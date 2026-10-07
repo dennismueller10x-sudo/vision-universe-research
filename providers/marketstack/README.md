@@ -25,6 +25,16 @@ an update field actually occurs; last trade time is never a provider update time
 Stockprice is independently routed from intraday; all delay/capability states
 start UNKNOWN. No global adjusted-field observation grants methodology admission.
 
+Live stockprice accepts native ticker strings and provider venue codes rather
+than the documented MIC filter. Pass an explicitly observed `canonicalTicker`
+or `snapshotTicker` for that endpoint; no suffix is stripped implicitly. The
+audited ETR/XETR, EPA/XPAR, AMS/XAMS and NASDAQ/XNAS mappings are linked to raw
+response hashes in `snapshot-exchange-mappings.json`. Unmapped or ambiguous
+home venues fail visibly, while raw retains every venue, including symbol
+collisions. An accepted quote does not certify freshness or realtime latency.
+Stockprice calls are paced at least 61 seconds apart. Metadata `about` prose is
+preserved as `description`, without fabricating structured fund attributes.
+
 Pagination validates count, offset and stable total; uses actual count rather
 than requested limit; detects repeated pages; reports caps and errors explicitly.
 A nonzero starting offset cannot certify the full population. Batch wrappers
@@ -68,6 +78,9 @@ node --test providers/marketstack/tests/*.test.mjs
 node scripts/quality/check-test-isolation.mjs --suite 'providers/marketstack/tests/*.test.mjs'
 ```
 
-Every test uses synthetic transport. Account/website parity and Europe freshness
-must still be assessed from authenticated raw evidence. See
+Every test uses synthetic transport. Authenticated Actions runs and independent
+raw-response reviews now establish scoped account/website parity and freshness.
+Frozen one-shot Actions leases total 3,500 reserved credits; the final signed
+marker only authorizes a child of the exact reviewed source and cannot replay.
+No schedule or production registration is added. See
 [the audit report](../../docs/marketstack-audit/ROOT_CAUSE_REPORT.md).

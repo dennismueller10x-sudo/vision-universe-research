@@ -2,15 +2,19 @@
   "asOfUTC": "2026-10-07T13:25:26.399197+00:00",
   "mainSHA": "b39d8d7ddbd093d138e2844ddec2cb2bb07a6962",
   "referenceSHA": "3f11a5a9d523e2b12f448ff91a6ddf7783cdaf7e",
-  "sourceKind": "OFFICIAL_WEBSITE_UI_AJAX_AND_FREE_PUBLISHED_DIRECTORY",
-  "accountRequests": 0,
-  "additionalAccountCredits": 0,
+  "sourceKind": "OFFICIAL_WEBSITE_PLUS_AUTHENTICATED_V2_RAW_PLUS_DRAFT_NORMALIZATION",
+  "accountRequests": 547,
+  "additionalAccountCredits": 1573,
   "counts": {
     "stocks": 27,
     "etfs": 12,
     "websiteHomeStocksFound": 26,
     "websiteAnyStocksFound": 27,
-    "websiteHomeETFsFound": 12
+    "websiteHomeETFsFound": 12,
+    "apiHomeStocksFound": 26,
+    "apiHomeETFsFound": 12,
+    "apiAnyStocksFound": 27,
+    "draftNormalizedHomeListingsFound": 38
   },
   "cases": [
     {
@@ -21,12 +25,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=adesso",
@@ -85,7 +89,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "ADN1.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE000A0Z23Q5",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0001"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0003"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0004"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0001"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -95,12 +139,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=HelloFresh",
@@ -199,7 +243,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "HFG.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE000A161408",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0007"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0009"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0010"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0002"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -209,12 +293,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=100&exchange=&search=SAP",
@@ -593,7 +677,7 @@
         },
         {
           "ticker": "0P0000JCSN.F",
-          "name": "Sapienta Global Strat\u00e9gies C",
+          "name": "Sapienta Global Stratégies C",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -601,7 +685,7 @@
         },
         {
           "ticker": "0P0001AM2D.F",
-          "name": "Sapienta Global Opportunit\u00e9s C EUR",
+          "name": "Sapienta Global Opportunités C EUR",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -609,7 +693,7 @@
         },
         {
           "ticker": "0P0001JLWN.F",
-          "name": "Sapienta Global Opportunit\u00e9s D EUR",
+          "name": "Sapienta Global Opportunités D EUR",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -911,7 +995,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SAP.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0007164600",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0013"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0015"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0016"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0003"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -921,12 +1045,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Siemens",
@@ -1219,7 +1343,7 @@
         },
         {
           "ticker": "0P000172GK.F",
-          "name": "Siemens Qualit\u00e4t & Dividende USA",
+          "name": "Siemens Qualität & Dividende USA",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -1227,7 +1351,7 @@
         },
         {
           "ticker": "0P0000X6R5.F",
-          "name": "Siemens Qualit\u00e4t & Dividende Europa",
+          "name": "Siemens Qualität & Dividende Europa",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -1449,7 +1573,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SIE.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0007236101",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0028"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0030"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0031"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0004"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -1459,12 +1623,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=XETR&search=Allianz",
@@ -2315,7 +2479,49 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "ALV.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0008404005",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0038",
+            "0039",
+            "0040"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0042"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0043"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0005"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -2325,12 +2531,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Deutsche+Telekom",
@@ -2453,7 +2659,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "DTE.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0005557508",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0050"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0052"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0053"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0006"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -2463,12 +2709,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_METADATA_ISIN_ABSENT_PLUS_VU_DIAGNOSTIC_FALSE_NEGATIVE_FIXED",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=HENSOLDT",
@@ -2549,7 +2795,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "HAG.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0060"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0062"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0063"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0007"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -2559,12 +2845,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_METADATA_ISIN_ABSENT_PLUS_VU_DIAGNOSTIC_FALSE_NEGATIVE_FIXED",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=RENK",
@@ -2621,7 +2907,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "R3NK.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0066"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0068"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0069"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0008"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -2631,12 +2957,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": false,
       "websiteADRorAlternativeOnly": true,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": false,
+      "rawHistoryAvailable": "NO_HOME_LISTING_FOR_HISTORY_PROBE",
+      "mappingStatus": "ALTERNATIVE_LISTINGS_ONLY_NO_HOME_LISTING_OBSERVED",
+      "rootCause": "PROVIDER_HOME_DIRECTORY_LIMIT_WITH_ALTERNATIVE_PARITY",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Schaeffler",
@@ -2658,7 +2984,7 @@
         }
       ],
       "publishedDirectoryFound": null,
-      "note": "Domestic listing absent only in observed website/frozen-directory routes; ADR/OTC and LSE present; authenticated API unknown.",
+      "note": "Authenticated directory/exact metadata finds alternative company listings only; 0RBK.L latest2024-10-02. No observed German home listing; not a product-universe absence claim.",
       "observedSearchMatches": [
         {
           "ticker": "SCFLF",
@@ -2740,7 +3066,35 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": false,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": null,
+      "rawLatestProviderTicker": null,
+      "rawLatestMIC": null,
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0072"
+          ],
+          "label": "company_search"
+        }
+      ],
+      "alternativeLatestEvidence": {
+        "runId": 37642262870,
+        "responseIds": [
+          "0021"
+        ],
+        "label": "alternative_listing_latest"
+      },
+      "alternativeLatestDate": "2024-10-02",
+      "parityScope": "ALTERNATIVE_COMPANY_LISTING_ONLY",
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -2750,12 +3104,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Fresenius",
@@ -3006,7 +3360,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "FRE.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0005785604",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0074"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0076"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0077"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0009"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3016,12 +3410,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=HAMBORNER+REIT",
@@ -3080,7 +3474,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "HABA.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE000A3H2333",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0080"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0082"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0083"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0010"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3090,12 +3524,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "STALE_LISTING_REQUIRES_VERIFIED_CURRENT_IDENTITY",
+      "rootCause": "PROVIDER_STALE_LISTING_OR_IDENTITY_MAPPING",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Alzchem",
@@ -3146,7 +3580,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "ACT.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE000A2YNT30",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0086"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0088"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0089"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0011"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3156,12 +3630,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Stabilus",
@@ -3268,7 +3742,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "STM.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "LU1066226637",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0092"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0094"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0095"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0012"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3278,12 +3792,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=SAF-HOLLAND",
@@ -3364,7 +3878,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SFQ.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "LU0307018795",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0098"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0100"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0101"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0013"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3374,12 +3928,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_EMPTY_LATEST_OLDER_EOD_PRESENT",
+      "mappingStatus": "STALE_LISTING_REQUIRES_VERIFIED_CURRENT_IDENTITY",
+      "rootCause": "PROVIDER_STALE_LISTING_OR_IDENTITY_MAPPING",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Kontron",
@@ -3445,7 +3999,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-04-01T00:00:00+0000",
+      "rawLatestProviderTicker": "SANT.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0104"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0106"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0107"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0014"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3455,12 +4049,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_EMPTY_LATEST_OLDER_EOD_PRESENT",
+      "mappingStatus": "STALE_LISTING_REQUIRES_VERIFIED_CURRENT_IDENTITY",
+      "rootCause": "PROVIDER_STALE_LISTING_OR_IDENTITY_MAPPING",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Einhell",
@@ -3509,7 +4103,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-04-13T00:00:00+0000",
+      "rawLatestProviderTicker": "EIN3.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": "DE0005654933",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0110"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0112"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0113"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0015"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3519,12 +4153,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_EMPTY_LATEST_OLDER_EOD_PRESENT",
+      "mappingStatus": "STALE_LISTING_REQUIRES_VERIFIED_CURRENT_IDENTITY",
+      "rootCause": "PROVIDER_STALE_LISTING_OR_IDENTITY_MAPPING",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Nagarro",
@@ -3589,7 +4223,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-08-27T00:00:00+0000",
+      "rawLatestProviderTicker": "NA9.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0116"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0118"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0119"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0016"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3599,12 +4273,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=ASML",
@@ -3845,7 +4519,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "ASML.AS",
+      "rawLatestMIC": "XAMS",
+      "rawLatestCurrency": "EUR",
+      "rawISIN": "NL0010273215",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0122"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0124"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0125"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0017"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -3855,12 +4569,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=LVMH",
@@ -3897,7 +4611,7 @@
         },
         {
           "ticker": "LVMHF",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "IEXG",
           "hasEOD": false,
           "hasIntraday": true,
@@ -3905,7 +4619,7 @@
         },
         {
           "ticker": "LVMUY",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "IEXG",
           "hasEOD": false,
           "hasIntraday": true,
@@ -3921,7 +4635,7 @@
         },
         {
           "ticker": "MC.PA",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XPAR",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3929,7 +4643,7 @@
         },
         {
           "ticker": "MOHF.F",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3937,7 +4651,7 @@
         },
         {
           "ticker": "MOH.F",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3945,7 +4659,7 @@
         },
         {
           "ticker": "1MC.MI",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XMIL",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3953,7 +4667,7 @@
         },
         {
           "ticker": "MCN.MX",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XMEX",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3961,7 +4675,7 @@
         },
         {
           "ticker": "LVMH01.BK",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XBKK",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3969,7 +4683,7 @@
         },
         {
           "ticker": "0HAU.IL",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XLON",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3977,7 +4691,7 @@
         },
         {
           "ticker": "0HAU.L",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XLON",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3985,7 +4699,7 @@
         },
         {
           "ticker": "MCP.XC",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "CHIX",
           "hasEOD": true,
           "hasIntraday": false,
@@ -3993,7 +4707,7 @@
         },
         {
           "ticker": "MOH.DE",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XETR",
           "hasEOD": true,
           "hasIntraday": false,
@@ -4001,13 +4715,53 @@
         },
         {
           "ticker": "MC.VI",
-          "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
           "mic": "XWBO",
           "hasEOD": true,
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "MC.PA",
+      "rawLatestMIC": "XPAR",
+      "rawLatestCurrency": "EUR",
+      "rawISIN": "FR0000121014",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0137"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0139"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0140"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0018"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -4017,12 +4771,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=XSWX&search=ABB",
@@ -4298,7 +5052,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "ABBN.SW",
+      "rawLatestMIC": "XSWX",
+      "rawLatestCurrency": "CHF",
+      "rawISIN": "CH0012221716",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0147"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0149"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0150"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0019"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -4308,12 +5102,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Swisscom",
@@ -4413,7 +5207,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SCMN.SW",
+      "rawLatestMIC": "XSWX",
+      "rawLatestCurrency": "CHF",
+      "rawISIN": "CH0008742519",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0157"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0159"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0160"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0020"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -4423,12 +5257,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Ferrari",
@@ -4543,7 +5377,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "RACE.MI",
+      "rawLatestMIC": "XMIL",
+      "rawLatestCurrency": "EUR",
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0163"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0165"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0166"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0021"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -4553,12 +5427,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=SAN.MC",
@@ -4787,7 +5661,7 @@
         },
         {
           "ticker": "0P0001EHUH.SA",
-          "name": "Santander Jos\u00e9 Do Egito FIM C Priv IE",
+          "name": "Santander José Do Egito FIM C Priv IE",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -4867,7 +5741,7 @@
         },
         {
           "ticker": "0P0001KG05.SA",
-          "name": "SANTANDER PB FAROL MULT CR\u00c9D PRIV FI",
+          "name": "SANTANDER PB FAROL MULT CRÉD PRIV FI",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -4891,7 +5765,7 @@
         },
         {
           "ticker": "0P0001IQ13.SA",
-          "name": "Santander PB It\u00e1lia FIC FIM C Priv",
+          "name": "Santander PB Itália FIC FIM C Priv",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -4955,7 +5829,7 @@
         },
         {
           "ticker": "0P00017UY5.SA",
-          "name": "SANTANDER PB 1940 MULTIMERCADO CR\u00c9DITO PRIVADO INV",
+          "name": "SANTANDER PB 1940 MULTIMERCADO CRÉDITO PRIVADO INV",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5051,7 +5925,7 @@
         },
         {
           "ticker": "0P0001JH2L.SA",
-          "name": "SANTANDER PB MONTANA MULT CR\u00c9D PRIV FI",
+          "name": "SANTANDER PB MONTANA MULT CRÉD PRIV FI",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5091,7 +5965,7 @@
         },
         {
           "ticker": "0P0001FDJL.SA",
-          "name": "SANTANDER PB VESTRAL II MULT CR\u00c9D PRIV FI",
+          "name": "SANTANDER PB VESTRAL II MULT CRÉD PRIV FI",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5171,7 +6045,7 @@
         },
         {
           "ticker": "0P00015SZA.SA",
-          "name": "Santander PB Am\u00e9rica FIM C Priv IE",
+          "name": "Santander PB América FIM C Priv IE",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5259,7 +6133,7 @@
         },
         {
           "ticker": "0P0001B6KT.SA",
-          "name": "SANTANDER PB S\u00c3O JO\u00c3O MULTIMERCADO CR\u00c9DITO PRIVADO",
+          "name": "SANTANDER PB SÃO JOÃO MULTIMERCADO CRÉDITO PRIVADO",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5307,7 +6181,7 @@
         },
         {
           "ticker": "0P0001OJXS.SA",
-          "name": "SANTANDER PB S\u00c3O JULI\u00c3O MULTIMERCADO CR\u00c9DITO PRIVA",
+          "name": "SANTANDER PB SÃO JULIÃO MULTIMERCADO CRÉDITO PRIVA",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5355,7 +6229,7 @@
         },
         {
           "ticker": "0P000150O7.SA",
-          "name": "SANTANDER PB LUNA MULTIMERCADO CR\u00c9DITO PRIVADO FUN",
+          "name": "SANTANDER PB LUNA MULTIMERCADO CRÉDITO PRIVADO FUN",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5363,13 +6237,53 @@
         },
         {
           "ticker": "0P0001FUEH.SA",
-          "name": "Santander PB WMDM II BDR N\u00edvel I FIA",
+          "name": "Santander PB WMDM II BDR Nível I FIA",
           "mic": "BVMF",
           "hasEOD": true,
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SAN.MC",
+      "rawLatestMIC": "XMAD",
+      "rawLatestCurrency": null,
+      "rawISIN": "ES0113900J37",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0169"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0171"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0172"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0022"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -5379,12 +6293,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=XMAD&search=BBVA",
@@ -5493,7 +6407,7 @@
         },
         {
           "ticker": "0P00000CTS.F",
-          "name": "BBVA Bonos Duraci\u00f3n B FI",
+          "name": "BBVA Bonos Duración B FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5525,7 +6439,7 @@
         },
         {
           "ticker": "0P0000N9M2.F",
-          "name": "BBVA Bonos Corp. Duraci\u00f3n Cubierta FI",
+          "name": "BBVA Bonos Corp. Duración Cubierta FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5533,7 +6447,7 @@
         },
         {
           "ticker": "0P0001CC4V.F",
-          "name": "BBVA Bonos Duraci\u00f3n Cartera FI",
+          "name": "BBVA Bonos Duración Cartera FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5669,7 +6583,7 @@
         },
         {
           "ticker": "0P0000VQFA.F",
-          "name": "BBVA Mi Inversi\u00f3n Bolsa Acumulaci\u00f3n FI",
+          "name": "BBVA Mi Inversión Bolsa Acumulación FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5733,7 +6647,7 @@
         },
         {
           "ticker": "0P00019AIU.F",
-          "name": "BBVA Rendimiento Espa\u00f1a II FI",
+          "name": "BBVA Rendimiento España II FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5741,7 +6655,7 @@
         },
         {
           "ticker": "0P00018BMG.F",
-          "name": "BBVA Rendimiento Espa\u00f1a Positivo FI",
+          "name": "BBVA Rendimiento España Positivo FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5749,7 +6663,7 @@
         },
         {
           "ticker": "0P00000L3B.F",
-          "name": "BBVA Gesti\u00f3n Decidida FI",
+          "name": "BBVA Gestión Decidida FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5757,7 +6671,7 @@
         },
         {
           "ticker": "0P00000V7V.F",
-          "name": "BBVA Gesti\u00f3n Conservadora FI",
+          "name": "BBVA Gestión Conservadora FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5765,7 +6679,7 @@
         },
         {
           "ticker": "0P00000PIM.F",
-          "name": "BBVA Gesti\u00f3n Moderada FI",
+          "name": "BBVA Gestión Moderada FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5773,7 +6687,7 @@
         },
         {
           "ticker": "0P0000VHG8.F",
-          "name": "BBVA Bonos Espa\u00f1a Largo Plazo FI",
+          "name": "BBVA Bonos España Largo Plazo FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5789,7 +6703,7 @@
         },
         {
           "ticker": "0P00018LTW.F",
-          "name": "BBVA Revalorizaci\u00f3n Espa\u00f1a Positivo PP",
+          "name": "BBVA Revalorización España Positivo PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5797,7 +6711,7 @@
         },
         {
           "ticker": "0P00019XNM.F",
-          "name": "BBVA Revalorizaci\u00f3n Espa\u00f1a Positivo C PP",
+          "name": "BBVA Revalorización España Positivo C PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5805,7 +6719,7 @@
         },
         {
           "ticker": "0P00000LVP.F",
-          "name": "BBVA Cr\u00e9dito Europa FI",
+          "name": "BBVA Crédito Europa FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5829,7 +6743,7 @@
         },
         {
           "ticker": "0P00007YJ9.F",
-          "name": "BBVA Bolsa \u00cdndice Usa",
+          "name": "BBVA Bolsa Índice Usa",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5837,7 +6751,7 @@
         },
         {
           "ticker": "0P00000PHT.F",
-          "name": "BBVA Bolsa \u00cdndice Jap\u00f3n",
+          "name": "BBVA Bolsa Índice Japón",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5845,7 +6759,7 @@
         },
         {
           "ticker": "0P0000JCEG.F",
-          "name": "BBVA Estrat\u00e9gia Acumula\u00e7\u00e3o PPR A",
+          "name": "BBVA Estratégia Acumulação PPR A",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5885,7 +6799,7 @@
         },
         {
           "ticker": "0P0001958N.F",
-          "name": "BBVA Revalorizaci\u00f3n Europa Positivo PP",
+          "name": "BBVA Revalorización Europa Positivo PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5917,7 +6831,7 @@
         },
         {
           "ticker": "0P00000YAF.F",
-          "name": "BBVA Previsi\u00f3n PP",
+          "name": "BBVA Previsión PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5933,7 +6847,7 @@
         },
         {
           "ticker": "0P00016QSI.F",
-          "name": "BBVA Consolidaci\u00f3n 85 FI",
+          "name": "BBVA Consolidación 85 FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5941,7 +6855,7 @@
         },
         {
           "ticker": "0P000166S9.F",
-          "name": "BBVA Plan Jubilaci\u00f3n Sostenible 2030 PP",
+          "name": "BBVA Plan Jubilación Sostenible 2030 PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -5981,7 +6895,7 @@
         },
         {
           "ticker": "0P00013C4S.F",
-          "name": "BBVA Mi Inversi\u00f3n Bolsa FI",
+          "name": "BBVA Mi Inversión Bolsa FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6037,7 +6951,7 @@
         },
         {
           "ticker": "0P00016OVC.F",
-          "name": "BBVA Protecci\u00f3n Futuro 5/10 B PP",
+          "name": "BBVA Protección Futuro 5/10 B PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6109,7 +7023,7 @@
         },
         {
           "ticker": "0P00000PGU.F",
-          "name": "BBVA Bolsa Jap\u00f3n FI",
+          "name": "BBVA Bolsa Japón FI",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6133,7 +7047,7 @@
         },
         {
           "ticker": "0P0000JCEN.F",
-          "name": "BBVA Sustent\u00e1vel Moderado ISR FP A",
+          "name": "BBVA Sustentável Moderado ISR FP A",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6149,7 +7063,7 @@
         },
         {
           "ticker": "0P00016DVD.F",
-          "name": "BBVA Protecci\u00f3n Futuro 2-10 PP",
+          "name": "BBVA Protección Futuro 2-10 PP",
           "mic": "XFRA",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6163,7 +7077,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "BBVA.MC",
+      "rawLatestMIC": "XMAD",
+      "rawLatestCurrency": null,
+      "rawISIN": "ES0113211835",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0175"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0177"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0178"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0023"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -6173,12 +7127,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=XHEL&search=Nordea",
@@ -6567,7 +7521,7 @@
         },
         {
           "ticker": "NDIKMKL1.CO",
-          "name": "Nordea Invest - Klima og Milj\u00f8",
+          "name": "Nordea Invest - Klima og Miljø",
           "mic": "XCSE",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6647,7 +7601,7 @@
         },
         {
           "ticker": "0P0000UV7O.CO",
-          "name": "Nordea Invest Portef\u00f8lje Eksterne Forv",
+          "name": "Nordea Invest Portefølje Eksterne Forv",
           "mic": "XCSE",
           "hasEOD": true,
           "hasIntraday": false,
@@ -6695,7 +7649,7 @@
         },
         {
           "ticker": "0P0000UV7P.CO",
-          "name": "Nordea Invest Portef\u00f8lje Aktier Strategi",
+          "name": "Nordea Invest Portefølje Aktier Strategi",
           "mic": "XCSE",
           "hasEOD": true,
           "hasIntraday": false,
@@ -7005,7 +7959,49 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "NDA-FI.HE",
+      "rawLatestMIC": "XHEL",
+      "rawLatestCurrency": "EUR",
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0181",
+            "0182",
+            "0183"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0185"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0186"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0024"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -7015,12 +8011,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=Airbus",
@@ -7175,7 +8171,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "AIR.PA",
+      "rawLatestMIC": "XPAR",
+      "rawLatestCurrency": "EUR",
+      "rawISIN": "NL0000235190",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0189"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0191"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0192"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0025"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "STOCK",
@@ -7185,12 +8221,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "RECENT_WINDOW_ROWS_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_DISCOVERY_GAP_FIXED_IN_DRAFT",
       "evidence": [
         {
           "url": "https://marketstack.com/stock_api.php?offset=0&exchange=&search=QIAGEN",
@@ -7265,7 +8301,47 @@
           "hasIntraday": false,
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "QIA.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0195"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0197"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0198"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0026"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_US",
@@ -7275,12 +8351,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_NORMALIZATION_BUG_FIXED_EXCHANGE_LABEL_VS_MIC",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7302,7 +8378,47 @@
           "mic": "IEXG",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SPY",
+      "rawLatestMIC": "ARCX",
+      "rawLatestCurrency": "USD",
+      "rawISIN": "US78462F1030",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0201"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0203"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0204"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0027"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_US",
@@ -7312,12 +8428,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_NORMALIZATION_BUG_FIXED_EXCHANGE_LABEL_VS_MIC",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7339,7 +8455,47 @@
           "mic": "IEXG",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "QQQ",
+      "rawLatestMIC": "XNAS",
+      "rawLatestCurrency": "USD",
+      "rawISIN": "US46090E1038",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0208"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0210"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0211"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0028"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_US",
@@ -7349,12 +8505,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_NORMALIZATION_BUG_FIXED_EXCHANGE_LABEL_VS_MIC",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7376,7 +8532,47 @@
           "mic": "IEXG",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "VOO",
+      "rawLatestMIC": "ARCX",
+      "rawLatestCurrency": "USD",
+      "rawISIN": "US9229083632",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0215"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0217"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0218"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0029"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_US",
@@ -7386,12 +8582,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_NORMALIZATION_BUG_FIXED_EXCHANGE_LABEL_VS_MIC",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7413,7 +8609,47 @@
           "mic": "IEXG",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "VTI",
+      "rawLatestMIC": "ARCX",
+      "rawLatestCurrency": "USD",
+      "rawISIN": "US9229087690",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0222"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0224"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0225"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0030"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_US",
@@ -7423,12 +8659,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "VU_NORMALIZATION_BUG_FIXED_EXCHANGE_LABEL_VS_MIC",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7450,7 +8686,47 @@
           "mic": "IEXG",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-06T00:00:00+0000",
+      "rawLatestProviderTicker": "SCHD",
+      "rawLatestMIC": "ARCX",
+      "rawLatestCurrency": "USD",
+      "rawISIN": "US8085247976",
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0229"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0231"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0232"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0031"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7460,12 +8736,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7482,7 +8758,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "SXR8.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0236"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0238"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0239"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0032"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7492,12 +8808,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7514,7 +8830,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "EUNL.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0242"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0244"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0245"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0033"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7524,12 +8880,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7546,7 +8902,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-08-12T00:00:00+0000",
+      "rawLatestProviderTicker": "XDWD.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0249"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0251"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0252"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0034"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7556,12 +8952,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7578,7 +8974,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "XESC.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0256"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0258"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0259"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0035"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7588,12 +9024,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7610,7 +9046,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "VWCE.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0263"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0265"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0266"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0036"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7620,12 +9096,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7642,7 +9118,47 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2026-10-05T00:00:00+0000",
+      "rawLatestProviderTicker": "SPY5.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0270"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0272"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0273"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0037"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     },
     {
       "kind": "ETF_UCITS",
@@ -7652,12 +9168,12 @@
       "websiteFound": true,
       "websiteHomeListingFound": true,
       "websiteADRorAlternativeOnly": false,
-      "authenticatedApiFound": "UNKNOWN",
-      "vuFound": "NO_MARKETSTACK_CONNECTOR_ON_MAIN_NOT_TESTED",
-      "rawLatestAvailable": "NOT_TESTED",
-      "rawHistoryAvailable": "NOT_TESTED",
-      "mappingStatus": "OBSERVED_CANDIDATE_IDENTITY_UNVERIFIED",
-      "rootCause": "UNKNOWN_PENDING_AUTHENTICATED_ACCOUNT",
+      "authenticatedApiFound": true,
+      "vuFound": "DRAFT_NORMALIZED_PROVIDER_OBSERVATION",
+      "rawLatestAvailable": true,
+      "rawHistoryAvailable": "NOT_PROBED_SERIES_LATEST_EOD_PRESENT",
+      "mappingStatus": "OBSERVED_EXACT_SYMBOL_MIC_ISIN_UNVERIFIED",
+      "rootCause": "PROVIDER_STALE_EOD_OUTPUT_NOT_CONNECTOR_CACHE",
       "holdingsAvailable": "NOT_TESTED",
       "evidence": [
         {
@@ -7674,7 +9190,55 @@
           "mic": "XETR",
           "identityVerified": false
         }
-      ]
+      ],
+      "apiHomeListingFound": true,
+      "productAdmission": false,
+      "parityStatus": "PARITY_OK",
+      "rawLatestTradingDate": "2025-02-20T00:00:00+0000",
+      "rawLatestProviderTicker": "LCUW.DE",
+      "rawLatestMIC": "XETR",
+      "rawLatestCurrency": null,
+      "rawISIN": null,
+      "authenticatedEvidence": [
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0277"
+          ],
+          "label": "company_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0279"
+          ],
+          "label": "ticker_search"
+        },
+        {
+          "runId": 37636729908,
+          "responseIds": [
+            "0280"
+          ],
+          "label": "exact_and_observed_alias_metadata"
+        },
+        {
+          "runId": 37638353777,
+          "responseIds": [
+            "0038"
+          ],
+          "label": "EOD_latest_fixed_MIC"
+        }
+      ],
+      "marketstackObservationFoundOnMain": false,
+      "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE"
     }
-  ]
+  ],
+  "liveRunIds": [
+    37636729908,
+    37638353777,
+    37642262870,
+    37645399592
+  ],
+  "vuFoundScope": "MARKETSTACK_PROVIDER_OBSERVATION_ONLY_NOT_PRODUCT_UNIVERSE",
+  "scope": "39_PARITY_CASES_27_EU_COMPANIES_12_ETFS_PLUS3_SEPARATE_US_ACTION_CONTROLS_IN42_CASE_PLAN"
 }

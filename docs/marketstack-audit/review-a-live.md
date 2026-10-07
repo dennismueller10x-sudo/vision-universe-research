@@ -91,3 +91,45 @@ Independently inspected complete small event windows and fully paginated action 
 The safe capability classifications are **adjustedOHLC PARTIAL**, **adjustedVolume PARTIAL**, **splits SUPPORTED** and **dividends SUPPORTED** for observed sample coverage. Full adjusted-price economic semantics remain unverified and provider quality gates must reject/quarantine inconsistent series for downstream use. This is a provider data-quality limitation, not normalization dropping fields; raw values are preserved.
 
 AAPL dividend response0296 has28rows, of which22lack payment_date/record_date/declaration_date/distr_freq; NVDA0314 has28rows,23lack those metadata fields. Latest samples have these fields, so metadata coverage is historical PARTIAL rather than endpoint unavailable. TSLA0305 returns total0 dividends; an empty non-dividend-paying control does not negate dividend endpoint support. No universal coverage conclusion is inferred from these three issuers.
+
+## Independent A final three-run review
+
+Runs inspected: initial37636729908 (326HTTP attempts/782reservedcredits), bounded follow-up37638353777 (145/411), final37642262870 (55/302). Cumulative **526attempts/1495conservative reservedcredits**, below2000target/3500hardcap. Five attempts timed out with no response;521stored raw responses have no usageHeaders. Actual invoiced/remaining account credits and plan name are not account-verified. Professional is user-stated and matches advertised plan features, but successful API authentication verifies endpoints, not the subscription label/monthly allowance/commercial license/support contract. No run reported function_access_restricted, entitlementRestricted or authError. Consequently no tested lack of data is a proven plan limitation.
+
+### Final root-cause corrections confirmed
+
+Current implementation separates exchange_code labels from actual MIC, fixing valid US EOD rejection. Raw-field preservation now includes holdings balance/units/currency/assetCategory/title and metadata identifiers/sector/industry/description; raw envelopes remain complete.
+
+The current `/stockprice` API diverges from the current Swagger parameter description: `exchange=XNAS` or European MICs XETR/XPAR fail, whereas the observed provider code `exchange=NASDAQ` succeeds for AAPL. Bare native ticker without exchange returns multiple actual venues. Qualified EOD symbols SAP.DE/MC.PA do not work on stockprice. Current adapter now uses endpoint-specific native ticker, retrieves venues and applies independently evidenced provider-code/name→MIC mappings, retaining original codes and mapping evidence. This is a confirmed query/mapping root cause, not a Professional entitlement limit.
+
+Independently replayed final CURRENT code using fake transport with exact final authenticated raw0047–0053 (no network): SAP/SIE/ALV/DTE ETR→XETR and MC EPA→XPAR pass, preserve raw price/date and record mapping source; ASML AMS→XAMS passes identity but remains stale2026-08-19; ABBN VIE-only is correctly rejected for requestedXSWX. Implementation **PASS** for this observed contract and venue rejection. This replay is distinguished from original final Actions observations, whose normalized results predate the final evidence map and say snapshotVenueUnverified.
+
+### Professional feature observations versus account assertions
+
+| Advertised feature | Authenticated observation / justified conclusion |
+|---|---|
+|100000monthlyrequests|Pricing/user-stated allowance; not account-verified by an API usage counter.|
+|EOD|Global and scoped latest/history deliver actual equity/ETF observations; SUPPORT observed, freshness varies by provider instrument.|
+|15+years|SAP/ASML fifteen-year boundary samples begin2011-10-07; full earliest2010-01-04. AAPL oldest1996-10-07. Presence supported; no uninterrupted full-series certificate.|
+|Splits/dividends|Dedicated endpoints succeed with matching split dates/factors and positive dividend controls; action metadata historical coverage partial.|
+|Stocktickerinfo|Exact metadata and tickerinfo return names/ISIN and identifiers where present. Search/directory filters are inconsistent; discovery not a completeness guarantee.|
+|2700+exchanges|Authenticated /exchanges total2883, directory-only listing does not imply price coverage.|
+|Currencies/timezones|Successful raw; totals43and57.|
+|HTTPS|All authenticated requests use HTTPS; transport support observed.|
+|Commercialuse/standardsupport|Contract/account attributes, no API endpoint or independent account verification; do not equate successful data request with license/support verification.|
+|IEXUSintraday/realtimeupdates|AAPL15min and1min payloads received, exchangeIEXG, derived marketstack_last present. FullTOPS last/bid/ask fields null; actual mid is non-null despite stale documentation generalization.|
+|Stockmarketindex/bonds|Indexlist/indexinfo and bondlist/Germanybond succeed. Indexinfo raw is a top-level array; consumer must not assume data wrapper.|
+|ETFholdings|ThreeUSfunds deliver large complete-response filing payloads, but stale and no reported total. SPY/QQQ unavailable; UCITS tested identifiers produce no data or timeout. Partial sampled coverage, not plan denial.|
+|Real-timeStockMarketPrices|Five nativeEuropean same-day snapshots demonstrably returned; no timezone/delay/update metadata, so actual REALTIME latency is unverified. Europe snapshot capability PARTIAL; ASMLstale and ABB nativeSIX missing.|
+|Commodityprices/history|Gold current and historical routes succeed with documented1/min spacing.|
+
+### Remaining provider limitations, distinguished from resolved connector defects
+
+- Provider directory name/venue search and etflist filters diverge from documentation; exact metadata/latest routes may succeed even when search misses a security.
+- ETFholdings pagination parameters are ignored by observed report payloads and no total is reported; no provider paging certificate. Date-constrained current filings are unavailable; stale filing dates remain raw and weights are not rescaled.
+- UCITS data absence for tested fund identifiers is coverage-specific; two iShares parameter alternatives time out, which is not a conclusive entitlement/coverage error. Preserve per-test timeouts rather than invent an unsupported result.
+- Snapshottimestamps are naive local-looking strings without timezone; no provider declared delay or quote update timestamp. Five same-day European quotes support a price snapshot, not certified tick realtime. ASML local quote datedAug19 and ABB lacks nativeSIXquote in tested bare response.
+- Europeintraday dot/bare/hyphen probes fail or return zero while USIEX controls succeed; no tested European native intraday coverage.
+- Adjusted OHLC/volume sparse or internally inconsistent (separate action review); historypresence does not establish economics or complete series.
+
+Final independent A disposition: **PASS for corrected route/parameter/raw-preservation and observed venue mapping contract; provider-data limitations remain explicit.** No production/product/Quant changes or paid reviewer calls.

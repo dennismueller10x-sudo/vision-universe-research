@@ -1,141 +1,168 @@
 # VISION UNIVERSE® — Marketstack Professional Capability & Connector Parity Audit
 
-Stand: 2026-10-07 UTC. **Teilbefund mit getesteten Connector-Korrekturen; der authentifizierte Account-Teil ist blockiert.** Dieser Bericht behauptet keine abgeschlossene Provider-/Tarifklassifikation. Die Umgebung enthält keinen `MARKETSTACK_API_KEY`; der ausdrücklich gestartete Live-Runner endet vor dem ersten Request mit `MARKETSTACK_API_KEY_NOT_CONFIGURED`. Runtime-Credential-Check: keine konfigurierten Secrets. Die GitHub-Verbindung funktioniert, kann aber den bestehenden Actions-Secret nicht lesen. Der notwendige Umgebungszugang wurde während des Laufs angefragt.
+Stand: 7.10.2026 UTC. Der authentifizierte Audit wurde über den vorhandenen Actions-Secret ausgeführt. Raw Responses, Requests und normalisierte Beobachtungen sind getrennt erhalten. **Keine Produktionsdaten wurden geändert; PR #479 bleibt Draft und wurde nicht gemergt.**
 
-Zusätzliche Marketstack-Account-Requests / Credits: **0 / 0**. Öffentliches Website-Backend und kostenlose Provider-Verzeichnisse werden separat als solche geführt. Synthetische Testantworten sind keine Account-Evidence.
+## Baseline und Account
 
-## Baseline und Untersuchungsgrenze
+- main beim ursprünglichen Audit: `b39d8d7ddbd093d138e2844ddec2cb2bb07a6962`; Draft-Basis auf aktuellen main `829b35bdce417a78ed2cf44319df347d747ac615` gesetzt. Auf main liegt kein Marketstack-Connector. Die zuvor beobachtete Implementierung stammt aus offenen Feature-PRs, insbesondere #461 (`3f11a5a9d523e2b12f448ff91a6ddf7783cdaf7e`). Diese Implementierungen und deren Verbraucher wurden nicht migriert.
+- Professional ist die Nutzerangabe; die offizielle aktuelle Planbeschreibung nennt 100.000 monatliche Requests. Der Actions-Key authentifiziert die tatsächlich geprüften Datenrouten. API-Antworten liefern keinen Account-Plan-Namen oder verifizierten Monats-Restzähler. Diese Angaben werden nicht erfunden.
+- v2 über HTTPS; Key ausschließlich im Fetch, niemals in den gespeicherten Request-Parametern oder Reports. Originaltext vor Normalisierung gespeichert, Secret-Redaktion, SHA256 pro Antwort; verschlüsselte Actions-Artefakte, entschlüsselte Originale außerhalb des Repository.
+- Client-Reservation vor jedem Fetch, ETF-Routen20-fach, sonst ein Credit pro angefragtem Symbol/Request. Offizielle FAQ: API-Fehler werden nicht berechnet. Die hier ausgewiesene Reservation zählt sie vorsichtshalber mit; sie ist **kein beobachteter Rechnungszähler**. Keine Retries, CacheTTL0, keine Schedules, keine Universe-Ingestion.
+- Referenzclient: fünf Minuten Prozesscache und Inflight-Deduplikation; Audit umgeht auch warmen Cache ausdrücklich. Identitäts-/Adjustierungs-/Qualitätszulassung in bestehenden Produkten bleibt unverändert. Neuer Adapter ist ein inaktiver Beobachtungsvertrag, kein produktiver Provider.
 
-| Gegenstand | Gemessener Stand |
-|---|---|
-| Repository | dennismueller10x-sudo/vision-universe-research |
-| aktueller main bei Start | `b39d8d7ddbd093d138e2844ddec2cb2bb07a6962` |
-| Draft-Branch | `marketstack-connector-capability-audit`; Start b39d8d7, vor PR auf aktuellen main `829b35bdce417a78ed2cf44319df347d747ac615` gesetzt |
-| Marketstack auf main | **kein Connector**, keine Marketstack-Ingestion-/Normalisierungsdateien oder -Workflows; vollständige Git-Tree-Suche, nicht nur Sparse-Dateisuche |
-| geprüfter Referenzcode | offener PR #461, `3f11a5a9d523e2b12f448ff91a6ddf7783cdaf7e`; eigener schreibgeschützter Referenz-Worktree |
-| weitere getrennte Implementierungen | offene PRs #330/#334/#341/#457; ETF-Probes/Normalisierung von #334/#341 wurden codebasiert mitgeprüft |
-| Plan | Professional laut Nutzer; aktuelle offizielle Werbung stimmt überein; Account-Plan und Restbudget **nicht authentifiziert verifiziert** |
-| Professional-Werbung | 100.000 monatliche Requests; ETF-Calls separat 20-fach; kein erfundener Account-Reststand |
-| API / Auth | Referenzclient: HTTPS `api.marketstack.com/v2`; serverseitiger Query-Key nur innerhalb Fetch |
-| Referenzdateien | `providers/marketstack/{client.js,adapter.js,README.md}`; `scripts/marketstack/{probe-missing-identities,ingest-de-eu}.mjs`; `scripts/market/{marketstack-budget,marketstack-cache}.mjs` |
-| Pagination | generischer Client mit offset/count/total; EOD/Actions nutzen ihn. Referenzadapter hat **keine Directory-Discovery-Methode** |
-| Cache | pro Prozess fünf Minuten, parameterabhängige Keys, Inflight-Deduplikation; kein Stale-Fallback. Private Ingestion nutzt getrennten verschlüsselten Arbeitsbestand/Actions-Caches |
-| Budget | Referenz erzwingt gemeinsame Reservation; alte run-spezifische 15k/20k-Autorisierung gilt **nicht** für diesen Lauf. Neuer Audit: Ziel 1.999, absolute Obergrenze 3.500 zusätzliche reservierte Credits |
-| Mapping / Normalisierung | Referenz: vollständige verifizierte ISIN/MIC/Listing-/Währungsidentität erforderlich; Raw-Quarantäne und unabhängige Adjustierungs-/Volume-Evidence |
-| Quality Gates | Symbol/MIC/ISIN/Currency-Konflikte blockieren; ungültige OHLC/Corporate Actions explizit; vollständige Seiten und Methodikzulassung getrennt; Produktionsisolation |
+## Connector-Dateien und Quality Gates
 
-Während des Audits änderte main sich durch unabhängige Daten-/Seiten-Commits. Die für diesen Connector geprüften Core-/Engine-/Provider-/Konfigurations-/Workflow-Pfade blieben im Tree-Vergleich unverändert; auch der neue main enthält keinen Marketstack-Connector. Diese Änderungen werden nicht Bestandteil des Audit-Diffs.
+Im Draft: `providers/marketstack/client.js` (Transport/Budget/Cache/Pagination), `audit-adapter.js` (die neun Beobachtungsverträge und Normalisierung), `snapshot-exchange-mappings.json` (Raw-belegtes Venue-Mapping), `providers/marketstack/tests/*.test.mjs`, `scripts/marketstack/capability-audit.mjs` und `actions-audit.mjs` (begrenzt autorisierter Runner). [.github/workflows/marketstack-probe.yml](../../.github/workflows/marketstack-probe.yml) stellt ausschließlich den Auditzugriff auf den vorhandenen Secret bereit. [Mapping-Tabelle](exchange-mapping-independent.json) und die neue Code-/MIC-Evidence bleiben getrennt.
 
-Main enthält die von #461 benötigten neuen ISIN-Identity-Funktionen nicht. Deshalb importiert dieser Draft ausschließlich den isolierten Transport und einen **inaktiven Provider-Observation-Vertrag**. Er registriert keinen produktiven Provider und baut keine konkurrierende Preiswahrheit. Die vorhandenen offenen Europa-/Quant-PRs bleiben getrennt. Der fehlerhafte Kandidatenstatus in deren Skript wird hier durch den neuen Resolver-Vertrag vermieden; ihre Consumer müssen den Vertrag später bewusst übernehmen.
+Der aus #461 gelesene Referenzadapter verlangt bestätigte Listing-/Währungszuordnung samt Quellen, bei Vorzugsaktien eine bestätigte Share-Class und für Intraday-Bar-Semantik ein separates Gate. Adjusted-OHLC benötigt eine datumsbezogene Quelle für SPLIT_AND_DIVIDEND_ADJUSTED; Volume-Evidence ist unabhängig. Diese Qualitätsregeln wurden nicht abgeschwächt. Der Draft liefert `identityVerified:false`, Raw-Beobachtungen und unbestätigte Adjustierung; keine Canonical-ISIN-Erfindung, kein Produkt-Consumer und keine Registrierung.
 
-## Quellen und reproduzierbare Evidenz
+Der generische Client hat Defaults100 Requests/100 konservative Credits, zwei Retries, 30s Timeout und fünf Minuten Cache; reale Requests benötigen einen gemeinsamen Budget-Reservierer. Die Live-Pläne überschreiben dies bewusst mit der eingefrorenen Lease, maximal600 Requests, null Retries und CacheTTL0. Der Final-Test erhöht nur seinen begrenzten Request-Timeout auf90s. Globale Ausführung ist seriell; stockprice wird zusätzlich61s gepaced. Auth erfolgt ausschließlich als v2-`access_key` innerhalb des Fetch, HTTPS bleibt fest.
 
-- [Offizielles aktuelles v2-OpenAPI](https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json), am 7.10. neu gelesen; SHA256 in [endpoint-inventory.json](endpoint-inventory.json). Alle dokumentierten Routen und Parameter sind enthalten, einschließlich Ticker-/Exchange-Varianten, ETF-/Index-/Bond-/Commodity- und Extended-Metadata-Routen.
-- [Aktuelle Dokumentation](https://docs.apilayer.com/marketstack/docs/api-documentation), [Getting Started](https://docs.apilayer.com/marketstack/docs/getting-started), [Professional Pricing](https://marketstack.com/pricing).
-- [Offizielle Stock Search](https://marketstack.com/search): UI ruft öffentlich `stock_api.php?offset=…&exchange=…&search=…` auf. **Das ist nicht der authentifizierte Professional-Account.** Originale Antworten in [evidence/website](evidence/website), Hashmanifest [website-raw-manifest.json](website-raw-manifest.json); URLs und UTC-Zeitpunkte pro Matrixfall.
-- [Provider-EOD-Workbook](https://marketstack.com/download/v2_eod_tickers_finnworlds_tiingo.xlsx): 512.378 Symbol/MIC-Zeilen, davon 8.919 XETR. Kostenlos geladen; weder aktuelle Prices noch universelle Account-Entitlement-Evidence. Der separate [CSV-Download](https://marketstack.com/download/supported_tickers_2.csv) enthält viele alte endDate-Werte und darf keinen negativen Europa-Coverage-Beweis liefern.
-- Referenz-Implementierung: [PR #461](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/461), [PR #334](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/334), [PR #341](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/341). Code und frisch gelesene Spezifikation begründen die Vertragsbefunde; alte Reports dienen nur als separat bezeichnete Beobachtungen.
+## Quellen und Evidence
 
-## Capability- und Usage-Matrizen
+[Endpoint-Inventar](endpoint-inventory.json), [Professional-Matrix](professional-capabilities.csv), [Usage-Matrix](connector-usage.csv), [Website-Originale](evidence/website), [Website-Hashmanifest](website-raw-manifest.json), [Capability-Flags](capabilities.json), [authentifizierte Evidence](live-account-evidence.json), [Raw-Hashmanifest](authenticated-raw-manifest.json), [Parität](website-api-vu-parity-matrix.csv), [Feldvergleich](raw-vs-normalized.csv), [Holdings](etf-holdings-live.csv), [Holdings-Feldvergleich](etf-holdings-raw-normalized-fields.csv).
 
-[professional-capabilities.csv](professional-capabilities.csv) behandelt **jeden** genannten Professional-Punkt mit Route, Parametern, Pagination, Scope, Nutzung und getrenntem Account-Entitlement. HTTPS, Commercial Use und Support sind keine Daten-Endpunkte. [connector-usage.csv](connector-usage.csv) unterscheidet main (`NOT_USED`) von der Referenzimplementierung (`USED_CORRECTLY`, `USED_PARTIALLY`, `NOT_USED`) und enthält Aufrufer, Consumer, Cache und Fehlermapping. Gleichwertige scoped EOD-Routen müssen nicht alle produktiv verwendet werden.
+Offizielle Quellen: [v2-OpenAPI](https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json), [API-Dokumentation](https://docs.apilayer.com/marketstack/docs/api-documentation), [Getting Started](https://docs.apilayer.com/marketstack/docs/getting-started), [Pricing](https://marketstack.com/pricing), [FAQ](https://marketstack.com/faq), [Website Search](https://marketstack.com/search). Aktuelle Credit-Zitate und Hashes: [credit-documentation-live.json](credit-documentation-live.json). Öffentliches Website-Backend ist ausdrücklich keine Account-API-Evidence.
 
-[capabilities.json](capabilities.json) enthält alle 15 geforderten Provider-Flags. Sie bleiben mangels Account-Responses **UNKNOWN**. Dokumentierte US-IEX-Grenzen und worldwide-stockprice-Werbung stehen separat; Methodenexistenz, Marketing und Raw-Verfügbarkeit werden nicht zu einem `SUPPORTED` vermischt.
+## Nachgewiesene Root Causes
 
-Die aktuelle v2-Spezifikation führt global **`/tickerslist`** mit Unternehmens-/Symbolsuche und MIC-Filter auf. `/tickers/{symbol}` ist ein exakter Lookup; global `/tickers` steht nicht in dieser aktuellen Spezifikation. `/tickerinfo` ist eine weitere, bisher im Referenzadapter ungenutzte Metadatenroute. `/exchanges/{mic}/tickers` hat das besondere `data.tickers[]`-Envelope.
-
-## Root Causes mit Evidenzniveau
-
-| Problem | Klassifikation | Beleg / praktische Grenze |
+| Befund | Klassifikation | Evidence und Korrektur |
 |---|---|---|
-| Marketstack auf aktuellem main fehlt | VU integration gap | vollständiger Git-Tree enthält keinen Adapter; früherer Befund kommt aus offenen Feature-PRs |
-| exakte Kandidaten erfolglos → `NOT_SUPPORTED` | **VU connector / diagnostic bug** | `probe-missing-identities` testet `.DE`/eingefrorene Kandidaten; `identityResolution` kann nach einem leeren Lookup NOT_SUPPORTED setzen. Name-, Directory- und Exchange-Suchwege fehlen; [Reproduktion](review-b-identity-diagnostic-reproduction.json) |
-| symbol suffix/Legacy-Auflösung | **Identity mapping problem** | Website findet `SANT.DE` (Kontron), `STM.DE` (Stabilus), `ADN1.DE`, `HFG.DE`, `HAG.DE`, `R3NK.DE`; kein universelles Suffixschema |
-| ungültige Totals / wiederholte Seiten → falsche Vollständigkeit | **VU connector bug, synthetisch belegt** | null/negative/fractional total, überlappende/repetierte Seiten, Suffix-Offset und unvollständiger Batch; [Review C](review-c-final.md). Noch kein Beweis, dass der Provider diese Defekte live liefert |
-| normale EOD-/Action-Pagination | kein bewiesener Abschneidefehler | normale volle und kurze Zwischenseiten funktionieren; maxPages meldet sichtbaren Fehler. Discovery paginiert nicht falsch, sie hat bisher gar keinen Directory-Consumer |
-| Intraday-Quote ignoriert interval/after_hours | **VU connector bug** | Referenz `getQuote(INTRADAY)` übergibt die Optionen nicht; neuer Vertrag und Regressionstests korrigieren dies |
-| Realtime Europa aus IEX ausgeschlossen | **falsche Capability-Schlussfolgerung** | `/stockprice` ist unabhängig und worldwide beschrieben; echte Europa-Verfügbarkeit/Delay bleibt UNKNOWN |
-| Raw-Trade-Time als Provider-Update-Time | **VU semantic normalization issue** | Referenz kopiert denselben Trade-/Bar-Timestamp in beide Felder; neuer Vertrag hält Update-Time null, sofern kein Raw-Update-Feld geliefert wird |
-| Metadaten-Deskriptoren/Identifikatoren nicht im normalisierten Contract | **VU normalization gap, schema/code-belegt** | Referenz verliert bei vorhandener Quelle u.a. sector/industry/cik/cusip/lei/Exchange-Deskriptoren; vorhandene Raw-Hooks können diese Quelle separat erhalten |
-| beobachtetes adj_close in adjustedClose fehlt | **bewusster Transform / Gate** | bleibt `adjustmentObservation.close`, bis Listing/Window-Evidence verifiziert ist; kein Grund, Quant-Adjustierung in diesem Audit zu ändern |
-| alter ETF-Page-Extractor nur `data[]` | **VU connector gap** | dokumentierte Holdings liegen `output.holdings[].investment_security`; der neue Vertrag extrahiert sie und hält alle Report-Felder |
-| alte Holdings tatsächlich auf 1.000 abgeschnitten | **UNKNOWN; bisher nicht belegt** | ältere befüllte Responses/Materialisierungen: AGG 12.572, BNDX 7.475, IEMG 2.704, LQD 2.910 trotz limit=1000. Diese alten Zahlen sind kein aktueller Account-Test |
-| ETF FULL ohne Fonds-/Report-Identität | **VU completeness-contract bug** | synthetisch falscher Ticker, fehlender Report, leere und überlappende Seiten; korrigiert, Gewichte und Duplikate nicht verändert |
-| Europa-EOD bis 5.10. statt 6./7.10. | **UNKNOWN** | kein aktueller authentifizierter Raw-/Cache-/Zeitvergleich; korrekter Referenz-Latest-Endpoint allein beweist keinen Publication-Delay |
-| Plan limitation | **UNKNOWN** | kein aktueller Account-Entitlement-Response; Pricing/Key-Anwesenheit würde keinen konkreten Account-Plan allein beweisen |
+| Directory-Discovery fehlt im Referenzadapter; enge Symbolkandidaten enden voreilig in NOT_SUPPORTED | VU connector / diagnostic bug | Website und Account-API finden die fraglichen Listings; echte Directory-/Exchange-/exakte Metadatenverträge und UNKNOWN statt falschem Negativurteil ergänzt |
+| Erste Seite kann deutsche Titel übersehen | VU discovery integration gap | Allianz-Suche 2350 Zeilen: ALV.DE erst Seite 3; SAP mit limit50: SAP.DE erst Seite 3 bei 144 Zeilen. Neue Discovery lädt alle Seiten und meldet Caps/Wiederholungen sichtbar |
+| US-EOD wird trotz korrekter Daten verworfen | VU normalization bug | exchange_code=NASDAQ/NYSE ARCA ist Label; exchange=XNAS/ARCX ist MIC. Acht echte EOD-Responses fälschlich abgelehnt, korrigiert und erneut live getestet |
+| stockprice mit dokumentiertem MIC-Filter findet selbst AAPL nicht | Provider documentation/parameter mismatch + VU connector usage bug | Unscoped AAPL liefert fünf Venues, exchange=XNAS404. Neuer Snapshot-Vertrag sendet keinen ungeeigneten MIC-Filter, nutzt expliziten expliziten nativen Endpoint-Ticker und wählt ein Listing über beobachtete Codes/Namen; alle Raw-Venues bleiben erhalten |
+| Viele stockprice-Aufrufe429 | Provider throttling + fehlende operative Endpoint-Pacing | Global250ms reicht dort empirisch nicht. ≥61s pro stockprice eliminiert429 im zweiten Lauf; keine Entitlement-Ablehnung daraus abgeleitet |
+| ETF directory ticker-filter wird ignoriert | Provider limitation | Zwölf unterschiedliche ticker-Parameter liefern dieselbe globale erste Seite1000/52429. Keine exakte ETF-Coverage aus dieser Seite; keine unnötigen53 Vollverzeichnis-Seiten |
+| ETF holdings limit/offset werden ignoriert | Provider limitation | VOO/VTI/SCHD limit1offset1 byte-identisch zu limit1000offset0. Keine versteckten Folgepages in diesen Reports; gesamter gelieferter Report erhalten |
+| Holdings/Prices vorhanden, Identität unvollständig | Provider metadata limitation / identity mapping problem | HENSOLDT/RENK ISIN leer trotz frischer EOD-Preise. Keine ISIN-Erfindung und keine Produktzulassung |
+| Feldprojektion und Zeitsemantik zu schmal | VU normalization gap | Provider-Codes getrennt vom MIC; Metadaten-ISIN/LEI/Sector/Country und Holdings-Units/Balance/Currency erhalten. Exchange-Country ist keine Fondsdomain. Trade-Time wird nicht als Provider-Update-Time erfunden |
+| Adjusted-Felder uneinheitlich/teilweise ungültig | Provider data quality limitation | AAPL adj_close>adj_high an drei Tagen; TSLA-Felder teilweise null und inkonsistente Split-Basis. Rohwerte erhalten; keine Quant-/Adjustierungsreparatur |
 
-## Website / API / VU-Parität
+## Website → API → VU
 
-Die vollständige [39-Fälle-Matrix](website-api-vu-parity-matrix.csv) und [JSON-Evidence](website-api-vu-parity-matrix.json) enthält alle 27 angeforderten Aktien, SPY/QQQ/VOO/VTI/SCHD und sieben konkrete UCITS-Kandidaten: iShares SXR8.DE/EUNL.DE, Xtrackers XDWD.DE/XESC.DE, Vanguard VWCE.DE, SPDR SPY5.DE, Amundi LCUW.DE.
+Alle **26 beobachteten europäischen Hauptlistings und 12 ETF-Ticker** werden durch Directory und exakte Metadaten wiedergefunden. Alle 27 angefragten Firmen haben irgendeinen API-/Website-Treffer. Schaeffler hat ausschließlich alternative Listings; die separate Schaeffler India wird nicht als deutsches Hauptlisting gezählt. Explizite SHA.DE/SHA0.DE-Probes und XETR-Namenssuche finden keinen deutschen Kandidaten.
 
-Ergebnis des öffentlichen Website-Tests: **26/27 europäische Hauptlistings** gefunden; Schaeffler nur alternative Listings beobachtet. Alle 27 Firmen haben irgendeinen Treffer; alternative ADR/OTC-Treffer werden nicht als deutsches Hauptlisting gewertet. **12/12 ETF-Kandidaten** gefunden. API Found bleibt UNKNOWN, Raw latest/history NOT_TESTED, VU Marketstack auf main nicht vorhanden. Deshalb wird **kein** Fall ohne Account-Probe als WEBSITE_ONLY oder API_COVERAGE_GAP etikettiert.
+VU Found bezeichnet in der Matrix die **normalisierte Draft-Beobachtung**; auf main fehlt der Marketstack-Provider, und kein Titel wurde in Produkte übernommen. Provider-Beobachtung bedeutet keine bestätigte kanonische Identität.
 
-Wichtige tatsächliche Suchbefunde:
+adesso ADN1.DE und HelloFresh HFG.DE: exakte Metadaten einschließlich ISIN sowie frische EOD verfügbar — frühere Abwesenheit ist kein Provider-Coverage-Beweis. HENSOLDT HAG.DE und RENK R3NK.DE: Ticker und EOD verfügbar, ISIN in exakten Metadaten leer — Identity-Gates können dadurch blockieren. Schaeffler: 0RBK.L mit EOD 2.10.2024 bestätigt eine stark veraltete alternative Beobachtung; alternative Parität, fehlende beobachtete deutsche Hauptnotierung; keine pauschale Behauptung „Provider hat Schaeffler nicht“.
 
-- SAP.DE liegt bei ungescopter SAP-Suche auf **Seite 2**, offset100 von total144. Ein neuer Discovery-Consumer muss vollständig paginieren. Das beweist nicht, dass der alte Consumer bereits Seite1 abgeschnitten hätte.
-- Der Website-Exchange-Selector `XETRA` findet SAP nicht; die Raw-Response/MIC-Suche `XETR` findet SAP.DE. Begriff, Dropdowncode, MIC und Provider-Ticker müssen getrennt bleiben.
-- Banco Santander SAN.MC erscheint über Ticker-Suche, obwohl die kombinierte Name/MIC-Suche leer blieb. Ein leerer Suchweg ist keine negative Coverage-Zertifizierung.
-- Broad company searches enthalten fremde Firmen/Fonds (Siemens Energy/Healthineers, Fresenius Medical Care, Abbott bei ABB). Diese sind **observedSearchMatches**, keine verifizierten Aliase. Aus dem ausführbaren Plan wurden alle solchen Alias-Fallbacks entfernt.
-- Workbook und Website widersprechen sich bei SIX: ABBN.SW/SCMN.SW haben im Workbook BTEE, im Website-Backend XSWX. Automatische Gleichsetzung ist nicht zulässig; echte API-Identity ist offen.
+SIX: live ABBN.SW/SCMN.SW XSWX; BTEE aus dem kostenlosen alten Workbook ersetzt diese aktuelle MIC-Beobachtung nicht. Suffixe sind beobachtete Provider-Ticker, keine universelle `.DE`-/`.PA`-Regel. Breite Namenssuche liefert auch andere Firmen/Fonds; solche Treffer werden nicht als verifizierte Aliase verwendet.
 
-[exchange-mapping-independent.json](exchange-mapping-independent.json) führt alle angeforderten Handelsplätze auf. Suffixspalte wurde aus den gespeicherten Raw-Tickern abgeleitet, nicht aus Börsennamen erfunden. VU Marketstack-Mapping auf main fehlt; Referenz-MIC ist von Provider-/Dropdown-Beobachtung getrennt.
+## EOD-Freshness, Historie und Adjustierung
 
-## Latest, Realtime, EOD-Freshness, Historie und Actions
+Während des Pre-Close-Tests ist 6.10. die letzte abgeschlossene kontinentaleuropäische Session. **22/26 geprüfte europäische Aktien** liefern dieses Datum; SAP/Siemens/Allianz/Telekom/ASML/LVMH/ABB sämtlich 6.10. Latest und enger historischer Bereich stimmen überein. Der frühere pauschale Befund „Europa nur bis 5.10.“ trifft aktuell nicht zu.
 
-Dokumentation unterscheidet US-IEX-Intraday mit `marketstack_last` von weltweit beworbenem `/stockprice`. Das stockprice-Schema liefert **last known price / last known trade time**, keine universelle Delay- oder Update-Garantie. Pricing erklärt Real-Time Updates als Intraday-Intervalle unter15min. Es gibt Docs-Widersprüche: stockprice-Prosa nennt bid/ask/volume, während das Schema sie nicht enthält; interval-Beispiel `1h` widerspricht dokumentiertem `1hour`; älterer Quickstart enthält eine widersprüchliche EOD-Route. Der neue Vertrag folgt den dokumentierten Routen/Parametern und bewahrt Raw-Abweichungen.
+Vier konkrete primäre Kandidaten bleiben älter: ACT.DE 5.10., SANT.DE 1.4., EIN3.DE 13.4., NA9.DE 27.8. KTN.DE wird über aktuelle Tickersuche gefunden und liefert 6.10., während der alte SANT.DE-Kandidat im April endet. KTN.DE hat leeren Namen und leeren exakten Metadaten-Lookup; eine bestätigte Issuer-/ISIN-Verknüpfung fehlt. Daher kein stiller Produkt-Alias-Wechsel.
 
-Für SAP/Siemens/Allianz/Telekom/ASML/LVMH/ABB stehen Europas Klassifikation und timestamp/price/currency/exchange/update/delay auf **UNCLEAR / NOT_TESTED**. Kein Real-Time-, Delayed- oder EOD_ONLY-Scope wird aus Marketing abgeleitet. Der Runner vergleicht frisches EOD/latest, enges date_from/date_to-Fenster, qualifizierte stockprice-/explizite lokale Kandidaten und Intraday separat mit CacheTTL0. Er muss danach selbst aus den Raw-Timestamps und verifizierten Sessions bewertet werden; momentan sind falsche Parameter, Publication-Delay, Provider-Cache, privater VU-Cache und Normalisierung als Ursache nicht eindeutig ausgeschlossen.
+UCITS-EOD: SXR8/EUNL/XESC/VWCE/SPY5.DE 5.10.; XDWD.DE 12.8.; LCUW.DE 20.2.2025. Ungecachte Latest-, date-bound- und tickerbezogene Routen zeigen dieselben Zeitstände. Das ist Provider-Output bzw. eine Listing-Identity-Frage, kein nachgewiesener VU-Cache-/Normalisierungsverlust. Exakter interner Publication-/Server-Cache-Grund wird nicht von der API offengelegt. Der frühere Abruf kann ohne dessen Originalzeitpunkt/Cacheledger nicht rückwirkend erklärt werden.
 
-[representative-plan.json](representative-plan.json) enthält **42 Fälle**: 39 Paritätsfälle plus AAPL/TSLA/NVDA als unterschiedliche Corporate-Action-Kontrollen. SAP/ASML/AAPL erhalten 1Y/5Y/10Y/15Y/full-Boundary-Samples mit limit1/ASC statt Vollhistorienimport. Getrennte Split-/Dividend-Feeds und EOD-Fenster um drei bekannte Splits bewahren Raw-, Adjusted- und Volume-Felder. Verfügbarkeit/Adjustierungssemantik ist erst nach diesen Live-Probes zu beurteilen; keine allgemeine Aussage aus einem Titel.
+SAP/ASML/AAPL liefern 1Y/5Y/10Y/15Y Boundary-Samples. Full-Sample beginnt SAP/ASML4.1.2010, AAPL7.10.1996; API-Totals4235/4279/7547. Das belegt vorhandene tiefe Historie, nicht lückenlose Validität aller Bars. Nur je eine Boundary-Zeile geladen, keine Vollhistorienimporte.
 
-## ETF-Vollständigkeit und Metadaten
+[Action-Evidence](action-semantics-live.json): Splits AAPL4:1, TSLA3:1, NVDA10:1 stimmen zwischen dedizierten Events und EOD-event-date/factor überein. AAPL/NVDA-Dividenden verfügbar; TSLA0 ist erwartbar. AAPL enthält bereits split-restatete close-Werte vor dem Split, NVDA abweichend unadjusted raw-close/adjusted-close-Basis. TSLA adjusted OHLC/volume null; einzelne pre-split adj_close-Werte ändern Basis. Drei AAPL-Adjusted-Bars verletzen adj_close≤adj_high. Deshalb adjustedOHLC und adjustedVolume PARTIAL, Adjustierungsstatus UNVERIFIED; bestehende Quality Gates/Quant bleiben unverändert.
 
-`/etflist` hat dokumentierte Pagination. `/etfholdings` dokumentiert limit/offset, sein Response-Schema jedoch **keine pagination/total**. Ältere Counts über1000 zeigen, dass limit nicht blind als Positionsgrenze gelten darf. Der neue Vertrag stoppt ohne Pagination standardmäßig unbestätigt; explizite Offset-Differenzprobes für SPY/QQQ dienen der Semantikprüfung. Dokumentierte Limits allein beweisen keine wirksame Paging-Unterstützung.
+## ETF-Holdings und Metadaten
 
-Pro Rückgabe werden reportedTotal, heruntergeladene Zeilen, Seitenzahl, originale signed percent_value-Werte, unveränderte Gewichtssumme, Report-Datum, separate period-end-Werte, Identifikatoren, Country und alle Raw-Report-/Holding-Felder gehalten. Kein synthetischer Gesamtbestand und keine 100%-Normalisierung. FULL bestätigt höchstens vollständig geladene Seiten desselben verifizierten Reports; Aktualität und wirtschaftliche Vollständigkeit bleiben separat. Fehlende Attribute, falscher Fonds, leere Positionen oder wiederholte Seiten verhindern FULL. Wiederholungen werden **nicht** aus dem Bestand oder der Gewichtssumme gelöscht.
+| ETF | Rows | Originale Gewichtssumme % | Signed | Befund |
+|---|---:|---:|---|---|
+| VOO |516|99.916916230713|27.2.2025|STALE; Report516/516 erhalten; offset/limit ignoriert |
+| VTI |3626|100.168847147443|28.5.2025|STALE; Report3626/3626 erhalten; offset/limit ignoriert |
+| SCHD |101|99.693498783176|24.3.2025|STALE; Report101/101 erhalten; offset/limit ignoriert |
+| SPY/QQQ |0|—|—|UNAVAILABLE in unbounded und explizitem2024–2026-Fenster |
 
-Dokumentierte ETF-Felder: fund_name/file_number/cik/reg_lei; series_name/id/lei, ticker/ISIN, report-period/final_filing/signature; pro Position LEI/ISIN/CUSIP/name/title/units/balance/currency/value_usd/percent_value/asset_category/collateral/fair-value/invested_country/issuer_category/loan/payoff/restricted. Kein dokumentierter strukturierter AUM-/TER-/OCF-/Benchmark-/UCITS-/AccDist-/Replikations-/NAV-/Inception-/FundCurrency- oder Allocation-Contract in diesen ETF-Schemas. Das ist **schema-scoped**, keine Aussage PROVIDER_DOES_NOT_HAVE. Extended tickerinfo wurde zuvor nicht genutzt und ist im Runner vorgesehen; tatsächliche zusätzliche Raw-Felder und UCITS-Holdings bleiben UNKNOWN.
+Keine künstliche100%-Normalisierung, keine Entfernung negativer Gewichte oder Duplikate. Kein Provider-total; daher keine wirtschaftliche FULL-Zertifizierung. date_report_period/end_report_period/signature_date bleiben getrennt; ein period-end-Wert ist kein Fetch-/Update-/universeller As-of-Zeitpunkt.2026-Datumsfilter liefern für alle drei erfolgreichen Fonds keine neueren Reports. VTI3626 bei limit1000 widerlegt pauschales Top1000-Abschneiden.
 
-[raw-vs-normalized.csv](raw-vs-normalized.csv) trennt aktuelle öffentliche Website-Beobachtung, dokumentierte Felder und bedingte Referenz-Normalisierungsverluste. Nicht getestete Account-Felder werden nicht als RAW_ABSENT klassifiziert. Im neuen Audit bleibt der gesamte Original-Response getrennt von normalisierten Beobachtungen und Produkten.
+Vorhanden: Fund-/Series-Name, CIK/FileNumber/LEI/ISIN, Report- und Signaturdaten; Positionen mit ISIN/CUSIP/LEI, Titel, units/balance/currency/value_usd, original percent_value, asset/issuer category, payoff/collateral/restriction/fairvalue, invested_country. Positions-Ticker und Sector fehlen in diesen drei Raw-Reports. ISIN verfügbar503/516,3569/3626,99/101; fehlende Identifier werden nicht erfunden.
 
-## Umgesetzte isolierte Korrekturen und Prüfungen
+Extended tickerinfo bestätigt alle zwölf ETFs. `about`-Strategieprosa ist für die fünf US-ETFs vorhanden; bei den sieben primären UCITS ist das Feld leer. Beispielsweise S&P500/Nasdaq100-Benchmark oder Sampling-/Replikationsbeschreibung sind **textuell verfügbar**. Strukturierte Benchmark-/Replication-Felder, TER/OCF/AUM/NAV/UCITS/AccDist/Domicile/Inception/FundCurrency und Sector-/Country-Allocation-Contracts werden daraus nicht hergestellt. XESC-Sector ist ein Provider-Label, keine Allocation oder geprüfte Fondsklassifikation. Fehlende strukturierte Felder sind endpoint-/sample-scoped Provider-Limits; keine providerweite Behauptung, dass solche Informationen nirgendwo existieren.
 
-- realer Directory-/Exchange-/Price-/Action-/Holdings-Contract ohne Produktregistrierung oder Fake-Capability;
-- robuste count/offset/total-Pagination, veränderte Totals, Wiederholungen, sichtbare Caps, Suffix- und Batch-Vollständigkeit;
-- exakte und explizite Symbolkandidaten mit UNKNOWN statt voreiligem Provider-Negativurteil; keine automatisch erfundenen Suffix-/Alias-/ISIN-Mappings;
-- verschachtelte Exchange-MIC-Erhaltung und ETF-Extraktion; dediziertes Actions-Schema ohne erfundenen MIC;
-- Weitergabe von Intraday-Parametern, unabhängige stockprice-Routingsemantik, warm-cache-bypass bei TTL0;
-- dokumentiertes 404_not_found-Fehlermapping; Originaltext vor Normalisierung gespeichert; keine Provider-Time-Erfindung;
-- FULL-Gates und Raw-Feld-/Weight-/Duplicate-Preservation; accountabhängige Capability-Flags bleiben UNKNOWN;
-- ausdrücklicher Offline-Default, maximal1.999/3.500 reservierte Credits, Ledger vor Fetch, private externe Outputs, Auth/Quota/Budget-Circuit und keine Schedules.
+## Tests, Reviews und Isolation
 
-**90/90 Tests unter Node22.23.3 bestanden**: 28 neue Connector-/Runner-Tests plus bestehende Core-Identity-, Provider-, Tiingo- und Realtime-Wiring-Regressionen. [TAP](node22-tests.tap). Produktionsisolation bestanden. Sechs unabhängige Reviews A–F haben die gefundenen Fehler nach Korrektur erneut geprüft: [A](review-a-final.md), [B](review-b-final.md), [C](review-c-final.md), [D](review-d-final.md), [E](review-e-final.md), [F](review-f-final.md). Sie bestätigen die isolierten Verträge, nicht ungetestete Account-Capabilities.
+103/103 Tests unter Node22 bestanden:41 Marketstack-Verträge/Runner/Actions plus62 Core-Identity/Provider/Tiingo/Realtime-Wiring-Regressionen. [TAP](node22-tests.tap). Produktionsisolation bestanden. Sechs unabhängige Live-Reviews [A](review-a-live.md), [B](review-b-live.md), [C](review-c-live.md), [D](review-d-live.md), [E](review-e-live.md), [F](review-f-live.md), zusätzlich [Action-Review](action-semantics-live.md).
 
-Keine Änderungen an Produktion, Universum, Quant-/ETF-Methodik, Rankings, SuperTrader, Tiingo, Produktdaten, Core-Identity, Workflowdateien oder Schedules. Der Draft enthält nur Provider-Code, Audit-Tests/Runner und Dokumentation/Evidence.
+Geändert wurden ausschließlich Provider-/Audit-Code, Tests, Dokumentation und der ausdrücklich autorisierte manuelle Workflow und ein signierter einmaliger Final-Start im Draft-Branch. Keine Production Data, Rankings, Quant-/ETF-Methodik, SuperTrader, Tiingo, Universe-/US-Datenmigration, Registrierung, Deployments, Merge oder Schedule-Aktivierung. Der Workflow hält nur Read-Permissions; Raw-Artefakte sind verschlüsselt, Source-SHA und einmalige Credit-Lease geprüft. Initial1800+verify1200+close400+final100=3500 maximale autorisierte Reservation; jede tatsächliche Reservation dauerhaft vor Fetch.
 
-## Die 14 Abschlussfragen
+## Authentifizierte Runs und Credits
 
-1. **Alle Professional-Endpunkte genutzt? Nein.** Auf main keiner; Referenzadapter nur acht globale/exakte Routen, Directory/Extended-Metadata/ETF/Index/Exchange-Contracts fehlen. Matrix enthält Einzelheiten.
-2. **Ticker Discovery vollständig paginiert? Nein als Gesamtprozess.** Referenz hat keinen Directory-Discovery-Consumer. Normale bestehende EOD-Pagination funktioniert; neue Discovery ist seitenübergreifend getestet.
-3. **API und Website dieselben Aktien? Nicht verifiziert.** Website-Hauptlisting26/27; authentifizierte API-Parität UNKNOWN, keine WEBSITE_ONLY-Behauptung.
-4. **Warum adesso/HelloFresh/HENSOLDT/RENK/Schaeffler fehlten?** Enge Kandidaten-/Identity-Resolution und voreiliges NOT_SUPPORTED sind bewiesen. Website findet die ersten vier lokal; konkrete API-/ISIN-Blocker und deutsches Schaeffler-Listing sind offen. Nicht als Provider-Nichtverfügbarkeit behaupten.
-5. **Aktuellere Europa-Preise über anderen Endpoint? UNKNOWN.** Separates stockprice existiert und ist worldwide dokumentiert; aktuelle Responses fehlen.
-6. **Real-time Stock Market Prices praktisch Europa?** Weltweit beworbener Last-Known-Trade-Snapshot; reale Markt-/Zeitstempel entscheiden die Klassifikation, nicht der Produktname.
-7. **Europa Realtime/Delayed tatsächlich abrufbar? Nicht bewiesen.** Gegenwärtig UNCLEAR, kein US-only-Schluss aus IEX.
-8. **EOD wegen Endpoint/Cache veraltet? UNKNOWN.** Referenz verwendet korrekt eod/latest; TTL/cache/date bounds/provider publication müssen mit neuen Raw-Responses verglichen werden.
-9. **Holdings mehr als bisher materialisiert? UNKNOWN.** Endpoint kann laut älteren separaten Responses mehr als1000 Zeilen liefern; aktueller Download und Feldvergleich ausstehend.
-10. **Holdings künstlich wegen Pagination abgeschnitten? Nicht belegt.** Extraktor-/Contract-Lücke real, pauschale Top1000-Behauptung durch alte große Counts nicht gestützt; tatsächliche offset-Semantik offen.
-11. **Welche ETF-Metadaten wirklich vorhanden?** Schema-Felder oben konkret nachgewiesen; Account-Raw-Verfügbarkeit und weitere tickerinfo-Felder UNKNOWN. Keine providerweite Metadaten-Abwesenheit behaupten.
-12. **Welche Normalisierungsverluste?** Code/Schemakontrakt zeigt schmale Metadata-Projektion und Timestamp-Semantik; EOD adj_close ist bewusste Beobachtung/Admission-Trennung; ältere Holding-Zeilen/Gewichte wurden schon erhalten. Aktueller per-title Account-Vergleich fehlt.
-13. **Notwendige Fixes?** Directory-Contract, robuste Pagination/Completeness, sichere Kandidatenklassifikation, Intraday-Parameter, Raw-/Zeit-/Exchange-Feldhaltung, verschachtelte ETF-Routen und Vollständigkeitsgates umgesetzt; spätere bewusste Übernahme in offene Consumer-PRs und aktuelle Account-Probes nötig.
-14. **Frühere Schlussfolgerungen korrigieren?** Kandidatenfehler ≠ Provider-Abwesenheit; US-IEX ≠ worldwide stockprice-Scope; erste1000 ≠ tatsächliche Holdings-Grenze; nicht materialisierte Metadata ≠ providerweit fehlend; unbekannte Capability ≠ unsupported; vorhandene ungemergte Implementierung ≠ aktueller main/Production.
+| Actions Run | Requests | Konservativ reservierte Credits | Raw Responses | Cap |
+|---|---:|---:|---:|---:|
+| [37636729908](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37636729908) | 326 | 782 | 325 | 1800 |
+| [37638353777](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37638353777) | 145 | 411 | 143 | 1200 |
+| [37642262870](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37642262870) | 55 | 302 | 53 | 400 |
+| [37645399592](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37645399592) | 21 | 78 | 21 | 100 |
 
-## Ausstehender Abschluss
+**Gesamt: 547 Requests, 1573 konservativ reservierte Credits, 542 erhaltene und hashgeprüfte Raw Responses.** Ziel <2.000 erreicht, Hard Cap 3.500 eingehalten. Die fünf früheren Timeouts und ggf. Final-Timeouts sind vor dem Request reserviert; eine ausbleibende Response wird nicht als leere Provider-Response erfunden. Alle Runs ohne Retries, Cache-Hits oder Produktionswrites; kein Entitlement-/Quota-/Auth-Denial. Ein Rechnungs- bzw. Monatsverbrauchszähler ist nicht verfügbar. Frozen Leases 1800+1200+400+100=3500 bleiben auch bei Fehlern verbraucht und können nicht wiederverwendet werden.
 
-Zum endgültigen A/B/C-Nachweis fehlt ausschließlich der authentifizierte Ausführungszugang und die daraus entstehende Raw-Evidence-Auswertung. Nach Secret-Bindung:
+Final geprüfter Connector: `86c22095e57fb1cada304b10ea3e572efc52fee9`; signierter Marker-Child `0cf0f30402d7499b3c241688e770fd1db67cd5ab`. CLI-Authentifizierung lief nach dem dritten manuellen Start ab; der vorhandene GitHub-Connector startete deshalb den letzten Lauf durch einen kryptografisch signierten, auf exakten Parent/Branch/Lease beschränkten Marker. Dieser Trigger hat keinen Schedule und keine freie Code-/Parameterauswahl.
 
-```bash
-node scripts/marketstack/capability-audit.mjs --live --out=/absolute/private/new-marketstack-audit
-```
+## Europa: Snapshot, Intraday und Realtime-Semantik
 
-Keine vollständigen Historien oder Universe-Imports nötig. Accountname/Entitlements, alle Rohantworten, Preiszeitpunkte, offset-Differenzen, Holdings-Report-Identitäten und Raw-vs-normalized-Verluste müssen danach geprüft und die UNKNOWN-Zellen evidenzbasiert ersetzt werden. **Der Gesamtlauf ist bis dahin nicht als erfolgreich abgeschlossen zu werten.**
+`/stockprice?ticker=<native ticker>` liefert globale Venue-Zeilen. Der dokumentierte MIC-Filter gibt selbst für AAPL/XNAS404; das tatsächlich zurückgegebene NASDAQ-Label funktioniert als Provider-Filter. Europa benötigt native SAP/SIE/ALV/DTE/ASML/MC/ABBN-Parameter und eine **Listing-Auswahl anhand beobachteter Provider-Codes**. Der finale Connector nutzt die Raw-belegten ETR→XETR, EPA→XPAR, AMS→XAMS und NASDAQ→XNAS Zuordnungen. Keine implizite Suffixentfernung, keine Auswahl nach Land/Währung allein. ALV/MC/DTE auf US-Venues bezeichnen auch andere Issuer; solche Zeilen werden nicht als europäische Kurse übernommen.
+
+| Titel | Erwartete Heimatbörse | Snapshot-Zeitstempel Raw | Preis/Währung | Normalisiert akzeptiert | Ergebnis |
+|---|---|---|---|---|---|
+| SAP | XETR | 2026-10-07 17:17:24 | 186.92 EUR | True | SAME_DAY_SNAPSHOT_DELAY_UNCERTIFIED |
+| Siemens | XETR | 2026-10-07 17:08:25 | 270.6 EUR | True | SAME_DAY_SNAPSHOT_DELAY_UNCERTIFIED |
+| Allianz | XETR | 2026-10-07 17:17:59 | 416.1 EUR | True | SAME_DAY_SNAPSHOT_DELAY_UNCERTIFIED |
+| Deutsche Telekom | XETR | 2026-10-07 17:14:10 | 27.04 EUR | True | SAME_DAY_SNAPSHOT_DELAY_UNCERTIFIED |
+| ASML | XAMS | 2026-08-19 13:32:51 | 1550 EUR | True | STALE_HOME_SNAPSHOT_EOD_FRESHER |
+| LVMH | XPAR | 2026-10-07 17:20:00 | 388 EUR | True | SAME_DAY_SNAPSHOT_DELAY_UNCERTIFIED |
+| ABB | XSWX | — | — | False | NO_REQUESTED_HOME_VENUE |
+
+Fünf europäische Heimatlistings liefern Tages-Snapshots, ASML nur einen alten AMS-Stand vom 19.8., ABB keinen Swiss-Home-Snapshot (nur Wien 18.8.). Die Raw-Trade-Zeitstempel enthalten **keine Zeitzone**, keinen gesonderten Provider-Update-Zeitpunkt und keinen verbindlichen Delay. Bei angenommener lokaler Börsenzeit sind die beobachteten europäischen Trades deutlich verzögert; diese Annahme wird nicht als gemessene SLA ausgegeben. Daher `realtimeEurope=PARTIAL`, aktuelle Last-Known-Trade-Snapshots verfügbar, **garantierte echte Realtime oder fester Delay unbestätigt**. Pro aktuellem Listing bleibt die präzise Realtime-/Delayed-Klassifikation UNCLEAR.
+
+European Intraday 15min/1min: alle sieben getesteten Heimatlistings liefern leere Daten oder ungültige Symbole; kein Entitlement-Error. `intradayEurope=UNSUPPORTED` im getesteten Scope. AAPL-US-Kontrolle liefert IEXG15min und1min (1min Trade-Bar im beobachteten Abruf68s alt), aber keine verifizierte Tick-/BidAsk-Feed-Semantik. Realtime-Stockprice und US-IEX-Intraday sind unterschiedliche Fähigkeiten.
+
+## UCITS-Holdings: abschließende Symbol-/Transportprüfung
+
+- `SXR8.DE`: HTTP 504 / invalidResponse; Run 37645399592, Raw IDs 0001; Timeoutgrenze 90s, einmaliger Request.
+- `CSPX.AS`: HTTP 504 / invalidResponse; Run 37645399592, Raw IDs 0002; Timeoutgrenze 90s, einmaliger Request.
+- `SPY5.L`: HTTP 504 / invalidResponse; Run 37645399592, Raw IDs 0003; Timeoutgrenze 90s, einmaliger Request.
+
+Die drei abschließenden langsamen Holdings-Abfragen lieferten jeweils eine originale HTML-504-Gateway-Antwort nach etwa60s. Der Client bewahrt status504/invalidResponse und das Raw-HTML, statt leere Holdings oder fehlende Berechtigung zu behaupten. Damit ist eine Provider-Betriebsstörung belegt; die underlying UCITS-Coverage dieser Routen bleibt unklar.
+
+Primäre deutsche Ticker, native Parameterhypothesen und tatsächlich beobachtete alternative Listings wurden getrennt getestet. Alternative Treffer bestätigen keine Identität oder gleiche Share-Class. Besonders `SSSPF` ist **kein gültiger SPDR-Alias**: Directory nennt SPDR, exakte Metadaten nennen Shandong Sacred Power Sources; der Widerspruch wird als Provider-Identity-Konflikt erhalten. Encoded `S&amp;P` Namenssuche findet die tatsächlich hinterlegten ETF-Namen; literal `S&P` hatte diese übersehen. Die abschließenden CSPX.AS/SPY5.L-Probes stammen aus diesen echten Directory-Treffern, nicht aus erfundenen Suffixen.
+
+`ETFHoldingsUCITS=UNSUPPORTED` bedeutet hier keine verifizierte Holdings-Lieferung im begrenzten Test-Scope. HTTP504 belegt einen Provider-Gateway-Fehler; weder dieser noch ein Client-Timeout belegt Provider-Abwesenheit noch fehlende Tarifberechtigung. Einzelne verbleibende Transportunsicherheiten stehen explizit in capabilities.json. Keine Plan-Limit-Klassifikation ohne tatsächlichen Entitlement-Error.
+
+## Finale Antworten auf die14 Fragen
+
+1. **Nutzen wir alle relevanten Professional-Endpoints?** Nein. Auf main gibt es keinen Marketstack-Connector. Der Referenzadapter nutzt nur einen Teil. Der Draft bietet die neun erforderlichen Verträge plus Directory und Metadaten; der Audit testet auch Index, Bond, Currency, Timezone und Commodity. Siehe Usage-Matrix je Route.
+
+2. **Ist Ticker Discovery vollständig paginiert?** Im neuen Draft ja, sofern der Provider valide Pagination liefert und kein explizites Cap erreicht wird. Allianz mit 2.350 Rows, SAP mit 144 Rows und fünf Exchange-Seiten wurden live bestätigt. Ein Cap meldet Unvollständigkeit. Dem Referenzadapter fehlt diese Discovery.
+
+3. **Finden API und Website dieselben deutschen/europäischen Aktien?** Ja: 26/26 beobachtete Heimatlistings und alternative Schaeffler-Firmenlistings. Dies ist eine Aussage über den Test-Scope, keine globale Vollständigkeitsbehauptung.
+
+4. **Warum fehlten adesso, HelloFresh, HENSOLDT, RENK und Schaeffler?** adesso/HelloFresh: VU-Discovery-/Mapping-Lücke; API-Titel und ISIN vorhanden. HENSOLDT/RENK: Ticker und Kurse vorhanden, ISIN fehlt beim Provider. Die frühere Diagnose erklärte unaufgelöste Identität voreilig zur Provider-Abwesenheit. Schaeffler: nur alternative Listings belegt, deutsche Heimatnotierung im Test nicht gefunden.
+
+5. **Liefert ein anderer Endpoint aktuellere Europa-Preise?** Ja. Native /stockprice-Abfragen für SAP, Siemens, Allianz, Telekom und LVMH liefern Tages-Trades gegenüber dem vorigen EOD. ASML und ABB liefern auf der gewünschten Heimatbörse keine aktuellen Snapshots.
+
+6. **Was bedeutet Real-time Stock Market Prices praktisch für Europa?** Ein globaler Last-Known-Trade-Snapshot mit Endpoint-spezifischem Venue-Code. Ein kontinuierlicher Echtzeitstream ist nicht belegt; Zeitstempel und Verzögerung sind unzureichend spezifiziert.
+
+7. **Können wir Europa-Realtime-/Delayed-Preise tatsächlich abrufen?** Tages-Snapshots für 5/7 Heimatlistings sind abrufbar: PARTIAL. Eine feste Realtime-/Delay-SLA ist nicht belegt. Europäische Intraday-Bar-Routen sind im Test UNSUPPORTED.
+
+8. **Sind EOD-Daten nur wegen falscher Endpoint-/Cache-Nutzung veraltet?** Aktuell kein Nachweis: ungecachte Global-Latest-, Historical-, Ticker- und Exchange-Routen zeigen dieselben älteren Outputs. 22/26 Aktien sind zum letzten abgeschlossenen Handelstag frisch. KTN.DE ist ein aktueller, aber unbestätigter Identity-Kandidat für den alten SANT.DE. Die früheren Abruf-/Cache-Zustände sind nicht rückwirkend rekonstruierbar.
+
+9. **Liefert ETF Holdings mehr Daten als bisher materialisiert?** Die Raw-Filings enthalten 3.626 VTI-, 516 VOO- und 101 SCHD-Positionen sowie zusätzliche Report-/Positionsfelder. Ob eine konkrete alte Materialisierung Rows verlor, benötigt deren Artefakt als Vergleich. Der aktuelle Draft erhält alle gelieferten Rows.
+
+10. **Haben wir Holdings durch fehlende Pagination abgeschnitten?** Für die drei erfolgreichen Reports nein: offset/limit werden ignoriert, der Gesamtbody ist byte-identisch. VTI liefert mehr als 1.000 Rows trotz limit=1000. Provider-Total und wirtschaftliche Vollständigkeit sind nicht zertifiziert.
+
+11. **Welche ETF-Metadaten sind vorhanden?** Tickerinfo liefert Identität, Name, Provider-Klassifikationsfelder und about-Strategieprosa. Holdings liefern Fund-/Series-/Report-Identifier, Report-/Signaturdaten sowie Positions-Identifier, Länder, Währungen, Kategorien, Mengen, Werte und Originalgewichte. Strukturierte AUM, TER, NAV, UCITS, Acc/Dist und Allocations fehlen in den geprüften Responses. Benchmark/Replikation sind teilweise als Prosa vorhanden.
+
+12. **Welche Daten gehen bei Normalisierung verloren?** Die Referenzprojektion ließ diverse Metadaten, Original-Venue-Labels und Quote-Optionen weg beziehungsweise behandelte Trade-Time als Update-Time. Der neue Draft erhält das vollständige Raw, typed Metadaten und description; MIC/Code, Länder und Zeitsemantik bleiben getrennt. Unbekannte Felder bleiben im Raw. Nicht projizierte typed Felder nennt die Feldmatrix ausdrücklich.
+
+13. **Welche Connector-Fixes sind notwendig?** Directory-/Exchange-Pagination, explizit beobachtete Aliase, MIC-/Code-Trennung, native Snapshot-Abfragen mit belegtem Venue-Mapping, 61s-Pacing, vollständige Raw-/Metadaten-/Holdings-Erhaltung sowie sichtbare Fehler und Unvollständigkeit. In #479 umgesetzt und getestet, ohne Produktmethodik zu ändern.
+
+14. **Welche früheren Schlussfolgerungen müssen korrigiert werden?** Die behauptete Provider-Abwesenheit von adesso/HelloFresh/HENSOLDT/RENK ist falsch. Europa ist nicht grundsätzlich EOD-only; nicht alle EOD-Daten enden am 5.10. Ein Top-1.000-Holdings-Limit ist unbelegt und für VTI widerlegt. Benchmark-/Replikationsinformationen existieren teilweise in Prosa. MIC-404 und 429 bei stockprice belegen keine Tarifgrenze.
+
+## Verbleibende Provider- und Evidenzgrenzen
+
+Keine nachgewiesene Tarifgrenze. Verbleiben: fehlende/inkonsistente Issuer-Identifier und Share-Class-Zuordnung; fehlendes beobachtetes Schaeffler-Heimatlisting; staleEOD einiger Aktien/UCITS; stale/missingSnapshotHeimatvenues; unspezifizierteSnapshotZeitzone/Latency; europäischeIntradayRouten ohne bestätigte Daten; veraltete oder fehlende ETF-Filings ohneTotal/aktivePagination; etflist ignoriertTickerFilter; ProviderName-HTML-Encoding; widersprüchlicheAdjustedBars/Basis; fehlende strukturierteFundAttributes in den geprüftenResponses. InternerProviderCache/PublicationSchedule, tatsächlichesBilledCredits/AccountplanName sowie verbleibendeTimeoutCoverage können mit diesenResponses nicht eindeutig bestimmt werden.
+
+Der Erfolg ist die belegte Trennung von ProviderOutput, Tarifberechtigung, ConnectorAbfrage und Normalisierung. Es gibt keine Produktionszulassung, keine Universe-Erweiterung und keinen Merge.
+
+Die sieben Final-EOD-Abfragen erfolgten etwa 11–17 Minuten nach dem kontinentalen Börsenschluss und lieferten weiterhin den 6.10. Ohne verifizierte Veröffentlichungsfrist beweist das keine verspätete 7.10.-Publikation. Die vier deutlich älteren Aktienserien und alten UCITS bleiben separate Freshness-Befunde.
+
+Die Paritätsmatrix umfasst 39 Fälle (27 europäische Firmen und 12 ETFs); der 42-Case-Plan enthält zusätzlich AAPL/TSLA/NVDA als separate US-History-/Corporate-Action-Kontrollen. VU Found bedeutet ausschließlich Marketstack-Provider-Beobachtung im Draft, keine Aussage über bestehende VU-Produktwerte anderer Provider.
+
+Der Holdings-Feldvergleich prüft alle 4.243 gelieferten Positionen und die vollständigen basics/attributes/signature-Objekte direkt gegen das erste Raw-Filing. Raw-Verlust 0; nicht typisiert projizierte Zusatzfelder bleiben in jeder Originalposition erhalten.

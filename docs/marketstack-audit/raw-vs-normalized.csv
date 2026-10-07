@@ -1,15 +1,46 @@
-fieldClass,rawEvidence,referenceNormalized,status,reason
-ticker/symbol,Documented + website observed,series.providerSymbol/mapping; metadata providerSymbol,TRANSFORMED,exact identity gates; original key not normalized
-name,Website observed; EOD/ticker documented,metadata name; EOD bar omitted,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,bar uses mapping rather than raw name
-exchange/MIC,Website observed; price/ticker documented,mapping/provenance/sourceVenue,TRANSFORMED,original exchange and exchange_code distinction not universally retained
-ISIN,Documented ticker; current account not observed,metadata ISIN; mapping required,TRANSFORMED,absent ISIN cannot be invented from name
-currency/country/asset type,Documented; website exchange fields observed,currency/type mapping; metadata exchange country omitted,TRANSFORMED_OR_DROPPED_IF_RETURNED,verified listing derivation vs provider row must stay separate
-open/high/low/close/volume,Documented; account not observed,bar values; quote OHLC/volume,TRANSFORMED,numeric validation
-adj_open/high/low,Documented; account not observed,adjustedOpen/High/Low,TRANSFORMED,observations; no global adjustment admission
-adj_close,Documented; account not observed,adjustmentObservation.close; adjustedClose only when verified,TRANSFORMED,"intentional evidence gate, not silent loss"
-adj_volume/split_factor/dividend,Documented; account not observed,adjustedVolume/splitFactor/dividend,TRANSFORMED,volume verification independent
-market timestamp,Documented; account not observed,market_timestamp + provider_timestamp,TRANSFORMED,reference assigns market time as provider time; update instant not separately observed
-cik/cusip/lei/sector/industry + exchange descriptors,Documented; account not observed,reference metadata omitted,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,metadata contract narrow; separate raw hook preserves source if enabled
-ETF investment_security fields,Documented + earlier materialization; current account not observed,older ETF normalize spreads source investment_security,TRANSFORMED,do not assert old constituent fields/weights were universally lost
-ETF basics/attributes/signature,Documented; current account not observed,reference adapter no ETF; older narrow fund projection omits signature/final_filing,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,new audit raw preserves full report without asserting daily issuer freshness
-AUM/TER/benchmark/UCITS/NAV/replication,Not in inspected ETF schemas; raw not tested,no reference adapter ETF metadata,UNKNOWN,schema omission is not provider-wide absence
+field,normalizedField,sampleRows,rawPresent,normalizedPresent,typedProjectionAbsent,rawDropped,reason
+"symbol","providerTicker","242","226","226","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"name","name","242","233","233","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"isin","isin","242","31","31","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"stock_exchange.mic","providerExchange","242","54","54","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"exchange","providerExchange","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"exchange_code","providerExchangeCode","242","24","24","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"price_currency","currency","242","53","53","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"currency","currency","242","7","7","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"country","country","242","7","0","7","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"country_code","countryCode","242","0","0","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"stock_exchange.country","exchangeCountry","242","0","0","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"item_type","assetType","242","62","62","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"asset_type","assetType","242","8","8","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"sector","sector","242","40","40","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"industry","industry","242","38","38","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"cik","cik","242","7","7","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"cusip","cusip","242","15","15","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"lei","lei","242","29","29","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"about","description","242","7","7","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"open","open","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"high","high","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"low","low","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"close","close","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"volume","volume","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"adj_open","adjustedOpen","242","166","166","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"adj_high","adjustedHigh","242","166","166","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"adj_low","adjustedLow","242","166","166","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"adj_close","adjustedClose","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"adj_volume","adjustedVolume","242","8","8","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"split_factor","splitFactor","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"dividend","dividend","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"trade_last","marketTimestamp","242","7","7","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"date","marketTimestamp","242","172","172","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"updated_at","providerUpdateTimestamp","242","0","0","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"update_timestamp","providerUpdateTimestamp","242","0","0","0","0","PRESERVED_TYPED_WHERE_PROVIDER_PRESENT_AND_SEMANTICALLY_VALID"
+"aum","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"ter","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"expense_ratio","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"benchmark","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"domicile","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"ucits","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"nav","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"inception_date","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"replication","","242","0","0","0","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"
+"stock_exchange.name","","242","54","0","54","0","ALL_VALUES_PRESERVED_IN_RAW_ONLY"

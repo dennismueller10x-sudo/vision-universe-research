@@ -43,3 +43,54 @@ US intraday positivecontrol succeeds at both15min(raw0112) and1min(raw0113). Bot
 European nativeintraday symbols with actualMIC all return200 empty count0,total0. The seven hyphenformatted candidates return422 `no_valid_symbols_provided`. Combined with first-runqualified15min/1min empty responses, these fail to obtain Europehome intraday data. Classification for the tested Europeanhome listings is UNSUPPORTED, with US intraday SUPPORTED. There is no401/403/nonentitlement error: do not label Europeabsence NOT_ENTITLED.
 
 Current second-run practicalclassification: globalEOD SUPPORTED with partiallistingfreshness; intradayUS SUPPORTED(derivedIEX); intradayEurope UNSUPPORTED for testedhome listings; realtimeUS PARTIAL(availablelastknown snapshot, uncertifiedtimestamp/delay); realtimeEurope awaiting the necessary nativeunscoped finalresolution rather than being forcednegative after providerMICparameter failure.
+
+## Third authenticated run — 37642262870: Europe snapshots exist
+
+The required nativeunscoped lookup succeeds for all7 querysymbols, exposing the missing connector venue mappings rather than a blanket providerEuropecapability gap. Exact snapshot native ticker is an explicitly provided canonicalTicker/snapshotTicker; it is not inferred by stripping a suffix. The following rawhomevenue observations are identified from the fullreturned multivenue responses:
+
+| Company | Query / provider venue → MIC | Price / currency | Raw trade_last | UTC retrieval | Response |
+|---|---|---|---|---|---|
+| SAP |SAP / ETR → XETR|186.38 EUR|2026-10-07 16:45:46|2026-10-07T15:11:06.336Z|0047|
+| Siemens |SIE / ETR → XETR|270.05 EUR|2026-10-07 16:41:59|2026-10-07T15:12:07.389Z|0048|
+| Allianz |ALV / ETR → XETR|416 EUR|2026-10-07 16:46:16|2026-10-07T15:13:08.484Z|0049|
+| Deutsche Telekom |DTE / ETR → XETR|27.04 EUR|2026-10-07 16:41:45|2026-10-07T15:14:09.482Z|0050|
+| ASML |ASML / AMS → XAMS|1550 EUR|2026-08-19 13:32:51|2026-10-07T15:15:10.502Z|0051|
+| LVMH |MC / EPA → XPAR|387.5 EUR|2026-10-07 16:52:10|2026-10-07T15:16:11.611Z|0052|
+| ABB |ABBN / only VIE returned; no XSWX|86.62 EUR foreignvenue only|2026-08-18 13:00:24|2026-10-07T15:17:12.986Z|0053|
+
+Five of7 Europeanhome listings have actual currentday snapshots; a sixth(ASMLAmsterdam) is available but stale; ABB has no Swisshome observation in the returned result. ASMLNASDAQ freshUSD is a distinct listing and cannot replace the staleAmsterdamEUR observation. ABBViennaEUR cannot stand in for SIXSwissCHF. NYSEALV, DTE, and MC are different issuers, so same ticker alone never selects those rows for Allianz/Telekom/LVMH. Retain all original rows in raw evidence while selecting exactly one verifiedhomevenue for normalization.
+
+Raw0045 `/stockprice?ticker=AAPL&exchange=NASDAQ` now returns200, proving the endpoint's actual provider exchange-code parameter works. Together with run2 XNAS404 this is direct evidence of documentation/runtime mismatch: documentedISO MIC is not the accepted querycode in this endpoint. Unscoped requests followed by exactverified provider venue selection avoid misleading404s.
+
+`trade_last` remains timezonefree in every successful snapshot. If continentaltimestamps mean exchange-local CEST, the five currentday Europequotes are approximately24–32minutes older than retrieval. This conditional calculation is evidence of an available lastknown/delayed snapshot, not a guarantee of fixeddelay or true realtime. No raw update/publicationtimestamp exists. **realtimeEurope=PARTIAL** is therefore justified: currentdayprices are obtainable for five testedhome listings, but exactrealtime semantics are uncertified and listingfreshness is partial. IntradayEurope remains unsupported for testedhome listings independently of this snapshot success. A broad statement 'Marketstack Europe is EODonly' is false.
+
+## Root fix and offline verification
+
+Owned files changed: `providers/marketstack/audit-adapter.js`, `providers/marketstack/tests/audit.test.mjs`, new `providers/marketstack/snapshot-exchange-mappings.json`. Default mappings ETR→XETR, EPA→XPAR, AMS→XAMS, NASDAQ→XNAS carry auditable run/response IDs andSHA256 references to live venue rows plus exactticker metadataMICs. Exported mappingevidence is deeply frozen. The adapter omits the rejectedMICquery, uses only explicit snapshotTicker orcanonicalTicker, accepts a unique expectedvenue, preserves venuecode/provenance andrawfields, rejects conflictingMIC, ambiguousduplicate listings, foreignsame-ticker issuers, and missinghomevenues. A contradictory reportedexchangename cannot override the defaultcode mapping. Description is preserved from actual description/aboutmetadata, with raw unchanged.
+
+Offline replay against all8 real snapshot bodies(AAPL plus7Europe) accepts AAPL and six Europehome rows, retains ASML'sAugust19 timestamp, and rejects ABB as snapshotVenueUnverified. No APIcalls are made by this replay. Output: `live-private/final-snapshot-raw-replay.json`. Node22 all41 provider tests pass, including rawpreservation, explicitalias override/noimplicitrewrite, venueconflicts/foreignissuers, timestampuncertainty, and immutableevidence regressions. Final post-fix authenticatedrun must still verify the nowcompiledadapter against freshresponses; parent owns that dispatch.
+
+## Final post-fix authenticated verification — 37645399592
+
+**PASS for the snapshot root fix and realtime semantic gates.** Independently checked all 21 preserved response SHA256 values, exact raw wrapper and selected row preservation, selected price/currency/timestamp equality, retained venue mapping provenance, and all seven latest EOD dates. This final run made 21 requests and reserved 78 conservative credits. The reviewer made no API requests and no repository changes during this verification.
+
+The corrected adapter calls `/stockprice` with explicit native symbols SAP, SIE, ALV, DTE, ASML, MC, ABBN and AAPL, without the incorrect ISO MIC query parameter. It selects the expected home venue through auditable code mappings. Actual final results:
+
+| Company | Selected venue | Price/currency | Raw trade date | Response | Result |
+|---|---|---|---|---|---|
+| SAP | XETR / ETR | 186.92 EUR | 2026-10-07 | 0007 | Accepted |
+| Siemens | XETR / ETR | 270.60 EUR | 2026-10-07 | 0009 | Accepted |
+| Allianz | XETR / ETR | 416.10 EUR | 2026-10-07 | 0011 | Accepted |
+| Deutsche Telekom | XETR / ETR | 27.04 EUR | 2026-10-07 | 0013 | Accepted |
+| ASML | XAMS / AMS | 1550 EUR | 2026-08-19 | 0015 | Accepted as a stale observation |
+| LVMH | XPAR / EPA | 388 EUR | 2026-10-07 | 0017 | Accepted |
+| ABB | No XSWX venue returned | Only Vienna EUR | 2026-08-18 | 0019 | snapshotVenueUnverified |
+| AAPL | XNAS / NASDAQ | 335.55 USD | 2026-10-07 | 0021 | Accepted |
+
+Five of seven European home listings have current-day snapshots. ASML's stale Amsterdam quote is never replaced by its fresh NASDAQ USD quote. ABB's Vienna EUR quote correctly fails venue verification rather than being admitted as a Swiss CHF price. Only AAPL's NASDAQ venue is selected from its five original worldwide rows. Foreign same-ticker issuers, including NYSE ALV/DTE/MC, are excluded from the requested European listings.
+
+Every accepted snapshot retains `timestampTimezone=NOT_REPORTED`, `delayState=UNKNOWN` and `providerUpdateTimestamp=null`. If the continental Europe timestamps mean exchange-local CEST, their observed ages are SAP 23m56.7s, Siemens 33m56.7s, Allianz 25m23.8s, Telekom 30m13.9s and LVMH 26m26.0s. This proves practical current-day snapshot availability while preserving uncertainty about exact feed delay and timestamp timezone. **Europe snapshot capability is PARTIAL**, with no guarantee of true realtime or a fixed 15-minute delay. The blanket claim that Europe is EOD-only is definitively corrected by actual provider responses and successful VU normalization in this authenticated post-fix run.
+
+All seven separate `/eod/latest` calls still report October 6, preserving dates and prices exactly and selecting XETR/XAMS/XPAR/XSWX correctly. These final EOD requests occur at 15:41–15:47 UTC, approximately 11–17 minutes after the ordinary continental closing auction. October 7 EOD had not appeared in those raw responses. Without a verified publication deadline, that short post-close interval does not establish an overdue feed. It cannot be attributed to VU cache because the requests use TTL0 and the new raw provider bytes already report October 6. The initial pre-close history/latest comparison had already proved October 6 availability for these names, disproving the blanket October 5 stock-freshness finding.
+
+No outstanding snapshot connector or realtime semantic blocker was found. Remaining provider limits are the old ASML Amsterdam snapshot, missing ABB Swiss snapshot, absent intraday data for the tested European home listings, missing timezone/update/delay metadata, and uneven EOD listing freshness. Product admission remains outside this observational audit adapter.
