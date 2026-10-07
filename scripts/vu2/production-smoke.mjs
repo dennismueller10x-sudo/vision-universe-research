@@ -421,6 +421,20 @@ for(const width of [1440,390]){
      if(width===1440&&oben>900)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
      console.log('     Auskunft: '+kopfsatz.slice(0,74)+' · '+Math.round(oben)+'px');
     }
+    /* AUSSAGE VOR METHODIK (Progressive Disclosure, 07.10.2026). Gemessen
+       vor dem Umbau: die Setup-Marken standen bei 390 px erst nach 2.382 px,
+       Signal gegen Markt nach 4.851 px. Verlangt wird jetzt: die drei
+       Antworten (Setup, Evidenz, Staerke) stehen oben, und die Setup-Antwort
+       beginnt bei 390 px innerhalb von 1.500 px. */
+    const antworten=await page.locator('.qx-verdict-card .q-answers > *').count();
+    if(antworten!==3)bad.push('ANTWORTEN='+antworten);
+    const setupAntwort=page.locator('.qx-verdict-card a.q-answer[href="#setup"]');
+    if(!await setupAntwort.count())bad.push('SETUP_ANTWORT_FEHLT');
+    else{
+     const at=await setupAntwort.evaluate(n=>n.getBoundingClientRect().top+scrollY);
+     if(width===390&&at>1500)bad.push('SETUP_ANTWORT_ZU_TIEF='+Math.round(at));
+    }
+    if(!await page.locator('.qx-verdict-card a.q-answer[href="#historie"]').count())bad.push('EVIDENZ_ANTWORT_FEHLT');
     /* Und die Setup-Frage mit ihrer Folgefrage. */
     const setupText=await page.locator('#setup').innerText().catch(()=>'');
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');

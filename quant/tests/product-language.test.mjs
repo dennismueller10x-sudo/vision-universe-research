@@ -229,8 +229,12 @@ test("the stock experience answers its questions in the order a person asks them
      getestet, 5 Pro/Contra, 6 Faktoren (mit Veraenderung), 7 Anlagestil,
      8 Technik, 9 Daten & Grenzen. Faktorwerte sind nicht mehr die
      Hauptgeschichte. Geprueft wird weiterhin die Reihenfolge der Fragen. */
-  const order = ["verdictCard(vm", '"setup"))', '"historie"))', '"dafuer"))', '"einordnung"))',
-    '"veraenderung"))', '"strategie"))', '"grenzen"))'];
+  /* Owner-Auftrag "Progressive Disclosure" (07.10.2026) ersetzt diese
+     Reihenfolge: 1 Kurs/Chart, 2 Jetzt (drei Antworten), 3 Setup,
+     4 Historische Evidenz, 5 Faktoren; danach unter "Mehr" Pro/Contra,
+     Bewegung, Anlagestil, ..., Daten & Grenzen - je einen Tipp tief. */
+  const order = ["verdictCard(vm", '"setup"))', '"historie"))', '"einordnung"))', '"dafuer"))',
+    '"veraenderung"))', '"strategie"))', '"grenzen")'];
   let cursor = -1;
   for (const marker of order) {
     const at = render.indexOf(marker, cursor + 1);

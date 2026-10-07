@@ -168,11 +168,13 @@
         buttons[r.id].classList.toggle("is-active", r.id === st.range);
       });
     }
-    /* Discovers Mass (chartMass): volle Breite, am Handy gut die Haelfte
-       des Bildschirms hoch - der Chart ist die Hauptflaeche. */
+    /* Volle Breite. Am Handy knapp ein Drittel des Bildschirms hoch
+       (Owner-Auftrag 07.10.2026): unter dem Chart sollen die drei
+       Antworten der Aktienseite schon im ersten Bild beginnen - vorher
+       war es gut die Haelfte, und der erste Bildschirm zeigte nur Kurs. */
     var mobile = function () { return global.innerWidth < 860; };
     function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 40 : 1100))); }
-    function height() { return mobile() ? Math.round(Math.max(300, Math.min(global.innerHeight * 0.52, 480))) : 440; }
+    function height() { return mobile() ? Math.round(Math.max(220, Math.min(global.innerHeight * 0.3, 280))) : 440; }
 
     /* Beruehrung wie in Discover (beruehrung): Finger oder Zeiger zeigen den
        Kurs an dieser Stelle - im Kopf und als Marke im Bild. Loslassen
