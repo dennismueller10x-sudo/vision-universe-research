@@ -18,6 +18,7 @@ ADS = (
     'MILLROSE PROPERTIES INVESTOR ALERT: Julie & Holleman Investigates Potential Misconduct Related to Dealings with Lennar',
     'Integra LifeSciences (NASDAQ: IART) Investor Alert: Johnson Fistel Investigates Following Flooding-Related Outlook Cuts and 21% Stock Decline',
     'BBNX Investor Alert: Schall, Brown & Schwartz LLP Files Class Action Lawsuit Against Beta Bionics, Inc. and Announces Opportunity for Investors to Lead Class Action Lawsuit',
+    'QBTS Investigation Notice: Kessler Topaz Meltzer & Check, LLP Encourages D-Wave Quantum Inc. Investors to Contact the Firm',
 )
 
 
@@ -41,6 +42,18 @@ class ExternalNewsQualityTests(unittest.TestCase):
     def test_recruitment_with_intervening_investor_words_is_promotional(self):
         self.assertTrue(promotional_solicitation('Apple Inc. lawsuit: Announces Opportunity for Investors to Lead Class Action Lawsuit'))
 
+    def test_firm_contact_recruitment_cannot_create_news_or_candidates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            c=company();store=Store(Path(tmp)/'state.sqlite')
+            src={'sourceId':'publisher','url':'https://www.globenewswire.com/feed','type':'RSS','verified':False,'provider':'GLOBENEWSWIRE_RSS'}
+            pipeline=Pipeline(tmp,{c['companyId']:c},store,HTTP('AAPL Investigation Notice: Example LLP Encourages Apple Inc. Investors to Contact the Firm'),NOW)
+            pipeline.ingest_source(src)
+            self.assertEqual(store.db.execute('select count(*) from items').fetchone()[0],0)
+            self.assertEqual(store.db.execute('select count(*) from events').fetchone()[0],0)
+            self.assertEqual(pipeline.run['promotionalRejected'],1)
+            self.assertFalse(store.state('siteCandidates:'+c['companyId']))
+            store.close()
+
     def test_factual_litigation_company_warnings_and_law_partner_business_survive(self):
         for headline in (
             'Apple Inc. reaches settlement in patent litigation',
@@ -50,6 +63,8 @@ class ExternalNewsQualityTests(unittest.TestCase):
             'Apple Inc. expands enterprise services partnership with Example LLP',
             'Apple Inc. board investigates product safety concerns',
             'Apple Inc. Investor Alert: Regulator Investigates Accounting Practices',
+            'Apple Inc. encourages investors to contact the company for conference call access',
+            'Example LLP advises Apple Inc. on its acquisition',
         ):
             with self.subTest(headline=headline):
                 self.assertFalse(promotional_solicitation(headline))

@@ -57,19 +57,26 @@ def declared_sites(body, annual, issuer_names=()):
     parser = FilingText(); parser.feed(body.decode('utf-8', 'replace'))
     text = re.sub(r'\s+', ' ', ' '.join(parser.parts))
     sites = {}
-    owners = [r'our', r'the company.s']
+    owners = [r'our', r'the company.s', r'the corporation.s']
     for name in issuer_names:
         name = clean(name, 160)
         short = re.sub(r'\s+(?:Inc\.?|Corporation|Corp\.?|Limited|Ltd\.?|plc)$', '', name, flags=re.I)
         for owner in {name, short}:
             if len(owner) >= 3:
                 owners.append(re.escape(owner) + r'[\x27\u2019]s')
-    label = r'\b(?:' + '|'.join(owners) + r')\s+(?:(?:corporate|investor relations)\s+)?(?:web\s*site|internet address)\b'
+    direct = r'\b(?:' + '|'.join(owners) + r')\s+(?:(?:corporate|investor relations|internet)\s+)?(?:web\s*site|internet address)\b'
+    maintained = r'\bwe\s+maintain\s+an?\s+(?:internet\s+)?web\s*site\b'
+    reports = (r'\bthe\s+(?:company|corporation)\s+makes?\s+available'
+               r'(?:(?![.!?]).){0,400}\bits\s+(?:internet\s+)?web\s*site\b')
+    label = '(?:' + direct + '|' + maintained + '|' + reports + ')'
     address = r'https?://[^\s<>"\x27]+|\b(?:www\.)?(?:[A-Za-z0-9-]+\.)+(?:com|net|org|io|co|ai|us|ca|uk|de|jp|cn)(?![A-Za-z0-9-]|\.[A-Za-z0-9])(?:/[^\s<>"\x27]*)?'
     for match in re.finditer(label, text, re.I):
         window = text[match.end():match.end() + 240]
         found = re.search(address, window, re.I)
         if not found: continue
+        edge = match.end() + found.end()
+        if found.end() == len(window) and edge < len(text) and not re.match(r"[\s<>\"\x27]", text[edge]):
+            continue  # The evidence window must not truncate a URL into another host.
         raw = found[0].rstrip('.,);]')
         url = canonical_url(raw if raw.startswith(('http://', 'https://')) else 'https://' + raw)
         if not url: continue

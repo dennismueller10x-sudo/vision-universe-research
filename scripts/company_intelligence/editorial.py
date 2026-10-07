@@ -18,7 +18,12 @@ def german_profile(profile, reviewed=None):
     if profile.get('language') == 'de':
         return profile
     reviewed = catalogue() if reviewed is None else reviewed
-    if profile['companyId'] in reviewed.get('withheld', {}):
+    withdrawal = reviewed.get('withheld', {}).get(profile['companyId'])
+    # A corrected future source is reviewed afresh; never permanently suppress
+    # an issuer merely because its preceding fragment was inadequate.
+    if isinstance(withdrawal, str) or (isinstance(withdrawal, dict) and
+        withdrawal.get('sourceDescriptionHash') == hashlib.sha256(profile['description'].encode()).hexdigest() and
+        withdrawal.get('sourceHashes') == sorted(s['contentHash'] for s in profile['sources'])):
         return None
     entry = reviewed.get('profiles', {}).get(profile['companyId'])
     if not entry or entry.get('sourceDescriptionHash') != hashlib.sha256(profile['description'].encode()).hexdigest():

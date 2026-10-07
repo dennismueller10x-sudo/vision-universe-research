@@ -1,3 +1,5 @@
+> Aktueller Nachweis vom 7. Oktober: [Accepted-State Recovery](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md). Der akzeptierte Originalbestand ist inzwischen privat in R2 gesichert und auf unabhängigem Runner exakt wiederhergestellt. Frühere fehlende-Bestandsmeldungen unten sind historische Befunde. Kein Merge und keine öffentliche Aktivierung.
+
 # Aktuelle sichere Übergabe und Discover-Beta — 6. Oktober 2026
 
 Aktuelle Fortsetzung: [Full-Data State Handoff](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md). Authentifizierte Actions-Prüfung bestätigt den privaten R2-Bucket, findet aber keinen aktuellen Rollout-State-Pointer (`REMOTE_STATE_MISSING_INITIALIZATION_REQUIRED`). Kein Restore, kein kleiner Ersatzbestand und keine externe Full-Data-Freigabe.

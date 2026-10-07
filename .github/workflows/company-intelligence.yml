@@ -220,8 +220,12 @@ jobs:
           node-version: '22'
       - uses: actions/checkout@v4
         with:
-          ref: '5f3ce9a48a850e2430ca160735773b2e979f08e3'
-          path: '.current-producer'
+          ref: abbea154a90ffece598e494530eea38661a20a95
+          path: .accepted-engine
+      - uses: actions/checkout@v4
+        with:
+          ref: 5a3ca18d3099df1f916e922e409aa01cb4a33436
+          path: .accepted-original-engine
       - name: Verify private bucket and read existing authoritative namespace only
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -235,15 +239,18 @@ jobs:
           CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
         run: |
           node scripts/company_intelligence/privacy.mjs
-          namespace=$(python3 -c 'import json; print(json.load(open("company-intelligence/config/current-state-handoff.json"))["namespace"])')
+          namespace=$(python3 -c 'import json; print(json.load(open("company-intelligence/config/accepted-state-handoff.json"))["namespace"])')
           node scripts/company_intelligence/sync-state.mjs pull --namespace "$namespace" --file "$RUNNER_TEMP/current-state.tar.gz"
-      - name: Fresh exact restore and unchanged-state export with original producer
+      - name: Fresh exact accepted restore and both pinned producer exports
         run: |
-          python3 scripts/company_intelligence/current_state_acceptance.py \
+          python3 scripts/company_intelligence/accepted_state_verify.py \
             --snapshot "$RUNNER_TEMP/current-state.tar.gz" --state "$RUNNER_TEMP/current-fresh-state" \
-            --producer-root "$GITHUB_WORKSPACE/.current-producer" \
-            --expected company-intelligence/config/current-state-handoff.json \
+            --engine "$GITHUB_WORKSPACE/.accepted-engine" --original-engine "$GITHUB_WORKSPACE/.accepted-original-engine" \
+            --expected company-intelligence/config/accepted-state-handoff.json \
             --evidence "$RUNNER_TEMP/current-restore-evidence.json"
+      - name: Reproduce exact reviewed consumer cohort from the fresh private R2 restore
+        run: |
+          python3 scripts/company_intelligence/verify_consumer_handoff.py --state "$RUNNER_TEMP/current-fresh-state" --consumer "$RUNNER_TEMP/fresh-consumer-cohort" --evidence "$RUNNER_TEMP/current-restore-evidence.json"
       - name: Hashes and counts only; no checkpoint, ledger or source-health artifact
         uses: actions/upload-artifact@v4
         with:

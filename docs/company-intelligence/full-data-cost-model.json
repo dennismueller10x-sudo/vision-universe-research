@@ -1,0 +1,39 @@
+{
+  "ongoingActivationPerformed": false,
+  "newPaidProviderOrAiService": false,
+  "consumerAssets": 86,
+  "consumerBytes": 1780647,
+  "privateArchiveBytes": 30905804,
+  "models": {
+    "beta": {
+      "enabledEligibleSources": 96,
+      "sourceTypes": {
+        "IR_FEED": 27,
+        "IR_EVENTS": 28,
+        "IR_MATERIALS": 41
+      },
+      "modeledMetadataRequestsPer30DaysByType": {
+        "IR_FEED": 4680.0,
+        "IR_EVENTS": 840.0,
+        "IR_MATERIALS": 1230.0
+      },
+      "modeledRequestsPer30Days": 6750.0,
+      "assumptions": "News minimum 4h; events/materials minimum 24h; all eligible configured+restored sources assumed due. Upper model, not measured full operation. HTTP cache/conditional requests retain request counts but reduce bytes. One request per descriptor is only the base; pagination/detail/SEC/retry requests and runtime are not measured or included."
+    },
+    "full": {
+      "enabledEligibleSources": 5346,
+      "sourceTypes": {
+        "IR_FEED": 2129,
+        "IR_EVENTS": 1342,
+        "IR_MATERIALS": 1875
+      },
+      "modeledMetadataRequestsPer30DaysByType": {
+        "IR_FEED": 358800.0,
+        "IR_EVENTS": 40260.0,
+        "IR_MATERIALS": 56250.0
+      },
+      "modeledRequestsPer30Days": 455310.0,
+      "assumptions": "News minimum 4h; events/materials minimum 24h; all eligible configured+restored sources assumed due. Upper model, not measured full operation. HTTP cache/conditional requests retain request counts but reduce bytes. One request per descriptor is only the base; pagination/detail/SEC/retry requests and runtime are not measured or included."
+    }
+  }
+}

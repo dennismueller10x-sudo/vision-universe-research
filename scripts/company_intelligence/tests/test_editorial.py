@@ -31,6 +31,12 @@ class EditorialEvidenceTests(unittest.TestCase):
     def test_nonbusiness_alphabet_fragment_is_withheld_for_both_share_classes(self):
         self.assertIsNone(german_profile(self.profiles['iss_cik_0001652044'], self.review))
 
+    def test_withdrawal_does_not_permanently_block_a_corrected_future_profile(self):
+        prior = self.profiles['iss_cik_0001652044']
+        changed = copy.deepcopy(prior)
+        changed['description'] = 'A newly reviewed actual business description.'
+        self.assertIsNotNone(german_profile(changed, self.review))
+
     def test_repeated_projection_keeps_review_only_status(self):
         profile = german_profile(self.apple, self.review)
         self.assertEqual(german_profile(profile, self.review), profile)

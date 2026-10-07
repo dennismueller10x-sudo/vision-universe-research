@@ -20,6 +20,15 @@ function block(host,title){const s=node('section',undefined,'ci-block');s.append
 function gap(host,title,text){const p=node('p',undefined,'ci-gap');p.append(node('strong',title+': '),document.createTextNode(text));host.append(p);}
 function details(host,title){const d=node('details',undefined,'ci-details');d.append(node('summary',title));host.append(d);return d;}
 function period(value){const annual=value.fiscalQuarter==='FY'||value.periodType==='FY';return (annual?'Geschäftsjahr'+(value.fiscalYear?' '+value.fiscalYear:''):value.fiscalQuarter||'Berichtszeitraum')+(!annual&&value.fiscalYear?' · Geschäftsjahr '+value.fiscalYear:'')+(value.reportingPeriod?' · Ende '+day(value.reportingPeriod):'');}
+function materialName(d){
+ let name=d.type==='FINANCIAL_REPORT'&&['10-K','20-F','40-F'].includes(d.form)?'Jahresbericht':d.type==='FINANCIAL_REPORT'&&d.form==='10-Q'?'Quartalsbericht':materialNames[d.type]||'Originalmaterial';
+ if(d.type==='FINANCIAL_REPORT'&&!d.form){const years=[...String(d.label||'').matchAll(/(20\d{2})\s*annual[\s_-]*report|annual[\s_-]*report\s*(20\d{2})/gi)].map(m=>m[1]||m[2]);const unique=[...new Set(years)];if(unique.length===1)name='Jahresbericht '+unique[0];}
+ if(d.fiscalQuarter&&d.fiscalYear)name+=' · '+period(d);
+ else if(d.reportingPeriod)name+=' · Berichtsende '+day(d.reportingPeriod);
+ if(d.filedAt)name+=' · eingereicht am '+day(d.filedAt);
+ else if(d.date&&d.publicationDateStatus!=='NOT_PROVIDED')name+=' · Datum '+day(d.date);
+ return name;
+}
 function knownDate(item){return item.publishedAt||item.date||null;}
 function story(item){
  const n=node('article',undefined,'ci-story'),regulatory=item.eventType==='MATERIAL_SEC_EVENT';
@@ -37,8 +46,9 @@ function activeEvent(e,now,today){
 }
 function eventRow(e){
  const n=node('article',undefined,'ci-story'),estimated=e.confirmationStatus==='ESTIMATED';
- const kind=e.eventType==='EARNINGS_CALL'?'Ergebnisgespräch (Earnings Call)':e.eventType==='EARNINGS_SCHEDULED'?'Ergebnisveröffentlichung':e.eventType==='EARNINGS_ESTIMATED'?'Geschätzter Berichtszeitraum':'Investorenveranstaltung';
+ const kind=e.eventType==='EARNINGS_CALL'?'Ergebnisgespräch (Earnings Call)':e.eventType==='EARNINGS_SCHEDULED'?'Ergebnisveröffentlichung':e.eventType==='EARNINGS_ESTIMATED'?'Geschätzter Berichtszeitraum':/teleconference|conference call/i.test(e.headline||'')?'Telefonkonferenz':'Investorenveranstaltung';
  n.append(node('p',kind,'ci-headline'));
+ if(e.fiscalYear&&e.fiscalQuarter)n.append(node('p',period(e),'ci-meta'));
  if(estimated)n.append(node('p',day(e.dateStart)+' – '+day(e.dateEnd)+' · Geschätzt'),node('p','Zeitfenster aus früheren Berichten. Kein bestätigter Termin und keine Vorhersage eines Veröffentlichungstags.','ci-meta'));
  else{
   n.append(node('p',day(e.startsAt||e.date,e.startsAt?'Europe/Berlin':'UTC')+' · Bestätigt'));
@@ -80,7 +90,7 @@ function render(host,payload){
    else n.append(node('small','Kein belastbarer Vorjahresvergleich'));grid.append(n);
   }s.append(grid);
   const bases={PREVIOUS_QUARTER_YOY_GROWTH:'Wachstumsrate des Vorquartals',PREVIOUS_YEAR:'Vorjahr',YEAR_AGO_QUARTER:'Vorjahresquartal'};
-  const changes=(f.whatChanged||[]).filter(c=>labels[c.metric]&&bases[c.comparison]&&((Number.isFinite(c.previous)&&Number.isFinite(c.current))||(c.unit==='percentage_points'&&Number.isFinite(c.absolute)))).slice(0,5);
+  const changes=(f.whatChanged||[]).filter(c=>c.metric!=='shares_outstanding'&&labels[c.metric]&&bases[c.comparison]&&((Number.isFinite(c.previous)&&Number.isFinite(c.current))||(c.unit==='percentage_points'&&Number.isFinite(c.absolute)))).slice(0,5);
   if(changes.length){const d=block(host,'Was hat sich verändert?');d.append(node('p','Belegte Zahlenvergleiche; keine Bewertung der Aktie.','ci-meta'));for(const c of changes){const unit=c.unit==='percentage_points'?'percent':c.unit;const values=Number.isFinite(c.previous)&&Number.isFinite(c.current)?number(c.previous,unit)+' → '+number(c.current,unit):(c.absolute>0?'+':'')+number(c.absolute,'percentage_points');d.append(node('p',labels[c.metric]+': '+values+' · '+bases[c.comparison]));}}
  }else gap(host,'Letzte Geschäftszahlen','Für diesen Titel liegen keine ausreichend geprüften Geschäftszahlen vor.');
  const upcoming=(payload.events||[]).filter(e=>activeEvent(e,now,today)&&['CONFIRMED','ESTIMATED'].includes(e.confirmationStatus)).sort((a,b)=>(a.startsAt||a.date||a.dateStart||'').localeCompare(b.startsAt||b.date||b.dateStart||''));
@@ -91,9 +101,9 @@ function render(host,payload){
  const documentsSeen=new Set(historicalCalls.slice(0,3).flatMap(c=>[c.webcastUrl,c.replayUrl,c.transcriptUrl].map(u=>g.VUCompanyIntelligence.safeLink(u)).filter(Boolean))),groups=[];
  function documents(rows){return rows.filter(d=>{const url=g.VUCompanyIntelligence.safeLink(d.url);if(!url||documentsSeen.has(url))return false;documentsSeen.add(url);return true;});}
  for(const b of payload.earningsBundles||[]){const docs=documents(b.materials||[]);if(docs.length)groups.push({title:period(b),docs});}
- const remaining=documents([...(payload.materials||[]),...(payload.filings||[]).filter(f=>/^(?:10-[KQ]|20-F|40-F)$/.test(f.form||'')).map(f=>({url:f.sourceUrl,type:'FINANCIAL_REPORT',label:(f.form==='10-Q'?'Quartalsbericht':'Jahresbericht')+' · '+day(f.date)}))]);
+ const remaining=documents([...(payload.materials||[]),...(payload.filings||[]).filter(f=>/^(?:10-[KQ]|20-F|40-F)$/.test(f.form||'')).map(f=>({url:f.sourceUrl,type:'FINANCIAL_REPORT',form:f.form,filedAt:f.date,label:(f.form==='10-Q'?'Quartalsbericht':'Jahresbericht')+' · '+day(f.date)}))]);
  if(remaining.length)groups.push({title:'Weitere verfügbare Unterlagen',docs:remaining.slice(0,8)});
- if(groups.length){const s=block(host,'Berichte & Präsentationen');for(const group of groups.slice(0,5)){s.append(node('p',group.title,'ci-headline'));for(const d of group.docs){const name=d.type==='FINANCIAL_REPORT'&&['10-K','20-F','40-F'].includes(d.form)?'Jahresbericht':materialNames[d.type]||'Originalmaterial';link(s,name+(d.filedAt?' · eingereicht am '+day(d.filedAt):''),d.url);}if(group.docs.some(d=>d.publicationDateStatus==='NOT_PROVIDED'))s.append(node('p','Unterlagen aus dem Archiv; Veröffentlichungsdatum nicht angegeben.','ci-meta'));}if(groups.some(group=>group.docs.some(d=>['WEBCAST','EARNINGS_WEBCAST','SHAREHOLDER_LETTER','PREPARED_REMARKS'].includes(d.type))))s.append(node('p','Ein Webcast-Link bestätigt keine verfügbare Aufzeichnung. Ein Aktionärsbrief und vorbereitete Aussagen sind keine vollständigen Call-Transkripte.','ci-meta'));}else gap(host,'Berichte & Präsentationen','In diesem Datenstand sind keine belegten Unterlagen verknüpft.');
+ if(groups.length){const s=block(host,'Berichte & Präsentationen');for(const group of groups.slice(0,5)){s.append(node('p',group.title,'ci-headline'));for(const d of group.docs){link(s,materialName(d),d.url);}if(group.docs.some(d=>(d.publicationDateStatus==='NOT_PROVIDED'||(!d.filedAt&&!d.date))))s.append(node('p','Unterlagen aus dem Archiv; Veröffentlichungsdatum nicht angegeben.','ci-meta'));}if(groups.some(group=>group.docs.some(d=>['WEBCAST','EARNINGS_WEBCAST','SHAREHOLDER_LETTER','PREPARED_REMARKS'].includes(d.type))))s.append(node('p','Ein Webcast-Link bestätigt keine verfügbare Aufzeichnung. Ein Aktionärsbrief und vorbereitete Aussagen sind keine vollständigen Call-Transkripte.','ci-meta'));}else gap(host,'Berichte & Präsentationen','In diesem Datenstand sind keine belegten Unterlagen verknüpft.');
  const proof=details(host,'Datenstand und Quellenhinweise');proof.append(node('p','Aufbereitungsstand: '+day(payload.generatedAt)+'. Originalquellen können neuer sein. Nachrichten sind keine vollständige Marktberichterstattung.','ci-meta'));
  if(profile&&profile.language!=='de'){proof.append(node('p','Quellenbeschreibung (Englisch), noch nicht als deutsches Profil freigegeben:','ci-meta'));const p=node('p',profile.description);p.lang='en';proof.append(p);for(const source of profile.sources||[])link(proof,'Profilquelle',source.url);}
 }

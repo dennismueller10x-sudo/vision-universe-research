@@ -1,12 +1,16 @@
 {
   "schema": 1,
-  "checkpointBytes": 30905804,
+  "status": "ACCEPTED_LEDGER_AND_DETERMINISTIC_EXPORT_VERIFIED",
   "checkpointSha256": "2368931508ec869fed1246733465b15dd550a6bcaec1d2154aed2359cb7ba6f9",
-  "generation": "21cc611a43b06f488418b58a",
-  "generatedAt": "2026-10-06T14:00:21Z",
+  "checkpointBytes": 30905804,
+  "acceptedGeneration": "21cc611a43b06f488418b58a",
+  "projectedGeneration": "2b1a4bcdffb54e9b40a23a98",
+  "originalGenerationReproduced": false,
+  "engineCodeSha": "abbea154a90ffece598e494530eea38661a20a95",
   "exportedCompanies": 5120,
-  "universeCompanies": 6078,
-  "producerCodeSha": "abbea154a90ffece598e494530eea38661a20a95",
+  "generatedAt": "2026-10-06T14:00:21Z",
+  "assetCount": 5759,
+  "assetHash": "52da6d3d19a12229ac8492d162dceb1b6fc2814656f7e22b2d107f98049da50b",
   "fingerprint": {
     "schema": "vu-intelligence-acceptance-1",
     "tables": {
@@ -93,16 +97,14 @@
       "logicalHash": "2b29e4a2cf94a3397c8f738bd52afa2c77e6d4462ec286ba5388a9faaaa05e7d"
     }
   },
-  "acceptedCounts": {
-    "profiles": 3678,
-    "newsIssuers": 2601,
-    "callIssuers": 1069,
-    "presentationIssuers": 1821
+  "privateStateRowsIncluded": false,
+  "acceptedProducerVerification": {
+    "engineCodeSha": "5a3ca18d3099df1f916e922e409aa01cb4a33436",
+    "projectedGeneration": "21cc611a43b06f488418b58a",
+    "originalGenerationReproduced": true,
+    "exportedCompanies": 5120,
+    "assetHash": "50dc526a99fbdc67fa63da3430b92f8fa13c36984d24e9ad0397b2782e1e3750",
+    "assetCount": 5759
   },
-  "namespace": "accepted-20261006-21cc611a43b06f488418b58a",
-  "rolloutNamespace": "branch-b153bd74ab50fdc2a7346c75",
-  "incompleteStoppedBatchExcluded": true,
-  "originalConsumerGenerationExactReproduction": "EXACT_ORIGINAL_PRODUCER_RESTORED_AND_EXPORTED",
-  "privateOperationalRowsIncluded": false,
-  "acceptedProducerCodeSha": "5a3ca18d3099df1f916e922e409aa01cb4a33436"
+  "generationDifferenceCause": "PRODUCER_REVISION_CHANGED; SAME_TIMESTAMP_AND_EXACT_PRIVATE_TABLES"
 }

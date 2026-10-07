@@ -1,3 +1,5 @@
+> Aktueller Nachweis vom 7. Oktober: [Accepted-State Recovery](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md). Der akzeptierte Originalbestand ist inzwischen privat in R2 gesichert und auf unabhängigem Runner exakt wiederhergestellt. Frühere fehlende-Bestandsmeldungen unten sind historische Befunde. Kein Merge und keine öffentliche Aktivierung.
+
 # Company Intelligence — aktueller State Handoff und Full-Data-Preview
 
 Stand: 6. Oktober 2026. Fortsetzung von [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356) und [#455](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/455). Kein PR-Merge, kein Produktions- oder Scheduler-Flag geändert, kein Coverage-Crawl gestartet. Arbeit auf dem vorhandenen `feature/company-intelligence-discover-beta`.

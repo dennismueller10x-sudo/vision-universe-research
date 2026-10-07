@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {generateKeyPairSync,privateDecrypt,createDecipheriv,constants} from 'node:crypto';
 import {boundedPut,encryptedAuthorization,handoff} from '../handoff-transfer.mjs';
 const expected={namespace:'accepted-test',rolloutNamespace:'rollout-test',checkpointSha256:'a'.repeat(64),checkpointBytes:30905804};
@@ -21,4 +24,14 @@ test('capability artifact requires matching private key and authenticated cipher
 test('different accepted pointer blocks issuance without any object mutation',async()=>{
  const calls=[];const driver={get:async key=>{calls.push('get');return key.includes('/accepted-test/')?Buffer.from(JSON.stringify({schema:1,slot:0,sha256:'b'.repeat(64),bytes:60000000})):null;},head:async()=>null,put:async()=>{calls.push('put');}};
  await assert.rejects(handoff('issue',{driver,expected,output:'/unused',env}),/ACCEPTED_NAMESPACE_ALREADY_HAS_DIFFERENT_STATE/);assert(!calls.includes('put'));
+});
+
+test('richer original rollout is inspected and preserved; ticket never updates either pointer',async()=>{
+ const temp=mkdtempSync(join(tmpdir(),'handoff-'));
+ try {
+  const calls=[];const driver={get:async key=>{calls.push(['get',key]);return key.includes('/rollout-test/')?Buffer.from(JSON.stringify({schema:1,slot:1,sha256:'b'.repeat(64),bytes:60000000,updatedAt:'2026-10-08T00:00:00Z'})):null;},head:async key=>{calls.push(['head',key]);return null;},put:async()=>calls.push(['put'])};
+  const output=join(temp,'envelope.json');const result=await handoff('issue',{driver,expected,output,env});
+  assert.equal(result.remotePointers['rollout-test'].status,'DIFFERENT_PRESERVED');assert(!calls.some(([method])=>method==='put'));
+  const artifact=JSON.parse(readFileSync(output));assert.equal(artifact.status,'ENCRYPTED_EXACT_PUT_AUTHORIZATION');assert(!JSON.stringify(artifact).includes(env.VU_HISTORY_S3_ACCESS_KEY_ID));
+ } finally {rmSync(temp,{recursive:true,force:true});}
 });

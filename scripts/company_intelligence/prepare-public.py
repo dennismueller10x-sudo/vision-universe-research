@@ -45,6 +45,8 @@ def prepare(source, output, tickers, preview_sources=None):
         if preview_sources is not None:
             from company_intelligence.consumer_usage import filter_for_preview
             raw, _ = filter_for_preview(raw, preview_sources)
+            from company_intelligence.consumer_event_review import apply_review
+            raw = apply_review(raw, source_generation=generation)
         values[cid] = project(raw)
     digest = hashlib.sha256(dumps({'sourceGeneration': generation, 'cohort': members, 'values': values}).encode()).hexdigest()[:24]
     paths = {cid: f'snapshots/{digest}/{cid}.json' for cid in values}

@@ -1,3 +1,5 @@
+> Aktueller Nachweis vom 7. Oktober: [Accepted-State Recovery](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md). Der akzeptierte Originalbestand ist inzwischen privat in R2 gesichert und auf unabhängigem Runner exakt wiederhergestellt. Frühere fehlende-Bestandsmeldungen unten sind historische Befunde. Kein Merge und keine öffentliche Aktivierung.
+
 # Company Intelligence — sichere Übergabe und Discover-Beta
 
 **Historischer Bericht der ersten Discover-Aufbereitung.** Die aktuelle Fortsetzung und die inzwischen authentifizierte R2-Untersuchung stehen in [COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md). Der aktuelle Rollout-Pointer fehlt im privaten Speicher; die frühere Aussage über fehlende lokale Credentials darf nicht mit fehlenden Actions-Credentials gleichgesetzt werden.

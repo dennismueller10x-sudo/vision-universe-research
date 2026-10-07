@@ -1,42 +1,38 @@
 {
-  "status": "CONFIGURATION_REVIEW_NOT_RESTORED_DATA_REVIEW",
-  "configuredSources": 5019,
+  "status": "RESTORED_DATA_REVIEW_METADATA_ONLY_ACCEPTED",
+  "policy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "acceptedGeneration": "21cc611a43b06f488418b58a",
+  "sourceGeneration": "2b1a4bcdffb54e9b40a23a98",
+  "consumerGeneration": "d700d480d9b2858eb8fa34f4",
+  "cohortTickers": 46,
+  "cohortIssuers": 45,
+  "restoredRegistrySources": 5366,
+  "combinedCohortRegistrySources": 96,
   "types": {
-    "IR_FEED": 2113,
-    "RSS": 6,
-    "IR_EVENTS": 1305,
-    "IR_MATERIALS": 1595
+    "IR_FEED": 27,
+    "IR_EVENTS": 28,
+    "IR_MATERIALS": 41
   },
   "providers": {
     "FIRST_PARTY": 1,
-    "PUBLIC_RSS": 1,
-    "GLOBENEWSWIRE_RSS": 4,
-    "GCS": 1566,
-    "STOCKPR": 495,
-    "Q4": 2323,
-    "WORDPRESS": 405,
-    "WEB_DRIVER": 44,
-    "GENERIC": 150,
-    "INVESTIS": 28,
-    "GLOBENEWSWIRE_SITEMAP": 1,
-    "BUSINESS_WIRE": 1
+    "GCS": 21,
+    "Q4": 61,
+    "STOCKPR": 7,
+    "GENERIC": 1,
+    "WORDPRESS": 5
   },
-  "previewPolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
-  "permittedRepresentation": [
-    "headline",
-    "publication date",
-    "original source URL",
-    "structured factual metadata",
-    "derived numeric comparisons"
+  "enabledSourceClasses": [
+    "EXACT_VERIFIED_ISSUER_OWNED_IR_METADATA",
+    "SEC_REGULATORY_FACTS_AND_ORIGINAL_LINKS",
+    "EXPLICITLY_ATTACHED_COMPANY_DOCUMENT_AND_WEBCAST_REFERENCES"
   ],
-  "excludedProvidersPendingGrant": [
-    "GLOBENEWSWIRE_RSS",
-    "GLOBENEWSWIRE_SITEMAP",
-    "PUBLIC_RSS",
-    "BUSINESS_WIRE"
+  "excludedSourceClasses": [
+    "GLOBENEWSWIRE_METADATA_AND_ARTICLES_NO_REUSE_GRANT",
+    "BUSINESSWIRE_EXTERNAL_METADATA_NO_REUSE_GRANT",
+    "OTHER_EXTERNAL_FEEDS_WITHOUT_CUSTOMER_USAGE_BASIS"
   ],
-  "privateRuntimeRegistryReviewed": false,
-  "sourceUsageAcceptedForFullDataset": false,
-  "actualPreviewSourceClassesEnabled": [],
-  "thirdPartyBodyRepublished": false
+  "thirdPartyBodiesRepublished": false,
+  "commercialFeedLicenseInvented": false,
+  "consumerEventReviewCorrections": 2,
+  "broadCommercialReleaseApproved": false
 }

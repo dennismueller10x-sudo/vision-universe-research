@@ -22,7 +22,7 @@ async function pageFor(product,ticker,width=390,preview=true){
 async function mutate(page,change){await page.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();change(body);await r.fulfill({response,json:body});});}
 try{
  for(const product of (phase==='adversarial'?[]:phase==='dark'?['discover']:['discover','quant'])){
-  const tickers=phase==='dark'?['AAPL','XPEV']:product==='discover'?cohort:['AAPL','ACU','CHE','GOOG','GOOGL','ROOT','XPEV','VEON'];
+  const tickers=phase==='dark'?['AAPL','XPEV','NVDA','ROOT']:product==='discover'?cohort:['AAPL','ACU','CHE','GOOG','GOOGL','ROOT','XPEV','VEON'];
   for(const ticker of tickers)for(const width of (phase==='dark'?[390,430]:[390,430,768,1440])){
    const {page,errors,requests}=await pageFor(product,ticker,width),chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
    const expected=Object.values(candidate.inventory).find(v=>v.tickers.includes(ticker));
@@ -30,7 +30,15 @@ try{
    assert.equal(await chapter.locator('.ci-profile[lang=de]').count(),expected.germanProfile?1:0,product+'/'+ticker+'/'+width+' profile');
    assert.equal(await chapter.getByRole('heading',{name:'Letzte Geschäftszahlen',exact:true}).count(),expected.financials==='AVAILABLE'?1:0,product+'/'+ticker+'/'+width+' financials '+text);
    if(expected.staleFinancials&&expected.financials==='AVAILABLE')assert(text.includes('Veraltete Geschäftszahlen'));
-   assert(text.includes('keine Meldungen enthalten'));assert(text.includes('Kein bestätigter kommender Termin'));
+   if(expected.noNews)assert(text.includes('keine Meldungen enthalten'));
+   if(!expected.confirmedUpcoming)assert(text.includes('Kein bestätigter kommender Termin'));
+   if(expected.confirmedUpcoming)assert(text.includes('Bestätigt'));
+   assert(!text.includes('erweiterte Nachrichten- und Terminbestand ist hier noch nicht verfügbar'));
+   assert.equal(await chapter.locator('a').evaluateAll(as=>as.every(a=>a.href.startsWith('https://')&&!/globenewswire|businesswire|prnewswire|newsfilecorp|accessnewswire/.test(a.href))),true);
+   if(ticker==='CHE'){assert(text.includes('Ergebnisveröffentlichung')&&text.includes('Ergebnisgespräch'));assert(text.includes('28. Okt. 2026')&&text.includes('15:00')&&text.includes('MEZ'));assert(text.includes('Uhrzeit nicht angegeben'));}
+   if(ticker==='AFRM'){assert(text.includes('Ergebnisveröffentlichung')&&text.includes('Ergebnisgespräch'));assert(text.includes('5. Nov. 2026')&&text.includes('23:00')&&text.includes('MEZ'));assert(text.includes('Uhrzeit nicht angegeben'));}
+   if(ticker==='AFL')assert(text.includes('Telefonkonferenz'));
+   if(expected.news)assert.equal(await chapter.getByRole('heading',{name:'Neuigkeiten',exact:true}).count(),1);
    assert.equal(new Set(requests).size,3,product+'/'+ticker+' unique consumer paths');assert(requests.length<=6,product+'/'+ticker+' repeated mounts');assert.deepEqual(errors,[]);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
    assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false);
@@ -44,11 +52,12 @@ try{
     await chapter.screenshot({path:`${out}/${product}-${ticker}-${width}-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
     await writeFile(`${out}/${product}-${ticker}.txt`,text);
    }
+   if(product==='discover'&&width===390)await writeFile(`${out}/${ticker}-visible.txt`,text);
    cases.push({product,ticker,width,kind:'ACTUAL_CANDIDATE',status:'PASS'});if(width===1440)console.log(product+' '+ticker+' responsive PASS');await page.close();
   }
   const disabled=await pageFor(product,'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:'DISABLED_ZERO_REQUESTS',status:'PASS'});
  }
- const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL'];
+ const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL','SHARES_REQUIRE_CONTEXT','ANNUAL_REPORT_LABEL'];
  for(const product of (phase==='actual'||phase==='dark'?[]:['discover','quant']))for(const attack of attacks){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const cid='iss_cik_0000320193',future='2026-10-24';
@@ -58,6 +67,7 @@ try{
    if(attack==='COMPANY_TIMESTAMP_MISMATCH')body.generatedAt='2026-10-05T00:00:00Z';
    if(attack==='NO_PROFILE')delete body.companyProfile;
    if(attack==='STALE_FINANCIALS')body.latestFinancials.stale=true;
+   if(attack==='DUPLICATES_AND_OLD_NEWS'){body.earnings=[];body.materialEvents=[];}
    if(attack==='DUPLICATES_AND_OLD_NEWS')body.news=[{companyId:cid,newsId:'a',eventType:'NEWS',headline:'Aktuelle belegte Meldung',publishedAt:body.generatedAt,canonicalUrl:'https://www.apple.com/newsroom/test/'},{companyId:cid,newsId:'b',eventType:'NEWS',headline:'Doppelter Titel',publishedAt:body.generatedAt,canonicalUrl:'https://www.apple.com/newsroom/test/'},{companyId:cid,newsId:'old',eventType:'NEWS',headline:'Historische Meldung',publishedAt:'2020-01-01T12:00:00Z',canonicalUrl:'https://www.apple.com/newsroom/old/'}];
    if(attack==='CANCELLED_AND_PAST_EVENTS')body.events=[{companyId:cid,eventType:'EARNINGS_CALL',confirmationStatus:'CONFIRMED',eventStatus:'CANCELLED',date:future,headline:'Abgesagter Call'},{companyId:cid,eventType:'EARNINGS_CALL',confirmationStatus:'CONFIRMED',date:'2020-01-01',headline:'Vergangener Call'}];
    if(attack==='DATE_ONLY_AND_SEPARATE_CALL')body.events=[{companyId:cid,eventType:'EARNINGS_SCHEDULED',confirmationStatus:'CONFIRMED',date:future,sourceUrl:'https://www.apple.com/'},{companyId:cid,eventType:'EARNINGS_CALL',confirmationStatus:'CONFIRMED',date:future,startsAt:'2026-10-24T23:30:00Z',sourceUrl:'https://www.apple.com/'}];
@@ -67,6 +77,8 @@ try{
    if(attack==='UNSAFE_LINK')body.materials=[{companyId:cid,type:'PRESENTATION',url:'javascript:window.__ciXss=true'},{companyId:cid,type:'PRESENTATION',url:'http://127.0.0.1/private'}];
    if(attack==='ANNUAL_WHAT_CHANGED'){body.latestFinancials.fiscalQuarter=null;body.latestFinancials.periodType='FY';body.latestFinancials.fiscalYear=2025;body.latestFinancials.metrics.gross_margin={current:{value:42,unit:'percent'},changePercentagePoints:2};body.latestFinancials.whatChanged=[{metric:'gross_margin',comparison:'PREVIOUS_YEAR',absolute:2,unit:'percentage_points'}];}
    if(attack==='UNKNOWN_COMPARISON')body.latestFinancials.whatChanged=[{metric:'revenue',comparison:'UNKNOWN',previous:1,current:2,unit:'USD'}];
+   if(attack==='SHARES_REQUIRE_CONTEXT')body.latestFinancials.whatChanged=[{metric:'shares_outstanding',comparison:'YEAR_AGO_QUARTER',classification:'NOT_COMPARABLE',interpretation:'SHARE_COUNT_CHANGE_REQUIRES_SPLIT_ISSUANCE_BUYBACK_CONTEXT',previous:100,current:300,unit:'shares'}];
+   if(attack==='ANNUAL_REPORT_LABEL'){body.materials=[{companyId:cid,type:'FINANCIAL_REPORT',label:'Company_2025AnnualReport.pdf2025 Annual Report',date:null,url:'https://www.apple.com/annual/2025.pdf'}];body.earningsBundles=[];body.filings=[];}
    if(attack==='CANCELLED_CALL')body.calls=[{companyId:cid,eventId:'cancelled',date:'2026-09-01',status:'CANCELLED',webcastUrl:'https://www.apple.com/cancelled/'}];
   });
   await page.goto(base+route(product,'AAPL'));await page.waitForSelector('.ci-company-intelligence h2');const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
@@ -82,6 +94,8 @@ try{
   if(attack==='UNSAFE_LINK'){assert.equal(await chapter.locator('a[href^="javascript:"],a[href*="127.0.0.1"]').count(),0);assert.equal(await page.evaluate(()=>window.__ciXss),undefined)}
   if(attack==='ANNUAL_WHAT_CHANGED'){assert(text.includes('Geschäftsjahr 2025'));assert(text.includes('Was hat sich verändert?'));assert(text.includes('+2 Prozentpunkte · Vorjahr'));assert(!text.includes('2 Prozentpunkte zum Vorjahresquartal'));}
   if(attack==='UNKNOWN_COMPARISON')assert.equal(await chapter.getByRole('heading',{name:'Was hat sich verändert?',exact:true}).count(),0);
+  if(attack==='SHARES_REQUIRE_CONTEXT'){assert(!text.includes('Aktienanzahl:'));assert.equal(await chapter.getByRole('heading',{name:'Was hat sich verändert?',exact:true}).count(),0);}
+  if(attack==='ANNUAL_REPORT_LABEL'){assert.equal(await chapter.getByRole('link',{name:'Jahresbericht 2025',exact:true}).count(),1);assert(text.includes('Veröffentlichungsdatum nicht angegeben'));}
   if(attack==='CANCELLED_CALL'){assert.equal(await chapter.getByRole('heading',{name:'Calls / Webcasts',exact:true}).count(),0);assert.equal(await chapter.locator('a[href*="/cancelled/"]').count(),0);}
   assert.deepEqual(errors,[]);cases.push({product,kind:attack,status:'PASS'});console.log(product+' '+attack+' PASS');await page.close();
  }

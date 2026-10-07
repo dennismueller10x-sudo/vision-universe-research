@@ -42,6 +42,23 @@ class SecSiteCandidateTests(unittest.TestCase):
         self.assertEqual(declared_sites(body, ANNUAL, ['AbbVie Inc.'])[0]['url'], 'https://investors.abbvie.com/')
         self.assertEqual(declared_sites(body, ANNUAL, ['Another Inc.']), [])
 
+    def test_observed_internet_website_declarations_are_candidate_only(self):
+        for text, url in [('Our internet website address is pultegroupinc.com.', 'https://pultegroupinc.com/'),
+                          ('We maintain an internet website at www.icf.com.', 'https://www.icf.com/')]:
+            with self.subTest(text=text):
+                self.assertEqual(self.sites(text)[0]['url'], url)
+                self.assertTrue(self.sites(text)[0]['evidence'].endswith('CANDIDATE_ONLY'))
+
+    def test_observed_company_reporting_clause_and_corporation_ir_declaration(self):
+        text = ('The Company makes available free of charge on its website at www.umb.com/investor, its annual report. '
+                'Reports are provided through the Corporation\u2019s investor relations website, fbpinvestor.com.')
+        self.assertEqual([x['url'] for x in self.sites(text)],
+                         ['https://fbpinvestor.com/', 'https://www.umb.com/investor'])
+
+    def test_bare_third_party_its_website_is_not_an_issuer_declaration(self):
+        self.assertEqual(self.sites('The supplier offers reports on its website at supplier.com.'), [])
+        self.assertEqual(self.sites('The Company makes available reports. A supplier uses its website at supplier.com.'), [])
+
     def test_sec_third_party_script_and_unsafe_hosts_are_excluded(self):
         for address in ['https://www.sec.gov/reports', 'https://localhost/', 'https://127.0.0.1/',
                         'https://user:password@issuer.com/', 'https://issuer.com:bad/',
@@ -52,6 +69,20 @@ class SecSiteCandidateTests(unittest.TestCase):
 
     def test_unrelated_unlabelled_sites_and_distant_links_do_not_become_candidates(self):
         self.assertEqual(self.sites('Supplier website is wrong.com. Our website ' + 'x' * 250 + 'issuer.com'), [])
+
+    def test_window_edge_cannot_truncate_sec_or_company_url_into_another_host(self):
+        for url, partial in [('http://www.sec.gov/reports', 'http://www.s'),
+                             ('https://legitimate-issuer.com/investors', 'https://legitimate-issuer.co')]:
+            with self.subTest(url=url):
+                filler = ' ' + 'x' * (238 - len(partial)) + ' '
+                self.assertEqual(self.sites('Our website' + filler + url), [])
+
+    def test_complete_url_at_window_edge_is_accepted_without_scanning_beyond_budget(self):
+        url = 'https://issuer.com'
+        # Whitespace is normalized, so use a non-whitespace filler within one word.
+        filler = ' ' + 'x' * (238 - len(url)) + ' '
+        self.assertEqual(self.sites('Our website' + filler + url + ' reports')[0]['url'], 'https://issuer.com/')
+        self.assertEqual(self.sites('Our website ' + 'x' * 240 + ' https://issuer.com'), [])
 
     def test_only_hash_and_bounded_evidence_are_returned_not_filing_body(self):
         body = b'<p>Our website is issuer.com.</p>'
