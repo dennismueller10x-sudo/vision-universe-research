@@ -227,3 +227,16 @@ test('GT-T-FREEZE: Freeze deckt Fallliste, Praeregistrierung und Replay-Code ab'
   if (fs.existsSync(path.join(root, 'scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-FREEZE.json'))) assert.equal(r.ok, true, JSON.stringify(r));
   else assert.equal(r.reason, 'NO_FREEZE');
 });
+
+test('GT-T-EXPLORE-TAGS: Erstmeldung ueber Tags hinweg (TNDM-Muster: 10-Q unter BasicAndDiluted, 10-K unter Diluted)', async () => {
+  const { earliestAcrossTags } = await import('../ground-truth/explore-sec-tags.mjs');
+  const row = (start, end, val, form, filed) => ({ start, end, val, form, filed, accn: form + filed });
+  const tax = {
+    EarningsPerShareDiluted: { units: { 'USD/shares': [row('2020-01-01', '2020-03-31', -0.25, '10-K', '2021-02-24')] } },
+    EarningsPerShareBasicAndDiluted: { units: { 'USD/shares': [row('2020-01-01', '2020-03-31', -0.25, '10-Q', '2020-04-30')] } },
+  };
+  const r = earliestAcrossTags(tax, ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted', 'EarningsPerShareBasic'], 'USD/shares');
+  assert.equal(r[0][2], '2020-04-30', 'frueheste Einreichung, nicht die erste Tag-Prioritaet');
+  const { seriesWithFallback } = await import('../replication/minervini/sec-facts.mjs');
+  assert.equal(seriesWithFallback(tax, ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted'], 'USD/shares')[0][2], '2021-02-24', 'Befund: eingefrorene Extraktion sieht das Quartal erst mit dem 10-K');
+});
