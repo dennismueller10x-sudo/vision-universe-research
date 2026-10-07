@@ -28,3 +28,22 @@ test('sharded ticker lookup loads only requested prefix and validates generation
   const stalePath = async path => ({ ok: true, json: async () => path.endsWith('index.json') ? { schema: SCHEMA, state: 'PREVIEW', generation, lookupShards: ['AA'] } : { schema: SCHEMA, generation, tickers: { AAPL: [{ companyId: cid, instrumentId: iid }] }, companies: { [cid]: 'snapshots/' + 'c'.repeat(24) + '/' + cid + '.json' } } });
   assert.equal((await load('AAPL', { ...options, fetch: stalePath })).reason, 'LOOKUP_GENERATION_MISMATCH');
 });
+
+test('an expired cached public snapshot fails closed rather than presenting old news as current', async()=>{
+ const result=await load('AAPL',{...options,now:'2026-10-10T00:00:00Z',fetch:fetcher()});
+ assert.equal(result.state,'UNAVAILABLE');assert.equal(result.reason,'SNAPSHOT_EXPIRED');
+});
+
+function profile() { return {schema:'company-profile-1.0.0',state:'AVAILABLE',companyId:cid,companyName:'Apple Inc.',description:'Apple Inc. designs and manufactures smartphones, computers and wearable devices.',language:'en',confidence:'HIGH',lastVerifiedAt:'2026-10-01T11:00:00Z',businessActivities:['Apple Inc. designs and manufactures electronic products.'],productsServices:[],customerMarkets:[],majorSegments:[],officialWebsite:'https://www.apple.com/',sources:[{companyId:cid,type:'SEC',url:'https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/annual.htm',form:'10-K',contentHash:'a'.repeat(64)}]}; }
+test('prepared company profiles load without additional requests and preserve old profile-free payloads', async()=>{
+ let requests=0; const p={...data(),companyProfile:profile()},inner=fetcher(p);
+ const loaded=await load('AAPL',{...options,fetch:async url=>{requests++;return inner(url)}});
+ assert.equal(loaded.companyProfile.description,p.companyProfile.description);assert.equal(requests,2);
+ assert.equal((await load('AAPL',{...options,fetch:fetcher()})).state,'AVAILABLE');
+});
+test('wrong issuer, private source, malformed facts and wrong SEC CIK invalidate a profile', async()=>{
+ for(const mutate of [p=>p.companyId='iss_cik_0000000001',p=>p.sources[0].companyId='iss_cik_0000000001',p=>p.sources[0].url='http://127.0.0.1/file',p=>p.sources[0].url=p.sources[0].url.replace('/320193/','/1/'),p=>p.description='x'.repeat(1201),p=>p.businessActivities=['x'.repeat(701)],p=>p.lastVerifiedAt='2026-10-02T00:00:00Z',p=>p.sources=[]]) {
+  const companyProfile=profile();mutate(companyProfile);
+  assert.equal((await load('AAPL',{...options,fetch:fetcher({...data(),companyProfile})})).reason,'INVALID_COMPANY_PROFILE');
+ }
+});

@@ -130,6 +130,18 @@ jobs:
         run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
       - name: Build static product delivery
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
+      - name: Controlled Company Intelligence consumer projection
+        if: vars.COMPANY_INTELLIGENCE_PUBLIC_PILOT_ENABLED == 'true'
+        env:
+          CONSUMER_NAMESPACE: ${{ vars.COMPANY_INTELLIGENCE_CONSUMER_NAMESPACE }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          # A failed consumer projection leaves the tracked disabled index intact.
+          node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der

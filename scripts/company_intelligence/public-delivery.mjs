@@ -1,0 +1,89 @@
+/* Consumer objects only. Immutable keys; pointer last; private state is never an allowed asset. */
+import {createHash} from 'node:crypto';
+import {readFileSync, realpathSync, statSync} from 'node:fs';
+import {resolve, sep} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
+import {createFsDriver} from '../market/storage/fs-driver.mjs';
+export const MAX = 512 * 1024;
+const sha = b => createHash('sha256').update(b).digest('hex');
+const ID = '(?:iss_cik_\\d{10}|vu_[a-f0-9]{14})';
+export function allowedAsset(path) {
+  return path === 'index.json' || new RegExp('^snapshots/[a-f0-9]{24}/(?:' + ID + '|lookup/[A-Z0-9.-]{1,2})\\.json$').test(path || '');
+}
+export function prefixFor(namespace) {
+  if (!/^[a-zA-Z0-9_-]{1,80}$/.test(namespace || '')) throw new Error('INVALID_CONSUMER_NAMESPACE');
+  return `v1/company-intelligence/consumer/${namespace}/`;
+}
+export function validateManifest(m) {
+  if (!m || (m.slot !== undefined && ![0, 1].includes(m.slot)) || m.schema !== 1 || !/^[a-f0-9]{24}$/.test(m.generation || '') || !Array.isArray(m.tickers) || !m.tickers.length || m.tickers.length > 100 ||
+      m.tickers.some(t => !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(t)) || !m.assets || !m.assets['index.json'] || Object.keys(m.assets).length > 250 ||
+      !Number.isFinite(Date.parse(m.generatedAt)) || Object.entries(m.assets).some(([p, v]) => !allowedAsset(p) || (p !== 'index.json' && !p.startsWith('snapshots/' + m.generation + '/')) || !/^[a-f0-9]{64}$/.test(v?.sha256 || '') || !Number.isSafeInteger(v.bytes) || v.bytes <= 0 || v.bytes > MAX)) throw new Error('INVALID_CONSUMER_MANIFEST');
+  return m;
+}
+async function manifest(driver, key) {
+  const bytes = await driver.get(key);
+  if (!bytes) return null;
+  if (bytes.length > MAX) throw new Error('INVALID_CONSUMER_MANIFEST');
+  return validateManifest(JSON.parse(bytes));
+}
+export async function readAsset(driver, {namespace, asset, now = Date.now()}) {
+  if (!allowedAsset(asset)) throw new Error('INVALID_CONSUMER_PATH');
+  const prefix = prefixFor(namespace);
+  const current = await manifest(driver, prefix + 'manifest.json');
+  if (!current) throw new Error('CONSUMER_NOT_PUBLISHED');
+  let selected = current;
+  if (!current.assets[asset] && asset !== 'index.json') {
+    selected = await manifest(driver, prefix + 'previous.json');
+    if (!selected?.assets[asset]) throw new Error('GENERATION_UNAVAILABLE');
+  }
+  const meta = selected.assets[asset];
+  const timestamp = Date.parse(selected.generatedAt);
+  if (timestamp > now + 300000 || now - timestamp > 7 * 86400000) throw new Error('CONSUMER_EXPIRED');
+  // index is generation-keyed in storage too, so pointer swaps cannot mix old/new index bytes.
+  const key = `slot-${selected.slot || 0}/` + (asset === 'index.json' ? asset : asset.split('/').slice(2).join('/'));
+  const bytes = await driver.get(prefix + key);
+  if (!bytes || bytes.length !== meta.bytes || bytes.length > MAX || sha(bytes) !== meta.sha256) throw new Error('CONSUMER_INTEGRITY_FAILED');
+  return {bytes, generation: selected.generation, stale: now - timestamp > 48 * 3600000};
+}
+export async function publish(driver, {namespace, directory}) {
+  const prefix = prefixFor(namespace), root = realpathSync(directory);
+  const m = validateManifest(JSON.parse(readFileSync(resolve(root, 'manifest.json'))));
+  const prior = await manifest(driver, prefix + 'manifest.json');
+  if (prior && Date.parse(m.generatedAt) < Date.parse(prior.generatedAt)) throw new Error('STALE_PUBLICATION_REFUSED');
+  if (prior?.generation === m.generation && JSON.stringify(prior.assets) !== JSON.stringify(m.assets)) throw new Error('IMMUTABLE_GENERATION_COLLISION');
+  m.slot = prior?.generation === m.generation ? prior.slot : prior ? 1 - (prior.slot || 0) : 0;
+  let put = 0, unchanged = 0, bytes = 0;
+  for (const [path, meta] of Object.entries(m.assets)) {
+    const file = realpathSync(resolve(root, path));
+    if (!file.startsWith(root + sep) || statSync(file).size > MAX) throw new Error('UNSAFE_PUBLIC_FILE');
+    const data = readFileSync(file);
+    if (data.length !== meta.bytes || sha(data) !== meta.sha256) throw new Error('LOCAL_CONSUMER_INTEGRITY_FAILED');
+    const parsed = JSON.parse(data);
+    if (parsed.coverage?.sources || parsed.coverage?.sec || parsed.coverage?.ir || parsed.checkpoints || parsed.state === 'DISABLED') throw new Error('PRIVATE_OR_DISABLED_CONTENT');
+    const key = prefix + `slot-${m.slot}/` + (path === 'index.json' ? path : path.split('/').slice(2).join('/'));
+    const existing = await driver.get(key);
+    if (existing && sha(existing) === meta.sha256) {
+      unchanged++;
+    } else {
+      await driver.put(key, data); put++; bytes += data.length;
+      const verified = await driver.get(key);
+      if (!verified || sha(verified) !== meta.sha256) throw new Error('CONSUMER_UPLOAD_FAILED');
+    }
+  }
+  if (prior?.generation !== m.generation) {
+    if (prior) await driver.put(prefix + 'previous.json', Buffer.from(JSON.stringify(prior)));
+    await driver.put(prefix + 'manifest.json', Buffer.from(JSON.stringify(m)));
+  }
+  const verified = await manifest(driver, prefix + 'manifest.json');
+  if (verified?.generation !== m.generation) throw new Error('CONSUMER_POINTER_FAILED');
+  return {status: 'PUBLISHED', generation: m.generation, uploadedObjects: put, unchangedObjects: unchanged, uploadedBytes: bytes, retainedGenerations: prior && prior.generation !== m.generation ? 2 : 1};
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const args = process.argv.slice(2), arg = k => args[args.indexOf(k) + 1];
+  try {
+    if (!args.includes('--namespace') || !args.includes('--directory')) throw new Error('MISSING_ARGUMENT');
+    const driver = args.includes('--local-root') ? createFsDriver(arg('--local-root')) : createS3DriverFromEnv();
+    console.log(JSON.stringify(await publish(driver, {namespace: arg('--namespace'), directory: arg('--directory')})));
+  } catch { console.error('CONSUMER_PUBLICATION_FAILED'); process.exitCode = 1; }
+}

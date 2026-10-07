@@ -1,0 +1,1322 @@
+{
+  "schema": "vu-company-intelligence-management-phase-1",
+  "validatedAt": "2026-10-03T11:26:28Z",
+  "baselineHead": "a4cb77e3928caeb7203783a1444787357b0399b2",
+  "mainRegressionHead": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
+  "issuerCount": 6078,
+  "baseline": {
+    "generatedAt": "2026-10-03T08:28:25Z",
+    "counts": {
+      "activeExternalNews": {
+        "companies": 54,
+        "percent": 0.89
+      },
+      "activeFirstPartyNews": {
+        "companies": 64,
+        "percent": 1.05
+      },
+      "anyCallContentReference": {
+        "companies": 42,
+        "percent": 0.69
+      },
+      "anyMaterialIntelligence": {
+        "companies": 3984,
+        "percent": 65.55
+      },
+      "anyNews": {
+        "companies": 117,
+        "percent": 1.92
+      },
+      "basicIntelligenceTier": {
+        "companies": 1569,
+        "percent": 25.81
+      },
+      "callDates": {
+        "companies": 36,
+        "percent": 0.59
+      },
+      "callSourceFound": {
+        "companies": 38,
+        "percent": 0.63
+      },
+      "calls": {
+        "companies": 36,
+        "percent": 0.59
+      },
+      "confirmedUpcomingEarnings": {
+        "companies": 9,
+        "percent": 0.15
+      },
+      "consumerPayloadAvailable": {
+        "companies": 4973,
+        "percent": 81.82
+      },
+      "discoveryAttempted": {
+        "companies": 5467,
+        "percent": 89.95
+      },
+      "earningsPageFound": {
+        "companies": 67,
+        "percent": 1.1
+      },
+      "estimatedUpcomingEarnings": {
+        "companies": 3332,
+        "percent": 54.82
+      },
+      "eventSourceActive": {
+        "companies": 38,
+        "percent": 0.63
+      },
+      "eventSourceFound": {
+        "companies": 40,
+        "percent": 0.66
+      },
+      "financialSummaryAvailable": {
+        "companies": 4869,
+        "percent": 80.11
+      },
+      "financialSummaryCurrent": {
+        "companies": 3721,
+        "percent": 61.22
+      },
+      "fullIntelligenceTier": {
+        "companies": 19,
+        "percent": 0.31
+      },
+      "irPageFound": {
+        "companies": 87,
+        "percent": 1.43
+      },
+      "limitedIntelligenceTier": {
+        "companies": 1209,
+        "percent": 19.89
+      },
+      "newsSourceActive": {
+        "companies": 65,
+        "percent": 1.07
+      },
+      "newsSourceDiscovered": {
+        "companies": 66,
+        "percent": 1.09
+      },
+      "newsSourceValidated": {
+        "companies": 66,
+        "percent": 1.09
+      },
+      "noCompanySource": {
+        "companies": 1110,
+        "percent": 18.26
+      },
+      "noConsumerPayload": {
+        "companies": 1105,
+        "percent": 18.18
+      },
+      "noNews": {
+        "companies": 5961,
+        "percent": 98.08
+      },
+      "noNewsOrSubmissionSource": {
+        "companies": 4942,
+        "percent": 81.31
+      },
+      "noRecentMaterialIntelligence": {
+        "companies": 2094,
+        "percent": 34.45
+      },
+      "officialDomainCandidate": {
+        "companies": 4248,
+        "percent": 69.89
+      },
+      "officialDomainFound": {
+        "companies": 134,
+        "percent": 2.2
+      },
+      "preparedRemarks": {
+        "companies": 0,
+        "percent": 0.0
+      },
+      "presentationSourceFound": {
+        "companies": 64,
+        "percent": 1.05
+      },
+      "presentations": {
+        "companies": 55,
+        "percent": 0.9
+      },
+      "recentMaterialNews": {
+        "companies": 66,
+        "percent": 1.09
+      },
+      "recentMaterialSEC": {
+        "companies": 594,
+        "percent": 9.77
+      },
+      "replayLinks": {
+        "companies": 0,
+        "percent": 0.0
+      },
+      "secIdentity": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "secOnlyEvents": {
+        "companies": 3650,
+        "percent": 60.05
+      },
+      "secSubmissions": {
+        "companies": 1081,
+        "percent": 17.79
+      },
+      "shareholderLetters": {
+        "companies": 3,
+        "percent": 0.05
+      },
+      "strongIntelligenceTier": {
+        "companies": 3281,
+        "percent": 53.98
+      },
+      "transcriptLinks": {
+        "companies": 18,
+        "percent": 0.3
+      },
+      "webcastLinks": {
+        "companies": 31,
+        "percent": 0.51
+      },
+      "webcasts": {
+        "companies": 31,
+        "percent": 0.51
+      }
+    },
+    "coverageTiers": {
+      "A_FULL": {
+        "companies": 19,
+        "percent": 0.31
+      },
+      "B_STRONG": {
+        "companies": 3281,
+        "percent": 53.98
+      },
+      "C_BASIC": {
+        "companies": 1569,
+        "percent": 25.81
+      },
+      "D_LIMITED": {
+        "companies": 1209,
+        "percent": 19.89
+      }
+    },
+    "sourceStatuses": {
+      "ACTIVE": 120,
+      "EMPTY": 3,
+      "INACTIVE": 1,
+      "STALE": 1
+    }
+  },
+  "after": {
+    "generatedAt": "2026-10-03T11:26:28Z",
+    "counts": {
+      "officialDomainFound": {
+        "companies": 306,
+        "percent": 5.03
+      },
+      "officialDomainCandidate": {
+        "companies": 4283,
+        "percent": 70.47
+      },
+      "discoveryAttempted": {
+        "companies": 5468,
+        "percent": 89.96
+      },
+      "irPageFound": {
+        "companies": 155,
+        "percent": 2.55
+      },
+      "newsSourceDiscovered": {
+        "companies": 112,
+        "percent": 1.84
+      },
+      "newsSourceValidated": {
+        "companies": 112,
+        "percent": 1.84
+      },
+      "newsSourceActive": {
+        "companies": 108,
+        "percent": 1.78
+      },
+      "activeFirstPartyNews": {
+        "companies": 107,
+        "percent": 1.76
+      },
+      "activeExternalNews": {
+        "companies": 162,
+        "percent": 2.67
+      },
+      "anyNews": {
+        "companies": 374,
+        "percent": 6.15
+      },
+      "anyNews7d": {
+        "companies": 306,
+        "percent": 5.03
+      },
+      "anyNews30d": {
+        "companies": 337,
+        "percent": 5.54
+      },
+      "anyNews90d": {
+        "companies": 372,
+        "percent": 6.12
+      },
+      "anyNews180d": {
+        "companies": 374,
+        "percent": 6.15
+      },
+      "recentMaterialSEC": {
+        "companies": 594,
+        "percent": 9.77
+      },
+      "calls": {
+        "companies": 75,
+        "percent": 1.23
+      },
+      "webcasts": {
+        "companies": 51,
+        "percent": 0.84
+      },
+      "webcastLinks": {
+        "companies": 51,
+        "percent": 0.84
+      },
+      "replayLinks": {
+        "companies": 0,
+        "percent": 0.0
+      },
+      "callDates": {
+        "companies": 71,
+        "percent": 1.17
+      },
+      "preparedRemarks": {
+        "companies": 2,
+        "percent": 0.03
+      },
+      "managementCommentary": {
+        "companies": 0,
+        "percent": 0.0
+      },
+      "callRecordings": {
+        "companies": 0,
+        "percent": 0.0
+      },
+      "shareholderLetters": {
+        "companies": 5,
+        "percent": 0.08
+      },
+      "presentations": {
+        "companies": 95,
+        "percent": 1.56
+      },
+      "transcriptLinks": {
+        "companies": 39,
+        "percent": 0.64
+      },
+      "consumerPayloadAvailable": {
+        "companies": 4982,
+        "percent": 81.97
+      },
+      "eventSourceFound": {
+        "companies": 68,
+        "percent": 1.12
+      },
+      "eventSourceActive": {
+        "companies": 64,
+        "percent": 1.05
+      },
+      "earningsPageFound": {
+        "companies": 114,
+        "percent": 1.88
+      },
+      "callSourceFound": {
+        "companies": 78,
+        "percent": 1.28
+      },
+      "presentationSourceFound": {
+        "companies": 110,
+        "percent": 1.81
+      },
+      "secIdentity": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "secSubmissions": {
+        "companies": 1081,
+        "percent": 17.79
+      },
+      "financialSummaryAvailable": {
+        "companies": 4869,
+        "percent": 80.11
+      },
+      "financialSummaryCurrent": {
+        "companies": 3721,
+        "percent": 61.22
+      },
+      "confirmedUpcomingEarnings": {
+        "companies": 27,
+        "percent": 0.44
+      },
+      "estimatedUpcomingEarnings": {
+        "companies": 3317,
+        "percent": 54.57
+      },
+      "noNewsOrSubmissionSource": {
+        "companies": 4897,
+        "percent": 80.57
+      },
+      "noCompanySource": {
+        "companies": 1108,
+        "percent": 18.23
+      },
+      "recentMaterialNews": {
+        "companies": 173,
+        "percent": 2.85
+      },
+      "anyMaterialIntelligence": {
+        "companies": 4003,
+        "percent": 65.86
+      },
+      "anyCallContentReference": {
+        "companies": 72,
+        "percent": 1.18
+      },
+      "fullIntelligenceTier": {
+        "companies": 26,
+        "percent": 0.43
+      },
+      "strongIntelligenceTier": {
+        "companies": 3273,
+        "percent": 53.85
+      },
+      "basicIntelligenceTier": {
+        "companies": 1570,
+        "percent": 25.83
+      },
+      "limitedIntelligenceTier": {
+        "companies": 1209,
+        "percent": 19.89
+      },
+      "noRecentMaterialIntelligence": {
+        "companies": 2075,
+        "percent": 34.14
+      },
+      "noNews": {
+        "companies": 5704,
+        "percent": 93.85
+      },
+      "noConsumerPayload": {
+        "companies": 1096,
+        "percent": 18.03
+      },
+      "secOnlyEvents": {
+        "companies": 3416,
+        "percent": 56.2
+      }
+    },
+    "coverageTiers": {
+      "A_FULL": {
+        "companies": 26,
+        "percent": 0.43
+      },
+      "B_STRONG": {
+        "companies": 3273,
+        "percent": 53.85
+      },
+      "C_BASIC": {
+        "companies": 1570,
+        "percent": 25.83
+      },
+      "D_LIMITED": {
+        "companies": 1209,
+        "percent": 19.89
+      }
+    },
+    "tierDefinitions": {
+      "A_FULL": "Current news + fresh financials + SEC identity + upcoming calendar + calls/presentation evidence within 365 days",
+      "B_STRONG": "Fresh financials + SEC identity + confirmed/estimated upcoming calendar",
+      "C_BASIC": "Financial summary + SEC identity",
+      "D_LIMITED": "Does not meet the preceding tiers"
+    },
+    "sourceStatuses": {
+      "INACTIVE": 3,
+      "ACTIVE": 200,
+      "EMPTY": 5,
+      "STALE": 5,
+      "UNDATED_METADATA": 38
+    },
+    "platformCompanies": {
+      "Q4": 46,
+      "BUSINESS_WIRE": 1,
+      "GCS": 45,
+      "STOCKPR": 15,
+      "WEB_DRIVER": 8,
+      "WORDPRESS": 12,
+      "GENERIC": 36,
+      "INVESTIS": 3
+    },
+    "platformHealth": {
+      "UNKNOWN": {
+        "sources": 1,
+        "active": 0,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 1,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": null,
+        "issuers": 0,
+        "healthySourcePercent": 0.0
+      },
+      "GCS": {
+        "sources": 70,
+        "active": 68,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:07:26Z",
+        "issuers": 40,
+        "healthySourcePercent": 97.14
+      },
+      "FIRST_PARTY": {
+        "sources": 1,
+        "active": 1,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T04:21:03Z",
+        "issuers": 1,
+        "healthySourcePercent": 100.0
+      },
+      "PUBLIC_RSS": {
+        "sources": 1,
+        "active": 1,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T04:21:03Z",
+        "issuers": 0,
+        "healthySourcePercent": 100.0
+      },
+      "GLOBENEWSWIRE_RSS": {
+        "sources": 4,
+        "active": 4,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T04:21:03Z",
+        "issuers": 0,
+        "healthySourcePercent": 100.0
+      },
+      "STOCKPR": {
+        "sources": 21,
+        "active": 20,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:01:18Z",
+        "issuers": 16,
+        "healthySourcePercent": 95.24
+      },
+      "Q4": {
+        "sources": 120,
+        "active": 81,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 38,
+        "lastSuccess": "2026-10-03T10:01:18Z",
+        "issuers": 41,
+        "healthySourcePercent": 67.5
+      },
+      "WORDPRESS": {
+        "sources": 15,
+        "active": 10,
+        "blocked": 0,
+        "stale": 5,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:07:26Z",
+        "issuers": 12,
+        "healthySourcePercent": 66.67
+      },
+      "WEB_DRIVER": {
+        "sources": 7,
+        "active": 7,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:01:18Z",
+        "issuers": 6,
+        "healthySourcePercent": 100.0
+      },
+      "GENERIC": {
+        "sources": 7,
+        "active": 6,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:07:26Z",
+        "issuers": 6,
+        "healthySourcePercent": 85.71
+      },
+      "INVESTIS": {
+        "sources": 1,
+        "active": 1,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T04:21:03Z",
+        "issuers": 1,
+        "healthySourcePercent": 100.0
+      },
+      "GLOBENEWSWIRE_ARTICLE": {
+        "sources": 2,
+        "active": 0,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:37:47Z",
+        "issuers": 0,
+        "healthySourcePercent": 0.0
+      },
+      "GLOBENEWSWIRE_SITEMAP": {
+        "sources": 1,
+        "active": 1,
+        "blocked": 0,
+        "stale": 0,
+        "failures": 0,
+        "parserFailures": 0,
+        "undatedMetadataAvailable": 0,
+        "lastSuccess": "2026-10-03T10:44:58Z",
+        "issuers": 0,
+        "healthySourcePercent": 100.0
+      }
+    },
+    "discoveryStatuses": {
+      "NOT_CHECKED": 5865,
+      "BLOCKED": 17,
+      "DEGRADED": 12,
+      "VALIDATED": 184
+    }
+  },
+  "domainRevalidation": {
+    "REVALIDATED": 135,
+    "RETRACTED": 8,
+    "NOT_REPLAYABLE": 37
+  },
+  "sourcePreservation": {
+    "sourceCountBefore": 118,
+    "sourceCountAfter": 242,
+    "newValidatedSources": 124,
+    "officialSeedCount": 306,
+    "newVerifiedDomainSeeds": 289
+  },
+  "repeatRuns": {
+    "asOf": "2026-10-03T11:26:28Z",
+    "before": {
+      "items": {
+        "count": 1406,
+        "identitySha256": "6ae862209a3992cc4c14224523527b3dd36277267c3dfd2ff15ba61102813254",
+        "payloadSha256": "23f97d95d566e659b955fe4e7b3657bbc14c2876f8fa34cf17a2d09fbbc2528d"
+      },
+      "events": {
+        "count": 157851,
+        "identitySha256": "0821c8f5de87ae510829db1a1c6ac5a2f697f01917fb7d2537873462ffd847e3",
+        "payloadSha256": "ee361e108d76c9051268bbe2be6c047362e1f7120a2f3ff0d3f624c187775aac"
+      },
+      "sources": {
+        "count": 251,
+        "identitySha256": "5d09def656c949a937bf32b875a54713b979767310f855e04b4b386c456db941",
+        "payloadSha256": "e61091ca96c3af1eea702bbbf8a7d36fd7230512b37ddad5fa78894cf62a716b"
+      },
+      "event_alias": {
+        "count": 178,
+        "identitySha256": "a63e7ff2346cca8da91b9b34abb2e8ad4d614a18dce8f3199bbb0a5fa4f44b7f",
+        "payloadSha256": "f30f77b769022e8d487a94c4d41d907a4471a8a341663b50d4c15119729bbf73"
+      }
+    },
+    "runs": [
+      {
+        "run": 1,
+        "runtimeSeconds": 45.84020346699981,
+        "networkRequests": 0,
+        "pipeline": {
+          "new": 0,
+          "promotionalRejected": 0,
+          "duplicate": 0,
+          "unmatched": 0,
+          "invalid": 0,
+          "sourceFailures": 0,
+          "secFailures": 0,
+          "documentFailures": 0,
+          "processedCompanies": 6078,
+          "discoveryFailures": 0
+        },
+        "export": {
+          "exportedCompanies": 4982,
+          "generation": "141dd50638120e908f289b52"
+        },
+        "hashes": {
+          "items": {
+            "count": 1406,
+            "identitySha256": "6ae862209a3992cc4c14224523527b3dd36277267c3dfd2ff15ba61102813254",
+            "payloadSha256": "23f97d95d566e659b955fe4e7b3657bbc14c2876f8fa34cf17a2d09fbbc2528d"
+          },
+          "events": {
+            "count": 157851,
+            "identitySha256": "0821c8f5de87ae510829db1a1c6ac5a2f697f01917fb7d2537873462ffd847e3",
+            "payloadSha256": "ee361e108d76c9051268bbe2be6c047362e1f7120a2f3ff0d3f624c187775aac"
+          },
+          "sources": {
+            "count": 251,
+            "identitySha256": "5d09def656c949a937bf32b875a54713b979767310f855e04b4b386c456db941",
+            "payloadSha256": "e61091ca96c3af1eea702bbbf8a7d36fd7230512b37ddad5fa78894cf62a716b"
+          },
+          "event_alias": {
+            "count": 178,
+            "identitySha256": "a63e7ff2346cca8da91b9b34abb2e8ad4d614a18dce8f3199bbb0a5fa4f44b7f",
+            "payloadSha256": "f30f77b769022e8d487a94c4d41d907a4471a8a341663b50d4c15119729bbf73"
+          }
+        }
+      },
+      {
+        "run": 2,
+        "runtimeSeconds": 44.46525582700269,
+        "networkRequests": 0,
+        "pipeline": {
+          "new": 0,
+          "promotionalRejected": 0,
+          "duplicate": 0,
+          "unmatched": 0,
+          "invalid": 0,
+          "sourceFailures": 0,
+          "secFailures": 0,
+          "documentFailures": 0,
+          "processedCompanies": 6078,
+          "discoveryFailures": 0
+        },
+        "export": {
+          "exportedCompanies": 4982,
+          "generation": "141dd50638120e908f289b52"
+        },
+        "hashes": {
+          "items": {
+            "count": 1406,
+            "identitySha256": "6ae862209a3992cc4c14224523527b3dd36277267c3dfd2ff15ba61102813254",
+            "payloadSha256": "23f97d95d566e659b955fe4e7b3657bbc14c2876f8fa34cf17a2d09fbbc2528d"
+          },
+          "events": {
+            "count": 157851,
+            "identitySha256": "0821c8f5de87ae510829db1a1c6ac5a2f697f01917fb7d2537873462ffd847e3",
+            "payloadSha256": "ee361e108d76c9051268bbe2be6c047362e1f7120a2f3ff0d3f624c187775aac"
+          },
+          "sources": {
+            "count": 251,
+            "identitySha256": "5d09def656c949a937bf32b875a54713b979767310f855e04b4b386c456db941",
+            "payloadSha256": "e61091ca96c3af1eea702bbbf8a7d36fd7230512b37ddad5fa78894cf62a716b"
+          },
+          "event_alias": {
+            "count": 178,
+            "identitySha256": "a63e7ff2346cca8da91b9b34abb2e8ad4d614a18dce8f3199bbb0a5fa4f44b7f",
+            "payloadSha256": "f30f77b769022e8d487a94c4d41d907a4471a8a341663b50d4c15119729bbf73"
+          }
+        }
+      },
+      {
+        "run": 3,
+        "runtimeSeconds": 46.13630872202339,
+        "networkRequests": 0,
+        "pipeline": {
+          "new": 0,
+          "promotionalRejected": 0,
+          "duplicate": 0,
+          "unmatched": 0,
+          "invalid": 0,
+          "sourceFailures": 0,
+          "secFailures": 0,
+          "documentFailures": 0,
+          "processedCompanies": 6078,
+          "discoveryFailures": 0
+        },
+        "export": {
+          "exportedCompanies": 4982,
+          "generation": "141dd50638120e908f289b52"
+        },
+        "hashes": {
+          "items": {
+            "count": 1406,
+            "identitySha256": "6ae862209a3992cc4c14224523527b3dd36277267c3dfd2ff15ba61102813254",
+            "payloadSha256": "23f97d95d566e659b955fe4e7b3657bbc14c2876f8fa34cf17a2d09fbbc2528d"
+          },
+          "events": {
+            "count": 157851,
+            "identitySha256": "0821c8f5de87ae510829db1a1c6ac5a2f697f01917fb7d2537873462ffd847e3",
+            "payloadSha256": "ee361e108d76c9051268bbe2be6c047362e1f7120a2f3ff0d3f624c187775aac"
+          },
+          "sources": {
+            "count": 251,
+            "identitySha256": "5d09def656c949a937bf32b875a54713b979767310f855e04b4b386c456db941",
+            "payloadSha256": "e61091ca96c3af1eea702bbbf8a7d36fd7230512b37ddad5fa78894cf62a716b"
+          },
+          "event_alias": {
+            "count": 178,
+            "identitySha256": "a63e7ff2346cca8da91b9b34abb2e8ad4d614a18dce8f3199bbb0a5fa4f44b7f",
+            "payloadSha256": "f30f77b769022e8d487a94c4d41d907a4471a8a341663b50d4c15119729bbf73"
+          }
+        }
+      }
+    ],
+    "stableIds": true,
+    "stableGeneration": true
+  },
+  "localFreshRestore": {
+    "asOf": "2026-10-03T11:26:28Z",
+    "checkpoint": {
+      "sha256": "98d888ec20e5e04276211305c2f06be6b2ffe007f8eb0645f2c503a556eb607e",
+      "bytes": 63540542,
+      "expandedBytes": 620571639
+    },
+    "packSeconds": 20.460055331001058,
+    "restoreSeconds": 2.4681529690278694,
+    "logicalHashesEqual": true,
+    "exportGenerationEqual": true,
+    "export": {
+      "exportedCompanies": 4982,
+      "generation": "141dd50638120e908f289b52"
+    },
+    "tableHashes": {
+      "state.sqlite:items": {
+        "count": 1406,
+        "sha256": "23f97d95d566e659b955fe4e7b3657bbc14c2876f8fa34cf17a2d09fbbc2528d"
+      },
+      "state.sqlite:events": {
+        "count": 157851,
+        "sha256": "ee361e108d76c9051268bbe2be6c047362e1f7120a2f3ff0d3f624c187775aac"
+      },
+      "state.sqlite:sources": {
+        "count": 251,
+        "sha256": "e61091ca96c3af1eea702bbbf8a7d36fd7230512b37ddad5fa78894cf62a716b"
+      },
+      "state.sqlite:event_alias": {
+        "count": 178,
+        "sha256": "f30f77b769022e8d487a94c4d41d907a4471a8a341663b50d4c15119729bbf73"
+      },
+      "state.sqlite:state": {
+        "count": 31546,
+        "sha256": "7efc5bb995a4675d39f04cf4963eb8a619961c88311fa3542580bb4796548c28"
+      },
+      "state.sqlite:audit": {
+        "count": 38807,
+        "sha256": "abc59cfa17d86d9132cd6a4a018b6ee09246b404fbe20c17a7bc07310d34fcc3"
+      },
+      "archive.sqlite:history": {
+        "count": 158100,
+        "sha256": "4e719591d1e0fa542162e48dec20f742da9dd9437f4108a5fba0cd3e607eba14"
+      }
+    },
+    "explicitFiscalYearCallLabelsRecovered": 0,
+    "transport": "LOCAL_ISOLATED_CHECKPOINT_RESTORE; authenticated R2 unchanged and not rerun this phase"
+  },
+  "consumerProjectionAudit": {
+    "generation": "141dd50638120e908f289b52",
+    "payloads": 4982,
+    "counts": {
+      "raw": {
+        "PRESENTATION": 95,
+        "WEBCAST": 51,
+        "PREPARED_REMARKS": 2,
+        "COMPANY_TRANSCRIPT": 39,
+        "SHAREHOLDER_LETTER": 5
+      },
+      "public": {
+        "PRESENTATION": 95,
+        "WEBCAST": 51,
+        "PREPARED_REMARKS": 2,
+        "COMPANY_TRANSCRIPT": 39,
+        "SHAREHOLDER_LETTER": 5
+      }
+    },
+    "lost": {
+      "PRESENTATION": [],
+      "WEBCAST": [],
+      "PREPARED_REMARKS": [],
+      "COMPANY_TRANSCRIPT": [],
+      "SHAREHOLDER_LETTER": []
+    }
+  },
+  "calendarBacktest": {
+    "overall": {
+      "issuers": 1094,
+      "medianAbsoluteErrorDays": 4,
+      "medianWindowDays": 22,
+      "predictions": 3847,
+      "windowHitRate": 0.955
+    },
+    "byFiscalCalendar": {
+      "calendar": {
+        "issuers": 872,
+        "medianAbsoluteErrorDays": 4,
+        "medianWindowDays": 22,
+        "predictions": 2919,
+        "windowHitRate": 0.952
+      },
+      "nonCalendar": {
+        "issuers": 222,
+        "medianAbsoluteErrorDays": 4.0,
+        "medianWindowDays": 22.0,
+        "predictions": 928,
+        "windowHitRate": 0.9644
+      }
+    },
+    "byReportEvidence": {
+      "20FPresent": {
+        "issuers": 136,
+        "medianAbsoluteErrorDays": 5,
+        "medianWindowDays": 27,
+        "predictions": 243,
+        "windowHitRate": 0.8765
+      },
+      "no20FObserved": {
+        "issuers": 958,
+        "medianAbsoluteErrorDays": 4.0,
+        "medianWindowDays": 22.0,
+        "predictions": 3604,
+        "windowHitRate": 0.9603
+      }
+    },
+    "byTarget": {
+      "EARNINGS_PUBLISHED": {
+        "issuers": 24,
+        "medianAbsoluteErrorDays": 3.0,
+        "medianWindowDays": 21.0,
+        "predictions": 44,
+        "windowHitRate": 1.0
+      },
+      "PERIODIC_REPORT_PUBLISHED": {
+        "issuers": 764,
+        "medianAbsoluteErrorDays": 4.0,
+        "medianWindowDays": 22.0,
+        "predictions": 3372,
+        "windowHitRate": 0.9537
+      },
+      "XBRL_FILING_PROXY": {
+        "issuers": 330,
+        "medianAbsoluteErrorDays": 4,
+        "medianWindowDays": 22,
+        "predictions": 431,
+        "windowHitRate": 0.9606
+      }
+    },
+    "sufficientHistoryIssuers": 4102,
+    "historyIssuers": 4847,
+    "limitations": [
+      "Original short-lag filings are proxies; reporting prediction is not guaranteed earnings-release accuracy.",
+      "Current XBRL facts are retrospective; only observation dates before origin enter each forecast.",
+      "Unobserved foreign forms cannot establish domicile. Sparse/changed cadence remains unavailable."
+    ]
+  },
+  "browserValidation": {
+    "status": "PASS",
+    "cases": 82,
+    "responsiveCases": 64,
+    "disabledCases": 2,
+    "adversarialCases": 16,
+    "widths": [
+      390,
+      430,
+      768,
+      1440
+    ],
+    "transport": "LOCAL_PRODUCTION_PACKAGE_WITH_SANITIZED_PUBLIC_COHORT; not remote deployment"
+  },
+  "tests": {
+    "featurePython": 236,
+    "featureNode": 29,
+    "existingNode": 2569,
+    "existingSkips": 5,
+    "secQuantPythonBranch": 484,
+    "servingNode": 63,
+    "vu2Python": 32,
+    "currentMainFailures": [
+      "quant reconciliation false",
+      "WITH_PRICE_HISTORY 6849 versus 6850",
+      "renderable 6871 versus 6850"
+    ]
+  },
+  "costPilotPlanning": {
+    "assumptions": {
+      "daysPerMonth": 30,
+      "runsPerDay": 6,
+      "runtimeMinutesPerRun": 5.55,
+      "payloadsPerGeneration": 30,
+      "consumerAssetsPerGeneration": 60,
+      "consumerBytesPerGeneration": 2737788,
+      "compressedCheckpointBytes": 63540542,
+      "retainedPublicSlots": 2,
+      "retainedPrivateSlots": 2
+    },
+    "dataProviderDollars": 0,
+    "actionsMinutesPerMonth": 999.0,
+    "plannedSourceRequestsPerDay": 919,
+    "plannedSourceRequestsPerMonth": 27570,
+    "excludedRequestCosts": "SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.",
+    "publicPutUpperBoundPerMonth": 11520,
+    "privatePutUpperBoundPerMonth": 540,
+    "publicVerificationGetUpperBoundPerMonth": 22320,
+    "privateRestoreGetUpperBoundPerMonth": 900,
+    "retainedSnapshotGB": 0.132557,
+    "generationRetention": "Two public and two private slots; generation count does not multiply retained snapshot storage.",
+    "limits": "Estimates omit user-delivery GET traffic and long-term ledger event growth. Conditional GET saves bytes, not request count. Do not treat reference free-tier limits as guaranteed billing."
+  },
+  "costFullRawPlanningNotActivated": {
+    "assumptions": {
+      "daysPerMonth": 30,
+      "runsPerDay": 6,
+      "runtimeMinutesPerRun": 5.55,
+      "payloadsPerGeneration": 4982,
+      "consumerAssetsPerGeneration": 5620,
+      "consumerBytesPerGeneration": 226903554,
+      "compressedCheckpointBytes": 63540542,
+      "retainedPublicSlots": 2,
+      "retainedPrivateSlots": 2
+    },
+    "dataProviderDollars": 0,
+    "actionsMinutesPerMonth": 999.0,
+    "plannedSourceRequestsPerDay": 919,
+    "plannedSourceRequestsPerMonth": 27570,
+    "excludedRequestCosts": "SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.",
+    "publicPutUpperBoundPerMonth": 1012320,
+    "privatePutUpperBoundPerMonth": 540,
+    "publicVerificationGetUpperBoundPerMonth": 2023920,
+    "privateRestoreGetUpperBoundPerMonth": 900,
+    "retainedSnapshotGB": 0.580888,
+    "generationRetention": "Two public and two private slots; generation count does not multiply retained snapshot storage.",
+    "limits": "Estimates omit user-delivery GET traffic and long-term ledger event growth. Conditional GET saves bytes, not request count. Do not treat reference free-tier limits as guaranteed billing."
+  },
+  "discoveryProbeStats": [
+    {
+      "file": "domains-1.log",
+      "requests": 163,
+      "stats": {
+        "bytesDownloaded": 4893246,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 2
+      },
+      "runtimeSeconds": 389.617
+    },
+    {
+      "file": "domains-4.log",
+      "requests": 118,
+      "stats": {
+        "bytesDownloaded": 7209979,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 2
+      },
+      "runtimeSeconds": 270.719
+    },
+    {
+      "file": "domains-6.log",
+      "requests": 121,
+      "stats": {
+        "bytesDownloaded": 7474004,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 0
+      },
+      "runtimeSeconds": 279.5
+    },
+    {
+      "file": "domains-8.log",
+      "requests": 125,
+      "stats": {
+        "bytesDownloaded": 5646553,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 26
+      },
+      "runtimeSeconds": 267.697
+    },
+    {
+      "file": "domains-7.log",
+      "requests": 130,
+      "stats": {
+        "bytesDownloaded": 7610778,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 4
+      },
+      "runtimeSeconds": 295.811
+    },
+    {
+      "file": "domains-9.log",
+      "requests": 162,
+      "stats": {
+        "bytesDownloaded": 6141255,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 75
+      },
+      "runtimeSeconds": 332.729
+    },
+    {
+      "file": "domains-10.log",
+      "requests": 164,
+      "stats": {
+        "bytesDownloaded": 2977843,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 77
+      },
+      "runtimeSeconds": 340.947
+    },
+    {
+      "file": "domains-2.log",
+      "requests": 133,
+      "stats": {
+        "bytesDownloaded": 6801188,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 2
+      },
+      "runtimeSeconds": 280.613
+    },
+    {
+      "file": "domains-11.log",
+      "requests": 155,
+      "stats": {
+        "bytesDownloaded": 514304,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 98
+      },
+      "runtimeSeconds": 320.613
+    },
+    {
+      "file": "domains-5.log",
+      "requests": 122,
+      "stats": {
+        "bytesDownloaded": 7506045,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 0
+      },
+      "runtimeSeconds": 261.529
+    },
+    {
+      "file": "domains-12.log",
+      "requests": 116,
+      "stats": {
+        "bytesDownloaded": 6013141,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 9
+      },
+      "runtimeSeconds": 287.927
+    },
+    {
+      "file": "domains-3.log",
+      "requests": 139,
+      "stats": {
+        "bytesDownloaded": 6777285,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 4
+      },
+      "runtimeSeconds": 319.648
+    },
+    {
+      "file": "ir-4.log",
+      "requests": 140,
+      "stats": {
+        "memoHits": 74,
+        "cacheHits": 34,
+        "notModified": 0,
+        "retries": 0,
+        "bytesDownloaded": 9883400
+      },
+      "runtimeSeconds": 364.6893672920123
+    },
+    {
+      "file": "ir-1.log",
+      "requests": 114,
+      "stats": {
+        "memoHits": 20,
+        "cacheHits": 16,
+        "notModified": 0,
+        "retries": 0,
+        "bytesDownloaded": 6775797
+      },
+      "runtimeSeconds": 326.3998763639829
+    },
+    {
+      "file": "ir-5.log",
+      "requests": 142,
+      "stats": {
+        "memoHits": 47,
+        "cacheHits": 31,
+        "notModified": 0,
+        "retries": 0,
+        "bytesDownloaded": 8241500
+      },
+      "runtimeSeconds": 366.0544342939975
+    },
+    {
+      "file": "ir-2.log",
+      "requests": 132,
+      "stats": {
+        "memoHits": 25,
+        "cacheHits": 15,
+        "notModified": 0,
+        "retries": 0,
+        "bytesDownloaded": 14083538
+      },
+      "runtimeSeconds": 362.9507523860084
+    },
+    {
+      "file": "ir-3.log",
+      "requests": 144,
+      "stats": {
+        "memoHits": 81,
+        "cacheHits": 46,
+        "notModified": 0,
+        "retries": 9,
+        "bytesDownloaded": 6668907
+      },
+      "runtimeSeconds": 414.7464738189883
+    },
+    {
+      "file": "ir-6.log",
+      "requests": 95,
+      "stats": {
+        "memoHits": 13,
+        "cacheHits": 8,
+        "notModified": 0,
+        "retries": 24,
+        "bytesDownloaded": 5416264
+      },
+      "runtimeSeconds": 202.926709138992
+    }
+  ],
+  "reviewSample": [
+    {
+      "symbols": [
+        "CLX"
+      ],
+      "evidence": "Issuer-hosted Q4 fiscal-2026 prepared remarks; group date is not publication date."
+    },
+    {
+      "symbols": [
+        "NVDA",
+        "CW"
+      ],
+      "evidence": "Issuer-hosted company transcripts and presentations; validated independent Q4 hosts."
+    },
+    {
+      "symbols": [
+        "HAE"
+      ],
+      "evidence": "Explicit Q2 FY2027 call November 5 at 08:00 America/New_York."
+    },
+    {
+      "symbols": [
+        "VMI"
+      ],
+      "evidence": "Official Q3 call October 20 at 09:00 America/New_York."
+    },
+    {
+      "symbols": [
+        "PCYO"
+      ],
+      "evidence": "Unusual fiscal February 28 period, official April 8 results."
+    },
+    {
+      "symbols": [
+        "HTO"
+      ],
+      "evidence": "Renamed H2O America / subsidiary Quadvest acquisition, exact master identity."
+    },
+    {
+      "symbols": [
+        "SCNX"
+      ],
+      "evidence": "Scienture matched explicit stock + legal keywords + issuer actor, not author authority."
+    },
+    {
+      "symbols": [
+        "BF-A",
+        "BF-B",
+        "CL",
+        "GATX",
+        "WTRG",
+        "RGLD",
+        "NIC"
+      ],
+      "evidence": "Recent investor webcast references survive public projection; neither invented earnings calls nor replay labels."
+    },
+    {
+      "symbols": [
+        "ROOT",
+        "U",
+        "XYZ",
+        "TOST",
+        "TGT",
+        "AFRM",
+        "META",
+        "AAPL",
+        "ORCL",
+        "GOOG",
+        "GOOGL"
+      ],
+      "evidence": "Generic-name and share-class audit; unavailable news stays unavailable."
+    }
+  ],
+  "limits": [
+    "No new authenticated R2 run; prior authenticated acceptance unchanged; this phase proves local fresh restore.",
+    "No multi-day scheduled/public operating acceptance.",
+    "80\u201390% news/calls/materials coverage not reached; free/public ceiling not exhausted.",
+    "Prior hot/cold history and private HTTP caches are excluded from this committed evidence.",
+    "Recording URLs are not proof of legal audio download or actual transcript availability."
+  ]
+}

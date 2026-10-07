@@ -33,7 +33,7 @@ def fingerprint(body, fallback='GENERIC'):
 def endpoints(links, homepage):
     patterns = {'newsroom': r'newsroom|news room', 'pressReleaseUrl': r'press releases?|news releases?',
                 'eventsUrl': r'events|calendar', 'earningsUrl': r'earnings|quarterly results|financial results',
-                'presentationsUrl': r'presentations|slides', 'reportsUrl': r'annual reports|financial reports|quarterly reports',
+                'presentationsUrl': r'\bpresentations?\b|\bslides?\b', 'reportsUrl': r'annual reports|financial reports|quarterly reports',
                 'callsUrl': r'webcasts|earnings calls'}
-    return {key: next((l['url'] for l in links if within_domain(l['url'], homepage) and re.search(pattern, l['text'], re.I)), None)
+    return {key: next((l['url'] for l in links if within_domain(l['url'], homepage) and re.search(pattern, l['text'], re.I) and not (key == 'eventsUrl' and re.search(r'news[-_/]?releases|press[-_/]?releases', l['url'], re.I))), None)
             for key, pattern in patterns.items()}

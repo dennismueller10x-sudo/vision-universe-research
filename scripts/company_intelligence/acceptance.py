@@ -96,6 +96,10 @@ def verify(state, expected):
             seed = sites.get(c.get('cik'))
             if seed:
                 c['officialSites'] = [seed.get('irHomepage') or seed['url']]
+            else:
+                verified = store.state('officialSite:' + c['companyId'], {})
+                if verified.get('status') == 'VALIDATED':
+                    c['officialSites'] = [verified['url']]
         stamp = store.state('latestRun')['generatedAt']
         recovered = store.export(companies, Path(state) / 'public/company-intelligence/data', stamp)
         if recovered['generation'] != expected['generation']:

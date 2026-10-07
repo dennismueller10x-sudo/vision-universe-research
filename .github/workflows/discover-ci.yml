@@ -62,11 +62,27 @@ jobs:
           grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
           echo "Seite geprueft"
 
+      - name: Gated Company Intelligence Stock-Hooks sind strikt additiv
+        id: intelligence_scope
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          git rev-parse --verify --quiet HEAD^2 >/dev/null || { echo "::error::HEAD ist kein PR-Merge-Commit"; exit 1; }
+          scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
+          nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
+          geaendert=$(git diff --name-only HEAD^1 HEAD -- $scope $nachweise)
+          if [ -n "$geaendert" ] && [ -f scripts/company_intelligence/check-quant-integration.mjs ]; then
+            unerwartet=$(node scripts/company_intelligence/check-quant-integration.mjs HEAD^1 HEAD $geaendert)
+            if [ -z "$unerwartet" ]; then
+              echo "exact_stock_hooks=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
       - name: Discover veraendert keine bestehende Engine
         # Der Kern des Auftrags: EXTEND, DO NOT MODIFY. Was ausserhalb von
         # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
         # anfassen - mit Ausnahme des einen Navigationseintrags.
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.intelligence_scope.outputs.exact_stock_hooks != 'true'
         # Ausgenommen sind allein die Currency-Nachweise, die Discover-
         # Dateipfade namentlich fuehren (Testmatrix, Formatierungs-Grundlinie,
         # Debt Register): verschiebt Discover eine Datei, muessen sie den

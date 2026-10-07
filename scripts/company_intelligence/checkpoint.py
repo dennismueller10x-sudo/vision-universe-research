@@ -6,12 +6,14 @@ locks/WAL files and the protected SEC cache are never copied.
 import argparse
 import hashlib
 import json
+import json
 import re
 import shutil
 import sqlite3
 import tarfile
 import tempfile
 from pathlib import Path, PurePosixPath
+from urllib.parse import urlsplit
 
 MAX_COMPRESSED = 128 * 1024 * 1024
 MAX_EXPANDED = 1024 * 1024 * 1024
@@ -44,6 +46,15 @@ def _pack(state, destination):
                 check_db(stage / name)
         cache_paths, cache_bytes = [], 0
         for meta in sorted((state / 'http').glob('*.json'), key=lambda p: p.stat().st_mtime, reverse=True):
+            # Older interrupted collectors may have left a raw article pair.
+            # Preserve its staged SQLite metadata, never its copyrighted body.
+            try:
+                cached = json.loads(meta.read_text())
+                urls = [urlsplit(cached.get(k, '')) for k in ('url', 'finalUrl')]
+                if any((u.hostname or '').removeprefix('www.') == 'globenewswire.com' and u.path.startswith('/news-release/') for u in urls):
+                    continue
+            except (OSError, ValueError, TypeError, AttributeError):
+                pass
             body = meta.with_suffix('.body')
             pair = [p for p in (meta, body) if p.is_file()]
             size = sum(p.stat().st_size for p in pair)
