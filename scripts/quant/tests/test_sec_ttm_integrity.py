@@ -90,3 +90,56 @@ class WeightedSharesAreNotAdditive(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def bundle(name):
+    import json
+    from quant.sec.consumer import build_consumer_bundle
+    from quant.sec.registry import MetricRegistry
+    from test_sec_ground_truth_regressions import FIXTURES
+    payload = json.loads((FIXTURES / f"{name}.json").read_text())
+    return build_consumer_bundle(payload["cik"], payload, MetricRegistry.load(), as_of=AS_OF)
+
+
+class PointInTimeTtm(unittest.TestCase):
+    def test_pit_ttm_before_the_split_is_a_valid_ttm(self):
+        """PIT_TTM(as_of): Piper Sandler am 2025-12-01 kennt nur vorsplit-Quartale (Q4 2024 bis Q3 2025, alle auf
+        rund 17,8 Mio. Aktien). Derselbe Emittent hat dann ein TTM - die Pruefung ist zeitpunktbezogen."""
+        _, resolver = build("PIPR")
+        fact = resolver.ttm("eps_diluted", "2025-12-01")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertLessEqual(str(fact.provenance.filed)[:10], "2025-12-01")
+
+    def test_pit_ttm_never_sees_a_later_filing(self):
+        """Am Tag vor der 10-Q-Einreichung fuer Q2 2026 endet das TTM spaetestens mit Q1 2026."""
+        _, resolver = build("CLIR")
+        fact = resolver.ttm("eps_diluted", "2026-08-01")
+        if fact.available:
+            self.assertLess(str(fact.period_end)[:10], "2026-06-30")
+
+
+class ConsumerEpsContract(unittest.TestCase):
+    def test_eps_ttm_is_never_replaced_by_fiscal_year(self):
+        doc = bundle("PIPR")
+        self.assertNotIn("eps_diluted", doc["ttm"])
+        self.assertEqual(doc["ttmAbsent"]["eps_diluted"], TTM_SHARE_BASIS_INCONSISTENT)
+        eps = doc["eps"]
+        self.assertEqual(eps["ttmDiluted"], {"status": "NOT_AVAILABLE", "reason": TTM_SHARE_BASIS_INCONSISTENT})
+        self.assertEqual(eps["fyDiluted"]["fp"], "FY")
+        self.assertNotIn("v", eps["ttmDiluted"])
+
+    def test_verified_ttm_basic_and_diluted_stay_separate(self):
+        doc = bundle("MUR")
+        eps = doc["eps"]
+        self.assertEqual(eps["ttmDiluted"]["status"], "VERIFIED")
+        self.assertEqual(eps["ttmBasic"]["status"], "VERIFIED")
+        self.assertAlmostEqual(eps["ttmDiluted"]["v"], 1.59 + 0.37 + 0.08 - 0.02, places=6)
+        self.assertAlmostEqual(eps["ttmBasic"]["v"], 1.62 + 0.37 + 0.08 - 0.02, places=6)
+        self.assertEqual(doc["views"]["bundle"], "LATEST_RESTATED")
+        self.assertEqual(doc["views"]["ttm"], "CURRENT_TTM")
+
+    def test_quarterly_series_has_one_cell_per_quarter_end(self):
+        doc = bundle("FUBO")
+        for metric, rows in doc["quarterly"].items():
+            ends = [row[2] for row in rows]
+            self.assertEqual(len(ends), len(set(ends)), f"{metric}: doppelte Quartalsenden {ends}")

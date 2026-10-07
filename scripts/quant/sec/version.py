@@ -158,7 +158,15 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          gemeldet haben (gleiche Einreichung, Flags ALT:); ohne Beleg fuer einen
 #          Unterschied wie bisher. 1.14.0 verwarf auch korrekte Ableitungen (NVDA
 #          Q4 FY2021 5.003 Mio.); die Ground Truth leitet sie ab.
-NORMALIZATION_LOGIC_VERSION = "1.15.0"
+# 1.16.0 — TTM-Integritaet und E12. Ein TTM ist die Summe von vier berichteten
+#          Quartalen mit verschiedenen Enden im Abstand von 12-17 Wochen (FUBO:
+#          ein Quartal in zwei Rasterplaetzen, TTM-Umsatz 6,09 Mrd.), je Aktie aus
+#          einer Konzeptklasse (gesamt vs. fortgefuehrt, Capital Southwest) und
+#          auf einer Aktienbasis (Piper-Sandler-Split 4:1, Summe 11,65); additiv
+#          bei belegtem Konzeptunterschied im gemeinsamen Konzept, sonst keines.
+#          Kein Ersatz durch das Geschaeftsjahr. E12: gewichtete Aktienzahlen
+#          sind Durchschnitte, nicht additiv (CSWC Q4 FY2026: 1,0 statt ~68 Mio.).
+NORMALIZATION_LOGIC_VERSION = "1.16.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -189,7 +197,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "dd33ef11f5016bfa1cadeeca382c8220c7e29fb524e644a26cf7fd8c5ec01c7b"
+    "becb452d83d304d058c78c8b4f1d5f6896602e3b876e42698519ffef9eb599c2"
 )
 
 

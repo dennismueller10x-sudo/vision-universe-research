@@ -4,7 +4,7 @@
    muessen denselben Wert lesen. Wo ein Consumer bewusst eine andere Groesse zeigt (Discover-KGV ohne TTM-EPS:
    TTM-Nettogewinn / Aktien), ist die Abweichung hier ausdruecklich festgehalten, nicht still.
 
-   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.15.0, Registry 1.8.0)
+   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.16.0, Registry 1.9.0)
    aus SEC companyfacts.zip (Stand 2026-10-07): AMT (E2), CECO (E9), FLS (E2-R), TNDM (E1), AAPL (Split), BMI (TTM-EPS vorhanden). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -31,8 +31,8 @@ test("Fixtures sind echte Bundles des korrigierten Kerns", () => {
   assert.deepEqual(Object.keys(byTicker).sort(), ["AAPL", "AMT", "BMI", "CECO", "FLS", "TNDM"]);
   for (const b of bundles) {
     assert.equal(b.schema, "vu-consumer-fundamentals-1.0.0");
-    assert.equal(b.versions.normalization_logic, "1.15.0", b.tickers[0]);
-    assert.equal(b.versions.metric_registry.mapping_version, "1.8.0", b.tickers[0]);
+    assert.equal(b.versions.normalization_logic, "1.16.0", b.tickers[0]);
+    assert.equal(b.versions.metric_registry.mapping_version, "1.9.0", b.tickers[0]);
   }
 });
 
@@ -65,6 +65,13 @@ test("C-X-1: TTM-Umsatz - Quant, Aktienseite und Geschaeftszahlen-Karte lesen di
     const latest = Fundamentals.latest(model);
     const karte = Unternehmen.ausConsumerBundle(model, { preis: 100 });
     assert.equal(latest.ttm.revenue.v, quant.value, `${b.tickers[0]} Aktienseite`);
+    // Die Karte zeigt Umsatz und Ergebnis aus EINER Periode. Ohne TTM-Ergebnis (1.16.0: CECO, Konzeptmix
+    // NetIncomeLoss/ProfitLoss mit belegtem Unterschied -> ttmAbsent) ist ihre Basis ausgewiesen das Geschaeftsjahr.
+    if (!b.ttm.net_income) {
+      assert.equal(karte.basis, "FY", `${b.tickers[0]}: ohne TTM-Ergebnis keine TTM-Karte`);
+      assert.ok(b.ttmAbsent && b.ttmAbsent.net_income, `${b.tickers[0]}: Grund fuer fehlendes TTM-Ergebnis`);
+      continue;
+    }
     assert.equal(karte.basis, "TTM", b.tickers[0]);
     assert.ok(Math.abs(karte.umsatzTTM * 1e6 - quant.value) <= 0.005e6, `${b.tickers[0]} Karte ${karte.umsatzTTM} Mio.`);
   }
@@ -74,6 +81,24 @@ test("Sicht ist ausgewiesen: das Bundle ist LATEST_RESTATED (as_of_latest), nie 
   for (const b of bundles) {
     assert.equal(b.policy, "as_of_latest", b.tickers[0]);
     assert.match(b.asOf, /^\d{4}-\d{2}-\d{2}$/);
+  }
+});
+
+test("EPS-Vertrag: EPS_TTM ist VERIFIED aus vier Quartalen oder NOT_AVAILABLE mit Grund - nie das Geschaeftsjahr", () => {
+  for (const b of bundles) {
+    for (const [field, metric] of [["ttmDiluted", "eps_diluted"], ["ttmBasic", "eps_basic"]]) {
+      const e = b.eps[field];
+      if (e.status === "VERIFIED") {
+        assert.equal(e.v, b.ttm[metric].v, `${b.tickers[0]} ${field}`);
+        assert.equal(b.ttm[metric].fp, "TTM");
+      } else {
+        assert.equal(e.status, "NOT_AVAILABLE", `${b.tickers[0]} ${field}`);
+        assert.ok(e.reason, `${b.tickers[0]} ${field}: Grund`);
+        assert.equal(b.ttm[metric], undefined, `${b.tickers[0]}: kein TTM-Wert ohne Status VERIFIED`);
+      }
+    }
+    assert.equal(b.views.bundle, "LATEST_RESTATED");
+    assert.equal(b.views.ttm, "CURRENT_TTM");
   }
 });
 

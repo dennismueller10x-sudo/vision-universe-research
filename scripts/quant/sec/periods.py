@@ -20,7 +20,8 @@ from .model import (
     TRANSFORM_FY_MINUS_YTD, TRANSFORM_SUM, QUALITY_HIGH, QUALITY_MEDIUM,
     PERIOD_QUARTER, PERIOD_ANNUAL, PERIOD_INSTANT, PERIOD_TTM,
     MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY, NOT_APPLICABLE_FOR_SECTOR,
-    NOT_YET_AVAILABLE, PERIOD_MISMATCH, missing,
+    NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_CONCEPT_MISMATCH,
+    TTM_SHARE_BASIS_INCONSISTENT, missing,
 )
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST, Observation, to_instant
@@ -31,6 +32,28 @@ QUARTERS = ("Q1", "Q2", "Q3", "Q4")
 CUMULATIVE_LABELS = {2: "YTD2", 3: "YTD3", 4: "FY"}
 FLAG_PERIOD_TRANSFORM = "VU_PERIOD_TRANSFORM"
 MAX_FIXPOINT_PASSES = 8
+
+# TTM-Integritaet. Abstand zweier Quartalsenden: 12 bis 17 Wochen (52/53-
+# Wochen-Jahre: 12/12/12/16 bzw. 17 Wochen, PepsiCo), mit einer Woche Spiel.
+TTM_GAP_DAYS = (77, 126)
+# Abweichung zweier Konzepte derselben Einreichung, ab der sie verschiedene
+# Groessen messen (Murphy Oil: Revenues 928,3 vs. Vertragsumsatz 926,3 Mio.).
+TTM_CONCEPT_TOLERANCE = 0.005
+# Verhaeltnis der Aktienbasis zweier Quartale, ab dem das Fenster einen Split
+# oder eine Kapitalmassnahme enthaelt (Piper Sandler 4:1: 17,8 -> 71,2 Mio.).
+TTM_SHARE_BASIS_JUMP = 1.5
+# Je-Aktie-Konzepte der fortgefuehrten Bereiche. Gesamt-EPS (inkl. aufgegebener
+# Bereiche) und fortgefuehrtes EPS sind verschiedene Groessen (Capital Southwest).
+CONTINUING_PER_SHARE = frozenset((
+    "IncomeLossFromContinuingOperationsPerDilutedShare",
+    "IncomeLossFromContinuingOperationsPerBasicShare",
+    "IncomeLossFromContinuingOperationsPerBasicAndDilutedShare",
+))
+TTM_SHARE_METRICS = {"eps_diluted": "diluted_weighted_average_shares",
+                     "eps_basic": "basic_weighted_average_shares"}
+# Implizite Aktienzahl (Ergebnis / EPS) nur, wo das gerundete EPS sie traegt.
+TTM_IMPLIED_MIN_EPS = 0.05
+TTM_MIN_SHARES = 1000.0
 
 
 ALTERNATE_PREFIX = "ALT:"  # normalize.FLAG_ALTERNATE_PREFIX
@@ -142,10 +165,11 @@ class PeriodResolver:
         if definition.kind == KIND_INSTANT:
             # Balance-sheet dates are already standalone; nothing to de-accumulate.
             return natives
-        if definition.is_per_share:
-            # Per-share amounts are not additive: each period divides by its own
+        if not definition.is_additive:
+            # Per-share amounts and averages are not additive: each period divides by its own
             # weighted share count, so FY - 9M or H1 - Q1 is not the quarter's EPS.
             # Replimune FY2021 Q4: reported -0.42, FY minus nine months gave -0.41.
+            # The same holds for weighted average share counts (E12).
             # Only reported quarters count; an unreported one stays a gap.
             return natives
 
@@ -270,7 +294,7 @@ class PeriodResolver:
         observation = self._raw(metric, fiscal_year, "FY", as_of, policy, lag_days)
         if observation is None and self._definition(metric) is not None \
                 and self._definition(metric).kind != KIND_INSTANT \
-                and not self._definition(metric).is_per_share:
+                and self._definition(metric).is_additive:
             grid = self.quarter_grid(metric, fiscal_year, as_of, policy, lag_days)
             parts = [grid[index] for index in range(1, 5)]
             if all(part is not None for part in parts):
@@ -320,13 +344,99 @@ class PeriodResolver:
         if len(quarters) < 4:
             return missing(self.factbook.cik, metric, INSUFFICIENT_HISTORY,
                            fiscal_period=PERIOD_TTM)
-        observations = [item[2] for item in quarters]
+        return self._ttm_fact(metric, quarters, as_of, policy, lag_days)
+
+    def _ttm_fact(self, metric, quarters, as_of, policy, lag_days):
+        """Sum of four quarters [(fiscal_year, index, observation)], newest first - or the reason there is none."""
+        fiscal_year, quarter_index = quarters[0][0], quarters[0][1]
+        observations, reason, flags = self._ttm_window(metric, quarters, as_of, policy, lag_days)
+        if reason:
+            return missing(self.factbook.cik, metric, reason,
+                           fiscal_year=fiscal_year, fiscal_period=PERIOD_TTM)
         combined = _combine(observations, sum(obs.value for obs in observations),
                             TRANSFORM_SUM, observations[0].unit)
-        fiscal_year, quarter_index = quarters[0][0], quarters[0][1]
         fact = self._to_fact(metric, combined, fiscal_year, PERIOD_TTM, PERIOD_TTM)
-        fact.flags = sorted(set(fact.flags) | {f"TTM_THROUGH_FY{fiscal_year}Q{quarter_index}"})
+        fact.flags = sorted(set(fact.flags) | set(flags) | {f"TTM_THROUGH_FY{fiscal_year}Q{quarter_index}"})
         return fact
+
+    def _ttm_window(self, metric, quarters, as_of, policy, lag_days):
+        """Integrity of a TTM window: (observations, reason, flags).
+
+        1. Periods: four different quarter ends, each 12-17 weeks after the
+           previous one. FUBO's fiscal-year change put one quarter into two grid
+           slots (TTM revenue 6.09 billion with 1.48 billion counted twice).
+        2. Concepts: per-share quarters from one class (total vs. continuing
+           operations). An additive metric whose quarters switch concept is
+           summed as reported unless a filing of the window shows the two
+           concepts differ; then the window is read in a concept every quarter
+           reported (ALT flags), otherwise there is no TTM.
+        3. Share basis (per share): weighted shares, or net income / EPS, may
+           not jump by a split ratio inside the window.
+        """
+        observations = [item[2] for item in quarters]
+        ends = [str(obs.period_end or "")[:10] for obs in observations]
+        if not all(ends) or len(set(ends)) != len(ends):
+            return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
+        dates = [to_instant(end) for end in ends]
+        for newer, older in zip(dates, dates[1:]):
+            if not TTM_GAP_DAYS[0] <= (newer - older).days <= TTM_GAP_DAYS[1]:
+                return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
+
+        definition = self._definition(metric)
+        if definition.is_per_share:
+            classes = {obs.provenance.concept in CONTINUING_PER_SHARE for obs in observations}
+            if len(classes) > 1:
+                return observations, TTM_CONCEPT_MISMATCH, []
+            if self._share_basis_jumps(metric, quarters, as_of, policy, lag_days):
+                return observations, TTM_SHARE_BASIS_INCONSISTENT, []
+            return observations, None, []
+
+        concepts = {obs.provenance.concept for obs in observations}
+        if len(concepts) == 1:
+            return observations, None, []
+        differ = False
+        for obs in observations:
+            for concept, (_, value) in _alternates(obs).items():
+                if concept in concepts and abs(value - obs.value) > TTM_CONCEPT_TOLERANCE * max(abs(obs.value), 1.0):
+                    differ = True
+        if not differ:
+            return observations, None, []
+        for rule in definition.concepts:
+            aligned = []
+            for obs in observations:
+                if obs.provenance.concept == rule.concept:
+                    aligned.append(obs)
+                    continue
+                alternate = _alternates(obs).get(rule.concept)
+                if alternate is None:
+                    break
+                aligned.append(_as_concept(obs, alternate[0], rule.concept, alternate[1]))
+            if len(aligned) == len(observations):
+                return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
+        return observations, TTM_CONCEPT_MISMATCH, []
+
+    def _share_basis_jumps(self, metric, quarters, as_of, policy, lag_days):
+        shares_metric = TTM_SHARE_METRICS.get(metric)
+        reported, implied = [], []
+        for fiscal_year, index, obs in quarters:
+            end = str(obs.period_end)[:10]
+            if shares_metric and self._definition(shares_metric) is not None:
+                shares = self.quarter_grid(shares_metric, fiscal_year, as_of, policy, lag_days).get(index)
+                if shares is not None and str(shares.period_end)[:10] == end and shares.value >= TTM_MIN_SHARES:
+                    reported.append(shares.value)
+            if abs(obs.value) >= TTM_IMPLIED_MIN_EPS and self._definition("net_income") is not None:
+                income = self.quarter_grid("net_income", fiscal_year, as_of, policy, lag_days).get(index)
+                if income is not None and str(income.period_end)[:10] == end:
+                    count = abs(income.value / obs.value)
+                    if count >= TTM_MIN_SHARES:
+                        implied.append(count)
+        # Reported weighted shares decide where at least two quarters carry them;
+        # net income / EPS only stands in without them, because net income can
+        # differ from the EPS numerator (non-controlling interests, preferred
+        # dividends, later restatements: Piper Sandler Q1 2025 implies 10 Mio.
+        # shares against 17.8 Mio. reported).
+        points = reported if len(reported) >= 2 else implied
+        return len(points) >= 2 and max(points) / min(points) >= TTM_SHARE_BASIS_JUMP
 
     def step_back(self, fiscal_year, quarter_index, steps):
         """Move `steps` quarters back from (fiscal_year, quarter_index)."""
@@ -367,12 +477,8 @@ class PeriodResolver:
             if observation is None:
                 return missing(self.factbook.cik, metric, INSUFFICIENT_HISTORY,
                                fiscal_year=fiscal_year, fiscal_period=PERIOD_TTM)
-            observations.append(observation)
-        combined = _combine(observations, sum(obs.value for obs in observations),
-                            TRANSFORM_SUM, observations[0].unit)
-        fact = self._to_fact(metric, combined, fiscal_year, PERIOD_TTM, PERIOD_TTM)
-        fact.flags = sorted(set(fact.flags) | {f"TTM_THROUGH_FY{fiscal_year}Q{quarter_index}"})
-        return fact
+            observations.append((year, index, observation))
+        return self._ttm_fact(metric, observations, as_of, policy, lag_days)
 
     def latest_instant(self, metric, as_of, policy=POLICY_AS_OF_LATEST, lag_days=0):
         blocked = self.sector_block(metric)

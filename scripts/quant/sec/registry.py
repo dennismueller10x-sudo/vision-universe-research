@@ -41,7 +41,7 @@ class ConceptRule:
 
 class MetricDefinition:
     __slots__ = ("name", "label", "kind", "statement", "units", "concepts", "optional", "sign",
-                 "industries")
+                 "industries", "additive")
 
     def __init__(self, name, payload):
         self.name = name
@@ -58,6 +58,10 @@ class MetricDefinition:
             raise RegistryError(f"metric {name}: at least one allowed unit is required")
         self.optional = bool(payload.get("optional", False))
         self.sign = payload.get("sign")
+        # Ein Durchschnitt (gewichtete Aktienzahl) ist ueber Perioden nicht
+        # additiv: FY minus 9M ist nicht der Q4-Durchschnitt (E12: Capital
+        # Southwest Q4 FY2026 ergab 1,0 statt rund 68 Mio. Aktien).
+        self.additive = bool(payload.get("additive", True))
         rules = [ConceptRule(rule["taxonomy"], rule["concept"], rule["priority"],
                              rule.get("aggregate", False))
                  for rule in payload.get("concepts") or []]
@@ -95,6 +99,11 @@ class MetricDefinition:
     def is_per_share(self):
         """Betrag je Aktie (EPS, Dividende je Aktie): nicht additiv ueber Perioden."""
         return bool(self.units) and all(unit.endswith("/shares") for unit in self.units)
+
+    @property
+    def is_additive(self):
+        """Quartale ergeben durch Summe/Differenz Jahres- und Restperioden (Umsatz, Ergebnis)."""
+        return self.additive and not self.is_per_share
 
     def allows_unit(self, unit):
         if unit in self.units:
