@@ -2,7 +2,7 @@
 // Fasst Bundle-Diff, Consumer-Wirkung, Build-Identitaet, Abdeckung je Jahr und Zusatzbelege zu FUNDAMENTAL-IMPACT.json zusammen.
 //   node build-impact.mjs --old <dir> --new <dir> --old-log <file> --new-log <file> --old-commit <sha> --new-commit <sha>
 //        --diff <bundle-diff.json> --impact <consumer-impact.json> --coverage <coverage-by-year.json> --q4 <q4approx.json>
-//        --e9 <e9scan.json> --out <FUNDAMENTAL-IMPACT.json>
+//        --e9 <e9scan.json> --ranks <quant-rank.json> --eps <eps-breakdown.json> --revenue <revenue-guarantee.json> --out <FUNDAMENTAL-IMPACT.json>
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -51,8 +51,10 @@ function buildIdentity(dir, log, commit) {
 const oldId = buildIdentity(arg("old"), arg("old-log"), arg("old-commit"));
 const newId = buildIdentity(arg("new"), arg("new-log"), arg("new-commit"));
 if (oldId.issuerUniverseHash !== newId.issuerUniverseHash) console.warn("WARN: unterschiedliche Bundle-Mengen alt/neu");
-if (newId.dataVersions.length !== 1 || newId.dataVersions[0] !== "1.12.0+registry-1.7.0") {
-  console.error("STALE_BUILD: neuer Build ist nicht vollstaendig 1.12.0+registry-1.7.0", newId.dataVersions);
+// Erwarteter Stand = Code im Arbeitsbaum (Data-Freeze); ein Build aus anderem Code ist STALE_BUILD.
+const expected = `${/NORMALIZATION_LOGIC_VERSION = "([^"]+)"/.exec(fs.readFileSync(path.join(root, "scripts/quant/sec/version.py"), "utf8"))[1]}+registry-${readJson(path.join(root, MAPPING[0])).mapping_version}`;
+if (newId.dataVersions.length !== 1 || newId.dataVersions[0] !== expected) {
+  console.error(`STALE_BUILD: neuer Build ist nicht vollstaendig ${expected}`, newId.dataVersions);
   process.exit(1);
 }
 
@@ -64,6 +66,9 @@ const out = {
   builds: { old: oldId, new: newId },
   bundleDiff: { issuersCompared: diff.issuersCompared, issuersWithAnyChange: diff.issuersWithAnyChange, byMetric: diff.byMetric, examples: diff.examples },
   consumerImpact: { issuersCompared: impact.issuersCompared, issuersWithChange: impact.issuersWithChange, counters: impact.counters, examples: impact.examples },
+  quantRankImpact: arg("ranks") ? readJson(arg("ranks")).byRaw : null,
+  epsAndTtmAvailability: arg("eps") ? readJson(arg("eps")) : null,
+  revenueGuarantee: arg("revenue") ? readJson(arg("revenue")) : null,
   e4Q4EpsApproximation: arg("q4") ? readJson(arg("q4")) : null,
   e9CurrencyConflicts: arg("e9") ? readJson(arg("e9")) : null,
   coverageByYear: arg("coverage") ? readJson(arg("coverage")) : null,
