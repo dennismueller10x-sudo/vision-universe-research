@@ -12,3 +12,5 @@ body .ci-company-intelligence h2,body.dv2 .dv2-stock .dx-chapter.ci-company-inte
 @media(prefers-reduced-motion:reduce){.ci-company-intelligence *{scroll-behavior:auto!important}}
 
 .ci-company-intelligence .ci-change-values{display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center}.ci-company-intelligence .ci-change-previous,.ci-company-intelligence .ci-change-arrow{color:var(--ci-muted);font-size:.72rem;font-weight:400}.ci-company-intelligence .ci-change-current{grid-column:1/-1;font-size:1.15rem;font-weight:700;line-height:1.3}.ci-company-intelligence .ci-story-title a{font-variant-emoji:text}
+
+.ci-company-intelligence .ci-actions a::after,.ci-company-intelligence .ci-story-title a::after{content:"";flex-shrink:0;width:6px;height:6px;border-top:1px solid currentColor;border-right:1px solid currentColor;margin-left:9px;align-self:center;transform:translateY(-2px)}

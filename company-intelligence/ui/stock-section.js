@@ -15,7 +15,7 @@ function day(value,zone='UTC'){
  const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(value),d=new Date(dateOnly?value+'T12:00:00Z':value);
  return Number.isFinite(d.valueOf())?new Intl.DateTimeFormat('de-DE',{day:'numeric',month:'short',year:'numeric',timeZone:dateOnly?'UTC':zone}).format(d):'Datum nicht angegeben';
 }
-function link(host,label,url){const safe=g.VUCompanyIntelligence.safeLink(url);if(!safe)return false;const a=node('a',label);a.href=safe;a.target='_blank';a.rel='noopener noreferrer';host.append(a);return true;}
+function link(host,label,url){const safe=g.VUCompanyIntelligence.safeLink(url);if(!safe)return false;const a=node('a',label);a.href=safe;a.target='_blank';a.rel='noopener noreferrer';a.className='ci-external';host.append(a);return true;}
 function block(host,title){const s=node('section',undefined,'ci-block');s.append(node('h3',title));host.append(s);return s;}
 function gap(host,title,text){const p=node('p',undefined,'ci-gap');p.append(node('strong',title+': '),document.createTextNode(text));host.append(p);}
 function details(host,title){const d=node('details',undefined,'ci-details');d.append(node('summary',title));host.append(d);return d;}
@@ -53,12 +53,12 @@ function viewModel(payload,now=Date.now()){
  return {recent,archive,metrics,changes:changes.slice(0,4),confirmed:upcoming.filter(e=>e.confirmationStatus==='CONFIRMED').slice(0,4),estimates:upcoming.filter(e=>e.confirmationStatus==='ESTIMATED').slice(0,1)};
 }
 function story(item,now){
- const n=node('article',undefined,'ci-story'),regulatory=item.eventType==='MATERIAL_SEC_EVENT';
+ const n=node('article',undefined,'ci-story'),regulatory=item.eventType==='MATERIAL_SEC_EVENT';n.dataset.intelligenceType=item.eventType;n.dataset.storyUrl=g.VUCompanyIntelligence.safeLink(storyUrl(item))||'';
  const title=['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(item.eventType)?(item.eventType==='EARNINGS_PUBLISHED'?'Geschäftszahlen veröffentlicht':'Finanzbericht veröffentlicht')+(item.fiscalQuarter&&item.fiscalYear?' · '+(item.fiscalQuarter==='FY'?'Geschäftsjahr ':item.fiscalQuarter+' · Geschäftsjahr ')+item.fiscalYear:''):regulatory?(item.secItems||[]).map(code=>secLabels[code]||'Regulatorische Meldung').join(' · ')||'Regulatorische Meldung':item.headline||'Unternehmensmeldung';
  const date=knownDate(item),ref=item.provenance?.[0];let source=regulatory?'SEC':ref?.sourceName||item.sourceName||ref?.originalSource;
  if(!source){try{source=new URL(storyUrl(item)).hostname.replace(/^www\./,'');}catch{source='Originalquelle';}}
  const meta=node('div',undefined,'ci-story-meta');meta.append(node('time',freshness(date,now)==='TODAY'?'Heute':date?day(date):'Veröffentlichungsdatum nicht angegeben'),node('span',source));n.append(meta);
- const a=node('div',undefined,'ci-story-title');link(a,title+' ↗︎',storyUrl(item));if(item.eventType==='NEWS')a.lang=item.language||'en';n.append(a,pill(storyType(item)));
+ const a=node('div',undefined,'ci-story-title');link(a,title+'',storyUrl(item));if(item.eventType==='NEWS')a.lang=item.language||'en';n.append(a,pill(storyType(item)));
  return n;
 }
 function activeEvent(e,now,today){
@@ -77,7 +77,7 @@ function eventRow(e){
  else{
   if(e.startsAt)n.append(node('p',new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}).format(new Date(e.startsAt))+' (Berlin)','ci-meta'));
   else n.append(node('p','Uhrzeit nicht angegeben','ci-meta'));
-  const actions=node('div',undefined,'ci-actions');link(actions,'Ankündigung ↗︎',e.sourceUrl);if(e.webcastUrl)link(actions,'Webcast öffnen ↗︎',e.webcastUrl);if(actions.childElementCount)n.append(actions);
+  const actions=node('div',undefined,'ci-actions');link(actions,'Ankündigung',e.sourceUrl);if(e.webcastUrl)link(actions,'Webcast öffnen',e.webcastUrl);if(actions.childElementCount)n.append(actions);
  }
  return n;
 }
@@ -98,7 +98,7 @@ function render(host,payload){
   // Keep every factual sentence; longer specifics live in an explicit expansion.
   const sentences=Array.from(new Intl.Segmenter('de',{granularity:'sentence'}).segment(profile.description),s=>s.segment);
   if(sentences.length>2&&profile.description.length>260){const count=sentences.slice(0,2).join('').length<=220?2:1;p.textContent=sentences.slice(0,count).join('').trim();const d=details(s,'Mehr zum Unternehmen');d.append(node('p',sentences.slice(count).join('').trim(),'ci-profile-more'));}
-  const actions=node('div',undefined,'ci-actions');link(actions,'Website ↗︎',profile.officialWebsite);if(actions.childElementCount)s.append(actions);
+  const actions=node('div',undefined,'ci-actions');link(actions,'Website',profile.officialWebsite);if(actions.childElementCount)s.append(actions);
   if(profile.stale)s.append(node('p','Ältere Unternehmensbeschreibung','ci-warning'));
  }else host.append(node('p','Eine ausreichend belegte deutsche Beschreibung ist noch nicht verfügbar.','ci-missing-profile ci-meta'));
  if(vm.recent.length){
@@ -130,8 +130,8 @@ function render(host,payload){
  if(groups.length||historicalCalls.length||vm.archive.length){
   const d=details(host,'Dokumente & Quellen');d.classList.add('ci-documents');
   if(historicalCalls.length){const s=block(d,'Calls / Webcasts');for(const c of historicalCalls.slice(0,3)){const n=node('article',undefined,'ci-story');n.append(node('p','Ergebnisgespräch · '+day(c.startsAt||c.date,c.startsAt?'Europe/Berlin':'UTC'),'ci-headline'));for(const [field,label] of [['webcastUrl','Webcast'],['replayUrl','Aufzeichnung'],['transcriptUrl','Unternehmenstranskript']])if(c[field])link(n,label,c[field]);s.append(n);}}
-  for(const group of groups.slice(0,5)){d.append(node('p',group.title,'ci-headline'));for(const doc of group.docs)link(d,(doc.type==='SEC_FACT_FILING_REFERENCE'&&f?.fiscalQuarter&&f?.fiscalYear&&Object.values(f.metrics||{}).some(m=>m.current?.filingId===doc.filingId)?f.fiscalQuarter+' '+f.fiscalYear+' · Beleg der Finanzzahlen':materialName(doc))+' ↗︎',doc.url);if(group.docs.some(doc=>doc.publicationDateStatus==='NOT_PROVIDED'||(!doc.filedAt&&!doc.date)))d.append(node('p','Veröffentlichungsdatum nicht angegeben','ci-meta'));}
-  if(vm.archive.length){const archive=details(d,'Ältere Meldungen / Datum nicht angegeben');for(const e of vm.archive.slice(0,10))archive.append(story(e,now));}
+  for(const group of groups.slice(0,5)){d.append(node('p',group.title,'ci-headline'));for(const doc of group.docs)link(d,(doc.type==='SEC_FACT_FILING_REFERENCE'&&f?.fiscalQuarter&&f?.fiscalYear&&Object.values(f.metrics||{}).some(m=>m.current?.filingId===doc.filingId)?f.fiscalQuarter+' '+f.fiscalYear+' · Beleg der Finanzzahlen':materialName(doc))+'',doc.url);if(group.docs.some(doc=>doc.publicationDateStatus==='NOT_PROVIDED'||(!doc.filedAt&&!doc.date)))d.append(node('p','Veröffentlichungsdatum nicht angegeben','ci-meta'));}
+  if(vm.archive.length){const archive=details(d,'Ältere Meldungen / Datum nicht angegeben');for(const e of vm.archive)archive.append(story(e,now));}
   if(historicalCalls.length||groups.some(group=>group.docs.some(doc=>['WEBCAST','EARNINGS_WEBCAST','SHAREHOLDER_LETTER','PREPARED_REMARKS'].includes(doc.type))))d.append(node('p','Webcast ≠ bestätigte Aufzeichnung. Aktionärsbriefe und vorbereitete Aussagen sind keine vollständigen Transkripte.','ci-meta'));
  }
  const proof=details(host,'Datenstand und Quellenhinweise');proof.classList.add('ci-sources');proof.append(node('p','Aufbereitungsstand: '+day(payload.generatedAt)+'. Originalquellen können neuer sein. Nachrichten sind keine vollständige Marktberichterstattung.','ci-meta'));

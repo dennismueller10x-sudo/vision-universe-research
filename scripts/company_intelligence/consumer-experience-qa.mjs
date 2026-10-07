@@ -30,6 +30,7 @@ try{
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height,height:a.getBoundingClientRect().height})));
    const intelligence=chapter.locator('section.ci-block').filter({has:page.getByRole('heading',{name:version==='after'?'Aktuelles':'Neuigkeiten',exact:true})});
    const storyLinks=await intelligence.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height})));
+   const renderedNewsLinks=version==='after'?await chapter.locator('.ci-story[data-intelligence-type=NEWS]').evaluateAll(ns=>ns.map(n=>n.dataset.storyUrl)):storyLinks.map(a=>a.url);
    const newsURLs=new Set(payload.news.map(n=>n.canonicalUrl||n.sourceUrl));const visibleNews=new Set(storyLinks.filter(a=>a.visible&&newsURLs.has(a.url)).map(a=>a.url));
    if(version==='after'){
     assert.equal(await chapter.getAttribute('data-experience'),'v2');assert.equal(await chapter.locator('.ci-profile[lang=de]').count(),inventory.germanProfile?1:0);
@@ -44,7 +45,7 @@ try{
     await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
-   cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors});
+   cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors});
    if(width===390&&theme==='dark')await writeFile(`${out}/${ticker}-visible.txt`,text);await page.close();
   }
   console.log(ticker+' '+version+' PASS');
