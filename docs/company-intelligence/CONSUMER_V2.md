@@ -1,6 +1,6 @@
 # Company Intelligence Consumer V2
 
-Status: validated candidate review in progress; **V2 is not yet production-deployed**. Existing V1 production remains unchanged and healthy. Only the approved 46 stocks / 45 issuers are in scope. No universe discovery, source-policy expansion, private-state mutation, polling cadence change or wider activation occurred.
+Status: validated candidate review in progress; **V2 is not yet production-deployed**. Existing V1 production remains unchanged and healthy. Validated candidate PR: [#480](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/480). Only the approved 46 stocks / 45 issuers are in scope. No universe discovery, source-policy expansion, private-state mutation, polling cadence change or wider activation occurred.
 
 ## Consumer structure
 
@@ -12,7 +12,7 @@ No new content generation/translation service, employee counts, speculative tags
 
 ## Accepted state and immutable consumer
 
-Authenticated fresh R2 restore and actual production readback: [Actions 37640112980](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37640112980).
+Authenticated fresh R2 restore and actual production readback: [Actions 37644770891](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37644770891).
 
 - Private accepted state: `21cc611a43b06f488418b58a`.
 - Checkpoint SHA-256: `2368931508ec869fed1246733465b15dd550a6bcaec1d2154aed2359cb7ba6f9`.
@@ -39,7 +39,7 @@ Authenticated fresh R2 restore and actual production readback: [Actions 37640112
 | NEWS within 90 days | — | 24 | Explicitly labelled recent window; not all current |
 | Apple NEWS without publication date | 20 | 1 | **Exported**, accessible in archive; never claimed as dated current news |
 
-**DATA DOES NOT EXIST:** 15 issuers have no accepted ledger NEWS; the cohort has no accepted material SEC events. Financial source references alone do not establish Tesla material announcements. **DATA EXISTS BUT IS FILTERED:** 31 items / eight issuers; source policy remains intact. **DATA EXISTS BUT IS NOT EXPORTED:** 42 old items / ten issuers intentionally outside consumer retention; zero unexplained ledger/export loss. **DATA IS EXPORTED BUT NOT RENDERED AS PRIMARY CURRENT NEWS:** older, undated and items beyond the initial story limit remain in labelled secondary/expanded views; this is presentation selection, not missing production bytes. Final V2 rendered counts are recorded after the all-cohort review.
+**DATA DOES NOT EXIST:** 15 issuers have no accepted ledger NEWS; the cohort has no accepted material SEC events. Financial source references alone do not establish Tesla material announcements. **DATA EXISTS BUT IS FILTERED:** 31 items / eight issuers; source policy remains intact. **DATA EXISTS BUT IS NOT EXPORTED:** 42 old items / ten issuers intentionally outside consumer retention; zero unexplained ledger/export loss. **DATA IS EXPORTED BUT NOT RENDERED AS PRIMARY CURRENT NEWS:** older, undated and items beyond the initial story limit remain in labelled secondary/expanded views; this is presentation selection, not missing production bytes. The previous shared list limits omitted 57 exported news records across 19 issuers, including all 20 undated Apple items. The final local V2 package renders all 213 metadata items in primary/expanded/archive views; actual production validation remains pending.
 
 The same approved cohort has 31 German profiles, 44 issuers with financials/What Changed, four with explicitly stale financials, 15 with supported calls, 38 with calendar content and 44 with documents. Sparse combinations are valid; no issuer is required to have every module.
 
@@ -57,7 +57,7 @@ Tesla V2 consequently shows its source-based German business description, websit
 
 ## Validation and deployment boundary
 
-669 Company Intelligence Python tests and 65 Node tests passed. Dedicated consumer-view tests cover publication/observation distinction, freshness, material-event/release unification, duplicate/unsafe/wrong-issuer/future records, separate date-only release/call, cancellation, estimates, unsupported comparisons and share-count context. Both product adversarial browser cases preserve uncertainty, source safety, exact fiscal basis and failure-closed generation handling. Full responsive and existing regression evidence is added when complete.
+669 Company Intelligence Python tests and 65 Node tests passed. Dedicated consumer-view tests cover publication/observation distinction, freshness, material-event/release unification, duplicate/unsafe/wrong-issuer/future records, separate date-only release/call, cancellation, estimates, unsupported comparisons and share-count context. 216 actual Discover/Quant and 38 adversarial browser cases preserve uncertainty, source safety, exact fiscal basis and failure-closed generation handling. The final frozen package passed all 368 Discover stock/theme/viewport combinations, plus 216 Discover/Quant cases and 38 adversarial cases. Additional access-gate/resource/Ask/Academy/worker tests: 64 pass; VU2 Python: 32 pass. All 45 representative original links returned HTTP 200 in the refreshed HEAD-only review.
 
 The independent broad regression classifier uses exact pre-V2 base `b2d0f3c842895d631b2cd4825c74df9f8d5ca670`; protected price/provider/engine/test inputs must be identical. It never waives an unknown failure. The four previously known price-data/regeneration failures must also reproduce on the independent baseline.
 
