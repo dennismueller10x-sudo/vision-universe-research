@@ -12,7 +12,7 @@
      Discover (discover/engines/theme.js). Hell ist Standard. -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/screener/screener.css">
-<link rel="preload" href="/screener/data/universe-US_REAL.json" as="fetch" crossorigin="anonymous">
+<script>if(new URLSearchParams(location.search).get('u')!=='EUROPE'){var scPreload=document.createElement('link');scPreload.rel='preload';scPreload.href='/screener/data/universe-US_REAL.json';scPreload.as='fetch';scPreload.crossOrigin='anonymous';document.head.append(scPreload);}</script>
 </head>
 <body class="sc"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="sc-skip" href="#sc-main">Zum Inhalt</a>
