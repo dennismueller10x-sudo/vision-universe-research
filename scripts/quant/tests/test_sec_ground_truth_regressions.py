@@ -105,6 +105,29 @@ class SecGroundTruthRegressions(unittest.TestCase):
         self.assertIsNotNone(q2)
         self.assertAlmostEqual(q2.value, 284961000.0, delta=1.0)
 
+    def test_e2r_revenues_smaller_than_contract_revenue_is_not_the_total(self):
+        """Gegenprobe zu E2 (gefunden in der Consumer-Wirkungsanalyse): manche Einreicher taggen einen Teilbetrag als
+        us-gaap:Revenues. FLS meldet in jedem 10-Q Revenues = 0 neben 1.169,175 Mio. Vertragsumsatz (Q2 2026);
+        PESI meldet im 10-K FY2025 Revenues = 642.000 neben 61,674 Mio. Vertragsumsatz. Ein Gesamtbetrag ist nie
+        kleiner als ein Teilbetrag derselben Einreichung."""
+        calendar, resolver = build("FLS")
+        q2 = quarter(resolver, calendar, "revenue", "2026-06-30", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q2)
+        self.assertAlmostEqual(q2.value, 1169175000.0, delta=1.0)
+        calendar, resolver = build("PESI")
+        fy = resolver.annual("revenue", calendar.fiscal_year_for("2025-12-31"), FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(fy)
+        self.assertAlmostEqual(fy.value, 61674000.0, delta=1.0)
+        q4 = quarter(resolver, calendar, "revenue", "2025-12-31", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q4)
+        self.assertAlmostEqual(q4.value, 61674000.0 - 45959000.0, delta=1.0)
+
+    def test_e2r_revenues_total_still_beats_contract_subset(self):
+        """AMT bleibt korrigiert: Revenues (1.953,6 Mio.) ist groesser als der Vertragsumsatz (137,3 Mio.) und ist der Gesamtumsatz."""
+        calendar, resolver = build("AMT")
+        seen = quarter(resolver, calendar, "revenue", "2019-09-30", FAR, POLICY_ORIGINAL)
+        self.assertAlmostEqual(seen.value, 1953600000.0, delta=1.0)
+
     def test_e4_unreported_eps_quarter_stays_missing(self):
         """Derselbe REPL-Auszug ohne die gemeldeten Q4-Dreimonatswerte: kein FY - 9M fuer EPS, die Luecke bleibt."""
         def q4_eps(row):
