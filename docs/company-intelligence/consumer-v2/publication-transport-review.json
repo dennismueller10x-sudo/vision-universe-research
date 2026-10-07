@@ -1,5 +1,5 @@
 {
-  "status": "V2_ACTIVE_DEPLOYED_COMPLETE_PRODUCTION_BROWSER_REVIEW_RUNNING",
+  "status": "FULL_PRODUCTION_CONSUMER_REVIEW_PASS",
   "initialPushRun": 37653514427,
   "initialPushResult": "package PASS; workflow failure before any deploy job; no error annotation available",
   "fullRetryEndpointResult": "HTTP 500; no new attempt created",
@@ -40,5 +40,33 @@
   "sequentialFullPagesResult": "package PASS; deploy PASS; browser dependencies still installing",
   "independentFreshR2AndFullReviewRun": 37665891019,
   "independentFreshR2Steps": "PASS: remote current pointer/integrity, fresh restore, both pinned exports, deterministic 45-issuer cohort and all 86 actual production asset hashes",
-  "productionApiLookups": "PASS: all 46 symbols resolve correct issuer and generatedAt; preview=false. API only, not browser proof."
+  "productionApiLookups": "PASS: all 46 symbols resolve correct issuer and generatedAt; preview=false. API only, not browser proof.",
+  "fullReadOnlyReviewRun": 37670448104,
+  "fullReadOnlyReviewedSourceCommit": "bb8f5eeaf56933910606801cfad0ef189d69221d",
+  "fullReadOnlyResult": {
+    "freshR2Restore": "PASS",
+    "actualAssetHashes": 86,
+    "productionStocks": 46,
+    "issuers": 45,
+    "responsiveThemeCases": 368,
+    "discoverQuantCases": 216,
+    "darkCases": 8,
+    "publicScreenshots": 30,
+    "unexplainedNewsRendererLoss": 0
+  },
+  "browserSetupBlocker": {
+    "diagnosticRun": 37665891019,
+    "reason": "APT mirror http://azure.archive.ubuntu.com hung while retrieving noble-updates Packages/Translation indexes; npm succeeded and no browser had started",
+    "cancelledOldPagesRun": 37665089922,
+    "cancelledSupersededBuild": 37668966256,
+    "fixPR": 486,
+    "fixMerge": "fbba85fb0674428b2d2471c772900e9bd1040aff",
+    "samePinnedBrowsersAndAssertions": true,
+    "builtPRRun": 37669623323,
+    "builtPRResult": "PASS"
+  },
+  "finalMainDeliveryRun": 37671583798,
+  "finalMainDeliveryStatus": "PASS: package, actual Pages deploy and actual production routine stock/access/hash proof",
+  "finalMainDeliveredSHA": "fbba85fb0674428b2d2471c772900e9bd1040aff",
+  "finalSourceAssetsMatchFullBrowserReviewedBytes": true
 }

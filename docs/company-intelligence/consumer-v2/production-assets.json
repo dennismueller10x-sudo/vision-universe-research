@@ -1,31 +1,29 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-07T17:11:03.415Z",
+  "verifiedAt": "2026-10-07T19:16:45.740Z",
   "origin": "https://research.visionuniverse.de",
-  "productionSHA": "9b73b05223947a3f8e1bc05ef1592de4fdd5b7dc",
-  "consumerGeneration": "d700d480d9b2858eb8fa34f4",
-  "issuers": 45,
-  "stocks": 46,
-  "assets": [
+  "productionSHA": "fbba85fb0674428b2d2471c772900e9bd1040aff",
+  "files": [
     {
       "path": "company-intelligence/api/contract.js",
-      "bytes": 10255,
       "sha256": "39f6cee6937fa9df052ac71046fe4e3c3f0e1aac99e80054cf7cd004bf425631",
-      "repositoryMatch": true
+      "status": "PASS"
     },
     {
       "path": "company-intelligence/ui/stock-section.js",
-      "bytes": 21022,
-      "sha256": "19594d03556492731f6915416d5e5baa9d0834bbc891ffed3619865543b46fd8",
-      "repositoryMatch": true
+      "sha256": "77929276e1521273bebaea5cf3c72554daf17ffb60f0f2d5c9c48294a8fd60d0",
+      "status": "PASS"
     },
     {
       "path": "company-intelligence/ui/stock-section.css",
-      "bytes": 6967,
       "sha256": "ad9e526926c1681f83ca9f1aa457f58dd00c712e3aca9753dc290989a4342a52",
-      "repositoryMatch": true
+      "status": "PASS"
     }
   ],
-  "retries": [],
-  "scope": "Public consumer and source-file integrity only; protected full browser review is a separate proof."
+  "consumerGeneration": "d700d480d9b2858eb8fa34f4",
+  "issuers": 45,
+  "stocks": 46,
+  "fullProtectedBrowserProofRun": 37670448104,
+  "fullProtectedBrowserReviewedSHA": "bb8f5eeaf56933910606801cfad0ef189d69221d",
+  "scope": "PUBLIC_CONSUMER_SOURCE_ASSETS_AND_GENERATION; full actual browser proof separately linked"
 }
