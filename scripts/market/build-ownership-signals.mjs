@@ -320,12 +320,13 @@ function cacheWrite(cache, rel, value) {
 export function loadUniverse(root, universeFile) {
   if (universeFile) {
     const rows = JSON.parse(readFileSync(universeFile, "utf8"));
-    return rows.map((r) => ({ ticker: r.ticker, securityId: r.securityId || Identity.securityIdForTicker(r.ticker), cik: padCik(r.cik), instrumentType: r.instrumentType || "EQUITY_COMMON" }));
+    return rows.map((r) => ({ ticker: r.ticker, securityId: r.securityId || Identity.securityIdForTicker(r.ticker), cik: padCik(r.cik), instrumentType: r.instrumentType || "EQUITY_COMMON", name: r.name || null }));
   }
   const names = JSON.parse(readFileSync(join(root, "quant/data/market/security-master/company-names.json"), "utf8"));
   const cikById = new Map(names.rows.filter((r) => r.cik).map((r) => [r.securityId, padCik(r.cik)]));
   return import(join(root, "scripts/market/universe-source.mjs")).then(({ resolveProductUniverse }) =>
-    resolveProductUniverse(root).securities.map((s) => ({ ticker: s.ticker, securityId: s.securityId, cik: cikById.get(s.securityId) || null, instrumentType: s.instrumentType || null })));
+    resolveProductUniverse(root).securities.map((s) => ({ ticker: s.ticker, securityId: s.securityId, cik: cikById.get(s.securityId) || null, instrumentType: s.instrumentType || null,
+      name: s.displayName || s.companyName || null })));
 }
 
 /* -------------------------------------------------- FTD -> CUSIP-Karte */
@@ -515,10 +516,25 @@ async function extract13fDataset(handle, ctx) {
       name: String(r[col(idx, "FILINGMANAGER_NAME")] || "").trim()
     });
   }
+  const summary = new Map();
+  for await (const r of tableRows(handle, "SUMMARYPAGE")) {
+    if (r.header) { idx = r.header; continue; }
+    const acc = r[col(idx, "ACCESSION_NUMBER")];
+    if (!subs.has(acc)) continue;
+    summary.set(acc, {
+      tableEntryTotal: E.num(r[col(idx, "TABLEENTRYTOTAL")]),
+      confidentialOmitted: /^(Y|YES|TRUE|1)$/i.test(String(r[col(idx, "ISCONFIDENTIALOMITTED")] || "").trim())
+    });
+  }
   /* Annahme in Einreichungsreihenfolge: je (Verwalter, Quartal) zaehlt die
-     ERSTE Originalmeldung; Aenderungen vom Typ NEW HOLDINGS kommen hinzu,
-     RESTATEMENT wird nicht uebernommen (dokumentierte Grenze). */
-  const accepted = new Map();
+     ERSTE Originalmeldung; Aenderungen vom Typ NEW HOLDINGS kommen hinzu.
+     RESTATEMENT ersetzt das Original nur, wenn beide im selben Datensatz
+     stehen und das Original unvollstaendig ist (siehe unten); sonst wird es
+     nicht uebernommen (dokumentierte Grenze).
+     "Hat gemeldet" (filedDay) zaehlt nur fuer vollstaendige Meldungen
+     (E.thirteenFFilingComplete) - sonst entstehen Neu- und Ausstiege aus
+     vertraulichen oder abgeschnittenen Meldungen. */
+  const accepted = new Map(), originalOf = new Map(), restates = new Map();
   for (const [acc, s] of [...subs.entries()].sort((a, b) => (a[1].f < b[1].f ? -1 : a[1].f > b[1].f ? 1 : 0))) {
     seenAcc.add(acc);
     if (s.period < fromPeriod) continue;
@@ -526,18 +542,22 @@ async function extract13fDataset(handle, ctx) {
     if (cv.reportType.includes("NOTICE")) continue;
     const key = s.cik + "|" + s.period;
     const amend = s.amendment || cv.isAmend;
+    let restatementOf = null;
     if (!amend) {
       if (seenOriginal.has(key)) { stats.duplicateOriginals++; continue; }
       seenOriginal.add(key);
-    } else if (!cv.amendType.includes("NEW HOLDINGS")) { stats.restatementsSkipped++; continue; }
+      originalOf.set(key, acc);
+    } else if (!cv.amendType.includes("NEW HOLDINGS")) {
+      restatementOf = originalOf.get(key) || null;
+      if (!restatementOf || restates.has(restatementOf)) { stats.restatementsSkipped++; continue; }
+    }
     let m = managerIndex.get(s.cik);
     if (m === undefined) { m = managerIndex.size; managerIndex.set(s.cik, m); }
     if (cv.name) managerNames[m] = cv.name;
     const fd = E.dayOf(s.f);
-    const fmap = filedDay.get(s.period) || filedDay.set(s.period, new Map()).get(s.period);
-    if (!fmap.has(m) || fmap.get(m) > fd) fmap.set(m, fd);
-    accepted.set(acc, { m, f: s.f, fd, period: s.period });
-    if (amend) stats.newHoldingsAmendments++; else stats.filings++;
+    accepted.set(acc, { m, f: s.f, fd, period: s.period, rows: 0, original: !amend });
+    if (restatementOf) restates.set(restatementOf, acc);
+    else if (amend) stats.newHoldingsAmendments++; else stats.filings++;
   }
   const agg = new Map(), implied = new Map();
   for await (const r of tableRows(handle, "INFOTABLE")) {
@@ -546,6 +566,7 @@ async function extract13fDataset(handle, ctx) {
     const a = accepted.get(acc);
     if (!a) continue;
     stats.infoRows++;
+    a.rows++;
     if (String(r[col(idx, "SSHPRNAMTTYPE")] || "").trim().toUpperCase() !== "SH") continue;
     if (String(r[col(idx, "PUTCALL")] || "").trim()) continue;
     const sh = E.num(r[col(idx, "SSHPRNAMT")]), v = E.num(r[col(idx, "VALUE")]);
@@ -559,6 +580,22 @@ async function extract13fDataset(handle, ctx) {
     const k = acc + "|" + ti;
     const e = agg.get(k);
     if (e) { e.sh += sh; e.v += v || 0; } else agg.set(k, { acc, ti, sh, v: v || 0 });
+  }
+  /* Vollstaendigkeit je Meldung; ein unvollstaendiges Original wird durch
+     seine vollstaendige RESTATEMENT-Aenderung ersetzt, sonst bleibt das
+     Original und die Aenderung entfaellt. */
+  const complete = (acc) => E.thirteenFFilingComplete(Object.assign({ rows: accepted.get(acc).rows }, summary.get(acc) || {}));
+  const dropped = new Set();
+  for (const [orig, rest] of restates) {
+    if (!complete(orig) && complete(rest)) { dropped.add(orig); stats.restatementsReplacing++; }
+    else { dropped.add(rest); stats.restatementsSkipped++; }
+  }
+  for (const acc of dropped) accepted.delete(acc);
+  for (const [k, e] of agg) if (dropped.has(e.acc)) agg.delete(k);
+  for (const [acc, a] of accepted) {
+    if (!complete(acc)) { if (a.original) stats.incompleteFilings++; continue; }
+    const fmap = filedDay.get(a.period) || filedDay.set(a.period, new Map()).get(a.period);
+    if (!fmap.has(a.m) || fmap.get(a.m) > a.fd) fmap.set(a.m, a.fd);
   }
   const unit = new Map();
   for (const [acc, a] of accepted) {
@@ -640,7 +677,7 @@ export async function build(opts = {}) {
     insiderDatasets: [], insiderMissing: [], insiderTransactions: 0, implausibleValues: 0, insiderPurchases: 0, insiderSales: 0, insiderAccessions: 0, insiderAmendmentsSkipped: 0, planColumnSeen: false,
     form4: { needed: 0, cached: 0, fetched: 0, failed: 0, cap: form4Max, from: null, to: null },
     indexQuarters: [], indexMissing: [], schedule: { filings: 0, resolved: 0, ambiguous: 0, filerOnly: 0, notInUniverse: 0 },
-    thirteenF: { datasets: [], missing: [], filings: 0, newHoldingsAmendments: 0, restatementsSkipped: 0, duplicateOriginals: 0, duplicateAccessions: 0, infoRows: 0, positions: 0, unitThousands: 0, unitDollars: 0, unitOverrides: 0 }
+    thirteenF: { datasets: [], missing: [], filings: 0, newHoldingsAmendments: 0, restatementsSkipped: 0, restatementsReplacing: 0, incompleteFilings: 0, duplicateOriginals: 0, duplicateAccessions: 0, infoRows: 0, positions: 0, unitThousands: 0, unitDollars: 0, unitOverrides: 0 }
   };
 
   /* 1) CUSIP -> Ticker */
@@ -910,19 +947,29 @@ export async function build(opts = {}) {
     if (Object.keys(s.history).length) writeFileSync(join(outDir, "history", key + ".json.gz"), gz({ schemaVersion: SCHEMA, source: SOURCE, shard: key, grain: "month-end", columns: HISTORY_COLUMNS, issuers: sortObj(s.history) }));
   }
 
-  /* Auffaelligkeiten */
+  /* Auffaelligkeiten. Insider- und 13D-Werte gelten je Emittent: mehrere
+     Gattungen (LEN/LEN-B) erscheinen nur einmal, mit dem ersten Ticker nach
+     der Sortierung. Namen aus der Namensschicht des Universums. */
   const all = [...shards.values()].flatMap((s) => Object.entries(s.current));
+  const nameOf = new Map(universe.map((u) => [u.ticker, u.name || null]));
+  const cikOf = new Map(all.map(([t, x]) => [t, x.cik || t]));
+  const named = (rows) => rows.map((r) => Object.assign({ ticker: r.ticker, name: nameOf.get(r.ticker) || null }, r));
+  const perIssuer = (rows) => { const seen = new Set(); return rows.filter((r) => { const c = cikOf.get(r.ticker); if (seen.has(c)) return false; seen.add(c); return true; }); };
   const highlights = {
     schemaVersion: SCHEMA, source: SOURCE, asOf: today,
     clusterBuys: all.filter(([, x]) => x.insider && x.insider.cb).map(([t, x]) => ({ ticker: t, buyers90: x.insider.ib90, netBuyUsd90: x.insider.nbv90 }))
-      .sort((a, b) => b.buyers90 - a.buyers90 || b.netBuyUsd90 - a.netBuyUsd90 || (a.ticker < b.ticker ? -1 : 1)).slice(0, 50),
+      .sort((a, b) => b.buyers90 - a.buyers90 || b.netBuyUsd90 - a.netBuyUsd90 || (a.ticker < b.ticker ? -1 : 1)),
     largestNetInsiderBuys90: all.filter(([, x]) => x.insider && x.insider.nbv90 > 0).map(([t, x]) => ({ ticker: t, netBuyUsd90: x.insider.nbv90, buyers90: x.insider.ib90 }))
-      .sort((a, b) => b.netBuyUsd90 - a.netBuyUsd90 || (a.ticker < b.ticker ? -1 : 1)).slice(0, 25),
+      .sort((a, b) => b.netBuyUsd90 - a.netBuyUsd90 || (a.ticker < b.ticker ? -1 : 1)),
     new13D90: all.filter(([, x]) => x.schedules && x.schedules.d13n > 0).map(([t, x]) => ({ ticker: t, filings: x.schedules.d13n, latest: x.schedules.recent.find((r) => r.form === "SC 13D") || null }))
-      .sort((a, b) => ((b.latest && b.latest.filed) || "").localeCompare((a.latest && a.latest.filed) || "") || (a.ticker < b.ticker ? -1 : 1)).slice(0, 50),
+      .sort((a, b) => ((b.latest && b.latest.filed) || "").localeCompare((a.latest && a.latest.filed) || "") || (a.ticker < b.ticker ? -1 : 1)),
     mostNewInstitutions: all.filter(([, x]) => x.institutions && x.institutions.fnew > 0 && !x.institutions.previousHoldersLow).map(([t, x]) => ({ ticker: t, period: x.institutions.period, newPositions: x.institutions.fnew, exits: x.institutions.fexit, holders: x.institutions.fh }))
       .sort((a, b) => b.newPositions - a.newPositions || (a.ticker < b.ticker ? -1 : 1)).slice(0, 25)
   };
+  highlights.clusterBuys = named(perIssuer(highlights.clusterBuys).slice(0, 50));
+  highlights.largestNetInsiderBuys90 = named(perIssuer(highlights.largestNetInsiderBuys90).slice(0, 25));
+  highlights.new13D90 = named(perIssuer(highlights.new13D90).slice(0, 50));
+  highlights.mostNewInstitutions = named(highlights.mostNewInstitutions);
   writeFileSync(join(outDir, "highlights.json"), JSON.stringify(highlights, null, 1) + "\n");
 
   const manifest = {
@@ -984,7 +1031,7 @@ export const LIMITATIONS = [
   "Form 3 enthaelt keine Transaktionen; Form 5 (nachtraegliche Jahresmeldung) zaehlt ab ihrem Einreichungsdatum.",
   "10b5-1: das Kontrollkaestchen gibt es erst seit 2023 und gilt fuer die ganze Einreichung; vorher nur Fussnoten. Fruehe Jahre unterschaetzen Planverkaeufe.",
   "Kaufwerte ohne gemeldeten Preis zaehlen mit 0 USD (ntx180/noPrice180 im aktuellen Stand).",
-  "13F: RESTATEMENT-Aenderungen werden nicht uebernommen; Verwalter, die dieselben Positionen ueber Sub-Advisor/Other Manager mehrfach melden, koennen doppelt zaehlen (fio > 100 % moeglich).",
+  "13F: Vertrauliche Meldungen (ISCONFIDENTIALOMITTED) und Meldungen, deren Tabelle im Datensatz unter 90 % der angegebenen Zeilen traegt, zaehlen nicht als \"hat gemeldet\" (keine Neu- oder Ausstiege daraus). Eine RESTATEMENT-Aenderung ersetzt ein solches Original nur im selben Datensatz; sonst werden RESTATEMENT-Aenderungen nicht uebernommen; Verwalter, die dieselben Positionen ueber Sub-Advisor/Other Manager mehrfach melden, koennen doppelt zaehlen (fio > 100 % moeglich).",
   "13F-Positionen ohne CUSIP-Zuordnung (kein Fails-to-Deliver-Eintrag unter dem heutigen Ticker) fehlen.",
   "Schedule 13D/13G: Rolle (Gegenstand/Meldender) kommt nicht aus dem Index; Meldungen mit zwei Universums-Parteien ohne klare Regel werden verworfen (coverage.schedules.ambiguous).",
   "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",

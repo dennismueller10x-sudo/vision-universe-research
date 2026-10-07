@@ -67,6 +67,17 @@ test("OS3 · 13F-Wert: bis 02.01.2023 Tausend USD, ab 03.01.2023 USD - mit Plaus
   assert.equal(E.valueToUsd(20, "DOLLARS"), 20);
 });
 
+test("OS3b · 13F-Meldung gilt nur vollstaendig als gemeldet (vertraulich, abgeschnitten)", () => {
+  assert.equal(E.thirteenFFilingComplete({ rows: 33063, tableEntryTotal: 33063, confidentialOmitted: false }), true);
+  /* JPMorgan Q1 2026: Original traegt 378 von 33 063 Zeilen, Bestaende stehen in der RESTATEMENT-Aenderung */
+  assert.equal(E.thirteenFFilingComplete({ rows: 378, tableEntryTotal: 33063, confidentialOmitted: false }), false);
+  /* Norges Bank: vertraulich, Bestaende ausgelassen */
+  assert.equal(E.thirteenFFilingComplete({ rows: 1, tableEntryTotal: 1507, confidentialOmitted: true }), false);
+  assert.equal(E.thirteenFFilingComplete({ rows: 950, tableEntryTotal: 1000 }), true, "Universumsfilter und Optionen: 90 % genuegen");
+  assert.equal(E.thirteenFFilingComplete({ rows: 5 }), true, "ohne Summenseite wie bisher");
+  assert.equal(E.thirteenFFilingComplete(null), false);
+});
+
 test("OS4 · Datensatzfenster und 13F-Quartal nach 45-Tage-Frist", () => {
   assert.deepEqual(E.datasetWindow("2024q1_form345.zip"), { start: "2024-01-01", end: "2024-03-31", kind: "insider" });
   assert.deepEqual(E.datasetWindow("2023q4_form13f.zip"), { start: "2023-10-01", end: "2023-12-31", kind: "13f" });

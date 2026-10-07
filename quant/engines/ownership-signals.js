@@ -168,6 +168,22 @@
   }
 
   /** Einheit der 13F-Spalte VALUE fuer eine Einreichung. */
+  /** Ist eine 13F-Meldung als Bestandsliste vollstaendig? Sonst darf der
+   *  Verwalter fuer dieses Quartal nicht als "hat gemeldet" gelten: Neu-
+   *  und Ausstiege wuerden aus einer Luecke abgeleitet. Zwei Faelle aus
+   *  den SEC-Datensaetzen: vertrauliche Meldungen (ISCONFIDENTIALOMITTED=Y,
+   *  z. B. Norges Bank) und Originale, deren Tabelle im Datensatz nur einen
+   *  Bruchteil der angegebenen Zeilen traegt (die Bestaende stehen in einer
+   *  RESTATEMENT-Aenderung, z. B. JPMorgan Q1 2026).
+   *  info: { rows, tableEntryTotal, confidentialOmitted } */
+  var THIRTEEN_F_MIN_COVERAGE = 0.9;
+  function thirteenFFilingComplete(info) {
+    if (!info || info.confidentialOmitted) return false;
+    var total = info.tableEntryTotal;
+    if (!(total > 0)) return true; // ohne Summenseite (aeltere Datensaetze): wie bisher
+    return (info.rows || 0) >= THIRTEEN_F_MIN_COVERAGE * total;
+  }
+
   function thirteenFValueUnit(filingIso, medianValuePerShare) {
     var byDate = filingIso && filingIso >= THIRTEEN_F_DOLLAR_SWITCH ? "DOLLARS" : "THOUSANDS";
     var m = medianValuePerShare;
@@ -571,7 +587,7 @@
     headerIndex: headerIndex, parseTsv: parseTsv, num: num,
     classifyRelationship: classifyRelationship, relationshipFromFlags: relationshipFromFlags, relationshipLabel: relationshipLabel, isInsider: isInsider,
     insiderDocType: insiderDocType, scheduleForm: scheduleForm,
-    thirteenFValueUnit: thirteenFValueUnit, valueToUsd: valueToUsd, median: median, datasetWindow: datasetWindow,
+    thirteenFValueUnit: thirteenFValueUnit, thirteenFFilingComplete: thirteenFFilingComplete, THIRTEEN_F_MIN_COVERAGE: THIRTEEN_F_MIN_COVERAGE, valueToUsd: valueToUsd, median: median, datasetWindow: datasetWindow,
     visible: visible, sortTransactions: sortTransactions, clusterBuy: clusterBuy, insiderSnapshot: insiderSnapshot, topInsiderBuyers: topInsiderBuyers,
     scheduleSnapshot: scheduleSnapshot, recentSchedules: recentSchedules, resolveScheduleSubject: resolveScheduleSubject,
     holdingsAt: holdingsAt, thirteenFSnapshot: thirteenFSnapshot,
