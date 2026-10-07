@@ -143,3 +143,15 @@ class ConsumerEpsContract(unittest.TestCase):
         for metric, rows in doc["quarterly"].items():
             ends = [row[2] for row in rows]
             self.assertEqual(len(ends), len(set(ends)), f"{metric}: doppelte Quartalsenden {ends}")
+
+
+class ContinuingOnlyWindow(unittest.TestCase):
+    def test_a_window_of_continuing_operations_eps_is_not_an_eps_ttm(self):
+        """F-TTM-1 (TTM-Holdout, nach der Auswertung behoben): VF Corp 10-K vom 2011-03-02 meldet die Quartale 2009 nur
+        als IncomeLossFromContinuingOperationsPerDilutedShare (0,91/0,68/1,94/0,60). Die Latest-Sicht stellte alle vier
+        Quartale auf das fortgefuehrte EPS um; das TTM 4,13 stand ohne Kennzeichen als verwaessertes Gesamt-EPS da."""
+        calendar, resolver = build("VFC")
+        fiscal_year, index = calendar.fiscal_year_for("2010-01-02"), calendar.quarter_index("2010-01-02")
+        fact = resolver.ttm_ending("eps_diluted", fiscal_year, index, "2011-03-02")
+        self.assertFalse(fact.available, f"TTM {fact.value} aus fortgefuehrtem EPS")
+        self.assertEqual(fact.reason, TTM_CONCEPT_MISMATCH)
