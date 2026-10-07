@@ -92,14 +92,25 @@ export function groundTruthQuarters(cf, conceptId) {
   }
   if (CONCEPTS[conceptId].additive) {
     // Q4 = FY - Q1..Q3 (Erstmeldungen), nur wenn kein Einzelquartal gemeldet.
+    // Q4-Ableitung nur innerhalb DESSELBEN Tags (kein Mischen von Gesamt- und Teilumsatz ueber Perioden):
+    // bevorzugt FY - YTD9M (gleicher Beginn), sonst FY - Q1..Q3, wenn alle drei unter demselben Tag gemeldet sind.
     for (const [k, arr] of fyBy) {
       const [s, e] = k.split('|');
       if (out.has(e)) continue;
-      const qs = [...out.values()].filter((q) => q.start >= s && q.end < e && q.quality !== 'DERIVED_Q4');
-      if (qs.length !== 3) continue;
-      const f0 = first(arr);
-      const kf = [f0.filed, ...qs.map((q) => q.known_from)].sort().at(-1);
-      out.set(e, { end: e, start: null, value: f0.val - qs.reduce((a, q) => a + q.value, 0), known_from: kf, accn: f0.accn, form: f0.form, tag: f0.tag, fy: f0.fy ?? null, fp: 'Q4', latest_value: null, latest_filed: null, quality: 'DERIVED_Q4', tagsFirstFiled: {}, ns, unit });
+      const tagOrder = CONCEPTS[conceptId].tags;
+      let best = null;
+      for (const tag of tagOrder) {
+        const fys = arr.filter((x) => x.tag === tag);
+        if (!fys.length) continue;
+        const f0 = first(fys);
+        const y9 = (ytd.get(s + '|' + [...ytd.keys()].map((kk) => kk.split('|')[1]).filter((ee) => ee < e && dur(ee, e) >= 80 && dur(ee, e) <= 100 && ytd.has(s + '|' + ee))[0]) || []).filter((x) => x.tag === tag);
+        if (y9.length) { const y0 = first(y9); best = { value: f0.val - y0.val, known_from: [f0.filed, y0.filed].sort().at(-1), f0 }; break; }
+        const qs = facts.filter((x) => x.tag === tag && isQ(x) && x.start >= s && x.end < e);
+        const qByEnd = new Map(); for (const x of qs) { const c = qByEnd.get(x.end); if (!c || firstOf(x, c)) qByEnd.set(x.end, x); }
+        if (qByEnd.size === 3) { const q3 = [...qByEnd.values()]; best = { value: f0.val - q3.reduce((a, x) => a + x.val, 0), known_from: [f0.filed, ...q3.map((x) => x.filed)].sort().at(-1), f0 }; break; }
+      }
+      if (!best) continue;
+      out.set(e, { end: e, start: null, value: best.value, known_from: best.known_from, accn: best.f0.accn, form: best.f0.form, tag: best.f0.tag, fy: best.f0.fy ?? null, fp: 'Q4', latest_value: null, latest_filed: null, quality: 'DERIVED_Q4', tagsFirstFiled: {}, ns, unit });
     }
     // Quartal nur aus YTD: YTD(n) - YTD(n-1) mit gleichem Beginn.
     const ytdList = [...ytd.entries()].map(([k, arr]) => ({ s: k.split('|')[0], e: k.split('|')[1], f0: first(arr) }));
