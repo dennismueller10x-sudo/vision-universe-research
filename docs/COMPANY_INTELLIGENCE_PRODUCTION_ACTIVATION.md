@@ -37,7 +37,7 @@ gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
 
 Disabling writes and rereads only the dedicated `gate.json`; it preserves the failed consumer generation and every private object. The emergency Pages flag requires zero R2 consumer reads and closes both the standalone Discover config and the shared Quant bundle, including query overrides. An unavailable generation therefore cannot prevent gate-off delivery. Future ordinary releases also remain off until the persistent gate is deliberately re-enabled. The previous two-slot consumer pointer/recovery mechanism remains intact; no richer private generation is overwritten. Static Pages propagation takes a release cycle, and already-loaded browser tabs are not remotely evicted immediately.
 
-Full 46-stock responsive and dark-mode acceptance runs on explicit Pages dispatches, including activation. Ordinary existing Pages/data deliveries use a short real-production AAPL/XPEV/hash/access smoke; release construction still verifies all 86 R2 assets on every enabled delivery. No full browser cohort or discovery campaign is added to the existing five-minute market-data delivery bridge.
+Full 46-stock responsive and dark-mode acceptance runs only with the explicit `company_intelligence_acceptance=true` Pages input, including activation. Existing automation also uses workflow dispatch, so event type alone does not select full acceptance. The post-deploy mode is bound to the package output; a concurrently enabled R2 gate cannot relabel an already built off artifact as active. Ordinary existing Pages/data deliveries use a short real-production AAPL/XPEV/hash/access smoke; release construction still verifies all 86 R2 assets on every enabled delivery. No full browser cohort or discovery campaign is added to the existing five-minute market-data delivery bridge.
 
 The automatic live workflow executes the same disable + emergency redeploy on any material production acceptance failure. A deliberate off release is tested in eight real-product/viewport cases rather than triggering a rollback loop.
 
@@ -48,3 +48,5 @@ The served facts retain their real 6 October data timestamp. Existing 48-hour st
 ## Live evidence
 
 Actual production deployment, served SHA, R2 read-back and browser results will be appended only after their corresponding real runs pass. A successful local or packaged preview is not recorded as a production deployment.
+
+Activation after verified R2 enable uses `gh workflow run pages-release.yml --ref main -f company_intelligence_acceptance=true`. Regular automated dispatches retain short smoke. A late disable of an enabled artifact still triggers fail-closed rollback.
