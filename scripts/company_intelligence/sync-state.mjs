@@ -13,6 +13,16 @@ export function prefixFor(namespace) {
   if (!/^[a-zA-Z0-9_-]{1,80}$/.test(namespace || '')) throw new Error('INVALID_STATE_NAMESPACE');
   return `v1/company-intelligence/state/${namespace}/`;
 }
+export function safeFailureCode(error) {
+  const known = new Set(['INVALID_STATE_NAMESPACE','INVALID_REMOTE_CHECKPOINT','REMOTE_STATE_MISSING_INITIALIZATION_REQUIRED',
+    'REMOTE_STATE_CORRUPT','INVALID_SYNC_DIRECTION','CHECKPOINT_STORAGE_BUDGET_EXCEEDED',
+    'CHECKPOINT_UPLOAD_VERIFICATION_FAILED','CHECKPOINT_POINTER_VERIFICATION_FAILED','MISSING_SYNC_ARGUMENT']);
+  if (known.has(error?.message)) return error.message;
+  if (error?.$metadata?.httpStatusCode === 403 || error?.name === 'AccessDenied') return 'PRIVATE_STATE_READ_ACCESS_DENIED';
+  if (error?.$metadata?.httpStatusCode === 404 || error?.name === 'NoSuchKey') return 'PRIVATE_STATE_OBJECT_NOT_FOUND';
+  if (error?.name === 'CredentialsProviderError') return 'PRIVATE_STATE_CREDENTIALS_UNAVAILABLE';
+  return 'PRIVATE_STATE_STORAGE_REQUEST_FAILED'; // Never echo SDK messages, URLs, headers or keys.
+}
 function validate(meta) {
   if (!meta || meta.schema !== 1 || ![0, 1].includes(meta.slot) || !/^[a-f0-9]{64}$/.test(meta.sha256) || !Number.isSafeInteger(meta.bytes) || meta.bytes <= 0 || meta.bytes > MAX) throw new Error('INVALID_REMOTE_CHECKPOINT');
   return meta;
@@ -74,5 +84,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const arg = name => { const i = args.indexOf(name); if (i < 0 || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error('MISSING_SYNC_ARGUMENT'); return args[i + 1]; };
   const driver = args.includes('--local-root') ? createFsDriver(arg('--local-root')) : createS3DriverFromEnv();
   try { console.log(JSON.stringify(await sync(driver, {direction: args[0], namespace: arg('--namespace'), file: arg('--file'), initialize: args.includes('--initialize')}))); }
-  catch { console.error('INTELLIGENCE_STATE_SYNC_FAILED: state unavailable, invalid or write verification failed.'); process.exitCode = 1; }
+  catch (error) { console.error('INTELLIGENCE_STATE_SYNC_FAILED: ' + safeFailureCode(error)); process.exitCode = 1; }
 }

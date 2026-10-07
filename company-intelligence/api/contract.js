@@ -12,7 +12,7 @@
   function validProfile(p, companyId, generatedAt) {
     if (!p || p.schema !== 'company-profile-1.0.0' || p.state !== 'AVAILABLE' || p.companyId !== companyId ||
         typeof p.companyName !== 'string' || p.companyName.length > 200 || typeof p.description !== 'string' || p.description.length < 40 || p.description.length > 1200 ||
-        p.language !== 'en' || !['HIGH','MEDIUM'].includes(p.confidence) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(p.lastVerifiedAt) ||
+        !['en','de'].includes(p.language) || !['HIGH','MEDIUM'].includes(p.confidence) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(p.lastVerifiedAt) ||
         !Number.isFinite(Date.parse(p.lastVerifiedAt)) || p.lastVerifiedAt > generatedAt || (p.officialWebsite && !safeLink(p.officialWebsite))) return false;
     for (const key of ['businessActivities','productsServices','customerMarkets','majorSegments']) {
       if (!Array.isArray(p[key]) || p[key].length > 5 || p[key].some(v => typeof v !== 'string' || v.length > 700)) return false;
@@ -34,6 +34,7 @@
       if (!response.ok) return unavailable('INDEX_UNAVAILABLE');
       const index = await response.json();
       if (index.schema !== SCHEMA || !['PREVIEW', 'AVAILABLE'].includes(index.state)) return unavailable('FEATURE_DISABLED');
+      if (options.expectedGeneration && index.generation !== options.expectedGeneration) return unavailable('PRODUCTION_GENERATION_MISMATCH');
       let lookup = index;
       if (Array.isArray(index.lookupShards)) {
         if (!/^[a-f0-9]{24}$/.test(index.generation)) return unavailable('INVALID_GENERATION');
@@ -57,6 +58,7 @@
       const dataResponse = await fetcher(base + path, { signal: options.signal, cache: 'default' });
       if (!dataResponse.ok) return unavailable('COMPANY_DATA_UNAVAILABLE');
       const payload = await dataResponse.json();
+      if (index.generatedAt && payload.generatedAt !== index.generatedAt) return unavailable('COMPANY_GENERATION_MISMATCH');
       if (payload.schema !== SCHEMA || payload.companyId !== companyId || !['AVAILABLE', 'NO_DATA'].includes(payload.state) ||
           !payload.listings?.some(l => l.symbol === symbol && listings.some(m => m.instrumentId === l.instrumentId && m.companyId === companyId))) return unavailable('IDENTITY_MISMATCH');
       for (const key of ['news', 'events', 'earnings', 'filings', 'calls', 'timeline']) if (!Array.isArray(payload[key]) || payload[key].length > 200) return unavailable('INVALID_SECTIONS');
@@ -71,7 +73,7 @@
       if (payload.events.some(e => e.eventType === 'EARNINGS_ESTIMATED' && (e.confirmationStatus !== 'ESTIMATED' || !validDay(e.dateStart) || !validDay(e.dateEnd) || e.dateStart > e.dateEnd))) return unavailable('INVALID_CALENDAR_CONFIDENCE');
       if (payload.events.some(e => e.eventType !== 'EARNINGS_ESTIMATED' && (!validDay(e.date) || e.confirmationStatus !== 'CONFIRMED' || (e.startsAt && (!Number.isFinite(Date.parse(e.startsAt)) || !/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(e.startsAt)))))) return unavailable('INVALID_CONFIRMED_EVENT');
       if (payload.earningsBundles?.some(b => !Array.isArray(b.eventIds) || !Array.isArray(b.materials) || b.materials.length > 20 || b.materials.some(d => d.companyId !== companyId))) return unavailable('INVALID_EARNINGS_BUNDLE');
-      return { ...payload, ticker: symbol, preview: index.state === 'PREVIEW', stale: now - generated > 48 * 3600000 };
+      return { ...payload, ticker: symbol, preview: index.state === 'PREVIEW' && !options.expectedGeneration, stale: now - generated > 48 * 3600000 };
     } catch (error) { return unavailable(error?.name === 'AbortError' ? 'REQUEST_ABORTED' : 'FETCH_FAILED'); }
   }
   const api = { SCHEMA, load, safeLink, validProfile };

@@ -93,6 +93,11 @@ on:
     - cron: '*/5 13-21 * * 1-5'
 
   workflow_dispatch:
+    inputs:
+      company_intelligence_off:
+        description: 'Emergency Company Intelligence gate off in Discover and Quant; no R2 consumer read'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -109,6 +114,8 @@ concurrency:
 
 jobs:
   package:
+    outputs:
+      source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
@@ -142,6 +149,18 @@ jobs:
         run: |
           # A failed consumer projection leaves the tracked disabled index intact.
           node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
+      - name: Pin approved Company Intelligence production generation (fail closed)
+        env:
+          COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          args=(stage --release "$RUNNER_TEMP/site")
+          if [ "$COMPANY_INTELLIGENCE_OFF" = true ]; then args+=(--off); fi
+          node scripts/company_intelligence/production-release.mjs "${args[@]}"
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
@@ -164,6 +183,7 @@ jobs:
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
 
       - name: Enforce delivery contract
+        id: delivery_contract
         env:
           EVENT_SHA: ${{ github.sha }}
           EVENT_NAME: ${{ github.event_name }}
@@ -189,6 +209,7 @@ jobs:
             echo "Kopf $HEAD_SHA enthaelt das Ereignis $EVENT_SHA - ausgeliefert wird der Kopf."
           fi
           export EXPECTED_COMMIT="$HEAD_SHA"
+          echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           echo "Ausgeliefert wird $HEAD_SHA (Ereignis: $EVENT_NAME)."
           node --input-type=module <<'NODE'
           import {readFile} from 'node:fs/promises';
@@ -251,3 +272,98 @@ jobs:
       - name: Deploy reviewed release artifact
         id: deployment
         uses: actions/deploy-pages@v4
+  company-intelligence-live:
+    if: github.event_name != 'pull_request'
+    needs: [package, deploy]
+    permissions:
+      contents: read
+      actions: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.package.outputs.source_sha }}
+      - name: Controlled activation only
+        id: approved
+        env:
+          EMERGENCY_OFF: ${{ inputs.company_intelligence_off }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -f company-intelligence/config/production-approval.json ]; then
+            node --input-type=module <<'NODE'
+          import {approval} from './scripts/company_intelligence/production-approval.mjs';
+          import {createS3DriverFromEnv} from './scripts/market/storage/s3-driver.mjs';
+          import {prefixFor} from './scripts/company_intelligence/public-delivery.mjs';
+          import {appendFileSync} from 'node:fs';
+          appendFileSync(process.env.GITHUB_OUTPUT,'prepared=true\n');
+          let enabled=false;
+          if(approval.deliveryEnabled&&process.env.EMERGENCY_OFF!=='true'){
+            const bytes=await createS3DriverFromEnv().get(prefixFor(approval.namespace)+'gate.json');
+            const gate=bytes?JSON.parse(bytes):null;
+            if(!gate||gate.generation!==approval.consumerGeneration)throw Error('PRODUCTION_GATE_MISMATCH');
+            enabled=gate.state==='AVAILABLE';
+          }
+          appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${enabled}\n`);
+          NODE
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.approved.outputs.prepared == 'true'
+        with:
+          node-version: '22'
+      - name: Browser dependencies
+        if: steps.approved.outputs.prepared == 'true'
+        run: |
+          npm install --prefix /tmp/ci-live --no-audit --no-fund playwright@1.55.0
+          /tmp/ci-live/node_modules/.bin/playwright install --with-deps chromium
+      - name: Prove actual production gate-off behavior before activation or after rollback
+        if: steps.approved.outputs.prepared == 'true' && steps.approved.outputs.enabled != 'true'
+        env:
+          NODE_PATH: /tmp/ci-live/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/company_intelligence/production-off-qa.mjs
+      - name: Actual production hash, access, stock and mobile acceptance
+        id: live
+        if: steps.approved.outputs.enabled == 'true'
+        env:
+          NODE_PATH: /tmp/ci-live/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
+          FULL_ACCEPTANCE: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          if [ "$FULL_ACCEPTANCE" != true ]; then
+            node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
+            exit 0
+          fi
+          node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
+          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
+          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"
+      - name: Fail-closed persistent consumer gate and emergency Pages rollback
+        if: failure() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          gate_failure=0
+          node scripts/company_intelligence/production-release.mjs disable || gate_failure=$?
+          # Emergency delivery must still close both products if R2 is unreachable.
+          gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
+          exit "$gate_failure"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.approved.outputs.prepared == 'true'
+        with:
+          name: company-intelligence-live-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/live-fast/
+            ${{ runner.temp }}/live-cohort/
+            ${{ runner.temp }}/live-dark/
+            ${{ runner.temp }}/live-off/
+          retention-days: 14

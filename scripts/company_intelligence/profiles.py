@@ -465,7 +465,7 @@ def public_profile(value, cid, now):
     for field in ('businessActivities', 'productsServices', 'customerMarkets', 'majorSegments'):
         if not isinstance(value.get(field), list) or len(value[field]) > 5 or any(not isinstance(s, str) or len(s) > 700 for s in value[field]):
             return None
-    fields = ('schema', 'parserVersion', 'state', 'companyId', 'companyName', 'description', 'language', 'primaryBusinessActivity', 'businessActivities', 'productsServices', 'customerMarkets', 'majorSegments', 'officialWebsite', 'confidence', 'lastVerifiedAt', 'refreshPolicy')
+    fields = ('schema', 'parserVersion', 'state', 'companyId', 'companyName', 'description', 'language', 'editorialStatus', 'primaryBusinessActivity', 'businessActivities', 'productsServices', 'customerMarkets', 'majorSegments', 'officialWebsite', 'confidence', 'lastVerifiedAt', 'refreshPolicy')
     public = {k: value[k] for k in fields if k in value}
     public['sources'] = [{k: s[k] for k in ('companyId', 'type', 'url', 'filingId', 'form', 'filedAt', 'verifiedAt', 'contentHash') if k in s} for s in sources]
     stale_days = SEC_STALE_DAYS if all(s['type'] == 'SEC' for s in sources) else 180

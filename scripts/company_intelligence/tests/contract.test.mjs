@@ -47,3 +47,8 @@ test('wrong issuer, private source, malformed facts and wrong SEC CIK invalidate
   assert.equal((await load('AAPL',{...options,fetch:fetcher({...data(),companyProfile})})).reason,'INVALID_COMPANY_PROFILE');
  }
 });
+
+test('issuer data with a different preparation timestamp cannot join the current index',async()=>{
+ const result=await load('AAPL',{...options,fetch:fetcher(data(),{generatedAt:'2026-10-01T11:00:00Z'})});
+ assert.equal(result.reason,'COMPANY_GENERATION_MISMATCH');
+});
