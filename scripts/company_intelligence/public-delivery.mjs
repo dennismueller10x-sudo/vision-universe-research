@@ -5,6 +5,7 @@ import {resolve, sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {createFsDriver} from '../market/storage/fs-driver.mjs';
+import {approvedForPublication} from './production-approval.mjs';
 export const MAX = 512 * 1024;
 const sha = b => createHash('sha256').update(b).digest('hex');
 const ID = '(?:iss_cik_\\d{10}|vu_[a-f0-9]{14})';
@@ -30,6 +31,8 @@ async function manifest(driver, key) {
 // Validate every local object before the first remote write. A correct hash alone
 // does not prove a complete, correctly scoped consumer generation.
 export function preflight(root, m, prior = null, {localReview = false} = {}) {
+  const approved = approvedForPublication(m);
+  if (m.productionApproval && !approved) throw new Error('PRODUCTION_APPROVAL_INVALID');
   if (!localReview && m.releaseState === 'REVIEW_ONLY') throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
   const assets = new Map();
   for (const [path, meta] of Object.entries(m.assets)) {
@@ -69,7 +72,7 @@ export function preflight(root, m, prior = null, {localReview = false} = {}) {
   }
   for (const path of issuerPaths) {
     const p = assets.get(path).data;
-    if (!localReview && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || ['CATALOGUE_AND_EXISTING_FACTS','OWNED_IR_SEC_REVIEW','RESTORED_OWNED_IR_SEC_REVIEW'].includes(p.previewBasis))) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
+    if (!localReview && !approved && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || ['CATALOGUE_AND_EXISTING_FACTS','OWNED_IR_SEC_REVIEW','RESTORED_OWNED_IR_SEC_REVIEW'].includes(p.previewBasis))) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
     if (p.companyId + '.json' !== path.split('/').at(-1) || p.schema !== index.schema || p.state !== 'AVAILABLE' || p.generatedAt !== m.generatedAt) throw new Error('INVALID_PUBLIC_COMPANY');
     for (const key of ['news','events','earnings','filings','calls','timeline']) {
       if (!Array.isArray(p[key]) || p[key].length > 200 || p[key].some(row => row?.companyId !== p.companyId)) throw new Error('INVALID_PUBLIC_SECTIONS');

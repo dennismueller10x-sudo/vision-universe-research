@@ -74,6 +74,11 @@ on:
     - cron: '*/5 13-21 * * 1-5'
 
   workflow_dispatch:
+    inputs:
+      company_intelligence_off:
+        description: 'Emergency Company Intelligence gate off in Discover and Quant; no R2 consumer read'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -119,6 +124,18 @@ jobs:
         run: |
           # A failed consumer projection leaves the tracked disabled index intact.
           node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
+      - name: Pin approved Company Intelligence production generation (fail closed)
+        env:
+          COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          args=(stage --release "$RUNNER_TEMP/site")
+          if [ "$COMPANY_INTELLIGENCE_OFF" = true ]; then args+=(--off); fi
+          node scripts/company_intelligence/production-release.mjs "${args[@]}"
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
