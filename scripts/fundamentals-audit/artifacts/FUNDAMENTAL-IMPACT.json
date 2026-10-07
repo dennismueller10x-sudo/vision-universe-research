@@ -23,18 +23,18 @@
    "completionStatus": "COMPLETE_BUNDLES_POSTPROCESS_FAILED"
   },
   "new": {
-   "commit": "dc826000049",
-   "builderHash": "9f3cd26bd5601665483540730f80e894ce06688d37f147ba7849f0512dff61d8",
+   "commit": "6d83e13efbf",
+   "builderHash": "6b3bd5b6c392a24c39af4adb407ad72e15e2e4ce2205ef79f826126ddd10d252",
    "schema": "vu-consumer-fundamentals-1.0.0",
    "dataVersions": [
-    "1.14.0+registry-1.8.0"
+    "1.15.0+registry-1.8.0"
    ],
    "asOf": [
     "2026-10-05"
    ],
    "buildWindowUtc": {
-    "first": "2026-10-07T15:22:25+00:00",
-    "last": "2026-10-07T15:29:11+00:00"
+    "first": "2026-10-07T15:39:26+00:00",
+    "last": "2026-10-07T15:46:11+00:00"
    },
    "bundles": 5072,
    "issuerUniverseHash": "a34ab7e471c59cc29dfe52355f14cafaddf0a76241a0a2bf78cff7e20d63d462",
@@ -45,7 +45,7 @@
  },
  "bundleDiff": {
   "issuersCompared": 5072,
-  "issuersWithAnyChange": 3762,
+  "issuersWithAnyChange": 3744,
   "byMetric": {
    "capital_expenditures": {
     "annual.added": {
@@ -69,36 +69,44 @@
      "issuers": 1
     },
     "quarterly.added": {
-     "rows": 142,
-     "issuers": 70
+     "rows": 39,
+     "issuers": 18
     },
     "quarterly.filedChanged": {
      "rows": 1,
      "issuers": 1
     },
     "quarterly.labelChanged": {
-     "rows": 928,
+     "rows": 942,
      "issuers": 137
     },
     "quarterly.removed": {
-     "rows": 188,
-     "issuers": 93
+     "rows": 49,
+     "issuers": 23
     },
     "quarterly.valueChanged": {
-     "rows": 1,
-     "issuers": 1
+     "rows": 14,
+     "issuers": 11
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 1,
-     "issuers": 1
+     "rows": 11,
+     "issuers": 9
     },
     "ttm.added": {
      "rows": 8,
      "issuers": 8
     },
     "ttm.removed": {
-     "rows": 44,
-     "issuers": 44
+     "rows": 2,
+     "issuers": 2
+    },
+    "ttm.valueChanged": {
+     "rows": 6,
+     "issuers": 6
+    },
+    "ttm.valueChangedOver10pct": {
+     "rows": 4,
+     "issuers": 4
     }
    },
    "cash_and_equivalents": {
@@ -177,44 +185,40 @@
      "issuers": 2
     },
     "quarterly.added": {
-     "rows": 499,
-     "issuers": 269
+     "rows": 43,
+     "issuers": 24
     },
     "quarterly.filedChanged": {
      "rows": 1,
      "issuers": 1
     },
     "quarterly.labelChanged": {
-     "rows": 1041,
+     "rows": 1064,
      "issuers": 149
     },
     "quarterly.removed": {
-     "rows": 541,
-     "issuers": 292
+     "rows": 44,
+     "issuers": 23
     },
     "quarterly.valueChanged": {
-     "rows": 5,
-     "issuers": 5
+     "rows": 298,
+     "issuers": 167
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 4,
-     "issuers": 4
+     "rows": 233,
+     "issuers": 134
     },
     "ttm.added": {
      "rows": 6,
      "issuers": 6
     },
-    "ttm.removed": {
-     "rows": 217,
-     "issuers": 217
-    },
     "ttm.valueChanged": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 130,
+     "issuers": 130
     },
     "ttm.valueChangedOver10pct": {
-     "rows": 1,
-     "issuers": 1
+     "rows": 86,
+     "issuers": 86
     }
    },
    "diluted_weighted_average_shares": {
@@ -279,44 +283,40 @@
      "issuers": 4
     },
     "quarterly.added": {
-     "rows": 383,
-     "issuers": 209
+     "rows": 33,
+     "issuers": 19
     },
     "quarterly.filedChanged": {
      "rows": 1,
      "issuers": 1
     },
     "quarterly.labelChanged": {
-     "rows": 919,
+     "rows": 939,
      "issuers": 132
     },
     "quarterly.removed": {
-     "rows": 413,
-     "issuers": 227
+     "rows": 32,
+     "issuers": 17
     },
     "quarterly.valueChanged": {
-     "rows": 4,
-     "issuers": 4
+     "rows": 215,
+     "issuers": 124
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 3,
-     "issuers": 3
+     "rows": 110,
+     "issuers": 67
     },
     "ttm.added": {
      "rows": 3,
      "issuers": 3
     },
-    "ttm.removed": {
-     "rows": 163,
-     "issuers": 163
-    },
     "ttm.valueChanged": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 91,
+     "issuers": 91
     },
     "ttm.valueChangedOver10pct": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 35,
+     "issuers": 35
     }
    },
    "eps_diluted": {
@@ -399,36 +399,44 @@
      "issuers": 1
     },
     "quarterly.added": {
-     "rows": 206,
-     "issuers": 106
+     "rows": 41,
+     "issuers": 19
     },
     "quarterly.filedChanged": {
      "rows": 1,
      "issuers": 1
     },
     "quarterly.labelChanged": {
-     "rows": 925,
+     "rows": 942,
      "issuers": 137
     },
     "quarterly.removed": {
-     "rows": 258,
-     "issuers": 133
+     "rows": 51,
+     "issuers": 24
     },
     "quarterly.valueChanged": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 15,
+     "issuers": 12
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 10,
+     "issuers": 8
     },
     "ttm.added": {
      "rows": 8,
      "issuers": 8
     },
     "ttm.removed": {
-     "rows": 73,
-     "issuers": 73
+     "rows": 2,
+     "issuers": 2
+    },
+    "ttm.valueChanged": {
+     "rows": 6,
+     "issuers": 6
+    },
+    "ttm.valueChangedOver10pct": {
+     "rows": 3,
+     "issuers": 3
     }
    },
    "gross_profit": {
@@ -449,32 +457,32 @@
      "issuers": 83
     },
     "annual.valueChanged": {
-     "rows": 614,
+     "rows": 634,
      "issuers": 138
     },
     "annual.valueChangedOver10pct": {
-     "rows": 413,
-     "issuers": 105
+     "rows": 424,
+     "issuers": 106
     },
     "quarterly.added": {
-     "rows": 64,
-     "issuers": 40
+     "rows": 20,
+     "issuers": 15
     },
     "quarterly.labelChanged": {
-     "rows": 761,
+     "rows": 762,
      "issuers": 109
     },
     "quarterly.removed": {
-     "rows": 76,
-     "issuers": 45
+     "rows": 27,
+     "issuers": 16
     },
     "quarterly.valueChanged": {
-     "rows": 438,
-     "issuers": 69
+     "rows": 462,
+     "issuers": 72
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 278,
-     "issuers": 51
+     "rows": 290,
+     "issuers": 54
     },
     "ttm.added": {
      "rows": 1,
@@ -629,44 +637,40 @@
      "issuers": 10
     },
     "quarterly.added": {
-     "rows": 178,
-     "issuers": 102
+     "rows": 51,
+     "issuers": 31
     },
     "quarterly.filedChanged": {
      "rows": 3,
      "issuers": 3
     },
     "quarterly.labelChanged": {
-     "rows": 1154,
+     "rows": 1162,
      "issuers": 162
     },
     "quarterly.removed": {
-     "rows": 183,
-     "issuers": 100
+     "rows": 49,
+     "issuers": 25
     },
     "quarterly.valueChanged": {
-     "rows": 4,
-     "issuers": 3
+     "rows": 53,
+     "issuers": 34
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 3,
-     "issuers": 2
+     "rows": 28,
+     "issuers": 21
     },
     "ttm.added": {
      "rows": 6,
      "issuers": 6
     },
-    "ttm.removed": {
-     "rows": 69,
-     "issuers": 69
-    },
     "ttm.valueChanged": {
-     "rows": 4,
-     "issuers": 4
+     "rows": 30,
+     "issuers": 30
     },
     "ttm.valueChangedOver10pct": {
-     "rows": 3,
-     "issuers": 3
+     "rows": 8,
+     "issuers": 8
     }
    },
    "operating_cash_flow": {
@@ -691,24 +695,24 @@
      "issuers": 5
     },
     "quarterly.added": {
-     "rows": 139,
-     "issuers": 74
+     "rows": 51,
+     "issuers": 26
     },
     "quarterly.filedChanged": {
      "rows": 2,
      "issuers": 2
     },
     "quarterly.labelChanged": {
-     "rows": 1140,
+     "rows": 1145,
      "issuers": 158
     },
     "quarterly.removed": {
-     "rows": 156,
-     "issuers": 81
+     "rows": 64,
+     "issuers": 30
     },
     "quarterly.valueChanged": {
-     "rows": 6,
-     "issuers": 5
+     "rows": 7,
+     "issuers": 6
     },
     "quarterly.valueChangedOver10pct": {
      "rows": 6,
@@ -719,8 +723,12 @@
      "issuers": 9
     },
     "ttm.removed": {
-     "rows": 42,
-     "issuers": 42
+     "rows": 2,
+     "issuers": 2
+    },
+    "ttm.valueChanged": {
+     "rows": 1,
+     "issuers": 1
     }
    },
    "operating_income": {
@@ -803,44 +811,40 @@
      "issuers": 7
     },
     "quarterly.added": {
-     "rows": 155,
-     "issuers": 83
+     "rows": 38,
+     "issuers": 21
     },
     "quarterly.filedChanged": {
      "rows": 1,
      "issuers": 1
     },
     "quarterly.labelChanged": {
-     "rows": 918,
-     "issuers": 130
+     "rows": 922,
+     "issuers": 129
     },
     "quarterly.removed": {
-     "rows": 162,
-     "issuers": 86
+     "rows": 40,
+     "issuers": 21
     },
     "quarterly.valueChanged": {
-     "rows": 3,
-     "issuers": 2
+     "rows": 40,
+     "issuers": 23
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 3,
-     "issuers": 2
+     "rows": 22,
+     "issuers": 15
     },
     "ttm.added": {
      "rows": 4,
      "issuers": 4
     },
-    "ttm.removed": {
-     "rows": 59,
-     "issuers": 59
-    },
     "ttm.valueChanged": {
-     "rows": 3,
-     "issuers": 3
+     "rows": 22,
+     "issuers": 22
     },
     "ttm.valueChangedOver10pct": {
-     "rows": 2,
-     "issuers": 2
+     "rows": 4,
+     "issuers": 4
     }
    },
    "research_and_development": {
@@ -879,52 +883,48 @@
      "issuers": 105
     },
     "annual.valueChanged": {
-     "rows": 2515,
-     "issuers": 554
+     "rows": 2670,
+     "issuers": 574
     },
     "annual.valueChangedOver10pct": {
-     "rows": 1469,
-     "issuers": 367
+     "rows": 1523,
+     "issuers": 383
     },
     "quarterly.added": {
-     "rows": 231,
-     "issuers": 138
+     "rows": 38,
+     "issuers": 23
     },
     "quarterly.filedChanged": {
      "rows": 2,
      "issuers": 2
     },
     "quarterly.labelChanged": {
-     "rows": 979,
+     "rows": 992,
      "issuers": 140
     },
     "quarterly.removed": {
-     "rows": 243,
-     "issuers": 141
+     "rows": 40,
+     "issuers": 21
     },
     "quarterly.valueChanged": {
-     "rows": 1941,
-     "issuers": 310
+     "rows": 2099,
+     "issuers": 329
     },
     "quarterly.valueChangedOver10pct": {
-     "rows": 1133,
-     "issuers": 201
+     "rows": 1192,
+     "issuers": 219
     },
     "ttm.added": {
-     "rows": 3,
-     "issuers": 3
-    },
-    "ttm.removed": {
-     "rows": 92,
-     "issuers": 92
+     "rows": 4,
+     "issuers": 4
     },
     "ttm.valueChanged": {
-     "rows": 284,
-     "issuers": 284
+     "rows": 309,
+     "issuers": 309
     },
     "ttm.valueChangedOver10pct": {
-     "rows": 153,
-     "issuers": 153
+     "rows": 164,
+     "issuers": 164
     }
    },
    "shares_outstanding": {
@@ -1207,484 +1207,86 @@
      "end": "2026-06-30"
     }
    ],
-   "pretax_income:quarterly.removed": [
+   "pretax_income:quarterly.valueChanged": [
     {
      "ticker": "AMD",
      "end": "2024-12-28",
-     "old": 922000000
+     "old": 922000000,
+     "new": 889000000,
+     "rel": 0.0358
     },
     {
      "ticker": "AMD",
      "end": "2025-12-27",
-     "old": 2100000000
+     "old": 2100000000,
+     "new": 2074000000,
+     "rel": 0.0124
     },
     {
      "ticker": "AEP",
      "end": "2024-12-31",
-     "old": 791800000
+     "old": 791800000,
+     "new": 697800000,
+     "rel": 0.1187
     },
     {
      "ticker": "AEP",
      "end": "2025-12-31",
-     "old": 800800000
+     "old": 800800000,
+     "new": 699800000,
+     "rel": 0.1261
     },
     {
-     "ticker": "ADP",
-     "end": "2024-06-30",
-     "old": 1089300000
-    },
-    {
-     "ticker": "CPK",
+     "ticker": "HUM",
      "end": "2024-12-31",
-     "old": 49700000
-    }
-   ],
-   "pretax_income:quarterly.added": [
-    {
-     "ticker": "AMD",
-     "end": "2024-03-30",
-     "new": 64000000
+     "old": -963000000,
+     "new": -862000000,
+     "rel": 0.1049
     },
     {
-     "ticker": "AMD",
-     "end": "2024-06-29",
-     "new": 299000000
-    },
-    {
-     "ticker": "AEP",
-     "end": "2023-09-30",
-     "new": 1001200000
-    },
-    {
-     "ticker": "AEP",
-     "end": "2024-03-31",
-     "new": 839300000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2025-09-30",
-     "new": 1307500000
-    },
-    {
-     "ticker": "CPK",
-     "end": "2024-03-31",
-     "new": 62800000
-    }
-   ],
-   "depreciation_and_amortization:quarterly.removed": [
-    {
-     "ticker": "AMD",
-     "end": "2023-12-30",
-     "old": -2213000000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2025-06-30",
-     "old": 5042000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2025-09-30",
-     "old": 8569000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2026-06-30",
-     "old": 12016000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-12-31",
-     "old": -11445000
-    },
-    {
-     "ticker": "AVD",
+     "ticker": "HUM",
      "end": "2025-12-31",
-     "old": -8752000
+     "old": -1128000000,
+     "new": -1011000000,
+     "rel": 0.1037
     }
    ],
-   "ebitda:quarterly.removed": [
-    {
-     "ticker": "AMD",
-     "end": "2023-12-30",
-     "old": -1871000000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2025-06-30",
-     "old": 23103000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2025-09-30",
-     "old": 17969000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2026-06-30",
-     "old": -21162000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-12-31",
-     "old": -81471000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2025-12-31",
-     "old": -30599000
-    }
-   ],
-   "pretax_income:ttm.removed": [
+   "pretax_income:ttm.valueChanged": [
     {
      "ticker": "AMD",
      "old": 7570000000,
-     "end": "2026-06-27"
+     "new": 7544000000,
+     "rel": 0.0034
     },
     {
      "ticker": "AEP",
      "old": 3857500000,
-     "end": "2026-03-31"
+     "new": 3756500000,
+     "rel": 0.0262
     },
     {
-     "ticker": "CPK",
-     "old": 206500000,
-     "end": "2026-06-30"
+     "ticker": "HUM",
+     "old": 1342000000,
+     "new": 1459000000,
+     "rel": 0.0802
     },
     {
-     "ticker": "DBD",
-     "old": 163900000,
-     "end": "2026-06-30"
+     "ticker": "OHI",
+     "old": 902103000,
+     "new": 902321000,
+     "rel": 0.0002
     },
     {
-     "ticker": "DDS",
-     "old": 840372000,
-     "end": "2026-08-01"
+     "ticker": "NKTR",
+     "old": -161841000,
+     "new": -153114000,
+     "rel": 0.0539
     },
     {
-     "ticker": "SRCE",
-     "old": 221495000,
-     "end": "2026-06-30"
-    }
-   ],
-   "operating_cash_flow:quarterly.removed": [
-    {
-     "ticker": "APD",
-     "end": "2024-09-30",
-     "old": 957000000
-    },
-    {
-     "ticker": "APD",
-     "end": "2025-09-30",
-     "old": 1261200000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2023-06-30",
-     "old": 1185700000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2024-06-30",
-     "old": 1300600000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2025-03-31",
-     "old": -204000000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2026-03-31",
-     "old": 671000000
-    }
-   ],
-   "operating_cash_flow:quarterly.added": [
-    {
-     "ticker": "APD",
-     "end": "2024-03-31",
-     "new": 801700000
-    },
-    {
-     "ticker": "APD",
-     "end": "2024-06-30",
-     "new": 1261400000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2025-03-31",
-     "new": 1525800000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2026-03-31",
-     "new": 2238000000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2024-03-31",
-     "new": 514000000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2024-06-30",
-     "new": 1297000000
-    }
-   ],
-   "free_cash_flow:quarterly.removed": [
-    {
-     "ticker": "APD",
-     "end": "2024-09-30",
-     "old": -1118200000
-    },
-    {
-     "ticker": "APD",
-     "end": "2025-09-30",
-     "old": -256500000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2023-06-30",
-     "old": 1124800000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2024-06-30",
-     "old": 1245900000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2025-03-31",
-     "old": -318000000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2026-03-31",
-     "old": 546000000
-    }
-   ],
-   "free_cash_flow:quarterly.added": [
-    {
-     "ticker": "APD",
-     "end": "2024-03-31",
-     "new": -867700000
-    },
-    {
-     "ticker": "APD",
-     "end": "2024-06-30",
-     "new": -345200000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2025-03-31",
-     "new": 1489400000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2026-03-31",
-     "new": 2187400000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2024-03-31",
-     "new": 380000000
-    },
-    {
-     "ticker": "BDX",
-     "end": "2024-06-30",
-     "new": 1118000000
-    }
-   ],
-   "operating_cash_flow:ttm.removed": [
-    {
-     "ticker": "APD",
-     "old": 4570800000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "BDX",
-     "old": 3956000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CHDN",
-     "old": 794800000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "ACH",
-     "old": -180417000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "BCO",
-     "old": 560900000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "SFD",
-     "old": 1155000000,
-     "end": "2026-06-28"
-    }
-   ],
-   "free_cash_flow:ttm.removed": [
-    {
-     "ticker": "APD",
-     "old": -301400000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "BDX",
-     "old": 3203000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CHDN",
-     "old": 718600000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CXT",
-     "old": 224000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "MKC",
-     "old": 925900000,
-     "end": "2026-08-31"
-    },
-    {
-     "ticker": "MCY",
-     "old": 1263765000,
-     "end": "2026-06-30"
-    }
-   ],
-   "depreciation_and_amortization:quarterly.added": [
-    {
-     "ticker": "CECO",
-     "end": "2023-12-31",
-     "new": 3738000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2024-03-31",
-     "new": 3512000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2024-06-30",
-     "new": 3461000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-03-31",
-     "new": 5441000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-06-30",
-     "new": 2195000
-    },
-    {
-     "ticker": "AAL",
-     "end": "2024-03-31",
-     "new": 470000000
-    }
-   ],
-   "ebitda:quarterly.added": [
-    {
-     "ticker": "CECO",
-     "end": "2023-12-31",
-     "new": 16390000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2024-03-31",
-     "new": 11198000
-    },
-    {
-     "ticker": "CECO",
-     "end": "2024-06-30",
-     "new": 12718000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-03-31",
-     "new": 11532000
-    },
-    {
-     "ticker": "AVD",
-     "end": "2024-06-30",
-     "new": -7037000
-    },
-    {
-     "ticker": "AAL",
-     "end": "2024-03-31",
-     "new": 477000000
-    }
-   ],
-   "depreciation_and_amortization:ttm.removed": [
-    {
-     "ticker": "CECO",
-     "old": 32845000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "AVD",
-     "old": -861000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "AAL",
-     "old": 2209000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CACI",
-     "old": 77600000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CMTL",
-     "old": 12492000,
-     "end": "2026-04-30"
-    },
-    {
-     "ticker": "CW",
-     "old": 119424000,
-     "end": "2026-06-30"
-    }
-   ],
-   "ebitda:ttm.removed": [
-    {
-     "ticker": "CECO",
-     "old": 27470000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "AVD",
-     "old": -27627000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "AAL",
-     "old": 3217000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CACI",
-     "old": 997415000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "CMTL",
-     "old": 7238000,
-     "end": "2026-04-30"
-    },
-    {
-     "ticker": "CW",
-     "old": 805633000,
-     "end": "2026-06-30"
+     "ticker": "SVC",
+     "old": -434932000,
+     "new": -430706000,
+     "rel": 0.0097
     }
    ],
    "eps_diluted:annual.valueChanged": [
@@ -1779,6 +1381,13 @@
     },
     {
      "ticker": "LNG",
+     "end": "2017-12-31",
+     "old": 5645000000,
+     "new": 5601000000,
+     "rel": 0.0078
+    },
+    {
+     "ticker": "LNG",
      "end": "2018-12-31",
      "old": 7896000000,
      "new": 7987000000,
@@ -1800,17 +1409,10 @@
     },
     {
      "ticker": "LNG",
-     "end": "2022-12-31",
-     "old": 33307000000,
-     "new": 33428000000,
-     "rel": 0.0036
-    },
-    {
-     "ticker": "LNG",
-     "end": "2023-12-31",
-     "old": 19781000000,
-     "new": 20394000000,
-     "rel": 0.0301
+     "end": "2021-12-31",
+     "old": 17531000000,
+     "new": 15864000000,
+     "rel": 0.0951
     }
    ],
    "gross_profit:annual.valueChanged": [
@@ -1820,6 +1422,13 @@
      "old": 700000000,
      "new": 701000000,
      "rel": 0.0014
+    },
+    {
+     "ticker": "LNG",
+     "end": "2017-12-31",
+     "old": 2525000000,
+     "new": 2481000000,
+     "rel": 0.0174
     },
     {
      "ticker": "LNG",
@@ -1848,13 +1457,6 @@
      "old": -132994000,
      "new": 3606565000,
      "rel": 1.0369
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2020-03-31",
-     "old": -133612000,
-     "new": 3814850000,
-     "rel": 1.035
     }
    ],
    "eps_diluted:annual.added": [
@@ -1933,12 +1535,50 @@
      "rel": 0.0138
     }
    ],
+   "revenue:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "LNG",
+     "end": "2026-03-31",
+     "old": 6587000000,
+     "new": 5868000000
+    },
+    {
+     "ticker": "UHAL",
+     "end": "2024-09-30",
+     "old": 9586000,
+     "new": 1658108000
+    },
+    {
+     "ticker": "UHAL",
+     "end": "2024-12-31",
+     "old": 8869000,
+     "new": 1388558000
+    },
+    {
+     "ticker": "UHAL",
+     "end": "2025-03-31",
+     "old": 707043000,
+     "new": 1233509000
+    },
+    {
+     "ticker": "UHAL",
+     "end": "2025-06-30",
+     "old": 232056000,
+     "new": 1630470000
+    },
+    {
+     "ticker": "UHAL",
+     "end": "2025-09-30",
+     "old": 9621000,
+     "new": 1719922000
+    }
+   ],
    "revenue:ttm.valueChanged": [
     {
      "ticker": "LNG",
      "old": 21932000000,
-     "new": 22210000000,
-     "rel": 0.0125
+     "new": 21491000000,
+     "rel": 0.0201
     },
     {
      "ticker": "UHAL",
@@ -2111,44 +1751,6 @@
      "new": 847864000
     }
    ],
-   "revenue:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "UHAL",
-     "end": "2024-09-30",
-     "old": 9586000,
-     "new": 1658108000
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2024-12-31",
-     "old": 8869000,
-     "new": 1388558000
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2025-03-31",
-     "old": 707043000,
-     "new": 1233509000
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2025-06-30",
-     "old": 232056000,
-     "new": 1630470000
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2025-09-30",
-     "old": 9621000,
-     "new": 1719922000
-    },
-    {
-     "ticker": "UHAL",
-     "end": "2025-12-31",
-     "old": 8817000,
-     "new": 1415608000
-    }
-   ],
    "gross_profit:quarterly.valueChanged": [
     {
      "ticker": "UHAL",
@@ -2283,6 +1885,348 @@
      "ticker": "PRTH",
      "old": "2019-12-31",
      "new": "2026-06-30"
+    }
+   ],
+   "pretax_income:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "AEP",
+     "end": "2024-12-31",
+     "old": 791800000,
+     "new": 697800000
+    },
+    {
+     "ticker": "AEP",
+     "end": "2025-12-31",
+     "old": 800800000,
+     "new": 699800000
+    },
+    {
+     "ticker": "HUM",
+     "end": "2024-12-31",
+     "old": -963000000,
+     "new": -862000000
+    },
+    {
+     "ticker": "HUM",
+     "end": "2025-12-31",
+     "old": -1128000000,
+     "new": -1011000000
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": 120410000,
+     "new": -116286000
+    },
+    {
+     "ticker": "NKTR",
+     "end": "2025-12-31",
+     "old": -43429000,
+     "new": -34702000
+    }
+   ],
+   "depreciation_and_amortization:quarterly.valueChanged": [
+    {
+     "ticker": "AVD",
+     "end": "2024-12-31",
+     "old": -11445000,
+     "new": 5720000,
+     "rel": 1.4998
+    },
+    {
+     "ticker": "AVD",
+     "end": "2025-12-31",
+     "old": -8752000,
+     "new": 4735000,
+     "rel": 1.541
+    },
+    {
+     "ticker": "AAL",
+     "end": "2024-12-31",
+     "old": 776000000,
+     "new": 502000000,
+     "rel": 0.3531
+    },
+    {
+     "ticker": "AAL",
+     "end": "2025-12-31",
+     "old": 782000000,
+     "new": 472000000,
+     "rel": 0.3964
+    },
+    {
+     "ticker": "CACI",
+     "end": "2025-06-30",
+     "old": -68764000,
+     "new": 55861000,
+     "rel": 1.8124
+    },
+    {
+     "ticker": "CACI",
+     "end": "2026-06-30",
+     "old": -89504000,
+     "new": 78795000,
+     "rel": 1.8804
+    }
+   ],
+   "depreciation_and_amortization:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "AVD",
+     "end": "2024-12-31",
+     "old": -11445000,
+     "new": 5720000
+    },
+    {
+     "ticker": "AVD",
+     "end": "2025-12-31",
+     "old": -8752000,
+     "new": 4735000
+    },
+    {
+     "ticker": "AAL",
+     "end": "2024-12-31",
+     "old": 776000000,
+     "new": 502000000
+    },
+    {
+     "ticker": "AAL",
+     "end": "2025-12-31",
+     "old": 782000000,
+     "new": 472000000
+    },
+    {
+     "ticker": "CACI",
+     "end": "2025-06-30",
+     "old": -68764000,
+     "new": 55861000
+    },
+    {
+     "ticker": "CACI",
+     "end": "2026-06-30",
+     "old": -89504000,
+     "new": 78795000
+    }
+   ],
+   "ebitda:quarterly.valueChanged": [
+    {
+     "ticker": "AVD",
+     "end": "2024-12-31",
+     "old": -81471000,
+     "new": -64306000,
+     "rel": 0.2107
+    },
+    {
+     "ticker": "AVD",
+     "end": "2025-12-31",
+     "old": -30599000,
+     "new": -17112000,
+     "rel": 0.4408
+    },
+    {
+     "ticker": "AAL",
+     "end": "2024-12-31",
+     "old": 1910000000,
+     "new": 1636000000,
+     "rel": 0.1435
+    },
+    {
+     "ticker": "AAL",
+     "end": "2025-12-31",
+     "old": 1234000000,
+     "new": 924000000,
+     "rel": 0.2512
+    },
+    {
+     "ticker": "CACI",
+     "end": "2025-06-30",
+     "old": 137913000,
+     "new": 262538000,
+     "rel": 0.4747
+    },
+    {
+     "ticker": "CACI",
+     "end": "2026-06-30",
+     "old": 182690000,
+     "new": 350989000,
+     "rel": 0.4795
+    }
+   ],
+   "ebitda:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "AVD",
+     "end": "2024-12-31",
+     "old": -81471000,
+     "new": -64306000
+    },
+    {
+     "ticker": "AVD",
+     "end": "2025-12-31",
+     "old": -30599000,
+     "new": -17112000
+    },
+    {
+     "ticker": "AAL",
+     "end": "2024-12-31",
+     "old": 1910000000,
+     "new": 1636000000
+    },
+    {
+     "ticker": "AAL",
+     "end": "2025-12-31",
+     "old": 1234000000,
+     "new": 924000000
+    },
+    {
+     "ticker": "CACI",
+     "end": "2025-06-30",
+     "old": 137913000,
+     "new": 262538000
+    },
+    {
+     "ticker": "CACI",
+     "end": "2026-06-30",
+     "old": 182690000,
+     "new": 350989000
+    }
+   ],
+   "depreciation_and_amortization:ttm.valueChanged": [
+    {
+     "ticker": "AVD",
+     "old": -861000,
+     "new": 12626000,
+     "rel": 1.0682
+    },
+    {
+     "ticker": "AAL",
+     "old": 2209000000,
+     "new": 1899000000,
+     "rel": 0.1403
+    },
+    {
+     "ticker": "CACI",
+     "old": 77600000,
+     "new": 245899000,
+     "rel": 0.6844
+    },
+    {
+     "ticker": "FHB",
+     "old": 14140000,
+     "new": 31646000,
+     "rel": 0.5532
+    },
+    {
+     "ticker": "BOH",
+     "old": 17554000,
+     "new": 17542000,
+     "rel": 0.0007
+    },
+    {
+     "ticker": "GFF",
+     "old": 33786000,
+     "new": 44698000,
+     "rel": 0.2441
+    }
+   ],
+   "depreciation_and_amortization:ttm.valueChangedOver10pct": [
+    {
+     "ticker": "AVD",
+     "old": -861000,
+     "new": 12626000
+    },
+    {
+     "ticker": "AAL",
+     "old": 2209000000,
+     "new": 1899000000
+    },
+    {
+     "ticker": "CACI",
+     "old": 77600000,
+     "new": 245899000
+    },
+    {
+     "ticker": "FHB",
+     "old": 14140000,
+     "new": 31646000
+    },
+    {
+     "ticker": "GFF",
+     "old": 33786000,
+     "new": 44698000
+    },
+    {
+     "ticker": "SPGI",
+     "old": 1185000000,
+     "new": 116000000
+    }
+   ],
+   "ebitda:ttm.valueChanged": [
+    {
+     "ticker": "AVD",
+     "old": -27627000,
+     "new": -14140000,
+     "rel": 0.4882
+    },
+    {
+     "ticker": "AAL",
+     "old": 3217000000,
+     "new": 2907000000,
+     "rel": 0.0964
+    },
+    {
+     "ticker": "CACI",
+     "old": 997415000,
+     "new": 1165714000,
+     "rel": 0.1444
+    },
+    {
+     "ticker": "GFF",
+     "old": 493097000,
+     "new": 504009000,
+     "rel": 0.0217
+    },
+    {
+     "ticker": "SPGI",
+     "old": 8087000000,
+     "new": 7018000000,
+     "rel": 0.1322
+    },
+    {
+     "ticker": "OXM",
+     "old": 64206000,
+     "new": 59385000,
+     "rel": 0.0751
+    }
+   ],
+   "ebitda:ttm.valueChangedOver10pct": [
+    {
+     "ticker": "AVD",
+     "old": -27627000,
+     "new": -14140000
+    },
+    {
+     "ticker": "CACI",
+     "old": 997415000,
+     "new": 1165714000
+    },
+    {
+     "ticker": "SPGI",
+     "old": 8087000000,
+     "new": 7018000000
+    },
+    {
+     "ticker": "ACNT",
+     "old": -4914000,
+     "new": -2472000
+    },
+    {
+     "ticker": "ARKR",
+     "old": -24000,
+     "new": 61000
+    },
+    {
+     "ticker": "LAKE",
+     "old": -4808000,
+     "new": -2545000
     }
    ],
    "revenue:annual.removed": [
@@ -4535,102 +4479,6 @@
      "new": 15909000000
     }
    ],
-   "revenue:quarterly.removed": [
-    {
-     "ticker": "APOG",
-     "end": "2025-03-01",
-     "old": 345694000
-    },
-    {
-     "ticker": "APOG",
-     "end": "2026-02-28",
-     "old": 351354000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2024-06-30",
-     "old": 4768500000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2025-06-30",
-     "old": 5126800000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2026-06-30",
-     "old": 5473800000
-    },
-    {
-     "ticker": "CALM",
-     "end": "2025-05-31",
-     "old": 1103658000
-    }
-   ],
-   "revenue:quarterly.added": [
-    {
-     "ticker": "APOG",
-     "end": "2023-11-25",
-     "new": 339714000
-    },
-    {
-     "ticker": "APOG",
-     "end": "2024-06-01",
-     "new": 331516000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2023-12-31",
-     "new": 4668000000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2024-03-31",
-     "new": 5253800000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2025-09-30",
-     "new": 5175200000
-    },
-    {
-     "ticker": "CALM",
-     "end": "2024-06-01",
-     "new": 640789000
-    }
-   ],
-   "revenue:ttm.removed": [
-    {
-     "ticker": "APOG",
-     "old": 1400795000,
-     "end": "2026-05-30"
-    },
-    {
-     "ticker": "CALM",
-     "old": 2528637000,
-     "end": "2026-08-29"
-    },
-    {
-     "ticker": "GD",
-     "old": 53808000000,
-     "end": "2026-04-05"
-    },
-    {
-     "ticker": "HAS",
-     "old": 4973200000,
-     "end": "2026-06-28"
-    },
-    {
-     "ticker": "KELYA",
-     "old": 4063100000,
-     "end": "2026-06-28"
-    },
-    {
-     "ticker": "SLNH",
-     "old": 42076000,
-     "end": "2026-06-30"
-    }
-   ],
    "revenue:quarterly.labelChanged": [
     {
      "ticker": "ADM",
@@ -5163,6 +5011,70 @@
      "new": "2020-08-05"
     }
    ],
+   "revenue:quarterly.removed": [
+    {
+     "ticker": "ADP",
+     "end": "2024-06-30",
+     "old": 4768500000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 34822000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-08-12",
+     "old": 33853000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-11-04",
+     "old": 33957000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2024-07-31",
+     "old": 148155000
+    },
+    {
+     "ticker": "CAKE",
+     "end": "2024-07-02",
+     "old": 904042000
+    }
+   ],
+   "revenue:quarterly.added": [
+    {
+     "ticker": "ADP",
+     "end": "2025-09-30",
+     "new": 5175200000
+    },
+    {
+     "ticker": "KR",
+     "end": "2024-08-17",
+     "new": 33912000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": 33859000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2026-01-31",
+     "new": 34725000000
+    },
+    {
+     "ticker": "PG",
+     "end": "2024-09-30",
+     "new": 21737000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2025-01-31",
+     "new": 158228000
+    }
+   ],
    "net_income:quarterly.removed": [
     {
      "ticker": "ADP",
@@ -5175,16 +5087,6 @@
      "old": 14035000
     },
     {
-     "ticker": "IFF",
-     "end": "2024-12-31",
-     "old": -56000000
-    },
-    {
-     "ticker": "IFF",
-     "end": "2025-12-31",
-     "old": 33000000
-    },
-    {
      "ticker": "KR",
      "end": "2023-01-28",
      "old": 451000000
@@ -5193,6 +5095,16 @@
      "ticker": "KR",
      "end": "2023-08-12",
      "old": -179000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-11-04",
+     "old": 646000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2024-07-31",
+     "old": 15007000
     }
    ],
    "net_income:quarterly.added": [
@@ -5207,16 +5119,6 @@
      "new": 17561000
     },
     {
-     "ticker": "IFF",
-     "end": "2024-03-31",
-     "new": 60000000
-    },
-    {
-     "ticker": "IFF",
-     "end": "2024-06-30",
-     "new": 170000000
-    },
-    {
      "ticker": "KR",
      "end": "2024-08-17",
      "new": 465000000
@@ -5225,6 +5127,80 @@
      "ticker": "KR",
      "end": "2024-11-09",
      "new": 618000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-02-01",
+     "new": 634000000
+    },
+    {
+     "ticker": "PG",
+     "end": "2024-09-30",
+     "new": 3959000000
+    }
+   ],
+   "operating_cash_flow:quarterly.removed": [
+    {
+     "ticker": "ADP",
+     "end": "2023-06-30",
+     "old": 1185700000
+    },
+    {
+     "ticker": "ADP",
+     "end": "2024-06-30",
+     "old": 1300600000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2024-06-30",
+     "old": 31125000
+    },
+    {
+     "ticker": "KR",
+     "end": "2022-11-05",
+     "old": 911000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 1160000000
+    },
+    {
+     "ticker": "PG",
+     "end": "2024-03-31",
+     "old": 4088000000
+    }
+   ],
+   "operating_cash_flow:quarterly.added": [
+    {
+     "ticker": "ADP",
+     "end": "2025-03-31",
+     "new": 1525800000
+    },
+    {
+     "ticker": "ADP",
+     "end": "2026-03-31",
+     "new": 2238000000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2025-03-31",
+     "new": -58728000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2026-03-31",
+     "new": -59139000
+    },
+    {
+     "ticker": "KR",
+     "end": "2024-11-09",
+     "new": 926000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": 970000000
     }
    ],
    "capital_expenditures:quarterly.removed": [
@@ -5244,19 +5220,19 @@
      "old": 25000
     },
     {
-     "ticker": "CXT",
-     "end": "2024-12-31",
-     "old": 10800000
+     "ticker": "KR",
+     "end": "2022-11-05",
+     "old": 831000000
     },
     {
-     "ticker": "CXT",
-     "end": "2025-12-31",
-     "old": 9800000
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 817000000
     },
     {
-     "ticker": "USAU",
-     "end": "2026-04-30",
-     "old": -1920773
+     "ticker": "PG",
+     "end": "2024-03-31",
+     "old": 797000000
     }
    ],
    "capital_expenditures:quarterly.added": [
@@ -5281,14 +5257,14 @@
      "new": 49000
     },
     {
-     "ticker": "CXT",
-     "end": "2024-03-31",
-     "new": 12500000
+     "ticker": "KR",
+     "end": "2024-11-09",
+     "new": 954000000
     },
     {
-     "ticker": "CXT",
-     "end": "2024-06-30",
-     "new": 8900000
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": 941000000
     }
    ],
    "cash_and_equivalents:quarterly.removed": [
@@ -5463,6 +5439,134 @@
      "new": 50051000
     }
    ],
+   "depreciation_and_amortization:quarterly.removed": [
+    {
+     "ticker": "ADP",
+     "end": "2024-06-30",
+     "old": 135700000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2024-06-30",
+     "old": 1279000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 706000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-08-12",
+     "old": 716000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-11-04",
+     "old": 721000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2024-07-31",
+     "old": 6085000
+    }
+   ],
+   "depreciation_and_amortization:quarterly.added": [
+    {
+     "ticker": "ADP",
+     "end": "2025-09-30",
+     "new": 146700000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2025-03-31",
+     "new": 1672000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2026-03-31",
+     "new": 1761000
+    },
+    {
+     "ticker": "KR",
+     "end": "2024-08-17",
+     "new": 751000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": 782000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2026-01-31",
+     "new": 722000000
+    }
+   ],
+   "pretax_income:quarterly.removed": [
+    {
+     "ticker": "ADP",
+     "end": "2024-06-30",
+     "old": 1089300000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 623000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-08-12",
+     "old": -197000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-11-04",
+     "old": 851000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2022-04-30",
+     "old": 8834000
+    },
+    {
+     "ticker": "REX",
+     "end": "2022-07-31",
+     "old": 19215000
+    }
+   ],
+   "pretax_income:quarterly.added": [
+    {
+     "ticker": "ADP",
+     "end": "2025-09-30",
+     "new": 1307500000
+    },
+    {
+     "ticker": "KR",
+     "end": "2024-08-17",
+     "new": 613000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": -1790000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2026-01-31",
+     "new": 1116000000
+    },
+    {
+     "ticker": "REX",
+     "end": "2023-10-31",
+     "new": 41282000
+    },
+    {
+     "ticker": "REX",
+     "end": "2024-01-31",
+     "new": 32462000
+    }
+   ],
    "income_tax_expense:quarterly.removed": [
     {
      "ticker": "ADP",
@@ -5527,6 +5631,70 @@
      "new": 255000000
     }
    ],
+   "free_cash_flow:quarterly.removed": [
+    {
+     "ticker": "ADP",
+     "end": "2023-06-30",
+     "old": 1124800000
+    },
+    {
+     "ticker": "ADP",
+     "end": "2024-06-30",
+     "old": 1245900000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2024-06-30",
+     "old": 31100000
+    },
+    {
+     "ticker": "KR",
+     "end": "2022-11-05",
+     "old": 80000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 343000000
+    },
+    {
+     "ticker": "PG",
+     "end": "2024-03-31",
+     "old": 3291000000
+    }
+   ],
+   "free_cash_flow:quarterly.added": [
+    {
+     "ticker": "ADP",
+     "end": "2025-03-31",
+     "new": 1489400000
+    },
+    {
+     "ticker": "ADP",
+     "end": "2026-03-31",
+     "new": 2187400000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2025-03-31",
+     "new": -59124000
+    },
+    {
+     "ticker": "CSWC",
+     "end": "2026-03-31",
+     "new": -59188000
+    },
+    {
+     "ticker": "KR",
+     "end": "2024-11-09",
+     "new": -28000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": 29000000
+    }
+   ],
    "gross_profit:quarterly.removed": [
     {
      "ticker": "ADP",
@@ -5534,61 +5702,61 @@
      "old": 2136900000
     },
     {
-     "ticker": "ADP",
-     "end": "2025-06-30",
-     "old": 2309900000
+     "ticker": "REX",
+     "end": "2024-07-31",
+     "old": 19773000
     },
     {
-     "ticker": "ADP",
-     "end": "2026-06-30",
-     "old": 2511300000
+     "ticker": "CAKE",
+     "end": "2022-03-29",
+     "old": 605209000
     },
     {
-     "ticker": "HRB",
-     "end": "2025-06-30",
-     "old": 578082000
+     "ticker": "CAKE",
+     "end": "2022-06-28",
+     "old": 628461000
     },
     {
-     "ticker": "HRB",
-     "end": "2026-06-30",
-     "old": 594349000
+     "ticker": "CAKE",
+     "end": "2022-09-27",
+     "old": 586227000
     },
     {
-     "ticker": "CAT",
-     "end": "2024-12-31",
-     "old": 46060000000
+     "ticker": "BJRI",
+     "end": "2024-07-02",
+     "old": 260091000
     }
    ],
    "gross_profit:quarterly.added": [
-    {
-     "ticker": "ADP",
-     "end": "2023-12-31",
-     "new": 2106400000
-    },
-    {
-     "ticker": "ADP",
-     "end": "2024-03-31",
-     "new": 2485600000
-    },
     {
      "ticker": "ADP",
      "end": "2025-09-30",
      "new": 2339100000
     },
     {
-     "ticker": "HRB",
-     "end": "2023-12-31",
-     "new": -120744000
+     "ticker": "PG",
+     "end": "2024-09-30",
+     "new": 11316000000
     },
     {
-     "ticker": "HRB",
-     "end": "2024-03-31",
-     "new": 1258826000
+     "ticker": "REX",
+     "end": "2025-01-31",
+     "new": 17572000
     },
     {
-     "ticker": "CAT",
-     "end": "2024-03-31",
-     "new": 15793000000
+     "ticker": "BJRI",
+     "end": "2024-12-31",
+     "new": 255241000
+    },
+    {
+     "ticker": "PLCE",
+     "end": "2025-02-01",
+     "new": 116585000
+    },
+    {
+     "ticker": "TTMI",
+     "end": "2024-12-30",
+     "new": 126541000
     }
    ],
    "total_debt:quarterly.removed": [
@@ -5653,6 +5821,28 @@
      "ticker": "PG",
      "end": "2024-09-30",
      "new": 36153000000
+    }
+   ],
+   "revenue:ttm.added": [
+    {
+     "ticker": "ADP",
+     "new": 21947500000,
+     "end": "2026-06-30"
+    },
+    {
+     "ticker": "STX",
+     "new": 12195000000,
+     "end": "2026-07-03"
+    },
+    {
+     "ticker": "PRTH",
+     "new": 1000381000,
+     "end": "2026-06-30"
+    },
+    {
+     "ticker": "VAI",
+     "new": 1982416,
+     "end": "2026-06-30"
     }
    ],
    "net_income:ttm.added": [
@@ -5985,38 +6175,6 @@
      "new": 4638833
     }
    ],
-   "capital_expenditures:ttm.removed": [
-    {
-     "ticker": "CXT",
-     "old": 46500000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "MKC",
-     "old": 214900000,
-     "end": "2026-08-31"
-    },
-    {
-     "ticker": "MCY",
-     "old": 63850000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "VYX",
-     "old": 161000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "OLN",
-     "old": 206600000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "TRC",
-     "old": 5772000,
-     "end": "2026-06-30"
-    }
-   ],
    "net_debt:annual.valueChanged": [
     {
      "ticker": "MAGN",
@@ -6099,36 +6257,250 @@
      "new": "2019-02-21"
     }
    ],
-   "net_income:ttm.removed": [
+   "net_income:quarterly.valueChanged": [
+    {
+     "ticker": "IFF",
+     "end": "2024-12-31",
+     "old": -56000000,
+     "new": -60000000,
+     "rel": 0.0667
+    },
+    {
+     "ticker": "IFF",
+     "end": "2025-12-31",
+     "old": 33000000,
+     "new": 31000000,
+     "rel": 0.0606
+    },
+    {
+     "ticker": "PG",
+     "end": "2025-03-31",
+     "old": 3770000000,
+     "new": 3769000000,
+     "rel": 0.0003
+    },
+    {
+     "ticker": "BELFA",
+     "end": "2024-12-31",
+     "old": -1800000,
+     "new": 6432000,
+     "rel": 1.2799
+    },
+    {
+     "ticker": "BELFA",
+     "end": "2025-12-31",
+     "old": -6134000,
+     "new": 6441000,
+     "rel": 1.9523
+    },
+    {
+     "ticker": "REX",
+     "end": "2026-01-31",
+     "old": 35482000,
+     "new": 43749000,
+     "rel": 0.189
+    }
+   ],
+   "net_income:ttm.valueChanged": [
     {
      "ticker": "IFF",
      "old": 292000000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "HOV",
-     "old": 17796000,
-     "end": "2026-07-31"
-    },
-    {
-     "ticker": "HXL",
-     "old": 153500000,
-     "end": "2026-06-30"
+     "new": 290000000,
+     "rel": 0.0068
     },
     {
      "ticker": "BELFA",
      "old": 53280000,
-     "end": "2026-06-30"
+     "new": 65855000,
+     "rel": 0.1909
     },
     {
      "ticker": "REX",
      "old": 125275000,
-     "end": "2026-07-31"
+     "new": 133542000,
+     "rel": 0.0619
     },
     {
-     "ticker": "SOTK",
-     "old": 2061864,
-     "end": "2026-05-31"
+     "ticker": "ATNI",
+     "old": 170233000,
+     "new": 161617000,
+     "rel": 0.0506
+    },
+    {
+     "ticker": "AKR",
+     "old": 211436000,
+     "new": 154529000,
+     "rel": 0.2691
+    },
+    {
+     "ticker": "SUI",
+     "old": 1434100000,
+     "new": 1450400000,
+     "rel": 0.0112
+    }
+   ],
+   "capital_expenditures:quarterly.valueChanged": [
+    {
+     "ticker": "RYN",
+     "end": "2023-12-31",
+     "old": 42381000,
+     "new": 28319000,
+     "rel": 0.3318
+    },
+    {
+     "ticker": "THO",
+     "end": "2026-04-30",
+     "old": 35255000,
+     "new": 38117000,
+     "rel": 0.0751
+    },
+    {
+     "ticker": "CSR",
+     "end": "2025-09-30",
+     "old": -124880000,
+     "new": 9349000,
+     "rel": 1.0749
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": 213271000,
+     "new": 2065000,
+     "rel": 0.9903
+    },
+    {
+     "ticker": "NHI",
+     "end": "2024-12-31",
+     "old": 110839000,
+     "new": 133117000,
+     "rel": 0.1674
+    },
+    {
+     "ticker": "NHI",
+     "end": "2025-12-31",
+     "old": 143298000,
+     "new": 196295000,
+     "rel": 0.27
+    }
+   ],
+   "capital_expenditures:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "RYN",
+     "end": "2023-12-31",
+     "old": 42381000,
+     "new": 28319000
+    },
+    {
+     "ticker": "CSR",
+     "end": "2025-09-30",
+     "old": -124880000,
+     "new": 9349000
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": 213271000,
+     "new": 2065000
+    },
+    {
+     "ticker": "NHI",
+     "end": "2024-12-31",
+     "old": 110839000,
+     "new": 133117000
+    },
+    {
+     "ticker": "NHI",
+     "end": "2025-12-31",
+     "old": 143298000,
+     "new": 196295000
+    },
+    {
+     "ticker": "EIG",
+     "end": "2024-12-31",
+     "old": -3100000,
+     "new": 1700000
+    }
+   ],
+   "free_cash_flow:quarterly.valueChanged": [
+    {
+     "ticker": "RYN",
+     "end": "2023-12-31",
+     "old": 47058000,
+     "new": 61120000,
+     "rel": 0.2301
+    },
+    {
+     "ticker": "THO",
+     "end": "2026-04-30",
+     "old": 198899000,
+     "new": 196037000,
+     "rel": 0.0144
+    },
+    {
+     "ticker": "CSR",
+     "end": "2025-09-30",
+     "old": 159932000,
+     "new": 25703000,
+     "rel": 0.8393
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": -29238000,
+     "new": -13626000,
+     "rel": 0.534
+    },
+    {
+     "ticker": "NHI",
+     "end": "2024-12-31",
+     "old": -53266000,
+     "new": -75544000,
+     "rel": 0.2949
+    },
+    {
+     "ticker": "NHI",
+     "end": "2025-12-31",
+     "old": -75562000,
+     "new": -128559000,
+     "rel": 0.4122
+    }
+   ],
+   "free_cash_flow:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "RYN",
+     "end": "2023-12-31",
+     "old": 47058000,
+     "new": 61120000
+    },
+    {
+     "ticker": "CSR",
+     "end": "2025-09-30",
+     "old": 159932000,
+     "new": 25703000
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": -29238000,
+     "new": -13626000
+    },
+    {
+     "ticker": "NHI",
+     "end": "2024-12-31",
+     "old": -53266000,
+     "new": -75544000
+    },
+    {
+     "ticker": "NHI",
+     "end": "2025-12-31",
+     "old": -75562000,
+     "new": -128559000
+    },
+    {
+     "ticker": "EIG",
+     "end": "2024-12-31",
+     "old": 16200000,
+     "new": 11400000
     }
    ],
    "operating_income:quarterly.removed": [
@@ -6195,34 +6567,68 @@
      "new": -4791000
     }
    ],
-   "net_income:quarterly.valueChanged": [
+   "ebitda:quarterly.removed": [
+    {
+     "ticker": "KR",
+     "end": "2023-01-28",
+     "old": 1532000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-08-12",
+     "old": 237000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2023-11-04",
+     "old": 1633000000
+    },
+    {
+     "ticker": "CAKE",
+     "end": "2024-07-02",
+     "old": 83652000
+    },
+    {
+     "ticker": "BJRI",
+     "end": "2024-07-02",
+     "old": 31384000
+    },
+    {
+     "ticker": "PLCE",
+     "end": "2024-08-03",
+     "old": -12271000
+    }
+   ],
+   "ebitda:quarterly.added": [
+    {
+     "ticker": "KR",
+     "end": "2024-08-17",
+     "new": 1566000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2025-11-08",
+     "new": -759000000
+    },
+    {
+     "ticker": "KR",
+     "end": "2026-01-31",
+     "new": 1968000000
+    },
     {
      "ticker": "PG",
-     "end": "2025-03-31",
-     "old": 3770000000,
-     "new": 3769000000,
-     "rel": 0.0003
+     "end": "2024-09-30",
+     "new": 6525000000
     },
     {
-     "ticker": "RJET",
+     "ticker": "CAKE",
      "end": "2024-12-31",
-     "old": 97765000,
-     "new": -114558000,
-     "rel": 1.8534
+     "new": 73067000
     },
     {
-     "ticker": "HOLO",
-     "end": "2022-09-30",
-     "old": 1660208,
-     "new": 11809889,
-     "rel": 0.8594
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -27094502,
-     "new": -184939373,
-     "rel": 0.8535
+     "ticker": "BJRI",
+     "end": "2024-12-31",
+     "new": 13725000
     }
    ],
    "net_debt:annual.valueChangedOver10pct": [
@@ -6382,6 +6788,152 @@
      "new": "2025-02-14"
     }
    ],
+   "net_income:quarterly.valueChangedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "end": "2024-12-31",
+     "old": -1800000,
+     "new": 6432000
+    },
+    {
+     "ticker": "BELFA",
+     "end": "2025-12-31",
+     "old": -6134000,
+     "new": 6441000
+    },
+    {
+     "ticker": "REX",
+     "end": "2026-01-31",
+     "old": 35482000,
+     "new": 43749000
+    },
+    {
+     "ticker": "RJET",
+     "end": "2024-12-31",
+     "old": 97765000,
+     "new": -114558000
+    },
+    {
+     "ticker": "ATNI",
+     "end": "2024-12-31",
+     "old": 9630000,
+     "new": 4207000
+    },
+    {
+     "ticker": "ATNI",
+     "end": "2025-12-31",
+     "old": 1809000,
+     "new": -6807000
+    }
+   ],
+   "net_income:ttm.valueChangedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "old": 53280000,
+     "new": 65855000
+    },
+    {
+     "ticker": "AKR",
+     "old": 211436000,
+     "new": 154529000
+    },
+    {
+     "ticker": "SPWH",
+     "old": -35362000,
+     "new": -47999000
+    },
+    {
+     "ticker": "PSEC",
+     "old": 132160000,
+     "new": 153662000
+    },
+    {
+     "ticker": "TIPT",
+     "old": 14246000,
+     "new": -14420000
+    },
+    {
+     "ticker": "PLAY",
+     "old": -30200000,
+     "new": -88600000
+    }
+   ],
+   "capital_expenditures:ttm.valueChanged": [
+    {
+     "ticker": "THO",
+     "old": 152387000,
+     "new": 155249000,
+     "rel": 0.0184
+    },
+    {
+     "ticker": "CSR",
+     "old": -101888000,
+     "new": 32341000,
+     "rel": 1.3174
+    },
+    {
+     "ticker": "PLOW",
+     "old": 13003000,
+     "new": 13308000,
+     "rel": 0.0229
+    },
+    {
+     "ticker": "EIG",
+     "old": 200000,
+     "new": 2300000,
+     "rel": 0.913
+    },
+    {
+     "ticker": "MTDR",
+     "old": 1111825000,
+     "new": 1606619000,
+     "rel": 0.308
+    },
+    {
+     "ticker": "PINE",
+     "old": 171624000,
+     "new": 228953000,
+     "rel": 0.2504
+    }
+   ],
+   "free_cash_flow:ttm.valueChanged": [
+    {
+     "ticker": "THO",
+     "old": 168836000,
+     "new": 165974000,
+     "rel": 0.017
+    },
+    {
+     "ticker": "CSR",
+     "old": 193775000,
+     "new": 59546000,
+     "rel": 0.6927
+    },
+    {
+     "ticker": "PLOW",
+     "old": 49213000,
+     "new": 48908000,
+     "rel": 0.0062
+    },
+    {
+     "ticker": "EIG",
+     "old": 21800000,
+     "new": 19700000,
+     "rel": 0.0963
+    },
+    {
+     "ticker": "MTDR",
+     "old": 1491958000,
+     "new": 997164000,
+     "rel": 0.3316
+    },
+    {
+     "ticker": "PINE",
+     "old": -149499000,
+     "new": -206828000,
+     "rel": 0.2772
+    }
+   ],
    "ebitda:annual.valueChanged": [
     {
      "ticker": "RFIL",
@@ -6452,6 +7004,45 @@
      "new": -45905572000000
     }
    ],
+   "capital_expenditures:ttm.valueChangedOver10pct": [
+    {
+     "ticker": "CSR",
+     "old": -101888000,
+     "new": 32341000
+    },
+    {
+     "ticker": "EIG",
+     "old": 200000,
+     "new": 2300000
+    },
+    {
+     "ticker": "MTDR",
+     "old": 1111825000,
+     "new": 1606619000
+    },
+    {
+     "ticker": "PINE",
+     "old": 171624000,
+     "new": 228953000
+    }
+   ],
+   "free_cash_flow:ttm.valueChangedOver10pct": [
+    {
+     "ticker": "CSR",
+     "old": 193775000,
+     "new": 59546000
+    },
+    {
+     "ticker": "MTDR",
+     "old": 1491958000,
+     "new": 997164000
+    },
+    {
+     "ticker": "PINE",
+     "old": -149499000,
+     "new": -206828000
+    }
+   ],
    "revenue:quarterly.filedChanged": [
     {
      "ticker": "RJET",
@@ -6489,26 +7080,6 @@
      "end": "2024-12-31",
      "old": "2026-03-19",
      "new": "2025-05-19"
-    }
-   ],
-   "net_income:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 97765000,
-     "new": -114558000
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-09-30",
-     "old": 1660208,
-     "new": 11809889
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -27094502,
-     "new": -184939373
     }
    ],
    "net_income:quarterly.filedChanged": [
@@ -6662,6 +7233,13 @@
      "rel": 0.6492
     },
     {
+     "ticker": "SDOT",
+     "end": "2025-12-31",
+     "old": -1494000,
+     "new": -1465000,
+     "rel": 0.0194
+    },
+    {
      "ticker": "HOLO",
      "end": "2022-09-30",
      "old": 5143590,
@@ -6674,13 +7252,6 @@
      "old": -139541594,
      "new": -169392734,
      "rel": 0.1762
-    },
-    {
-     "ticker": "ESLA",
-     "end": "2024-12-31",
-     "old": -2838334,
-     "new": -896066,
-     "rel": 0.6843
     }
    ],
    "operating_cash_flow:quarterly.valueChangedOver10pct": [
@@ -6735,23 +7306,6 @@
      "new": "2024-11-14"
     }
    ],
-   "capital_expenditures:quarterly.valueChanged": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 213271000,
-     "new": 2065000,
-     "rel": 0.9903
-    }
-   ],
-   "capital_expenditures:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 213271000,
-     "new": 2065000
-    }
-   ],
    "capital_expenditures:quarterly.filedChanged": [
     {
      "ticker": "RJET",
@@ -6760,118 +7314,12 @@
      "new": "2025-05-19"
     }
    ],
-   "depreciation_and_amortization:quarterly.valueChanged": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 90252000,
-     "new": 7979000,
-     "rel": 0.9116
-    },
-    {
-     "ticker": "TEL",
-     "end": "2025-06-27",
-     "old": 216000000,
-     "new": 164000000,
-     "rel": 0.2407
-    },
-    {
-     "ticker": "HURA",
-     "end": "2024-09-30",
-     "old": 29141,
-     "new": 29000,
-     "rel": 0.0048
-    },
-    {
-     "ticker": "ASLE",
-     "end": "2024-09-30",
-     "old": 4511000,
-     "new": 8166000,
-     "rel": 0.4476
-    },
-    {
-     "ticker": "MWYN",
-     "end": "2025-01-31",
-     "old": 13147,
-     "new": 647,
-     "rel": 0.9508
-    }
-   ],
-   "depreciation_and_amortization:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 90252000,
-     "new": 7979000
-    },
-    {
-     "ticker": "TEL",
-     "end": "2025-06-27",
-     "old": 216000000,
-     "new": 164000000
-    },
-    {
-     "ticker": "ASLE",
-     "end": "2024-09-30",
-     "old": 4511000,
-     "new": 8166000
-    },
-    {
-     "ticker": "MWYN",
-     "end": "2025-01-31",
-     "old": 13147,
-     "new": 647
-    }
-   ],
    "depreciation_and_amortization:quarterly.filedChanged": [
     {
      "ticker": "RJET",
      "end": "2024-12-31",
      "old": "2026-03-19",
      "new": "2025-05-19"
-    }
-   ],
-   "pretax_income:quarterly.valueChanged": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 120410000,
-     "new": -116286000,
-     "rel": 1.9658
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-09-30",
-     "old": 1717515,
-     "new": 12217539,
-     "rel": 0.8594
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -143922894,
-     "new": -184503402,
-     "rel": 0.2199
-    }
-   ],
-   "pretax_income:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 120410000,
-     "new": -116286000
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-09-30",
-     "old": 1717515,
-     "new": 12217539
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -143922894,
-     "new": -184503402
     }
    ],
    "pretax_income:quarterly.filedChanged": [
@@ -6952,92 +7400,12 @@
      "new": "2023-08-03"
     }
    ],
-   "free_cash_flow:quarterly.valueChanged": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": -29238000,
-     "new": -13626000,
-     "rel": 0.534
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -139548444,
-     "new": -169399584,
-     "rel": 0.1762
-    }
-   ],
-   "free_cash_flow:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": -29238000,
-     "new": -13626000
-    },
-    {
-     "ticker": "HOLO",
-     "end": "2022-12-31",
-     "old": -139548444,
-     "new": -169399584
-    }
-   ],
    "free_cash_flow:quarterly.filedChanged": [
     {
      "ticker": "RJET",
      "end": "2024-12-31",
      "old": "2026-03-19",
      "new": "2025-05-19"
-    }
-   ],
-   "ebitda:quarterly.valueChanged": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 241669000,
-     "new": -102818000,
-     "rel": 1.4254
-    },
-    {
-     "ticker": "TEL",
-     "end": "2025-06-27",
-     "old": 1073000000,
-     "new": 1021000000,
-     "rel": 0.0485
-    },
-    {
-     "ticker": "ASLE",
-     "end": "2024-09-30",
-     "old": 6507000,
-     "new": 10162000,
-     "rel": 0.3597
-    },
-    {
-     "ticker": "MWYN",
-     "end": "2025-01-31",
-     "old": 97230,
-     "new": 84730,
-     "rel": 0.1286
-    }
-   ],
-   "ebitda:quarterly.valueChangedOver10pct": [
-    {
-     "ticker": "RJET",
-     "end": "2024-12-31",
-     "old": 241669000,
-     "new": -102818000
-    },
-    {
-     "ticker": "ASLE",
-     "end": "2024-09-30",
-     "old": 6507000,
-     "new": 10162000
-    },
-    {
-     "ticker": "MWYN",
-     "end": "2025-01-31",
-     "old": 97230,
-     "new": 84730
     }
    ],
    "ebitda:quarterly.filedChanged": [
@@ -7368,83 +7736,6 @@
      "new": 36200000
     }
    ],
-   "net_income:ttm.valueChanged": [
-    {
-     "ticker": "SPWH",
-     "old": -35362000,
-     "new": -47999000,
-     "rel": 0.2633
-    },
-    {
-     "ticker": "PSEC",
-     "old": 132160000,
-     "new": 153662000,
-     "rel": 0.1399
-    },
-    {
-     "ticker": "PLAY",
-     "old": -30200000,
-     "new": -88600000,
-     "rel": 0.6591
-    },
-    {
-     "ticker": "OLLI",
-     "old": 246292000,
-     "new": 273580000,
-     "rel": 0.0997
-    }
-   ],
-   "net_income:ttm.valueChangedOver10pct": [
-    {
-     "ticker": "SPWH",
-     "old": -35362000,
-     "new": -47999000
-    },
-    {
-     "ticker": "PSEC",
-     "old": 132160000,
-     "new": 153662000
-    },
-    {
-     "ticker": "PLAY",
-     "old": -30200000,
-     "new": -88600000
-    }
-   ],
-   "depreciation_and_amortization:ttm.valueChanged": [
-    {
-     "ticker": "SPWH",
-     "old": 37168000,
-     "new": 36540000,
-     "rel": 0.0169
-    },
-    {
-     "ticker": "PLAY",
-     "old": 262500000,
-     "new": 295600000,
-     "rel": 0.112
-    }
-   ],
-   "pretax_income:ttm.valueChanged": [
-    {
-     "ticker": "SPWH",
-     "old": -24874000,
-     "new": -46819000,
-     "rel": 0.4687
-    },
-    {
-     "ticker": "PLAY",
-     "old": -41700000,
-     "new": -117200000,
-     "rel": 0.6442
-    },
-    {
-     "ticker": "OLLI",
-     "old": 329469000,
-     "new": 363042000,
-     "rel": 0.0925
-    }
-   ],
    "pretax_income:ttm.valueChangedOver10pct": [
     {
      "ticker": "SPWH",
@@ -7455,6 +7746,16 @@
      "ticker": "PLAY",
      "old": -41700000,
      "new": -117200000
+    },
+    {
+     "ticker": "WTTR",
+     "old": 32772000,
+     "new": 37664000
+    },
+    {
+     "ticker": "WOOF",
+     "old": 19721000,
+     "new": -637000
     }
    ],
    "income_tax_expense:ttm.valueChanged": [
@@ -7487,32 +7788,6 @@
      "ticker": "PLAY",
      "old": -11500000,
      "new": -28600000
-    }
-   ],
-   "ebitda:ttm.valueChanged": [
-    {
-     "ticker": "SPWH",
-     "old": 24642000,
-     "new": 2773000,
-     "rel": 0.8875
-    },
-    {
-     "ticker": "PLAY",
-     "old": 379200000,
-     "new": 331800000,
-     "rel": 0.125
-    }
-   ],
-   "ebitda:ttm.valueChangedOver10pct": [
-    {
-     "ticker": "SPWH",
-     "old": 24642000,
-     "new": 2773000
-    },
-    {
-     "ticker": "PLAY",
-     "old": 379200000,
-     "new": 331800000
     }
    ],
    "cash_and_equivalents:ttm.endChanged": [
@@ -7632,23 +7907,6 @@
      "rel": 0.1866
     }
    ],
-   "revenue:ttm.added": [
-    {
-     "ticker": "STX",
-     "new": 12195000000,
-     "end": "2026-07-03"
-    },
-    {
-     "ticker": "PRTH",
-     "new": 1000381000,
-     "end": "2026-06-30"
-    },
-    {
-     "ticker": "VAI",
-     "new": 1982416,
-     "end": "2026-06-30"
-    }
-   ],
    "operating_income:ttm.added": [
     {
      "ticker": "STX",
@@ -7681,6 +7939,42 @@
      "ticker": "VAI",
      "new": -2396582,
      "end": "2026-06-30"
+    }
+   ],
+   "operating_cash_flow:ttm.removed": [
+    {
+     "ticker": "QXO",
+     "old": 295500000,
+     "end": "2026-03-31"
+    },
+    {
+     "ticker": "SLDE",
+     "old": 990108000,
+     "end": "2026-03-31"
+    }
+   ],
+   "capital_expenditures:ttm.removed": [
+    {
+     "ticker": "QXO",
+     "old": 100600000,
+     "end": "2026-03-31"
+    },
+    {
+     "ticker": "SLDE",
+     "old": 2948000,
+     "end": "2026-03-31"
+    }
+   ],
+   "free_cash_flow:ttm.removed": [
+    {
+     "ticker": "QXO",
+     "old": 194900000,
+     "end": "2026-03-31"
+    },
+    {
+     "ticker": "SLDE",
+     "old": 987160000,
+     "end": "2026-03-31"
     }
    ],
    "long_term_debt:annual.valueChanged": [
@@ -8397,13 +8691,6 @@
      "new": "2020-03-06"
     }
    ],
-   "depreciation_and_amortization:ttm.valueChangedOver10pct": [
-    {
-     "ticker": "PLAY",
-     "old": 262500000,
-     "new": 295600000
-    }
-   ],
    "gross_profit:ttm.removed": [
     {
      "ticker": "CHRN",
@@ -8541,6 +8828,14 @@
      "ticker": "PRTH",
      "old": 67060943,
      "new": 82440372
+    }
+   ],
+   "operating_cash_flow:ttm.valueChanged": [
+    {
+     "ticker": "SDOT",
+     "old": -4545000,
+     "new": -4516000,
+     "rel": 0.0064
     }
    ],
    "gross_profit:ttm.added": [
@@ -8733,113 +9028,112 @@
  "consumerImpact": {
   "issuersCompared": 5072,
   "issuersWithChange": {
-   "quant": 818,
-   "discover": 3357,
-   "screener": 3382
+   "quant": 606,
+   "discover": 3354,
+   "screener": 3380
   },
   "counters": {
-   "discover.basis.FY->TTM": 3,
+   "discover.basis.FY->TTM": 4,
    "discover.basis.FY->undefined": 2,
-   "discover.basis.TTM->FY": 149,
-   "discover.epsBasis.FY_EPS_OR_NI_SHARES->TTM_NI_DIV_SHARES": 4,
-   "discover.epsBasis.TTM_EPS->FY_EPS_OR_NI_SHARES": 340,
-   "discover.epsBasis.TTM_EPS->TTM_NI_DIV_SHARES": 2896,
-   "discover.epsBasis.TTM_NI_DIV_SHARES->FY_EPS_OR_NI_SHARES": 8,
+   "discover.epsBasis.FY_EPS_OR_NI_SHARES->TTM_NI_DIV_SHARES": 5,
+   "discover.epsBasis.TTM_EPS->FY_EPS_OR_NI_SHARES": 199,
+   "discover.epsBasis.TTM_EPS->TTM_NI_DIV_SHARES": 3037,
    "discover.epsBasis.TTM_NI_DIV_SHARES->TTM_EPS": 1,
-   "discover.gewinnJeAktie.changed": 2889,
-   "discover.gewinnJeAktie.changedOver10pct": 919,
-   "discover.gewinnJeAktie.lost": 20,
-   "discover.gewinnJeAktie.signFlip": 96,
-   "discover.gewinnTTM.changed": 153,
-   "discover.gewinnTTM.changedOver10pct": 102,
+   "discover.gewinnJeAktie.changed": 2891,
+   "discover.gewinnJeAktie.changedOver10pct": 863,
+   "discover.gewinnJeAktie.lost": 21,
+   "discover.gewinnJeAktie.signFlip": 80,
+   "discover.gewinnTTM.changed": 39,
+   "discover.gewinnTTM.changedOver10pct": 17,
    "discover.gewinnTTM.lost": 2,
-   "discover.gewinnTTM.signFlip": 18,
-   "discover.gewinnWachstum.changed": 85,
-   "discover.gewinnWachstum.changedOver10pct": 78,
-   "discover.gewinnWachstum.gained": 9,
-   "discover.gewinnWachstum.lost": 10,
-   "discover.gewinnWachstum.signFlip": 21,
-   "discover.kgv.changed": 1606,
-   "discover.kgv.changedOver10pct": 317,
-   "discover.kgv.gained": 48,
-   "discover.kgv.lost": 66,
+   "discover.gewinnTTM.signFlip": 2,
+   "discover.gewinnWachstum.changed": 32,
+   "discover.gewinnWachstum.changedOver10pct": 21,
+   "discover.gewinnWachstum.gained": 3,
+   "discover.gewinnWachstum.lost": 5,
+   "discover.gewinnWachstum.signFlip": 5,
+   "discover.kgv.changed": 1620,
+   "discover.kgv.changedOver10pct": 287,
+   "discover.kgv.gained": 43,
+   "discover.kgv.lost": 55,
    "discover.kgv.signFlip": 3,
-   "discover.kgvStatus.CALCULATED->SOURCE_MISSING": 66,
-   "discover.kgvStatus.SOURCE_MISSING->CALCULATED": 48,
-   "discover.marge.changed": 449,
-   "discover.marge.changedOver10pct": 285,
-   "discover.marge.gained": 7,
+   "discover.kgvStatus.CALCULATED->SOURCE_MISSING": 55,
+   "discover.kgvStatus.SOURCE_MISSING->CALCULATED": 43,
+   "discover.marge.changed": 364,
+   "discover.marge.changedOver10pct": 208,
+   "discover.marge.gained": 6,
    "discover.marge.lost": 2,
-   "discover.marge.signFlip": 18,
+   "discover.marge.signFlip": 1,
    "discover.status.CALCULATED->SOURCE_MISSING": 2,
-   "discover.umsatzTTM.changed": 462,
-   "discover.umsatzTTM.changedOver10pct": 239,
+   "discover.umsatzTTM.changed": 359,
+   "discover.umsatzTTM.changedOver10pct": 205,
    "discover.umsatzTTM.lost": 2,
-   "discover.umsatzTTM.signFlip": 8,
-   "discover.umsatzWachstum.changed": 487,
-   "discover.umsatzWachstum.changedOver10pct": 369,
-   "discover.umsatzWachstum.gained": 13,
-   "discover.umsatzWachstum.lost": 9,
-   "discover.umsatzWachstum.signFlip": 80,
-   "quant.change.fcfMarginPriorTtm.changed": 386,
-   "quant.change.fcfMarginPriorTtm.changedOver10pct": 207,
-   "quant.change.fcfMarginPriorTtm.gained": 3,
-   "quant.change.fcfMarginPriorTtm.lost": 12,
-   "quant.change.fcfMarginPriorTtm.signFlip": 15,
-   "quant.change.fcfMarginTtm.changed": 401,
-   "quant.change.fcfMarginTtm.changedOver10pct": 208,
+   "discover.umsatzTTM.signFlip": 7,
+   "discover.umsatzWachstum.changed": 379,
+   "discover.umsatzWachstum.changedOver10pct": 273,
+   "discover.umsatzWachstum.gained": 10,
+   "discover.umsatzWachstum.lost": 6,
+   "discover.umsatzWachstum.signFlip": 62,
+   "quant.change.fcfMarginPriorTtm.changed": 247,
+   "quant.change.fcfMarginPriorTtm.changedOver10pct": 125,
+   "quant.change.fcfMarginPriorTtm.gained": 1,
+   "quant.change.fcfMarginPriorTtm.lost": 2,
+   "quant.change.fcfMarginPriorTtm.signFlip": 3,
+   "quant.change.fcfMarginTtm.changed": 265,
+   "quant.change.fcfMarginTtm.changedOver10pct": 140,
    "quant.change.fcfMarginTtm.gained": 1,
-   "quant.change.fcfMarginTtm.lost": 6,
-   "quant.change.fcfMarginTtm.signFlip": 11,
-   "quant.change.grossMarginPriorTtm.changed": 219,
-   "quant.change.grossMarginPriorTtm.changedOver10pct": 87,
-   "quant.change.grossMarginPriorTtm.gained": 1,
-   "quant.change.grossMarginPriorTtm.lost": 6,
+   "quant.change.fcfMarginTtm.lost": 1,
+   "quant.change.fcfMarginTtm.signFlip": 1,
+   "quant.change.grossMarginPriorTtm.changed": 152,
+   "quant.change.grossMarginPriorTtm.changedOver10pct": 68,
+   "quant.change.grossMarginPriorTtm.lost": 1,
    "quant.change.grossMarginPriorTtm.signFlip": 8,
-   "quant.change.grossMarginTtm.changed": 219,
-   "quant.change.grossMarginTtm.changedOver10pct": 91,
-   "quant.change.grossMarginTtm.lost": 2,
+   "quant.change.grossMarginTtm.changed": 155,
+   "quant.change.grossMarginTtm.changedOver10pct": 76,
+   "quant.change.grossMarginTtm.lost": 1,
    "quant.change.grossMarginTtm.signFlip": 8,
-   "quant.change.revenueGrowthAcceleration.changed": 353,
-   "quant.change.revenueGrowthAcceleration.changedOver10pct": 253,
+   "quant.change.revenueGrowthAcceleration.changed": 369,
+   "quant.change.revenueGrowthAcceleration.changedOver10pct": 271,
    "quant.change.revenueGrowthAcceleration.gained": 10,
    "quant.change.revenueGrowthAcceleration.lost": 1,
-   "quant.change.revenueGrowthAcceleration.signFlip": 69,
-   "quant.change.revenueGrowthCurrent.changed": 331,
-   "quant.change.revenueGrowthCurrent.changedOver10pct": 227,
+   "quant.change.revenueGrowthAcceleration.signFlip": 70,
+   "quant.change.revenueGrowthCurrent.changed": 346,
+   "quant.change.revenueGrowthCurrent.changedOver10pct": 241,
    "quant.change.revenueGrowthCurrent.gained": 10,
    "quant.change.revenueGrowthCurrent.lost": 1,
-   "quant.change.revenueGrowthCurrent.signFlip": 45,
-   "quant.change.revenueGrowthPrior.changed": 339,
-   "quant.change.revenueGrowthPrior.changedOver10pct": 230,
+   "quant.change.revenueGrowthCurrent.signFlip": 48,
+   "quant.change.revenueGrowthPrior.changed": 354,
+   "quant.change.revenueGrowthPrior.changedOver10pct": 241,
    "quant.change.revenueGrowthPrior.gained": 10,
    "quant.change.revenueGrowthPrior.lost": 1,
-   "quant.change.revenueGrowthPrior.signFlip": 61,
-   "quant.raws.accrualRatio.changed": 4,
+   "quant.change.revenueGrowthPrior.signFlip": 62,
+   "quant.raws.accrualRatio.changed": 31,
+   "quant.raws.accrualRatio.changedOver10pct": 7,
    "quant.raws.accrualRatio.gained": 9,
-   "quant.raws.accrualRatio.lost": 107,
+   "quant.raws.accrualRatio.signFlip": 1,
    "quant.raws.bookToMarket.changed": 7,
    "quant.raws.bookToMarket.changedOver10pct": 5,
    "quant.raws.bookToMarket.gained": 5,
    "quant.raws.bookToMarket.lost": 1,
    "quant.raws.bookToMarket.signFlip": 1,
+   "quant.raws.cashFlowYield.changed": 1,
    "quant.raws.cashFlowYield.gained": 9,
-   "quant.raws.cashFlowYield.lost": 42,
-   "quant.raws.cashReturnOnAssets.changed": 3,
+   "quant.raws.cashFlowYield.lost": 2,
+   "quant.raws.cashReturnOnAssets.changed": 4,
    "quant.raws.cashReturnOnAssets.gained": 9,
-   "quant.raws.cashReturnOnAssets.lost": 42,
+   "quant.raws.cashReturnOnAssets.lost": 2,
    "quant.raws.dividendCoverageByOcf.gained": 3,
-   "quant.raws.dividendCoverageByOcf.lost": 16,
    "quant.raws.dividendYield.changed": 2,
    "quant.raws.dividendYield.changedOver10pct": 1,
-   "quant.raws.earningsYield.changed": 4,
-   "quant.raws.earningsYield.changedOver10pct": 3,
+   "quant.raws.earningsYield.changed": 30,
+   "quant.raws.earningsYield.changedOver10pct": 8,
    "quant.raws.earningsYield.gained": 6,
-   "quant.raws.earningsYield.lost": 69,
+   "quant.raws.earningsYield.signFlip": 1,
+   "quant.raws.ebitdaYield.changed": 5,
+   "quant.raws.ebitdaYield.changedOver10pct": 3,
    "quant.raws.ebitdaYield.gained": 1,
-   "quant.raws.ebitdaYield.lost": 7,
+   "quant.raws.effectiveTaxRateTtm.changed": 1,
    "quant.raws.effectiveTaxRateTtm.gained": 1,
-   "quant.raws.effectiveTaxRateTtm.lost": 4,
    "quant.raws.epsCagr3y.changed": 18,
    "quant.raws.epsCagr3y.changedOver10pct": 15,
    "quant.raws.epsCagr3y.gained": 13,
@@ -8855,12 +9149,13 @@
    "quant.raws.fcfCagr3y.gained": 6,
    "quant.raws.fcfCagr3y.lost": 1,
    "quant.raws.fcfCagr3y.signFlip": 4,
-   "quant.raws.fcfMarginTtm.changed": 204,
-   "quant.raws.fcfMarginTtm.changedOver10pct": 100,
-   "quant.raws.fcfMarginTtm.gained": 6,
-   "quant.raws.fcfMarginTtm.lost": 140,
+   "quant.raws.fcfMarginTtm.changed": 229,
+   "quant.raws.fcfMarginTtm.changedOver10pct": 116,
+   "quant.raws.fcfMarginTtm.gained": 7,
+   "quant.raws.fcfYield.changed": 6,
+   "quant.raws.fcfYield.changedOver10pct": 3,
    "quant.raws.fcfYield.gained": 8,
-   "quant.raws.fcfYield.lost": 73,
+   "quant.raws.fcfYield.lost": 2,
    "quant.raws.grossProfitabilityTtm.changed": 3,
    "quant.raws.grossProfitabilityTtm.gained": 1,
    "quant.raws.grossProfitabilityTtm.lost": 1,
@@ -8868,27 +9163,24 @@
    "quant.raws.netDebtToAssets.changedOver10pct": 3,
    "quant.raws.netDebtToAssets.lost": 1,
    "quant.raws.netDebtToAssets.signFlip": 1,
-   "quant.raws.netMarginTtm.changed": 273,
-   "quant.raws.netMarginTtm.changedOver10pct": 147,
-   "quant.raws.netMarginTtm.gained": 7,
-   "quant.raws.netMarginTtm.lost": 146,
-   "quant.raws.ocfMarginTtm.changed": 272,
-   "quant.raws.ocfMarginTtm.changedOver10pct": 144,
-   "quant.raws.ocfMarginTtm.gained": 11,
-   "quant.raws.ocfMarginTtm.lost": 123,
-   "quant.raws.operatingMarginExpansion3y.changed": 290,
-   "quant.raws.operatingMarginExpansion3y.changedOver10pct": 165,
+   "quant.raws.netMarginTtm.changed": 324,
+   "quant.raws.netMarginTtm.changedOver10pct": 164,
+   "quant.raws.netMarginTtm.gained": 9,
+   "quant.raws.ocfMarginTtm.changed": 299,
+   "quant.raws.ocfMarginTtm.changedOver10pct": 157,
+   "quant.raws.ocfMarginTtm.gained": 12,
+   "quant.raws.operatingMarginExpansion3y.changed": 303,
+   "quant.raws.operatingMarginExpansion3y.changedOver10pct": 179,
    "quant.raws.operatingMarginExpansion3y.gained": 5,
    "quant.raws.operatingMarginExpansion3y.lost": 1,
-   "quant.raws.operatingMarginExpansion3y.signFlip": 26,
-   "quant.raws.operatingMarginStability.changed": 291,
-   "quant.raws.operatingMarginStability.changedOver10pct": 186,
+   "quant.raws.operatingMarginExpansion3y.signFlip": 30,
+   "quant.raws.operatingMarginStability.changed": 306,
+   "quant.raws.operatingMarginStability.changedOver10pct": 199,
    "quant.raws.operatingMarginStability.gained": 5,
    "quant.raws.operatingMarginStability.lost": 1,
-   "quant.raws.operatingMarginTtm.changed": 194,
-   "quant.raws.operatingMarginTtm.changedOver10pct": 79,
+   "quant.raws.operatingMarginTtm.changed": 215,
+   "quant.raws.operatingMarginTtm.changedOver10pct": 87,
    "quant.raws.operatingMarginTtm.gained": 4,
-   "quant.raws.operatingMarginTtm.lost": 86,
    "quant.raws.positiveEarningsYears.changed": 29,
    "quant.raws.positiveEarningsYears.changedOver10pct": 29,
    "quant.raws.positiveEarningsYears.gained": 2,
@@ -8899,29 +9191,29 @@
    "quant.raws.positiveFcfYears.gained": 2,
    "quant.raws.positiveFcfYears.lost": 1,
    "quant.raws.positiveFcfYears.signFlip": 2,
-   "quant.raws.pretaxEarningsYield.changed": 3,
-   "quant.raws.pretaxEarningsYield.changedOver10pct": 2,
+   "quant.raws.pretaxEarningsYield.changed": 22,
+   "quant.raws.pretaxEarningsYield.changedOver10pct": 4,
    "quant.raws.pretaxEarningsYield.gained": 4,
-   "quant.raws.pretaxEarningsYield.lost": 59,
-   "quant.raws.pretaxRoaTtm.changed": 5,
-   "quant.raws.pretaxRoaTtm.changedOver10pct": 2,
+   "quant.raws.pretaxEarningsYield.signFlip": 1,
+   "quant.raws.pretaxRoaTtm.changed": 24,
+   "quant.raws.pretaxRoaTtm.changedOver10pct": 4,
    "quant.raws.pretaxRoaTtm.gained": 4,
-   "quant.raws.pretaxRoaTtm.lost": 59,
-   "quant.raws.revenueCagr3y.changed": 363,
-   "quant.raws.revenueCagr3y.changedOver10pct": 241,
+   "quant.raws.pretaxRoaTtm.signFlip": 1,
+   "quant.raws.revenueCagr3y.changed": 378,
+   "quant.raws.revenueCagr3y.changedOver10pct": 263,
    "quant.raws.revenueCagr3y.gained": 10,
    "quant.raws.revenueCagr3y.lost": 1,
-   "quant.raws.revenueCagr3y.signFlip": 58,
-   "quant.raws.revenueGrowthAcceleration.changed": 353,
-   "quant.raws.revenueGrowthAcceleration.changedOver10pct": 253,
+   "quant.raws.revenueCagr3y.signFlip": 63,
+   "quant.raws.revenueGrowthAcceleration.changed": 369,
+   "quant.raws.revenueGrowthAcceleration.changedOver10pct": 271,
    "quant.raws.revenueGrowthAcceleration.gained": 10,
    "quant.raws.revenueGrowthAcceleration.lost": 1,
-   "quant.raws.revenueGrowthAcceleration.signFlip": 69,
-   "quant.raws.revenueGrowthTtmYoy.changed": 411,
-   "quant.raws.revenueGrowthTtmYoy.changedOver10pct": 311,
-   "quant.raws.revenueGrowthTtmYoy.gained": 6,
-   "quant.raws.revenueGrowthTtmYoy.lost": 9,
-   "quant.raws.revenueGrowthTtmYoy.signFlip": 61,
+   "quant.raws.revenueGrowthAcceleration.signFlip": 70,
+   "quant.raws.revenueGrowthTtmYoy.changed": 335,
+   "quant.raws.revenueGrowthTtmYoy.changedOver10pct": 238,
+   "quant.raws.revenueGrowthTtmYoy.gained": 4,
+   "quant.raws.revenueGrowthTtmYoy.lost": 2,
+   "quant.raws.revenueGrowthTtmYoy.signFlip": 52,
    "quant.raws.roaMedian3y.changed": 25,
    "quant.raws.roaMedian3y.changedOver10pct": 21,
    "quant.raws.roaMedian3y.gained": 1,
@@ -8929,23 +9221,22 @@
    "quant.raws.roaStability5y.changed": 69,
    "quant.raws.roaStability5y.changedOver10pct": 63,
    "quant.raws.roaStability5y.gained": 3,
-   "quant.raws.roaTtm.changed": 7,
-   "quant.raws.roaTtm.changedOver10pct": 3,
+   "quant.raws.roaTtm.changed": 33,
+   "quant.raws.roaTtm.changedOver10pct": 8,
    "quant.raws.roaTtm.gained": 6,
-   "quant.raws.roaTtm.lost": 69,
-   "quant.raws.roeTtm.changed": 1,
-   "quant.raws.roeTtm.changedOver10pct": 1,
+   "quant.raws.roaTtm.signFlip": 1,
+   "quant.raws.roeTtm.changed": 25,
+   "quant.raws.roeTtm.changedOver10pct": 5,
    "quant.raws.roeTtm.gained": 9,
-   "quant.raws.roeTtm.lost": 64,
+   "quant.raws.roeTtm.signFlip": 1,
    "quant.raws.roicMedian3y.changed": 1,
    "quant.raws.roicMedian3y.changedOver10pct": 1,
    "quant.raws.roicMedian3y.gained": 4,
+   "quant.raws.roicTtm.changed": 1,
    "quant.raws.roicTtm.gained": 1,
-   "quant.raws.roicTtm.lost": 4,
-   "quant.raws.salesYield.changed": 23,
-   "quant.raws.salesYield.changedOver10pct": 11,
+   "quant.raws.salesYield.changed": 24,
+   "quant.raws.salesYield.changedOver10pct": 12,
    "quant.raws.salesYield.gained": 1,
-   "quant.raws.salesYield.lost": 9,
    "quant.raws.salesYield.signFlip": 1,
    "screener.eps.changed": 3146,
    "screener.eps.changedOver10pct": 2219,
@@ -8966,8 +9257,8 @@
    "screener.epsSource.FY->TTM": 1,
    "screener.epsSource.NONE->FY": 35,
    "screener.epsSource.TTM->FY": 3236,
-   "screener.revenue.changed": 423,
-   "screener.revenue.changedOver10pct": 226,
+   "screener.revenue.changed": 365,
+   "screener.revenue.changedOver10pct": 206,
    "screener.revenue.lost": 2,
    "screener.revenue.signFlip": 6
   },
@@ -9150,108 +9441,102 @@
      "ticker": "ALCO"
     }
    ],
-   "quant.raws.pretaxRoaTtm.lost": [
+   "quant.raws.pretaxRoaTtm.changed": [
     {
      "ticker": "AMD",
-     "old": 0.1035907821993541
+     "old": 0.1035907821993541,
+     "new": 0.10323498823143029
     },
     {
      "ticker": "AEP",
-     "old": 0.03546506817199754
-    },
-    {
-     "ticker": "CPK",
-     "old": 0.05454449404368842
-    },
-    {
-     "ticker": "DBD",
-     "old": 0.044309871720353076
-    },
-    {
-     "ticker": "DDS",
-     "old": 0.2388751572786938
-    },
-    {
-     "ticker": "SRCE",
-     "old": 0.02462805789536653
+     "old": 0.03546506817199754,
+     "new": 0.03453649477332696
     },
     {
      "ticker": "HUM",
-     "old": 0.028137711242504297
+     "old": 0.028137711242504297,
+     "new": 0.0305908500020967
     },
     {
-     "ticker": "MAT",
-     "old": 0.0732474110062554
+     "ticker": "CAKE",
+     "old": 0.06438388378996912,
+     "new": 0.06232699900625564
+    },
+    {
+     "ticker": "OHI",
+     "old": 0.0904502192064451,
+     "new": 0.0904720771847325
+    },
+    {
+     "ticker": "NKTR",
+     "old": -0.5540071475517582,
+     "new": -0.5241332566546172
+    },
+    {
+     "ticker": "SVC",
+     "old": -0.06390824925880555,
+     "new": -0.06328728722021627
+    },
+    {
+     "ticker": "WULF",
+     "old": -0.5247741771947181,
+     "new": -0.5236497087476975
     }
    ],
-   "quant.raws.pretaxEarningsYield.lost": [
+   "quant.raws.pretaxEarningsYield.changed": [
     {
      "ticker": "AMD",
-     "old": 0.757
+     "old": 0.757,
+     "new": 0.7544
     },
     {
      "ticker": "AEP",
-     "old": 0.38575
-    },
-    {
-     "ticker": "CPK",
-     "old": 0.02065
-    },
-    {
-     "ticker": "DBD",
-     "old": 0.01639
-    },
-    {
-     "ticker": "DDS",
-     "old": 0.0840372
-    },
-    {
-     "ticker": "SRCE",
-     "old": 0.0221495
+     "old": 0.38575,
+     "new": 0.37565
     },
     {
      "ticker": "HUM",
-     "old": 0.1342
+     "old": 0.1342,
+     "new": 0.1459
     },
     {
-     "ticker": "MAT",
-     "old": 0.0482864
+     "ticker": "OHI",
+     "old": 0.0902103,
+     "new": 0.0902321
+    },
+    {
+     "ticker": "NKTR",
+     "old": -0.0161841,
+     "new": -0.0153114
+    },
+    {
+     "ticker": "SVC",
+     "old": -0.0434932,
+     "new": -0.0430706
+    },
+    {
+     "ticker": "WULF",
+     "old": -0.1927415,
+     "new": -0.1923285
+    },
+    {
+     "ticker": "SPWH",
+     "old": -0.0024874,
+     "new": -0.0046819
     }
    ],
-   "quant.raws.roicTtm.lost": [
+   "quant.raws.roicTtm.changed": [
     {
      "ticker": "AMD",
-     "old": 0.09072670515415822
-    },
-    {
-     "ticker": "JBTM",
-     "old": 0.038422908229766524
-    },
-    {
-     "ticker": "APTV",
-     "old": 0.03122503708775534
-    },
-    {
-     "ticker": "XYL",
-     "old": 0.0797445210712382
+     "old": 0.09072670515415822,
+     "new": 0.09067365695577781
     }
    ],
-   "quant.raws.effectiveTaxRateTtm.lost": [
+   "quant.raws.effectiveTaxRateTtm.changed": [
     {
      "ticker": "AMD",
-     "old": 0.1450462351387054
-    },
-    {
-     "ticker": "JBTM",
-     "old": 0.1965029142381349
-    },
-    {
-     "ticker": "APTV",
-     "old": 0.5669291338582677
-    },
-    {
-     "ticker": "XYL",
-     "old": 0.20738413197172034
+     "old": 0.1450462351387054,
+     "new": 0.14554612937433722
     }
    ],
    "screener.eps.changedOver10pct": [
@@ -9296,422 +9581,11 @@
      "new": 3.71
     }
    ],
-   "quant.raws.accrualRatio.lost": [
-    {
-     "ticker": "APD",
-     "old": -0.11454459093609279
-    },
-    {
-     "ticker": "BDX",
-     "old": -0.05354716679542851
-    },
-    {
-     "ticker": "CHDN",
-     "old": -0.051677065761572806
-    },
-    {
-     "ticker": "IFF",
-     "old": -0.032029781430835576
-    },
-    {
-     "ticker": "ACH",
-     "old": -0.03424997787678162
-    },
-    {
-     "ticker": "BCO",
-     "old": -0.05404553691010793
-    },
-    {
-     "ticker": "SFD",
-     "old": -0.00826481856140502
-    },
-    {
-     "ticker": "JEF",
-     "old": -0.01634741455629364
-    }
-   ],
-   "quant.raws.fcfYield.lost": [
-    {
-     "ticker": "APD",
-     "old": -0.03014
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.3203
-    },
-    {
-     "ticker": "CHDN",
-     "old": 0.07186
-    },
-    {
-     "ticker": "CXT",
-     "old": 0.0224
-    },
-    {
-     "ticker": "MKC",
-     "old": 0.09259
-    },
-    {
-     "ticker": "MCY",
-     "old": 0.1263765
-    },
-    {
-     "ticker": "VYX",
-     "old": -0.0028
-    },
-    {
-     "ticker": "OLN",
-     "old": 0.01006
-    }
-   ],
-   "quant.raws.fcfMarginTtm.lost": [
-    {
-     "ticker": "APD",
-     "old": -0.023916459030962848
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.08798360930757178
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.13776344086021505
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.012959946405909587
-    },
-    {
-     "ticker": "CHDN",
-     "old": 0.2401818242588322
-    },
-    {
-     "ticker": "CXT",
-     "old": 0.12424427311553608
-    },
-    {
-     "ticker": "GD",
-     "old": 0.11524308652988403
-    },
-    {
-     "ticker": "HAS",
-     "old": 0.24402799002654227
-    }
-   ],
-   "quant.raws.cashReturnOnAssets.lost": [
-    {
-     "ticker": "APD",
-     "old": 0.11337139001985512
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.07025956611698679
-    },
-    {
-     "ticker": "CHDN",
-     "old": 0.10768991050681191
-    },
-    {
-     "ticker": "ACH",
-     "old": -0.050765083497739213
-    },
-    {
-     "ticker": "BCO",
-     "old": 0.08034492884410162
-    },
-    {
-     "ticker": "SFD",
-     "old": 0.09943609831690414
-    },
-    {
-     "ticker": "JEF",
-     "old": 0.02864503753494555
-    },
-    {
-     "ticker": "T",
-     "old": 0.09783642313492263
-    }
-   ],
-   "quant.raws.ocfMarginTtm.lost": [
-    {
-     "ticker": "APD",
-     "old": 0.36269857643903447
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.1068514664886725
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.1701505376344086
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.03945168879518887
-    },
-    {
-     "ticker": "CHDN",
-     "old": 0.2656505899261339
-    },
-    {
-     "ticker": "GD",
-     "old": 0.1379534641688968
-    },
-    {
-     "ticker": "HAS",
-     "old": 0.25902839218209606
-    },
-    {
-     "ticker": "KELYA",
-     "old": 0.006669784154955576
-    }
-   ],
-   "quant.raws.dividendCoverageByOcf.lost": [
-    {
-     "ticker": "APD",
-     "old": 2.885423900006313
-    },
-    {
-     "ticker": "BDX",
-     "old": 3.3076923076923075
-    },
-    {
-     "ticker": "CHDN",
-     "old": 25.805194805194805
-    },
-    {
-     "ticker": "BCO",
-     "old": 13.260047281323876
-    },
-    {
-     "ticker": "SFD",
-     "old": 2.9166666666666665
-    },
-    {
-     "ticker": "JEF",
-     "old": 5.373773821933552
-    },
-    {
-     "ticker": "T",
-     "old": 4.873838630806846
-    },
-    {
-     "ticker": "BWA",
-     "old": 14.495798319327731
-    }
-   ],
-   "quant.raws.cashFlowYield.lost": [
-    {
-     "ticker": "APD",
-     "old": 0.45708
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.3956
-    },
-    {
-     "ticker": "CHDN",
-     "old": 0.07948
-    },
-    {
-     "ticker": "ACH",
-     "old": -0.0180417
-    },
-    {
-     "ticker": "BCO",
-     "old": 0.05609
-    },
-    {
-     "ticker": "SFD",
-     "old": 0.1155
-    },
-    {
-     "ticker": "JEF",
-     "old": 0.201049
-    },
-    {
-     "ticker": "T",
-     "old": 3.9868
-    }
-   ],
-   "quant.change.fcfMarginTtm.changed": [
-    {
-     "ticker": "APD",
-     "old": -0.023916459030962848,
-     "new": -0.0543476535842948
-    },
-    {
-     "ticker": "LNG",
-     "old": 0.1272569761079701,
-     "new": 0.12566411526339485
-    },
-    {
-     "ticker": "UHAL",
-     "old": -1.2469509298324704,
-     "new": -0.2025874243929099
-    },
-    {
-     "ticker": "AEP",
-     "old": 0.11685031002481099,
-     "new": 0.11567985877695854
-    },
-    {
-     "ticker": "AP",
-     "old": -0.009744449549804964,
-     "new": -0.009314506520388186
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.08798360930757178,
-     "new": 0.08828183255340195
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.06709878766054496,
-     "new": 0.020426558179758584
-    },
-    {
-     "ticker": "ARTW",
-     "old": -0.09916099966573569,
-     "new": -0.09915808879527609
-    }
-   ],
-   "quant.change.fcfMarginTtm.changedOver10pct": [
-    {
-     "ticker": "APD",
-     "old": -0.023916459030962848,
-     "new": -0.0543476535842948
-    },
-    {
-     "ticker": "UHAL",
-     "old": -1.2469509298324704,
-     "new": -0.2025874243929099
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.06709878766054496,
-     "new": 0.020426558179758584
-    },
-    {
-     "ticker": "ADP",
-     "old": 0.20376636482777832,
-     "new": 0.2381019399183718
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.13776344086021505,
-     "new": 0.15406451612903227
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.012959946405909587,
-     "new": -0.011305576580610752
-    },
-    {
-     "ticker": "CNA",
-     "old": 1.4806303348653973,
-     "new": 0.14883506039205333
-    },
-    {
-     "ticker": "CXT",
-     "old": 0.12424427311553608,
-     "new": 0.10194686338676577
-    }
-   ],
-   "quant.change.fcfMarginPriorTtm.changed": [
-    {
-     "ticker": "APD",
-     "old": -0.3837732938571393,
-     "new": -0.3385498304016454
-    },
-    {
-     "ticker": "LNG",
-     "old": 0.13144990527136965,
-     "new": 0.12901990811638592
-    },
-    {
-     "ticker": "UHAL",
-     "old": -1.8870862635423171,
-     "new": -0.3057173963247666
-    },
-    {
-     "ticker": "AP",
-     "old": 0.0021335517983152733,
-     "new": 0.0020483942181720796
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.04679601773126953,
-     "new": 0.047524232221954905
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.16599337480811183,
-     "new": 0.04963999226829033
-    },
-    {
-     "ticker": "ARTW",
-     "old": 0.09802081424408754,
-     "new": 0.09802505620691064
-    },
-    {
-     "ticker": "ADP",
-     "old": 0.21023036638848466,
-     "new": 0.2409243090658439
-    }
-   ],
-   "quant.change.fcfMarginPriorTtm.changedOver10pct": [
-    {
-     "ticker": "APD",
-     "old": -0.3837732938571393,
-     "new": -0.3385498304016454
-    },
-    {
-     "ticker": "UHAL",
-     "old": -1.8870862635423171,
-     "new": -0.3057173963247666
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.16599337480811183,
-     "new": 0.04963999226829033
-    },
-    {
-     "ticker": "ADP",
-     "old": 0.21023036638848466,
-     "new": 0.2409243090658439
-    },
-    {
-     "ticker": "BDX",
-     "old": 0.104840745040634,
-     "new": 0.14981575892181112
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.2762464375158004,
-     "new": 0.3198465076219737
-    },
-    {
-     "ticker": "CNA",
-     "old": 1.6026365348399247,
-     "new": 0.17425431711145997
-    },
-    {
-     "ticker": "CXT",
-     "old": 0.09588239120536005,
-     "new": 0.043062512196708515
-    }
-   ],
    "discover.gewinnJeAktie.changedOver10pct": [
     {
      "ticker": "CECO",
      "old": -0.69,
      "new": -0.8545
-    },
-    {
-     "ticker": "APOG",
-     "old": 3.19,
-     "new": 2.52
     },
     {
      "ticker": "ASB",
@@ -9722,11 +9596,6 @@
      "ticker": "AAME",
      "old": 0.21,
      "new": 0.2503
-    },
-    {
-     "ticker": "CALM",
-     "old": 1.22,
-     "new": 6.63
     },
     {
      "ticker": "AMJB",
@@ -9742,6 +9611,16 @@
      "ticker": "CTO",
      "old": 0.21,
      "new": 0.4336
+    },
+    {
+     "ticker": "USAU",
+     "old": -1.27,
+     "new": -0.42
+    },
+    {
+     "ticker": "DDS",
+     "old": 43.63,
+     "new": 43549.984
     }
    ],
    "screener.eps.signFlip": [
@@ -9798,6 +9677,11 @@
      "new": 0.07268036023016172
     },
     {
+     "ticker": "AEP",
+     "old": 0.020378928092324666,
+     "new": 0.015814939320413335
+    },
+    {
      "ticker": "AP",
      "old": 0.044482401837735434,
      "new": 0.04295529777448529
@@ -9821,11 +9705,6 @@
      "ticker": "CATO",
      "old": 0.01482425033978416,
      "new": 0.014658316223395543
-    },
-    {
-     "ticker": "LUMN",
-     "old": 0.07755950331467695,
-     "new": 0.07090871526485464
     }
    ],
    "quant.raws.operatingMarginExpansion3y.changed": [
@@ -9916,7 +9795,7 @@
     {
      "ticker": "LNG",
      "old": 0.22211077677476876,
-     "new": 0.21472325530518477
+     "new": 0.17539925618026686
     },
     {
      "ticker": "UHAL",
@@ -9926,17 +9805,12 @@
     {
      "ticker": "AEP",
      "old": 0.08246734256190291,
-     "new": 0.09341976993566004
+     "new": 0.11282201376108114
     },
     {
      "ticker": "AP",
      "old": 0.02821615970728364,
      "new": 0.03274294220826057
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.017945643485211882,
-     "new": 0.03029415194234164
     },
     {
      "ticker": "ADM",
@@ -9951,7 +9825,54 @@
     {
      "ticker": "ADP",
      "old": 0.08397433993644388,
-     "new": 0.11229668381903668
+     "new": 0.06743868215885485
+    },
+    {
+     "ticker": "WRB",
+     "old": 0.019119417270892614,
+     "new": 0.042695045846488755
+    }
+   ],
+   "quant.raws.revenueGrowthTtmYoy.changedOver10pct": [
+    {
+     "ticker": "LNG",
+     "old": 0.22211077677476876,
+     "new": 0.17539925618026686
+    },
+    {
+     "ticker": "AEP",
+     "old": 0.08246734256190291,
+     "new": 0.11282201376108114
+    },
+    {
+     "ticker": "AP",
+     "old": 0.02821615970728364,
+     "new": 0.03274294220826057
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.009655005251676396,
+     "new": -0.008178699139847256
+    },
+    {
+     "ticker": "ADP",
+     "old": 0.08397433993644388,
+     "new": 0.06743868215885485
+    },
+    {
+     "ticker": "WRB",
+     "old": 0.019119417270892614,
+     "new": 0.042695045846488755
+    },
+    {
+     "ticker": "DOMH",
+     "old": 1.4219135191549852,
+     "new": 1.2404168904403865
+    },
+    {
+     "ticker": "CATO",
+     "old": -0.00923164014021638,
+     "new": -0.011007482752792619
     }
    ],
    "quant.raws.revenueGrowthAcceleration.changed": [
@@ -9968,7 +9889,7 @@
     {
      "ticker": "AEP",
      "old": 0.06031150961639842,
-     "new": 0.06902457922080507
+     "new": 0.07034275813812796
     },
     {
      "ticker": "AP",
@@ -10000,7 +9921,7 @@
     {
      "ticker": "LNG",
      "old": 0.6614391700343808,
-     "new": 0.6698232704023162
+     "new": 0.648139212256469
     },
     {
      "ticker": "CNA",
@@ -10018,6 +9939,11 @@
      "new": 19.16100304663698
     },
     {
+     "ticker": "WMB",
+     "old": 0.40124291434812004,
+     "new": 0.31733319465390813
+    },
+    {
      "ticker": "HOG",
      "old": 0.35219570750575185,
      "new": 0.40977793327608464
@@ -10031,18 +9957,13 @@
      "ticker": "HIG",
      "old": 0.09013269339356296,
      "new": 2.0511010728402033
-    },
-    {
-     "ticker": "NHI",
-     "old": 0.01189464657749543,
-     "new": 0.038430616355159056
     }
    ],
    "quant.raws.fcfMarginTtm.changed": [
     {
      "ticker": "LNG",
      "old": 0.1272569761079701,
-     "new": 0.12566411526339485
+     "new": 0.12986831696989437
     },
     {
      "ticker": "UHAL",
@@ -10084,7 +10005,7 @@
     {
      "ticker": "LNG",
      "old": 0.29285974831296735,
-     "new": 0.2891940567312022
+     "new": 0.2988692941231213
     },
     {
      "ticker": "UHAL",
@@ -10109,7 +10030,7 @@
     {
      "ticker": "DOMH",
      "old": -0.31988290624326676,
-     "new": -0.31941538689813787
+     "new": -0.32251878375645165
     },
     {
      "ticker": "CP",
@@ -10126,7 +10047,7 @@
     {
      "ticker": "LNG",
      "old": 0.13300200620098487,
-     "new": 0.13133723547951373
+     "new": 0.1357312363314876
     },
     {
      "ticker": "UHAL",
@@ -10161,14 +10082,14 @@
     {
      "ticker": "DOMH",
      "old": -0.5118691165216616,
-     "new": -0.5111210030417687
+     "new": -0.5160869858344632
     }
    ],
    "quant.raws.ocfMarginTtm.changed": [
     {
      "ticker": "LNG",
      "old": 0.2798650373882911,
-     "new": 0.2763619990995047
+     "new": 0.28560792890047
     },
     {
      "ticker": "UHAL",
@@ -10203,7 +10124,7 @@
     {
      "ticker": "DOMH",
      "old": -0.12635129612981358,
-     "new": -0.1261666295719267
+     "new": -0.12739244754406598
     }
    ],
    "quant.change.revenueGrowthAcceleration.changed": [
@@ -10220,7 +10141,7 @@
     {
      "ticker": "AEP",
      "old": 0.06031150961639842,
-     "new": 0.06902457922080507
+     "new": 0.07034275813812796
     },
     {
      "ticker": "AP",
@@ -10262,7 +10183,7 @@
     {
      "ticker": "AEP",
      "old": 0.08673009514271413,
-     "new": 0.09544316474712078
+     "new": 0.1092743775670606
     },
     {
      "ticker": "AP",
@@ -10302,6 +10223,11 @@
      "new": 0.036082965347796536
     },
     {
+     "ticker": "AEP",
+     "old": 0.026418585526315708,
+     "new": 0.03893161942893264
+    },
+    {
      "ticker": "AP",
      "old": -0.030145502613653563,
      "new": -0.009553913908225575
@@ -10325,18 +10251,97 @@
      "ticker": "DOMH",
      "old": 7.965179009318293,
      "new": 9.284943599803825
+    }
+   ],
+   "quant.change.fcfMarginTtm.changed": [
+    {
+     "ticker": "LNG",
+     "old": 0.1272569761079701,
+     "new": 0.12986831696989437
+    },
+    {
+     "ticker": "UHAL",
+     "old": -1.2469509298324704,
+     "new": -0.2025874243929099
+    },
+    {
+     "ticker": "AEP",
+     "old": 0.11685031002481099,
+     "new": 0.11567985877695854
+    },
+    {
+     "ticker": "AP",
+     "old": -0.009744449549804964,
+     "new": -0.009314506520388186
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.06709878766054496,
+     "new": 0.020426558179758584
+    },
+    {
+     "ticker": "ARTW",
+     "old": -0.09916099966573569,
+     "new": -0.09915808879527609
+    },
+    {
+     "ticker": "ADP",
+     "old": 0.20376636482777832,
+     "new": 0.23896115730721038
+    },
+    {
+     "ticker": "DOMH",
+     "old": -0.16835199453166214,
+     "new": -0.1697392372633771
+    }
+   ],
+   "quant.change.fcfMarginPriorTtm.changed": [
+    {
+     "ticker": "LNG",
+     "old": 0.13144990527136965,
+     "new": 0.12901990811638592
+    },
+    {
+     "ticker": "UHAL",
+     "old": -1.8870862635423171,
+     "new": -0.3057173963247666
+    },
+    {
+     "ticker": "AP",
+     "old": 0.0021335517983152733,
+     "new": 0.0020483942181720796
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.16599337480811183,
+     "new": 0.04963999226829033
+    },
+    {
+     "ticker": "ARTW",
+     "old": 0.09802081424408754,
+     "new": 0.09802505620691064
+    },
+    {
+     "ticker": "ADP",
+     "old": 0.21023036638848466,
+     "new": 0.2320423716860643
     },
     {
      "ticker": "CP",
-     "old": 0.15849541874296746,
-     "new": 0.15858223815213068
+     "old": 0.17196375439545578,
+     "new": 0.1704766373935778
+    },
+    {
+     "ticker": "CATO",
+     "old": -0.02857827143137078,
+     "new": -0.028234715670758876
     }
    ],
    "discover.umsatzTTM.changed": [
     {
      "ticker": "LNG",
      "old": 21932,
-     "new": 22210
+     "new": 21491
     },
     {
      "ticker": "UHAL",
@@ -10354,11 +10359,6 @@
      "new": 428.04
     },
     {
-     "ticker": "APOG",
-     "old": 1400.8,
-     "new": 1404.73
-    },
-    {
      "ticker": "ADM",
      "old": 24993,
      "new": 82099
@@ -10371,14 +10371,19 @@
     {
      "ticker": "DOMH",
      "old": 134.59,
-     "new": 134.79
+     "new": 133.49
+    },
+    {
+     "ticker": "CP",
+     "old": 15338,
+     "new": 15449
     }
    ],
    "discover.umsatzWachstum.changed": [
     {
      "ticker": "LNG",
      "old": 0.2221,
-     "new": 0.2147
+     "new": 0.1754
     },
     {
      "ticker": "UHAL",
@@ -10388,17 +10393,12 @@
     {
      "ticker": "AEP",
      "old": 0.0825,
-     "new": 0.0934
+     "new": 0.1128
     },
     {
      "ticker": "AP",
      "old": 0.0282,
      "new": 0.0327
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.0179,
-     "new": 0.0321
     },
     {
      "ticker": "ADM",
@@ -10414,13 +10414,60 @@
      "ticker": "WRB",
      "old": 0.0191,
      "new": 0.0427
+    },
+    {
+     "ticker": "DOMH",
+     "old": 1.4219,
+     "new": 1.2404
+    }
+   ],
+   "discover.umsatzWachstum.changedOver10pct": [
+    {
+     "ticker": "LNG",
+     "old": 0.2221,
+     "new": 0.1754
+    },
+    {
+     "ticker": "AEP",
+     "old": 0.0825,
+     "new": 0.1128
+    },
+    {
+     "ticker": "AP",
+     "old": 0.0282,
+     "new": 0.0327
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.0097,
+     "new": -0.0082
+    },
+    {
+     "ticker": "WRB",
+     "old": 0.0191,
+     "new": 0.0427
+    },
+    {
+     "ticker": "DOMH",
+     "old": 1.4219,
+     "new": 1.2404
+    },
+    {
+     "ticker": "CATO",
+     "old": -0.0092,
+     "new": -0.011
+    },
+    {
+     "ticker": "LUMN",
+     "old": -0.0992,
+     "new": -0.0774
     }
    ],
    "discover.marge.changed": [
     {
      "ticker": "LNG",
      "old": 0.133,
-     "new": 0.1313
+     "new": 0.1357
     },
     {
      "ticker": "UHAL",
@@ -10438,11 +10485,6 @@
      "new": -0.1384
     },
     {
-     "ticker": "APOG",
-     "old": 0.0488,
-     "new": 0.0385
-    },
-    {
      "ticker": "ADM",
      "old": 0.0708,
      "new": 0.0216
@@ -10455,14 +10497,19 @@
     {
      "ticker": "DOMH",
      "old": -0.5119,
-     "new": -0.5111
+     "new": -0.5161
+    },
+    {
+     "ticker": "CP",
+     "old": 0.2521,
+     "new": 0.2503
     }
    ],
    "screener.revenue.changed": [
     {
      "ticker": "LNG",
      "old": 21932000000,
-     "new": 22210000000
+     "new": 21491000000
     },
     {
      "ticker": "UHAL",
@@ -10480,11 +10527,6 @@
      "new": 428042000
     },
     {
-     "ticker": "APOG",
-     "old": 1400795000,
-     "new": 1404733000
-    },
-    {
      "ticker": "ADM",
      "old": 24993000000,
      "new": 82099000000
@@ -10493,6 +10535,11 @@
      "ticker": "ARTW",
      "old": 25991408,
      "new": 25992171
+    },
+    {
+     "ticker": "ADP",
+     "old": 21947400000,
+     "new": 21947500000
     },
     {
      "ticker": "WRB",
@@ -10505,6 +10552,11 @@
      "ticker": "UHAL",
      "old": 0.568038987303799,
      "new": 0.07268036023016172
+    },
+    {
+     "ticker": "AEP",
+     "old": 0.020378928092324666,
+     "new": 0.015814939320413335
     },
     {
      "ticker": "CHE",
@@ -10527,19 +10579,14 @@
      "new": 0.0031920274129282333
     },
     {
+     "ticker": "NFG",
+     "old": 0.03231879532575693,
+     "new": 0.010045786653107014
+    },
+    {
      "ticker": "ES",
      "old": 0.0013050686827462687,
      "new": 0.0006555650422002679
-    },
-    {
-     "ticker": "UDR",
-     "old": 4.813851004190099,
-     "new": 0.042310224297442856
-    },
-    {
-     "ticker": "RGLD",
-     "old": 0.04940073950775503,
-     "new": 0.032117514751084375
     }
    ],
    "quant.raws.operatingMarginExpansion3y.changedOver10pct": [
@@ -10635,7 +10682,7 @@
     {
      "ticker": "AEP",
      "old": 0.06031150961639842,
-     "new": 0.06902457922080507
+     "new": 0.07034275813812796
     },
     {
      "ticker": "AP",
@@ -10747,9 +10794,9 @@
      "new": 0.09446881352305553
     },
     {
-     "ticker": "SIEB",
-     "old": 0.16787527193618565,
-     "new": 0.14103357352955176
+     "ticker": "MCY",
+     "old": 39.99256329113924,
+     "new": 0.19926039204519386
     }
    ],
    "quant.raws.operatingMarginTtm.changedOver10pct": [
@@ -10779,19 +10826,19 @@
      "new": 0.3852750641235554
     },
     {
+     "ticker": "WMB",
+     "old": 0.30198950165251764,
+     "new": 0.3818420190101606
+    },
+    {
      "ticker": "VAL",
      "old": 0.21000348553502962,
      "new": 0.11273798942788979
     },
     {
-     "ticker": "NVEC",
-     "old": 16.001904254511988,
-     "new": 0.6206873111422478
-    },
-    {
-     "ticker": "OPY",
-     "old": 0.09525487275882931,
-     "new": 0.08349790961687531
+     "ticker": "NSYS",
+     "old": 0.1359632531748176,
+     "new": 0.026786189568716798
     }
    ],
    "quant.raws.netMarginTtm.changedOver10pct": [
@@ -10887,7 +10934,7 @@
     {
      "ticker": "AEP",
      "old": 0.06031150961639842,
-     "new": 0.06902457922080507
+     "new": 0.07034275813812796
     },
     {
      "ticker": "AP",
@@ -10969,6 +11016,11 @@
      "new": 0.036082965347796536
     },
     {
+     "ticker": "AEP",
+     "old": 0.026418585526315708,
+     "new": 0.03893161942893264
+    },
+    {
      "ticker": "AP",
      "old": -0.030145502613653563,
      "new": -0.009553913908225575
@@ -10997,11 +11049,6 @@
      "ticker": "FEIM",
      "old": 783.3932584269663,
      "new": 0.2629988783153019
-    },
-    {
-     "ticker": "CFR",
-     "old": 0.13610112936344976,
-     "new": 0.03849827345529344
     }
    ],
    "quant.change.grossMarginTtm.changed": [
@@ -11009,11 +11056,6 @@
      "ticker": "UHAL",
      "old": 0.7509304389488516,
      "new": 0.9595346058446711
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.2279976727501169,
-     "new": 0.22877047812312196
     },
     {
      "ticker": "ADM",
@@ -11028,22 +11070,27 @@
     {
      "ticker": "ADP",
      "old": 0.4638546789594093,
-     "new": 0.46873567079952966
-    },
-    {
-     "ticker": "HRB",
-     "old": 0.44329815643160425,
-     "new": 0.6241073130375892
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.14281923423567716,
-     "new": 0.12458799899815708
+     "new": 0.46416220526255836
     },
     {
      "ticker": "CAT",
      "old": 0.9416023230606592,
-     "new": 0.3425443937427237
+     "new": 0.34340082163550967
+    },
+    {
+     "ticker": "CATO",
+     "old": 0.32929505391872166,
+     "new": 0.336168136890872
+    },
+    {
+     "ticker": "LUMN",
+     "old": 0.42032657657657657,
+     "new": 0.47794117647058826
+    },
+    {
+     "ticker": "DDS",
+     "old": 0.40377604208689244,
+     "new": 0.39811668212510287
     }
    ],
    "quant.change.grossMarginTtm.changedOver10pct": [
@@ -11058,19 +11105,9 @@
      "new": 0.06869754808219344
     },
     {
-     "ticker": "HRB",
-     "old": 0.44329815643160425,
-     "new": 0.6241073130375892
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.14281923423567716,
-     "new": 0.12458799899815708
-    },
-    {
      "ticker": "CAT",
      "old": 0.9416023230606592,
-     "new": 0.3425443937427237
+     "new": 0.34340082163550967
     },
     {
      "ticker": "LUMN",
@@ -11086,6 +11123,16 @@
      "ticker": "MCY",
      "old": 0.47468354430379744,
      "new": 0.9973826443144491
+    },
+    {
+     "ticker": "VAL",
+     "old": -0.40109794353433253,
+     "new": 0.24783645974645646
+    },
+    {
+     "ticker": "NSYS",
+     "old": 1.107592542556066,
+     "new": 0.21820736939603316
     }
    ],
    "quant.change.grossMarginPriorTtm.changed": [
@@ -11093,11 +11140,6 @@
      "ticker": "UHAL",
      "old": 0.7490104996689482,
      "new": 0.9593384478343734
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.2442867524162488,
-     "new": 0.24808821163471373
     },
     {
      "ticker": "ADM",
@@ -11112,22 +11154,27 @@
     {
      "ticker": "ADP",
      "old": 0.4598715016879016,
-     "new": 0.4593721121653899
-    },
-    {
-     "ticker": "HRB",
-     "old": 0.44533002569798685,
-     "new": 0.2465230610516632
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.43535989502152495,
-     "new": 0.5040728967711638
+     "new": 0.46027168071436564
     },
     {
      "ticker": "CAT",
      "old": 1.0001108665008949,
-     "new": 0.5330461363024438
+     "new": 0.3639588843662396
+    },
+    {
+     "ticker": "CATO",
+     "old": 0.322559976112198,
+     "new": 0.3307038704423582
+    },
+    {
+     "ticker": "LUMN",
+     "old": 0.43288250211327134,
+     "new": 0.4768402994385527
+    },
+    {
+     "ticker": "DDS",
+     "old": 0.39127612798589034,
+     "new": 0.3853699274949702
     }
    ],
    "quant.change.grossMarginPriorTtm.changedOver10pct": [
@@ -11142,19 +11189,9 @@
      "new": 0.0637020392384266
     },
     {
-     "ticker": "HRB",
-     "old": 0.44533002569798685,
-     "new": 0.2465230610516632
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.43535989502152495,
-     "new": 0.5040728967711638
-    },
-    {
      "ticker": "CAT",
      "old": 1.0001108665008949,
-     "new": 0.5330461363024438
+     "new": 0.3639588843662396
     },
     {
      "ticker": "FEIM",
@@ -11167,9 +11204,103 @@
      "new": 0.2982312794386235
     },
     {
-     "ticker": "SLNH",
-     "old": -1.14900864078018,
-     "new": -0.8980524029704358
+     "ticker": "MCY",
+     "old": 0.48175182481751827,
+     "new": 0.9975382767625288
+    },
+    {
+     "ticker": "VAL",
+     "old": -14.290760869565217,
+     "new": 0.31472761224324103
+    },
+    {
+     "ticker": "NVEC",
+     "old": 16.324703193078477,
+     "new": 0.8236707245178558
+    }
+   ],
+   "quant.change.fcfMarginTtm.changedOver10pct": [
+    {
+     "ticker": "UHAL",
+     "old": -1.2469509298324704,
+     "new": -0.2025874243929099
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.06709878766054496,
+     "new": 0.020426558179758584
+    },
+    {
+     "ticker": "ADP",
+     "old": 0.20376636482777832,
+     "new": 0.23896115730721038
+    },
+    {
+     "ticker": "CNA",
+     "old": 1.4806303348653973,
+     "new": 0.14883506039205333
+    },
+    {
+     "ticker": "FEIM",
+     "old": -0.0029101491451436886,
+     "new": -0.002525183213021162
+    },
+    {
+     "ticker": "CFR",
+     "old": 4.160818848264097,
+     "new": 0.2355233751286439
+    },
+    {
+     "ticker": "HUM",
+     "old": 0.20595854922279794,
+     "new": 0.009271137026239067
+    },
+    {
+     "ticker": "KR",
+     "old": 0.009794656527695362,
+     "new": 0.016245579496153705
+    }
+   ],
+   "quant.change.fcfMarginPriorTtm.changedOver10pct": [
+    {
+     "ticker": "UHAL",
+     "old": -1.8870862635423171,
+     "new": -0.3057173963247666
+    },
+    {
+     "ticker": "ADM",
+     "old": 0.16599337480811183,
+     "new": 0.04963999226829033
+    },
+    {
+     "ticker": "CNA",
+     "old": 1.6026365348399247,
+     "new": 0.17425431711145997
+    },
+    {
+     "ticker": "FEIM",
+     "old": -0.012448762714437529,
+     "new": -0.015551827266759063
+    },
+    {
+     "ticker": "CFR",
+     "old": 0.7603123093383322,
+     "new": 0.04015245474174966
+    },
+    {
+     "ticker": "HAS",
+     "old": 0.14681942222640443,
+     "new": 0.12811249101919325
+    },
+    {
+     "ticker": "HUM",
+     "old": 0.5062725919625771,
+     "new": 0.019798440072508357
+    },
+    {
+     "ticker": "L",
+     "old": 0.9948169744088111,
+     "new": 0.17003488178949117
     }
    ],
    "discover.umsatzTTM.changedOver10pct": [
@@ -11187,11 +11318,6 @@
      "ticker": "WRB",
      "old": 4149.31,
      "new": 14896.1
-    },
-    {
-     "ticker": "CALM",
-     "old": 2528.64,
-     "new": 2911.63
     },
     {
      "ticker": "CNA",
@@ -11212,6 +11338,11 @@
      "ticker": "ALLY",
      "old": 1226,
      "new": 8679
+    },
+    {
+     "ticker": "HUM",
+     "old": 6176,
+     "new": 137200
     }
    ],
    "discover.marge.changedOver10pct": [
@@ -11219,11 +11350,6 @@
      "ticker": "UHAL",
      "old": 0.1391,
      "new": 0.0226
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.0488,
-     "new": 0.0385
     },
     {
      "ticker": "ADM",
@@ -11234,11 +11360,6 @@
      "ticker": "WRB",
      "old": 0.4647,
      "new": 0.1294
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.0232,
-     "new": 0.1088
     },
     {
      "ticker": "CNA",
@@ -11254,6 +11375,16 @@
      "ticker": "CFR",
      "old": 5.2536,
      "new": 0.2974
+    },
+    {
+     "ticker": "ALLY",
+     "old": 1.186,
+     "new": 0.1675
+    },
+    {
+     "ticker": "HUM",
+     "old": 0.183,
+     "new": 0.0082
     }
    ],
    "screener.revenue.changedOver10pct": [
@@ -11271,11 +11402,6 @@
      "ticker": "WRB",
      "old": 4149307000,
      "new": 14896102000
-    },
-    {
-     "ticker": "CALM",
-     "old": 2528637000,
-     "new": 2911632000
     },
     {
      "ticker": "CNA",
@@ -11296,93 +11422,19 @@
      "ticker": "ALLY",
      "old": 1226000000,
      "new": 8679000000
-    }
-   ],
-   "quant.raws.revenueGrowthTtmYoy.changedOver10pct": [
-    {
-     "ticker": "AEP",
-     "old": 0.08246734256190291,
-     "new": 0.09341976993566004
     },
     {
-     "ticker": "AP",
-     "old": 0.02821615970728364,
-     "new": 0.03274294220826057
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.017945643485211882,
-     "new": 0.03029415194234164
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.009655005251676396,
-     "new": -0.008178699139847256
-    },
-    {
-     "ticker": "ADP",
-     "old": 0.08397433993644388,
-     "new": 0.11229668381903668
-    },
-    {
-     "ticker": "WRB",
-     "old": 0.019119417270892614,
-     "new": 0.042695045846488755
-    },
-    {
-     "ticker": "DOMH",
-     "old": 1.4219135191549852,
-     "new": 1.228154858333058
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.4251289496514358,
-     "new": -0.2369976857165118
-    }
-   ],
-   "discover.umsatzWachstum.changedOver10pct": [
-    {
-     "ticker": "AEP",
-     "old": 0.0825,
-     "new": 0.0934
-    },
-    {
-     "ticker": "AP",
-     "old": 0.0282,
-     "new": 0.0327
-    },
-    {
-     "ticker": "APOG",
-     "old": 0.0179,
-     "new": 0.0321
-    },
-    {
-     "ticker": "ADM",
-     "old": 0.0097,
-     "new": -0.0082
-    },
-    {
-     "ticker": "WRB",
-     "old": 0.0191,
-     "new": 0.0427
-    },
-    {
-     "ticker": "DOMH",
-     "old": 1.4219,
-     "new": 1.2282
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.4251,
-     "new": -0.3168
-    },
-    {
-     "ticker": "CATO",
-     "old": -0.0092,
-     "new": -0.011
+     "ticker": "HUM",
+     "old": 6176000000,
+     "new": 137200000000
     }
    ],
    "quant.change.revenueGrowthCurrent.changedOver10pct": [
+    {
+     "ticker": "AEP",
+     "old": 0.08673009514271413,
+     "new": 0.1092743775670606
+    },
     {
      "ticker": "AP",
      "old": 0.0334683055320395,
@@ -11417,413 +11469,33 @@
      "ticker": "CNA",
      "old": -0.019888129272840227,
      "new": 0.05038542396636303
-    },
-    {
-     "ticker": "DDS",
-     "old": -0.0013903294894237472,
-     "new": -0.004081040558365889
     }
    ],
-   "quant.raws.ebitdaYield.lost": [
+   "quant.raws.ebitdaYield.changed": [
     {
      "ticker": "AAL",
-     "old": 0.08597236697934205
+     "old": 0.08597236697934205,
+     "new": 0.0776878056602261
     },
     {
      "ticker": "AMTX",
-     "old": -0.00014911297463389547
+     "old": -0.00014911297463389547,
+     "new": -0.00015352971438480287
     },
     {
      "ticker": "SCHL",
-     "old": 0.0058543361778130585
-    },
-    {
-     "ticker": "EEFT",
-     "old": 0.05739200265356179
+     "old": 0.0058543361778130585,
+     "new": 0.006975590394919627
     },
     {
      "ticker": "NDAQ",
-     "old": 0.1505399923249822
+     "old": 0.1505399923249822,
+     "new": 0.17723809001699467
     },
     {
      "ticker": "XYL",
-     "old": 0.1621459227467811
-    },
-    {
-     "ticker": "BTBT",
-     "old": -0.023477013615798657
-    }
-   ],
-   "quant.raws.operatingMarginTtm.lost": [
-    {
-     "ticker": "APOG",
-     "old": 0.06880450030161445
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.007449467835834088
-    },
-    {
-     "ticker": "GD",
-     "old": 0.10236396074933095
-    },
-    {
-     "ticker": "HAS",
-     "old": 0.2335317300731923
-    },
-    {
-     "ticker": "KELYA",
-     "old": -0.022593586178041396
-    },
-    {
-     "ticker": "SLNH",
-     "old": -1.270320372658998
-    },
-    {
-     "ticker": "SON",
-     "old": 0.1359833672790703
-    },
-    {
-     "ticker": "TEX",
-     "old": 0.05721132245020219
-    }
-   ],
-   "quant.raws.netMarginTtm.lost": [
-    {
-     "ticker": "APOG",
-     "old": 0.048795862349594335
-    },
-    {
-     "ticker": "CALM",
-     "old": 0.023224764962309734
-    },
-    {
-     "ticker": "GD",
-     "old": 0.0806757359500446
-    },
-    {
-     "ticker": "HAS",
-     "old": 0.15989704817823533
-    },
-    {
-     "ticker": "IFF",
-     "old": 0.029264381639607137
-    },
-    {
-     "ticker": "KELYA",
-     "old": -0.06728852354113854
-    },
-    {
-     "ticker": "SLNH",
-     "old": -1.912444148683335
-    },
-    {
-     "ticker": "NTRS",
-     "old": 0.42579505300353354
-    }
-   ],
-   "discover.basis.TTM->FY": [
-    {
-     "ticker": "APOG"
-    },
-    {
-     "ticker": "CALM"
-    },
-    {
-     "ticker": "GD"
-    },
-    {
-     "ticker": "HAS"
-    },
-    {
-     "ticker": "IFF"
-    },
-    {
-     "ticker": "KELYA"
-    },
-    {
-     "ticker": "SLNH"
-    },
-    {
-     "ticker": "NTRS"
-    }
-   ],
-   "discover.kgv.changedOver10pct": [
-    {
-     "ticker": "APOG",
-     "old": 31.35,
-     "new": 39.68
-    },
-    {
-     "ticker": "ASB",
-     "old": 34.84,
-     "new": 88.5
-    },
-    {
-     "ticker": "AAME",
-     "old": 476.19,
-     "new": 399.45
-    },
-    {
-     "ticker": "CBT",
-     "old": 28.09,
-     "new": 25.28
-    },
-    {
-     "ticker": "CALM",
-     "old": 81.97,
-     "new": 15.08
-    },
-    {
-     "ticker": "AMJB",
-     "old": 4.28,
-     "new": 5
-    },
-    {
-     "ticker": "CTO",
-     "old": 476.19,
-     "new": 230.64
-    },
-    {
-     "ticker": "DDS",
-     "old": 2.29,
-     "new": 0
-    }
-   ],
-   "discover.gewinnTTM.changed": [
-    {
-     "ticker": "APOG",
-     "old": 68.35,
-     "new": 54.13
-    },
-    {
-     "ticker": "CALM",
-     "old": 58.73,
-     "new": 316.68
-    },
-    {
-     "ticker": "GD",
-     "old": 4341,
-     "new": 4210
-    },
-    {
-     "ticker": "HAS",
-     "old": 795.2,
-     "new": -322.4
-    },
-    {
-     "ticker": "IFF",
-     "old": 292,
-     "new": -359
-    },
-    {
-     "ticker": "KELYA",
-     "old": -273.4,
-     "new": -254.1
-    },
-    {
-     "ticker": "KR",
-     "old": 2665,
-     "new": 1016
-    },
-    {
-     "ticker": "SLNH",
-     "old": -80.47,
-     "new": -53.41
-    }
-   ],
-   "discover.gewinnTTM.changedOver10pct": [
-    {
-     "ticker": "APOG",
-     "old": 68.35,
-     "new": 54.13
-    },
-    {
-     "ticker": "CALM",
-     "old": 58.73,
-     "new": 316.68
-    },
-    {
-     "ticker": "HAS",
-     "old": 795.2,
-     "new": -322.4
-    },
-    {
-     "ticker": "IFF",
-     "old": 292,
-     "new": -359
-    },
-    {
-     "ticker": "KR",
-     "old": 2665,
-     "new": 1016
-    },
-    {
-     "ticker": "SLNH",
-     "old": -80.47,
-     "new": -53.41
-    },
-    {
-     "ticker": "NTRS",
-     "old": 2241.3,
-     "new": 1736.9
-    },
-    {
-     "ticker": "TEX",
-     "old": 149,
-     "new": 221
-    }
-   ],
-   "discover.gewinnWachstum.changed": [
-    {
-     "ticker": "APOG",
-     "old": 0.331,
-     "new": -0.3636
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.9537,
-     "new": -0.7404
-    },
-    {
-     "ticker": "GD",
-     "old": 0.0915,
-     "new": 0.1132
-    },
-    {
-     "ticker": "KR",
-     "old": 0.2315,
-     "new": -0.6188
-    },
-    {
-     "ticker": "NTRS",
-     "old": 0.2929,
-     "new": -0.1448
-    },
-    {
-     "ticker": "PG",
-     "old": 0.0165,
-     "new": 0.0045
-    },
-    {
-     "ticker": "SON",
-     "old": 5.6255,
-     "new": 5.1178
-    },
-    {
-     "ticker": "TEX",
-     "old": -0.1676,
-     "new": -0.3403
-    }
-   ],
-   "discover.gewinnWachstum.changedOver10pct": [
-    {
-     "ticker": "APOG",
-     "old": 0.331,
-     "new": -0.3636
-    },
-    {
-     "ticker": "CALM",
-     "old": -0.9537,
-     "new": -0.7404
-    },
-    {
-     "ticker": "GD",
-     "old": 0.0915,
-     "new": 0.1132
-    },
-    {
-     "ticker": "KR",
-     "old": 0.2315,
-     "new": -0.6188
-    },
-    {
-     "ticker": "NTRS",
-     "old": 0.2929,
-     "new": -0.1448
-    },
-    {
-     "ticker": "PG",
-     "old": 0.0165,
-     "new": 0.0045
-    },
-    {
-     "ticker": "TEX",
-     "old": -0.1676,
-     "new": -0.3403
-    },
-    {
-     "ticker": "WWW",
-     "old": 0.2711,
-     "new": 1.1195
-    }
-   ],
-   "discover.gewinnWachstum.signFlip": [
-    {
-     "ticker": "APOG",
-     "old": 0.331,
-     "new": -0.3636
-    },
-    {
-     "ticker": "KR",
-     "old": 0.2315,
-     "new": -0.6188
-    },
-    {
-     "ticker": "NTRS",
-     "old": 0.2929,
-     "new": -0.1448
-    },
-    {
-     "ticker": "HXL",
-     "old": 0.7443,
-     "new": -0.1718
-    },
-    {
-     "ticker": "SMG",
-     "old": 0.3917,
-     "new": -0.8278
-    },
-    {
-     "ticker": "EXPO",
-     "old": 0.0869,
-     "new": -0.0275
-    },
-    {
-     "ticker": "FCN",
-     "old": 0.0124,
-     "new": -0.0329
-    },
-    {
-     "ticker": "BWA",
-     "old": 0.9762,
-     "new": -0.1805
-    }
-   ],
-   "discover.epsBasis.TTM_EPS->FY_EPS_OR_NI_SHARES": [
-    {
-     "ticker": "APOG"
-    },
-    {
-     "ticker": "ASB"
-    },
-    {
-     "ticker": "CALM"
-    },
-    {
-     "ticker": "AMJB"
-    },
-    {
-     "ticker": "USAU"
-    },
-    {
-     "ticker": "GD"
-    },
-    {
-     "ticker": "HAS"
-    },
-    {
-     "ticker": "BOH"
+     "old": 0.1621459227467811,
+     "new": 0.13570815450643778
     }
    ],
    "quant.raws.revenueGrowthTtmYoy.signFlip": [
@@ -11858,14 +11530,14 @@
      "new": 0.08791208791208782
     },
     {
-     "ticker": "NSYS",
-     "old": -0.842640543551281,
-     "new": 0.03476447071093336
-    },
-    {
      "ticker": "NVEC",
      "old": -0.04619985667999438,
      "new": 0.2406935376570669
+    },
+    {
+     "ticker": "WASH",
+     "old": -0.0713957840471735,
+     "new": 1.0017193300600482
     }
    ],
    "quant.change.revenueGrowthCurrent.signFlip": [
@@ -11937,19 +11609,87 @@
      "new": 0.0035
     },
     {
-     "ticker": "SLNH",
-     "old": 0.5086,
-     "new": -0.2184
-    },
-    {
-     "ticker": "NTRS",
-     "old": 0.0823,
-     "new": -0.0246
-    },
-    {
      "ticker": "VAL",
      "old": 9.3949,
      "new": -0.1322
+    },
+    {
+     "ticker": "CASS",
+     "old": -0.0089,
+     "new": 0.0879
+    },
+    {
+     "ticker": "NVEC",
+     "old": -0.0462,
+     "new": 0.2407
+    }
+   ],
+   "discover.kgv.changedOver10pct": [
+    {
+     "ticker": "ASB",
+     "old": 34.84,
+     "new": 88.5
+    },
+    {
+     "ticker": "AAME",
+     "old": 476.19,
+     "new": 399.45
+    },
+    {
+     "ticker": "CBT",
+     "old": 28.09,
+     "new": 25.28
+    },
+    {
+     "ticker": "AMJB",
+     "old": 4.28,
+     "new": 5
+    },
+    {
+     "ticker": "CTO",
+     "old": 476.19,
+     "new": 230.64
+    },
+    {
+     "ticker": "DDS",
+     "old": 2.29,
+     "new": 0
+    },
+    {
+     "ticker": "FLXS",
+     "old": 16.47,
+     "new": 12.35
+    },
+    {
+     "ticker": "BOH",
+     "old": 18.66,
+     "new": 21.6
+    }
+   ],
+   "discover.epsBasis.TTM_EPS->FY_EPS_OR_NI_SHARES": [
+    {
+     "ticker": "ASB"
+    },
+    {
+     "ticker": "AMJB"
+    },
+    {
+     "ticker": "USAU"
+    },
+    {
+     "ticker": "BOH"
+    },
+    {
+     "ticker": "XEL"
+    },
+    {
+     "ticker": "WFC"
+    },
+    {
+     "ticker": "GTBP"
+    },
+    {
+     "ticker": "ONB"
     }
    ],
    "quant.raws.accrualRatio.gained": [
@@ -12044,6 +11784,36 @@
     {
      "ticker": "VAI",
      "new": -0.0037939659
+    }
+   ],
+   "quant.raws.fcfMarginTtm.gained": [
+    {
+     "ticker": "ADP",
+     "new": 0.23896115730721038
+    },
+    {
+     "ticker": "SPWH",
+     "new": 0.026043629669226114
+    },
+    {
+     "ticker": "STX",
+     "new": 0.25461254612546125
+    },
+    {
+     "ticker": "RNAC",
+     "new": -53.2241029113067
+    },
+    {
+     "ticker": "PLAY",
+     "new": -0.007688241795204459
+    },
+    {
+     "ticker": "OLLI",
+     "new": 0.07992673394655703
+    },
+    {
+     "ticker": "PRTH",
+     "new": 0.10368049773036474
     }
    ],
    "quant.raws.roaTtm.gained": [
@@ -12158,6 +11928,74 @@
      "new": 0.06070998546027322
     }
    ],
+   "quant.raws.netMarginTtm.gained": [
+    {
+     "ticker": "ADP",
+     "new": 0.20108896229638912
+    },
+    {
+     "ticker": "SITC",
+     "new": 1.7947940784396268
+    },
+    {
+     "ticker": "STX",
+     "new": 0.2610906109061091
+    },
+    {
+     "ticker": "AGO",
+     "new": 0.37340425531914895
+    },
+    {
+     "ticker": "RNAC",
+     "new": -102.83750846310087
+    },
+    {
+     "ticker": "LAND",
+     "new": -0.07307618412576428
+    },
+    {
+     "ticker": "CTRE",
+     "new": 0.621938841581005
+    },
+    {
+     "ticker": "PRTH",
+     "new": 0.05613561233170162
+    }
+   ],
+   "quant.raws.ocfMarginTtm.gained": [
+    {
+     "ticker": "ADP",
+     "new": 0.2479188973687208
+    },
+    {
+     "ticker": "SITC",
+     "new": -0.24942117448958115
+    },
+    {
+     "ticker": "SPWH",
+     "new": 0.041617091229479056
+    },
+    {
+     "ticker": "STX",
+     "new": 0.30127101271012713
+    },
+    {
+     "ticker": "AGO",
+     "new": 0.3446808510638298
+    },
+    {
+     "ticker": "RNAC",
+     "new": -51.81381178063643
+    },
+    {
+     "ticker": "LAND",
+     "new": 0.3142185504560198
+    },
+    {
+     "ticker": "PLAY",
+     "new": 0.15453366008360964
+    }
+   ],
    "quant.raws.dividendCoverageByOcf.gained": [
     {
      "ticker": "ADP",
@@ -12224,6 +12062,37 @@
      "new": 0.012827
     }
    ],
+   "discover.basis.FY->TTM": [
+    {
+     "ticker": "ADP"
+    },
+    {
+     "ticker": "STX"
+    },
+    {
+     "ticker": "PRTH"
+    },
+    {
+     "ticker": "VAI"
+    }
+   ],
+   "discover.epsBasis.FY_EPS_OR_NI_SHARES->TTM_NI_DIV_SHARES": [
+    {
+     "ticker": "ADP"
+    },
+    {
+     "ticker": "STX"
+    },
+    {
+     "ticker": "PRTH"
+    },
+    {
+     "ticker": "VAI"
+    },
+    {
+     "ticker": "SLDE"
+    }
+   ],
    "discover.epsBasis.TTM_NI_DIV_SHARES->TTM_EPS": [
     {
      "ticker": "CSWC"
@@ -12239,6 +12108,11 @@
      "ticker": "CNA",
      "old": 0.12056681443951868,
      "new": 1.1994141861937935
+    },
+    {
+     "ticker": "WMB",
+     "old": 0.40124291434812004,
+     "new": 0.31733319465390813
     },
     {
      "ticker": "HOG",
@@ -12269,11 +12143,6 @@
      "ticker": "SITC",
      "old": -0.0034915215272417767,
      "new": 0.00730093840083581
-    },
-    {
-     "ticker": "SNEX",
-     "old": 0.42911304311696946,
-     "new": 16.38124915604583
     }
    ],
    "quant.change.revenueGrowthPrior.signFlip": [
@@ -12313,9 +12182,9 @@
      "new": 0.009171481321131214
     },
     {
-     "ticker": "VAL",
-     "old": -0.9946194372828159,
-     "new": 0.3241789037103464
+     "ticker": "WMB",
+     "old": 0.0530176725575191,
+     "new": -0.03704043274961033
     }
    ],
    "screener.eps.gained": [
@@ -12436,19 +12305,9 @@
      "new": 0.203
     },
     {
-     "ticker": "HAS",
-     "old": 5.59,
-     "new": -2.3
-    },
-    {
      "ticker": "HNI",
      "old": -0.05,
      "new": 0.0603
-    },
-    {
-     "ticker": "IFF",
-     "old": 1.14,
-     "new": -1.41
     },
     {
      "ticker": "GTBP",
@@ -12456,19 +12315,29 @@
      "new": -6.45
     },
     {
-     "ticker": "ASYS",
-     "old": 0.27,
-     "new": -2.12
-    },
-    {
-     "ticker": "NSYS",
-     "old": 0.37,
-     "new": -0.09
-    },
-    {
      "ticker": "HNRG",
      "old": 0.02,
      "new": -0.0208
+    },
+    {
+     "ticker": "FRPH",
+     "old": 0,
+     "new": 0.005
+    },
+    {
+     "ticker": "MBOT",
+     "old": -0.24,
+     "new": 0.04
+    },
+    {
+     "ticker": "LFMD",
+     "old": -0.03,
+     "new": 0.0043
+    },
+    {
+     "ticker": "CEPL",
+     "old": -3.13,
+     "new": 0.1919
     }
    ],
    "discover.kgv.gained": [
@@ -12497,12 +12366,12 @@
      "new": 520.97
     },
     {
-     "ticker": "LIVE",
-     "new": 20.28
-    },
-    {
      "ticker": "NFLX",
      "new": 30.93
+    },
+    {
+     "ticker": "TRAW",
+     "new": 121.95
     }
    ],
    "discover.kgvStatus.SOURCE_MISSING->CALCULATED": [
@@ -12525,10 +12394,10 @@
      "ticker": "CEPL"
     },
     {
-     "ticker": "LIVE"
+     "ticker": "NFLX"
     },
     {
-     "ticker": "NFLX"
+     "ticker": "TRAW"
     }
    ],
    "quant.raws.positiveFcfYears.changed": [
@@ -12699,40 +12568,6 @@
      "new": 0.01891239940292633
     }
    ],
-   "quant.raws.salesYield.lost": [
-    {
-     "ticker": "GD",
-     "old": 3.732001664585934
-    },
-    {
-     "ticker": "DCH",
-     "old": 0.5775435245205104
-    },
-    {
-     "ticker": "ORCL",
-     "old": 0.6957023223355174
-    },
-    {
-     "ticker": "NX",
-     "old": 0.17507859356169436
-    },
-    {
-     "ticker": "JBTM",
-     "old": 0.33943978559695687
-    },
-    {
-     "ticker": "RYZ",
-     "old": 0.535035232239561
-    },
-    {
-     "ticker": "LITE",
-     "old": 0.3141579545336099
-    },
-    {
-     "ticker": "BRBR",
-     "old": 0.21137204208409638
-    }
-   ],
    "quant.raws.revenueCagr3y.signFlip": [
     {
      "ticker": "ALLY",
@@ -12745,6 +12580,11 @@
      "new": -0.0013868956327633963
     },
     {
+     "ticker": "NFG",
+     "old": -0.10169136666118017,
+     "new": 0.013761131140530347
+    },
+    {
      "ticker": "SFD",
      "old": 0.02461360166127169,
      "new": -0.013939100199574228
@@ -12755,6 +12595,11 @@
      "new": 0.02113673668415572
     },
     {
+     "ticker": "WMB",
+     "old": -0.05710038207593171,
+     "new": 0.029089364281741803
+    },
+    {
      "ticker": "VAL",
      "old": -0.8049034268765691,
      "new": 0.13917122809673477
@@ -12763,16 +12608,6 @@
      "ticker": "CASS",
      "old": -0.038922972989649196,
      "new": 0.014891460065566298
-    },
-    {
-     "ticker": "SF",
-     "old": -0.06360410905142522,
-     "new": 0.11388834123486391
-    },
-    {
-     "ticker": "ITIC",
-     "old": 0.04118313574161636,
-     "new": -0.01267141355241308
     }
    ],
    "quant.raws.operatingMarginExpansion3y.signFlip": [
@@ -12792,6 +12627,11 @@
      "new": -0.05753219549202443
     },
     {
+     "ticker": "NFG",
+     "old": 0.10049863369820689,
+     "new": -0.015432362635088182
+    },
+    {
      "ticker": "UDR",
      "old": -1.2144175345932382,
      "new": 0.15801465397391137
@@ -12804,17 +12644,12 @@
     {
      "ticker": "HTO",
      "old": -0.002794521803097194,
-     "new": 0.009350553861876304
+     "new": 0.010727938804389575
     },
     {
      "ticker": "CDP",
      "old": 1.096444924878448,
      "new": -0.0027538296445622223
-    },
-    {
-     "ticker": "SQFT",
-     "old": 0.12333672793707451,
-     "new": -0.0027464932512931695
     }
    ],
    "quant.raws.fcfCagr3y.gained": [
@@ -12969,284 +12804,214 @@
      "new": 2
     }
    ],
-   "discover.kgv.lost": [
-    {
-     "ticker": "HAS",
-     "old": 17.89
-    },
+   "quant.raws.accrualRatio.changed": [
     {
      "ticker": "IFF",
-     "old": 87.72
+     "old": -0.032029781430835576,
+     "new": -0.03210349784379492
     },
     {
-     "ticker": "GTBP",
-     "old": 33
+     "ticker": "BELFA",
+     "old": -0.03207445772893104,
+     "new": -0.018732204803317155
     },
     {
-     "ticker": "ASYS",
-     "old": 370.37
-    },
-    {
-     "ticker": "NSYS",
-     "old": 270.27
-    },
-    {
-     "ticker": "HNRG",
-     "old": 5000
+     "ticker": "REX",
+     "old": -0.023415093108894218,
+     "new": -0.012521256948658499
     },
     {
      "ticker": "ATNI",
-     "old": 9.73
+     "old": 0.0250561926291857,
+     "new": 0.019988489443902507
     },
     {
-     "ticker": "INSG",
-     "old": 769.23
+     "ticker": "CAKE",
+     "old": -0.057630421226947316,
+     "new": -0.055789290659437586
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.009891886227236026,
+     "new": -0.002467976093449916
+    },
+    {
+     "ticker": "SUI",
+     "old": 0.03745833662971282,
+     "new": 0.03857967893837089
+    },
+    {
+     "ticker": "SHOO",
+     "old": -0.06987632168868278,
+     "new": -0.07161532244874398
     }
    ],
-   "discover.kgvStatus.CALCULATED->SOURCE_MISSING": [
+   "quant.raws.earningsYield.changed": [
     {
-     "ticker": "HAS"
+     "ticker": "IFF",
+     "old": 0.0292,
+     "new": 0.029
     },
     {
-     "ticker": "IFF"
+     "ticker": "BELFA",
+     "old": 0.005328,
+     "new": 0.0065855
     },
     {
-     "ticker": "GTBP"
+     "ticker": "REX",
+     "old": 0.0125275,
+     "new": 0.0133542
     },
     {
-     "ticker": "ASYS"
+     "ticker": "ATNI",
+     "old": 0.0170233,
+     "new": 0.0161617
     },
     {
-     "ticker": "NSYS"
+     "ticker": "AKR",
+     "old": 0.0211436,
+     "new": 0.0154529
     },
     {
-     "ticker": "HNRG"
+     "ticker": "SUI",
+     "old": 0.14341,
+     "new": 0.14504
     },
     {
-     "ticker": "ATNI"
+     "ticker": "SHOO",
+     "old": 0.0147621,
+     "new": 0.0144729
     },
     {
-     "ticker": "INSG"
+     "ticker": "JLL",
+     "old": 0.09978,
+     "new": 0.09979
     }
    ],
-   "discover.gewinnTTM.signFlip": [
+   "quant.raws.roaTtm.changed": [
     {
-     "ticker": "HAS",
-     "old": 795.2,
-     "new": -322.4
+     "ticker": "IFF",
+     "old": 0.010762596292064427,
+     "new": 0.010688879879105082
     },
+    {
+     "ticker": "BELFA",
+     "old": 0.05653083386693503,
+     "new": 0.06987308679254892
+    },
+    {
+     "ticker": "REX",
+     "old": 0.16508108442887742,
+     "new": 0.17597492058911315
+    },
+    {
+     "ticker": "ATNI",
+     "old": 0.1001265455362481,
+     "new": 0.09505884235096491
+    },
+    {
+     "ticker": "CAKE",
+     "old": 0.05854290071131774,
+     "new": 0.05667261897962887
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.04592264307794389,
+     "new": 0.033562780757257944
+    },
+    {
+     "ticker": "SUI",
+     "old": 0.0986574849599103,
+     "new": 0.09977882726856836
+    },
+    {
+     "ticker": "SHOO",
+     "old": 0.0887666082990985,
+     "new": 0.08702760753903732
+    }
+   ],
+   "quant.raws.roeTtm.changed": [
+    {
+     "ticker": "IFF",
+     "old": 0.02063021054118977,
+     "new": 0.020488907729263813
+    },
+    {
+     "ticker": "BELFA",
+     "old": 0.12521356574299727,
+     "new": 0.1547661293544498
+    },
+    {
+     "ticker": "REX",
+     "old": 0.2051294227066113,
+     "new": 0.2186660815572643
+    },
+    {
+     "ticker": "ATNI",
+     "old": 0.3831556723956317,
+     "new": 0.3637630207161056
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.0949997910719894,
+     "new": 0.0694310463429286
+    },
+    {
+     "ticker": "SUI",
+     "old": 0.20616437371515647,
+     "new": 0.20850764077572204
+    },
+    {
+     "ticker": "SHOO",
+     "old": 0.17038670895718777,
+     "new": 0.1670487125860469
+    },
+    {
+     "ticker": "JLL",
+     "old": 0.1329903502692328,
+     "new": 0.13300367862664605
+    }
+   ],
+   "discover.gewinnTTM.changed": [
     {
      "ticker": "IFF",
      "old": 292,
-     "new": -359
+     "new": 290
     },
     {
-     "ticker": "ASYS",
-     "old": 4,
-     "new": -30.33
+     "ticker": "KR",
+     "old": 2665,
+     "new": 1016
     },
     {
-     "ticker": "NSYS",
-     "old": 1.03,
-     "new": -0.25
+     "ticker": "BELFA",
+     "old": 53.28,
+     "new": 65.86
+    },
+    {
+     "ticker": "REX",
+     "old": 125.28,
+     "new": 133.54
     },
     {
      "ticker": "ATNI",
      "old": 170.23,
-     "new": -14.91
+     "new": 161.62
     },
     {
-     "ticker": "LIVE",
-     "old": -2.57,
-     "new": 22.74
+     "ticker": "SUI",
+     "old": 1434.1,
+     "new": 1450.4
     },
     {
-     "ticker": "MOS",
-     "old": -638.5,
-     "new": 540.7
+     "ticker": "SHOO",
+     "old": 147.62,
+     "new": 144.73
     },
     {
-     "ticker": "GNK",
-     "old": 40.45,
-     "new": -4.5
-    }
-   ],
-   "discover.gewinnWachstum.gained": [
-    {
-     "ticker": "HAS",
-     "new": -1.8361
-    },
-    {
-     "ticker": "IFF",
-     "new": -2.3446
-    },
-    {
-     "ticker": "DTST",
-     "new": 36.4508
-    },
-    {
-     "ticker": "NX",
-     "new": -8.5866
-    },
-    {
-     "ticker": "JBTM",
-     "new": -1.5913
-    },
-    {
-     "ticker": "LND",
-     "new": -0.3916
-    },
-    {
-     "ticker": "PRTH",
-     "new": 0.5188
-    },
-    {
-     "ticker": "YYAI",
-     "new": -6.0298
-    }
-   ],
-   "discover.marge.signFlip": [
-    {
-     "ticker": "HAS",
-     "old": 0.1599,
-     "new": -0.0601
-    },
-    {
-     "ticker": "IFF",
-     "old": 0.0293,
-     "new": -0.033
-    },
-    {
-     "ticker": "ASYS",
-     "old": 0.049,
-     "new": -0.3821
-    },
-    {
-     "ticker": "NSYS",
-     "old": 0.0558,
-     "new": -0.0206
-    },
-    {
-     "ticker": "ATNI",
-     "old": 0.2524,
-     "new": -0.0205
-    },
-    {
-     "ticker": "LIVE",
-     "old": -0.0059,
-     "new": 0.0511
-    },
-    {
-     "ticker": "MOS",
-     "old": -0.0521,
-     "new": 0.0449
-    },
-    {
-     "ticker": "GNK",
-     "old": 0.0918,
-     "new": -0.0132
-    }
-   ],
-   "quant.raws.earningsYield.lost": [
-    {
-     "ticker": "IFF",
-     "old": 0.0292
-    },
-    {
-     "ticker": "HOV",
-     "old": 0.0017796
-    },
-    {
-     "ticker": "HXL",
-     "old": 0.01535
-    },
-    {
-     "ticker": "BELFA",
-     "old": 0.005328
-    },
-    {
-     "ticker": "REX",
-     "old": 0.0125275
-    },
-    {
-     "ticker": "SOTK",
-     "old": 0.0002061864
-    },
-    {
-     "ticker": "TECH",
-     "old": 0.0181862
-    },
-    {
-     "ticker": "ATNI",
-     "old": 0.0170233
-    }
-   ],
-   "quant.raws.roaTtm.lost": [
-    {
-     "ticker": "IFF",
-     "old": 0.010762596292064427
-    },
-    {
-     "ticker": "HOV",
-     "old": 0.0067930314551787226
-    },
-    {
-     "ticker": "HXL",
-     "old": 0.05654191837336084
-    },
-    {
-     "ticker": "BELFA",
-     "old": 0.05653083386693503
-    },
-    {
-     "ticker": "REX",
-     "old": 0.16508108442887742
-    },
-    {
-     "ticker": "SOTK",
-     "old": 0.0827507306334013
-    },
-    {
-     "ticker": "TECH",
-     "old": 0.07070023407094904
-    },
-    {
-     "ticker": "ATNI",
-     "old": 0.1001265455362481
-    }
-   ],
-   "quant.raws.roeTtm.lost": [
-    {
-     "ticker": "IFF",
-     "old": 0.02063021054118977
-    },
-    {
-     "ticker": "HOV",
-     "old": 0.021416837658781974
-    },
-    {
-     "ticker": "HXL",
-     "old": 0.12273127048852643
-    },
-    {
-     "ticker": "BELFA",
-     "old": 0.12521356574299727
-    },
-    {
-     "ticker": "REX",
-     "old": 0.2051294227066113
-    },
-    {
-     "ticker": "SOTK",
-     "old": 0.10427062915798341
-    },
-    {
-     "ticker": "TECH",
-     "old": 0.08626325228711791
-    },
-    {
-     "ticker": "ATNI",
-     "old": 0.3831556723956317
+     "ticker": "JLL",
+     "old": 997.8,
+     "new": 997.9
     }
    ],
    "quant.raws.epsCagr3y.changed": [
@@ -13494,6 +13259,159 @@
     {
      "ticker": "KVUE",
      "new": 0.0973927464088658
+    }
+   ],
+   "discover.gewinnTTM.changedOver10pct": [
+    {
+     "ticker": "KR",
+     "old": 2665,
+     "new": 1016
+    },
+    {
+     "ticker": "BELFA",
+     "old": 53.28,
+     "new": 65.86
+    },
+    {
+     "ticker": "SPWH",
+     "old": -35.36,
+     "new": -48
+    },
+    {
+     "ticker": "STX",
+     "old": 1469,
+     "new": 3184
+    },
+    {
+     "ticker": "TIPT",
+     "old": 14.25,
+     "new": -14.42
+    },
+    {
+     "ticker": "AACG",
+     "old": -33.65,
+     "new": -48.05
+    },
+    {
+     "ticker": "PLAY",
+     "old": -30.2,
+     "new": -88.6
+    },
+    {
+     "ticker": "VSA",
+     "old": 245.8,
+     "new": 1718.87
+    }
+   ],
+   "discover.gewinnWachstum.changed": [
+    {
+     "ticker": "KR",
+     "old": 0.2315,
+     "new": -0.6188
+    },
+    {
+     "ticker": "PG",
+     "old": 0.0165,
+     "new": 0.0045
+    },
+    {
+     "ticker": "BELFA",
+     "old": 0.0444,
+     "new": 0.1115
+    },
+    {
+     "ticker": "REX",
+     "old": 0.9241,
+     "new": 1.0799
+    },
+    {
+     "ticker": "CAKE",
+     "old": 0.0495,
+     "new": 0.1241
+    },
+    {
+     "ticker": "SUI",
+     "old": 16.5963,
+     "new": 16.0635
+    },
+    {
+     "ticker": "SHOO",
+     "old": 0.5135,
+     "new": 0.5392
+    },
+    {
+     "ticker": "BJRI",
+     "old": -0.1804,
+     "new": 0.4878
+    }
+   ],
+   "discover.gewinnWachstum.changedOver10pct": [
+    {
+     "ticker": "KR",
+     "old": 0.2315,
+     "new": -0.6188
+    },
+    {
+     "ticker": "PG",
+     "old": 0.0165,
+     "new": 0.0045
+    },
+    {
+     "ticker": "BELFA",
+     "old": 0.0444,
+     "new": 0.1115
+    },
+    {
+     "ticker": "REX",
+     "old": 0.9241,
+     "new": 1.0799
+    },
+    {
+     "ticker": "CAKE",
+     "old": 0.0495,
+     "new": 0.1241
+    },
+    {
+     "ticker": "BJRI",
+     "old": -0.1804,
+     "new": 0.4878
+    },
+    {
+     "ticker": "BTU",
+     "old": -2.0058,
+     "new": -2.2385
+    },
+    {
+     "ticker": "TTMI",
+     "old": 1.0702,
+     "new": 1.5408
+    }
+   ],
+   "discover.gewinnWachstum.signFlip": [
+    {
+     "ticker": "KR",
+     "old": 0.2315,
+     "new": -0.6188
+    },
+    {
+     "ticker": "BJRI",
+     "old": -0.1804,
+     "new": 0.4878
+    },
+    {
+     "ticker": "STX",
+     "old": -0.5386,
+     "new": 1.1675
+    },
+    {
+     "ticker": "RH",
+     "old": -0.085,
+     "new": 0.0438
+    },
+    {
+     "ticker": "MLGO",
+     "old": -0.6536,
+     "new": 1.4346
     }
    ],
    "screener.epsGrowth.changed": [
@@ -13783,74 +13701,6 @@
      "old": -0.12906276008855144
     }
    ],
-   "discover.epsBasis.TTM_NI_DIV_SHARES->FY_EPS_OR_NI_SHARES": [
-    {
-     "ticker": "NTRS"
-    },
-    {
-     "ticker": "BELFA"
-    },
-    {
-     "ticker": "NXPL"
-    },
-    {
-     "ticker": "LOOP"
-    },
-    {
-     "ticker": "TLYS"
-    },
-    {
-     "ticker": "VERI"
-    },
-    {
-     "ticker": "METC"
-    },
-    {
-     "ticker": "LUCD"
-    }
-   ],
-   "quant.change.fcfMarginPriorTtm.signFlip": [
-    {
-     "ticker": "ACH",
-     "old": -0.031536671695273716,
-     "new": 0.016081558405505413
-    },
-    {
-     "ticker": "TRC",
-     "old": 0.5675944114595979,
-     "new": -0.6553954135122608
-    },
-    {
-     "ticker": "REX",
-     "old": -0.008349285474305985,
-     "new": 0.017336709702034436
-    },
-    {
-     "ticker": "CSR",
-     "old": -0.274947954889245,
-     "new": 0.2223636717638425
-    },
-    {
-     "ticker": "FWRD",
-     "old": 0.003170682944399399,
-     "new": -0.01219203556813656
-    },
-    {
-     "ticker": "HOFT",
-     "old": -0.031396627685259304,
-     "new": 0.038233016406031384
-    },
-    {
-     "ticker": "TTMI",
-     "old": -0.003844343866351091,
-     "new": 0.0072277476012679595
-    },
-    {
-     "ticker": "SPWH",
-     "old": 0.05937823035688583,
-     "new": -0.04518486562040175
-    }
-   ],
    "quant.raws.epsCagr3y.gained": [
     {
      "ticker": "NPK",
@@ -13919,46 +13769,64 @@
      "new": 1.3334667123969215
     }
    ],
-   "quant.change.fcfMarginTtm.signFlip": [
+   "discover.kgv.lost": [
     {
-     "ticker": "TRC",
-     "old": 0.11781058113552792,
-     "new": -0.0818304977391488
+     "ticker": "GTBP",
+     "old": 33
     },
     {
-     "ticker": "CSR",
-     "old": 0.7206987737613949,
-     "new": -0.33433133361351725
+     "ticker": "HNRG",
+     "old": 5000
     },
     {
-     "ticker": "FWRD",
-     "old": 0.01914796024741122,
-     "new": -0.007284929956415119
+     "ticker": "INSG",
+     "old": 769.23
     },
     {
-     "ticker": "SRI",
-     "old": -0.0027255257030932407,
-     "new": 0.004837313172802289
+     "ticker": "SCOR",
+     "old": 13.79
     },
     {
-     "ticker": "MTRN",
-     "old": 0.02393041578579149,
-     "new": -0.0032836230610420285
+     "ticker": "SCYX",
+     "old": 344.83
     },
     {
-     "ticker": "BWEN",
-     "old": -0.13660493519264066,
-     "new": 0.038763280342598995
+     "ticker": "MOH",
+     "old": 1000
     },
     {
-     "ticker": "SPWH",
-     "old": -0.15815369661713238,
-     "new": 0.026043629669226114
+     "ticker": "OMER",
+     "old": 58.14
     },
     {
-     "ticker": "PLOW",
-     "old": 0.07039439053416945,
-     "new": -0.08337815260676523
+     "ticker": "QCLS",
+     "old": 38.02
+    }
+   ],
+   "discover.kgvStatus.CALCULATED->SOURCE_MISSING": [
+    {
+     "ticker": "GTBP"
+    },
+    {
+     "ticker": "HNRG"
+    },
+    {
+     "ticker": "INSG"
+    },
+    {
+     "ticker": "SCOR"
+    },
+    {
+     "ticker": "SCYX"
+    },
+    {
+     "ticker": "MOH"
+    },
+    {
+     "ticker": "OMER"
+    },
+    {
+     "ticker": "QCLS"
     }
    ],
    "quant.change.grossMarginTtm.signFlip": [
@@ -13985,7 +13853,7 @@
     {
      "ticker": "IPM",
      "old": -0.5549928137808936,
-     "new": 0.4759217998644034
+     "new": 0.3106911644022978
     },
     {
      "ticker": "RENT",
@@ -13995,7 +13863,7 @@
     {
      "ticker": "SCLX",
      "old": -1.0995001265502404,
-     "new": 2.791413566185776
+     "new": 1.610668185269552
     },
     {
      "ticker": "FLOC",
@@ -14017,7 +13885,7 @@
     {
      "ticker": "STRS",
      "old": -1.3021346469622332,
-     "new": 0.2998869158592867
+     "new": 0.10015587273449678
     },
     {
      "ticker": "LXP",
@@ -14037,12 +13905,192 @@
     {
      "ticker": "SCLX",
      "old": -0.36355004973324895,
-     "new": 1.0713446062030925
+     "new": 1.7650103987702324
     },
     {
      "ticker": "CYN",
      "old": 0.029506743634970693,
      "new": -0.0021364278190958473
+    }
+   ],
+   "quant.raws.accrualRatio.changedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "old": -0.03207445772893104,
+     "new": -0.018732204803317155
+    },
+    {
+     "ticker": "REX",
+     "old": -0.023415093108894218,
+     "new": -0.012521256948658499
+    },
+    {
+     "ticker": "ATNI",
+     "old": 0.0250561926291857,
+     "new": 0.019988489443902507
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.009891886227236026,
+     "new": -0.002467976093449916
+    },
+    {
+     "ticker": "KRG",
+     "old": -0.0093931026621763,
+     "new": -0.008395011901487207
+    },
+    {
+     "ticker": "TIPT",
+     "old": -0.026985396080401097,
+     "new": -0.03155920284352733
+    },
+    {
+     "ticker": "TWFG",
+     "old": -0.05398102514793112,
+     "new": -0.11278265731290683
+    }
+   ],
+   "quant.raws.earningsYield.changedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "old": 0.005328,
+     "new": 0.0065855
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.0211436,
+     "new": 0.0154529
+    },
+    {
+     "ticker": "SPWH",
+     "old": -0.0035362,
+     "new": -0.0047999
+    },
+    {
+     "ticker": "PSEC",
+     "old": 0.013216,
+     "new": 0.0153662
+    },
+    {
+     "ticker": "TIPT",
+     "old": 0.0014246,
+     "new": -0.001442
+    },
+    {
+     "ticker": "PLAY",
+     "old": -0.00302,
+     "new": -0.00886
+    },
+    {
+     "ticker": "AERT",
+     "old": 0.0002737,
+     "new": 0.000338
+    },
+    {
+     "ticker": "TWFG",
+     "old": 0.0041999,
+     "new": 0.0021543
+    }
+   ],
+   "quant.raws.roaTtm.changedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "old": 0.05653083386693503,
+     "new": 0.06987308679254892
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.04592264307794389,
+     "new": 0.033562780757257944
+    },
+    {
+     "ticker": "SPWH",
+     "old": -0.04289456430697234,
+     "new": -0.05945311900037407
+    },
+    {
+     "ticker": "PSEC",
+     "old": 0.019943313365121007,
+     "new": 0.023188025259618827
+    },
+    {
+     "ticker": "TIPT",
+     "old": 0.002273022087054225,
+     "new": -0.002300784676072015
+    },
+    {
+     "ticker": "PLAY",
+     "old": -0.007673739042053106,
+     "new": -0.021789385667207714
+    },
+    {
+     "ticker": "AERT",
+     "old": 0.06697908891798304,
+     "new": 0.08271440282893046
+    },
+    {
+     "ticker": "TWFG",
+     "old": 0.1207278915377794,
+     "new": 0.06192625937280367
+    }
+   ],
+   "quant.raws.roeTtm.changedOver10pct": [
+    {
+     "ticker": "BELFA",
+     "old": 0.12521356574299727,
+     "new": 0.1547661293544498
+    },
+    {
+     "ticker": "AKR",
+     "old": 0.0949997910719894,
+     "new": 0.0694310463429286
+    },
+    {
+     "ticker": "PSEC",
+     "old": 0.04512357426781743,
+     "new": 0.05246503230282507
+    },
+    {
+     "ticker": "TIPT",
+     "old": 0.028012922991007785,
+     "new": -0.02835507156607695
+    },
+    {
+     "ticker": "TWFG",
+     "old": 0.5036938427958072,
+     "new": 0.2583651147729726
+    }
+   ],
+   "quant.raws.fcfYield.changed": [
+    {
+     "ticker": "THO",
+     "old": 0.0168836,
+     "new": 0.0165974
+    },
+    {
+     "ticker": "CSR",
+     "old": 0.0193775,
+     "new": 0.0059546
+    },
+    {
+     "ticker": "PLOW",
+     "old": 0.0049213,
+     "new": 0.0048908
+    },
+    {
+     "ticker": "EIG",
+     "old": 0.00218,
+     "new": 0.00197
+    },
+    {
+     "ticker": "MTDR",
+     "old": 0.1491958,
+     "new": 0.0997164
+    },
+    {
+     "ticker": "PINE",
+     "old": -0.0149499,
+     "new": -0.0206828
     }
    ],
    "quant.raws.roaMedian3y.changedOver10pct": [
@@ -14104,150 +14152,77 @@
      "new": -0.0335298246593245
     }
    ],
-   "quant.change.fcfMarginPriorTtm.lost": [
+   "quant.change.fcfMarginPriorTtm.signFlip": [
     {
-     "ticker": "RJET",
-     "old": -0.025895480632423706
+     "ticker": "REX",
+     "old": -0.008349285474305985,
+     "new": 0.017336709702034436
     },
     {
-     "ticker": "WTFC",
-     "old": 3.1662153028220446
+     "ticker": "TTMI",
+     "old": -0.003844343866351091,
+     "new": 0.006664293983055714
+    },
+    {
+     "ticker": "SPWH",
+     "old": 0.05937823035688583,
+     "new": -0.04518486562040175
+    }
+   ],
+   "quant.raws.fcfYield.changedOver10pct": [
+    {
+     "ticker": "CSR",
+     "old": 0.0193775,
+     "new": 0.0059546
+    },
+    {
+     "ticker": "MTDR",
+     "old": 0.1491958,
+     "new": 0.0997164
+    },
+    {
+     "ticker": "PINE",
+     "old": -0.0149499,
+     "new": -0.0206828
+    }
+   ],
+   "discover.gewinnWachstum.lost": [
+    {
+     "ticker": "RJET",
+     "old": 0.2528
     },
     {
      "ticker": "QXO",
-     "old": 0.025909656385397453
+     "old": -10.9786
     },
     {
-     "ticker": "TEL",
-     "old": 0.16679205972567857
+     "ticker": "HTOO",
+     "old": -4.4465
     },
     {
-     "ticker": "IVDA",
-     "old": -0.4786906908571901
-    },
-    {
-     "ticker": "GNE",
-     "old": 0.13504539524947687
-    },
-    {
-     "ticker": "GLPI",
-     "old": 0.6875462839610061
-    },
-    {
-     "ticker": "CHYM",
-     "old": -0.006308205451096104
-    }
-   ],
-   "quant.change.fcfMarginTtm.lost": [
-    {
-     "ticker": "NHI",
-     "old": -1.6711428464615499
-    },
-    {
-     "ticker": "NNDM",
-     "old": -0.8311364049895882
-    },
-    {
-     "ticker": "BNKK",
-     "old": -3.995404385282508
+     "ticker": "ASTL",
+     "old": -10.3622
     },
     {
      "ticker": "SLDE",
-     "old": 0.7108006912442396
-    },
-    {
-     "ticker": "GOAI",
-     "old": -0.01371283582871801
-    },
-    {
-     "ticker": "QNME",
-     "old": -0.05264372932371238
+     "old": 1.2074
     }
    ],
-   "quant.raws.accrualRatio.changed": [
+   "quant.raws.ebitdaYield.changedOver10pct": [
     {
-     "ticker": "CAKE",
-     "old": -0.057630421226947316,
-     "new": -0.055789290659437586
+     "ticker": "SCHL",
+     "old": 0.0058543361778130585,
+     "new": 0.006975590394919627
     },
     {
-     "ticker": "PSEC",
-     "old": -0.05796870502389357,
-     "new": -0.05472399312939575
+     "ticker": "NDAQ",
+     "old": 0.1505399923249822,
+     "new": 0.17723809001699467
     },
     {
-     "ticker": "TEL",
-     "old": -0.05849587983727965,
-     "new": -0.057533290928863084
-    },
-    {
-     "ticker": "ICMB",
-     "old": -0.28218607446804744,
-     "new": -0.2717640895781151
-    }
-   ],
-   "quant.raws.roaTtm.changed": [
-    {
-     "ticker": "CAKE",
-     "old": 0.05854290071131774,
-     "new": 0.05667261897962887
-    },
-    {
-     "ticker": "SPWH",
-     "old": -0.04289456430697234,
-     "new": -0.05945311900037407
-    },
-    {
-     "ticker": "PSEC",
-     "old": 0.019943313365121007,
-     "new": 0.023188025259618827
-    },
-    {
-     "ticker": "TEL",
-     "old": 0.12583707103369146,
-     "new": 0.12376633769005067
-    },
-    {
-     "ticker": "PLAY",
-     "old": -0.007673739042053106,
-     "new": -0.021789385667207714
-    },
-    {
-     "ticker": "ICMB",
-     "old": -0.10684629017107794,
-     "new": -0.1029001336365733
-    },
-    {
-     "ticker": "OLLI",
-     "old": 0.09383362031047632,
-     "new": 0.0991933065728709
-    }
-   ],
-   "quant.raws.pretaxRoaTtm.changed": [
-    {
-     "ticker": "CAKE",
-     "old": 0.06438388378996912,
-     "new": 0.06232699900625564
-    },
-    {
-     "ticker": "SPWH",
-     "old": -0.030172484377909335,
-     "new": -0.05799153270856713
-    },
-    {
-     "ticker": "TEL",
-     "old": 0.15733806195890268,
-     "new": 0.1547489586966781
-    },
-    {
-     "ticker": "PLAY",
-     "old": -0.010595858213695845,
-     "new": -0.028822979686193496
-    },
-    {
-     "ticker": "OLLI",
-     "old": 0.12552283082711707,
-     "new": 0.13163000367288616
+     "ticker": "XYL",
+     "old": 0.1621459227467811,
+     "new": 0.13570815450643778
     }
    ],
    "quant.raws.cashReturnOnAssets.changed": [
@@ -14265,6 +14240,11 @@
      "ticker": "ICMB",
      "old": 0.17533978429696948,
      "new": 0.1688639559415418
+    },
+    {
+     "ticker": "SDOT",
+     "old": -0.054252138154949836,
+     "new": -0.05390597489719548
     }
    ],
    "quant.raws.salesYield.signFlip": [
@@ -14280,10 +14260,6 @@
      "new": -0.5856517416406481
     },
     {
-     "ticker": "RIME",
-     "new": -0.508336698782669
-    },
-    {
      "ticker": "RNAC",
      "new": 0.43957115009746595
     },
@@ -14294,61 +14270,18 @@
     {
      "ticker": "CTRE",
      "new": 0.5302920343317756
-    },
-    {
-     "ticker": "XCUR",
-     "new": -1
-    }
-   ],
-   "quant.raws.ocfMarginTtm.gained": [
-    {
-     "ticker": "SITC",
-     "new": -0.24942117448958115
-    },
-    {
-     "ticker": "SPWH",
-     "new": 0.041617091229479056
-    },
-    {
-     "ticker": "STX",
-     "new": 0.30127101271012713
-    },
-    {
-     "ticker": "AGO",
-     "new": 0.3446808510638298
-    },
-    {
-     "ticker": "RNAC",
-     "new": -51.81381178063643
-    },
-    {
-     "ticker": "LAND",
-     "new": 0.3142185504560198
-    },
-    {
-     "ticker": "PLAY",
-     "new": 0.15453366008360964
-    },
-    {
-     "ticker": "CTRE",
-     "new": 0.7822180689283452
     }
    ],
    "discover.umsatzTTM.signFlip": [
     {
      "ticker": "SITC",
      "old": -34.08,
-     "new": 123.65
+     "new": 71.27
     },
     {
      "ticker": "AGO",
      "old": -170,
      "new": 940
-    },
-    {
-     "ticker": "TIPT",
-     "old": -81.89,
-     "new": 0.49
     },
     {
      "ticker": "RNAC",
@@ -14379,15 +14312,7 @@
    "discover.umsatzWachstum.gained": [
     {
      "ticker": "SITC",
-     "new": -0.5544
-    },
-    {
-     "ticker": "RIME",
-     "new": -0.5083
-    },
-    {
-     "ticker": "TIPT",
-     "new": -0.6789
+     "new": -0.5857
     },
     {
      "ticker": "RNAC",
@@ -14408,20 +14333,24 @@
     {
      "ticker": "PRTH",
      "new": 0.0891
+    },
+    {
+     "ticker": "CNEY",
+     "new": -0.3019
+    },
+    {
+     "ticker": "CGNT",
+     "new": 0.1409
     }
    ],
    "discover.marge.gained": [
     {
      "ticker": "SITC",
-     "new": 1.4384
+     "new": 1.7948
     },
     {
      "ticker": "AGO",
      "new": 0.3734
-    },
-    {
-     "ticker": "TIPT",
-     "new": 11.5471
     },
     {
      "ticker": "RNAC",
@@ -14472,6 +14401,13 @@
      "new": 21081840
     }
    ],
+   "quant.raws.accrualRatio.signFlip": [
+    {
+     "ticker": "AKR",
+     "old": 0.009891886227236026,
+     "new": -0.002467976093449916
+    }
+   ],
    "quant.raws.revenueCagr3y.gained": [
     {
      "ticker": "AIV",
@@ -14506,26 +14442,6 @@
      "new": 0.7247547667446972
     }
    ],
-   "quant.change.grossMarginPriorTtm.gained": [
-    {
-     "ticker": "RIME",
-     "new": -0.07130906363583915
-    }
-   ],
-   "quant.change.fcfMarginPriorTtm.gained": [
-    {
-     "ticker": "RIME",
-     "new": -0.35400680782322735
-    },
-    {
-     "ticker": "RNAC",
-     "new": -43.3859649122807
-    },
-    {
-     "ticker": "XCUR",
-     "new": -20.714
-    }
-   ],
    "quant.raws.positiveFcfYears.signFlip": [
     {
      "ticker": "IRIX",
@@ -14542,74 +14458,6 @@
     {
      "ticker": "BJRI",
      "old": 0.22784523090111986
-    }
-   ],
-   "quant.raws.revenueGrowthTtmYoy.lost": [
-    {
-     "ticker": "WTFC",
-     "old": 0.13744596108744656
-    },
-    {
-     "ticker": "QXO",
-     "old": 1.123117841362447
-    },
-    {
-     "ticker": "NXTT",
-     "old": 3.163555237045985
-    },
-    {
-     "ticker": "LENZ",
-     "old": 3.295
-    },
-    {
-     "ticker": "IREN",
-     "old": 0.4111268344966199
-    },
-    {
-     "ticker": "SLDE",
-     "old": 0.4146066694711623
-    },
-    {
-     "ticker": "GITS",
-     "old": 8.361233480176212
-    },
-    {
-     "ticker": "NTHI",
-     "old": -1
-    }
-   ],
-   "discover.gewinnWachstum.lost": [
-    {
-     "ticker": "LIVE",
-     "old": -2.3693
-    },
-    {
-     "ticker": "MSTR",
-     "old": -7.3462
-    },
-    {
-     "ticker": "QXO",
-     "old": -10.9786
-    },
-    {
-     "ticker": "EBS",
-     "old": -2.2674
-    },
-    {
-     "ticker": "NXTT",
-     "old": -1.9485
-    },
-    {
-     "ticker": "DFDV",
-     "old": -15.5374
-    },
-    {
-     "ticker": "SPIR",
-     "old": -3.6015
-    },
-    {
-     "ticker": "HTOO",
-     "old": -4.4465
     }
    ],
    "quant.raws.netDebtToAssets.changed": [
@@ -14672,45 +14520,6 @@
      "new": 0.25407124488129695
     }
    ],
-   "quant.raws.earningsYield.changed": [
-    {
-     "ticker": "SPWH",
-     "old": -0.0035362,
-     "new": -0.0047999
-    },
-    {
-     "ticker": "PSEC",
-     "old": 0.013216,
-     "new": 0.0153662
-    },
-    {
-     "ticker": "PLAY",
-     "old": -0.00302,
-     "new": -0.00886
-    },
-    {
-     "ticker": "OLLI",
-     "old": 0.0246292,
-     "new": 0.027358
-    }
-   ],
-   "quant.raws.earningsYield.changedOver10pct": [
-    {
-     "ticker": "SPWH",
-     "old": -0.0035362,
-     "new": -0.0047999
-    },
-    {
-     "ticker": "PSEC",
-     "old": 0.013216,
-     "new": 0.0153662
-    },
-    {
-     "ticker": "PLAY",
-     "old": -0.00302,
-     "new": -0.00886
-    }
-   ],
    "quant.raws.grossProfitabilityTtm.changed": [
     {
      "ticker": "SPWH",
@@ -14728,23 +14537,6 @@
      "new": 0.42156756460817046
     }
    ],
-   "quant.raws.roaTtm.changedOver10pct": [
-    {
-     "ticker": "SPWH",
-     "old": -0.04289456430697234,
-     "new": -0.05945311900037407
-    },
-    {
-     "ticker": "PSEC",
-     "old": 0.019943313365121007,
-     "new": 0.023188025259618827
-    },
-    {
-     "ticker": "PLAY",
-     "old": -0.007673739042053106,
-     "new": -0.021789385667207714
-    }
-   ],
    "quant.raws.pretaxRoaTtm.changedOver10pct": [
     {
      "ticker": "SPWH",
@@ -14755,23 +14547,16 @@
      "ticker": "PLAY",
      "old": -0.010595858213695845,
      "new": -0.028822979686193496
-    }
-   ],
-   "quant.raws.pretaxEarningsYield.changed": [
-    {
-     "ticker": "SPWH",
-     "old": -0.0024874,
-     "new": -0.0046819
     },
     {
-     "ticker": "PLAY",
-     "old": -0.00417,
-     "new": -0.01172
+     "ticker": "WTTR",
+     "old": 0.022129083620143056,
+     "new": 0.025432375365222387
     },
     {
-     "ticker": "OLLI",
-     "old": 0.0329469,
-     "new": 0.0363042
+     "ticker": "WOOF",
+     "old": 0.0038042584507595833,
+     "new": -0.00012287980493554357
     }
    ],
    "quant.raws.pretaxEarningsYield.changedOver10pct": [
@@ -14784,6 +14569,16 @@
      "ticker": "PLAY",
      "old": -0.00417,
      "new": -0.01172
+    },
+    {
+     "ticker": "WTTR",
+     "old": 0.0032772,
+     "new": 0.0037664
+    },
+    {
+     "ticker": "WOOF",
+     "old": 0.0019721,
+     "new": -0.0000637
     }
    ],
    "quant.raws.equityToAssets.gained": [
@@ -14830,30 +14625,11 @@
      "new": 0.0303408074
     }
    ],
-   "quant.raws.fcfMarginTtm.gained": [
+   "quant.change.fcfMarginTtm.signFlip": [
     {
      "ticker": "SPWH",
+     "old": -0.15815369661713238,
      "new": 0.026043629669226114
-    },
-    {
-     "ticker": "STX",
-     "new": 0.25461254612546125
-    },
-    {
-     "ticker": "RNAC",
-     "new": -53.2241029113067
-    },
-    {
-     "ticker": "PLAY",
-     "new": -0.007688241795204459
-    },
-    {
-     "ticker": "OLLI",
-     "new": 0.07992673394655703
-    },
-    {
-     "ticker": "PRTH",
-     "new": 0.10368049773036474
     }
    ],
    "quant.raws.salesYield.gained": [
@@ -14886,36 +14662,6 @@
      "new": -1.6227552642835812
     }
    ],
-   "quant.raws.netMarginTtm.gained": [
-    {
-     "ticker": "STX",
-     "new": 0.2610906109061091
-    },
-    {
-     "ticker": "AGO",
-     "new": 0.37340425531914895
-    },
-    {
-     "ticker": "RNAC",
-     "new": -102.83750846310087
-    },
-    {
-     "ticker": "LAND",
-     "new": -0.07307618412576428
-    },
-    {
-     "ticker": "CTRE",
-     "new": 0.621938841581005
-    },
-    {
-     "ticker": "PRTH",
-     "new": 0.05613561233170162
-    },
-    {
-     "ticker": "VAI",
-     "new": -19.13809160135915
-    }
-   ],
    "quant.raws.roicTtm.gained": [
     {
      "ticker": "STX",
@@ -14928,55 +14674,94 @@
      "new": 0.13712737127371274
     }
    ],
-   "discover.basis.FY->TTM": [
+   "discover.gewinnJeAktie.lost": [
     {
-     "ticker": "STX"
+     "ticker": "MCHX",
+     "old": -0.12
     },
     {
-     "ticker": "PRTH"
+     "ticker": "RENT",
+     "old": 9.48
     },
     {
-     "ticker": "VAI"
+     "ticker": "PINS",
+     "old": 0.34
+    },
+    {
+     "ticker": "CRWD",
+     "old": 0.22
+    },
+    {
+     "ticker": "RLMD",
+     "old": -0.92
+    },
+    {
+     "ticker": "DDOG",
+     "old": 0.5
+    },
+    {
+     "ticker": "CXM",
+     "old": 0.1
+    },
+    {
+     "ticker": "SHOP",
+     "old": 1.48
     }
    ],
-   "discover.epsBasis.FY_EPS_OR_NI_SHARES->TTM_NI_DIV_SHARES": [
+   "quant.raws.revenueGrowthTtmYoy.lost": [
     {
-     "ticker": "STX"
+     "ticker": "QXO",
+     "old": 1.123117841362447
     },
     {
-     "ticker": "PRTH"
+     "ticker": "SLDE",
+     "old": 0.4146066694711623
+    }
+   ],
+   "quant.raws.fcfYield.lost": [
+    {
+     "ticker": "QXO",
+     "old": 0.01949
     },
     {
-     "ticker": "VAI"
+     "ticker": "SLDE",
+     "old": 0.098716
+    }
+   ],
+   "quant.raws.cashReturnOnAssets.lost": [
+    {
+     "ticker": "QXO",
+     "old": 0.028162570942516906
     },
     {
-     "ticker": "SLDE"
+     "ticker": "SLDE",
+     "old": 0.40825896133755785
+    }
+   ],
+   "quant.raws.cashFlowYield.lost": [
+    {
+     "ticker": "QXO",
+     "old": 0.02955
+    },
+    {
+     "ticker": "SLDE",
+     "old": 0.0990108
     }
    ],
    "quant.change.grossMarginPriorTtm.lost": [
     {
      "ticker": "QXO",
      "old": 0.2248723778473682
+    }
+   ],
+   "quant.change.fcfMarginPriorTtm.lost": [
+    {
+     "ticker": "QXO",
+     "old": 0.025909656385397453
     },
     {
-     "ticker": "CLDT",
-     "old": 0.43610225695337
-    },
-    {
-     "ticker": "NXTT",
-     "old": 0.3346123841289861
-    },
-    {
-     "ticker": "IREN",
-     "old": 0.6826652668639963
-    },
-    {
-     "ticker": "GITS",
-     "old": 1
-    },
-    {
-     "ticker": "FATN",
-     "old": 0.939002584906296
+     "ticker": "TEL",
+     "old": 0.16679205972567857
     }
    ],
    "discover.umsatzWachstum.lost": [
@@ -14987,14 +14772,6 @@
     {
      "ticker": "AMBR",
      "old": -0.09
-    },
-    {
-     "ticker": "NXTT",
-     "old": 3.1636
-    },
-    {
-     "ticker": "LENZ",
-     "old": 3.295
     },
     {
      "ticker": "NVX",
@@ -15009,8 +14786,8 @@
      "old": 0.365
     },
     {
-     "ticker": "GITS",
-     "old": 8.3612
+     "ticker": "OFAL",
+     "old": 2.5488
     }
    ],
    "quant.raws.revenueGrowthAcceleration.gained": [
@@ -15163,18 +14940,37 @@
      "new": 0.009756852399128161
     }
    ],
-   "quant.raws.roeTtm.changed": [
+   "quant.raws.earningsYield.signFlip": [
     {
-     "ticker": "PSEC",
-     "old": 0.04512357426781743,
-     "new": 0.05246503230282507
+     "ticker": "TIPT",
+     "old": 0.0014246,
+     "new": -0.001442
     }
    ],
-   "quant.raws.roeTtm.changedOver10pct": [
+   "quant.raws.roaTtm.signFlip": [
     {
-     "ticker": "PSEC",
-     "old": 0.04512357426781743,
-     "new": 0.05246503230282507
+     "ticker": "TIPT",
+     "old": 0.002273022087054225,
+     "new": -0.002300784676072015
+    }
+   ],
+   "quant.raws.roeTtm.signFlip": [
+    {
+     "ticker": "TIPT",
+     "old": 0.028012922991007785,
+     "new": -0.02835507156607695
+    }
+   ],
+   "discover.gewinnTTM.signFlip": [
+    {
+     "ticker": "TIPT",
+     "old": 14.25,
+     "new": -14.42
+    },
+    {
+     "ticker": "PRTH",
+     "old": -33.59,
+     "new": 56.16
     }
    ],
    "quant.raws.equityToAssets.changed": [
@@ -15319,38 +15115,24 @@
      "new": -53.2241029113067
     }
    ],
-   "discover.gewinnJeAktie.lost": [
+   "quant.change.fcfMarginPriorTtm.gained": [
     {
-     "ticker": "RENT",
-     "old": 9.48
+     "ticker": "RNAC",
+     "new": -43.3859649122807
+    }
+   ],
+   "discover.gewinnWachstum.gained": [
+    {
+     "ticker": "LND",
+     "new": -0.3916
     },
     {
-     "ticker": "PINS",
-     "old": 0.34
+     "ticker": "PRTH",
+     "new": 0.5188
     },
     {
-     "ticker": "CRWD",
-     "old": 0.22
-    },
-    {
-     "ticker": "RLMD",
-     "old": -0.92
-    },
-    {
-     "ticker": "DDOG",
-     "old": 0.5
-    },
-    {
-     "ticker": "CXM",
-     "old": 0.1
-    },
-    {
-     "ticker": "SHOP",
-     "old": 1.48
-    },
-    {
-     "ticker": "SHAK",
-     "old": 0.94
+     "ticker": "YYAI",
+     "new": -31.3849
     }
    ],
    "quant.raws.grossProfitabilityTtm.lost": [
@@ -15419,10 +15201,13 @@
     {
      "ticker": "PRTH",
      "old": 0.3207845014441152
-    },
+    }
+   ],
+   "discover.marge.signFlip": [
     {
-     "ticker": "ASBP",
-     "old": -0.25038142925895207
+     "ticker": "PRTH",
+     "old": -0.0903,
+     "new": 0.0561
     }
    ],
    "quant.raws.equityToAssets.signFlip": [
@@ -15503,6 +15288,13 @@
      "new": 1
     }
    ],
+   "quant.raws.cashFlowYield.changed": [
+    {
+     "ticker": "SDOT",
+     "old": -0.0004545,
+     "new": -0.0004516
+    }
+   ],
    "quant.raws.grossProfitabilityTtm.gained": [
     {
      "ticker": "VAI",
@@ -15520,6 +15312,20 @@
      "ticker": "SNTG",
      "old": 6.9931e-10,
      "new": 1e-10
+    }
+   ],
+   "quant.raws.pretaxRoaTtm.signFlip": [
+    {
+     "ticker": "WOOF",
+     "old": 0.0038042584507595833,
+     "new": -0.00012287980493554357
+    }
+   ],
+   "quant.raws.pretaxEarningsYield.signFlip": [
+    {
+     "ticker": "WOOF",
+     "old": 0.0019721,
+     "new": -0.0000637
     }
    ],
    "quant.raws.positiveEarningsYears.lost": [
@@ -15568,6 +15374,12 @@
      "old": 0.1113241
     }
    ],
+   "quant.change.fcfMarginTtm.lost": [
+    {
+     "ticker": "SLDE",
+     "old": 0.7108006912442396
+    }
+   ],
    "quant.raws.operatingMarginStability.lost": [
     {
      "ticker": "HUT",
@@ -15597,10 +15409,10 @@
  "quantRankImpact": {
   "accrualRatio": {
    "issuersOld": 3711,
-   "issuersNew": 3613,
-   "both": 3604,
-   "spearman": 1,
-   "rankMoveOver10pts": 0,
+   "issuersNew": 3720,
+   "both": 3711,
+   "spearman": 0.99989,
+   "rankMoveOver10pts": 1,
    "rankMoveOver25pts": 0
   },
   "bookToMarket": {
@@ -15613,25 +15425,25 @@
   },
   "cashFlowYield": {
    "issuersOld": 3721,
-   "issuersNew": 3688,
-   "both": 3679,
+   "issuersNew": 3728,
+   "both": 3719,
    "spearman": 1,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
   "cashReturnOnAssets": {
    "issuersOld": 3721,
-   "issuersNew": 3688,
-   "both": 3679,
+   "issuersNew": 3728,
+   "both": 3719,
    "spearman": 1,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
   "dividendCoverageByOcf": {
    "issuersOld": 1336,
-   "issuersNew": 1323,
-   "both": 1320,
-   "spearman": 0.99997,
+   "issuersNew": 1339,
+   "both": 1336,
+   "spearman": 1,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
@@ -15645,25 +15457,25 @@
   },
   "earningsYield": {
    "issuersOld": 3750,
-   "issuersNew": 3687,
-   "both": 3681,
-   "spearman": 0.99998,
-   "rankMoveOver10pts": 0,
+   "issuersNew": 3756,
+   "both": 3750,
+   "spearman": 0.99992,
+   "rankMoveOver10pts": 1,
    "rankMoveOver25pts": 0
   },
   "ebitdaYield": {
    "issuersOld": 176,
-   "issuersNew": 170,
-   "both": 169,
-   "spearman": 0.99979,
+   "issuersNew": 177,
+   "both": 176,
+   "spearman": 0.99983,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
   "effectiveTaxRateTtm": {
    "issuersOld": 115,
-   "issuersNew": 112,
-   "both": 111,
-   "spearman": 0.99986,
+   "issuersNew": 116,
+   "both": 115,
+   "spearman": 0.99989,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
@@ -15693,18 +15505,18 @@
   },
   "fcfMarginTtm": {
    "issuersOld": 2454,
-   "issuersNew": 2320,
-   "both": 2314,
-   "spearman": 0.99354,
-   "rankMoveOver10pts": 28,
-   "rankMoveOver25pts": 11
+   "issuersNew": 2461,
+   "both": 2454,
+   "spearman": 0.99357,
+   "rankMoveOver10pts": 32,
+   "rankMoveOver25pts": 12
   },
   "fcfYield": {
    "issuersOld": 2806,
-   "issuersNew": 2741,
-   "both": 2733,
-   "spearman": 0.99999,
-   "rankMoveOver10pts": 0,
+   "issuersNew": 2812,
+   "both": 2804,
+   "spearman": 0.99995,
+   "rankMoveOver10pts": 1,
    "rankMoveOver25pts": 0
   },
   "grossProfitabilityTtm": {
@@ -15725,43 +15537,43 @@
   },
   "netMarginTtm": {
    "issuersOld": 2986,
-   "issuersNew": 2847,
-   "both": 2840,
-   "spearman": 0.99262,
-   "rankMoveOver10pts": 57,
-   "rankMoveOver25pts": 17
+   "issuersNew": 2995,
+   "both": 2986,
+   "spearman": 0.99265,
+   "rankMoveOver10pts": 61,
+   "rankMoveOver25pts": 18
   },
   "ocfMarginTtm": {
    "issuersOld": 2977,
-   "issuersNew": 2865,
-   "both": 2854,
-   "spearman": 0.99147,
-   "rankMoveOver10pts": 47,
-   "rankMoveOver25pts": 19
+   "issuersNew": 2989,
+   "both": 2977,
+   "spearman": 0.9916,
+   "rankMoveOver10pts": 49,
+   "rankMoveOver25pts": 20
   },
   "operatingMarginExpansion3y": {
    "issuersOld": 3249,
    "issuersNew": 3253,
    "both": 3248,
-   "spearman": 0.97997,
-   "rankMoveOver10pts": 63,
-   "rankMoveOver25pts": 34
+   "spearman": 0.97927,
+   "rankMoveOver10pts": 66,
+   "rankMoveOver25pts": 36
   },
   "operatingMarginStability": {
    "issuersOld": 3249,
    "issuersNew": 3253,
    "both": 3248,
-   "spearman": 0.97825,
-   "rankMoveOver10pts": 64,
-   "rankMoveOver25pts": 39
+   "spearman": 0.97745,
+   "rankMoveOver10pts": 71,
+   "rankMoveOver25pts": 44
   },
   "operatingMarginTtm": {
    "issuersOld": 2552,
-   "issuersNew": 2470,
-   "both": 2466,
-   "spearman": 0.99644,
-   "rankMoveOver10pts": 18,
-   "rankMoveOver25pts": 7
+   "issuersNew": 2556,
+   "both": 2552,
+   "spearman": 0.99638,
+   "rankMoveOver10pts": 19,
+   "rankMoveOver25pts": 8
   },
   "positiveEarningsYears": {
    "issuersOld": 4413,
@@ -15781,16 +15593,16 @@
   },
   "pretaxEarningsYield": {
    "issuersOld": 2949,
-   "issuersNew": 2894,
-   "both": 2890,
+   "issuersNew": 2953,
+   "both": 2949,
    "spearman": 0.99997,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
   "pretaxRoaTtm": {
    "issuersOld": 2949,
-   "issuersNew": 2894,
-   "both": 2890,
+   "issuersNew": 2953,
+   "both": 2949,
    "spearman": 0.99999,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
@@ -15799,25 +15611,25 @@
    "issuersOld": 3685,
    "issuersNew": 3694,
    "both": 3684,
-   "spearman": 0.96644,
-   "rankMoveOver10pts": 117,
-   "rankMoveOver25pts": 59
+   "spearman": 0.96529,
+   "rankMoveOver10pts": 125,
+   "rankMoveOver25pts": 61
   },
   "revenueGrowthAcceleration": {
    "issuersOld": 3927,
    "issuersNew": 3936,
    "both": 3926,
-   "spearman": 0.9666,
-   "rankMoveOver10pts": 126,
+   "spearman": 0.96626,
+   "rankMoveOver10pts": 130,
    "rankMoveOver25pts": 64
   },
   "revenueGrowthTtmYoy": {
    "issuersOld": 3077,
-   "issuersNew": 3074,
-   "both": 3068,
-   "spearman": 0.96165,
-   "rankMoveOver10pts": 127,
-   "rankMoveOver25pts": 63
+   "issuersNew": 3079,
+   "both": 3075,
+   "spearman": 0.97116,
+   "rankMoveOver10pts": 99,
+   "rankMoveOver25pts": 49
   },
   "roaMedian3y": {
    "issuersOld": 4500,
@@ -15837,17 +15649,17 @@
   },
   "roaTtm": {
    "issuersOld": 3749,
-   "issuersNew": 3686,
-   "both": 3680,
-   "spearman": 1,
-   "rankMoveOver10pts": 0,
+   "issuersNew": 3755,
+   "both": 3749,
+   "spearman": 0.99996,
+   "rankMoveOver10pts": 1,
    "rankMoveOver25pts": 0
   },
   "roeTtm": {
    "issuersOld": 3335,
-   "issuersNew": 3280,
-   "both": 3271,
-   "spearman": 0.99999,
+   "issuersNew": 3344,
+   "both": 3335,
+   "spearman": 0.99996,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
@@ -15861,17 +15673,17 @@
   },
   "roicTtm": {
    "issuersOld": 115,
-   "issuersNew": 112,
-   "both": 111,
-   "spearman": 0.99818,
+   "issuersNew": 116,
+   "both": 115,
+   "spearman": 0.99987,
    "rankMoveOver10pts": 0,
    "rankMoveOver25pts": 0
   },
   "salesYield": {
    "issuersOld": 228,
-   "issuersNew": 220,
-   "both": 219,
-   "spearman": 0.97127,
+   "issuersNew": 229,
+   "both": 228,
+   "spearman": 0.97219,
    "rankMoveOver10pts": 4,
    "rankMoveOver25pts": 3
   }
@@ -15880,38 +15692,71 @@
   "ttmEps_old": 3394,
   "ttmEps_new": 159,
   "ttmRev_old": 3024,
-  "ttmRev_new": 2935,
+  "ttmRev_new": 3028,
   "ttmNi_old": 3750,
-  "ttmNi_new": 3687,
+  "ttmNi_new": 3756,
   "qEpsRemoved_Q4": 6575,
   "annualEpsIssuers_old": 4523,
   "annualEpsIssuers_new": 4556,
   "annualEpsRows_old": 38491,
   "annualEpsRows_new": 41999,
-  "q_revenue_removed_Q4": 213,
-  "q_net_income_removed_Q4": 148,
+  "q_revenue_removed_Q4": 12,
+  "q_net_income_removed_Q4": 15,
   "qEpsRemoved_other": 36,
-  "q_net_income_removed_other": 35,
-  "q_revenue_removed_other": 30
+  "q_net_income_removed_other": 34,
+  "q_revenue_removed_other": 28,
+  "unitChanged_eps_diluted": 3,
+  "unitChangedIssuers": 16,
+  "unitChanged_cash_and_equivalents": 2,
+  "unitChanged_total_assets": 4,
+  "unitChanged_stockholders_equity": 1,
+  "unitChanged_operating_income": 2,
+  "unitChanged_net_income": 4,
+  "unitChanged_income_tax_expense": 1,
+  "unitChanged_operating_cash_flow": 1,
+  "unitChanged_long_term_debt": 3,
+  "unitChanged_total_debt": 3,
+  "unitChanged_depreciation_and_amortization": 1,
+  "unitChanged_dividends_paid": 2,
+  "unitChanged_revenue": 1,
+  "unitChanged_gross_profit": 1,
+  "unitChanged_pretax_income": 1,
+  "unitChanged_stock_based_compensation": 1
  },
  "revenueGuarantee": {
   "schema": "vu-fundamental-revenue-guarantee-1.0.0",
   "tolerance": 0.005,
   "counts": {
-   "cells": 63527,
-   "equal": 59562,
-   "larger": 3927,
-   "smallerLabelChanged": 2,
+   "cells": 63731,
+   "equal": 59452,
+   "larger": 3924,
+   "smallerLabelChanged": 17,
    "smallerUnitChanged": 1,
-   "smallerUnexplained": 35,
+   "smallerUnexplained": 337,
    "q4AbsorbsConceptSwitch": 13
   },
   "issuers": {
-   "larger": 530,
-   "smallerUnexplained": 27
+   "larger": 526,
+   "smallerUnexplained": 102
   },
   "examples": {
    "smallerUnexplained": [
+    {
+     "ticker": "LNG",
+     "section": "annual",
+     "end": "2017-12-31",
+     "main": 5645000000,
+     "corrected": 5601000000,
+     "label": "2017FY -> 2017FY"
+    },
+    {
+     "ticker": "LNG",
+     "section": "annual",
+     "end": "2021-12-31",
+     "main": 17531000000,
+     "corrected": 15864000000,
+     "label": "2021FY -> 2021FY"
+    },
     {
      "ticker": "LNG",
      "section": "quarterly",
@@ -15919,6 +15764,102 @@
      "main": 4467000000,
      "corrected": 4436000000,
      "label": "2024Q4 -> 2024Q4"
+    },
+    {
+     "ticker": "LNG",
+     "section": "quarterly",
+     "end": "2026-03-31",
+     "main": 6587000000,
+     "corrected": 5868000000,
+     "label": "2026Q1 -> 2026Q1"
+    },
+    {
+     "ticker": "AEP",
+     "section": "annual",
+     "end": "2023-12-31",
+     "main": 19456000000,
+     "corrected": 18982000000,
+     "label": "2023FY -> 2023FY"
+    },
+    {
+     "ticker": "AEP",
+     "section": "annual",
+     "end": "2024-12-31",
+     "main": 19970000000,
+     "corrected": 19721000000,
+     "label": "2024FY -> 2024FY"
+    },
+    {
+     "ticker": "AEP",
+     "section": "quarterly",
+     "end": "2024-06-30",
+     "main": 4657600000,
+     "corrected": 4579200000,
+     "label": "2024Q2 -> 2024Q2"
+    },
+    {
+     "ticker": "AEP",
+     "section": "quarterly",
+     "end": "2024-09-30",
+     "main": 5470100000,
+     "corrected": 5420100000,
+     "label": "2024Q3 -> 2024Q3"
+    },
+    {
+     "ticker": "AEP",
+     "section": "quarterly",
+     "end": "2024-12-31",
+     "main": 4757300000,
+     "corrected": 4696000000,
+     "label": "2024Q4 -> 2024Q4"
+    },
+    {
+     "ticker": "AEP",
+     "section": "quarterly",
+     "end": "2025-03-31",
+     "main": 5631000000,
+     "corrected": 5463000000,
+     "label": "2025Q1 -> 2025Q1"
+    },
+    {
+     "ticker": "DOMH",
+     "section": "quarterly",
+     "end": "2025-03-31",
+     "main": 8150000,
+     "corrected": 7240000,
+     "label": "2025Q1 -> 2025Q1"
+    },
+    {
+     "ticker": "DOMH",
+     "section": "quarterly",
+     "end": "2026-03-31",
+     "main": 37102000,
+     "corrected": 35805000,
+     "label": "2026Q1 -> 2026Q1"
+    },
+    {
+     "ticker": "EQT",
+     "section": "annual",
+     "end": "2018-12-31",
+     "main": 4709384000,
+     "corrected": 4557868000,
+     "label": "2018FY -> 2018FY"
+    },
+    {
+     "ticker": "ESCA",
+     "section": "annual",
+     "end": "2016-12-31",
+     "main": 189958000,
+     "corrected": 171662000,
+     "label": "2016FY -> 2016FY"
+    },
+    {
+     "ticker": "ESCA",
+     "section": "annual",
+     "end": "2017-12-30",
+     "main": 195779000,
+     "corrected": 177333000,
+     "label": "2017FY -> 2017FY"
     },
     {
      "ticker": "FEIM",
@@ -15937,263 +15878,287 @@
      "label": "2026Q4 -> 2026Q4"
     },
     {
-     "ticker": "RRC",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 676657000,
-     "corrected": 626417000,
-     "label": "2024Q4 -> 2024Q4"
+     "ticker": "NFG",
+     "section": "annual",
+     "end": "2022-09-30",
+     "main": 3061283000,
+     "corrected": 2186046000,
+     "label": "2022FY -> 2022FY"
     },
     {
-     "ticker": "CPF",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 8848000,
-     "corrected": 2624000,
-     "label": "2024Q4 -> 2024Q4"
+     "ticker": "NFG",
+     "section": "annual",
+     "end": "2023-09-30",
+     "main": 2254894000,
+     "corrected": 2173771000,
+     "label": "2023FY -> 2023FY"
     },
     {
-     "ticker": "WASH",
+     "ticker": "NFG",
      "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 12371000,
-     "corrected": -44956000,
-     "label": "2024Q4 -> 2024Q4"
+     "end": "2025-03-31",
+     "main": 734758000,
+     "corrected": 729950000,
+     "label": "2025Q2 -> 2025Q2"
     },
     {
-     "ticker": "PEG",
+     "ticker": "NFG",
      "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 3023000000,
-     "corrected": 2915000000,
-     "label": "2025Q4 -> 2025Q4"
+     "end": "2026-03-31",
+     "main": 909034000,
+     "corrected": 858373000,
+     "label": "2026Q2 -> 2026Q2"
     },
     {
-     "ticker": "CHSCL",
-     "section": "quarterly",
-     "end": "2025-08-31",
-     "main": 23689193000,
-     "corrected": 8605884000,
-     "label": "2025Q4 -> 2025Q4"
+     "ticker": "THC",
+     "section": "annual",
+     "end": "2016-12-31",
+     "main": 21070000000,
+     "corrected": 19621000000,
+     "label": "2016FY -> 2016FY"
     },
     {
-     "ticker": "FCX",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 5880000000,
-     "corrected": 5720000000,
-     "label": "2024Q4 -> 2024Q4"
+     "ticker": "THC",
+     "section": "annual",
+     "end": "2017-12-31",
+     "main": 20613000000,
+     "corrected": 19179000000,
+     "label": "2017FY -> 2017FY"
     },
     {
-     "ticker": "SCWO",
+     "ticker": "ES",
      "section": "quarterly",
-     "end": "2025-12-31",
-     "main": -55630,
-     "corrected": -1683447,
-     "label": "2025Q4 -> 2025Q4"
+     "end": "2026-03-31",
+     "main": 4538000000,
+     "corrected": 4504363000,
+     "label": "2026Q1 -> 2026Q1"
     },
     {
-     "ticker": "DVN",
+     "ticker": "ES",
      "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 4487000000,
-     "corrected": 4403000000,
-     "label": "2024Q4 -> 2024Q4"
+     "end": "2026-06-30",
+     "main": 2981400000,
+     "corrected": 2903189000,
+     "label": "2026Q2 -> 2026Q2"
     },
     {
-     "ticker": "TXNM",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 480976000,
-     "corrected": 476964000,
-     "label": "2024Q4 -> 2024Q4"
+     "ticker": "SO",
+     "section": "annual",
+     "end": "2018-12-31",
+     "main": 25241000000,
+     "corrected": 23495000000,
+     "label": "2018FY -> 2018FY"
     },
     {
-     "ticker": "HY",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 4308200000,
-     "corrected": 1067500000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "HY",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 3769300000,
-     "corrected": 923200000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "SONM",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 15263000,
-     "corrected": 14984000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "IVT",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 272913000,
-     "corrected": 71232000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "IVT",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 297919000,
-     "corrected": 77381000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "TIPT",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": -262694000,
-     "corrected": -1537736000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "TIPT",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": -242903000,
-     "corrected": -1565990000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "CRMD",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 131344130,
-     "corrected": 128615264,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "SNWV",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 10581000,
-     "corrected": 10326000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "AR",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 1182891000,
-     "corrected": 1168751000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "OTTR",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 308099000,
-     "corrected": 303986000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "MTDR",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 978283000,
-     "corrected": 970369000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "TLN",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 758000000,
-     "corrected": 749000000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "PROF",
+     "ticker": "SO",
      "section": "annual",
      "end": "2019-12-31",
-     "main": 5528000,
-     "corrected": 4174000,
+     "main": 22596000000,
+     "corrected": 21419000000,
      "label": "2019FY -> 2019FY"
     },
     {
-     "ticker": "PROF",
+     "ticker": "SO",
+     "section": "annual",
+     "end": "2020-12-31",
+     "main": 21097000000,
+     "corrected": 20375000000,
+     "label": "2020FY -> 2020FY"
+    },
+    {
+     "ticker": "SO",
+     "section": "annual",
+     "end": "2021-12-31",
+     "main": 23463000000,
+     "corrected": 23113000000,
+     "label": "2021FY -> 2021FY"
+    },
+    {
+     "ticker": "SO",
+     "section": "quarterly",
+     "end": "2024-09-30",
+     "main": 7481000000,
+     "corrected": 7274000000,
+     "label": "2024Q3 -> 2024Q3"
+    },
+    {
+     "ticker": "WMB",
+     "section": "annual",
+     "end": "2021-12-31",
+     "main": 12784000000,
+     "corrected": 10627000000,
+     "label": "2021FY -> 2021FY"
+    },
+    {
+     "ticker": "WMB",
+     "section": "annual",
+     "end": "2022-12-31",
+     "main": 17773000000,
+     "corrected": 10965000000,
+     "label": "2022FY -> 2022FY"
+    },
+    {
+     "ticker": "WMB",
+     "section": "annual",
+     "end": "2023-12-31",
+     "main": 11996000000,
+     "corrected": 10907000000,
+     "label": "2023FY -> 2023FY"
+    },
+    {
+     "ticker": "WMB",
+     "section": "annual",
+     "end": "2024-12-31",
+     "main": 12632000000,
+     "corrected": 10503000000,
+     "label": "2024FY -> 2024FY"
+    },
+    {
+     "ticker": "WMB",
+     "section": "annual",
+     "end": "2025-12-31",
+     "main": 14899000000,
+     "corrected": 11950000000,
+     "label": "2025FY -> 2025FY"
+    },
+    {
+     "ticker": "WMB",
+     "section": "quarterly",
+     "end": "2024-09-30",
+     "main": 3035000000,
+     "corrected": 2653000000,
+     "label": "2024Q3 -> 2024Q3"
+    },
+    {
+     "ticker": "WMB",
      "section": "quarterly",
      "end": "2024-12-31",
-     "main": 4966000,
-     "corrected": 4176000,
+     "main": 3411000000,
+     "corrected": 2743000000,
      "label": "2024Q4 -> 2024Q4"
     },
     {
-     "ticker": "PROF",
+     "ticker": "WMB",
      "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 6717000,
-     "corrected": 5977000,
-     "label": "2025Q4 -> 2025Q4"
+     "end": "2025-03-31",
+     "main": 4187000000,
+     "corrected": 3048000000,
+     "label": "2025Q1 -> 2025Q1"
     },
     {
-     "ticker": "KROS",
+     "ticker": "WMB",
      "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 385000,
-     "corrected": 380000,
-     "label": "2025Q4 -> 2025Q4"
+     "end": "2025-06-30",
+     "main": 3378000000,
+     "corrected": 2781000000,
+     "label": "2025Q2 -> 2025Q2"
     },
     {
-     "ticker": "DBRG",
+     "ticker": "WMB",
      "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 101551000,
-     "corrected": 66174000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "VST",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 4805000000,
-     "corrected": 4584000000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "ADCT",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 17943000,
-     "corrected": 16910000,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "ADCT",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 30118000,
-     "corrected": 23058000,
-     "label": "2025Q4 -> 2025Q4"
-    },
-    {
-     "ticker": "CYN",
-     "section": "quarterly",
-     "end": "2024-12-31",
-     "main": 368138,
-     "corrected": 306376,
-     "label": "2024Q4 -> 2024Q4"
-    },
-    {
-     "ticker": "CYN",
-     "section": "quarterly",
-     "end": "2025-12-31",
-     "main": 218976,
-     "corrected": 68125,
-     "label": "2025Q4 -> 2025Q4"
+     "end": "2025-09-30",
+     "main": 3491000000,
+     "corrected": 2923000000,
+     "label": "2025Q3 -> 2025Q3"
     }
    ],
    "smallerLabelChanged": [
+    {
+     "ticker": "LE",
+     "section": "annual",
+     "end": "2023-01-27",
+     "main": 1555429000,
+     "corrected": 1308810000,
+     "label": "2022FY -> 2023FY"
+    },
+    {
+     "ticker": "LE",
+     "section": "annual",
+     "end": "2024-02-02",
+     "main": 1472508000,
+     "corrected": 1293178000,
+     "label": "2023FY -> 2024FY"
+    },
+    {
+     "ticker": "LE",
+     "section": "annual",
+     "end": "2025-01-31",
+     "main": 1362935000,
+     "corrected": 1154442000,
+     "label": "2024FY -> 2025FY"
+    },
+    {
+     "ticker": "LE",
+     "section": "annual",
+     "end": "2026-01-30",
+     "main": 1335146000,
+     "corrected": 1162769000,
+     "label": "2025FY -> 2026FY"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2024-11-01",
+     "main": 318628000,
+     "corrected": 273501000,
+     "label": "2024Q3 -> 2025Q3"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2025-01-31",
+     "main": 441663000,
+     "corrected": 381853000,
+     "label": "2024Q4 -> 2025Q4"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2025-05-02",
+     "main": 261208000,
+     "corrected": 227752000,
+     "label": "2025Q1 -> 2026Q1"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2025-08-01",
+     "main": 294079000,
+     "corrected": 255254000,
+     "label": "2025Q2 -> 2026Q2"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2025-10-31",
+     "main": 317487000,
+     "corrected": 277453000,
+     "label": "2025Q3 -> 2026Q3"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2026-01-30",
+     "main": 462372000,
+     "corrected": 402310000,
+     "label": "2025Q4 -> 2026Q4"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2026-05-01",
+     "main": 238916000,
+     "corrected": 205123000,
+     "label": "2026Q1 -> 2027Q1"
+    },
+    {
+     "ticker": "LE",
+     "section": "quarterly",
+     "end": "2026-07-31",
+     "main": 302038000,
+     "corrected": 268898000,
+     "label": "2026Q2 -> 2027Q2"
+    },
     {
      "ticker": "RJET",
      "section": "quarterly",
@@ -16201,6 +16166,30 @@
      "main": 808268000,
      "corrected": 103233000,
      "label": "2024Q4 -> 2026Q1"
+    },
+    {
+     "ticker": "RIME",
+     "section": "quarterly",
+     "end": "2024-09-30",
+     "main": 127000,
+     "corrected": -4739000,
+     "label": "2024Q4 -> 2024Q3"
+    },
+    {
+     "ticker": "PVLA",
+     "section": "quarterly",
+     "end": "2023-03-31",
+     "main": 2010000,
+     "corrected": 1936000,
+     "label": "2023Q1 -> 2024Q1"
+    },
+    {
+     "ticker": "HKD",
+     "section": "annual",
+     "end": "2024-10-31",
+     "main": 22814000,
+     "corrected": 20445000,
+     "label": "2024FY -> 2025FY"
     },
     {
      "ticker": "FERG",
@@ -16332,19 +16321,14 @@
  "screenerPresetFlips": {
   "revenueGrowth > 10 %": {
    "passOld": 1691,
-   "passNew": 1675,
-   "gained": 36,
-   "lost": 52,
+   "passNew": 1685,
+   "gained": 32,
+   "lost": 38,
    "examplesLost": [
     {
      "t": "CFR",
      "old": 0.1507,
      "new": 0.0735
-    },
-    {
-     "t": "SLNH",
-     "old": 0.5086,
-     "new": -0.2184
     },
     {
      "t": "MCY",
@@ -16362,16 +16346,21 @@
      "new": 0.0215
     },
     {
-     "t": "TEX",
-     "old": 0.2917,
-     "new": 0.0573
+     "t": "WMB",
+     "old": 0.1013,
+     "new": 0.0872
+    },
+    {
+     "t": "VAL",
+     "old": 9.3949,
+     "new": -0.1322
     }
    ],
    "examplesGained": [
     {
-     "t": "GD",
-     "old": 0.0935,
-     "new": 0.1013
+     "t": "AEP",
+     "old": 0.0825,
+     "new": 0.1128
     },
     {
      "t": "ALLY",
@@ -16402,19 +16391,19 @@
   },
   "revenueGrowth > 20 %": {
    "passOld": 1018,
-   "passNew": 1001,
-   "gained": 32,
-   "lost": 49,
+   "passNew": 1011,
+   "gained": 28,
+   "lost": 35,
    "examplesLost": [
+    {
+     "t": "LNG",
+     "old": 0.2221,
+     "new": 0.1754
+    },
     {
      "t": "HUM",
      "old": 0.3132,
      "new": 0.1408
-    },
-    {
-     "t": "SLNH",
-     "old": 0.5086,
-     "new": -0.2184
     },
     {
      "t": "UDR",
@@ -16427,26 +16416,26 @@
      "new": 0.1375
     },
     {
-     "t": "TEX",
-     "old": 0.2917,
-     "new": 0.0573
-    },
-    {
      "t": "VAL",
      "old": 9.3949,
      "new": -0.1322
+    },
+    {
+     "t": "SF",
+     "old": 0.2064,
+     "new": 0.11
     }
    ],
    "examplesGained": [
     {
-     "t": "MAGN",
-     "old": 0.125,
-     "new": 0.2176
-    },
-    {
      "t": "KEY",
      "old": 0.0693,
      "new": 0.5111
+    },
+    {
+     "t": "RRC",
+     "old": 0.173,
+     "new": 0.2324
     },
     {
      "t": "CPF",
@@ -16473,14 +16462,9 @@
   "revenueGrowth > 50 %": {
    "passOld": 436,
    "passNew": 432,
-   "gained": 19,
-   "lost": 23,
+   "gained": 14,
+   "lost": 18,
    "examplesLost": [
-    {
-     "t": "SLNH",
-     "old": 0.5086,
-     "new": -0.2184
-    },
     {
      "t": "VAL",
      "old": 9.3949,
@@ -16489,7 +16473,7 @@
     {
      "t": "CHSCL",
      "old": 0.5914,
-     "new": 0.0258
+     "new": 0.0382
     },
     {
      "t": "ONIT",
@@ -16505,6 +16489,11 @@
      "t": "NHI",
      "old": 1.3912,
      "new": 0.2394
+    },
+    {
+     "t": "AIV",
+     "old": 0.7912,
+     "new": -0.1151
     }
    ],
    "examplesGained": [
@@ -16519,24 +16508,24 @@
      "new": 1.0017
     },
     {
-     "t": "WKSP",
-     "old": 0.4763,
-     "new": 0.8978
+     "t": "RJET",
+     "old": 0.3302,
+     "new": 1.2155
     },
     {
-     "t": "LEDS",
-     "old": -0.1664,
-     "new": 7.2981
-    },
-    {
-     "t": "JBTM",
-     "old": 0.4486,
-     "new": 1.2134
+     "t": "IPM",
+     "old": 0.0352,
+     "new": 0.5991
     },
     {
      "t": "ATLC",
      "old": 0.3872,
      "new": 0.8372
+    },
+    {
+     "t": "CHRN",
+     "old": -0.1514,
+     "new": 4.5945
     }
    ]
   },
@@ -16951,8 +16940,8 @@
   },
   "netMargin > 10 %": {
    "passOld": 1031,
-   "passNew": 1050,
-   "gained": 40,
+   "passNew": 1051,
+   "gained": 41,
    "lost": 21,
    "examplesLost": [
     {
@@ -17092,8 +17081,8 @@
  },
  "productInputs": {
   "supertrader": {
-   "issuersWithAnyInputChange": 860,
-   "issuersWithValueChange": 572,
+   "issuersWithAnyInputChange": 845,
+   "issuersWithValueChange": 616,
    "bySeries": {
     "annual.net_income": {
      "value": 15,
@@ -17131,18 +17120,18 @@
      "issuersValue": 3
     },
     "annual.gross_profit": {
-     "value": 614,
+     "value": 634,
      "label": 838,
      "added": 96,
      "removed": 99,
      "issuersValue": 138
     },
     "annual.revenue": {
-     "value": 2515,
+     "value": 2670,
      "label": 1085,
      "added": 137,
      "removed": 126,
-     "issuersValue": 554
+     "issuersValue": 574
     },
     "annual.stockholders_equity": {
      "value": 7,
@@ -17152,24 +17141,24 @@
      "issuersValue": 5
     },
     "quarterly.net_income": {
-     "value": 4,
-     "label": 1154,
-     "added": 178,
-     "removed": 183,
-     "issuersValue": 3
+     "value": 53,
+     "label": 1162,
+     "added": 51,
+     "removed": 49,
+     "issuersValue": 34
     }
    }
   },
   "companyIntelligence": {
-   "issuersWithAnyInputChange": 3475,
-   "issuersWithValueChange": 338,
+   "issuersWithAnyInputChange": 3461,
+   "issuersWithValueChange": 393,
    "bySeries": {
     "quarterly.revenue": {
-     "value": 1941,
-     "label": 979,
-     "added": 231,
-     "removed": 243,
-     "issuersValue": 310
+     "value": 2099,
+     "label": 992,
+     "added": 38,
+     "removed": 40,
+     "issuersValue": 329
     },
     "quarterly.eps_diluted": {
      "value": 9,
@@ -17179,18 +17168,18 @@
      "issuersValue": 9
     },
     "quarterly.net_income": {
-     "value": 4,
-     "label": 1154,
-     "added": 178,
-     "removed": 183,
-     "issuersValue": 3
+     "value": 53,
+     "label": 1162,
+     "added": 51,
+     "removed": 49,
+     "issuersValue": 34
     },
     "quarterly.gross_profit": {
-     "value": 438,
-     "label": 761,
-     "added": 64,
-     "removed": 76,
-     "issuersValue": 69
+     "value": 462,
+     "label": 762,
+     "added": 20,
+     "removed": 27,
+     "issuersValue": 72
     },
     "quarterly.operating_income": {
      "value": 1,
@@ -17200,18 +17189,18 @@
      "issuersValue": 1
     },
     "quarterly.free_cash_flow": {
-     "value": 2,
-     "label": 925,
-     "added": 206,
-     "removed": 258,
-     "issuersValue": 2
+     "value": 15,
+     "label": 942,
+     "added": 41,
+     "removed": 51,
+     "issuersValue": 12
     },
     "quarterly.operating_cash_flow": {
-     "value": 6,
-     "label": 1140,
-     "added": 139,
-     "removed": 156,
-     "issuersValue": 5
+     "value": 7,
+     "label": 1145,
+     "added": 51,
+     "removed": 64,
+     "issuersValue": 6
     },
     "quarterly.cash_and_equivalents": {
      "value": 8,
@@ -17228,11 +17217,11 @@
      "issuersValue": 6
     },
     "quarterly.capital_expenditures": {
-     "value": 1,
-     "label": 928,
-     "added": 142,
-     "removed": 188,
-     "issuersValue": 1
+     "value": 14,
+     "label": 942,
+     "added": 39,
+     "removed": 49,
+     "issuersValue": 11
     },
     "quarterly.shares_outstanding": {
      "value": 13,
