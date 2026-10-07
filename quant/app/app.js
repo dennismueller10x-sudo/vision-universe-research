@@ -155,34 +155,30 @@
   };
 
   /* ------------------------------------------------------------ Shell
-     Wie auf den Konzepttafeln: Kopfzeile mit Marke und Suche, EINE Leiste
-     mit den fuenf Bereichen - am Handy unten am Rand, am Desktop in der
-     Kopfzeile -, darunter die Seite und der Fuss. */
-  var main, navLinks = [];
-  function dockItem(n) {
-    var a = el("a", { class: "qx-nav-" + n.id, href: n.href, dataset: { nav: n.id } }, [el("span", { class: "qx-nav-icon", "aria-hidden": "true" }, [X.icon(n.id)]), el("span", { text: n.label })]);
-    navLinks.push(a); return a;
-  }
+     Gemeinsame Vision-Universe-Shell (assets/site-navigation.js): Kopf mit
+     Marke, AI Atlas und Farbschema, unten die Produkt-Leiste
+     Quant | Screener | Strategien | Aktien | ☰. Quant baut keine eigene
+     Kopf- oder Bereichsleiste mehr; Quant meldet der Leiste nur, welcher
+     Bereich aktiv ist (Router als Quelle der Wahrheit). Die Suche bleibt
+     Quant-Suche: im Hero, auf "Aktien", mit / und Strg+K. */
+  var main;
   function buildShell() {
     var root = document.getElementById("qx-app");
-    var dock = el("nav", { class: "q-dock v2-dock qx-nav qx-tabbar", "aria-label": "Quant" }, X.NAV.map(dockItem));
-    var bar = el("header", { class: "q-top qx-bar" }, [
-      el("a", { class: "q-brand qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("span", { text: "Vision Universe Quant" }), el("span", { class: "q-beta qx-beta", text: "Beta" })]),
-      dock,
-      el("button", { type: "button", class: "q-search-btn qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" })])
-    ]);
     main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
     var foot = el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       el("p", { text: "Daten heute. Bessere Entscheidungen für morgen." }),
       el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
-      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
+      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
-    root.replaceChildren(bar, main, foot);
+    root.replaceChildren(main, foot);
     document.querySelector(".qx-skip").addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
+  /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
+     sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
+  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: null };
   function markNav(section) {
-    navLinks.forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    if (global.VUNavigation) global.VUNavigation.dock({ active: Object.prototype.hasOwnProperty.call(DOCK, section) ? DOCK[section] : null });
   }
 
   /* ------------------------------------------------------------ Suche */
