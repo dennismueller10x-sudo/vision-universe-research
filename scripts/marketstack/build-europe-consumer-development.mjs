@@ -18,7 +18,7 @@ const decision=(status,causes,evidence=[],window=null,nextStep=null)=>({status,c
 const missing=(cause='PRODUCT_INTEGRATION_MISSING')=>decision('NOT_TESTED',[cause],[],null,'Supply actual function-specific evidence for this listing.');
 const numeric=v=>typeof v==='number'&&Number.isFinite(v);
 // Detailed private audits remain immutable; the registered report projects their counts and refs.
-const certificateSources=new WeakMap();
+const certificateSources=new WeakMap(),certificateCacheAudits=new WeakMap();
 function certificateRef(cert,pointer=''){
  const source=cert&&certificateSources.get(cert);
  return cert?{...(source||{sha256:hash(cert),inline:true,jsonPointer:''}),jsonPointer:(source?.jsonPointer||'')+pointer}:null;
@@ -56,6 +56,7 @@ function readPrivateCertification(directory,listingId){
   const wrapped=value?.schemaVersion==='private-europe-cache-audit-1.0.0';
   certificate=wrapped?value.recentWindow||null:value;
   if(certificate&&typeof certificate==='object')certificateSources.set(certificate,{path,sha256:createHash('sha256').update(bytes).digest('hex'),jsonPointer:wrapped?'/recentWindow':''});
+  if(wrapped&&certificate)certificateCacheAudits.set(certificate,{schemaVersion:value.schemaVersion,listingId:value.listingId,securityId:value.securityId,isin:value.isin,mic:value.mic,asOf:value.asOf,inputSeriesHash:value.inputSeriesHash,identity:value.identity,sourceFields:value.sourceFields,sourceEvidence:value.sourceEvidence});
  }
  return certificate;
 }
@@ -104,12 +105,13 @@ function uiProof(input,id,name){
  if(!Array.isArray(p.listingIds)||!p.listingIds.includes(id)||!Array.isArray(p.products)||!p.products.includes(name)||!arrayRefs(p.evidence).length)return null;
  return {verified:true,evidence:arrayRefs(p.evidence)};
 }
-function verifiedProviderIdentity(row,h,facts,input,statusEvidence){
+function verifiedProviderIdentity(row,h,facts,input,statusEvidence,cert){
  const m=byId(input.providerMetadata,row.listingId),d=m?.data;
  if(!m||!d||m.isin!==row.isin||m.mic!==row.mic||d.listingId&&d.listingId!==row.listingId||d.securityId&&d.securityId!==row.securityId||!arrayRefs(m.sourceEvidence).length||!Number.isFinite(Date.parse(m.checkedAt))||Date.parse(m.checkedAt)>Date.parse(input.now)||Date.parse(input.now)-Date.parse(m.checkedAt)>30*86400000)return false;
  const e=row.providerIdentityEvidence,independent=row.providerIdentityBasis?.startsWith('HISTORICAL_EXACT_ISIN_MIC')&&e?.providerSymbol===row.providerSymbol&&e?.isin===row.isin&&e?.mic===row.mic&&/^[a-f0-9]{64}$/.test(e.sourceHash||'')&&typeof e.sourcePath==='string';
  if(d.providerSymbol!==row.providerSymbol||d.exchange!==row.mic||d.isin!==row.isin&&(!independent||d.isin)||d.currency&&d.currency!==row.tradingCurrency)return false;
- return !!h&&facts.bars>0&&!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&statusEvidence.some(d=>d.isin===row.isin&&d.mic===row.mic&&['READY','PARTIAL'].includes(d.status)&&d.bars>0&&arrayRefs(d.sourceEvidence).length>0);
+ const audit=certificateCacheAudits.get(cert),cached=certified(row,h,cert,input.asOf)&&audit?.listingId===row.listingId&&audit.securityId===row.securityId&&audit.isin===row.isin&&audit.mic===row.mic&&audit.asOf===input.asOf&&audit.inputSeriesHash===facts.inputSeriesHash&&audit.identity?.status==='READY'&&refs(audit.identity.evidence)&&audit.sourceFields?.priceStatus==='READY'&&audit.sourceFields.priceMatches===facts.bars&&audit.sourceFields.bars===facts.bars&&refs(audit.sourceEvidence)&&['equity',...(row.shareClass==='PREFERRED_SHARE'?['preferred_equity']:[])].includes(d.assetType);
+ return !!h&&facts.bars>0&&!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&(cached||statusEvidence.some(d=>d.isin===row.isin&&d.mic===row.mic&&['READY','PARTIAL'].includes(d.status)&&d.bars>0&&arrayRefs(d.sourceEvidence).length>0));
 }
 function provenReferenceCountry(row){
  return provenIssuerCountry(row);
@@ -206,8 +208,9 @@ export function aggregateDevelopment(input){
   const logo=logoRecord(row,input);logos.push(logo);functions.logo=decision(logo.verified?'READY':logo.status==='EXISTING_FALLBACK'?'PARTIAL':'BLOCKED',logo.verified?[]:['PRODUCT_INTEGRATION_MISSING'],logo.evidence,null,logo.reason);
   const statusEvidence=(input.statuses||[]).flatMap(s=>s.decisions||s.listings||[]).filter(d=>d.listingId===row.listingId);
   const {barsForEvaluator,...storedFacts}=facts;
-  const providerIdentityMatched=verifiedProviderIdentity(row,h,facts,input,statusEvidence);
-  ingestion.push({providerIdentityMatched,listingId:row.listingId,isin:row.isin,mic:row.mic,name:row.name,history:storedFacts,latest:{price:facts.latestClose??null,date:facts.last,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,source:h?.source||null,apiVersion:h?.apiVersion||null,retrievedAt:h?.retrievedAt||null,dataKind:'EOD'},freshness:fresh,sourceEvidence:sourceRefs,statusEvidence,certificationInputMatched:certMatches,quality:chartQuality});
+  const providerIdentityMatched=verifiedProviderIdentity(row,h,facts,input,statusEvidence,cert);
+  const currentAttempts=statusEvidence.filter(d=>d.asOf===input.asOf&&d.isin===row.isin&&d.mic===row.mic&&Number.isFinite(Date.parse(d.testedAt))&&Date.parse(d.testedAt)<=Date.parse(input.now)).sort((a,b)=>Date.parse(a.testedAt)-Date.parse(b.testedAt)),refreshAttempt=currentAttempts.at(-1)||statusEvidence.at(-1)||null,currentIdentityAttempt=currentAttempts.at(-1),providerIdentityBasis=providerIdentityMatched?(currentIdentityAttempt&&['READY','PARTIAL'].includes(currentIdentityAttempt.status)&&currentIdentityAttempt.bars>0&&refs(currentIdentityAttempt.sourceEvidence)?'CURRENT_REFRESH_RESPONSE':certificateCacheAudits.has(cert)?'EXACT_CACHED_SOURCE_RECONCILIATION':'EXISTING_PROVIDER_IDENTITY_EVIDENCE'):null;
+  ingestion.push({providerIdentityMatched,providerIdentityBasis,refreshAttempt:refreshAttempt?{status:refreshAttempt.status,cause:refreshAttempt.cause||null,phase:refreshAttempt.phase||null,asOf:refreshAttempt.asOf||null,testedAt:refreshAttempt.testedAt||null,sourceEvidence:arrayRefs(refreshAttempt.sourceEvidence)}:null,listingId:row.listingId,isin:row.isin,mic:row.mic,name:row.name,history:storedFacts,latest:{price:facts.latestClose??null,date:facts.last,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,source:h?.source||null,apiVersion:h?.apiVersion||null,retrievedAt:h?.retrievedAt||null,dataKind:'EOD'},freshness:fresh,sourceEvidence:sourceRefs,statusEvidence,certificationInputMatched:certMatches,quality:chartQuality});
   readiness.push({listingId:row.listingId,securityId:row.securityId,companyId:row.companyId||null,referencedIssuerId:row.referencedIssuerId||null,isin:row.isin,mic:row.mic,asOf:input.asOf,functions,technicalFields:fields,inputSeriesHash:facts.inputSeriesHash});
  }
  const byReady=new Map(readiness.map(r=>[r.listingId,r])),byIngestion=new Map(ingestion.map(r=>[r.listingId,r])),byLogo=new Map(logos.map(r=>[r.listingId,r]));

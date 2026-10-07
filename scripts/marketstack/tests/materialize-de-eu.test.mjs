@@ -121,3 +121,16 @@ test('stale extra files force a clean generated tree; symlinks and hardlinks nev
  linkSync(external,join(target,'unowned.json'));assert.throws(()=>materialize(input),/LINK_REJECTED/);assert.equal(lstatSync(external).mode&0o777,0o644);rmSync(join(target,'unowned.json'));assert.equal(treeSnapshot(out)['protected.json'].mtime,original['protected.json'].mtime);
  }finally{rmSync(out,{recursive:true,force:true});}
 });
+
+test('optional consumer compaction preserves prices, readiness gates and full private input hashes',()=>{
+ const out=mkdtempSync(join(tmpdir(),'vu-local-compact-'));try{
+  const r=directory([row],'2026-10-06').listings[0],bars=h.points.map(p=>({date:p[0],close:p[1]})),hash=createHash('sha256').update(JSON.stringify(bars)).digest('hex');
+  const evidence=Array.from({length:80},(_,i)=>'private-long-original-source-'+i+'x'.repeat(200)),proof={status:'READY',state:'CHART_READY',asOf:'2026-10-02',dataAsOf:'2026-10-06',inputSeriesHash:hash,window:{start:h.points[0][0],end:'2026-10-02'},evidence};
+  const input={rows:[{...row,aliases:['SAP local'],sourceEvidence:evidence,referenceEvidence:[{privateGraph:'x'.repeat(50000)}]}],histories:{[r.listingId]:{...h,bars}},asOf:'2026-10-06',expectedSessions:{XETR:'2026-10-02'},readiness:{[r.listingId]:{chart:proof}},out};
+  const before=JSON.stringify(input);materialize({...input,compactConsumerProjection:true});assert.equal(JSON.stringify(input),before);
+  const dir=JSON.parse(readFileSync(join(out,'core/data/de-eu/listings.json'))),series=JSON.parse(readFileSync(join(out,'core/data/de-eu/series',r.listingId+'.json'))),scr=JSON.parse(readFileSync(join(out,'core/data/de-eu/screener.json')));
+  const compact=dir.listings[0];assert.equal(compact.sourceEvidence,undefined);assert.equal(compact.referenceEvidence,undefined);assert.deepEqual(compact.aliases,['SAP local']);assert.match(compact.privateMetadataHash,/^[a-f0-9]{64}$/);
+  assert.equal(compact.readiness.chart.status,'READY');assert.equal(compact.readiness.chart.evidence.length,1);assert.equal(compact.readiness.chart.evidenceCount,80);assert.equal(compact.readiness.chart.fullProofHash,createHash('sha256').update(JSON.stringify(proof)).digest('hex'));assert.deepEqual(series.readiness,compact.readiness);assert.deepEqual(scr.listings[0].price.readiness,compact.readiness);assert.deepEqual(series.points,h.points);assert.equal(materialize({...input,compactConsumerProjection:true}).changed,false);
+  proof.window.end='2026-10-07';assert.throws(()=>materialize({...input,compactConsumerProjection:true}),/EVIDENCE_MISMATCH/);
+ }finally{rmSync(out,{recursive:true,force:true});}
+});

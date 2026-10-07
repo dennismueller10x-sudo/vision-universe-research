@@ -103,7 +103,12 @@ export function certifiedReadiness(proofs,series,inputSeriesHash){
  }
  return result;
 }
-export function materialize({rows,histories={},historiesDir=null,asOf,referenceAsOf=asOf,expectedSessions={},lastProvenCompletedSessions={},technicalFields={},readiness={},out,disabled=false}){
+// Validate full private input first; compact only the consumer projection.
+const CONSUMER_FIELDS=['name','companyName','isin','mic','listingId','securityId','companyId','referencedIssuerId','companyAssociationStatus','companyCountry','listingCountry','ticker','localTicker','aliases','assetType','shareClass','tradingCurrency','quoteUnit','indexMemberships','mappingStatus','mappingSource','providerSymbol','providerStatus','providerVerified','currentProviderVerified','primaryListingVerified','alternativeListing','listingPreference','tier','logo','sector','industry','description','region','readiness'];
+const proofHash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+function compactProof(value){if(!value?.evidence?.length)return value;return {...value,evidence:['private-proof:sha256:'+proofHash(value)],fullProofHash:proofHash(value),evidenceCount:value.evidence.length,evidenceHash:proofHash(value.evidence)};}
+function compactConsumerRow(row){const out=Object.fromEntries(CONSUMER_FIELDS.filter(k=>row[k]!==undefined).map(k=>[k,row[k]]));return {...out,privateMetadataHash:proofHash(row),readiness:Object.fromEntries(Object.entries(row.readiness).map(([name,value])=>[name,compactProof(value)]))};}
+export function materialize({rows,histories={},historiesDir=null,asOf,referenceAsOf=asOf,expectedSessions={},lastProvenCompletedSessions={},technicalFields={},readiness={},compactConsumerProjection=false,out,disabled=false}){
  out=resolve(out);if(!disabled)assertPrivateOutput(out);else rejectSymlinkAncestors(out);
  if(historiesDir){if(Object.keys(histories).length)throw Error('COMPETING_HISTORY_INPUTS');assertPrivateOutput(historiesDir,{allowCache:true});rejectSymlinkAncestors(historiesDir);}
  const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={},historyHashes={};
@@ -139,6 +144,7 @@ export function materialize({rows,histories={},historiesDir=null,asOf,referenceA
  const stageParent=lstatSync(dirname(out)).dev===lstatSync(dirname(target)).dev?dirname(out):dirname(target);
  const stage=mkdtempSync(join(stageParent,'.de-eu-stage-'));
  const write=(p,v)=>{mkdirSync(dirname(p),{recursive:true,mode:disabled?0o755:0o700});writeFileSync(p,JSON.stringify(v)+'\n',{mode:disabled?0o644:0o600});};
+ if(compactConsumerProjection){d.listings=d.listings.map(compactConsumerRow);for(const row of d.listings){const s=series[row.listingId];if(s)s.readiness=row.readiness;}}
  const result=changed=>({listings:d.listings.length,series:Object.keys(series).length,privateDevelopment:true,publicDisplay:false,changed});
  try{
   write(join(stage,'listings.json'),d);for(const [id,s]of Object.entries(series))write(join(stage,'series',id+'.json'),s);

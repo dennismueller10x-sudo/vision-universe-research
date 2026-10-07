@@ -20,6 +20,8 @@ Canonical readiness is bound to listing, exact normalized-bars hash, observation
 
 Technical fields require actual existing-engine values, field units, matching dates/windows and verified price/volume bases. Generic indicator research is not a SuperTrader strategy run or a backtest. Relative strength requires an existing verified European benchmark; no US or ETF substitute is fetched. Missing fundamentals, unverified CIK/ADR bridges, shares and monetary bases cannot create Quant scores or alter US ranking populations.
 
+The optional compact consumer projection validates complete private rows and function proofs before retaining required product fields and full metadata/proof/evidence hashes. Original reference graphs, immutable source files and complete certificates stay private. Directory, series, cards and Screener share identical compact readiness; compaction changes no dates, prices, windows or eligibility. The unchanged 180,000-byte / twelve-request Discover gate covers only the documented view JS/CSS; separate opt-in EU JSON loading, decode time and total transferred resources are measured in private browser evidence.
+
 The central reviewed logo producer inherits current main removal rules and accepts only exact issuer/domain/asset evidence. Fallbacks remain honest. The private completion producer is registered under `privateGenerators` in `core/registry/domains.json`; its fourteen status artifacts, CSV, manifest and full evidence remain outside every repository/public release.
 
 Public source retains an empty DISABLED Europe directory. Licensed series, raw responses, account evidence and private browser screenshots must not be uploaded to Pages/Vercel or plaintext Actions artifacts. The existing browser password screen does not protect publicly retrievable data files. Public raw/display rights remain unresolved.
@@ -33,7 +35,7 @@ VU_DE_EU_REFERENCE_SOURCE=/workspace/scratch/europe-consumer-reference/hamborner
   node --test core/tests/*.test.mjs scripts/marketstack/tests/*.test.mjs quant/tests/marketstack-*.test.mjs
 node scripts/vu2/build-release.mjs --output=/workspace/scratch/europe-817-completion-preview-release
 node scripts/marketstack/materialize-de-eu.mjs \
-  --input=/workspace/scratch/europe-817-completion-private/final-materializer-input.json \
+  --input=/workspace/scratch/europe-817-completion-private/full846-materializer-input.json \
   --out=/workspace/scratch/europe-817-completion-preview-release --as-of=2026-10-07
 python3 -m http.server 8783 --bind 127.0.0.1 \
   --directory /workspace/scratch/europe-817-completion-preview-release
@@ -53,4 +55,4 @@ node scripts/marketstack/materialize-de-eu.mjs \
   --as-of=2026-10-07 --disabled
 ```
 
-Unrelated gate failures require a new fixed-input reproduction on current main. The prior Morning currency failure is not carried forward. Actual current-main accessibility comparison retains twelve identical experimental label-content-name failures; no isolation, budget, rights or accessibility gate is waived. Final private checkpoint supplies actual results, credits, missing names, apply steps and tested SHAs.
+Unrelated gate failures require a new fixed-input reproduction on current main. The prior Morning currency failure is not carried forward. The current-main/full-Quant comparison reproduces four identical existing JPM/total-return failures on fixed inputs; targeted Core/Europe tests do not replace that failing full-suite result. Actual current-main accessibility comparison retains twelve identical experimental label-content-name failures; no isolation, budget, rights or accessibility gate is waived. Final private checkpoint supplies actual results, credits, missing names, apply steps and tested SHAs.
