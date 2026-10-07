@@ -7,7 +7,7 @@
 // zurueck), kein Menue-Knopf doppelt im Kopf, kein horizontaler Ueberlauf,
 // das Seitenende liegt ueber der Leiste, Browser-Zurueck/Vor haelt den Zustand.
 //
-// Aufruf:  node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 [--out=/tmp/shell-qa] [--playwright=<pfad>]
+// Aufruf:  node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 [--out=/tmp/shell-qa] [--viewports=390x844,1440x900] [--playwright=<pfad>]
 // Schreibt nur nach --out (Screenshots, results.json), nie in das Repository.
 import { createRequire } from 'node:module';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -33,7 +33,7 @@ const ROUTES = [
   ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien']
 ];
-const VIEWPORTS = [['390', 390, 844], ['430', 430, 932], ['768', 768, 1024], ['1024', 1024, 768], ['1440', 1440, 900]];
+const VIEWPORTS = (arg('viewports', '390x844,430x932,768x1024,1024x768,1440x900')).split(',').map((v) => { const [w, h] = v.split('x').map(Number); return [String(w), w, h]; });
 const findings = [], checks = [];
 const fail = (where, msg) => { findings.push({ where, msg }); console.log('FAIL ' + where + ': ' + msg); };
 
@@ -82,7 +82,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
       }
       // Seitenende: das letzte sichtbare Element liegt ueber der Leiste.
       const end = await page.evaluate(async () => {
-        scrollTo(0, document.documentElement.scrollHeight); await new Promise((r) => setTimeout(r, 300));
+        // Bis zum Ende scrollen, bis nachgeladene Abschnitte die Hoehe nicht mehr aendern.
+        for (let i = 0, h = -1; i < 8 && h !== document.documentElement.scrollHeight; i++) { h = document.documentElement.scrollHeight; scrollTo(0, h); await new Promise((r) => setTimeout(r, 700)); }
         const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
         // Aeussere Bloecke des Dokuments (Inhalt in eigenen Scroll-Containern zaehlt nicht).
         const blocks = [...document.body.children].filter((n) => n.id !== 'vu-dock' && n.getClientRects().length && !['fixed', 'sticky'].includes(getComputedStyle(n).position) && !['SCRIPT', 'STYLE', 'DIALOG', 'VU-NAVIGATION'].includes(n.tagName));
