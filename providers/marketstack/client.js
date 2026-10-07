@@ -36,7 +36,9 @@ function createMarketstackClient(options = {}) {
   const cache = new Map(), inflight = new Map(), seenSymbols=new Set();
   let queue = Promise.resolve(), lastAttempt = null, lastError = null, attemptContext;
   const endpointAttempts=new Map();
-  const endpointIntervals={ '/companyratings':60000,'/commodities':60000,'/commoditieshistory':60000,...(options.endpointIntervals||{}) };
+  // Authenticated /stockprice probes were throttled after one call. Use a
+  // conservative minute spacing; this is operational evidence, not entitlement.
+  const endpointIntervals={ '/stockprice':61000,'/companyratings':60000,'/commodities':60000,'/commoditieshistory':60000,...(options.endpointIntervals||{}) };
   const sanitize = value => {
     if (typeof value === 'string') return value.split(String(apiKey || '\u0000')).join('[REDACTED]').replace(/access_key(?:=|%3D)[^&\s"<>]+/gi,'access_key=[REDACTED]');
     if (Array.isArray(value)) return value.map(sanitize);
@@ -89,7 +91,7 @@ function createMarketstackClient(options = {}) {
         if (body && body.error) {
           const numericTypes={101:'invalid_access_key',102:'inactive_user',105:'function_access_restricted',106:'rate_limit_reached',104:'usage_limit_reached',0:'internal_error'};
           const code = String(body.error.type || numericTypes[body.error.code] || body.error.code || 'providerError');
-          const reason = ({invalid_access_key:'authError',inactive_user:'authError',function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',usage_limit_reached:'quotaExceeded',daily_limit_reached:'quotaExceeded',fair_use_limit_reached:'quotaExceeded',fairuse_limit_reached:'quotaExceeded',monthly_limit_reached:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable',not_found_error:'dataUnavailable','404_not_found':'dataUnavailable',internal_error:'internalError',maintenance:'internalError'})[code] || 'providerError';
+          const reason = ({invalid_access_key:'authError',inactive_user:'authError',function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',usage_limit_reached:'quotaExceeded',daily_limit_reached:'quotaExceeded',fair_use_limit_reached:'quotaExceeded',fairuse_limit_reached:'quotaExceeded',monthly_limit_reached:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable',no_ticker_or_exchange_found:'dataUnavailable',not_found_error:'dataUnavailable','404_not_found':'dataUnavailable',internal_error:'internalError',maintenance:'internalError'})[code] || 'providerError';
           ctx.failure = {...error(reason,response.status,'Marketstack error: ' + code),providerErrorType:sanitize(code),providerErrorCode:sanitize(body.error.code??null)};
           ctx.providerCode = sanitize(code);
         }

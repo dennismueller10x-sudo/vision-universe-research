@@ -28,13 +28,16 @@ export async function runAudit({plan,out,maxCredits=TARGET_CREDITS,apiKey=proces
   out=privateOutput(out);
   if(!apiKey)throw Error('MARKETSTACK_API_KEY_NOT_CONFIGURED');
   if(!Array.isArray(plan?.cases)||plan.cases.length<30||plan.cases.length>50)throw Error('REPRESENTATIVE_SET_REQUIRED_30_TO_50');
+  const focused=plan.mode==='FOCUSED_VERIFICATION';
+  const allowedMethods=new Set(['searchTicker','listExchangeTickers','getLatestEOD','getHistoricalEOD','getRealtimePrice','getIntraday','getSplits','getDividends','getETFHoldings','getTicker','getTickerInfo']);
+  if(plan.mode&& !focused||focused&&(!Array.isArray(plan.operations)||plan.operations.length<1||plan.operations.length>150||plan.operations.some(o=>!o.case||!o.label||o.method&&!allowedMethods.has(o.method)||!o.method&&!o.endpoint)))throw Error('INVALID_FOCUSED_PLAN');
   mkdirSync(out,{recursive:true,mode:0o700});
   const lock=join(out,'.running');mkdirSync(lock,{mode:0o700});
   const rawDir=join(out,'raw-provider'),normalizedDir=join(out,'normalized-observations');
   mkdirSync(rawDir,{mode:0o700});mkdirSync(normalizedDir,{mode:0o700});
   const budget=createRunBudget(join(out,'credits.json'),maxCredits),responses=[],results=[];
   let context=null,sequence=0,terminalReason=null;
-  const clientOptions={apiKey,fetchImpl,sharedBudget:budget,maxCredits,maxRequests:600,maxRetries:0,cacheTtlMs:0,minIntervalMs:fetchImpl?0:250,
+  const clientOptions={apiKey,fetchImpl,sharedBudget:budget,maxCredits,maxRequests:600,maxRetries:0,cacheTtlMs:0,minIntervalMs:fetchImpl?0:250,endpointIntervals:fetchImpl?{'/stockprice':0}:undefined,
     onResponse:async r=>{const id=String(++sequence).padStart(4,'0'),raw=r.rawText;
       writeFileSync(join(rawDir,id+'.json'),raw,{mode:0o600});
       const meta={...r,rawText:undefined,body:undefined,id,sha256:hash(raw),testCase:context};
@@ -50,7 +53,8 @@ export async function runAudit({plan,out,maxCredits=TARGET_CREDITS,apiKey=proces
     writeFileSync(join(normalizedDir,String(results.length).padStart(4,'0')+'.json'),JSON.stringify(entry,null,2)+'\n',{mode:0o600});return result;
   }
   try {
-    for(const c of plan.cases) {
+    if(focused)for(const o of plan.operations){context=o.case;await measure(o.label,()=>o.method?api[o.method](...(o.args||[])):request(o.endpoint,o.params||{}));}
+    for(const c of focused?[]:plan.cases) {
       context=c.company;
       if(terminalReason||budget.status().estimatedCredits>=maxCredits)break;
       await measure('company_search',()=>api.searchTicker(c.company,{maxPages:3,limit:1000}));
@@ -83,7 +87,7 @@ export async function runAudit({plan,out,maxCredits=TARGET_CREDITS,apiKey=proces
       }
     }
     context='PROFESSIONAL_REFERENCE_ENDPOINTS';
-    for(const [endpoint,params] of [['/exchanges',{limit:1}],['/currencies',{limit:1}],['/timezones',{limit:1}],['/tickerinfo',{ticker:'AAPL'}],['/indexlist',{limit:1}],['/indexinfo',{index:'us500'}],['/bondlist',{limit:1}],['/bond',{country:'germany'}],['/commodities',{commodity_name:'gold'}],['/commoditieshistory',{commodity_name:'gold',date_from:plan.recentFrom,date_to:plan.asOf,frequency:'daily'}]])
+    for(const [endpoint,params] of focused?[]:[['/exchanges',{limit:1}],['/currencies',{limit:1}],['/timezones',{limit:1}],['/tickerinfo',{ticker:'AAPL'}],['/indexlist',{limit:1}],['/indexinfo',{index:'us500'}],['/bondlist',{limit:1}],['/bond',{country:'germany'}],['/commodities',{commodity_name:'gold'}],['/commoditieshistory',{commodity_name:'gold',date_from:plan.recentFrom,date_to:plan.asOf,frequency:'daily'}]])
       await measure(endpoint,()=>request(endpoint,params));
     const summary={asOf:plan.asOf,startedPlan:plan,accountPlan:'USER_STATED_PROFESSIONAL_ACCOUNT_NAME_NOT_VERIFIED_BY_API',
       results,responses,terminalReason,budget:budget.status(),transportStats:client.stats(),capabilityFlags:api.capabilities,

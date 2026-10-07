@@ -5,7 +5,11 @@ const {createMarketstackClient}=require('./client.js');
 const clone=x=>x===undefined?undefined:structuredClone(x);
 const numeric=x=>x===null||x===undefined||typeof x==='boolean'||String(x).trim()===''?null:Number.isFinite(Number(x))?Number(x):null;
 const symbolOf=r=>r.symbol||r.ticker||null;
-const micOf=r=>r.exchange_code||r.exchange||r.stock_exchange?.mic||r.stock_exchange?.exchange_mic||null;
+// exchange_code is often a descriptive label (NASDAQ / NYSE ARCA), not a MIC.
+const micOf=r=>{
+  const mics=[r.exchange,r.stock_exchange?.mic,r.stock_exchange?.exchange_mic,r.exchange_code].filter(x=>typeof x==='string'&&/^[A-Z0-9]{4}$/.test(x));
+  const unique=[...new Set(mics)];return unique.length>1?'CONFLICTING_PROVIDER_MIC':unique[0]||null;
+};
 const failure=reason=>({ok:false,reason,data:null,complete:false});
 const capabilityNames=['stockDirectory','globalEOD','history','adjustedOHLC','adjustedVolume','splits','dividends','realtimeUS','realtimeEurope','intradayUS','intradayEurope','ETFHoldingsUS','ETFHoldingsUCITS','ETFHoldingsPagination','ETFMetadata'];
 const states=new Set(['SUPPORTED','PARTIAL','UNSUPPORTED','NOT_ENTITLED','UNKNOWN']);
@@ -19,8 +23,10 @@ function capabilityFlags(evidence={}) {
 }
 function normalizeObservation(row,{kind,retrievedAt}={}) {
   // Retain every provider field separately, including unrecognized future fields.
-  return {raw:clone(row),normalized:{providerTicker:symbolOf(row),providerExchange:micOf(row),
+  return {raw:clone(row),normalized:{providerTicker:symbolOf(row),providerExchange:micOf(row),providerExchangeCode:row.exchange_code??null,
     name:row.name??null,isin:row.isin??null,currency:row.price_currency??row.currency??null,
+    sector:row.sector??null,industry:row.industry??null,cik:row.cik??null,cusip:row.cusip??null,lei:row.lei??null,
+    countryCode:row.country_code??row.stock_exchange?.country_code??null,
     country:row.country??row.stock_exchange?.country??null,assetType:row.asset_type??row.item_type??null,
     open:numeric(row.open),high:numeric(row.high),low:numeric(row.low),close:numeric(row.close),volume:numeric(row.volume),
     adjustedOpen:numeric(row.adj_open),adjustedHigh:numeric(row.adj_high),adjustedLow:numeric(row.adj_low),adjustedClose:numeric(row.adj_close),adjustedVolume:numeric(row.adj_volume),
@@ -75,7 +81,8 @@ function createAuditAdapter(options={}) {
         {...pageOptions(o),followUnverifiedPages:o.probePagination===true,extract:holdingsOf});
       const rows=Array.isArray(res.data)?res.data:[];
       const holdings=rows.map(r=>{const s=r.investment_security||r;return {raw:clone(r),name:s.name??null,ticker:s.ticker??s.symbol??null,isin:s.isin??null,lei:s.lei??null,cusip:s.cusip??null,
-        weightPercent:numeric(s.percent_value),weightRaw:s.percent_value??null,valueUSD:numeric(s.value_usd),country:s.invested_country??null,sector:s.sector??null};});
+        weightPercent:numeric(s.percent_value),weightRaw:s.percent_value??null,valueUSD:numeric(s.value_usd),country:s.invested_country??null,sector:s.sector??null,
+        title:s.title??null,units:s.units??null,balance:numeric(s.balance),currency:s.currency??null,assetCategory:s.asset_category??null,issuerCategory:s.issuer_category??null,payoffProfile:s.payoff_profile??null};});
       const raw=res.rawPages||[],attributes=raw.map(b=>clone(b.output?.attributes??null));
       const reports=new Set(attributes.map(a=>JSON.stringify(a)));
       const validDate=x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString().slice(0,10)===x;

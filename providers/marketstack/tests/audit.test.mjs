@@ -6,7 +6,7 @@ const {createMarketstackClient}=require('../client.js');
 const {createAuditAdapter,capabilityFlags,normalizeObservation}=require('../audit-adapter.js');
 function fake(pages,overrides={}) {
   const calls=[],persisted=[];
-  const client=createMarketstackClient({apiKey:'synthetic-secret',maxRequests:100,maxCredits:1000,maxRetries:0,minIntervalMs:0,allowUncoordinatedTestRequests:true,
+  const client=createMarketstackClient({apiKey:'synthetic-secret',maxRequests:100,maxCredits:1000,maxRetries:0,minIntervalMs:0,endpointIntervals:{'/stockprice':0},allowUncoordinatedTestRequests:true,
     onResponse:r=>persisted.push(r),fetchImpl:async url=>{const u=new URL(url);calls.push(u);const body=typeof pages==='function'?pages(u,calls.length-1):pages[calls.length-1];return {status:200,text:async()=>JSON.stringify(body),headers:new Headers()};},...overrides});
   return {client,api:createAuditAdapter({client}),calls,persisted};
 }
@@ -97,4 +97,15 @@ test('holdings cannot certify wrong fund, missing report, empty or overlapping r
 });
 test('zero TTL forces raw refresh even if generic client already has a warm quote cache',async()=>{
  const f=fake([paged([row],0,1,1000),paged([{...row,date:'2026-10-07'}],0,1,1000)],{cacheTtlMs:300000});await f.client.request('/eod/latest',{symbols:'SAP.DE',exchange:'XETR',limit:1000,offset:0});const r=await f.api.getLatestEOD(listing);assert.equal(f.calls.length,2);assert.equal(r.data[0].normalized.tradingDate,'2026-10-07');
+});
+test('authenticated US EOD venue labels preserve the actual MIC and descriptive code',async()=>{
+ for(const [ticker,mic,label] of [['AAPL','XNAS','NASDAQ'],['SPY','ARCX','NYSE ARCA']]){
+  const raw={...row,symbol:ticker,exchange:mic,exchange_code:label};const f=fake([paged([raw],0,1,1000)]);
+  const r=await f.api.getLatestEOD({providerTicker:ticker,mic});assert.equal(r.ok,true);assert.equal(r.data[0].normalized.providerExchange,mic);assert.equal(r.data[0].normalized.providerExchangeCode,label);assert.deepEqual(r.data[0].raw,raw);
+ }
+ const f=fake([paged([{...row,exchange_code:'XNYS'}],0,1,1000)]);assert.equal((await f.api.getLatestEOD(listing)).reason,'identityMismatch');
+});
+test('stockprice throttling spaces actual attempts independently without retry inflation',async()=>{
+ let clock=0;const waits=[];const f=fake([{error:{code:'no_ticker_or_exchange_found'}},{data:[]}],{now:()=>clock,sleep:async ms=>{waits.push(ms);clock+=ms;},endpointIntervals:{'/stockprice':61000}});
+ assert.equal((await f.client.request('/stockprice',{ticker:'SAP.DE'})).reason,'dataUnavailable');await f.client.request('/stockprice',{ticker:'SAP'});assert.deepEqual(waits,[61000]);assert.equal(f.client.stats().requestsAttempted,2);assert.equal(f.client.stats().retries,0);
 });

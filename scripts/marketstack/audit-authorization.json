@@ -5,6 +5,15 @@
   "hardCap": 3500,
   "authorization": "User explicitly requested authenticated Actions audit; no production writes or merge",
   "allocations": [
-    { "id": "initial-20261007", "cap": 1800, "plan": "docs/marketstack-audit/representative-plan.json" }
+    {
+      "id": "initial-20261007",
+      "cap": 1800,
+      "plan": "docs/marketstack-audit/representative-plan.json"
+    },
+    {
+      "id": "verify-20261007",
+      "cap": 1200,
+      "plan": "docs/marketstack-audit/followup-plan.json"
+    }
   ]
 }
