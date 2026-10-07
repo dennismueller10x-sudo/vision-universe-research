@@ -18,13 +18,30 @@ try{
  async function reviewIssuer([cid,inventory]){for(const ticker of inventory.tickers){
   const combinations=version==='after'?['dark','light'].flatMap(theme=>[390,430,768,1440].map(width=>({theme,width}))):examples.includes(ticker)?[390,430,1440].map(width=>({theme:'dark',width})):[{theme:'dark',width:390}];
   for(const {theme,width} of combinations){
-   const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],payloads=[];
+   const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],responses=[],requestFailures=[];
+   // Observe the exact promise returned to the real chapter. Network events alone
+   // can miss a cached response or an aborted earlier mount during stock hydration.
+   await page.addInitScript(()=>{
+    window.__ciReviewLoads=[];let current;
+    Object.defineProperty(window,'VUCompanyIntelligence',{configurable:true,get:()=>current,set:api=>{
+     const original=api.load;api.load=function(...args){const result=original.apply(this,args);result.then(payload=>window.__ciReviewLoads.push({ticker:args[0],payload}),error=>window.__ciReviewLoads.push({ticker:args[0],error:error.name}));return result;};current=api;
+    }});
+   });
    if(process.env.RESEARCH_ACCESS_PASSWORD){const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});}
    await page.addInitScript(theme=>localStorage.setItem('vu-discover-theme-v1',theme),theme);
    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
-   page.on('response',r=>{if(r.status()===200&&r.url().includes(cid+'.json'))payloads.push(r.json())});
+   page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({path:new URL(r.url()).pathname,status:r.status()});});
+   page.on('requestfailed',r=>{if(r.url().includes('/company-intelligence/data/'))requestFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText})});
+   try{
    await page.goto(base+'/discover/'+(live?'':'?company-intelligence=preview')+'#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence[aria-busy=false] h2');
-   const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();const payload=await payloads[0];assert(payload&&payload.companyId===cid,ticker+' identity');
+   const chapter=page.locator('.ci-company-intelligence');
+   if(version==='after'){
+    const initial=await chapter.getAttribute('data-company-id');if(initial)assert.equal(initial,cid,ticker+' initially rendered issuer');
+    await page.waitForFunction(cid=>{const e=document.querySelector('.ci-company-intelligence');return e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.getAttribute('aria-busy')==='false';},cid,{timeout:15000});
+   }
+   const text=await chapter.innerText();const actualLoads=await page.evaluate(()=>window.__ciReviewLoads);
+   const payload=actualLoads.filter(r=>String(r.ticker).trim().toUpperCase()===ticker&&r.payload?.state==='AVAILABLE').at(-1)?.payload;assert(payload&&payload.companyId===cid,ticker+' identity');
+   if(version==='after'){assert.equal(await chapter.getAttribute('data-company-id'),payload.companyId);assert.equal(await chapter.getAttribute('data-generated-at'),payload.generatedAt);}
    assert(!text.includes('derzeit nicht verfügbar'),ticker+' unavailable');assert.deepEqual(errors,[]);assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+' page overflow');assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false,ticker+' chapter overflow');
    assert.equal(await page.locator('vu-navigation').count(),1);assert(requests.some(u=>u.includes(candidate.generation)),ticker+' generation');
@@ -46,8 +63,12 @@ try{
     await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
-   cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors});
-   if(width===390&&theme==='dark')await writeFile(`${out}/${ticker}-visible.txt`,text);await page.close();
+   cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors,consumerResponses:responses,requestFailures,observedLoadStates:actualLoads.map(r=>({ticker:r.ticker,state:r.payload?.state,reason:r.payload?.reason,companyId:r.payload?.companyId}))});
+   if(width===390&&theme==='dark')await writeFile(`${out}/${ticker}-visible.txt`,text);
+   }catch(error){
+    const diagnostic={status:'FAIL',ticker,companyId:cid,width,theme,generation:candidate.generation,error:{name:error.name,message:error.message},consumerResponses:responses,requestFailures,loads:await page.evaluate(()=>window.__ciReviewLoads?.map(r=>({ticker:r.ticker,state:r.payload?.state,reason:r.payload?.reason,companyId:r.payload?.companyId}))).catch(()=>null),visibleText:await page.locator('.ci-company-intelligence').innerText().catch(()=>null),completedCases:cases.length};
+    await writeFile(`${out}/failure-${ticker}-${width}-${theme}.json`,JSON.stringify(diagnostic,null,2)+'\n');await page.screenshot({path:`${out}/failure-${ticker}-${width}-${theme}.png`}).catch(()=>{});throw error;
+   }finally{await page.close();}
   }
   console.log(ticker+' '+version+' PASS');
  }

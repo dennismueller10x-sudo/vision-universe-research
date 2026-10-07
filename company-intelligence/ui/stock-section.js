@@ -87,8 +87,10 @@ function changeLabel(c){
  return c.current>c.previous?'Gestiegen':c.current<c.previous?'Gesunken':'Unverändert';
 }
 function render(host,payload){
+ host.dataset.state=payload.state;delete host.dataset.companyId;delete host.dataset.generatedAt;
  host.dataset.experience='v2';host.replaceChildren(node('h2','Auf einen Blick'));
  if(payload.state!=='AVAILABLE'){host.append(node('p','Unternehmensmeldungen sind derzeit nicht verfügbar. Bitte später erneut versuchen.','ci-meta'));return;}
+ host.dataset.companyId=payload.companyId;host.dataset.generatedAt=payload.generatedAt;
  const now=Date.now(),today=new Date(now).toISOString().slice(0,10),vm=viewModel(payload,now),profile=payload.companyProfile,f=payload.latestFinancials;
  const status=node('div',undefined,'ci-status');status.append(node('span',(payload.preview?'Vorschau · ':'')+'Datenstand '+day(payload.generatedAt),'ci-meta'));host.append(status);
  if(payload.previewBasis==='CATALOGUE_AND_EXISTING_FACTS')host.append(node('p','Vorschau mit geprüften Beschreibungen und vorhandenen Geschäftszahlen.','ci-warning'));
