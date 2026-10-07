@@ -1,8 +1,8 @@
 {
   "schema": "vu-fundamental-data-freeze-1.0.0",
   "status": "FROZEN",
-  "frozenAt": "2026-10-07T19:29:28.436Z",
-  "commit": "579f99d8027625ff8ea1918af2c8e6c380aaaad8",
+  "frozenAt": "2026-10-07T19:49:39.631Z",
+  "commit": "d26e81fd11d9d092f677b1df9adaab31af158100",
   "dataVersion": {
     "normalizationLogic": "1.19.0",
     "registryMapping": "1.9.0",
@@ -51,18 +51,18 @@
   "tests": {
     "files": {
       "scripts/quant/tests/test_sec_ground_truth_regressions.py": "1574a0b330fa8f052f9b99182a7fb0d828292d08f3467281006e95ab85290edd",
-      "scripts/quant/tests/test_sec_ttm_integrity.py": "b39a8782d9000fbd9668a9b677ba5397b34fc925f5bdda37de31162c67ff0c3e",
+      "scripts/quant/tests/test_sec_ttm_integrity.py": "b4d1c7cbd05eb4a99109dc768658eb029e06ee691a9b3693616d5b0aca1008af",
       "scripts/quant/tests/test_normalize_periods.py": "8e35d10b5c5b9ed81bc55558c3a2756356edcde20edcc9f4ee6ed6cc9f248ea4",
       "core/tests/fundamental-cross-consumer.test.mjs": "6e355fec54a984c28f5c1bec61ef4b3fd176ca14be74c651f09f37709d5258a0"
     },
-    "hash": "5c5aac701850da55638865be2b490f7551fc80fd3c435171347a376ec4dcaefa"
+    "hash": "7b96b26cfeb3be347373be4352600a294c9de8df4e82e4216a14558e92de74ba"
   },
   "supersedes": {
     "file": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-DATA-FREEZE-v3.json",
     "hash": "28a58e92df2330048794594fce204b833d702b833959890531bdb0b407f3cfdc",
     "note": "fruehere Freezes bleiben unveraendert; der Data-Holdout ist gegen v1 gelaufen"
   },
-  "reason": "TTM-Integritaet, Umsatzbelege, Sichten, Red-Team-Korrekturen (Kern 1.19.0)",
+  "reason": "TTM-Integritaet, Umsatzbelege, Sichten, Red-Team-Korrekturen (Kern 1.19.0). Neu geschrieben nach Testimport-Fix (nur Testdatei; Code- und Mapping-Hash unveraendert: da11b06f2961 81a4cdb356b0)",
   "parent": "v3 (FUNDAMENTAL-DATA-FREEZE-v3.json, Kern 1.15.0, Registry 1.8.0)",
   "revenueEvidence": {
     "version": "1.1.0",
