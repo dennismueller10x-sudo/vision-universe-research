@@ -1,0 +1,31 @@
+{
+  "schema": "vu-minervini-ground-truth-freeze-1.0.0",
+  "status": "FROZEN",
+  "frozenAt": "2026-10-07T09:07:10.084Z",
+  "commit": "7438c7f4f8f",
+  "redTeam": "Opus-Red-Team 2026-10-07: BLOCKER B1-B2, MAJOR M1-M8, MINOR N1-N14; umgesetzt in 7438c7f4f8f (PREREG-A1)",
+  "casesHash": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+  "counts": {
+    "MAIN": 16,
+    "ENTRY_TYPE_NOT_MODELLED": 1,
+    "WATCHLIST": 6,
+    "NOT_EVALUATED": 65,
+    "SENSITIVITY": 15,
+    "NEGATIVE": 1
+  },
+  "files": {
+    "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-PREREG.json": "0556438a2be362c844ae5d9b8858e04c4103e08004a16a2c72f3275679c6d63c",
+    "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+    "scripts/supertrader/ground-truth/build-cases.mjs": "e67b447fe0d886225a1d1ad647201bbf7e6b1c31c98bbf9751f60fff669d4852",
+    "scripts/supertrader/ground-truth/replay.mjs": "9193642fa40a485fc30ca86430d9872921acf899d9601018bf5a742544bf8a24",
+    "scripts/supertrader/ground-truth/run-replay.mjs": "f499410450c92ebd4f7f629e5e0d0b83c3c2cb90a0ff302906ec2eebd8a0107e",
+    "scripts/supertrader/ground-truth/build-results.mjs": "c0e87e17617d4a1af6f4cec34e3584a1f5c5416cb20e7927b510e495afedb172"
+  },
+  "engine": {
+    "name": "minervini-adaptation-1.1.0",
+    "rulebookHash": "ae226511dcd045bca2457929e4894e43946c71d096e84c5dbdf0569a18bc6ba7",
+    "codeHash": "2093c8d18adf33495c6ea0aa2312c77bb70aa652e379d194313a2ebf249be930",
+    "frozenCommit": "9db37cb18a4"
+  },
+  "rule": "Nach dem Freeze keine Aenderung an Faellen, Ankern, Toleranzen oder Replay-Code; Replay je Fenster genau einmal. Engine unveraendert."
+}
