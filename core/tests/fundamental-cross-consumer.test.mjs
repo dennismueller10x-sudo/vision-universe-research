@@ -4,8 +4,8 @@
    muessen denselben Wert lesen. Wo ein Consumer bewusst eine andere Groesse zeigt (Discover-KGV ohne TTM-EPS:
    TTM-Nettogewinn / Aktien), ist die Abweichung hier ausdruecklich festgehalten, nicht still.
 
-   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.12.0, Registry 1.7.0)
-   aus SEC companyfacts.zip (Stand 2026-10-07): AMT (E2), CECO (E9), TNDM (E1), AAPL (Split), BMI (TTM-EPS vorhanden). */
+   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.13.0, Registry 1.8.0)
+   aus SEC companyfacts.zip (Stand 2026-10-07): AMT (E2), CECO (E9), FLS (E2-R), TNDM (E1), AAPL (Split), BMI (TTM-EPS vorhanden). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -28,11 +28,11 @@ const CUTOFF = "9999-12-31";
 const COL = Inputs.COL;
 
 test("Fixtures sind echte Bundles des korrigierten Kerns", () => {
-  assert.deepEqual(Object.keys(byTicker).sort(), ["AAPL", "AMT", "BMI", "CECO", "TNDM"]);
+  assert.deepEqual(Object.keys(byTicker).sort(), ["AAPL", "AMT", "BMI", "CECO", "FLS", "TNDM"]);
   for (const b of bundles) {
     assert.equal(b.schema, "vu-consumer-fundamentals-1.0.0");
-    assert.equal(b.versions.normalization_logic, "1.12.0", b.tickers[0]);
-    assert.equal(b.versions.metric_registry.mapping_version, "1.7.0", b.tickers[0]);
+    assert.equal(b.versions.normalization_logic, "1.13.0", b.tickers[0]);
+    assert.equal(b.versions.metric_registry.mapping_version, "1.8.0", b.tickers[0]);
   }
 });
 
@@ -124,10 +124,14 @@ test("Bewusste Abweichung: ohne TTM-EPS rechnet die Geschaeftszahlen-Karte TTM-G
   assert.notEqual(karte.gewinnJeAktie, Inputs.annualSeries(b, "eps_diluted", CUTOFF).at(-1).value);
 });
 
-test("Fallwerte aus der SEC-Ground-Truth (E2, E9)", () => {
+test("Fallwerte aus der SEC-Ground-Truth (E2, E9, E2-R)", () => {
   const ceco = Object.fromEntries(byTicker.CECO.annual.revenue.map((r) => [r[COL.end], r[COL.v]]));
   assert.equal(ceco["2025-12-31"], 774381000, "CECO FY2025: USD-Umsatz, nicht 750 Mio. EUR");
   assert.equal(byTicker.CECO.units.revenue, "USD");
   const amt = Object.fromEntries(byTicker.AMT.quarterly.revenue.map((r) => [r[COL.end], r[COL.v]]));
   for (const [end, v] of Object.entries(amt)) assert.ok(v > 2e9, `AMT ${end}: ${v} ist kein Gesamtumsatz`);
+  // FLS taggt Revenues = 0 in jedem 10-Q; der Umsatz ist der Vertragsumsatz (Q2 2026: 1.169,175 Mio.).
+  const fls = Object.fromEntries(byTicker.FLS.quarterly.revenue.map((r) => [r[COL.end], r[COL.v]]));
+  assert.equal(fls["2026-06-30"], 1169175000);
+  for (const [end, v] of Object.entries(fls)) assert.ok(v > 5e8, `FLS ${end}: ${v} ist kein Gesamtumsatz`);
 });
