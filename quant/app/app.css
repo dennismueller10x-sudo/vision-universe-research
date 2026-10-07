@@ -969,3 +969,62 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-ev-checks li small{color:var(--q-card-muted)}
 html[data-theme=light] .qd .q-belast-col.tier-certified.is-off{box-shadow:none}
 html[data-theme=light] dialog.qx-dialog::backdrop{background:rgba(16,18,22,.35)}
+
+/* ------------------------------------------------------------------
+   Aktienseite, Lesbarkeit (Owner-Feedback 07.10.2026): Bilder statt
+   Absaetze, auf dem Telefon volle Breite statt Kasten im Kasten. */
+.qd .q-glance-bars{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:2px}
+.qd .q-glance-bars a{display:grid;grid-template-columns:minmax(0,1fr) minmax(70px,38%) 30px;align-items:center;gap:12px;padding:7px 0;color:inherit;text-decoration:none}
+.qd .q-gb-name{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qd .q-gb-bar{display:block;height:8px;border-radius:8px;background:var(--q-line);overflow:hidden}
+.qd .q-gb-bar i{display:block;height:100%;border-radius:8px;background:var(--q-lime-line)}
+.qd .q-glance-bars .tone-bad .q-gb-bar i{background:var(--q-down)}
+.qd .q-glance-bars .tone-neutral .q-gb-bar i{background:var(--q-warm)}
+.qd .q-glance-bars b{text-align:right;font-size:14px;font-weight:900}
+
+.qd .q-pricestrip{margin:6px 0 16px}
+.qd .q-ps-track{position:relative;height:8px;margin:26px 6px 30px;border-radius:8px;background:var(--q-line)}
+.qd .q-ps-risk{position:absolute;top:0;bottom:0;border-radius:8px 0 0 8px;background:linear-gradient(90deg,color-mix(in srgb,var(--q-down) 45%,transparent),transparent)}
+.qd .q-ps-band{position:absolute;top:-3px;height:14px;border-radius:5px;min-width:6px}
+.qd .q-ps-band.is-entry{background:color-mix(in srgb,var(--q-lime-line) 45%,transparent);outline:1px dashed var(--q-lime-line)}
+.qd .q-ps-band.is-target{background:var(--q-up)}
+.qd .q-ps-band small,.qd .q-ps-mark small{position:absolute;left:50%;transform:translateX(-50%);top:20px;font-size:10.5px;font-weight:800;color:var(--q-muted);white-space:nowrap}
+.qd .q-ps-mark{position:absolute;top:50%;width:0;height:0}
+.qd .q-ps-mark::before{content:"";position:absolute;left:-2px;top:-11px;width:4px;height:22px;border-radius:2px;background:var(--q-down)}
+.qd .q-ps-mark.is-now::before{left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:var(--q-text);box-shadow:0 0 0 3px var(--q-panel)}
+.qd .q-ps-mark.is-now small{top:-30px;color:var(--q-text)}
+.qd .q-ps-mark.is-stop small{color:var(--q-down)}
+.qd .q-ps-chips{display:flex;flex-wrap:wrap;gap:8px}
+.qd .q-ps-chips>span{display:flex;flex-direction:column;gap:1px;padding:8px 12px;border-radius:12px;background:var(--q-panel2);min-width:86px}
+.qd .q-ps-chips small{font-size:11px;font-weight:700;color:var(--q-muted)}
+.qd .q-ps-chips b{font-size:17px;font-weight:900}
+.qd .q-ps-chips .is-up b{color:var(--q-up)}
+.qd .q-ps-chips .is-down b{color:var(--q-down)}
+
+.qd .q-cond-sum{display:grid;gap:6px;margin-top:14px}
+.qd .q-cond-sum>span{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700}
+.qd .q-cond-sum i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-style:normal;font-size:12px;font-weight:900;flex:none;background:var(--q-panel2)}
+.qd .q-cond-sum .is-ok i{color:var(--q-up)}
+.qd .q-cond-sum .is-wait i{color:var(--q-warm)}
+.qd .q-cond-sum .is-bad i{color:var(--q-down)}
+.qd .q-setup .qx-more,.qd .q-lifecycle .qx-more,.qd .q-setup-evidence .qx-more,.qd .q-now .qx-more{margin-top:8px}
+
+@media (max-width:640px){
+  /* Ein Kasten pro Thema, ueber die volle Breite - keine Rahmen im Rahmen. */
+  .qd .qx-stock .qc-chart,.qd .qx-stock .q-setup,.qd .qx-stock .q-ev-observed,.qd .qx-stock .q-evx,.qd .qx-stock .q-ev-cert,
+  .qd .qx-stock .q-alerts,.qd .qx-stock .qx-strategy-link,.qd .qx-stock .q-news .q-tile{margin-left:-16px;margin-right:-16px;border-radius:0;border-left:0;border-right:0;padding-left:16px;padding-right:16px}
+  .qd .qx-stock .qc-chart{border:0;background:transparent;padding-top:4px}
+  .qd .qx-stock .q-setup{border:0;background:transparent;padding-top:4px;padding-bottom:4px}
+  .qd .qx-stock .q-levels{background:transparent;gap:0;border-radius:0;border-top:1px solid var(--q-line)}
+  .qd .qx-stock .q-levels>div{background:transparent;padding:12px 0;border-bottom:1px solid var(--q-line)}
+  .qd .qx-stock .q-levels>div:nth-child(odd){padding-right:12px}
+  .qd .qx-stock .q-rr,.qd .qx-stock .q-moves>div{background:transparent;padding-left:0;padding-right:0;border-radius:0}
+  .qd .qx-stock .q-trigger{background:transparent;border-radius:0;padding:4px 0 4px 12px}
+  .qd .qx-stock .dx-zahlen{gap:0}
+  .qd .qx-stock .qx-factor{background:transparent;border:0;border-bottom:1px solid var(--q-line);border-radius:0;padding:16px 0}
+  .qd .qx-stock .qx-factors{border-top:1px solid var(--q-line)}
+  .qd .qx-stock .dx-waage-spalte{background:transparent;border:0;border-top:3px solid var(--q-line2);border-radius:0;padding:14px 0}
+  .qd .qx-stock .q-stats{background:transparent;border:0;border-radius:0;border-top:1px solid var(--q-line);border-bottom:1px solid var(--q-line)}
+  .qd .qx-stock .qx-change{background:transparent;border:0;border-bottom:1px solid var(--q-line);border-radius:0;padding-left:0;padding-right:0}
+  .qd .qx-stock .q-sec-intro{font-size:14px}
+}

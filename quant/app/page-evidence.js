@@ -235,6 +235,13 @@
     ]));
     kids.push(el("p", { class: "q-ev-why", text: SAMPLE_WHY }));
     kids.push(trustChecklist(b));
+    /* opts.folded: Aktienseite - Quote, Balken und Edge-Satz offen, die
+       Fakten und die Pruefliste hinter einem Aufklapper. */
+    if (opts.folded) {
+      var head = kids.slice(0, 4), rest = kids.slice(4);
+      return el("div", { class: "q-evx" }, head.concat([el("details", { class: "q-ev-more q-ev-fold" }, [
+        el("summary", { text: "Fälle, Risiko und Belastbarkeit · " + (TRUST_SHORT[b.trust] || "nicht bereit") })].concat(rest))]));
+    }
     return el("div", { class: "q-evx" }, kids);
   }
   /* Zertifiziert: nur mit Status CERTIFIED - sonst ein ruhiger Satz. */
