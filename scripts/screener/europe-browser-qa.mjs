@@ -157,10 +157,10 @@ for (const engine of ['chromium', 'webkit']) {
       if (!fixture && canonicalPrice) { assert.equal(proof.latest.state, 'AVAILABLE'); assert.equal(canonicalPrice.close, proof.latest.data.close); }
       const visible = page.locator('[data-listing-id="' + chosen.listingId + '"]');
       await page.getByRole('searchbox', { name: 'Europäische Aktien suchen' }).fill(chosen.isin); await visible.waitFor();
+      await visible.scrollIntoViewIfNeeded();
       assert.equal(await visible.locator('.dx-logo').getAttribute('data-logo'), proof.logo);
       if (proof.logo) await page.waitForFunction(id => document.querySelector('[data-listing-id="' + id + '"] .dx-logo img')?.naturalWidth > 0, chosen.listingId);
       else assert.equal(await visible.locator('.dx-logo img').count(), 0);
-      await visible.scrollIntoViewIfNeeded();
       await page.screenshot({ path: privateOutputFile(out, engine + '-' + width + '-' + theme + '.png') });
       checks.push({ engine, width, theme, listingCount: rows.length, allListingIdentityRoundtrips: localRoundtrip.length, payload, readinessFilters, testedListingId: chosen.listingId, issuerCountryFilter: !!issuerCountry, issuerCountryURLReload: !!issuerCountry, unknownIssuerCount, displayedPriceMatchesCompactContract: canonicalPrice !== null, centralSeriesPriceMatches: !fixture && canonicalPrice !== null, verifiedLogoLoaded: !!proof.logo, fallbackChecked: !proof.logo, consumerHistoryRequests, watchlist: true, legacyWatchlistPreserved: true });
       await context.close();
