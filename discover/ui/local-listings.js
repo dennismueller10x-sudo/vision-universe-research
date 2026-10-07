@@ -15,10 +15,7 @@
     if (!Number.isFinite(value)) return 'nicht verfügbar';
     return new Intl.NumberFormat('de-DE', { maximumFractionDigits: value >= 1 ? 2 : 6 }).format(value) + ' ' + (currency || '');
   }
-  function freshnessLabel(value) {
-    return { STALE_CACHE: 'veralteter Quellenstand', STALE: 'veralteter Quellenstand', UNKNOWN: 'Aktualität nicht bestätigt',
-      FRESH: 'letzte bestätigte Handelssitzung' }[value] || 'Aktualität nicht bestätigt';
-  }
+  var freshnessLabel = M.freshnessLabel;
   function watchButton(row) {
     var button = el('button', { type: 'button', class: 'v2-watch-button' });
     function paint() {
@@ -62,7 +59,7 @@
         var link = el('a', { href: M.href(row), class: 'v2-watch-row' }, [mark(row), el('span', {}, [
           el('b', { text: row.name || row.ticker }), el('span', { text: ' · ' + [row.ticker, row.mic, row.tradingCurrency, (row.indexMemberships || []).join(', ')].filter(Boolean).join(' · ') })])]);
         var p = prices.get(row.listingId), unit = p && p.quoteUnit;
-        link.append(el('span', { class: 'dx-hint', text: p ? money(p.close, M.unitLabel(p.currency, unit)) + ' · ' + p.date + ' · ' + freshnessLabel(p.freshness) : 'Kurs nicht verfügbar' }));
+        link.append(el('span', { class: 'dx-hint', text: p ? money(p.close, M.unitLabel(p.currency, unit)) + ' · ' + p.date + ' · ' + freshnessLabel(row.readiness && row.readiness.latestEod && row.readiness.latestEod.state || p.freshness) : 'Kurs nicht verfügbar' }));
         rows.append(link);
       });
       if (!listings.length) rows.append(el('p', { text: 'Keine passenden belegten Listings.' }));
@@ -87,18 +84,26 @@
       var p = price.data;
       var unit = p.quoteUnit || row.quoteUnit;
       quote.append(el('p', { class: 'v2-lead', text: money(p.close, M.unitLabel(p.currency, unit)) }),
-        el('p', { class: 'dx-hint', text: p.date + ' · Marketstack Tageskurs · ' + row.mic + ' · ' + freshnessLabel(p.freshness) }));
+        el('p', { class: 'dx-hint', text: p.date + ' · Marketstack Tageskurs · ' + row.mic + ' · ' + freshnessLabel(row.readiness && row.readiness.latestEod && row.readiness.latestEod.state || p.freshness) }));
       if (p.retrievedAt) quote.append(el('p', { class: 'dx-hint', text: 'Abruf des Quellenstands: ' + p.retrievedAt }));
+      if (p.expectedSession) quote.append(el('p', { class: 'dx-hint', text: 'Erwartete abgeschlossene Sitzung: ' + p.expectedSession }));
       if (Number.isFinite(p.changePercent)) quote.append(el('p', { text: p.changePercent.toLocaleString('de-DE', { maximumFractionDigits: 2 }) + ' % gegenüber ' + p.previousDate }));
     } else quote.append(el('p', { text: 'Nicht verfügbar (' + price.reason + ').' }));
     root.append(quote);
     var chart = el('section', { class: 'dx-chapter' }, [el('h2', { text: 'Kursverlauf' })]);
     if (series.state === 'AVAILABLE') {
-      var data = series.data, quality = data.quality || {}, ps = { status: 'CALCULATED', points: data.points, source: series.source, from: data.from, to: data.to, priceSeriesType: data.basis, asOf: series.asOf };
+      var data = series.data, quality = data.quality || {}, readiness = data.readiness || row.readiness || {}, proof = readiness.chart;
+      var certified = proof && ['READY', 'PARTIAL'].includes(proof.status), points = certified ? data.chartPoints : data.points;
+      var from = points && points.length ? points[0][0] : data.from, to = points && points.length ? points[points.length - 1][0] : data.to;
+      var ps = { status: 'CALCULATED', points: points || [], source: series.source, from: from, to: to, priceSeriesType: data.basis, asOf: series.asOf };
       var uncertain = quality.completenessVerified !== true || quality.quarantinedCandles > 0 || (quality.missingSessions || []).length > 0;
-      var graphic = D.MicroChart.render(ps, { width: 720, height: 260, dates: true, symbol: row.ticker, range: 'MAX', pointsOnly: uncertain });
-      if (graphic) chart.append(graphic); else chart.append(el('p', { text: 'Kurze Historie: ' + data.points.length + ' belegte Tageskurse; für diesen Chart noch zu kurz.' }));
-      chart.append(el('p', { class: 'dx-hint', text: data.from + ' bis ' + data.to + ' · ' + (/UNVERIFIED|UNKNOWN/.test(data.basis || '') ? 'Bereinigungsbasis ungeklärt' : data.basis || 'Feldbasis nicht verfügbar') + ' · ' + (M.unitLabel(data.currency || row.tradingCurrency, data.quoteUnit || row.quoteUnit) || '') }));
+      var blocked = proof && proof.status === 'BLOCKED' && proof.state === 'CHART_BLOCKED';
+      var graphic = blocked || !points ? null : D.MicroChart.render(ps, { width: 720, height: 260, dates: true, symbol: row.ticker, range: 'MAX', pointsOnly: uncertain });
+      chart.append(el('p', { class: 'dx-hint', text: M.readinessLabel(proof, 'chart') }));
+      if (graphic) chart.append(graphic); else chart.append(el('p', { text: blocked ? 'Chartprüfung gesperrt. Die freigegebene letzte Kursbeobachtung bleibt getrennt verfügbar.' : !points ? 'Freigegebenes Chartfenster nicht verfügbar.' : 'Kurze Historie: ' + points.length + ' belegte Tageskurse; für diesen Chart noch zu kurz.' }));
+      if (proof) chart.append(el('p', { class: 'dx-hint', text: 'Prüfstand: ' + (proof.asOf || 'nicht belegt') + (proof.window ? ' · ' + proof.window.start + ' bis ' + proof.window.end : '') + (proof.cause ? ' · ' + proof.cause : '') }));
+      chart.append(el('p', { class: 'dx-hint', text: from + ' bis ' + to + ' · ' + (/UNVERIFIED|UNKNOWN/.test(data.basis || '') ? 'Bereinigungsbasis ungeklärt' : data.basis || 'Feldbasis nicht verfügbar') + ' · ' + (M.unitLabel(data.currency || row.tradingCurrency, data.quoteUnit || row.quoteUnit) || '') }));
+      if (certified && (from !== data.from || to !== data.to)) chart.append(el('p', { class: 'dx-hint', text: 'Darstellung auf das geprüfte Fenster begrenzt. Übrige gespeicherte Historie ist damit nicht freigegeben.' }));
       if (quality.priceBasis === 'PROVIDER_REPORTED_UNVERIFIED' || !data.basis || /UNVERIFIED|UNKNOWN/.test(data.basis))
         chart.append(el('p', { class: 'dx-hint', text: 'Bereinigungsbasis ungeprüft.' }));
       if (uncertain) chart.append(el('p', { class: 'dx-hint', text: (quality.quarantinedCandles > 0 || (quality.missingSessions || []).length > 0 ? 'Historie mit belegten Datenlücken; ' : '') +
@@ -109,7 +114,8 @@
       ['Indexmitgliedschaften', (row.indexMemberships || []).join(', ')], ['Emittentendomizil', row.companyCountry || 'nicht belegt']];
     var facts = el('dl', { class: 'dx-stammdaten' }); info.forEach(function (x) { facts.append(el('dt', { text: x[0] }), el('dd', { text: x[1] || 'nicht verfügbar' })); });
     root.append(el('section', { class: 'dx-chapter' }, [el('h2', { text: 'Stammdaten' }), facts]),
-      el('section', { class: 'dx-chapter' }, [el('h2', { text: 'Analyse' }), el('p', { text: 'Quant, SuperTrader und Fundamentalkennzahlen sind für dieses Listing noch nicht freigegeben. Fehlende Bewertungsdaten werden nicht ersetzt.' })]));
+      el('section', { class: 'dx-chapter' }, [el('h2', { text: 'Analyse' }), el('p', { text: M.readinessLabel(row.readiness && row.readiness.technical, 'technical') }),
+        el('a', { href: '/screener/?u=EUROPE&q=' + encodeURIComponent(row.isin), text: 'Verfügbare technische Kriterien im Screener prüfen' }), el('p', { text: 'Quant, SuperTrader und Fundamentalkennzahlen sind für dieses Listing noch nicht freigegeben. Fehlende Bewertungsdaten werden nicht ersetzt.' })]));
   }
   async function renderWatchlist(root, onRemove, active) {
     var rows; try { rows = M.saved(global.localStorage); } catch (_) { return; }

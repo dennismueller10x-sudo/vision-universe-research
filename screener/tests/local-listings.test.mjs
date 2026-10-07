@@ -93,3 +93,39 @@ test('URL encoding retains the same validated engine screen', () => {
   assert.equal(Query.key(restored), Query.key(query));
   assert.deepEqual(Local.execute(Local.prepare(data()), restored).rows, Local.execute(Local.prepare(data()), query).rows);
 });
+
+test('central readiness filters separate freshness, limited charts and individual technical gates without inferring approval', () => {
+  const current = { ...sap, price: { ...sap.price, freshness: 'UNKNOWN' }, readiness: {
+    latestEod: { status: 'READY', state: 'FRESH_LAST_VALID_SESSION' },
+    chart: { status: 'PARTIAL', state: 'CHART_READY_WITH_LIMITATION' }, technical: { status: 'BLOCKED', state: 'TECHNICAL_BLOCKED' } } };
+  const stale = { ...alt, price: { ...alt.price, freshness: 'STALE_CACHE' }, readiness: { chart: { status: 'READY', state: 'CHART_READY' }, technical: { status: 'PARTIAL', state: 'TECHNICAL_PARTIAL' } } };
+  const untested = { ...asml, readiness: { chart: { status: 'NOT_TESTED', state: 'CHART_READY' } } };
+  const p = Local.prepare(data([current, stale, untested]));
+  assert.deepEqual(Local.execute(p, q(), { freshness: 'FRESH_LAST_VALID_SESSION', chartReadiness: 'CHART_READY_WITH_LIMITATION', technicalReadiness: 'TECHNICAL_BLOCKED' }).rows.map(r => r.listingId), [current.listingId]);
+  assert.deepEqual(Local.execute(p, q(), { freshness: 'STALE' }).rows.map(r => r.listingId), [stale.listingId]);
+  assert.deepEqual(Local.execute(p, q(), { freshness: 'MISSING', chartReadiness: 'NOT_TESTED', technicalReadiness: 'NOT_TESTED' }).rows.map(r => r.listingId), [untested.listingId]);
+  assert.equal(Local.execute(p, q(), { technicalReadiness: 'TECHNICAL_READY' }).total, 0);
+  assert.equal(Local.status({ ...current, readiness: { chart: { status: 'BLOCKED', state: 'CHART_READY' } } }, 'chartReadiness'), 'NOT_TESTED');
+  assert.equal(Local.status({ ...current, readiness: undefined }, 'chartReadiness'), 'NOT_TESTED');
+  assert.equal(Local.status({ ...current, price: { ...current.price, freshness: 'HTTP_200' }, readiness: undefined }, 'freshness'), 'UNKNOWN');
+  assert.equal(Local.status({ ...current, price: { ...current.price, freshness: 'STALE' }, readiness: { latestEod: { status: 'PARTIAL', state: 'DELAYED_EXPECTED' } } }, 'freshness'), 'DELAYED_EXPECTED');
+  assert.throws(() => Local.execute(p, q(), { technicalReadiness: 'APPROVED' }), /STATUS_FILTER_INVALID/);
+});
+
+test('readiness URL parameters preserve the exact central filter intersection and never become global ranking fields', () => {
+  const p = Local.prepare(data([{ ...sap, price: { ...sap.price, freshness: 'CURRENT' }, readiness: { chart: { status: 'READY', state: 'CHART_READY' }, technical: { status: 'PARTIAL', state: 'TECHNICAL_PARTIAL' } } }]));
+  const params = Query.toParams(q()); for (const [k, v] of Object.entries({ freshness: 'FRESH_LAST_VALID_SESSION', chartReadiness: 'CHART_READY', technicalReadiness: 'TECHNICAL_PARTIAL' })) params.set(k, v);
+  const options = Object.fromEntries([...params].filter(([key]) => key in Local.STATUS));
+  assert.equal(Local.execute(p, Query.fromParams(new URLSearchParams(params.toString())), options).total, 1);
+  assert.equal(p.dataset.value('quantScore', 0), null);
+  assert.throws(() => Local.execute(p, q([{ field: 'chartReadiness', op: 'in', value: ['CHART_READY'] }])), /unknown-field|UNSUPPORTED_FIELD/);
+});
+
+test('52W and drawdown fields accept only existing engine outputs with validated evidence; missing stays missing', () => {
+  const local = { ...sap, fields: { distance52wHigh: ready(-0.1), maxDrawdown: ready(-0.25), distance52wLow: { ...ready(0.2), evidence: [] } } };
+  const p = Local.prepare(data([local, asml]));
+  assert.equal(Local.execute(p, q([{ field: 'distance52wHigh', op: 'gte', value: -0.2 }])).total, 1);
+  assert.equal(p.dataset.value('maxDrawdown', 0), -0.25);
+  assert.equal(p.dataset.value('distance52wLow', 0), null);
+  assert.equal(p.dataset.value('distance52wHigh', 1), null);
+});

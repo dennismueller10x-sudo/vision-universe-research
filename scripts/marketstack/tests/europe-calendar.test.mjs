@@ -49,3 +49,13 @@ test('bad year/date/source evidence fails instead of manufacturing a calendar',(
  assert.throws(()=>buildEuropeanCalendar({...cfg(),annualRules:[rule(2026),rule(2026)]}),/DUPLICATE/);
  assert.throws(()=>buildEuropeanCalendar({...cfg(),now:undefined}),/FIXED_NOW/);
 });
+test('freshness distinguishes completed current EOD from the last valid session and never calls intraday fresh',()=>{
+ const before=buildEuropeanCalendar({...cfg(),now:'2026-10-07T08:31:59Z'});
+ assert.equal(checkEuropeanEodFreshness({calendar:before,mic:'XETR',latestDate:'2026-10-06'}).state,'FRESH_LAST_VALID_SESSION');
+ assert.equal(checkEuropeanEodFreshness({calendar:before,mic:'XETR',latestDate:'2026-10-05'}).state,'STALE');
+ assert.equal(checkEuropeanEodFreshness({calendar:before,mic:'XETR',latestDate:'2026-10-07'}).state,'INVALID_EOD');
+ const after=buildEuropeanCalendar({...cfg(),now:'2026-10-07T17:00:00Z'});
+ assert.equal(checkEuropeanEodFreshness({calendar:after,mic:'XETR',latestDate:'2026-10-07'}).state,'FRESH_CURRENT_SESSION');
+ const random=buildEuropeanCalendar({...cfg(),regularClose:{verified:true,time:'17:30',meaning:'NOT_BEFORE',evidence:['synthetic-only']},now:'2026-10-07T17:00:00Z'});
+ assert.equal(checkEuropeanEodFreshness({calendar:random,mic:'XETR',latestDate:'2026-10-07'}).state,'UNKNOWN');
+});

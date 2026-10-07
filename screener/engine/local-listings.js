@@ -12,8 +12,23 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (Identity, Fields, Query, Engine) {
   'use strict';
   var METRICS = ['perf1d', 'perf1w', 'perf1m', 'perf3m', 'perf6m', 'perf1y',
-    'priceVsSma20', 'priceVsSma50', 'priceVsSma200', 'sma50VsSma200', 'volatility', 'avgVolume', 'relativeVolume'];
+    'priceVsSma20', 'priceVsSma50', 'priceVsSma200', 'sma50VsSma200', 'distance52wHigh', 'distance52wLow', 'maxDrawdown', 'volatility', 'avgVolume', 'relativeVolume'];
   var FILTERS = ['country', 'region', 'exchange', 'index', 'price'].concat(METRICS);
+  var STATUS = {
+    freshness: { FRESH_CURRENT_SESSION: 'Bestätigte aktuelle Sitzung', FRESH_LAST_VALID_SESSION: 'Letzte bestätigte Sitzung', DELAYED_EXPECTED: 'Tageskurs ausstehend', STALE: 'Veraltet', MISSING: 'Kurs fehlt', INVALID: 'Kurs gesperrt', UNKNOWN: 'Aktualität ungeklärt' },
+    chartReadiness: { CHART_READY: 'Chart freigegeben', CHART_READY_WITH_LIMITATION: 'Chart mit Einschränkung', CHART_BLOCKED: 'Chart gesperrt', NOT_TESTED: 'Chart noch nicht geprüft' },
+    technicalReadiness: { TECHNICAL_READY: 'Technik freigegeben', TECHNICAL_PARTIAL: 'Technik teilweise freigegeben', TECHNICAL_BLOCKED: 'Technik gesperrt', NOT_TESTED: 'Technik noch nicht geprüft' }
+  };
+  function status(row, kind) {
+    var readiness = row.readiness && row.readiness[kind === 'freshness' ? 'latestEod' : kind === 'chartReadiness' ? 'chart' : 'technical'], value;
+    if (kind === 'freshness') { value = readiness && readiness.state || (row.price ? row.price.freshness : 'MISSING'); value = ({ CURRENT: 'FRESH_LAST_VALID_SESSION', STALE_CACHE: 'STALE' })[value] || value; }
+    else {
+      value = readiness && readiness.state;
+      var expected = { CHART_READY: 'READY', CHART_READY_WITH_LIMITATION: 'PARTIAL', CHART_BLOCKED: 'BLOCKED', TECHNICAL_READY: 'READY', TECHNICAL_PARTIAL: 'PARTIAL', TECHNICAL_BLOCKED: 'BLOCKED' }[value];
+      if (!readiness || readiness.status !== expected) value = 'NOT_TESTED';
+    }
+    return STATUS[kind] && STATUS[kind][value] ? value : kind === 'freshness' ? 'UNKNOWN' : 'NOT_TESTED';
+  }
   function day(value) { return /^\d{4}-\d{2}-\d{2}$/.test(value || ''); }
   function quoteUnit(row) { var unit = row.price && row.price.quoteUnit || row.quoteUnit; return unit === 'MINOR' ? row.tradingCurrency === 'GBP' ? 'GBX' : row.tradingCurrency + ' Untereinheit' : unit && unit !== 'MAJOR' ? unit : row.tradingCurrency; }
   function issuerCountry(row) { return /^[A-Z]{2}$/.test(row.companyCountry || '') ? row.companyCountry : null; }
@@ -52,6 +67,7 @@
   function validate(query, options) {
     var q = Query.validate(query), opts = options || {};
     if (opts.issuerCountry && opts.issuerCountry !== 'UNKNOWN' && !/^[A-Z]{2}$/.test(opts.issuerCountry)) throw Error('EUROPE_ISSUER_COUNTRY_INVALID');
+    Object.keys(STATUS).forEach(function (kind) { if (opts[kind] && !STATUS[kind][opts[kind]]) throw Error('EUROPE_STATUS_FILTER_INVALID:' + kind); });
     if (q.universe !== 'EUROPE' || q.ranking.enabled || q.logic !== 'AND' || q.groups.length !== 1 || q.groups[0].op !== 'AND') throw Error('EUROPE_UNSUPPORTED_QUERY');
     if (['name', 'price'].concat(METRICS).indexOf(q.sort.field) < 0) throw Error('EUROPE_UNSUPPORTED_SORT');
     Query.filters(q).forEach(function (filter) {
@@ -64,7 +80,8 @@
   function execute(prepared, query, options) {
     var opts = options || {}, q = validate(query, opts), ds = prepared.dataset;
     var text = String(opts.query || '').trim().toUpperCase(), scopedRows = prepared.rows.filter(function (row) {
-      return (!opts.issuerCountry || (issuerCountry(row) || 'UNKNOWN') === opts.issuerCountry) && (!opts.currency || quoteUnit(row) === opts.currency) && (!text ||
+      return Object.keys(STATUS).every(function (kind) { return !opts[kind] || status(row, kind) === opts[kind]; }) &&
+        (!opts.issuerCountry || (issuerCountry(row) || 'UNKNOWN') === opts.issuerCountry) && (!opts.currency || quoteUnit(row) === opts.currency) && (!text ||
         [row.name, row.ticker, row.providerSymbol, row.isin, row.mic].concat(row.aliases || []).some(function (v) { return String(v || '').toUpperCase().includes(text); }));
     });
     var scoped = prepare({ state: 'AVAILABLE', data: Object.assign({}, prepared.data, { listings: scopedRows }) });
@@ -73,5 +90,5 @@
     return { total: order.length, order: order, universe: scopedRows.length, totalUniverse: ds.size, perFilter: result.perFilter,
       rows: order.map(function (i) { return prepared.rows[i]; }), why: function (i) { return Engine.why(ds, q, i); } };
   }
-  return { METRICS: METRICS, FILTERS: FILTERS, prepare: prepare, execute: execute, validate: validate, quoteUnit: quoteUnit, issuerCountry: issuerCountry };
+  return { METRICS: METRICS, FILTERS: FILTERS, STATUS: STATUS, status: status, prepare: prepare, execute: execute, validate: validate, quoteUnit: quoteUnit, issuerCountry: issuerCountry };
 });

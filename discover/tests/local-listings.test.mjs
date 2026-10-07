@@ -7,6 +7,21 @@ const require = createRequire(import.meta.url);
 const Listings = require('../engines/local-listings.js');
 const sap = { listingId: 'lst_XETR_DE0007164600', ticker: 'SAP', name: 'SAP SE', mic: 'XETR', tradingCurrency: 'EUR' };
 const alternate = { ...sap, listingId: 'lst_XFRA_DE0007164600', mic: 'XFRA' };
+test('freshness displays central certification and never upgrades unknown or legacy unproven labels', () => {
+  for (const status of ['CURRENT', 'FRESH_CURRENT_SESSION', 'FRESH_LAST_VALID_SESSION']) assert.match(Listings.freshnessLabel(status), /bestätigte/);
+  for (const status of ['UNKNOWN', undefined, 'FRESH', 'HTTP_200']) assert.equal(Listings.freshnessLabel(status), 'Aktualität nicht bestätigt');
+  assert.equal(Listings.freshnessLabel('DELAYED_EXPECTED'), 'Tageskurs noch ausstehend');
+  assert.equal(Listings.freshnessLabel('STALE'), 'veralteter Quellenstand');
+  assert.equal(Listings.freshnessLabel('INVALID'), 'Kurs gesperrt');
+});
+test('readiness labels require the matching central state and retain NOT_TESTED when approval evidence is absent', () => {
+  assert.equal(Listings.readinessLabel(null, 'chart'), 'Chart noch nicht geprüft');
+  assert.equal(Listings.readinessLabel({ status: 'NOT_TESTED', state: 'CHART_READY' }, 'chart'), 'Chart noch nicht geprüft');
+  assert.equal(Listings.readinessLabel({ status: 'BLOCKED', state: 'TECHNICAL_READY' }, 'technical'), 'Technik noch nicht geprüft');
+  assert.equal(Listings.readinessLabel({ status: 'PARTIAL', state: 'CHART_READY_WITH_LIMITATION' }, 'chart'), 'Chart mit Einschränkung');
+  assert.equal(Listings.readinessLabel({ status: 'BLOCKED', state: 'CHART_BLOCKED' }, 'chart'), 'Chart gesperrt');
+  assert.equal(Listings.readinessLabel({ status: 'PARTIAL', state: 'TECHNICAL_PARTIAL' }, 'technical'), 'Technik teilweise freigegeben');
+});
 function storage(seed = {}) {
   const map = new Map(Object.entries(seed));
   return { getItem: key => map.get(key) ?? null, setItem: (key, value) => map.set(key, value) };
@@ -118,4 +133,20 @@ test('notierungseinheit keeps verified GBP pence separate from GBP major units w
   assert.equal(Listings.unitLabel('GBP', 'MINOR'), 'GBX');
   assert.equal(Listings.unitLabel('GBP', 'MAJOR'), 'GBP');
   assert.equal(Listings.unitLabel('EUR', 'MINOR'), 'EUR Untereinheit');
+});
+
+test('detail renders only the centrally approved chart points, never the older blocked part or an absent approved projection', async () => {
+  const points = [['2023-01-02', 2], ['2026-10-01', 10], ['2026-10-02', 11]], selected = points.slice(1);
+  function element(tag, attrs = {}, children = []) { return { tag, textContent: attrs.text || '', attrs, children, append(...nodes) { this.children.push(...nodes); }, setAttribute(k, v) { this.attrs[k] = v; } }; }
+  for (const [status, state, chartPoints, expected] of [['PARTIAL', 'CHART_READY_WITH_LIMITATION', selected, 1], ['BLOCKED', 'CHART_BLOCKED', undefined, 0], ['READY', 'CHART_READY', undefined, 0]]) {
+    const renderings = [], root = element('main'), row = { ...sap, isin: 'DE0007164600', indexMemberships: [], readiness: { chart: { status, state, asOf: '2026-10-02', window: { start: '2026-10-01', end: '2026-10-02' } } } };
+    const series = { state: 'AVAILABLE', data: { points, chartPoints, chartWindow: row.readiness.chart.window, from: points[0][0], to: '2026-10-02', currency: 'EUR', basis: 'PROVIDER_REPORTED_UNVERIFIED', readiness: row.readiness } };
+    const core = { getListing: async () => ({ state: 'AVAILABLE', data: row }), getListingLatestPrice: async () => ({ state: 'UNAVAILABLE', reason: 'MISSING_HISTORY' }), getListingPriceSeries: async () => series };
+    const window = { VUCore: { Client: { create: () => core } }, QuantShell: { el: element, clear: n => { n.children = []; } }, localStorage: storage(),
+      VUDiscover: { LocalListings: Listings, Logos: { mark: () => element('span') }, MicroChart: { render: (ps, opts) => { renderings.push({ ps, opts }); return element('svg'); } } } };
+    vm.runInNewContext(readFileSync(new URL('../ui/local-listings.js', import.meta.url), 'utf8'), { window, document: {} });
+    await window.VUDiscover.LocalListingsView.renderDetail(root, sap.listingId, () => true);
+    assert.equal(renderings.length, expected);
+    if (expected) { assert.deepEqual(renderings[0].ps.points, selected); assert.equal(renderings[0].ps.from, '2026-10-01'); assert.equal(renderings[0].opts.pointsOnly, true); }
+  }
 });

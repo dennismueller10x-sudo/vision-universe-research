@@ -33,7 +33,16 @@ for (const engine of ['chromium', 'webkit']) {
     for (const width of engine === 'chromium' ? [390, 1440] : [390]) for (const theme of ['light', 'dark']) {
       const requestStart = requests.length;
       const context = await browser.newContext({ viewport: { width, height: 900 }, isMobile: width < 500, hasTouch: width < 500, ...(fixture ? { serviceWorkers: 'block' } : {}) });
-      await context.addInitScript(t => { localStorage.setItem('vu-discover-theme-v1', t); localStorage.setItem('vu-discover-watchlist-v1', '["SAP","BRK-B"]'); }, theme);
+      await context.addInitScript(t => {
+        localStorage.setItem('vu-discover-theme-v1', t); localStorage.setItem('vu-discover-watchlist-v1', '["SAP","BRK-B"]');
+        window.__euJsonReadDecode = [];
+        const json = Response.prototype.json;
+        Response.prototype.json = async function (...args) {
+          const start = performance.now();
+          try { return await json.apply(this, args); }
+          finally { if (new URL(this.url).pathname.startsWith('/core/data/de-eu/')) window.__euJsonReadDecode.push({ path: new URL(this.url).pathname, bodyReadAndDecodeMs: performance.now() - start }); }
+        };
+      }, theme);
       await context.route('**/*', route => {
         const path = new URL(route.request().url()).pathname, host = new URL(route.request().url()).hostname;
         requests.push({ path, host });
@@ -47,6 +56,8 @@ for (const engine of ['chromium', 'webkit']) {
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       assert.equal(await page.locator('.sc-europe a[href],.sc-europe button').evaluateAll(nodes => nodes.filter(n => { const r=n.getBoundingClientRect(); return r.width && r.height && (r.width < 32 || r.height < 32); }).length), 0, 'Regional touch targets remain usable on iPhone');
+      const coldLoad = await page.evaluate(() => ({ resources: performance.getEntriesByType('resource').map(r => ({ path: new URL(r.name).pathname, decodedBytes: r.decodedBodySize, encodedBytes: r.encodedBodySize, transferBytes: r.transferSize, durationMs: r.duration })), euJsonBodyReadAndDecode: window.__euJsonReadDecode, domNodes: document.querySelectorAll('*').length }));
+      const payload = { scope: 'FULL_OPT_IN_EU_RESOURCE_LIST_NOT_A_DEFAULT_VIEW_CODE_GATE', ...coldLoad, decodedBytes: coldLoad.resources.reduce((sum, r) => sum + r.decodedBytes, 0), requests: coldLoad.resources.length, euDataDecodedBytes: coldLoad.resources.filter(r => r.path.startsWith('/core/data/de-eu/')).reduce((sum, r) => sum + r.decodedBytes, 0) };
       const central = await page.evaluate(async () => { const core = VUCore.Client.create({ load: p => fetch(p).then(r => r.json()) }); return core.getListingScreener(); });
       assert.equal(central.state, 'AVAILABLE'); const rows = central.data.listings; assert(rows.length);
       const localRoundtrip = await page.evaluate(rows => {
@@ -54,11 +65,30 @@ for (const engine of ['chromium', 'webkit']) {
         return rows.map(r => ({ id: r.listingId, index: p.dataset.indexOf(r.listingId), symbol: p.dataset.symbol(p.dataset.indexOf(r.listingId)) }));
       }, rows);
       assert(localRoundtrip.every(r => r.index >= 0 && r.symbol === r.id));
+      const readinessFilters = [];
+      for (const [kind, label] of [['freshness', 'Kursaktualität'], ['chartReadiness', 'Chartfreigabe'], ['technicalReadiness', 'Technische Freigabe']]) {
+        const statuses = await page.evaluate(({ rows, kind }) => rows.map(r => VUScreenerLocalListings.status(r, kind)), { rows, kind });
+        const allowed = await page.evaluate(kind => Object.keys(VUScreenerLocalListings.STATUS[kind]), kind);
+        for (const value of allowed) {
+          const expected = rows.filter((_, i) => statuses[i] === value).map(r => r.listingId);
+          await page.getByRole('combobox', { name: label, exact: true }).selectOption(value);
+          await page.waitForFunction(n => document.querySelector('[role="status"]').textContent.startsWith(n + ' passende Listings'), expected.length);
+          const ids = await page.locator('.sc-eu-row').evaluateAll(nodes => nodes.map(n => n.dataset.listingId));
+          assert.equal(ids.length, Math.min(30, expected.length)); assert(ids.every(id => expected.includes(id)));
+          const url = page.url(); assert.equal(new URL(url).searchParams.get(kind), value);
+          await page.reload(); await page.getByRole('combobox', { name: label, exact: true }).waitFor();
+          await page.waitForFunction(n => document.querySelector('[role="status"]').textContent.startsWith(n + ' passende Listings'), expected.length);
+          assert.equal(page.url(), url); assert.equal(await page.getByRole('combobox', { name: label, exact: true }).inputValue(), value);
+          readinessFilters.push({ kind, status: value, matchingListings: expected.length, visibleIdsChecked: ids.length, urlReload: true });
+        }
+        await page.getByRole('combobox', { name: label, exact: true }).selectOption('');
+      }
       const logoIds = await page.evaluate(rows => rows.filter(r => VUDiscover.LocalListings.logoSymbol(r)).map(r => r.listingId), rows);
       const chosen = rows.find(r => r.price && logoIds.includes(r.listingId)) || rows.find(r => r.price) || rows[0], search = page.getByRole('searchbox', { name: 'Europäische Aktien suchen' });
       await search.fill(chosen.isin); const card = page.locator('[data-listing-id="' + chosen.listingId + '"]'); await card.waitFor();
       const canonicalPrice = chosen.price, text = await card.innerText();
       if (canonicalPrice) assert(text.includes(new Intl.NumberFormat('de-DE', { maximumFractionDigits: canonicalPrice.close >= 1 ? 2 : 6 }).format(canonicalPrice.close)) && text.includes(canonicalPrice.date));
+      if (canonicalPrice) assert(text.includes(await page.evaluate(row => VUDiscover.LocalListings.freshnessLabel(VUScreenerLocalListings.status(row, 'freshness')), chosen)), 'Displayed freshness agrees with the central readiness filter');
       assert.equal(await card.locator('a').getAttribute('href'), '/discover/#/listing/' + chosen.listingId);
       const watch = card.locator('button'); await watch.click(); assert.equal(await watch.getAttribute('aria-pressed'), 'true');
       await page.reload(); await card.waitFor(); assert.equal(await card.locator('button').getAttribute('aria-pressed'), 'true');
@@ -132,7 +162,7 @@ for (const engine of ['chromium', 'webkit']) {
       else assert.equal(await visible.locator('.dx-logo img').count(), 0);
       await visible.scrollIntoViewIfNeeded();
       await page.screenshot({ path: privateOutputFile(out, engine + '-' + width + '-' + theme + '.png') });
-      checks.push({ engine, width, theme, listingCount: rows.length, allListingIdentityRoundtrips: localRoundtrip.length, testedListingId: chosen.listingId, issuerCountryFilter: !!issuerCountry, issuerCountryURLReload: !!issuerCountry, unknownIssuerCount, displayedPriceMatchesCompactContract: canonicalPrice !== null, centralSeriesPriceMatches: !fixture && canonicalPrice !== null, verifiedLogoLoaded: !!proof.logo, fallbackChecked: !proof.logo, consumerHistoryRequests, watchlist: true, legacyWatchlistPreserved: true });
+      checks.push({ engine, width, theme, listingCount: rows.length, allListingIdentityRoundtrips: localRoundtrip.length, payload, readinessFilters, testedListingId: chosen.listingId, issuerCountryFilter: !!issuerCountry, issuerCountryURLReload: !!issuerCountry, unknownIssuerCount, displayedPriceMatchesCompactContract: canonicalPrice !== null, centralSeriesPriceMatches: !fixture && canonicalPrice !== null, verifiedLogoLoaded: !!proof.logo, fallbackChecked: !proof.logo, consumerHistoryRequests, watchlist: true, legacyWatchlistPreserved: true });
       await context.close();
     }
   } finally { await browser.close(); }

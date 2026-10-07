@@ -8,6 +8,31 @@
     "intraday": "Intraday-Verzeichnis: bei offener Boerse Alter des letzten Takts in Minuten, nach Schluss vollstaendiger Tagesverlauf der letzten Sitzung.",
     "none": "Kein Frischevertrag (Referenzdaten oder abgeschaltet)."
   },
+  "privateGenerators": [
+    {
+      "id": "europe817Completion",
+      "producer": "scripts/marketstack/build-europe-817-completion.mjs",
+      "artifacts": [
+        "europe_817_freshness.json",
+        "europe_817_quality.json",
+        "europe_817_history_readiness.json",
+        "europe_817_adjustment_status.json",
+        "europe_817_chart_readiness.json",
+        "europe_817_technical_readiness.json",
+        "europe_817_fundamentals_readiness.json",
+        "europe_817_quant_readiness.json",
+        "europe_817_supertrader_readiness.json",
+        "europe_817_logo_status.json",
+        "europe_817_product_readiness.json",
+        "europe_refresh_credit_model.json",
+        "europe_core_index_status.json",
+        "europe_core_blockers.json"
+      ],
+      "scope": "EXISTING_817_SERIES_AND_29_CORE_METADATA_BLOCKERS_ONLY",
+      "publicDisplay": false,
+      "scheduleActivated": false
+    }
+  ],
   "domains": [
     {
       "id": "deEuListings",
@@ -25,7 +50,7 @@
       "freshness": { "kind": "none" },
       "disabledWhen": { "path": "state", "equals": "DISABLED" },
       "consumers": ["Discover lokale Suche, Listingseite und Watchlist; Screener Europa (separate Produkt-PRs)"],
-      "knownGaps": ["Account-Restkontingent ohne Nachweis UNKNOWN. Expliziter Entwicklungslauf: Ziel 15000, Hartlimit 20000 zusätzlich geschätzte Symbolcredits; gemeinsamer persistenter Zähler, kein aktivierter Zeitplan.", "Öffentliche Rohkurs- und Displayrechte sind nicht allgemein bestätigt; reale DE/EU-Daten werden ausschließlich außerhalb des Repositorys materialisiert."]
+      "knownGaps": ["Account-Restkontingent UNKNOWN; expliziter Completionlauf 2026-10-07: nur vorhandene 817 Reihen und 29 Coreblocker. Zusatz-Ziel 8000, Zusatz-Hartlimit 12000 auf Öffnungsstand3702; gleicher persistenter Zähler, kein Zeitplan.", "Öffentliche Rohkurs- und Displayrechte sind nicht allgemein bestätigt; reale DE/EU-Daten werden ausschließlich außerhalb des Repositorys materialisiert."]
     },
     {
       "id": "securityMaster",

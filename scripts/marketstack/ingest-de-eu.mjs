@@ -20,7 +20,16 @@ export function dedicatedActionCoverage(mic){return EU_ACTION_UNCOVERED_MICS.has
  sha256:'c8e56f7c42a7df179237befddda6a0616e766c04733bb7d4d54f1ceb677ac117',scope:'DEDICATED_SPLITS_AND_DIVIDENDS_MARKETS'}]}:null;}
 const date=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 const reason=r=>({entitlementRestricted:'ENTITLEMENT_BLOCKED',authError:'ENTITLEMENT_BLOCKED',dataUnavailable:'UNSUPPORTED_LISTING',identityMismatch:'MAPPING_ERROR',symbolMismatch:'MAPPING_ERROR',exchangeMismatch:'MAPPING_ERROR',isinMismatch:'MAPPING_ERROR',budgetUnverified:'ACCOUNT_BUDGET_UNVERIFIED',SHARED_BUDGET_EXCEEDED:'ACCOUNT_BUDGET_UNVERIFIED'})[r]||'PROVIDER_DATA_DEFECT';
-export function sampleSelection(rows,size=15){
+export function sampleSelection(rows,size=15,listingIds){
+ if(listingIds!==undefined){
+  if(!Array.isArray(listingIds)||!listingIds.length||listingIds.length>20||new Set(listingIds).size!==listingIds.length)throw Error('FROZEN_SAMPLE_SELECTION_INVALID');
+  const picked=listingIds.map(id=>rows.find(r=>r.listingId===id));
+  if(picked.some(r=>!r||r.listingId!==require('../../core/identity.js').listingIdFor(r)))throw Error('FROZEN_SAMPLE_SELECTION_INVALID');
+  for(const mic of new Set(rows.map(r=>r.mic)))if(!picked.some(r=>r.mic===mic))throw Error('FROZEN_SAMPLE_VENUE_COVERAGE_REQUIRED');
+  for(const index of ['DAX','MDAX','SDAX','TECDAX','EURO_STOXX_50'])if(rows.some(r=>r.indexMemberships.includes(index))&&!picked.some(r=>r.indexMemberships.includes(index)))throw Error('FROZEN_SAMPLE_INDEX_COVERAGE_REQUIRED');
+  if(rows.some(r=>r.shareClass==='PREFERRED_SHARE')&&!picked.some(r=>r.shareClass==='PREFERRED_SHARE'))throw Error('FROZEN_SAMPLE_SHARE_CLASS_COVERAGE_REQUIRED');
+  return picked;
+ }
  const chosen=new Map(),add=r=>{if(r&&chosen.size<size)chosen.set(r.listingId,r);};
  for(const ticker of ['SAP','SIE','RHM','ALV','DTE','VOW3','ASML','MC'])add(rows.find(r=>r.ticker===ticker));
  for(const index of ['MDAX','SDAX','TECDAX'])for(const r of rows.filter(r=>r.indexMemberships.includes(index)).slice(0,2))add(r);
@@ -41,18 +50,39 @@ export function mergeQuarantine(previous=[],incoming=[],validatedBars=[]){
  for(const q of incoming)byObservation.set(JSON.stringify(q),q);
  return [...byObservation.values()].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||String(a.reason||'').localeCompare(String(b.reason||'')));
 }
+
+export function mergeQuarantineLedger(ledger=[],previous=[],incoming=[],previousEvidence=[],incomingEvidence=[],asOf){
+ const entries=new Map(ledger.map(entry=>[entry.observationHash,entry]));
+ for(const [observations,evidence,origin]of [[previous,previousEvidence,'EXISTING_QUARANTINE'],[incoming,incomingEvidence,'NEW_SOURCE_QUARANTINE']])for(const observation of observations){
+  const observationHash=sha(JSON.stringify(observation));if(!entries.has(observationHash))entries.set(observationHash,{observationHash,observation,sourceEvidence:evidence.slice(),recordedAsOf:asOf,origin});
+ }
+ return [...entries.values()].sort((a,b)=>a.observationHash.localeCompare(b.observationHash));
+}
+export function incrementalHistoryWindow(prior,asOf,historyYears=5,policy=null){
+ const priorLatestDate=prior?.bars?.at(-1)?.date||null;
+ const overlapFrom=priorLatestDate?new Date(Date.parse(priorLatestDate)-(policy?.historyOverlapDays||10)*86400000).toISOString().slice(0,10):new Date(Date.parse(asOf)-historyYears*366*86400000).toISOString().slice(0,10);
+ const cappedFrom=policy?.maxLookbackDays?new Date(Date.parse(asOf)-policy.maxLookbackDays*86400000).toISOString().slice(0,10):overlapFrom,from=overlapFrom<cappedFrom?cappedFrom:overlapFrom;
+ return {from,to:asOf,overlapDays:policy?.historyOverlapDays||10,maxLookbackDays:policy?.maxLookbackDays||null,priorLatestDate,boundedGapRemains:from>overlapFrom&&from>(priorLatestDate||'')};
+}
+function incrementalPolicy(listingMap,accountEvidence){
+ const policy=listingMap.ingestionPolicy;if(policy===undefined)return null;
+ if(policy?.schemaVersion!=='de-eu-incremental-policy-1.0.0'||policy.mode!=='EXISTING_ACCEPTED_SERIES'||policy.latestEod!==true||policy.historyOverlapDays!==10||policy.skipDocumentedUncoveredDedicatedActions!==true||policy.dedicatedActionCoverageSourceHash!==dedicatedActionCoverage('XETR').evidence[0].sha256||!policy.cachedHistoryHashes||typeof policy.cachedHistoryHashes!=='object'||Array.isArray(policy.cachedHistoryHashes)||(policy.maxLookbackDays!==undefined&&(!Number.isSafeInteger(policy.maxLookbackDays)||policy.maxLookbackDays<10||policy.maxLookbackDays>45)))throw Error('FROZEN_INCREMENTAL_POLICY_INVALID');
+ if(accountEvidence?.kind!=='USER_AUTHORIZED_BOUNDED_RUN'||accountEvidence.referenceHash!==sha(JSON.stringify(listingMap)))throw Error('INCREMENTAL_POLICY_AUTHORIZATION_REQUIRED');
+ return policy;
+}
 export async function ingest({listingMap,accountEvidence,privateDir,previewOut,asOf,runId,providerFactory,now=Date.now,phase='sample',sampleProof=null,historyYears=5}={}){
  if(!date(asOf)||!runId)throw Error('FIXED_AS_OF_AND_RUN_ID_REQUIRED');assertPrivateOutput(privateDir,{allowCache:true});assertPrivateOutput(previewOut);
  if(listingMap?.schemaVersion!=='de-eu-listing-map-1.0.0'||!date(listingMap.asOf)||listingMap.asOf>asOf||(phase!=='refresh'&&listingMap.asOf!==asOf))throw Error('FROZEN_REFERENCE_REQUIRED');
+ const policy=incrementalPolicy(listingMap,accountEvidence);
  if(![2,5].includes(historyYears))throw Error('BOUNDED_HISTORY_WINDOW_REQUIRED');
  const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
  // Account evidence is validated before any client, URL, or request exists.
  const opening=await budget.status();const rows=listingMap.listings.filter(r=>r.mappingStatus==='VERIFIED');
- const candidates=rows.filter(r=>r.providerSymbol&&r.quoteUnit==='MAJOR');const requiredBaseCredits=candidates.length*(phase==='refresh'?2:6);
+ const candidates=rows.filter(r=>r.providerSymbol&&r.quoteUnit==='MAJOR');const requiredBaseCredits=candidates.length*(policy?2:phase==='refresh'?2:6);
  if(opening.creditsRemaining<requiredBaseCredits)throw Error('ACCOUNT_BUDGET_INSUFFICIENT_FOR_MANDATORY_BASE');
  const write=(p,v)=>{rejectSymlinkAncestors(p);mkdirSync(resolve(p,'..'),{recursive:true,mode:0o700});writeFileSync(p,JSON.stringify(v)+'\n',{mode:0o600});};
  const read=p=>{rejectSymlinkAncestors(p);return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):null;};
- const sample=sampleSelection(candidates),sampleIds=new Set(sample.map(r=>r.listingId));
+ const sample=sampleSelection(candidates,15,listingMap.sampleListingIds),sampleIds=new Set(sample.map(r=>r.listingId));
  if(!['sample','mandatory','refresh'].includes(phase))throw Error('INVALID_IMPORT_PHASE');
  const referenceHash=sha(JSON.stringify(listingMap)),checkpointPath=join(privateDir,'checkpoints',referenceHash+'.json');
  const latestPath=join(privateDir,'checkpoint.json'),legacyCheckpoint=read(latestPath);
@@ -93,6 +123,11 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
  let ordered=phase==='sample'?sample:phase==='mandatory'?candidates.filter(r=>!sampleIds.has(r.listingId)):candidates;
  const histories={},currentHistoryHashes={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3])),actionEndpointBlocks=new Set();let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
  for(const r of rows){const h=read(join(privateDir,'normalized',r.listingId+'.json'));if(h&&h.isin===r.isin&&h.mic===r.mic&&h.currency===r.tradingCurrency){histories[r.listingId]=h;currentHistoryHashes[r.listingId]=sha(JSON.stringify(h));}}
+ if(policy){
+  const expectedHashes=phase==='sample'?policy.cachedHistoryHashes:previousCheckpoint?.currentHistoryHashes||policy.cachedHistoryHashes;
+  if(Object.keys(policy.cachedHistoryHashes).length!==candidates.length||candidates.some(r=>!histories[r.listingId]?.bars?.length||histories[r.listingId].provider!=='marketstack'||histories[r.listingId].apiVersion!=='v2'||histories[r.listingId].quoteUnit!==r.quoteUnit||!/^[a-f0-9]{64}$/.test(policy.cachedHistoryHashes[r.listingId]||'')||currentHistoryHashes[r.listingId]!==expectedHashes[r.listingId]))throw Error('INCREMENTAL_CACHED_HISTORY_DRIFT');
+ }
+
  if(phase==='refresh'){
   // Daily overlap updates accepted histories only. Mapping failures need an
   // explicit revalidation run, not repeated paid metadata requests every day.
@@ -112,7 +147,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   // Scope evidence before every early gate, including listings never queried.
   responseRefs=[];
   const remaining=await budget.status();console.log(JSON.stringify({stage:'BEFORE_SELECTED_LISTING',phase,
-   estimatedBatchCredits:phase==='refresh'?1:6,consumedCredits:remaining.estimatedCreditsConsumed,remainingRunCredits:remaining.creditsRemaining}));
+   estimatedBatchCredits:policy?2:phase==='refresh'?1:6,requestsSoFar:remaining.requestsAttempted,consumedCredits:remaining.estimatedCreditsConsumed,additionalBudgetScope:remaining.additionalBudgetScope||null,remainingRunCredits:remaining.creditsRemaining,listingsCompleted:decisions.length,listingsOpen:ordered.length-decisions.length}));
   const samplePhase=sampleIds.has(r.listingId),block=(cause,nextStep)=>decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'BLOCKED',cause,nextStep,phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY',sourceEvidence:responseRefs.slice(),testedAt:new Date(now()).toISOString(),asOf});
   if(!samplePhase&&sampleSuccesses===0){block('PROVIDER_DATA_DEFECT','Resolve the representative end-to-end sample before broad import.');continue;}
   if(quarantinedMICs.includes(r.mic)){block('MAPPING_ERROR','The representative identity for this MIC was not validated; no market-wide provider defect is inferred. Resolve the exact listing evidence first.');continue;}
@@ -134,11 +169,11 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
    if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');if(['authError','quotaExceeded'].includes(metadata.reason))break;continue;}
    write(join(privateDir,'metadata',r.listingId+'.json'),{isin:r.isin,mic:r.mic,checkedAt:new Date(now()).toISOString(),data:metadata.data,sourceEvidence:responseRefs.slice()});
   }
-  const quote=phase==='refresh'?null:await provider.getQuote(r.listingId,{frequency:'EOD'});
+  const quote=phase==='refresh'&&!policy?null:await provider.getQuote(r.listingId,{frequency:'EOD'});
   if(quote&&!quote.available){block(reason(quote.reason),'Review latest-EOD identity and entitlement for this listing.');if(['authError','quotaExceeded'].includes(quote.reason))break;venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
   const lastDate=quote?String(quote.data.timestamp).slice(0,10):null;if(quote&&(!date(lastDate)||lastDate>asOf)){block('PROVIDER_DATA_DEFECT','Correct future or invalid provider market date.');continue;}
   // Limited calendar-day overlap is retrieval only, never a session-completeness claim.
-  const from=prior?.bars?.length?new Date(Date.parse(prior.bars.at(-1).date)-10*86400000).toISOString().slice(0,10):new Date(Date.parse(asOf)-historyYears*366*86400000).toISOString().slice(0,10);
+  const retrieval=incrementalHistoryWindow(prior,asOf,historyYears,policy),from=retrieval.from;
   const history=await provider.getHistoricalBars(r.listingId,{from,to:asOf,maxPages:2});
   if(!history.available){block(reason(history.reason),'Review the bounded history response; preserve prior history.');if(['authError','quotaExceeded'].includes(history.reason))break;continue;}
   if(history.data.bars.some(b=>b.date<from||b.date>asOf)){block('PROVIDER_DATA_DEFECT','Provider returned bars outside the requested window.');continue;}
@@ -146,7 +181,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(!last||quote&&(last.date!==lastDate||last.close!==quote.data.last)){block('PROVIDER_DATA_DEFECT','Reconcile latest endpoint with canonical EOD history; no second product quote source.');continue;}
   const actions={...prior?.corporateActions};let terminalActionFailure=false;
   if(phase!=='refresh'&&typeof provider.getActionEvents==='function')for(const kind of ['splits','dividends']){
-   const uncovered=phase==='mandatory'&&dedicatedActionCoverage(r.mic);
+   const uncovered=(phase==='mandatory'||policy?.skipDocumentedUncoveredDedicatedActions)&&dedicatedActionCoverage(r.mic);
    if(uncovered){actions[kind]=uncovered;write(join(privateDir,'actions',r.listingId+'-'+kind+'.json'),uncovered);continue;}
    if(actionEndpointBlocks.has(kind)){actions[kind]={available:false,reason:'entitlementRestricted',priorRepresentativeFailure:true};continue;}
    const action=await provider.getActionEvents(r.listingId,kind,{from,to:asOf,maxPages:2});actions[kind]=action;
@@ -155,14 +190,22 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
    if(['authError','quotaExceeded'].includes(action.reason)){terminalActionFailure=true;break;}
   }
   const quarantine=mergeQuarantine(prior?.quarantined,history.data.anomalies,history.data.bars);
+  const quarantineLedger=mergeQuarantineLedger(prior?.quarantineLedger,prior?.quarantined,history.data.anomalies,prior?.sourceEvidence||[],responseRefs,asOf);
+  const priorBars=new Map((prior?.bars||[]).map(bar=>[bar.date,bar])),incomingBars=new Map(history.data.bars.map(bar=>[bar.date,bar]));
+  const newRestatements=merged.restatements.map(change=>({...change,previousBarHash:sha(JSON.stringify(priorBars.get(change.date))),incomingBarHash:sha(JSON.stringify(incomingBars.get(change.date))),sourceEvidence:responseRefs.slice(),asOf}));
+  const legacyRestatements=prior?.restatementLedger||((prior?.restatements||[]).map(change=>({...change,legacy:true,sourceEvidence:(prior.sourceEvidence||[]).slice(),hashBasis:'PREVIOUS_BAR_HASH_NOT_RECORDED'})));
+  const restatementLedger=[...new Map([...legacyRestatements,...newRestatements].map(entry=>[sha(JSON.stringify(entry)),entry])).values()];
+  const priorQuarantineDates=new Set((prior?.quarantined||[]).map(q=>String(q.date||'').slice(0,10)));
+  const correctionEvidence=history.data.bars.filter(bar=>priorQuarantineDates.has(bar.date)).map(bar=>({date:bar.date,incomingBarHash:sha(JSON.stringify(bar)),quarantinedObservationHashes:quarantineLedger.filter(entry=>String(entry.observation.date||'').slice(0,10)===bar.date).map(entry=>entry.observationHash),sourceEvidence:responseRefs.slice(),asOf}));
+  const quarantineCorrections=[...new Map([...(prior?.quarantineCorrections||[]),...correctionEvidence].map(entry=>[sha(JSON.stringify(entry)),entry])).values()];
   const h={provider:'marketstack',source:'marketstack',apiVersion:'v2',isin:r.isin,mic:r.mic,currency:r.tradingCurrency,quoteUnit:r.quoteUnit,corporateActions:actions,
    retrievedAt:quote?.data.retrieved_at||history.provenance?.retrieved_at||history.provenance?.ingestedAt||new Date(now()).toISOString(),sourceEvidence:[...new Set([...(prior?.sourceEvidence||[]),...responseRefs])],bars:merged.bars,restatements:merged.restatements,
-   quarantined:quarantine,adjustmentStatus:{verified:false,priceSeriesType:'UNKNOWN',evidence:[]},
-   quality:{status:'PARTIAL',quarantinedCandles:quarantine.length,completenessVerified:false,priceBasis:'PROVIDER_REPORTED_UNVERIFIED'}};
+   quarantined:quarantine,quarantineLedger,quarantineCorrections,restatementLedger,...(policy?{incrementalRetrieval:retrieval}:{}),adjustmentStatus:{verified:false,priceSeriesType:'UNKNOWN',evidence:[]},
+   quality:{status:'PARTIAL',quarantinedCandles:quarantine.length,originalQuarantinedCandles:quarantineLedger.length,completenessVerified:false,priceBasis:'PROVIDER_REPORTED_UNVERIFIED'}};
   write(join(privateDir,'normalized',r.listingId+'.json'),h);write(join(privateDir,'latest',r.listingId+'.json'),quote||{derivedFrom:'CANONICAL_HISTORY',data:{listingId:r.listingId,mic:r.mic,currency:r.tradingCurrency,last:last.close,date:last.date,kind:'EOD_CLOSE'}});histories[r.listingId]=h;currentHistoryHashes[r.listingId]=sha(JSON.stringify(h));
   decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'PARTIAL',cause:'UNKNOWN_ADJUSTMENT_BASIS',phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY',
    latestDate:last.date,historyStart:merged.bars[0].date,bars:merged.bars.length,freshness:'UNKNOWN_LOCAL_CALENDAR_NOT_VERIFIED',restatements:merged.restatements,sourceEvidence:responseRefs});
-  if(samplePhase)sampleSuccesses++;
+  if(samplePhase&&(!policy||phase==='sample'))sampleSuccesses++;
   // Crash checkpoint contains private state, never an exported public artifact.
   checkpoint({asOf,referenceHash,runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes,budget:await budget.status()});
   if(terminalActionFailure)break;

@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-06T04:15:34.000Z",
- "asOf": "2026-10-05",
+ "generatedAt": "2026-10-07T03:38:47.000Z",
+ "asOf": "2026-10-06",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -327,21 +327,21 @@
  "observed": 5747,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4400,
-  "WATCH": 745,
-  "SETUP_FORMING": 580,
-  "CONFIRMED": 22,
+  "NO_SETUP": 4403,
+  "WATCH": 770,
+  "SETUP_FORMING": 556,
+  "CONFIRMED": 18,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 580,
-  "setup.none.fallback": 4400,
-  "setup.watch.bullish-trend": 472,
-  "setup.watch.confirmed-structure-near-high": 273,
-  "setup.confirmed.structure-trend-volume": 22
+  "setup.forming.complete-setup-awaiting-trigger": 556,
+  "setup.none.fallback": 4403,
+  "setup.watch.bullish-trend": 484,
+  "setup.watch.confirmed-structure-near-high": 286,
+  "setup.confirmed.structure-trend-volume": 18
  },
  "pathTier": {
   "states": [
@@ -367,7 +367,8 @@
    "2026-09-30",
    "2026-10-01",
    "2026-10-02",
-   "2026-10-05"
+   "2026-10-05",
+   "2026-10-06"
   ],
   "minimumRequired": 2
  },
@@ -1016,8 +1017,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 60,
-  "cutoff": "2026-10-05",
+  "count": 61,
+  "cutoff": "2026-10-06",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-09-29": 5,
@@ -1044,6 +1045,7 @@
    "2026-08-19": 1,
    "2026-08-12": 1,
    "2026-09-09": 1,
+   "2026-10-05": 1,
    "2026-08-25": 2,
    "2026-09-25": 3,
    "2026-08-20": 3,
@@ -1215,6 +1217,10 @@
     "dataCutoff": "2026-09-10"
    },
    {
+    "ticker": "QRVO",
+    "dataCutoff": "2026-10-05"
+   },
+   {
     "ticker": "QULL",
     "dataCutoff": "2026-08-18"
    },
@@ -1245,10 +1251,6 @@
    {
     "ticker": "TALK",
     "dataCutoff": "2026-08-17"
-   },
-   {
-    "ticker": "TWO",
-    "dataCutoff": "2026-08-25"
    }
   ]
  }

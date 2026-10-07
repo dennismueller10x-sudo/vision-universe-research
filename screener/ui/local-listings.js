@@ -19,7 +19,9 @@
       var prepared = L.prepare(await core.getListingScreener()), rows = prepared.rows, ds = prepared.dataset, params = new URLSearchParams(location.search);
       var q = Q.fromParams(params); if (!params.get('sort')) q.sort = { field: 'name', dir: 'asc' };
       var currency = params.get('currency') || '', search = params.get('q') || '', issuerCountry = params.get('issuerCountry') || '', shown = 30;
-      L.validate(q, { currency: currency, issuerCountry: issuerCountry });
+      var statusFilters = {}; Object.keys(L.STATUS).forEach(function (kind) { statusFilters[kind] = params.get(kind) || ''; });
+      function options() { return Object.assign({ currency: currency, issuerCountry: issuerCountry, query: search }, statusFilters); }
+      L.validate(q, options());
       var controls = h('form', { class: 'sc-card sc-eu-controls', onsubmit: function (e) { e.preventDefault(); } });
       var results = h('section', { class: 'sc-eu-results', 'aria-label': 'Lokale Screener-Treffer' });
       function label(text, child) { return h('label', {}, [h('span', { text: text }), child]); }
@@ -36,6 +38,7 @@
         var p = Q.toParams(q); p.set('u', 'EUROPE');
         if (currency) p.set('currency', currency); if (search) p.set('q', search);
         if (issuerCountry) p.set('issuerCountry', issuerCountry);
+        Object.keys(statusFilters).forEach(function (kind) { if (statusFilters[kind]) p.set(kind, statusFilters[kind]); });
         history.replaceState({ sc: 1 }, '', '/screener/?' + p.toString());
       }
       var query = h('input', { type: 'search', placeholder: 'Name, Ticker oder ISIN', 'aria-label': 'Europäische Aktien suchen', value: search });
@@ -55,6 +58,11 @@
       var currencies = unique(rows.map(L.quoteUnit)), ccy = select('Kurswährung / Notierungseinheit', [['', 'Alle · kein Kursvergleich']].concat(currencies.map(function (c) { return [c, c]; })), currency);
       ccy.onchange = function () { currency = ccy.value; if (!currency && q.sort.field === 'price') q.sort = { field: 'name', dir: 'asc' }; paintControls(); paint(); };
       controls.append(label('Kurswährung / Notierungseinheit', ccy));
+      [['freshness', 'Kursaktualität'], ['chartReadiness', 'Chartfreigabe'], ['technicalReadiness', 'Technische Freigabe']].forEach(function (item) {
+        var input = select(item[1], [['', 'Alle']].concat(Object.keys(L.STATUS[item[0]]).map(function (status) { return [status, L.STATUS[item[0]][status]]; })), statusFilters[item[0]]);
+        input.onchange = function () { statusFilters[item[0]] = input.value; shown = 30; paint(); };
+        controls.append(label(item[1], input));
+      });
       var priceControl = h('div'), metricControls = h('div', { class: 'sc-eu-metrics' }); controls.append(priceControl, metricControls); main.append(controls, results);
       function paintControls() {
         var activePrice = Q.filters(q).find(function (f) { return f.field === 'price'; });
@@ -88,7 +96,7 @@
       controls.append(label('Sortierung', sort), label('Sortierrichtung', direction));
       function paint() {
         try {
-          var r = L.execute(prepared, q, { currency: currency, query: search, issuerCountry: issuerCountry }); updateURL();
+          var r = L.execute(prepared, q, options()); updateURL();
           status.textContent = r.total + ' passende Listings von ' + r.universe + ' in der Auswahl · Referenzstand ' + (prepared.data.referenceAsOf || 'unbekannt') + ' · Datenstand ' + (prepared.data.dataAsOf || 'unbekannt');
           sort.querySelector('option[value="price"]').disabled = !currency;
           sort.value = q.sort.field;
@@ -96,7 +104,7 @@
           var missing = Object.values(r.perFilter).reduce(function (n, f) { return n + f.missing; }, 0);
           if (missing) results.append(h('p', { class: 'sc-note', text: 'Fehlende Werte erfüllen keinen Filter. ' + missing + ' fehlende Einzelwerte in den aktiven Kriterien.' }));
           r.rows.slice(0, shown).forEach(function (row) {
-            var p = row.price, unit = L.quoteUnit(row), freshness = p && ({ CURRENT: 'bestätigte letzte Sitzung', STALE: 'veralteter Quellenstand', STALE_CACHE: 'veralteter Quellenstand' }[p.freshness] || 'Aktualität nicht bestätigt');
+            var p = row.price, unit = L.quoteUnit(row), freshness = D.LocalListings.freshnessLabel(L.status(row, 'freshness'));
             var price = p ? new Intl.NumberFormat('de-DE', { maximumFractionDigits: p.close >= 1 ? 2 : 6 }).format(p.close) + ' ' + unit : 'Kurs nicht verfügbar';
             var watch = h('button', { type: 'button', class: 'sc-btn sc-btn-secondary' });
             function watchState() { var saved = D.LocalListings.contains(storage, row); watch.textContent = saved ? 'Auf Watchlist' : 'Zur Watchlist'; watch.setAttribute('aria-pressed', String(saved)); watch.setAttribute('aria-label', row.name + (saved ? ' aus Watchlist entfernen' : ' zur Watchlist hinzufügen')); }
@@ -105,6 +113,18 @@
               h('p', { class: 'sc-note', text: [row.ticker, row.isin, row.mic, unit, (row.indexMemberships || []).join(', ')].filter(Boolean).join(' · ') }),
               h('p', { class: 'sc-note', text: 'Emittentenland: ' + (L.issuerCountry(row) ? displayNames ? displayNames.of(L.issuerCountry(row)) : L.issuerCountry(row) : 'nicht belegt') }),
               h('p', { class: 'sc-num sc-eu-price', text: price }), h('p', { class: 'sc-note', text: p ? 'Letzter Handelsschluss: ' + p.date + ' · ' + freshness : 'Keine freigegebene Kursbasis vorhanden.' })]);
+            details.append(h('p', { class: 'sc-note', text: L.STATUS.chartReadiness[L.status(row, 'chartReadiness')] + ' · ' + L.STATUS.technicalReadiness[L.status(row, 'technicalReadiness')] }));
+            if (p) details.append(h('p', { class: 'sc-note', text: 'Marketstack · EOD · ' + row.mic + ' · ' + unit + ' · Quellenabruf: ' + (p.retrievedAt || 'nicht belegt') + ' · erwartete Sitzung: ' + (p.expectedSession || 'nicht belegt') }));
+            var readiness = row.readiness || {};
+            ['chart', 'technical'].forEach(function (kind) {
+              var proof = readiness[kind];
+              if (proof) details.append(h('p', { class: 'sc-note', text: (kind === 'chart' ? 'Chartprüfung' : 'Technikprüfung') + ': ' + (proof.asOf || 'Datum nicht belegt') + (proof.window ? ' · ' + proof.window.start + ' bis ' + proof.window.end : '') + (proof.cause ? ' · ' + proof.cause : '') }));
+            });
+            var quality = p && p.quality || row.quality;
+            var qualityLabel = quality && ({ READY: 'geprüft', VERIFIED: 'geprüft', PARTIAL: 'eingeschränkt', BLOCKED: 'gesperrt', NOT_TESTED: 'noch nicht geprüft' })[quality.status] || 'nicht belegt';
+            var basis = p && p.basis || quality && quality.priceBasis;
+            var basisLabel = ({ PROVIDER_REPORTED_UNVERIFIED: 'ungeklärt', SPLIT_ADJUSTED: 'splitbereinigt', RAW: 'unbereinigt' })[basis] || 'nicht belegt';
+            details.append(h('p', { class: 'sc-note', text: 'Datenqualität: ' + qualityLabel + ' · Bereinigungsbasis: ' + basisLabel }));
             Q.filters(q).filter(function (f) { return L.METRICS.includes(f.field); }).forEach(function (filter) {
               details.append(h('p', { class: 'sc-note', text: F.field(filter.field).label + ': ' + F.format(filter.field, ds.value(filter.field, ds.indexOf(row.listingId))) }));
             });
