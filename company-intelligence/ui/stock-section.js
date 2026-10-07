@@ -59,7 +59,7 @@ function eventRow(e){
  return n;
 }
 function render(host,payload){
- host.replaceChildren(node('p','Company Intelligence','dv2-detail-eyebrow'),node('h2','Unternehmensüberblick'));
+ host.replaceChildren(node('p','Unternehmensinformationen','dv2-detail-eyebrow'),node('h2','Unternehmensüberblick'));
  if(payload.state!=='AVAILABLE'){host.append(node('p','Unternehmensmeldungen sind derzeit nicht verfügbar. Bitte später erneut versuchen.','ci-meta'));return;}
  const now=Date.now(),today=new Date(now).toISOString().slice(0,10),cutoff=new Date(now-30*86400000).toISOString().slice(0,10);
  const status=node('p',(payload.preview?'Vorschau · ':'')+'Daten aufbereitet am '+day(payload.generatedAt)+' · Abdeckung je Unternehmen unterschiedlich.','ci-meta');host.append(status);
