@@ -1,0 +1,186 @@
+name: Chartbild-Historie (Mission IX, Genauigkeit x Geometrie / asymmetrische Gewinner)
+
+# WOZU: Mission IX nutzt die Mission-VIII-Infrastruktur (scripts/technical/hsab) runner-privat und
+# committet NUR aggregierte Kennzahlen (keine Kurse, keine Niveaus, keine Ereignis-Exporte).
+#
+#   Track A Bestaetigung: Tagesengine auf einer NEUEN, zu Mission VIII titel-disjunkten Stichprobe
+#     (Hash-Raenge 1200..2399; Mission VIII oeffnete nur 0..1199, die Disjunktheit prueft replay.mjs
+#     gegen den veroeffentlichten Symbol-Hash), Erkennung 2017-01-01 .. 2026-09-30.
+#   Track B Survivorship-Erweiterung: delistete Wochenkohorte (in Mission VIII als Holdout VERBRAUCHT;
+#     hier nur Erweiterung/Sensitivitaet, ausdruecklich KEINE Bestaetigung).
+#
+# Ausloeser: Push auf claude/** mit einer Marke im BETREFF der Commit-Nachricht:
+#   [hsab9-ci-dev]    Track B delistete Kohorte (verbrauchte Daten, beschreibend) + Track A NUR Stage 1
+#                     (Siegel, Zaehler, Disjunktheitspruefung; keine Outcomes)
+#   [hsab9-confirm]   einmalige Track-A-Bestaetigung; verlangt protocol9.status PREREGISTERED und den
+#                     SHA-256 der Mission-IX-Praeregistrierung; bricht ab, wenn bereits ein Ergebnis existiert
+# Ohne Marke laeuft nichts.
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technical-intelligence-mission9-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.g.outputs.mode }}
+    steps:
+      - id: g
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          case "$subject" in
+            *"[hsab9-confirm]"*) echo "mode=confirm" >> "$GITHUB_OUTPUT" ;;
+            *"[hsab9-ci-dev]"*) echo "mode=dev" >> "$GITHUB_OUTPUT" ;;
+            *) echo "mode=none" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+  track-b-delisted:
+    needs: gate
+    if: needs.gate.outputs.mode == 'dev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      OUT: quant/data/technical-intelligence/historical-accuracy/mission9/ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE --out "$RUNNER_TEMP/preflight.json"
+      - name: Restore canonical history (runner-private, needed for ticker-change de-duplication)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/preflight.json" --work-dir "$RUNNER_TEMP/canonical-history" --report "$RUNNER_TEMP/sync.json"
+      - name: Private delisted weekly bundle
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          VU_SURVIVORSHIP_OUT: ${{ runner.temp }}/survivorship-control.json
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-survivorship-control.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history" --bundle-out "$RUNNER_TEMP/delisted-weekly.json"
+      - name: Stage 1 replay (delisted weekly cohort, detection points only)
+        run: >-
+          node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --delisted "$RUNNER_TEMP/delisted-weekly.json"
+          --workers "$(nproc)" --out "$RUNNER_TEMP/dl-replay"
+      - name: Track B on the delisted cohort (aggregates only)
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          node --max-old-space-size=7168 scripts/technical/hsab/track-b.mjs --records "$RUNNER_TEMP/dl-replay" --delisted "$RUNNER_TEMP/delisted-weekly.json" --out "$OUT/tb-delisted.json"
+          node --max-old-space-size=7168 scripts/technical/hsab/track-b.mjs --records "$RUNNER_TEMP/dl-replay" --delisted "$RUNNER_TEMP/delisted-weekly.json" --min-price 1 --out "$OUT/tb-delisted-p1.json"
+          node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/dl-replay" --label "m9-delisted" --out "$OUT"
+      - name: Hygiene
+        run: |
+          node scripts/market/assert-public-data-hygiene.mjs
+          node scripts/technical/hsab/publish-ci.mjs --check "$OUT"
+      - name: Commit (aggregates only)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence/historical-accuracy/mission9/ci
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Mission IX CI: Track B delistete Kohorte (nur Kennzahlen)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  track-a-daily:
+    needs: gate
+    if: needs.gate.outputs.mode != 'none'
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      MODE: ${{ needs.gate.outputs.mode }}
+      OUT: quant/data/technical-intelligence/historical-accuracy/mission9/ci
+      # Mission-VIII-Tagesstichprobe (Raenge 0..1199), veroeffentlichter Symbol-Hash aus d-holdout-stage1-holdout-stage1.json
+      M8_SAMPLE: '1200:457ce200ffb2be48ff178db01313217317f1ad2d493dca766d51e0e2adb781d0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bestaetigung nur einmal, Praeregistrierung vor dem Oeffnungs-Commit
+        if: needs.gate.outputs.mode == 'confirm'
+        run: |
+          set -euo pipefail
+          if [ -f "$OUT/a9-confirm-eval.json" ]; then echo "Track-A-Bestaetigung wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
+          git diff --quiet HEAD~1 HEAD -- scripts/technical/hsab quant/engines scripts/technical/lib .github/workflows/technical-intelligence-mission9.yml docs/technical-intelligence/MISSION9_PREREGISTRATION.md \
+            || { echo "Oeffnungs-Commit aendert Code/Protokoll/Praeregistrierung - verweigert."; exit 1; }
+          git cat-file -e HEAD~1:docs/technical-intelligence/MISSION9_PREREGISTRATION.md
+      - name: Read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE --out "$RUNNER_TEMP/preflight.json"
+      - name: Restore canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/preflight.json" --work-dir "$RUNNER_TEMP/canonical-history" --report "$RUNNER_TEMP/sync.json"
+      - name: "Stage 1, disjoint daily sample (ranks 1200..2399; dev = seal only, no outcomes)"
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
+            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 1200 --sample-offset 1200 --disjoint-from "$M8_SAMPLE" \
+            --from 2017-01-01 --to 2026-09-30 --grid month --workers "$(nproc)" --out "$RUNNER_TEMP/a9"
+          mkdir -p "$OUT"
+          node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/a9" --label "a9-confirm-$MODE" --out "$OUT"
+      - name: Stage 2 + Track A (confirm only; results are not printed to the log)
+        if: needs.gate.outputs.mode == 'confirm'
+        run: |
+          set -euo pipefail
+          sha=$(sha256sum docs/technical-intelligence/MISSION9_PREREGISTRATION.md | cut -d' ' -f1)
+          node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/a9" --phase A9_CONFIRM --protocol scripts/technical/hsab/protocol9.json \
+            --work-dir "$RUNNER_TEMP/canonical-history" --open-holdout "$sha" --dump-events "$RUNNER_TEMP/a9-events.jsonl.gz" --out "$OUT/a9-confirm-eval.json"
+          node --max-old-space-size=7168 scripts/technical/hsab/track-a.mjs --events "$RUNNER_TEMP/a9-events.jsonl.gz" --eval "$OUT/a9-confirm-eval.json" --out "$OUT/a9-confirm-tracka.json" > /dev/null
+      - name: Hygiene
+        run: |
+          node scripts/market/assert-public-data-hygiene.mjs
+          node scripts/technical/hsab/publish-ci.mjs --check "$OUT"
+      - name: Commit (aggregates only)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence/historical-accuracy/mission9/ci
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Mission IX CI: Track A Tagesstichprobe (${MODE}, nur Kennzahlen)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

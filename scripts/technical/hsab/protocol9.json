@@ -1,0 +1,92 @@
+{
+ "schemaVersion": "hsab-protocol-9.0.0",
+ "status": "DRAFT",
+ "note": "Mission IX Protokoll. Mission VIII (protocol.json) bleibt eingefroren. Nach status=PREREGISTERED keine Aenderung; Hypothesen und Regeln in MISSION9_PREREGISTRATION.md.",
+ "preregistration": {
+  "file": "docs/technical-intelligence/MISSION9_PREREGISTRATION.md",
+  "sha256": null
+ },
+ "phases": {
+  "W_DEV": {
+   "cohorts": [
+    "SURV_W"
+   ],
+   "bucket": [
+    0,
+    2
+   ],
+   "usage": "Track A/B Exploration (verbrauchte Daten, Mission VIII W_DEV)"
+  },
+  "W_VAL": {
+   "cohorts": [
+    "SURV_W"
+   ],
+   "bucket": [
+    1,
+    2
+   ],
+   "usage": "Track A/B Gegenprobe nach DEV-Sichtung (verbrauchte Daten, Mission VIII W_VAL) - Validierung, keine Bestaetigung"
+  },
+  "A9_CONFIRM": {
+   "cohorts": [
+    "SURV_D"
+   ],
+   "from": "2017-01-01",
+   "requires": "PREREGISTERED",
+   "sample": {
+    "size": 1200,
+    "offset": 1200
+   },
+   "usage": "Track-A-Bestaetigung: Tagesengine, Titel disjunkt zu Mission VIII (Hash-Raenge 1200..2399), Kalenderzeitraum aus Wochenstudien bekannt -> CONDITIONAL HOLDOUT",
+   "detectionWindow": "Stage 1: --from 2017-01-01 --to 2026-09-30 (wie Mission VIII D_HOLDOUT)"
+  }
+ },
+ "trackB": {
+  "dev": "Ueberlebende Woche, Bucket 0/2",
+  "val": "Ueberlebende Woche, Bucket 1/2 (nach DEV-Freeze)",
+  "survivorshipExtension": "delistete Wochenkohorte in CI (Mission VIII verbraucht; nur Sensitivitaet)",
+  "confirmation": "KEINE frische Bestaetigung moeglich (alle Wochenpfade verbraucht; Horizonte 6-36 Monate schliessen prospektive Daten aus) -> ehrliche Herabstufung auf VALIDATION_ON_CONSUMED_DATA"
+ },
+ "variants": [
+  "FULL",
+  "NO_TREND",
+  "NO_MOMENTUM",
+  "NO_STRUCTURE",
+  "NO_HTF",
+  "NO_VOLUME",
+  "NO_PATTERN",
+  "NO_SR",
+  "NO_FIB",
+  "NO_ELLIOTT",
+  "NO_WYCKOFF",
+  "TREND_ONLY",
+  "STRUCTURE_ONLY",
+  "MOMENTUM_ONLY",
+  "TREND_STRUCTURE",
+  "TREND_MOMENTUM",
+  "STRUCTURE_VOLUME",
+  "TREND_STRUCTURE_VOLUME"
+ ],
+ "controls": {
+  "B": 3,
+  "C": 3,
+  "D": 5,
+  "E": 5
+ },
+ "minN": {
+  "segment": 300
+ },
+ "bootstrap": {
+  "B": 1000,
+  "timeBlock": "QUARTER"
+ },
+ "selectivity": {
+  "agreementCutoffs": {
+   "TOP50": 0.6028,
+   "TOP25": 0.7793,
+   "TOP10": 0.8706
+  },
+  "source": "Quantile von |Agreement| der aufgeloesten FULL-Ereignisse in W_DEV (Stage-1-Siegel 5c16e61dc463b10a), eingefroren vor W_VAL"
+ },
+ "freeze": null
+}

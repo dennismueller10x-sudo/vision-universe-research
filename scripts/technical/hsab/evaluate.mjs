@@ -27,7 +27,7 @@
         gleichem ATR%-Tercil am Datum (struktur-gematcht, ohne VU-Methode)
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
@@ -41,7 +41,7 @@ const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
 const Out = require(join(ROOT, "quant/engines/technical/ti/outcomes.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 
-export const EVAL_VERSION = "hsab-evaluate-1.1.0";   // 1.1.0 (Mission IX): optionaler Ereignis-Export (--dump-events), Ausgaben sonst unveraendert
+export const EVAL_VERSION = "hsab-evaluate-1.2.0";   // 1.1.0 (Mission IX): optionaler Ereignis-Export (--dump-events); 1.2.0: protocol9.json als Repository-Protokoll, Stichproben-Pruefung (sampleOffset); Ausgaben sonst unveraendert
 const HERE = dirname(fileURLToPath(import.meta.url));
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -226,7 +226,8 @@ export async function evaluate(o) {
   const phase = protocol.phases[o.phase]; if (!phase) throw new Error("Unbekannte Phase " + o.phase);
   /* Siegel-Regeln: VAL erst nach DEV-Freeze, HOLDOUT nur mit Praeregistrierungs-Hash und nur einmal. */
   /* Review H3: versiegelte Phasen nur mit dem Protokoll des Repositorys (kein --protocol-Umweg). */
-  if (phase.requires && join(protoPath) !== join(HERE, "protocol.json")) throw new Error("VALIDATION/HOLDOUT versiegelt: nur das Repository-Protokoll ist zulaessig");
+  /* Mission IX: eigenes Repository-Protokoll protocol9.json (Mission VIII bleibt eingefroren). */
+  if (phase.requires && ![join(HERE, "protocol.json"), join(HERE, "protocol9.json")].includes(resolve(protoPath))) throw new Error("VALIDATION/HOLDOUT versiegelt: nur das Repository-Protokoll ist zulaessig (protocol.json oder protocol9.json)");
   if (phase.requires === "DEV_FROZEN" && protocol.status !== "DEV_FROZEN" && protocol.status !== "PREREGISTERED") throw new Error("VALIDATION versiegelt: protocol.status muss DEV_FROZEN sein");
   if (phase.requires === "PREREGISTERED") {
     if (protocol.status !== "PREREGISTERED") throw new Error("HOLDOUT versiegelt: protocol.status muss PREREGISTERED sein");
@@ -235,6 +236,8 @@ export async function evaluate(o) {
     if (!protocol.preregistration.sha256 || protocol.preregistration.sha256 !== sha(pre)) throw new Error("HOLDOUT versiegelt: protocol.preregistration.sha256 passt nicht zur Praeregistrierung");
   }
   const { man, recs: all } = readRecords(o.records);
+  /* Mission IX: eine Phase mit festgelegter Titelstichprobe (z. B. Raenge 1200..2399, disjunkt zu Mission VIII) nur mit genau dieser Stichprobe. */
+  if (phase.sample && (man.sampleSymbols !== phase.sample.size || (man.sampleOffset || 0) !== phase.sample.offset)) throw new Error("Phase " + o.phase + " verlangt die Stichprobe " + JSON.stringify(phase.sample) + ", Records: " + JSON.stringify([man.sampleSymbols, man.sampleOffset]));
   /* Review H3: Holdout nur mit den eingefrorenen Engine-Dateien (Hashes aus der Praeregistrierung). */
   if (phase.requires === "PREREGISTERED") {
     const fz = protocol.freeze && protocol.freeze.engineFiles; if (!fz) throw new Error("HOLDOUT versiegelt: protocol.freeze.engineFiles fehlt");

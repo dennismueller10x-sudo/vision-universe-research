@@ -16,6 +16,11 @@
    Auswahl
      --bucket a/b          nur Titel mit hash(symbol) mod b == a (DEV/VAL-Teilung)
      --sample-symbols N    zufaellige, deterministische Titelstichprobe (Tagesstudie)
+     --sample-offset K     Stichprobe ab Rang K der Hash-Reihenfolge (Mission IX: Raenge 1200.. sind zu
+                           Mission VIII disjunkt, dort wurden nur die Raenge 0..1199 geoeffnet)
+     --disjoint-from N:SHA Abbruch, wenn die Raenge 0..N-1 der aktuellen Titelliste nicht exakt die
+                           veroeffentlichte Mission-VIII-Stichprobe sind (symbols.sha256) - dann waere die
+                           Disjunktheit der Raenge ab K=N nicht garantiert
      --from YYYY-MM-DD --to YYYY-MM-DD   nur Erkennungszeitpunkte in diesem Fenster
      --perbar N            fuer Titel mit hash mod N == 0 zusaetzlich JEDE Bar (Relabel-Studie)
      --persist N           fuer Titel mit hash mod N == 0 jede 10. Erkennung mit Elliott-
@@ -51,6 +56,16 @@ function chainState(P, series, t, meth) {
   return prev;
 }
 
+/** Mission IX: bester interner Motiv-Kandidat je Typ aus den ausgabeneutralen Haken (trace.forensics + trace.allCands).
+    Richtung aus den Pivot-Indizes des Kandidaten (Schluss am Ende minus Schluss am Anfang). */
+export function internalElliott(E, close, t) {
+  const tr = E.trace || {}, F = tr.forensics || {}, all = tr.allCands || [];
+  const pick = (type) => { const k = all.findIndex((c) => c.type === type); if (k < 0) return null; const c = all[k], fe = F.final && F.final[type] && F.final[type].best;
+    return { pos: k, dir: Math.sign(close[c.pts[c.pts.length - 1]] - close[c.pts[0]]), waves: c.pts.length - 1, complete: c.complete ? 1 : 0, internal: fe && fe.internal ? 1 : 0,
+             gap: fe ? fe.rankGapToTop : null, endAge: t - c.pts[c.pts.length - 1] }; };
+  return { IMPULSE: pick("IMPULSE"), LEADING_DIAGONAL: pick("LEADING_DIAGONAL"), scored: F.scoredTotal ?? null, top: all.length ? all[0].type : null };
+}
+
 function processSeries(series, meta, o) {
   const minBars = MIN_BARS[series.timeframe];
   if (series.length < minBars) return { recs: [], skipped: "TOO_SHORT" };
@@ -81,9 +96,9 @@ function processSeries(series, meta, o) {
     /* Mission IX (nur Forschung): interne Elliott-Kandidaten ueber die ausgabeneutralen Forensik-Haken von Mission VI.
        Zweiter Engine-Aufruf mit forensics:true; das Produkt-Ergebnis im Record bleibt unveraendert. */
     if (o.forensics && r.g) {
-      const Ef = EV3.analyzeElliottV3({ series, features: P.main.features, pivots: P.main.pivots, asOfIndex: t, barsPerYear: P.main.profile.barsPerYear, previous: null, methodology: PRODUCT_METHODOLOGY, forensics: true });
-      const F = Ef.forensics || {}, pick = (k) => (F.final && F.final[k] ? { pos: F.final[k].bestPos, ...F.final[k].best } : null);
-      r.fx = { IMPULSE: pick("IMPULSE"), LEADING_DIAGONAL: pick("LEADING_DIAGONAL"), scored: F.scoredTotal ?? null, samePrimary: (Ef.primary && Ef.primary.persistenceKey) === (r.ew && r.ew.key) ? 1 : 0 };
+      const Ef = EV3.analyzeElliottV3({ series, features: P.main.features, pivots: P.main.pivots, asOfIndex: t, barsPerYear: P.main.profile.barsPerYear, previous: null, methodology: PRODUCT_METHODOLOGY, forensics: true, debugAll: true });
+      r.fx = internalElliott(Ef, series.close, t);
+      r.fx.samePrimary = (Ef.primary && Ef.primary.persistenceKey) === (r.ew && r.ew.key) ? 1 : 0;
     }
     recs.push(r);
     if (persist && !perBar && r.dp && (k++ % 10 === 0)) {
@@ -138,7 +153,7 @@ async function main() {
   const out = arg("out", null); if (!out) throw new Error("--out DIR fehlt (Stage-1-Records gehoeren nie in ein committetes Artefakt)");
   mkdirSync(out, { recursive: true });
   const opts = { from: arg("from", null), to: arg("to", null), perbar: +arg("perbar", "0"), persist: +arg("persist", "0"), grid: arg("grid", null), historyFrom: arg("history-from", null), gridOnly: process.argv.includes("--grid-only"), forensics: process.argv.includes("--forensics") };
-  const bucket = arg("bucket", null), limit = +arg("limit", "0"), workers = +arg("workers", "4"), sampleN = +arg("sample-symbols", "0");
+  const bucket = arg("bucket", null), limit = +arg("limit", "0"), workers = +arg("workers", "4"), sampleN = +arg("sample-symbols", "0"), sampleOff = +arg("sample-offset", "0");
   let jobs = [];
   const wdir = arg("weekly-dir", null);
   if (wdir) for (const f of readdirSync(wdir).filter((x) => x.startsWith("ref_") && x.endsWith(".json")).sort())
@@ -161,7 +176,12 @@ async function main() {
   if (work) { const dd = join(work, "tiingo", "daily");
     for (const f of readdirSync(dd).filter((x) => x.endsWith(".json") && (!allowed || allowed.has(x.replace(/\.json$/, "")))).sort()) jobs.push({ kind: "daily", path: join(dd, f), symbol: "D:" + f.replace(/\.json$/, ""), cohort: "SURV_D", size: statSync(join(dd, f)).size }); }
   if (bucket) { const [a, b] = bucket.split("/").map(Number); jobs = jobs.filter((j) => symHash(j.symbol) % b === a); }
-  if (sampleN && jobs.length > sampleN) { jobs = jobs.map((j) => [symHash("sample|" + j.symbol), j]).sort((x, y) => x[0] - y[0]).slice(0, sampleN).map((x) => x[1]); }
+  const disj = arg("disjoint-from", null);
+  if (disj) { const [n, want] = disj.split(":"); const ranked = jobs.map((j) => [symHash("sample|" + j.symbol), j.symbol]).sort((x, y) => x[0] - y[0]);
+    const prev = ranked.slice(0, +n).map((x) => x[1]).sort(), got = sha(prev.join("\n"));
+    if (got !== want || sampleOff < +n) throw new Error("Disjunktheit nicht garantiert: Raenge 0.." + (+n - 1) + " ergeben " + got.slice(0, 12) + "…, erwartet " + want.slice(0, 12) + "… (oder --sample-offset < N)");
+    console.log(`[hsab-replay] Disjunktheit geprueft: Raenge 0..${+n - 1} = veroeffentlichte Stichprobe ${want.slice(0, 12)}…`); }
+  if (sampleN && jobs.length > sampleN) { jobs = jobs.map((j) => [symHash("sample|" + j.symbol), j]).sort((x, y) => x[0] - y[0]).slice(sampleOff, sampleOff + sampleN).map((x) => x[1]); }
   if (limit) jobs = jobs.slice(0, limit);
   const symbols = jobs.map((j) => j.symbol).sort();
   const queue = jobs.slice().sort((a, b) => b.size - a.size || (a.symbol < b.symbol ? -1 : 1));
@@ -193,7 +213,7 @@ async function main() {
   const manifest = {
     schemaVersion: "hsab-replay-manifest-1.0.0", replayVersion: Core.REPLAY_VERSION, generatedAt: new Date().toISOString(), commit, dirtyEngineFiles: dirty,
     engine: { scenario: require(join(ROOT, "quant/engines/technical/ti/scenario.js")).ENGINE_VERSION, elliott: EV3.ENGINE_VERSION || null, methodology: PRODUCT_METHODOLOGY, files: hashesAtStart },
-    args: process.argv.slice(2).filter((x) => !/\/|\\/.test(x) || x.startsWith("--")), opts, bucket, sampleSymbols: sampleN || null, delisted: delistedMeta,
+    args: process.argv.slice(2).filter((x) => !/\/|\\/.test(x) || x.startsWith("--")), opts, bucket, sampleSymbols: sampleN || null, sampleOffset: sampleOff || null, disjointFrom: disj || null, delisted: delistedMeta,
     symbols: { n: symbols.length, sha256: sha(symbols.join("\n")) }, counts: { series: agg.series, tooShort: agg.skipped, records: agg.records, perBarSymbols: agg.perBarSymbols, errors: agg.errors.length },
     errors: agg.errors.slice(0, 200), shards, seconds: Math.round((Date.now() - t0) / 1000),
     persistenceCheck: C.length ? { n: C.length, samePrimary: sum("samePrimary") / C.length, sameOutlook: sum("sameOutlook") / C.length, sameClarity: sum("sameClarity") / C.length,

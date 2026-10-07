@@ -24,7 +24,7 @@ import { loadPanel, eligible } from "./lib/panel.mjs";
 
 const require = createRequire(import.meta.url);
 const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
-export const TRACKB_VERSION = "hsab-trackb-1.0.0";
+export const TRACKB_VERSION = "hsab-trackb-1.1.0";   // 1.1.0: MFE (maximales Vielfaches im Horizont); Quartalsend-Zustaende und interne Elliott-Kandidaten (--grid-records)
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 const sha = (b) => createHash("sha256").update(b).digest("hex");
@@ -54,6 +54,24 @@ function readStates(dir) {
   return { man, by };
 }
 
+/** Mission IX: exakte Quartalsend-Zustaende mit internen Elliott-Kandidaten (replay.mjs --grid quarter --grid-only --forensics). */
+function readGrid(dir) {
+  const man = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
+  const by = new Map();
+  for (const sh of man.shards) {
+    const buf = readFileSync(join(dir, sh.file));
+    if (sha(buf) !== sh.sha256) throw new Error("Siegel verletzt: " + sh.file);
+    for (const line of gunzipSync(buf).toString("utf8").split("\n")) {
+      if (!line) continue; const r = JSON.parse(line); if (!r.g) continue;
+      const ew = r.ew || {};
+      let m = by.get(r.s); if (!m) by.set(r.s, (m = new Map()));
+      m.set(r.i, { pdir: r.P ? r.P.dir : 0, cl: r.cl, ag: r.ag, ewp: ew.p || null, eww: ew.w || null, ewm: ew.motive || 0, ewab: ew.ab ? 1 : 0, ewd: ew.d || 0, fx: r.fx || null });
+    }
+  }
+  return { man, by };
+}
+export const earlyUp = (c) => !!c && c.dir === 1 && !c.complete && (c.waves === 2 || c.waves === 3) && c.endAge <= 4;
+
 /** Signaldefinitionen (eingefroren in protocol9.json; hier die Umsetzung). */
 export const SIGNALS = {
   BASE: () => true,
@@ -71,6 +89,18 @@ export const SIGNALS = {
   TREND_MOM: (u) => u.trend === 1 && u.momQ >= 0.8,
   W3_AND_TREND_MOM: (u) => SIGNALS.EW_EARLY_MOTIVE_INTERNAL(u) && u.trend === 1 && u.momQ >= 0.8,
   VU_BULL_AND_TREND_MOM: (u) => u.st && u.st.pdir === 1 && u.trend === 1 && u.momQ >= 0.8
+};
+/** Nur mit --grid-records (exakter Zustand am Quartalsende + interne Elliott-Kandidaten, Mission-VI-Forensik-Haken).
+    „Fruehe Aufwaerts-Motivwelle“: bester interner IMPULSE-Kandidat aufwaerts, unvollstaendig, Wellen 1–2 oder 1–3 vorhanden
+    (Welle 3 steht bevor bzw. laeuft), letzte Wellenmarke hoechstens 4 Wochen alt. Definition vor jeder Auswertung festgelegt. */
+export const GRID_SIGNALS = {
+  VU_BULL_EXACT: (u) => u.gx && u.gx.pdir === 1,
+  EW_DISPLAYED_MOTIVE_UP: (u) => u.gx && u.gx.ewm === 1 && !u.gx.ewab && u.gx.ewd > 0,
+  EW_INT_UP_EARLY: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.IMPULSE),
+  EW_INT_UP_EARLY_TOP5: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.IMPULSE) && u.gx.fx.IMPULSE.pos <= 4,
+  EW_INT_LD_UP_EARLY: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.LEADING_DIAGONAL),
+  EW_INT_UP_EARLY_AND_TREND_MOM: (u) => GRID_SIGNALS.EW_INT_UP_EARLY(u) && u.trend === 1 && u.momQ >= 0.8,
+  EW_INT_UP_EARLY_AND_RS: (u) => GRID_SIGNALS.EW_INT_UP_EARLY(u) && u.rsQ >= 0.8
 };
 
 function quarterOf(d) { return d.slice(0, 4) + "Q" + (Math.floor((+d.slice(5, 7) - 1) / 3) + 1); }
@@ -96,7 +126,9 @@ function buildUnits(panel, states, o) {
       const st = k > 0 && t - sts[k - 1].i <= LOOKBACK ? sts[k - 1] : null;
       const c = e.close[t];
       let mx = -Infinity; for (let j = t - 51; j <= t; j++) if (j >= 0) mx = Math.max(mx, e.close[j]);
-      const u = { s: e.symbol, c: e.cohort, d: e.dates[t], q: quarterOf(e.dates[t]), t, st, trend: e.trend[t], atrPct: e.atrPct[t],
+      const gx = o.grid ? (o.grid.get(e.symbol) || new Map()).get(t) || null : null;
+      if (o.grid && !gx) continue;
+      const u = { s: e.symbol, c: e.cohort, d: e.dates[t], q: quarterOf(e.dates[t]), t, st, gx, trend: e.trend[t], atrPct: e.atrPct[t],
                   ret52: c / e.close[t - 52] - 1, ret26: c / e.close[t - 26] - 1, dist52: c / mx, age: t, delisted: e.cohort === "DELISTED_W" };
       /* Zukunft je Horizont: max. Vielfaches, Endvielfaches, Zeit bis k×, MAE vor k×, Invalidation vor k× */
       u.f = {};
@@ -177,7 +209,8 @@ function evaluateSignal(units, name, fn, hn, strat) {
     skew: r4((() => { const m = mean(ret), s = Math.sqrt(mean(ret.map((x) => (x - m) ** 2))); return s > 0 ? mean(ret.map((x) => ((x - m) / s) ** 3)) : null; })()),
     top1PctShareOfGains: top(0.01), top5PctShareOfGains: top(0.05), meanWithoutTop1: meanWithout(1), meanWithoutTop3: meanWithout(3),
     meanWithoutTop1Pct: meanWithout(Math.floor(ret.length * 0.01)), meanWithoutTop5Pct: meanWithout(Math.floor(ret.length * 0.05)),
-    medianMae: VS.median(flagged.map((u) => u.f[hn].mae)), delistedShare: r4(flagged.filter((u) => u.f[hn].delistedBefore).length / nf),
+    medianMae: VS.median(flagged.map((u) => u.f[hn].mae)), medianMfe: r4(VS.median(flagged.map((u) => u.f[hn].maxM - 1))), meanMfe: r4(mean(flagged.map((u) => u.f[hn].maxM - 1))),
+    delistedShare: r4(flagged.filter((u) => u.f[hn].delistedBefore).length / nf),
     invalidatedShare: r4(flagged.filter((u) => u.f[hn].invBeforeEnd).length / nf) };
   return out;
 }
@@ -186,9 +219,13 @@ export function trackB(o) {
   const { man, by } = readStates(o.records);
   let symbols = Array.from(by.keys());
   if (o.bucket) { const [a, b] = o.bucket.split("/").map(Number); symbols = symbols.filter((s) => symHash(s) % b === a); }
+  const G = o.gridRecords ? readGrid(o.gridRecords) : null;
+  if (G) symbols = symbols.filter((x) => G.by.has(x));
   const only = new Set(symbols);
   const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, only });
-  const units = buildUnits(panel, by, { from: o.from, to: o.to, only, minPrice: o.minPrice || null });
+  const units = buildUnits(panel, by, { from: o.from, to: o.to, only, minPrice: o.minPrice || null, grid: G ? G.by : null });
+  const SIG = G ? { ...SIGNALS, ...GRID_SIGNALS } : SIGNALS;
+  const W3 = G ? GRID_SIGNALS.EW_INT_UP_EARLY : SIGNALS.EW_EARLY_MOTIVE_INTERNAL;
   /* Schicht-Summen je Horizont */
   const strat = new Map();
   for (const u of units) for (const hn of Object.keys(HORIZONS)) {
@@ -200,11 +237,11 @@ export function trackB(o) {
     }
   }
   const results = [];
-  for (const [name, fn] of Object.entries(SIGNALS)) for (const hn of Object.keys(HORIZONS)) results.push(evaluateSignal(units, name, fn, hn, strat));
+  for (const [name, fn] of Object.entries(SIG)) for (const hn of Object.keys(HORIZONS)) results.push(evaluateSignal(units, name, fn, hn, strat));
   /* Welle-3-Zusatzwert: innerhalb TREND_MOM die Einheiten mit/ohne fruehe Motivwelle (gepaart nach Schicht) */
   const inc = {};
   for (const hn of Object.keys(HORIZONS)) {
-    const tm = units.filter((u) => u.f[hn] && SIGNALS.TREND_MOM(u)), w = tm.filter((u) => SIGNALS.EW_EARLY_MOTIVE_INTERNAL(u)), nw = tm.filter((u) => !SIGNALS.EW_EARLY_MOTIVE_INTERNAL(u));
+    const tm = units.filter((u) => u.f[hn] && SIGNALS.TREND_MOM(u)), w = tm.filter((u) => W3(u)), nw = tm.filter((u) => !W3(u));
     inc[hn] = { trendMomUnits: tm.length, withW3: w.length, withoutW3: nw.length,
       ...Object.fromEntries(MULTS.map((K) => [K + "x", { withW3: r4(w.filter((u) => u.f[hn].maxM >= K).length / Math.max(1, w.length)), withoutW3: r4(nw.filter((u) => u.f[hn].maxM >= K).length / Math.max(1, nw.length)) }])),
       meanEndWith: r4(VS.mean(w.map((u) => u.f[hn].endM - 1))), meanEndWithout: r4(VS.mean(nw.map((u) => u.f[hn].endM - 1))),
@@ -212,8 +249,8 @@ export function trackB(o) {
   }
   /* Fruehe Erkennung: Anteil der spaeteren Bewegung, der beim ersten Signal (Quartal) schon gelaufen war — fuer 5×-Gewinner (24M) */
   const early = {};
-  for (const name of ["VU_BULL", "EW_EARLY_MOTIVE_INTERNAL", "TREND_MOM", "BREAKOUT52"]) {
-    const fn = SIGNALS[name]; const bySym = new Map();
+  for (const name of ["VU_BULL", "EW_EARLY_MOTIVE_INTERNAL", "TREND_MOM", "BREAKOUT52", "RS26_TOP20", ...(G ? ["VU_BULL_EXACT", "EW_INT_UP_EARLY"] : [])]) {
+    const fn = SIG[name]; const bySym = new Map();
     units.filter((u) => u.f["24M"]).forEach((u) => { let a = bySym.get(u.s); if (!a) bySym.set(u.s, (a = [])); a.push(u); });
     const done = [];
     let episodes = 0;
@@ -225,13 +262,13 @@ export function trackB(o) {
     }
     early[name] = { episodes5x24M: episodes, flaggedBefore5x: done.length, shareFlagged: r4(done.length / Math.max(1, episodes)), medianQuartersEarly: VS.median(done.map((x) => x.quartersBefore)), medianRemainingMaxMultiple24M: VS.median(done.map((x) => x.remainingMultipleFromSignal)) };
   }
-  return { schemaVersion: "hsab-trackb-result-1.0.0", version: TRACKB_VERSION, generatedAt: new Date().toISOString(), records: { sealHash: man.sealHash, engine: man.engine.scenario, elliott: man.engine.elliott },
+  return { schemaVersion: "hsab-trackb-result-1.0.0", version: TRACKB_VERSION, generatedAt: new Date().toISOString(), records: { sealHash: man.sealHash, engine: man.engine.scenario, elliott: man.engine.elliott }, gridRecords: G ? { sealHash: G.man.sealHash, symbols: G.by.size } : null, wave3Signal: G ? "EW_INT_UP_EARLY" : "EW_EARLY_MOTIVE_INTERNAL",
            opts: { bucket: o.bucket || null, from: o.from || null, to: o.to || null, delisted: !!o.delisted }, units: units.length, symbols: new Set(units.map((u) => u.s)).size,
            delistedUnits: units.filter((u) => u.delisted).length, anomalyExcludedUnitHorizons: units.reduce((a, u) => a + (u.anomaly || 0), 0), horizons: HORIZONS, multiples: MULTS, results, wave3WithinTrendMom: inc, earlyDetection: early };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const o = { records: arg("records"), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), bucket: arg("bucket", null), from: arg("from", null), to: arg("to", null), minPrice: arg("min-price", null) ? +arg("min-price") : null };
+  const o = { records: arg("records"), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), bucket: arg("bucket", null), from: arg("from", null), to: arg("to", null), minPrice: arg("min-price", null) ? +arg("min-price") : null, gridRecords: arg("grid-records", null) };
   const t0 = Date.now(); const res = trackB(o); res.seconds = Math.round((Date.now() - t0) / 1000);
   writeFileSync(arg("out"), JSON.stringify(res, null, 1));
   console.log(`[track-b] ${res.units} Einheiten, ${res.symbols} Titel, ${res.seconds} s`);
