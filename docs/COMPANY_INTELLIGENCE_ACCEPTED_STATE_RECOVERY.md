@@ -30,7 +30,7 @@ Private namespace: `accepted-20261006-21cc611a43b06f488418b58a`. Pointer: `v1/co
 
 ## Acceptance evidence
 
-Authenticated issue run: [37593324150](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37593324150). Both relevant pointers were absent. The exact private PUT returned HTTP 200. Acceptance/fresh-restore run: [37593716690](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37593716690). Final runner evidence and statuses will be recorded after completion; an HTTP 200 by itself is not a fresh restore proof.
+Authenticated issue run: [37593324150](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37593324150). Both relevant pointers were absent. The exact private PUT returned HTTP 200. The first accept attempt [37593716690](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37593716690) failed before pointer publication because relative engine paths were resolved again inside a changed subprocess working directory. Path normalization and a regression guard corrected it; no checkpoint or rollout generation was overwritten. Successful authenticated acceptance and independent fresh restore: [37594123321](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37594123321). An HTTP 200 alone was never counted as a restore proof.
 
 ## Publication boundary
 
@@ -88,4 +88,11 @@ Der private akzeptierte Checkpoint ist ein eigener Wiederherstellungsanker und w
 - Renderer-SHA-256: `1b65183ef92816e266f4fa95bdd7d8a38f40e77b0132d06a9efae9fd026eca6e`.
 - [R2-Preservation](company-intelligence/accepted-r2-preservation.json), [unabhängiger Fresh-Restore](company-intelligence/accepted-fresh-restore.json), [Consumer-Manifest](company-intelligence/full-data-consumer-manifest.json), [46-Aktien-Kohorte](company-intelligence/full-data-preview-cohort.json), [Release-Inventar](company-intelligence/full-data-release-candidate.json), [263 Browserfälle](company-intelligence/accepted-product-review.json), [Quellenreview](company-intelligence/full-data-source-review.json), [Linkprüfung](company-intelligence/full-data-source-links.json), [Kostenmodell](company-intelligence/full-data-cost-model.json), [partielle Größenklassenprüfung](company-intelligence/full-data-marketcap-review.json).
 
-Eine zusätzliche finale Read-only-Runner-Abnahme prüft den vollständigen Pfad **R2 → frisches Verzeichnis → 5.120 Raw-Payloads → exakt derselbe 46-Aktien-Consumer einschließlich aller 86 Asset-Hashes**. Run/Commit und finale Evidenz werden nach Abschluss ergänzt. Kein Merge, kein Website-Deployment und keine Kundenaktivierung sind Bestandteil dieses Laufs.
+Die finale Read-only-Runner-Abnahme [37599252711](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37599252711) auf validiertem Runtime-Code **`7b4c15d506b7204a640706d78adadd440251972e`** besteht vollständig: **R2 → frisches Verzeichnis → 5.120 Raw-Payloads → exakt derselbe 46-Aktien-Consumer einschließlich aller 86 Asset-Hashes**. [Finale R2-Consumer-Evidenz](company-intelligence/accepted-r2-consumer-handoff.json) bestätigt identische Generation, Manifest-Hash, Bytes und IDs. Dieser Lauf hatte ausschließlich Lesezugriff/Projektion; Initialisieren, Crawlen, Publizieren und alle anderen Workflow-Jobs waren aus. Kein Merge, kein Website-Deployment und keine Kundenaktivierung.
+
+
+## Finale Freigabeempfehlung
+
+Datenhandoff und lokale Discover-Abnahme sind abgeschlossen und remote erhalten. **Noch keine Kundenfreigabeempfehlung ohne geschützte externe Vorschau und Dennis’ manuelle Prüfung.** Die aktuelle Deployment-Untersagung ist die unmittelbare Grenze; es wird keine erforderliche Infrastruktur-Berechtigung erfunden oder durch öffentliche Ersatzhosts umgangen. Quellenannahme gilt nur für den beschriebenen Metadata-/Link-Review; `REVIEW_ONLY` wird nicht durch eine Statusmeldung zu einem öffentlichen kommerziellen Release.
+
+Exakte verbleibende Punkte: `DEPLOYMENT_PROHIBITED_BY_CURRENT_REQUEST`, `PROTECTED_EXTERNAL_URL_AND_SERVER_ACCESS_VALIDATION`, `DENNIS_MANUAL_PRODUCT_REVIEW`, `SEPARATE_CUSTOMER_APPROVAL`, `CURRENT_NUMERIC_MID_SMALL_MICRO_CAP_BAND_REVIEW`. Fehlende deutsche Profile und einzelne Module sind sichtbare, getestete Einschränkungen; keine weitere breite Discovery-/Coverage-Kampagne wurde gestartet.
