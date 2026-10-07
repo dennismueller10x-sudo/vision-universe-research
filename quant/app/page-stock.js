@@ -27,8 +27,6 @@
   "use strict";
   var X = global.QX, el = X.el, VM = global.VUQuantViewModel;
 
-  /* Discovers Signalfarben fuer die Faktor-Chips im Kopf. */
-  var SIG = { good: "strength", neutral: "quality", bad: "breakout", unknown: "muted" };
   /* Bildwelt der Anlagestile: dieselben Fotografien wie Discovers
      Perspektiven, je nach Sinn zugeordnet. */
   var STRATEGY_ART = {
@@ -269,14 +267,9 @@
     kids.push(el("ol", { class: "qx-ladder", "aria-label": "Stufen eines Setups" }, s.stages.map(function (st, i) {
       return el("li", { class: i === s.stageIndex ? "is-now" : i < s.stageIndex ? "is-past" : null, "aria-current": i === s.stageIndex ? "step" : null, text: st.label });
     })));
-    kids.push(el("dl", { class: "qx-qa" }, [
-      el("div", { class: "dx-bewertung-satz" }, [el("dt", { text: "Wo steht die Aktie?" }), el("dd", { text: s.label + (s.stageIndex < 0 ? "" : " – " + (s.stages[s.stageIndex] || {}).short) + "." })]),
-      s.why ? el("div", { class: "dx-bewertung-satz" }, [el("dt", { text: "Warum?" }), el("dd", { text: s.why })]) : null,
-      s.next ? el("div", { class: "dv2-valuation-card" }, [el("dt", { text: "Was müsste als Nächstes passieren?" }), el("dd", {}, [el("p", { text: s.next.text }), conditions(s.next.conditions, "")])]) : null,
-      s.invalidation ? el("div", { class: "dv2-valuation-card" }, [el("dt", { text: "Was würde das Setup ungültig machen?" }), el("dd", {}, [
-        el("p", { text: s.invalidation.text + (s.invalidation.price ? " Die beschriebene Invalidierungsmarke liegt bei " + X.money(s.invalidation.price) + "." : "") }),
-        conditions(s.invalidation.conditions, "")])]) : null
-    ]));
+    /* Wo die Aktie steht, was als Naechstes fehlt und was sie ungueltig
+       macht, zeigt die Setup-Karte darueber; hier steht nur das Warum. */
+    if (s.why) kids.push(el("p", { class: "dx-bewertung-satz" }, [el("b", { text: "Warum? " }), el("span", { text: s.why })]));
     kids.push(X.more("Alle geprüften Bedingungen", function () { return [conditions(s.conditions, "Keine Bedingungen veröffentlicht."), el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie Setups entstehen", X.routes.method("setups"))])]; }));
     kids.push(foot("Datenstand des Laufs " + X.dateDe(s.asOf) + " – das ist der Stand der technischen Auswertung, nicht dem täglichen Kursstand gleichzusetzen" +
       (s.previous && s.previous.label && s.previous.asOf && s.asOf && s.previous.asOf < s.asOf ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") +
