@@ -1,0 +1,3023 @@
+{
+ "schemaVersion": "hsab-tracka-result-1.0.0",
+ "version": "hsab-tracka-1.1.0",
+ "phase": "W_DEV",
+ "events": 94686,
+ "trendOnlyEvents": 95002,
+ "analysisPoints": 193778,
+ "all": {
+  "bucket": "ALL",
+  "events": 94686,
+  "shareOfEvents": 1,
+  "coverageOfPoints": 0.4886,
+  "n": 94686,
+  "symbols": 2548,
+  "hit": 0.5928,
+  "hitCi": [
+   0.5792,
+   0.6056
+  ],
+  "control": 0.5719,
+  "lift": 0.0208,
+  "liftCi": [
+   0.0153,
+   0.0264
+  ],
+  "liftP": 0,
+  "expectancyR": -0.1221,
+  "expectancyRCi": [
+   -0.1501,
+   -0.0929
+  ],
+  "excessR": 0.0341,
+  "excessRCi": [
+   0.0236,
+   0.0445
+  ],
+  "oppositeDiff": 0.0433,
+  "oppositeDiffCi": [
+   0.0199,
+   0.0669
+  ],
+  "randomWalkExpectation": 0.6405,
+  "medianTargetAtr": 2.0092,
+  "medianInvalidationAtr": 3.5022,
+  "avgWinnerR": 0.5765,
+  "medianWinnerR": 0.4921,
+  "avgLoserR": -1.139,
+  "medianLoserR": -1.1475,
+  "payoffRatio": 0.5062,
+  "rP05": -1.65,
+  "rP95": 1.2,
+  "medianMfeAtr": 1.76,
+  "medianMaeAtr": 1.55,
+  "medianBars": 6,
+  "trading": {
+   "filled": 55228,
+   "meanReturnAfterCosts": -0.0033,
+   "controlMeanReturn": -0.0099,
+   "winRate": 0.389,
+   "avgWin": 0.1936,
+   "avgLoss": -0.1287
+  },
+  "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+  "trendOnly": {
+   "n": 95002,
+   "hit": 0.5925,
+   "control": 0.5708,
+   "lift": 0.0217
+  }
+ },
+ "byRewardRisk": [
+  {
+   "bucket": "RR<0.5",
+   "events": 40308,
+   "shareOfEvents": 0.4257,
+   "coverageOfPoints": 0.208,
+   "n": 40308,
+   "symbols": 2423,
+   "hit": 0.7104,
+   "hitCi": [
+    0.6984,
+    0.7224
+   ],
+   "control": 0.692,
+   "lift": 0.0183,
+   "liftCi": [
+    0.012,
+    0.0247
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1308,
+   "expectancyRCi": [
+    -0.1514,
+    -0.114
+   ],
+   "excessR": 0.021,
+   "excessRCi": [
+    0.0116,
+    0.0305
+   ],
+   "oppositeDiff": 0.0353,
+   "oppositeDiffCi": [
+    0.0153,
+    0.0553
+   ],
+   "randomWalkExpectation": 0.7903,
+   "medianTargetAtr": 1.0914,
+   "medianInvalidationAtr": 4.3079,
+   "avgWinnerR": 0.2668,
+   "medianWinnerR": 0.2593,
+   "avgLoserR": -1.1061,
+   "medianLoserR": -1.1138,
+   "payoffRatio": 0.2412,
+   "rP05": -1.4008,
+   "rP95": 0.4737,
+   "medianMfeAtr": 1.38,
+   "medianMaeAtr": 0.95,
+   "medianBars": 4,
+   "trading": {
+    "filled": 20241,
+    "meanReturnAfterCosts": -0.0032,
+    "controlMeanReturn": -0.0165,
+    "winRate": 0.4341,
+    "avgWin": 0.1736,
+    "avgLoss": -0.1388
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 40389,
+    "hit": 0.7091,
+    "control": 0.6892,
+    "lift": 0.0199
+   }
+  },
+  {
+   "bucket": "RR0.5-0.75",
+   "events": 22796,
+   "shareOfEvents": 0.2408,
+   "coverageOfPoints": 0.1176,
+   "n": 22796,
+   "symbols": 2315,
+   "hit": 0.5815,
+   "hitCi": [
+    0.5658,
+    0.5971
+   ],
+   "control": 0.5544,
+   "lift": 0.0271,
+   "liftCi": [
+    0.0179,
+    0.0363
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1105,
+   "expectancyRCi": [
+    -0.1427,
+    -0.0782
+   ],
+   "excessR": 0.0392,
+   "excessRCi": [
+    0.0219,
+    0.0566
+   ],
+   "oppositeDiff": 0.0511,
+   "oppositeDiffCi": [
+    0.0212,
+    0.0809
+   ],
+   "randomWalkExpectation": 0.6242,
+   "medianTargetAtr": 2.1413,
+   "medianInvalidationAtr": 3.5676,
+   "avgWinnerR": 0.6023,
+   "medianWinnerR": 0.5906,
+   "avgLoserR": -1.1006,
+   "medianLoserR": -1.1286,
+   "payoffRatio": 0.5472,
+   "rP05": -1.5663,
+   "rP95": 0.7164,
+   "medianMfeAtr": 2.12,
+   "medianMaeAtr": 1.81,
+   "medianBars": 7,
+   "trading": {
+    "filled": 13414,
+    "meanReturnAfterCosts": -0.0035,
+    "controlMeanReturn": -0.0011,
+    "winRate": 0.4024,
+    "avgWin": 0.1928,
+    "avgLoss": -0.1357
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 22737,
+    "hit": 0.5838,
+    "control": 0.5579,
+    "lift": 0.0259
+   }
+  },
+  {
+   "bucket": "RR0.75-1.33_SYMMETRIC",
+   "events": 22344,
+   "shareOfEvents": 0.236,
+   "coverageOfPoints": 0.1153,
+   "n": 22344,
+   "symbols": 2315,
+   "hit": 0.4927,
+   "hitCi": [
+    0.4796,
+    0.5059
+   ],
+   "control": 0.4711,
+   "lift": 0.0216,
+   "liftCi": [
+    0.013,
+    0.0303
+   ],
+   "liftP": 0.000001,
+   "expectancyR": -0.114,
+   "expectancyRCi": [
+    -0.1492,
+    -0.0788
+   ],
+   "excessR": 0.0402,
+   "excessRCi": [
+    0.0204,
+    0.06
+   ],
+   "oppositeDiff": 0.0526,
+   "oppositeDiffCi": [
+    0.0269,
+    0.0783
+   ],
+   "randomWalkExpectation": 0.5069,
+   "medianTargetAtr": 2.692,
+   "medianInvalidationAtr": 2.742,
+   "avgWinnerR": 0.9767,
+   "medianWinnerR": 0.9476,
+   "avgLoserR": -1.1735,
+   "medianLoserR": -1.1765,
+   "payoffRatio": 0.8323,
+   "rP05": -1.8181,
+   "rP95": 1.2191,
+   "medianMfeAtr": 2.29,
+   "medianMaeAtr": 2.06,
+   "medianBars": 7,
+   "trading": {
+    "filled": 14835,
+    "meanReturnAfterCosts": -0.0036,
+    "controlMeanReturn": -0.0159,
+    "winRate": 0.3642,
+    "avgWin": 0.2138,
+    "avgLoss": -0.128
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 22447,
+    "hit": 0.4948,
+    "control": 0.4707,
+    "lift": 0.024
+   }
+  },
+  {
+   "bucket": "RR1.33-2",
+   "events": 6256,
+   "shareOfEvents": 0.0661,
+   "coverageOfPoints": 0.0323,
+   "n": 6256,
+   "symbols": 1841,
+   "hit": 0.3868,
+   "hitCi": [
+    0.3666,
+    0.4071
+   ],
+   "control": 0.3657,
+   "lift": 0.0211,
+   "liftCi": [
+    0.0063,
+    0.036
+   ],
+   "liftP": 0.00528,
+   "expectancyR": -0.1162,
+   "expectancyRCi": [
+    -0.1869,
+    -0.0509
+   ],
+   "excessR": 0.0768,
+   "excessRCi": [
+    0.0361,
+    0.1175
+   ],
+   "oppositeDiff": 0.0461,
+   "oppositeDiffCi": [
+    0.0059,
+    0.0862
+   ],
+   "randomWalkExpectation": 0.3885,
+   "medianTargetAtr": 3.6118,
+   "medianInvalidationAtr": 2.2789,
+   "avgWinnerR": 1.5753,
+   "medianWinnerR": 1.5412,
+   "avgLoserR": -1.1833,
+   "medianLoserR": -1.2057,
+   "payoffRatio": 1.3312,
+   "rP05": -2.083,
+   "rP95": 1.8091,
+   "medianMfeAtr": 2.29,
+   "medianMaeAtr": 2.03,
+   "medianBars": 7,
+   "trading": {
+    "filled": 4458,
+    "meanReturnAfterCosts": -0.001,
+    "controlMeanReturn": 0.0048,
+    "winRate": 0.3008,
+    "avgWin": 0.2274,
+    "avgLoss": -0.0992
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 6439,
+    "hit": 0.3825,
+    "control": 0.3646,
+    "lift": 0.0179
+   }
+  },
+  {
+   "bucket": "RR2-3",
+   "events": 2172,
+   "shareOfEvents": 0.0229,
+   "coverageOfPoints": 0.0112,
+   "n": 2172,
+   "symbols": 1213,
+   "hit": 0.2891,
+   "hitCi": [
+    0.2675,
+    0.3107
+   ],
+   "control": 0.2902,
+   "lift": -0.0011,
+   "liftCi": [
+    -0.0235,
+    0.0212
+   ],
+   "liftP": 0.919111,
+   "expectancyR": -0.1401,
+   "expectancyRCi": [
+    -0.2496,
+    -0.0305
+   ],
+   "excessR": 0.0142,
+   "excessRCi": [
+    -0.0788,
+    0.1073
+   ],
+   "oppositeDiff": 0.016,
+   "oppositeDiffCi": [
+    -0.0286,
+    0.058
+   ],
+   "randomWalkExpectation": 0.2985,
+   "medianTargetAtr": 4.901,
+   "medianInvalidationAtr": 2.1228,
+   "avgWinnerR": 2.3501,
+   "medianWinnerR": 2.2817,
+   "avgLoserR": -1.1529,
+   "medianLoserR": -1.231,
+   "payoffRatio": 2.0384,
+   "rP05": -2.4814,
+   "rP95": 2.6438,
+   "medianMfeAtr": 1.97,
+   "medianMaeAtr": 1.99,
+   "medianBars": 7,
+   "trading": {
+    "filled": 1611,
+    "meanReturnAfterCosts": -0.0076,
+    "controlMeanReturn": -0.0051,
+    "winRate": 0.2502,
+    "avgWin": 0.2321,
+    "avgLoss": -0.0876
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 2177,
+    "hit": 0.288,
+    "control": 0.2804,
+    "lift": 0.0076
+   }
+  },
+  {
+   "bucket": "RR>=3",
+   "events": 809,
+   "shareOfEvents": 0.0085,
+   "coverageOfPoints": 0.0042,
+   "n": 809,
+   "symbols": 638,
+   "hit": 0.2237,
+   "hitCi": [
+    0.1918,
+    0.2557
+   ],
+   "control": 0.2203,
+   "lift": 0.0035,
+   "liftCi": [
+    -0.0297,
+    0.0366
+   ],
+   "liftP": 0.837698,
+   "expectancyR": -0.2336,
+   "expectancyRCi": [
+    -0.4404,
+    -0.0361
+   ],
+   "excessR": 0.0898,
+   "excessRCi": [
+    -0.1165,
+    0.285
+   ],
+   "oppositeDiff": 0.0303,
+   "oppositeDiffCi": [
+    -0.0155,
+    0.0762
+   ],
+   "randomWalkExpectation": 0.1997,
+   "medianTargetAtr": 5.0474,
+   "medianInvalidationAtr": 1.2322,
+   "avgWinnerR": 3.8398,
+   "medianWinnerR": 3.6667,
+   "avgLoserR": -1.4077,
+   "medianLoserR": -1.3538,
+   "payoffRatio": 2.7278,
+   "rP05": -3.6432,
+   "rP95": 4.5752,
+   "medianMfeAtr": 1.35,
+   "medianMaeAtr": 1.52,
+   "medianBars": 6,
+   "trading": {
+    "filled": 668,
+    "meanReturnAfterCosts": -0.004,
+    "controlMeanReturn": 0.0088,
+    "winRate": 0.226,
+    "avgWin": 0.2591,
+    "avgLoss": -0.0809
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 812,
+    "hit": 0.2204,
+    "control": 0.2266,
+    "lift": -0.0062
+   }
+  }
+ ],
+ "byTargetAtr": [
+  {
+   "bucket": "T<1ATR",
+   "events": 18398,
+   "shareOfEvents": 0.1943,
+   "coverageOfPoints": 0.0949,
+   "n": 18398,
+   "symbols": 2183,
+   "hit": 0.7713,
+   "hitCi": [
+    0.7592,
+    0.7833
+   ],
+   "control": 0.7572,
+   "lift": 0.0141,
+   "liftCi": [
+    0.0057,
+    0.0225
+   ],
+   "liftP": 0.000971,
+   "expectancyR": -0.1662,
+   "expectancyRCi": [
+    -0.1845,
+    -0.148
+   ],
+   "excessR": 0.0132,
+   "excessRCi": [
+    0.0006,
+    0.0259
+   ],
+   "oppositeDiff": 0.0299,
+   "oppositeDiffCi": [
+    0.0122,
+    0.0477
+   ],
+   "randomWalkExpectation": 0.8644,
+   "medianTargetAtr": 0.6141,
+   "medianInvalidationAtr": 3.8536,
+   "avgWinnerR": 0.1572,
+   "medianWinnerR": 0.1484,
+   "avgLoserR": -1.2569,
+   "medianLoserR": -1.1644,
+   "payoffRatio": 0.1251,
+   "rP05": -1.413,
+   "rP95": 0.3265,
+   "medianMfeAtr": 0.98,
+   "medianMaeAtr": 0.45,
+   "medianBars": 2,
+   "trading": {
+    "filled": 9173,
+    "meanReturnAfterCosts": -0.005,
+    "controlMeanReturn": -0.0286,
+    "winRate": 0.4288,
+    "avgWin": 0.1519,
+    "avgLoss": -0.1227
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 18655,
+    "hit": 0.7674,
+    "control": 0.7535,
+    "lift": 0.0139
+   }
+  },
+  {
+   "bucket": "T1-2ATR",
+   "events": 28622,
+   "shareOfEvents": 0.3023,
+   "coverageOfPoints": 0.1477,
+   "n": 28622,
+   "symbols": 2348,
+   "hit": 0.6217,
+   "hitCi": [
+    0.6076,
+    0.6357
+   ],
+   "control": 0.6065,
+   "lift": 0.0151,
+   "liftCi": [
+    0.0065,
+    0.0237
+   ],
+   "liftP": 0.000277,
+   "expectancyR": -0.16,
+   "expectancyRCi": [
+    -0.1854,
+    -0.1346
+   ],
+   "excessR": 0.0248,
+   "excessRCi": [
+    0.0084,
+    0.0413
+   ],
+   "oppositeDiff": 0.02,
+   "oppositeDiffCi": [
+    -0.0024,
+    0.0423
+   ],
+   "randomWalkExpectation": 0.6728,
+   "medianTargetAtr": 1.6425,
+   "medianInvalidationAtr": 3.229,
+   "avgWinnerR": 0.4932,
+   "medianWinnerR": 0.4667,
+   "avgLoserR": -1.2333,
+   "medianLoserR": -1.1675,
+   "payoffRatio": 0.3999,
+   "rP05": -1.6509,
+   "rP95": 0.814,
+   "medianMfeAtr": 1.71,
+   "medianMaeAtr": 1.41,
+   "medianBars": 5,
+   "trading": {
+    "filled": 17792,
+    "meanReturnAfterCosts": -0.0051,
+    "controlMeanReturn": -0.0072,
+    "winRate": 0.4088,
+    "avgWin": 0.1935,
+    "avgLoss": -0.1424
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 28683,
+    "hit": 0.6231,
+    "control": 0.6064,
+    "lift": 0.0167
+   }
+  },
+  {
+   "bucket": "T2-3ATR",
+   "events": 28377,
+   "shareOfEvents": 0.2997,
+   "coverageOfPoints": 0.1464,
+   "n": 28377,
+   "symbols": 2353,
+   "hit": 0.5477,
+   "hitCi": [
+    0.5315,
+    0.5638
+   ],
+   "control": 0.5242,
+   "lift": 0.0234,
+   "liftCi": [
+    0.015,
+    0.0319
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1161,
+   "expectancyRCi": [
+    -0.1439,
+    -0.0883
+   ],
+   "excessR": 0.0416,
+   "excessRCi": [
+    0.0241,
+    0.0591
+   ],
+   "oppositeDiff": 0.0422,
+   "oppositeDiffCi": [
+    0.0151,
+    0.0693
+   ],
+   "randomWalkExpectation": 0.5792,
+   "medianTargetAtr": 2.3998,
+   "medianInvalidationAtr": 3.4744,
+   "avgWinnerR": 0.746,
+   "medianWinnerR": 0.6493,
+   "avgLoserR": -1.16,
+   "medianLoserR": -1.1481,
+   "payoffRatio": 0.6432,
+   "rP05": -1.7075,
+   "rP95": 1.197,
+   "medianMfeAtr": 2.38,
+   "medianMaeAtr": 1.89,
+   "medianBars": 7,
+   "trading": {
+    "filled": 17217,
+    "meanReturnAfterCosts": -0.0053,
+    "controlMeanReturn": -0.017,
+    "winRate": 0.3775,
+    "avgWin": 0.21,
+    "avgLoss": -0.1359
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 28233,
+    "hit": 0.5474,
+    "control": 0.5231,
+    "lift": 0.0243
+   }
+  },
+  {
+   "bucket": "T3-5ATR",
+   "events": 16018,
+   "shareOfEvents": 0.1692,
+   "coverageOfPoints": 0.0827,
+   "n": 16018,
+   "symbols": 2135,
+   "hit": 0.4782,
+   "hitCi": [
+    0.4546,
+    0.5004
+   ],
+   "control": 0.4417,
+   "lift": 0.0365,
+   "liftCi": [
+    0.0257,
+    0.0484
+   ],
+   "liftP": 0,
+   "expectancyR": -0.0285,
+   "expectancyRCi": [
+    -0.0885,
+    0.0321
+   ],
+   "excessR": 0.0659,
+   "excessRCi": [
+    0.0415,
+    0.0946
+   ],
+   "oppositeDiff": 0.1009,
+   "oppositeDiffCi": [
+    0.0568,
+    0.1461
+   ],
+   "randomWalkExpectation": 0.4914,
+   "medianTargetAtr": 3.5962,
+   "medianInvalidationAtr": 3.5743,
+   "avgWinnerR": 1.0623,
+   "medianWinnerR": 0.9417,
+   "avgLoserR": -1.0282,
+   "medianLoserR": -1.12,
+   "payoffRatio": 1.0332,
+   "rP05": -1.7407,
+   "rP95": 1.6415,
+   "medianMfeAtr": 3.26,
+   "medianMaeAtr": 2.26,
+   "medianBars": 9,
+   "trading": {
+    "filled": 9094,
+    "meanReturnAfterCosts": 0.0052,
+    "controlMeanReturn": 0.0115,
+    "winRate": 0.3519,
+    "avgWin": 0.2104,
+    "avgLoss": -0.1062
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 16149,
+    "hit": 0.4769,
+    "control": 0.4405,
+    "lift": 0.0364
+   }
+  },
+  {
+   "bucket": "T>=5ATR",
+   "events": 3271,
+   "shareOfEvents": 0.0345,
+   "coverageOfPoints": 0.0169,
+   "n": 3271,
+   "symbols": 1343,
+   "hit": 0.2886,
+   "hitCi": [
+    0.2621,
+    0.3151
+   ],
+   "control": 0.2795,
+   "lift": 0.0091,
+   "liftCi": [
+    -0.0115,
+    0.0298
+   ],
+   "liftP": 0.387079,
+   "expectancyR": -0.0512,
+   "expectancyRCi": [
+    -0.1486,
+    0.0716
+   ],
+   "excessR": 0.0111,
+   "excessRCi": [
+    -0.0541,
+    0.0764
+   ],
+   "oppositeDiff": 0.0517,
+   "oppositeDiffCi": [
+    -0.0025,
+    0.1058
+   ],
+   "randomWalkExpectation": 0.361,
+   "medianTargetAtr": 5.8496,
+   "medianInvalidationAtr": 3.3514,
+   "avgWinnerR": 1.7178,
+   "medianWinnerR": 1.537,
+   "avgLoserR": -0.7689,
+   "medianLoserR": -1.0909,
+   "payoffRatio": 2.2341,
+   "rP05": -1.9169,
+   "rP95": 2.4652,
+   "medianMfeAtr": 3.17,
+   "medianMaeAtr": 2.63,
+   "medianBars": 13,
+   "trading": {
+    "filled": 1952,
+    "meanReturnAfterCosts": -0.0015,
+    "controlMeanReturn": 0.0066,
+    "winRate": 0.2961,
+    "avgWin": 0.201,
+    "avgLoss": -0.0867
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 3282,
+    "hit": 0.2867,
+    "control": 0.2728,
+    "lift": 0.014
+   }
+  }
+ ],
+ "byInvalidationAtr": [
+  {
+   "bucket": "I<1ATR",
+   "events": 530,
+   "shareOfEvents": 0.0056,
+   "coverageOfPoints": 0.0027,
+   "n": 530,
+   "symbols": 440,
+   "hit": 0.3113,
+   "hitCi": [
+    0.2704,
+    0.3534
+   ],
+   "control": 0.2928,
+   "lift": 0.0185,
+   "liftCi": [
+    -0.0221,
+    0.0591
+   ],
+   "liftP": 0.372244,
+   "expectancyR": -0.4354,
+   "expectancyRCi": [
+    -0.7217,
+    -0.1596
+   ],
+   "excessR": 0.1336,
+   "excessRCi": [
+    -0.1358,
+    0.403
+   ],
+   "oppositeDiff": 0.0142,
+   "oppositeDiffCi": [
+    -0.0553,
+    0.0837
+   ],
+   "randomWalkExpectation": 0.222,
+   "medianTargetAtr": 2.7103,
+   "medianInvalidationAtr": 0.8131,
+   "avgWinnerR": 3.3981,
+   "medianWinnerR": 3.2857,
+   "avgLoserR": -2.1684,
+   "medianLoserR": -1.8596,
+   "payoffRatio": 1.5671,
+   "rP05": -5,
+   "rP95": 4.8884,
+   "medianMfeAtr": 0.795,
+   "medianMaeAtr": 1.03,
+   "medianBars": 3,
+   "trading": {
+    "filled": 465,
+    "meanReturnAfterCosts": -0.0323,
+    "controlMeanReturn": -0.0045,
+    "winRate": 0.2366,
+    "avgWin": 0.1982,
+    "avgLoss": -0.1037
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 539,
+    "hit": 0.3098,
+    "control": 0.2898,
+    "lift": 0.02
+   }
+  },
+  {
+   "bucket": "I1-2ATR",
+   "events": 5731,
+   "shareOfEvents": 0.0605,
+   "coverageOfPoints": 0.0296,
+   "n": 5731,
+   "symbols": 1753,
+   "hit": 0.4525,
+   "hitCi": [
+    0.4359,
+    0.469
+   ],
+   "control": 0.431,
+   "lift": 0.0215,
+   "liftCi": [
+    0.0077,
+    0.0352
+   ],
+   "liftP": 0.002199,
+   "expectancyR": -0.1833,
+   "expectancyRCi": [
+    -0.2365,
+    -0.13
+   ],
+   "excessR": 0.0959,
+   "excessRCi": [
+    0.0533,
+    0.1388
+   ],
+   "oppositeDiff": 0.033,
+   "oppositeDiffCi": [
+    0.0016,
+    0.0643
+   ],
+   "randomWalkExpectation": 0.4315,
+   "medianTargetAtr": 2.166,
+   "medianInvalidationAtr": 1.7138,
+   "avgWinnerR": 1.358,
+   "medianWinnerR": 1.25,
+   "avgLoserR": -1.4569,
+   "medianLoserR": -1.3253,
+   "payoffRatio": 0.9322,
+   "rP05": -2.3325,
+   "rP95": 2.0556,
+   "medianMfeAtr": 1.55,
+   "medianMaeAtr": 1.56,
+   "medianBars": 4,
+   "trading": {
+    "filled": 4470,
+    "meanReturnAfterCosts": -0.004,
+    "controlMeanReturn": -0.0075,
+    "winRate": 0.3107,
+    "avgWin": 0.214,
+    "avgLoss": -0.1022
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 5750,
+    "hit": 0.4523,
+    "control": 0.435,
+    "lift": 0.0173
+   }
+  },
+  {
+   "bucket": "I2-3ATR",
+   "events": 27949,
+   "shareOfEvents": 0.2952,
+   "coverageOfPoints": 0.1442,
+   "n": 27949,
+   "symbols": 2320,
+   "hit": 0.5304,
+   "hitCi": [
+    0.518,
+    0.5427
+   ],
+   "control": 0.5197,
+   "lift": 0.0106,
+   "liftCi": [
+    0.0033,
+    0.018
+   ],
+   "liftP": 0.004609,
+   "expectancyR": -0.1818,
+   "expectancyRCi": [
+    -0.2132,
+    -0.1503
+   ],
+   "excessR": 0.0228,
+   "excessRCi": [
+    0.0043,
+    0.0413
+   ],
+   "oppositeDiff": 0.0152,
+   "oppositeDiffCi": [
+    -0.0083,
+    0.0388
+   ],
+   "randomWalkExpectation": 0.5655,
+   "medianTargetAtr": 1.993,
+   "medianInvalidationAtr": 2.5137,
+   "avgWinnerR": 0.7761,
+   "medianWinnerR": 0.7059,
+   "avgLoserR": -1.2634,
+   "medianLoserR": -1.2121,
+   "payoffRatio": 0.6143,
+   "rP05": -1.8472,
+   "rP95": 1.3729,
+   "medianMfeAtr": 1.57,
+   "medianMaeAtr": 1.73,
+   "medianBars": 5,
+   "trading": {
+    "filled": 19468,
+    "meanReturnAfterCosts": -0.0064,
+    "controlMeanReturn": -0.0118,
+    "winRate": 0.3548,
+    "avgWin": 0.209,
+    "avgLoss": -0.1249
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 28591,
+    "hit": 0.532,
+    "control": 0.5207,
+    "lift": 0.0113
+   }
+  },
+  {
+   "bucket": "I3-5ATR",
+   "events": 43057,
+   "shareOfEvents": 0.4547,
+   "coverageOfPoints": 0.2222,
+   "n": 43057,
+   "symbols": 2417,
+   "hit": 0.6237,
+   "hitCi": [
+    0.6099,
+    0.6375
+   ],
+   "control": 0.6024,
+   "lift": 0.0213,
+   "liftCi": [
+    0.0152,
+    0.0275
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1038,
+   "expectancyRCi": [
+    -0.1312,
+    -0.0743
+   ],
+   "excessR": 0.0296,
+   "excessRCi": [
+    0.0185,
+    0.0403
+   ],
+   "oppositeDiff": 0.0481,
+   "oppositeDiffCi": [
+    0.0226,
+    0.0737
+   ],
+   "randomWalkExpectation": 0.6792,
+   "medianTargetAtr": 1.9413,
+   "medianInvalidationAtr": 3.859,
+   "avgWinnerR": 0.4773,
+   "medianWinnerR": 0.4615,
+   "avgLoserR": -1.067,
+   "medianLoserR": -1.1212,
+   "payoffRatio": 0.4473,
+   "rP05": -1.4899,
+   "rP95": 0.9522,
+   "medianMfeAtr": 1.8,
+   "medianMaeAtr": 1.49,
+   "medianBars": 6,
+   "trading": {
+    "filled": 23811,
+    "meanReturnAfterCosts": -0.0015,
+    "controlMeanReturn": -0.0116,
+    "winRate": 0.412,
+    "avgWin": 0.1844,
+    "avgLoss": -0.1317
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 42993,
+    "hit": 0.6233,
+    "control": 0.6009,
+    "lift": 0.0223
+   }
+  },
+  {
+   "bucket": "I>=5ATR",
+   "events": 17419,
+   "shareOfEvents": 0.184,
+   "coverageOfPoints": 0.0899,
+   "n": 17419,
+   "symbols": 2170,
+   "hit": 0.6712,
+   "hitCi": [
+    0.6542,
+    0.69
+   ],
+   "control": 0.6354,
+   "lift": 0.0358,
+   "liftCi": [
+    0.0268,
+    0.0449
+   ],
+   "liftP": 0,
+   "expectancyR": -0.0417,
+   "expectancyRCi": [
+    -0.0716,
+    -0.0118
+   ],
+   "excessR": 0.0396,
+   "excessRCi": [
+    0.0276,
+    0.0517
+   ],
+   "oppositeDiff": 0.0806,
+   "oppositeDiffCi": [
+    0.0463,
+    0.1149
+   ],
+   "randomWalkExpectation": 0.7469,
+   "medianTargetAtr": 2.1017,
+   "medianInvalidationAtr": 5.7305,
+   "avgWinnerR": 0.3384,
+   "medianWinnerR": 0.3294,
+   "avgLoserR": -0.8176,
+   "medianLoserR": -1.0312,
+   "payoffRatio": 0.4139,
+   "rP05": -1.2658,
+   "rP95": 0.6721,
+   "medianMfeAtr": 2.08,
+   "medianMaeAtr": 1.44,
+   "medianBars": 7,
+   "trading": {
+    "filled": 7014,
+    "meanReturnAfterCosts": 0.0013,
+    "controlMeanReturn": 0.0006,
+    "winRate": 0.4659,
+    "avgWin": 0.1797,
+    "avgLoss": -0.1543
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 17129,
+    "hit": 0.6722,
+    "control": 0.6333,
+    "lift": 0.0388
+   }
+  }
+ ],
+ "byDirectionRR": [
+  {
+   "bucket": "BULL·RR<0.5",
+   "events": 23796,
+   "shareOfEvents": 0.2513,
+   "coverageOfPoints": 0.1228,
+   "n": 23796,
+   "symbols": 2070,
+   "hit": 0.7364,
+   "hitCi": [
+    0.7145,
+    0.7581
+   ],
+   "control": 0.728,
+   "lift": 0.0084,
+   "liftCi": [
+    -0.0004,
+    0.0159
+   ],
+   "liftP": 0.031969,
+   "expectancyR": -0.085,
+   "expectancyRCi": [
+    -0.122,
+    -0.0486
+   ],
+   "excessR": 0.0068,
+   "excessRCi": [
+    -0.0055,
+    0.0172
+   ],
+   "oppositeDiff": 0.083,
+   "oppositeDiffCi": [
+    0.0396,
+    0.1264
+   ],
+   "randomWalkExpectation": 0.7918,
+   "medianTargetAtr": 1.0979,
+   "medianInvalidationAtr": 4.3779,
+   "avgWinnerR": 0.2664,
+   "medianWinnerR": 0.2565,
+   "avgLoserR": -1.0671,
+   "medianLoserR": -1.0994,
+   "payoffRatio": 0.2497,
+   "rP05": -1.3287,
+   "rP95": 0.4754,
+   "medianMfeAtr": 1.47,
+   "medianMaeAtr": 0.86,
+   "medianBars": 4,
+   "trading": {
+    "filled": 11514,
+    "meanReturnAfterCosts": 0.0137,
+    "controlMeanReturn": 0.0173,
+    "winRate": 0.4661,
+    "avgWin": 0.1762,
+    "avgLoss": -0.1281
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 23798,
+    "hit": 0.7352,
+    "control": 0.7244,
+    "lift": 0.0108
+   }
+  },
+  {
+   "bucket": "BULL·RR0.5-0.75",
+   "events": 14072,
+   "shareOfEvents": 0.1486,
+   "coverageOfPoints": 0.0726,
+   "n": 14072,
+   "symbols": 1955,
+   "hit": 0.6132,
+   "hitCi": [
+    0.5863,
+    0.6401
+   ],
+   "control": 0.5924,
+   "lift": 0.0208,
+   "liftCi": [
+    0.0095,
+    0.0321
+   ],
+   "liftP": 0.000297,
+   "expectancyR": -0.032,
+   "expectancyRCi": [
+    -0.0865,
+    0.0225
+   ],
+   "excessR": 0.0292,
+   "excessRCi": [
+    0.011,
+    0.0474
+   ],
+   "oppositeDiff": 0.1176,
+   "oppositeDiffCi": [
+    0.0593,
+    0.1759
+   ],
+   "randomWalkExpectation": 0.6239,
+   "medianTargetAtr": 2.2768,
+   "medianInvalidationAtr": 3.776,
+   "avgWinnerR": 0.6031,
+   "medianWinnerR": 0.5909,
+   "avgLoserR": -1.039,
+   "medianLoserR": -1.1111,
+   "payoffRatio": 0.5805,
+   "rP05": -1.4685,
+   "rP95": 0.7188,
+   "medianMfeAtr": 2.37,
+   "medianMaeAtr": 1.66,
+   "medianBars": 7,
+   "trading": {
+    "filled": 7862,
+    "meanReturnAfterCosts": 0.0149,
+    "controlMeanReturn": 0.023,
+    "winRate": 0.4284,
+    "avgWin": 0.1884,
+    "avgLoss": -0.1151
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 13982,
+    "hit": 0.6154,
+    "control": 0.595,
+    "lift": 0.0204
+   }
+  },
+  {
+   "bucket": "BULL·RR0.75-1.33_SYMMETRIC",
+   "events": 13966,
+   "shareOfEvents": 0.1475,
+   "coverageOfPoints": 0.0721,
+   "n": 13966,
+   "symbols": 1935,
+   "hit": 0.5176,
+   "hitCi": [
+    0.4933,
+    0.5419
+   ],
+   "control": 0.5084,
+   "lift": 0.0092,
+   "liftCi": [
+    -0.0015,
+    0.0199
+   ],
+   "liftP": 0.092817,
+   "expectancyR": -0.0236,
+   "expectancyRCi": [
+    -0.0874,
+    0.0402
+   ],
+   "excessR": 0.0149,
+   "excessRCi": [
+    -0.0086,
+    0.0384
+   ],
+   "oppositeDiff": 0.1085,
+   "oppositeDiffCi": [
+    0.0573,
+    0.1598
+   ],
+   "randomWalkExpectation": 0.5069,
+   "medianTargetAtr": 2.8989,
+   "medianInvalidationAtr": 2.9602,
+   "avgWinnerR": 0.9766,
+   "medianWinnerR": 0.9469,
+   "avgLoserR": -1.0969,
+   "medianLoserR": -1.151,
+   "payoffRatio": 0.8903,
+   "rP05": -1.6667,
+   "rP95": 1.2222,
+   "medianMfeAtr": 2.575,
+   "medianMaeAtr": 1.97,
+   "medianBars": 7,
+   "trading": {
+    "filled": 8864,
+    "meanReturnAfterCosts": 0.0153,
+    "controlMeanReturn": 0.0183,
+    "winRate": 0.3821,
+    "avgWin": 0.203,
+    "avgLoss": -0.1007
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 13949,
+    "hit": 0.521,
+    "control": 0.5073,
+    "lift": 0.0137
+   }
+  },
+  {
+   "bucket": "BULL·RR1.33-2",
+   "events": 3979,
+   "shareOfEvents": 0.042,
+   "coverageOfPoints": 0.0205,
+   "n": 3979,
+   "symbols": 1458,
+   "hit": 0.4109,
+   "hitCi": [
+    0.3807,
+    0.4411
+   ],
+   "control": 0.4003,
+   "lift": 0.0106,
+   "liftCi": [
+    -0.0059,
+    0.0272
+   ],
+   "liftP": 0.209245,
+   "expectancyR": -0.011,
+   "expectancyRCi": [
+    -0.1177,
+    0.0958
+   ],
+   "excessR": 0.0586,
+   "excessRCi": [
+    0.0095,
+    0.1012
+   ],
+   "oppositeDiff": 0.1029,
+   "oppositeDiffCi": [
+    0.0397,
+    0.1661
+   ],
+   "randomWalkExpectation": 0.3883,
+   "medianTargetAtr": 3.7595,
+   "medianInvalidationAtr": 2.3539,
+   "avgWinnerR": 1.5751,
+   "medianWinnerR": 1.5429,
+   "avgLoserR": -1.1173,
+   "medianLoserR": -1.1824,
+   "payoffRatio": 1.4098,
+   "rP05": -1.8903,
+   "rP95": 1.8226,
+   "medianMfeAtr": 2.55,
+   "medianMaeAtr": 1.95,
+   "medianBars": 7,
+   "trading": {
+    "filled": 2760,
+    "meanReturnAfterCosts": 0.0093,
+    "controlMeanReturn": 0.0286,
+    "winRate": 0.3181,
+    "avgWin": 0.2156,
+    "avgLoss": -0.0869
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 4113,
+    "hit": 0.4077,
+    "control": 0.3971,
+    "lift": 0.0106
+   }
+  },
+  {
+   "bucket": "BULL·RR2-3",
+   "events": 1378,
+   "shareOfEvents": 0.0146,
+   "coverageOfPoints": 0.0071,
+   "n": 1378,
+   "symbols": 883,
+   "hit": 0.3099,
+   "hitCi": [
+    0.275,
+    0.3496
+   ],
+   "control": 0.3279,
+   "lift": -0.018,
+   "liftCi": [
+    -0.046,
+    0.01
+   ],
+   "liftP": 0.207185,
+   "expectancyR": -0.035,
+   "expectancyRCi": [
+    -0.2003,
+    0.1479
+   ],
+   "excessR": -0.0389,
+   "excessRCi": [
+    -0.1568,
+    0.0791
+   ],
+   "oppositeDiff": 0.0551,
+   "oppositeDiffCi": [
+    -0.0079,
+    0.1305
+   ],
+   "randomWalkExpectation": 0.2989,
+   "medianTargetAtr": 4.8781,
+   "medianInvalidationAtr": 2.1286,
+   "avgWinnerR": 2.3521,
+   "medianWinnerR": 2.2787,
+   "avgLoserR": -1.1068,
+   "medianLoserR": -1.2143,
+   "payoffRatio": 2.1252,
+   "rP05": -2.3314,
+   "rP95": 2.6622,
+   "medianMfeAtr": 2.23,
+   "medianMaeAtr": 1.895,
+   "medianBars": 7,
+   "trading": {
+    "filled": 1022,
+    "meanReturnAfterCosts": 0.0014,
+    "controlMeanReturn": 0.0108,
+    "winRate": 0.2789,
+    "avgWin": 0.2248,
+    "avgLoss": -0.085
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 1382,
+    "hit": 0.3039,
+    "control": 0.3166,
+    "lift": -0.0127
+   }
+  },
+  {
+   "bucket": "BULL·RR>=3",
+   "events": 520,
+   "shareOfEvents": 0.0055,
+   "coverageOfPoints": 0.0027,
+   "n": 520,
+   "symbols": 441,
+   "hit": 0.25,
+   "hitCi": [
+    0.2054,
+    0.2946
+   ],
+   "control": 0.2538,
+   "lift": -0.0038,
+   "liftCi": [
+    -0.0412,
+    0.0336
+   ],
+   "liftP": 0.840262,
+   "expectancyR": -0.0622,
+   "expectancyRCi": [
+    -0.3597,
+    0.2354
+   ],
+   "excessR": 0.0283,
+   "excessRCi": [
+    -0.2175,
+    0.2741
+   ],
+   "oppositeDiff": 0.0749,
+   "oppositeDiffCi": [
+    0.0029,
+    0.147
+   ],
+   "randomWalkExpectation": 0.1992,
+   "medianTargetAtr": 5.0403,
+   "medianInvalidationAtr": 1.218,
+   "avgWinnerR": 3.8841,
+   "medianWinnerR": 3.7178,
+   "avgLoserR": -1.3776,
+   "medianLoserR": -1.327,
+   "payoffRatio": 2.8195,
+   "rP05": -3.4573,
+   "rP95": 4.8157,
+   "medianMfeAtr": 1.41,
+   "medianMaeAtr": 1.495,
+   "medianBars": 6,
+   "trading": {
+    "filled": 429,
+    "meanReturnAfterCosts": 0.0076,
+    "controlMeanReturn": 0.0276,
+    "winRate": 0.2494,
+    "avgWin": 0.2523,
+    "avgLoss": -0.0737
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 528,
+    "hit": 0.2443,
+    "control": 0.2625,
+    "lift": -0.0182
+   }
+  },
+  {
+   "bucket": "BEAR·RR<0.5",
+   "events": 16512,
+   "shareOfEvents": 0.1744,
+   "coverageOfPoints": 0.0852,
+   "n": 16512,
+   "symbols": 2214,
+   "hit": 0.6728,
+   "hitCi": [
+    0.6416,
+    0.7004
+   ],
+   "control": 0.6402,
+   "lift": 0.0327,
+   "liftCi": [
+    0.0235,
+    0.0419
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1967,
+   "expectancyRCi": [
+    -0.2465,
+    -0.1572
+   ],
+   "excessR": 0.0415,
+   "excessRCi": [
+    0.0265,
+    0.0566
+   ],
+   "oppositeDiff": -0.0335,
+   "oppositeDiffCi": [
+    -0.0863,
+    0.0193
+   ],
+   "randomWalkExpectation": 0.7881,
+   "medianTargetAtr": 1.0836,
+   "medianInvalidationAtr": 4.2106,
+   "avgWinnerR": 0.2674,
+   "medianWinnerR": 0.2627,
+   "avgLoserR": -1.1513,
+   "medianLoserR": -1.1317,
+   "payoffRatio": 0.2323,
+   "rP05": -1.5,
+   "rP95": 0.4706,
+   "medianMfeAtr": 1.25,
+   "medianMaeAtr": 1.09,
+   "medianBars": 4,
+   "trading": {
+    "filled": 8727,
+    "meanReturnAfterCosts": -0.0255,
+    "controlMeanReturn": -0.0588,
+    "winRate": 0.3919,
+    "avgWin": 0.1696,
+    "avgLoss": -0.1513
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 16591,
+    "hit": 0.6716,
+    "control": 0.6387,
+    "lift": 0.033
+   }
+  },
+  {
+   "bucket": "BEAR·RR0.5-0.75",
+   "events": 8724,
+   "shareOfEvents": 0.0921,
+   "coverageOfPoints": 0.045,
+   "n": 8724,
+   "symbols": 2004,
+   "hit": 0.5303,
+   "hitCi": [
+    0.491,
+    0.5695
+   ],
+   "control": 0.493,
+   "lift": 0.0373,
+   "liftCi": [
+    0.0244,
+    0.0501
+   ],
+   "liftP": 0,
+   "expectancyR": -0.2369,
+   "expectancyRCi": [
+    -0.3122,
+    -0.1693
+   ],
+   "excessR": 0.0555,
+   "excessRCi": [
+    0.0296,
+    0.0813
+   ],
+   "oppositeDiff": -0.0563,
+   "oppositeDiffCi": [
+    -0.1281,
+    0.0155
+   ],
+   "randomWalkExpectation": 0.6247,
+   "medianTargetAtr": 1.9874,
+   "medianInvalidationAtr": 3.3035,
+   "avgWinnerR": 0.6006,
+   "medianWinnerR": 0.5891,
+   "avgLoserR": -1.1824,
+   "medianLoserR": -1.1586,
+   "payoffRatio": 0.508,
+   "rP05": -1.7494,
+   "rP95": 0.7122,
+   "medianMfeAtr": 1.83,
+   "medianMaeAtr": 2.08,
+   "medianBars": 7,
+   "trading": {
+    "filled": 5552,
+    "meanReturnAfterCosts": -0.0295,
+    "controlMeanReturn": -0.033,
+    "winRate": 0.3656,
+    "avgWin": 0.2002,
+    "avgLoss": -0.162
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 8755,
+    "hit": 0.5334,
+    "control": 0.4987,
+    "lift": 0.0347
+   }
+  },
+  {
+   "bucket": "BEAR·RR0.75-1.33_SYMMETRIC",
+   "events": 8378,
+   "shareOfEvents": 0.0885,
+   "coverageOfPoints": 0.0432,
+   "n": 8378,
+   "symbols": 1999,
+   "hit": 0.4513,
+   "hitCi": [
+    0.414,
+    0.4886
+   ],
+   "control": 0.409,
+   "lift": 0.0423,
+   "liftCi": [
+    0.0271,
+    0.0575
+   ],
+   "liftP": 0,
+   "expectancyR": -0.2646,
+   "expectancyRCi": [
+    -0.3531,
+    -0.1762
+   ],
+   "excessR": 0.0824,
+   "excessRCi": [
+    0.0434,
+    0.1261
+   ],
+   "oppositeDiff": -0.0407,
+   "oppositeDiffCi": [
+    -0.1116,
+    0.0301
+   ],
+   "randomWalkExpectation": 0.5068,
+   "medianTargetAtr": 2.4351,
+   "medianInvalidationAtr": 2.4935,
+   "avgWinnerR": 0.9769,
+   "medianWinnerR": 0.9489,
+   "avgLoserR": -1.2857,
+   "medianLoserR": -1.2248,
+   "payoffRatio": 0.7598,
+   "rP05": -2.0957,
+   "rP95": 1.2059,
+   "medianMfeAtr": 1.9,
+   "medianMaeAtr": 2.17,
+   "medianBars": 7,
+   "trading": {
+    "filled": 5971,
+    "meanReturnAfterCosts": -0.0316,
+    "controlMeanReturn": -0.0627,
+    "winRate": 0.3376,
+    "avgWin": 0.2319,
+    "avgLoss": -0.1658
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 8498,
+    "hit": 0.4516,
+    "control": 0.4106,
+    "lift": 0.041
+   }
+  },
+  {
+   "bucket": "BEAR·RR1.33-2",
+   "events": 2277,
+   "shareOfEvents": 0.024,
+   "coverageOfPoints": 0.0118,
+   "n": 2277,
+   "symbols": 1262,
+   "hit": 0.3448,
+   "hitCi": [
+    0.305,
+    0.3845
+   ],
+   "control": 0.3052,
+   "lift": 0.0395,
+   "liftCi": [
+    0.0165,
+    0.0625
+   ],
+   "liftP": 0.00075,
+   "expectancyR": -0.3001,
+   "expectancyRCi": [
+    -0.4214,
+    -0.1789
+   ],
+   "excessR": 0.1086,
+   "excessRCi": [
+    0.0336,
+    0.1751
+   ],
+   "oppositeDiff": -0.0531,
+   "oppositeDiffCi": [
+    -0.1279,
+    0.0216
+   ],
+   "randomWalkExpectation": 0.3889,
+   "medianTargetAtr": 3.375,
+   "medianInvalidationAtr": 2.1754,
+   "avgWinnerR": 1.5757,
+   "medianWinnerR": 1.5355,
+   "avgLoserR": -1.2871,
+   "medianLoserR": -1.2527,
+   "payoffRatio": 1.2242,
+   "rP05": -2.4367,
+   "rP95": 1.7897,
+   "medianMfeAtr": 1.9,
+   "medianMaeAtr": 2.18,
+   "medianBars": 7,
+   "trading": {
+    "filled": 1698,
+    "meanReturnAfterCosts": -0.0177,
+    "controlMeanReturn": -0.0326,
+    "winRate": 0.2727,
+    "avgWin": 0.2498,
+    "avgLoss": -0.118
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 2326,
+    "hit": 0.3379,
+    "control": 0.3071,
+    "lift": 0.0308
+   }
+  },
+  {
+   "bucket": "BEAR·RR2-3",
+   "events": 794,
+   "shareOfEvents": 0.0084,
+   "coverageOfPoints": 0.0041,
+   "n": 794,
+   "symbols": 610,
+   "hit": 0.2531,
+   "hitCi": [
+    0.2092,
+    0.2971
+   ],
+   "control": 0.2249,
+   "lift": 0.0282,
+   "liftCi": [
+    -0.0033,
+    0.0597
+   ],
+   "liftP": 0.079337,
+   "expectancyR": -0.3225,
+   "expectancyRCi": [
+    -0.5172,
+    -0.1277
+   ],
+   "excessR": 0.1064,
+   "excessRCi": [
+    -0.0555,
+    0.2679
+   ],
+   "oppositeDiff": -0.0516,
+   "oppositeDiffCi": [
+    -0.1326,
+    0.0293
+   ],
+   "randomWalkExpectation": 0.2977,
+   "medianTargetAtr": 4.9783,
+   "medianInvalidationAtr": 2.1129,
+   "avgWinnerR": 2.3457,
+   "medianWinnerR": 2.2861,
+   "avgLoserR": -1.2269,
+   "medianLoserR": -1.2581,
+   "payoffRatio": 1.9119,
+   "rP05": -2.5741,
+   "rP95": 2.6,
+   "medianMfeAtr": 1.65,
+   "medianMaeAtr": 2.11,
+   "medianBars": 7,
+   "trading": {
+    "filled": 589,
+    "meanReturnAfterCosts": -0.0233,
+    "controlMeanReturn": -0.0325,
+    "winRate": 0.2003,
+    "avgWin": 0.2495,
+    "avgLoss": -0.0916
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 795,
+    "hit": 0.2604,
+    "control": 0.2174,
+    "lift": 0.043
+   }
+  },
+  {
+   "bucket": "BEAR·RR>=3",
+   "events": 289,
+   "shareOfEvents": 0.0031,
+   "coverageOfPoints": 0.0015,
+   "n": 289,
+   "symbols": 260,
+   "hit": 0.1765,
+   "hitCi": [
+    0.1208,
+    0.2321
+   ],
+   "control": 0.1599,
+   "lift": 0.0166,
+   "liftCi": [
+    -0.0314,
+    0.0646
+   ],
+   "liftP": 0.497765,
+   "expectancyR": -0.5422,
+   "expectancyRCi": [
+    -0.8969,
+    -0.1875
+   ],
+   "excessR": 0.2004,
+   "excessRCi": [
+    -0.1227,
+    0.5234
+   ],
+   "oppositeDiff": -0.0484,
+   "oppositeDiffCi": [
+    -0.1413,
+    0.0444
+   ],
+   "randomWalkExpectation": 0.2005,
+   "medianTargetAtr": 5.0718,
+   "medianInvalidationAtr": 1.2761,
+   "avgWinnerR": 3.7271,
+   "medianWinnerR": 3.5475,
+   "avgLoserR": -1.4571,
+   "medianLoserR": -1.43,
+   "payoffRatio": 2.558,
+   "rP05": -3.7409,
+   "rP95": 3.9614,
+   "medianMfeAtr": 1.16,
+   "medianMaeAtr": 1.59,
+   "medianBars": 5,
+   "trading": {
+    "filled": 239,
+    "meanReturnAfterCosts": -0.0249,
+    "controlMeanReturn": -0.0235,
+    "winRate": 0.1841,
+    "avgWin": 0.2757,
+    "avgLoss": -0.0928
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 284,
+    "hit": 0.1761,
+    "control": 0.1599,
+    "lift": 0.0162
+   }
+  }
+ ],
+ "selectivitySymmetric": [
+  {
+   "bucket": "SYM·ALL",
+   "events": 22344,
+   "shareOfEvents": 0.236,
+   "coverageOfPoints": 0.1153,
+   "n": 22344,
+   "symbols": 2315,
+   "hit": 0.4927,
+   "hitCi": [
+    0.4786,
+    0.5069
+   ],
+   "control": 0.4711,
+   "lift": 0.0216,
+   "liftCi": [
+    0.0127,
+    0.0305
+   ],
+   "liftP": 0.000002,
+   "expectancyR": -0.114,
+   "expectancyRCi": [
+    -0.1534,
+    -0.0746
+   ],
+   "excessR": 0.0402,
+   "excessRCi": [
+    0.0189,
+    0.0615
+   ],
+   "oppositeDiff": 0.0526,
+   "oppositeDiffCi": [
+    0.0242,
+    0.081
+   ],
+   "randomWalkExpectation": 0.5069,
+   "medianTargetAtr": 2.692,
+   "medianInvalidationAtr": 2.742,
+   "avgWinnerR": 0.9767,
+   "medianWinnerR": 0.9476,
+   "avgLoserR": -1.1735,
+   "medianLoserR": -1.1765,
+   "payoffRatio": 0.8323,
+   "rP05": -1.8181,
+   "rP95": 1.2191,
+   "medianMfeAtr": 2.29,
+   "medianMaeAtr": 2.06,
+   "medianBars": 7,
+   "trading": {
+    "filled": 14835,
+    "meanReturnAfterCosts": -0.0036,
+    "controlMeanReturn": -0.0159,
+    "winRate": 0.3642,
+    "avgWin": 0.2138,
+    "avgLoss": -0.128
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 22447,
+    "hit": 0.4948,
+    "control": 0.4707,
+    "lift": 0.024
+   }
+  },
+  {
+   "bucket": "SYM·CLEAR",
+   "events": 14091,
+   "shareOfEvents": 0.1488,
+   "coverageOfPoints": 0.0727,
+   "n": 14091,
+   "symbols": 2159,
+   "hit": 0.4987,
+   "hitCi": [
+    0.4774,
+    0.52
+   ],
+   "control": 0.4722,
+   "lift": 0.0265,
+   "liftCi": [
+    0.0136,
+    0.0394
+   ],
+   "liftP": 0.000056,
+   "expectancyR": -0.0998,
+   "expectancyRCi": [
+    -0.1544,
+    -0.0452
+   ],
+   "excessR": 0.0491,
+   "excessRCi": [
+    0.02,
+    0.0782
+   ],
+   "oppositeDiff": 0.0649,
+   "oppositeDiffCi": [
+    0.0182,
+    0.1023
+   ],
+   "randomWalkExpectation": 0.5092,
+   "medianTargetAtr": 2.7506,
+   "medianInvalidationAtr": 2.8417,
+   "avgWinnerR": 0.9673,
+   "medianWinnerR": 0.9355,
+   "avgLoserR": -1.1614,
+   "medianLoserR": -1.1702,
+   "payoffRatio": 0.8329,
+   "rP05": -1.8,
+   "rP95": 1.2064,
+   "medianMfeAtr": 2.33,
+   "medianMaeAtr": 2.07,
+   "medianBars": 7,
+   "trading": {
+    "filled": 9005,
+    "meanReturnAfterCosts": -0.0025,
+    "controlMeanReturn": -0.0058,
+    "winRate": 0.3617,
+    "avgWin": 0.2265,
+    "avgLoss": -0.1323
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 14035,
+    "hit": 0.5007,
+    "control": 0.4734,
+    "lift": 0.0272
+   }
+  },
+  {
+   "bucket": "SYM·AGREEMENT_TOP25",
+   "events": 4954,
+   "shareOfEvents": 0.0523,
+   "coverageOfPoints": 0.0256,
+   "n": 4954,
+   "symbols": 1683,
+   "hit": 0.5091,
+   "hitCi": [
+    0.4813,
+    0.5368
+   ],
+   "control": 0.4751,
+   "lift": 0.034,
+   "liftCi": [
+    0.0138,
+    0.0542
+   ],
+   "liftP": 0.000989,
+   "expectancyR": -0.078,
+   "expectancyRCi": [
+    -0.148,
+    -0.008
+   ],
+   "excessR": 0.0606,
+   "excessRCi": [
+    0.0136,
+    0.1014
+   ],
+   "oppositeDiff": 0.0803,
+   "oppositeDiffCi": [
+    0.0252,
+    0.1355
+   ],
+   "randomWalkExpectation": 0.513,
+   "medianTargetAtr": 2.8952,
+   "medianInvalidationAtr": 3.0271,
+   "avgWinnerR": 0.9516,
+   "medianWinnerR": 0.9214,
+   "avgLoserR": -1.1457,
+   "medianLoserR": -1.1679,
+   "payoffRatio": 0.8306,
+   "rP05": -1.7481,
+   "rP95": 1.1839,
+   "medianMfeAtr": 2.44,
+   "medianMaeAtr": 2.05,
+   "medianBars": 7,
+   "trading": {
+    "filled": 2990,
+    "meanReturnAfterCosts": -0.0063,
+    "controlMeanReturn": -0.0111,
+    "winRate": 0.3458,
+    "avgWin": 0.2473,
+    "avgLoss": -0.1404
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 4938,
+    "hit": 0.5115,
+    "control": 0.476,
+    "lift": 0.0356
+   }
+  },
+  {
+   "bucket": "SYM·CLEAR_TOP25",
+   "events": 4954,
+   "shareOfEvents": 0.0523,
+   "coverageOfPoints": 0.0256,
+   "n": 4954,
+   "symbols": 1683,
+   "hit": 0.5091,
+   "hitCi": [
+    0.4801,
+    0.5381
+   ],
+   "control": 0.4751,
+   "lift": 0.034,
+   "liftCi": [
+    0.0127,
+    0.0553
+   ],
+   "liftP": 0.001768,
+   "expectancyR": -0.078,
+   "expectancyRCi": [
+    -0.1504,
+    -0.0057
+   ],
+   "excessR": 0.0606,
+   "excessRCi": [
+    0.0154,
+    0.1059
+   ],
+   "oppositeDiff": 0.0803,
+   "oppositeDiffCi": [
+    0.0223,
+    0.1384
+   ],
+   "randomWalkExpectation": 0.513,
+   "medianTargetAtr": 2.8952,
+   "medianInvalidationAtr": 3.0271,
+   "avgWinnerR": 0.9516,
+   "medianWinnerR": 0.9214,
+   "avgLoserR": -1.1457,
+   "medianLoserR": -1.1679,
+   "payoffRatio": 0.8306,
+   "rP05": -1.7481,
+   "rP95": 1.1839,
+   "medianMfeAtr": 2.44,
+   "medianMaeAtr": 2.05,
+   "medianBars": 7,
+   "trading": {
+    "filled": 2990,
+    "meanReturnAfterCosts": -0.0063,
+    "controlMeanReturn": -0.0111,
+    "winRate": 0.3458,
+    "avgWin": 0.2473,
+    "avgLoss": -0.1404
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 4938,
+    "hit": 0.5115,
+    "control": 0.476,
+    "lift": 0.0356
+   }
+  },
+  {
+   "bucket": "SYM·AGREEMENT_TOP10",
+   "events": 1777,
+   "shareOfEvents": 0.0188,
+   "coverageOfPoints": 0.0092,
+   "n": 1777,
+   "symbols": 1060,
+   "hit": 0.5431,
+   "hitCi": [
+    0.5094,
+    0.5741
+   ],
+   "control": 0.4864,
+   "lift": 0.0566,
+   "liftCi": [
+    0.0284,
+    0.0849
+   ],
+   "liftP": 0.000086,
+   "expectancyR": -0.032,
+   "expectancyRCi": [
+    -0.1106,
+    0.0418
+   ],
+   "excessR": 0.0858,
+   "excessRCi": [
+    0.0238,
+    0.1478
+   ],
+   "oppositeDiff": 0.1244,
+   "oppositeDiffCi": [
+    0.061,
+    0.1828
+   ],
+   "randomWalkExpectation": 0.5162,
+   "medianTargetAtr": 2.9435,
+   "medianInvalidationAtr": 3.1237,
+   "avgWinnerR": 0.9454,
+   "medianWinnerR": 0.9108,
+   "avgLoserR": -1.1935,
+   "medianLoserR": -1.189,
+   "payoffRatio": 0.7921,
+   "rP05": -1.75,
+   "rP95": 1.1842,
+   "medianMfeAtr": 2.58,
+   "medianMaeAtr": 1.9,
+   "medianBars": 7,
+   "trading": {
+    "filled": 1032,
+    "meanReturnAfterCosts": 0.0017,
+    "controlMeanReturn": -0.0106,
+    "winRate": 0.3459,
+    "avgWin": 0.2657,
+    "avgLoss": -0.1379
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 1767,
+    "hit": 0.5461,
+    "control": 0.485,
+    "lift": 0.0611
+   }
+  }
+ ],
+ "selectivityFavorable": [
+  {
+   "bucket": "FAV·ALL",
+   "events": 9238,
+   "shareOfEvents": 0.0976,
+   "coverageOfPoints": 0.0477,
+   "n": 9238,
+   "symbols": 2007,
+   "hit": 0.3495,
+   "hitCi": [
+    0.3331,
+    0.366
+   ],
+   "control": 0.3352,
+   "lift": 0.0143,
+   "liftCi": [
+    0.0021,
+    0.0265
+   ],
+   "liftP": 0.021443,
+   "expectancyR": -0.1321,
+   "expectancyRCi": [
+    -0.2022,
+    -0.062
+   ],
+   "excessR": 0.0632,
+   "excessRCi": [
+    0.0203,
+    0.1061
+   ],
+   "oppositeDiff": 0.0373,
+   "oppositeDiffCi": [
+    0.0024,
+    0.0721
+   ],
+   "randomWalkExpectation": 0.3508,
+   "medianTargetAtr": 3.8844,
+   "medianInvalidationAtr": 2.1917,
+   "avgWinnerR": 1.8529,
+   "medianWinnerR": 1.6398,
+   "avgLoserR": -1.1988,
+   "medianLoserR": -1.2199,
+   "payoffRatio": 1.5457,
+   "rP05": -2.3516,
+   "rP95": 2.3645,
+   "medianMfeAtr": 2.13,
+   "medianMaeAtr": 1.95,
+   "medianBars": 7,
+   "trading": {
+    "filled": 6738,
+    "meanReturnAfterCosts": -0.0029,
+    "controlMeanReturn": 0.0028,
+    "winRate": 0.2812,
+    "avgWin": 0.2309,
+    "avgLoss": -0.0944
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 9429,
+    "hit": 0.3467,
+    "control": 0.3332,
+    "lift": 0.0134
+   }
+  },
+  {
+   "bucket": "FAV·CLEAR",
+   "events": 4858,
+   "shareOfEvents": 0.0513,
+   "coverageOfPoints": 0.0251,
+   "n": 4858,
+   "symbols": 1679,
+   "hit": 0.366,
+   "hitCi": [
+    0.344,
+    0.388
+   ],
+   "control": 0.3434,
+   "lift": 0.0226,
+   "liftCi": [
+    0.0079,
+    0.0373
+   ],
+   "liftP": 0.002539,
+   "expectancyR": -0.1015,
+   "expectancyRCi": [
+    -0.1859,
+    -0.014
+   ],
+   "excessR": 0.0887,
+   "excessRCi": [
+    0.0343,
+    0.1431
+   ],
+   "oppositeDiff": 0.0546,
+   "oppositeDiffCi": [
+    0.0102,
+    0.099
+   ],
+   "randomWalkExpectation": 0.3543,
+   "medianTargetAtr": 3.9338,
+   "medianInvalidationAtr": 2.2061,
+   "avgWinnerR": 1.8233,
+   "medianWinnerR": 1.6248,
+   "avgLoserR": -1.2126,
+   "medianLoserR": -1.2364,
+   "payoffRatio": 1.5036,
+   "rP05": -2.2951,
+   "rP95": 2.3333,
+   "medianMfeAtr": 2.19,
+   "medianMaeAtr": 1.91,
+   "medianBars": 7,
+   "trading": {
+    "filled": 3459,
+    "meanReturnAfterCosts": -0.0036,
+    "controlMeanReturn": 0.0089,
+    "winRate": 0.2778,
+    "avgWin": 0.2429,
+    "avgLoss": -0.0984
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 4802,
+    "hit": 0.3688,
+    "control": 0.3425,
+    "lift": 0.0263
+   }
+  },
+  {
+   "bucket": "FAV·AGREEMENT_TOP25",
+   "events": 1325,
+   "shareOfEvents": 0.014,
+   "coverageOfPoints": 0.0068,
+   "n": 1325,
+   "symbols": 900,
+   "hit": 0.3849,
+   "hitCi": [
+    0.3458,
+    0.424
+   ],
+   "control": 0.3452,
+   "lift": 0.0397,
+   "liftCi": [
+    0.0059,
+    0.0735
+   ],
+   "liftP": 0.021351,
+   "expectancyR": -0.0552,
+   "expectancyRCi": [
+    -0.1954,
+    0.072
+   ],
+   "excessR": 0.105,
+   "excessRCi": [
+    -0.0039,
+    0.2139
+   ],
+   "oppositeDiff": 0.0735,
+   "oppositeDiffCi": [
+    0.0048,
+    0.1423
+   ],
+   "randomWalkExpectation": 0.3576,
+   "medianTargetAtr": 4.1061,
+   "medianInvalidationAtr": 2.3107,
+   "avgWinnerR": 1.7944,
+   "medianWinnerR": 1.614,
+   "avgLoserR": -1.2127,
+   "medianLoserR": -1.2368,
+   "payoffRatio": 1.4797,
+   "rP05": -2.1969,
+   "rP95": 2.2727,
+   "medianMfeAtr": 2.35,
+   "medianMaeAtr": 1.98,
+   "medianBars": 7,
+   "trading": {
+    "filled": 893,
+    "meanReturnAfterCosts": -0.0053,
+    "controlMeanReturn": 0.0032,
+    "winRate": 0.28,
+    "avgWin": 0.2484,
+    "avgLoss": -0.1039
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 1295,
+    "hit": 0.3907,
+    "control": 0.3466,
+    "lift": 0.0442
+   }
+  },
+  {
+   "bucket": "FAV·CLEAR_TOP25",
+   "events": 1325,
+   "shareOfEvents": 0.014,
+   "coverageOfPoints": 0.0068,
+   "n": 1325,
+   "symbols": 900,
+   "hit": 0.3849,
+   "hitCi": [
+    0.3487,
+    0.4211
+   ],
+   "control": 0.3452,
+   "lift": 0.0397,
+   "liftCi": [
+    0.0073,
+    0.0721
+   ],
+   "liftP": 0.016405,
+   "expectancyR": -0.0552,
+   "expectancyRCi": [
+    -0.1809,
+    0.0705
+   ],
+   "excessR": 0.105,
+   "excessRCi": [
+    -0.0093,
+    0.2096
+   ],
+   "oppositeDiff": 0.0735,
+   "oppositeDiffCi": [
+    0.0082,
+    0.1386
+   ],
+   "randomWalkExpectation": 0.3576,
+   "medianTargetAtr": 4.1061,
+   "medianInvalidationAtr": 2.3107,
+   "avgWinnerR": 1.7944,
+   "medianWinnerR": 1.614,
+   "avgLoserR": -1.2127,
+   "medianLoserR": -1.2368,
+   "payoffRatio": 1.4797,
+   "rP05": -2.1969,
+   "rP95": 2.2727,
+   "medianMfeAtr": 2.35,
+   "medianMaeAtr": 1.98,
+   "medianBars": 7,
+   "trading": {
+    "filled": 893,
+    "meanReturnAfterCosts": -0.0053,
+    "controlMeanReturn": 0.0032,
+    "winRate": 0.28,
+    "avgWin": 0.2484,
+    "avgLoss": -0.1039
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 1295,
+    "hit": 0.3907,
+    "control": 0.3466,
+    "lift": 0.0442
+   }
+  },
+  {
+   "bucket": "FAV·AGREEMENT_TOP10",
+   "events": 460,
+   "shareOfEvents": 0.0049,
+   "coverageOfPoints": 0.0024,
+   "n": 460,
+   "symbols": 403,
+   "hit": 0.3913,
+   "hitCi": [
+    0.3364,
+    0.4462
+   ],
+   "control": 0.3339,
+   "lift": 0.0574,
+   "liftCi": [
+    0.0073,
+    0.1078
+   ],
+   "liftP": 0.022804,
+   "expectancyR": -0.0023,
+   "expectancyRCi": [
+    -0.1776,
+    0.1729
+   ],
+   "excessR": 0.1722,
+   "excessRCi": [
+    0.001,
+    0.3435
+   ],
+   "oppositeDiff": 0.1,
+   "oppositeDiffCi": [
+    0.0153,
+    0.1847
+   ],
+   "randomWalkExpectation": 0.355,
+   "medianTargetAtr": 4.2291,
+   "medianInvalidationAtr": 2.3074,
+   "avgWinnerR": 1.761,
+   "medianWinnerR": 1.5751,
+   "avgLoserR": -1.1359,
+   "medianLoserR": -1.2297,
+   "payoffRatio": 1.5503,
+   "rP05": -2.1386,
+   "rP95": 2.2727,
+   "medianMfeAtr": 2.635,
+   "medianMaeAtr": 2.035,
+   "medianBars": 7,
+   "trading": {
+    "filled": 310,
+    "meanReturnAfterCosts": 0.0023,
+    "controlMeanReturn": -0.0012,
+    "winRate": 0.3,
+    "avgWin": 0.2411,
+    "avgLoss": -0.1001
+   },
+   "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
+   "trendOnly": {
+    "n": 443,
+    "hit": 0.4041,
+    "control": 0.3395,
+    "lift": 0.0646
+   }
+  }
+ ],
+ "selectivityAll": [
+  {
+   "bucket": "ALL·ALL",
+   "events": 94686,
+   "shareOfEvents": 1,
+   "coverageOfPoints": 0.4886,
+   "n": 94686,
+   "symbols": 2548,
+   "hit": 0.5928,
+   "hitCi": [
+    0.5794,
+    0.6061
+   ],
+   "control": 0.5719,
+   "lift": 0.0208,
+   "liftCi": [
+    0.0152,
+    0.0264
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1221,
+   "expectancyRCi": [
+    -0.1506,
+    -0.0935
+   ],
+   "excessR": 0.0341,
+   "excessRCi": [
+    0.0234,
+    0.0447
+   ],
+   "oppositeDiff": 0.0433,
+   "oppositeDiffCi": [
+    0.0195,
+    0.067
+   ],
+   "randomWalkExpectation": 0.6405,
+   "medianTargetAtr": 2.0092,
+   "medianInvalidationAtr": 3.5022,
+   "avgWinnerR": 0.5765,
+   "medianWinnerR": 0.4921,
+   "avgLoserR": -1.139,
+   "medianLoserR": -1.1475,
+   "payoffRatio": 0.5062,
+   "rP05": -1.65,
+   "rP95": 1.2,
+   "medianMfeAtr": 1.76,
+   "medianMaeAtr": 1.55,
+   "medianBars": 6,
+   "trading": {
+    "filled": 55228,
+    "meanReturnAfterCosts": -0.0033,
+    "controlMeanReturn": -0.0099,
+    "winRate": 0.389,
+    "avgWin": 0.1936,
+    "avgLoss": -0.1287
+   },
+   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 95002,
+    "hit": 0.5925,
+    "control": 0.5708,
+    "lift": 0.0217
+   }
+  },
+  {
+   "bucket": "ALL·CLEAR",
+   "events": 62443,
+   "shareOfEvents": 0.6595,
+   "coverageOfPoints": 0.3222,
+   "n": 62443,
+   "symbols": 2492,
+   "hit": 0.6056,
+   "hitCi": [
+    0.5887,
+    0.6226
+   ],
+   "control": 0.5778,
+   "lift": 0.0279,
+   "liftCi": [
+    0.0209,
+    0.0354
+   ],
+   "liftP": 0,
+   "expectancyR": -0.1027,
+   "expectancyRCi": [
+    -0.1365,
+    -0.0688
+   ],
+   "excessR": 0.0448,
+   "excessRCi": [
+    0.0319,
+    0.0576
+   ],
+   "oppositeDiff": 0.0577,
+   "oppositeDiffCi": [
+    0.0256,
+    0.0867
+   ],
+   "randomWalkExpectation": 0.6487,
+   "medianTargetAtr": 2.0398,
+   "medianInvalidationAtr": 3.7149,
+   "avgWinnerR": 0.5563,
+   "medianWinnerR": 0.4861,
+   "avgLoserR": -1.1146,
+   "medianLoserR": -1.1356,
+   "payoffRatio": 0.4991,
+   "rP05": -1.6,
+   "rP95": 1.1429,
+   "medianMfeAtr": 1.85,
+   "medianMaeAtr": 1.52,
+   "medianBars": 6,
+   "trading": {
+    "filled": 34653,
+    "meanReturnAfterCosts": -0.0025,
+    "controlMeanReturn": -0.0037,
+    "winRate": 0.393,
+    "avgWin": 0.2004,
+    "avgLoss": -0.1338
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 62295,
+    "hit": 0.6069,
+    "control": 0.5776,
+    "lift": 0.0293
+   }
+  },
+  {
+   "bucket": "ALL·AGREEMENT_TOP25",
+   "events": 23684,
+   "shareOfEvents": 0.2501,
+   "coverageOfPoints": 0.1222,
+   "n": 23684,
+   "symbols": 2251,
+   "hit": 0.6153,
+   "hitCi": [
+    0.5929,
+    0.6377
+   ],
+   "control": 0.5801,
+   "lift": 0.0352,
+   "liftCi": [
+    0.0247,
+    0.0456
+   ],
+   "liftP": 0,
+   "expectancyR": -0.0797,
+   "expectancyRCi": [
+    -0.1246,
+    -0.038
+   ],
+   "excessR": 0.0489,
+   "excessRCi": [
+    0.0295,
+    0.0682
+   ],
+   "oppositeDiff": 0.0723,
+   "oppositeDiffCi": [
+    0.0313,
+    0.1133
+   ],
+   "randomWalkExpectation": 0.6534,
+   "medianTargetAtr": 2.1539,
+   "medianInvalidationAtr": 4.0717,
+   "avgWinnerR": 0.5456,
+   "medianWinnerR": 0.4923,
+   "avgLoserR": -1.0795,
+   "medianLoserR": -1.1213,
+   "payoffRatio": 0.5054,
+   "rP05": -1.5473,
+   "rP95": 1.0455,
+   "medianMfeAtr": 2.04,
+   "medianMaeAtr": 1.56,
+   "medianBars": 6,
+   "trading": {
+    "filled": 11989,
+    "meanReturnAfterCosts": -0.0029,
+    "controlMeanReturn": -0.0065,
+    "winRate": 0.3813,
+    "avgWin": 0.2238,
+    "avgLoss": -0.1427
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 23625,
+    "hit": 0.6167,
+    "control": 0.5797,
+    "lift": 0.037
+   }
+  },
+  {
+   "bucket": "ALL·CLEAR_TOP25",
+   "events": 23684,
+   "shareOfEvents": 0.2501,
+   "coverageOfPoints": 0.1222,
+   "n": 23684,
+   "symbols": 2251,
+   "hit": 0.6153,
+   "hitCi": [
+    0.5924,
+    0.6381
+   ],
+   "control": 0.5801,
+   "lift": 0.0352,
+   "liftCi": [
+    0.0243,
+    0.046
+   ],
+   "liftP": 0,
+   "expectancyR": -0.0797,
+   "expectancyRCi": [
+    -0.1243,
+    -0.0351
+   ],
+   "excessR": 0.0489,
+   "excessRCi": [
+    0.0294,
+    0.0683
+   ],
+   "oppositeDiff": 0.0723,
+   "oppositeDiffCi": [
+    0.0301,
+    0.1146
+   ],
+   "randomWalkExpectation": 0.6534,
+   "medianTargetAtr": 2.1539,
+   "medianInvalidationAtr": 4.0717,
+   "avgWinnerR": 0.5456,
+   "medianWinnerR": 0.4923,
+   "avgLoserR": -1.0795,
+   "medianLoserR": -1.1213,
+   "payoffRatio": 0.5054,
+   "rP05": -1.5473,
+   "rP95": 1.0455,
+   "medianMfeAtr": 2.04,
+   "medianMaeAtr": 1.56,
+   "medianBars": 6,
+   "trading": {
+    "filled": 11989,
+    "meanReturnAfterCosts": -0.0029,
+    "controlMeanReturn": -0.0065,
+    "winRate": 0.3813,
+    "avgWin": 0.2238,
+    "avgLoss": -0.1427
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 23625,
+    "hit": 0.6167,
+    "control": 0.5797,
+    "lift": 0.037
+   }
+  },
+  {
+   "bucket": "ALL·AGREEMENT_TOP10",
+   "events": 9470,
+   "shareOfEvents": 0.1,
+   "coverageOfPoints": 0.0489,
+   "n": 9470,
+   "symbols": 1899,
+   "hit": 0.6202,
+   "hitCi": [
+    0.5934,
+    0.6469
+   ],
+   "control": 0.5816,
+   "lift": 0.0386,
+   "liftCi": [
+    0.0237,
+    0.0534
+   ],
+   "liftP": 0,
+   "expectancyR": -0.0566,
+   "expectancyRCi": [
+    -0.1034,
+    -0.0098
+   ],
+   "excessR": 0.054,
+   "excessRCi": [
+    0.0291,
+    0.079
+   ],
+   "oppositeDiff": 0.0872,
+   "oppositeDiffCi": [
+    0.0384,
+    0.136
+   ],
+   "randomWalkExpectation": 0.6513,
+   "medianTargetAtr": 2.2319,
+   "medianInvalidationAtr": 4.2898,
+   "avgWinnerR": 0.5542,
+   "medianWinnerR": 0.4957,
+   "avgLoserR": -1.0539,
+   "medianLoserR": -1.1102,
+   "payoffRatio": 0.5259,
+   "rP05": -1.5179,
+   "rP95": 1.0197,
+   "medianMfeAtr": 2.23,
+   "medianMaeAtr": 1.63,
+   "medianBars": 6,
+   "trading": {
+    "filled": 4523,
+    "meanReturnAfterCosts": -0.0015,
+    "controlMeanReturn": -0.0018,
+    "winRate": 0.3679,
+    "avgWin": 0.2423,
+    "avgLoss": -0.1433
+   },
+   "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
+   "trendOnly": {
+    "n": 9399,
+    "hit": 0.6214,
+    "control": 0.5797,
+    "lift": 0.0417
+   }
+  }
+ ],
+ "highAccuracyCandidates": [],
+ "decision": {
+  "rule": "MISSION9_PREREGISTRATION.md §2",
+  "HAC": {
+   "minN": 300,
+   "minHit": 0.6,
+   "minLift": 0.05
+  },
+  "HA1": "NO_HIGH_ACCURACY_EDGE",
+  "symmetricAll": {
+   "n": 22344,
+   "hit": 0.4927,
+   "control": 0.4711,
+   "lift": 0.0216,
+   "liftCi": [
+    0.0127,
+    0.0305
+   ],
+   "meetsHac": false
+  },
+  "selectiveTiers": [
+   {
+    "bucket": "SYM·CLEAR",
+    "n": 14091,
+    "hit": 0.4987,
+    "lift": 0.0265,
+    "liftCi": [
+     0.0136,
+     0.0394
+    ],
+    "meetsHac": false,
+    "pHolm": 0.0002,
+    "qualifies": false
+   },
+   {
+    "bucket": "SYM·AGREEMENT_TOP25",
+    "n": 4954,
+    "hit": 0.5091,
+    "lift": 0.034,
+    "liftCi": [
+     0.0138,
+     0.0542
+    ],
+    "meetsHac": false,
+    "pHolm": 0.003,
+    "qualifies": false
+   },
+   {
+    "bucket": "SYM·AGREEMENT_TOP10",
+    "n": 1777,
+    "hit": 0.5431,
+    "lift": 0.0566,
+    "liftCi": [
+     0.0284,
+     0.0849
+    ],
+    "meetsHac": false,
+    "pHolm": 0.0003,
+    "qualifies": false
+   },
+   {
+    "bucket": "FAV·ALL",
+    "n": 9238,
+    "hit": 0.3495,
+    "lift": 0.0143,
+    "liftCi": [
+     0.0021,
+     0.0265
+    ],
+    "meetsHac": false,
+    "pHolm": 0.032,
+    "qualifies": false
+   },
+   {
+    "bucket": "FAV·CLEAR",
+    "n": 4858,
+    "hit": 0.366,
+    "lift": 0.0226,
+    "liftCi": [
+     0.0079,
+     0.0373
+    ],
+    "meetsHac": false,
+    "pHolm": 0.0063,
+    "qualifies": false
+   },
+   {
+    "bucket": "FAV·AGREEMENT_TOP25",
+    "n": 1325,
+    "hit": 0.3849,
+    "lift": 0.0397,
+    "liftCi": [
+     0.0059,
+     0.0735
+    ],
+    "meetsHac": false,
+    "pHolm": 0.032,
+    "qualifies": false
+   },
+   {
+    "bucket": "FAV·AGREEMENT_TOP10",
+    "n": 460,
+    "hit": 0.3913,
+    "lift": 0.0574,
+    "liftCi": [
+     0.0073,
+     0.1078
+    ],
+    "meetsHac": false,
+    "pHolm": 0.032,
+    "qualifies": false
+   },
+   {
+    "bucket": "RR1.33-2",
+    "n": 6256,
+    "hit": 0.3868,
+    "lift": 0.0211,
+    "liftCi": [
+     0.0063,
+     0.036
+    ],
+    "meetsHac": false,
+    "pHolm": 0.0106,
+    "qualifies": false
+   }
+  ],
+  "HA2": [
+   {
+    "bucket": "ALL·AGREEMENT_TOP10",
+    "lift": 0.0386,
+    "liftCi": [
+     0.0237,
+     0.0534
+    ],
+    "pHolm": 0,
+    "detected": true,
+    "meaningful": true
+   },
+   {
+    "bucket": "SYM·AGREEMENT_TOP10",
+    "lift": 0.0566,
+    "liftCi": [
+     0.0284,
+     0.0849
+    ],
+    "pHolm": 0,
+    "detected": true,
+    "meaningful": true
+   }
+  ],
+  "HA3": {
+   "controlHit": 0.692,
+   "controlAtLeast60": true,
+   "hit": 0.7104,
+   "randomWalk": 0.7903,
+   "hitBelowRandomWalk": true
+  },
+  "HA4": {
+   "ALL·ALL": -0.0009,
+   "SYM·ALL": -0.0024,
+   "within15pp": true
+  },
+  "HA5": {
+   "ALL": {
+    "n": 94686,
+    "expectancyR": -0.1221,
+    "expectancyRCi": [
+     -0.1501,
+     -0.0929
+    ],
+    "excessR": 0.0341,
+    "excessRCi": [
+     0.0236,
+     0.0445
+    ],
+    "trading": {
+     "filled": 55228,
+     "meanReturnAfterCosts": -0.0033,
+     "controlMeanReturn": -0.0099,
+     "winRate": 0.389,
+     "avgWin": 0.1936,
+     "avgLoss": -0.1287
+    }
+   },
+   "SYM": {
+    "n": 22344,
+    "expectancyR": -0.114,
+    "expectancyRCi": [
+     -0.1534,
+     -0.0746
+    ],
+    "excessR": 0.0402,
+    "excessRCi": [
+     0.0189,
+     0.0615
+    ],
+    "trading": {
+     "filled": 14835,
+     "meanReturnAfterCosts": -0.0036,
+     "controlMeanReturn": -0.0159,
+     "winRate": 0.3642,
+     "avgWin": 0.2138,
+     "avgLoss": -0.128
+    }
+   },
+   "FAV": {
+    "n": 9238,
+    "expectancyR": -0.1321,
+    "expectancyRCi": [
+     -0.2022,
+     -0.062
+    ],
+    "excessR": 0.0632,
+    "excessRCi": [
+     0.0203,
+     0.1061
+    ],
+    "trading": {
+     "filled": 6738,
+     "meanReturnAfterCosts": -0.0029,
+     "controlMeanReturn": 0.0028,
+     "winRate": 0.2812,
+     "avgWin": 0.2309,
+     "avgLoss": -0.0944
+    }
+   },
+   "structuralNegativeAll": true
+  }
+ }
+}

@@ -18,7 +18,7 @@ import { ROOT } from "../lib/ti-data.mjs";
 
 const require = createRequire(import.meta.url);
 const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
-export const TRACKA_VERSION = "hsab-tracka-1.0.0";
+export const TRACKA_VERSION = "hsab-tracka-1.1.0";
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 function arg(k, d) { const i = process.argv.indexOf("--" + k); return i >= 0 ? process.argv[i + 1] : d; }
@@ -77,10 +77,44 @@ export function trackA(events, evalJson) {
   return out;
 }
 
+/* ======================================================================
+   Entscheidung nach MISSION9_PREREGISTRATION.md §2 (mechanisch, vor dem Oeffnen festgelegt)
+   ====================================================================== */
+export const HAC = { minN: 300, minHit: 0.6, minLift: 0.05 };
+export const SELECTIVE_TIERS = ["SYM·CLEAR", "SYM·AGREEMENT_TOP25", "SYM·AGREEMENT_TOP10", "FAV·ALL", "FAV·CLEAR", "FAV·AGREEMENT_TOP25", "FAV·AGREEMENT_TOP10", "RR1.33-2"];
+const meetsHac = (r) => !!r && r.n >= HAC.minN && r.hit >= HAC.minHit && r.lift >= HAC.minLift && isNum(r.liftCi && r.liftCi[0]) && r.liftCi[0] > 0;
+const oneSidedP = (r) => (!r || !isNum(r.liftP) ? 1 : r.lift > 0 ? r.liftP / 2 : 1 - r.liftP / 2);
+function holm(rows) {
+  const o = rows.map((r, i) => [oneSidedP(r), i]).sort((a, b) => a[0] - b[0]), m = o.length, adj = new Array(m).fill(1); let run = 0;
+  o.forEach(([p, i], k) => { run = Math.max(run, Math.min(1, p * (m - k))); adj[i] = run; });
+  return adj;
+}
+export function decideTrackA(res) {
+  const all = [...res.byRewardRisk, ...res.selectivitySymmetric, ...res.selectivityFavorable, ...res.selectivityAll], get = (b) => all.find((r) => r.bucket === b);
+  const symAll = get("SYM·ALL");
+  const tiers = SELECTIVE_TIERS.map(get), adj = holm(tiers);
+  const tierRows = SELECTIVE_TIERS.map((b, k) => ({ bucket: b, n: tiers[k] ? tiers[k].n : 0, hit: tiers[k] ? tiers[k].hit : null, lift: tiers[k] ? tiers[k].lift : null, liftCi: tiers[k] ? tiers[k].liftCi : null,
+    meetsHac: meetsHac(tiers[k]), pHolm: r4(adj[k]), qualifies: meetsHac(tiers[k]) && adj[k] <= 0.025 }));
+  const HA1 = meetsHac(symAll) ? "ROBUST_HIGH_ACCURACY_EDGE" : tierRows.some((x) => x.qualifies) ? "SELECTIVE_HIGH_ACCURACY_EDGE" : "NO_HIGH_ACCURACY_EDGE";
+  const h2 = [get("ALL·AGREEMENT_TOP10"), get("SYM·AGREEMENT_TOP10")], adj2 = holm(h2);
+  const HA2 = h2.map((r, k) => ({ bucket: r && r.bucket, lift: r && r.lift, liftCi: r && r.liftCi, pHolm: r4(adj2[k]), detected: !!r && adj2[k] <= 0.025 && r.liftCi[0] > 0,
+    meaningful: !!r && r.lift >= 0.02 && r.liftCi[0] >= 0.005 }));
+  const near = get("RR<0.5");
+  const HA3 = near && near.n ? { controlHit: near.control, controlAtLeast60: near.control >= 0.6, hit: near.hit, randomWalk: near.randomWalkExpectation, hitBelowRandomWalk: near.hit < near.randomWalkExpectation } : null;
+  const toDiff = (r) => (r && r.trendOnly ? r4(r.lift - r.trendOnly.lift) : null);
+  const HA4 = { "ALL·ALL": toDiff(get("ALL·ALL")), "SYM·ALL": toDiff(symAll) }; HA4.within15pp = Object.values(HA4).every((v) => isNum(v) && Math.abs(v) < 0.015);
+  const ex = (r) => r && { n: r.n, expectancyR: r.expectancyR, expectancyRCi: r.expectancyRCi, excessR: r.excessR, excessRCi: r.excessRCi, trading: r.trading };
+  const fav = get("FAV·ALL");
+  const HA5 = { ALL: ex(res.all), SYM: ex(symAll), FAV: ex(fav), structuralNegativeAll: !!res.all && res.all.expectancyR < 0 };
+  return { rule: "MISSION9_PREREGISTRATION.md §2", HAC, HA1, symmetricAll: symAll && { n: symAll.n, hit: symAll.hit, control: symAll.control, lift: symAll.lift, liftCi: symAll.liftCi, meetsHac: meetsHac(symAll) },
+           selectiveTiers: tierRows, HA2, HA3, HA4, HA5 };
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const ev = gunzipSync(readFileSync(arg("events"))).toString("utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
   const evalJson = arg("eval", null) ? JSON.parse(readFileSync(arg("eval"), "utf8")) : null;
   const res = trackA(ev, evalJson);
+  res.decision = decideTrackA(res);
   writeFileSync(arg("out"), JSON.stringify(res, null, 1));
-  console.log(`[track-a] ${res.events} Ereignisse; Kandidaten: ${JSON.stringify(res.highAccuracyCandidates)}`);
+  console.log(`[track-a] ${res.events} Ereignisse; Kandidaten: ${JSON.stringify(res.highAccuracyCandidates)}; HA1 ${res.decision.HA1}`);
 }
