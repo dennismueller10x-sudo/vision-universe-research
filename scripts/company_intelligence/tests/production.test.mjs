@@ -4,7 +4,7 @@ import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {approval,reviewed,approvedForPublication,approve} from '../production-approval.mjs';
-import {stageProduction} from '../production-release.mjs';
+import {stageProduction,setProductionGate} from '../production-release.mjs';
 const approved=()=>({...structuredClone(reviewed),releaseState:'APPROVED_CONTROLLED_PRODUCTION',productionApproval:approval.approvalId});
 test('production authorization is bound to the exact reviewed assets, source policy, time and cohort',()=>{
  assert.equal(approvedForPublication(approved()),true);
@@ -17,7 +17,12 @@ test('promotion changes only manifest release approval, and cannot promote anoth
 });
 test('an unavailable or foreign production pointer fails before changing the disabled index',async()=>{
  const root=mkdtempSync(join(tmpdir(),'ci-production-'));
- try{mkdirSync(join(root,'company-intelligence/data'),{recursive:true});const path=join(root,'company-intelligence/data/index.json');writeFileSync(path,'{"state":"DISABLED"}');for(const value of [null,Buffer.from(JSON.stringify(reviewed)),Buffer.from(JSON.stringify({...approved(),generation:'0'.repeat(24)}))]){await assert.rejects(stageProduction({get:async()=>value},root,{enabled:true}),/APPROVED_PRODUCTION_POINTER_REQUIRED/);assert.equal(readFileSync(path,'utf8'),'{"state":"DISABLED"}');}}finally{rmSync(root,{recursive:true,force:true});}
+ try{mkdirSync(join(root,'company-intelligence/data'),{recursive:true});const path=join(root,'company-intelligence/data/index.json');writeFileSync(path,'{"state":"DISABLED"}');for(const value of [null,Buffer.from(JSON.stringify(reviewed)),Buffer.from(JSON.stringify({...approved(),generation:'0'.repeat(24)}))]){await assert.rejects(stageProduction({get:async()=>value},root,{enabled:true}),/PRODUCTION_GATE|APPROVED_PRODUCTION_POINTER/);assert.equal(readFileSync(path,'utf8'),'{"state":"DISABLED"}');}}finally{rmSync(root,{recursive:true,force:true});}
+});
+test('persistent emergency gate off needs no intact generation and never changes consumer or private state',async()=>{
+ const objects=new Map(),written=[];const driver={get:async k=>objects.get(k)||null,put:async(k,b)=>{objects.set(k,b);written.push(k);}};
+ await setProductionGate(driver,'DISABLED');assert.equal(written.length,1);assert(written[0].endsWith('/gate.json'));assert.equal(JSON.parse(objects.get(written[0])).state,'DISABLED');
+ await assert.rejects(setProductionGate(driver,'AVAILABLE'),/APPROVED_PRODUCTION_POINTER_REQUIRED/);assert.equal(written.length,1);
 });
 test('emergency gate off requires zero R2 reads and closes both packaged products',async()=>{
  const root=mkdtempSync(join(tmpdir(),'ci-off-'));

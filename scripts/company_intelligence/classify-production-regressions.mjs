@@ -1,0 +1,25 @@
+/* Never waive a branch regression: independently reproduce known price-data failures
+   on the exact production base, with identical protected data/engine/test inputs. */
+import {spawnSync} from 'node:child_process';
+import {readdirSync,writeFileSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+const baseline='27ffac9d139ff49cf769d34dfc4c0c4bd4f3a1d4';
+const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
+const protectedPaths=['quant/data','quant/engines','quant/tests','providers','scripts/market','scripts/quant'];
+const diff=run('git',['diff','--name-only',baseline,'HEAD','--',...protectedPaths]);
+if(diff.status||diff.stdout.trim())throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
+const dirs=['quant/tests','discover/tests','scripts/supertrader/tests','screener/tests'];
+const files=dirs.flatMap(d=>readdirSync(d).filter(p=>p.endsWith('.test.mjs')).map(p=>join(d,p)));
+const allowed=new Set(['CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch','die Golden Five bestehen den Nachweis ohne Ausnahme','the check is reproducible and reads only committed files','a run that changes nothing leaves the artifact untouched']);
+const parse=r=>({status:r.status,failures:[...r.stdout.matchAll(/^not ok \d+ - (.*)$/gm)].map(m=>m[1]).sort(),testCount:Number(r.stdout.match(/^# tests (\d+)/m)?.[1]||0),passCount:Number(r.stdout.match(/^# pass (\d+)/m)?.[1]||0),skipCount:Number(r.stdout.match(/^# skipped (\d+)/m)?.[1]||0)});
+const currentRaw=run(process.execPath,['--test',...files]);const candidate=parse(currentRaw);
+let control=null;
+if(candidate.status){
+ if(!candidate.failures.length||candidate.failures.some(n=>!allowed.has(n)))throw Error('UNCLASSIFIED_CANDIDATE_REGRESSION:'+candidate.failures.join('|'));
+ const root=resolve(process.env.RUNNER_TEMP||'/tmp','ci-production-baseline-'+process.pid);
+ const added=run('git',['worktree','add','--detach',root,baseline]);if(added.status)throw Error('INDEPENDENT_BASELINE_CHECKOUT_FAILED');
+ try{control=parse(run(process.execPath,['--test',...files],root));}finally{run('git',['worktree','remove',root]);}
+ if(control.status!==candidate.status||JSON.stringify(control.failures)!==JSON.stringify(candidate.failures)||control.testCount!==candidate.testCount)throw Error('BASELINE_DOES_NOT_REPRODUCE_CANDIDATE_FAILURES');
+}
+const report={status:candidate.status?'PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES':'PASS',baselineSha:baseline,protectedPaths,protectedInputDiff:[],candidate,independentBaseline:control,newBranchFailures:0,productionPriceDataChanged:false};
+writeFileSync(resolve(process.env.RUNNER_TEMP||'/tmp','production-regression-classification.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

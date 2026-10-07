@@ -7,12 +7,14 @@ const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
 const candidate=JSON.parse(await readFile(arg('candidate','/tmp/release-candidate.json'),'utf8'));
 const phase=arg('phase','all');assert(['all','actual','adversarial','dark'].includes(phase));
+const production=process.argv.includes('--production');
 const cohort=Object.values(candidate.inventory).flatMap(v=>v.tickers);
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
-const cases=[],route=(product,ticker,preview=true)=>product==='quant'?`/quant/${preview?'?company-intelligence=preview':''}#/aktie/${ticker}`:`/discover/${preview?'?company-intelligence=preview':''}#/s/US_REAL/${ticker}`;
+const cases=[],route=(product,ticker,preview=true)=>product==='quant'?`/quant/${preview&&!production?'?company-intelligence=preview':''}#/aktie/${ticker}`:`/discover/${preview&&!production?'?company-intelligence=preview':''}#/s/US_REAL/${ticker}`;
 async function pageFor(product,ticker,width=390,preview=true){
  const page=await browser.newPage({viewport:{width,height:860}}),errors=[],requests=[];
+ if(process.env.RESEARCH_ACCESS_PASSWORD){const {accessStateFor,STORAGE_KEY}=await import('../access-gate/build.mjs');await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state:accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD)});}
  if(phase==='dark')await page.addInitScript(()=>localStorage.setItem('vu-discover-theme-v1','dark'));
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
  await page.goto(base+route(product,ticker,preview),{waitUntil:'domcontentloaded'});
@@ -55,7 +57,7 @@ try{
    if(product==='discover'&&width===390)await writeFile(`${out}/${ticker}-visible.txt`,text);
    cases.push({product,ticker,width,kind:'ACTUAL_CANDIDATE',status:'PASS'});if(width===1440)console.log(product+' '+ticker+' responsive PASS');await page.close();
   }
-  const disabled=await pageFor(product,'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:'DISABLED_ZERO_REQUESTS',status:'PASS'});
+  const disabled=await pageFor(product,production?'ZZZZZ':'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:production?'OUT_OF_COHORT_ZERO_REQUESTS':'DISABLED_ZERO_REQUESTS',status:'PASS'});
  }
  const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL','SHARES_REQUIRE_CONTEXT','ANNUAL_REPORT_LABEL'];
  for(const product of (phase==='actual'||phase==='dark'?[]:['discover','quant']))for(const attack of attacks){
