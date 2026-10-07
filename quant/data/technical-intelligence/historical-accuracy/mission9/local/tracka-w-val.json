@@ -1,21 +1,22 @@
 {
- "schemaVersion": "hsab-tracka-result-1.0.0",
- "version": "hsab-tracka-1.1.0",
+ "schemaVersion": "hsab-tracka-result-1.1.0",
+ "version": "hsab-tracka-1.2.0",
  "phase": "W_VAL",
- "events": 91939,
- "trendOnlyEvents": 92373,
+ "events": 91936,
+ "excludedNoGeometry": 3,
+ "trendOnlyEvents": 92370,
  "analysisPoints": 188184,
  "all": {
   "bucket": "ALL",
-  "events": 91939,
+  "events": 91936,
   "shareOfEvents": 1,
-  "coverageOfPoints": 0.4886,
-  "n": 91939,
+  "coverageOfPoints": 0.4885,
+  "n": 91936,
   "symbols": 2461,
   "hit": 0.5955,
   "hitCi": [
    0.5815,
-   0.6094
+   0.6095
   ],
   "control": 0.5733,
   "lift": 0.0222,
@@ -24,10 +25,17 @@
    0.028
   ],
   "liftP": 0,
+  "liftE": 0.0189,
+  "liftECi": [
+   0.0151,
+   0.0227
+  ],
+  "liftEP": 0,
+  "controlE": 0.5766,
   "expectancyR": -0.1137,
   "expectancyRCi": [
    -0.1425,
-   -0.0849
+   -0.085
   ],
   "excessR": 0.0357,
   "excessRCi": [
@@ -44,16 +52,16 @@
   "medianInvalidationAtr": 3.5143,
   "avgWinnerR": 0.5736,
   "medianWinnerR": 0.4912,
-  "avgLoserR": -1.1254,
+  "avgLoserR": -1.1255,
   "medianLoserR": -1.1462,
-  "payoffRatio": 0.5097,
+  "payoffRatio": 0.5096,
   "rP05": -1.6429,
   "rP95": 1.1935,
   "medianMfeAtr": 1.78,
   "medianMaeAtr": 1.54,
   "medianBars": 6,
   "trading": {
-   "filled": 53463,
+   "filled": 53460,
    "meanReturnAfterCosts": -0.0936,
    "controlMeanReturn": -0.0025,
    "winRate": 0.3983,
@@ -62,7 +70,7 @@
   },
   "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
   "trendOnly": {
-   "n": 92373,
+   "n": 92370,
    "hit": 0.594,
    "control": 0.5728,
    "lift": 0.0212
@@ -88,6 +96,13 @@
     0.0306
    ],
    "liftP": 0,
+   "liftE": 0.0198,
+   "liftECi": [
+    0.0143,
+    0.0253
+   ],
+   "liftEP": 0,
+   "controlE": 0.6953,
    "expectancyR": -0.1208,
    "expectancyRCi": [
     -0.1397,
@@ -151,6 +166,13 @@
     0.0372
    ],
    "liftP": 0,
+   "liftE": 0.024,
+   "liftECi": [
+    0.0167,
+    0.031
+   ],
+   "liftEP": 0,
+   "controlE": 0.5635,
    "expectancyR": -0.0972,
    "expectancyRCi": [
     -0.1253,
@@ -214,6 +236,13 @@
     0.029
    ],
    "liftP": 0.000066,
+   "liftE": 0.016,
+   "liftECi": [
+    0.0084,
+    0.0235
+   ],
+   "liftEP": 0.000035,
+   "controlE": 0.4761,
    "expectancyR": -0.1103,
    "expectancyRCi": [
     -0.1609,
@@ -277,6 +306,13 @@
     0.0282
    ],
    "liftP": 0.022153,
+   "liftE": 0.0159,
+   "liftECi": [
+    0.0038,
+    0.028
+   ],
+   "liftEP": 0.01005,
+   "controlE": 0.3736,
    "expectancyR": -0.1064,
    "expectancyRCi": [
     -0.1643,
@@ -340,6 +376,13 @@
     0.0115
    ],
    "liftP": 0.417416,
+   "liftE": 0.0032,
+   "liftECi": [
+    -0.0155,
+    0.0219
+   ],
+   "liftEP": 0.738819,
+   "controlE": 0.2776,
    "expectancyR": -0.1333,
    "expectancyRCi": [
     -0.218,
@@ -403,6 +446,13 @@
     0.0062
    ],
    "liftP": 0.118832,
+   "liftE": -0.0205,
+   "liftECi": [
+    -0.0523,
+    0.0114
+   ],
+   "liftEP": 0.207423,
+   "controlE": 0.2093,
    "expectancyR": -0.311,
    "expectancyRCi": [
     -0.4876,
@@ -468,6 +518,13 @@
     0.023
    ],
    "liftP": 0.000011,
+   "liftE": 0.0134,
+   "liftECi": [
+    0.0067,
+    0.02
+   ],
+   "liftEP": 0.000048,
+   "controlE": 0.7596,
    "expectancyR": -0.1562,
    "expectancyRCi": [
     -0.1719,
@@ -531,6 +588,13 @@
     0.0297
    ],
    "liftP": 0,
+   "liftE": 0.0204,
+   "liftECi": [
+    0.0144,
+    0.0264
+   ],
+   "liftEP": 0,
+   "controlE": 0.6116,
    "expectancyR": -0.1418,
    "expectancyRCi": [
     -0.1633,
@@ -594,6 +658,13 @@
     0.0312
    ],
    "liftP": 0.000001,
+   "liftE": 0.0235,
+   "liftECi": [
+    0.0167,
+    0.0303
+   ],
+   "liftEP": 0,
+   "controlE": 0.5241,
    "expectancyR": -0.1123,
    "expectancyRCi": [
     -0.148,
@@ -640,23 +711,30 @@
   },
   {
    "bucket": "T3-5ATR",
-   "events": 15618,
-   "shareOfEvents": 0.1699,
+   "events": 15615,
+   "shareOfEvents": 0.1698,
    "coverageOfPoints": 0.083,
-   "n": 15618,
+   "n": 15615,
    "symbols": 2032,
-   "hit": 0.4762,
+   "hit": 0.4763,
    "hitCi": [
-    0.4513,
-    0.5012
+    0.4514,
+    0.5013
    ],
    "control": 0.4444,
    "lift": 0.0319,
    "liftCi": [
     0.0203,
-    0.0434
+    0.0435
    ],
    "liftP": 0,
+   "liftE": 0.0182,
+   "liftECi": [
+    0.0089,
+    0.0274
+   ],
+   "liftEP": 0.000116,
+   "controlE": 0.4582,
    "expectancyR": -0.0371,
    "expectancyRCi": [
     -0.0969,
@@ -664,7 +742,7 @@
    ],
    "excessR": 0.0532,
    "excessRCi": [
-    0.0287,
+    0.0288,
     0.0777
    ],
    "oppositeDiff": 0.0925,
@@ -672,32 +750,32 @@
     0.0462,
     0.1412
    ],
-   "randomWalkExpectation": 0.4915,
-   "medianTargetAtr": 3.592,
-   "medianInvalidationAtr": 3.6105,
+   "randomWalkExpectation": 0.4916,
+   "medianTargetAtr": 3.5921,
+   "medianInvalidationAtr": 3.6113,
    "avgWinnerR": 1.0562,
    "medianWinnerR": 0.9354,
-   "avgLoserR": -1.0312,
+   "avgLoserR": -1.0316,
    "medianLoserR": -1.1311,
-   "payoffRatio": 1.0242,
+   "payoffRatio": 1.0238,
    "rP05": -1.7641,
    "rP95": 1.6389,
    "medianMfeAtr": 3.25,
    "medianMaeAtr": 2.23,
    "medianBars": 9,
    "trading": {
-    "filled": 8881,
+    "filled": 8878,
     "meanReturnAfterCosts": -0.0029,
     "controlMeanReturn": 0.0017,
-    "winRate": 0.3484,
+    "winRate": 0.3485,
     "avgWin": 0.1995,
-    "avgLoss": -0.1111
+    "avgLoss": -0.1112
    },
    "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
    "trendOnly": {
-    "n": 15746,
-    "hit": 0.4752,
-    "control": 0.4414,
+    "n": 15743,
+    "hit": 0.4753,
+    "control": 0.4415,
     "lift": 0.0338
    }
   },
@@ -720,6 +798,13 @@
     0.0237
    ],
    "liftP": 0.444915,
+   "liftE": 0.001,
+   "liftECi": [
+    -0.0158,
+    0.0178
+   ],
+   "liftEP": 0.903841,
+   "controlE": 0.2879,
    "expectancyR": -0.0224,
    "expectancyRCi": [
     -0.0968,
@@ -768,65 +853,72 @@
  "byInvalidationAtr": [
   {
    "bucket": "I<1ATR",
-   "events": 529,
-   "shareOfEvents": 0.0058,
+   "events": 526,
+   "shareOfEvents": 0.0057,
    "coverageOfPoints": 0.0028,
-   "n": 529,
-   "symbols": 444,
-   "hit": 0.3043,
+   "n": 526,
+   "symbols": 442,
+   "hit": 0.3061,
    "hitCi": [
-    0.2677,
-    0.341
+    0.266,
+    0.344
    ],
-   "control": 0.3085,
-   "lift": -0.0042,
+   "control": 0.3095,
+   "lift": -0.0034,
    "liftCi": [
-    -0.0434,
-    0.0351
+    -0.0431,
+    0.0363
    ],
-   "liftP": 0.835467,
-   "expectancyR": -0.3613,
+   "liftP": 0.865911,
+   "liftE": 0.0042,
+   "liftECi": [
+    -0.0334,
+    0.0418
+   ],
+   "liftEP": 0.827507,
+   "controlE": 0.3019,
+   "expectancyR": -0.3634,
    "expectancyRCi": [
-    -0.589,
-    -0.1336
+    -0.6143,
+    -0.1447
    ],
-   "excessR": 0.0687,
+   "excessR": 0.0691,
    "excessRCi": [
-    -0.1759,
-    0.3133
+    -0.1745,
+    0.3126
    ],
-   "oppositeDiff": 0.0321,
+   "oppositeDiff": 0.0323,
    "oppositeDiffCi": [
-    -0.0372,
-    0.1015
+    -0.0383,
+    0.0997
    ],
-   "randomWalkExpectation": 0.2202,
-   "medianTargetAtr": 2.7193,
-   "medianInvalidationAtr": 0.7952,
+   "randomWalkExpectation": 0.2214,
+   "medianTargetAtr": 2.7083,
+   "medianInvalidationAtr": 0.7986,
    "avgWinnerR": 3.3279,
    "medianWinnerR": 3.1497,
-   "avgLoserR": -1.9753,
+   "avgLoserR": -1.9916,
    "medianLoserR": -1.7778,
-   "payoffRatio": 1.6847,
+   "payoffRatio": 1.671,
    "rP05": -4.079,
    "rP95": 5,
-   "medianMfeAtr": 0.99,
-   "medianMaeAtr": 1.04,
+   "medianMfeAtr": 1.015,
+   "medianMaeAtr": 1.045,
    "medianBars": 3,
    "trading": {
-    "filled": 461,
+    "filled": 458,
     "meanReturnAfterCosts": -0.0069,
-    "controlMeanReturn": -0.0129,
-    "winRate": 0.2126,
+    "controlMeanReturn": -0.0131,
+    "winRate": 0.214,
     "avgWin": 0.1775,
-    "avgLoss": -0.0567
+    "avgLoss": -0.0571
    },
    "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
    "trendOnly": {
-    "n": 539,
-    "hit": 0.3024,
-    "control": 0.3006,
-    "lift": 0.0019
+    "n": 536,
+    "hit": 0.3041,
+    "control": 0.3015,
+    "lift": 0.0026
    }
   },
   {
@@ -848,6 +940,13 @@
     0.0332
    ],
    "liftP": 0.001657,
+   "liftE": 0.0193,
+   "liftECi": [
+    0.0076,
+    0.0323
+   ],
+   "liftEP": 0.001876,
+   "controlE": 0.4345,
    "expectancyR": -0.1718,
    "expectancyRCi": [
     -0.217,
@@ -911,6 +1010,13 @@
     0.0214
    ],
    "liftP": 0.016346,
+   "liftE": 0.0165,
+   "liftECi": [
+    0.0087,
+    0.024
+   ],
+   "liftEP": 0.000012,
+   "controlE": 0.5168,
    "expectancyR": -0.1699,
    "expectancyRCi": [
     -0.2041,
@@ -974,6 +1080,13 @@
     0.0298
    ],
    "liftP": 0,
+   "liftE": 0.0172,
+   "liftECi": [
+    0.0114,
+    0.0227
+   ],
+   "liftEP": 0,
+   "controlE": 0.6092,
    "expectancyR": -0.0985,
    "expectancyRCi": [
     -0.1297,
@@ -1037,6 +1150,13 @@
     0.0462
    ],
    "liftP": 0,
+   "liftE": 0.0271,
+   "liftECi": [
+    0.0191,
+    0.0341
+   ],
+   "liftEP": 0,
+   "controlE": 0.6449,
    "expectancyR": -0.0369,
    "expectancyRCi": [
     -0.0697,
@@ -1102,6 +1222,13 @@
     0.0244
    ],
    "liftP": 0.000098,
+   "liftE": 0.0163,
+   "liftECi": [
+    0.0096,
+    0.0229
+   ],
+   "liftEP": 0.000002,
+   "controlE": 0.7281,
    "expectancyR": -0.0729,
    "expectancyRCi": [
     -0.1076,
@@ -1165,6 +1292,13 @@
     0.0308
    ],
    "liftP": 0.002765,
+   "liftE": 0.0117,
+   "liftECi": [
+    0.0018,
+    0.0216
+   ],
+   "liftEP": 0.021047,
+   "controlE": 0.6071,
    "expectancyR": -0.0255,
    "expectancyRCi": [
     -0.0776,
@@ -1228,6 +1362,13 @@
     0.0226
    ],
    "liftP": 0.003599,
+   "liftE": 0.0081,
+   "liftECi": [
+    -0.0006,
+    0.0167
+   ],
+   "liftEP": 0.068322,
+   "controlE": 0.5173,
    "expectancyR": -0.0034,
    "expectancyRCi": [
     -0.0763,
@@ -1291,6 +1432,13 @@
     0.0249
    ],
    "liftP": 0.391432,
+   "liftE": 0.0077,
+   "liftECi": [
+    -0.0089,
+    0.0243
+   ],
+   "liftEP": 0.361921,
+   "controlE": 0.4141,
    "expectancyR": 0.014,
    "expectancyRCi": [
     -0.0807,
@@ -1354,6 +1502,13 @@
     0.0053
    ],
    "liftP": 0.117583,
+   "liftE": -0.0077,
+   "liftECi": [
+    -0.0353,
+    0.0198
+   ],
+   "liftEP": 0.582919,
+   "controlE": 0.3179,
    "expectancyR": 0.0028,
    "expectancyRCi": [
     -0.1441,
@@ -1417,6 +1572,13 @@
     0.0225
    ],
    "liftP": 0.357302,
+   "liftE": -0.0188,
+   "liftECi": [
+    -0.0548,
+    0.0172
+   ],
+   "liftEP": 0.30692,
+   "controlE": 0.2426,
    "expectancyR": -0.0484,
    "expectancyRCi": [
     -0.2566,
@@ -1480,6 +1642,13 @@
     0.0456
    ],
    "liftP": 0,
+   "liftE": 0.0252,
+   "liftECi": [
+    0.017,
+    0.0333
+   ],
+   "liftEP": 0,
+   "controlE": 0.6449,
    "expectancyR": -0.1944,
    "expectancyRCi": [
     -0.2399,
@@ -1543,6 +1712,13 @@
     0.0585
    ],
    "liftP": 0,
+   "liftE": 0.0449,
+   "liftECi": [
+    0.0337,
+    0.0565
+   ],
+   "liftEP": 0,
+   "controlE": 0.4897,
    "expectancyR": -0.2184,
    "expectancyRCi": [
     -0.2896,
@@ -1606,6 +1782,13 @@
     0.0437
    ],
    "liftP": 0.00002,
+   "liftE": 0.0299,
+   "liftECi": [
+    0.0183,
+    0.0415
+   ],
+   "liftEP": 0,
+   "controlE": 0.4033,
    "expectancyR": -0.2992,
    "expectancyRCi": [
     -0.3929,
@@ -1669,6 +1852,13 @@
     0.0506
    ],
    "liftP": 0.004603,
+   "liftE": 0.0307,
+   "liftECi": [
+    0.0122,
+    0.0522
+   ],
+   "liftEP": 0.002447,
+   "controlE": 0.3003,
    "expectancyR": -0.3239,
    "expectancyRCi": [
     -0.4491,
@@ -1732,6 +1922,13 @@
     0.0444
    ],
    "liftP": 0.409312,
+   "liftE": 0.0214,
+   "liftECi": [
+    -0.0093,
+    0.052
+   ],
+   "liftEP": 0.17234,
+   "controlE": 0.2103,
    "expectancyR": -0.3604,
    "expectancyRCi": [
     -0.5351,
@@ -1795,6 +1992,13 @@
     0.0037
    ],
    "liftP": 0.062735,
+   "liftE": -0.024,
+   "liftECi": [
+    -0.0622,
+    0.0193
+   ],
+   "liftEP": 0.231826,
+   "controlE": 0.1401,
    "expectancyR": -0.8558,
    "expectancyRCi": [
     -1.1305,
@@ -1860,6 +2064,13 @@
     0.0289
    ],
    "liftP": 0.000047,
+   "liftE": 0.016,
+   "liftECi": [
+    0.0084,
+    0.0229
+   ],
+   "liftEP": 0.000012,
+   "controlE": 0.4761,
    "expectancyR": -0.1103,
    "expectancyRCi": [
     -0.1609,
@@ -1923,6 +2134,13 @@
     0.0336
    ],
    "liftP": 0.000217,
+   "liftE": 0.0162,
+   "liftECi": [
+    0.0072,
+    0.0252
+   ],
+   "liftEP": 0.000426,
+   "controlE": 0.4802,
    "expectancyR": -0.0994,
    "expectancyRCi": [
     -0.1643,
@@ -1986,6 +2204,13 @@
     0.053
    ],
    "liftP": 0.002394,
+   "liftE": 0.0272,
+   "liftECi": [
+    0.0099,
+    0.0458
+   ],
+   "liftEP": 0.001951,
+   "controlE": 0.4882,
    "expectancyR": -0.0695,
    "expectancyRCi": [
     -0.1822,
@@ -2049,6 +2274,13 @@
     0.0514
    ],
    "liftP": 0.000972,
+   "liftE": 0.0272,
+   "liftECi": [
+    0.0109,
+    0.0435
+   ],
+   "liftEP": 0.001101,
+   "controlE": 0.4882,
    "expectancyR": -0.0695,
    "expectancyRCi": [
     -0.1638,
@@ -2112,6 +2344,13 @@
     0.0749
    ],
    "liftP": 0.000225,
+   "liftE": 0.0428,
+   "liftECi": [
+    0.0194,
+    0.0662
+   ],
+   "liftEP": 0.000333,
+   "controlE": 0.4974,
    "expectancyR": -0.0315,
    "expectancyRCi": [
     -0.1308,
@@ -2160,26 +2399,33 @@
  "selectivityFavorable": [
   {
    "bucket": "FAV·ALL",
-   "events": 9018,
+   "events": 9015,
    "shareOfEvents": 0.0981,
    "coverageOfPoints": 0.0479,
-   "n": 9018,
+   "n": 9015,
    "symbols": 1942,
-   "hit": 0.3461,
+   "hit": 0.3462,
    "hitCi": [
-    0.3314,
-    0.3589
+    0.3315,
+    0.359
    ],
-   "control": 0.3398,
+   "control": 0.3399,
    "lift": 0.0063,
    "liftCi": [
     -0.0036,
     0.0166
    ],
-   "liftP": 0.220244,
+   "liftP": 0.216883,
+   "liftE": 0.0097,
+   "liftECi": [
+    -0.0005,
+    0.0192
+   ],
+   "liftEP": 0.049046,
+   "controlE": 0.3365,
    "expectancyR": -0.1312,
    "expectancyRCi": [
-    -0.1853,
+    -0.1854,
     -0.0806
    ],
    "excessR": 0.0315,
@@ -2190,57 +2436,64 @@
    "oppositeDiff": 0.0323,
    "oppositeDiffCi": [
     0.0036,
-    0.061
+    0.0611
    ],
-   "randomWalkExpectation": 0.3497,
-   "medianTargetAtr": 3.8862,
+   "randomWalkExpectation": 0.3498,
+   "medianTargetAtr": 3.8866,
    "medianInvalidationAtr": 2.1895,
    "avgWinnerR": 1.8424,
    "medianWinnerR": 1.6364,
-   "avgLoserR": -1.1757,
+   "avgLoserR": -1.1763,
    "medianLoserR": -1.2245,
-   "payoffRatio": 1.567,
+   "payoffRatio": 1.5662,
    "rP05": -2.2782,
    "rP95": 2.3333,
    "medianMfeAtr": 2.18,
    "medianMaeAtr": 1.93,
    "medianBars": 7,
    "trading": {
-    "filled": 6629,
+    "filled": 6626,
     "meanReturnAfterCosts": -0.0032,
     "controlMeanReturn": -0.0015,
-    "winRate": 0.2857,
+    "winRate": 0.2858,
     "avgWin": 0.2285,
-    "avgLoss": -0.0958
+    "avgLoss": -0.0959
    },
    "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
    "trendOnly": {
-    "n": 9146,
-    "hit": 0.3435,
-    "control": 0.3399,
-    "lift": 0.0036
+    "n": 9143,
+    "hit": 0.3437,
+    "control": 0.34,
+    "lift": 0.0037
    }
   },
   {
    "bucket": "FAV·CLEAR",
-   "events": 4844,
+   "events": 4843,
    "shareOfEvents": 0.0527,
    "coverageOfPoints": 0.0257,
-   "n": 4844,
+   "n": 4843,
    "symbols": 1668,
-   "hit": 0.3666,
+   "hit": 0.3667,
    "hitCi": [
-    0.3455,
-    0.3877
+    0.3456,
+    0.3878
    ],
-   "control": 0.3464,
+   "control": 0.3465,
    "lift": 0.0202,
    "liftCi": [
     0.0067,
-    0.0337
+    0.0338
    ],
-   "liftP": 0.003428,
-   "expectancyR": -0.0809,
+   "liftP": 0.003356,
+   "liftE": 0.0178,
+   "liftECi": [
+    0.0049,
+    0.0306
+   ],
+   "liftEP": 0.006604,
+   "controlE": 0.349,
+   "expectancyR": -0.081,
    "expectancyRCi": [
     -0.1569,
     -0.005
@@ -2250,26 +2503,26 @@
     0.023,
     0.1235
    ],
-   "oppositeDiff": 0.0628,
+   "oppositeDiff": 0.0629,
    "oppositeDiffCi": [
     0.0215,
     0.1042
    ],
-   "randomWalkExpectation": 0.3544,
-   "medianTargetAtr": 3.9536,
-   "medianInvalidationAtr": 2.2248,
+   "randomWalkExpectation": 0.3545,
+   "medianTargetAtr": 3.9544,
+   "medianInvalidationAtr": 2.2256,
    "avgWinnerR": 1.8289,
    "medianWinnerR": 1.6316,
-   "avgLoserR": -1.1865,
+   "avgLoserR": -1.1869,
    "medianLoserR": -1.2319,
-   "payoffRatio": 1.5414,
+   "payoffRatio": 1.5409,
    "rP05": -2.25,
    "rP95": 2.3333,
    "medianMfeAtr": 2.33,
    "medianMaeAtr": 1.95,
    "medianBars": 7,
    "trading": {
-    "filled": 3448,
+    "filled": 3447,
     "meanReturnAfterCosts": 0.0005,
     "controlMeanReturn": 0.0001,
     "winRate": 0.2889,
@@ -2278,10 +2531,10 @@
    },
    "quadrant": "LOW_ACCURACY/HIGH_PAYOFF",
    "trendOnly": {
-    "n": 4798,
-    "hit": 0.3666,
+    "n": 4797,
+    "hit": 0.3667,
     "control": 0.3544,
-    "lift": 0.0122
+    "lift": 0.0123
    }
   },
   {
@@ -2303,6 +2556,13 @@
     0.0649
    ],
    "liftP": 0.013708,
+   "liftE": 0.0286,
+   "liftECi": [
+    0.0026,
+    0.0556
+   ],
+   "liftEP": 0.029763,
+   "controlE": 0.3516,
    "expectancyR": -0.0497,
    "expectancyRCi": [
     -0.1619,
@@ -2366,6 +2626,13 @@
     0.0631
    ],
    "liftP": 0.011099,
+   "liftE": 0.0286,
+   "liftECi": [
+    0.0023,
+    0.0549
+   ],
+   "liftEP": 0.033089,
+   "controlE": 0.3516,
    "expectancyR": -0.0497,
    "expectancyRCi": [
     -0.161,
@@ -2429,6 +2696,13 @@
     0.1245
    ],
    "liftP": 0.005405,
+   "liftE": 0.0774,
+   "liftECi": [
+    0.0271,
+    0.1277
+   ],
+   "liftEP": 0.00256,
+   "controlE": 0.307,
    "expectancyR": -0.0043,
    "expectancyRCi": [
     -0.1974,
@@ -2477,10 +2751,10 @@
  "selectivityAll": [
   {
    "bucket": "ALL·ALL",
-   "events": 91939,
+   "events": 91936,
    "shareOfEvents": 1,
-   "coverageOfPoints": 0.4886,
-   "n": 91939,
+   "coverageOfPoints": 0.4885,
+   "n": 91936,
    "symbols": 2461,
    "hit": 0.5955,
    "hitCi": [
@@ -2494,6 +2768,13 @@
     0.0283
    ],
    "liftP": 0,
+   "liftE": 0.0189,
+   "liftECi": [
+    0.015,
+    0.0228
+   ],
+   "liftEP": 0,
+   "controlE": 0.5766,
    "expectancyR": -0.1137,
    "expectancyRCi": [
     -0.1429,
@@ -2514,16 +2795,16 @@
    "medianInvalidationAtr": 3.5143,
    "avgWinnerR": 0.5736,
    "medianWinnerR": 0.4912,
-   "avgLoserR": -1.1254,
+   "avgLoserR": -1.1255,
    "medianLoserR": -1.1462,
-   "payoffRatio": 0.5097,
+   "payoffRatio": 0.5096,
    "rP05": -1.6429,
    "rP95": 1.1935,
    "medianMfeAtr": 1.78,
    "medianMaeAtr": 1.54,
    "medianBars": 6,
    "trading": {
-    "filled": 53463,
+    "filled": 53460,
     "meanReturnAfterCosts": -0.0936,
     "controlMeanReturn": -0.0025,
     "winRate": 0.3983,
@@ -2532,7 +2813,7 @@
    },
    "quadrant": "LOW_ACCURACY/LOW_PAYOFF",
    "trendOnly": {
-    "n": 92373,
+    "n": 92370,
     "hit": 0.594,
     "control": 0.5728,
     "lift": 0.0212
@@ -2540,26 +2821,33 @@
   },
   {
    "bucket": "ALL·CLEAR",
-   "events": 60752,
+   "events": 60751,
    "shareOfEvents": 0.6608,
    "coverageOfPoints": 0.3228,
-   "n": 60752,
+   "n": 60751,
    "symbols": 2416,
-   "hit": 0.6079,
+   "hit": 0.608,
    "hitCi": [
     0.5897,
-    0.6262
+    0.6263
    ],
-   "control": 0.5788,
+   "control": 0.5789,
    "lift": 0.0291,
    "liftCi": [
     0.022,
     0.0362
    ],
    "liftP": 0,
+   "liftE": 0.0234,
+   "liftECi": [
+    0.0189,
+    0.0279
+   ],
+   "liftEP": 0,
+   "controlE": 0.5845,
    "expectancyR": -0.0949,
    "expectancyRCi": [
-    -0.1319,
+    -0.1318,
     -0.0579
    ],
    "excessR": 0.0452,
@@ -2570,11 +2858,11 @@
    "oppositeDiff": 0.0606,
    "oppositeDiffCi": [
     0.0274,
-    0.0938
+    0.0939
    ],
    "randomWalkExpectation": 0.6491,
    "medianTargetAtr": 2.0478,
-   "medianInvalidationAtr": 3.7373,
+   "medianInvalidationAtr": 3.7374,
    "avgWinnerR": 0.556,
    "medianWinnerR": 0.4835,
    "avgLoserR": -1.1042,
@@ -2586,7 +2874,7 @@
    "medianMaeAtr": 1.51,
    "medianBars": 6,
    "trading": {
-    "filled": 33509,
+    "filled": 33508,
     "meanReturnAfterCosts": -0.0015,
     "controlMeanReturn": -0.0051,
     "winRate": 0.402,
@@ -2595,7 +2883,7 @@
    },
    "quadrant": "HIGH_ACCURACY/LOW_PAYOFF",
    "trendOnly": {
-    "n": 60695,
+    "n": 60694,
     "hit": 0.6082,
     "control": 0.5808,
     "lift": 0.0274
@@ -2620,6 +2908,13 @@
     0.0454
    ],
    "liftP": 0,
+   "liftE": 0.0323,
+   "liftECi": [
+    0.0253,
+    0.0393
+   ],
+   "liftEP": 0,
+   "controlE": 0.5855,
    "expectancyR": -0.0744,
    "expectancyRCi": [
     -0.1228,
@@ -2683,6 +2978,13 @@
     0.0453
    ],
    "liftP": 0,
+   "liftE": 0.0323,
+   "liftECi": [
+    0.0253,
+    0.0393
+   ],
+   "liftEP": 0,
+   "controlE": 0.5855,
    "expectancyR": -0.0744,
    "expectancyRCi": [
     -0.1262,
@@ -2746,6 +3048,13 @@
     0.0578
    ],
    "liftP": 0,
+   "liftE": 0.0435,
+   "liftECi": [
+    0.0303,
+    0.0551
+   ],
+   "liftEP": 0,
+   "controlE": 0.5801,
    "expectancyR": -0.0554,
    "expectancyRCi": [
     -0.1129,
@@ -2803,13 +3112,23 @@
   "symmetricAll": {
    "n": 21759,
    "hit": 0.4921,
+   "hitCi": [
+    0.4733,
+    0.5109
+   ],
    "control": 0.4726,
    "lift": 0.0195,
    "liftCi": [
     0.0101,
     0.0289
    ],
-   "meetsHac": false
+   "liftE": 0.016,
+   "liftECi": [
+    0.0084,
+    0.0229
+   ],
+   "meetsHac": false,
+   "excludesHac": true
   },
   "selectiveTiers": [
    {
@@ -2821,6 +3140,8 @@
      0.0102,
      0.0336
     ],
+    "liftE": 0.0162,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0009,
     "qualifies": false
@@ -2834,6 +3155,8 @@
      0.0114,
      0.053
     ],
+    "liftE": 0.0272,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0072,
     "qualifies": false
@@ -2847,34 +3170,40 @@
      0.0229,
      0.0749
     ],
+    "liftE": 0.0428,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0009,
     "qualifies": false
    },
    {
     "bucket": "FAV·ALL",
-    "n": 9018,
-    "hit": 0.3461,
+    "n": 9015,
+    "hit": 0.3462,
     "lift": 0.0063,
     "liftCi": [
      -0.0036,
      0.0166
     ],
+    "liftE": 0.0097,
+    "excludesHac": true,
     "meetsHac": false,
-    "pHolm": 0.1101,
+    "pHolm": 0.1084,
     "qualifies": false
    },
    {
     "bucket": "FAV·CLEAR",
-    "n": 4844,
-    "hit": 0.3666,
+    "n": 4843,
+    "hit": 0.3667,
     "lift": 0.0202,
     "liftCi": [
      0.0067,
-     0.0337
+     0.0338
     ],
+    "liftE": 0.0178,
+    "excludesHac": true,
     "meetsHac": false,
-    "pHolm": 0.0086,
+    "pHolm": 0.0084,
     "qualifies": false
    },
    {
@@ -2886,6 +3215,8 @@
      0.0074,
      0.0649
     ],
+    "liftE": 0.0286,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0206,
     "qualifies": false
@@ -2899,6 +3230,8 @@
      0.0243,
      0.1245
     ],
+    "liftE": 0.0774,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0108,
     "qualifies": false
@@ -2912,6 +3245,8 @@
      0.0012,
      0.0282
     ],
+    "liftE": 0.0159,
+    "excludesHac": true,
     "meetsHac": false,
     "pHolm": 0.0222,
     "qualifies": false
@@ -2955,11 +3290,11 @@
   },
   "HA5": {
    "ALL": {
-    "n": 91939,
+    "n": 91936,
     "expectancyR": -0.1137,
     "expectancyRCi": [
      -0.1425,
-     -0.0849
+     -0.085
     ],
     "excessR": 0.0357,
     "excessRCi": [
@@ -2967,7 +3302,7 @@
      0.0463
     ],
     "trading": {
-     "filled": 53463,
+     "filled": 53460,
      "meanReturnAfterCosts": -0.0936,
      "controlMeanReturn": -0.0025,
      "winRate": 0.3983,
@@ -2997,10 +3332,10 @@
     }
    },
    "FAV": {
-    "n": 9018,
+    "n": 9015,
     "expectancyR": -0.1312,
     "expectancyRCi": [
-     -0.1853,
+     -0.1854,
      -0.0806
     ],
     "excessR": 0.0315,
@@ -3009,12 +3344,12 @@
      0.0685
     ],
     "trading": {
-     "filled": 6629,
+     "filled": 6626,
      "meanReturnAfterCosts": -0.0032,
      "controlMeanReturn": -0.0015,
-     "winRate": 0.2857,
+     "winRate": 0.2858,
      "avgWin": 0.2285,
-     "avgLoss": -0.0958
+     "avgLoss": -0.0959
     }
    },
    "structuralNegativeAll": true

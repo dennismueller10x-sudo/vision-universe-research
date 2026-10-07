@@ -1,0 +1,434 @@
+{
+ "schemaVersion": "hsab-m9-decision-1.0.0",
+ "trackB": {
+  "rule": "MISSION9_PREREGISTRATION.md §3",
+  "level": "VALIDATION_ON_CONSUMED_DATA",
+  "perSignal": [
+   {
+    "signal": "VU_BULL",
+    "available": true,
+    "ratio5x24M": [
+     0.6176,
+     0.6429
+    ],
+    "ci": [
+     [
+      0.5276,
+      0.7076
+     ],
+     [
+      0.5465,
+      0.7392
+     ]
+    ],
+    "cappedExcess": [
+     -0.0149,
+     0.0051
+    ],
+    "cappedExcessCi": [
+     [
+      -0.0341,
+      0.0044
+     ],
+     [
+      -0.0101,
+      0.0203
+     ]
+    ],
+    "harmBoth": true,
+    "cls": "NONE"
+   },
+   {
+    "signal": "VU_BULL_CLEAR",
+    "available": true,
+    "ratio5x24M": [
+     0.7985,
+     0.718
+    ],
+    "ci": [
+     [
+      0.659,
+      0.938
+     ],
+     [
+      0.6108,
+      0.8253
+     ]
+    ],
+    "cappedExcess": [
+     -0.0023,
+     0.0035
+    ],
+    "cappedExcessCi": [
+     [
+      -0.017,
+      0.0124
+     ],
+     [
+      -0.0109,
+      0.0179
+     ]
+    ],
+    "harmBoth": true,
+    "cls": "NONE"
+   },
+   {
+    "signal": "VU_BULL_STRONG",
+    "available": true,
+    "ratio5x24M": [
+     0.7754,
+     0.7849
+    ],
+    "ci": [
+     [
+      0.6228,
+      0.9195
+     ],
+     [
+      0.6182,
+      0.9516
+     ]
+    ],
+    "cappedExcess": [
+     -0.0035,
+     0.0009
+    ],
+    "cappedExcessCi": [
+     [
+      -0.0232,
+      0.0162
+     ],
+     [
+      -0.0151,
+      0.0168
+     ]
+    ],
+    "harmBoth": true,
+    "cls": "NONE"
+   },
+   {
+    "signal": "VU_BULL_AND_TREND_MOM",
+    "available": true,
+    "ratio5x24M": [
+     0.8077,
+     0.8232
+    ],
+    "ci": [
+     [
+      0.619,
+      0.9964
+     ],
+     [
+      0.6612,
+      0.9852
+     ]
+    ],
+    "cappedExcess": [
+     -0.0048,
+     -0.0063
+    ],
+    "cappedExcessCi": [
+     [
+      -0.0441,
+      0.0345
+     ],
+     [
+      -0.0361,
+      0.0236
+     ]
+    ],
+    "harmBoth": true,
+    "cls": "NONE"
+   },
+   {
+    "signal": "VU_BULL_EXACT",
+    "available": false
+   }
+  ],
+  "classification": "NO_ASYMMETRIC_EDGE",
+  "vuBullHarmsSuperwinnerSelection": [
+   "VU_BULL",
+   "VU_BULL_CLEAR",
+   "VU_BULL_STRONG",
+   "VU_BULL_AND_TREND_MOM"
+  ]
+ },
+ "elliott": {
+  "rule": "MISSION9_PREREGISTRATION.md §4",
+  "level": "EXPLORATORY_VALIDATION_ON_CONSUMED_DATA",
+  "standalone": {
+   "EW_DISPLAYED_MOTIVE_UP": {
+    "24M_5x": {
+     "ratio": [
+      null,
+      null
+     ],
+     "ci": [
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ]
+     ],
+     "flagged": [
+      2,
+      4
+     ],
+     "both": false
+    },
+    "12M_2x": {
+     "ratio": [
+      0,
+      null
+     ],
+     "ci": [
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ]
+     ],
+     "flagged": [
+      2,
+      4
+     ],
+     "both": false
+    }
+   },
+   "EW_INT_UP_EARLY": {
+    "24M_5x": {
+     "ratio": [
+      1.398,
+      1.3538
+     ],
+     "ci": [
+      [
+       1.0873,
+       1.7512
+      ],
+      [
+       1.0587,
+       1.649
+      ]
+     ],
+     "flagged": [
+      4913,
+      5057
+     ],
+     "both": true
+    },
+    "12M_2x": {
+     "ratio": [
+      1.148,
+      1.1573
+     ],
+     "ci": [
+      [
+       1.0356,
+       1.2603
+      ],
+      [
+       1.0508,
+       1.2639
+      ]
+     ],
+     "flagged": [
+      5327,
+      5472
+     ],
+     "both": true
+    }
+   },
+   "EW_INT_UP_EARLY_TOP5": {
+    "24M_5x": {
+     "ratio": [
+      1.0033,
+      0.6278
+     ],
+     "ci": [
+      [
+       -0.6695,
+       2.676
+      ],
+      [
+       -0.5629,
+       1.8185
+      ]
+     ],
+     "flagged": [
+      99,
+      99
+     ],
+     "both": false
+    },
+    "12M_2x": {
+     "ratio": [
+      1.1466,
+      1.1613
+     ],
+     "ci": [
+      [
+       0.3507,
+       1.9425
+      ],
+      [
+       0.5625,
+       1.76
+      ]
+     ],
+     "flagged": [
+      107,
+      107
+     ],
+     "both": false
+    }
+   },
+   "EW_INT_LD_UP_EARLY": {
+    "24M_5x": null,
+    "12M_2x": null
+   },
+   "EW_INT_UP_ANY_OPEN": {
+    "24M_5x": {
+     "ratio": [
+      1.3459,
+      1.4054
+     ],
+     "ci": [
+      [
+       1.0533,
+       1.6385
+      ],
+      [
+       1.1563,
+       1.6321
+      ]
+     ],
+     "flagged": [
+      12889,
+      13619
+     ],
+     "both": true
+    },
+    "12M_2x": {
+     "ratio": [
+      1.1799,
+      1.2439
+     ],
+     "ci": [
+      [
+       1.0826,
+       1.2772
+      ],
+      [
+       1.1657,
+       1.3221
+      ]
+     ],
+     "flagged": [
+      13932,
+      14680
+     ],
+     "both": true
+    }
+   }
+  },
+  "filters": {
+   "EW_INT_UP_EARLY_AND_TREND_MOM": {
+    "24M_5x": {
+     "ratio": [
+      1.5841,
+      1.4369
+     ],
+     "ci": [
+      [
+       0.9033,
+       2.2649
+      ],
+      [
+       0.7653,
+       2.1085
+      ]
+     ],
+     "flagged": [
+      1078,
+      1153
+     ],
+     "both": false
+    },
+    "12M_2x": {
+     "ratio": [
+      1.1956,
+      1.2421
+     ],
+     "ci": [
+      [
+       0.968,
+       1.4224
+      ],
+      [
+       1.0401,
+       1.4511
+      ]
+     ],
+     "flagged": [
+      1190,
+      1253
+     ],
+     "both": false
+    }
+   },
+   "EW_INT_UP_EARLY_AND_RS": {
+    "24M_5x": {
+     "ratio": [
+      1.4756,
+      1.5022
+     ],
+     "ci": [
+      [
+       0.9673,
+       2.0466
+      ],
+      [
+       0.9436,
+       2.0607
+      ]
+     ],
+     "flagged": [
+      1490,
+      1555
+     ],
+     "both": false
+    },
+    "12M_2x": {
+     "ratio": [
+      1.3489,
+      1.2849
+     ],
+     "ci": [
+      [
+       1.1472,
+       1.5586
+      ],
+      [
+       1.068,
+       1.5019
+      ]
+     ],
+     "flagged": [
+      1632,
+      1691
+     ],
+     "both": true
+    }
+   }
+  },
+  "classification": "INCREMENTAL_PREDICTIVE_VALUE",
+  "note": "STRUCTURAL_LANGUAGE_ONLY = kein messbarer Prognosebeitrag; die angezeigte Zaehlung bleibt beschreibende Sprache (Mission VIII: spricht in < 1 % der Analysezeitpunkte)."
+ }
+}
