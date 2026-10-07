@@ -128,6 +128,21 @@ class SecGroundTruthRegressions(unittest.TestCase):
         seen = quarter(resolver, calendar, "revenue", "2019-09-30", FAR, POLICY_ORIGINAL)
         self.assertAlmostEqual(seen.value, 1953600000.0, delta=1.0)
 
+    def test_e10_derived_quarter_never_subtracts_two_concepts(self):
+        """NTRS FY2025: der 10-K meldet Revenues 8.086,4 Mio. (Gesamtertrag) und Vertragsumsatz 5.017,8 Mio.; die 10-Qs
+        nur den Vertragsumsatz (9M 3.710,4 Mio.). Q4 = Gesamtertrag minus 9M-Vertragsumsatz = 4.376 Mio. ist kein Quartal
+        (Q1-Q3 je rund 1,25 Mrd.). Eine Differenz zweier verschiedener Konzepte bleibt eine Luecke."""
+        calendar, resolver = build("NTRS")
+        fy = resolver.annual("revenue", calendar.fiscal_year_for("2025-12-31"), FAR, POLICY_ORIGINAL)
+        self.assertAlmostEqual(fy.value, 8086400000.0, delta=1.0)
+        q4 = quarter(resolver, calendar, "revenue", "2025-12-31", FAR, POLICY_ORIGINAL)
+        if q4 is not None:
+            self.assertNotAlmostEqual(q4.value, 8086400000.0 - 3710400000.0, delta=1.0)
+            self.assertEqual(q4.provenance.concept, "RevenueFromContractWithCustomerExcludingAssessedTax")
+        # Gleiches Konzept bleibt ableitbar: Q3 = 9M - 6M Vertragsumsatz (gemeldet: 1.265,5 Mio.).
+        q3 = quarter(resolver, calendar, "revenue", "2025-09-30", FAR, POLICY_ORIGINAL)
+        self.assertAlmostEqual(q3.value, 1265500000.0, delta=1.0)
+
     def test_e4_unreported_eps_quarter_stays_missing(self):
         """Derselbe REPL-Auszug ohne die gemeldeten Q4-Dreimonatswerte: kein FY - 9M fuer EPS, die Luecke bleibt."""
         def q4_eps(row):
