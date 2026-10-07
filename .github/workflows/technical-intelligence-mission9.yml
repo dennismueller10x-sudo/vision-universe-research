@@ -177,6 +177,8 @@ jobs:
       - name: "Stage 1, disjoint daily sample (ranks 1200..2399; dev = seal only, no outcomes)"
         run: |
           set -euo pipefail
+          # nach der einmaligen Oeffnung braucht der Dev-Modus keinen weiteren Tageslauf
+          if [ "$MODE" = "dev" ] && [ -f "$OUT/a9-confirm-opened.json" ]; then echo "Bestaetigung bereits geoeffnet - Dev-Stage-1 entfaellt."; exit 0; fi
           node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
             --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 1200 --sample-offset 1200 --disjoint-from "$M8_SAMPLE" \
             --from 2017-01-01 --to 2026-09-30 --grid month --workers "$(nproc)" --out "$RUNNER_TEMP/a9"
