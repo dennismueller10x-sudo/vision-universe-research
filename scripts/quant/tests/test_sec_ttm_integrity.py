@@ -4,9 +4,15 @@ derselben Konzeptklasse auf derselben Aktienbasis - sonst NOT_AVAILABLE mit Grun
 Echte SEC-companyfacts-Auszuege (scripts/quant/tests/fixtures/sec-real/*.json), Befunde aus
 scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-INVESTIGATION.json.
 """
+import sys
 import unittest
+from pathlib import Path
 
-from test_sec_ground_truth_regressions import build
+# Laeuft als Paket (cli.py test: quant.tests) und direkt (unittest discover -s scripts/quant/tests).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from test_sec_ground_truth_regressions import build  # noqa: E402
 
 from quant.sec.model import (TTM_CONCEPT_MISMATCH, TTM_EPS_INCONSISTENT,  # noqa: E402
                              TTM_PERIODS_NOT_CONTIGUOUS, TTM_SHARE_BASIS_INCONSISTENT, TTM_UNIT_MISMATCH)
@@ -96,7 +102,7 @@ def bundle(name):
     import json
     from quant.sec.consumer import build_consumer_bundle
     from quant.sec.registry import MetricRegistry
-    from test_sec_ground_truth_regressions import FIXTURES
+    from test_sec_ground_truth_regressions import FIXTURES  # noqa: E402
     payload = json.loads((FIXTURES / f"{name}.json").read_text())
     return build_consumer_bundle(payload["cik"], payload, MetricRegistry.load(), as_of=AS_OF)
 
