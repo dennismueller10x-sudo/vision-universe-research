@@ -15,7 +15,7 @@
     }
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Portfolio</p><h1>Was steckt wirklich<br>in deinem Portfolio?</h1><p class="vs-lead">Wähle ein Strategiemodell als Beispiel-Struktur oder baue dein eigenes. Wir zeigen Regionen, Risiko, Kursverlauf, Konzentration und Überschneidungen – keine Kaufempfehlung.</p>' +
       '<div class="vs-tabs"><a class="vs-pill' + (sub === "xray" ? " primary" : "") + '" href="#/portfolio">Portfolio-X-Ray</a><a class="vs-pill' + (sub === "szenarien" ? " primary" : "") + '" href="#/portfolio/szenarien">Szenario-Lab</a></div></section>' +
-      '<section class="vs-section"><div class="vs-section-head"><h2>Strategiemodelle</h2><p class="vs-sub">Beispiel-Strukturen zum Verstehen – keine Empfehlung</p></div><div class="vs-grid g4" id="vs-models"><div class="vs-loading">…</div></div></section>' +
+      '<section class="vs-section"><div class="vs-section-head"><h2>Strategiemodelle</h2><p class="vs-sub">Beispiel-Strukturen zum Verstehen – keine Empfehlung</p></div><div class="vs-grid g3" id="vs-models"><div class="vs-loading">…</div></div><div id="vs-model-play" style="margin-top:14px"></div></section>' +
       '<section class="vs-section"><div class="vs-grid side"><div class="vs-card app" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div></div></section>');
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
@@ -23,16 +23,31 @@
         var w = 0, c = 0; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; if (e && e.cost !== null) { w += x.weight; c += x.weight * e.cost; } });
         return w >= 0.999 ? VS.costPct(c) : w > 0 ? VS.costPct(c / w) + ' <span class="vs-fine">(für ' + F.pct(w, 0) + ')</span>' : '<span class="vs-fine">Quelle fehlt</span>';
       }
+      var RING = ["#ccf54a", "#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#8a94a6"];
+      // Gewichtete Kennzahlen aus der bisherigen Entwicklung der Bausteine (nur wenn alle Bausteine die Kennzahl haben)
+      function wavg(p, f) { var w = 0, s = 0, ok = true; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol], v = e ? f(e) : null; if (v === null || v === undefined || !isFinite(v)) ok = false; else { w += x.weight; s += x.weight * v; } }); return ok && w > 0 ? s / w : null; }
+      function modelStats(p) {
+        var r10 = wavg(p, function (e) { return e.m && e.m.p["10Y"]; }), r5 = wavg(p, function (e) { return e.m && e.m.p["5Y"]; });
+        return { ret: r10 !== null ? r10 : r5, retLabel: r10 !== null ? "10 J. p. a." : "5 J. p. a.", vol: wavg(p, function (e) { return e.m && e.m.vol; }), hy: Math.min.apply(null, p.positions.map(function (x) { var e = m._bySymbol[x.symbol]; return e && e.m ? e.m.hy || 0 : 0; })) };
+      }
       root.querySelector("#vs-models").innerHTML = models.portfolios.map(function (p) {
-        var regions = {}; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; var k = e && e.region ? (VS.REGION[e.region] || e.region) : "nicht zugeordnet"; regions[k] = 1; });
-        var vols = p.positions.map(function (x) { var e = m._bySymbol[x.symbol]; return e && e.m ? e.m.vol : null; }).filter(function (v) { return v !== null; });
-        return '<button class="vs-card link" style="text-align:left;cursor:pointer;border:1px solid var(--line-soft)" data-model="' + esc(p.id) + '"><p class="vs-label">' + esc(p.label) + '</p><p style="margin-top:6px;font-size:14px">' + esc(p.idea) + '</p>' +
-          '<div class="vs-row" style="margin-top:8px"><span>Bausteine</span><span>' + p.positions.length + '</span></div><div class="vs-row"><span>Regionen</span><span style="text-align:right">' + esc(Object.keys(regions).join(", ")) + '</span></div>' +
-          '<div class="vs-row"><span>Schwankung der Bausteine</span><span>' + (vols.length ? F.pct(Math.min.apply(null, vols), 0) + "–" + F.pct(Math.max.apply(null, vols), 0) : "–") + '</span></div><div class="vs-row"><span>Expense Ratio (gewichtet, US-Prospekt)</span><span>' + modelCost(p) + '</span></div>' +
-          '<p class="vs-fine" style="margin-top:8px">' + p.positions.map(function (x) { return esc(x.symbol) + " " + F.pct(x.weight, 0); }).join(" · ") + '</p></button>';
-      }).join("") + '<p class="vs-fine" style="grid-column:1/-1">' + esc(models.note) + '</p>';
+        var acc = 0, ring = p.positions.map(function (x, k) { var a = acc; acc += x.weight * 360; return RING[k % RING.length] + " " + a.toFixed(1) + "deg " + acc.toFixed(1) + "deg"; }).join(",");
+        var st = modelStats(p);
+        return '<div class="vs-card" data-card="' + esc(p.id) + '"><div class="vs-mp"><span class="vs-ring" style="background:conic-gradient(' + ring + ')" aria-hidden="true"></span><div style="min-width:0"><p class="vs-label">' + esc(p.label) + '</p><p style="margin-top:4px;font-size:14px;color:var(--ink-2)">' + esc(p.idea) + '</p></div></div>' +
+          '<div class="vs-chips" style="margin-top:12px">' + p.positions.map(function (x, k) { return '<a class="vs-chip" href="#/etf/' + encodeURIComponent(x.symbol) + '" style="text-decoration:none"><i style="width:8px;height:8px;border-radius:50%;background:' + RING[k % RING.length] + ';display:inline-block"></i>' + esc(x.symbol) + ' ' + F.pct(x.weight, 0) + '</a>'; }).join("") + '</div>' +
+          '<div class="vs-mp-kpis"><div><span>' + esc(st.retLabel) + '</span><b class="num ' + F.cls(st.ret) + '">' + F.spct(st.ret) + '</b></div><div><span>Schwankung</span><b class="num">' + F.pct(st.vol, 0) + '</b></div><div><span>Kosten</span><b class="num">' + modelCost(p) + '</b></div></div>' +
+          '<div class="vs-tabs" style="margin-top:12px"><button class="vs-pill small primary" data-model="' + esc(p.id) + '">Übernehmen</button><button class="vs-pill small lime" data-play="' + esc(p.id) + '">Planspiel</button></div></div>';
+      }).join("") + '<p class="vs-fine" style="grid-column:1/-1">Rendite: gewichtete Kursentwicklung der Bausteine (ohne Ausschüttungen), Schwankung: gewichteter Durchschnitt (überschätzt die Schwankung gemischter Portfolios leicht). Vergangene Entwicklung, keine Prognose. ' + esc(models.note) + '</p>';
       root.querySelectorAll("[data-model]").forEach(function (b) {
         b.onclick = function () { var p = models.portfolios.filter(function (x) { return x.id === b.dataset.model; })[0]; VS.state.portfolio = p.positions.map(function (x) { return { symbol: x.symbol, weight: x.weight }; }); VS.save(); editor(); compute(); };
+      });
+      root.querySelectorAll("[data-play]").forEach(function (b) {
+        b.onclick = function () {
+          var p = models.portfolios.filter(function (x) { return x.id === b.dataset.play; })[0], st = modelStats(p), host = root.querySelector("#vs-model-play");
+          VS.renderPlanspiel(host, { symbol: p.label, name: p.label, cagr: st.ret, vol: st.vol, since: st.retLabel === "10 J. p. a." ? "10 Jahren" : "5 Jahren", years: st.retLabel === "10 J. p. a." ? Math.max(10, st.hy) : 0, us: true,
+            basis: "gewichtete Kursentwicklung der Bausteine " + st.retLabel + ", ohne Ausschüttungen" });
+          if (host.scrollIntoView) host.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
       });
       function editor() {
         var el = root.querySelector("#vs-editor");
