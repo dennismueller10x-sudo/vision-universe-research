@@ -50,3 +50,4 @@
 | G30 Kausalität Track B | Merkmale nur bis t, Anomalie-Tor nur [t−52, t], kein Kursfilter auf bereinigten Kursen | Test M9-B2, Red Team H3/H4 | ✅ |
 | G31 Track A hohe Genauigkeit (vorab registriert) | HAC gegen D und E bei CRV ≥ 0,75 | `mission9/ci/a9-confirm-tracka.json` | ❌ **NO HIGH-ACCURACY EDGE** (einmal geöffnet; HAC überall ausgeschlossen) |
 | G32 Track B asymmetrischer Vorteil | VU-Signal 5×/24M > 1 auf DEV und VAL mit gedeckeltem Überschuss > 0 | `mission9/local/decision-trackb-elliott.json` | ❌ NO ASYMMETRIC EDGE (explorativ, verbrauchte Daten) |
+| G33 Tests | Mission-IX-Tests (Track A/B, Disjunktheit, Siegel, Kausalität, Fallstudie) und volle Quant-Suite | `quant/tests/hsab-mission9.test.mjs`; Quant-Suite 2.326/2.326 | ✅ |

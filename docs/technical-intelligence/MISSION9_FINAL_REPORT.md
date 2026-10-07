@@ -27,7 +27,10 @@ Bei fairer, symmetrischer Geometrie (Ziel ≈ Invalidation, CRV 0,75–1,33):
 
 Keine Teilmenge erreicht ≥ 60 % mit ≥ +5 Pp. Vorsprung, weder nach Klarheit noch nach Übereinstimmung, weder symmetrisch noch günstig. Der echte Vorsprung beträgt in jeder Geometrie-Klasse +1 bis +4 Pp. und entspricht dem, was der einfache Trend allein liefert (Differenz FULL − TREND_ONLY ≤ 0,3 Pp.).
 
-Bestätigung auf 1.200 neuen Titeln (Tag, einmal geöffnet): ****NO HIGH-ACCURACY EDGE**. Symmetrisch trifft VU 54,9 % gegen 53,2 % der Kontrolle (Lift +1,7 Pp. [0,2; 3,1]; gegen die Trend-Kontrolle E +1,2). Die obere Grenze der Trefferquote liegt bei 57,5 %; keine Stufe erfüllt das Kriterium**.
+Bestätigung auf 1.200 neuen Titeln (Tag, einmal geöffnet): **NO HIGH-ACCURACY EDGE**.
+* Bei nahen Zielen (CRV < 0,5) trifft VU 81,2 %, die Kontrolle gleicher Abstände 80,7 %.
+* Symmetrisch trifft VU 54,9 % gegen 53,2 % (Lift +1,7 Pp. [0,2; 3,1]; gegen die Trend-Kontrolle E +1,2). Die obere Grenze der Trefferquote liegt bei 57,5 %.
+* Keine Stufe erfüllt das Kriterium.
 
 ### Frage 2: Schafft VU einen überlegenen Erwartungswert, indem es seltene langfristige Extremgewinner früh erkennt, auch bei geringerer Trefferquote?
 
@@ -35,11 +38,12 @@ Bestätigung auf 1.200 neuen Titeln (Tag, einmal geöffnet): ****NO HIGH-ACCURAC
 
 Ein bullisches VU-Bild senkt die Chance, dass ein Titel binnen 24 Monaten 5× macht (+400 %):
 * gegenüber vergleichbaren Titeln mit gleichem Trend, gleichem Momentum-, Volatilitäts- und Abstands-Terzil und gleichem Alter um rund ein Drittel: Verhältnis 0,62 bzw. 0,64, beide 95-%-KI < 1, auf zwei getrennten Titelhälften;
-* gegenüber dem Gesamtmarkt desselben Quartals um rund 45 %.
+* gegenüber dem Gesamtmarkt desselben Quartals um rund 45 %;
+* in der delisteten Kohorte ebenso: 0,65 [0,44; 0,91].
 
 Extremgewinner kommen überwiegend aus Lagen, die VU (zu Recht nach seiner Logik) nicht bullisch nennt.
 
-Einfache relative Stärke (26 Wochen, Top 20 %) leistet mehr als jedes VU-Signal (Verhältnis 1,5). Ein Renditevorteil nach Deckelung der Ausreißer folgt daraus aber auch für sie nicht.
+Einfache relative Stärke (26 Wochen, Top 20 %) leistet mehr als jedes VU-Signal (Verhältnis 1,5–1,7). Ihr Renditevorteil nach Deckelung der Ausreißer ist klein (+1 bis +4 %) und nicht in jeder Stichprobe gesichert. Das ist ein bekannter einfacher Faktor, keine VU-Leistung.
 
 Ein **intern** gefundener, vom Produkt **nicht angezeigter** Elliott-Kandidat („frühe Aufwärts-Motivwelle“) erhöht die 5×-Häufigkeit um etwa 1,35–1,4×. Das gilt nur explorativ, auf verbrauchten Daten und ohne Renditevorteil. Ein Zusatzwert über relative Stärke hinaus ist nicht gesichert.
 
@@ -156,8 +160,8 @@ Die Selektivitätsschwellen (Wochen-Quantile) markieren auf Tagesdaten 23 % (TOP
     * Mit Ausschluss auch späterer Datensprünge (Sensitivität) sinken die Mittel zusätzlich. Ein Teil der extremen Mittel sind Datenfehler (Splits) nach t.
     * Kein VU-Signal behält danach einen Vorsprung, weil es vorher keinen hatte.
 17. **Bringt Wave 3 / Motivinformation etwas über Trend und Momentum hinaus?** Siehe §4: Der **angezeigte** Elliott-Zustand nein (spricht fast nie). Ein **interner** Kandidat zeigt eine höhere Extremhäufigkeit. Über RS26 bzw. Trend+Momentum hinaus ist das nicht gesichert (KI enthalten 1).
-18. **Reicht eine einfache Alternative?** Ja, sie ist sogar besser. RS26 Top 20 % liegt bei 1,49 / 1,53 und hat mit 2,6 / 2,5 % die doppelte 5×-Präzision von VU_BULL. Auch RS26 hat keinen gesicherten gedeckelten Renditevorteil (+1,7 / +2,1 %, KI siehe Tabellen).
-19. **Hält es mit delisteten Titeln?** Delistete Kohorte (CI, verbraucht, Sensitivität): {{DELISTED}}.
+18. **Reicht eine einfache Alternative?** Ja, sie ist sogar besser. RS26 Top 20 % liegt bei 1,49 / 1,53 (delistet 1,69) und hat mit 2,6 / 2,5 % die doppelte 5×-Präzision von VU_BULL. Ihr gedeckelter Überschuss (24M) beträgt +1,7 % [−1,1; +4,5] / +2,1 % [−0,5; +4,7] / delistet +4,1 % [+0,2; +8,3]: klein, nur teilweise gesichert, vor Kosten.
+19. **Hält es mit delisteten Titeln?** Delistete Kohorte (CI, verbraucht, Sensitivität): ja, gleiche Richtung. In der delisteten Kohorte (18.810 Einheiten aus 1.430 Listings, 49 % der Einheiten enden mit dem Delisting im Horizont) liegt VU_BULL 5×/24M gegen die Schicht bei 0,65 [0,44; 0,91]; mit Zukunftsausschluss 0,72 [0,48; 1,00]; gegen das Quartal 0,49. RS26 liegt bei 1,69 [1,17; 2,26], gegen das Quartal aber unter 1 (0,82). VU-bullische Einheiten enden ebenso oft im Delisting wie die Basis (48 % gegen 49 %).
 20. **Out-of-sample?** DEV → VAL (neue Titel, gleicher Kalender) repliziert. Eine frische Bestätigung ist nicht möglich (§1).
 
 **Früherkennung:**
@@ -269,10 +273,10 @@ Bereit ist keine. Geprüft:
 5. **Erklärt Momentum oder relative Stärke das Ergebnis?** Für Track B ist relative Stärke die **bessere** Alternative. VU-Bullishness ist eher ein Trend-Reife-Merkmal und keine Frühindikation.
 6. **Erzeugten wenige Superwinner allen Payoff?** In der Basis ja, zu großen Teilen: Top 5 % = 49–60 % der Gewinne. Bei VU-Signalen gab es keinen Payoff-Vorsprung, der hätte verschwinden können.
 7. **Überlebt die Kante das Entfernen der Top-Gewinner?** Es gab keine VU-Kante. Für die internen Wave-3-Kandidaten verschwindet der Mittelwertvorteil bereits mit dem 4×-Deckel.
-8. **Überlebt sie delistete Titel?** {{DELISTED_SHORT}}
+8. **Überlebt sie delistete Titel?** Es gab keine VU-Kante. Die Unterauswahl von Extremgewinnern zeigt sich auch in der delisteten Kohorte (0,65 [0,44; 0,91]).
 9. **Bringt Wave 3 etwas inkrementell?** Angezeigt nein. Intern explorativ mehr Extremhäufigkeit, ohne Ertrag und nicht über RS hinaus gesichert.
 10. **War die Woche nützlicher als der Tag?** Für Genauigkeit gleich (geometrie-dominiert). Für Langfrist-Fragen ist nur die Woche messbar.
-11. **Wie viel Abdeckung ist nötig?** Selektivität kostet viel Abdeckung für wenig Lift: Top 10 % Übereinstimmung bringen +4–6 Pp. bei 2 % Abdeckung, ohne die 60-%-Schwelle zu erreichen.
+11. **Wie viel Abdeckung ist nötig?** Selektivität kostet viel Abdeckung für wenig Lift. Woche: Top 10 % Übereinstimmung bringen +4–6 Pp. bei 2 % Abdeckung, ohne die 60-%-Schwelle zu erreichen. Tag (Bestätigung): nicht einmal das ist nachweisbar (+1,8 Pp., KI enthält 0).
 12. **Kommerziell bedeutsam?** Nicht als Prognosevorteil. Der Wert bleibt beschreibend (Klasse C).
 13. **Ist eine Kundenaussage bereit?** Nein (§7).
 14. **Was würde ein externer Quant am meisten kritisieren?**
