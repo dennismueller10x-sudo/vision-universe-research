@@ -1,0 +1,6001 @@
+{
+  "schema": "vu-minervini-ground-truth-results-1.0.0",
+  "label": "Diagnose, keine Optimierung, keine Rueckwirkung auf Engine/Regelbuch/Live. Performance ist keine Ground Truth. DEV/HOLDOUT gelten als gesehene Daten.",
+  "engine": {
+    "name": "minervini-adaptation-1.1.0",
+    "codeHash": "2093c8d18adf33495c6ea0aa2312c77bb70aa652e379d194313a2ebf249be930",
+    "rulebookHash": "ae226511dcd045bca2457929e4894e43946c71d096e84c5dbdf0569a18bc6ba7"
+  },
+  "groundTruthFreeze": {
+    "casesHash": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+    "commit": "7438c7f4f8f",
+    "frozenAt": "2026-10-07T09:07:10.084Z"
+  },
+  "runs": {
+    "DEV": {
+      "runId": "37598401407",
+      "cases": 39
+    },
+    "HOLDOUT": {
+      "runId": "37604155118",
+      "cases": 37,
+      "note": "alle Faelle ausserhalb des Fensters (2008-2015); nur Trichter. Zwei Vortagsanker (ACAD, RVNC) ohne Logzeile, weil der Vortag im HOLDOUT-Kalender fehlt (ohne Einfluss)"
+    }
+  },
+  "recall": {
+    "MAIN": {
+      "cases": 16,
+      "evaluable": 15,
+      "detected": 3,
+      "missed": 12,
+      "recall": 0.2,
+      "strongEvidenceExactOrPlusMinus1": 2,
+      "timing": {
+        "MISS": 12,
+        "EXACT": 2,
+        "PLUS_MINUS_3": 1
+      },
+      "signOfOffset": {
+        "vuEarlier": 1,
+        "same": 2,
+        "vuLater": 0
+      },
+      "notEvaluable": {
+        "SECURITY_MAPPING_NO_COVERING_SEGMENT": 1
+      },
+      "setupAtTStar": 2,
+      "setupAtTStarRate": 0.133
+    },
+    "MAIN_A_OWN_ENTRY": {
+      "cases": 14,
+      "evaluable": 13,
+      "detected": 2,
+      "missed": 11,
+      "recall": 0.154,
+      "strongEvidenceExactOrPlusMinus1": 2,
+      "timing": {
+        "MISS": 11,
+        "EXACT": 2
+      },
+      "signOfOffset": {
+        "vuEarlier": 0,
+        "same": 2,
+        "vuLater": 0
+      },
+      "notEvaluable": {
+        "SECURITY_MAPPING_NO_COVERING_SEGMENT": 1
+      },
+      "setupAtTStar": 2,
+      "setupAtTStarRate": 0.154
+    },
+    "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY": {
+      "cases": 2,
+      "evaluable": 2,
+      "detected": 1,
+      "missed": 1,
+      "recall": 0.5,
+      "strongEvidenceExactOrPlusMinus1": 0,
+      "timing": {
+        "PLUS_MINUS_3": 1,
+        "MISS": 1
+      },
+      "signOfOffset": {
+        "vuEarlier": 1,
+        "same": 0,
+        "vuLater": 0
+      },
+      "notEvaluable": {},
+      "setupAtTStar": 0,
+      "setupAtTStarRate": 0
+    },
+    "MAIN_WITHOUT_SEC_QUARTERLY_UNAVAILABLE": {
+      "cases": 13,
+      "evaluable": 12,
+      "detected": 3,
+      "missed": 9,
+      "recall": 0.25,
+      "strongEvidenceExactOrPlusMinus1": 2,
+      "timing": {
+        "MISS": 9,
+        "EXACT": 2,
+        "PLUS_MINUS_3": 1
+      },
+      "signOfOffset": {
+        "vuEarlier": 1,
+        "same": 2,
+        "vuLater": 0
+      },
+      "notEvaluable": {
+        "SECURITY_MAPPING_NO_COVERING_SEGMENT": 1
+      },
+      "setupAtTStar": 2,
+      "setupAtTStarRate": 0.167
+    },
+    "MAIN_WITHOUT_EX_POST_ANCHOR": {
+      "cases": 15,
+      "evaluable": 14,
+      "detected": 2,
+      "missed": 12,
+      "recall": 0.143,
+      "strongEvidenceExactOrPlusMinus1": 1,
+      "timing": {
+        "MISS": 12,
+        "EXACT": 1,
+        "PLUS_MINUS_3": 1
+      },
+      "signOfOffset": {
+        "vuEarlier": 1,
+        "same": 1,
+        "vuLater": 0
+      },
+      "notEvaluable": {
+        "SECURITY_MAPPING_NO_COVERING_SEGMENT": 1
+      },
+      "setupAtTStar": 1,
+      "setupAtTStarRate": 0.071
+    },
+    "MAIN_POST_LEVEL": {
+      "posts": 15,
+      "detectedPosts": 3,
+      "recall": 0.2,
+      "clusteredCaseShare": 0
+    },
+    "SENSITIVITY": {
+      "cases": 15,
+      "evaluable": 14,
+      "detected": 2,
+      "missed": 12,
+      "recall": 0.143,
+      "strongEvidenceExactOrPlusMinus1": 0,
+      "timing": {
+        "MISS": 12,
+        "IN_WINDOW": 2
+      },
+      "signOfOffset": {
+        "vuEarlier": 0,
+        "same": 0,
+        "vuLater": 0
+      },
+      "notEvaluable": {
+        "HISTORY_TOO_SHORT": 1
+      },
+      "setupAtTStar": 2,
+      "setupAtTStarRate": 0.143
+    },
+    "SENSITIVITY_POST_LEVEL": {
+      "posts": 5,
+      "detectedPosts": 1,
+      "recall": 0.2,
+      "clusteredCaseShare": 0.786
+    }
+  },
+  "watchlist": {
+    "cases": 6,
+    "evaluable": 5,
+    "setupAtTStar": 0,
+    "passedLayers": [
+      {
+        "ticker": "PENN",
+        "passedLayers": 3,
+        "setupAtTStar": false,
+        "nearestSignalOffset": -611
+      },
+      {
+        "ticker": "NMIH",
+        "passedLayers": 3,
+        "setupAtTStar": false,
+        "nearestSignalOffset": 9
+      },
+      {
+        "ticker": "VEC",
+        "passedLayers": 2,
+        "setupAtTStar": false,
+        "nearestSignalOffset": null
+      },
+      {
+        "ticker": "CPRT",
+        "passedLayers": 2,
+        "setupAtTStar": false,
+        "nearestSignalOffset": 478
+      },
+      {
+        "ticker": "RBA",
+        "passedLayers": 2,
+        "setupAtTStar": false,
+        "nearestSignalOffset": 286
+      }
+    ],
+    "notEvaluable": [
+      [
+        "INMD",
+        "HISTORY_TOO_SHORT"
+      ]
+    ],
+    "note": "kein Recall; Primaermass setupAtTStar"
+  },
+  "entryTypeNotModelled": [
+    {
+      "ticker": "DXCM",
+      "decision": "REJECTED",
+      "passedLayers": 3,
+      "blockers": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ]
+    }
+  ],
+  "precision": "NOT_MEASURABLE (< 5 auswertbare Negativfaelle)",
+  "negatives": [
+    {
+      "case_id": "GT-041",
+      "ticker": "UPST",
+      "decision": "NOT_EVALUABLE",
+      "reason": "HISTORY_TOO_SHORT",
+      "note": "Einzelbeobachtung"
+    }
+  ],
+  "failureMatrix": {
+    "rejected": 12,
+    "byLayer": {
+      "FUNDAMENTALS_RULE": {
+        "cases": 5,
+        "share": 0.417
+      },
+      "VCP": {
+        "cases": 5,
+        "share": 0.417
+      },
+      "FUNDAMENTALS_DATA": {
+        "cases": 7,
+        "share": 0.583
+      },
+      "UNIVERSE": {
+        "cases": 1,
+        "share": 0.083
+      },
+      "RS": {
+        "cases": 1,
+        "share": 0.083
+      }
+    },
+    "byRule": {
+      "SEPA_RULE:SEPA_BASE_NOT_POSITIVE": 4,
+      "VCP:BASE_TOO_SHORT": 5,
+      "SEPA_DATA:SEPA_DATA_MISSING": 2,
+      "SEPA_DATA:SEPA_STALE": 5,
+      "MR-UNI-01": 1,
+      "MR-TT-08": 1,
+      "SEPA_RULE:SEPA_NO_ACCELERATION": 1
+    },
+    "soleBlockingLayer": {
+      "FUNDAMENTALS_RULE": 4,
+      "FUNDAMENTALS_DATA": 2
+    }
+  },
+  "failureMatrixSensitivity": {
+    "rejected": 12,
+    "byLayer": {
+      "VCP": {
+        "cases": 8,
+        "share": 0.667
+      },
+      "FUNDAMENTALS_DATA": {
+        "cases": 4,
+        "share": 0.333
+      },
+      "FUNDAMENTALS_RULE": {
+        "cases": 7,
+        "share": 0.583
+      },
+      "TREND": {
+        "cases": 1,
+        "share": 0.083
+      },
+      "RS": {
+        "cases": 1,
+        "share": 0.083
+      }
+    },
+    "byRule": {
+      "VCP:BASE_TOO_SHORT": 7,
+      "SEPA_DATA:SEPA_STALE": 1,
+      "SEPA_RULE:SEPA_BASE_NOT_POSITIVE": 3,
+      "SEPA_DATA:SEPA_ACCEL_NOT_DEMONSTRABLE": 1,
+      "SEPA_RULE:SEPA_EPS_GROWTH_LOW": 1,
+      "VCP:CONTRACTION_COUNT": 1,
+      "SEPA_DATA:SEPA_DATA_MISSING": 2,
+      "SEPA_RULE:SEPA_NO_ACCELERATION": 3,
+      "MR-TT-01": 1,
+      "MR-TT-02": 1,
+      "MR-TT-03": 1,
+      "MR-TT-04": 1,
+      "MR-TT-07": 1,
+      "MR-TT-08": 1
+    },
+    "soleBlockingLayer": {
+      "FUNDAMENTALS_RULE": 2,
+      "VCP": 1,
+      "FUNDAMENTALS_DATA": 1
+    }
+  },
+  "trendRuleFailures": {
+    "MR-TT-08": 1
+  },
+  "sepaReasons": {
+    "SEPA_BASE_NOT_POSITIVE": 4,
+    "SEPA_DATA_MISSING": 2,
+    "SEPA_STALE": 5,
+    "SEPA_NO_ACCELERATION": 1
+  },
+  "vcpConfusion": {
+    "positives": 15,
+    "vuVcpYes": 9,
+    "vuVcpNo": 6,
+    "recall": 0.6,
+    "falseNegativeRate": 0.4,
+    "precision": "NOT_MEASURABLE (keine VCP-Negativfaelle)",
+    "falsePositiveRate": "NOT_MEASURABLE",
+    "reasons": {
+      "BASE_TOO_SHORT": 5,
+      "STOP_TOO_WIDE": 1
+    }
+  },
+  "controls": {
+    "universeOnly": {
+      "cases": 15,
+      "controls": 150,
+      "setupAtTStar": 1,
+      "detected": 2,
+      "trend": 23,
+      "vcp": 48,
+      "sepa": 15,
+      "setupRate": 0.007,
+      "detectedRate": 0.013
+    },
+    "trendTemplatePassing": {
+      "cases": 15,
+      "controls": 150,
+      "setupAtTStar": 2,
+      "detected": 8,
+      "trend": 150,
+      "vcp": 16,
+      "sepa": 20,
+      "setupRate": 0.013,
+      "detectedRate": 0.053
+    },
+    "comparison": {
+      "caseRecall": 0.2,
+      "caseSetupAtTStarRate": 0.133
+    }
+  },
+  "funnel": [
+    {
+      "window": "DEV",
+      "perYear": {
+        "2016": {
+          "evaluated": 1160084,
+          "universe": 507303,
+          "trend": 74599,
+          "vcp": 8624,
+          "setups": 846,
+          "signals": 204,
+          "titles": 0,
+          "setupsPer1000": 1.7,
+          "signalsPer1000": 0.4,
+          "byRegime": {
+            "NA": {
+              "evaluated": 917815,
+              "universe": 398301,
+              "trend": 52667,
+              "vcp": 6636,
+              "setups": 662,
+              "signals": 156,
+              "titles": 0
+            },
+            "UP": {
+              "evaluated": 242269,
+              "universe": 109002,
+              "trend": 21932,
+              "vcp": 1988,
+              "setups": 184,
+              "signals": 48,
+              "titles": 0
+            }
+          }
+        },
+        "2017": {
+          "evaluated": 1150533,
+          "universe": 526654,
+          "trend": 114865,
+          "vcp": 15826,
+          "setups": 1782,
+          "signals": 402,
+          "titles": 0,
+          "setupsPer1000": 3.4,
+          "signalsPer1000": 0.8,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1150533,
+              "universe": 526654,
+              "trend": 114865,
+              "vcp": 15826,
+              "setups": 1782,
+              "signals": 402,
+              "titles": 0
+            }
+          }
+        },
+        "2018": {
+          "evaluated": 1148401,
+          "universe": 549283,
+          "trend": 101252,
+          "vcp": 13736,
+          "setups": 1501,
+          "signals": 393,
+          "titles": 0,
+          "setupsPer1000": 2.7,
+          "signalsPer1000": 0.7,
+          "byRegime": {
+            "UP": {
+              "evaluated": 960513,
+              "universe": 460481,
+              "trend": 95214,
+              "vcp": 12883,
+              "setups": 1367,
+              "signals": 373,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 187888,
+              "universe": 88802,
+              "trend": 6038,
+              "vcp": 853,
+              "setups": 134,
+              "signals": 20,
+              "titles": 0
+            }
+          }
+        },
+        "2019": {
+          "evaluated": 1154176,
+          "universe": 536052,
+          "trend": 90380,
+          "vcp": 13203,
+          "setups": 1794,
+          "signals": 433,
+          "titles": 0,
+          "setupsPer1000": 3.3,
+          "signalsPer1000": 0.8,
+          "byRegime": {
+            "DOWN": {
+              "evaluated": 122892,
+              "universe": 57557,
+              "trend": 4043,
+              "vcp": 1055,
+              "setups": 189,
+              "signals": 60,
+              "titles": 0
+            },
+            "UP": {
+              "evaluated": 1031284,
+              "universe": 478495,
+              "trend": 86337,
+              "vcp": 12148,
+              "setups": 1605,
+              "signals": 373,
+              "titles": 0
+            }
+          }
+        },
+        "2020": {
+          "evaluated": 1179664,
+          "universe": 557692,
+          "trend": 83498,
+          "vcp": 9002,
+          "setups": 992,
+          "signals": 277,
+          "titles": 0,
+          "setupsPer1000": 1.8,
+          "signalsPer1000": 0.5,
+          "byRegime": {
+            "UP": {
+              "evaluated": 908889,
+              "universe": 432260,
+              "trend": 76764,
+              "vcp": 8048,
+              "setups": 848,
+              "signals": 239,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 270775,
+              "universe": 125432,
+              "trend": 6734,
+              "vcp": 954,
+              "setups": 144,
+              "signals": 38,
+              "titles": 0
+            }
+          }
+        },
+        "2021": {
+          "evaluated": 1286972,
+          "universe": 665559,
+          "trend": 118189,
+          "vcp": 14018,
+          "setups": 1805,
+          "signals": 446,
+          "titles": 0,
+          "setupsPer1000": 2.7,
+          "signalsPer1000": 0.7,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1286972,
+              "universe": 665559,
+              "trend": 118189,
+              "vcp": 14018,
+              "setups": 1805,
+              "signals": 446,
+              "titles": 0
+            }
+          }
+        },
+        "2022": {
+          "evaluated": 1329664,
+          "universe": 611447,
+          "trend": 55533,
+          "vcp": 8813,
+          "setups": 1239,
+          "signals": 283,
+          "titles": 0,
+          "setupsPer1000": 2,
+          "signalsPer1000": 0.5,
+          "byRegime": {
+            "UP": {
+              "evaluated": 249234,
+              "universe": 120485,
+              "trend": 15756,
+              "vcp": 2377,
+              "setups": 298,
+              "signals": 77,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 1080430,
+              "universe": 490962,
+              "trend": 39777,
+              "vcp": 6436,
+              "setups": 941,
+              "signals": 206,
+              "titles": 0
+            }
+          }
+        },
+        "2023": {
+          "evaluated": 1294344,
+          "universe": 580240,
+          "trend": 93807,
+          "vcp": 14145,
+          "setups": 1908,
+          "signals": 507,
+          "titles": 0,
+          "setupsPer1000": 3.3,
+          "signalsPer1000": 0.9,
+          "byRegime": {
+            "DOWN": {
+              "evaluated": 83294,
+              "universe": 36846,
+              "trend": 3548,
+              "vcp": 596,
+              "setups": 104,
+              "signals": 32,
+              "titles": 0
+            },
+            "UP": {
+              "evaluated": 1211050,
+              "universe": 543394,
+              "trend": 90259,
+              "vcp": 13549,
+              "setups": 1804,
+              "signals": 475,
+              "titles": 0
+            }
+          }
+        },
+        "2024": {
+          "evaluated": 1305626,
+          "universe": 605556,
+          "trend": 129321,
+          "vcp": 14538,
+          "setups": 1722,
+          "signals": 419,
+          "titles": 0,
+          "setupsPer1000": 2.8,
+          "signalsPer1000": 0.7,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1305626,
+              "universe": 605556,
+              "trend": 129321,
+              "vcp": 14538,
+              "setups": 1722,
+              "signals": 419,
+              "titles": 0
+            }
+          }
+        },
+        "2025": {
+          "evaluated": 1337141,
+          "universe": 637867,
+          "trend": 96994,
+          "vcp": 12543,
+          "setups": 1844,
+          "signals": 476,
+          "titles": 0,
+          "setupsPer1000": 2.9,
+          "signalsPer1000": 0.7,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1114241,
+              "universe": 534264,
+              "trend": 87666,
+              "vcp": 10879,
+              "setups": 1608,
+              "signals": 407,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 222900,
+              "universe": 103603,
+              "trend": 9328,
+              "vcp": 1664,
+              "setups": 236,
+              "signals": 69,
+              "titles": 0
+            }
+          }
+        },
+        "2026": {
+          "evaluated": 1070276,
+          "universe": 512905,
+          "trend": 98162,
+          "vcp": 11003,
+          "setups": 1639,
+          "signals": 443,
+          "titles": 0,
+          "setupsPer1000": 3.2,
+          "signalsPer1000": 0.9,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1002391,
+              "universe": 480447,
+              "trend": 93146,
+              "vcp": 10229,
+              "setups": 1533,
+              "signals": 417,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 67885,
+              "universe": 32458,
+              "trend": 5016,
+              "vcp": 774,
+              "setups": 106,
+              "signals": 26,
+              "titles": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "window": "HOLDOUT",
+      "perYear": {
+        "2008": {
+          "evaluated": 909507,
+          "universe": 400184,
+          "trend": 30361,
+          "vcp": 4425,
+          "setups": 0,
+          "signals": 0,
+          "titles": 0,
+          "setupsPer1000": 0,
+          "signalsPer1000": 0,
+          "byRegime": {
+            "NA": {
+              "evaluated": 712852,
+              "universe": 324021,
+              "trend": 29050,
+              "vcp": 4221,
+              "setups": 0,
+              "signals": 0,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 196655,
+              "universe": 76163,
+              "trend": 1311,
+              "vcp": 204,
+              "setups": 0,
+              "signals": 0,
+              "titles": 0
+            }
+          }
+        },
+        "2009": {
+          "evaluated": 924867,
+          "universe": 346243,
+          "trend": 35788,
+          "vcp": 4745,
+          "setups": 10,
+          "signals": 3,
+          "titles": 0,
+          "setupsPer1000": 0,
+          "signalsPer1000": 0,
+          "byRegime": {
+            "DOWN": {
+              "evaluated": 369178,
+              "universe": 132363,
+              "trend": 2255,
+              "vcp": 368,
+              "setups": 0,
+              "signals": 0,
+              "titles": 0
+            },
+            "UP": {
+              "evaluated": 555689,
+              "universe": 213880,
+              "trend": 33533,
+              "vcp": 4377,
+              "setups": 10,
+              "signals": 3,
+              "titles": 0
+            }
+          }
+        },
+        "2010": {
+          "evaluated": 955014,
+          "universe": 380948,
+          "trend": 71656,
+          "vcp": 8928,
+          "setups": 258,
+          "signals": 63,
+          "titles": 0,
+          "setupsPer1000": 0.7,
+          "signalsPer1000": 0.2,
+          "byRegime": {
+            "UP": {
+              "evaluated": 727218,
+              "universe": 290121,
+              "trend": 60320,
+              "vcp": 6381,
+              "setups": 210,
+              "signals": 56,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 227796,
+              "universe": 90827,
+              "trend": 11336,
+              "vcp": 2547,
+              "setups": 48,
+              "signals": 7,
+              "titles": 0
+            }
+          }
+        },
+        "2011": {
+          "evaluated": 993228,
+          "universe": 414880,
+          "trend": 64666,
+          "vcp": 8513,
+          "setups": 900,
+          "signals": 203,
+          "titles": 0,
+          "setupsPer1000": 2.2,
+          "signalsPer1000": 0.5,
+          "byRegime": {
+            "UP": {
+              "evaluated": 627735,
+              "universe": 263344,
+              "trend": 54435,
+              "vcp": 6695,
+              "setups": 514,
+              "signals": 123,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 365493,
+              "universe": 151536,
+              "trend": 10231,
+              "vcp": 1818,
+              "setups": 386,
+              "signals": 80,
+              "titles": 0
+            }
+          }
+        },
+        "2012": {
+          "evaluated": 1016552,
+          "universe": 404151,
+          "trend": 69393,
+          "vcp": 9988,
+          "setups": 1701,
+          "signals": 419,
+          "titles": 0,
+          "setupsPer1000": 4.2,
+          "signalsPer1000": 1,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1004131,
+              "universe": 399337,
+              "trend": 69016,
+              "vcp": 9940,
+              "setups": 1696,
+              "signals": 419,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 12421,
+              "universe": 4814,
+              "trend": 377,
+              "vcp": 48,
+              "setups": 5,
+              "signals": 0,
+              "titles": 0
+            }
+          }
+        },
+        "2013": {
+          "evaluated": 1064223,
+          "universe": 456527,
+          "trend": 108592,
+          "vcp": 10215,
+          "setups": 1237,
+          "signals": 345,
+          "titles": 0,
+          "setupsPer1000": 2.7,
+          "signalsPer1000": 0.8,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1064223,
+              "universe": 456527,
+              "trend": 108592,
+              "vcp": 10215,
+              "setups": 1237,
+              "signals": 345,
+              "titles": 0
+            }
+          }
+        },
+        "2014": {
+          "evaluated": 1113086,
+          "universe": 513400,
+          "trend": 98502,
+          "vcp": 13580,
+          "setups": 1795,
+          "signals": 430,
+          "titles": 0,
+          "setupsPer1000": 3.5,
+          "signalsPer1000": 0.8,
+          "byRegime": {
+            "UP": {
+              "evaluated": 1090652,
+              "universe": 503218,
+              "trend": 98041,
+              "vcp": 13549,
+              "setups": 1789,
+              "signals": 430,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 22434,
+              "universe": 10182,
+              "trend": 461,
+              "vcp": 31,
+              "setups": 6,
+              "signals": 0,
+              "titles": 0
+            }
+          }
+        },
+        "2015": {
+          "evaluated": 1142143,
+          "universe": 523676,
+          "trend": 88182,
+          "vcp": 13124,
+          "setups": 1957,
+          "signals": 473,
+          "titles": 0,
+          "setupsPer1000": 3.7,
+          "signalsPer1000": 0.9,
+          "byRegime": {
+            "UP": {
+              "evaluated": 896692,
+              "universe": 411688,
+              "trend": 77875,
+              "vcp": 11030,
+              "setups": 1665,
+              "signals": 401,
+              "titles": 0
+            },
+            "DOWN": {
+              "evaluated": 245451,
+              "universe": 111988,
+              "trend": 10307,
+              "vcp": 2094,
+              "setups": 292,
+              "signals": 72,
+              "titles": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "decisionTree": [
+    "B"
+  ],
+  "scorecard": {
+    "positiveCasesMain": 16,
+    "evaluable": 15,
+    "correctlyDetected": 3,
+    "missed": 12,
+    "exact": 2,
+    "plusMinus1": 0,
+    "plusMinus3": 1,
+    "plusMinus5": 0,
+    "fundamentalRuleFailures": 5,
+    "fundamentalDataGaps": 7,
+    "vcpFailures": 5,
+    "trendFailures": 0,
+    "rsFailures": 1,
+    "universeFailures": 1,
+    "negativeControls": 1,
+    "negativeEvaluable": 0,
+    "falsePositives": "NOT_MEASURABLE (< 5 Negativfaelle)",
+    "pivot": "NOT_MEASURABLE (kein dokumentierter Pivot)",
+    "note": "Fehlerzahlen ueber abgelehnte MAIN-Faelle; ein Fall kann an mehreren Schichten scheitern."
+  },
+  "exploratoryPostFreeze": {
+    "secTagDiagnosis": {
+      "label": "EXPLORATIV nach dem Freeze; oeffentliche SEC-companyfacts; Split-Verhaeltnis 1 angenommen (keine Splits zwischen den Einreichungen der betroffenen Faelle)",
+      "cases": [
+        {
+          "case_id": "GT-001",
+          "ticker": "ZGNX",
+          "group": "MAIN",
+          "exec": "2018-06-12",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2018-03-31",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-003",
+          "ticker": "ROKU",
+          "group": "MAIN",
+          "exec": "2019-07-16",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2019-03-31",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-004",
+          "ticker": "ACAD",
+          "group": "MAIN",
+          "exec": "2019-10-21",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2019-06-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-005",
+          "ticker": "AMD",
+          "group": "MAIN",
+          "exec": "2020-06-09",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2020-03-28",
+          "epsGrowth": 13.000000000000002,
+          "epsGrowthPrev": 2.75,
+          "revGrowth": 0.4040880503144655
+        },
+        {
+          "case_id": "GT-006",
+          "ticker": "DXCM",
+          "group": "ENTRY_TYPE_NOT_MODELLED",
+          "exec": "2020-06-26",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2020-03-31",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-007",
+          "ticker": "TNDM",
+          "group": "MAIN",
+          "exec": "2020-06-30",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2020-03-31",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-008",
+          "ticker": "AMD",
+          "group": "MAIN",
+          "exec": "2020-07-22",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2020-03-28",
+          "epsGrowth": 13.000000000000002,
+          "epsGrowthPrev": 2.75,
+          "revGrowth": 0.4040880503144655
+        },
+        {
+          "case_id": "GT-009",
+          "ticker": "AEM",
+          "group": "MAIN",
+          "exec": "2020-09-14",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_STALE",
+          "quarterEnd": "2014-06-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-010",
+          "ticker": "RVNC",
+          "group": "MAIN",
+          "exec": "2020-09-15",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2020-06-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-011",
+          "ticker": "AMZN",
+          "group": "MAIN",
+          "exec": "2020-10-08",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2020-06-30",
+          "epsGrowth": 0.9731800766283527,
+          "epsGrowthPrev": -0.2933709449929478,
+          "revGrowth": 0.40230900258658764
+        },
+        {
+          "case_id": "GT-012",
+          "ticker": "REPL",
+          "group": "MAIN",
+          "exec": "2020-10-14",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2020-06-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-013",
+          "ticker": "PENN",
+          "group": "WATCHLIST",
+          "exec": "2020-12-08",
+          "replay": "SEPA_REVENUE_NOT_GROWING",
+          "frozen": "SEPA_REVENUE_NOT_GROWING",
+          "earliestAcrossTags": "SEPA_REVENUE_NOT_GROWING",
+          "quarterEnd": "2020-09-30",
+          "epsGrowth": 1.4473684210526319,
+          "epsGrowthPrev": -4.840909090909091,
+          "revGrowth": -0.16596530084902172
+        },
+        {
+          "case_id": "GT-014",
+          "ticker": "DKL",
+          "group": "MAIN",
+          "exec": "2020-12-29",
+          "replay": "SEPA_DATA_MISSING",
+          "frozen": "SEPA_DATA_MISSING",
+          "earliestAcrossTags": "SEPA_DATA_MISSING",
+          "quarterEnd": null,
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-016",
+          "ticker": "RICK",
+          "group": "MAIN",
+          "exec": "2021-04-05",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_REVENUE_NOT_GROWING",
+          "quarterEnd": "2020-12-31",
+          "epsGrowth": 0.7833333333333334,
+          "epsGrowthPrev": -7.199999999999999,
+          "revGrowth": -0.20655453155349834
+        },
+        {
+          "case_id": "GT-018",
+          "ticker": "DECK",
+          "group": "MAIN",
+          "exec": "2021-04-12",
+          "replay": "SEPA_NO_ACCELERATION",
+          "frozen": "SEPA_NO_ACCELERATION",
+          "earliestAcrossTags": "SEPA_NO_ACCELERATION",
+          "quarterEnd": "2020-12-31",
+          "epsGrowth": 0.2591036414565828,
+          "epsGrowthPrev": 0.3210332103321034,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-019",
+          "ticker": "GDDY",
+          "group": "SENSITIVITY",
+          "exec": "2024-02-05",
+          "replay": "SEPA_STALE",
+          "frozen": "SEPA_STALE",
+          "earliestAcrossTags": "SEPA_STALE",
+          "quarterEnd": "2016-12-31",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-020",
+          "ticker": "MU",
+          "group": "SENSITIVITY",
+          "exec": "2024-04-26",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2024-02-29",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-021",
+          "ticker": "AXON",
+          "group": "SENSITIVITY",
+          "exec": "2024-09-12",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2024-06-30",
+          "epsGrowth": 2.3125,
+          "epsGrowthPrev": 1.8360655737704916,
+          "revGrowth": 0.345681451128522
+        },
+        {
+          "case_id": "GT-022",
+          "ticker": "APP",
+          "group": "SENSITIVITY",
+          "exec": "2024-09-12",
+          "replay": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+          "frozen": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+          "earliestAcrossTags": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+          "quarterEnd": "2024-06-30",
+          "epsGrowth": 3.045454545454546,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-023",
+          "ticker": "LMB",
+          "group": "SENSITIVITY",
+          "exec": "2024-09-12",
+          "replay": "SEPA_EPS_GROWTH_LOW",
+          "frozen": "SEPA_EPS_GROWTH_LOW",
+          "earliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+          "quarterEnd": "2024-06-30",
+          "epsGrowth": 0.08695652173913038,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-025",
+          "ticker": "DVA",
+          "group": "SENSITIVITY",
+          "exec": "2024-09-12",
+          "replay": "SEPA_NO_ACCELERATION",
+          "frozen": "SEPA_NO_ACCELERATION",
+          "earliestAcrossTags": "SEPA_NO_ACCELERATION",
+          "quarterEnd": "2024-06-30",
+          "epsGrowth": 0.3089005235602096,
+          "epsGrowthPrev": 1.12,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-026",
+          "ticker": "SG",
+          "group": "MAIN",
+          "exec": "2024-10-08",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2024-06-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-029",
+          "ticker": "NLOK",
+          "group": "SENSITIVITY",
+          "exec": "2020-08-01",
+          "replay": "SEPA_NO_ACCELERATION",
+          "frozen": "SEPA_NO_ACCELERATION",
+          "earliestAcrossTags": "SEPA_NO_ACCELERATION",
+          "quarterEnd": "2020-04-03",
+          "epsGrowth": 5.499999999999995,
+          "epsGrowthPrev": 43,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-031",
+          "ticker": "AVGO",
+          "group": "SENSITIVITY",
+          "exec": "2025-11-26",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2025-08-03",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-032",
+          "ticker": "NEM",
+          "group": "SENSITIVITY",
+          "exec": "2025-12-03",
+          "replay": "SEPA_NO_ACCELERATION",
+          "frozen": "SEPA_NO_ACCELERATION",
+          "earliestAcrossTags": "SEPA_NO_ACCELERATION",
+          "quarterEnd": "2025-09-30",
+          "epsGrowth": 1.0875,
+          "epsGrowthPrev": 1.5,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-033",
+          "ticker": "ATI",
+          "group": "SENSITIVITY",
+          "exec": "2025-12-02",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2025-09-28",
+          "epsGrowth": 0.3684210526315792,
+          "epsGrowthPrev": 0.2068965517241379,
+          "revGrowth": 0.07068112633181123
+        },
+        {
+          "case_id": "GT-034",
+          "ticker": "F",
+          "group": "SENSITIVITY",
+          "exec": "2025-12-03",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2025-09-30",
+          "epsGrowth": 1.727272727272727,
+          "epsGrowthPrev": -1.0217391304347827,
+          "revGrowth": 0.09390423413282534
+        },
+        {
+          "case_id": "GT-035",
+          "ticker": "ROIV",
+          "group": "SENSITIVITY",
+          "exec": "2025-11-26",
+          "replay": "SEPA_BASE_NOT_POSITIVE",
+          "frozen": "SEPA_BASE_NOT_POSITIVE",
+          "earliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+          "quarterEnd": "2025-09-30",
+          "epsGrowth": null,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-037",
+          "ticker": "NMIH",
+          "group": "WATCHLIST",
+          "exec": "2019-10-22",
+          "replay": "ok",
+          "frozen": "ok",
+          "earliestAcrossTags": "ok",
+          "quarterEnd": "2019-06-30",
+          "epsGrowth": 0.5135135135135136,
+          "epsGrowthPrev": 0.4117647058823528,
+          "revGrowth": 0.35175603753724816
+        },
+        {
+          "case_id": "GT-038",
+          "ticker": "VEC",
+          "group": "WATCHLIST",
+          "exec": "2019-10-22",
+          "replay": "SEPA_EPS_GROWTH_LOW",
+          "frozen": "SEPA_EPS_GROWTH_LOW",
+          "earliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+          "quarterEnd": "2019-06-28",
+          "epsGrowth": -0.18518518518518523,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-039",
+          "ticker": "CPRT",
+          "group": "WATCHLIST",
+          "exec": "2019-10-22",
+          "replay": "SEPA_NO_ACCELERATION",
+          "frozen": "SEPA_NO_ACCELERATION",
+          "earliestAcrossTags": "SEPA_NO_ACCELERATION",
+          "quarterEnd": "2019-07-31",
+          "epsGrowth": 0.4222222222222223,
+          "epsGrowthPrev": 0.5576923076923077,
+          "revGrowth": null
+        },
+        {
+          "case_id": "GT-040",
+          "ticker": "RBA",
+          "group": "WATCHLIST",
+          "exec": "2019-10-22",
+          "replay": "SEPA_EPS_GROWTH_LOW",
+          "frozen": "SEPA_EPS_GROWTH_LOW",
+          "earliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+          "quarterEnd": "2019-06-30",
+          "epsGrowth": 0.16666666666666674,
+          "epsGrowthPrev": null,
+          "revGrowth": null
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case_id": "GT-001",
+      "ticker": "ZGNX",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "statusId": "1006531423380103168",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ZGNX",
+            "2015-01-02",
+            "2022-03-15"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ZGNX:2010-11-23",
+        "exchange": "NASDAQ",
+        "cik": "0001375151",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": "ACQUISITION",
+        "splitsBeforeAnchor": [
+          [
+            "2015-07-01",
+            0.125
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2018-06-11",
+        "anchorDate": "2018-06-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 96,
+          "sma200RisingSessions": 194
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 66,
+          "contractions": 3,
+          "depths": [
+            0.215,
+            0.042,
+            0.027
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.58,
+          "stopPct": 0.027,
+          "pivotDate": "2018-06-07"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2018-03-31",
+            "filed": "2018-05-09",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "2834",
+        "level": 3,
+        "groupSize": 235,
+        "rank": 35,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 4,
+        "vcp": 3,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-002",
+      "ticker": "MTLS",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "statusId": "1082650684594548737",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "MTLS",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NASDAQ:MTLS:2014-06-25",
+        "exchange": "NASDAQ",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-01-07",
+        "anchorDate": "2019-01-08",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 99,
+          "sma200RisingSessions": 46
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 9,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-00",
+          "reason": "SEPA_DATA_MISSING",
+          "facts": null
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-SEPA-00",
+            "detail": "SEPA_DATA_MISSING",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "known": false,
+        "reason": "SIC_UNKNOWN_AT_DATE"
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 1,
+        "vcp": 1,
+        "sepa": 4
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-003",
+      "ticker": "ROKU",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "statusId": "1151132121672474628",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ROKU",
+            "2017-09-28",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ROKU:2017-09-28",
+        "exchange": "NASDAQ",
+        "cik": "0001428439",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "4841"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-07-15",
+        "anchorDate": "2019-07-16",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 99,
+          "sma200RisingSessions": 131
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 16,
+          "contractions": 2,
+          "depths": [
+            0.194,
+            0.054
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.64,
+          "stopPct": 0.054,
+          "pivotDate": "2019-07-10"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2019-03-31",
+            "filed": "2019-05-10",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "4841",
+        "level": 3,
+        "groupSize": 11,
+        "rank": 1,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 5,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-004",
+      "ticker": "ACAD",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ACAD",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ACAD:2004-05-27",
+        "exchange": "NASDAQ",
+        "cik": "0001070494",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-10-18",
+        "anchorDate": "2019-10-21",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 99,
+          "sma200RisingSessions": 187
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 24,
+          "contractions": 3,
+          "depths": [
+            0.212,
+            0.036,
+            0.035
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.81,
+          "stopPct": 0.035,
+          "pivotDate": "2019-10-15"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2019-06-30",
+            "filed": "2019-08-01",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "2834",
+        "level": 3,
+        "groupSize": 231,
+        "rank": 17,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 6,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 2,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 3
+      }
+    },
+    {
+      "case_id": "GT-005",
+      "ticker": "AMD",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "statusId": "1270354059220996098",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AMD",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AMD:1983-03-21",
+        "exchange": "NASDAQ",
+        "cik": "0000002488",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      },
+      "replay": {
+        "decision": "DETECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-06-08",
+        "anchorDate": "2020-06-09",
+        "setupAtTStar": true,
+        "timing": {
+          "offsetSessions": 0,
+          "class": "EXACT",
+          "signalDate": "2020-06-09"
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 0,
+          "date": "2020-06-09"
+        },
+        "signalsInRange": 1,
+        "segmentSignalsTotal": 11,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 87,
+          "sma200RisingSessions": 212
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 76,
+          "contractions": 4,
+          "depths": [
+            0.38,
+            0.163,
+            0.039,
+            0.031
+          ],
+          "baseDepthClass": "DEEP",
+          "volumeRatio": 0.69,
+          "stopPct": 0.031,
+          "pivotDate": "2020-06-04"
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2020-03-28",
+            "filed": "2020-04-29",
+            "form": "10-Q",
+            "epsGrowth": 13,
+            "epsGrowthPrev": 2.75,
+            "revGrowth": 0.404,
+            "revGrowthPrev": 0.499,
+            "revAccel": false,
+            "code33": false
+          }
+        },
+        "passedLayers": 4,
+        "attribution": []
+      },
+      "industry": {
+        "sic": "3674",
+        "level": 3,
+        "groupSize": 87,
+        "rank": 28,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 2,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 2
+      }
+    },
+    {
+      "case_id": "GT-006",
+      "ticker": "DXCM",
+      "group": "ENTRY_TYPE_NOT_MODELLED",
+      "stratum": null,
+      "tags": [
+        "ENTRY_PULLBACK"
+      ],
+      "statusId": "1276517252016242688",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DXCM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:DXCM:2005-04-14",
+        "exchange": "NASDAQ",
+        "cik": "0001093557",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2022-06-13",
+            4
+          ]
+        ],
+        "sicAtAnchor": "3841"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-06-25",
+        "anchorDate": "2020-06-26",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 96,
+          "sma200RisingSessions": 252
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 27,
+          "contractions": 2,
+          "depths": [
+            0.216,
+            0.085
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.48,
+          "stopPct": 0.085,
+          "pivotDate": "2020-06-22"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2020-03-31",
+            "filed": "2020-04-28",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3841",
+        "level": 3,
+        "groupSize": 107,
+        "rank": 8,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 3,
+        "vcp": 4,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-007",
+      "ticker": "TNDM",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "statusId": "1278004425764868099",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "TNDM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:TNDM:2013-11-14",
+        "exchange": "NASDAQ",
+        "cik": "0001438133",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2017-10-10",
+            0.1
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3841"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-06-29",
+        "anchorDate": "2020-06-30",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 84,
+          "sma200RisingSessions": 57
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 7,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2019-12-31",
+            "filed": "2020-02-24",
+            "form": "10-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3841",
+        "level": 3,
+        "groupSize": 107,
+        "rank": 21,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 2,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 3
+      }
+    },
+    {
+      "case_id": "GT-008",
+      "ticker": "AMD",
+      "group": "MAIN",
+      "stratum": "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY",
+      "tags": [],
+      "statusId": "1286020981086134277",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AMD",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AMD:1983-03-21",
+        "exchange": "NASDAQ",
+        "cik": "0000002488",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      },
+      "replay": {
+        "decision": "DETECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-07-21",
+        "anchorDate": "2020-07-22",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": -3,
+          "class": "PLUS_MINUS_3",
+          "signalDate": "2020-07-17"
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": -3,
+          "date": "2020-07-17"
+        },
+        "signalsInRange": 1,
+        "segmentSignalsTotal": 11,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 81,
+          "sma200RisingSessions": 242
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "STOP_TOO_WIDE",
+          "baseLength": 106,
+          "contractions": 2,
+          "depths": [
+            0.38,
+            0.179
+          ],
+          "baseDepthClass": "DEEP",
+          "volumeRatio": 0.92,
+          "stopPct": 0.179,
+          "pivotDate": "2020-06-10"
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2020-03-28",
+            "filed": "2020-04-29",
+            "form": "10-Q",
+            "epsGrowth": 13,
+            "epsGrowthPrev": 2.75,
+            "revGrowth": 0.404,
+            "revGrowthPrev": 0.499,
+            "revAccel": false,
+            "code33": false
+          }
+        },
+        "passedLayers": 3,
+        "attribution": []
+      },
+      "industry": {
+        "sic": "3674",
+        "level": 3,
+        "groupSize": 85,
+        "rank": 28,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 5,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-009",
+      "ticker": "AEM",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "statusId": "1305508439528017922",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AEM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:AEM:1984-09-07",
+        "exchange": "NYSE",
+        "cik": "0000002809",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1040"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-09-11",
+        "anchorDate": "2020-09-14",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 89,
+          "sma200RisingSessions": 57
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 25,
+          "contractions": 2,
+          "depths": [
+            0.106,
+            0.037
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.46,
+          "stopPct": 0.037,
+          "pivotDate": "2020-09-10"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2014-06-30",
+            "filed": "2014-08-11",
+            "form": "6-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "1040",
+        "level": 3,
+        "groupSize": 11,
+        "rank": 8,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 3,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-010",
+      "ticker": "RVNC",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "statusId": "1306216940868960256",
+      "identity": {
+        "segments": 2,
+        "covering": 1,
+        "ranges": [
+          [
+            "RVNC",
+            "2015-01-02",
+            "2025-02-06"
+          ],
+          [
+            "RVNC",
+            "2026-02-06",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:RVNC:2014-02-06",
+        "exchange": "NASDAQ",
+        "cik": "0001479290",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-09-14",
+        "anchorDate": "2020-09-15",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 91,
+          "sma200RisingSessions": 175
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 9,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2019-12-31",
+            "filed": "2020-02-26",
+            "form": "10-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "2834",
+        "level": 3,
+        "groupSize": 328,
+        "rank": 58,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 3,
+        "vcp": 4,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 2
+      }
+    },
+    {
+      "case_id": "GT-011",
+      "ticker": "AMZN",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "EX_POST_ANCHOR"
+      ],
+      "statusId": "1315721815222878209",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AMZN",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AMZN:1997-05-15",
+        "exchange": "NASDAQ",
+        "cik": "0001018724",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2022-06-06",
+            20
+          ]
+        ],
+        "sicAtAnchor": "5961"
+      },
+      "replay": {
+        "decision": "DETECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-10-07",
+        "anchorDate": "2020-10-08",
+        "setupAtTStar": true,
+        "timing": {
+          "offsetSessions": 0,
+          "class": "EXACT",
+          "signalDate": "2020-10-08"
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 0,
+          "date": "2020-10-08"
+        },
+        "signalsInRange": 1,
+        "segmentSignalsTotal": 4,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 81,
+          "sma200RisingSessions": 129
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 24,
+          "contractions": 2,
+          "depths": [
+            0.192,
+            0.042
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.98,
+          "stopPct": 0.042,
+          "pivotDate": "2020-10-01"
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2020-06-30",
+            "filed": "2020-07-31",
+            "form": "10-Q",
+            "epsGrowth": 0.973,
+            "epsGrowthPrev": -0.293,
+            "revGrowth": 0.402,
+            "revGrowthPrev": 0.264,
+            "revAccel": true,
+            "code33": false
+          }
+        },
+        "passedLayers": 4,
+        "attribution": []
+      },
+      "industry": {
+        "sic": "5961",
+        "level": 3,
+        "groupSize": 8,
+        "rank": 3,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 2,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 2,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 3
+      }
+    },
+    {
+      "case_id": "GT-012",
+      "ticker": "REPL",
+      "group": "MAIN",
+      "stratum": "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY",
+      "tags": [],
+      "statusId": "1316394720818593793",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "REPL",
+            "2018-07-20",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:REPL:2018-07-20",
+        "exchange": "NASDAQ",
+        "cik": "0001737953",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2836"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-10-13",
+        "anchorDate": "2020-10-14",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 87,
+          "sma200RisingSessions": 117
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 30,
+          "contractions": 2,
+          "depths": [
+            0.263,
+            0.087
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.87,
+          "stopPct": 0.087,
+          "pivotDate": "2020-10-07"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2020-03-31",
+            "filed": "2020-06-03",
+            "form": "10-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "2836",
+        "level": 3,
+        "groupSize": 324,
+        "rank": 74,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 7,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-013",
+      "ticker": "PENN",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "ENTRY_PRE_BREAKOUT"
+      ],
+      "statusId": "1336343967210876930",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "PENN",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:PENN:1994-05-26",
+        "exchange": "NASDAQ",
+        "cik": "0000921738",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7011"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-12-07",
+        "anchorDate": "2020-12-08",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": -611,
+          "date": "2018-07-06"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 1,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 94,
+          "sma200RisingSessions": 142
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 55,
+          "contractions": 3,
+          "depths": [
+            0.32,
+            0.123,
+            0.066
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.47,
+          "stopPct": 0.066,
+          "pivotDate": "2020-12-03"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-04",
+          "reason": "SEPA_REVENUE_NOT_GROWING",
+          "facts": {
+            "quarterEnd": "2020-09-30",
+            "filed": "2020-11-04",
+            "form": "10-Q",
+            "epsGrowth": 1.447,
+            "epsGrowthPrev": -4.841,
+            "revGrowth": -0.166,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-04",
+            "detail": "SEPA_REVENUE_NOT_GROWING",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "7011",
+        "level": 3,
+        "groupSize": 19,
+        "rank": 1,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 5,
+        "sepa": 3
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-014",
+      "ticker": "DKL",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "PARTNERSHIP_UNITS"
+      ],
+      "statusId": "1347626186504085509",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DKL",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:DKL:2012-11-02",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2020-12-28",
+        "anchorDate": "2020-12-29",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": false,
+          "rawCloseOk": true,
+          "dollarVolumeOk": false
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 73,
+          "sma200RisingSessions": 16
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 94,
+          "contractions": 2,
+          "depths": [
+            0.278,
+            0.071
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.82,
+          "stopPct": 0.071,
+          "pivotDate": "2020-12-09"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-00",
+          "reason": "SEPA_DATA_MISSING",
+          "facts": null
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-UNI-01",
+            "detail": "DOLLAR_VOLUME"
+          },
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-SEPA-00",
+            "detail": "SEPA_DATA_MISSING",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "known": false,
+        "reason": "SIC_UNKNOWN_AT_DATE"
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 4,
+        "vcp": 2,
+        "sepa": 3
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 2
+      }
+    },
+    {
+      "case_id": "GT-016",
+      "ticker": "RICK",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ENTRY_LOW_CHEAT"
+      ],
+      "statusId": "1379147436611010563",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "RICK",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:RICK:1995-10-13",
+        "exchange": "NASDAQ",
+        "cik": "0000935419",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "5812"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2021-04-01",
+        "anchorDate": "2021-04-05",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 96,
+          "sma200RisingSessions": 131
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 13,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2019-09-30",
+            "filed": "2020-02-13",
+            "form": "10-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "5812",
+        "level": 3,
+        "groupSize": 34,
+        "rank": 2,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 0,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-018",
+      "ticker": "DECK",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "statusId": "1381655133780578304",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DECK",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:DECK:1993-10-15",
+        "exchange": "NYSE",
+        "cik": "0000910521",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2024-09-17",
+            6
+          ]
+        ],
+        "sicAtAnchor": "3021"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2021-04-09",
+        "anchorDate": "2021-04-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 477,
+          "date": "2023-03-03"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 8,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": false,
+          "failed": [
+            "MR-TT-08"
+          ],
+          "rsPercentile": 65,
+          "sma200RisingSessions": 226
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 3,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_NO_ACCELERATION",
+          "facts": {
+            "quarterEnd": "2020-12-31",
+            "filed": "2021-02-08",
+            "form": "10-Q",
+            "epsGrowth": 0.259,
+            "epsGrowthPrev": 0.321,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 1,
+        "attribution": [
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-08"
+          },
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_NO_ACCELERATION",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3021",
+        "level": 2,
+        "groupSize": 14,
+        "rank": 5,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 4,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 3,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-019",
+      "ticker": "GDDY",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1796180630608183709",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GDDY",
+            "2015-04-01",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:GDDY:2015-04-01",
+        "exchange": "NYSE",
+        "cik": "0001609711",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7373"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-02-02",
+        "anchorDate": "2024-02-05",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 87,
+          "sma200RisingSessions": 62
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 9,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-PIT-01",
+          "reason": "SEPA_STALE",
+          "facts": {
+            "quarterEnd": "2016-12-31",
+            "filed": "2017-02-28",
+            "form": "10-K",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-PIT-01",
+            "detail": "SEPA_STALE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "7373",
+        "level": 3,
+        "groupSize": 229,
+        "rank": 52,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 4,
+        "vcp": 2,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 3,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-020",
+      "ticker": "MU",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1795475913833845049",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "MU",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:MU:1989-05-16",
+        "exchange": "NASDAQ",
+        "cik": "0000723125",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-04-25",
+        "anchorDate": "2024-04-26",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 339,
+          "date": "2025-09-04"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 8,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 92,
+          "sma200RisingSessions": 239
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 15,
+          "contractions": 2,
+          "depths": [
+            0.19,
+            0.052
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.75,
+          "stopPct": 0.052,
+          "pivotDate": "2024-04-24"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2024-02-29",
+            "filed": "2024-03-21",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3674",
+        "level": 3,
+        "groupSize": 86,
+        "rank": 7,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 1,
+        "vcp": 3,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-021",
+      "ticker": "AXON",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1834268442897064242",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AXON",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AXON:2001-06-07",
+        "exchange": "NASDAQ",
+        "cik": "0001069183",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3480"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-09-11",
+        "anchorDate": "2024-09-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 154,
+          "date": "2025-04-25"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 6,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 90,
+          "sma200RisingSessions": 468
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 14,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2024-06-30",
+            "filed": "2024-08-07",
+            "form": "10-Q",
+            "epsGrowth": 2.313,
+            "epsGrowthPrev": 1.836,
+            "revGrowth": 0.346,
+            "revGrowthPrev": 0.343,
+            "revAccel": true,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3480",
+        "level": 2,
+        "groupSize": 34,
+        "rank": 2,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 2,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 3
+      }
+    },
+    {
+      "case_id": "GT-022",
+      "ticker": "APP",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1834268442897064242",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "APP",
+            "2021-04-15",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:APP:2021-04-15",
+        "exchange": "NASDAQ",
+        "cik": "0001751008",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7370"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-09-11",
+        "anchorDate": "2024-09-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 78,
+          "date": "2025-01-03"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 5,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 97,
+          "sma200RisingSessions": 301
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 0,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+          "facts": {
+            "quarterEnd": "2024-06-30",
+            "filed": "2024-08-07",
+            "form": "10-Q",
+            "epsGrowth": 3.045,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "DATA_MISSING",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "7370",
+        "level": 3,
+        "groupSize": 230,
+        "rank": 5,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 1,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 3,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-023",
+      "ticker": "LMB",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1834268442897064242",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "LMB",
+            "2016-01-21",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:LMB:2016-01-21",
+        "exchange": "NASDAQ",
+        "cik": "0001606163",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1700"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-09-11",
+        "anchorDate": "2024-09-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 92,
+          "sma200RisingSessions": 460
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 0,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-01",
+          "reason": "SEPA_EPS_GROWTH_LOW",
+          "facts": {
+            "quarterEnd": "2024-06-30",
+            "filed": "2024-08-06",
+            "form": "10-Q",
+            "epsGrowth": 0.087,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-01",
+            "detail": "SEPA_EPS_GROWTH_LOW",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "1700",
+        "level": 2,
+        "groupSize": 8,
+        "rank": 3,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 2,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 2
+      }
+    },
+    {
+      "case_id": "GT-024",
+      "ticker": "NMM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q",
+        "PARTNERSHIP_UNITS"
+      ],
+      "statusId": "1834268442897064242",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NMM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:NMM:2007-11-13",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2019-05-21",
+            0.0666666667
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-09-11",
+        "anchorDate": "2024-09-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 94,
+          "sma200RisingSessions": 185
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "CONTRACTION_COUNT",
+          "baseLength": 15,
+          "contractions": 1,
+          "depths": [
+            0.105
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-00",
+          "reason": "SEPA_DATA_MISSING",
+          "facts": null
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "CONTRACTION_COUNT"
+          },
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-SEPA-00",
+            "detail": "SEPA_DATA_MISSING",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "known": false,
+        "reason": "SIC_UNKNOWN_AT_DATE"
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 4,
+        "vcp": 2,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-025",
+      "ticker": "DVA",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1834268442897064242",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DVA",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:DVA:1995-10-31",
+        "exchange": "NYSE",
+        "cik": "0000927066",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "8090"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-09-11",
+        "anchorDate": "2024-09-12",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": -151,
+          "date": "2024-02-06"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 6,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 82,
+          "sma200RisingSessions": 211
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 11,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_NO_ACCELERATION",
+          "facts": {
+            "quarterEnd": "2024-06-30",
+            "filed": "2024-08-06",
+            "form": "10-Q",
+            "epsGrowth": 0.309,
+            "epsGrowthPrev": 1.12,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_NO_ACCELERATION",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "8090",
+        "level": 3,
+        "groupSize": 5,
+        "rank": 1,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 3,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 3
+      }
+    },
+    {
+      "case_id": "GT-026",
+      "ticker": "SG",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ENTRY_ADD_ON"
+      ],
+      "statusId": "1843739764744434111",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "SG",
+            "2021-11-18",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 2,
+        "inUniverse": true,
+        "listingSources": [
+          "UNFETCHABLE_REUSED",
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:SG:2021-11-18",
+        "exchange": "NYSE",
+        "cik": "0001477815",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "5812"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2024-10-07",
+        "anchorDate": "2024-10-08",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 98,
+          "sma200RisingSessions": 212
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 30,
+          "contractions": 3,
+          "depths": [
+            0.293,
+            0.145,
+            0.05
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.61,
+          "stopPct": 0.05,
+          "pivotDate": "2024-10-03"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2024-06-30",
+            "filed": "2024-08-09",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "5812",
+        "level": 3,
+        "groupSize": 33,
+        "rank": 2,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 4,
+        "vcp": 2,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-027",
+      "ticker": "RNA",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "TICKER_REUSED_LATER"
+      ],
+      "statusId": "1856764704234041720",
+      "identity": {
+        "segments": 1,
+        "covering": 0,
+        "ranges": [
+          [
+            "RNA",
+            "2026-02-27",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ]
+      },
+      "replay": {
+        "decision": "NOT_EVALUABLE",
+        "reason": "SECURITY_MAPPING_NO_COVERING_SEGMENT"
+      }
+    },
+    {
+      "case_id": "GT-028",
+      "ticker": "GTHX",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "statusId": "994943521328193536",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GTHX",
+            "2017-05-17",
+            "2024-09-18"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:GTHX:2017-05-17",
+        "exchange": "NASDAQ",
+        "cik": "0001560241",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": "ACQUISITION",
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      },
+      "replay": {
+        "decision": "NOT_EVALUABLE",
+        "reason": "HISTORY_TOO_SHORT"
+      }
+    },
+    {
+      "case_id": "GT-029",
+      "ticker": "NLOK",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "TICKER_CHANGED"
+      ],
+      "statusId": "1298663189341708288",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GEN",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:GEN:1990-03-26",
+        "exchange": "NASDAQ",
+        "cik": "0000849399",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7372"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2020-07-31",
+        "anchorDate": null,
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 848,
+          "date": "2023-12-14"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 1,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": false,
+          "failed": [
+            "MR-TT-01",
+            "MR-TT-02",
+            "MR-TT-03",
+            "MR-TT-04",
+            "MR-TT-07",
+            "MR-TT-08"
+          ],
+          "rsPercentile": 40,
+          "sma200RisingSessions": 0
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 132,
+          "contractions": 3,
+          "depths": [
+            0.473,
+            0.184,
+            0.068
+          ],
+          "baseDepthClass": "DEEP",
+          "volumeRatio": 0.59,
+          "stopPct": 0.068,
+          "pivotDate": "2020-07-23"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_NO_ACCELERATION",
+          "facts": {
+            "quarterEnd": "2020-04-03",
+            "filed": "2020-05-28",
+            "form": "10-K",
+            "epsGrowth": 5.5,
+            "epsGrowthPrev": 43,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-01"
+          },
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-02"
+          },
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-03"
+          },
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-04"
+          },
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-07"
+          },
+          {
+            "category": "TREND_MISMATCH",
+            "layer": "MR-TT-08"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_NO_ACCELERATION",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "7372",
+        "level": 3,
+        "groupSize": 195,
+        "rank": 157,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 6,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 5,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-030",
+      "ticker": "TSM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "TSM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:TSM:1997-10-09",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-11-28",
+        "anchorDate": null,
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 84,
+          "sma200RisingSessions": 145
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 30,
+          "contractions": 2,
+          "depths": [
+            0.143,
+            0.013
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.41,
+          "stopPct": 0.013,
+          "pivotDate": "2025-11-26"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-00",
+          "reason": "SEPA_DATA_MISSING",
+          "facts": null
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-SEPA-00",
+            "detail": "SEPA_DATA_MISSING",
+            "fundamentals": "DATA"
+          }
+        ]
+      },
+      "industry": {
+        "known": false,
+        "reason": "SIC_UNKNOWN_AT_DATE"
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 7,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 5,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-031",
+      "ticker": "AVGO",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AVGO",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AVGO:2009-08-06",
+        "exchange": "NASDAQ",
+        "cik": "0001730168",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2024-07-15",
+            10
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-11-25",
+        "anchorDate": null,
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": -923,
+          "date": "2022-03-24"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 4,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 91,
+          "sma200RisingSessions": 151
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 0,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2025-08-03",
+            "filed": "2025-09-10",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "3674",
+        "level": 3,
+        "groupSize": 96,
+        "rank": 16,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 7,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 4,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-032",
+      "ticker": "NEM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NEM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:NEM:1983-04-06",
+        "exchange": "NYSE",
+        "cik": "0001164727",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1040"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-12-02",
+        "anchorDate": null,
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 112,
+          "date": "2026-05-11"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 1,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 90,
+          "sma200RisingSessions": 184
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 32,
+          "contractions": 3,
+          "depths": [
+            0.229,
+            0.134,
+            0.05
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.81,
+          "stopPct": 0.05,
+          "pivotDate": "2025-12-01"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_NO_ACCELERATION",
+          "facts": {
+            "quarterEnd": "2025-09-30",
+            "filed": "2025-10-23",
+            "form": "10-Q",
+            "epsGrowth": 1.088,
+            "epsGrowthPrev": 1.5,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_NO_ACCELERATION",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "1040",
+        "level": 3,
+        "groupSize": 17,
+        "rank": 11,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 0,
+        "vcp": 8,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 2,
+        "detected": 2,
+        "trend": 10,
+        "vcp": 7,
+        "sepa": 4
+      }
+    },
+    {
+      "case_id": "GT-033",
+      "ticker": "ATI",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ATI",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:ATI:1999-11-29",
+        "exchange": "NYSE",
+        "cik": "0001018963",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3317"
+      },
+      "replay": {
+        "decision": "DETECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-12-01",
+        "anchorDate": null,
+        "setupAtTStar": true,
+        "timing": {
+          "offsetSessions": null,
+          "class": "IN_WINDOW",
+          "signalDate": "2025-12-08"
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 7,
+          "date": "2025-12-08"
+        },
+        "signalsInRange": 1,
+        "segmentSignalsTotal": 8,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 84,
+          "sma200RisingSessions": 148
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 23,
+          "contractions": 2,
+          "depths": [
+            0.102,
+            0.035
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.75,
+          "stopPct": 0.035,
+          "pivotDate": "2025-11-28"
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2025-09-28",
+            "filed": "2025-10-28",
+            "form": "10-Q",
+            "epsGrowth": 0.368,
+            "epsGrowthPrev": 0.207,
+            "revGrowth": 0.071,
+            "revGrowthPrev": 0.041,
+            "revAccel": true,
+            "code33": false
+          }
+        },
+        "passedLayers": 4,
+        "attribution": []
+      },
+      "industry": {
+        "sic": "3317",
+        "level": 3,
+        "groupSize": 13,
+        "rank": 1,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 1,
+        "vcp": 10,
+        "sepa": 2
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 2,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-034",
+      "ticker": "F",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "F",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:F:1972-06-01",
+        "exchange": "NYSE",
+        "cik": "0000037996",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3711"
+      },
+      "replay": {
+        "decision": "DETECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-12-02",
+        "anchorDate": null,
+        "setupAtTStar": true,
+        "timing": {
+          "offsetSessions": null,
+          "class": "IN_WINDOW",
+          "signalDate": "2025-12-10"
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 9,
+          "date": "2025-12-10"
+        },
+        "signalsInRange": 1,
+        "segmentSignalsTotal": 2,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 73,
+          "sma200RisingSessions": 111
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 26,
+          "contractions": 2,
+          "depths": [
+            0.114,
+            0.038
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.56,
+          "stopPct": 0.038,
+          "pivotDate": "2025-12-01"
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2025-09-30",
+            "filed": "2025-10-24",
+            "form": "10-Q",
+            "epsGrowth": 1.727,
+            "epsGrowthPrev": -1.022,
+            "revGrowth": 0.094,
+            "revGrowthPrev": 0.05,
+            "revAccel": true,
+            "code33": null
+          }
+        },
+        "passedLayers": 4,
+        "attribution": []
+      },
+      "industry": {
+        "sic": "3711",
+        "level": 3,
+        "groupSize": 42,
+        "rank": 16,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 9,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 7,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-035",
+      "ticker": "ROIV",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1999138986254573979",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ROIV",
+            "2021-10-01",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ROIV:2021-10-01",
+        "exchange": "NASDAQ",
+        "cik": "0001635088",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "WINDOW",
+        "evaluatedClose": "2025-11-25",
+        "anchorDate": null,
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 93,
+          "sma200RisingSessions": 68
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 11,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-10",
+          "reason": "SEPA_BASE_NOT_POSITIVE",
+          "facts": {
+            "quarterEnd": "2025-09-30",
+            "filed": "2025-11-10",
+            "form": "10-Q",
+            "epsGrowth": null,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-10",
+            "detail": "SEPA_BASE_NOT_POSITIVE",
+            "fundamentals": "RULE",
+            "also": [
+              "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+              "PRE_PROFIT_SCOPE"
+            ]
+          }
+        ]
+      },
+      "industry": {
+        "sic": "2834",
+        "level": 3,
+        "groupSize": 410,
+        "rank": 97,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 4,
+        "vcp": 7,
+        "sepa": 1
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 6,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-036",
+      "ticker": "INMD",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "INMD",
+            "2019-08-08",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NASDAQ:INMD:2019-08-08",
+        "exchange": "NASDAQ",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2021-10-01",
+            2
+          ]
+        ],
+        "sicAtAnchor": null
+      },
+      "replay": {
+        "decision": "NOT_EVALUABLE",
+        "reason": "HISTORY_TOO_SHORT"
+      }
+    },
+    {
+      "case_id": "GT-037",
+      "ticker": "NMIH",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NMIH",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:NMIH:2013-11-08",
+        "exchange": "NASDAQ",
+        "cik": "0001547903",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "6351"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-10-21",
+        "anchorDate": "2019-10-22",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 9,
+          "date": "2019-11-04"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 9,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 88,
+          "sma200RisingSessions": 205
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "CONTRACTION_COUNT",
+          "baseLength": 93,
+          "contractions": 1,
+          "depths": [
+            0.223
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": true,
+          "ruleId": null,
+          "reason": null,
+          "facts": {
+            "quarterEnd": "2019-06-30",
+            "filed": "2019-08-01",
+            "form": "10-Q",
+            "epsGrowth": 0.514,
+            "epsGrowthPrev": 0.412,
+            "revGrowth": 0.352,
+            "revGrowthPrev": 0.362,
+            "revAccel": false,
+            "code33": null
+          }
+        },
+        "passedLayers": 3,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "CONTRACTION_COUNT"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "6351",
+        "level": 3,
+        "groupSize": 6,
+        "rank": 1,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 2,
+        "vcp": 3,
+        "sepa": 3
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 6,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-038",
+      "ticker": "VEC",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "TICKER_CHANGED"
+      ],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "VVX",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:VVX:2014-09-16",
+        "exchange": "NYSE",
+        "cik": "0001601548",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "8744"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-10-21",
+        "anchorDate": "2019-10-22",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": null,
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 0,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": false,
+          "rawCloseOk": true,
+          "dollarVolumeOk": false
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 93,
+          "sma200RisingSessions": 99
+        },
+        "vcp": {
+          "ok": true,
+          "reason": null,
+          "baseLength": 74,
+          "contractions": 2,
+          "depths": [
+            0.221,
+            0.047
+          ],
+          "baseDepthClass": "CONSTRUCTIVE",
+          "volumeRatio": 0.88,
+          "stopPct": 0.047,
+          "pivotDate": "2019-10-11"
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-01",
+          "reason": "SEPA_EPS_GROWTH_LOW",
+          "facts": {
+            "quarterEnd": "2019-06-28",
+            "filed": "2019-08-06",
+            "form": "10-Q",
+            "epsGrowth": -0.185,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "DATA_DEFINITION_MISMATCH",
+            "layer": "MR-UNI-01",
+            "detail": "DOLLAR_VOLUME"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-01",
+            "detail": "SEPA_EPS_GROWTH_LOW",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "8744",
+        "level": 3,
+        "groupSize": 14,
+        "rank": 2,
+        "topN": true
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 2,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 1,
+        "sepa": 4
+      }
+    },
+    {
+      "case_id": "GT-039",
+      "ticker": "CPRT",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "CPRT",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:CPRT:1994-03-17",
+        "exchange": "NASDAQ",
+        "cik": "0000900075",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2017-04-11",
+            2
+          ]
+        ],
+        "splitsAfterAnchor": [
+          [
+            "2022-11-04",
+            2
+          ],
+          [
+            "2023-08-22",
+            2
+          ]
+        ],
+        "sicAtAnchor": "5500"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-10-21",
+        "anchorDate": "2019-10-22",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 478,
+          "date": "2021-09-15"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 2,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 94,
+          "sma200RisingSessions": 177
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 0,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-02",
+          "reason": "SEPA_NO_ACCELERATION",
+          "facts": {
+            "quarterEnd": "2019-07-31",
+            "filed": "2019-09-30",
+            "form": "10-K",
+            "epsGrowth": 0.422,
+            "epsGrowthPrev": 0.558,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-02",
+            "detail": "SEPA_NO_ACCELERATION",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "5500",
+        "level": 3,
+        "groupSize": 14,
+        "rank": 6,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 3,
+        "vcp": 1,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 10,
+        "vcp": 0,
+        "sepa": 0
+      }
+    },
+    {
+      "case_id": "GT-040",
+      "ticker": "RBA",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1186675011664465920",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "RBA",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:RBA:1998-03-10",
+        "exchange": "NYSE",
+        "cik": "0001046102",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7389"
+      },
+      "replay": {
+        "decision": "REJECTED",
+        "mode": "ANCHOR",
+        "evaluatedClose": "2019-10-21",
+        "anchorDate": "2019-10-22",
+        "setupAtTStar": false,
+        "timing": {
+          "offsetSessions": null,
+          "class": "MISS",
+          "signalDate": null
+        },
+        "nearestSignalAnyDistance": {
+          "offsetSessions": 286,
+          "date": "2020-12-09"
+        },
+        "signalsInRange": 0,
+        "segmentSignalsTotal": 2,
+        "pivotPctDeviation": null,
+        "universe": {
+          "ok": true,
+          "rawCloseOk": true,
+          "dollarVolumeOk": true
+        },
+        "trend": {
+          "ok": true,
+          "failed": [],
+          "rsPercentile": 77,
+          "sma200RisingSessions": 60
+        },
+        "vcp": {
+          "ok": false,
+          "reason": "BASE_TOO_SHORT",
+          "baseLength": 0,
+          "contractions": 0,
+          "depths": [],
+          "baseDepthClass": null,
+          "volumeRatio": null,
+          "stopPct": null,
+          "pivotDate": null
+        },
+        "sepa": {
+          "ok": false,
+          "ruleId": "MR-SEPA-01",
+          "reason": "SEPA_EPS_GROWTH_LOW",
+          "facts": {
+            "quarterEnd": "2019-06-30",
+            "filed": "2019-08-08",
+            "form": "10-Q",
+            "epsGrowth": 0.167,
+            "epsGrowthPrev": null,
+            "revGrowth": null,
+            "revGrowthPrev": null,
+            "revAccel": null,
+            "code33": null
+          }
+        },
+        "passedLayers": 2,
+        "attribution": [
+          {
+            "category": "VCP_MISMATCH",
+            "layer": "VCP",
+            "detail": "BASE_TOO_SHORT"
+          },
+          {
+            "category": "FUNDAMENTAL_MISMATCH",
+            "layer": "MR-SEPA-01",
+            "detail": "SEPA_EPS_GROWTH_LOW",
+            "fundamentals": "RULE"
+          }
+        ]
+      },
+      "industry": {
+        "sic": "7389",
+        "level": 3,
+        "groupSize": 56,
+        "rank": 16,
+        "topN": false
+      },
+      "controls": {
+        "n": 10,
+        "setupAtTStar": 0,
+        "detected": 0,
+        "trend": 2,
+        "vcp": 2,
+        "sepa": 0
+      },
+      "controlsTrend": {
+        "n": 10,
+        "setupAtTStar": 1,
+        "detected": 1,
+        "trend": 10,
+        "vcp": 4,
+        "sepa": 1
+      }
+    },
+    {
+      "case_id": "GT-041",
+      "ticker": "UPST",
+      "group": "NEGATIVE",
+      "stratum": null,
+      "tags": [],
+      "statusId": "1449089499410075651",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "UPST",
+            "2020-12-16",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:UPST:2020-12-16",
+        "exchange": "NASDAQ",
+        "cik": "0001647639",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "6199"
+      },
+      "replay": {
+        "decision": "NOT_EVALUABLE",
+        "reason": "HISTORY_TOO_SHORT"
+      }
+    }
+  ]
+}

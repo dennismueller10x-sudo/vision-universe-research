@@ -1,0 +1,42 @@
+{
+  "schema": "vu-minervini-ground-truth-prereg-amendment-1.0.0",
+  "amends": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-PREREG.json",
+  "createdAt": "2026-10-07",
+  "timing": "NACH der Fallsammlung, VOR jedem Replay (kein Replay-Ergebnis gesehen; nur ein technischer Probelauf mit --limit 600 ohne Auswertung). Grund: Red-Team-Review der Fallliste (Opus) mit 2 BLOCKER- und 8 MAJOR-Befunden.",
+  "honesty": "Die Gruppen und Strata unten wurden in Kenntnis der Fallliste festgelegt, aber ohne Kenntnis eines Replay-Ergebnisses. Die Schwellen der Praeregistrierung (Recall 70 %/40 %, Toleranz +-5, Kontrollen 10/Fall) bleiben unveraendert.",
+  "evaluationGroups": {
+    "MAIN": "positive Faelle mit Tag aus dem Beitrag selbst (Datum, 'heute', 'gestern', Wochentag) UND Basis-/Cheat-Ausbruch als Einstiegsart; Strata MAIN_A (eigener Einstieg) und MAIN_B (Setup bejaht, kein eigener Kauf). Nur MAIN definiert den Recall.",
+    "SENSITIVITY": "Anker/Fenster nur erschlossen oder aus rueckblickenden, ergebnisbedingten Beitraegen (Verkaufs-/Halte-Beitrag nennt das Kaufdatum) oder ohne Ausbruchstag je Titel (Focus-List 'emerged'). Getrennt berichtet.",
+    "WATCHLIST": "Kaufkandidaten bzw. Position vor dem Ausbruch. Primaermass: Setup am Schluss vor dem Beitrag (setupAtTStar); Abstand zum naechsten Signal nur beschreibend; KEIN Recall.",
+    "ENTRY_TYPE_NOT_MODELLED": "Einstiegsarten, die die Engine bewusst nicht modelliert (Pullback-Kauf). Getrennt berichtet, nicht im Recall.",
+    "NEGATIVE": "ausdruecklich 'nicht kaufen'. Mit < 5 Faellen nur als Einzelbeobachtung; Precision und Falsch-Positiv-Rate NOT_MEASURABLE."
+  },
+  "strata": {
+    "secQuarterlyEpsUnavailable": "Auslandsemittenten (20-F/40-F, Quartalszahlen per 6-K ohne 10-Q-XBRL) und Personengesellschaften: Recall MAIN mit und ohne diese Faelle",
+    "exPostAnchor": "Anker aus einem spaeteren Beitrag (z. B. 'am Donnerstag gekauft'): Recall MAIN mit und ohne",
+    "postLevel": "Recall zusaetzlich je Beitrag (ein Beitrag = eine Marktsituation; Cluster aus einem Beitrag zaehlen einmal, erkannt wenn mind. ein Fall erkannt)"
+  },
+  "attribution": {
+    "layers": "FUNDAMENTALS_DATA (MR-SEPA-00, MR-PIT-01, SEPA_ACCEL_NOT_DEMONSTRABLE) getrennt von FUNDAMENTALS_RULE (MR-SEPA-01/02/04 mit vorhandenen Daten). Entscheidungsfall D nur ueber FUNDAMENTALS_RULE.",
+    "definitionMismatch": "Auslandsemittent oder Personengesellschaft mit fehlenden/veralteten SEC-Quartalsdaten -> DATA_DEFINITION_MISMATCH (nicht FUNDAMENTAL_MISMATCH)",
+    "gaapVsAdjusted": "SEPA_BASE_NOT_POSITIVE (Verlust im Vorjahresquartal, GAAP) -> zusaetzlich EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE / PRE_PROFIT_SCOPE; kein Schluss RULE_TOO_STRICT ohne bereinigte EPS",
+    "pivot": "documented_pivot ist in keinem Fall bekannt -> Pivot-Vergleich NOT_MEASURABLE"
+  },
+  "controls": {
+    "comparison": "Kontroll-SIGNAL-Rate (gleiches Toleranzfenster) gegen Recall; Kontroll-Setup-Rate an t* gegen Setup-Rate der Faelle an t*. 'Selten' (Fall A): Kontroll-Signal-Rate hoechstens halb so hoch wie der Recall.",
+    "secondSet": "Zweite Kontrollgruppe nur zur Diagnose: 10 Titel je Fall, die am Schluss t* MR-UNI-01 UND das Trend Template bestehen (gleicher Tag, deterministischer Seed aus SHA-256('TT|'+Seed-Schluessel)). Erste Gruppe (nur MR-UNI-01) unveraendert praeregistriert.",
+    "seedKey": "Seed = SHA-256(Ticker|Status-ID|Anker) statt positionsabhaengiger case_id",
+    "windowMode": "Kontrollen werden am t* des Falls ausgewaehlt (Messrahmen an diesem Tag) und mit derselben Fall-Spezifikation ausgewertet"
+  },
+  "timingReport": {
+    "report": "Vorzeichenverteilung (VU-Signal vor/nach D) und EXACT/+-1 als Zeile 'starker Beleg'; Toleranz +-5 bleibt"
+  },
+  "identity": {
+    "aliases": "Umbenannte Ticker ueber Aliasliste (NLOK->GEN, VEC->VVX)",
+    "ambiguity": "mehr als ein abdeckendes Segment -> SECURITY_MAPPING_AMBIGUOUS",
+    "expectedCik": "je Fall erwartete CIK (SEC-Suche); abweichende CIK aus dem Datenlayer -> SECURITY_MAPPING_CIK_MISMATCH (nicht auswertbar)",
+    "anchorCalendar": "PREVIOUS_SESSION_OF_POST ueber den SPY-Handelskalender; Beitragszeit in ET mitgefuehrt (Pruefung: Beitraege ausserhalb 09:30-16:00 ET markiert)"
+  },
+  "funnel": "Trichter nach Ausfuehrungstag (t+1) gezaehlt, damit kein Schluss vor dem Fenster in ein Vorjahr faellt",
+  "holdout": "Alle auswertbaren Faelle liegen in DEV (2018-2025). HOLDOUT-Lauf liefert nur Trichter/Selektivitaet."
+}

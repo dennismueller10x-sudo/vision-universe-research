@@ -1,0 +1,86 @@
+{
+  "schema": "vu-minervini-ground-truth-prereg-1.0.0",
+  "createdAt": "2026-10-07",
+  "status": "PREREGISTERED_BEFORE_CASE_LIST_AND_BEFORE_ANY_REPLAY",
+  "purpose": "Ground-Truth-Validierung: Reproduziert die eingefrorene Engine minervini-adaptation-1.1.0 Setups, die Mark Minervini selbst dokumentiert hat? Nur Diagnose. Keine Regelaenderung, keine Optimierung; Phase 2B bleibt CLOSED - MAXIMUM CURRENT FIDELITY.",
+  "engineUnderTest": {
+    "name": "minervini-adaptation-1.1.0",
+    "freeze": "scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE-1.1.0.json",
+    "note": "1.0.0 und 1.1.0 haben identische Signal-Regeln (Unterschied nur Portfolio-Stufe); die Setup-/Signal-Reproduktion gilt fuer beide."
+  },
+  "groundTruthDefinition": {
+    "rule": "Ein Fall ist Ground Truth nur, wenn Minervini ihn SELBST als Beispiel seiner Methode dokumentiert hat (eigenes Buch mit Seiten-/Snippet-Beleg, eigener Beitrag, eigenes Video, Interview mit seiner eigenen Fallbeschreibung). Sekundaerquellen duerfen einen Fall nur finden helfen.",
+    "notGroundTruth": ["spaetere Kursentwicklung (+X %)", "Auswahl durch VU", "Fremdzuschreibungen ohne Primaerbeleg", "Modellwissen"],
+    "sourceConfidence": {
+      "HIGH": "Primaerquelle direkt gelesen (Volltext/Seite) mit Ticker und Datum",
+      "MEDIUM": "Primaerquelle nur als Suchindex-Ausschnitt (Ticker und Zeitraum erkennbar) oder Buchbeispiel ueber Seiten-Snippet",
+      "LOW": "nur Buchnotizen/Sekundaerquelle -> NICHT Ground Truth, nur als Kandidat gefuehrt"
+    },
+    "inclusion": "Ground-Truth-Menge = Faelle mit sourceConfidence HIGH oder MEDIUM. LOW-Faelle werden gelistet, aber nicht ausgewertet (Sensitivitaet getrennt).",
+    "classes": {
+      "POSITIVE": "BUY_SETUP, VCP_EXAMPLE, ENTRY_DOCUMENTED, REENTRY, eigener Trade (auch mit spaeterem STOPPED_OUT/FAILED_BREAKOUT: der Kauf war seine Entscheidung)",
+      "NEGATIVE": "AVOID_OR_NEGATIVE (ausdruecklich nicht gekauft, schlechtes/kein VCP, zu lose)",
+      "ILLUSTRATIVE_ONLY": "nur Kursbild ohne Kaufentscheidung -> getrennt ausgewiesen, nicht im Recall"
+    }
+  },
+  "dataWindow": {
+    "DEV": ["2016-01-04", "2026-09-30"],
+    "HOLDOUT": ["2008-01-02", "2015-12-31"],
+    "outOfWindow": "Faelle vor 2008-01-02 oder nach 2026-09-30 -> NOT_EVALUABLE (DATA_WINDOW); werden gezaehlt, nicht ausgewertet"
+  },
+  "anchor": {
+    "entryKnown": "Anker D = dokumentierter Einstiegs-/Ausbruchstag (Handelstag). Bewerteter Schluss t* = letzter Handelstag vor D (Setup-Schluss fuer eine Order am Tag D).",
+    "windowOnly": "Ist nur ein Zeitraum (Woche/Monat) bekannt: Fenster W = [erster, letzter Handelstag des Zeitraums]. t* = der Schluss in W mit den meisten bestandenen Schichten (Universum, Trend, VCP, SEPA); Gleichstand -> fruehester. Diese Wahl ist fuer den Fall guenstig und wird so ausgewiesen.",
+    "monthOnlyWindowCap": "Zeitraum groesser als ein Kalendermonat -> SOURCE_AMBIGUOUS, nicht im Recall"
+  },
+  "detection": {
+    "SETUP": "Die Engine hat an einem Schluss t ein Setup (alle Schichten bestanden, scanSegment-Logik).",
+    "SIGNAL": "Setup an t und Kauf-Stop ausgeloest am Folgetag (Hoch[t+1] > Pivot).",
+    "DETECTED_entryKnown": "SIGNAL mit Signaltag innerhalb von +-5 Handelstagen um D",
+    "DETECTED_windowOnly": "SIGNAL mit Signaltag innerhalb von W",
+    "REJECTED": "kein SIGNAL in der Toleranz; Regel-Attribution an t*",
+    "NOT_EVALUABLE": "keine Kursreihe/kein Listing (SECURITY_MAPPING), ausserhalb des Datenfensters, zu kurze Historie fuer SMA200/52W"
+  },
+  "timingTolerance": {
+    "fixedBeforeAnalysis": true,
+    "classes": ["EXACT (0 Handelstage)", "PLUS_MINUS_1", "PLUS_MINUS_3", "PLUS_MINUS_5", "MISS (> 5 oder kein Signal)"],
+    "measure": "Abstand in Handelstagen zwischen dokumentiertem Einstieg D und dem naechstgelegenen VU-Signaltag; Vorzeichen: negativ = VU frueher",
+    "noPerCaseAdjustment": true
+  },
+  "pivot": {
+    "comparison": "dokumentierter Pivot (Preis zum damaligen Zeitpunkt) gegen VU-Pivot am Setup-Schluss, auf damaligen Rohpreis umgerechnet (pivot x rawClose/close am selben Tag)",
+    "report": "absolute und prozentuale Abweichung, Datumsabweichung; Preise selbst nur verschluesselt"
+  },
+  "ruleAttribution": {
+    "layersEvaluatedIndependently": ["MR-UNI-01 (Messrahmen)", "MR-TT-01..08 je Regel", "VCP (Ablehnungsgrund oder bestanden)", "SEPA (erste blockierende Regel + Kennzahlen)"],
+    "categories": ["DATA_MISSING", "DATA_WRONG", "DATA_DEFINITION_MISMATCH", "RULE_WRONG", "RULE_TOO_STRICT", "RULE_TOO_LOOSE", "FORMALIZATION_MISMATCH", "VCP_MISMATCH", "FUNDAMENTAL_MISMATCH", "TREND_MISMATCH", "ENTRY_MISMATCH", "TIMING_MISMATCH", "SECURITY_MAPPING", "NOT_REPRODUCIBLE", "SOURCE_AMBIGUOUS"],
+    "assignment": "Mechanische Erstzuordnung aus der blockierenden Schicht (Trend -> TREND_MISMATCH, VCP -> VCP_MISMATCH, SEPA -> FUNDAMENTAL_MISMATCH bzw. DATA_MISSING bei fehlenden SEC-Daten, Universum -> DATA_DEFINITION_MISMATCH); Lead-Pruefung kann je Fall weitere Kategorien begruendet ergaenzen (Mehrfachzuordnung zulaessig)."
+  },
+  "controls": {
+    "negativeGroundTruth": "Faelle der Klasse NEGATIVE: FALSE_POSITIVE, wenn VU im Anker-Fenster (D+-5 bzw. W) ein SIGNAL erzeugt.",
+    "randomControls": {
+      "design": "Je auswertbarem positivem Fall 10 zufaellige Kontrolltitel aus demselben Fenster (DEV/HOLDOUT), die am Schluss t* den Messrahmen MR-UNI-01 bestehen; Auswahl mit deterministischem Zufall (Seed = SHA-256 der case_id), ohne den Falltitel.",
+      "metric": "Anteil der Kontrollen mit SETUP an t* und mit SIGNAL im selben Toleranzfenster; Vergleich mit der Erkennungsrate der Ground-Truth-Faelle.",
+      "purpose": "Pruefen, ob die Engine extrem permissiv ist; keine Optimierung"
+    },
+    "baseRate": "Je Jahr: Titel-Tage im Messrahmen, Titel-Tage mit Trend Template, mit VCP, mit Setup; Signale; Setups und Signale je 1.000 Titel-Tage"
+  },
+  "metrics": {
+    "recall": "DETECTED / auswertbare POSITIVE",
+    "precision": "nur, wenn >= 5 auswertbare NEGATIVE vorliegen: DETECTED_POS / (DETECTED_POS + FALSE_POSITIVE_NEG); sonst NOT_MEASURABLE",
+    "falseNegativeRate": "1 - recall",
+    "falsePositiveRate": "FALSE_POSITIVE / auswertbare NEGATIVE (nur ausweisen, wenn >= 5)",
+    "vcpConfusion": "VCP-Schicht allein an t*: positive VCP-Faelle (Minervini sagt VCP) gegen VU-VCP ja/nein; negative entsprechend"
+  },
+  "decisionTree": {
+    "A": "Recall hoch (>= 70 %) und Kontrollen selten Setups -> schwacher Backtest ist Befund der mechanischen Variante",
+    "B": "Recall niedrig (< 40 %) -> Backtest nicht geeignet, Minervinis Methode zu beurteilen",
+    "C": "Recall hoch, aber Kontroll-Setup-Rate aehnlich hoch -> Selektion/Precision falsch",
+    "D": "Fundamental-Schicht blockiert den groessten Anteil der Fehlschlaege",
+    "E": "VCP-Schicht blockiert den groessten Anteil",
+    "F": "Ueberwiegend NOT_REPRODUCIBLE/Ermessen -> vollstaendige mechanische Replikation mit oeffentlichen Regeln nicht moeglich",
+    "note": "Schwellen 70 %/40 % vor der Auswertung festgelegt; mehrere Faelle (D/E/F) koennen zugleich zutreffen."
+  },
+  "publicationPolicy": "Oeffentlich: Entscheidungen, Regel bestanden/nicht, Gruende, Session-Abstaende, prozentuale Pivot-Abweichungen, SEC-Kennzahlen (oeffentlich). Verschluesselt: Kurse, Indikatorwerte, Renditen (Tiingo-Nutzungsrechte).",
+  "freezeOrder": ["Preregistration (diese Datei) committen", "Fallliste sammeln", "Red-Team-Review der Fallliste", "Ground-Truth-Freeze (Faelle + Replay-Code)", "Replay-Lauf DEV und HOLDOUT", "Bericht"]
+}

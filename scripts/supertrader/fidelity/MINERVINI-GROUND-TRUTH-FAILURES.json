@@ -1,0 +1,2059 @@
+{
+  "schema": "vu-minervini-ground-truth-failures-1.0.0",
+  "label": "Diagnose, keine Optimierung, keine Rueckwirkung auf Engine/Regelbuch/Live. Performance ist keine Ground Truth. DEV/HOLDOUT gelten als gesehene Daten.",
+  "engine": {
+    "name": "minervini-adaptation-1.1.0",
+    "codeHash": "2093c8d18adf33495c6ea0aa2312c77bb70aa652e379d194313a2ebf249be930",
+    "rulebookHash": "ae226511dcd045bca2457929e4894e43946c71d096e84c5dbdf0569a18bc6ba7"
+  },
+  "groundTruthFreeze": {
+    "casesHash": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+    "commit": "7438c7f4f8f",
+    "frozenAt": "2026-10-07T09:07:10.084Z"
+  },
+  "runs": {
+    "DEV": {
+      "runId": "37598401407",
+      "cases": 39
+    },
+    "HOLDOUT": {
+      "runId": "37604155118",
+      "cases": 37,
+      "note": "alle Faelle ausserhalb des Fensters (2008-2015); nur Trichter. Zwei Vortagsanker (ACAD, RVNC) ohne Logzeile, weil der Vortag im HOLDOUT-Kalender fehlt (ohne Einfluss)"
+    }
+  },
+  "failures": [
+    {
+      "case_id": "GT-001",
+      "ticker": "ZGNX",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "FUNDAMENTAL_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "Einzige Sperre MR-SEPA-10: GAAP-Vorjahresquartal negativ (Verlust). Trend und VCP an t* bestanden (3 Kontraktionen 21/4/3 %, Volumen 0,58). Minervini kaufte den Ausbruch einer vorbörslichen/verlustreichen Biotech; die VU-Lesart 'kein Einstieg bei Basis <= 0' widerspricht seiner dokumentierten Praxis. Ob er bereinigte EPS nutzte: unbekannt."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ZGNX",
+            "2015-01-02",
+            "2022-03-15"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ZGNX:2010-11-23",
+        "exchange": "NASDAQ",
+        "cik": "0001375151",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": "ACQUISITION",
+        "splitsBeforeAnchor": [
+          [
+            "2015-07-01",
+            0.125
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      }
+    },
+    {
+      "case_id": "GT-002",
+      "ticker": "MTLS",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_DATA_MISSING"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-SEPA-00",
+          "detail": "SEPA_DATA_MISSING",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_DEFINITION_MISMATCH",
+          "VCP_MISMATCH",
+          "SECURITY_MAPPING"
+        ],
+        "note": "Auslandsemittent (20-F/6-K, keine 10-Q-XBRL); keine CIK im SEC-Datenlayer -> SEPA nicht bewertbar. VCP: Basis 9 Sitzungen (< 15) – der Titel lief in neue Hochs, VU misst die Basis ab dem juengsten Hoch."
+      },
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "MTLS",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NASDAQ:MTLS:2014-06-25",
+        "exchange": "NASDAQ",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      }
+    },
+    {
+      "case_id": "GT-003",
+      "ticker": "ROKU",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "FUNDAMENTAL_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "Einzige Sperre MR-SEPA-10 (GAAP-Verlust im Vorjahresquartal). Trend (RS 99) und VCP (2 Kontraktionen 19/5 %) bestanden; Branche Rang 1. Klarer Fall: Regel-Lesart blockiert einen dokumentierten Kauf."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ROKU",
+            "2017-09-28",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ROKU:2017-09-28",
+        "exchange": "NASDAQ",
+        "cik": "0001428439",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "4841"
+      }
+    },
+    {
+      "case_id": "GT-004",
+      "ticker": "ACAD",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "FUNDAMENTAL_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "Einzige Sperre MR-SEPA-10 (GAAP-Verlust). Trend und VCP (3 Kontraktionen) bestanden."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ACAD",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ACAD:2004-05-27",
+        "exchange": "NASDAQ",
+        "cik": "0001070494",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      }
+    },
+    {
+      "case_id": "GT-006",
+      "ticker": "DXCM",
+      "group": "ENTRY_TYPE_NOT_MODELLED",
+      "stratum": null,
+      "tags": [
+        "ENTRY_PULLBACK"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DXCM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:DXCM:2005-04-14",
+        "exchange": "NASDAQ",
+        "cik": "0001093557",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2022-06-13",
+            4
+          ]
+        ],
+        "sicAtAnchor": "3841"
+      }
+    },
+    {
+      "case_id": "GT-007",
+      "ticker": "TNDM",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_WRONG",
+          "FUNDAMENTAL_MISMATCH",
+          "VCP_MISMATCH"
+        ],
+        "note": "SEPA_STALE durch VU-Extraktion (Tag-Wechsel: Q1 2020 nur unter EarningsPerShareBasicAndDiluted, erst mit dem 10-K 2021 sichtbar). Mit fruehester Einreichung: SEPA_BASE_NOT_POSITIVE (Verlust). VCP: Basis 7 Sitzungen."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "TNDM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:TNDM:2013-11-14",
+        "exchange": "NASDAQ",
+        "cik": "0001438133",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2017-10-10",
+            0.1
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3841"
+      }
+    },
+    {
+      "case_id": "GT-009",
+      "ticker": "AEM",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_DEFINITION_MISMATCH"
+        ],
+        "note": "Einzige Sperre SEPA: Auslandsemittent (40-F/6-K), letzte verwertbare Quartalszahl 2014. Trend und VCP (2 Kontraktionen 11/4 %) bestanden."
+      },
+      "secEarliestAcrossTags": "SEPA_STALE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AEM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:AEM:1984-09-07",
+        "exchange": "NYSE",
+        "cik": "0000002809",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1040"
+      }
+    },
+    {
+      "case_id": "GT-010",
+      "ticker": "RVNC",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_WRONG",
+          "FUNDAMENTAL_MISMATCH",
+          "VCP_MISMATCH"
+        ],
+        "note": "SEPA_STALE durch VU-Extraktion; mit fruehester Einreichung SEPA_BASE_NOT_POSITIVE (Verlust). VCP: Basis 9 Sitzungen; Kauf am Tag des von ihm genannten grossen Ausbruchs."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 2,
+        "covering": 1,
+        "ranges": [
+          [
+            "RVNC",
+            "2015-01-02",
+            "2025-02-06"
+          ],
+          [
+            "RVNC",
+            "2026-02-06",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:RVNC:2014-02-06",
+        "exchange": "NASDAQ",
+        "cik": "0001479290",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      }
+    },
+    {
+      "case_id": "GT-012",
+      "ticker": "REPL",
+      "group": "MAIN",
+      "stratum": "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY",
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_WRONG",
+          "FUNDAMENTAL_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "MAIN_B (Setup bejaht, Kauf verpasst). Einzige Sperre SEPA_STALE (VU-Extraktion); mit fruehester Einreichung SEPA_BASE_NOT_POSITIVE (vorkommerzielle Biotech). Trend und VCP bestanden."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "REPL",
+            "2018-07-20",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:REPL:2018-07-20",
+        "exchange": "NASDAQ",
+        "cik": "0001737953",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2836"
+      }
+    },
+    {
+      "case_id": "GT-013",
+      "ticker": "PENN",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "ENTRY_PRE_BREAKOUT"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_REVENUE_NOT_GROWING"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-04",
+          "detail": "SEPA_REVENUE_NOT_GROWING",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_REVENUE_NOT_GROWING",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "PENN",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:PENN:1994-05-26",
+        "exchange": "NASDAQ",
+        "cik": "0000921738",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7011"
+      }
+    },
+    {
+      "case_id": "GT-014",
+      "ticker": "DKL",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "PARTNERSHIP_UNITS"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "MR-UNI-01",
+        "SEPA_DATA:SEPA_DATA_MISSING"
+      ],
+      "blockingLayers": [
+        "UNIVERSE",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-UNI-01",
+          "detail": "DOLLAR_VOLUME"
+        },
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-SEPA-00",
+          "detail": "SEPA_DATA_MISSING",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_DEFINITION_MISMATCH",
+          "SECURITY_MAPPING"
+        ],
+        "note": "Personengesellschaft (Einheiten); keine CIK im SEC-Datenlayer; Messrahmen MR-UNI-01 (Dollarumsatz < 5 Mio.) nicht erfuellt - VU-eigener Messrahmen, keine Minervini-Regel. Trend und VCP bestanden."
+      },
+      "secEarliestAcrossTags": "SEPA_DATA_MISSING",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DKL",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:DKL:2012-11-02",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      }
+    },
+    {
+      "case_id": "GT-016",
+      "ticker": "RICK",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ENTRY_LOW_CHEAT"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "DATA_WRONG",
+          "FUNDAMENTAL_MISMATCH",
+          "VCP_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "Minervini nennt selbst eine 'kleine Basis' mit 'Low Cheat'; VU: Basis 13 Sitzungen (< 15). SEPA_STALE durch VU-Extraktion (Tag-Wechsel); mit fruehester Einreichung SEPA_REVENUE_NOT_GROWING (Umsatz Q4 2020 -21 % gg. Vorjahr, Pandemie)."
+      },
+      "secEarliestAcrossTags": "SEPA_REVENUE_NOT_GROWING",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "RICK",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:RICK:1995-10-13",
+        "exchange": "NASDAQ",
+        "cik": "0000935419",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "5812"
+      }
+    },
+    {
+      "case_id": "GT-018",
+      "ticker": "DECK",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "MR-TT-08",
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_NO_ACCELERATION"
+      ],
+      "blockingLayers": [
+        "RS",
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-08"
+        },
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_NO_ACCELERATION",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "TREND_MISMATCH",
+          "VCP_MISMATCH",
+          "FUNDAMENTAL_MISMATCH"
+        ],
+        "note": "Drei Sperren: RS-Perzentil 65 (< 70), Basis 3 Sitzungen, EPS-Wachstum 26 % ohne Beschleunigung (Vorquartal 32 %). 'Versucht auszubrechen' - Minervini kaufte vor dem VU-Pivot."
+      },
+      "secEarliestAcrossTags": "SEPA_NO_ACCELERATION",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DECK",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:DECK:1993-10-15",
+        "exchange": "NYSE",
+        "cik": "0000910521",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2024-09-17",
+            6
+          ]
+        ],
+        "sicAtAnchor": "3021"
+      }
+    },
+    {
+      "case_id": "GT-019",
+      "ticker": "GDDY",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_STALE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-PIT-01",
+          "detail": "SEPA_STALE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_STALE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GDDY",
+            "2015-04-01",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:GDDY:2015-04-01",
+        "exchange": "NYSE",
+        "cik": "0001609711",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7373"
+      }
+    },
+    {
+      "case_id": "GT-020",
+      "ticker": "MU",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "MU",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:MU:1989-05-16",
+        "exchange": "NASDAQ",
+        "cik": "0000723125",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      }
+    },
+    {
+      "case_id": "GT-021",
+      "ticker": "AXON",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT"
+      ],
+      "blockingLayers": [
+        "VCP"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "ok",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AXON",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AXON:2001-06-07",
+        "exchange": "NASDAQ",
+        "cik": "0001069183",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3480"
+      }
+    },
+    {
+      "case_id": "GT-022",
+      "ticker": "APP",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_DATA:SEPA_ACCEL_NOT_DEMONSTRABLE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "DATA_MISSING",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "APP",
+            "2021-04-15",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:APP:2021-04-15",
+        "exchange": "NASDAQ",
+        "cik": "0001751008",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7370"
+      }
+    },
+    {
+      "case_id": "GT-023",
+      "ticker": "LMB",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_EPS_GROWTH_LOW"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-01",
+          "detail": "SEPA_EPS_GROWTH_LOW",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "LMB",
+            "2016-01-21",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:LMB:2016-01-21",
+        "exchange": "NASDAQ",
+        "cik": "0001606163",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1700"
+      }
+    },
+    {
+      "case_id": "GT-024",
+      "ticker": "NMM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q",
+        "PARTNERSHIP_UNITS"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:CONTRACTION_COUNT",
+        "SEPA_DATA:SEPA_DATA_MISSING"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "CONTRACTION_COUNT"
+        },
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-SEPA-00",
+          "detail": "SEPA_DATA_MISSING",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NMM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:NMM:2007-11-13",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2019-05-21",
+            0.0666666667
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      }
+    },
+    {
+      "case_id": "GT-025",
+      "ticker": "DVA",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_NO_ACCELERATION"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_NO_ACCELERATION",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_NO_ACCELERATION",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "DVA",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:DVA:1995-10-31",
+        "exchange": "NYSE",
+        "cik": "0000927066",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "8090"
+      }
+    },
+    {
+      "case_id": "GT-026",
+      "ticker": "SG",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "ENTRY_ADD_ON"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": {
+        "categories": [
+          "FUNDAMENTAL_MISMATCH",
+          "FORMALIZATION_MISMATCH"
+        ],
+        "note": "Einzige Sperre MR-SEPA-10 (GAAP-Verlust). Trend (RS 98) und VCP (3 Kontraktionen 29/15/5 %, 'klassische VCP' laut Minervini) bestanden. VCP-Erkennung stimmt mit seiner Einstufung ueberein."
+      },
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "SG",
+            "2021-11-18",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 2,
+        "inUniverse": true,
+        "listingSources": [
+          "UNFETCHABLE_REUSED",
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:SG:2021-11-18",
+        "exchange": "NYSE",
+        "cik": "0001477815",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "5812"
+      }
+    },
+    {
+      "case_id": "GT-027",
+      "ticker": "RNA",
+      "group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "tags": [
+        "TICKER_REUSED_LATER"
+      ],
+      "decision": "NOT_EVALUABLE",
+      "reason": "SECURITY_MAPPING_NO_COVERING_SEGMENT",
+      "blockingRules": [],
+      "blockingLayers": [],
+      "mechanicalAttribution": [],
+      "leadReview": {
+        "categories": [
+          "SECURITY_MAPPING",
+          "DATA_MISSING"
+        ],
+        "note": "Ticker RNA wurde nach der Uebernahme von Avidity neu vergeben; im PIT-Bestand existiert nur das neue Listing (ab 2026-02-27). Die damalige Avidity-Reihe fehlt -> nicht auswertbar (kein Fall verloren durch Fehlzuordnung: die Pruefung verhindert die falsche Zuordnung)."
+      },
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 0,
+        "ranges": [
+          [
+            "RNA",
+            "2026-02-27",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ]
+      }
+    },
+    {
+      "case_id": "GT-028",
+      "ticker": "GTHX",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "decision": "NOT_EVALUABLE",
+      "reason": "HISTORY_TOO_SHORT",
+      "blockingRules": [],
+      "blockingLayers": [],
+      "mechanicalAttribution": [],
+      "leadReview": null,
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GTHX",
+            "2017-05-17",
+            "2024-09-18"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "FETCH"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:GTHX:2017-05-17",
+        "exchange": "NASDAQ",
+        "cik": "0001560241",
+        "secFacts": true,
+        "delisted": true,
+        "delistClass": "ACQUISITION",
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      }
+    },
+    {
+      "case_id": "GT-029",
+      "ticker": "NLOK",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "TICKER_CHANGED"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "MR-TT-01",
+        "MR-TT-02",
+        "MR-TT-03",
+        "MR-TT-04",
+        "MR-TT-07",
+        "MR-TT-08",
+        "SEPA_RULE:SEPA_NO_ACCELERATION"
+      ],
+      "blockingLayers": [
+        "TREND",
+        "RS",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-01"
+        },
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-02"
+        },
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-03"
+        },
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-04"
+        },
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-07"
+        },
+        {
+          "category": "TREND_MISMATCH",
+          "layer": "MR-TT-08"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_NO_ACCELERATION",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_NO_ACCELERATION",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "GEN",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:GEN:1990-03-26",
+        "exchange": "NASDAQ",
+        "cik": "0000849399",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7372"
+      }
+    },
+    {
+      "case_id": "GT-030",
+      "ticker": "TSM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_DATA:SEPA_DATA_MISSING"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_DATA"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-SEPA-00",
+          "detail": "SEPA_DATA_MISSING",
+          "fundamentals": "DATA"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "TSM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NYSE:TSM:1997-10-09",
+        "exchange": "NYSE",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": null
+      }
+    },
+    {
+      "case_id": "GT-031",
+      "ticker": "AVGO",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "AVGO",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:AVGO:2009-08-06",
+        "exchange": "NASDAQ",
+        "cik": "0001730168",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2024-07-15",
+            10
+          ]
+        ],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "3674"
+      }
+    },
+    {
+      "case_id": "GT-032",
+      "ticker": "NEM",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "SEPA_RULE:SEPA_NO_ACCELERATION"
+      ],
+      "blockingLayers": [
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_NO_ACCELERATION",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_NO_ACCELERATION",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NEM",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:NEM:1983-04-06",
+        "exchange": "NYSE",
+        "cik": "0001164727",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "1040"
+      }
+    },
+    {
+      "case_id": "GT-035",
+      "ticker": "ROIV",
+      "group": "SENSITIVITY",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_BASE_NOT_POSITIVE"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-10",
+          "detail": "SEPA_BASE_NOT_POSITIVE",
+          "fundamentals": "RULE",
+          "also": [
+            "EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE",
+            "PRE_PROFIT_SCOPE"
+          ]
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_BASE_NOT_POSITIVE",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "ROIV",
+            "2021-10-01",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:ROIV:2021-10-01",
+        "exchange": "NASDAQ",
+        "cik": "0001635088",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "2834"
+      }
+    },
+    {
+      "case_id": "GT-036",
+      "ticker": "INMD",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
+      "decision": "NOT_EVALUABLE",
+      "reason": "HISTORY_TOO_SHORT",
+      "blockingRules": [],
+      "blockingLayers": [],
+      "mechanicalAttribution": [],
+      "leadReview": null,
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "INMD",
+            "2019-08-08",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "CIK_UNKNOWN_IN_DATA_LAYER",
+        "segId": "tiingo:NASDAQ:INMD:2019-08-08",
+        "exchange": "NASDAQ",
+        "cik": null,
+        "secFacts": false,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [
+          [
+            "2021-10-01",
+            2
+          ]
+        ],
+        "sicAtAnchor": null
+      }
+    },
+    {
+      "case_id": "GT-037",
+      "ticker": "NMIH",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:CONTRACTION_COUNT"
+      ],
+      "blockingLayers": [
+        "VCP"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "CONTRACTION_COUNT"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "ok",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "NMIH",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:NMIH:2013-11-08",
+        "exchange": "NASDAQ",
+        "cik": "0001547903",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "6351"
+      }
+    },
+    {
+      "case_id": "GT-038",
+      "ticker": "VEC",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [
+        "TICKER_CHANGED"
+      ],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "MR-UNI-01",
+        "SEPA_RULE:SEPA_EPS_GROWTH_LOW"
+      ],
+      "blockingLayers": [
+        "UNIVERSE",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "DATA_DEFINITION_MISMATCH",
+          "layer": "MR-UNI-01",
+          "detail": "DOLLAR_VOLUME"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-01",
+          "detail": "SEPA_EPS_GROWTH_LOW",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "VVX",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:VVX:2014-09-16",
+        "exchange": "NYSE",
+        "cik": "0001601548",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "8744"
+      }
+    },
+    {
+      "case_id": "GT-039",
+      "ticker": "CPRT",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_NO_ACCELERATION"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-02",
+          "detail": "SEPA_NO_ACCELERATION",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_NO_ACCELERATION",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "CPRT",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:CPRT:1994-03-17",
+        "exchange": "NASDAQ",
+        "cik": "0000900075",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [
+          [
+            "2017-04-11",
+            2
+          ]
+        ],
+        "splitsAfterAnchor": [
+          [
+            "2022-11-04",
+            2
+          ],
+          [
+            "2023-08-22",
+            2
+          ]
+        ],
+        "sicAtAnchor": "5500"
+      }
+    },
+    {
+      "case_id": "GT-040",
+      "ticker": "RBA",
+      "group": "WATCHLIST",
+      "stratum": null,
+      "tags": [],
+      "decision": "REJECTED",
+      "reason": null,
+      "blockingRules": [
+        "VCP:BASE_TOO_SHORT",
+        "SEPA_RULE:SEPA_EPS_GROWTH_LOW"
+      ],
+      "blockingLayers": [
+        "VCP",
+        "FUNDAMENTALS_RULE"
+      ],
+      "mechanicalAttribution": [
+        {
+          "category": "VCP_MISMATCH",
+          "layer": "VCP",
+          "detail": "BASE_TOO_SHORT"
+        },
+        {
+          "category": "FUNDAMENTAL_MISMATCH",
+          "layer": "MR-SEPA-01",
+          "detail": "SEPA_EPS_GROWTH_LOW",
+          "fundamentals": "RULE"
+        }
+      ],
+      "leadReview": null,
+      "secEarliestAcrossTags": "SEPA_EPS_GROWTH_LOW",
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "RBA",
+            "2015-01-02",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NYSE:RBA:1998-03-10",
+        "exchange": "NYSE",
+        "cik": "0001046102",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "7389"
+      }
+    },
+    {
+      "case_id": "GT-041",
+      "ticker": "UPST",
+      "group": "NEGATIVE",
+      "stratum": null,
+      "tags": [],
+      "decision": "NOT_EVALUABLE",
+      "reason": "HISTORY_TOO_SHORT",
+      "blockingRules": [],
+      "blockingLayers": [],
+      "mechanicalAttribution": [],
+      "leadReview": null,
+      "secEarliestAcrossTags": null,
+      "identity": {
+        "segments": 1,
+        "covering": 1,
+        "ranges": [
+          [
+            "UPST",
+            "2020-12-16",
+            "2026-09-30"
+          ]
+        ],
+        "listingsWithTicker": 1,
+        "inUniverse": true,
+        "listingSources": [
+          "STORE_ACTIVE"
+        ],
+        "cikCheck": "MATCH",
+        "segId": "tiingo:NASDAQ:UPST:2020-12-16",
+        "exchange": "NASDAQ",
+        "cik": "0001647639",
+        "secFacts": true,
+        "delisted": false,
+        "delistClass": null,
+        "splitsBeforeAnchor": [],
+        "splitsAfterAnchor": [],
+        "sicAtAnchor": "6199"
+      }
+    }
+  ]
+}
