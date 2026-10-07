@@ -24,7 +24,7 @@ import { loadPanel, eligible } from "./lib/panel.mjs";
 
 const require = createRequire(import.meta.url);
 const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
-export const TRACKB_VERSION = "hsab-trackb-1.1.0";   // 1.1.0: MFE (maximales Vielfaches im Horizont); Quartalsend-Zustaende und interne Elliott-Kandidaten (--grid-records)
+export const TRACKB_VERSION = "hsab-trackb-1.2.0";   // 1.1.0: MFE; Quartalsend-Zustaende und interne Elliott-Kandidaten (--grid-records); 1.2.0: Zusatzwert von W3 innerhalb RS26/TREND_MOM/TREND (gleiche Schicht)
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 const sha = (b) => createHash("sha256").update(b).digest("hex");
@@ -267,6 +267,25 @@ export function trackB(o) {
       meanEndWith: r4(VS.mean(w.map((u) => u.f[hn].endM - 1))), meanEndWithout: r4(VS.mean(nw.map((u) => u.f[hn].endM - 1))),
       medianEndWith: r4(VS.median(w.map((u) => u.f[hn].endM - 1))), medianEndWithout: r4(VS.median(nw.map((u) => u.f[hn].endM - 1))) };
   }
+  /* Zusatzwert innerhalb einer Basisgruppe (nach Red Team: „bringt Wave 3 etwas ueber RS bzw. Trend+Momentum hinaus?“):
+     unter den Einheiten der Basisgruppe die mit W3-Kandidat gegen die ohne W3-Kandidat in DERSELBEN Schicht. */
+  const within = {};
+  for (const [bn, bf] of [["RS26_TOP20", SIGNALS.RS26_TOP20], ["TREND_MOM", SIGNALS.TREND_MOM], ["TREND", SIGNALS.TREND]]) {
+    within[bn] = {};
+    for (const hn of Object.keys(HORIZONS)) {
+      const B = units.filter((u) => u.f[hn] && bf(u)), S = new Map();
+      for (const u of B) { const w = W3(u) ? 1 : 0; let a = S.get(u.stratum); if (!a) S.set(u.stratum, (a = [{ n: 0, k: {}, r: 0 }, { n: 0, k: {}, r: 0 }])); const c = a[w]; c.n++; c.r += Math.min(u.f[hn].endM - 1, 4); for (const K of MULTS) c.k[K] = (c.k[K] || 0) + (u.f[hn].maxM >= K ? 1 : 0); }
+      const fl = B.filter((u) => W3(u) && S.get(u.stratum)[0].n > 0);
+      const res = { baseUnits: B.length, withW3: B.filter((u) => W3(u)).length, matched: fl.length };
+      for (const K of MULTS) {
+        const rows = fl.map((u) => { const c = S.get(u.stratum)[0]; return { s: u.s, d: u.d, v: [u.f[hn].maxM >= K ? 1 : 0, 1, c.k[K] / c.n, 1, Math.min(u.f[hn].endM - 1, 4), c.r / c.n] }; });
+        if (!rows.length) { res[K + "x"] = null; continue; }
+        const b = boot(rows, { prec: (v) => v[0] / v[1], ratio: (v) => (v[2] > 0 ? v[0] / v[2] : null), capEx: (v) => v[4] / v[1] - v[5] / v[3] }, "within|" + bn + "|" + hn + "|" + K, hn);
+        res[K + "x"] = { precisionW3: b.stats.prec.est, ratio: b.stats.ratio.est, ratioCi: [b.stats.ratio.lo, b.stats.ratio.hi], cappedExcess: b.stats.capEx.est, cappedExcessCi: [b.stats.capEx.lo, b.stats.capEx.hi] };
+      }
+      within[bn][hn] = res;
+    }
+  }
   /* Fruehe Erkennung: Anteil der spaeteren Bewegung, der beim ersten Signal (Quartal) schon gelaufen war — fuer 5×-Gewinner (24M) */
   const early = {};
   for (const name of ["VU_BULL", "EW_EARLY_MOTIVE_INTERNAL", "TREND_MOM", "BREAKOUT52", "RS26_TOP20", ...(G ? ["VU_BULL_EXACT", "EW_INT_UP_EARLY"] : [])]) {
@@ -286,7 +305,7 @@ export function trackB(o) {
   }
   return { schemaVersion: "hsab-trackb-result-1.0.0", version: TRACKB_VERSION, generatedAt: new Date().toISOString(), records: { sealHash: man.sealHash, engine: man.engine.scenario, elliott: man.engine.elliott }, gridRecords: G ? { sealHash: G.man.sealHash, symbols: G.by.size } : null, wave3Signal: G ? "EW_INT_UP_EARLY" : "EW_EARLY_MOTIVE_INTERNAL",
            opts: { bucket: o.bucket || null, from: o.from || null, to: o.to || null, delisted: !!o.delisted, anomalyGate: o.gate || "past" }, units: units.length, symbols: new Set(units.map((u) => u.s)).size,
-           delistedUnits: units.filter((u) => u.delisted).length, anomalyExcludedUnitHorizons: units.reduce((a, u) => a + (u.anomaly || 0), 0), horizons: HORIZONS, multiples: MULTS, results, wave3WithinTrendMom: inc, earlyDetection: early };
+           delistedUnits: units.filter((u) => u.delisted).length, anomalyExcludedUnitHorizons: units.reduce((a, u) => a + (u.anomaly || 0), 0), horizons: HORIZONS, multiples: MULTS, results, wave3WithinTrendMom: inc, wave3IncrementalWithin: within, earlyDetection: early };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

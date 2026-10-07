@@ -41,11 +41,12 @@ for (const [name, d] of TA) {
 }
 
 /* ---------------- Track B ---------------- */
-const TB = [["Überlebende DEV (Bucket 0/2)", load("local/trackb-w-dev.json")], ["Überlebende VAL (Bucket 1/2)", load("local/trackb-w-val.json")], ["Delistete Kohorte (CI, verbraucht)", load("ci/tb-delisted.json")],
-            ["Wave-3-Forensik DEV (Bucket 0/4)", load("local/trackb-wave3-dev.json")], ["Wave-3-Forensik VAL (Bucket 1/4)", load("local/trackb-wave3-val.json")]].filter((x) => x[1]);
+const TB = [["Überlebende DEV (Bucket 0/2)", load("local/trackb-w-dev.json")], ["Überlebende VAL (Bucket 1/2)", load("local/trackb-w-val.json")], ["Überlebende DEV, Sensitivität Anomalie-Tor inkl. Zukunft", load("local/trackb-w-dev-gatefull.json")], ["Delistete Kohorte (CI, verbraucht)", load("ci/tb-delisted.json")], ["Delistete Kohorte, Sensitivität Anomalie-Tor inkl. Zukunft (CI)", load("ci/tb-delisted-gatefull.json")],
+            ["Wave-3-Forensik DEV (Bucket 0/4)", load("local/trackb-wave3-dev.json")], ["Wave-3-Forensik VAL (Bucket 1/4)", load("local/trackb-wave3-val.json")],
+            ["Wave-3-Forensik DEV, Anomalie-Tor inkl. Zukunft", load("local/trackb-wave3-dev-gatefull.json")], ["Wave-3-Forensik VAL, Anomalie-Tor inkl. Zukunft", load("local/trackb-wave3-val-gatefull.json")]].filter((x) => x[1]);
 for (const [name, d] of TB) {
   h(`## Track B — ${name}`);
-  L.push(`Einheiten (Titel × Quartal) ${d.units}, Titel ${d.symbols}, davon delistet ${d.delistedUnits}; Fenster mit Datenanomalie ausgeschlossen: ${d.anomalyExcludedUnitHorizons}.`, "");
+  L.push(`Einheiten (Titel × Quartal) ${d.units}, Titel ${d.symbols}, davon delistet ${d.delistedUnits}; Fenster mit Datenanomalie ausgeschlossen: ${d.anomalyExcludedUnitHorizons} (Tor: ${(d.opts && d.opts.anomalyGate) || "past+future (Version 1.0)"}); Code ${d.version}. „gg. Schicht“ = gegen nicht markierte Einheiten derselben Schicht (ab 1.1.0).`, "");
   for (const H of ["12M", "24M", "36M"]) {
     L.push(`### Horizont ${H}: Fang und Präzision`, "", "| Signal | Abdeckung | 2× Präz. | 2× gg. Schicht | 3× Präz. | 3× gg. Schicht | 5× Präz. | 5× Recall | 5× gg. Schicht [95 %] | 5× gg. Datum | 10× Präz. | 10× gg. Schicht | Fehlentdeckung 5× |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|");
     for (const r of d.results.filter((x) => x.horizon === H && x.mult)) {
@@ -62,6 +63,11 @@ for (const [name, d] of TB) {
   if (d.earlyDetection) {
     L.push("", "### Frühe Erkennung (Episoden: erstes Quartal, ab dem ein Titel binnen 24 Monaten 5× erreicht)", "", "| Signal | Episoden | im Jahr davor markiert | Anteil | Median Quartale früher | Median verbleibendes Max-Vielfaches |", "|---|---|---|---|---|---|");
     for (const [k, v] of Object.entries(d.earlyDetection)) L.push(`| ${k} | ${v.episodes5x24M} | ${v.flaggedBefore5x} | ${pct(v.shareFlagged)} | ${v.medianQuartersEarly ?? "–"} | ${num(v.medianRemainingMaxMultiple24M)} |`);
+  }
+  if (d.wave3IncrementalWithin) {
+    L.push("", `### Zusatzwert von ${d.wave3Signal} innerhalb einer Basisgruppe (gleiche Schicht, mit gegen ohne W3)`, "", "| Basis | Horizont | Basis-Einheiten | mit W3 | 2× Verhältnis [95 %] | 5× Verhältnis [95 %] | 10× Verhältnis | gedeckelter Überschuss 5×-Zeile [95 %] |", "|---|---|---|---|---|---|---|---|");
+    for (const [bn, v] of Object.entries(d.wave3IncrementalWithin)) for (const hn of ["12M", "24M", "36M"]) { const x = v[hn]; if (!x) continue;
+      L.push(`| ${bn} | ${hn} | ${x.baseUnits} | ${x.withW3} | ${x["2x"] ? x2(x["2x"].ratio) + " " + ciX(x["2x"].ratioCi) : "–"} | ${x["5x"] ? x2(x["5x"].ratio) + " " + ciX(x["5x"].ratioCi) : "–"} | ${x["10x"] ? x2(x["10x"].ratio) : "–"} | ${x["5x"] ? pp(x["5x"].cappedExcess) + " " + ci(x["5x"].cappedExcessCi) : "–"} |`); }
   }
   if (d.wave3WithinTrendMom) {
     L.push("", `### Wave 3 innerhalb TREND_MOM (Signal ${d.wave3Signal || "EW_EARLY_MOTIVE_INTERNAL"})`, "", "| Horizont | TREND_MOM-Einheiten | mit W3 | 2× mit / ohne | 5× mit / ohne | Median Endrendite mit / ohne |", "|---|---|---|---|---|---|");
