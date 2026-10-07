@@ -81,7 +81,29 @@ export function readPrivateHistory(historiesDir,listingId){
  const stat=lstatSync(p);if(!stat.isFile()||stat.nlink!==1)throw Error('HISTORY_INPUT_FILE_TYPE_REJECTED');
  return JSON.parse(readFileSync(p,'utf8'));
 }
-export function materialize({rows,histories={},historiesDir=null,asOf,referenceAsOf=asOf,expectedSessions={},lastProvenCompletedSessions={},technicalFields={},out,disabled=false}){
+export function certifiedReadiness(proofs,series,inputSeriesHash){
+ const states={chart:['CHART_READY','CHART_READY_WITH_LIMITATION','CHART_BLOCKED'],technical:['TECHNICAL_READY','TECHNICAL_PARTIAL','TECHNICAL_BLOCKED'],latestEod:['FRESH_CURRENT_SESSION','FRESH_LAST_VALID_SESSION','DELAYED_EXPECTED','STALE','MISSING','INVALID','UNKNOWN']};
+ const result={};
+ for(const [name,allowed]of Object.entries(states)){
+  const p=proofs?.[name];
+  if(!p){result[name]={status:'NOT_TESTED',state:name==='latestEod'?'UNKNOWN':'NOT_TESTED',cause:'MISSING_CERTIFICATION_EVIDENCE'};continue;}
+  if(!['READY','PARTIAL','BLOCKED','NOT_TESTED','NOT_APPLICABLE'].includes(p.status)||!allowed.includes(p.state)&&p.state!=='NOT_TESTED'||
+   !series||!inputSeriesHash||p.inputSeriesHash!==inputSeriesHash||p.asOf!==series.asOf||
+   !Array.isArray(p.evidence)||!p.evidence.length||p.evidence.some(e=>typeof e!=='string'||!e.trim())||
+   !day(p.window?.start)||!day(p.window?.end)||p.window.start>p.window.end||p.window.start<series.points[0][0]||p.window.end>series.asOf)throw Error('READINESS_INPUT_EVIDENCE_MISMATCH');
+  if(name==='chart'&&((p.status==='READY'&&p.state!=='CHART_READY')||(p.status==='PARTIAL'&&p.state!=='CHART_READY_WITH_LIMITATION')||(p.status==='BLOCKED'&&p.state!=='CHART_BLOCKED')))throw Error('READINESS_STATUS_STATE_MISMATCH');
+  if(name==='chart'&&['READY','PARTIAL'].includes(p.status)&&(p.window.end!==series.asOf||
+   p.status==='READY'&&series.freshness!=='CURRENT'||
+   p.status==='PARTIAL'&&series.freshness!=='CURRENT'&&!(series.freshness==='STALE'&&p.lagSessions===1&&p.expectedLastSession===series.expectedSession&&p.freshnessPolicy?.maxLagSessions===1)))throw Error('READINESS_CHART_FRESHNESS_CONTRADICTION');
+  if(name==='technical'&&((p.status==='READY'&&p.state!=='TECHNICAL_READY')||(p.status==='PARTIAL'&&p.state!=='TECHNICAL_PARTIAL')||(p.status==='BLOCKED'&&p.state!=='TECHNICAL_BLOCKED')))throw Error('READINESS_STATUS_STATE_MISMATCH');
+  if(name==='latestEod'&&p.status==='READY'&&!['FRESH_CURRENT_SESSION','FRESH_LAST_VALID_SESSION'].includes(p.state))throw Error('READINESS_STATUS_STATE_MISMATCH');
+  if(name==='latestEod'&&p.status==='READY'&&(!day(series.expectedSession)||series.asOf!==series.expectedSession||series.freshness!=='CURRENT'||
+   p.state==='FRESH_CURRENT_SESSION'&&(!day(p.dataAsOf)||p.asOf!==p.dataAsOf)))throw Error('READINESS_FRESHNESS_CONTRADICTION');
+  result[name]=p;
+ }
+ return result;
+}
+export function materialize({rows,histories={},historiesDir=null,asOf,referenceAsOf=asOf,expectedSessions={},lastProvenCompletedSessions={},technicalFields={},readiness={},out,disabled=false}){
  out=resolve(out);if(!disabled)assertPrivateOutput(out);else rejectSymlinkAncestors(out);
  if(historiesDir){if(Object.keys(histories).length)throw Error('COMPETING_HISTORY_INPUTS');assertPrivateOutput(historiesDir,{allowCache:true});rejectSymlinkAncestors(historiesDir);}
  const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={},historyHashes={};
@@ -96,6 +118,18 @@ export function materialize({rows,histories={},historiesDir=null,asOf,referenceA
   const s=series[r.listingId],hash=historyHashes[r.listingId];
   if(!s||!hash||field.inputSeriesHash!==hash||!Number.isFinite(field.value)||!Array.isArray(field.evidence)||!field.evidence.length||
    field.asOf!==s.asOf||!day(field.window?.from)||!day(field.window?.to)||field.window.to!==s.asOf||field.window.from>s.asOf||field.window.from<s.points[0][0])throw Error('TECHNICAL_INPUT_EVIDENCE_MISMATCH');
+ }
+ for(const r of d.listings){
+  const s=series[r.listingId];
+  r.readiness=certifiedReadiness(readiness[r.listingId],s,historyHashes[r.listingId]);
+  if(s){
+   s.readiness=r.readiness;
+   const proof=r.readiness.chart;
+   if(['READY','PARTIAL'].includes(proof.status)){
+    s.chartWindow=proof.window;s.chartPoints=s.points.filter(p=>p[0]>=proof.window.start&&p[0]<=proof.window.end);
+    if(!s.chartPoints.length||s.chartPoints[0][0]!==proof.window.start||s.chartPoints.at(-1)[0]!==proof.window.end)throw Error('CHART_WINDOW_NOT_MATERIALIZED');
+   }
+  }
  }
  const target=join(out,'core/data/de-eu'),backup=target+'.previous';rejectSymlinkAncestors(target);rejectSymlinkAncestors(backup);
  if(existsSync(backup))throw Error('PUBLISH_RECOVERY_REQUIRED');

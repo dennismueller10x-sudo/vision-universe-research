@@ -24,6 +24,7 @@ function certificateRef(cert,pointer=''){
  return cert?{...(source||{sha256:hash(cert),inline:true,jsonPointer:''}),jsonPointer:(source?.jsonPointer||'')+pointer}:null;
 }
 function summarizeDiagnostics(values){
+ if(values?.compacted===true&&Number.isSafeInteger(values.count)&&/^[a-f0-9]{64}$/.test(values.sha256||''))return {count:values.count,compacted:true,sha256:values.sha256,byCause:null,byField:null,byReason:null,window:null};
  const rows=Array.isArray(values)?values:[],byCause={},byField={},byReason={};let first=null,last=null;
  for(const value of rows){
   for(const [key,target]of [['cause',byCause],['field',byField],['reason',byReason]])if(typeof value?.[key]==='string')target[value[key]]=(target[value[key]]||0)+1;
@@ -134,7 +135,7 @@ function logoRecord(row,input){
  const flatLoaded=!literal&&l.assetLoad?.loaded===true&&l.assetLoad.asset===asset&&refs(l.assetLoad.evidence);
  const verified=known==='VERIFIED_LOGO'&&linked&&issuerProven&&!!asset&&(!!loaded||flatLoaded);
  const evidence=[...arrayRefs(l.evidence),...arrayRefs(loaded?.evidence),...arrayRefs(l.assetLoad?.evidence),...(company?[company.issuerEvidence?.path,company.domainEvidence?.path].filter(Boolean):arrayRefs(l.issuerEvidence))];
- return {listingId:row.listingId,status:verified?'VERIFIED_LOGO':known==='SUSPECT_QUARANTINED'||!linked?'SUSPECT_QUARANTINED':known==='MISSING'?'MISSING':'EXISTING_FALLBACK',verified,evidence,asset:verified?asset:null,candidateAsset:verified?null:asset,producerCanonicalStatus:supplied,reason:verified?null:l.reason||fallback.reason};
+ return {listingId:row.listingId,securityId:row.securityId,isin:row.isin,mic:row.mic,companyId:row.companyId||null,referencedIssuerId:row.referencedIssuerId||null,status:verified?'VERIFIED_LOGO':known==='SUSPECT_QUARANTINED'||!linked?'SUSPECT_QUARANTINED':known==='MISSING'?'MISSING':'EXISTING_FALLBACK',verified,evidence,asset:verified?asset:null,candidateAsset:verified?null:asset,producerCanonicalStatus:supplied,reason:verified?null:l.reason||fallback.reason};
 }
 export function aggregateDevelopment(input){
  if(!input||!Array.isArray(input.listingMaps)||!date(input.asOf)||!/^[a-f0-9]{40}$/.test(input.sourceSHA||'')||typeof input.now!=='string'||!/(Z|[+-]\d\d:\d\d)$/.test(input.now)||!Number.isFinite(Date.parse(input.now)))throw Error('FIXED_PRIVATE_REPORT_INPUT_REQUIRED');
@@ -172,7 +173,7 @@ export function aggregateDevelopment(input){
   const functions=baseline.functions;
   const quarantine=[...(h?.quarantined||[]),...(h?.anomalies||[])],missingSessions=certMatches?cert.missingSessions||[]:[];
   const issues=certMatches?cert.fullHistoryQuality?.issues||[]:h?.quality?.issues||[];
-  const chartQuality={quarantinedRowsRetained:quarantine.length,quarantineSummary:summarizeDiagnostics(quarantine),historyIssueSummary:summarizeDiagnostics(issues),missingSessions,missingSessionCount:missingSessions.length,filledSessions:0,basis:facts.basis||'UNKNOWN'};
+  const chartQuality={quarantinedRowsRetained:quarantine.length,immutableQuarantineObservationCount:h?.quarantineLedger?.length??quarantine.length,quarantineSummary:summarizeDiagnostics(quarantine),historyIssueSummary:summarizeDiagnostics(issues),missingSessions,missingSessionCount:missingSessions.length,filledSessions:0,basis:facts.basis||'UNKNOWN'};
   if(issues.length&&certMatches)chartQuality.privateHistoryIssues=certificateRef(cert,'/fullHistoryQuality/issues');
   if(quarantine.length||issues.length&&!certMatches)chartQuality.privateHistorySource={...(input.historiesDir?{path:join(input.historiesDir,row.listingId+'.json')}:{inline:true}),inputSeriesHash:facts.inputSeriesHash,sourceEvidence:sourceRefs};
   if(functions.privateCloseChart.status==='READY'){
