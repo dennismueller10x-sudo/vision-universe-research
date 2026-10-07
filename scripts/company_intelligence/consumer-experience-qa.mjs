@@ -27,9 +27,9 @@ try{
    assert(!text.includes('derzeit nicht verfügbar'),ticker+' unavailable');assert.deepEqual(errors,[]);assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+' page overflow');assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false,ticker+' chapter overflow');
    assert.equal(await page.locator('vu-navigation').count(),1);assert(requests.some(u=>u.includes(candidate.generation)),ticker+' generation');
-   const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height,height:a.getBoundingClientRect().height})));
+   const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height&&!a.closest('details:not([open])'),height:a.getBoundingClientRect().height})));
    const intelligence=chapter.locator('section.ci-block').filter({has:page.getByRole('heading',{name:version==='after'?'Aktuelles':'Neuigkeiten',exact:true})});
-   const storyLinks=await intelligence.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height})));
+   const storyLinks=await intelligence.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,visible:!!a.getBoundingClientRect().height&&!a.closest('details:not([open])')})));
    const renderedNewsLinks=version==='after'?await chapter.locator('.ci-story[data-intelligence-type=NEWS]').evaluateAll(ns=>ns.map(n=>n.dataset.storyUrl)):storyLinks.map(a=>a.url);
    const newsURLs=new Set(payload.news.map(n=>n.canonicalUrl||n.sourceUrl));const visibleNews=new Set(storyLinks.filter(a=>a.visible&&newsURLs.has(a.url)).map(a=>a.url));
    if(version==='after'){
@@ -41,7 +41,7 @@ try{
     if(inventory.staleFinancials&&inventory.financials==='AVAILABLE')assert(text.includes('Veraltete Geschäftszahlen'));
    }
    if(examples.includes(ticker)&&theme==='dark'&&[390,430,1440].includes(width)){
-    await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-viewport.png`});
+    await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-viewport.png`});
     await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
