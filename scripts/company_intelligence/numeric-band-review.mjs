@@ -5,14 +5,17 @@ import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url),{createTiingoProvider}=require('../../providers/tiingo/adapter.js');
 const samples=[['BOH','MID_CAP'],['SBSI','SMALL_CAP'],['AMPY','MICRO_CAP']];
 const today=new Date().toISOString().slice(0,10),from=new Date(Date.now()-10*86400000).toISOString().slice(0,10);
-const provider=createTiingoProvider({apiKey:process.env.TIINGO_API_KEY,limits:{requestsPerMinute:3,requestsPerHour:3,requestsPerDay:3,maxRetries:0,concurrency:1}});
+const provider=createTiingoProvider({apiKey:process.env.TIINGO_API_KEY,fetchImpl:(url,init)=>fetch(url,init),limits:{requestsPerMinute:3,requestsPerHour:3,requestsPerDay:3,maxRetries:0,concurrency:1}});
 const rows=[];
 for(const [ticker,expectedBand] of samples){
  const detail=JSON.parse(readFileSync(new URL(`../../discover/data/stocks/US_REAL/${ticker}.json`,import.meta.url)));
  const cik=detail.fundamentals?.cik;if(!/^\d{10}$/.test(cik||''))throw Error('NUMERIC_REVIEW_IDENTITY_MISSING');
  const quote=await provider.getDailyBars(ticker,{from,to:today,currency:'USD'});
  const bars=quote.data?.bars||[],bar=bars.at(-1);
- if(!quote.available||!bar||!Number.isFinite(bar.close)||bar.close<=0||bar.date>today||Date.now()-Date.parse(bar.date)>4*86400000)throw Error('CURRENT_NUMERIC_PRICE_UNAVAILABLE_'+ticker);
+ if(!quote.available||!bar||!Number.isFinite(bar.close)||bar.close<=0||bar.date>today||Date.now()-Date.parse(bar.date)>4*86400000){
+  console.log(JSON.stringify({ticker,available:quote.available,reason:quote.reason,status:quote.status,budgetSource:quote.source,barCount:bars.length,barKeys:bar?Object.keys(bar):[],priceDate:bar?.date,keyConfigured:Boolean(process.env.TIINGO_API_KEY)}));
+  throw Error('CURRENT_NUMERIC_PRICE_UNAVAILABLE_'+ticker);
+ }
  const sourceUrl=`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`;
  const response=await fetch(sourceUrl,{headers:{'User-Agent':'VisionUniverseResearch info@visionuniverse.de'},signal:AbortSignal.timeout(30000)});
  if(!response.ok)throw Error('CURRENT_SHARE_SOURCE_UNAVAILABLE_'+ticker);

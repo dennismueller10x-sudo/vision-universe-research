@@ -13,7 +13,7 @@ on:
       production_release:
         description: 'Approved exact cohort: validate or publish consumer only; fresh accepted R2 restore, no crawl or polling'
         type: choice
-        options: [none, validate, publish, enable, disable]
+        options: [none, validate, publish, enable, disable, numeric]
         default: none
       accepted_handoff:
         description: "Exact recovered checkpoint: issue encrypted bounded PUT or accept and fresh restore; no crawl/deploy"
@@ -72,6 +72,25 @@ concurrency:
   group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  production-numeric:
+    if: github.event_name == 'workflow_dispatch' && inputs.production_release == 'numeric' && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Three targeted existing-provider prices and SEC share disclosures; no state write
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/company_intelligence/numeric-band-review.mjs --evidence "$RUNNER_TEMP/numeric-band-review.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: numeric-band-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/numeric-band-review.json
+          retention-days: 14
   production-gate:
     if: github.event_name == 'workflow_dispatch' && (inputs.production_release == 'enable' || inputs.production_release == 'disable') && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     runs-on: ubuntu-latest
@@ -175,7 +194,7 @@ jobs:
             ${{ runner.temp }}/production-dark-qa/
           retention-days: 14
   validate:
-    if: github.event_name != 'schedule' && !inputs.current_restore_only && inputs.production_release != 'disable' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
+    if: github.event_name != 'schedule' && !inputs.current_restore_only && inputs.production_release != 'disable' && inputs.production_release != 'numeric' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

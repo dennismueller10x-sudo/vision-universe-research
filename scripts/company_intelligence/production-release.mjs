@@ -54,7 +54,7 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   for(const path of ['company-intelligence/config/rollout.js','quant/release-bundle.js']){
    const file=resolve(release,path);if(!existsSync(file))continue;
    const text=readFileSync(file,'utf8'),needle='const config = {stage:1,';
-   if(text.includes(needle))writeFileSync(file,text.replace(needle,'const config = {stage:0,'));
+   if(text.includes(needle))writeFileSync(file,text.replace(needle,'const config = {stage:0,productionOff:true,'));
   }
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
