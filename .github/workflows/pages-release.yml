@@ -213,7 +213,7 @@ jobs:
           # immer uebersprungen und der Start scheiterte am fehlenden
           # headless_shell. Deshalb wie in allen anderen Workflows dieses
           # Repositories: unbedingt installieren, mit der gepinnten CLI.
-          /tmp/vu2-smoke/node_modules/.bin/playwright install --with-deps chromium
+          node scripts/company_intelligence/install-browser-deps.mjs /tmp/vu2-smoke/node_modules/.bin/playwright
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
 
       - name: Enforce delivery contract
@@ -356,7 +356,7 @@ jobs:
         if: steps.approved.outputs.prepared == 'true'
         run: |
           npm install --prefix /tmp/ci-live --no-audit --no-fund playwright@1.55.0
-          /tmp/ci-live/node_modules/.bin/playwright install --with-deps chromium
+          node scripts/company_intelligence/install-browser-deps.mjs /tmp/ci-live/node_modules/.bin/playwright
       - name: Prove actual production gate-off behavior before activation or after rollback
         if: steps.approved.outputs.prepared == 'true' && steps.approved.outputs.enabled != 'true'
         env:
