@@ -47,6 +47,11 @@ MIXED_CURRENCY = "MIXED_CURRENCY"
 TTM_PERIODS_NOT_CONTIGUOUS = "TTM_PERIODS_NOT_CONTIGUOUS"
 TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
 TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
+# Ein Quartals-EPS, das zu Ergebnis und Aktienzahl desselben Quartals um eine
+# Groessenordnung nicht passt (Tagging-Fehler, Churchill Downs Q1 2020: -590000).
+TTM_EPS_INCONSISTENT = "TTM_EPS_INCONSISTENT"
+# Quartale in verschiedenen Einheiten/Waehrungen werden nicht summiert.
+TTM_UNIT_MISMATCH = "TTM_UNIT_MISMATCH"
 
 # --- quality / confidence states --------------------------------------------
 QUALITY_HIGH = "HIGH"

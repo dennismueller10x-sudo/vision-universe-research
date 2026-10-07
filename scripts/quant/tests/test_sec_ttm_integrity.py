@@ -8,8 +8,8 @@ import unittest
 
 from test_sec_ground_truth_regressions import build
 
-from quant.sec.model import (TTM_CONCEPT_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS,  # noqa: E402
-                             TTM_SHARE_BASIS_INCONSISTENT)
+from quant.sec.model import (TTM_CONCEPT_MISMATCH, TTM_EPS_INCONSISTENT,  # noqa: E402
+                             TTM_PERIODS_NOT_CONTIGUOUS, TTM_SHARE_BASIS_INCONSISTENT, TTM_UNIT_MISMATCH)
 
 AS_OF = "2026-10-05"
 
@@ -155,3 +155,67 @@ class ContinuingOnlyWindow(unittest.TestCase):
         fact = resolver.ttm_ending("eps_diluted", fiscal_year, index, "2011-03-02")
         self.assertFalse(fact.available, f"TTM {fact.value} aus fortgefuehrtem EPS")
         self.assertEqual(fact.reason, TTM_CONCEPT_MISMATCH)
+
+
+class RedTeamTtm(unittest.TestCase):
+    """Red Team der TTM-Logik (1.16-1.18): echte Faelle, die als VERIFIED-TTM falsch waren."""
+
+    def test_small_split_ratios_block_eps_ttm(self):
+        """HIGH-1: Neogen 4:3-Split 2017-12-29 - TTM 1,28 mischt 0,31/0,32 (vor Split) mit 0,32/0,33; konsistent 1,12.
+        Wilson Bank 4:3 - 2,94 statt 2,35. Verwaesserte Aktien springen um das Splitverhaeltnis (1,26-1,35)."""
+        for name, as_of in (("NEOG", "2018-03-29"), ("WBHC", "2016-05-10")):
+            _, resolver = build(name)
+            fact = resolver.ttm("eps_diluted", as_of)
+            self.assertFalse(fact.available, f"{name}: TTM {fact.value} ueber einen Split")
+            self.assertEqual(fact.reason, TTM_SHARE_BASIS_INCONSISTENT)
+
+    def test_fiscal_year_change_does_not_publish_a_stale_ttm(self):
+        """HIGH-2: VF Corp (Geschaeftsjahr Dezember -> Maerz): das 10-K 0000103379-19-000006 meldet Okt-Dez 2018
+        (1,16) und Jan-Maer 2019 (0,32) in derselben Rasterzelle; behalten wurde nur eines, das TTM stand am 2019-06-01
+        als VERIFIED 3,45 bis 2018-12-29 ('FY2019Q4'). Richtig waere 3,14 bis 2019-03-30 - oder keins."""
+        _, resolver = build("VFC")
+        for metric in ("eps_diluted", "revenue"):
+            fact = resolver.ttm(metric, "2019-06-01")
+            if fact.available:
+                self.assertEqual(str(fact.period_end)[:10], "2019-03-30", f"{metric}: veraltetes TTM {fact.value}")
+
+    def test_calendar_year_tax_disclosures_do_not_shift_fiscal_years(self):
+        """HIGH-3: Hovnanian (Geschaeftsjahr Oktober) meldet im 10-K FY2021 Steuersaetze fuer Kalenderjahre bis
+        2021-12-31; max(ends) machte den Dezember zum Jahresende, das Jahr bis 2025-10-31 hiess FY2028."""
+        calendar, _ = build("HOV")
+        self.assertEqual(calendar.fiscal_year_for("2025-10-31"), 2025)
+        self.assertEqual(calendar.fiscal_year_for("2021-10-31"), 2021)
+
+    def test_mis_scaled_eps_is_not_summed(self):
+        """HIGH-4: Churchill Downs 10-Q Q1 2020 taggt EPS -590000 (SEC spaeter -0,59); Ergebnis -23,4 Mio. bei 39,7 Mio.
+        Aktien. Das TTM -589.996,91 stand bis 2021-02 als VERIFIED."""
+        _, resolver = build("CHDN")
+        fact = resolver.ttm("eps_diluted", "2020-06-01")
+        self.assertFalse(fact.available, f"TTM {fact.value}")
+        self.assertEqual(fact.reason, TTM_EPS_INCONSISTENT)
+
+    def test_quarters_in_different_currencies_are_not_summed(self):
+        """MEDIUM-5: Viscount Systems - TTM-Umsatz 3.477.609 aus einem CAD- und drei USD-Quartalen, als CAD beschriftet."""
+        _, resolver = build("VSYS")
+        fact = resolver.ttm("revenue", "2012-08-14")
+        self.assertFalse(fact.available, f"TTM {fact.value} {fact.unit}")
+        self.assertEqual(fact.reason, TTM_UNIT_MISMATCH)
+
+    def test_evidence_names_the_statement_concept(self):
+        """MEDIUM-6: Escalade 0001104659-20-023597 - Beleg OTHER:RevenueFromContractWithCustomerIncludingAssessedTax
+        (Abschlusszeile 180,5 Mio.); gewaehlt wurde der Vertragsumsatz ohne Steuern 203,4 Mio. (naechste Prioritaet)."""
+        calendar, resolver = build("ESCA")
+        fact = resolver.annual("revenue", calendar.fiscal_year_for("2019-12-28"), "2020-06-01")
+        if fact.available:
+            self.assertEqual(fact.provenance.concept, "RevenueFromContractWithCustomerIncludingAssessedTax", fact.value)
+
+    def test_eps_fields_carry_their_concept_class(self):
+        """MEDIUM-7: Oshkosh - eps.fyDiluted 10,02 und latestQuarterDiluted 0,68 sind EPS fortgefuehrter Bereiche, ohne
+        Kennzeichen unter dem Gesamt-EPS-Namen."""
+        doc = bundle("OSK")
+        for field in ("fyDiluted", "latestQuarterDiluted"):
+            value = doc["eps"][field]
+            self.assertIsNotNone(value)
+            self.assertIn(value.get("class"), ("TOTAL", "CONTINUING"))
+            self.assertTrue(value.get("concept"))
+        self.assertEqual(doc["eps"]["fyDiluted"]["class"], "CONTINUING")
