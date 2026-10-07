@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest,dedicatedActionCoverage,mergeQuarantine} from '../ingest-de-eu.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest,dedicatedActionCoverage,mergeQuarantine,mergeQuarantineLedger,incrementalHistoryWindow} from '../ingest-de-eu.mjs';
 import {mkdtempSync,rmSync,readFileSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
 import {createRequire} from 'node:module';import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url),I=require('../../../core/identity.js');
@@ -249,4 +249,51 @@ test('reference checkpoints migrate legacy state and preserve alternating cohort
   const wrong={...load(checkpointPath(mapB)),referenceHash:hash(mapA)};writeFileSync(checkpointPath(mapB),JSON.stringify(wrong));
   await assert.rejects(ingest({...input,listingMap:mapB,phase:'refresh',sampleProof:proofB}),/REFERENCE_CHECKPOINT_MISMATCH/);assert.equal(calls.length,beforeDrift);
  }finally{rmSync(out,{recursive:true,force:true});}
+});
+
+test('explicit frozen samples preserve selected order and reject missing identity, venue, index or preferred-class coverage',()=>{
+ const identities=[['DE0007164600','XETR'],['DE0007664039','XPAR'],['NL0010273215','XAMS']];
+ const rows=identities.map(([isin,mic],n)=>({isin,mic,listingId:I.listingIdFor({isin,mic}),shareClass:n===1?'PREFERRED_SHARE':'ORDINARY_SHARE',indexMemberships:n===2?['EURO_STOXX_50']:['DAX','MDAX','SDAX','TECDAX']}));
+ const ids=rows.map(r=>r.listingId).reverse();assert.deepEqual(sampleSelection(rows,15,ids).map(r=>r.listingId),ids);
+ for(const wrong of [[],[ids[0],ids[0]],['lst_XETR_DE000BASF111'],[ids[0],ids[1]],Array(21).fill(ids[0])])assert.throws(()=>sampleSelection(rows,15,wrong),/FROZEN_SAMPLE/);
+ const sameVenue=rows.map(r=>({...r,mic:'XETR',listingId:I.listingIdFor({isin:r.isin,mic:'XETR'})}));assert.throws(()=>sampleSelection(sameVenue,15,[sameVenue[0].listingId,sameVenue[1].listingId]),/INDEX_COVERAGE/);assert.throws(()=>sampleSelection(sameVenue,15,[sameVenue[0].listingId,sameVenue[2].listingId]),/SHARE_CLASS_COVERAGE/);
+});
+test('immutable quarantine ledger retains original observations and source hashes after a distinct valid correction',()=>{
+ const original=[{date:'2026-09-25T00:00:00+0000',reason:'invalidOHLC'},{date:'2026-09-26T00:00:00+0000',reason:'negativeVolume'}],source=['sha256:'+hash({original:true})];
+ const ledger=mergeQuarantineLedger([],original,[],source,[],'2026-10-06');assert.equal(ledger.length,2);assert.deepEqual(ledger.map(l=>l.sourceEvidence),[source,source]);
+ const active=mergeQuarantine(original,[],[{date:'2026-09-25',close:100}]);assert.equal(active.length,1);
+ const repeated=mergeQuarantineLedger(ledger,active,[{date:'2026-10-06',reason:'invalidOHLC'}],source,['sha256:'+hash({new:true})],'2026-10-07');assert.equal(repeated.length,3);for(const entry of ledger)assert.deepEqual(repeated.find(r=>r.observationHash===entry.observationHash),entry);
+ assert.deepEqual(mergeQuarantineLedger(repeated,active,[],source,[],'2026-10-07'),repeated);assert.ok(repeated.some(l=>l.observation.date===original[0].date),'corrected original row is still retained, never re-admitted');
+});
+test('hash-bound existing-series sample and refresh use latest plus bounded overlap, skip unsupported actions and preserve correction provenance',async()=>{
+ const out=mkdtempSync(join(tmpdir(),'vu-817-bounded-refresh-'));try{
+  const rows=[['DE0007164600','XETR'],['DE0007664039','XPAR']].map(([isin,mic],n)=>({isin,mic,listingId:I.listingIdFor({isin,mic}),securityId:I.securityIdForISIN(isin),ticker:'POLICY'+n,name:'Synthetic incremental '+n,assetType:'EQUITY',shareClass:n?'PREFERRED_SHARE':'ORDINARY_SHARE',mappingStatus:'VERIFIED',mappingSource:['SYNTHETIC_EXACT_REFERENCE'],quoteUnit:'MAJOR',tradingCurrency:'EUR',indexMemberships:['DAX','MDAX','SDAX','TECDAX','EURO_STOXX_50'],providerSymbol:'POLICY'+n+'.DE'}));
+  let updated=false;const calls=[],oldMap={schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:rows},oldNow=Date.parse('2026-10-06T18:00:00Z');
+  const auth={kind:'USER_AUTHORIZED_BOUNDED_RUN',id:'INCREMENTAL_SYNTHETIC',runId:'INCREMENTAL_SYNTHETIC',source:'SYNTHETIC_AUTHORIZATION',month:'2026-10',observedAt:new Date(oldNow).toISOString(),unknownAccountUsageAcknowledged:true,hardLimit:20000,targetLimit:15000,sourceSHA:'a'.repeat(40),referenceHash:hash(oldMap)};
+  const factory=({mappings,budget,onResponse})=>{
+   const respond=async(id,endpoint,opts={})=>{calls.push({id,endpoint,opts});await budget.reserve({cost:1,endpoint});await onResponse({body:{fixture:true,symbol:mappings[id].symbol,updated},endpoint,params:{symbols:mappings[id].symbol,...opts},apiVersion:'v2',host:'FAKE_TRANSPORT',retrievedAt:new Date(updated?oldNow+86400000:oldNow).toISOString()});};
+   return {getMetadata:async id=>{await respond(id,'/tickers');return {available:true,data:{isin:mappings[id].isin,providerSymbol:mappings[id].symbol,exchange:mappings[id].mic,currency:mappings[id].currency,assetType:mappings[id].assetType}};},getQuote:async id=>{await respond(id,'/eod/latest');return {available:true,data:{timestamp:updated?'2026-10-06T00:00:00Z':'2026-10-02T00:00:00Z',last:updated?105:101}};},getHistoricalBars:async(id,opts)=>{
+    await respond(id,'/eod',opts);const bars=[...(updated?[{date:'2026-09-25',open:98,high:101,low:97,close:99,volume:9}]:[]),{date:'2026-10-01',open:99,high:101,low:98,close:100,volume:10},{date:'2026-10-02',open:100,high:102,low:99,close:updated?102:101,volume:11},...(updated?[{date:'2026-10-06',open:103,high:106,low:102,close:105,volume:12}]:[])].filter(bar=>bar.date>=opts.from&&bar.date<=opts.to);
+    return {available:true,data:{bars,anomalies:updated?[]:[{date:'2026-09-25T00:00:00+0000',reason:'invalidOHLC'},{date:'2026-09-26T00:00:00+0000',reason:'invalidOHLC'}]}};
+   },getActionEvents:async(id,kind)=>{await respond(id,'/'+kind);return {available:true,data:{events:[],verified:false}};}};
+  };
+  const base={listingMap:oldMap,accountEvidence:auth,asOf:oldMap.asOf,now:()=>oldNow,runId:auth.runId,privateDir:join(out,'marketstack'),previewOut:join(out,'preview'),providerFactory:factory};
+  const initial=await ingest(base);assert.equal(initial.budget.requestsAttempted,10,'legacy sample requests remain unchanged');const load=id=>JSON.parse(readFileSync(join(base.privateDir,'normalized',id+'.json')));
+  const cachedHistoryHashes=Object.fromEntries(rows.map(r=>[r.listingId,hash(load(r.listingId))])),ids=rows.map(r=>r.listingId).reverse();
+  const map={...oldMap,asOf:'2026-10-07',sampleListingIds:ids,ingestionPolicy:{schemaVersion:'de-eu-incremental-policy-1.0.0',mode:'EXISTING_ACCEPTED_SERIES',latestEod:true,historyOverlapDays:10,maxLookbackDays:45,skipDocumentedUncoveredDedicatedActions:true,dedicatedActionCoverageSourceHash:dedicatedActionCoverage('XETR').evidence[0].sha256,cachedHistoryHashes}};
+  const newer={...base,listingMap:map,asOf:map.asOf,now:()=>oldNow+86400000,accountEvidence:{...auth,observedAt:new Date(oldNow+86400000).toISOString(),sourceSHA:'b'.repeat(40),referenceHash:hash(map),previousLedgerHash:initial.budget.ledgerHash}};updated=true;
+  const before=calls.length,sample=await ingest(newer);assert.equal(sample.sampleSuccesses,2);assert.equal(calls.length-before,4);assert.ok(calls.slice(before).every(c=>['/eod/latest','/eod'].includes(c.endpoint)));assert.ok(calls.slice(before).filter(c=>c.endpoint==='/eod').every(c=>c.opts.from==='2026-09-22'&&c.opts.maxPages===2));
+  for(const r of rows){const h=load(r.listingId);assert.equal(h.quarantined.length,1);assert.equal(h.quarantineLedger.length,2);assert.equal(h.quality.originalQuarantinedCandles,2);assert.equal(h.quarantineCorrections.length,1);assert.equal(h.quarantineCorrections[0].date,'2026-09-25');assert.equal(h.quarantineCorrections[0].quarantinedObservationHashes.length,1);assert.ok(h.quarantineCorrections[0].sourceEvidence.length);assert.equal(h.restatementLedger.length,1);assert.ok(h.restatementLedger[0].previousBarHash);assert.ok(h.restatementLedger[0].incomingBarHash);assert.ok(h.restatementLedger[0].sourceEvidence.length);assert.equal(h.corporateActions.splits.actionsComplete,false);assert.equal(h.corporateActions.dividends.verified,false);assert.deepEqual(h.bars.map(b=>b.date),['2026-09-25','2026-10-01','2026-10-02','2026-10-06']);}
+  const proof={fixture:false,passed:true,asOf:map.asOf,referenceHash:hash(map),successfulListingIds:ids,testedListingIds:ids,engines:['chromium','webkit'],normalizedHistoryHashes:Object.fromEntries(ids.map(id=>[id,hash(load(id))]))};
+  const refreshStart=calls.length,refreshed=await ingest({...newer,phase:'refresh',sampleProof:proof});assert.equal(refreshed.sampleSuccesses,2);assert.equal(calls.length-refreshStart,4);assert.ok(calls.slice(refreshStart).filter(c=>c.endpoint==='/eod').every(c=>c.opts.from==='2026-09-26'));for(const id of ids){assert.equal(load(id).quarantineLedger.length,2);assert.equal(load(id).restatementLedger.length,1);assert.equal(load(id).quarantineCorrections.length,1);}
+  const path=join(base.privateDir,'normalized',ids[0]+'.json'),drift=load(ids[0]);drift.bars[0].close=90;writeFileSync(path,JSON.stringify(drift));const beforeDrift=calls.length;await assert.rejects(ingest({...newer,phase:'refresh',sampleProof:proof}),/CACHED_HISTORY_DRIFT/);assert.equal(calls.length,beforeDrift);
+  await assert.rejects(ingest({...newer,listingMap:{...map,ingestionPolicy:{...map.ingestionPolicy,dedicatedActionCoverageSourceHash:'f'.repeat(64)}}}),/FROZEN_INCREMENTAL_POLICY_INVALID/);
+ }finally{rmSync(out,{recursive:true,force:true});}
+});
+
+test('large stale overlap is capped explicitly with a retained gap limitation, never a full-history reimport',()=>{
+ const old={bars:[{date:'2026-06-01',close:100}]},policy={historyOverlapDays:10,maxLookbackDays:45};
+ const bounded=incrementalHistoryWindow(old,'2026-10-07',5,policy);assert.equal(bounded.from,'2026-08-23');assert.equal(bounded.to,'2026-10-07');assert.equal(bounded.boundedGapRemains,true);assert.equal(bounded.priorLatestDate,'2026-06-01');
+ const legacy=incrementalHistoryWindow(old,'2026-10-07');assert.equal(legacy.from,'2026-05-22');assert.equal(legacy.boundedGapRemains,false);
+ const recent=incrementalHistoryWindow({bars:[{date:'2026-10-02'}]},'2026-10-07',5,policy);assert.equal(recent.from,'2026-09-22');assert.equal(recent.boundedGapRemains,false);assert.deepEqual(old.bars,[{date:'2026-06-01',close:100}]);
 });
