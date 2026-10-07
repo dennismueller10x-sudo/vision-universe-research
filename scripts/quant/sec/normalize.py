@@ -103,6 +103,34 @@ def _currency(unit):
     return code if len(code) == 3 and code.isalpha() and code.isupper() else None
 
 
+def _drop_partial_aggregates(entries, definition):
+    """A total is never smaller than a component of the same filing.
+
+    us-gaap:Revenues outranks the ASC 606 contract revenue because it is the
+    total (AMT Q3 2019: 1,953.6 million against 137.3 million). Some filers tag
+    a partial amount with it instead: FLS reports Revenues = 0 in every 10-Q
+    next to 1,169 million contract revenue, PESI a 10-K Revenues of 642,000
+    next to 61.7 million. Where a positive component in the same currency is
+    larger by more than the disagreement tolerance, the aggregate is not this
+    filing's total and the next concept decides - as it did before Revenues
+    was ranked first.
+    """
+    if len(entries) < 2:
+        return entries
+    top = entries[0][1]
+    if not definition.is_aggregate(top.taxonomy, top.concept):
+        return entries
+    unit = top.unit
+    larger = [fact for _, fact in entries[1:]
+              if fact.unit == unit and fact.value > 0
+              and fact.value - top.value > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(fact.value), abs(top.value), 1.0)]
+    if not larger:
+        return entries
+    rest = [entry for entry in entries
+            if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
+    return rest or entries
+
+
 def _filing_currencies(raw_facts):
     """accession -> the currency most of that filing's monetary facts are in."""
     counts = defaultdict(Counter)
@@ -219,13 +247,16 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         entries.sort(key=lambda item: (
             reporting is not None and _currency(item[1].unit) not in (None, reporting),
             item[0]))
+        candidates_in_filing = entries
+        entries = _drop_partial_aggregates(entries, registry.get(metric_name))
         best_priority, fact = entries[0]
         flags = []
 
         # More than one accepted concept in the same filing for the same cell:
         # the registry's priority decides, and a material disagreement is
         # reported rather than averaged away.
-        rivals = [other for priority, other in entries[1:]]
+        # A dropped partial aggregate still disagrees and is reported, not hidden.
+        rivals = [other for priority, other in candidates_in_filing if other is not fact]
         if rivals:
             scale = max(abs(fact.value), 1.0)
             if any(abs(other.value - fact.value) / scale > CONCEPT_DISAGREEMENT_TOLERANCE

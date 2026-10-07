@@ -21,12 +21,15 @@ class RegistryError(ValueError):
 
 
 class ConceptRule:
-    __slots__ = ("taxonomy", "concept", "priority")
+    __slots__ = ("taxonomy", "concept", "priority", "aggregate")
 
-    def __init__(self, taxonomy, concept, priority):
+    def __init__(self, taxonomy, concept, priority, aggregate=False):
         self.taxonomy = taxonomy
         self.concept = concept
         self.priority = int(priority)
+        # A total (us-gaap:Revenues): it outranks its components only where it
+        # is not smaller than them in the same filing (normalize.py).
+        self.aggregate = bool(aggregate)
 
     @property
     def qualified(self):
@@ -55,7 +58,8 @@ class MetricDefinition:
             raise RegistryError(f"metric {name}: at least one allowed unit is required")
         self.optional = bool(payload.get("optional", False))
         self.sign = payload.get("sign")
-        rules = [ConceptRule(rule["taxonomy"], rule["concept"], rule["priority"])
+        rules = [ConceptRule(rule["taxonomy"], rule["concept"], rule["priority"],
+                             rule.get("aggregate", False))
                  for rule in payload.get("concepts") or []]
         if not rules:
             raise RegistryError(f"metric {name}: no accepted concepts")
@@ -115,6 +119,12 @@ class MetricDefinition:
             code = unit.split("/", 1)[0]
             return code if self._is_currency(code) else None
         return None
+
+    def is_aggregate(self, taxonomy, concept):
+        for rule in self.concepts:
+            if rule.taxonomy == taxonomy and rule.concept == concept:
+                return rule.aggregate
+        return False
 
     def priority_of(self, taxonomy, concept):
         for rule in self.concepts:

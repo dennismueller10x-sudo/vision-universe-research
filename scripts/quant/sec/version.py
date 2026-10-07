@@ -139,7 +139,13 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          dem USD-Umsatz; mit Revenues als Gesamtumsatz (Registry 1.7.0) wurde
 #          der EUR-Betrag zum Umsatz. Gefunden in der Consumer-Wirkungsanalyse
 #          des Audits, nach dem Holdout (Data-Freeze v2).
-NORMALIZATION_LOGIC_VERSION = "1.12.0"
+# 1.13.0 — Ein Gesamtkonzept (Registry "aggregate", us-gaap:Revenues) gilt in
+#          einer Einreichung nur, wenn es nicht kleiner ist als ein anderes
+#          Konzept derselben Kennzahl und Waehrung. FLS meldet in jedem 10-Q
+#          Revenues = 0, PESI im 10-K 642.000 neben 61,7 Mio. Vertragsumsatz;
+#          mit Revenues als Gesamtumsatz (Registry 1.7.0) gewann der Teilbetrag.
+#          Gefunden in der universumsweiten Consumer-Gegenprobe (Data-Freeze v3).
+NORMALIZATION_LOGIC_VERSION = "1.13.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -170,7 +176,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "10e1a31bb39ae2a4d7452f9fbdf26dea2f2f2e041f72f5dd86fcb0523b58ef8f"
+    "e7313c51a4452cddf681b6bb0bbb6652f8f2dcd24b9d99d4d081950b9f44a8c5"
 )
 
 

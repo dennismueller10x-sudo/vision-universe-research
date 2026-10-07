@@ -323,10 +323,28 @@ class MappingIntegrityTests(unittest.TestCase):
         result, _ = normalize(builder, self.registry, 2000000006)
         resolver = PeriodResolver(result.factbook, self.registry)
         fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
-        # Registry 1.7.0: Revenues ist laut US-GAAP-Taxonomie der Gesamtumsatz und hat in
-        # derselben Einreichung Vorrang vor dem ASC-606-Vertragsumsatz (Teilbetrag; AMT
-        # Q3 2019: 1.953,6 Mio. statt 137,3 Mio., Fundamental-Data-Integrity-Audit E2).
-        self.assertEqual(fact.value, 900.0)
+        # Registry 1.8.0: Revenues ist der Gesamtumsatz (aggregate) und hat Vorrang - aber ein
+        # Gesamtbetrag ist nie kleiner als ein Teilbetrag derselben Einreichung. 900 neben 1000
+        # Vertragsumsatz ist kein Gesamtumsatz (FLS, PESI; Fundamental-Data-Integrity-Audit E2-R).
+        self.assertEqual(fact.value, 1000.0)
+        self.assertEqual(fact.provenance.concept,
+                         "RevenueFromContractWithCustomerExcludingAssessedTax")
+
+    def test_the_total_revenue_wins_over_a_smaller_contract_revenue(self):
+        builder = FactsBuilder(2000000016)
+        for year in (2022, 2023):
+            start, end = f"{year}-01-01", f"{year}-12-31"
+            filed = f"{year + 1}-02-20"
+            builder.add("us-gaap", "Revenues", "USD", 1953.6, end, start,
+                        f"acc-{year}", "10-K", filed, fy=year, fp="FY")
+            builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
+                        "USD", 137.3, end, start, f"acc-{year}", "10-K", filed,
+                        fy=year, fp="FY")
+        result, _ = normalize(builder, self.registry, 2000000016)
+        resolver = PeriodResolver(result.factbook, self.registry)
+        fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
+        # E2: AMT Q3 2019 - Revenues 1.953,6 Mio., Vertragsumsatz 137,3 Mio. (Teilbetrag).
+        self.assertEqual(fact.value, 1953.6)
         self.assertEqual(fact.provenance.concept, "Revenues")
 
     def test_disagreeing_concepts_are_flagged_not_averaged(self):
