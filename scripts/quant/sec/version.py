@@ -166,7 +166,14 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          bei belegtem Konzeptunterschied im gemeinsamen Konzept, sonst keines.
 #          Kein Ersatz durch das Geschaeftsjahr. E12: gewichtete Aktienzahlen
 #          sind Durchschnitte, nicht additiv (CSWC Q4 FY2026: 1,0 statt ~68 Mio.).
-NORMALIZATION_LOGIC_VERSION = "1.16.0"
+# 1.17.0 — Umsatz-Mehrdeutigkeit aus Belegen der Einreichung statt 50-%-Regel:
+#          ist us-gaap:Revenues kleiner als ein anderes Umsatzkonzept derselben
+#          Zelle, entscheidet die Ergebnisrechnung der Einreichung (Statement-
+#          Rolle, Presentation/Calculation, quant/config/sec-revenue-statement-
+#          evidence.json). Ohne eindeutigen Beleg bleibt die Zelle leer
+#          (AMBIGUOUS > GUESSED). Die Regel widersprach den Belegen in 448
+#          Zellen (EQT-Nettogesamtumsatz verworfen, Escalade-Anhangwert behalten).
+NORMALIZATION_LOGIC_VERSION = "1.17.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -197,7 +204,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "becb452d83d304d058c78c8b4f1d5f6896602e3b876e42698519ffef9eb599c2"
+    "05395207ae685da6065c05c550097051ead07984118a4de411043f0b3b38e576"
 )
 
 
@@ -230,4 +237,15 @@ def version_stamp(metric_registry_version=None):
     }
     if metric_registry_version is not None:
         stamp["metric_registry"] = metric_registry_version
+    stamp["revenue_evidence"] = revenue_evidence_version()
     return stamp
+
+
+def revenue_evidence_version():
+    """Version of quant/config/sec-revenue-statement-evidence.json (None if absent)."""
+    import json
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[3] / "quant" / "config" / "sec-revenue-statement-evidence.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8")).get("version")

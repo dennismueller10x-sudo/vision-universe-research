@@ -13,8 +13,11 @@ Rules this layer obeys without exception:
   - Every observation carries the concept actually used, its accession, its form
     and when it became publicly available.
 """
+import json
 import logging
 from collections import Counter, defaultdict
+
+from pathlib import Path
 
 from .fiscal import FiscalCalendar
 from .model import (
@@ -42,9 +45,28 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
-# An aggregate below this share of another concept of the same filing is a
-# partial amount, not the total (see _drop_partial_aggregates).
-PARTIAL_AGGREGATE_RATIO = 0.5
+ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
+
+# Which concept is a filing's revenue line when us-gaap:Revenues is smaller
+# than another revenue concept of the same cell? Decided from the filing
+# itself (statement roles, presentation and calculation linkbase), produced by
+# scripts/fundamentals-audit/build_revenue_evidence.py. A size ratio alone
+# does not decide (1.15.0 dropped EQT's total revenue, 29 percent of contract
+# revenue after derivative losses, and kept Escalade's note-only Revenues).
+REVENUE_EVIDENCE_PATH = (Path(__file__).resolve().parents[3] / "quant" / "config"
+                         / "sec-revenue-statement-evidence.json")
+EVIDENCE_TOTAL = "TOTAL"
+EVIDENCE_OTHER = "OTHER"
+_EVIDENCE_CACHE = {}
+
+
+def load_revenue_evidence(path=None):
+    """{accession: "TOTAL" | "OTHER[:concept]" | "AMBIGUOUS"} (cached)."""
+    path = Path(path or REVENUE_EVIDENCE_PATH)
+    if path not in _EVIDENCE_CACHE:
+        payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        _EVIDENCE_CACHE[path] = payload.get("decisions") or {}
+    return _EVIDENCE_CACHE[path]
 # Same-filing values of the other accepted concepts, kept on the observation as
 # "ALT:<taxonomy>:<concept>=<value>" so a derived quarter can subtract two
 # cumulative points of ONE concept (periods.py). Not a quality signal.
@@ -110,23 +132,14 @@ def _currency(unit):
     return code if len(code) == 3 and code.isalpha() and code.isupper() else None
 
 
-def _drop_partial_aggregates(entries, definition):
-    """An aggregate (us-gaap:Revenues) is not this filing's total when it is a
-    fraction of another concept of the same metric and currency.
-
-    Revenues outranks the ASC 606 contract revenue because it is the total
-    (AMT Q3 2019: 1,953.6 million against 137.3 million). Some filers tag a
-    partial amount with it instead: FLS reports Revenues = 0 in every 10-Q,
-    PESI a 10-K Revenues of 642,000 next to 61.7 million, VTSI, GEN and VRRM
-    1 to 12 percent of the contract revenue. A total may also legitimately be
-    SMALLER than the contract revenue when another component is negative:
-    UPST Q2 2022 Revenues 228.2 million = 258.3 million contract revenue
-    - 30.2 million RevenueNotFromContractWithCustomer; PXD, FCX and PENN
-    (derivatives, provisional pricing, promotional allowances) sit at 80 to
-    98 percent. Every partial case measured lies below half of the component,
-    every net total above it, so the aggregate is dropped only when it is
-    not positive or below PARTIAL_AGGREGATE_RATIO of a positive component;
-    then the next concept decides, as it did before Revenues was ranked first.
+def _drop_partial_aggregates(entries, definition, accession=None, evidence=None):
+    """An aggregate (us-gaap:Revenues) smaller than another positive concept of
+    the same metric, currency and filing is either the statement total (net of
+    a negative component: UPST, EQT, PXD, FCX) or a partial amount (FLS
+    Revenues = 0, PESI, VTSI, GEN, VRRM, Escalade). The filing decides
+    (REVENUE_EVIDENCE_PATH): TOTAL keeps it, OTHER drops it for the next
+    concept. Without a decision - AMBIGUOUS or no evidence for the filing - the
+    cell has no value: None is returned, never a guess.
     """
     if len(entries) < 2:
         return entries
@@ -135,13 +148,17 @@ def _drop_partial_aggregates(entries, definition):
         return entries
     unit = top.unit
     larger = [fact for _, fact in entries[1:]
-              if fact.unit == unit and fact.value > 0
-              and (top.value <= 0 or top.value < PARTIAL_AGGREGATE_RATIO * fact.value)]
+              if fact.unit == unit and fact.value > 0 and top.value < fact.value]
     if not larger:
         return entries
-    rest = [entry for entry in entries
-            if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
-    return rest or entries
+    decision = (evidence or {}).get(accession) or ""
+    if decision == EVIDENCE_TOTAL:
+        return entries
+    if decision.startswith(EVIDENCE_OTHER):
+        rest = [entry for entry in entries
+                if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
+        return rest or None
+    return None
 
 
 def _alternate_flags(fact, rivals):
@@ -165,7 +182,7 @@ def _filing_currencies(raw_facts):
 
 
 def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
-                      calendar=None):
+                      calendar=None, revenue_evidence=None):
     """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
     raw_facts = list(raw_facts)
     issues = []
@@ -271,7 +288,14 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             reporting is not None and _currency(item[1].unit) not in (None, reporting),
             item[0]))
         candidates_in_filing = entries
-        entries = _drop_partial_aggregates(entries, registry.get(metric_name))
+        decided = _drop_partial_aggregates(
+            entries, registry.get(metric_name), accession,
+            load_revenue_evidence() if revenue_evidence is None else revenue_evidence)
+        if decided is None:
+            issues.append(_issue(ISSUE_AMBIGUOUS_AGGREGATE, entries[0][1],
+                                 "aggregate smaller than another concept without filing evidence; cell left empty"))
+            continue
+        entries = decided
         best_priority, fact = entries[0]
         flags = []
 

@@ -40,8 +40,12 @@ def days(a, b):
 
 
 def first_reports(cf, concepts):
-    """{(start, end): (value, filed, concept, form)} - Erstmeldung je Dreimonatsperiode, nicht-dimensional."""
-    out = {}
+    """{(start, end): (value, filed, concept, form, unit)} - Erstmeldung je Quartal (Periodenende), nicht-dimensional.
+
+    Auswertung v3: ein Quartal ist sein Periodenende. Filer melden dasselbe Quartal mit um einen Tag verschobenem
+    Beginn (CIK 4281: 2012-01-01..03-31 im 10-Q vom 2012-04-26, 2011-12-31..03-31 erst im 10-K vom 2013-02-15);
+    v2 fuehrte beide als verschiedene Perioden und nahm die spaete als Erstmeldung."""
+    by_end = {}
     for concept in concepts:
         for unit, rows in (cf.get("facts", {}).get("us-gaap", {}).get(concept, {}).get("units", {})).items():
             if not unit.endswith("/shares"):
@@ -51,10 +55,10 @@ def first_reports(cf, concepts):
                     continue
                 if r.get("form") not in PERIODIC_FORMS:
                     continue
-                key = (r["start"], r["end"])
-                if key not in out or r["filed"] < out[key][1]:
-                    out[key] = (r["val"], r["filed"], concept, r.get("form"), unit)
-    return out
+                current = by_end.get(r["end"])
+                if current is None or r["filed"] < current[1][1]:
+                    by_end[r["end"]] = ((r["start"], r["end"]), (r["val"], r["filed"], concept, r.get("form"), unit))
+    return dict(by_end.values())
 
 
 def truth_windows(reports):
@@ -71,15 +75,23 @@ def truth_windows(reports):
 
 
 def hide_q4(cf):
-    """Experiment B: Dreimonats-EPS aus 10-K-Einreichungen entfernen (gemeldetes Q4)."""
+    """Experiment B: gemeldete Q4-Dreimonats-EPS entfernen - Dreimonatswerte, deren Ende ein Geschaeftsjahresende ist.
+
+    Auswertung v3: v2 entfernte jeden Dreimonatswert aus 10-K-Einreichungen, also auch die Vergleichsquartale Q1-Q3
+    der Quartalsangaben; der Kern sah fuer Q1-Q3 dann nur noch das fortgefuehrte EPS des 10-K (Messkonstrukt)."""
     cf = copy.deepcopy(cf)
+    fy_ends = set()
+    for concepts in FAMILIES.values():
+        for concept in concepts:
+            for rows in (cf.get("facts", {}).get("us-gaap", {}).get(concept, {}).get("units", {})).values():
+                fy_ends.update(r["end"] for r in rows if r.get("start") and 350 <= days(r["start"], r["end"]) <= 380)
     for concepts in FAMILIES.values():
         for concept in concepts:
             body = cf.get("facts", {}).get("us-gaap", {}).get(concept)
             if not body:
                 continue
             for unit, rows in body["units"].items():
-                body["units"][unit] = [r for r in rows if not (r.get("start") and r.get("form", "").startswith("10-K")
+                body["units"][unit] = [r for r in rows if not (r.get("start") and r["end"] in fy_ends
                                                                and 80 <= days(r["start"], r["end"]) <= 100)]
     return cf
 

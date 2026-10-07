@@ -13,7 +13,7 @@ Entscheidung:
   OTHER_STATEMENT_LINE          nur das andere Konzept steht in der Ergebnisrechnung (Revenues nur im Anhang)
   AMBIGUOUS                     beide ohne Summenbeziehung, keines, oder keine lesbare Ergebnisrechnung
 Kein Raten: ohne Beleg AMBIGUOUS. SEC Fair Access ueber sec_filing_xbrl (<= 5 Anfragen/s, Cache).
-  python3 build_revenue_evidence.py <conflicts.json> <cache-dir> <out.json> [--limit N]
+  python3 build_revenue_evidence.py <conflicts.json> <cache-dir> <out.json> [--limit N] [--redecide]
 """
 import json
 import re
@@ -64,6 +64,9 @@ def decide(filing, rival_concepts):
                     in_statement.add(concept_name(href))
     revenues_in = "Revenues" in in_statement
     rivals_in = sorted(c for c in rival_concepts if c in in_statement)
+    revenues_total_label = any(
+        arc["child"] and concept_name(arc["child"]) == "Revenues" and (arc["preferredLabel"] or "").endswith("totalLabel")
+        for role in roles for arc in pre.get(role, []))
     summand = False
     for role in roles:
         for arc in cal.get(role, []):
@@ -71,9 +74,12 @@ def decide(filing, rival_concepts):
                     and concept_name(arc["child"]) in rival_concepts and arc["weight"] > 0:
                 summand = True
     base = {"incomeStatementRoles": roles, "revenuesInStatement": revenues_in, "rivalsInStatement": rivals_in,
-            "rivalIsSummandOfRevenues": summand}
+            "rivalIsSummandOfRevenues": summand, "revenuesTotalLabel": revenues_total_label}
     if revenues_in and (not rivals_in or summand):
         return dict(base, decision="REVENUES_STATEMENT_TOTAL", basis="PRESENTATION" + ("+CALCULATION" if summand else ""))
+    if revenues_in and rivals_in and revenues_total_label:
+        # Beide Zeilen in der Ergebnisrechnung, Revenues mit Gesamtlabel: Revenues ist die Summenzeile.
+        return dict(base, decision="REVENUES_STATEMENT_TOTAL", basis="PRESENTATION_TOTAL_LABEL")
     if rivals_in and not revenues_in:
         return dict(base, decision="OTHER_STATEMENT_LINE", concept=rivals_in[0] if len(rivals_in) == 1 else None,
                     basis="PRESENTATION")
@@ -92,7 +98,7 @@ def main():
         out = json.load(open(out_path))["filings"]
     items = sorted(by_filing.items())[:limit] if limit else sorted(by_filing.items())
     for k, ((cik, accn), rivals) in enumerate(items):
-        if accn in out:
+        if accn in out and out[accn].get("basis") != "FILING_NOT_READABLE" and "--redecide" not in sys.argv:
             continue
         try:
             out[accn] = dict(decide(Filing(cik, accn, cache), rivals), cik=cik)
