@@ -214,23 +214,24 @@
   });
 
   // ------------------------------------------------------------ Rahmen
-  function tabbar() {
+  /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
+     (Screener | Treffer | Gespeichert | Watchlist | ☰). Der Screener meldet
+     ihr den aktiven Bereich, die Trefferzahl und Ziele, die den Screen in
+     der URL behalten; Klicks auf die Leiste bleiben In-App-Navigation. */
+  var DOCK_VIEW = { screener: 'build', treffer: 'results', gespeichert: 'saved', watchlist: 'watchlist' };
+  function dockView(id) { var v = DOCK_VIEW[id]; return v === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : v; }
+  function syncDock() {
+    if (!window.VUNavigation) return;
     var r = ds() ? result() : null;
-    var cur = state.view === 'start' || state.view === 'build' ? 'build' : state.view === 'changes' ? 'saved' : state.view === 'compare' ? 'results' : state.view;
-    function tab(id, label, ic, badge) {
-      var a = h('a', { class: 'sc-tab', href: buildURL({ view: id === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : id }), 'aria-current': cur === id ? 'page' : null,
-        onclick: function (e) { e.preventDefault(); go({ view: id === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : id }); window.scrollTo(0, 0); } }, [icon(ic), label]);
-      if (badge !== undefined && badge !== null) a.append(h('span', { class: 'sc-badge', 'aria-label': badge + ' Treffer' }, badge > 999 ? '999+' : String(badge)));
-      return a;
-    }
-    return h('div', { class: 'sc-tabbar' }, h('nav', { 'aria-label': 'Screener' }, [
-      tab('build', 'Screen', 'filter'), tab('results', 'Treffer', 'hits', r && Q.count(state.query) ? r.total : null), tab('saved', 'Gespeichert', 'saved'), tab('watchlist', 'Watchlist', 'heart')]));
+    var cur = { start: 'screener', build: 'screener', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'watchlist' }[state.view] || null;
+    var hrefs = {};
+    Object.keys(DOCK_VIEW).forEach(function (id) { hrefs[id] = buildURL({ view: dockView(id) }); });
+    window.VUNavigation.dock({ active: cur, hrefs: hrefs, badges: { treffer: r && Q.count(state.query) ? r.total : null } });
   }
-  function deskNav() {
-    var cur = state.view === 'start' || state.view === 'build' || state.view === 'results' ? 'build' : state.view === 'changes' ? 'saved' : state.view;
-    function a(id, label) { return h('a', { href: buildURL({ view: id }), 'aria-current': cur === id ? 'page' : null, onclick: function (e) { e.preventDefault(); go({ view: id }); } }, label); }
-    return h('nav', { class: 'sc-deskNav', 'aria-label': 'Screener-Bereiche' }, [a(Q.count(state.query) ? 'build' : 'start', 'Screen'), a('saved', 'Gespeichert'), a('watchlist', 'Watchlist')]);
-  }
+  document.addEventListener('vu-dock-navigate', function (e) {
+    if (!e.detail || e.detail.product !== 'screener' || !DOCK_VIEW[e.detail.id]) return;
+    e.preventDefault(); go({ view: dockView(e.detail.id) }); window.scrollTo(0, 0);
+  });
   function modeSeg() {
     var q = state.query;
     function set(mode) {
@@ -252,7 +253,7 @@
     opts = opts || {};
     var row = h('div', { class: 'sc-bar-row' });
     if (opts.back) row.append(iconBtn('back', 'Zurück', opts.back));
-    if (mqDesk.matches) row.append(h('div', { class: 'sc-brand', style: { flex: '1' } }, [h('h1', { text: 'Screener', style: { flex: 'none' } }), h('small', { text: 'Vision Universe' })]), deskNav());
+    if (mqDesk.matches) row.append(h('div', { class: 'sc-brand', style: { flex: '1' } }, [h('h1', { text: 'Screener', style: { flex: 'none' } }), h('small', { text: 'Vision Universe' })]));
     else row.append(h('h1', { text: title }));
     (opts.right || []).forEach(function (n) { if (n) row.append(n); });
     var b = h('div', { class: 'sc-bar' }, row);
@@ -274,8 +275,8 @@
     main.append(footer());
     if (state.view === 'build' && !mqDesk.matches) frag.push(stickyCta());
     if (state.select && state.selected.length) frag.push(compareBar());
-    frag.push(tabbar());
     root.replaceChildren.apply(root, frag);
+    syncDock();
     var b = main.querySelector('.sc-bar');
     if (b) { var onS = function () { b.classList.toggle('is-stuck', window.scrollY > 4); }; onS(); window.onscroll = onS; }
     if (opts.keepScroll) window.scrollTo(0, y);
