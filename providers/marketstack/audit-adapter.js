@@ -7,7 +7,7 @@ const numeric=x=>x===null||x===undefined||typeof x==='boolean'||String(x).trim()
 const symbolOf=r=>r.symbol||r.ticker||null;
 // exchange_code is often a descriptive label (NASDAQ / NYSE ARCA), not a MIC.
 const micOf=r=>{
-  const mics=[r.exchange,r.stock_exchange?.mic,r.stock_exchange?.exchange_mic,r.exchange_code].filter(x=>typeof x==='string'&&/^[A-Z0-9]{4}$/.test(x));
+  const mics=[r.exchange,r.stock_exchange?.mic,r.stock_exchange?.exchange_mic].filter(x=>typeof x==='string'&&/^[A-Z0-9]{4}$/.test(x));
   const unique=[...new Set(mics)];return unique.length>1?'CONFLICTING_PROVIDER_MIC':unique[0]||null;
 };
 const failure=reason=>({ok:false,reason,data:null,complete:false});
@@ -26,14 +26,16 @@ function normalizeObservation(row,{kind,retrievedAt}={}) {
   return {raw:clone(row),normalized:{providerTicker:symbolOf(row),providerExchange:micOf(row),providerExchangeCode:row.exchange_code??null,
     name:row.name??null,isin:row.isin??null,currency:row.price_currency??row.currency??null,
     sector:row.sector??null,industry:row.industry??null,cik:row.cik??null,cusip:row.cusip??null,lei:row.lei??null,
-    countryCode:row.country_code??row.stock_exchange?.country_code??null,
-    country:row.country??row.stock_exchange?.country??null,assetType:row.asset_type??row.item_type??null,
+    countryCode:kind==='SNAPSHOT'?null:row.country_code??null,country:kind==='SNAPSHOT'?null:row.country??null,
+    exchangeCountry:row.stock_exchange?.country??(kind==='SNAPSHOT'?row.country??null:null),exchangeCountryCode:row.stock_exchange?.country_code??null,
+    assetType:row.asset_type??row.item_type??null,
     open:numeric(row.open),high:numeric(row.high),low:numeric(row.low),close:numeric(row.close),volume:numeric(row.volume),
     adjustedOpen:numeric(row.adj_open),adjustedHigh:numeric(row.adj_high),adjustedLow:numeric(row.adj_low),adjustedClose:numeric(row.adj_close),adjustedVolume:numeric(row.adj_volume),
     splitFactor:numeric(row.split_factor),dividend:numeric(row.dividend),
     price:kind==='SNAPSHOT'?numeric(row.price):kind==='INTRADAY'?numeric(row.marketstack_last??row.last):numeric(row.close),
     marketTimestamp:row.trade_last??row.date??null,providerUpdateTimestamp:row.updated_at??row.update_timestamp??null,
-    tradingDate:typeof row.date==='string'?row.date.slice(0,10):null,retrievedAt:retrievedAt??null,
+    tradingDate:typeof (row.date??row.trade_last)==='string'&&/^\d{4}-\d{2}-\d{2}/.test(row.date??row.trade_last)?(row.date??row.trade_last).slice(0,10):null,
+    timestampTimezone:/Z$|[+-]\d{2}:?\d{2}$/.test(String(row.trade_last??row.date??''))?'EXPLICIT_OFFSET':'NOT_REPORTED',retrievedAt:retrievedAt??null,
     frequency:kind??'METADATA',delayState:kind==='EOD'?'EOD_ONLY':'UNKNOWN',adjustmentVerification:'UNVERIFIED'}};
 }
 function holdingsOf(body) {
@@ -42,6 +44,11 @@ function holdingsOf(body) {
 function createAuditAdapter(options={}) {
   const client=options.client||createMarketstackClient(options);
   const pageOptions=o=>({maxPages:o.maxPages??10,cacheTtlMs:0});
+  async function metadata(endpoint,params={}) {
+    const res=await client.request(endpoint,params,{cacheTtlMs:0});if(!res.ok)return res;
+    const body=res.data?.data??res.data,rows=Array.isArray(body)?body:[body];
+    return {...res,raw:clone(res.data),observations:rows.filter(r=>r&&typeof r==='object').map(r=>normalizeObservation(r,{kind:'METADATA',retrievedAt:res.retrievedAt}))};
+  }
   async function directory(endpoint,params,o={}) {
     const res=await client.paginate(endpoint,{...params,limit:o.limit??1000},pageOptions(o));
     if(!res.ok)return res;
@@ -60,8 +67,8 @@ function createAuditAdapter(options={}) {
     searchTicker:(query,o={})=>directory('/tickerslist',{search:query,...(o.exchange?{exchange:o.exchange}:{})},o),
     listExchangeTickers:(mic,o={})=>/^[A-Z0-9]{4}$/.test(mic)?directory('/exchanges/'+mic+'/tickers',{search:o.search},o):Promise.resolve(failure('invalidMIC')),
     listExchanges:(o={})=>client.paginate('/exchanges',{search:o.search,limit:o.limit??1000},pageOptions(o)),
-    getTicker:(symbol)=>client.request('/tickers/'+encodeURIComponent(symbol),{}, {cacheTtlMs:0}),
-    getTickerInfo:(symbol)=>client.request('/tickerinfo',{ticker:symbol},{cacheTtlMs:0}),
+    getTicker:(symbol)=>metadata('/tickers/'+encodeURIComponent(symbol)),
+    getTickerInfo:(symbol)=>metadata('/tickerinfo',{ticker:symbol}),
     listETFs:(o={})=>client.paginate('/etflist',{ticker:o.ticker,status:o.status,date_from:o.from,date_to:o.to,limit:o.limit??1000},pageOptions(o)),
     async resolveTicker({providerTicker,canonicalTicker,legacyTicker,aliases=[],mic}) {
       // Candidates are observed/explicit aliases, never a fabricated suffix.
@@ -71,7 +78,7 @@ function createAuditAdapter(options={}) {
         if(!res.ok)continue;
         const body=res.data?.data??res.data,rows=Array.isArray(body)?body:[body];
         const matched=rows.filter(r=>r&&symbolOf(r)===candidate&&(!mic||micOf(r)===mic||(r.stock_exchanges||[]).some(e=>(e.mic||e.exchange_mic)===mic)));
-        if(matched.length===1)return {ok:true,providerTicker:candidate,mic,raw:clone(matched[0]),attempts,identityVerified:false,identityAdmission:'PROVIDER_OBSERVATION_ONLY'};
+        if(matched.length===1)return {ok:true,providerTicker:candidate,mic,raw:clone(matched[0]),observation:normalizeObservation(matched[0],{kind:'METADATA',retrievedAt:res.retrievedAt}),attempts,identityVerified:false,identityAdmission:'PROVIDER_OBSERVATION_ONLY'};
         if(matched.length>1)return {...failure('ambiguousListing'),attempts};
       }
       return {...failure('identityUnresolved'),attempts,coverageConclusion:'UNKNOWN'};
@@ -103,17 +110,32 @@ function createAuditAdapter(options={}) {
   async function prices(endpoint,listing,o={},kind='EOD',latest=false) {
     if(!listing?.providerTicker)return failure('providerTickerRequired');
     if(!/^[A-Z0-9]{4}$/.test(listing.mic||''))return failure('listingMICRequired');
-    const params={...(kind==='SNAPSHOT'?{ticker:listing.providerTicker}:{symbols:listing.providerTicker,limit:o.limit??1000}),
-      ...(listing.mic?{exchange:listing.mic}:{}),...(latest?{}:{date_from:o.from,date_to:o.to,sort:'ASC'}),
+    const snapshotTicker=listing.snapshotTicker||listing.providerTicker;
+    const codes=listing.verifiedExchangeCodes||[],names=listing.verifiedExchangeNames||[];
+    if(kind==='SNAPSHOT'&&(codes.length||names.length)&&!listing.snapshotMappingSource)return failure('snapshotMappingEvidenceRequired');
+    const params={...(kind==='SNAPSHOT'?{ticker:snapshotTicker}:{symbols:listing.providerTicker,limit:o.limit??1000}),
+      // Live stockprice reports provider codes, while MIC XNAS returns 404.
+      // Fetch all venues and select using explicit observed mapping evidence.
+      ...(kind==='SNAPSHOT'?{}:{exchange:listing.mic}),...(latest?{}:{date_from:o.from,date_to:o.to,sort:'ASC'}),
       ...(kind==='INTRADAY'?{interval:o.interval??'15min',after_hours:o.extendedHours===true}: {})};
     const res=kind==='SNAPSHOT'?await client.request(endpoint,params,{cacheTtlMs:0}):await client.paginate(endpoint,params,pageOptions(o));
     if(!res.ok)return res;
-    const rows=kind==='SNAPSHOT'?res.data?.data:res.data;
+    let rows=kind==='SNAPSHOT'?res.data?.data:res.data;
     if(!Array.isArray(rows))return failure('invalidResponse');
-    const accepted=new Set([listing.providerTicker,...(listing.verifiedAliases||[])]);
-    if(rows.some(r=>!accepted.has(symbolOf(r))||listing.mic&&micOf(r)!==listing.mic))return {...failure('identityMismatch'),raw:clone(res.rawPages??res.data)};
+    const accepted=new Set([listing.providerTicker,...(kind==='SNAPSHOT'?[snapshotTicker]:[]),...(listing.verifiedAliases||[])]);
+    if(rows.some(r=>!accepted.has(symbolOf(r))))return {...failure('identityMismatch'),raw:clone(res.rawPages??res.data)};
+    if(kind==='SNAPSHOT') {
+      const venueName=x=>String(x||'').normalize('NFKC').toUpperCase().replace(/[^\p{L}\p{N}]/gu,'');
+      const observedNames=new Set(names.map(venueName).filter(Boolean));
+      rows=rows.filter(r=>micOf(r)===listing.mic||!micOf(r)&&(r.exchange_code===listing.mic||codes.includes(r.exchange_code)||observedNames.has(venueName(r.exchange_name))));
+      if(!rows.length)return {...failure('snapshotVenueUnverified'),raw:clone(res.data)};
+    } else if(rows.some(r=>micOf(r)!==listing.mic))return {...failure('identityMismatch'),raw:clone(res.rawPages??res.data)};
     if(latest&&rows.length!==1)return {...failure(rows.length?'ambiguousListing':'dataUnavailable'),raw:clone(res.rawPages??res.data)};
-    return {...res,raw:clone(res.rawPages??res.data),data:rows.map(row=>normalizeObservation(row,{kind,retrievedAt:res.retrievedAt})),
+    return {...res,raw:clone(res.rawPages??res.data),data:rows.map(row=>{
+      const observation=normalizeObservation(row,{kind,retrievedAt:res.retrievedAt});
+      if(kind==='SNAPSHOT'&&!micOf(row)){observation.normalized.providerExchange=listing.mic;observation.normalized.exchangeProvenance=row.exchange_code===listing.mic?'PROVIDER_CODE_MATCHES_REQUEST_MIC':'EXPLICIT_OBSERVED_PROVIDER_VENUE_MAPPING';observation.normalized.exchangeMappingSource=listing.snapshotMappingSource??null;}
+      return observation;
+    }),
       complete:kind==='SNAPSHOT'?null:res.complete,capabilityConclusion:'UNKNOWN'};
   }
   api.getLatestEOD=(listing,o={})=>prices('/eod/latest',listing,o,'EOD',true);

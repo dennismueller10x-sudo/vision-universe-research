@@ -1,0 +1,522 @@
+{
+  "sourceRun": 37636729908,
+  "paidReviewRequests": 0,
+  "cases": {
+    "AAPL": {
+      "rawResponseIds": {
+        "split_events": [
+          "0295"
+        ],
+        "dividend_events": [
+          "0296"
+        ],
+        "known_action_EOD": [
+          "0297"
+        ]
+      },
+      "eodRows": [
+        {
+          "date": "2020-08-25T00:00:00+0000",
+          "open": 124.6975,
+          "high": 125.18,
+          "low": 123.0525,
+          "close": 124.825,
+          "volume": 211495600.0,
+          "adj_open": 121.4462986202,
+          "adj_high": 121.9155367899,
+          "adj_low": 119.8441882232,
+          "adj_close": 122.9442,
+          "adj_volume": 211495788.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-08-26T00:00:00+0000",
+          "open": 126.18,
+          "high": 126.9925,
+          "low": 125.0825,
+          "close": 126.5225,
+          "volume": 163022400.0,
+          "adj_open": 122.8892936457,
+          "adj_high": 123.6814617576,
+          "adj_low": 121.821260628,
+          "adj_close": 124.6161,
+          "adj_volume": 163022268.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-08-27T00:00:00+0000",
+          "open": 127.1425,
+          "high": 127.485,
+          "low": 123.8325,
+          "close": 125.01,
+          "volume": 155552400.0,
+          "adj_open": 123.8275508516,
+          "adj_high": 124.1611209494,
+          "adj_low": 120.6038515117,
+          "adj_close": 123.1264,
+          "adj_volume": 155552384.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-08-28T00:00:00+0000",
+          "open": 126.0125,
+          "high": 126.4425,
+          "low": 124.5775,
+          "close": 124.8075,
+          "volume": 187630000.0,
+          "adj_open": 122.7270130105,
+          "adj_high": 123.1458017465,
+          "adj_low": 121.329427345,
+          "adj_close": 122.9269,
+          "adj_volume": 187629916.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-08-31T00:00:00+0000",
+          "open": 127.58,
+          "high": 131.0,
+          "low": 126.0,
+          "close": 129.04,
+          "volume": 225702700.0,
+          "adj_open": 124.2536440423,
+          "adj_high": 127.5844753844,
+          "adj_low": 122.7148389193,
+          "adj_close": 127.0957,
+          "adj_volume": 223505733.0,
+          "split_factor": 4.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-09-01T00:00:00+0000",
+          "open": 132.76,
+          "high": 134.8,
+          "low": 130.53,
+          "close": 134.18,
+          "volume": 151948100.0,
+          "adj_open": 129.2985874201,
+          "adj_high": 131.2853990978,
+          "adj_low": 127.1267295567,
+          "adj_close": 132.1582,
+          "adj_volume": 152470142.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-09-02T00:00:00+0000",
+          "open": 137.59,
+          "high": 137.98,
+          "low": 127.0,
+          "close": 131.4,
+          "volume": 200119000.0,
+          "adj_open": 134.0026562453,
+          "adj_high": 134.3824878896,
+          "adj_low": 123.6887662123,
+          "adj_close": 129.4201,
+          "adj_volume": 200118991.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-09-03T00:00:00+0000",
+          "open": 126.91,
+          "high": 128.84,
+          "low": 120.5,
+          "close": 120.88,
+          "volume": 257599600.0,
+          "adj_open": 123.601112756,
+          "adj_high": 125.4807924315,
+          "adj_low": 117.3582388078,
+          "adj_close": 119.0586,
+          "adj_volume": 257599640.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2020-09-04T00:00:00+0000",
+          "open": 120.07,
+          "high": 123.7,
+          "low": 110.89,
+          "close": 120.96,
+          "volume": 332607200.0,
+          "adj_open": 116.9394500718,
+          "adj_high": 120.4748061454,
+          "adj_low": 107.9987975219,
+          "adj_close": 119.1374,
+          "adj_volume": 332607163.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        }
+      ],
+      "splitEvents": [
+        {
+          "date": "2020-08-31",
+          "split_factor": 4.0,
+          "stock_split": null,
+          "symbol": "AAPL"
+        }
+      ],
+      "dividendCount": 28,
+      "dividendNullFieldCounts": {
+        "payment_date": 22,
+        "record_date": 22,
+        "declaration_date": 22,
+        "distr_freq": 22
+      },
+      "invalidAdjustedRanges": [
+        {
+          "date": "2020-08-25T00:00:00+0000",
+          "adj_open": 121.4462986202,
+          "adj_high": 121.9155367899,
+          "adj_low": 119.8441882232,
+          "adj_close": 122.9442
+        },
+        {
+          "date": "2020-08-26T00:00:00+0000",
+          "adj_open": 122.8892936457,
+          "adj_high": 123.6814617576,
+          "adj_low": 121.821260628,
+          "adj_close": 124.6161
+        },
+        {
+          "date": "2020-09-01T00:00:00+0000",
+          "adj_open": 129.2985874201,
+          "adj_high": 131.2853990978,
+          "adj_low": 127.1267295567,
+          "adj_close": 132.1582
+        }
+      ],
+      "missingAdjustedFieldCounts": {
+        "adj_open": 0,
+        "adj_high": 0,
+        "adj_low": 0,
+        "adj_close": 0,
+        "adj_volume": 0
+      }
+    },
+    "TSLA": {
+      "rawResponseIds": {
+        "split_events": [
+          "0304"
+        ],
+        "dividend_events": [
+          "0305"
+        ],
+        "known_action_EOD": [
+          "0306"
+        ]
+      },
+      "eodRows": [
+        {
+          "date": "2022-08-22T00:00:00+0000",
+          "open": 875.74,
+          "high": 877.2,
+          "low": 858.89,
+          "close": 869.74,
+          "volume": 18546300.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 869.74,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-23T00:00:00+0000",
+          "open": 874.36,
+          "high": 896.48,
+          "low": 863.77,
+          "close": 889.36,
+          "volume": 21269900.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 889.36,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-24T00:00:00+0000",
+          "open": 2678.07,
+          "high": 2732.82,
+          "low": 891.29,
+          "close": 891.29,
+          "volume": 19030600.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 297.0967,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-25T00:00:00+0000",
+          "open": 302.36,
+          "high": 302.96,
+          "low": 291.6,
+          "close": 296.07,
+          "volume": 53230013.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 296.07,
+          "adj_volume": null,
+          "split_factor": 3.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-26T00:00:00+0000",
+          "open": 297.43,
+          "high": 302.0,
+          "low": 287.47,
+          "close": 288.09,
+          "volume": 57163953.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 288.09,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-29T00:00:00+0000",
+          "open": 282.83,
+          "high": 287.74,
+          "low": 280.7,
+          "close": 284.82,
+          "volume": 41864742.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 284.82,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2022-08-30T00:00:00+0000",
+          "open": 287.865,
+          "high": 288.48,
+          "low": 272.65,
+          "close": 277.7,
+          "volume": 50541759.0,
+          "adj_open": null,
+          "adj_high": null,
+          "adj_low": null,
+          "adj_close": 277.7,
+          "adj_volume": null,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        }
+      ],
+      "splitEvents": [
+        {
+          "date": "2020-08-31",
+          "split_factor": 5.0,
+          "stock_split": null,
+          "symbol": "TSLA"
+        },
+        {
+          "date": "2022-08-25",
+          "split_factor": 3.0,
+          "stock_split": null,
+          "symbol": "TSLA"
+        }
+      ],
+      "dividendCount": 0,
+      "dividendNullFieldCounts": {
+        "payment_date": 0,
+        "record_date": 0,
+        "declaration_date": 0,
+        "distr_freq": 0
+      },
+      "invalidAdjustedRanges": [],
+      "missingAdjustedFieldCounts": {
+        "adj_open": 7,
+        "adj_high": 7,
+        "adj_low": 7,
+        "adj_close": 0,
+        "adj_volume": 7
+      }
+    },
+    "NVDA": {
+      "rawResponseIds": {
+        "split_events": [
+          "0313"
+        ],
+        "dividend_events": [
+          "0314"
+        ],
+        "known_action_EOD": [
+          "0315"
+        ]
+      },
+      "eodRows": [
+        {
+          "date": "2024-06-05T00:00:00+0000",
+          "open": 1183.71,
+          "high": 1224.495,
+          "low": 1174.68,
+          "close": 1224.4,
+          "volume": 528401795.0,
+          "adj_open": 118.3612108005,
+          "adj_high": 122.4393735114,
+          "adj_low": 117.458285478,
+          "adj_close": 122.4299,
+          "adj_volume": 528401780.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-06T00:00:00+0000",
+          "open": 1240.48,
+          "high": 1255.87,
+          "low": 1183.2,
+          "close": 1209.98,
+          "volume": 664696163.0,
+          "adj_open": 124.0377413166,
+          "adj_high": 125.5766140423,
+          "adj_low": 118.3102150182,
+          "adj_close": 120.9881,
+          "adj_volume": 664696190.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-07T00:00:00+0000",
+          "open": 1197.7,
+          "high": 1216.917,
+          "low": 1180.22,
+          "close": 1208.88,
+          "volume": 412385776.0,
+          "adj_open": 119.7600951042,
+          "adj_high": 121.6816461801,
+          "adj_low": 118.0122396626,
+          "adj_close": 120.8781,
+          "adj_volume": 412385800.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-10T00:00:00+0000",
+          "open": 120.37,
+          "high": 123.1,
+          "low": 117.01,
+          "close": 121.79,
+          "volume": 314162688.0,
+          "adj_open": 120.3600454846,
+          "adj_high": 123.0898197155,
+          "adj_low": 117.0003233543,
+          "adj_close": 121.78,
+          "adj_volume": 308134791.0,
+          "split_factor": 10.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-11T00:00:00+0000",
+          "open": 121.77,
+          "high": 122.87,
+          "low": 118.74,
+          "close": 120.91,
+          "volume": 222551203.0,
+          "adj_open": 121.77,
+          "adj_high": 122.87,
+          "adj_low": 118.74,
+          "adj_close": 120.91,
+          "adj_volume": 222551158.0,
+          "split_factor": 1.0,
+          "dividend": 0.01
+        },
+        {
+          "date": "2024-06-12T00:00:00+0000",
+          "open": 123.06,
+          "high": 126.88,
+          "low": 122.57,
+          "close": 125.2,
+          "volume": 299595000.0,
+          "adj_open": 123.06,
+          "adj_high": 126.88,
+          "adj_low": 122.57,
+          "adj_close": 125.2,
+          "adj_volume": 299595001.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-13T00:00:00+0000",
+          "open": 129.39,
+          "high": 129.8,
+          "low": 127.16,
+          "close": 129.61,
+          "volume": 260704500.0,
+          "adj_open": 129.39,
+          "adj_high": 129.8,
+          "adj_low": 127.16,
+          "adj_close": 129.61,
+          "adj_volume": 260704537.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        },
+        {
+          "date": "2024-06-14T00:00:00+0000",
+          "open": 129.96,
+          "high": 132.84,
+          "low": 128.32,
+          "close": 131.88,
+          "volume": 309320375.0,
+          "adj_open": 129.96,
+          "adj_high": 132.84,
+          "adj_low": 128.32,
+          "adj_close": 131.88,
+          "adj_volume": 309320376.0,
+          "split_factor": 1.0,
+          "dividend": 0.0
+        }
+      ],
+      "splitEvents": [
+        {
+          "date": "2021-07-20",
+          "split_factor": 4.0,
+          "stock_split": null,
+          "symbol": "NVDA"
+        },
+        {
+          "date": "2024-06-10",
+          "split_factor": 10.0,
+          "stock_split": null,
+          "symbol": "NVDA"
+        }
+      ],
+      "dividendCount": 28,
+      "dividendNullFieldCounts": {
+        "payment_date": 23,
+        "record_date": 23,
+        "declaration_date": 23,
+        "distr_freq": 23
+      },
+      "invalidAdjustedRanges": [],
+      "missingAdjustedFieldCounts": {
+        "adj_open": 0,
+        "adj_high": 0,
+        "adj_low": 0,
+        "adj_close": 0,
+        "adj_volume": 0
+      }
+    }
+  },
+  "conclusion": {
+    "adjustedOHLC": "PARTIAL",
+    "adjustedVolume": "PARTIAL",
+    "splits": "SUPPORTED",
+    "dividends": "SUPPORTED",
+    "semantics": "PROVIDER_RAW_INCONSISTENCIES_NOT_NORMALIZATION_LOSS",
+    "scope": "sampledAAPL_TSLA_NVDA_not_universal_coverage"
+  }
+}

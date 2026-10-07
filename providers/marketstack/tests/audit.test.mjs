@@ -103,9 +103,28 @@ test('authenticated US EOD venue labels preserve the actual MIC and descriptive 
   const raw={...row,symbol:ticker,exchange:mic,exchange_code:label};const f=fake([paged([raw],0,1,1000)]);
   const r=await f.api.getLatestEOD({providerTicker:ticker,mic});assert.equal(r.ok,true);assert.equal(r.data[0].normalized.providerExchange,mic);assert.equal(r.data[0].normalized.providerExchangeCode,label);assert.deepEqual(r.data[0].raw,raw);
  }
- const f=fake([paged([{...row,exchange_code:'XNYS'}],0,1,1000)]);assert.equal((await f.api.getLatestEOD(listing)).reason,'identityMismatch');
+ const f=fake([paged([{...row,stock_exchange:{mic:'XNYS'}}],0,1,1000)]);assert.equal((await f.api.getLatestEOD(listing)).reason,'identityMismatch');
+ assert.equal(normalizeObservation({exchange_code:'BCBA'}).normalized.providerExchange,null);
 });
 test('stockprice throttling spaces actual attempts independently without retry inflation',async()=>{
  let clock=0;const waits=[];const f=fake([{error:{code:'no_ticker_or_exchange_found'}},{data:[]}],{now:()=>clock,sleep:async ms=>{waits.push(ms);clock+=ms;},endpointIntervals:{'/stockprice':61000}});
  assert.equal((await f.client.request('/stockprice',{ticker:'SAP.DE'})).reason,'dataUnavailable');await f.client.request('/stockprice',{ticker:'SAP'});assert.deepEqual(waits,[61000]);assert.equal(f.client.stats().requestsAttempted,2);assert.equal(f.client.stats().retries,0);
+});
+test('exact metadata projects real identifiers without treating venue country as issuer domicile',async()=>{
+ const raw={symbol:'ADN1.DE',name:'adesso SE',isin:'DE000A0Z23Q5',lei:'529900KOICE97ZSA1O52',sector:'Technology',item_type:'equity',stock_exchange:{mic:'XETR',country:null,country_code:'DE'}};
+ const f=fake([raw]);const r=await f.api.resolveTicker({providerTicker:'ADN1.DE',mic:'XETR'});
+ assert.equal(r.observation.normalized.isin,raw.isin);assert.equal(r.observation.normalized.lei,raw.lei);assert.equal(r.observation.normalized.sector,'Technology');assert.equal(r.observation.normalized.exchangeCountryCode,'DE');assert.equal(r.observation.normalized.countryCode,null);assert.equal(r.identityVerified,false);assert.deepEqual(r.raw,raw);
+ const g=fake([{data:{ticker:'AAPL',exchange_code:'NMS',sector:'Technology',country:'United States'}}]);const info=await g.api.getTickerInfo('AAPL');assert.equal(info.observations[0].normalized.country,'United States');assert.equal(info.observations[0].normalized.providerExchange,null);assert.equal(info.observations[0].normalized.providerExchangeCode,'NMS');
+});
+test('live multi-venue snapshots omit unsupported MIC filter and select observed provider code',async()=>{
+ const raw={data:[{ticker:'AAPL',exchange_code:'BCBA',exchange_name:'Buenos Aires Stock Exchange',price:'21770',currency:'ARS'},{ticker:'AAPL',exchange_code:'NASDAQ',exchange_name:'Nasdaq Stock Market',price:'335.36',currency:'USD',trade_last:'2026-10-07 10:32:43'}]};
+ const f=fake([raw]);const r=await f.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS',verifiedExchangeCodes:['NASDAQ'],snapshotMappingSource:'REAL_EOD_AAPL_EXCHANGE_XNAS_CODE_NASDAQ'});
+ assert.equal(r.ok,true);assert.equal(f.calls[0].searchParams.has('exchange'),false);assert.equal(r.data.length,1);assert.equal(r.data[0].normalized.currency,'USD');assert.equal(r.data[0].normalized.providerExchange,'XNAS');assert.equal(r.data[0].normalized.providerExchangeCode,'NASDAQ');assert.equal(r.data[0].normalized.providerUpdateTimestamp,null);assert.deepEqual(r.raw,raw);
+ const g=fake([raw]);assert.equal((await g.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS'})).reason,'snapshotVenueUnverified');
+ const h=fake([]);assert.equal((await h.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS',verifiedExchangeCodes:['NASDAQ']})).reason,'snapshotMappingEvidenceRequired');assert.equal(h.calls.length,0);
+});
+test('explicit snapshot symbol and observed exchange name preserve alias and venue provenance',async()=>{
+ const f=fake([{data:[{ticker:'SAP',exchange_code:'GER',exchange_name:'Xetra',currency:'EUR',price:'190'}]}]);
+ const r=await f.api.getRealtimePrice({providerTicker:'SAP.DE',mic:'XETR',snapshotTicker:'SAP',verifiedExchangeNames:['XETRA'],snapshotMappingSource:'EXACT_SAP_DE_METADATA_MIC_XETR_NAME_XETRA'});assert.equal(r.ok,true);assert.equal(f.calls[0].searchParams.get('ticker'),'SAP');assert.equal(r.data[0].normalized.providerExchange,'XETR');assert.equal(r.data[0].raw.ticker,'SAP');
+ const g=fake([{data:[{ticker:'SAP',exchange_code:'GER',exchange_name:'Xetra',price:'190'},{ticker:'SAP',exchange_code:'OTHER',exchange_name:'Xetra',price:'191'}]}]);assert.equal((await g.api.getRealtimePrice({providerTicker:'SAP.DE',mic:'XETR',snapshotTicker:'SAP',verifiedExchangeNames:['XETRA'],snapshotMappingSource:'EXACT_METADATA'})).reason,'ambiguousListing');
 });
