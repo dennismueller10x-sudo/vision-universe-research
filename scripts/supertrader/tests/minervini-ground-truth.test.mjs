@@ -176,3 +176,34 @@ test('GT-T-CASES: Fallliste nur aus eigenen Beitraegen; LOW nie ausgewertet; kei
   }
   assert.ok(j.cases.filter((c) => c.evaluation_group === 'MAIN').length >= 20);
 });
+
+test('GT-T-RESULTS: Auswertung aus oeffentlichen Logzeilen (Recall, Fehlermatrix, Kontrollen, Baum)', async () => {
+  const { parseLog, evaluate } = await import('../ground-truth/build-results.mjs');
+  const ok = { universe: { ok: true }, trend: { ok: true, failed: [] }, vcp: { ok: true }, sepa: { ok: true } };
+  const mk = (id, group, decision, patch = {}, extra = {}) => ({ case_id: id, ticker: id, group, replay: { decision, setupAtTStar: decision === 'DETECTED', timing: { class: decision === 'DETECTED' ? 'EXACT' : 'MISS' }, ...ok, ...patch }, ...extra });
+  const ctl = { controls: { n: 10, setupAtTStar: 1, detected: 1, trend: 3, vcp: 2, sepa: 4 } };
+  const lines = [
+    mk('A', 'MAIN', 'DETECTED', {}, ctl), mk('B', 'MAIN', 'REJECTED', { vcp: { ok: false, reason: 'NOT_CONTRACTING' } }, ctl),
+    mk('C', 'MAIN', 'REJECTED', { sepa: { ok: false, reason: 'SEPA_EPS_GROWTH_LOW' }, vcp: { ok: false, reason: 'STOP_TOO_WIDE' } }, ctl),
+    { case_id: 'D', ticker: 'D', group: 'MAIN', replay: { decision: 'NOT_EVALUABLE', reason: 'SECURITY_MAPPING_NOT_IN_PROVIDER_LIST' } },
+    mk('N', 'NEGATIVE', 'CORRECT_REJECT'),
+  ].map((x) => `[gt-replay DEV +1s] FALL ${JSON.stringify(x)}`).join('\n') + '\n[gt-replay DEV +2s] TRICHTER {"2020|UP":{"evaluated":10,"universe":8,"trend":4,"vcp":2,"setups":1,"signals":1}}';
+  const { cases, funnels } = parseLog(lines);
+  const r = evaluate(cases, funnels);
+  assert.equal(r.recall.MAIN.evaluable, 3); assert.equal(r.recall.MAIN.detected, 1);
+  assert.equal(r.recall.MAIN.notEvaluable.SECURITY_MAPPING_NOT_IN_PROVIDER_LIST, 1);
+  assert.equal(r.failureMatrix.VCP.cases, 2); assert.equal(r.failureMatrix.FUNDAMENTALS.cases, 1);
+  assert.equal(r.soleBlockingLayer.VCP, 1);
+  assert.match(String(r.precision), /NOT_MEASURABLE/);
+  assert.equal(r.controls.setupRate, 0.1);
+  assert.deepEqual(r.decisionTree, ['B', 'E']);
+  assert.equal(r.funnel[0].perYear['2020'].setupsPer1000, 125);
+});
+
+test('GT-T-FREEZE: Freeze deckt Fallliste, Praeregistrierung und Replay-Code ab', async () => {
+  const { FROZEN_FILES, verifyGtFreeze } = await import('../ground-truth/freeze.mjs');
+  for (const f of ['MINERVINI-GROUND-TRUTH-CASES.json', 'MINERVINI-GROUND-TRUTH-PREREG.json', 'replay.mjs', 'run-replay.mjs', 'build-results.mjs']) assert.ok(FROZEN_FILES.some((x) => x.endsWith(f)), f);
+  const r = verifyGtFreeze();
+  if (fs.existsSync(path.join(root, 'scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-FREEZE.json'))) assert.equal(r.ok, true, JSON.stringify(r));
+  else assert.equal(r.reason, 'NO_FREEZE');
+});

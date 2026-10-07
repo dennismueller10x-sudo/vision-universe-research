@@ -16,6 +16,7 @@ import { P } from '../replication/minervini-1.1/params.mjs';
 import { makeSplitRatio } from '../replication/minervini/sepa.mjs';
 import { SEC_STORE_KEY } from '../replication/minervini/measure.mjs';
 import { verifyFreeze } from '../replication/minervini-1.1/freeze.mjs';
+import { verifyGtFreeze } from './freeze.mjs';
 import { STORE_KEY as EVENTS_STORE_KEY } from '../data-layer/sec/build-sec-events.mjs';
 import { sicAt } from '../data-layer/sec/industry-sic.mjs';
 import { industryRecord } from '../replication/minervini-1.1/industry-record.mjs';
@@ -25,7 +26,6 @@ import { replayCase, yearlyFunnel, seededSample, indexOnOrBefore } from './repla
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..', '..');
 export const CASES_PATH = path.join(root, 'scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json');
-export const GT_FREEZE_PATH = path.join(root, 'scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-FREEZE.json');
 export const CONTROLS_PER_CASE = 10;
 const tickerOf = (id) => String(id).split(':')[2];
 const r2 = (x) => (Number.isFinite(x) ? Math.round(x * 100) / 100 : null);
@@ -72,9 +72,9 @@ async function main() {
   if (!freeze.ok || freeze.sharedChanged.length) { console.error('Engine 1.1.0 nicht im eingefrorenen Zustand: ' + (freeze.reason || freeze.sharedChanged.join(', '))); process.exit(3); }
   const casesBuf = fs.readFileSync(CASES_PATH);
   const casesHash = crypto.createHash('sha256').update(casesBuf).digest('hex');
-  const gtFreeze = fs.existsSync(GT_FREEZE_PATH) ? JSON.parse(fs.readFileSync(GT_FREEZE_PATH, 'utf8')) : null;
-  if (!LIMIT && (!gtFreeze || gtFreeze.status !== 'FROZEN' || gtFreeze.casesHash !== casesHash)) { console.error('Kein Replay ohne Ground-Truth-Freeze (Fallliste nach Red Team eingefroren).'); process.exit(3); }
-  log(`Engine-Freeze ok (${freeze.codeHash.slice(0, 12)}); Fallliste ${casesHash.slice(0, 12)}${gtFreeze ? `, GT-Freeze ${gtFreeze.status}` : ''}`);
+  const gt = verifyGtFreeze();
+  if (!LIMIT && !(gt.ok && gt.casesHash === casesHash)) { console.error('Kein Replay ohne gueltigen Ground-Truth-Freeze (Fallliste nach Red Team eingefroren): ' + (gt.reason || 'HASH') + (gt.changed ? ' ' + gt.changed.join(', ') : '')); process.exit(3); }
+  log(`Engine-Freeze ok (${freeze.codeHash.slice(0, 12)}); Fallliste ${casesHash.slice(0, 12)}; GT-Freeze ${gt.ok ? 'ok' : 'fehlt (nur Probelauf)'}`);
   const CASES = JSON.parse(casesBuf.toString('utf8')).cases.filter((c) => c.replay_spec);
 
   const W = L.WINDOW;
