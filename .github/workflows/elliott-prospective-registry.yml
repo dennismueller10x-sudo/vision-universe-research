@@ -1,0 +1,76 @@
+name: Elliott Prospective Registry (Mission X, nur anhaengen)
+
+# WOZU: Jede abgeschlossene Woche friert das Register jedes neu qualifizierte Elliott-Setup der Library V1
+# (Produkt-Setups, nicht angezeigte Primaerzaehlungen, Forschungskohorte RESEARCH_ONLY_INTERNAL_WAVE3) und einen
+# Snapshot aller Titel (Kontrollkohorte: Trend, RS26, Marktstruktur) ein — ohne Zukunftswissen. Spaetere
+# Entwicklungen werden als REVISION angehaengt, nie als Aenderung. Auswertung nur abgelaufener Horizonte.
+#
+# Daten: Wochenschluesse im Format von quant/data/market/discover-series-long, im Runner frisch aus der
+# Historienablage gebaut (publish-long-series.mjs). Die veroeffentlichten Langreihen gehoeren dem Workflow
+# long-series.yml und werden hier NICHT committet (vor dem Commit zurueckgesetzt).
+#
+# Ausloeser: Zeitplan nur auf dem Default-Branch (Samstag, nach Wochenschluss); manuell; auf claude/** nur mit
+# der Marke [elliott-registry] am Anfang des Betreffs.
+
+on:
+  schedule:
+    - cron: '23 9 * * 6'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: elliott-prospective-registry
+  cancel-in-progress: false
+
+jobs:
+  register:
+    if: >-
+      github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, '[elliott-registry]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      REG: quant/data/technical-intelligence/elliott-registry
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Register vor dem Lauf pruefen
+        run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG"
+      - name: Wochenschluesse runner-seitig aus der Historienablage
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/publish-long-series.mjs
+      - name: Registrieren (letzte abgeschlossene Woche)
+        run: >-
+          node --max-old-space-size=6144 scripts/technical/elliott-registry/register.mjs --weekly-dir quant/data/market/discover-series-long
+          --registry "$REG" --workers "$(nproc)" --data-source "publish-long-series.mjs (runner, Historienablage)"
+      - name: Pruefen (Kette, Snapshots, nur anhaengen gegen den Stand vor dem Lauf)
+        run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG" --against-git HEAD
+      - name: Auswerten (nur abgelaufene Horizonte)
+        run: node scripts/technical/elliott-registry/evaluate-registry.mjs --weekly-dir quant/data/market/discover-series-long --registry "$REG" --out "$REG/reports/latest.json"
+      - name: Langreihen nicht committen (gehoeren long-series.yml)
+        run: |
+          git checkout -- quant/data/market/discover-series-long
+          git clean -fdq quant/data/market/discover-series-long
+          git status --short | grep -v "^?? $REG\|^ M $REG\|^A  $REG" || true
+      - name: Commit (nur Register)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$REG"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Elliott Prospective Registry: $(node -e 'const h=require("./'"$REG"'/HEAD.json");console.log("seq "+h.seq)')"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
