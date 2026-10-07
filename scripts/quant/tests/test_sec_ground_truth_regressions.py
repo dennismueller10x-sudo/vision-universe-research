@@ -92,6 +92,19 @@ class SecGroundTruthRegressions(unittest.TestCase):
         self.assertEqual(str(q1_2011.period_end), "2011-04-02", "Abfrage Q1 2011 lieferte ein anderes Quartal")
         self.assertAlmostEqual(q1_2011.value, 0.75, places=6)
 
+    def test_e9_foreign_currency_fact_does_not_beat_reporting_currency_concept(self):
+        """CECO FY2025: der 10-K meldet Revenues = 750 Mio. EUR (in jeder Einreichung derselbe Betrag, kein Abschlusswert)
+        und RevenueFromContractWithCustomerExcludingAssessedTax = 774,381 Mio. USD. Ein EUR-Betrag ist nicht der Umsatz
+        eines in USD berichtenden Emittenten."""
+        calendar, resolver = build("CECO")
+        annual = resolver.annual("revenue", calendar.fiscal_year_for("2025-12-31"), FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(annual)
+        self.assertAlmostEqual(annual.value, 774381000.0, delta=1.0)
+        self.assertEqual(annual.unit, "USD")
+        q2 = quarter(resolver, calendar, "revenue", "2026-06-30", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q2)
+        self.assertAlmostEqual(q2.value, 284961000.0, delta=1.0)
+
     def test_e4_unreported_eps_quarter_stays_missing(self):
         """Derselbe REPL-Auszug ohne die gemeldeten Q4-Dreimonatswerte: kein FY - 9M fuer EPS, die Luecke bleibt."""
         def q4_eps(row):
