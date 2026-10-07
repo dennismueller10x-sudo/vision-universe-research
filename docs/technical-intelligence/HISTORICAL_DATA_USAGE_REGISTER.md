@@ -89,3 +89,15 @@ Disjunktheit von A9_CONFIRM: `replay.mjs --disjoint-from 1200:<sha>` bricht ab, 
 | Wochen-Forensik an Quartalsenden, Bucket 0/4 und 1/4 | DEVELOPMENT / VALIDATION (verbraucht) |
 | Tag, übrige Stammaktien (Hash-Rang ≥ 2400; rund 3.500 Titel) 2017–2026 | für TI-Tagesszenarien weiter ungeöffnet. Kalender gesehen; nur bedingt als Holdout geeignet. |
 | Kursdaten nach 2026-09-30 | **AVAILABLE HOLDOUT** für die prospektive Fortschreibung (Track B / Wave 3: Signale je Quartal einfrieren und mitschreiben, Auswertung nach 12/24 Monaten) |
+
+## 6. Mission X (Elliott Setup Library V1, ab 07.10.2026)
+
+| Daten | Rolle in Mission X | Status |
+|---|---|---|
+| Wochen-Überlebende, Titelhälfte 0/2 (Erkennungspunkte aus dem Mission-VIII-Replay) | DEV: Implementierung und Fehlersuche der Setup-Library | CONSUMED (Development) |
+| Wochen-Überlebende, Titelhälfte 1/2 | VAL: erste Auswertung der Setup-Definitionen **nach** dem Freeze `82f7456` | VALIDATION_ON_CONSUMED_DATA (Kurse aus Mission I–IX bekannt; diese Definitionen nie) |
+| PLTR-Wochenreihe | Fallstudie, nur Erklärung, nach der Universumsauswertung | CONSUMED |
+| Mission-IX-Forschungskohorte (Quartalsraster) | Hypothese für RESEARCH_ONLY_INTERNAL_WAVE3 | CONSUMED (keine neue Bestätigung) |
+| Wochen ab 2026-09-25 (Register) | **prospektive** Bestätigung; Ereignisse vor jeder Auswertung eingefroren | AVAILABLE HOLDOUT (prospektiv). Die erste Woche ist Bestand (`initialStock`); Neuzugänge ab dem zweiten Lauf. |
+
+Mission VIII und IX bleiben eingefroren. Keine ihrer Daten wird als frischer Holdout ausgegeben.

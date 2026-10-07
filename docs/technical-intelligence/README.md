@@ -71,3 +71,11 @@ Kurzfassung:
 * Hohe Trefferquoten entstehen durch nahe Ziele. Bei symmetrischer Geometrie trifft VU 49 % gegen 47 % der Kontrolle; keine Teilmenge erreicht 60 % mit +5 Pp.
 * Bullische VU-Zustände wählen spätere Extremgewinner seltener aus als vergleichbare Titel. Relative Stärke allein ist besser.
 * Elliott-Welle 3 wird praktisch nie angezeigt. Ein interner Kandidat zeigt explorativ mehr Extremfälle, aber keinen Renditevorteil.
+
+## Mission X (Elliott Setup Library V1, Evidenzschicht, prospektives Register)
+
+* [MISSION10_FINAL_REPORT.md](MISSION10_FINAL_REPORT.md) — Abschlussbericht. **Kein Setup erreicht positive oder inkrementelle Evidenz; S3 angezeigt STRUCTURAL ONLY, S1/S2/S4 INSUFFICIENT EVIDENCE; Register läuft seit Woche 2026-09-25.**
+* [ELLIOTT_SETUP_LIBRARY_V1.md](ELLIOTT_SETUP_LIBRARY_V1.md) · Spec `scripts/technical/elliott-setups/ELLIOTT_SETUP_SPEC.json` · [MISSION10_SETUP_FREEZE.md](MISSION10_SETUP_FREEZE.md)
+* [ELLIOTT_SETUP_EVIDENCE.md](ELLIOTT_SETUP_EVIDENCE.md) · Tabellen [hsab/MISSION10_SETUP_TABLES.md](hsab/MISSION10_SETUP_TABLES.md)
+* [ELLIOTT_PROSPECTIVE_REGISTRY.md](ELLIOTT_PROSPECTIVE_REGISTRY.md) · [ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md](ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md)
+* Code: `scripts/technical/elliott-setups/`, `scripts/technical/elliott-registry/` · Daten: `quant/data/technical-intelligence/elliott-setups/`, `quant/data/technical-intelligence/elliott-registry/` · CI: `.github/workflows/elliott-prospective-registry.yml`

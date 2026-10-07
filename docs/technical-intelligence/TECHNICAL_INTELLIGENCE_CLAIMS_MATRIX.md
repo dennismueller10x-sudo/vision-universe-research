@@ -34,6 +34,11 @@ Klassen: SUPPORTED · SUPPORTED WITH QUALIFICATION · NOT SUPPORTED · MISLEADIN
 | 21 | „VU erkannte X % späterer 5×-Gewinner früh.“ | **MISLEADING / DO NOT USE** | 47–51 % der Episoden bei 44 % Abdeckung; relative Stärke erreicht dasselbe mit 20 % Abdeckung. | — |
 | 22 | „Frühe Elliott-Welle-3-Strukturen kündigen große Gewinner an.“ | **NOT SUPPORTED** (für das Produkt) | Angezeigte Zählung zeigt sie praktisch nie. Ein internes, nicht angezeigtes Merkmal ist explorativ mit 1,35–1,4× mehr 5×-Fällen verbunden, ohne Renditevorteil und nicht über relative Stärke hinaus gesichert. | — |
 
+| 23 | „VU erkennt Elliott-Setups wie eine frühe Welle 3.“ (Mission X) | **MISLEADING / DO NOT USE** | Die eingefrorene Engine zeigt eine laufende Welle 2/3 nie als Primärzählung; nur ein interner, nicht angezeigter Kandidat existiert. | — |
+| 24 | „Abgeschlossene Korrekturen führen historisch zur Trendfortsetzung (X % Erfolg).“ | **NOT SUPPORTED** | S3 angezeigt: 36,8 % gegen 36,1 % gleicher Geometrie (VAL), Lift ≈ 0; nicht angezeigt sogar −2,2 Pp. | Zulässig nur als Struktur: „Die Lesart gilt, solange der Kurs über X schließt; die Projektion liegt bei Y.“ Ohne Erfolgszahl. |
+| 25 | „Elliott plus relative Stärke/Trend bestätigt ein Setup.“ | **NOT SUPPORTED** | 24–40 Fälle je Hälfte, widersprüchliche Vorzeichen. | Beschreibend zulässig: „Trend ✓, relative Stärke ✗, Marktstruktur ✓“ — als Zustandsanzeige, nicht als Erfolgsversprechen. |
+| 26 | „Jedes Setup wird vorab festgehalten und später überprüft.“ | **SUPPORTED** (Verfahren) | Prospektives Register mit Hash-Kette seit Woche 2026-09-25. | „Wir speichern jedes Setup in der Woche, in der es erscheint, unveränderlich und werten es erst nach Ablauf aus.“ Zusatz: „Ergebnisse liegen frühestens ab Ende 2026 (3 Monate) bzw. 2027 (12 Monate) vor.“ |
+
 ## Pflichtregeln für jede historische Zahl
 
 1. Erfolgsquote **immer** mit Kontrollquote, Lift, n, Abdeckung, Zeitraum, Universum.

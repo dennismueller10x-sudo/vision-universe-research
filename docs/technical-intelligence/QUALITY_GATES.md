@@ -51,3 +51,15 @@
 | G31 Track A hohe Genauigkeit (vorab registriert) | HAC gegen D und E bei CRV ≥ 0,75 | `mission9/ci/a9-confirm-tracka.json` | ❌ **NO HIGH-ACCURACY EDGE** (einmal geöffnet; HAC überall ausgeschlossen) |
 | G32 Track B asymmetrischer Vorteil | VU-Signal 5×/24M > 1 auf DEV und VAL mit gedeckeltem Überschuss > 0 | `mission9/local/decision-trackb-elliott.json` | ❌ NO ASYMMETRIC EDGE (explorativ, verbrauchte Daten) |
 | G33 Tests | Mission-IX-Tests (Track A/B, Disjunktheit, Siegel, Kausalität, Fallstudie) und volle Quant-Suite | `quant/tests/hsab-mission9.test.mjs`; Quant-Suite 2.326/2.326 | ✅ |
+
+## Mission X
+
+| Gate | Kriterium | Nachweis | Status |
+|---|---|---|---|
+| G34 Engine eingefroren | Datei-Hashes = Mission-VIII-Freeze; keine Änderung an Grammatik, Rang, Grad, Pivots, Konfidenz, Enthaltung, Gewichten | `protocol9.json` freeze, Hash-Vergleich | ✅ |
+| G35 Definitionen vor Evidenz | Spec und Code vor VAL committet; DEV nur für Implementierungsfehler | `MISSION10_SETUP_FREEZE.md`, Commit `82f7456` | ✅ |
+| G36 Kausalität der Setups | Klassifikation auf gekürzter Reihe = volle Reihe; Register kürzt vor der Analyse | Tests M10-L3, M10-R2 | ✅ |
+| G37 Unveränderliches Register | Hash-Kette, Snapshot-Hashes, nur anhängen gegen Git, Woche nur einmal und nur vorwärts | `verify.mjs`, Tests M10-R1/R4, Workflow-Prüfung vor und nach dem Lauf | ✅ |
+| G38 Auswertung nur abgelaufener Horizonte | 3/6/12/24/36 Monate erst nach Ablauf | `evaluate-registry.mjs`, Test M10-R4 | ✅ |
+| G39 Setup-Evidenz LEVEL 1/2 | vorab festgelegte Regeln (`decide-setups.mjs`) | `setup-decision.json` | ❌ kein Setup erreicht LEVEL 1 oder 2 (S3 angezeigt STRUCTURAL ONLY; S1/S2/S4 INSUFFICIENT EVIDENCE; S3 nicht angezeigt REJECT) |
+| G40 Tests | Mission-X-Tests (8) | `quant/tests/elliott-setups-mission10.test.mjs` | ✅ |
