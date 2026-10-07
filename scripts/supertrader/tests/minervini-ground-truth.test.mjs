@@ -240,3 +240,14 @@ test('GT-T-EXPLORE-TAGS: Erstmeldung ueber Tags hinweg (TNDM-Muster: 10-Q unter 
   const { seriesWithFallback } = await import('../replication/minervini/sec-facts.mjs');
   assert.equal(seriesWithFallback(tax, ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted'], 'USD/shares')[0][2], '2021-02-24', 'Befund: eingefrorene Extraktion sieht das Quartal erst mit dem 10-K');
 });
+
+test('GT-T-PUBLIC-ARTIFACTS: RESULTS/FAILURES ohne Kurse; Freeze gueltig; Engine unveraendert', () => {
+  for (const f of ['MINERVINI-GROUND-TRUTH-RESULTS.json', 'MINERVINI-GROUND-TRUTH-FAILURES.json']) {
+    const p = path.join(root, 'scripts/supertrader/fidelity', f);
+    if (!fs.existsSync(p)) continue;
+    const s = fs.readFileSync(p, 'utf8');
+    assert.doesNotMatch(s, /"(pivot|stop|close|open|high|low|price|entryPrice|exitPrice)":\s*-?\d/, f);
+    const j = JSON.parse(s);
+    assert.equal(j.engine.name, 'minervini-adaptation-1.1.0');
+  }
+});
