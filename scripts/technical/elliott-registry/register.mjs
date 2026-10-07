@@ -124,12 +124,16 @@ export async function register(o) {
   if (existsSync(snapFile)) throw new Error("Snapshot existiert bereits: " + snapFile);
   writeFileSync(snapFile, snapBody);
   const recordedAt = new Date().toISOString(), entries = [];
-  entries.push({ type: "RUN", id: "RUN-" + F, week: F, recordedAt, payload: { week: F, asOf: o.asOf || null, code: codeVersion(), universe: { files: files.length, analysed: ok.length, skipped: rows.filter((r) => r.skip).length, errors: rows.filter((r) => r.error).length },
+  /* Erster Lauf: erfasst den BESTAND bereits qualifizierter Setups (moeglicherweise seit Wochen). Spaetere Laeufe nur Neuzugaenge.
+     Fuer eine saubere Auswertung wird der Bestand markiert und getrennt betrachtet. */
+  const initialStock = !lines.some((e) => e.type === "RUN");
+  const skipReasons = {}; for (const r of rows) if (r.skip || r.error) { const k = r.skip || "ERROR"; skipReasons[k] = (skipReasons[k] || 0) + 1; }
+  entries.push({ type: "RUN", id: "RUN-" + F, week: F, recordedAt, payload: { week: F, asOf: o.asOf || null, code: codeVersion(), universe: { files: files.length, analysed: ok.length, skipped: rows.filter((r) => r.skip).length, errors: rows.filter((r) => r.error).length, skipReasons }, initialStockRun: initialStock,
     snapshot: { file: "snapshots/" + F + ".jsonl.gz", sha256: sha(snapBody), rows: snap.length }, data: { source: o.dataSource || "weekly closes (discover-series-long format)", seriesAsOfMin: ok.reduce((m, r) => (r.seriesAsOf < m ? r.seriesAsOf : m), "9999"), seriesAsOfMax: ok.reduce((m, r) => (r.seriesAsOf > m ? r.seriesAsOf : m), "0000") } } });
   /* EVENTS: neu qualifizierte Setups und neue Forschungskandidaten */
   const registered = new Set(lines.filter((e) => e.type === "EVENT").map((e) => e.payload.dedupeKey));
   for (const r of ok) {
-    const base = { symbol: r.s, timeframe: "1W", registeredWeek: F, registeredBarDate: r.d, price: r.px, atr: r.atr, dataVersion: { seriesAsOf: r.seriesAsOf, sha256_16: r.dataSha }, codeVersion: { library: LIBRARY_VERSION, specSha256: SPEC_SHA256, engine: EV3.ENGINE_VERSION },
+    const base = { initialStock, symbol: r.s, timeframe: "1W", registeredWeek: F, registeredBarDate: r.d, price: r.px, atr: r.atr, dataVersion: { seriesAsOf: r.seriesAsOf, sha256_16: r.dataSha }, codeVersion: { library: LIBRARY_VERSION, specSha256: SPEC_SHA256, engine: EV3.ENGINE_VERSION },
                    confirmationsAtRegistration: { trend: r.trend, rs26Rank: r4(r.rsQ), rs26Top20: isNum(r.rsQ) ? r.rsQ >= 0.8 : null, rs26Bottom20: isNum(r.rsQ) ? r.rsQ <= 0.2 : null, marketStructureVote: r4(r.ms), volume: "NOT_AVAILABLE" } };
     if (r.setup && r.setup.status === "QUALIFIED") {
       const S = r.setup, dk = [r.s, S.setupId, S.persistenceKey].join("|");

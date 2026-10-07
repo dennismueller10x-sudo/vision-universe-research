@@ -1,0 +1,1495 @@
+{
+ "schemaVersion": "elliott-evidence-contract-1.0.0",
+ "generatedFrom": {
+  "val": "setup-eval-w-val.json",
+  "dev": "setup-eval-w-dev.json",
+  "decision": "setup-decision.json",
+  "registry": null
+ },
+ "records": [
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Fruehe Welle-3-Ausdehnung",
+   "setupId": "S1_EARLY_WAVE3",
+   "variant": "PURE",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Die eingefrorene Engine zeigt eine laufende Welle 2/3 praktisch nie als Hauptzählung; Evidenz nur über die nicht angezeigte Forschungskohorte."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Fruehe Welle-3-Ausdehnung",
+   "setupId": "S1_EARLY_WAVE3",
+   "variant": "PURE_RS",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Die eingefrorene Engine zeigt eine laufende Welle 2/3 praktisch nie als Hauptzählung; Evidenz nur über die nicht angezeigte Forschungskohorte."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Fruehe Welle-3-Ausdehnung",
+   "setupId": "S1_EARLY_WAVE3",
+   "variant": "CONFIRMED",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Die eingefrorene Engine zeigt eine laufende Welle 2/3 praktisch nie als Hauptzählung; Evidenz nur über die nicht angezeigte Forschungskohorte."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Fruehe Welle-3-Ausdehnung",
+   "setupId": "S1_EARLY_WAVE3",
+   "variant": "ENGINE_PRIMARY",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": false,
+   "timeframe": "1W",
+   "historicalCases": 2,
+   "historicalCasesDevelopment": 2,
+   "coverage": 0,
+   "scenarioSuccess": 0.5,
+   "scenarioSuccessCi": [
+    null,
+    null
+   ],
+   "matchedBaseline": 0.2,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.3,
+   "liftCi": [
+    null,
+    null
+   ],
+   "liftVsTrendRs": 0.2,
+   "liftVsTrendRsCi": [
+    null,
+    null
+   ],
+   "geometry": {
+    "medianTargetAtr": 6.0876,
+    "medianInvalidationAtr": 1.3725,
+    "medianRewardRisk": 15.5756,
+    "naiveGeometric": 0.1655
+   },
+   "medianPayoff": 0.4723,
+   "expectancyR": -1.3192,
+   "expectancyRCi": [
+    null,
+    null
+   ],
+   "invalidatedFirst": 0.5,
+   "relabelRate": 0.5,
+   "confirmationBeforeExit": 0.5,
+   "longHorizon": {
+    "6M": {
+     "n": 2
+    },
+    "12M": {
+     "n": 2
+    },
+    "24M": {
+     "n": 2
+    },
+    "36M": {
+     "n": 1
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 2 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Die eingefrorene Engine zeigt eine laufende Welle 2/3 praktisch nie als Hauptzählung; Evidenz nur über die nicht angezeigte Forschungskohorte."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Welle 4 → Welle 5 Fortsetzung",
+   "setupId": "S2_WAVE4_TO_5",
+   "variant": "PURE",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Als angezeigte Zählung praktisch nie vorhanden."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Welle 4 → Welle 5 Fortsetzung",
+   "setupId": "S2_WAVE4_TO_5",
+   "variant": "PURE_RS",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Als angezeigte Zählung praktisch nie vorhanden."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Welle 4 → Welle 5 Fortsetzung",
+   "setupId": "S2_WAVE4_TO_5",
+   "variant": "CONFIRMED",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 0,
+   "historicalCasesDevelopment": 0,
+   "coverage": null,
+   "scenarioSuccess": null,
+   "scenarioSuccessCi": null,
+   "matchedBaseline": null,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": null,
+   "liftCi": null,
+   "liftVsTrendRs": null,
+   "liftVsTrendRsCi": null,
+   "geometry": null,
+   "medianPayoff": null,
+   "expectancyR": null,
+   "expectancyRCi": null,
+   "invalidatedFirst": null,
+   "relabelRate": null,
+   "confirmationBeforeExit": null,
+   "longHorizon": null,
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 0 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Als angezeigte Zählung praktisch nie vorhanden."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Welle 4 → Welle 5 Fortsetzung",
+   "setupId": "S2_WAVE4_TO_5",
+   "variant": "ENGINE_PRIMARY",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": false,
+   "timeframe": "1W",
+   "historicalCases": 51,
+   "historicalCasesDevelopment": 58,
+   "coverage": 0.0003,
+   "scenarioSuccess": 0.3529,
+   "scenarioSuccessCi": [
+    0.206,
+    0.4999
+   ],
+   "matchedBaseline": 0.3922,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": -0.0392,
+   "liftCi": [
+    -0.1741,
+    0.0957
+   ],
+   "liftVsTrendRs": -0.0763,
+   "liftVsTrendRsCi": [
+    -0.219,
+    0.0664
+   ],
+   "geometry": {
+    "medianTargetAtr": 4.0478,
+    "medianInvalidationAtr": 3.115,
+    "medianRewardRisk": 1.4505,
+    "naiveGeometric": 0.4372
+   },
+   "medianPayoff": 1.1968,
+   "expectancyR": -0.2551,
+   "expectancyRCi": [
+    -0.6936,
+    0.1835
+   ],
+   "invalidatedFirst": 0.4902,
+   "relabelRate": 0.5294,
+   "confirmationBeforeExit": 0.4118,
+   "longHorizon": {
+    "6M": {
+     "n": 33,
+     "medianReturn": -0.0296,
+     "meanReturnCapped4x": 0.1899,
+     "excessVsDate": 0.132,
+     "excessVsDateCi": [
+      -0.1342,
+      0.3982
+     ],
+     "excessVsTrendCell": 0.1272,
+     "excessVsTrendCellCi": [
+      -0.1369,
+      0.3914
+     ],
+     "excessVsTrendRsCell": 0.119,
+     "excessVsTrendRsCellCi": [
+      -0.1463,
+      0.3842
+     ],
+     "rate2x": 0.1212,
+     "rate3x": 0.0606,
+     "rate5x": 0,
+     "ratio2xVsDate": 2.579,
+     "ratio2xVsDateCi": [
+      0,
+      5.9437
+     ],
+     "ratio3xVsDate": 4.3578,
+     "ratio5xVsDate": 0,
+     "ratio2xVsTrendRs": 2.1641,
+     "ratio3xVsTrendRs": 3.672,
+     "medianMfe": 0.2414,
+     "medianMae": -0.1812
+    },
+    "12M": {
+     "n": 30,
+     "medianReturn": -0.0158,
+     "meanReturnCapped4x": 0.217,
+     "excessVsDate": 0.111,
+     "excessVsDateCi": [
+      -0.1466,
+      0.3686
+     ],
+     "excessVsTrendCell": 0.0964,
+     "excessVsTrendCellCi": [
+      -0.1602,
+      0.3531
+     ],
+     "excessVsTrendRsCell": 0.0868,
+     "excessVsTrendRsCellCi": [
+      -0.1686,
+      0.3421
+     ],
+     "rate2x": 0.2333,
+     "rate3x": 0.1,
+     "rate5x": 0.0333,
+     "ratio2xVsDate": 2.4613,
+     "ratio2xVsDateCi": [
+      1.0551,
+      4.2041
+     ],
+     "ratio3xVsDate": 3.1505,
+     "ratio5xVsDate": 3.2855,
+     "ratio2xVsTrendRs": 2.0113,
+     "ratio3xVsTrendRs": 2.572,
+     "medianMfe": 0.2867,
+     "medianMae": -0.3227
+    },
+    "24M": {
+     "n": 28,
+     "medianReturn": 0.0062,
+     "meanReturnCapped4x": 0.3537,
+     "excessVsDate": 0.1879,
+     "excessVsDateCi": [
+      -0.2428,
+      0.6186
+     ],
+     "excessVsTrendCell": 0.1711,
+     "excessVsTrendCellCi": [
+      -0.2673,
+      0.6094
+     ],
+     "excessVsTrendRsCell": 0.1652,
+     "excessVsTrendRsCellCi": [
+      -0.2278,
+      0.6408
+     ],
+     "rate2x": 0.25,
+     "rate3x": 0.2143,
+     "rate5x": 0.1071,
+     "ratio2xVsDate": 1.425,
+     "ratio2xVsDateCi": [
+      0.3926,
+      2.5109
+     ],
+     "ratio3xVsDate": 3.2659,
+     "ratio5xVsDate": 4.5995,
+     "ratio2xVsTrendRs": 1.2172,
+     "ratio3xVsTrendRs": 2.7207,
+     "medianMfe": 0.6291,
+     "medianMae": -0.5021
+    },
+    "36M": {
+     "n": 26,
+     "medianReturn": 0.1017,
+     "meanReturnCapped4x": 0.5176,
+     "excessVsDate": 0.1362,
+     "excessVsDateCi": [
+      -0.6172,
+      0.8895
+     ],
+     "excessVsTrendCell": 0.1144,
+     "excessVsTrendCellCi": [
+      -0.6419,
+      0.8706
+     ],
+     "excessVsTrendRsCell": 0.1062,
+     "excessVsTrendRsCellCi": [
+      -0.6365,
+      0.8489
+     ],
+     "rate2x": 0.3077,
+     "rate3x": 0.2308,
+     "rate5x": 0.1538,
+     "ratio2xVsDate": 1.1188,
+     "ratio2xVsDateCi": [
+      0.493,
+      1.7446
+     ],
+     "ratio3xVsDate": 2.0273,
+     "ratio5xVsDate": 3.6085,
+     "ratio2xVsTrendRs": 1.0004,
+     "ratio3xVsTrendRs": 1.695,
+     "medianMfe": 0.6956,
+     "medianMae": -0.5146
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 51 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Als angezeigte Zählung praktisch nie vorhanden."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Abgeschlossene Korrektur → Trendfortsetzung",
+   "setupId": "S3_CORRECTION_COMPLETE",
+   "variant": "PURE",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 182,
+   "historicalCasesDevelopment": 172,
+   "coverage": 0.001,
+   "scenarioSuccess": 0.3681,
+   "scenarioSuccessCi": [
+    0.3036,
+    0.4374
+   ],
+   "matchedBaseline": 0.3615,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.0066,
+   "liftCi": [
+    -0.0602,
+    0.0704
+   ],
+   "liftVsTrendRs": 0.0053,
+   "liftVsTrendRsCi": [
+    -0.0559,
+    0.0665
+   ],
+   "geometry": {
+    "medianTargetAtr": 3.8357,
+    "medianInvalidationAtr": 5.2135,
+    "medianRewardRisk": 0.7477,
+    "naiveGeometric": 0.5883
+   },
+   "medianPayoff": 0.9078,
+   "expectancyR": -0.1514,
+   "expectancyRCi": [
+    -0.314,
+    -0.0012
+   ],
+   "invalidatedFirst": 0.2802,
+   "relabelRate": 0.2418,
+   "confirmationBeforeExit": 0.2958,
+   "longHorizon": {
+    "6M": {
+     "n": 77,
+     "medianReturn": 0.013,
+     "meanReturnCapped4x": 0.0481,
+     "excessVsDate": 0.0042,
+     "excessVsDateCi": [
+      -0.05,
+      0.0862
+     ],
+     "excessVsTrendCell": -0.0019,
+     "excessVsTrendCellCi": [
+      -0.0545,
+      0.0807
+     ],
+     "excessVsTrendRsCell": 0.0004,
+     "excessVsTrendRsCellCi": [
+      -0.0499,
+      0.0766
+     ],
+     "rate2x": 0.013,
+     "rate3x": 0.013,
+     "rate5x": 0.013,
+     "ratio2xVsDate": 0.4491,
+     "ratio2xVsDateCi": [
+      -0.4547,
+      1.3528
+     ],
+     "ratio3xVsDate": 1.7704,
+     "ratio5xVsDate": 6.659,
+     "ratio2xVsTrendRs": 0.4218,
+     "ratio3xVsTrendRs": 1.7215,
+     "medianMfe": 0.114,
+     "medianMae": -0.0938
+    },
+    "12M": {
+     "n": 77,
+     "medianReturn": 0.0435,
+     "meanReturnCapped4x": 0.0601,
+     "excessVsDate": -0.0434,
+     "excessVsDateCi": [
+      -0.1303,
+      0.0436
+     ],
+     "excessVsTrendCell": -0.0544,
+     "excessVsTrendCellCi": [
+      -0.1403,
+      0.0315
+     ],
+     "excessVsTrendRsCell": -0.0489,
+     "excessVsTrendRsCellCi": [
+      -0.1331,
+      0.0352
+     ],
+     "rate2x": 0.026,
+     "rate3x": 0.013,
+     "rate5x": 0.013,
+     "ratio2xVsDate": 0.3622,
+     "ratio2xVsDateCi": [
+      -0.1461,
+      0.8706
+     ],
+     "ratio3xVsDate": 0.6085,
+     "ratio5xVsDate": 2.2166,
+     "ratio2xVsTrendRs": 0.3425,
+     "ratio3xVsTrendRs": 0.5901,
+     "medianMfe": 0.1671,
+     "medianMae": -0.1174
+    },
+    "24M": {
+     "n": 74,
+     "medianReturn": 0.1292,
+     "meanReturnCapped4x": 0.1862,
+     "excessVsDate": -0.0489,
+     "excessVsDateCi": [
+      -0.1918,
+      0.0939
+     ],
+     "excessVsTrendCell": -0.0585,
+     "excessVsTrendCellCi": [
+      -0.1983,
+      0.0813
+     ],
+     "excessVsTrendRsCell": -0.05,
+     "excessVsTrendRsCellCi": [
+      -0.1898,
+      0.0899
+     ],
+     "rate2x": 0.1081,
+     "rate3x": 0.027,
+     "rate5x": 0.0135,
+     "ratio2xVsDate": 0.6395,
+     "ratio2xVsDateCi": [
+      0.2328,
+      1.0462
+     ],
+     "ratio3xVsDate": 0.4808,
+     "ratio5xVsDate": 0.8175,
+     "ratio2xVsTrendRs": 0.6177,
+     "ratio3xVsTrendRs": 0.4675,
+     "medianMfe": 0.3501,
+     "medianMae": -0.166
+    },
+    "36M": {
+     "n": 74,
+     "medianReturn": 0.1349,
+     "meanReturnCapped4x": 0.2054,
+     "excessVsDate": -0.1387,
+     "excessVsDateCi": [
+      -0.2806,
+      0.0032
+     ],
+     "excessVsTrendCell": -0.1531,
+     "excessVsTrendCellCi": [
+      -0.2941,
+      -0.0122
+     ],
+     "excessVsTrendRsCell": -0.1439,
+     "excessVsTrendRsCellCi": [
+      -0.2862,
+      -0.0016
+     ],
+     "rate2x": 0.2162,
+     "rate3x": 0.0541,
+     "rate5x": 0.0135,
+     "ratio2xVsDate": 0.8226,
+     "ratio2xVsDateCi": [
+      0.4834,
+      1.1691
+     ],
+     "ratio3xVsDate": 0.5524,
+     "ratio5xVsDate": 0.4223,
+     "ratio2xVsTrendRs": 0.8004,
+     "ratio3xVsTrendRs": 0.5314,
+     "medianMfe": 0.4261,
+     "medianMae": -0.206
+    }
+   },
+   "evidenceGrade": "STRUCTURAL_ONLY",
+   "evidenceGradeReason": "tritt auf, Invalidation und Projektion definiert, aber weder LEVEL 1 noch LEVEL 2",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Bei Erkennung liegt der Kurs oft schon jenseits der Projektionszone; dann gilt das Setup nicht."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Abgeschlossene Korrektur → Trendfortsetzung",
+   "setupId": "S3_CORRECTION_COMPLETE",
+   "variant": "PURE_RS",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 40,
+   "historicalCasesDevelopment": 39,
+   "coverage": 0.0002,
+   "scenarioSuccess": 0.5,
+   "scenarioSuccessCi": [
+    0.3333,
+    0.6667
+   ],
+   "matchedBaseline": 0.435,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.065,
+   "liftCi": [
+    -0.1047,
+    0.2347
+   ],
+   "liftVsTrendRs": 0.135,
+   "liftVsTrendRsCi": [
+    -0.0183,
+    0.2884
+   ],
+   "geometry": {
+    "medianTargetAtr": 3.7939,
+    "medianInvalidationAtr": 10.1304,
+    "medianRewardRisk": 0.4363,
+    "naiveGeometric": 0.6699
+   },
+   "medianPayoff": 1.5042,
+   "expectancyR": 0.0642,
+   "expectancyRCi": [
+    -0.1713,
+    0.2996
+   ],
+   "invalidatedFirst": 0.125,
+   "relabelRate": 0.25,
+   "confirmationBeforeExit": 0.4444,
+   "longHorizon": {
+    "6M": {
+     "n": 15
+    },
+    "12M": {
+     "n": 15
+    },
+    "24M": {
+     "n": 15
+    },
+    "36M": {
+     "n": 15
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 40 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Bei Erkennung liegt der Kurs oft schon jenseits der Projektionszone; dann gilt das Setup nicht."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Abgeschlossene Korrektur → Trendfortsetzung",
+   "setupId": "S3_CORRECTION_COMPLETE",
+   "variant": "CONFIRMED",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 24,
+   "historicalCasesDevelopment": 24,
+   "coverage": 0.0001,
+   "scenarioSuccess": 0.5833,
+   "scenarioSuccessCi": [
+    0.375,
+    0.7917
+   ],
+   "matchedBaseline": 0.45,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.1333,
+   "liftCi": [
+    -0.0419,
+    0.3086
+   ],
+   "liftVsTrendRs": 0.2133,
+   "liftVsTrendRsCi": [
+    0.0313,
+    0.3954
+   ],
+   "geometry": {
+    "medianTargetAtr": 2.8182,
+    "medianInvalidationAtr": 13.2201,
+    "medianRewardRisk": 0.2722,
+    "naiveGeometric": 0.7342
+   },
+   "medianPayoff": 1.2923,
+   "expectancyR": 0.0685,
+   "expectancyRCi": [
+    -0.14,
+    0.2669
+   ],
+   "invalidatedFirst": 0.0833,
+   "relabelRate": 0.2917,
+   "confirmationBeforeExit": 0.5333,
+   "longHorizon": {
+    "6M": {
+     "n": 6
+    },
+    "12M": {
+     "n": 6
+    },
+    "24M": {
+     "n": 6
+    },
+    "36M": {
+     "n": 6
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 24 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Bei Erkennung liegt der Kurs oft schon jenseits der Projektionszone; dann gilt das Setup nicht."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Abgeschlossene Korrektur → Trendfortsetzung",
+   "setupId": "S3_CORRECTION_COMPLETE",
+   "variant": "ENGINE_PRIMARY",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": false,
+   "timeframe": "1W",
+   "historicalCases": 15010,
+   "historicalCasesDevelopment": 13777,
+   "coverage": 0.0797,
+   "scenarioSuccess": 0.3508,
+   "scenarioSuccessCi": [
+    0.3322,
+    0.3691
+   ],
+   "matchedBaseline": 0.3724,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": -0.0216,
+   "liftCi": [
+    -0.0303,
+    -0.0129
+   ],
+   "liftVsTrendRs": -0.0222,
+   "liftVsTrendRsCi": [
+    -0.031,
+    -0.0134
+   ],
+   "geometry": {
+    "medianTargetAtr": 4.4926,
+    "medianInvalidationAtr": 3.5346,
+    "medianRewardRisk": 1.1262,
+    "naiveGeometric": 0.5057
+   },
+   "medianPayoff": 1.2401,
+   "expectancyR": -0.1269,
+   "expectancyRCi": [
+    -0.1585,
+    -0.0954
+   ],
+   "invalidatedFirst": 0.3547,
+   "relabelRate": 0.4004,
+   "confirmationBeforeExit": 0.4035,
+   "longHorizon": {
+    "6M": {
+     "n": 8220,
+     "medianReturn": 0.021,
+     "meanReturnCapped4x": 0.0456,
+     "excessVsDate": -0.0198,
+     "excessVsDateCi": [
+      -0.0309,
+      -0.0087
+     ],
+     "excessVsTrendCell": -0.0233,
+     "excessVsTrendCellCi": [
+      -0.0319,
+      -0.0146
+     ],
+     "excessVsTrendRsCell": -0.0233,
+     "excessVsTrendRsCellCi": [
+      -0.0344,
+      -0.0123
+     ],
+     "rate2x": 0.0191,
+     "rate3x": 0.003,
+     "rate5x": 0.0009,
+     "ratio2xVsDate": 0.4865,
+     "ratio2xVsDateCi": [
+      0.3984,
+      0.5748
+     ],
+     "ratio3xVsDate": 0.2684,
+     "ratio5xVsDate": 0.2696,
+     "ratio2xVsTrendRs": 0.4645,
+     "ratio3xVsTrendRs": 0.2598,
+     "medianMfe": 0.1297,
+     "medianMae": -0.1045
+    },
+    "12M": {
+     "n": 8013,
+     "medianReturn": 0.0484,
+     "meanReturnCapped4x": 0.0958,
+     "excessVsDate": -0.0271,
+     "excessVsDateCi": [
+      -0.0492,
+      -0.005
+     ],
+     "excessVsTrendCell": -0.0305,
+     "excessVsTrendCellCi": [
+      -0.0495,
+      -0.0114
+     ],
+     "excessVsTrendRsCell": -0.0308,
+     "excessVsTrendRsCellCi": [
+      -0.0524,
+      -0.0093
+     ],
+     "rate2x": 0.0557,
+     "rate3x": 0.0121,
+     "rate5x": 0.0024,
+     "ratio2xVsDate": 0.6238,
+     "ratio2xVsDateCi": [
+      0.5394,
+      0.7081
+     ],
+     "ratio3xVsDate": 0.3986,
+     "ratio5xVsDate": 0.2537,
+     "ratio2xVsTrendRs": 0.5993,
+     "ratio3xVsTrendRs": 0.3876,
+     "medianMfe": 0.206,
+     "medianMae": -0.1507
+    },
+    "24M": {
+     "n": 7614,
+     "medianReturn": 0.1089,
+     "meanReturnCapped4x": 0.2079,
+     "excessVsDate": -0.0261,
+     "excessVsDateCi": [
+      -0.05,
+      -0.0022
+     ],
+     "excessVsTrendCell": -0.0292,
+     "excessVsTrendCellCi": [
+      -0.0503,
+      -0.0081
+     ],
+     "excessVsTrendRsCell": -0.0291,
+     "excessVsTrendRsCellCi": [
+      -0.0516,
+      -0.0066
+     ],
+     "rate2x": 0.1475,
+     "rate3x": 0.0394,
+     "rate5x": 0.0095,
+     "ratio2xVsDate": 0.8018,
+     "ratio2xVsDateCi": [
+      0.7304,
+      0.8732
+     ],
+     "ratio3xVsDate": 0.5823,
+     "ratio5xVsDate": 0.4102,
+     "ratio2xVsTrendRs": 0.7785,
+     "ratio3xVsTrendRs": 0.5646,
+     "medianMfe": 0.3422,
+     "medianMae": -0.2115
+    },
+    "36M": {
+     "n": 7218,
+     "medianReturn": 0.1667,
+     "meanReturnCapped4x": 0.311,
+     "excessVsDate": -0.0266,
+     "excessVsDateCi": [
+      -0.0573,
+      0.0041
+     ],
+     "excessVsTrendCell": -0.0315,
+     "excessVsTrendCellCi": [
+      -0.0601,
+      -0.0029
+     ],
+     "excessVsTrendRsCell": -0.0289,
+     "excessVsTrendRsCellCi": [
+      -0.0596,
+      0.0018
+     ],
+     "rate2x": 0.2383,
+     "rate3x": 0.073,
+     "rate5x": 0.0202,
+     "ratio2xVsDate": 0.8728,
+     "ratio2xVsDateCi": [
+      0.8179,
+      0.9277
+     ],
+     "ratio3xVsDate": 0.6716,
+     "ratio5xVsDate": 0.5257,
+     "ratio2xVsTrendRs": 0.856,
+     "ratio3xVsTrendRs": 0.6533,
+     "medianMfe": 0.4799,
+     "medianMae": -0.2507
+    }
+   },
+   "evidenceGrade": "REJECT",
+   "evidenceGradeReason": "Lift gegen dieselbe Geometrie (D) mit Obergrenze < 0 auf DEV und VAL",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Bei Erkennung liegt der Kurs oft schon jenseits der Projektionszone; dann gilt das Setup nicht."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Dreieck → Schlussstoss",
+   "setupId": "S4_TRIANGLE_THRUST",
+   "variant": "PURE",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 17,
+   "historicalCasesDevelopment": 15,
+   "coverage": 0.0001,
+   "scenarioSuccess": 0.0588,
+   "scenarioSuccessCi": [
+    -0.0596,
+    0.1772
+   ],
+   "matchedBaseline": 0.1882,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": -0.1294,
+   "liftCi": [
+    -0.2381,
+    -0.0207
+   ],
+   "liftVsTrendRs": -0.0755,
+   "liftVsTrendRsCi": [
+    -0.2324,
+    0.0814
+   ],
+   "geometry": {
+    "medianTargetAtr": 17.0558,
+    "medianInvalidationAtr": 4.8602,
+    "medianRewardRisk": 2.5673,
+    "naiveGeometric": 0.3971
+   },
+   "medianPayoff": 1.9683,
+   "expectancyR": -0.3332,
+   "expectancyRCi": [
+    -0.9092,
+    0.2429
+   ],
+   "invalidatedFirst": 0.4706,
+   "relabelRate": 0.3529,
+   "confirmationBeforeExit": 0.5714,
+   "longHorizon": {
+    "6M": {
+     "n": 8
+    },
+    "12M": {
+     "n": 7
+    },
+    "24M": {
+     "n": 7
+    },
+    "36M": {
+     "n": 6
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 17 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Angezeigte Fälle sehr selten (n < 20 je Hälfte)."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Dreieck → Schlussstoss",
+   "setupId": "S4_TRIANGLE_THRUST",
+   "variant": "PURE_RS",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 4,
+   "historicalCasesDevelopment": 2,
+   "coverage": 0,
+   "scenarioSuccess": 0.25,
+   "scenarioSuccessCi": [
+    null,
+    null
+   ],
+   "matchedBaseline": 0.3,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": -0.05,
+   "liftCi": [
+    null,
+    null
+   ],
+   "liftVsTrendRs": 0.0625,
+   "liftVsTrendRsCi": [
+    null,
+    null
+   ],
+   "geometry": {
+    "medianTargetAtr": 9.0294,
+    "medianInvalidationAtr": 11.167,
+    "medianRewardRisk": 0.8081,
+    "naiveGeometric": 0.534
+   },
+   "medianPayoff": 3.3126,
+   "expectancyR": 0.0187,
+   "expectancyRCi": [
+    null,
+    null
+   ],
+   "invalidatedFirst": 0.25,
+   "relabelRate": 0.5,
+   "confirmationBeforeExit": 0,
+   "longHorizon": {
+    "6M": {
+     "n": 2
+    },
+    "12M": {
+     "n": 2
+    },
+    "24M": {
+     "n": 2
+    },
+    "36M": {
+     "n": 1
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 4 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Angezeigte Fälle sehr selten (n < 20 je Hälfte)."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Dreieck → Schlussstoss",
+   "setupId": "S4_TRIANGLE_THRUST",
+   "variant": "CONFIRMED",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": true,
+   "timeframe": "1W",
+   "historicalCases": 3,
+   "historicalCasesDevelopment": 1,
+   "coverage": 0,
+   "scenarioSuccess": 0.3333,
+   "scenarioSuccessCi": [
+    null,
+    null
+   ],
+   "matchedBaseline": 0.2,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.1333,
+   "liftCi": [
+    null,
+    null
+   ],
+   "liftVsTrendRs": 0.1515,
+   "liftVsTrendRsCi": [
+    null,
+    null
+   ],
+   "geometry": {
+    "medianTargetAtr": 9.5002,
+    "medianInvalidationAtr": 10.7725,
+    "medianRewardRisk": 0.8217,
+    "naiveGeometric": 0.413
+   },
+   "medianPayoff": 2.1676,
+   "expectancyR": 0.0205,
+   "expectancyRCi": [
+    null,
+    null
+   ],
+   "invalidatedFirst": 0.3333,
+   "relabelRate": 0.3333,
+   "confirmationBeforeExit": 0,
+   "longHorizon": {
+    "6M": {
+     "n": 2
+    },
+    "12M": {
+     "n": 2
+    },
+    "24M": {
+     "n": 2
+    },
+    "36M": {
+     "n": 1
+    }
+   },
+   "evidenceGrade": "INSUFFICIENT_EVIDENCE",
+   "evidenceGradeReason": "n VAL = 3 < 100",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Angezeigte Fälle sehr selten (n < 20 je Hälfte)."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  },
+  {
+   "contractVersion": "elliott-evidence-contract-1.0.0",
+   "setupName": "Dreieck → Schlussstoss",
+   "setupId": "S4_TRIANGLE_THRUST",
+   "variant": "ENGINE_PRIMARY",
+   "setupVersion": "1.0.0",
+   "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+   "evidenceVersion": "mission10-v1",
+   "productVisible": false,
+   "timeframe": "1W",
+   "historicalCases": 2081,
+   "historicalCasesDevelopment": 1811,
+   "coverage": 0.0111,
+   "scenarioSuccess": 0.2542,
+   "scenarioSuccessCi": [
+    0.2301,
+    0.2783
+   ],
+   "matchedBaseline": 0.2397,
+   "matchedBaselineDefinition": "gleiches Datum, andere Titel, gleiche Ziel-/Invalidations-/Bestätigungsabstände in ATR",
+   "lift": 0.0145,
+   "liftCi": [
+    -0.0041,
+    0.0332
+   ],
+   "liftVsTrendRs": -0.0065,
+   "liftVsTrendRsCi": [
+    -0.0277,
+    0.0147
+   ],
+   "geometry": {
+    "medianTargetAtr": 8.6444,
+    "medianInvalidationAtr": 3.3122,
+    "medianRewardRisk": 2.4132,
+    "naiveGeometric": 0.3702
+   },
+   "medianPayoff": 3.0395,
+   "expectancyR": 0.0092,
+   "expectancyRCi": [
+    -0.068,
+    0.0864
+   ],
+   "invalidatedFirst": 0.3945,
+   "relabelRate": 0.4647,
+   "confirmationBeforeExit": 0.5182,
+   "longHorizon": {
+    "6M": {
+     "n": 1204,
+     "medianReturn": 0.0314,
+     "meanReturnCapped4x": 0.055,
+     "excessVsDate": -0.002,
+     "excessVsDateCi": [
+      -0.0215,
+      0.0175
+     ],
+     "excessVsTrendCell": -0.0076,
+     "excessVsTrendCellCi": [
+      -0.0261,
+      0.0105
+     ],
+     "excessVsTrendRsCell": -0.0056,
+     "excessVsTrendRsCellCi": [
+      -0.0253,
+      0.0141
+     ],
+     "rate2x": 0.0166,
+     "rate3x": 0.0033,
+     "rate5x": 0.0017,
+     "ratio2xVsDate": 0.4461,
+     "ratio2xVsDateCi": [
+      0.2703,
+      0.6606
+     ],
+     "ratio3xVsDate": 0.3097,
+     "ratio5xVsDate": 0.5563,
+     "ratio2xVsTrendRs": 0.4266,
+     "ratio3xVsTrendRs": 0.3042,
+     "medianMfe": 0.1362,
+     "medianMae": -0.1024
+    },
+    "12M": {
+     "n": 1161,
+     "medianReturn": 0.0688,
+     "meanReturnCapped4x": 0.1198,
+     "excessVsDate": -0.0005,
+     "excessVsDateCi": [
+      -0.0285,
+      0.0274
+     ],
+     "excessVsTrendCell": -0.0064,
+     "excessVsTrendCellCi": [
+      -0.0329,
+      0.0202
+     ],
+     "excessVsTrendRsCell": -0.0057,
+     "excessVsTrendRsCellCi": [
+      -0.033,
+      0.0215
+     ],
+     "rate2x": 0.0525,
+     "rate3x": 0.0103,
+     "rate5x": 0.0043,
+     "ratio2xVsDate": 0.6141,
+     "ratio2xVsDateCi": [
+      0.4241,
+      0.804
+     ],
+     "ratio3xVsDate": 0.363,
+     "ratio5xVsDate": 0.4959,
+     "ratio2xVsTrendRs": 0.5874,
+     "ratio3xVsTrendRs": 0.3539,
+     "medianMfe": 0.218,
+     "medianMae": -0.1366
+    },
+    "24M": {
+     "n": 1081,
+     "medianReturn": 0.1395,
+     "meanReturnCapped4x": 0.2351,
+     "excessVsDate": -0.009,
+     "excessVsDateCi": [
+      -0.0493,
+      0.0282
+     ],
+     "excessVsTrendCell": -0.0156,
+     "excessVsTrendCellCi": [
+      -0.0529,
+      0.0217
+     ],
+     "excessVsTrendRsCell": -0.0143,
+     "excessVsTrendRsCellCi": [
+      -0.0542,
+      0.0218
+     ],
+     "rate2x": 0.1508,
+     "rate3x": 0.0398,
+     "rate5x": 0.0093,
+     "ratio2xVsDate": 0.818,
+     "ratio2xVsDateCi": [
+      0.6999,
+      0.9362
+     ],
+     "ratio3xVsDate": 0.5927,
+     "ratio5xVsDate": 0.4133,
+     "ratio2xVsTrendRs": 0.792,
+     "ratio3xVsTrendRs": 0.5742,
+     "medianMfe": 0.3831,
+     "medianMae": -0.1955
+    },
+    "36M": {
+     "n": 997,
+     "medianReturn": 0.2029,
+     "meanReturnCapped4x": 0.3583,
+     "excessVsDate": 0.0191,
+     "excessVsDateCi": [
+      -0.0328,
+      0.0709
+     ],
+     "excessVsTrendCell": 0.0097,
+     "excessVsTrendCellCi": [
+      -0.0408,
+      0.0603
+     ],
+     "excessVsTrendRsCell": 0.0135,
+     "excessVsTrendRsCellCi": [
+      -0.0365,
+      0.0634
+     ],
+     "rate2x": 0.2568,
+     "rate3x": 0.0822,
+     "rate5x": 0.0221,
+     "ratio2xVsDate": 0.9378,
+     "ratio2xVsDateCi": [
+      0.8337,
+      1.0419
+     ],
+     "ratio3xVsDate": 0.7557,
+     "ratio5xVsDate": 0.5869,
+     "ratio2xVsTrendRs": 0.9165,
+     "ratio3xVsTrendRs": 0.7336,
+     "medianMfe": 0.5111,
+     "medianMae": -0.2365
+    }
+   },
+   "evidenceGrade": "STRUCTURAL_ONLY",
+   "evidenceGradeReason": "tritt auf, Invalidation und Projektion definiert, aber weder LEVEL 1 noch LEVEL 2",
+   "dataStatus": "VALIDATION_ON_CONSUMED_DATA",
+   "prospective": null,
+   "limitations": [
+    "Historische Evidenz liegt auf verbrauchten Wochendaten (Mission I–IX); höchstens Validierung, keine Bestätigung.",
+    "Trefferquote nur zusammen mit der Kontrollquote gleicher Geometrie lesen; eine hohe Quote bei nahem Ziel ist Geometrie.",
+    "Zustandslose Engine-Sicht (ohne Persistenzkette); die Produktanzeige kann davon abweichen.",
+    "Historische Häufigkeit, keine Wahrscheinlichkeit.",
+    "Angezeigte Fälle sehr selten (n < 20 je Hälfte)."
+   ],
+   "publishable": false,
+   "publishableReason": "Kein Setup hat prospektive Bestätigung (LEVEL 3). Anzeige historischer Zahlen erst nach Legal Review und nur mit Kontrollquote."
+  }
+ ]
+}

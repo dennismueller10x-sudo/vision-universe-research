@@ -1,0 +1,3350 @@
+{
+ "schemaVersion": "elliott-setup-evidence-1.0.0",
+ "evalVersion": "elliott-setup-eval-1.0.0",
+ "library": "elliott-setup-library-1.0.0",
+ "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+ "phase": "VAL",
+ "bucket": "1/2",
+ "events": [
+  {
+   "sha256": "18b5ab447e43f18731d112b18f9cc6308e93c85a8d1ade68f7327effab78597b",
+   "candidates": 5839,
+   "keyMismatch": 0,
+   "records": "5c16e61dc463b10a7893693fbe25dd75881d7be2c9b97ce41ed553781d318263"
+  },
+  {
+   "sha256": "cefb526d9fad794cc2f27acd851b69934bb406fa21d245ba68552e52717facfe",
+   "candidates": 5585,
+   "keyMismatch": 0,
+   "records": "5c16e61dc463b10a7893693fbe25dd75881d7be2c9b97ce41ed553781d318263"
+  },
+  {
+   "sha256": "e0343660dc828b0a39a9347ba18cea6625518fbce8ba3c7594446ef190a3bd9e",
+   "candidates": 6111,
+   "keyMismatch": 0,
+   "records": "5c16e61dc463b10a7893693fbe25dd75881d7be2c9b97ce41ed553781d318263"
+  },
+  {
+   "sha256": "2ca849827fef3e29fe2255dd1c3624525a7feba0edd0ad92e322d9cc31ede741",
+   "candidates": 5605,
+   "keyMismatch": 0,
+   "records": "5c16e61dc463b10a7893693fbe25dd75881d7be2c9b97ce41ed553781d318263"
+  }
+ ],
+ "detectionPoints": 188236,
+ "statusCounts": {
+  "S3_CORRECTION_COMPLETE|QUALIFIED": 15394,
+  "S4_TRIANGLE_THRUST|NO_PROJECTION_BEYOND_PRICE": 1715,
+  "S3_CORRECTION_COMPLETE|NO_PROJECTION_BEYOND_PRICE": 3841,
+  "S4_TRIANGLE_THRUST|QUALIFIED": 2135,
+  "OUTCOME_CENSORED": 291,
+  "S2_WAVE4_TO_5|QUALIFIED": 53,
+  "ANOMALY_PAST_JUMP": 57,
+  "S1_EARLY_WAVE3|QUALIFIED": 2
+ },
+ "rowsResolved": 17236,
+ "results": {
+  "S1_EARLY_WAVE3": {
+   "ENGINE_PRIMARY": {
+    "all": {
+     "n": 2,
+     "symbols": 2,
+     "hit": 0.5,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.2,
+     "liftD": 0.3,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.2,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.2,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0.3333,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -1.3192,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.2244,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.5,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0,
+     "confirmationBeforeExit": 0.5,
+     "confirmationPendingN": 2,
+     "geometry": {
+      "medianTargetAtr": 6.0876,
+      "medianInvalidationAtr": 1.3725,
+      "medianRewardRisk": 15.5756,
+      "naiveGeometric": 0.1655
+     },
+     "payoff": {
+      "avgWinnerR": 2.3616,
+      "avgLoserR": -5,
+      "payoffRatio": 0.4723
+     },
+     "forward": {
+      "f13Median": 0.1786,
+      "f26Median": 0.3058,
+      "f26Mean": 0.3058
+     },
+     "mfeAtrMedian": 4.4,
+     "maeAtrMedian": 0.93,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "up": {
+     "n": 2,
+     "symbols": 2,
+     "hit": 0.5,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.2,
+     "liftD": 0.3,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.2,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.2,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0.3333,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -1.3192,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.2244,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.5,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0,
+     "confirmationBeforeExit": 0.5,
+     "confirmationPendingN": 2,
+     "geometry": {
+      "medianTargetAtr": 6.0876,
+      "medianInvalidationAtr": 1.3725,
+      "medianRewardRisk": 15.5756,
+      "naiveGeometric": 0.1655
+     },
+     "payoff": {
+      "avgWinnerR": 2.3616,
+      "avgLoserR": -5,
+      "payoffRatio": 0.4723
+     },
+     "forward": {
+      "f13Median": 0.1786,
+      "f26Median": 0.3058,
+      "f26Mean": 0.3058
+     },
+     "mfeAtrMedian": 4.4,
+     "maeAtrMedian": 0.93,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "PURE": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "PURE_RS": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "CONFIRMED": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "PURE_HD": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   }
+  },
+  "S2_WAVE4_TO_5": {
+   "ENGINE_PRIMARY": {
+    "all": {
+     "n": 51,
+     "symbols": 51,
+     "hit": 0.3529,
+     "hitCi": [
+      0.206,
+      0.4999
+     ],
+     "controlD": 0.3922,
+     "liftD": -0.0392,
+     "liftDCi": [
+      -0.1741,
+      0.0957
+     ],
+     "liftDp": 0.568835,
+     "liftT": -0.0206,
+     "liftTCi": [
+      -0.1524,
+      0.1113
+     ],
+     "liftTR": -0.0763,
+     "liftTRCi": [
+      -0.219,
+      0.0664
+     ],
+     "liftC": -0.0131,
+     "liftCCi": [
+      -0.1651,
+      0.1389
+     ],
+     "expectancyR": -0.2551,
+     "expectancyRCi": [
+      -0.6936,
+      0.1835
+     ],
+     "excessRvsD": -0.2642,
+     "excessRCi": [
+      -0.7203,
+      0.1919
+     ],
+     "invalidatedFirst": 0.4902,
+     "relabelBeforeResolution": 0.5294,
+     "timeoutShare": 0.1569,
+     "confirmationBeforeExit": 0.4118,
+     "confirmationPendingN": 51,
+     "geometry": {
+      "medianTargetAtr": 4.0478,
+      "medianInvalidationAtr": 3.115,
+      "medianRewardRisk": 1.4505,
+      "naiveGeometric": 0.4372
+     },
+     "payoff": {
+      "avgWinnerR": 1.359,
+      "avgLoserR": -1.1355,
+      "payoffRatio": 1.1968
+     },
+     "forward": {
+      "f13Median": 0.0018,
+      "f26Median": 0.0016,
+      "f26Mean": 0.1456
+     },
+     "mfeAtrMedian": 1.79,
+     "maeAtrMedian": 1.87,
+     "coverageOfDetectionPoints": 0.0003,
+     "long": {
+      "6M": {
+       "n": 33,
+       "medianReturn": -0.0296,
+       "meanReturnCapped4x": 0.1899,
+       "excessVsDate": 0.132,
+       "excessVsDateCi": [
+        -0.1342,
+        0.3982
+       ],
+       "excessVsTrendCell": 0.1272,
+       "excessVsTrendCellCi": [
+        -0.1369,
+        0.3914
+       ],
+       "excessVsTrendRsCell": 0.119,
+       "excessVsTrendRsCellCi": [
+        -0.1463,
+        0.3842
+       ],
+       "rate2x": 0.1212,
+       "rate3x": 0.0606,
+       "rate5x": 0,
+       "ratio2xVsDate": 2.579,
+       "ratio2xVsDateCi": [
+        0,
+        5.9437
+       ],
+       "ratio3xVsDate": 4.3578,
+       "ratio5xVsDate": 0,
+       "ratio2xVsTrendRs": 2.1641,
+       "ratio3xVsTrendRs": 3.672,
+       "medianMfe": 0.2414,
+       "medianMae": -0.1812
+      },
+      "12M": {
+       "n": 30,
+       "medianReturn": -0.0158,
+       "meanReturnCapped4x": 0.217,
+       "excessVsDate": 0.111,
+       "excessVsDateCi": [
+        -0.1466,
+        0.3686
+       ],
+       "excessVsTrendCell": 0.0964,
+       "excessVsTrendCellCi": [
+        -0.1602,
+        0.3531
+       ],
+       "excessVsTrendRsCell": 0.0868,
+       "excessVsTrendRsCellCi": [
+        -0.1686,
+        0.3421
+       ],
+       "rate2x": 0.2333,
+       "rate3x": 0.1,
+       "rate5x": 0.0333,
+       "ratio2xVsDate": 2.4613,
+       "ratio2xVsDateCi": [
+        1.0551,
+        4.2041
+       ],
+       "ratio3xVsDate": 3.1505,
+       "ratio5xVsDate": 3.2855,
+       "ratio2xVsTrendRs": 2.0113,
+       "ratio3xVsTrendRs": 2.572,
+       "medianMfe": 0.2867,
+       "medianMae": -0.3227
+      },
+      "24M": {
+       "n": 28,
+       "medianReturn": 0.0062,
+       "meanReturnCapped4x": 0.3537,
+       "excessVsDate": 0.1879,
+       "excessVsDateCi": [
+        -0.2428,
+        0.6186
+       ],
+       "excessVsTrendCell": 0.1711,
+       "excessVsTrendCellCi": [
+        -0.2673,
+        0.6094
+       ],
+       "excessVsTrendRsCell": 0.1652,
+       "excessVsTrendRsCellCi": [
+        -0.2278,
+        0.6408
+       ],
+       "rate2x": 0.25,
+       "rate3x": 0.2143,
+       "rate5x": 0.1071,
+       "ratio2xVsDate": 1.425,
+       "ratio2xVsDateCi": [
+        0.3926,
+        2.5109
+       ],
+       "ratio3xVsDate": 3.2659,
+       "ratio5xVsDate": 4.5995,
+       "ratio2xVsTrendRs": 1.2172,
+       "ratio3xVsTrendRs": 2.7207,
+       "medianMfe": 0.6291,
+       "medianMae": -0.5021
+      },
+      "36M": {
+       "n": 26,
+       "medianReturn": 0.1017,
+       "meanReturnCapped4x": 0.5176,
+       "excessVsDate": 0.1362,
+       "excessVsDateCi": [
+        -0.6172,
+        0.8895
+       ],
+       "excessVsTrendCell": 0.1144,
+       "excessVsTrendCellCi": [
+        -0.6419,
+        0.8706
+       ],
+       "excessVsTrendRsCell": 0.1062,
+       "excessVsTrendRsCellCi": [
+        -0.6365,
+        0.8489
+       ],
+       "rate2x": 0.3077,
+       "rate3x": 0.2308,
+       "rate5x": 0.1538,
+       "ratio2xVsDate": 1.1188,
+       "ratio2xVsDateCi": [
+        0.493,
+        1.7446
+       ],
+       "ratio3xVsDate": 2.0273,
+       "ratio5xVsDate": 3.6085,
+       "ratio2xVsTrendRs": 1.0004,
+       "ratio3xVsTrendRs": 1.695,
+       "medianMfe": 0.6956,
+       "medianMae": -0.5146
+      }
+     }
+    },
+    "up": {
+     "n": 34,
+     "symbols": 34,
+     "hit": 0.3824,
+     "hitCi": [
+      0.2022,
+      0.5625
+     ],
+     "controlD": 0.3941,
+     "liftD": -0.0118,
+     "liftDCi": [
+      -0.172,
+      0.1485
+     ],
+     "liftDp": 0.885582,
+     "liftT": -0.0046,
+     "liftTCi": [
+      -0.1748,
+      0.1657
+     ],
+     "liftTR": -0.0646,
+     "liftTRCi": [
+      -0.2462,
+      0.1169
+     ],
+     "liftC": 0.0392,
+     "liftCCi": [
+      -0.1353,
+      0.2138
+     ],
+     "expectancyR": -0.3391,
+     "expectancyRCi": [
+      -0.9533,
+      0.2751
+     ],
+     "excessRvsD": -0.3791,
+     "excessRCi": [
+      -0.9942,
+      0.236
+     ],
+     "invalidatedFirst": 0.5294,
+     "relabelBeforeResolution": 0.5294,
+     "timeoutShare": 0.0882,
+     "confirmationBeforeExit": 0.4118,
+     "confirmationPendingN": 34,
+     "geometry": {
+      "medianTargetAtr": 3.9913,
+      "medianInvalidationAtr": 2.9489,
+      "medianRewardRisk": 1.6721,
+      "naiveGeometric": 0.4178
+     },
+     "payoff": {
+      "avgWinnerR": 1.421,
+      "avgLoserR": -1.4287,
+      "payoffRatio": 0.9946
+     },
+     "forward": {
+      "f13Median": -0.0052,
+      "f26Median": -0.0296,
+      "f26Mean": 0.1899
+     },
+     "mfeAtrMedian": 2.025,
+     "maeAtrMedian": 1.97,
+     "coverageOfDetectionPoints": 0.0002,
+     "long": {
+      "6M": {
+       "n": 33,
+       "medianReturn": -0.0296,
+       "meanReturnCapped4x": 0.1899,
+       "excessVsDate": 0.132,
+       "excessVsDateCi": [
+        -0.1243,
+        0.3882
+       ],
+       "excessVsTrendCell": 0.1272,
+       "excessVsTrendCellCi": [
+        -0.127,
+        0.3814
+       ],
+       "excessVsTrendRsCell": 0.119,
+       "excessVsTrendRsCellCi": [
+        -0.1367,
+        0.3746
+       ],
+       "rate2x": 0.1212,
+       "rate3x": 0.0606,
+       "rate5x": 0,
+       "ratio2xVsDate": 2.579,
+       "ratio2xVsDateCi": [
+        -0.1582,
+        5.3161
+       ],
+       "ratio3xVsDate": 4.3578,
+       "ratio5xVsDate": 0,
+       "ratio2xVsTrendRs": 2.1641,
+       "ratio3xVsTrendRs": 3.672,
+       "medianMfe": 0.2414,
+       "medianMae": -0.1812
+      },
+      "12M": {
+       "n": 30,
+       "medianReturn": -0.0158,
+       "meanReturnCapped4x": 0.217,
+       "excessVsDate": 0.111,
+       "excessVsDateCi": [
+        -0.124,
+        0.3901
+       ],
+       "excessVsTrendCell": 0.0964,
+       "excessVsTrendCellCi": [
+        -0.142,
+        0.3773
+       ],
+       "excessVsTrendRsCell": 0.0868,
+       "excessVsTrendRsCellCi": [
+        -0.1504,
+        0.3663
+       ],
+       "rate2x": 0.2333,
+       "rate3x": 0.1,
+       "rate5x": 0.0333,
+       "ratio2xVsDate": 2.4613,
+       "ratio2xVsDateCi": [
+        0.8678,
+        4.0548
+       ],
+       "ratio3xVsDate": 3.1505,
+       "ratio5xVsDate": 3.2855,
+       "ratio2xVsTrendRs": 2.0113,
+       "ratio3xVsTrendRs": 2.572,
+       "medianMfe": 0.2867,
+       "medianMae": -0.3227
+      },
+      "24M": {
+       "n": 28,
+       "medianReturn": 0.0062,
+       "meanReturnCapped4x": 0.3537,
+       "excessVsDate": 0.1879,
+       "excessVsDateCi": [
+        -0.2254,
+        0.6012
+       ],
+       "excessVsTrendCell": 0.1711,
+       "excessVsTrendCellCi": [
+        -0.2516,
+        0.5937
+       ],
+       "excessVsTrendRsCell": 0.1652,
+       "excessVsTrendRsCellCi": [
+        -0.2534,
+        0.5838
+       ],
+       "rate2x": 0.25,
+       "rate3x": 0.2143,
+       "rate5x": 0.1071,
+       "ratio2xVsDate": 1.425,
+       "ratio2xVsDateCi": [
+        0.3471,
+        2.4249
+       ],
+       "ratio3xVsDate": 3.2659,
+       "ratio5xVsDate": 4.5995,
+       "ratio2xVsTrendRs": 1.2172,
+       "ratio3xVsTrendRs": 2.7207,
+       "medianMfe": 0.6291,
+       "medianMae": -0.5021
+      },
+      "36M": {
+       "n": 26,
+       "medianReturn": 0.1017,
+       "meanReturnCapped4x": 0.5176,
+       "excessVsDate": 0.1362,
+       "excessVsDateCi": [
+        -0.6108,
+        0.8831
+       ],
+       "excessVsTrendCell": 0.1144,
+       "excessVsTrendCellCi": [
+        -0.6318,
+        0.8606
+       ],
+       "excessVsTrendRsCell": 0.1062,
+       "excessVsTrendRsCellCi": [
+        -0.6265,
+        0.8389
+       ],
+       "rate2x": 0.3077,
+       "rate3x": 0.2308,
+       "rate5x": 0.1538,
+       "ratio2xVsDate": 1.1188,
+       "ratio2xVsDateCi": [
+        0.5117,
+        1.7259
+       ],
+       "ratio3xVsDate": 2.0273,
+       "ratio5xVsDate": 3.6085,
+       "ratio2xVsTrendRs": 1.0004,
+       "ratio3xVsTrendRs": 1.695,
+       "medianMfe": 0.6956,
+       "medianMae": -0.5146
+      }
+     }
+    },
+    "down": {
+     "n": 17,
+     "symbols": 17,
+     "hit": 0.2941,
+     "hitCi": [
+      0.0868,
+      0.5294
+     ],
+     "controlD": 0.3882,
+     "liftD": -0.0941,
+     "liftDCi": [
+      -0.3333,
+      0.1867
+     ],
+     "liftDp": 0.445746,
+     "liftT": -0.0516,
+     "liftTCi": [
+      -0.3261,
+      0.1752
+     ],
+     "liftTR": -0.1059,
+     "liftTRCi": [
+      -0.3568,
+      0.145
+     ],
+     "liftC": -0.1176,
+     "liftCCi": [
+      -0.3969,
+      0.1616
+     ],
+     "expectancyR": -0.087,
+     "expectancyRCi": [
+      -0.6592,
+      0.4852
+     ],
+     "excessRvsD": -0.0344,
+     "excessRCi": [
+      -0.7159,
+      0.6471
+     ],
+     "invalidatedFirst": 0.4118,
+     "relabelBeforeResolution": 0.5294,
+     "timeoutShare": 0.2941,
+     "confirmationBeforeExit": 0.4118,
+     "confirmationPendingN": 17,
+     "geometry": {
+      "medianTargetAtr": 4.144,
+      "medianInvalidationAtr": 3.1895,
+      "medianRewardRisk": 1.2939,
+      "naiveGeometric": 0.476
+     },
+     "payoff": {
+      "avgWinnerR": 1.1979,
+      "avgLoserR": -0.6224,
+      "payoffRatio": 1.9246
+     },
+     "forward": {
+      "f13Median": 0.0235,
+      "f26Median": 0.0328,
+      "f26Mean": 0.0595
+     },
+     "mfeAtrMedian": 1.59,
+     "maeAtrMedian": 1.84,
+     "coverageOfDetectionPoints": 0.0001
+    }
+   },
+   "PURE": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "PURE_RS": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "CONFIRMED": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   },
+   "PURE_HD": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   }
+  },
+  "S3_CORRECTION_COMPLETE": {
+   "ENGINE_PRIMARY": {
+    "all": {
+     "n": 15010,
+     "symbols": 2269,
+     "hit": 0.3508,
+     "hitCi": [
+      0.3322,
+      0.3691
+     ],
+     "controlD": 0.3724,
+     "liftD": -0.0216,
+     "liftDCi": [
+      -0.0303,
+      -0.0129
+     ],
+     "liftDp": 0.000001,
+     "liftT": -0.0228,
+     "liftTCi": [
+      -0.0306,
+      -0.015
+     ],
+     "liftTR": -0.0222,
+     "liftTRCi": [
+      -0.031,
+      -0.0134
+     ],
+     "liftC": -0.0565,
+     "liftCCi": [
+      -0.0711,
+      -0.0441
+     ],
+     "expectancyR": -0.1269,
+     "expectancyRCi": [
+      -0.1585,
+      -0.0954
+     ],
+     "excessRvsD": -0.0258,
+     "excessRCi": [
+      -0.0462,
+      -0.0053
+     ],
+     "invalidatedFirst": 0.3547,
+     "relabelBeforeResolution": 0.4004,
+     "timeoutShare": 0.2945,
+     "confirmationBeforeExit": 0.4035,
+     "confirmationPendingN": 11220,
+     "geometry": {
+      "medianTargetAtr": 4.4926,
+      "medianInvalidationAtr": 3.5346,
+      "medianRewardRisk": 1.1262,
+      "naiveGeometric": 0.5057
+     },
+     "payoff": {
+      "avgWinnerR": 0.7348,
+      "avgLoserR": -0.5925,
+      "payoffRatio": 1.2401
+     },
+     "forward": {
+      "f13Median": 0.0105,
+      "f26Median": 0.0193,
+      "f26Mean": 0.1077
+     },
+     "mfeAtrMedian": 1.97,
+     "maeAtrMedian": 2.36,
+     "coverageOfDetectionPoints": 0.0797,
+     "long": {
+      "6M": {
+       "n": 8220,
+       "medianReturn": 0.021,
+       "meanReturnCapped4x": 0.0456,
+       "excessVsDate": -0.0198,
+       "excessVsDateCi": [
+        -0.0309,
+        -0.0087
+       ],
+       "excessVsTrendCell": -0.0233,
+       "excessVsTrendCellCi": [
+        -0.0319,
+        -0.0146
+       ],
+       "excessVsTrendRsCell": -0.0233,
+       "excessVsTrendRsCellCi": [
+        -0.0344,
+        -0.0123
+       ],
+       "rate2x": 0.0191,
+       "rate3x": 0.003,
+       "rate5x": 0.0009,
+       "ratio2xVsDate": 0.4865,
+       "ratio2xVsDateCi": [
+        0.3984,
+        0.5748
+       ],
+       "ratio3xVsDate": 0.2684,
+       "ratio5xVsDate": 0.2696,
+       "ratio2xVsTrendRs": 0.4645,
+       "ratio3xVsTrendRs": 0.2598,
+       "medianMfe": 0.1297,
+       "medianMae": -0.1045
+      },
+      "12M": {
+       "n": 8013,
+       "medianReturn": 0.0484,
+       "meanReturnCapped4x": 0.0958,
+       "excessVsDate": -0.0271,
+       "excessVsDateCi": [
+        -0.0492,
+        -0.005
+       ],
+       "excessVsTrendCell": -0.0305,
+       "excessVsTrendCellCi": [
+        -0.0495,
+        -0.0114
+       ],
+       "excessVsTrendRsCell": -0.0308,
+       "excessVsTrendRsCellCi": [
+        -0.0524,
+        -0.0093
+       ],
+       "rate2x": 0.0557,
+       "rate3x": 0.0121,
+       "rate5x": 0.0024,
+       "ratio2xVsDate": 0.6238,
+       "ratio2xVsDateCi": [
+        0.5394,
+        0.7081
+       ],
+       "ratio3xVsDate": 0.3986,
+       "ratio5xVsDate": 0.2537,
+       "ratio2xVsTrendRs": 0.5993,
+       "ratio3xVsTrendRs": 0.3876,
+       "medianMfe": 0.206,
+       "medianMae": -0.1507
+      },
+      "24M": {
+       "n": 7614,
+       "medianReturn": 0.1089,
+       "meanReturnCapped4x": 0.2079,
+       "excessVsDate": -0.0261,
+       "excessVsDateCi": [
+        -0.05,
+        -0.0022
+       ],
+       "excessVsTrendCell": -0.0292,
+       "excessVsTrendCellCi": [
+        -0.0503,
+        -0.0081
+       ],
+       "excessVsTrendRsCell": -0.0291,
+       "excessVsTrendRsCellCi": [
+        -0.0516,
+        -0.0066
+       ],
+       "rate2x": 0.1475,
+       "rate3x": 0.0394,
+       "rate5x": 0.0095,
+       "ratio2xVsDate": 0.8018,
+       "ratio2xVsDateCi": [
+        0.7304,
+        0.8732
+       ],
+       "ratio3xVsDate": 0.5823,
+       "ratio5xVsDate": 0.4102,
+       "ratio2xVsTrendRs": 0.7785,
+       "ratio3xVsTrendRs": 0.5646,
+       "medianMfe": 0.3422,
+       "medianMae": -0.2115
+      },
+      "36M": {
+       "n": 7218,
+       "medianReturn": 0.1667,
+       "meanReturnCapped4x": 0.311,
+       "excessVsDate": -0.0266,
+       "excessVsDateCi": [
+        -0.0573,
+        0.0041
+       ],
+       "excessVsTrendCell": -0.0315,
+       "excessVsTrendCellCi": [
+        -0.0601,
+        -0.0029
+       ],
+       "excessVsTrendRsCell": -0.0289,
+       "excessVsTrendRsCellCi": [
+        -0.0596,
+        0.0018
+       ],
+       "rate2x": 0.2383,
+       "rate3x": 0.073,
+       "rate5x": 0.0202,
+       "ratio2xVsDate": 0.8728,
+       "ratio2xVsDateCi": [
+        0.8179,
+        0.9277
+       ],
+       "ratio3xVsDate": 0.6716,
+       "ratio5xVsDate": 0.5257,
+       "ratio2xVsTrendRs": 0.856,
+       "ratio3xVsTrendRs": 0.6533,
+       "medianMfe": 0.4799,
+       "medianMae": -0.2507
+      }
+     }
+    },
+    "up": {
+     "n": 8349,
+     "symbols": 1777,
+     "hit": 0.3866,
+     "hitCi": [
+      0.3557,
+      0.4175
+     ],
+     "controlD": 0.4106,
+     "liftD": -0.0239,
+     "liftDCi": [
+      -0.0343,
+      -0.0136
+     ],
+     "liftDp": 0.000006,
+     "liftT": -0.023,
+     "liftTCi": [
+      -0.0334,
+      -0.0125
+     ],
+     "liftTR": -0.0213,
+     "liftTRCi": [
+      -0.0322,
+      -0.0104
+     ],
+     "liftC": -0.0554,
+     "liftCCi": [
+      -0.0847,
+      -0.0262
+     ],
+     "expectancyR": -0.0237,
+     "expectancyRCi": [
+      -0.1134,
+      0.066
+     ],
+     "excessRvsD": -0.0686,
+     "excessRCi": [
+      -0.0927,
+      -0.0416
+     ],
+     "invalidatedFirst": 0.318,
+     "relabelBeforeResolution": 0.3846,
+     "timeoutShare": 0.2954,
+     "confirmationBeforeExit": 0.4326,
+     "confirmationPendingN": 6126,
+     "geometry": {
+      "medianTargetAtr": 4.5334,
+      "medianInvalidationAtr": 3.6692,
+      "medianRewardRisk": 1.1349,
+      "naiveGeometric": 0.5028
+     },
+     "payoff": {
+      "avgWinnerR": 0.7414,
+      "avgLoserR": -0.506,
+      "payoffRatio": 1.4654
+     },
+     "forward": {
+      "f13Median": 0.0121,
+      "f26Median": 0.021,
+      "f26Mean": 0.0467
+     },
+     "mfeAtrMedian": 2.2,
+     "maeAtrMedian": 2.19,
+     "coverageOfDetectionPoints": 0.0444,
+     "long": {
+      "6M": {
+       "n": 8220,
+       "medianReturn": 0.021,
+       "meanReturnCapped4x": 0.0456,
+       "excessVsDate": -0.0198,
+       "excessVsDateCi": [
+        -0.0315,
+        -0.008
+       ],
+       "excessVsTrendCell": -0.0233,
+       "excessVsTrendCellCi": [
+        -0.0326,
+        -0.014
+       ],
+       "excessVsTrendRsCell": -0.0233,
+       "excessVsTrendRsCellCi": [
+        -0.035,
+        -0.0117
+       ],
+       "rate2x": 0.0191,
+       "rate3x": 0.003,
+       "rate5x": 0.0009,
+       "ratio2xVsDate": 0.4865,
+       "ratio2xVsDateCi": [
+        0.3959,
+        0.577
+       ],
+       "ratio3xVsDate": 0.2684,
+       "ratio5xVsDate": 0.2696,
+       "ratio2xVsTrendRs": 0.4645,
+       "ratio3xVsTrendRs": 0.2598,
+       "medianMfe": 0.1297,
+       "medianMae": -0.1045
+      },
+      "12M": {
+       "n": 8013,
+       "medianReturn": 0.0484,
+       "meanReturnCapped4x": 0.0958,
+       "excessVsDate": -0.0271,
+       "excessVsDateCi": [
+        -0.0483,
+        -0.0059
+       ],
+       "excessVsTrendCell": -0.0305,
+       "excessVsTrendCellCi": [
+        -0.0482,
+        -0.0128
+       ],
+       "excessVsTrendRsCell": -0.0308,
+       "excessVsTrendRsCellCi": [
+        -0.0513,
+        -0.0104
+       ],
+       "rate2x": 0.0557,
+       "rate3x": 0.0121,
+       "rate5x": 0.0024,
+       "ratio2xVsDate": 0.6238,
+       "ratio2xVsDateCi": [
+        0.547,
+        0.7005
+       ],
+       "ratio3xVsDate": 0.3986,
+       "ratio5xVsDate": 0.2537,
+       "ratio2xVsTrendRs": 0.5993,
+       "ratio3xVsTrendRs": 0.3876,
+       "medianMfe": 0.206,
+       "medianMae": -0.1507
+      },
+      "24M": {
+       "n": 7614,
+       "medianReturn": 0.1089,
+       "meanReturnCapped4x": 0.2079,
+       "excessVsDate": -0.0261,
+       "excessVsDateCi": [
+        -0.0508,
+        -0.0014
+       ],
+       "excessVsTrendCell": -0.0292,
+       "excessVsTrendCellCi": [
+        -0.0517,
+        -0.0067
+       ],
+       "excessVsTrendRsCell": -0.0291,
+       "excessVsTrendRsCellCi": [
+        -0.053,
+        -0.0052
+       ],
+       "rate2x": 0.1475,
+       "rate3x": 0.0394,
+       "rate5x": 0.0095,
+       "ratio2xVsDate": 0.8018,
+       "ratio2xVsDateCi": [
+        0.7353,
+        0.8698
+       ],
+       "ratio3xVsDate": 0.5823,
+       "ratio5xVsDate": 0.4102,
+       "ratio2xVsTrendRs": 0.7785,
+       "ratio3xVsTrendRs": 0.5646,
+       "medianMfe": 0.3422,
+       "medianMae": -0.2115
+      },
+      "36M": {
+       "n": 7218,
+       "medianReturn": 0.1667,
+       "meanReturnCapped4x": 0.311,
+       "excessVsDate": -0.0266,
+       "excessVsDateCi": [
+        -0.0577,
+        0.0046
+       ],
+       "excessVsTrendCell": -0.0315,
+       "excessVsTrendCellCi": [
+        -0.0607,
+        -0.0024
+       ],
+       "excessVsTrendRsCell": -0.0289,
+       "excessVsTrendRsCellCi": [
+        -0.0601,
+        0.0023
+       ],
+       "rate2x": 0.2383,
+       "rate3x": 0.073,
+       "rate5x": 0.0202,
+       "ratio2xVsDate": 0.8728,
+       "ratio2xVsDateCi": [
+        0.8193,
+        0.9264
+       ],
+       "ratio3xVsDate": 0.6716,
+       "ratio5xVsDate": 0.5257,
+       "ratio2xVsTrendRs": 0.856,
+       "ratio3xVsTrendRs": 0.6533,
+       "medianMfe": 0.4799,
+       "medianMae": -0.2507
+      }
+     }
+    },
+    "down": {
+     "n": 6661,
+     "symbols": 1992,
+     "hit": 0.3058,
+     "hitCi": [
+      0.2708,
+      0.3408
+     ],
+     "controlD": 0.3245,
+     "liftD": -0.0187,
+     "liftDCi": [
+      -0.0288,
+      -0.0091
+     ],
+     "liftDp": 0.000178,
+     "liftT": -0.0223,
+     "liftTCi": [
+      -0.033,
+      -0.0115
+     ],
+     "liftTR": -0.0218,
+     "liftTRCi": [
+      -0.0311,
+      -0.0104
+     ],
+     "liftC": -0.0577,
+     "liftCCi": [
+      -0.0888,
+      -0.0267
+     ],
+     "expectancyR": -0.2564,
+     "expectancyRCi": [
+      -0.3504,
+      -0.1624
+     ],
+     "excessRvsD": 0.028,
+     "excessRCi": [
+      -0.0083,
+      0.0642
+     ],
+     "invalidatedFirst": 0.4007,
+     "relabelBeforeResolution": 0.4202,
+     "timeoutShare": 0.2935,
+     "confirmationBeforeExit": 0.3685,
+     "confirmationPendingN": 5094,
+     "geometry": {
+      "medianTargetAtr": 4.4469,
+      "medianInvalidationAtr": 3.3488,
+      "medianRewardRisk": 1.1169,
+      "naiveGeometric": 0.5094
+     },
+     "payoff": {
+      "avgWinnerR": 0.7243,
+      "avgLoserR": -0.6884,
+      "payoffRatio": 1.0522
+     },
+     "forward": {
+      "f13Median": 0.0084,
+      "f26Median": 0.0155,
+      "f26Mean": 0.1841
+     },
+     "mfeAtrMedian": 1.69,
+     "maeAtrMedian": 2.56,
+     "coverageOfDetectionPoints": 0.0354
+    }
+   },
+   "PURE": {
+    "all": {
+     "n": 182,
+     "symbols": 173,
+     "hit": 0.3681,
+     "hitCi": [
+      0.3036,
+      0.4374
+     ],
+     "controlD": 0.3615,
+     "liftD": 0.0066,
+     "liftDCi": [
+      -0.0602,
+      0.0704
+     ],
+     "liftDp": 0.835475,
+     "liftT": 0.017,
+     "liftTCi": [
+      -0.0503,
+      0.0842
+     ],
+     "liftTR": 0.0053,
+     "liftTRCi": [
+      -0.0559,
+      0.0665
+     ],
+     "liftC": -0.022,
+     "liftCCi": [
+      -0.0924,
+      0.0485
+     ],
+     "expectancyR": -0.1514,
+     "expectancyRCi": [
+      -0.314,
+      -0.0012
+     ],
+     "excessRvsD": -0.0093,
+     "excessRCi": [
+      -0.1605,
+      0.1267
+     ],
+     "invalidatedFirst": 0.2802,
+     "relabelBeforeResolution": 0.2418,
+     "timeoutShare": 0.3516,
+     "confirmationBeforeExit": 0.2958,
+     "confirmationPendingN": 142,
+     "geometry": {
+      "medianTargetAtr": 3.8357,
+      "medianInvalidationAtr": 5.2135,
+      "medianRewardRisk": 0.7477,
+      "naiveGeometric": 0.5883
+     },
+     "payoff": {
+      "avgWinnerR": 0.4616,
+      "avgLoserR": -0.5085,
+      "payoffRatio": 0.9078
+     },
+     "forward": {
+      "f13Median": 0.0114,
+      "f26Median": 0.0272,
+      "f26Mean": 0.0694
+     },
+     "mfeAtrMedian": 1.965,
+     "maeAtrMedian": 2.525,
+     "coverageOfDetectionPoints": 0.001,
+     "long": {
+      "6M": {
+       "n": 77,
+       "medianReturn": 0.013,
+       "meanReturnCapped4x": 0.0481,
+       "excessVsDate": 0.0042,
+       "excessVsDateCi": [
+        -0.05,
+        0.0862
+       ],
+       "excessVsTrendCell": -0.0019,
+       "excessVsTrendCellCi": [
+        -0.0545,
+        0.0807
+       ],
+       "excessVsTrendRsCell": 0.0004,
+       "excessVsTrendRsCellCi": [
+        -0.0499,
+        0.0766
+       ],
+       "rate2x": 0.013,
+       "rate3x": 0.013,
+       "rate5x": 0.013,
+       "ratio2xVsDate": 0.4491,
+       "ratio2xVsDateCi": [
+        -0.4547,
+        1.3528
+       ],
+       "ratio3xVsDate": 1.7704,
+       "ratio5xVsDate": 6.659,
+       "ratio2xVsTrendRs": 0.4218,
+       "ratio3xVsTrendRs": 1.7215,
+       "medianMfe": 0.114,
+       "medianMae": -0.0938
+      },
+      "12M": {
+       "n": 77,
+       "medianReturn": 0.0435,
+       "meanReturnCapped4x": 0.0601,
+       "excessVsDate": -0.0434,
+       "excessVsDateCi": [
+        -0.1303,
+        0.0436
+       ],
+       "excessVsTrendCell": -0.0544,
+       "excessVsTrendCellCi": [
+        -0.1403,
+        0.0315
+       ],
+       "excessVsTrendRsCell": -0.0489,
+       "excessVsTrendRsCellCi": [
+        -0.1331,
+        0.0352
+       ],
+       "rate2x": 0.026,
+       "rate3x": 0.013,
+       "rate5x": 0.013,
+       "ratio2xVsDate": 0.3622,
+       "ratio2xVsDateCi": [
+        -0.1461,
+        0.8706
+       ],
+       "ratio3xVsDate": 0.6085,
+       "ratio5xVsDate": 2.2166,
+       "ratio2xVsTrendRs": 0.3425,
+       "ratio3xVsTrendRs": 0.5901,
+       "medianMfe": 0.1671,
+       "medianMae": -0.1174
+      },
+      "24M": {
+       "n": 74,
+       "medianReturn": 0.1292,
+       "meanReturnCapped4x": 0.1862,
+       "excessVsDate": -0.0489,
+       "excessVsDateCi": [
+        -0.1918,
+        0.0939
+       ],
+       "excessVsTrendCell": -0.0585,
+       "excessVsTrendCellCi": [
+        -0.1983,
+        0.0813
+       ],
+       "excessVsTrendRsCell": -0.05,
+       "excessVsTrendRsCellCi": [
+        -0.1898,
+        0.0899
+       ],
+       "rate2x": 0.1081,
+       "rate3x": 0.027,
+       "rate5x": 0.0135,
+       "ratio2xVsDate": 0.6395,
+       "ratio2xVsDateCi": [
+        0.2328,
+        1.0462
+       ],
+       "ratio3xVsDate": 0.4808,
+       "ratio5xVsDate": 0.8175,
+       "ratio2xVsTrendRs": 0.6177,
+       "ratio3xVsTrendRs": 0.4675,
+       "medianMfe": 0.3501,
+       "medianMae": -0.166
+      },
+      "36M": {
+       "n": 74,
+       "medianReturn": 0.1349,
+       "meanReturnCapped4x": 0.2054,
+       "excessVsDate": -0.1387,
+       "excessVsDateCi": [
+        -0.2806,
+        0.0032
+       ],
+       "excessVsTrendCell": -0.1531,
+       "excessVsTrendCellCi": [
+        -0.2941,
+        -0.0122
+       ],
+       "excessVsTrendRsCell": -0.1439,
+       "excessVsTrendRsCellCi": [
+        -0.2862,
+        -0.0016
+       ],
+       "rate2x": 0.2162,
+       "rate3x": 0.0541,
+       "rate5x": 0.0135,
+       "ratio2xVsDate": 0.8226,
+       "ratio2xVsDateCi": [
+        0.4834,
+        1.1691
+       ],
+       "ratio3xVsDate": 0.5524,
+       "ratio5xVsDate": 0.4223,
+       "ratio2xVsTrendRs": 0.8004,
+       "ratio3xVsTrendRs": 0.5314,
+       "medianMfe": 0.4261,
+       "medianMae": -0.206
+      }
+     }
+    },
+    "up": {
+     "n": 80,
+     "symbols": 76,
+     "hit": 0.3625,
+     "hitCi": [
+      0.245,
+      0.48
+     ],
+     "controlD": 0.36,
+     "liftD": 0.0025,
+     "liftDCi": [
+      -0.0871,
+      0.0921
+     ],
+     "liftDp": 0.956367,
+     "liftT": -0.0359,
+     "liftTCi": [
+      -0.1397,
+      0.0654
+     ],
+     "liftTR": -0.0503,
+     "liftTRCi": [
+      -0.1305,
+      0.03
+     ],
+     "liftC": -0.0542,
+     "liftCCi": [
+      -0.179,
+      0.0707
+     ],
+     "expectancyR": -0.0269,
+     "expectancyRCi": [
+      -0.2365,
+      0.1827
+     ],
+     "excessRvsD": 0.0064,
+     "excessRCi": [
+      -0.1957,
+      0.2085
+     ],
+     "invalidatedFirst": 0.2375,
+     "relabelBeforeResolution": 0.2375,
+     "timeoutShare": 0.4,
+     "confirmationBeforeExit": 0.2879,
+     "confirmationPendingN": 66,
+     "geometry": {
+      "medianTargetAtr": 4.7437,
+      "medianInvalidationAtr": 5.2856,
+      "medianRewardRisk": 0.9377,
+      "naiveGeometric": 0.5566
+     },
+     "payoff": {
+      "avgWinnerR": 0.5527,
+      "avgLoserR": -0.3565,
+      "payoffRatio": 1.5504
+     },
+     "forward": {
+      "f13Median": 0.0096,
+      "f26Median": 0.013,
+      "f26Mean": 0.0481
+     },
+     "mfeAtrMedian": 2.045,
+     "maeAtrMedian": 1.755,
+     "coverageOfDetectionPoints": 0.0004,
+     "long": {
+      "6M": {
+       "n": 77,
+       "medianReturn": 0.013,
+       "meanReturnCapped4x": 0.0481,
+       "excessVsDate": 0.0042,
+       "excessVsDateCi": [
+        -0.0598,
+        0.0681
+       ],
+       "excessVsTrendCell": -0.0019,
+       "excessVsTrendCellCi": [
+        -0.0653,
+        0.0616
+       ],
+       "excessVsTrendRsCell": 0.0004,
+       "excessVsTrendRsCellCi": [
+        -0.059,
+        0.0597
+       ],
+       "rate2x": 0.013,
+       "rate3x": 0.013,
+       "rate5x": 0.013,
+       "ratio2xVsDate": 0.4491,
+       "ratio2xVsDateCi": [
+        -0.4183,
+        1.3164
+       ],
+       "ratio3xVsDate": 1.7704,
+       "ratio5xVsDate": 6.659,
+       "ratio2xVsTrendRs": 0.4218,
+       "ratio3xVsTrendRs": 1.7215,
+       "medianMfe": 0.114,
+       "medianMae": -0.0938
+      },
+      "12M": {
+       "n": 77,
+       "medianReturn": 0.0435,
+       "meanReturnCapped4x": 0.0601,
+       "excessVsDate": -0.0434,
+       "excessVsDateCi": [
+        -0.1301,
+        0.0434
+       ],
+       "excessVsTrendCell": -0.0544,
+       "excessVsTrendCellCi": [
+        -0.1367,
+        0.0341
+       ],
+       "excessVsTrendRsCell": -0.0489,
+       "excessVsTrendRsCellCi": [
+        -0.1303,
+        0.0393
+       ],
+       "rate2x": 0.026,
+       "rate3x": 0.013,
+       "rate5x": 0.013,
+       "ratio2xVsDate": 0.3622,
+       "ratio2xVsDateCi": [
+        -0.1483,
+        0.8728
+       ],
+       "ratio3xVsDate": 0.6085,
+       "ratio5xVsDate": 2.2166,
+       "ratio2xVsTrendRs": 0.3425,
+       "ratio3xVsTrendRs": 0.5901,
+       "medianMfe": 0.1671,
+       "medianMae": -0.1174
+      },
+      "24M": {
+       "n": 74,
+       "medianReturn": 0.1292,
+       "meanReturnCapped4x": 0.1862,
+       "excessVsDate": -0.0489,
+       "excessVsDateCi": [
+        -0.192,
+        0.0941
+       ],
+       "excessVsTrendCell": -0.0585,
+       "excessVsTrendCellCi": [
+        -0.2002,
+        0.0832
+       ],
+       "excessVsTrendRsCell": -0.05,
+       "excessVsTrendRsCellCi": [
+        -0.1906,
+        0.0906
+       ],
+       "rate2x": 0.1081,
+       "rate3x": 0.027,
+       "rate5x": 0.0135,
+       "ratio2xVsDate": 0.6395,
+       "ratio2xVsDateCi": [
+        0.2591,
+        1.0962
+       ],
+       "ratio3xVsDate": 0.4808,
+       "ratio5xVsDate": 0.8175,
+       "ratio2xVsTrendRs": 0.6177,
+       "ratio3xVsTrendRs": 0.4675,
+       "medianMfe": 0.3501,
+       "medianMae": -0.166
+      },
+      "36M": {
+       "n": 74,
+       "medianReturn": 0.1349,
+       "meanReturnCapped4x": 0.2054,
+       "excessVsDate": -0.1387,
+       "excessVsDateCi": [
+        -0.2914,
+        0.0138
+       ],
+       "excessVsTrendCell": -0.1531,
+       "excessVsTrendCellCi": [
+        -0.3046,
+        -0.0017
+       ],
+       "excessVsTrendRsCell": -0.1439,
+       "excessVsTrendRsCellCi": [
+        -0.2957,
+        0.0079
+       ],
+       "rate2x": 0.2162,
+       "rate3x": 0.0541,
+       "rate5x": 0.0135,
+       "ratio2xVsDate": 0.8226,
+       "ratio2xVsDateCi": [
+        0.4579,
+        1.2166
+       ],
+       "ratio3xVsDate": 0.5524,
+       "ratio5xVsDate": 0.4223,
+       "ratio2xVsTrendRs": 0.8004,
+       "ratio3xVsTrendRs": 0.5314,
+       "medianMfe": 0.4261,
+       "medianMae": -0.206
+      }
+     }
+    },
+    "down": {
+     "n": 102,
+     "symbols": 99,
+     "hit": 0.3725,
+     "hitCi": [
+      0.2745,
+      0.4706
+     ],
+     "controlD": 0.3627,
+     "liftD": 0.0098,
+     "liftDCi": [
+      -0.0763,
+      0.0959
+     ],
+     "liftDp": 0.823367,
+     "liftT": 0.0595,
+     "liftTCi": [
+      -0.0317,
+      0.1508
+     ],
+     "liftTR": 0.0492,
+     "liftTRCi": [
+      -0.04,
+      0.1383
+     ],
+     "liftC": 0.0033,
+     "liftCCi": [
+      -0.0987,
+      0.1053
+     ],
+     "expectancyR": -0.249,
+     "expectancyRCi": [
+      -0.4743,
+      -0.0236
+     ],
+     "excessRvsD": -0.0217,
+     "excessRCi": [
+      -0.2109,
+      0.1675
+     ],
+     "invalidatedFirst": 0.3137,
+     "relabelBeforeResolution": 0.2451,
+     "timeoutShare": 0.3137,
+     "confirmationBeforeExit": 0.3026,
+     "confirmationPendingN": 76,
+     "geometry": {
+      "medianTargetAtr": 3.5705,
+      "medianInvalidationAtr": 5.0344,
+      "medianRewardRisk": 0.566,
+      "naiveGeometric": 0.6131
+     },
+     "payoff": {
+      "avgWinnerR": 0.3921,
+      "avgLoserR": -0.6296,
+      "payoffRatio": 0.6228
+     },
+     "forward": {
+      "f13Median": 0.0215,
+      "f26Median": 0.0543,
+      "f26Mean": 0.0854
+     },
+     "mfeAtrMedian": 1.95,
+     "maeAtrMedian": 2.56,
+     "coverageOfDetectionPoints": 0.0005
+    }
+   },
+   "PURE_RS": {
+    "all": {
+     "n": 40,
+     "symbols": 40,
+     "hit": 0.5,
+     "hitCi": [
+      0.3333,
+      0.6667
+     ],
+     "controlD": 0.435,
+     "liftD": 0.065,
+     "liftDCi": [
+      -0.1047,
+      0.2347
+     ],
+     "liftDp": 0.452907,
+     "liftT": 0.0969,
+     "liftTCi": [
+      -0.0717,
+      0.2654
+     ],
+     "liftTR": 0.135,
+     "liftTRCi": [
+      -0.0183,
+      0.2884
+     ],
+     "liftC": 0.125,
+     "liftCCi": [
+      -0.044,
+      0.294
+     ],
+     "expectancyR": 0.0642,
+     "expectancyRCi": [
+      -0.1713,
+      0.2996
+     ],
+     "excessRvsD": 0.1635,
+     "excessRCi": [
+      -0.0433,
+      0.3742
+     ],
+     "invalidatedFirst": 0.125,
+     "relabelBeforeResolution": 0.25,
+     "timeoutShare": 0.375,
+     "confirmationBeforeExit": 0.4444,
+     "confirmationPendingN": 27,
+     "geometry": {
+      "medianTargetAtr": 3.7939,
+      "medianInvalidationAtr": 10.1304,
+      "medianRewardRisk": 0.4363,
+      "naiveGeometric": 0.6699
+     },
+     "payoff": {
+      "avgWinnerR": 0.3828,
+      "avgLoserR": -0.2545,
+      "payoffRatio": 1.5042
+     },
+     "forward": {
+      "f13Median": 0.0038,
+      "f26Median": 0.0282,
+      "f26Mean": 0.1383
+     },
+     "mfeAtrMedian": 3.335,
+     "maeAtrMedian": 1.48,
+     "coverageOfDetectionPoints": 0.0002,
+     "long": {
+      "6M": {
+       "n": 15
+      },
+      "12M": {
+       "n": 15
+      },
+      "24M": {
+       "n": 15
+      },
+      "36M": {
+       "n": 15
+      }
+     }
+    },
+    "up": {
+     "n": 17,
+     "symbols": 17,
+     "hit": 0.4118,
+     "hitCi": [
+      0.1765,
+      0.6471
+     ],
+     "controlD": 0.3412,
+     "liftD": 0.0706,
+     "liftDCi": [
+      -0.156,
+      0.2972
+     ],
+     "liftDp": 0.541475,
+     "liftT": 0.0262,
+     "liftTCi": [
+      -0.1927,
+      0.2481
+     ],
+     "liftTR": 0.0118,
+     "liftTRCi": [
+      -0.2033,
+      0.2269
+     ],
+     "liftC": 0.0784,
+     "liftCCi": [
+      -0.1676,
+      0.3245
+     ],
+     "expectancyR": 0.1588,
+     "expectancyRCi": [
+      -0.2971,
+      0.6148
+     ],
+     "excessRvsD": 0.2029,
+     "excessRCi": [
+      -0.18,
+      0.5859
+     ],
+     "invalidatedFirst": 0.1765,
+     "relabelBeforeResolution": 0.2353,
+     "timeoutShare": 0.4118,
+     "confirmationBeforeExit": 0.375,
+     "confirmationPendingN": 16,
+     "geometry": {
+      "medianTargetAtr": 7.7277,
+      "medianInvalidationAtr": 7.6129,
+      "medianRewardRisk": 1.0112,
+      "naiveGeometric": 0.5748
+     },
+     "payoff": {
+      "avgWinnerR": 0.6454,
+      "avgLoserR": -0.1818,
+      "payoffRatio": 3.551
+     },
+     "forward": {
+      "f13Median": 0.0096,
+      "f26Median": 0.0832,
+      "f26Mean": 0.2649
+     },
+     "mfeAtrMedian": 2.61,
+     "maeAtrMedian": 0.14,
+     "coverageOfDetectionPoints": 0.0001,
+     "long": {
+      "6M": {
+       "n": 15
+      },
+      "12M": {
+       "n": 15
+      },
+      "24M": {
+       "n": 15
+      },
+      "36M": {
+       "n": 15
+      }
+     }
+    },
+    "down": {
+     "n": 23,
+     "symbols": 23,
+     "hit": 0.5652,
+     "hitCi": [
+      0.3505,
+      0.78
+     ],
+     "controlD": 0.5043,
+     "liftD": 0.0609,
+     "liftDCi": [
+      -0.1634,
+      0.2851
+     ],
+     "liftDp": 0.594702,
+     "liftT": 0.1486,
+     "liftTCi": [
+      -0.0835,
+      0.3806
+     ],
+     "liftTR": 0.2238,
+     "liftTRCi": [
+      0.0243,
+      0.4232
+     ],
+     "liftC": 0.1594,
+     "liftCCi": [
+      -0.049,
+      0.3679
+     ],
+     "expectancyR": -0.0058,
+     "expectancyRCi": [
+      -0.1819,
+      0.1703
+     ],
+     "excessRvsD": 0.1343,
+     "excessRCi": [
+      -0.0861,
+      0.3548
+     ],
+     "invalidatedFirst": 0.087,
+     "relabelBeforeResolution": 0.2609,
+     "timeoutShare": 0.3478,
+     "confirmationBeforeExit": 0.5455,
+     "confirmationPendingN": 11,
+     "geometry": {
+      "medianTargetAtr": 3.745,
+      "medianInvalidationAtr": 11.5239,
+      "medianRewardRisk": 0.2618,
+      "naiveGeometric": 0.7402
+     },
+     "payoff": {
+      "avgWinnerR": 0.2415,
+      "avgLoserR": -0.3273,
+      "payoffRatio": 0.7378
+     },
+     "forward": {
+      "f13Median": -0.0013,
+      "f26Median": -0.0229,
+      "f26Mean": 0.0557
+     },
+     "mfeAtrMedian": 4.2,
+     "maeAtrMedian": 2.27,
+     "coverageOfDetectionPoints": 0.0001
+    }
+   },
+   "CONFIRMED": {
+    "all": {
+     "n": 24,
+     "symbols": 24,
+     "hit": 0.5833,
+     "hitCi": [
+      0.375,
+      0.7917
+     ],
+     "controlD": 0.45,
+     "liftD": 0.1333,
+     "liftDCi": [
+      -0.0419,
+      0.3086
+     ],
+     "liftDp": 0.135853,
+     "liftT": 0.1264,
+     "liftTCi": [
+      -0.0699,
+      0.3227
+     ],
+     "liftTR": 0.2133,
+     "liftTRCi": [
+      0.0313,
+      0.3954
+     ],
+     "liftC": 0.1389,
+     "liftCCi": [
+      -0.0555,
+      0.3333
+     ],
+     "expectancyR": 0.0685,
+     "expectancyRCi": [
+      -0.14,
+      0.2669
+     ],
+     "excessRvsD": 0.1776,
+     "excessRCi": [
+      -0.0118,
+      0.4123
+     ],
+     "invalidatedFirst": 0.0833,
+     "relabelBeforeResolution": 0.2917,
+     "timeoutShare": 0.3333,
+     "confirmationBeforeExit": 0.5333,
+     "confirmationPendingN": 15,
+     "geometry": {
+      "medianTargetAtr": 2.8182,
+      "medianInvalidationAtr": 13.2201,
+      "medianRewardRisk": 0.2722,
+      "naiveGeometric": 0.7342
+     },
+     "payoff": {
+      "avgWinnerR": 0.2627,
+      "avgLoserR": -0.2033,
+      "payoffRatio": 1.2923
+     },
+     "forward": {
+      "f13Median": 0.0038,
+      "f26Median": 0.024,
+      "f26Mean": 0.1058
+     },
+     "mfeAtrMedian": 3.885,
+     "maeAtrMedian": 1.285,
+     "coverageOfDetectionPoints": 0.0001,
+     "long": {
+      "6M": {
+       "n": 6
+      },
+      "12M": {
+       "n": 6
+      },
+      "24M": {
+       "n": 6
+      },
+      "36M": {
+       "n": 6
+      }
+     }
+    },
+    "up": {
+     "n": 8,
+     "symbols": 8,
+     "hit": 0.375,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.275,
+     "liftD": 0.1,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": -0.125,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.0417,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -0.0046,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": 0.1663,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.25,
+     "relabelBeforeResolution": 0.375,
+     "timeoutShare": 0.375,
+     "confirmationBeforeExit": 0.4286,
+     "confirmationPendingN": 7,
+     "geometry": {
+      "medianTargetAtr": 6.4744,
+      "medianInvalidationAtr": 12.014,
+      "medianRewardRisk": 0.8791,
+      "naiveGeometric": 0.6161
+     },
+     "payoff": {
+      "avgWinnerR": 0.3957,
+      "avgLoserR": -0.2448,
+      "payoffRatio": 1.6166
+     },
+     "forward": {
+      "f13Median": 0.0253,
+      "f26Median": 0.0656,
+      "f26Mean": 0.106
+     },
+     "mfeAtrMedian": 2.695,
+     "maeAtrMedian": 0.825,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 6
+      },
+      "12M": {
+       "n": 6
+      },
+      "24M": {
+       "n": 6
+      },
+      "36M": {
+       "n": 6
+      }
+     }
+    },
+    "down": {
+     "n": 16,
+     "symbols": 16,
+     "hit": 0.6875,
+     "hitCi": [
+      0.4561,
+      0.9189
+     ],
+     "controlD": 0.5375,
+     "liftD": 0.15,
+     "liftDCi": [
+      -0.0529,
+      0.3867
+     ],
+     "liftDp": 0.165486,
+     "liftT": 0.2516,
+     "liftTCi": [
+      0.02,
+      0.4522
+     ],
+     "liftTR": 0.3018,
+     "liftTRCi": [
+      0.085,
+      0.5185
+     ],
+     "liftC": 0.2083,
+     "liftCCi": [
+      -0.0092,
+      0.4258
+     ],
+     "expectancyR": 0.1051,
+     "expectancyRCi": [
+      -0.013,
+      0.2232
+     ],
+     "excessRvsD": 0.1833,
+     "excessRCi": [
+      -0.0432,
+      0.4089
+     ],
+     "invalidatedFirst": 0,
+     "relabelBeforeResolution": 0.25,
+     "timeoutShare": 0.3125,
+     "confirmationBeforeExit": 0.625,
+     "confirmationPendingN": 8,
+     "geometry": {
+      "medianTargetAtr": 2.8182,
+      "medianInvalidationAtr": 13.8208,
+      "medianRewardRisk": 0.2551,
+      "naiveGeometric": 0.7933
+     },
+     "payoff": {
+      "avgWinnerR": 0.2264,
+      "avgLoserR": -0.1618,
+      "payoffRatio": 1.3995
+     },
+     "forward": {
+      "f13Median": 0.0038,
+      "f26Median": -0.0115,
+      "f26Mean": 0.1057
+     },
+     "mfeAtrMedian": 4.305,
+     "maeAtrMedian": 1.455,
+     "coverageOfDetectionPoints": 0.0001
+    }
+   },
+   "PURE_HD": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   }
+  },
+  "S4_TRIANGLE_THRUST": {
+   "ENGINE_PRIMARY": {
+    "all": {
+     "n": 2081,
+     "symbols": 1229,
+     "hit": 0.2542,
+     "hitCi": [
+      0.2301,
+      0.2783
+     ],
+     "controlD": 0.2397,
+     "liftD": 0.0145,
+     "liftDCi": [
+      -0.0041,
+      0.0332
+     ],
+     "liftDp": 0.126836,
+     "liftT": -0.0013,
+     "liftTCi": [
+      -0.0182,
+      0.0156
+     ],
+     "liftTR": -0.0065,
+     "liftTRCi": [
+      -0.0277,
+      0.0147
+     ],
+     "liftC": -0.0226,
+     "liftCCi": [
+      -0.0444,
+      -0.0008
+     ],
+     "expectancyR": 0.0092,
+     "expectancyRCi": [
+      -0.068,
+      0.0864
+     ],
+     "excessRvsD": 0.1292,
+     "excessRCi": [
+      0.0529,
+      0.2054
+     ],
+     "invalidatedFirst": 0.3945,
+     "relabelBeforeResolution": 0.4647,
+     "timeoutShare": 0.3513,
+     "confirmationBeforeExit": 0.5182,
+     "confirmationPendingN": 1071,
+     "geometry": {
+      "medianTargetAtr": 8.6444,
+      "medianInvalidationAtr": 3.3122,
+      "medianRewardRisk": 2.4132,
+      "naiveGeometric": 0.3702
+     },
+     "payoff": {
+      "avgWinnerR": 1.0367,
+      "avgLoserR": -0.3411,
+      "payoffRatio": 3.0395
+     },
+     "forward": {
+      "f13Median": 0.0035,
+      "f26Median": 0.0136,
+      "f26Mean": 0.0553
+     },
+     "mfeAtrMedian": 2.33,
+     "maeAtrMedian": 2.36,
+     "coverageOfDetectionPoints": 0.0111,
+     "long": {
+      "6M": {
+       "n": 1204,
+       "medianReturn": 0.0314,
+       "meanReturnCapped4x": 0.055,
+       "excessVsDate": -0.002,
+       "excessVsDateCi": [
+        -0.0215,
+        0.0175
+       ],
+       "excessVsTrendCell": -0.0076,
+       "excessVsTrendCellCi": [
+        -0.0261,
+        0.0105
+       ],
+       "excessVsTrendRsCell": -0.0056,
+       "excessVsTrendRsCellCi": [
+        -0.0253,
+        0.0141
+       ],
+       "rate2x": 0.0166,
+       "rate3x": 0.0033,
+       "rate5x": 0.0017,
+       "ratio2xVsDate": 0.4461,
+       "ratio2xVsDateCi": [
+        0.2703,
+        0.6606
+       ],
+       "ratio3xVsDate": 0.3097,
+       "ratio5xVsDate": 0.5563,
+       "ratio2xVsTrendRs": 0.4266,
+       "ratio3xVsTrendRs": 0.3042,
+       "medianMfe": 0.1362,
+       "medianMae": -0.1024
+      },
+      "12M": {
+       "n": 1161,
+       "medianReturn": 0.0688,
+       "meanReturnCapped4x": 0.1198,
+       "excessVsDate": -0.0005,
+       "excessVsDateCi": [
+        -0.0285,
+        0.0274
+       ],
+       "excessVsTrendCell": -0.0064,
+       "excessVsTrendCellCi": [
+        -0.0329,
+        0.0202
+       ],
+       "excessVsTrendRsCell": -0.0057,
+       "excessVsTrendRsCellCi": [
+        -0.033,
+        0.0215
+       ],
+       "rate2x": 0.0525,
+       "rate3x": 0.0103,
+       "rate5x": 0.0043,
+       "ratio2xVsDate": 0.6141,
+       "ratio2xVsDateCi": [
+        0.4241,
+        0.804
+       ],
+       "ratio3xVsDate": 0.363,
+       "ratio5xVsDate": 0.4959,
+       "ratio2xVsTrendRs": 0.5874,
+       "ratio3xVsTrendRs": 0.3539,
+       "medianMfe": 0.218,
+       "medianMae": -0.1366
+      },
+      "24M": {
+       "n": 1081,
+       "medianReturn": 0.1395,
+       "meanReturnCapped4x": 0.2351,
+       "excessVsDate": -0.009,
+       "excessVsDateCi": [
+        -0.0493,
+        0.0282
+       ],
+       "excessVsTrendCell": -0.0156,
+       "excessVsTrendCellCi": [
+        -0.0529,
+        0.0217
+       ],
+       "excessVsTrendRsCell": -0.0143,
+       "excessVsTrendRsCellCi": [
+        -0.0542,
+        0.0218
+       ],
+       "rate2x": 0.1508,
+       "rate3x": 0.0398,
+       "rate5x": 0.0093,
+       "ratio2xVsDate": 0.818,
+       "ratio2xVsDateCi": [
+        0.6999,
+        0.9362
+       ],
+       "ratio3xVsDate": 0.5927,
+       "ratio5xVsDate": 0.4133,
+       "ratio2xVsTrendRs": 0.792,
+       "ratio3xVsTrendRs": 0.5742,
+       "medianMfe": 0.3831,
+       "medianMae": -0.1955
+      },
+      "36M": {
+       "n": 997,
+       "medianReturn": 0.2029,
+       "meanReturnCapped4x": 0.3583,
+       "excessVsDate": 0.0191,
+       "excessVsDateCi": [
+        -0.0328,
+        0.0709
+       ],
+       "excessVsTrendCell": 0.0097,
+       "excessVsTrendCellCi": [
+        -0.0408,
+        0.0603
+       ],
+       "excessVsTrendRsCell": 0.0135,
+       "excessVsTrendRsCellCi": [
+        -0.0365,
+        0.0634
+       ],
+       "rate2x": 0.2568,
+       "rate3x": 0.0822,
+       "rate5x": 0.0221,
+       "ratio2xVsDate": 0.9378,
+       "ratio2xVsDateCi": [
+        0.8337,
+        1.0419
+       ],
+       "ratio3xVsDate": 0.7557,
+       "ratio5xVsDate": 0.5869,
+       "ratio2xVsTrendRs": 0.9165,
+       "ratio3xVsTrendRs": 0.7336,
+       "medianMfe": 0.5111,
+       "medianMae": -0.2365
+      }
+     }
+    },
+    "up": {
+     "n": 1220,
+     "symbols": 797,
+     "hit": 0.2828,
+     "hitCi": [
+      0.2492,
+      0.3163
+     ],
+     "controlD": 0.2672,
+     "liftD": 0.0156,
+     "liftDCi": [
+      -0.0097,
+      0.0409
+     ],
+     "liftDp": 0.225873,
+     "liftT": -0.0065,
+     "liftTCi": [
+      -0.0301,
+      0.0171
+     ],
+     "liftTR": 0.0021,
+     "liftTRCi": [
+      -0.0251,
+      0.0293
+     ],
+     "liftC": -0.0207,
+     "liftCCi": [
+      -0.0524,
+      0.0109
+     ],
+     "expectancyR": 0.1065,
+     "expectancyRCi": [
+      -0.0374,
+      0.2504
+     ],
+     "excessRvsD": 0.0609,
+     "excessRCi": [
+      -0.0453,
+      0.167
+     ],
+     "invalidatedFirst": 0.3893,
+     "relabelBeforeResolution": 0.4484,
+     "timeoutShare": 0.3279,
+     "confirmationBeforeExit": 0.5142,
+     "confirmationPendingN": 597,
+     "geometry": {
+      "medianTargetAtr": 8.8784,
+      "medianInvalidationAtr": 3.3896,
+      "medianRewardRisk": 2.4557,
+      "naiveGeometric": 0.3683
+     },
+     "payoff": {
+      "avgWinnerR": 1.1274,
+      "avgLoserR": -0.296,
+      "payoffRatio": 3.8082
+     },
+     "forward": {
+      "f13Median": 0.0097,
+      "f26Median": 0.0314,
+      "f26Mean": 0.0552
+     },
+     "mfeAtrMedian": 2.42,
+     "maeAtrMedian": 2.3,
+     "coverageOfDetectionPoints": 0.0065,
+     "long": {
+      "6M": {
+       "n": 1204,
+       "medianReturn": 0.0314,
+       "meanReturnCapped4x": 0.055,
+       "excessVsDate": -0.002,
+       "excessVsDateCi": [
+        -0.0218,
+        0.0178
+       ],
+       "excessVsTrendCell": -0.0076,
+       "excessVsTrendCellCi": [
+        -0.0262,
+        0.011
+       ],
+       "excessVsTrendRsCell": -0.0056,
+       "excessVsTrendRsCellCi": [
+        -0.0257,
+        0.0145
+       ],
+       "rate2x": 0.0166,
+       "rate3x": 0.0033,
+       "rate5x": 0.0017,
+       "ratio2xVsDate": 0.4461,
+       "ratio2xVsDateCi": [
+        0.2475,
+        0.6447
+       ],
+       "ratio3xVsDate": 0.3097,
+       "ratio5xVsDate": 0.5563,
+       "ratio2xVsTrendRs": 0.4266,
+       "ratio3xVsTrendRs": 0.3042,
+       "medianMfe": 0.1362,
+       "medianMae": -0.1024
+      },
+      "12M": {
+       "n": 1161,
+       "medianReturn": 0.0688,
+       "meanReturnCapped4x": 0.1198,
+       "excessVsDate": -0.0005,
+       "excessVsDateCi": [
+        -0.0289,
+        0.0242
+       ],
+       "excessVsTrendCell": -0.0064,
+       "excessVsTrendCellCi": [
+        -0.0318,
+        0.019
+       ],
+       "excessVsTrendRsCell": -0.0057,
+       "excessVsTrendRsCellCi": [
+        -0.0333,
+        0.0185
+       ],
+       "rate2x": 0.0525,
+       "rate3x": 0.0103,
+       "rate5x": 0.0043,
+       "ratio2xVsDate": 0.6141,
+       "ratio2xVsDateCi": [
+        0.4374,
+        0.7908
+       ],
+       "ratio3xVsDate": 0.363,
+       "ratio5xVsDate": 0.4959,
+       "ratio2xVsTrendRs": 0.5874,
+       "ratio3xVsTrendRs": 0.3539,
+       "medianMfe": 0.218,
+       "medianMae": -0.1366
+      },
+      "24M": {
+       "n": 1081,
+       "medianReturn": 0.1395,
+       "meanReturnCapped4x": 0.2351,
+       "excessVsDate": -0.009,
+       "excessVsDateCi": [
+        -0.0467,
+        0.0288
+       ],
+       "excessVsTrendCell": -0.0156,
+       "excessVsTrendCellCi": [
+        -0.0535,
+        0.0224
+       ],
+       "excessVsTrendRsCell": -0.0143,
+       "excessVsTrendRsCellCi": [
+        -0.0521,
+        0.0235
+       ],
+       "rate2x": 0.1508,
+       "rate3x": 0.0398,
+       "rate5x": 0.0093,
+       "ratio2xVsDate": 0.818,
+       "ratio2xVsDateCi": [
+        0.6968,
+        0.9393
+       ],
+       "ratio3xVsDate": 0.5927,
+       "ratio5xVsDate": 0.4133,
+       "ratio2xVsTrendRs": 0.792,
+       "ratio3xVsTrendRs": 0.5742,
+       "medianMfe": 0.3831,
+       "medianMae": -0.1955
+      },
+      "36M": {
+       "n": 997,
+       "medianReturn": 0.2029,
+       "meanReturnCapped4x": 0.3583,
+       "excessVsDate": 0.0191,
+       "excessVsDateCi": [
+        -0.0359,
+        0.0741
+       ],
+       "excessVsTrendCell": 0.0097,
+       "excessVsTrendCellCi": [
+        -0.0418,
+        0.0613
+       ],
+       "excessVsTrendRsCell": 0.0135,
+       "excessVsTrendRsCellCi": [
+        -0.039,
+        0.0659
+       ],
+       "rate2x": 0.2568,
+       "rate3x": 0.0822,
+       "rate5x": 0.0221,
+       "ratio2xVsDate": 0.9378,
+       "ratio2xVsDateCi": [
+        0.8343,
+        1.0532
+       ],
+       "ratio3xVsDate": 0.7557,
+       "ratio5xVsDate": 0.5869,
+       "ratio2xVsTrendRs": 0.9165,
+       "ratio3xVsTrendRs": 0.7336,
+       "medianMfe": 0.5111,
+       "medianMae": -0.2365
+      }
+     }
+    },
+    "down": {
+     "n": 861,
+     "symbols": 646,
+     "hit": 0.2137,
+     "hitCi": [
+      0.1675,
+      0.2587
+     ],
+     "controlD": 0.2007,
+     "liftD": 0.0131,
+     "liftDCi": [
+      -0.0159,
+      0.042
+     ],
+     "liftDp": 0.3771,
+     "liftT": 0.0079,
+     "liftTCi": [
+      -0.023,
+      0.0381
+     ],
+     "liftTR": -0.0152,
+     "liftTRCi": [
+      -0.0503,
+      0.0198
+     ],
+     "liftC": -0.0249,
+     "liftCCi": [
+      -0.0661,
+      0.0162
+     ],
+     "expectancyR": -0.1287,
+     "expectancyRCi": [
+      -0.2802,
+      0.0227
+     ],
+     "excessRvsD": 0.226,
+     "excessRCi": [
+      0.1113,
+      0.3406
+     ],
+     "invalidatedFirst": 0.4019,
+     "relabelBeforeResolution": 0.4878,
+     "timeoutShare": 0.3844,
+     "confirmationBeforeExit": 0.5232,
+     "confirmationPendingN": 474,
+     "geometry": {
+      "medianTargetAtr": 8.3932,
+      "medianInvalidationAtr": 3.148,
+      "medianRewardRisk": 2.3053,
+      "naiveGeometric": 0.373
+     },
+     "payoff": {
+      "avgWinnerR": 0.8668,
+      "avgLoserR": -0.3993,
+      "payoffRatio": 2.1707
+     },
+     "forward": {
+      "f13Median": -0.009,
+      "f26Median": -0.0265,
+      "f26Mean": 0.0554
+     },
+     "mfeAtrMedian": 2.23,
+     "maeAtrMedian": 2.39,
+     "coverageOfDetectionPoints": 0.0046
+    }
+   },
+   "PURE": {
+    "all": {
+     "n": 17,
+     "symbols": 17,
+     "hit": 0.0588,
+     "hitCi": [
+      -0.0596,
+      0.1772
+     ],
+     "controlD": 0.1882,
+     "liftD": -0.1294,
+     "liftDCi": [
+      -0.2381,
+      -0.0207
+     ],
+     "liftDp": 0.019608,
+     "liftT": -0.0646,
+     "liftTCi": [
+      -0.2015,
+      0.0722
+     ],
+     "liftTR": -0.0755,
+     "liftTRCi": [
+      -0.2324,
+      0.0814
+     ],
+     "liftC": -0.1044,
+     "liftCCi": [
+      -0.2375,
+      0.0286
+     ],
+     "expectancyR": -0.3332,
+     "expectancyRCi": [
+      -0.9092,
+      0.2429
+     ],
+     "excessRvsD": -0.5223,
+     "excessRCi": [
+      -1.1657,
+      0.1212
+     ],
+     "invalidatedFirst": 0.4706,
+     "relabelBeforeResolution": 0.3529,
+     "timeoutShare": 0.4706,
+     "confirmationBeforeExit": 0.5714,
+     "confirmationPendingN": 7,
+     "geometry": {
+      "medianTargetAtr": 17.0558,
+      "medianInvalidationAtr": 4.8602,
+      "medianRewardRisk": 2.5673,
+      "naiveGeometric": 0.3971
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": -0.4036,
+      "payoffRatio": 1.9683
+     },
+     "forward": {
+      "f13Median": 0.0322,
+      "f26Median": 0.0352,
+      "f26Mean": 0.1234
+     },
+     "mfeAtrMedian": 1.68,
+     "maeAtrMedian": 3.59,
+     "coverageOfDetectionPoints": 0.0001,
+     "long": {
+      "6M": {
+       "n": 8
+      },
+      "12M": {
+       "n": 7
+      },
+      "24M": {
+       "n": 7
+      },
+      "36M": {
+       "n": 6
+      }
+     }
+    },
+    "up": {
+     "n": 8,
+     "symbols": 8,
+     "hit": 0,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.025,
+     "liftD": -0.025,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": -0.0513,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": -0.0606,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": -0.0417,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -0.1994,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.7113,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.625,
+     "relabelBeforeResolution": 0.25,
+     "timeoutShare": 0.375,
+     "confirmationBeforeExit": 0.6667,
+     "confirmationPendingN": 6,
+     "geometry": {
+      "medianTargetAtr": 19.1535,
+      "medianInvalidationAtr": 4.2808,
+      "medianRewardRisk": 5.9901,
+      "naiveGeometric": 0.1887
+     },
+     "payoff": {
+      "avgWinnerR": null,
+      "avgLoserR": -0.1994,
+      "payoffRatio": null
+     },
+     "forward": {
+      "f13Median": -0.0542,
+      "f26Median": -0.0808,
+      "f26Mean": -0.0572
+     },
+     "mfeAtrMedian": 2.645,
+     "maeAtrMedian": 3.215,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 8
+      },
+      "12M": {
+       "n": 7
+      },
+      "24M": {
+       "n": 7
+      },
+      "36M": {
+       "n": 6
+      }
+     }
+    },
+    "down": {
+     "n": 9,
+     "symbols": 9,
+     "hit": 0.1111,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.3333,
+     "liftD": -0.2222,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": -0.0794,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": -0.0948,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": -0.1689,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -0.452,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.3542,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.3333,
+     "relabelBeforeResolution": 0.4444,
+     "timeoutShare": 0.5556,
+     "confirmationBeforeExit": 0,
+     "confirmationPendingN": 1,
+     "geometry": {
+      "medianTargetAtr": 8.5586,
+      "medianInvalidationAtr": 10.7725,
+      "medianRewardRisk": 0.7945,
+      "naiveGeometric": 0.5824
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": -0.6079,
+      "payoffRatio": 1.307
+     },
+     "forward": {
+      "f13Median": 0.1314,
+      "f26Median": 0.2396,
+      "f26Mean": 0.2839
+     },
+     "mfeAtrMedian": 1.23,
+     "maeAtrMedian": 6.71,
+     "coverageOfDetectionPoints": 0
+    }
+   },
+   "PURE_RS": {
+    "all": {
+     "n": 4,
+     "symbols": 4,
+     "hit": 0.25,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.3,
+     "liftD": -0.05,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.05,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.0625,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": -0.0833,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": 0.0187,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.3023,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.25,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0.5,
+     "confirmationBeforeExit": 0,
+     "confirmationPendingN": 1,
+     "geometry": {
+      "medianTargetAtr": 9.0294,
+      "medianInvalidationAtr": 11.167,
+      "medianRewardRisk": 0.8081,
+      "naiveGeometric": 0.534
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": -0.2398,
+      "payoffRatio": 3.3126
+     },
+     "forward": {
+      "f13Median": -0.0584,
+      "f26Median": -0.1025,
+      "f26Mean": -0.1644
+     },
+     "mfeAtrMedian": 3.805,
+     "maeAtrMedian": 2.42,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "up": {
+     "n": 2,
+     "symbols": 2,
+     "hit": 0,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0,
+     "liftD": 0,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": -0.125,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": -0.1667,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -0.3665,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.7891,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.5,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0.5,
+     "confirmationBeforeExit": 0,
+     "confirmationPendingN": 1,
+     "geometry": {
+      "medianTargetAtr": 13.278,
+      "medianInvalidationAtr": 7.0864,
+      "medianRewardRisk": 3.6767,
+      "naiveGeometric": 0.3409
+     },
+     "payoff": {
+      "avgWinnerR": null,
+      "avgLoserR": -0.3665,
+      "payoffRatio": null
+     },
+     "forward": {
+      "f13Median": -0.0584,
+      "f26Median": -0.0087,
+      "f26Mean": -0.0087
+     },
+     "mfeAtrMedian": 3.715,
+     "maeAtrMedian": 2.42,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "down": {
+     "n": 2,
+     "symbols": 2,
+     "hit": 0.5,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.6,
+     "liftD": -0.1,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.1,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.25,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": 0.404,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": 0.1844,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0.5,
+     "confirmationBeforeExit": null,
+     "confirmationPendingN": 0,
+     "geometry": {
+      "medianTargetAtr": 5.0584,
+      "medianInvalidationAtr": 12.164,
+      "medianRewardRisk": 0.4547,
+      "naiveGeometric": 0.7271
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": 0.0136,
+      "payoffRatio": null
+     },
+     "forward": {
+      "f13Median": -0.22,
+      "f26Median": -0.32,
+      "f26Mean": -0.32
+     },
+     "mfeAtrMedian": 4.54,
+     "maeAtrMedian": 3.53,
+     "coverageOfDetectionPoints": 0
+    }
+   },
+   "CONFIRMED": {
+    "all": {
+     "n": 3,
+     "symbols": 3,
+     "hit": 0.3333,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.2,
+     "liftD": 0.1333,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.2667,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.1515,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0.1111,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": 0.0205,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.4479,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.3333,
+     "relabelBeforeResolution": 0.3333,
+     "timeoutShare": 0.3333,
+     "confirmationBeforeExit": 0,
+     "confirmationPendingN": 1,
+     "geometry": {
+      "medianTargetAtr": 9.5002,
+      "medianInvalidationAtr": 10.7725,
+      "medianRewardRisk": 0.8217,
+      "naiveGeometric": 0.413
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": -0.3665,
+      "payoffRatio": 2.1676
+     },
+     "forward": {
+      "f13Median": -0.1491,
+      "f26Median": -0.1968,
+      "f26Mean": -0.2164
+     },
+     "mfeAtrMedian": 7.43,
+     "maeAtrMedian": 1.25,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "up": {
+     "n": 2,
+     "symbols": 2,
+     "hit": 0,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0,
+     "liftD": 0,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": -0.125,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": -0.1667,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": -0.3665,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": -0.7891,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0.5,
+     "relabelBeforeResolution": 0.5,
+     "timeoutShare": 0.5,
+     "confirmationBeforeExit": 0,
+     "confirmationPendingN": 1,
+     "geometry": {
+      "medianTargetAtr": 13.278,
+      "medianInvalidationAtr": 7.0864,
+      "medianRewardRisk": 3.6767,
+      "naiveGeometric": 0.3409
+     },
+     "payoff": {
+      "avgWinnerR": null,
+      "avgLoserR": -0.3665,
+      "payoffRatio": null
+     },
+     "forward": {
+      "f13Median": -0.0584,
+      "f26Median": -0.0087,
+      "f26Mean": -0.0087
+     },
+     "mfeAtrMedian": 3.715,
+     "maeAtrMedian": 2.42,
+     "coverageOfDetectionPoints": 0,
+     "long": {
+      "6M": {
+       "n": 2
+      },
+      "12M": {
+       "n": 2
+      },
+      "24M": {
+       "n": 2
+      },
+      "36M": {
+       "n": 1
+      }
+     }
+    },
+    "down": {
+     "n": 1,
+     "symbols": 1,
+     "hit": 1,
+     "hitCi": [
+      null,
+      null
+     ],
+     "controlD": 0.6,
+     "liftD": 0.4,
+     "liftDCi": [
+      null,
+      null
+     ],
+     "liftDp": null,
+     "liftT": 0.8,
+     "liftTCi": [
+      null,
+      null
+     ],
+     "liftTR": 0.6667,
+     "liftTRCi": [
+      null,
+      null
+     ],
+     "liftC": 0.6667,
+     "liftCCi": [
+      null,
+      null
+     ],
+     "expectancyR": 0.7945,
+     "expectancyRCi": [
+      null,
+      null
+     ],
+     "excessRvsD": 0.2344,
+     "excessRCi": [
+      null,
+      null
+     ],
+     "invalidatedFirst": 0,
+     "relabelBeforeResolution": 0,
+     "timeoutShare": 0,
+     "confirmationBeforeExit": null,
+     "confirmationPendingN": 0,
+     "geometry": {
+      "medianTargetAtr": 8.5586,
+      "medianInvalidationAtr": 10.7725,
+      "medianRewardRisk": 0.7945,
+      "naiveGeometric": 0.5573
+     },
+     "payoff": {
+      "avgWinnerR": 0.7945,
+      "avgLoserR": null,
+      "payoffRatio": null
+     },
+     "forward": {
+      "f13Median": -0.6239,
+      "f26Median": -0.6318,
+      "f26Mean": -0.6318
+     },
+     "mfeAtrMedian": 8.9,
+     "maeAtrMedian": 0.81,
+     "coverageOfDetectionPoints": 0
+    }
+   },
+   "PURE_HD": {
+    "all": {
+     "n": 0
+    },
+    "up": {
+     "n": 0
+    },
+    "down": {
+     "n": 0
+    }
+   }
+  }
+ },
+ "researchInternalWave3AtSetupEvents": {
+  "n": 1150
+ },
+ "seconds": 69
+}

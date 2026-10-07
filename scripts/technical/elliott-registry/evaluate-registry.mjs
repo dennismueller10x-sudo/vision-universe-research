@@ -10,8 +10,8 @@
 
      node scripts/technical/elliott-registry/evaluate-registry.mjs --weekly-dir DIR --registry DIR [--as-of YYYY-MM-DD] --out FILE
    ========================================================================= */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { readJson } from "../lib/ti-data.mjs";
@@ -43,7 +43,8 @@ export function evaluateRegistry(o) {
   const out = { schemaVersion: "elliott-registry-evaluation-1.0.0", asOfCompletedWeek: latest, events: events.length, revisions: revs.length, horizons: {}, pending: {} };
   const groups = new Map();
   for (const ev of events) {
-    const p = ev.payload, g = p.cohort + "|" + p.setupType + "|" + (p.dir > 0 ? "UP" : "DOWN");
+    /* Bestand des ersten Laufs getrennt von Neuzugaengen (nur Neuzugaenge sind „erstes Auftreten“) */
+    const p = ev.payload, g = (p.initialStock ? "STOCK|" : "NEW|") + p.cohort + "|" + p.setupType + "|" + (p.dir > 0 ? "UP" : "DOWN");
     for (const [hn, h] of Object.entries(HORIZONS)) {
       const end = addWeeks(p.registeredWeek, h);
       if (end > latest) { const k = g + "|" + hn; out.pending[k] = out.pending[k] || { events: 0, firstEvaluableWeek: end }; out.pending[k].events++; if (end < out.pending[k].firstEvaluableWeek) out.pending[k].firstEvaluableWeek = end; continue; }
@@ -72,6 +73,6 @@ export function evaluateRegistry(o) {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const r = evaluateRegistry({ weeklyDir: arg("weekly-dir"), registry: arg("registry"), asOf: arg("as-of", null) });
-  writeFileSync(arg("out"), JSON.stringify(r, null, 1) + "\n");
+  mkdirSync(dirname(arg("out")), { recursive: true }); writeFileSync(arg("out"), JSON.stringify(r, null, 1) + "\n");
   console.log(`[elliott-registry evaluate] Stand ${r.asOfCompletedWeek}: ${r.events} Ereignisse, ${Object.keys(r.horizons).length} auswertbare Gruppen, ${Object.keys(r.pending).length} wartend`);
 }

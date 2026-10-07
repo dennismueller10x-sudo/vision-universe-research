@@ -1,0 +1,157 @@
+{
+ "schemaVersion": "elliott-setup-decision-1.0.0",
+ "specSha256": "b7dd89d58cefb77c049e4e88c30594c4b49adf333452b966d10da13c3a04117f",
+ "rules": {
+  "LEVEL1_POSITIVE_UTILITY": "strukturelle Erwartung E[R] > 0 auf DEV und VAL, 95-%-Untergrenze > 0 auf VAL",
+  "LEVEL2_INCREMENTAL_UTILITY": "Lift (Ziel 1 vor Invalidation) gegen D ≥ +3 Pp. mit Untergrenze > 0 UND gegen TR > 0 mit Untergrenze > 0 auf VAL, gleiches Vorzeichen auf DEV",
+  "LEVEL3_ROBUST_EDGE": "LEVEL2 zusaetzlich auf unberuehrten Daten — historisch nicht verfuegbar (alle Wochendaten verbraucht); nur ueber das prospektive Register erreichbar",
+  "minEventsVal": 100,
+  "classification": [
+   "ROBUST_EDGE",
+   "INCREMENTAL_UTILITY",
+   "POSITIVE_UTILITY",
+   "STRUCTURAL_ONLY",
+   "INSUFFICIENT_EVIDENCE",
+   "REJECT"
+  ],
+  "rejectRule": "Lift gegen D mit Obergrenze < 0 auf DEV und VAL (systematisch schlechter als dieselbe Geometrie)",
+  "structuralOnlyRule": "Setup tritt angezeigt auf (n ≥ 100 VAL), hat definierte Invalidation/Projektion, erfuellt aber weder LEVEL1 noch LEVEL2"
+ },
+ "level3Note": "LEVEL2 zusaetzlich auf unberuehrten Daten — historisch nicht verfuegbar (alle Wochendaten verbraucht); nur ueber das prospektive Register erreichbar",
+ "perSetup": {
+  "S1_EARLY_WAVE3": {
+   "ENGINE_PRIMARY": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 2 < 100",
+    "nDev": 2,
+    "nVal": 2
+   },
+   "PURE": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "PURE_RS": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "CONFIRMED": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "PURE_HD": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   }
+  },
+  "S2_WAVE4_TO_5": {
+   "ENGINE_PRIMARY": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 51 < 100",
+    "nDev": 58,
+    "nVal": 51
+   },
+   "PURE": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "PURE_RS": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "CONFIRMED": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   },
+   "PURE_HD": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   }
+  },
+  "S3_CORRECTION_COMPLETE": {
+   "ENGINE_PRIMARY": {
+    "status": "REJECT",
+    "reason": "Lift gegen dieselbe Geometrie (D) mit Obergrenze < 0 auf DEV und VAL",
+    "nDev": 13777,
+    "nVal": 15010
+   },
+   "PURE": {
+    "status": "STRUCTURAL_ONLY",
+    "reason": "tritt auf, Invalidation und Projektion definiert, aber weder LEVEL 1 noch LEVEL 2",
+    "nDev": 172,
+    "nVal": 182
+   },
+   "PURE_RS": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 40 < 100",
+    "nDev": 39,
+    "nVal": 40
+   },
+   "CONFIRMED": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 24 < 100",
+    "nDev": 24,
+    "nVal": 24
+   },
+   "PURE_HD": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   }
+  },
+  "S4_TRIANGLE_THRUST": {
+   "ENGINE_PRIMARY": {
+    "status": "STRUCTURAL_ONLY",
+    "reason": "tritt auf, Invalidation und Projektion definiert, aber weder LEVEL 1 noch LEVEL 2",
+    "nDev": 1811,
+    "nVal": 2081
+   },
+   "PURE": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 17 < 100",
+    "nDev": 15,
+    "nVal": 17
+   },
+   "PURE_RS": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 4 < 100",
+    "nDev": 2,
+    "nVal": 4
+   },
+   "CONFIRMED": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 3 < 100",
+    "nDev": 1,
+    "nVal": 3
+   },
+   "PURE_HD": {
+    "status": "INSUFFICIENT_EVIDENCE",
+    "reason": "n VAL = 0 < 100",
+    "nDev": 0,
+    "nVal": 0
+   }
+  }
+ },
+ "productClassification": {
+  "S1_EARLY_WAVE3": "INSUFFICIENT_EVIDENCE",
+  "S2_WAVE4_TO_5": "INSUFFICIENT_EVIDENCE",
+  "S3_CORRECTION_COMPLETE": "STRUCTURAL_ONLY",
+  "S4_TRIANGLE_THRUST": "INSUFFICIENT_EVIDENCE"
+ }
+}
