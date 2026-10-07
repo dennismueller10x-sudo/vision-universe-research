@@ -2,6 +2,11 @@
  * price truth. Canonical/product admission remains with the existing Core. */
 'use strict';
 const {createMarketstackClient}=require('./client.js');
+const freezeEvidence=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freezeEvidence);Object.freeze(value);}return value;};
+// Endpoint-specific codes, independently linked to exact ticker metadata MICs.
+// No suffix convention or country alone supplies venue identity.
+const snapshotMappingEvidence=freezeEvidence(require('./snapshot-exchange-mappings.json'));
+const snapshotExchangeMappings=snapshotMappingEvidence.mappings;
 const clone=x=>x===undefined?undefined:structuredClone(x);
 const numeric=x=>x===null||x===undefined||typeof x==='boolean'||String(x).trim()===''?null:Number.isFinite(Number(x))?Number(x):null;
 const symbolOf=r=>r.symbol||r.ticker||null;
@@ -24,7 +29,7 @@ function capabilityFlags(evidence={}) {
 function normalizeObservation(row,{kind,retrievedAt}={}) {
   // Retain every provider field separately, including unrecognized future fields.
   return {raw:clone(row),normalized:{providerTicker:symbolOf(row),providerExchange:micOf(row),providerExchangeCode:row.exchange_code??null,
-    name:row.name??null,isin:row.isin??null,currency:row.price_currency??row.currency??null,
+    name:row.name??null,description:row.description??row.about??null,isin:row.isin??null,currency:row.price_currency??row.currency??null,
     sector:row.sector??null,industry:row.industry??null,cik:row.cik??null,cusip:row.cusip??null,lei:row.lei??null,
     countryCode:kind==='SNAPSHOT'?null:row.country_code??null,country:kind==='SNAPSHOT'?null:row.country??null,
     exchangeCountry:row.stock_exchange?.country??(kind==='SNAPSHOT'?row.country??null:null),exchangeCountryCode:row.stock_exchange?.country_code??null,
@@ -110,7 +115,7 @@ function createAuditAdapter(options={}) {
   async function prices(endpoint,listing,o={},kind='EOD',latest=false) {
     if(!listing?.providerTicker)return failure('providerTickerRequired');
     if(!/^[A-Z0-9]{4}$/.test(listing.mic||''))return failure('listingMICRequired');
-    const snapshotTicker=listing.snapshotTicker||listing.providerTicker;
+    const snapshotTicker=listing.snapshotTicker||listing.canonicalTicker||listing.providerTicker;
     const codes=listing.verifiedExchangeCodes||[],names=listing.verifiedExchangeNames||[];
     if(kind==='SNAPSHOT'&&(codes.length||names.length)&&!listing.snapshotMappingSource)return failure('snapshotMappingEvidenceRequired');
     const params={...(kind==='SNAPSHOT'?{ticker:snapshotTicker}:{symbols:listing.providerTicker,limit:o.limit??1000}),
@@ -124,16 +129,23 @@ function createAuditAdapter(options={}) {
     if(!Array.isArray(rows))return failure('invalidResponse');
     const accepted=new Set([listing.providerTicker,...(kind==='SNAPSHOT'?[snapshotTicker]:[]),...(listing.verifiedAliases||[])]);
     if(rows.some(r=>!accepted.has(symbolOf(r))))return {...failure('identityMismatch'),raw:clone(res.rawPages??res.data)};
+    const venueName=x=>String(x||'').normalize('NFKC').toUpperCase().replace(/[^\p{L}\p{N}]/gu,'');
+    const mappedVenue=row=>snapshotExchangeMappings.find(m=>m.providerExchangeCode===row.exchange_code&&m.mic===listing.mic&&
+      (!row.exchange_name||venueName(row.exchange_name)===venueName(m.providerExchangeName)));
     if(kind==='SNAPSHOT') {
-      const venueName=x=>String(x||'').normalize('NFKC').toUpperCase().replace(/[^\p{L}\p{N}]/gu,'');
       const observedNames=new Set(names.map(venueName).filter(Boolean));
-      rows=rows.filter(r=>micOf(r)===listing.mic||!micOf(r)&&(r.exchange_code===listing.mic||codes.includes(r.exchange_code)||observedNames.has(venueName(r.exchange_name))));
+      rows=rows.filter(r=>micOf(r)===listing.mic||!micOf(r)&&(r.exchange_code===listing.mic||codes.includes(r.exchange_code)||observedNames.has(venueName(r.exchange_name))||mappedVenue(r)));
       if(!rows.length)return {...failure('snapshotVenueUnverified'),raw:clone(res.data)};
     } else if(rows.some(r=>micOf(r)!==listing.mic))return {...failure('identityMismatch'),raw:clone(res.rawPages??res.data)};
     if(latest&&rows.length!==1)return {...failure(rows.length?'ambiguousListing':'dataUnavailable'),raw:clone(res.rawPages??res.data)};
     return {...res,raw:clone(res.rawPages??res.data),data:rows.map(row=>{
       const observation=normalizeObservation(row,{kind,retrievedAt:res.retrievedAt});
-      if(kind==='SNAPSHOT'&&!micOf(row)){observation.normalized.providerExchange=listing.mic;observation.normalized.exchangeProvenance=row.exchange_code===listing.mic?'PROVIDER_CODE_MATCHES_REQUEST_MIC':'EXPLICIT_OBSERVED_PROVIDER_VENUE_MAPPING';observation.normalized.exchangeMappingSource=listing.snapshotMappingSource??null;}
+      if(kind==='SNAPSHOT'&&!micOf(row)){
+        const mapping=mappedVenue(row);observation.normalized.providerExchange=listing.mic;
+        observation.normalized.exchangeProvenance=row.exchange_code===listing.mic?'PROVIDER_CODE_MATCHES_REQUEST_MIC':mapping?'AUDITED_PROVIDER_CODE_TO_MIC':'EXPLICIT_OBSERVED_PROVIDER_VENUE_MAPPING';
+        observation.normalized.exchangeMappingSource=mapping?.sourceId??listing.snapshotMappingSource??null;
+        if(mapping)observation.normalized.exchangeMappingEvidence=clone(mapping.evidence);
+      }
       return observation;
     }),
       complete:kind==='SNAPSHOT'?null:res.complete,capabilityConclusion:'UNKNOWN'};
@@ -151,4 +163,4 @@ function createAuditAdapter(options={}) {
   };
   return api;
 }
-module.exports={createAuditAdapter,capabilityFlags,capabilityNames,normalizeObservation,holdingsOf};
+module.exports={createAuditAdapter,capabilityFlags,capabilityNames,normalizeObservation,holdingsOf,snapshotExchangeMappings,snapshotMappingEvidence};

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "marketstack-snapshot-exchange-mapping-1",
+  "scope": "STOCKPRICE_PROVIDER_OBSERVATIONS_ONLY",
+  "method": "Observed stockprice venue code/name linked to exact ticker metadata MIC; no issuer identity, delay or freshness certification.",
+  "mappings": [
+    {
+      "providerExchangeCode": "ETR",
+      "providerExchangeName": "Deutsche Börse Xetra",
+      "mic": "XETR",
+      "sourceId": "MARKETSTACK_20261007_STOCKPRICE_ETR_EXACT_METADATA_XETR",
+      "evidence": [
+        {
+          "runId": "37642262870",
+          "responseId": "0047",
+          "endpoint": "/stockprice",
+          "params": {
+            "ticker": "SAP"
+          },
+          "sha256": "4bb1df670dc990dfcdff6221a6ee2886172cfc31e1edc003fb3ef9526ed11774"
+        },
+        {
+          "runId": "37636729908",
+          "responseId": "0016",
+          "endpoint": "/tickers/SAP.DE",
+          "params": {},
+          "sha256": "989db173d88d37673b6d484750dd6f95f77882d346a3731611aa40601b245d3a"
+        }
+      ]
+    },
+    {
+      "providerExchangeCode": "EPA",
+      "providerExchangeName": "Euronext Paris",
+      "mic": "XPAR",
+      "sourceId": "MARKETSTACK_20261007_STOCKPRICE_EPA_EXACT_METADATA_XPAR",
+      "evidence": [
+        {
+          "runId": "37642262870",
+          "responseId": "0052",
+          "endpoint": "/stockprice",
+          "params": {
+            "ticker": "MC"
+          },
+          "sha256": "b75ecfcde5f16c16e606639ef068c0fbb9c1f6d1ebc57de9ff477da0a60f4949"
+        },
+        {
+          "runId": "37636729908",
+          "responseId": "0140",
+          "endpoint": "/tickers/MC.PA",
+          "params": {},
+          "sha256": "b1ff5453daefc0d95af1aafefb72a1af30a718c8f95bfa5ad1501af9b69e4b01"
+        }
+      ]
+    },
+    {
+      "providerExchangeCode": "AMS",
+      "providerExchangeName": "Euronext Amsterdam",
+      "mic": "XAMS",
+      "sourceId": "MARKETSTACK_20261007_STOCKPRICE_AMS_EXACT_METADATA_XAMS",
+      "evidence": [
+        {
+          "runId": "37642262870",
+          "responseId": "0051",
+          "endpoint": "/stockprice",
+          "params": {
+            "ticker": "ASML"
+          },
+          "sha256": "a390d2166267a09a9af6c755646fc5dd4a1b3611f42bb31eea5b0497c06f7241"
+        },
+        {
+          "runId": "37636729908",
+          "responseId": "0125",
+          "endpoint": "/tickers/ASML.AS",
+          "params": {},
+          "sha256": "bac0ddee41ba461bf1bbff794db4426c1781fe780a21ff2ecd993cac25b2e20c"
+        }
+      ]
+    },
+    {
+      "providerExchangeCode": "NASDAQ",
+      "providerExchangeName": "Nasdaq Stock Market",
+      "mic": "XNAS",
+      "sourceId": "MARKETSTACK_20261007_STOCKPRICE_NASDAQ_EXACT_METADATA_XNAS",
+      "evidence": [
+        {
+          "runId": "37642262870",
+          "responseId": "0046",
+          "endpoint": "/stockprice",
+          "params": {
+            "ticker": "AAPL"
+          },
+          "sha256": "631690951fb560628c647974fd01bfc7ade16e90c1de64ef69430315dd240a11"
+        },
+        {
+          "runId": "37636729908",
+          "responseId": "0287",
+          "endpoint": "/tickers/AAPL",
+          "params": {},
+          "sha256": "fbab09115dce8a9716cc0d8ba5ae1919025b666ed7c31170bb3558eaeb82c522"
+        }
+      ]
+    }
+  ]
+}

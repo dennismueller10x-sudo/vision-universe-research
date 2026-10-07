@@ -120,8 +120,36 @@ test('live multi-venue snapshots omit unsupported MIC filter and select observed
  const raw={data:[{ticker:'AAPL',exchange_code:'BCBA',exchange_name:'Buenos Aires Stock Exchange',price:'21770',currency:'ARS'},{ticker:'AAPL',exchange_code:'NASDAQ',exchange_name:'Nasdaq Stock Market',price:'335.36',currency:'USD',trade_last:'2026-10-07 10:32:43'}]};
  const f=fake([raw]);const r=await f.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS',verifiedExchangeCodes:['NASDAQ'],snapshotMappingSource:'REAL_EOD_AAPL_EXCHANGE_XNAS_CODE_NASDAQ'});
  assert.equal(r.ok,true);assert.equal(f.calls[0].searchParams.has('exchange'),false);assert.equal(r.data.length,1);assert.equal(r.data[0].normalized.currency,'USD');assert.equal(r.data[0].normalized.providerExchange,'XNAS');assert.equal(r.data[0].normalized.providerExchangeCode,'NASDAQ');assert.equal(r.data[0].normalized.providerUpdateTimestamp,null);assert.deepEqual(r.raw,raw);
- const g=fake([raw]);assert.equal((await g.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS'})).reason,'snapshotVenueUnverified');
+ const g=fake([raw]);const mapped=await g.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS'});assert.equal(mapped.ok,true);assert.equal(mapped.data[0].normalized.exchangeProvenance,'AUDITED_PROVIDER_CODE_TO_MIC');
  const h=fake([]);assert.equal((await h.api.getRealtimePrice({providerTicker:'AAPL',mic:'XNAS',verifiedExchangeCodes:['NASDAQ']})).reason,'snapshotMappingEvidenceRequired');assert.equal(h.calls.length,0);
+});
+test('audited native Europe snapshot routing preserves venue, raw fields and timestamp limits',async()=>{
+ for(const [providerTicker,canonicalTicker,mic,code,name] of [
+  ['SAP.DE','SAP','XETR','ETR','Deutsche Börse Xetra'],['SIE.DE','SIE','XETR','ETR','Deutsche Börse Xetra'],
+  ['ALV.DE','ALV','XETR','ETR','Deutsche Börse Xetra'],['DTE.DE','DTE','XETR','ETR','Deutsche Börse Xetra'],
+  ['MC.PA','MC','XPAR','EPA','Euronext Paris'],['ASML.AS','ASML','XAMS','AMS','Euronext Amsterdam']]){
+  const raw={data:[{ticker:canonicalTicker,exchange_code:code,exchange_name:name,price:'186.38',currency:'EUR',trade_last:'2026-10-07 16:45:46',country:'Germany'},
+   {ticker:canonicalTicker,exchange_code:'NYSE',exchange_name:'New York Stock Exchange',price:'110.89',currency:'USD',trade_last:'2026-10-07 10:54:45'}]};
+  const f=fake([raw]);const r=await f.api.getRealtimePrice({providerTicker,canonicalTicker,mic});assert.equal(r.ok,true);assert.equal(f.calls[0].searchParams.get('ticker'),canonicalTicker);assert.equal(f.calls[0].searchParams.has('exchange'),false);
+  assert.equal(r.data.length,1);assert.equal(r.data[0].normalized.providerExchange,mic);assert.equal(r.data[0].normalized.providerExchangeCode,code);assert.equal(r.data[0].normalized.timestampTimezone,'NOT_REPORTED');assert.equal(r.data[0].normalized.delayState,'UNKNOWN');assert.equal(r.data[0].normalized.providerUpdateTimestamp,null);assert.deepEqual(r.raw,raw);
+  assert.equal(r.data[0].normalized.exchangeProvenance,'AUDITED_PROVIDER_CODE_TO_MIC');assert.equal(r.data[0].normalized.exchangeMappingEvidence[0].runId,'37642262870');assert.match(r.data[0].normalized.exchangeMappingEvidence[0].sha256,/^[a-f0-9]{64}$/);
+ }
+ const explicit=fake([{data:[{ticker:'SAP',exchange_code:'ETR',exchange_name:'Deutsche Börse Xetra',price:'186.38'}]}]);await explicit.api.getRealtimePrice({providerTicker:'SAP.DE',canonicalTicker:'IGNORED',snapshotTicker:'SAP',mic:'XETR'});assert.equal(explicit.calls[0].searchParams.get('ticker'),'SAP');
+ const noAlias=fake([{data:[]}]);await noAlias.api.getRealtimePrice({providerTicker:'SAP.DE',mic:'XETR'});assert.equal(noAlias.calls[0].searchParams.get('ticker'),'SAP.DE');
+});
+test('snapshot mappings reject foreign same-ticker issuers, missing home venue and conflicts',async()=>{
+ for(const [providerTicker,canonicalTicker,mic,code,name] of [['ABBN.SW','ABBN','XSWX','VIE','Vienna Stock Exchange'],['ALV.DE','ALV','XETR','NYSE','New York Stock Exchange'],['DTE.DE','DTE','XETR','NYSE','New York Stock Exchange'],['MC.PA','MC','XPAR','NYSE','New York Stock Exchange']]){
+  const f=fake([{data:[{ticker:canonicalTicker,exchange_code:code,exchange_name:name,country:'Germany',price:'1',currency:'EUR'}]}]);assert.equal((await f.api.getRealtimePrice({providerTicker,canonicalTicker,mic})).reason,'snapshotVenueUnverified');
+ }
+ for(const extra of [{exchange:'XNYS'},{exchange:'XETR',stock_exchange:{mic:'XNYS'}},{exchange_name:'New York Stock Exchange'}]){
+  const f=fake([{data:[{ticker:'SAP',exchange_code:'ETR',exchange_name:'Deutsche Börse Xetra',price:'186.38',...extra}]}]);assert.equal((await f.api.getRealtimePrice({providerTicker:'SAP.DE',canonicalTicker:'SAP',mic:'XETR'})).reason,'snapshotVenueUnverified');
+ }
+ const f=fake([{data:[{ticker:'SAP',exchange_code:'ETR',price:'186.38'},{ticker:'SAP',exchange_code:'ETR',price:'186.42'}]}]);assert.equal((await f.api.getRealtimePrice({providerTicker:'SAP.DE',canonicalTicker:'SAP',mic:'XETR'})).reason,'ambiguousListing');
+});
+test('snapshot mapping evidence is exported immutably and metadata descriptions are retained',()=>{
+ const {snapshotExchangeMappings,snapshotMappingEvidence}=require('../audit-adapter.js');assert.deepEqual(snapshotExchangeMappings.map(m=>[m.providerExchangeCode,m.mic]),[['ETR','XETR'],['EPA','XPAR'],['AMS','XAMS'],['NASDAQ','XNAS']]);
+ assert.equal(snapshotMappingEvidence.scope,'STOCKPRICE_PROVIDER_OBSERVATIONS_ONLY');assert(Object.isFrozen(snapshotExchangeMappings));assert(Object.isFrozen(snapshotExchangeMappings[0].evidence[0]));assert.throws(()=>snapshotExchangeMappings.push({providerExchangeCode:'VIE',mic:'XSWX'}));
+ const raw={about:'Actual company description',future:{present:true}};assert.equal(normalizeObservation(raw).normalized.description,raw.about);assert.deepEqual(normalizeObservation(raw).raw,raw);assert.equal(normalizeObservation({description:'Primary description',about:'Alternative'}).normalized.description,'Primary description');
 });
 test('explicit snapshot symbol and observed exchange name preserve alias and venue provenance',async()=>{
  const f=fake([{data:[{ticker:'SAP',exchange_code:'GER',exchange_name:'Xetra',currency:'EUR',price:'190'}]}]);

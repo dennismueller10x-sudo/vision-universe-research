@@ -1,6 +1,9 @@
 name: Marketstack authenticated capability audit
-run-name: Marketstack audit 479 ${{ inputs.lease }}
+run-name: Marketstack audit 479 ${{ github.event_name == 'push' && 'final-20261007' || inputs.lease }}
 on:
+  push:
+    branches: [marketstack-connector-capability-audit]
+    paths: [scripts/marketstack/final-live-trigger.json]
   workflow_dispatch:
     inputs:
       lease:
@@ -21,17 +24,18 @@ jobs:
   audit:
     if: >-
       github.ref == 'refs/heads/marketstack-connector-capability-audit' &&
-      github.actor == github.repository_owner && github.run_attempt == 1
+      (github.event_name == 'push' || github.actor == github.repository_owner) && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      VU_AUDIT_LEASE: ${{ inputs.lease }}
+      VU_AUDIT_LEASE: ${{ github.event_name == 'push' && 'final-20261007' || inputs.lease }}
       VU_AUDIT_EXPECTED_SHA: ${{ inputs.expected_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -51,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-audit-${{ inputs.lease }}-${{ github.run_id }}
+          name: marketstack-audit-${{ env.VU_AUDIT_LEASE }}-${{ github.run_id }}
           path: ${{ runner.temp }}/vu-marketstack-encrypted/evidence.enc.json
           if-no-files-found: error
           retention-days: 7

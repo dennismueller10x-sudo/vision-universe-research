@@ -3,10 +3,18 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
-import {createHash,randomBytes,createCipheriv,createDecipheriv,publicEncrypt,privateDecrypt,createPublicKey,constants} from 'node:crypto';
+import {createHash,randomBytes,createCipheriv,createDecipheriv,publicEncrypt,privateDecrypt,createPublicKey,verify,constants} from 'node:crypto';
 import {runAudit,HARD_CAP} from './capability-audit.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const branch='marketstack-connector-capability-audit';
+export function pushApprovalPayload(reviewedSourceSha) {
+ return JSON.stringify({pr:479,ref:'refs/heads/'+branch,lease:'final-20261007',reviewedSourceSha});
+}
+export function verifyPushApproval({marker,publicKey,before,parents,changedPaths,lease}) {
+ if(lease!=='final-20261007'||marker?.lease!==lease||! /^[a-f0-9]{40}$/.test(marker?.reviewedSourceSha||'')||before!==marker.reviewedSourceSha||parents?.length!==1||parents[0]!==before||changedPaths?.length!==1||changedPaths[0]!=='scripts/marketstack/final-live-trigger.json')throw Error('SIGNED_PUSH_SOURCE_MISMATCH');
+ if(typeof marker.signature!=='string'||!verify('sha256',Buffer.from(pushApprovalPayload(before)),{key:publicKey,padding:constants.RSA_PKCS1_PSS_PADDING,saltLength:32},Buffer.from(marker.signature,'base64')))throw Error('SIGNED_PUSH_APPROVAL_INVALID');
+ return true;
+}
 export function checkLease(manifest,lease) {
  if(manifest?.version!==1||manifest.hardCap!==HARD_CAP||manifest.pr!==479||manifest.branch!==branch||!Array.isArray(manifest.allocations))throw Error('INVALID_AUDIT_AUTHORIZATION');
  const ids=new Set();let sum=0;
@@ -33,11 +41,15 @@ export function openEvidence(envelope,privateKey) {
 }
 async function guard() {
  const env=process.env,manifest=JSON.parse(readFileSync('scripts/marketstack/audit-authorization.json','utf8')),allocation=checkLease(manifest,env.VU_AUDIT_LEASE);
- if(env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+branch||env.GITHUB_RUN_ATTEMPT!=='1'||env.VU_AUDIT_EXPECTED_SHA!==env.GITHUB_SHA||!/^[a-f0-9]{40}$/.test(env.GITHUB_SHA||''))throw Error('ACTION_EXECUTION_NOT_AUTHORIZED');
+ if(!['workflow_dispatch','push'].includes(env.GITHUB_EVENT_NAME)||env.GITHUB_REF!=='refs/heads/'+branch||env.GITHUB_RUN_ATTEMPT!=='1'||!/^[a-f0-9]{40}$/.test(env.GITHUB_SHA||''))throw Error('ACTION_EXECUTION_NOT_AUTHORIZED');
  if(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()!==env.GITHUB_SHA)throw Error('ACTION_CHECKOUT_SHA_MISMATCH');
+ if(env.GITHUB_EVENT_NAME==='push') {
+  const event=JSON.parse(readFileSync(env.GITHUB_EVENT_PATH,'utf8'));
+  verifyPushApproval({marker:JSON.parse(readFileSync('scripts/marketstack/final-live-trigger.json','utf8')),publicKey:readFileSync('scripts/marketstack/audit-recipient-public.pem','utf8'),before:event.before,parents:execFileSync('git',['show','-s','--format=%P','HEAD'],{encoding:'utf8'}).trim().split(' '),changedPaths:execFileSync('git',['diff','--name-only',event.before,'HEAD'],{encoding:'utf8'}).trim().split('\n'),lease:allocation.id});
+ } else if(env.VU_AUDIT_EXPECTED_SHA!==env.GITHUB_SHA||env.GITHUB_ACTOR!==env.GITHUB_REPOSITORY_OWNER)throw Error('ACTION_EXECUTION_NOT_AUTHORIZED');
  const runs=[];let sawCurrent=false;
  for(let page=1;page<=5;page++){
-  const url=new URL('https://api.github.com/repos/'+env.GITHUB_REPOSITORY+'/actions/runs');url.search=new URLSearchParams({branch,event:'workflow_dispatch',per_page:'100',page:String(page)}).toString();
+  const url=new URL('https://api.github.com/repos/'+env.GITHUB_REPOSITORY+'/actions/runs');url.search=new URLSearchParams({branch,per_page:'100',page:String(page)}).toString();
   const response=await fetch(url,{headers:{authorization:'Bearer '+env.GH_TOKEN,accept:'application/vnd.github+json'},redirect:'error'});
   if(!response.ok)throw Error('ACTION_HISTORY_UNVERIFIED');
   const body=await response.json();if(!Array.isArray(body.workflow_runs))throw Error('ACTION_HISTORY_UNVERIFIED');runs.push(...body.workflow_runs);

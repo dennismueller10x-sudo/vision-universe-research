@@ -31,13 +31,14 @@ export async function runAudit({plan,out,maxCredits=TARGET_CREDITS,apiKey=proces
   const focused=plan.mode==='FOCUSED_VERIFICATION';
   const allowedMethods=new Set(['searchTicker','listExchangeTickers','getLatestEOD','getHistoricalEOD','getRealtimePrice','getIntraday','getSplits','getDividends','getETFHoldings','getTicker','getTickerInfo']);
   if(plan.mode&& !focused||focused&&(!Array.isArray(plan.operations)||plan.operations.length<1||plan.operations.length>150||plan.operations.some(o=>!o.case||!o.label||o.method&&!allowedMethods.has(o.method)||!o.method&&!o.endpoint)))throw Error('INVALID_FOCUSED_PLAN');
+  if(plan.requestTimeoutMs!==undefined&&(!Number.isInteger(plan.requestTimeoutMs)||plan.requestTimeoutMs<1000||plan.requestTimeoutMs>90000))throw Error('INVALID_REQUEST_TIMEOUT');
   mkdirSync(out,{recursive:true,mode:0o700});
   const lock=join(out,'.running');mkdirSync(lock,{mode:0o700});
   const rawDir=join(out,'raw-provider'),normalizedDir=join(out,'normalized-observations');
   mkdirSync(rawDir,{mode:0o700});mkdirSync(normalizedDir,{mode:0o700});
   const budget=createRunBudget(join(out,'credits.json'),maxCredits),responses=[],results=[];
   let context=null,sequence=0,terminalReason=null;
-  const clientOptions={apiKey,fetchImpl,sharedBudget:budget,maxCredits,maxRequests:600,maxRetries:0,cacheTtlMs:0,minIntervalMs:fetchImpl?0:250,endpointIntervals:fetchImpl?{'/stockprice':0}:undefined,
+  const clientOptions={apiKey,fetchImpl,sharedBudget:budget,maxCredits,maxRequests:600,maxRetries:0,cacheTtlMs:0,timeoutMs:plan.requestTimeoutMs??30000,minIntervalMs:fetchImpl?0:250,endpointIntervals:fetchImpl?{'/stockprice':0}:undefined,
     onResponse:async r=>{const id=String(++sequence).padStart(4,'0'),raw=r.rawText;
       writeFileSync(join(rawDir,id+'.json'),raw,{mode:0o600});
       const meta={...r,rawText:undefined,body:undefined,id,sha256:hash(raw),testCase:context};
