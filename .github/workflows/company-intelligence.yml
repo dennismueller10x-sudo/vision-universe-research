@@ -407,7 +407,7 @@ jobs:
           REVIEW_VERSION: ${{ inputs.consumer_review }}
         run: |
           npm install --prefix /tmp/consumer-review playwright@1.51.1 --no-audit --no-fund
-          /tmp/consumer-review/node_modules/.bin/playwright install --with-deps chromium
+          node scripts/company_intelligence/install-browser-deps.mjs /tmp/consumer-review/node_modules/.bin/playwright
           # Manual after-review is read-only and has its own concurrency group.
           # It must not be displaced by a newer scheduled market-data deployment.
           if [ "$REVIEW_VERSION" = after ]; then
@@ -424,6 +424,7 @@ jobs:
           path: ${{ runner.temp }}/consumer-review/
           retention-days: 14
       - name: Hashes and counts only; no checkpoint, ledger or source-health artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: current-state-restore-evidence-${{ github.run_id }}
