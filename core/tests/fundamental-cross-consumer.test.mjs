@@ -4,7 +4,7 @@
    muessen denselben Wert lesen. Wo ein Consumer bewusst eine andere Groesse zeigt (Discover-KGV ohne TTM-EPS:
    TTM-Nettogewinn / Aktien), ist die Abweichung hier ausdruecklich festgehalten, nicht still.
 
-   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.18.0, Registry 1.9.0, Umsatzbelege 1.0.0)
+   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.18.0, Registry 1.9.0, Umsatzbelege 1.1.0)
    aus SEC companyfacts.zip (Stand 2026-10-07): AMT (E2), CECO (E9), FLS (E2-R), TNDM (E1), AAPL (Split), BMI (TTM-EPS vorhanden). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
