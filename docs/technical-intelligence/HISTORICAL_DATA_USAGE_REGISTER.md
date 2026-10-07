@@ -63,3 +63,20 @@ Vor der Präregistrierung entstehen für W_HOLDOUT und D_HOLDOUT nur Stage-1-Sie
 | Tag, übrige ≈ 4.700 Stammaktien 2017–2026 | für TI-Tagesszenarien ungeöffnet. Kalender gesehen; als Holdout nur bedingt geeignet. |
 | Kursdaten nach 2026-09-30 | **AVAILABLE HOLDOUT** für eine prospektive Fortschreibung (frühestens 26 Wochen später auswertbar) |
 | Practitioner-Holdout (43), Experten-Holdout (30) | weiterhin **SEALED** |
+
+## 4. Mission IX (ab 07.10.2026)
+
+Mission IX stellt zwei getrennte Forschungsfragen (Track A: Genauigkeit unter fairer Geometrie; Track B: asymmetrische Langfrist-Gewinner). Mission VIII bleibt eingefroren: `protocol.json`, Präregistrierung und Holdout-Ergebnisse werden nicht verändert. Mission IX hat ein eigenes Protokoll `scripts/technical/hsab/protocol9.json`.
+
+| Phase (Mission IX) | Daten | Universum | Zweck | Status vor Mission IX | Rolle in Mission IX |
+|---|---|---|---|---|---|
+| W_DEV (Track A, B) | Wochenschlüsse, alle Jahre | Überlebende, Bucket 0/2 | Exploration | CONSUMED | DEVELOPMENT |
+| W_VAL (Track A, B) | Wochenschlüsse, alle Jahre | Überlebende, Bucket 1/2 | Gegenprobe **nach** schriftlichem DEV-Freeze | CONSUMED | VALIDATION auf verbrauchten Daten (keine Bestätigung) |
+| Wave-3-Forensik | Quartalsenden, interne Elliott-Kandidaten | Überlebende, Bucket 0/4 (DEV) und 1/4 (VAL) | Exploration bzw. Gegenprobe | Struktur nie mit Langfrist-Outcomes ausgewertet; Kurse CONSUMED | DEVELOPMENT / VALIDATION |
+| Track B delistete Kohorte (CI) | delistete Listings ab 2015 | #12 | Survivorship-Erweiterung | **CONSUMED TEST** (Mission VIII W_HOLDOUT) | nur Sensitivität, **keine** Bestätigung |
+| **A9_CONFIRM** (Track A) | Tages-OHLCV, Erkennung 2017-01-01 – 2026-09-30 | Stammaktien mit Hash-Rang 1200–2399 (`sha256("hsab\|sample\|"+id)`) | einmalige Bestätigung nach Präregistrierung | für TI-Tagesszenarien **ungeöffnet**; Kalender wochenweise gesehen | CONDITIONAL HOLDOUT |
+| Fallstudie PLTR | Wochenschlüsse PLTR | ein Titel | nur Erklärung, nach der Universumsstudie | CONSUMED | EXPLANATORY ONLY (nie Kalibrierung) |
+
+Disjunktheit von A9_CONFIRM: `replay.mjs --disjoint-from 1200:<sha>` bricht ab, wenn die Ränge 0–1199 der aktuellen Titelliste nicht genau die Mission-VIII-Stichprobe ergeben (Symbol-Hash `457ce200…` aus `d-holdout-stage1-holdout-stage1.json`). Eine Universumsänderung kann die Disjunktheit damit nicht still verletzen.
+
+**Track B hat keinen frischen Holdout.** Alle Wochenpfade der Überlebenden und der Delisteten sind verbraucht. Die Horizonte von 6–36 Monaten schließen prospektive Daten aus. Track B wird darum ehrlich auf **VALIDATION_ON_CONSUMED_DATA** herabgestuft.
