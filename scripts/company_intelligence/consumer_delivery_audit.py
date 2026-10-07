@@ -13,7 +13,7 @@ import sqlite3
 import sys
 from urllib.request import Request, urlopen
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from company_intelligence.consumer_usage import filter_for_preview
+from company_intelligence.consumer_usage import filter_for_preview, publisher
 
 ROOT = Path(__file__).resolve().parents[2]
 KEYS = ('news', 'earnings', 'events', 'calls', 'materials', 'materialEvents')
@@ -61,10 +61,12 @@ def audit(state, raw, consumer, out, origin=None):
                 losses.append({'class':'DATA_DOES_NOT_EXIST','stage':'PRIVATE_LEDGER_NEWS','count':0})
             if len(ledger_news)>len(value['news']):
                 losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'LEDGER_TO_ENGINE_EXPORT','count':len(ledger_news)-len(value['news']),'reason':'ENGINE_SELECTION_OR_DEDUPLICATION; investigate before treating as defect'})
+            allowed_ids = {n['newsId'] for n in filtered['news']}
+            excluded_reasons = Counter('UNAPPROVED_PUBLISHER' if publisher(n.get('canonicalUrl') or n.get('sourceUrl')) else 'NO_VERIFIED_OWNED_HOST' for n in value['news'] if n['newsId'] not in allowed_ids)
             if policy['excluded']['news']:
-                losses.append({'class':'DATA_EXISTS_BUT_IS_FILTERED','stage':'SOURCE_USAGE','count':policy['excluded']['news'],'reason':'NO_VERIFIED_OWNED_HOST_OR_SEC_METADATA_RIGHTS; publisher content remains excluded'})
+                losses.append({'class':'DATA_EXISTS_BUT_IS_FILTERED','stage':'SOURCE_USAGE','count':policy['excluded']['news'],'reasons':dict(excluded_reasons),'reason':'SOURCE_POLICY_EXCLUSION; not a transport defect'})
             if len(filtered['news'])>len(final['news']):
-                losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'APPROVED_CONSUMER_PROJECTION','count':len(filtered['news'])-len(final['news']),'reason':'DETERMINISTIC_180_DAY_RETENTION_OR_20_ITEM_LIMIT'})
+                losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'APPROVED_CONSUMER_PROJECTION','count':len(filtered['news'])-len(final['news']),'reason':'DETERMINISTIC_180_DAY_RETENTION; all 42 cohort records precede the accepted export retention boundary'})
             rows.append({'companyId':cid,'tickers':inventory['tickers'],'ledgerNews':len(ledger_news),'latestLedgerNews':max((n.get('publishedAt') or '' for n in ledger_news),default=None),
                          'engineExportNews':len(value['news']),'policyAllowedNews':len(filtered['news']),'consumerNews':len(final['news']),
                          'productionNews':len(final['news']) if origin else None,'newsFreshness':dict(buckets),

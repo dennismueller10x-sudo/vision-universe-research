@@ -351,7 +351,7 @@ jobs:
   current-state-restore:
     if: github.event_name == 'workflow_dispatch' && inputs.current_restore_only && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none') && !inputs.acceptance && !inputs.pilot
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
