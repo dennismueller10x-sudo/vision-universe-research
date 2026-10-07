@@ -576,9 +576,9 @@
       "cik": "0001718500",
       "name": "Axil Brands, Inc.",
       "sic": "2844",
-      "rawFacts": 8177,
-      "mappedFacts": 3066,
-      "unmappedFacts": 5196,
+      "rawFacts": 8418,
+      "mappedFacts": 3142,
+      "unmappedFacts": 5426,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -588,28 +588,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2016-05-31",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2022-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0,
@@ -629,21 +629,21 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0
@@ -657,14 +657,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2017-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 9.0
@@ -687,47 +687,48 @@
         }
       },
       "quality": {
-        "HIGH": 308,
-        "MEDIUM": 8
+        "HIGH": 311,
+        "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 316,
-        "resolvedValues": 316
+        "datableValues": 323,
+        "resolvedValues": 323
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5412,
+        "total": 5651,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 5196,
-          "WARNING": 215
+          "INFO": 5426,
+          "WARNING": 224
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 160,
+          "CONCEPT_DISAGREEMENT": 168,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 5196
+          "RESTATEMENT_CONFLICT": 56,
+          "UNKNOWN_CONCEPT": 5426
         }
       },
       "latestFiling": {
-        "accession": "0001520138-26-000360",
-        "filing_date": "2026-08-18",
-        "form": "10-K",
-        "periodic_filings": 38
+        "accession": "0001520138-26-000410",
+        "filing_date": "2026-10-06",
+        "form": "10-Q",
+        "periodic_filings": 39,
+        "acceptance_datetime": "2026-10-07T00:15:41.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "99e57d63221e3e4e1a8a037a0b52972feeeaf3a8185d47a047e6042b571b4167",
+      "sourceDigest": "aa2466e5313c130bc08da659e088443163fdc88f65a6adc793988d0e58ea5e5e",
       "issuerId": "iss_cik_0001718500"
     },
     {

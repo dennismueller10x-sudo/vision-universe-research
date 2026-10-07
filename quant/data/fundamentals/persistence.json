@@ -1,22 +1,22 @@
 {
   "version": "fundamentals-store-1.0.0",
-  "generatedAt": "2026-10-06T13:23:24.020Z",
+  "generatedAt": "2026-10-07T13:30:29.135Z",
   "driver": "s3",
   "endpointKind": "s3",
   "prefix": "v1/sec/fundamentals",
   "localFactbooks": 5480,
   "push": {
-    "changed": 1,
-    "unchanged": 5479,
+    "changed": 7,
+    "unchanged": 5473,
     "objectCount": 5480,
-    "bytesUploaded": 221588,
+    "bytesUploaded": 848635,
     "dryRun": false,
     "spent": {
-      "classA": 3,
+      "classA": 9,
       "classB": 1,
-      "bytesUploaded": 221588,
+      "bytesUploaded": 848635,
       "bytesDownloaded": 0,
-      "writesSkipped": 5479
+      "writesSkipped": 5473
     }
   },
   "persisted": {
@@ -25,11 +25,11 @@
     "PERSISTED_QUARTERLY_HISTORIES": 5345,
     "PERSISTED_PIT_HISTORIES": 5345,
     "PERSISTED_METADATA": 5397,
-    "PERSISTED_STORAGE_BYTES": 640137303,
+    "PERSISTED_STORAGE_BYTES": 640151651,
     "PERSISTENCE_LOCATION": "r2:vision-universe-history/v1/sec/fundamentals/",
     "byNormalizationVersion": {
-      "1.10.0": 154,
-      "1.9.0": 5326
+      "1.10.0": 161,
+      "1.9.0": 5319
     },
     "currencies": {
       "USD": 4986,
@@ -84,19 +84,19 @@
     }
   },
   "reload": {
-    "requested": 1,
-    "passed": 1,
+    "requested": 7,
+    "passed": 7,
     "results": [
       {
-        "cik": "0000033002",
-        "key": "v1/sec/fundamentals/facts/0000033002.json.gz",
+        "cik": "0000006845",
+        "key": "v1/sec/fundamentals/facts/0000006845.json.gz",
         "found": true,
-        "bytes": 221588,
-        "sha256": "ecd077068391d9c443a40aa1e700be7ed47586adfee86d77a6b85e8da1aa1770",
+        "bytes": 248797,
+        "sha256": "688eddd57bd1c2b100c400f2df04a297c5c563090c08ffb79bbe673f8f963a5f",
         "sha256MatchesLocal": true,
         "parsed": true,
         "missingTopLevel": [],
-        "observations": 6822,
+        "observations": 7137,
         "observationsMissingPitFields": 0,
         "hasAnnual": true,
         "hasQuarterly": true,
@@ -108,17 +108,228 @@
           "normalizationLogic": "1.10.0",
           "mappingVersion": "1.6.0",
           "formula": "1.2.0",
-          "timelines": 2920,
-          "annualTimelines": 582,
-          "quarterlyTimelines": 2338,
-          "observations": 6822,
+          "timelines": 2869,
+          "annualTimelines": 586,
+          "quarterlyTimelines": 2283,
+          "observations": 7137,
           "firstPeriodEnd": "2009-02-28",
+          "lastPeriodEnd": "2026-08-29",
+          "currencies": [
+            "USD"
+          ],
+          "filings": 135,
+          "qualityFindings": 19638,
+          "latestForm": "10-Q"
+        }
+      },
+      {
+        "cik": "0000110621",
+        "key": "v1/sec/fundamentals/facts/0000110621.json.gz",
+        "found": true,
+        "bytes": 256007,
+        "sha256": "383948a7685729cfa57e8039a9cd6e78a19071dd7cd13f569693f786763f8a98",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 7928,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 3106,
+          "annualTimelines": 642,
+          "quarterlyTimelines": 2464,
+          "observations": 7928,
+          "firstPeriodEnd": "2008-05-31",
           "lastPeriodEnd": "2026-08-31",
           "currencies": [
             "USD"
           ],
-          "filings": 123,
-          "qualityFindings": 16347,
+          "filings": 139,
+          "qualityFindings": 20154,
+          "latestForm": "10-Q"
+        }
+      },
+      {
+        "cik": "0001377936",
+        "key": "v1/sec/fundamentals/facts/0001377936.json.gz",
+        "found": true,
+        "bytes": 50883,
+        "sha256": "5e073c5331aec12af57b9d64e3a783659221ff107f54327766645486fe427418",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 1143,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 562,
+          "annualTimelines": 123,
+          "quarterlyTimelines": 439,
+          "observations": 1143,
+          "firstPeriodEnd": "2010-08-12",
+          "lastPeriodEnd": "2026-08-31",
+          "currencies": [
+            "USD"
+          ],
+          "filings": 82,
+          "qualityFindings": 5254,
+          "latestForm": "10-Q"
+        }
+      },
+      {
+        "cik": "0001679273",
+        "key": "v1/sec/fundamentals/facts/0001679273.json.gz",
+        "found": true,
+        "bytes": 155050,
+        "sha256": "f3813ad739632ce181a58ac3a4c3162c55df6950ed0d0134b0a023d9824aed22",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 4502,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 1967,
+          "annualTimelines": 402,
+          "quarterlyTimelines": 1565,
+          "observations": 4502,
+          "firstPeriodEnd": "2014-05-25",
+          "lastPeriodEnd": "2026-08-30",
+          "currencies": [
+            "USD"
+          ],
+          "filings": 40,
+          "qualityFindings": 10986,
+          "latestForm": "10-Q"
+        }
+      },
+      {
+        "cik": "0001718500",
+        "key": "v1/sec/fundamentals/facts/0001718500.json.gz",
+        "found": true,
+        "bytes": 105612,
+        "sha256": "07aeb930ac0b46de01d2c647e1438fd6e79a89ce7c51da370486ce06765d213a",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 3142,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 1425,
+          "annualTimelines": 277,
+          "quarterlyTimelines": 1148,
+          "observations": 3142,
+          "firstPeriodEnd": "2016-05-31",
+          "lastPeriodEnd": "2026-08-31",
+          "currencies": [
+            "USD"
+          ],
+          "filings": 39,
+          "qualityFindings": 5651,
+          "latestForm": "10-Q"
+        }
+      },
+      {
+        "cik": "0001819794",
+        "key": "v1/sec/fundamentals/facts/0001819794.json.gz",
+        "found": true,
+        "bytes": 14438,
+        "sha256": "c97b908a05aa4599167b260fa3483eab46a126bfee7b11b2c9ae93416322ecb6",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 319,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 168,
+          "annualTimelines": 117,
+          "quarterlyTimelines": 51,
+          "observations": 319,
+          "firstPeriodEnd": "2018-12-31",
+          "lastPeriodEnd": "2025-12-31",
+          "currencies": [
+            "EUR",
+            "USD"
+          ],
+          "filings": 7,
+          "qualityFindings": 875,
+          "latestForm": "20-F/A"
+        }
+      },
+      {
+        "cik": "0002000775",
+        "key": "v1/sec/fundamentals/facts/0002000775.json.gz",
+        "found": true,
+        "bytes": 17848,
+        "sha256": "f2bd0c15edeb568c3c9dc23c049430a9b2fe7200cd2d80b5e1ac262e1297c740",
+        "sha256MatchesLocal": true,
+        "parsed": true,
+        "missingTopLevel": [],
+        "observations": 518,
+        "observationsMissingPitFields": 0,
+        "hasAnnual": true,
+        "hasQuarterly": true,
+        "hasRestatementMetadata": true,
+        "hasQualityStates": true,
+        "hasNormalizationVersion": true,
+        "pass": true,
+        "summary": {
+          "normalizationLogic": "1.10.0",
+          "mappingVersion": "1.6.0",
+          "formula": "1.2.0",
+          "timelines": 240,
+          "annualTimelines": 40,
+          "quarterlyTimelines": 200,
+          "observations": 518,
+          "firstPeriodEnd": "2023-05-31",
+          "lastPeriodEnd": "2026-08-31",
+          "currencies": [
+            "USD"
+          ],
+          "filings": 13,
+          "qualityFindings": 584,
           "latestForm": "10-Q"
         }
       }
@@ -126,7 +337,7 @@
     "reloadDir": "/home/runner/work/vision-universe-research/vision-universe-research/.sec-reload/facts",
     "spent": {
       "classA": 0,
-      "classB": 1,
+      "classB": 7,
       "bytesUploaded": 0,
       "bytesDownloaded": 0,
       "writesSkipped": 0
@@ -134,7 +345,7 @@
   },
   "witness": {
     "allowedPrefix": "v1/sec/fundamentals/",
-    "touchedKeys": 1,
+    "touchedKeys": 7,
     "keysOutsidePrefix": 0,
     "priceStoreUntouched": true,
     "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb von v1/sec/fundamentals/. Dass hier 0 steht, ist deshalb kein Zaehlergebnis, sondern eine Eigenschaft: das Skript KANN v1/tiingo/ nicht anfassen."
