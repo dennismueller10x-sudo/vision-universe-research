@@ -1,0 +1,28 @@
+{
+  "provider": "marketstack",
+  "apiVersion": "v2",
+  "accountPlan": "USER_STATED_PROFESSIONAL_NOT_AUTHENTICATED",
+  "evidenceLevel": "NO_AUTHENTICATED_ACCOUNT_RESPONSES",
+  "flags": {
+    "stockDirectory": "UNKNOWN",
+    "globalEOD": "UNKNOWN",
+    "history": "UNKNOWN",
+    "adjustedOHLC": "UNKNOWN",
+    "adjustedVolume": "UNKNOWN",
+    "splits": "UNKNOWN",
+    "dividends": "UNKNOWN",
+    "realtimeUS": "UNKNOWN",
+    "realtimeEurope": "UNKNOWN",
+    "intradayUS": "UNKNOWN",
+    "intradayEurope": "UNKNOWN",
+    "ETFHoldingsUS": "UNKNOWN",
+    "ETFHoldingsUCITS": "UNKNOWN",
+    "ETFHoldingsPagination": "UNKNOWN",
+    "ETFMetadata": "UNKNOWN"
+  },
+  "documentedConstraints": {
+    "intradayEurope": "US_IEX_ONLY_DOCUMENTED",
+    "stockprice": "WORLDWIDE_ADVERTISED_LAST_KNOWN_TRADE_SCHEMA",
+    "ETFHoldingsPagination": "LIMIT_OFFSET_DOCUMENTED_TOTAL_NOT_IN_SCHEMA"
+  }
+}

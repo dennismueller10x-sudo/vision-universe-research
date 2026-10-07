@@ -1,0 +1,15 @@
+fieldClass,rawEvidence,referenceNormalized,status,reason
+ticker/symbol,Documented + website observed,series.providerSymbol/mapping; metadata providerSymbol,TRANSFORMED,exact identity gates; original key not normalized
+name,Website observed; EOD/ticker documented,metadata name; EOD bar omitted,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,bar uses mapping rather than raw name
+exchange/MIC,Website observed; price/ticker documented,mapping/provenance/sourceVenue,TRANSFORMED,original exchange and exchange_code distinction not universally retained
+ISIN,Documented ticker; current account not observed,metadata ISIN; mapping required,TRANSFORMED,absent ISIN cannot be invented from name
+currency/country/asset type,Documented; website exchange fields observed,currency/type mapping; metadata exchange country omitted,TRANSFORMED_OR_DROPPED_IF_RETURNED,verified listing derivation vs provider row must stay separate
+open/high/low/close/volume,Documented; account not observed,bar values; quote OHLC/volume,TRANSFORMED,numeric validation
+adj_open/high/low,Documented; account not observed,adjustedOpen/High/Low,TRANSFORMED,observations; no global adjustment admission
+adj_close,Documented; account not observed,adjustmentObservation.close; adjustedClose only when verified,TRANSFORMED,"intentional evidence gate, not silent loss"
+adj_volume/split_factor/dividend,Documented; account not observed,adjustedVolume/splitFactor/dividend,TRANSFORMED,volume verification independent
+market timestamp,Documented; account not observed,market_timestamp + provider_timestamp,TRANSFORMED,reference assigns market time as provider time; update instant not separately observed
+cik/cusip/lei/sector/industry + exchange descriptors,Documented; account not observed,reference metadata omitted,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,metadata contract narrow; separate raw hook preserves source if enabled
+ETF investment_security fields,Documented + earlier materialization; current account not observed,older ETF normalize spreads source investment_security,TRANSFORMED,do not assert old constituent fields/weights were universally lost
+ETF basics/attributes/signature,Documented; current account not observed,reference adapter no ETF; older narrow fund projection omits signature/final_filing,RAW_PRESENT_NORMALIZED_LOST_IF_RETURNED,new audit raw preserves full report without asserting daily issuer freshness
+AUM/TER/benchmark/UCITS/NAV/replication,Not in inspected ETF schemas; raw not tested,no reference adapter ETF metadata,UNKNOWN,schema omission is not provider-wide absence

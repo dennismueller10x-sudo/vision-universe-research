@@ -1,0 +1,125 @@
+{
+  "basis": "OFFICIAL_WEBSITE_AND_PUBLISHED_DIRECTORY",
+  "rows": [
+    {
+      "venue": "Xetra",
+      "websiteDropdownCode": "XETRA",
+      "observedSuffixCandidates": ".BE / .DE",
+      "discrepancy": "Website dropdown XETRA misses SAP; MIC filter XETR succeeds.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XETR",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Frankfurt",
+      "websiteDropdownCode": "XFRA",
+      "observedSuffixCandidates": ".F / .XFRA",
+      "discrepancy": null,
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XFRA",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Euronext Paris",
+      "websiteDropdownCode": "XPAR",
+      "observedSuffixCandidates": ".PA / .XPAR",
+      "discrepancy": "Both MC.PA/MC.XPAR and AIR.PA/AIR.XPAR observed.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XPAR",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Amsterdam",
+      "websiteDropdownCode": "XAMS",
+      "observedSuffixCandidates": ".AS / .NX / .XAMS",
+      "discrepancy": "ASML.AS and ASML.XAMS observed.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XAMS",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "SIX",
+      "websiteDropdownCode": "XSWX",
+      "observedSuffixCandidates": ".SW",
+      "discrepancy": "ABBN.SW/SCMN.SW workbook MIC BTEE differs website XSWX.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XSWX",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "LSE",
+      "websiteDropdownCode": "XLON",
+      "observedSuffixCandidates": ".IL / .L / .XLON",
+      "discrepancy": null,
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XLON",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Nasdaq Nordic Helsinki",
+      "websiteDropdownCode": "XHEL",
+      "observedSuffixCandidates": ".HE",
+      "discrepancy": "NDA-FI.HE observed.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XHEL",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Nasdaq Nordic Stockholm",
+      "websiteDropdownCode": "XSTO",
+      "observedSuffixCandidates": "NOT_OBSERVED_IN_THIS_SAMPLE",
+      "discrepancy": "Dropdown observed; target primary response not measured.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XSTO",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Nasdaq Nordic Copenhagen",
+      "websiteDropdownCode": "XCSE",
+      "observedSuffixCandidates": ".CO",
+      "discrepancy": "Dropdown observed; target primary response not measured.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XCSE",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Madrid",
+      "websiteDropdownCode": "BMEX",
+      "observedSuffixCandidates": ".MC",
+      "discrepancy": "Dropdown BMEX mismatches row XMAD; company filtering may miss SAN.MC.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XMAD",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Vienna",
+      "websiteDropdownCode": null,
+      "observedSuffixCandidates": ".VI",
+      "discrepancy": "Dropdown absent in observed HTML; target rows present.",
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XWBO",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    },
+    {
+      "venue": "Milan",
+      "websiteDropdownCode": "XMIL",
+      "observedSuffixCandidates": ".MI",
+      "discrepancy": null,
+      "authenticatedAPICode": "NOT_TESTED",
+      "referenceMIC": "XMIL",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY"
+    }
+  ]
+}

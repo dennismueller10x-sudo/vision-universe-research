@@ -1,0 +1,241 @@
+{
+  "networkRequests": 0,
+  "syntheticCases": 14,
+  "results": [
+    {
+      "case": "normal multi-page",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 3,
+      "nextOffset": 5,
+      "rows": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "offsets": [
+        0,
+        2,
+        4
+      ]
+    },
+    {
+      "case": "short intermediate page uses count not requested limit",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 3,
+      "nextOffset": 3,
+      "rows": [
+        0,
+        1,
+        2
+      ],
+      "offsets": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "case": "nested exchange tickers",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 3,
+      "nextOffset": 3,
+      "rows": [
+        {
+          "symbol": "S0"
+        },
+        {
+          "symbol": "S1"
+        },
+        {
+          "symbol": "S2"
+        }
+      ],
+      "offsets": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "case": "null total silently complete",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 1,
+      "nextOffset": 2,
+      "rows": [
+        0,
+        1
+      ],
+      "offsets": [
+        0
+      ]
+    },
+    {
+      "case": "negative total silently complete",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 1,
+      "nextOffset": 2,
+      "rows": [
+        0,
+        1
+      ],
+      "offsets": [
+        0
+      ]
+    },
+    {
+      "case": "fractional total silently complete",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 1,
+      "nextOffset": 2,
+      "rows": [
+        0,
+        1
+      ],
+      "offsets": [
+        0
+      ]
+    },
+    {
+      "case": "repeated rows with advancing offset silently complete",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 2,
+      "nextOffset": 4,
+      "rows": [
+        "A",
+        "B",
+        "A",
+        "B"
+      ],
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    {
+      "case": "total shrinks across pages silently complete",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 2,
+      "nextOffset": 4,
+      "rows": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    {
+      "case": "missing total cannot finish short final page",
+      "ok": false,
+      "reason": "invalidPagination",
+      "complete": false,
+      "pages": 3,
+      "nextOffset": 3,
+      "rows": [
+        0,
+        1,
+        2
+      ],
+      "offsets": [
+        0,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "empty page before total",
+      "ok": false,
+      "reason": "invalidPagination",
+      "complete": false,
+      "pages": 2,
+      "nextOffset": 2,
+      "rows": [
+        0,
+        1
+      ],
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    {
+      "case": "count mismatch",
+      "ok": false,
+      "reason": "invalidPagination",
+      "complete": false,
+      "pages": 1,
+      "nextOffset": 0,
+      "rows": [],
+      "offsets": [
+        0
+      ]
+    },
+    {
+      "case": "stalled offset",
+      "ok": false,
+      "reason": "invalidPagination",
+      "complete": false,
+      "pages": 2,
+      "nextOffset": 2,
+      "rows": [
+        0,
+        1
+      ],
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    {
+      "case": "bounded history page ceiling visibly fails",
+      "ok": false,
+      "reason": "pageBudgetExceeded",
+      "complete": false,
+      "pages": 2,
+      "nextOffset": 4,
+      "rows": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    {
+      "case": "zero limit accidentally defaults to 1000",
+      "ok": true,
+      "reason": null,
+      "complete": true,
+      "pages": 1,
+      "nextOffset": 0,
+      "rows": [],
+      "offsets": [
+        0
+      ]
+    }
+  ]
+}

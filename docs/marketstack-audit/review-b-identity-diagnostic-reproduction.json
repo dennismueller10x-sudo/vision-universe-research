@@ -1,0 +1,17 @@
+{
+  "test": "ACTUAL_FUNCTION_EXTRACTED_NO_PROVIDER_REQUEST",
+  "source": "PR461/scripts/marketstack/probe-missing-identities.mjs",
+  "sourceSHA": "3f11a5a9d523e2b12f448ff91a6ddf7783cdaf7e",
+  "attempts": [
+    {
+      "cause": "UNSUPPORTED_LISTING",
+      "reason": "EMPTY_PROVIDER_METADATA"
+    }
+  ],
+  "result": {
+    "resolutionStatus": "NOT_SUPPORTED",
+    "cause": "UNSUPPORTED_LISTING"
+  },
+  "expectedInstrumentLevelConclusion": "IDENTITY_UNRESOLVED_UNTIL_EXHAUSTIVE_RESOLUTION",
+  "paidRequests": 0
+}
