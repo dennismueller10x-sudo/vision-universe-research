@@ -390,8 +390,23 @@
     ]);
   }
 
+  /* Der US-Handelstag "jetzt" (New York) als JJJJ-MM-TT. */
+  function usHandelstag(jetzt) {
+    try {
+      return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" })
+        .format(jetzt || new Date());
+    } catch (_) { return null; }
+  }
+
+  /* "heute" nur, wenn die Sitzung wirklich der heutige US-Handelstag ist -
+     am Wochenende oder vor dem Lauf des Tages zeigt die Karte die Vorsitzung. */
+  function moversTitel(session, jetzt) {
+    if (session && session === usHandelstag(jetzt)) return "Top & Flop heute";
+    return session ? "Top & Flop vom " + standText(session) : "Top & Flop der letzten Sitzung";
+  }
+
   /** AKTIEN IN BEWEGUNG: Gewinner und Verlierer der juengsten Sitzung, je mit Link zur Aktienseite. */
-  function moversBereich(p) {
+  function moversBereich(p, jetzt) {
     var m = p && p.movers;
     if (!m || !m.gainers || !m.gainers.length) return null;
     function spalte(titel, xs, glyph, art) {
@@ -404,8 +419,9 @@
         ])]);
       }))]);
     }
-    return el("section", { class: "dx-maerkte-movers", id: "maerkte-movers", "aria-label": "Top & Flop heute" }, [
-      el("h2", { text: "Top & Flop heute" }),
+    var titel = moversTitel(m.session, jetzt);
+    return el("section", { class: "dx-maerkte-movers", id: "maerkte-movers", "aria-label": titel }, [
+      el("h2", { text: titel }),
       el("p", { class: "dx-maerkte-unter", text: "Sitzung vom " + standText(m.session) + " gegenüber " + standText(m.previousSession) +
         (m.complete ? "" : " (Sitzung läuft)") + " · " + m.eligible + " liquide Titel aus dem Discover-Universum" }),
       el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers, "hoch", "kurs-up"), spalte("Stärkste Verlierer", m.losers, "runter", "kurs-down")])
@@ -573,6 +589,6 @@
   global.VUDiscover.Markets = { render: render, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
-                                marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, namen: namen,
+                                marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, moversTitel: moversTitel, namen: namen,
                                 GRUPPEN: GRUPPEN, AUSWAHL: AUSWAHL };
 })(typeof window !== "undefined" ? window : globalThis);

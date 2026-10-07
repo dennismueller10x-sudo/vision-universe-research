@@ -33,12 +33,12 @@ jobs:
           set -euo pipefail
           for p in /supertrader/ /supertrader/signals/ /supertrader/strategies/ /supertrader/backtests/ /supertrader/sources/ /supertrader/stock/ \
                    /supertrader/strategies/greenblatt-value/ /supertrader/strategies/momentum-breakout/ /supertrader/strategies/weinstein-stages/ \
-                   /supertrader/strategies/darvas-boxes/ /supertrader/strategies/minervini-vcp/ \
+                   /supertrader/strategies/darvas-boxes/ /supertrader/strategies/minervini-vcp/ /supertrader/strategies/vu-trendfolge-52w/ /supertrader/strategies/donchian-turtle/ \
                    /supertrader/assets/supertrader.js /supertrader/assets/st-chart.js /supertrader/assets/supertrader.css; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE$p")
             echo "$code $p"; test "$code" = 200
           done
-          for f in registry signals backtests coverage market sources; do
+          for f in registry signals backtests coverage market sources portfolio trend52; do
             curl -sf "$SITE/supertrader/data/$f.json" -o "/tmp/$f.json"
             node -e "JSON.parse(require('fs').readFileSync('/tmp/$f.json','utf8'))"
           done
@@ -47,7 +47,16 @@ jobs:
             const age=(Date.now()-new Date(s.asOf+"T21:00:00Z"))/864e5;
             console.log("Stand", s.asOf, "Alter Tage", age.toFixed(1), "Zaehler", JSON.stringify(s.counts));
             if (age > 6) throw new Error("Signalstand aelter als 6 Tage");
-            for (const r of b.runs) if (!r.metricsPublishable && r.metrics !== null) throw new Error("Kennzahl ohne Gates: "+r.variantId);'
+            for (const r of b.runs) if (!r.metricsPublishable && r.metrics !== null) throw new Error("Kennzahl ohne Gates: "+r.variantId);
+            // Runde 12: Modelldepot VU Trendfolge 52W und Marktampel-Versionen live; keine Gesamtrendite/Kurve veroeffentlicht.
+            const reg=require("/tmp/registry.json"), t=require("/tmp/trend52.json"), pf=require("/tmp/portfolio.json");
+            const st=Object.fromEntries(reg.strategies.map((x)=>[x.strategy_id,x]));
+            if (!st.VU_TREND_52W || st.VU_TREND_52W.mode!=="MODEL") throw new Error("VU_TREND_52W fehlt oder falscher Modus");
+            if (t.schema!=="supertrader-trend52-1.0.0" || !t.market || !t.schedule || !t.portfolio || !t.prepared) throw new Error("trend52.json unvollstaendig");
+            if (JSON.stringify(t).match(/"(totalReturn|cagr|equityCurve|excessCagr)"/)) throw new Error("trend52.json enthaelt Kennzahlen");
+            if (s.strategies.DARVAS_BOX.version!=="3.0.2" || s.strategies.DONCHIAN_TURTLE.version!=="2.0.2" || s.strategies.WEINSTEIN_STAGE.version!=="4.0.0") throw new Error("R13-Versionen nicht live");
+            if (!pf.strategies.DARVAS_BOX.config.marketFilter || pf.strategies.DONCHIAN_TURTLE.config.marketFilter) throw new Error("Marktampel im Modellportfolio falsch (Darvas an, Turtle aus)");
+            console.log("VU Trendfolge 52W: Ampel", t.market.green, "Positionen", t.portfolio.used, "Rangliste", t.prepared.candidates.length, "naechste Entscheidung", t.schedule.nextDecision);'
           # Zugangsschranke ist laut docs/RESEARCH_ACCESS_GATE.md eine clientseitige
           # Entwicklungs-/Marketing-Maske, kein Zugriffsschutz: Originaldateien unter
           # /__research/content/ sind direkt abrufbar, bis eine serverseitige Sperre

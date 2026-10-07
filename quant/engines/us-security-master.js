@@ -51,13 +51,18 @@
     ? require("./instrument-classification.js")
     : global.VUInstrumentClassification;
 
-  var VERSION = "us-security-master-1.2.0";
+  /* Artifact schema follows the currently published main baseline.
+     Classification rules retain separate provenance; the combined rule
+     revision includes main's DEBT exclusions and the accepted Tiingo 2.0
+     classification safeguards. Old artifact files remain readable. */
+  var VERSION = "us-security-master-1.3.0";
+  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.3";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
     "EQUITY_COMMON", "ADR", "REIT", "SPAC", "PREFERRED", "TRUST",
     "ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-    "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "OTHER", "UNKNOWN"
+    "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY", "OTHER", "UNKNOWN"
   ];
 
   /* Die Politik aus der Aufgabenstellung, als Daten und nicht als
@@ -70,7 +75,7 @@
     SEPARATE: ["ADR", "REIT", "SPAC", "TRUST", "PREFERRED"],
     /* Keine Aktien. Bleiben im Stamm, zaehlen aber nirgends mit. */
     EXCLUDE: ["ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-              "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY"]
+              "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY"]
   };
 
   function policyBucket(cls) {
@@ -254,14 +259,25 @@
     { type: "ETN",         re: /\b(ETN|EXCHANGE[- ]TRADED NOTES?)\b/i },
     { type: "ETP",         re: /\b(ETP|EXCHANGE[- ]TRADED (PRODUCT|COMMODIT(Y|IES))S?)\b/i },
     { type: "CEF",         re: /\b(CLOSED[- ]END|CEF)\b/i },
+    /* Schuldverschreibungen ("Baby Bonds"), die der Anbieter als "Stock"
+       fuehrt (02.10.2026): "T-Mobile US Inc 5.500 Senior Notes due 2070",
+       "Presurance Holdings Inc Sr Nt", "Maiden Holdings ... 775 Nts 12012043".
+       Eine Forderung gegen den Emittenten, kein Anteil - Eigenkapital-
+       Kennzahlen gelten fuer sie nicht. Nur ausdrueckliche Formen: ein Rang
+       (Senior/Sr/Subordinated/Junior) vor Notes/Nt/Debentures/Bonds, "Notes
+       due", "Debentures", der Kupon vor "Notes" oder die Abkuerzung "Nts".
+       Absichtlich NICHT "Bond" allein: "Columbia Core Bond ETF" ist ein
+       Fonds (die ETF-Regel greift), "Our Bond, Inc." eine Firma. */
+    { type: "DEBT",        re: /\b(?:(?:SENIOR|SR|SUBORDINATED|SUB|JUNIOR|JR)\.?\s+(?:SECURED\s+|UNSECURED\s+)?(?:NOTES?|NTS?|DEBENTURES?|BONDS?)|NOTES?\s+DUE|DEBENTURES?|BABY\s+BONDS?|NTS|\d+(?:\.\d+)?\s?%?\s+(?:FIXED[- ]RATE\s+)?(?:SENIOR\s+|SUBORDINATED\s+)?NOTES?)\b/i },
     /* Die Form des Papiers vor der Art des Emittenten: "Centurion
        Acquisition Corp - Units" ist eine Unit (eines SPAC), "US Bancorp
        Depositary Shares ... Pfd" ein Vorzugspapier (kein ADR). */
-    { type: "PREFERRED",   re: /\b(PREFERRED|PFD|PREF\.)/i },
+    { type: "PREFERRED",   re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
     { type: "WARRANT",     re: /\bWARRANTS?\b/i },
     { type: "RIGHT",       re: /\bRIGHTS?\b/i },
     { type: "UNIT",        re: /\bUNITS?\b/i },
-    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
+    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSIT[AO]R(Y|IES)|DEPOSIT[AO]RY RECEIPTS?)\b/i },
+    { type: "UNKNOWN",     re: /\bDEPOSIT[AO]RY SHARES?\b/i },
     { type: "REIT",        re: /\b(REIT|REAL ESTATE INVESTMENT TRUST)\b/i },
     { type: "SPAC",        re: /\b(SPAC|ACQUISITION CORP|ACQUISITION COMPANY|BLANK CHECK)\b/i },
     { type: "ETF",         re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
@@ -282,7 +298,7 @@
      Stammaktie trennen lassen. Ihre Zahlen sind Untergrenzen, solange
      der Anbieter keinen Namen liefert - das steht als Feld im Befund und
      nicht nur in dieser Bemerkung. */
-  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF"];
+  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF", "DEBT"];
 
   /**
    * Klassifiziert eine Anbieterzeile in die feine Gattungsliste.
@@ -326,6 +342,9 @@
     var marker = tickerMarker(ticker);
     var fifth = nasdaqFifthLetter(ticker, opts.listedRoots);
     var byName = nameRule(name);
+    var byDescription = Base.securityDescriptionRule(row.providerDescription || row.description, row.name);
+    var bareDepositary = /\bDEPOSIT[AO]RY SHARES?\b/i.test(name) &&
+      !/\b(ADR|ADS|AMERICAN DEPOSIT[AO]R(Y|IES)|DEPOSIT[AO]RY RECEIPTS?)\b/i.test(name);
 
     /* 1. Grobklasse aus dem Basis-Klassierer uebernehmen. */
     var cls, confidence;
@@ -354,22 +373,32 @@
     } else if (looksLikeIndex(ticker)) {
       cls = "INDEX"; confidence = "HIGH";
       reasons.push("Tickerpraefix '" + ticker.charAt(0) + "' weist das Symbol als Index aus.");
-    } else if (fifth && cls === "EQUITY_COMMON") {
+    } else if (fifth && (cls === "EQUITY_COMMON" || cls === "UNKNOWN" && bareDepositary)) {
       /* Der fuenfte Buchstabe der NASDAQ. Mit Stammbeleg ist es ein
          Befund, ohne ihn ein Verdacht - und ein Verdacht wird als
          solcher gefuehrt, nicht als Ausschluss. */
       cls = fifth.type;
-      if (fifth.rootListed) {
+      var nasdaqVenue = exchange.indexOf("NASDAQ") === 0;
+      var explicitCommonName = /\b(COMMON (STOCK|SHARES?)|ORDINARY SHARES?)\b/i.test(name);
+      if (fifth.rootListed && nasdaqVenue && !explicitCommonName) {
         confidence = "HIGH";
         reasons.push("Fuenfstelliger NASDAQ-Ticker auf '" + fifth.marker + "'; der vierstellige " +
                      "Stamm " + fifth.root + " ist eigenstaendig gelistet - " + fifth.type + ".");
         flags.push("NASDAQ_FIFTH_LETTER_ROOT_LISTED");
       } else {
         confidence = "LOW";
-        reasons.push("Fuenfstelliger NASDAQ-Ticker auf '" + fifth.marker + "', aber der Stamm " +
-                     fifth.root + " ist NICHT gelistet. Der Suffix allein belegt die Gattung " +
-                     "nicht - es gibt Gesellschaften, deren Name auf W, R, U, P, O, N oder M endet.");
+        reasons.push("Fuenfstelliger Ticker auf '" + fifth.marker + "'; Stamm " + fifth.root +
+                     (fifth.rootListed ? " ist gelistet, aber weiterer Beleg widerspricht der Suffixregel." : " ist NICHT gelistet.") +
+                     " Der Suffix allein belegt die Gattung nicht.");
         flags.push("NASDAQ_FIFTH_LETTER_UNCONFIRMED");
+        if (!nasdaqVenue) {
+          flags.push("NASDAQ_FIFTH_LETTER_VENUE_UNCONFIRMED");
+          reasons.push("NASDAQ suffix convention is unconfirmed on venue " + exchange + ".");
+        }
+        if (explicitCommonName) {
+          flags.push("NASDAQ_FIFTH_LETTER_COMMON_NAME_CONFLICT");
+          reasons.push("Provider name explicitly identifies common/ordinary shares; a shared ticker root alone cannot override it.");
+        }
       }
     } else if (marker && marker.type && marker.basis === "tickerSuffix3") {
       /* 3. Die dreiteilige Schreibweise. Sie ist der Grund, warum es
@@ -389,7 +418,19 @@
     /* 4. Der Name, wo einer vorliegt. Er ist die genauere Angabe fuer
        genau die Gattungen, die aus Ticker und assetType nicht folgen. */
     if (byName) {
-      if (byName.type !== cls && NAME_ONLY_CLASSES.indexOf(byName.type) >= 0) {
+      /* Issuer metadata (a REIT, trust or depositary issuer) cannot
+         change a separately evidenced preferred/warrant/unit/right into
+         common equity or an ADR. The security form outranks its issuer. */
+      var securityForm = ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "DEBT"].indexOf(cls) >= 0;
+      var issuerClass = NAME_ONLY_CLASSES.indexOf(byName.type) >= 0;
+      if (byName.type === "DEBT" && cls !== "DEBT") {
+        // Notes/debentures name the security itself, not its issuer.
+        // Retain main's explicit debt evidence over a ticker-form guess.
+        reasons.push("Name weist das Papier als DEBT aus (Basisbefund war " + cls + ").");
+        cls = "DEBT"; confidence = "HIGH";
+      } else if (securityForm && issuerClass && byName.type !== cls) {
+        reasons.push("Security form " + cls + " retained over issuer name classification " + byName.type + ".");
+      } else if (byName.type !== cls && issuerClass) {
         reasons.push("Name weist das Papier als " + byName.type + " aus (Basisbefund war " + cls + ").");
         cls = byName.type; confidence = "HIGH";
       } else if (byName.type === "CEF" && cls === "MUTUAL_FUND") {
@@ -399,6 +440,16 @@
         confidence = "HIGH";
         reasons.push("Name bestaetigt die Gattung " + cls + ".");
       }
+    }
+
+    if (byDescription && ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY", "INDEX", "ETF", "ETN"].indexOf(cls) < 0) {
+      cls = "CEF"; confidence = "HIGH";
+      flags.push("PROVIDER_DESCRIPTION_CLOSED_END_FUND");
+      reasons.push("Provider security description explicitly identifies a closed-end investment-company wrapper.");
+    }
+    if (/\bWHEN[- ]ISSUED\b/i.test(name)) {
+      flags.push("WHEN_ISSUED_LISTING_METADATA_REVIEW");
+      reasons.push("Provider security name carries When-Issued status; publication requires current trading-period evidence.");
     }
 
     /* 5. Beleglage fuer die Gattungen, die nur ein Name trennt. */
@@ -469,6 +520,7 @@
 
     return {
       version: VERSION,
+      classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
       baseVersion: Base.VERSION,
       ticker: ticker || null,
       instrumentType: cls,
@@ -712,6 +764,7 @@
 
     return {
       version: VERSION,
+      classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
       generatedFor: today,
       providerAvailable: providerAvailable,
       rows: rows,
@@ -1117,6 +1170,7 @@
 
   var api = {
     VERSION: VERSION,
+    CLASSIFICATION_RULE_VERSION: CLASSIFICATION_RULE_VERSION,
     CLASSES: CLASSES,
     POLICY: POLICY,
     RECONCILIATION_STATUS: RECONCILIATION_STATUS,

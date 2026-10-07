@@ -27,7 +27,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: market-data
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: market-data-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -56,7 +59,11 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
-        run: node scripts/market/build-company-names.mjs --tiingo --sec --max-requests=${{ github.event.inputs.max_requests || '7000' }} --concurrency=4
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_MAX_REQUESTS: ${{ github.event.inputs.max_requests || '7000' }}
+        run: |
+          case "$IN_MAX_REQUESTS" in ''|*[!0-9]*) echo "::error::max_requests muss eine Zahl sein"; exit 1;; esac
+          node scripts/market/build-company-names.mjs --tiingo --sec --max-requests="$IN_MAX_REQUESTS" --concurrency=4
 
       - name: Discover-Daten mit Namen neu bauen
         run: |
@@ -88,8 +95,8 @@ jobs:
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const s=require("./quant/data/market/security-master/company-names-summary.json").coverage; console.log(s.withName+"/"+s.productUniverse+" ("+s.pct+" %), "+JSON.stringify(s.bySource))')
           git commit -m "Company-Namen: $Z"
-          git pull --rebase origin "${{ github.ref_name }}"
-          git push origin HEAD:"${{ github.ref_name }}"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Zusammenfassung
         if: always()

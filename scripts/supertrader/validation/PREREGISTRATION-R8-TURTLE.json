@@ -1,0 +1,19 @@
+{
+  "schema": "supertrader-validation-prereg-r8-turtle-1.0.0",
+  "registeredAt": "2026-10-02",
+  "status": "FROZEN_BEFORE_RUN",
+  "freeze": "Commit vor jedem historischen Lauf von Donchian/Turtle 2.0.0. Regeln aus 'The Original Turtle Trading Rules' (OriginalTurtles.org, PDF über tradingblox.com, 27 Seiten, am 02.10.2026 im Volltext gelesen). Genau ein Lauf, keine Parametersuche.",
+  "basedOn": "PREREGISTRATION-METHODS.json und PREREGISTRATION-R8.json: gleiches Universum, gleiche Daten, Kosten, Szenarien, Kontrollen, Akzeptanz R1-R4.",
+  "hypothesis": {
+    "id": "DONCHIAN_TURTLE@2.0.0",
+    "engine": "scripts/supertrader/engine/strategies/donchian-v2.mjs",
+    "statement": "Turtle System 1 auf liquiden US-Aktien (Kauf-Stop über dem 20-Tage-Hoch mit Filter und 55-Tage-Failsafe, Stop 2N, Ausstieg am 10-Tage-Tief, Unit 1 % je N, notionelles Konto) schlägt nach Kosten SPY inkl. Dividenden.",
+    "changesVs1_1_0": ["Kauf-Stop im Tagesverlauf statt Schlusskurs-Bestätigung + Folgetag-Eröffnung", "N als EMA 19/20 der True Range statt 20-Tage-Mittel", "Stop 2N unter dem tatsächlichen Einstieg", "Ausstieg sobald das 10-Tage-Tief unterschritten wird statt Schluss darunter + Folgetag", "System-1-Filter mit 55-Tage-Failsafe", "Unit-Größe 1 % je N (2 % Risiko), höchstens 12 Titel, notionelles Konto"],
+    "notImplemented": ["Nachkaufen bis 4 Units in 1/2-N-Schritten (Simulator führt eine Position je Signal)", "Korrelationsgrenzen 6/10 Units", "System 2", "Short-Seite"]
+  },
+  "controlsAndCounterchecks": [
+    { "id": "DONCHIAN_TURTLE@2.0.0-P", "role": "SENSITIVITY_PESSIMISTIC", "rule": "Wie 2.0.0, aber jedes Tagestief auf oder unter dem 2N-Stop am Einstiegstag gilt als Ausstieg am selben Tag." },
+    { "id": "DONCHIAN_TURTLE@1.1.0", "role": "REFERENCE_SAME_HARNESS", "rule": "Bisherige Tagesvariante im selben Lauf (Standard-Portfolio)." }
+  ],
+  "acceptance": "CRITERIA_MET nur, wenn 2.0.0 R1-R4 erfüllt UND 2.0.0-P mindestens R1. Sonst TESTED_NO_EDGE. Wegen fehlender Pyramidisierung bleibt die Einstufung höchstens VU_VARIANT, nie 'vollständiges Turtle-System'."
+}

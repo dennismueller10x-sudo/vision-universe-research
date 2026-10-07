@@ -1,0 +1,19 @@
+{
+  "schema": "supertrader-validation-decision-r12-1.0.0",
+  "decidedAt": "2026-10-03",
+  "prereg": "PREREGISTRATION-R12.json",
+  "runs": { "sourcesTraderFox": 37117635696, "trend52": 37118293517, "marketFilter": 37118295375, "secPitR12": 37118296877 },
+  "publication": "Ergebnisse liegen verschlüsselt vor. Öffentlich nur Entscheidungen ohne Kennzahlen; Tests unserer VU-Versionen, nicht der Trader und nicht des TraderFox-Systems.",
+  "decisions": {
+    "VU_TREND_52W@1.0.0": { "technicalControls": "PASS", "R1": "FAIL", "R2": "FAIL", "R3": "FAIL", "R4": "FAIL", "decision": "LIVE_MODEL_OBSERVATION", "note": "Live als nachvollziehbares Modelldepot (Vorwärtsbeobachtung, öffentlich „In Prüfung“). Kein historischer Vorteil belegt; hohe Schwankungen. Große Gewinner werden häufig rechtzeitig Kandidat und deutlich länger gehalten als in den Ausbruchsmethoden; das Gesamtdepot verliert dennoch durch spekulative Fehlgriffe. Sensitivitäten (Regeln 2018, Rang nach relativer Stärke) ändern das Urteil nicht." },
+    "PORT-MARKET-200": {
+      "MOMENTUM_BREAKOUT@3.2.0": { "a": "FAIL", "b": "FAIL", "decision": "UNCHANGED" },
+      "WEINSTEIN_STAGE@3.0.0": { "a": "PASS", "b": "FAIL", "decision": "UNCHANGED" },
+      "DARVAS_BOX": { "a": "PASS", "b": "PASS", "decision": "LIVE", "version": "3.0.2" },
+      "MINERVINI_VCP@2.0.0": { "a": "FAIL", "b": "FAIL", "decision": "UNCHANGED" },
+      "DONCHIAN_TURTLE": { "a": "PASS", "b": "PASS", "decision": "LIVE", "version": "2.0.1", "note": "VU-Annahme; für die Turtles ist keine Marktregel belegt." }
+    },
+    "data": "SEC-Gewinnhistorie erweitert (IFRS, weitere Kennzahlen). Fehlende EPS-Reihen nach Ursache getrennt: Wert existiert nicht in SEC-Quartalsdaten (Auslandsemittenten mit Jahresberichten, junge Börsengänge, Emittenten ohne EPS-Kennzahl) gegenüber Pipeline-Lücke (Namenszuordnung, Zuordnung ohne Daten im Notierungszeitraum, mehrdeutige Namen). Keine Werte erfunden."
+  },
+  "claims": "Für keine Methode ist ein historischer Vorteil gegenüber dem Markt belegt; öffentlich weiter „In Prüfung“ ohne Kennzahlen."
+}

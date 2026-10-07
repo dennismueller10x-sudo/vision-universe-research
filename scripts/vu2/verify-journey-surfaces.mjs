@@ -9,7 +9,8 @@
 
      NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
      APGE   was das Setup beenden wuerde, ist da
-     AAAP   der Musternenner nennt, wovon er zaehlt
+     AAAP   der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
+            erscheint stattdessen der belegte Nichtverfuegbarkeitsgrund
      AACB   Setup-Bedingungen zaehlen messbare
      AAAC   ein belegter ETF: keine Unternehmensanalyse - eine Luecke mit
             Grund, kein Nichtpassen
@@ -31,6 +32,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { createRequire } from "node:module";
+import { gunzipSync } from "node:zlib";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const argv = process.argv.slice(2);
@@ -39,6 +41,12 @@ const argOf = (name, fallback) => {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 };
 const root = resolve(argOf("site", process.cwd()));
+/* AAAP has no published weekly series. Keep the historical denominator
+   assertion for measured patterns, but accept the precise unavailable copy
+   only when the shipped typed pattern payload confirms that state. */
+const aaPatterns = JSON.parse(gunzipSync(await readFile(resolve(root,"quant/data/product/pattern-match-v1/AA.json.gz"))));
+const aaapNoWeeklySeries = aaPatterns.unavailable?.AAAP?.reason === "NO_WEEKLY_SERIES"
+  && !Object.hasOwn(aaPatterns.instruments || {}, "AAAP");
 const mime = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json" };
 const server = createServer(async (req,res)=>{try{
  let p=decodeURIComponent(new URL(req.url,"http://l").pathname);
@@ -82,7 +90,11 @@ for(const width of [1440,390]){
   /* textContent statt innerText: innerText folgt text-transform, und die
      Fragen im Setup-Abschnitt stehen in Versalien. */
   const text=(await page.locator(sel).first().textContent().catch(()=>"")||"").replace(/\s+/g," ");
-  const ok=typeof expect==="string"?text.includes(expect):expect.test(text);
+  const unavailablePatternCopy = ticker === "AAAP" && aaapNoWeeklySeries
+    && text.includes("Für diesen Titel ist keine Wochenreihe veröffentlicht, gegen die Muster geprüft werden könnten.")
+    && !/\d+ von \d+ Mustern/.test(text);
+  const expectedCopy = typeof expect==="string"?text.includes(expect):expect.test(text);
+  const ok = ticker === "AAAP" && aaapNoWeeklySeries ? unavailablePatternCopy : expectedCopy;
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(!ok||overflow||fehler.length)bad++;
   console.log((ok?"OK  ":"FEHLT ")+width+" "+ticker+" "+sel+" · overflow "+overflow+" · Fehler "+(fehler.join(";")||"keine")+(ok?"":" · erwartet: "+expect));

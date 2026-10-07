@@ -1,8 +1,8 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-10-02T12:36:49.245Z",
-  "asOf": "2026-10-02",
+  "generatedAt": "2026-10-06T13:23:10.001Z",
+  "asOf": "2026-10-06",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -19,7 +19,7 @@
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
-        "securities": 6875
+        "securities": 6853
       },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
@@ -2692,13 +2692,13 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "37006839961",
-    "commit": "fa7e9ea472098e755ca40c5274e475cccf05dba9",
-    "normalizeMs": 59,
-    "syncMs": 89,
+    "runId": "37469329350",
+    "commit": "1d56daf897ed7374c6f44c9cdc22faaf1e49b192",
+    "normalizeMs": 77,
+    "syncMs": 85,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
-    "publishedBytes": 10119541
+    "publishedBytes": 10119037
   },
   "identifiers": {
     "cikMap": {
@@ -2769,14 +2769,16 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1306,
+      "classificationDisagreement": 1327,
       "classificationDisagreementByClass": {
         "EQUITY_COMMON->ETF": 133,
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
         "WARRANT->COMMON_STOCK": 453,
-        "TRUST->COMMON_STOCK": 118,
-        "PREFERRED->COMMON_STOCK": 124,
+        "EQUITY_COMMON->ADR": 1,
+        "TRUST->COMMON_STOCK": 115,
+        "PREFERRED->COMMON_STOCK": 125,
+        "DEBT->COMMON_STOCK": 22,
         "WARRANT->ADR": 1,
         "ETN->COMMON_STOCK": 3,
         "TEST_SECURITY->COMMON_STOCK": 44,

@@ -39,6 +39,25 @@ on:
       # Neue Titel bekommen ihr Logo nach dem Marktdaten-Refresh; der
       # Logo-Lauf pusht mit dem GITHUB_TOKEN und loest sonst nichts aus.
       - "Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)"
+      # Plattform-Audit 03.10.2026: diese Datenlaeufe pushen ebenfalls mit
+      # dem GITHUB_TOKEN und kamen bisher erst mit der naechsten Bruecke
+      # (Mo-Fr 13-21 UTC) auf die Seite - Samstagslaeufe (Supertrader-
+      # Signale, Index-Mitgliedschaft, lange Reihen) also erst am Montag.
+      - "Supertrader Signale"
+      - "SEC Fundamentals — Daily Incremental"
+      - "Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)"
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
+      - "Company Master — Universum, Suchindex, CIK"
+      - "Company-Namen (kanonische Namensschicht zum Company Master)"
+      - "Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)"
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Update VISION UNIVERSE news"
+      - "Update VISION UNIVERSE analyst ratings"
+      - "Update Hedgefonds 13F data"
+      - "Build VISION UNIVERSE Morning"
+      # Die Startseite setzt nach den Datenlaeufen ihre Abbildungswerte neu ein
+      # und pusht mit dem GITHUB_TOKEN.
+      - "Startseite: Werte der Produktabbildungen"
     types: [completed]
     branches: [main]
 
@@ -85,9 +104,13 @@ permissions:
   pages: write
   id-token: write
 
+# PR-Laeufe bekommen eine eigene Gruppe je PR. Die gemeinsame Gruppe
+# 'pages-production' bleibt den Laeufen vorbehalten, die sie brauchen (main,
+# Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
+# wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  group: pages-production
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || 'pages-production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   package:
@@ -162,13 +185,25 @@ jobs:
           EVENT_SHA: ${{ github.sha }}
           EVENT_NAME: ${{ github.event_name }}
           SITE_ROOT: ${{ runner.temp }}/site
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Gebaut wird, was ausgecheckt ist - und bei allem ausser
-          # workflow_run muss das der Commit des Ereignisses sein.
+          # workflow_run muss das der Commit des Ereignisses sein ODER ein
+          # neuerer Kopf, der ihn enthaelt. Die Gruppe pages-production haelt
+          # einen laufenden und EINEN wartenden Lauf; ein spaet gestarteter
+          # Lauf checkt den Kopf aus, der nach seinem Ereignis kam. Vorher
+          # brach er dann ab, und weil die Laeufe der neueren Commits schon
+          # verdraengt waren, blieb der Kopf unausgeliefert (05.10.2026,
+          # Lauf 37246080180). Ein Kopf, der das Ereignis NICHT enthaelt,
+          # bricht weiter ab.
           HEAD_SHA=$(git rev-parse HEAD)
           if [ "$EVENT_NAME" != "workflow_run" ] && [ "$HEAD_SHA" != "$EVENT_SHA" ]; then
-            echo "CHECKOUT_COMMIT_MISMATCH: $HEAD_SHA != $EVENT_SHA" >&2
-            exit 1
+            STATUS=$(gh api "repos/$GITHUB_REPOSITORY/compare/$EVENT_SHA...$HEAD_SHA" --jq .status || echo unbekannt)
+            if [ "$STATUS" != "ahead" ]; then
+              echo "CHECKOUT_COMMIT_MISMATCH: $HEAD_SHA != $EVENT_SHA (Vergleich: $STATUS)" >&2
+              exit 1
+            fi
+            echo "Kopf $HEAD_SHA enthaelt das Ereignis $EVENT_SHA - ausgeliefert wird der Kopf."
           fi
           export EXPECTED_COMMIT="$HEAD_SHA"
           echo "Ausgeliefert wird $HEAD_SHA (Ereignis: $EVENT_NAME)."

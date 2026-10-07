@@ -186,7 +186,7 @@
     "lookbackTradingDays": 252,
     "minBars": 200,
     "priceSeriesType": "SPLIT_ADJUSTED",
-    "note": "Das rollierende 52-Wochen-Hoch wird vorberechnet; zur Laufzeit wird nur der aktuelle Kurs dagegen gehalten. Das Hoch des Vergleichsfensters schließt den aktuellen Tag aus - sonst wäre jeder Titel per Definition auf seinem Hoch.",
+    "note": "Ausgeliefert wird die Plattformdefinition aus quant/engines/market-factors.js: 252 Handelstage einschließlich des letzten, Tageshoch der split-bereinigten Reihe; Abstand = Schluss / Hoch - 1. Ein neues Hoch liegt vor, wenn das Tageshoch das Fensterhoch erreicht - gleichwertig zu \"Kurs über dem Hoch der vorherigen 252 Tage\" (gemessen 0 Abweichungen auf 2.500 Beobachtungen, Audit 03.10.2026). Der Realtime-Pfad (high52w.js evaluate) vergleicht einen Live-Kurs mit dem vorberechneten Hoch ohne den laufenden Tag.",
     "nearHighPct": 0.02,
     "watchPct": 0.05,
     "maxQuoteAgeMs": 900000
@@ -194,7 +194,7 @@
   "signals": {
     "new52WeekHigh": {
       "label": "NEW HIGH",
-      "rule": "currentPrice >= previous52WeekHigh (Kursreihe SPLIT_ADJUSTED, Vergleichsfenster ohne aktuellen Tag)"
+      "rule": "newHigh52w aus market-factors (Tageshoch >= Hoch der 252 Handelstage einschließlich heute, SPLIT_ADJUSTED); live: currentPrice >= previous52WeekHigh (Fenster ohne laufenden Tag)"
     },
     "nearHigh": {
       "label": "NEAR HIGH",

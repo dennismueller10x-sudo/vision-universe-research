@@ -47,6 +47,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const engines = join(root, "quant", "engines");
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
+const CanonicalTR = require(join(engines, "canonical-total-return.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
@@ -65,14 +66,18 @@ const today = new Date().toISOString().slice(0, 10);
 
 export const BENCHMARK_ROLE = "BENCHMARK_REFERENCE";
 
-/** Ist die Reihe als Gesamtrendite verwendbar? Dieselbe Regel wie
-    scripts/quant/lib/daily-prices.mjs fromBars: jede Bar braucht einen
-    bestaetigten adjustedClose. */
+/** Ist die Reihe als Gesamtrendite verwendbar? Dieselbe Engine wie fuer
+    jede Aktie (quant/engines/canonical-total-return.js, Rolle
+    BENCHMARK_REFERENCE): rekonstruiert aus Rohkurs, Splitfaktor und
+    Dividende; die bereinigte Spalte ist nur Gegenprobe. Der
+    Vergleichsmassstab schuettet aus - ohne eine einzige erfasste Dividende
+    ist sein Input unvollstaendig. */
 export function totalReturnState(bars) {
   if (!Array.isArray(bars) || !bars.length) return { state: "UNAVAILABLE", reason: "NO_BARS" };
-  const missing = bars.filter((b) => !(b && b.adjustedClose > 0)).length;
-  if (missing) return { state: "UNAVAILABLE", reason: "ADJUSTED_CLOSE_MISSING", missingBars: missing };
-  return { state: "AVAILABLE", reason: null, missingBars: 0 };
+  const r = CanonicalTR.reconstruct(bars, { identity: { state: "CONFIRMED", via: "BENCHMARK_CONFIG" }, role: BENCHMARK_ROLE });
+  if (!r.reconstructed) return { state: "UNAVAILABLE", reason: r.reason, contract: r.contract, date: r.date || null };
+  if (!r.events.dividends) return { state: "UNAVAILABLE", reason: "BENCHMARK_DIVIDENDS_MISSING", contract: r.contract };
+  return { state: "AVAILABLE", reason: null, contract: r.contract, benchmarkContract: r.benchmarkContract, events: r.events, crossCheck: r.crossCheck };
 }
 
 function report(out) {
@@ -117,15 +122,16 @@ async function main() {
      ankommt, widerlegt die Gesamtrendite. Fuer den Vergleichsmassstab ist
      das ein Abbruch, keine Warnung - eine Kursrendite, die als
      Gesamtrendite auftritt, waere die gefaehrlichste Mischung. */
-  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN" }) : null;
-  /* Das Urteil faellt der gemeinsame Gesamtrendite-Vertrag (dieselbe
-     Funktion wie fuer jede Aktie, market-quality.js totalReturnVerdict). */
-  const verdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars) : null;
-  /* Der Vergleichsmassstab schuettet aus: ohne Dividendenbeleg ist er keine
-     Gesamtrendite, auch wenn nichts widerlegt ist. */
-  if (verdict && ((!verdict.confirmed && verdict.reason !== "ADJUSTED_CLOSE_MISSING") || semantics.inferredStatus !== "TOTAL_RETURN")) {
-    report({ ...base, state: "FAIL", reason: "TOTAL_RETURN_NOT_CONFIRMED", contract: verdict.contract, verdictReason: verdict.reason, bars: bars.length, inferredStatus: semantics.inferredStatus,
-      findings: semantics.findings.map((f) => f.code).filter((c, i, a) => a.indexOf(c) === i).slice(0, 8) });
+  /* Das Urteil faellt die kanonische Rekonstruktion - dieselbe Engine wie
+     fuer jede Aktie. Die Anbieterspalte (market-quality.js
+     totalReturnVerdict) steht nur als Gegenprobe im Bericht. Fuer den
+     Vergleichsmassstab ist ein Nein ein Abbruch, keine Warnung. */
+  const providerVerdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars, { dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
+  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN", dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
+  const canonical = validation.ok ? totalReturnState(validation.bars) : null;
+  if (canonical && canonical.state !== "AVAILABLE") {
+    report({ ...base, state: "FAIL", reason: "TOTAL_RETURN_NOT_RECONSTRUCTED", contract: canonical.contract || null, canonicalReason: canonical.reason, date: canonical.date || null,
+      bars: bars.length, providerCrossCheck: providerVerdict ? { state: providerVerdict.state, reason: providerVerdict.reason } : null });
     return;
   }
   const tr = totalReturnState(validation.ok ? validation.bars || bars : bars);
@@ -148,7 +154,8 @@ async function main() {
   report({ ...base, state: tr.state === "AVAILABLE" ? "PASS" : "FAIL", reason: tr.state === "AVAILABLE" ? null : tr.reason,
     adjustmentStatus: res.data.adjustmentStatus, bars: stored.bars.length, first: stored.first, last: stored.last,
     added: merged.added, replaced: merged.replaced, totalReturn: tr, corporateActions: actions,
-    adjustmentSemantics: { inferredStatus: semantics.inferredStatus, dividendEvidence: semantics.observed.dividendEvidence.length, splitEvidence: semantics.observed.splitEvidence.length },
+    providerCrossCheck: providerVerdict ? { state: providerVerdict.state, reason: providerVerdict.reason } : null,
+    adjustmentSemantics: semantics && { inferredStatus: semantics.inferredStatus, dividendEvidence: semantics.observed.dividendEvidence.length, splitEvidence: semantics.observed.splitEvidence.length },
     quality: assessment ? { status: assessment.status, staleTradingDays: assessment.metrics ? assessment.metrics.staleTradingDays : null } : null });
 }
 

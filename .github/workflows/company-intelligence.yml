@@ -62,11 +62,14 @@ on:
         default: false
 permissions:
   contents: read
+# PR-Laeufe bekommen eine eigene Gruppe je PR. Die gemeinsame Gruppe
+# 'company-intelligence-state' bleibt den Laeufen vorbehalten, die sie brauchen (main,
+# Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
+# wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  # Read-only probes cannot evict the writer group's single pending batch.
-  # Every existing mutating job retains the original serialized group.
-  group: ${{ inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
-  cancel-in-progress: false
+  # PR checks and read-only probes cannot evict the serialized writer group.
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   production-consumer:
     if: github.event_name == 'workflow_dispatch' && (inputs.production_release == 'validate' || inputs.production_release == 'publish') && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
@@ -247,8 +250,9 @@ jobs:
           TICKERS: ${{ inputs.tickers }}
           LIVE_SOURCES: ${{ inputs.live_sources || github.event_name == 'schedule' }}
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          IN_DURABLE_STATE: ${{ inputs.durable_state }}
         run: |
-          if [ '${{ inputs.durable_state }}' != true ] && [ '${{ github.event_name }}' != schedule ]; then echo 'Ephemeral preview only; private state is not retained in GitHub caches or artifacts.'; fi
+          if [ "$IN_DURABLE_STATE" != true ] && [ '${{ github.event_name }}' != schedule ]; then echo 'Ephemeral preview only; private state is not retained in GitHub caches or artifacts.'; fi
           args=(backfill --limit 25 --request-budget 160 --max-seconds 480)
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --sec-documents --discover-ir); fi
@@ -380,6 +384,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NAMESPACE: acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          IN_ACCEPTANCE_UNIVERSE: ${{ inputs.acceptance_universe }}
         run: |
           mkdir -p .verification/acceptance
           state="$RUNNER_TEMP/intelligence-a"
@@ -388,7 +393,7 @@ jobs:
           node scripts/company_intelligence/sync-state.mjs pull --namespace "$NAMESPACE" --file "$snapshot" --initialize
           if [ -f "$snapshot" ]; then echo 'Acceptance namespace already exists; refuse replacement.'; exit 1; fi
           scope=cohort
-          if [ '${{ inputs.acceptance_universe }}' = true ]; then scope=universe; fi
+          if [ "$IN_ACCEPTANCE_UNIVERSE" = true ]; then scope=universe; fi
           python3 scripts/company_intelligence/acceptance.py prepare --state "$state" --evidence "$evidence" --scope "$scope"
           python3 scripts/company_intelligence/checkpoint.py pack --state "$state" --snapshot "$snapshot"
           node scripts/company_intelligence/sync-state.mjs push --namespace "$NAMESPACE" --file "$snapshot" --initialize

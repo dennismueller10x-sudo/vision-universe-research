@@ -116,6 +116,8 @@
   function shortDate(iso) {
     if (!iso) return "";
     var parts = String(iso).slice(0, 10).split("-");
+    /* "2026" ergab vorher "undefined.undefined.26". */
+    if (parts.length !== 3) return String(iso);
     return parts[2] + "." + parts[1] + "." + parts[0].slice(2);
   }
 

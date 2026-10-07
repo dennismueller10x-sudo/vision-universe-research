@@ -7,7 +7,15 @@ import zlib from 'node:zlib';
 
 export const PREREG_VERSION = 'supertrader-validation-prereg-1.0.0';
 export const EXCHANGES = new Set(['NYSE', 'NASDAQ', 'AMEX', 'NYSE MKT', 'NYSE ARCA', 'BATS']);
-export const WINDOW = Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30' });
+// Runde 14 (PREREGISTRATION-R14 periods): DEV = bekannter Zeitraum; HOLDOUT = 2008–2015, eigener privater
+// Namensraum, nur per ST_WINDOW=HOLDOUT. Ohne Umgebungsvariable bleibt alles wie bisher (DEV).
+export const WINDOWS = Object.freeze({
+  DEV: Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30' }),
+  HOLDOUT: Object.freeze({ warmupFrom: '2007-01-02', from: '2008-01-02', to: '2015-12-31' }),
+});
+export const WINDOW_NAME = process.env.ST_WINDOW === 'HOLDOUT' ? 'HOLDOUT' : 'DEV';
+export const WINDOW = WINDOWS[WINDOW_NAME];
+export const SERIES_PROVIDER = WINDOW_NAME === 'HOLDOUT' ? 'tiingo-holdout' : 'tiingo-delisted';
 export const INCLUDED_CLASSES = new Set(['EQUITY_COMMON', 'ADR', 'REIT']);
 export const LIST_URL = 'https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip';
 
@@ -61,10 +69,11 @@ export function buildListingTable(rows, storeActive, opts = {}) {
     }
     chains.forEach((c, i) => {
       if (!(c.start <= WINDOW.to && c.end >= WINDOW.warmupFrom)) return;
-      const active = c.end === '9999-12-31' || c.end >= addDays(today, -10);
+      // HOLDOUT: "aktiv" heisst ueber das Fensterende hinaus gelistet; alle Reihen kommen aus dem Holdout-Namensraum.
+      const active = WINDOW_NAME === 'HOLDOUT' ? c.end > WINDOW.to : c.end === '9999-12-31' || c.end >= addDays(today, -10);
       const isNewest = i === chains.length - 1;
       const store = storeActive.get(ticker);
-      const source = !isNewest ? 'UNFETCHABLE_REUSED' : active && store ? 'STORE_ACTIVE' : 'FETCH';
+      const source = !isNewest ? 'UNFETCHABLE_REUSED' : active && store && WINDOW_NAME !== 'HOLDOUT' ? 'STORE_ACTIVE' : 'FETCH';
       out.push({
         id: `tiingo:${c.exchange}:${ticker}:${c.start}`, ticker, exchange: c.exchange, startDate: c.start,
         endDate: active ? null : c.end, listEnd: c.end === '9999-12-31' ? null : c.end, active, source,
@@ -108,7 +117,7 @@ export function classifyFetch(listing, bars, meta) {
   if (!inside.length) { res.status = 'MISMATCH'; return res; }
   res.first = inside[0].date; res.last = inside[inside.length - 1].date;
   const wantFirst = lo > WINDOW.warmupFrom ? lo : WINDOW.warmupFrom;
-  const wantLast = listing.active ? WINDOW.to : listing.listEnd;
+  const wantLast = listing.active ? WINDOW.to : listing.listEnd && listing.listEnd < WINDOW.to ? listing.listEnd : WINDOW.to;
   const startOk = days(wantFirst, res.first) <= 7;
   const endOk = listing.active ? days(res.last, wantLast) <= 7 : Math.abs(days(res.last, wantLast)) <= 7;
   if (res.flags.includes('META_START_MISMATCH') && res.outsideWindow > inside.length) res.status = 'MISMATCH';
@@ -197,6 +206,28 @@ const NAME_FORM = [
   ['PREFERRED', /\b(PREFERRED|PFD|PREF\.)/i], ['WARRANT', /\bWARRANTS?\b/i],
   ['RIGHT', /\bRIGHTS?\b/i], ['UNIT', /\bUNITS?\b/i],
 ];
+// Runde 10: Namensmuster fuer Nicht-Aktien, auch im Plural ("ETNs", "ETFs") und mit Faktor
+// ("3X", "-2X"). Nur Diagnose/Universumspruefung; die Klassifikation oben bleibt unveraendert.
+export const NON_EQUITY_NAME = /(\bETNs?\b|\bETFs?\b|\bETPs?\b|\bEXCHANGE[- ]TRADED\b|\bINDEX[- ]LINKED\b|\bLEVERAGED\b|\bINVERSE\b|[-\s]\d+(\.\d+)?X\b|\bULTRA ?(PRO|SHORT)\b|\bDAILY TARGET\b)/i;
+export function nonEquityName(name) { return NON_EQUITY_NAME.test(String(name || '')); }
+
+// Runde 10 (PREREGISTRATION-R10-FIXES U1): Die Stammdaten fuehren rund 200 ETFs, ETNs und
+// geschlossene Fonds als EQUITY_COMMON. ETNs tragen den Namen der emittierenden Bank
+// (NRGU, FNGU, BULZ: "Bank of Montreal"), daher greift die Namenspruefung allein nicht.
+// Supertrader schliesst sie aus: Produktnamen, Fonds-/Puffer-/Autocall-Konstrukte, ETN-Emittenten
+// (ausser der eigenen Aktie der Bank) und Notierung an NYSE Arca (dort nur Produkte gefunden).
+export const FUND_NAME = /(\bFUND\b|\bBUFFER\b|\bAUTOCALLABLE\b|\bCLO\b|\bMONEY MARKET\b|\bK-1 FREE\b|\bTARGET INCOME\b|\bSTRUCTURED\b)/i;
+export const ETN_ISSUER = /^(BANK OF MONTREAL|UBS AG|CREDIT SUISSE AG|BARCLAYS BANK|CITIGROUP GLOBAL MARKETS|MORGAN STANLEY FINANCE|JPMORGAN CHASE FINANCIAL|ROYAL BANK OF CANADA|CANADIAN IMPERIAL BANK|DEUTSCHE BANK AG|GOLDMAN SACHS BANK)/i;
+const ISSUER_OWN = new Set(['BMO', 'UBS', 'CS', 'BCS', 'C', 'MS', 'JPM', 'RY', 'CM', 'DB', 'GS']);
+export function nonStockProduct({ ticker, exchange, name }) {
+  const n = String(name || '').trim();
+  if (exchange === 'NYSE ARCA') return 'EXCHANGE_NYSE_ARCA';
+  if (nonEquityName(n)) return 'PRODUCT_NAME';
+  if (FUND_NAME.test(n) && !/LENDING FUND/i.test(n)) return 'FUND_NAME'; // BDCs (Direct Lending) bleiben Aktien
+  if (ETN_ISSUER.test(n) && !ISSUER_OWN.has(ticker)) return 'ETN_ISSUER';
+  return null;
+}
+
 export function classifyListing(Master, listing, name, listedRoots, today = '2026-10-01') {
   const r = Master.classifySecurity({ ticker: listing.ticker, exchange: listing.exchange, assetType: 'Stock', priceCurrency: 'USD', name: name || '', startDate: listing.startDate, endDate: listing.listEnd || '' }, { today, listedRoots });
   let cls = r.instrumentType, basis = 'classifySecurity';

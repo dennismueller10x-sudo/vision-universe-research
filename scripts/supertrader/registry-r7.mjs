@@ -11,6 +11,8 @@ export const R7_VERSION = '2.0.0';
 export function applyR7({ momentum, weinstein, darvas, minervini, donchian, rule }) {
   const bump = (s, legacyIds, prev) => {
     s.previous_versions = [...(s.previous_versions || []), { version: prev, note: 'Ergebnis der vorab festgelegten Prüfung bleibt gültig; offene Positionen laufen nach dieser Version weiter.' }];
+    // Plan der Vorversion aufbewahren: offene Positionen zeigen Ein-/Ausstieg nach ihrer eigenen Version.
+    for (const c of s.rule_cards || []) c.plans_by_version = { ...(c.plans_by_version || {}), [prev]: { ...c.plan } };
     s.strategy_version = R7_VERSION;
     for (const r of s.rules) {
       r.strategy_version = R7_VERSION;

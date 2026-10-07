@@ -2,30 +2,30 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1878037,
-      "ISSUERS_WITH_VALUES": 5341
+      "RESOLVED_VALUES": 1878137,
+      "ISSUERS_WITH_VALUES": 5343
     },
     "byState": {
-      "VALID": 1708391,
-      "WARNING": 169646
+      "VALID": 1708486,
+      "WARNING": 169651
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49668220
+      "RAW_XBRL_FACTS_WITH_FINDING": 49670324
     },
     "byState": {
-      "AMBIGUOUS": 1335288,
-      "RESTATED": 313342,
+      "AMBIGUOUS": 1335270,
+      "RESTATED": 313341,
       "NON_COMPARABLE": 70513,
-      "MISSING": 47929373,
+      "MISSING": 47931496,
       "WARNING": 19704
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47929373,
-      "CONCEPT_DISAGREEMENT": 1327503,
-      "RESTATEMENT_CONFLICT": 313342,
+      "UNKNOWN_CONCEPT": 47931496,
+      "CONCEPT_DISAGREEMENT": 1327484,
+      "RESTATEMENT_CONFLICT": 313341,
       "UNEXPECTED_DURATION": 54399,
       "FISCAL_PERIOD_CONFLICT": 14871,
       "PERIOD_MISMATCH": 14853,
@@ -33,75 +33,75 @@
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2244,
       "UNIT_MISMATCH": 1261,
-      "UNPLACEABLE_PERIOD": 305
+      "UNPLACEABLE_PERIOD": 306
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
   },
   "titles": {
     "denominator": {
-      "PRODUCT_TITLES": 6875
+      "PRODUCT_TITLES": 6853
     },
     "byState": {
-      "AVAILABLE": 5129,
+      "AVAILABLE": 5112,
       "PARTIAL": 490,
-      "MISSING": 91,
+      "MISSING": 90,
       "NOT_APPLICABLE": 59,
       "REQUIRES_REVIEW": 0,
-      "UNAVAILABLE": 1106
+      "UNAVAILABLE": 1102
     },
     "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. PARTIAL = Werte, aber kuerzer. MISSING = Einreichungen vorhanden, kein aufloesbarer Wert, und die Struktur muesste welche haben. NOT_APPLICABLE = die Kennzahlen existieren fuer diese Struktur nicht (SPAC, geschlossener Fonds). REQUIRES_REVIEW = nicht belastbar einzuordnen. UNAVAILABLE = kein Factbook."
   },
   "metricsByMissingRate": [
     {
       "metric": "total_debt",
-      "MISSING_COUNT": 2496,
-      "MISSING_RATE": 46.7328
+      "MISSING_COUNT": 2498,
+      "MISSING_RATE": 46.7528
     },
     {
       "metric": "revenue",
-      "MISSING_COUNT": 932,
-      "MISSING_RATE": 17.4499
+      "MISSING_COUNT": 933,
+      "MISSING_RATE": 17.4621
     },
     {
       "metric": "free_cash_flow",
-      "MISSING_COUNT": 818,
-      "MISSING_RATE": 15.3155
+      "MISSING_COUNT": 819,
+      "MISSING_RATE": 15.3285
     },
     {
       "metric": "capital_expenditures",
-      "MISSING_COUNT": 808,
-      "MISSING_RATE": 15.1283
+      "MISSING_COUNT": 809,
+      "MISSING_RATE": 15.1413
     },
     {
       "metric": "eps_diluted",
-      "MISSING_COUNT": 572,
-      "MISSING_RATE": 10.7096
+      "MISSING_COUNT": 573,
+      "MISSING_RATE": 10.7243
     },
     {
       "metric": "operating_cash_flow",
-      "MISSING_COUNT": 298,
-      "MISSING_RATE": 5.5795
+      "MISSING_COUNT": 299,
+      "MISSING_RATE": 5.5961
     },
     {
       "metric": "net_income",
-      "MISSING_COUNT": 280,
-      "MISSING_RATE": 5.2425
+      "MISSING_COUNT": 281,
+      "MISSING_RATE": 5.2592
     },
     {
       "metric": "stockholders_equity",
       "MISSING_COUNT": 79,
-      "MISSING_RATE": 1.4791
+      "MISSING_RATE": 1.4786
     },
     {
       "metric": "total_assets",
       "MISSING_COUNT": 43,
-      "MISSING_RATE": 0.8051
+      "MISSING_RATE": 0.8048
     }
   ],
   "highestMissingRate": {
     "metric": "total_debt",
-    "MISSING_COUNT": 2496,
-    "MISSING_RATE": 46.7328
+    "MISSING_COUNT": 2498,
+    "MISSING_RATE": 46.7528
   },
   "versions": {
     "normalization_schema": "1.0.0",
@@ -111,8 +111,8 @@
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.5.0"
+      "mapping_version": "1.6.0"
     }
   },
-  "generatedAtUtc": "2026-10-02T12:37:17+00:00"
+  "generatedAtUtc": "2026-10-06T13:23:29+00:00"
 }

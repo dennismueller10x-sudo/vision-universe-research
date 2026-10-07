@@ -119,7 +119,7 @@ Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutig
 
 - **Regel:** Eine Reihe gilt nur dann als Gesamtrendite, wenn jede Ausschüttung und jeder Split in der bereinigten Spalte angekommen ist. Ein Ex-Tag ohne Faktorsprung, ein Faktorsprung außerhalb 0,6–1,4 × der gemeldeten Ausschüttung oder ein nicht bereinigter Split ist eine Ablehnung, keine Warnung.
 - **Ein Vertrag:** `quant/engines/market-quality.js totalReturnVerdict` – dieselbe Funktion für SPY (`refresh-benchmark-history.mjs`), Signal- und Setup-Studie (`scripts/quant/lib/daily-prices.mjs`) und die Reparatur.
-- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 1.500 je Lauf, jüngste Lücke zuerst. Übernommen wird nur, was den Vertrag besteht und die Rohschlüsse bestätigt.
+- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 1.500 je Lauf, jüngste Lücke zuerst. Übernommen wird **nur die Gesamtrendite-Spalte auf den gespeicherten Tagen** (Rohkurs, Volumen, Ausschüttung, Split und die Menge der Tage bleiben bitgleich), und nur, wenn die Reihe danach den Vertrag besteht und die Rohschlüsse übereinstimmen. Die erste Fassung ersetzte die ganze Reihe; im Marktlauf 37013170985 verschob das Faktor-Perzentile, und Discover lehnte eine Karte an der 90-%-Grenze ab (PRHIZ). Solche Reihen werden aus der dauerhaften Ablage zurückgeholt, bevor sie spaltenweise repariert werden.
 - **Kein Mischen:** Unter 95 % bestätigter Titel rechnet die Signal-Studie ganz in Kursrendite, die Setup-Studie ebenso. Darüber fallen abgelehnte Titel heraus und werden gezählt (`quant/data/product/total-return-quality-v1.json`).
 
 ## Methodikwechsel bei gleichem Stichtag
@@ -142,3 +142,103 @@ Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutig
 
 - Setup-Backtest: Freigabe der Setup-Methodik (`backtestCertification`), sobald die Historien-Gates bestehen.
 - Setup-Einstiegsvariante, falls die Abweichung 1 Pp übersteigt.
+
+## Schuldverschreibungen sind keine Aktien (DEBT, 02.10.2026)
+
+**Fall PRHIZ.** Der Wertpapierstamm fuehrte PRHIZ als `EQUITY_COMMON`/`ELIGIBLE`, aber nur aus dem Restfall: Tiingo meldet `assetType=Stock`, und das Tickermuster ist unauffaellig. Die Namensschicht (`company-names.json`, Quelle `TIINGO_METADATA`, Stand 14.09.2026) nennt das Papier „Presurance Holdings Inc Sr Nt“. Die SEC fuehrt unter CIK 0001502292 die Symbole PRHI (Stammaktie, seit 2015) und PRHIZ. PRHIZ ist also ein Senior Note des Emittenten, kein Stammkapital.
+
+**Korrektur, provenance-basiert.**
+- `us-security-master` 1.3.0 fuehrt die Klasse `DEBT` (Policy `EXCLUDE`, nur ueber den Namen belegbar).
+- Die Namensregel erkennt Senior/Subordinated Notes, Debentures, „Notes due“, „Nts“ und Kupon-Notes.
+- `scripts/market/apply-name-layer-class.mjs --classes DEBT` wendet die Regel auf die bestehende Eignung an. Jede Aenderung steht mit Name und Namensquelle in `eligibility-reconciliation.json`.
+- Die Tickerform (Preferred, Warrant, Unit, Right) hat Vorrang vor dem Namen, wie beim vollen Eignungslauf.
+
+**Ergebnis.**
+- Die Regel stuft 22 Papiere um, darunter PRHIZ, TMUSI, TMUSL, TMUSZ, TRINI, TRINZ, SAX, SSSSL und MFICL.
+- Das Produktuniversum sinkt von 6.875 auf 6.853 Titel.
+- Die Papiere bleiben als Instrumente im Stamm und in der Suche. Sie fallen aus Screener, Strategie-Match, Bewertung, Faktoren und Discover heraus, weil diese aus dem Produktuniversum lesen.
+- Der Discover-Code ist unveraendert.
+
+**Gegenprobe.**
+- „Our Bond, Inc.“, „Sticky Notes Holdings Inc“ und „Columbia Core Bond ETF“ bleiben, was sie sind.
+- Derselbe Ticker mit dem Emittentennamen bleibt Stammaktie. Es gibt also keine Ticker-Heuristik.
+- Tests: `quant/tests/debt-instrument-classification.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
+## Gesamtrendite nach der Reparatur: gemessen, nicht behauptet (03.10.2026)
+
+Die Studie misst die Gesamtrendite an der **dauerhaften Historie** (R2), nicht an der Arbeitsablage.
+
+| Stand | bestaetigt | Dividendenluecke | Splitluecke | Anteil |
+|---|---|---|---|---|
+| main, 25.09. (vor der Reparatur) | 4.921 / 6.333 | 847 | 564 | 77,7 % |
+| Branch, 02.10. (nach Reparatur und Push) | 5.462 / 6.334 | 320 | 551 | 86,2 % |
+
+Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-closed auf `SPLIT_ADJUSTED_PRICE`, und die Basisrate laeuft auf derselben Basis.
+
+**Ursache des Rests (gefunden, behoben).**
+- Lauf 37052123489 brach in Gate A ab, also vor dem Zurueckholen der Arbeitsablage. Er sicherte trotzdem (`always()`) eine leere Ablage von 1 MB als juengsten Cache.
+- Der naechste Lauf baute darauf auf und lud nur das Standardfenster (941 Handelstage).
+- Die Reparatur pruefte nur dieses Fenster: 6.430 / 6.496 bestaetigt.
+- Der Push fuehrte die 941 Tage in die langen R2-Reihen ein. Der aeltere Teil behielt die alte Bereinigung.
+- Fix: gesichert wird nur noch nach erfolgreichem Zurueckholen (`steps.restore.outcome == 'success'`). Test EG-CACHE haelt das fest; mit entfernter Bedingung schlaegt er fehl.
+- Caches sind je Branch getrennt. Der main-Cache traegt die volle reparierte Ablage, und der naechste Lauf auf main schreibt sie vollstaendig nach R2.
+
+**Nicht reparierbar (Anbieterdaten).**
+- 337 der 551 Splitluecken lehnt schon der Abruf als `adjustmentContradicted` ab: Die bereinigte Spalte des Anbieters hat den Split nicht mitgemacht.
+- 66 Reihen behalten die Dividendenluecke auch nach vollem Neuabruf (`STILL_DIVIDEND_GAP`).
+- Beides bleibt `TOTAL_RETURN_REJECTED`, mit Grund. Es wird nicht geglaettet.
+
+## Listing-Kontinuitaet: ein Kuerzel ist keine Identitaet, auch in der Kursreihe nicht (03.10.2026)
+
+**Befund.**
+- Der erste vollstaendig veroeffentlichende Lauf auf main zeigte DINE mit Kerzen von 2010-05-11 bis 2011-01-03 (um 12) und ab 2026-05-05 (um 25). Dazwischen liegen 15 Jahre ohne eine Kerze, also zwei Firmen unter einem Kuerzel.
+- 127 kompakte und 251 lange Reihen hatten in ihrem Fenster eine Luecke von mehr als einem Jahr. Die meisten davon waren schon vorher veroeffentlicht.
+- Chart, 12-Monats-Rendite, 200-Tage-Schnitt und die Faehigkeit „Historie ≥ 250 Tage“ rechneten ueber diese Luecke hinweg.
+
+**Regel** (`survivorship-control.js` 1.1.0, `currentListingSegment`): Nach mehr als 365 Kalendertagen ohne Kerze beginnt ein neues Listing, und nur das juengste zaehlt. Kuerzere Luecken (Handelsaussetzungen) bleiben unberuehrt. Kein Ticker, kein Name: es entscheiden nur die Kerzen.
+
+**Angewendet**:
+- im Marktdaten-Lauf nach Abruf und Reparatur, vor allen Ableitungen (`scripts/market/guard-listing-continuity.mjs`, Bericht ohne Kurse in `quant/data/market/listing-continuity-v1.json`);
+- in beiden Reihen-Publishern;
+- beim Push: Gekuerzte Reihen werden zusammengefuehrt, dann geschnitten und anschliessend **ersetzt**, damit die alten Kerzen nicht aus der Ablage zurueckkommen.
+
+**Wirkung.**
+- 127 kompakte Reihen sind gekuerzt. Von den langen Reihen sind 207 gekuerzt; 44 fallen unter 30 Wochen und entfallen, wie es der Publisher bei zu kurzer Historie tut.
+- `historicalAvailable` sinkt von 5.660 auf 5.543: 117 Titel haben im aktuellen Listing keine 250 Handelstage.
+
+**Tests**: `quant/tests/listing-continuity.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
+## Methodikwechsel ist kein Marktereignis (quant-radar 1.3.0, 03.10.2026)
+
+**Befund.** Der Radar vom 02.10. meldete 571 „Evidenz veraendert“, 670 „neues Muster“, 117 Faktor- und 55 Strategie-Wechsel. Sie entstanden aus der DEBT-Umstufung und aus der neuen Grundgesamtheit der Faktorevidenz, nicht aus der Aktie.
+
+**Regel.**
+- Jeder verglichene Stand traegt seine Methodik (`snapshotMethod`). Das gilt fuer Faktor-Evidenz-Historie, Musterstand und Rueckblick-Evidenz.
+- Zur Methodik gehoeren Engine- und Methodikversionen, die Gattungsregel des Wertpapierstamms, die Listing-Regel der Reihen und die Grundgesamtheit der Perzentile.
+- Weichen zwei Staende ab, oder fehlt einem die Angabe (Gleichheit nicht belegt), entsteht **kein** Ereignis: kein Radar, keine Karte, keine Watchlist-Historie, kein Alert.
+- Stattdessen fuehrt der Radar ein internes `METHOD_REBASE` (`methodRebase`, `measures.METHOD_REBASES`) mit der Zahl der unterdrueckten Uebergaenge. Der juengere Stand ist die neue Vergleichsbasis.
+
+**Gemessen am Radar vom 02.10.**
+- 4 Rebases (EVIDENCE 571, PATTERN 670, FACTOR 117, STRATEGY 55): 1.413 unterdrueckte Uebergaenge.
+- Es bleiben 679 Ereignisse aus Markt und Setup: 52-Wochen-Hoch, Momentum, Trend, Setups.
+- Der Radar schrumpft von 211 auf 88 KB.
+
+**Gegenprobe und Tests.**
+- Bei gleicher Methodik werden Uebergaenge zu Ereignissen (MC1).
+- Ein unabhaengiger Nachrechner liest die Staende selbst (MC4).
+- Mit abgeschalteter Regel schlagen MC2 und MC4 fehl.
+
+## Eigene Gesamtrendite (canonical-total-return-1.0.0, 03.10.2026)
+
+Owner-Entscheidung zu Punkt 8: Option (a). Der Vertrag `total-return-contract-1.0.0` (Abschnitt oben) bewertete die bereinigte Spalte des Anbieters und kam nicht über 86,1 % – bei 334 Titeln widersprach die Spalte den eigenen Split- und Dividendenangaben des Anbieters. Ab jetzt ist die Gesamtrendite eine eigene Rekonstruktion; der alte Vertrag bleibt nur als Vorher-Messung und Gegenprobe.
+
+- **Engine:** `quant/engines/canonical-total-return.js` – eine Funktion (`reconstruct`) für Aktien, delistete Listings und SPY (Rolle `BENCHMARK_REFERENCE`, keine Sondermethodik). Inputs: Rohkurs, Splitfaktor, Bardividende, Handelstag. Methodik: `quant/methodology/gesamtrendite-v1.json`.
+- **Semantik:** Kursrendite `g = s·P_t/P_(t-1)`, Gesamtrendite `g = s·(P_t + D_t)/P_(t-1)`, reinvestiert am Ex-Tag. Keine Mischbasis: `assertSingleBasis` bricht die Studie ab, sobald ein Titel oder SPY nicht auf der kanonischen Reihe rechnet.
+- **Fail closed:** fehlendes Feld, ein Ereignis, das die Anbieterspalte zeigt und uns fehlt (auch kumuliert über 0,5 % aus kleinen Schritten), widersprüchliche Ereignisse, unbestätigte Lücke ohne Gegenprobe, unsichere Listing-Identität → `TOTAL_RETURN_UNAVAILABLE`, keine Reihe.
+- **Gegenprobe:** Weicht der Anbieter ab, weil *er* ein Ereignis verpasst oder seine Spalte aus zwei Abrufen zusammensetzt, gilt der Kanon (`CONFLICT_CANONICAL_WINS`). Gemessen: Tagesabweichung je Titel (Median, p95, Max), Niveauabweichung, Dividenden- und Split-Parität, übereinstimmende und widersprechende Titel (`quant/data/product/total-return-quality-v1.json`, Schema 2.0.0).
+- **Vergleich A/B/C:** Die Signal-Studie rechnet über die Titel, die alle drei Basen tragen, Kursrendite (A), Anbieterspalte (B) und eigene Gesamtrendite (C) und veröffentlicht C (`returnBasisComparison`).
+- **Setup-Studie:** SPY rechnet im Gesamtrendite-Modus ebenfalls in kanonischer Gesamtrendite; vorher wurde dort gegen SPY als Kurs verglichen.
+- **Listing-Fenster:** Der Lader rechnet nur das jüngste Listing einer Reihe (`currentListingPayload`, dieselbe Regel wie die Veröffentlichung der Kursreihen) und nennt den Schnitt (`listingCut`). Die Regel beim Abruf sieht nur das Arbeitsfenster; bei 72 Titeln trug die dauerhafte Reihe noch ein älteres Listing vor einer Lücke über 365 Tage. Die Engine lehnt eine Reihe über zwei Listings weiter ab (`LISTING_DISCONTINUITY`).
+- **Überlebende:** unverändert getrennt; delistete Listings bekommen eine Gesamtrendite nur mit bestätigtem Listing-Fenster (Klassen A/B). Gate PASS und Kontrolle PARTIAL bleiben, was sie sind.
+- **Fingerabdruck:** neue Gruppe `contracts` (Gesamtrendite-, Corporate-Action-, Benchmark-Vertragsversion); `canonical-total-return.js` und `refresh-benchmark-history.mjs` gehören zu ihren Gruppen. Ein Vertragswechsel rechnet bei gleichem Stichtag neu.
+- **Seite:** Die Backtesting-Seite nennt die Renditebasis in Klartext („Gesamtrendite mit Dividenden (selbst berechnet)“ oder „Nur Kursrendite, ohne Dividenden“).

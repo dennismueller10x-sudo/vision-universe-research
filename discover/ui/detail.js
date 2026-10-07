@@ -287,6 +287,7 @@
         state.dailyPoints = loaded.dailyPoints || null;
         state.weeklyPoints = loaded.weeklyPoints || null;
         state.seriesAsOf = loaded.asOf || null;
+        state.closeOnly = !!loaded.closeOnly;
       }
       if (state.intraday) state.range = "1D";
       else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
@@ -309,7 +310,7 @@
    */
   function heroKurs(detail, state) {
     var live = state && state.intraday && state.intraday.live;
-    var snap = state && state.intraday && state.intraday.snapshot;
+    var snap = vortagAusReihe(state && state.intraday && state.intraday.snapshot, state && state.dailyPoints);
     if (!live || !live.fresh || !isNum(live.price)) return { hat: false };
     var basis = snap && isNum(snap.previousClose) ? snap.previousClose : null;
     return {
@@ -923,12 +924,14 @@
         annotations.push(seriesAnnotation("bbMiddle", "Bollinger Mitte", "bb-mid"));
       }
       if (state.overlays.high52w) {
-        var hoch = Math.max.apply(null, slice.high.filter(isNum).slice(-252));
-        var tief = Math.min.apply(null, slice.low.filter(isNum).slice(-252));
-        annotations.push(levelAnnotation(hoch, "52W Hoch", slice.timestamps[0],
-                                         slice.timestamps[slice.timestamps.length - 1]));
-        annotations.push(levelAnnotation(tief, "52W Tief", slice.timestamps[0],
-                                         slice.timestamps[slice.timestamps.length - 1]));
+        var jahr = jahresExtreme(state.bars, slice.timestamps[slice.timestamps.length - 1]);
+        if (jahr) {
+          var art = state.closeOnly ? " (Schluss)" : "";
+          annotations.push(levelAnnotation(jahr.hoch, "52W Hoch" + art, slice.timestamps[0],
+                                           slice.timestamps[slice.timestamps.length - 1]));
+          annotations.push(levelAnnotation(jahr.tief, "52W Tief" + art, slice.timestamps[0],
+                                           slice.timestamps[slice.timestamps.length - 1]));
+        }
       }
       if (state.bundle && state.bundle.annotations) {
         var ebenen = OVERLAYS.filter(function (o) { return o.source === "layer" && state.overlays[o.id]; })
@@ -1025,7 +1028,7 @@
     var FX = (typeof VUFx !== "undefined") ? VUFx : null;
     var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
     if (FX && FX.Format && typeof FX.Format.formatPrice === "function") {
-      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: 2 });
+      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
     }
     return C().money(v);
   }
@@ -1213,7 +1216,7 @@
       return;
     }
     var mobil = global.innerWidth < 860;
-    var snapNativ = mitLaufendemKurs(p);
+    var snapNativ = vortagAusReihe(mitLaufendemKurs(p), state.dailyPoints);
     /* EINMAL UMRECHNEN, DANN NUR NOCH DAMIT RECHNEN.
 
        Kopf, Achse und Tooltip muessen dieselbe Waehrung benutzen. Die
@@ -1589,6 +1592,44 @@
     }
     return { start: start, end: end };
   }
+  /* Der Vortagesschluss eines Tagesverlaufs wird beim Abholen festgehalten.
+     Wird ein Split erst danach veroeffentlicht, ist er falsch (BGM 01.10.:
+     0,25 statt 7,55 -> Kopf +3.928 %; Audit 03.10.2026). Enthaelt die
+     Tagesreihe die Sitzung schon - Splits dieser Sitzung sind dann
+     eingerechnet -, gilt ihr Punkt vor der Sitzung (ADR-002). Gemessen:
+     4.941 vergleichbare Snapshots, genau 3 Aenderungen (die Splits). */
+  function vortagAusReihe(snap, punkte) {
+    if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
+    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var vor = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
+    if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;
+    var kopie = {};
+    for (var k in snap) if (Object.prototype.hasOwnProperty.call(snap, k)) kopie[k] = snap[k];
+    kopie.previousClose = vor;
+    kopie.previousCloseSource = "DAILY_SERIES";
+    return kopie;
+  }
+
+  /* 52-Wochen-Hoch/-Tief nach der Plattformdefinition (252 Handelstage
+     einschliesslich des letzten, Tageshoch/-tief der Tagesreihe; wie
+     market-factors.js): immer aus den TAGESbars bis zum Ende des
+     Ausschnitts, nie aus dem gewaehlten Zeitraum. Vorher stand bei "3M"
+     das 3-Monats-Hoch als "52W Hoch", auf Wochenbasis 252 Wochen
+     (Audit 03.10.2026). Unter 252 Tagen: keine Linie. */
+  function jahresExtreme(bars, bis) {
+    if (!bars || !bars.timestamps || !bars.timestamps.length) return null;
+    var ende = bars.timestamps.length - 1;
+    while (ende >= 0 && bars.timestamps[ende] > bis) ende--;
+    if (ende + 1 < 252) return null;
+    var hoch = -Infinity, tief = Infinity;
+    for (var i = ende - 251; i <= ende; i++) {
+      if (isNum(bars.high[i]) && bars.high[i] > hoch) hoch = bars.high[i];
+      if (isNum(bars.low[i]) && bars.low[i] < tief) tief = bars.low[i];
+    }
+    return isFinite(hoch) && isFinite(tief) ? { hoch: hoch, tief: tief } : null;
+  }
+
   function sliceBars(bars, bounds) {
     var cut = function (a) { return a ? a.slice(bounds.start, bounds.end + 1) : []; };
     return { timestamps: cut(bars.timestamps), open: cut(bars.open), high: cut(bars.high),

@@ -83,6 +83,8 @@
        Negativbeispiele - Headline-Verdichtung, isolierte Zahl, englischer
        Quelltitel. */
     /^b(ö|oe)rsengang mit existenzwarnung[.!]?$/i,
+    /^rivian schaltet einen gang h(ö|oe)her[.!]?$/i,
+    /^rekord geschafft\. jetzt kommt der schwere teil[.!]?$/i,
     /^50\.000 dollar f(ü|ue)r ein auto\??$/i,
     /^10-year u\.s\. treasury yield tops/i
   ];
@@ -157,9 +159,18 @@
         p.visualOrigin + ", visualType=" + p.visualType + ")." });
     }
 
+    /* Owner-Art-Direction "PREMIUM CAMPAIGN EDITORIAL" (02.10.): im
+       Carousel-Pfad wird Atlas NICHT mehr verwendet (atlasVerboten).
+       Dort ist ein gemeldeter Atlas der Verstoss - nicht sein Fehlen.
+       Die aelteren Pfade behalten ihren Atlas-Vertrag unveraendert. */
     var atlasPresent = options.atlasBefund
       ? options.atlasBefund.passed === true : false;
-    if (!atlasPresent) {
+    if (options.atlasVerboten === true) {
+      if (atlasPresent) {
+        verstoesse.push({ id: "ATLAS_ABSENT", satz: "Das Bild meldet Atlas - " +
+          "Atlas wird nicht mehr verwendet (Owner-Art-Direction 02.10.)." });
+      }
+    } else if (!atlasPresent) {
       verstoesse.push({ id: "ATLAS_PRESENT", satz: "Kein bestandener " +
         "Atlas-Vertrag hinterlegt (asset.atlasBefund)." });
     }

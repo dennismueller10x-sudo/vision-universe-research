@@ -261,7 +261,7 @@
     }
     var zentral = Math.abs(value) >= 1e6
       ? vuFormat("formatCompact", value, cur, { numberLocale: "de-DE", decimals: 1 })
-      : vuFormat("formatPrice", value, cur, { numberLocale: "de-DE", decimals: 2 });
+      : vuFormat("formatPrice", value, cur, { numberLocale: "de-DE", decimals: Math.abs(value) < 1 ? 4 : 2 });
     if (zentral) return zentral;
 
 

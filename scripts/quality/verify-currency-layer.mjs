@@ -39,6 +39,7 @@ import { buildUsdEurSeries, HOLIDAYS_2021 } from "../../quant/tests/fixtures/fx-
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(ROOT, "core", "identity.js"));
 const FXDIR = join(ROOT, "quant", "engines", "fx");
 
 const Rates    = require(join(FXDIR, "fx-rates.js"));
@@ -239,7 +240,7 @@ const engine = Engine.createEngine({ store: fx.store, now: Date.now() });
 /* §57 Kurshistorie an echten Titeln                                       */
 /* --------------------------------------------------------------------- */
 function loadSeries(ticker) {
-  const file = join(SERIES_DIR, `ref_${ticker}.json`);
+  const file = join(SERIES_DIR, Identity.securityIdForTicker(ticker) + ".json");
   if (!existsSync(file)) return null;
   return JSON.parse(readFileSync(file, "utf8"));
 }

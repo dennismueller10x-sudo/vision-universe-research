@@ -37,6 +37,9 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
+const SC = require(join(HERE, "..", "..", "quant", "engines", "survivorship-control.js"));
+const PublishedClose = require(join(HERE, "..", "..", "quant", "engines", "published-close.js"));
+const ReturnSeries = require(join(HERE, "..", "..", "quant", "engines", "return-series.js"));
 const DEFAULT_ROOT = join(HERE, "..", "..");
 
 export const SERIES_DIR = join("quant", "data", "market", "discover-series");
@@ -46,20 +49,13 @@ export const SERIES_SCHEMA = "discover-series-1.1.0";
 export const DEFAULT_POINTS = 270;
 
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
-function round2(v) { return Math.round(v * 100) / 100; }
 
-/* Split-bereinigte Schlusskurse aus Rohbars - dieselbe Ableitung wie in
-   scripts/discover/build-discover-data.mjs und golden-five-series.mjs:
-   aus splitFactor, nicht aus der adjClose-Spalte des Anbieters. */
+/* Split-bereinigte Schlusskurse aus Rohbars - aus splitFactor, nicht aus
+   der adjClose-Spalte des Anbieters. Der Faktor kommt aus der EINEN
+   Definition (quant/engines/return-series.js#splitFactors, ADR-002); ein
+   Splitfaktor <= 0 ist ein Datenfehler und wirkt nicht. */
 export function splitAdjustedCloses(bars) {
-  const n = bars.length;
-  const factors = new Array(n).fill(1);
-  let cumulative = 1;
-  for (let i = n - 1; i >= 0; i--) {
-    factors[i] = cumulative;
-    const sf = bars[i].splitFactor;
-    if (isNum(sf) && sf !== 1) cumulative *= sf;
-  }
+  const factors = ReturnSeries.splitFactors(bars);
   return bars.map((b, i) => ({ date: String(b.date).slice(0, 10),
                                close: isNum(b.close) ? b.close / factors[i] : null }));
 }
@@ -71,8 +67,13 @@ export function splitAdjustedCloses(bars) {
 export function compactSeries(payload, security, permission, opts) {
   opts = opts || {};
   const maxPoints = opts.maxPoints || DEFAULT_POINTS;
-  const bars = (payload && payload.bars) || [];
-  const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close));
+  /* Nur das juengste Listing (survivorship-control.js
+     currentListingSegment): nach mehr als einem Jahr ohne Kerze traegt das
+     Kuerzel eine andere Firma. Ohne diesen Schnitt zeigte DINE 2010 und
+     2026 in einem Chart (03.10.2026). */
+  const bars = SC.currentListingSegment((payload && payload.bars) || []).bars;
+  /* Nur positive Kurse: ein Schluss von 0 ist ein Datenloch, kein Kurs. */
+  const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close) && b.close > 0);
   if (dated.length < 30) return null;
   const fenster = dated.slice(-maxPoints);
   return {
@@ -93,7 +94,7 @@ export function compactSeries(payload, security, permission, opts) {
     from: fenster[0].date,
     to: fenster[fenster.length - 1].date,
     asOf: fenster[fenster.length - 1].date,
-    points: fenster.map((b) => [b.date, round2(b.close)]),
+    points: fenster.map((b) => [b.date, PublishedClose.roundClose(b.close)]),
     barCount: fenster.length,
     sourceBarCount: bars.length,
     /* Der Stand der Quelle, nicht die Wanduhr: derselbe Bestand ergibt

@@ -165,13 +165,24 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   return { reason: grund };
 }
 
-async function sparql(query) {
-  const res = await http("https://query.wikidata.org/sparql", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
-    body: "query=" + encodeURIComponent(query)
-  });
-  return (await res.json()).results.bindings;
+/* Wikidata bricht lange Abfragen bei Zeitueberschreitung mitten im Strom ab
+   und haengt die Fehlermeldung an (02.10.2026: "Bad control character in
+   string literal") - dann noch einmal, mit Pause. */
+async function sparql(query, versuche = 4) {
+  for (let v = 1; ; v++) {
+    try {
+      const res = await http("https://query.wikidata.org/sparql", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
+        body: "query=" + encodeURIComponent(query)
+      });
+      return JSON.parse(await res.text()).results.bindings;
+    } catch (e) {
+      if (v >= versuche) throw e;
+      console.log(`     Wikidata-Abfrage fehlgeschlagen (${String(e.message).slice(0, 80)}), Versuch ${v + 1} von ${versuche} …`);
+      await sleep(30000 * v);
+    }
+  }
 }
 
 async function imageinfo(titles) {
@@ -207,6 +218,13 @@ const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
    erfahrungsgemaess weitere Fehlgriffe (Unterschriften, Stimmzettel). */
 const SEC_GESPERRT = new Set(Object.entries(REJECTS.urls || {})
   .filter(([url]) => /^https:\/\/www\.sec\.gov\//.test(url)).map(([, why]) => String(why).split(":")[0].trim()));
+/* Firmen, deren Website schon zweimal ein falsches Bild lieferte (fremde
+   Logos, Produktmarken, Baukasten-Icons): die Website ist dafuer keine
+   Quelle mehr - sonst kaeme nach jeder Sperre das naechste falsche Bild. */
+const WEB_GESPERRT = new Set(Object.entries(Object.entries(REJECTS.urls || {})
+  .filter(([url]) => !/^https:\/\/www\.sec\.gov\//.test(url))
+  .reduce((a, [, why]) => { const s = String(why).split(":")[0].trim(); a[s] = (a[s] || 0) + 1; return a; }, {}))
+  .filter(([, n]) => n >= 2).map(([s]) => s));
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
@@ -382,10 +400,36 @@ if (!args["no-web"] && !DRY) {
   let sharp = null;
   try { sharp = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Website-Icons entfallen."); }
   if (sharp) {
+    /* Von Hand gewaehlte Bildadressen (discover/config/logo-urls.json) fuer
+       Titel, bei denen keine Quelle automatisch etwas findet - gewaehlt aus
+       den Kandidaten (scripts/discover/logo-candidates.mjs). Sie gehen jeder
+       anderen Quelle vor und durchlaufen die Freigabe wie alle anderen. */
+    const gewaehlt = readJson(join(root, "discover", "config", "logo-urls.json"), { symbols: {} }).symbols || {};
+    const imUniv = new Set(universe.map((r) => r.symbol));
+    for (const [sym, url] of Object.entries(gewaehlt)) {
+      if (!imUniv.has(sym) || gesperrt(url) || !/^https:\/\//.test(url)) continue;
+      try {
+        const host = new URL(url).hostname;
+        const istSec = /(^|\.)sec\.gov$/.test(host);
+        const { buf } = istSec ? await secHolen(url, 3 * 1024 * 1024, process.env.SEC_USER_AGENT || WEB_USER_AGENT) : await holen(url, 3 * 1024 * 1024);
+        const res = await toPng(buf, sharp, { logo: true });
+        if (!res.png) { dbg(sym, "gewaehlt", url, res.reason); continue; }
+        const path = "files/" + sym + ".png";
+        for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + ".png") rmSync(join(FILES, f));
+        writeFileSync(join(OUT, path), res.png);
+        files[sym] = path;
+        const basis = { path, wide: breitSchreiben(sym, res.wide), iconUrl: url, sha1: createHash("sha1").update(res.png).digest("hex"),
+                        via: "KURATIERT", licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round((res.ratio || 1) * 100) / 100 };
+        credits[sym] = istSec ? { source: "SEC_FILING", page: url, form: "kuratiert", rule: "kuratiert", ...basis }
+                              : { source: "WEBSITE", page: "https://" + host + "/", host: host.replace(/^www\./, ""), ...basis };
+        reasons.delete(sym);
+        dbg(sym, "gewaehlt", url, "OK");
+      } catch (e) { dbg(sym, "gewaehlt", url, "Fehler", e.message); }
+    }
     console.log("4/5  Website-Icons fuer Titel ohne Commons-Logo oder mit breitem Schriftzug …");
     /* Ein breiter Schriftzug (NVIDIA 5:1) wird im Quadrat winzig. Hat die
        Website ein quadratisches Symbol, geht das vor. */
-    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2).map(([s]) => s));
+    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2 && c.via !== "KURATIERT").map(([s]) => s));
     const ohne = universe.filter((r) => !files[r.symbol] || breit.has(r.symbol)).slice(0, LIMIT);
     console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
@@ -443,6 +487,7 @@ if (!args["no-web"] && !DRY) {
       }
       console.log(`     SEC: ${JSON.stringify(stat)}`);
     } else console.log("     SEC_USER_AGENT fehlt - keine SEC-Adressen.");
+    for (const sym of WEB_GESPERRT) if (siteOf.has(sym) && siteOf.get(sym).via !== "KURATIERT") siteOf.delete(sym);
     console.log(`     ${siteOf.size} von ${ohne.length} Titeln mit offizieller Website`);
 
     const icons = new Map();

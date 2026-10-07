@@ -27,7 +27,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: long-series
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: long-series-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +43,9 @@ jobs:
       contains(github.event.head_commit.message, '[long-series]')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -94,7 +100,10 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Lange Kursreihen: $(node -e 'const i=require("./quant/data/market/discover-series-long/index.json");console.log(i.count+" Wochenreihen, "+JSON.stringify(i.summary))')"
-            git pull --rebase
+            # Nur den eigenen Zweig holen. Ein blankes `git pull` holte am
+            # 03.10.2026 jeden Zweig des Repositorys (49 Minuten) und lief
+            # in die Job-Grenze - die Reihen waren gebaut, der Commit kam nie an.
+            git pull --rebase origin "${GITHUB_REF_NAME}"
             # Nach einem Rebase koennen andere Daten-Workflows die Inputs
             # geaendert haben. Den gemeinsamen Commit auf diesem Stand
             # erneut pruefen, bevor irgendetwas veroeffentlicht wird.
@@ -102,5 +111,9 @@ jobs:
             node scripts/discover/verify-discover-data.mjs
             git add -A discover/data
             if ! git diff --cached --quiet; then git commit --amend --no-edit; fi
-            git push
+            # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
+            # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
+            # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und
+            # mit Wartezeit erneut versuchen.
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi

@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-10-02T13:17:30.000Z",
- "universe": 6875,
+ "generatedAt": "2026-10-07T04:11:43.000Z",
+ "universe": 6853,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-10-01",
+ "evidenceAsOf": "2026-10-06",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -20,104 +20,102 @@
   {
    "id": "chart",
    "label": "Kursverlauf",
+   "answered": 496,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 4,
+   "share": 0.992,
+   "reasons": {
+    "SOURCE_MISSING": 4
+   }
+  },
+  {
+   "id": "factorStrength",
+   "label": "Wie stark ist die Aktie",
    "answered": 481,
    "findings": 0,
    "findingReasons": {},
    "withheld": 19,
    "share": 0.962,
    "reasons": {
-    "SOURCE_MISSING": 19
-   }
-  },
-  {
-   "id": "factorStrength",
-   "label": "Wie stark ist die Aktie",
-   "answered": 468,
-   "findings": 0,
-   "findingReasons": {},
-   "withheld": 32,
-   "share": 0.936,
-   "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 32
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 19
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 465,
+   "answered": 476,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 35,
-   "share": 0.93,
+   "withheld": 24,
+   "share": 0.952,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 35
+    "NO_COMPARABLE_OBSERVATION": 24
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 427,
+   "answered": 430,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 73,
-   "share": 0.854,
+   "withheld": 70,
+   "share": 0.86,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 68,
-    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 4,
-    "SOURCE_MISSING": 1
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 427,
+   "answered": 430,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 73,
-   "share": 0.854,
+   "withheld": 70,
+   "share": 0.86,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 68,
-    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 4,
-    "SOURCE_MISSING": 1
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
   {
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
-   "answered": 402,
-   "findings": 80,
+   "answered": 411,
+   "findings": 70,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 80
+    "NO_PATTERN_HOLDS": 70
    },
-   "withheld": 98,
-   "share": 0.804,
+   "withheld": 89,
+   "share": 0.822,
    "reasons": {
-    "NOT_COVERED_BY_PATTERN_MATCH": 98
+    "NOT_COVERED_BY_PATTERN_MATCH": 89
    }
   },
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 414,
-   "findings": 183,
+   "answered": 428,
+   "findings": 179,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 183
+    "NO_PROFILE_FITS_WELL": 179
    },
-   "withheld": 86,
-   "share": 0.828,
+   "withheld": 72,
+   "share": 0.856,
    "reasons": {
-    "NO_EVIDENCE": 54,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 23,
-    "NOT_AN_EQUITY_LISTING": 9
+    "NO_EVIDENCE": 53,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 13,
+    "NOT_AN_EQUITY_LISTING": 6
    }
   },
   {
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 499,
+   "findings": 497,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 499
+    "NO_ASSIGNMENT_CHANGE": 497
    },
    "withheld": 0,
    "share": 1,
@@ -126,15 +124,14 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 428,
+   "answered": 430,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 72,
-   "share": 0.856,
+   "withheld": 70,
+   "share": 0.86,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 68,
-    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 3,
-    "SOURCE_MISSING": 1
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
   {
@@ -150,44 +147,43 @@
  ],
  "answeredStationsPerTitle": {
   "3": 2,
-  "4": 7,
-  "5": 4,
-  "6": 51,
-  "7": 26,
-  "8": 4,
+  "4": 6,
+  "5": 5,
+  "6": 47,
+  "7": 14,
+  "8": 7,
   "9": 1,
-  "10": 26,
-  "11": 379
+  "10": 16,
+  "11": 402
  },
  "shapes": {
-  "full": 405,
-  "reduced": 93,
+  "full": 418,
+  "reduced": 80,
   "minimal": 2,
-  "noticeBoxesBefore": 625,
-  "noticeBoxesAfter": 263,
+  "noticeBoxesBefore": 517,
+  "noticeBoxesAfter": 210,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 95,
-  "dataPoorNoticeBoxesBefore": 598,
-  "dataPoorNoticeBoxesAfter": 236,
+  "dataPoorPages": 82,
+  "dataPoorNoticeBoxesBefore": 501,
+  "dataPoorNoticeBoxesAfter": 194,
   "substantiveStationsPerTitle": {
    "1": 2,
    "3": 8,
-   "4": 37,
-   "5": 32,
-   "6": 2,
-   "7": 11,
-   "8": 3,
-   "9": 1,
-   "10": 25,
-   "11": 379
+   "4": 24,
+   "5": 27,
+   "6": 4,
+   "7": 16,
+   "8": 1,
+   "10": 16,
+   "11": 402
   },
   "causes": {
-   "SHORT_HISTORY": 100,
-   "NO_WEEKLY_SERIES": 44,
-   "NO_FIGURES": 86,
-   "RARELY_TRADED": 4,
-   "NOT_AN_EQUITY_LISTING": 9,
-   "NO_SERIES": 19
+   "SHORT_HISTORY": 89,
+   "NO_WEEKLY_SERIES": 36,
+   "NO_FIGURES": 74,
+   "NOT_AN_EQUITY_LISTING": 6,
+   "NO_SERIES": 4,
+   "RARELY_TRADED": 1
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
  },

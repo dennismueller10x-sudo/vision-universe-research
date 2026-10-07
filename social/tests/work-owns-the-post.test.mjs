@@ -48,7 +48,8 @@ function slide(i, extra) {
   return Object.assign({ visual_variant_id: "v" + i, visual_strategy: "CAROUSEL", slide_index: i,
     slide_role: i === 1 ? "cover" : "story", asset_path: "authoring/requests/x/assets/slide-0" + i + ".png",
     mime_type: "image/png", width: 1080, height: 1350, asset_byte_size: 10, asset_sha256: "a".repeat(64),
-    brand_elements: { includes_logo: true, includes_atlas: i === 1, includes_hook_text_de: i === 1 } }, extra || {});
+    brand_elements: { includes_logo: true, includes_atlas: false, includes_hook_text_de: i === 1,
+      includes_text_de: true } }, extra || {});
 }
 
 /* Die Lieferform des aktiven Agentenvertrags: EIN Bild, das Cover,
@@ -56,7 +57,7 @@ function slide(i, extra) {
 function plan(i, extra) {
   return Object.assign({ slide_index: i, role: ["HOOK / COVER", "KEY INSIGHT", "EINORDNUNG"][i - 1],
     headline_de: "Aussage " + i, key_content: "Inhalt " + i, visual_concept: "Motiv " + i,
-    atlas: i === 1 }, extra || {});
+    supporting_line_de: "Kurz " + i }, extra || {});
 }
 
 function cover(extra) {
@@ -77,7 +78,10 @@ function ergebnis(extra) {
       caption_standalone_quality: "PASS", fact_grounding: "PASS" },
     visual_variants: [cover()],
     style_references_check: [],
-    carousel_checks: { atlas_only_on_slide_1: true, logo_on_all_slides: true, logo_position_consistent: true },
+    carousel_checks: { no_atlas: true, logo_on_all_slides: true, logo_position_consistent: true },
+    design_mode: "PREMIUM_CAMPAIGN_EDITORIAL",
+    visual_concept: "Reale Szene aus der Storywelt.",
+    ai_cliche_check: { result: "PASS", checked: [], redesigned: false },
     research: { web_access: true, mode_used: "WORK_WEB_RESEARCH" }
   }, extra || {});
 }
@@ -130,51 +134,71 @@ test("WOP3 · Der Carousel-Brief reist als FULL_CREATIVE/CAROUSEL (einzig vom Ag
   assert.equal(Contract.validateRequest({ request_type: "FULL_CAROUSEL" }).reason, "unknownRequestType");
 });
 
-test("WOP4 · Rahmen statt Schablone: Designsprache ja, Layout-Zonen und Pixelvorgaben nein", () => {
+test("WOP4 · Premium Campaign Editorial: Kampagnenfotografie statt KI-Bild, Rahmen statt Schablone", () => {
   const b = brief();
   const text = JSON.stringify(b);
+  const a = b.art_direction;
   /* Pflichtfeld des Agentenvertrags (PR #300): die Designsprache, kein Stilrezept. */
-  assert.equal(b.visual_strategy.strategy_id, "VU_EDITORIAL_PREMIUM");
+  assert.equal(b.visual_strategy.strategy_id, "PREMIUM_CAMPAIGN_EDITORIAL");
+  assert.equal(a.design_mode, "PREMIUM_CAMPAIGN_EDITORIAL");
   for (const k of ["palette", "style", "composition"]) {
     assert.equal(b.visual_strategy[k], undefined, "visual_strategy." + k + " waere ein Stilrezept");
   }
-  assert.equal(b.grounding_hook_en, undefined, "keine vorgewaehlte Hook");
-  for (const verboten of ["#5FE0C0", "20%", "one-fifth", "bold flat", "comic-panel", "Serverreihen",
-    "premium cinematic 3D", "carousel_sheet", "Bogen ist", "panel_width"]) {
-    assert.ok(!text.includes(verboten), "Brief enthaelt " + verboten);
+  assert.match(a.principle, /Kampagnenfotografie/);
+  assert.match(a.principle, /KI soll moeglichst unsichtbar/);
+  for (const verboten of ["humanoide Roboter", "Hologramme", "Neon-Trading-Charts", "Cyberpunk",
+    "generische Serverhallen", "schwebende Interfaces"]) {
+    assert.ok(a.forbidden_visuals.includes(verboten), "fehlt in forbidden_visuals: " + verboten);
   }
-  assert.match(b.art_direction.principle, /Kein starres Template/);
+  assert.match(a.subtlety, /Subtilitaet ist ausdruecklich erlaubt/);
+  assert.match(a.creative_director, /KEIN starres Template/);
+  /* Das KI-Klischee-Gate ist Pflicht vor der Auslieferung. */
+  assert.match(b.ai_cliche_gate.question, /offensichtlich KI-generiert/);
+  assert.match(b.ai_cliche_gate.on_fail, /neu gestalten/);
+  assert.equal(b.authoring_requirements.ai_cliche_check_required, true);
+  /* Die Referenzkampagne wird beschrieben, nicht kopiert: keine Marke im Brief. */
+  assert.ok(!/xpeng/i.test(text), "Fremdmarke im Brief");
+  assert.equal(b.grounding_hook_en, undefined, "keine vorgewaehlte Hook");
+  for (const alt of ["#5FE0C0", "one-fifth", "bold flat", "comic-panel", "premium cinematic 3D",
+    "carousel_sheet", "panel_width"]) {
+    assert.ok(!text.includes(alt), "Brief enthaelt " + alt);
+  }
   assert.equal(b.authoring_requirements.hook_variant_count, 1);
-  assert.equal(b.authoring_requirements.internal_hook_exploration, true);
   assert.deepEqual(b.hook_strategy.negative_fixtures.slice(0, 2),
     ["BÖRSENGANG MIT EXISTENZWARNUNG", "50.000 DOLLAR FÜR EIN AUTO?"]);
 });
 
-test("WOP5 · 3 Slides Standard, Atlas nur Slide 1, Logo oben links auf allen, Cover zuerst", () => {
+test("WOP5 · Kein Atlas, Logo fest oben links auf allen, Hook + EINE Supporting Line, 3 Slides, Cover zuerst", () => {
   const b = brief();
   const c = b.carousel;
+  const a = b.art_direction;
+  assert.match(a.no_atlas, /Atlas wird NICHT mehr verwendet/);
+  assert.match(c.atlas_contract, /KEIN Atlas auf keinem Slide/);
+  assert.equal(b.brand_assets.atlas, undefined, "keine Atlas-Datei mehr im Brief");
+  assert.ok(b.constraints.some((x) => /Kein Atlas/.test(x)));
+  assert.match(a.brand_anchor, /fest OBEN LINKS/);
+  assert.match(a.brand_anchor, /keine freie Neuplatzierung/);
+  assert.match(c.logo_contract, /fest OBEN LINKS/);
+  assert.match(a.hook, /hoechstens etwa 2-3 Zeilen/);
+  assert.match(a.hook, /GEMEINSAM/);
+  assert.match(a.supporting_copy, /EINE kurze Supporting Line/);
   assert.match(c.slide_count, /Standard: 3 Slides/);
-  assert.deepEqual(c.slides.map((s) => s.role), ["HOOK / COVER", "KEY INSIGHT", "EINORDNUNG"]);
-  assert.match(c.slides[1].contains, /KEIN Atlas/);
-  assert.match(c.slides[2].contains, /KEIN Atlas/);
-  assert.match(c.atlas_contract, /AUSSCHLIESSLICH auf Slide 1/);
-  assert.match(c.logo_contract, /auf ALLEN Slides, bevorzugt oben links/);
+  assert.deepEqual(c.slides.map((x) => x.role),
+    ["HERO / HOOK", "DETAIL / KEY INSIGHT", "CONTEXT / INVESTOR RELEVANCE"]);
+  assert.match(a.coherence, /nicht dreimal dasselbe Bild/);
   assert.match(c.text_on_image, /BÖRSE\|NGANG/);
   assert.match(b.editorial_gate.rule, /OHNE Bild/);
   /* COVER_FIRST: der aktive Vertrag erlaubt EIN Asset (PR #300), ein Bogen scheitert (PR #303). */
   assert.equal(b.delivery.mode, "COVER_FIRST");
   assert.match(b.delivery.deliver_now, /kein Bogen/);
-  const a = b.asset_requirements;
-  assert.equal(a.count, 1);
-  assert.match(a.deterministic_path, /\/assets\/visual-01\.png$/);
-  assert.match(a.format_note, /skaliere oder beschneide nicht/);
+  const r = b.asset_requirements;
+  assert.equal(r.count, 1);
+  assert.match(r.deterministic_path, /\/assets\/visual-01\.png$/);
+  assert.ok(!/Atlas/.test(r.format_note));
   assert.match(b.caption_guidance, /allein zum Cover/);
-  assert.equal(b.authoring_requirements.sources_required, true);
-  /* MULTI_ASSET ist vorbereitet: eine Datei je Slide, sobald der Vertrag es erlaubt. */
+  /* MULTI_ASSET bleibt vorbereitet. */
   const m = brief({ delivery: "MULTI_ASSET" });
-  assert.equal(m.delivery.mode, "MULTI_ASSET");
   assert.equal(m.asset_requirements.deterministic_paths.length, 4);
-  assert.match(m.asset_requirements.deterministic_paths[0], /slide-01\.png$/);
 });
 
 test("WOP6 · Recherchemodus, Owner-Thema, leeres Paket", () => {
@@ -205,14 +229,20 @@ test("WOP8 · Ein vollstaendiges Cover-First-Ergebnis besteht die Carousel-Pruef
   assert.equal(Work.carouselLieferung(ergebnis()).geplant, 3);
 });
 
-test("WOP9 · Atlas ausserhalb von Slide 1, fehlendes Logo, zu viele Tags, keine Quelle, Gate nicht PASS", () => {
+test("WOP9 · Atlas, fehlendes Logo, KI-Klischee, falscher Design-Modus, Tags, Quellen, Gate", () => {
   const ids = (r) => Work.verifyCarousel(r).map((b) => b.id);
-  assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2, { atlas: true }), plan(3)] }))
-    .includes("atlasOutsideCover"));
-  assert.ok(ids(ergebnis({ visual_variants: [cover({ brand_elements: { includes_logo: false,
-    includes_atlas: true, includes_hook_text_de: true } })] })).includes("logoMissing"));
+  /* Atlas ist jetzt auf JEDEM Slide ein Befund - auch auf dem Cover. */
   assert.ok(ids(ergebnis({ visual_variants: [cover({ brand_elements: { includes_logo: true,
-    includes_atlas: false, includes_hook_text_de: true } })] })).includes("atlasMissingOnCover"));
+    includes_atlas: true, includes_hook_text_de: true } })] })).includes("atlasPresent"));
+  assert.ok(ids(ergebnis({ carousel_plan: [plan(1, { atlas: true }), plan(2), plan(3)] }))
+    .includes("atlasPresent"));
+  assert.ok(ids(ergebnis({ visual_variants: [cover({ brand_elements: { includes_logo: false,
+    includes_atlas: false, includes_hook_text_de: true } })] })).includes("logoMissing"));
+  assert.ok(ids(ergebnis({ ai_cliche_check: { result: "FAIL" } })).includes("aiClicheCheck"));
+  assert.ok(ids(ergebnis({ ai_cliche_check: undefined })).includes("aiClicheCheck"));
+  assert.ok(ids(ergebnis({ design_mode: "VU_EDITORIAL_PREMIUM" })).includes("designMode"));
+  assert.ok(ids(ergebnis({ carousel_checks: { atlas_only_on_slide_1: true, logo_on_all_slides: true,
+    logo_position_consistent: true } })).includes("carouselCheck:no_atlas"));
   assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2, { visual_concept: "" }), plan(3)] }))
     .includes("planIncomplete"));
   assert.ok(ids(ergebnis({ hashtags: ["a", "b", "c", "d", "e", "f"] })).includes("hashtags"));
@@ -220,12 +250,10 @@ test("WOP9 · Atlas ausserhalb von Slide 1, fehlendes Logo, zu viele Tags, keine
   assert.ok(ids(ergebnis({ editorial_gate: { story_quality: "PASS", hook_standalone_quality: "FAIL",
     caption_standalone_quality: "PASS", fact_grounding: "PASS" } })).includes("editorialGate:hook_standalone_quality"));
   assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2)], slide_count: 2 })).includes("slideCount"));
-  const zuWenig = Contract.validateResult(ergebnis({ carousel_plan: [plan(1), plan(2)] }), brief());
-  assert.equal(zuWenig.ok, false);
-  /* MULTI_ASSET: eine Datei je Slide bleibt gueltig; Atlas auf Slide 2 nicht. */
+  /* MULTI_ASSET: eine Datei je Slide bleibt gueltig; Atlas auf irgendeinem Slide nicht. */
   assert.deepEqual(Work.verifyCarousel(ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] })), []);
   assert.ok(ids(ergebnis({ visual_variants: [slide(1), slide(2, { brand_elements: { includes_logo: true,
-    includes_atlas: true } }), slide(3)] })).includes("atlasOutsideCover"));
+    includes_atlas: true } }), slide(3)] })).includes("atlasPresent"));
 });
 
 /* ------------------------------------------------------------ Kandidat */
@@ -248,9 +276,16 @@ test("WOP10 · Cover-First = EIN Kandidat als Einzelbild, Plan reist mit, nichts
     "Vorschau = Sendung: Caption + Tags lassen sich zurueckrechnen");
   assert.equal(k.contentHash, ContentHash.contentHash(k.content));
   assert.equal(k.presentation.sources[0].url, "https://example.com/a");
-  const gate = Gate.pruefe(k, { rendered: true, atlasBefund: { passed: true }, logoBefund: { passed: true },
-    assetExists: true });
+  /* Carousel-Pfad: Atlas verboten - fehlender Atlas besteht, gemeldeter faellt durch. */
+  const gate = Gate.pruefe(k, { rendered: true, atlasVerboten: true, atlasBefund: { passed: false },
+    logoBefund: { passed: true }, assetExists: true });
   assert.equal(gate.ok, true, gate.erklaerung);
+  const mitAtlas = Gate.pruefe(k, { rendered: true, atlasVerboten: true, atlasBefund: { passed: true },
+    logoBefund: { passed: true }, assetExists: true });
+  assert.ok(mitAtlas.verstoesse.some((v) => v.id === "ATLAS_ABSENT"));
+  assert.equal(k.presentation.designMode, "PREMIUM_CAMPAIGN_EDITORIAL");
+  assert.equal(k.presentation.aiClicheCheck.result, "PASS");
+  assert.equal(k.presentation.atlasPresent, false);
 
   /* MULTI_ASSET: drei Dateien = EIN Carousel-Kandidat. */
   const urls = [1, 2, 3].map((n) => "https://research.visionuniverse.de/assets/social/c-s" + n + ".png");
@@ -446,4 +481,82 @@ test("WOP24 · Meldet der Agent den Abbruch, schliesst der Abgleich den Job - ei
   assert.equal(r.ok, true, r.message);
   assert.equal(r.to, "CREATIVE_JOB_FAILED");
   assert.equal(reg.all()[0].failureType, "AGENT_REPORTED_ASSET_CONTRACT_MISMATCH");
+});
+
+test("WOP25 · Owner 03.10.: aggressive Hook, Text auf jedem Slide, drei Bilder in EINEM Auftrag", () => {
+  const b = brief({ delivery: "MULTI_ASSET" });
+  const h = b.hook_strategy;
+  assert.match(h.instruction, /SCROLL-STOPPER/);
+  assert.match(h.instruction, /AGGRESSIVSTE/);
+  assert.ok(h.tone.some((t) => /3 bis 6 Woerter/.test(t)));
+  assert.deepEqual(h.tone_examples, ["RIVIAN SCHLÄGT DIE WALL STREET.", "TOTGESAGT. JETZT REKORD.",
+    "DIE NÄCHSTEN 90 TAGE ENTSCHEIDEN ALLES."]);
+  assert.match(h.fact_limit, /Jede Zuspitzung muss belegt sein/);
+  assert.ok(h.negative_fixtures.includes("RIVIAN SCHALTET EINEN GANG HÖHER."));
+  assert.ok(h.negative_fixtures.includes("REKORD GESCHAFFT. JETZT KOMMT DER SCHWERE TEIL."));
+  assert.equal(Gate.istNegativeHookFixture("RIVIAN SCHALTET EINEN GANG HÖHER."), true);
+  assert.equal(Gate.istNegativeHookFixture("TOTGESAGT. JETZT REKORD."), false);
+  assert.match(b.research.instruction, /Routinemeldungen/);
+
+  /* Text auf Slide 2 und 3 ist Pflicht - weniger extrem als die Hook. */
+  assert.match(b.carousel.text_on_image, /auf JEDEM Slide Pflicht/);
+  assert.match(b.carousel.text_on_image, /weniger extrem als die Hook/);
+  assert.match(b.carousel.slides[1].contains, /PFLICHT: eine starke deutsche Headline/);
+  assert.match(b.carousel.slides[2].contains, /PFLICHT: eine starke deutsche Headline/);
+
+  /* Drei Bilder in einem Auftrag. */
+  assert.equal(b.delivery.mode, "MULTI_ASSET");
+  assert.match(b.delivery.deliver_now, /ALLE Slides in DIESEM einen Auftrag/);
+  assert.match(b.asset_requirements.deterministic_paths[2], /slide-03\.png$/);
+  assert.match(b.asset_requirements.announcement_note, /includes_text_de/);
+  const cfg = JSON.parse(readFileSync(join(ROOT, "social/config/work-agent.json"), "utf8"));
+  assert.equal(cfg.delivery_mode, "MULTI_ASSET");
+
+  /* Ein Slide ohne Text faellt durch. */
+  const ohneText = ergebnis({ visual_variants: [slide(1), slide(2, { brand_elements: {
+    includes_logo: true, includes_atlas: false, includes_text_de: false } }), slide(3)] });
+  assert.ok(Work.verifyCarousel(ohneText).map((x) => x.id).includes("slideTextMissing"));
+  assert.deepEqual(Work.verifyCarousel(ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] })), []);
+});
+
+test("WOP26 · Owner-Storno: nur ein nie gestarteter Auftrag, nur mit gemessener Stille", () => {
+  const Job = require("../engines/creative-job.js");
+  const KEY = "brief_s:vu-post-s:abc:1.0";
+  const storno = { contentId: "vu-post-s", processingKey: KEY, decidedBy: "OWNER",
+    decidedAt: "2026-10-03T05:50:00Z" };
+  const job = (extra) => Object.assign({ creativeJobId: "job_s", contentId: "vu-post-s",
+    processingKey: KEY, state: "CREATIVE_JOB_DISPATCHED", prNumber: 364, observedStarts: 0,
+    history: [], createdAt: "2026-10-02T21:00:45Z", updatedAt: "2026-10-02T21:00:45Z" }, extra || {});
+  const gemessen = { now: "2026-10-03T06:00:00Z", ownerStorno: storno,
+    agentMeldungGemessen: true, agentMeldungVorhanden: false };
+
+  assert.equal(Job.EVIDENZ.OWNER_STORNO_NIE_GESTARTET, "CREATIVE_JOB_SUPERSEDED");
+  const reg = Job.createRegistry([job()]);
+  const r = reg.reconcile("job_s", "OWNER_STORNO_NIE_GESTARTET", gemessen);
+  assert.equal(r.ok, true, r.message);
+  assert.equal(r.to, "CREATIVE_JOB_SUPERSEDED");
+  assert.equal(Job.OFFEN.includes(reg.all()[0].state), false, "der Slot ist frei");
+
+  const abgewiesen = (j, opt) => {
+    const x = Job.createRegistry([job(j)]).reconcile("job_s", "OWNER_STORNO_NIE_GESTARTET",
+      Object.assign({}, gemessen, opt));
+    assert.equal(x.ok, false);
+    assert.equal(x.geaendert, false);
+    return x.message;
+  };
+  assert.match(abgewiesen({}, { agentMeldungVorhanden: true }), /Agent-Meldung/);
+  assert.match(abgewiesen({}, { agentMeldungGemessen: undefined }), /nicht gemessen/);
+  assert.match(abgewiesen({ observedStarts: 2 }), /Start/);
+  assert.match(abgewiesen({ state: "CREATIVE_JOB_IN_FLIGHT" }), /CREATIVE_JOB_IN_FLIGHT/);
+  assert.match(abgewiesen({ processingKey: "brief_s:vu-post-s:anderer:1.0" }), /Storno-Entscheidung nennt/);
+  assert.match(abgewiesen({}, { ownerStorno: Object.assign({}, storno, { decidedBy: "SCRIPT" }) }),
+    /Owner-Entscheidung/);
+  assert.ok(Job.KEINE_EVIDENZ.includes("OWNER_VERMUTUNG"), "eine Vermutung bleibt unzulaessig");
+
+  /* Die echte Entscheidung nennt genau den Auftrag aus PR #364. */
+  const datei = JSON.parse(readFileSync(join(ROOT, "social/data/owner-job-storno.json"), "utf8"));
+  const e = datei.entries.find((x) => x.prNumber === 364);
+  assert.equal(e.decidedBy, "OWNER");
+  assert.equal(e.contentId, "vu-post-20261002-fd3c1bcd00");
+  assert.ok(e.processingKey.startsWith("brief_6c4b03d96db69f6d:vu-post-20261002-fd3c1bcd00:"));
 });

@@ -34,8 +34,16 @@ on:
         description: 'Website-Icons und -Adressen neu holen statt Zwischenspeicher'
         type: boolean
         default: false
+      candidates:
+        description: 'Kandidaten-Bilder aus SEC-Einreichungen fuer diese Ticker auf den Branch claude/logo-candidates (schreibt sonst nichts)'
+        type: string
+        default: ''
   schedule:
     - cron: '17 4 * * 1'
+    # Absicherung: workflow_run nach dem Marktdaten-Refresh loeste am
+    # 03.10.2026 nicht aus. Taeglich nach dem naechtlichen Refresh, vor der
+    # Sichtpruefung um 07:52 Uhr deutscher Zeit.
+    - cron: '47 3 * * 2-6'
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
@@ -49,7 +57,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: company-logos
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: company-logos-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -68,9 +79,25 @@ jobs:
           node-version: '22'
 
       - name: Bildbibliothek fuer die Website-Icons
-        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34.5
+
+      - name: Kandidaten-Bilder (nur mit Eingabe candidates)
+        if: ${{ github.event.inputs.candidates }}
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          CANDIDATES: ${{ github.event.inputs.candidates }}
+        run: |
+          if ! [[ "$CANDIDATES" =~ ^[A-Za-z0-9.,-]+$ ]]; then echo "Ungueltige Ticker-Liste"; exit 1; fi
+          node scripts/discover/logo-candidates.mjs --symbols="$CANDIDATES"
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git checkout -B claude/logo-candidates
+          git add -f .logo-candidates
+          git commit -m "Logo-Kandidaten: $CANDIDATES (nur zur Auswahl, nicht im Produkt)"
+          git push -f origin claude/logo-candidates
 
       - name: Logos (Commons mit freier Lizenz, sonst Website-Icon)
+        if: ${{ !github.event.inputs.candidates }}
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
           ONLY: ${{ github.event.inputs.only }}
@@ -85,11 +112,11 @@ jobs:
           node scripts/discover/build-company-logos.mjs $ARGS
 
       - name: Pruefung (Zuordnung, Lizenzen, jede Datei belegt)
-        if: ${{ !github.event.inputs.only }}
+        if: ${{ !github.event.inputs.only && !github.event.inputs.candidates }}
         run: node --test discover/tests/company-logos.test.mjs
 
       - name: Commit und Push
-        if: ${{ !github.event.inputs.only }}
+        if: ${{ !github.event.inputs.only && !github.event.inputs.candidates }}
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"

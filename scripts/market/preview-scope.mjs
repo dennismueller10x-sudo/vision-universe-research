@@ -28,6 +28,8 @@
    ========================================================================= */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { createRequire } from "node:module";
+const Identity = createRequire(import.meta.url)("../../core/identity.js");
 import { resolveUniverse, PRODUCT_UNIVERSE } from "./universe-source.mjs";
 
 function readJSON(file) { return JSON.parse(readFileSync(file, "utf8")); }
@@ -48,7 +50,10 @@ export function knownSecurities(root) {
     if (!s || !s.ticker) return;
     if (byTicker.has(s.ticker)) return;
     byTicker.set(s.ticker, {
-      securityId: s.securityId || "ref_" + s.ticker,
+      /* Kanonische Bildung (core/identity.js): Praefix ref_ plus Ticker, jedes
+         Nicht-Alphanumerische zu "_". Die rohe Verkettung ergab fuer
+         Bindestrich-Ticker eine zweite Identitaet. */
+      securityId: s.securityId || Identity.securityIdForTicker(s.ticker),
       ticker: s.ticker,
       providerSymbol: s.providerSymbol || s.ticker,
       exchange: s.exchange || null,
@@ -108,7 +113,7 @@ export function resolveScope(root, config) {
   for (const t of [...tickers].sort()) {
     const s = bekannt.get(t);
     if (s) securities.push(s);
-    else { unresolved.push(t); securities.push({ securityId: "ref_" + t, ticker: t, providerSymbol: t,
+    else { unresolved.push(t); securities.push({ securityId: Identity.securityIdForTicker(t), ticker: t, providerSymbol: t,
                                                   exchange: null, mic: null, source: "abgeleitet" }); }
   }
   const fh = (config.discoverSeries && Array.isArray(config.discoverSeries.fullHistory))

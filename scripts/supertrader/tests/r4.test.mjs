@@ -132,7 +132,11 @@ test('Artefakte: Modus je Methode und keine Teilpruefung als Signal', () => {
   }
   for (const c of sig.partialChecks.PIOTROSKI_F.candidates) { assert.equal(c.checked, 8); assert.ok(c.partialScore >= 7); assert.equal(c.signals.DLIQUID.status, 'NOT_AVAILABLE'); }
   // Live-Methode Donchian: Ledger und Regelkarte
-  assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => s.id.endsWith(`:v${donchian.version}`) && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
+  // Runde 8: neue Setups laufen unter der Live-Version; aeltere Versionen nur noch als offene Positionen.
+  const liveV = sig.strategies.DONCHIAN_TURTLE.version;
+  // Runde 12: 2.0.1 fuehrt signalgleiche 2.0.0-Setups unter ihrer Version weiter (signalCompatible).
+  const compat = [liveV, '2.0.0'];
+  assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => (compat.some((v) => s.id.endsWith(`:v${v}`)) || (s.entry && ['1.0.0', donchian.version].includes(s.version))) && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
 });
 
 test('Artefakte: Pilot-Backtest ist explorativ und traegt Universum, Zeitraum, Kosten, Verzerrungen', () => {

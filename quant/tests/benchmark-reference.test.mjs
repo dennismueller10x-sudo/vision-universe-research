@@ -18,6 +18,7 @@ import { benchmarkSpec, withBenchmark, BENCHMARK_ROLE } from "../../scripts/mark
 import { resolveProductUniverse } from "../../scripts/market/universe-source.mjs";
 import { createFsDriver } from "../../scripts/market/storage/fs-driver.mjs";
 import { totalReturnState } from "../../scripts/market/refresh-benchmark-history.mjs";
+import { barsWithDividends } from "./total-return-fixtures.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -65,7 +66,7 @@ function syncFixture(t) {
   const dir = mkdtempSync(join(tmpdir(), "vu-bm-sync-"));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   for (const f of ["scripts/market/sync-history-store.mjs", "scripts/market/benchmark-reference.mjs", "scripts/market/storage/fs-driver.mjs",
-    "quant/engines/history-store.js", "quant/engines/bar-codec.js", "quant/engines/zero-cost-guard.js", "quant/config/tiingo-scale.json"]) {
+    "quant/engines/history-store.js", "quant/engines/bar-codec.js", "quant/engines/zero-cost-guard.js", "quant/engines/survivorship-control.js", "quant/config/tiingo-scale.json"]) {
     mkdirSync(dirname(join(dir, f)), { recursive: true }); copyFileSync(join(ROOT, f), join(dir, f));
   }
   const write = (p, v) => { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), JSON.stringify(v)); };
@@ -98,10 +99,15 @@ test("the full store pushes and restores SPY; a partial gate does not", async (t
   assert.equal(restored.bars.length, 4, "die Materialisierung bekommt SPY aus der Ablage zurueck");
 });
 
-test("SPY total return is AVAILABLE only when every bar carries a confirmed adjustedClose", () => {
-  const ok = [{ adjustedClose: 1 }, { adjustedClose: 2 }];
-  assert.equal(totalReturnState(ok).state, "AVAILABLE");
-  assert.equal(totalReturnState([{ adjustedClose: 1 }, { adjustedClose: null }]).state, "UNAVAILABLE");
+test("SPY total return is AVAILABLE only when the same canonical engine reconstructs it with dividends on record", () => {
+  const bar = (date, close, dividend = 0, extra = {}) => ({ date, close, splitFactor: 1, dividend, adjustedClose: null, ...extra });
+  const ok = [bar("2024-01-02", 100), bar("2024-01-03", 99.5, 0.5), bar("2024-01-04", 100)];
+  const r = totalReturnState(ok);
+  assert.equal(r.state, "AVAILABLE", JSON.stringify(r));
+  assert.equal(r.contract, "canonical-total-return-1.0.0");
+  assert.equal(r.benchmarkContract, "benchmark-contract-1.0.0");
+  assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101)]).reason, "BENCHMARK_DIVIDENDS_MISSING", "ein Vergleichsmassstab ohne erfasste Ausschuettung ist unvollstaendig");
+  assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101, null)]).reason, "DIVIDEND_FIELD_MISSING");
   assert.equal(totalReturnState([]).state, "UNAVAILABLE");
 });
 
@@ -115,7 +121,7 @@ test("survivorship still gates trust: a passed return basis alone never lifts a 
 
 /* --------------------------------------------- Signal-Studie mit Fixture */
 
-function signalFixture(t, { spyCut = 0, spyGap = false, spyAdjusted = true, spyFrom = null } = {}) {
+function signalFixture(t, { spyCut = 0, spyGap = false, spyMissingDividend = false, spyFrom = null } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "vu-bm-signal-"));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   const long = join(dir, "long"), work = join(dir, "work", "tiingo", "daily");
@@ -129,7 +135,7 @@ function signalFixture(t, { spyCut = 0, spyGap = false, spyAdjusted = true, spyF
     copyFileSync(join(src, f), join(long, f));
     /* Gesamtrendite = Kurs mal stetig wachsender Ausschuettungsfaktor. */
     writeFileSync(join(work, j.securityId + ".json"), JSON.stringify({ ticker: j.ticker, securityId: j.securityId, provider: "tiingo",
-      bars: j.points.map(([d, v], i) => ({ securityId: j.securityId, date: d, open: v, high: v, low: v, close: v, volume: 1, adjustedClose: v * Math.pow(1.0004, i), splitFactor: 1, dividend: 0 })) }));
+      bars: barsWithDividends(j.points, j.securityId) }));
   }
   const spySeries = json("quant/data/market/multi-asset/series/SPY.json").points;
   writeFileSync(join(long, "ref_SPY.json"), JSON.stringify({ securityId: "ref_SPY", ticker: "SPY", priceSeriesType: "SPLIT_ADJUSTED", points: spySeries.filter((_, i) => i % 5 === 0) }));
@@ -137,7 +143,7 @@ function signalFixture(t, { spyCut = 0, spyGap = false, spyAdjusted = true, spyF
   if (spyFrom) spyPts = spyPts.filter(([d]) => d >= spyFrom); /* der heutige Arbeitsstand: SPY erst ab 2023 */
   if (spyGap) spyPts = spyPts.filter(([d]) => !(d >= "2005-01-01" && d < "2005-03-01"));
   writeFileSync(join(work, "ref_SPY.json"), JSON.stringify({ ticker: "SPY", securityId: "ref_SPY", provider: "tiingo",
-    bars: spyPts.map(([d, v], i) => ({ securityId: "ref_SPY", date: d, open: v, high: v, low: v, close: v, volume: 1, adjustedClose: spyAdjusted ? v * Math.pow(1.00008, i) : null, splitFactor: 1, dividend: 0 })) }));
+    bars: barsWithDividends(spyPts, "ref_SPY", { yield: 0.004, ...(spyMissingDividend ? { oursMisses: new Set([5]) } : {}) }) }));
   const out = join(dir, "signal.json");
   const r = spawnSync(process.execPath, ["--max-old-space-size=4096", join(ROOT, "scripts/quant/build-signal-backtest.mjs"), "--work-dir", join(dir, "work")],
     { encoding: "utf8", env: { PATH: process.env.PATH, VU_SIGNAL_LONG_DIR: long, VU_SIGNAL_OUT: out }, timeout: 600000 });
@@ -159,15 +165,22 @@ test("total return on both sides: the study switches to TOTAL_RETURN and publish
   }
   assert.equal(s.returnBasisComparison.compared, true);
   assert.deepEqual(s.returnBasisComparison.rules.map((r) => r.id), s.rules.map((r) => r.id));
+  assert.equal(s.returnBasis, "CANONICAL_TOTAL_RETURN");
+  assert.equal(s.source.spyTotalReturn.canonical.role, "BENCHMARK_REFERENCE");
+  assert.equal(s.returnBasisComparison.spyProviderAdjusted, "PASS");
   for (const c of s.returnBasisComparison.rules) {
-    for (const side of ["priceReturn", "totalReturn"]) for (const k of ["positiveShare", "basePositiveShare", "deltaPositiveShare", "median", "maxDrawdownMedian", "oos", "walkForward", "trust"]) assert.ok(k in c[side], side + "." + k);
+    for (const side of ["priceReturn", "providerAdjustedReturn", "canonicalTotalReturn"]) for (const k of ["positiveShare", "basePositiveShare", "deltaPositiveShare", "median", "maxDrawdownMedian", "oos", "walkForward", "parameterStability", "trust"]) assert.ok(k in c[side], side + "." + k);
   }
-  /* Die Basis aendert die Zahlen wirklich (synthetische Ausschuettung > 0). */
-  assert.ok(s.returnBasisComparison.rules.some((c) => c.priceReturn.median !== c.totalReturn.median));
+  /* Die Basis aendert die Zahlen wirklich (Ausschuettungen > 0); Anbieter
+     und Kanon liegen bei sauberer Anbieterspalte nah beieinander. */
+  assert.ok(s.returnBasisComparison.rules.some((c) => c.priceReturn.median !== c.canonicalTotalReturn.median));
+  for (const c of s.returnBasisComparison.rules) {
+    if (c.canonicalTotalReturn.median !== null) assert.ok(Math.abs(c.canonicalTotalReturn.median - c.providerAdjustedReturn.median) < 0.005, c.id);
+  }
 });
 
 test("fail closed: a stale, gappy or unadjusted SPY keeps the whole study on price return, no mixing", (t) => {
-  for (const [opts, reason] of [[{ spyCut: 40 }, "SPY_TOTAL_RETURN_STALE"], [{ spyGap: true }, "SPY_TOTAL_RETURN_GAPS"], [{ spyAdjusted: false }, "SPY_TOTAL_RETURN_MISSING"], [{ spyFrom: "2023-01-01" }, "SPY_TOTAL_RETURN_COVERAGE_SHORT"]]) {
+  for (const [opts, reason] of [[{ spyCut: 40 }, "SPY_TOTAL_RETURN_STALE"], [{ spyGap: true }, "SPY_TOTAL_RETURN_GAPS"], [{ spyMissingDividend: true }, "SPY_TOTAL_RETURN_MISSING"], [{ spyFrom: "2023-01-01" }, "SPY_TOTAL_RETURN_COVERAGE_SHORT"]]) {
     const s = signalFixture(t, opts);
     assert.equal(s.returnType, "SPLIT_ADJUSTED_PRICE", reason);
     assert.equal(s.source.spyTotalReturn.reason, reason);
@@ -178,7 +191,7 @@ test("fail closed: a stale, gappy or unadjusted SPY keeps the whole study on pri
 
 /* ------------------------------------------- Abruf gegen eine Attrappe */
 
-function spyBars({ dividendsInAdjusted = true } = {}) {
+function spyBars({ dividendsInAdjusted = true, dividendsInRecord = true } = {}) {
   const dates = [], end = new Date(); end.setUTCDate(end.getUTCDate() - 1);
   const c = new Date(Date.UTC(1993, 0, 29));
   while (c <= end) { if (c.getUTCDay() % 6) dates.push(c.toISOString().slice(0, 10)); c.setUTCDate(c.getUTCDate() + 1); }
@@ -189,7 +202,7 @@ function spyBars({ dividendsInAdjusted = true } = {}) {
   for (let i = rows.length - 2; i >= 0; i--) adj[i] = adj[i + 1] * (rows[i + 1].div > 0 ? 1 - rows[i + 1].div / rows[i].close : 1);
   return rows.map((r, i) => { const a = dividendsInAdjusted ? r.close * adj[i] : r.close;
     return { date: r.date, open: r.close, high: r.close * 1.004, low: r.close * 0.996, close: r.close, volume: 5e7,
-      adjOpen: a, adjHigh: a * 1.004, adjLow: a * 0.996, adjClose: a, adjVolume: 5e7, divCash: r.div, splitFactor: 1 }; });
+      adjOpen: a, adjHigh: a * 1.004, adjLow: a * 0.996, adjClose: a, adjVolume: 5e7, divCash: dividendsInRecord || i !== 63 ? r.div : 0, splitFactor: 1 }; });
 }
 
 async function runRefresh(t, opts) {
@@ -229,8 +242,17 @@ test("the benchmark refresh fetches the whole series in one request with one adj
   assert.equal(JSON.stringify(rep).includes("\"close\""), false, "der Bericht traegt keine Kurse");
 });
 
-test("fail closed: dividends missing from the adjusted series leave the cache untouched", async (t) => {
+test("provider conflict: dividends missing from the adjusted column do not block SPY - the canonical engine wins", async (t) => {
   const { rep, cache } = await runRefresh(t, { dividendsInAdjusted: false });
+  assert.equal(rep.state, "PASS", JSON.stringify(rep));
+  assert.equal(rep.providerCrossCheck.reason, "DIVIDEND_GAP", "Gegenprobe: der alte Vertrag haette abgelehnt");
+  assert.equal(rep.totalReturn.crossCheck.state, "CONFLICT_CANONICAL_WINS");
+  assert.ok(cache);
+});
+
+test("fail closed: a dividend the provider knows but our record lacks leaves the cache untouched", async (t) => {
+  const { rep, cache } = await runRefresh(t, { dividendsInRecord: false });
   assert.equal(rep.state, "FAIL", JSON.stringify(rep));
-  assert.equal(cache, null, "ohne bestaetigte Gesamtrendite wird nichts geschrieben");
+  assert.equal(rep.canonicalReason, "DIVIDEND_MISSING");
+  assert.equal(cache, null, "ohne rekonstruierte Gesamtrendite wird nichts geschrieben");
 });

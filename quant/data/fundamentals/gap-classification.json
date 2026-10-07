@@ -6,15 +6,15 @@
     "youngListingYears": 2
   },
   "denominator": {
-    "PRODUCT_TITLES": 6875
+    "PRODUCT_TITLES": 6853
   },
-  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 5129,
-  "TITLES_WITH_GAP": 1746,
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 5112,
+  "TITLES_WITH_GAP": 1741,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 748,
-      "percent": 10.88,
+      "count": 745,
+      "percent": 10.8712,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -51,8 +51,8 @@
     },
     {
       "cause": "SPECIAL_SECURITY_STRUCTURE",
-      "count": 451,
-      "percent": 6.56,
+      "count": 450,
+      "percent": 6.5665,
       "recoverability": "BY_DESIGN",
       "examples": [
         {
@@ -89,8 +89,8 @@
     },
     {
       "cause": "NO_CIK",
-      "count": 344,
-      "percent": 5.0036,
+      "count": 343,
+      "percent": 5.0051,
       "recoverability": "REQUIRES_REVIEW",
       "examples": [
         {
@@ -128,7 +128,7 @@
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
       "count": 119,
-      "percent": 1.7309,
+      "percent": 1.7365,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -166,7 +166,7 @@
     {
       "cause": "INSUFFICIENT_HISTORY",
       "count": 56,
-      "percent": 0.8145,
+      "percent": 0.8172,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -204,7 +204,7 @@
     {
       "cause": "FOREIGN_ISSUER",
       "count": 28,
-      "percent": 0.4073,
+      "percent": 0.4086,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -243,9 +243,9 @@
   "byRecoverability": {
     "SEC_RECOVERABLE": 1,
     "EXTERNAL_PROVIDER_CANDIDATE": 99,
-    "RESOLVES_WITH_TIME": 792,
-    "BY_DESIGN": 510,
-    "REQUIRES_REVIEW": 344
+    "RESOLVES_WITH_TIME": 789,
+    "BY_DESIGN": 509,
+    "REQUIRES_REVIEW": 343
   },
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
@@ -262,9 +262,9 @@
   "byRecoverabilityCoarse": {
     "SEC_RECOVERABLE": 147,
     "EXTERNAL_PROVIDER_CANDIDATE": 56,
-    "RESOLVES_WITH_TIME": 748,
-    "BY_DESIGN": 451,
-    "REQUIRES_REVIEW": 344
+    "RESOLVES_WITH_TIME": 745,
+    "BY_DESIGN": 450,
+    "REQUIRES_REVIEW": 343
   },
   "regroupedByFineClassification": 146,
   "versions": {
@@ -275,32 +275,32 @@
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.5.0"
+      "mapping_version": "1.6.0"
     }
   },
   "priorities": {
     "note": "Die Gruppen ueberschneiden sich bewusst; jede beantwortet eine eigene Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
     "denominator": {
-      "PRODUCT_TITLES": 6875
+      "PRODUCT_TITLES": 6853
     },
     "groups": [
       {
         "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
         "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
-        "COUNT": 682,
-        "PERCENT": 9.92,
+        "COUNT": 564,
+        "PERCENT": 8.23,
         "TOP_CAUSES": [
           {
-            "cause": "NO_CIK",
-            "count": 334
+            "cause": "SPECIAL_SECURITY_STRUCTURE",
+            "count": 335
           },
           {
-            "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 332
+            "cause": "NO_CIK",
+            "count": 211
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 16
+            "count": 18
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
@@ -309,8 +309,8 @@
       {
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
-        "COUNT": 1147,
-        "PERCENT": 16.6836,
+        "COUNT": 1139,
+        "PERCENT": 16.6205,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -330,7 +330,7 @@
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 11
+            "count": 10
           }
         ],
         "SEC_RECOVERABLE_COUNT": 1,
@@ -340,7 +340,7 @@
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
         "COUNT": 490,
-        "PERCENT": 7.1273,
+        "PERCENT": 7.1502,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -361,8 +361,8 @@
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
-        "COUNT": 150,
-        "PERCENT": 2.1818,
+        "COUNT": 149,
+        "PERCENT": 2.1742,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -374,7 +374,7 @@
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 3
+            "count": 2
           }
         ],
         "SEC_RECOVERABLE_COUNT": 1,
@@ -383,16 +383,16 @@
       {
         "priority": "PRIORITY_5_EDGE_CASES",
         "description": "Spezial- und Randfaelle",
-        "COUNT": 1067,
-        "PERCENT": 15.52,
+        "COUNT": 1064,
+        "PERCENT": 15.526,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
-            "count": 451
+            "count": 450
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 186
+            "count": 187
           },
           {
             "cause": "NO_CIK",
@@ -400,7 +400,7 @@
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 37
+            "count": 38
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -408,9 +408,9 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 40
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 41
       }
     ]
   },
-  "generatedAtUtc": "2026-10-02T12:37:17+00:00"
+  "generatedAtUtc": "2026-10-06T13:23:29+00:00"
 }
