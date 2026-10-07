@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-02T13:16:36.266Z",
+ "generatedAt": "2026-10-07T04:10:38.600Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -10,40 +10,40 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 6,
+   "count": 9,
    "from": "2026-09-10",
-   "to": "2026-10-01",
-   "spanDays": 21,
+   "to": "2026-10-06",
+   "spanDays": 26,
    "replay": {
-    "titles": 155,
-    "observations": 126038,
+    "titles": 156,
+    "observations": 124849,
     "from": "1991-03-08"
    }
   },
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 6,
+   "count": 9,
    "from": "2026-09-23",
-   "to": "2026-10-01",
-   "spanDays": 8
+   "to": "2026-10-06",
+   "spanDays": 13
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 6,
-   "from": "2026-09-30",
-   "to": "2026-10-01",
+   "count": 9,
+   "from": "2026-10-05",
+   "to": "2026-10-06",
    "spanDays": 1
   },
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 2,
+   "count": 3,
    "byIndex": {
-    "SP500": 2,
-    "NDX": 2,
-    "DJIA": 2
+    "SP500": 3,
+    "NDX": 3,
+    "DJIA": 3
    },
    "from": "2026-09-15"
   },
@@ -51,14 +51,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6333,
+    "titles": 6308,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6504
+    "titlesLastYear": 6829
    }
   },
   {
@@ -82,7 +82,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 6,
+   "count": 9,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -94,7 +94,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 114,
    "robust": 69,
-   "matchSnapshots": 1
+   "matchSnapshots": 3
   },
   {
    "id": "technicalStates",
@@ -108,7 +108,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 6,
+   "publishedSnapshots": 9,
    "reconstructible": {
     "titles": 5
    }
@@ -118,7 +118,7 @@
    "label": "Corporate Actions",
    "titles": 5,
    "splits": 3,
-   "dividends": 235,
+   "dividends": 236,
    "universe": "nur im privaten Historienspeicher"
   },
   {
@@ -126,7 +126,7 @@
    "label": "Vergleichsindex",
    "series": "SPY",
    "from": "1995-01-03",
-   "to": "2026-10-01",
+   "to": "2026-10-05",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "totalReturn": false,
    "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
@@ -140,14 +140,14 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 5104,
-   "of": 6875
+   "ready": 5119,
+   "of": 6853
   },
   {
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 2,
+   "membershipSnapshots": 3,
    "state": "NOT_CONTROLLED"
   }
  ],
@@ -162,7 +162,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6333 Titel seit 1990-01-05",
+     "value": "6308 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -188,13 +188,13 @@
    "id": "B",
    "key": "SETUP_BACKTEST",
    "label": "Setup-Backtest",
-   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "returnType": "TOTAL_RETURN",
    "gates": [
     {
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "871 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "1362 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -223,26 +223,26 @@
     {
      "id": "SETUP_CONFIRMED",
      "trust": "LIMITED",
-     "n": 835,
+     "n": 822,
      "titles": 115,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7548,
-     "titles": 144,
+     "n": 7452,
+     "titles": 145,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8342,
-     "titles": 145,
+     "n": 8228,
+     "titles": 146,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     }
    ],
    "decision": "WITHHELD",
@@ -256,7 +256,7 @@
    "id": "C",
    "key": "SIGNAL_BACKTEST",
    "label": "Signal-Backtest",
-   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "returnType": "TOTAL_RETURN",
    "gates": [
     {
      "id": "pit",
@@ -269,7 +269,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6333 Titel seit 1990-01-05",
+     "value": "6308 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -291,42 +291,42 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 93597,
-     "titles": 5453,
+     "n": 89187,
+     "titles": 5171,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 93984,
-     "titles": 5474,
+     "n": 89473,
+     "titles": 5196,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 90548,
-     "titles": 5409,
+     "n": 86484,
+     "titles": 5147,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 90650,
-     "titles": 5432,
+     "n": 86521,
+     "titles": 5164,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 59110,
-     "titles": 5198,
+     "n": 56493,
+     "titles": 4923,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     }
    ],
    "decision": "PUBLISHED",
@@ -346,7 +346,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "2 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "3 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {
@@ -360,7 +360,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "6 Faktor-Snapshots seit 2026-09-23",
+     "value": "9 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -404,14 +404,14 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "6 Snapshots über 8 Tage",
+     "value": "9 Snapshots über 13 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "5104 von 6875 Titeln",
+     "value": "5119 von 6853 Titeln",
      "reason": null
     },
     {

@@ -206,7 +206,29 @@
        Neustart derselben Verarbeitung haebe sie auf). Gemessen wird im
        Aufrufer, hier nur zugelassen.
        ----------------------------------------------------------------- */
-    AGENT_ABBRUCH_GEMELDET: "CREATIVE_JOB_FAILED"
+    AGENT_ABBRUCH_GEMELDET: "CREATIVE_JOB_FAILED",
+    /* -----------------------------------------------------------------
+       DER OWNER STORNIERT EINEN AUFTRAG, DEN NIEMAND BEGONNEN HAT
+
+       PR #364 (02.10., 21:01 UTC): der Request-PR stand offen, und der
+       Agent hat ihn nie gestartet - kein VU_CREATIVE_AGENT_*-Kommentar,
+       kein beobachteter Start. MAX_OPEN_CREATIVE_JOBS = 1 hielt den
+       Slot, und jeder Knopfdruck wartete auf einen Lauf, den es nicht
+       gab. Alter schliesst ihn nicht (PR 105 lieferte nach elf Stunden),
+       und das bleibt so.
+
+       Was ihn schliesst, ist eine ausdrueckliche Owner-Entscheidung,
+       geschrieben in social/data/owner-job-storno.json und an genau
+       diesen processing_key gebunden - KEINE Vermutung (OWNER_VERMUTUNG
+       bleibt unzulaessig). Und sie gilt nur, solange gemessen ist, dass
+       niemand begonnen hat: eine Agent-Meldung zum selben Schluessel
+       oder ein beobachteter Start macht den Storno wirkungslos.
+
+       Ziel ist SUPERSEDED, nicht FAILED: der Job ist fertig, ohne
+       geliefert zu haben und ohne dass jemand gescheitert waere. Ein
+       Storno ist keine Aussage ueber den Agenten.
+       ----------------------------------------------------------------- */
+    OWNER_STORNO_NIE_GESTARTET: "CREATIVE_JOB_SUPERSEDED"
   };
 
   /* Was ausdruecklich NICHT genuegt. Steht als Liste da, damit ein
@@ -552,6 +574,14 @@
         }
       }
 
+      if (evidenzArt === "OWNER_STORNO_NIE_GESTARTET") {
+        var stornoEinwandText = stornoEinwand(job, options);
+        if (stornoEinwandText) {
+          return { ok: false, geaendert: false, reason: "inadmissibleEvidence",
+            job: job, message: stornoEinwandText };
+        }
+      }
+
       if (TERMINAL.indexOf(job.state) !== -1) {
         return { ok: true, geaendert: false,
           reason: job.state === ziel ? "bereitsReconciled" : "bereitsTerminal",
@@ -644,6 +674,42 @@
       if (Number(job.observedStarts) > 0) {
         return "Es wurden " + job.observedStarts + " Start(s) beobachtet. " +
           "Jemand hat begonnen.";
+      }
+      return null;
+    }
+
+    /**
+     * Darf ein Owner-Storno diesen Job schliessen?
+     *
+     * Jede Bedingung ist ein Beleg dafuer, dass der Agent DOCH begonnen
+     * haben koennte - oder dass die Entscheidung einen anderen Auftrag
+     * meint. Eine genuegt, um nicht zu schliessen.
+     */
+    function stornoEinwand(job, options) {
+      var s = options.ownerStorno;
+      if (!s || s.decidedBy !== "OWNER" || !s.decidedAt) {
+        return "Zu OWNER_STORNO_NIE_GESTARTET fehlt eine Owner-Entscheidung " +
+          "(decidedBy OWNER, decidedAt).";
+      }
+      if (s.contentId !== job.contentId || s.processingKey !== job.processingKey) {
+        return "Die Storno-Entscheidung nennt " + s.contentId + " / " + s.processingKey +
+          " - dieser Job ist " + job.contentId + " / " + job.processingKey + ".";
+      }
+      if (["CREATIVE_JOB_DISPATCHED", "CREATIVE_JOB_STALE"].indexOf(job.state) === -1) {
+        return "Ein Storno gilt nur fuer CREATIVE_JOB_DISPATCHED oder " +
+          "CREATIVE_JOB_STALE; dieser Job steht auf " + job.state + ".";
+      }
+      if (Number(job.observedStarts) > 0) {
+        return "Es wurden " + job.observedStarts + " Start(s) beobachtet. " +
+          "Jemand hat begonnen - der Storno greift nicht.";
+      }
+      if (options.agentMeldungGemessen !== true) {
+        return "Ob der Agent sich gemeldet hat, ist nicht gemessen. " +
+          "Unbekannt ist kein Nein.";
+      }
+      if (options.agentMeldungVorhanden !== false) {
+        return "Zum processing_key liegt eine Agent-Meldung vor. Der Agent " +
+          "hat begonnen - der Storno greift nicht.";
       }
       return null;
     }

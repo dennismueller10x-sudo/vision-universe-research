@@ -36,13 +36,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const Evidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const Verdict = require(join(ROOT, "quant/engines/plain-verdict.js"));
 
-/** Ein Datensatz mit genau diesen Faktorwerten. */
+/** Ein Datensatz mit genau diesen Faktorwerten. Die Fixtur setzt die
+    Position gleich dem Wert (factor-band-2.0.0: die Stufe kommt aus der
+    Position); so bleiben die Faelle lesbar. */
 function titel(werte) {
   const factors = {};
   for (const [id, score] of Object.entries(werte)) {
     factors[id] = score === null
       ? { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null }
-      : { state: "AVAILABLE", score };
+      : { state: "AVAILABLE", score, position: score };
   }
   return { factors };
 }
@@ -222,7 +224,9 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
   assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
   const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
-  assert.match(hero, /el\("h1", \{ text: "Was möchtest du heute analysieren\?"/,
+  /* Produktpositionierung (Owner, 04.10.2026): die Frage wird zum Claim -
+     der erste Bildschirm sagt, was Quant ist (docs/VU_QUANT_PRODUCT_POSITIONING.md). */
+  assert.match(hero, /el\("h1", \{ class: "q-claim", text: CLAIM \}/,
     "das Versprechen der Startseite ist verschwunden");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
   assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");

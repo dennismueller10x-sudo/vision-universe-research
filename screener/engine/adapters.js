@@ -28,6 +28,8 @@
 (function (global) {
   'use strict';
   var Engine = global.VUScreenerEngine || (typeof require === 'function' ? require('./engine.js') : null);
+  /* Eine Identitaetsregel fuer alle Produkte (core/identity.js, ADR-001). */
+  var Identity = (global.VUCore && global.VUCore.Identity) || (typeof require === 'function' ? require('../../core/identity.js') : null);
   var Fields = global.VUScreenerFields || (typeof require === 'function' ? require('./fields.js') : null);
 
   function fetchJson(url, opts) {
@@ -92,7 +94,9 @@
       sparkSeries: function (symbol) {
         var key = 'spark:' + symbol;
         if (seriesCache[key]) return seriesCache[key];
-        seriesCache[key] = (opts.fetchJson || fetchJson)('/quant/data/market/discover-series/ref_' + symbol.replace(/[.\-]/g, '_') + '.json')
+        var id;
+        try { id = Identity.securityIdForTicker(symbol); } catch (e) { return self.series(symbol); }
+        seriesCache[key] = (opts.fetchJson || fetchJson)('/quant/data/market/discover-series/' + id + '.json')
           .then(function (s) { return s && Array.isArray(s.points) ? s.points : null; })
           .catch(function () { return self.series(symbol); });
         return seriesCache[key];

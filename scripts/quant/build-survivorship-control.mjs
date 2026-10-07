@@ -37,14 +37,24 @@ import { splitSegments } from "../supertrader/validation/lib.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(ROOT, "core", "identity.js"));
 const SC = require(join(ROOT, "quant/engines/survivorship-control.js"));
 const MQ = require(join(ROOT, "quant/engines/market-quality.js"));
+const CTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
 const argv = process.argv.slice(2);
 const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 const WORK = arg("--work-dir");
 const BUNDLE_OUT = arg("--bundle-out");
 const OUT = process.env.VU_SURVIVORSHIP_OUT || join(ROOT, "quant/data/product/survivorship-control-v1.json");
-export const BUNDLE_VERSION = "delisted-weekly-bundle-1.0.0";
+// Weekly total-return eligibility now uses the provider's ex-close cash
+// convention. Invalidate only the derived bundle, never stored histories.
+export const BUNDLE_VERSION = "delisted-weekly-bundle-1.1.0";
+export function delistedBundleStamp(manifest) {
+  return { bundle: BUNDLE_VERSION, contract: MQ.TR_CONTRACT_VERSION, canonicalTotalReturn: CTR.contractVersions(), manifestUpdatedAt: manifest.updatedAt || null, tableHash: manifest.tableHash || null };
+}
+export function fromDelistedTiingoBars(ticker, bars, opts = {}) {
+  return fromBars({ ticker, provider: "tiingo", bars }, opts);
+}
 const json = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 const today = new Date().toISOString().slice(0, 10);
 const t0 = Date.now();
@@ -56,7 +66,7 @@ function securityMasterInventory() {
   const active = new Set(sm.rows.filter((r) => r.active_status !== "INACTIVE").map((r) => r.ticker));
   const inactive = sm.rows.filter((r) => r.active_status === "INACTIVE" && r.instrument_type === "EQUITY_COMMON");
   const seriesOf = (r) => {
-    const f = join(ROOT, "quant/data/market/discover-series-long", (r.baseline_security_id || "ref_" + r.ticker) + ".json");
+    const f = join(ROOT, "quant/data/market/discover-series-long", (r.baseline_security_id || Identity.securityIdForTicker(r.ticker)) + ".json");
     if (!existsSync(f)) return null;
     const j = JSON.parse(readFileSync(f, "utf8"));
     return { from: j.points.length ? j.points[0][0] : null, to: j.points.length ? j.points[j.points.length - 1][0] : null };
@@ -97,7 +107,7 @@ async function delistedInventory(survivorLastKeys) {
 
   /* Wochenbuendel: aus dem Cache, solange Manifest und Vertrag gleich sind. */
   const cacheKey = mine.seriesPrefix + "_validation/quant-weekly-bundle-v1.json.gz";
-  const stamp = { bundle: BUNDLE_VERSION, contract: MQ.TR_CONTRACT_VERSION, manifestUpdatedAt: manifest.updatedAt || null, tableHash: manifest.tableHash || null };
+  const stamp = delistedBundleStamp(manifest);
   let bundle = null;
   budget.consumeClassB(1, "GET bundle cache");
   const cbuf = await driver.get(cacheKey);
@@ -109,20 +119,26 @@ async function delistedInventory(survivorLastKeys) {
     let read = 0;
     for (const [id, e] of Object.entries(entries)) {
       if (!(e.status === "OK" || e.status === "PARTIAL") || e.included === false || id.startsWith("BENCH:")) continue;
-      if (!(e.last && SC.classifyFetchedListing(e, { asOf }))) continue;           /* nur beendete Listings */
+      const cl = e.last ? SC.classifyFetchedListing(e, { asOf }) : null;
+      if (!cl) continue;                                                           /* nur beendete Listings */
+      /* Identitaet ueber das Listing-Fenster (tiingo:BOERSE:KUERZEL:Start),
+         nie ueber das Kuerzel: A/B liegen im Fenster, D/F sind unsicher. */
+      const identity = cl.cls === "A" || cl.cls === "B" ? { state: "CONFIRMED", via: "LISTING_WINDOW", cls: cl.cls } : { state: "UNCERTAIN", reason: cl.reason, cls: cl.cls };
       const { ticker, start } = parseId(id);
       const s = await mine.getSeries(`${ticker}@${start}`);
       read++;
       if (!s || !Array.isArray(s.bars)) continue;
       const bars = s.bars.map((b) => ({ date: String(b.date).slice(0, 10), open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume ?? 0,
-        adjustedClose: b.adjustedClose ?? b.adjClose ?? null, dividend: b.dividend ?? 0, splitFactor: b.splitFactor ?? 1 }))
+        adjustedClose: b.adjustedClose ?? b.adjClose ?? null, dividend: b.dividend ?? null, splitFactor: b.splitFactor ?? null }))
         .filter((b) => b.close > 0).sort((a, b) => a.date.localeCompare(b.date));
       const segs = splitSegments(bars);
       segs.forEach((seg, k) => {
         if (seg.length < 30) return;
         const last = seg[seg.length - 1];
-        const sa = splitAdjustedCloses(seg);
-        const d = fromBars({ ticker, bars: seg });
+        /* Kurs: fehlender Splitfaktor wie bisher als kein Split. Gesamtrendite:
+           fehlende Felder bleiben fehlend - die Rekonstruktion lehnt ab. */
+        const sa = splitAdjustedCloses(seg.map((b) => ({ ...b, splitFactor: b.splitFactor ?? 1 })));
+        const d = fromDelistedTiingoBars(ticker, seg, { identity, delisted: true });
         const wk = new Map();
         sa.forEach((b, i) => { const key = weekKey(b.date); wk.set(key, [b.close, d.tr ? d.tr[i] : null]); });
         /* Lueckenlose Freitage ab der ersten Woche; Wochen ohne Handel null. */
@@ -131,7 +147,7 @@ async function delistedInventory(survivorLastKeys) {
         const val = (x, j) => { const v = wk.get(x); return v && v[j] > 0 ? +v[j].toPrecision(7) : null; };
         listings.push({ id: k ? id + "#" + k : id, ticker, cls: e.cls || null, status: e.status, first: seg[0].date, last: last.date,
           segmentEnd: k < segs.length - 1, lastKey: `${last.date}|${last.close}|${last.volume}`,
-          tr: d.trVerdict.confirmed ? "TOTAL_RETURN_CONFIRMED" : "TOTAL_RETURN_REJECTED_" + d.trVerdict.reason,
+          tr: d.trVerdict.confirmed ? "TOTAL_RETURN_CONFIRMED" : "TOTAL_RETURN_REJECTED_" + d.trVerdict.reason, trBucket: d.trVerdict.bucket,
           w0: keys[0], c: keys.map((x) => val(x, 0)), t: d.tr ? keys.map((x) => val(x, 1)) : null });
       });
       if (read % 500 === 0) log(`gelesen ${read}`);

@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="de" data-theme="light" data-theme-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="vu-navigation" content="none">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<script>/* Intro-Animation im Hero nur, wenn Bewegung erlaubt ist (vor dem ersten Zeichnen gesetzt) */try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro");}catch(e){}</script>
+<title>Vision Universe® – Investieren mit Weitblick. Alles in einer App.</title>
+<meta name="description" content="Die Vision Universe App: Aktien entdecken und analysieren – Fundamentaldaten, Technik, Elliott Wave, Quant, Screener, Supertrader – und die Altersvorsorge planen. Alles in einer App.">
+<link rel="canonical" href="https://research.visionuniverse.de/">
+<!-- Link-Vorschau (WhatsApp, iMessage, LinkedIn, X): absolute URLs, Bild 1200 x 630 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vision Universe">
+<meta property="og:locale" content="de_DE">
+<meta property="og:url" content="https://research.visionuniverse.de/">
+<meta property="og:title" content="Vision Universe – Investieren mit Weitblick">
+<meta property="og:description" content="Aktien analysieren, Märkte verstehen, Vorsorge planen – Fundamentaldaten, Technik, Elliott Wave und Quant in einer App.">
+<meta property="og:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
+<meta property="og:image:secure_url" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vision Universe App: Aktienanalyse mit Chart, Elliott-Wave-Zählung und Fundamentaldaten">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vision Universe – Investieren mit Weitblick">
+<meta name="twitter:description" content="Aktien analysieren, Märkte verstehen, Vorsorge planen – alles in einer App.">
+<meta name="twitter:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/home/home.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<script src="/assets/pwa.js" defer></script>
+<script src="/assets/home/hero-intro.js" defer></script>
+<script src="/assets/home/home-motion.js" defer></script>
+</head>
+<body>
+<!-- Startseite als Landingpage: eigener, schlanker Kopf statt der Plattform-Navigation.
+     Transparent ueber dem Hero, beim Scrollen kompakte Glasleiste mit Logo und App-Button. -->
+<header class="lp-head" id="lp-head">
+  <div class="shell lp-row">
+    <a class="lp-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"></a>
+    <nav class="lp-nav" aria-label="Startseite">
+      <a href="#app-module">Module</a><a href="#entwicklung">Discover</a><a href="#vorsorge">Vorsorge</a><a href="/ask/">AI Atlas</a>
+    </nav>
+    <a class="btn btn-app lp-cta" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a>
+  </div>
+</header>
+
+<!-- Icons. h-*: HUD-Icons (in .hud-Kacheln), i-*: kleine Bedien-Icons.
+     NICHT index.html bearbeiten, sondern dieses Template: scripts/home/build-home.mjs
+     setzt alle Werte der Produktabbildungen aus den Produktdaten ein und laeuft
+     nach jedem Datenlauf (Workflow "Startseite: Werte der Produktabbildungen"). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".18"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-tablet" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z" opacity=".7"/></symbol>
+%%HUD_SYMBOLS%%
+  <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
+  <!-- NVIDIA: Tageskurse der letzten 270 Handelstage, SMA 50/200, Elliott-Zählung, Setup-Zonen -->
+  <symbol id="chart-nvda" viewBox="0 -14 690 298">
+    %%CHART_BODY%%
+  </symbol>
+</svg>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero-fx" aria-hidden="true"><i class="hero-grid-fx"></i><i class="hero-scan"></i></div>
+  <div class="shell hero-grid">
+    <div class="hero-copy">
+      <span class="hero-badge"><b>App</b> Aktien · ETFs · Vorsorge · Elliott Wave · Quant</span>
+      <h1>Investieren mit <em>Weitblick.</em> Alles in einer&nbsp;App.</h1>
+      <p class="lead">Aktien entdecken und bis ins Detail verstehen – Fundamentaldaten, Technik, Elliott Wave und Quant mit klarer Einschätzung. Dazu Screener, Methoden und deine Altersvorsorge. Unabhängig, nachvollziehbar, auf echten Daten.</p>
+      <div class="hero-cta">
+        <a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost btn-xl" href="#app-module">Alle Module ansehen</a>
+      </div>
+      <ul class="hero-checks">
+        <li><svg><use href="#i-check"/></svg>Über 6.000 US-Aktien</li>
+        <li><svg><use href="#i-check"/></svg>9 Module in einer App</li>
+        <li><svg><use href="#i-check"/></svg>Desktop &amp; Smartphone</li>
+      </ul>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <!-- Desktop: Technik & Elliott -->
+      <div class="browser">
+        <div class="browser-bar"><i></i><i></i><i></i><span>research.visionuniverse.de/quant/#/aktie/NVDA/technik</span></div>
+        <div class="desk">
+          <div class="desk-side"><b>NVDA</b><span>Überblick</span><span>Zahlen</span><span class="on">Technik</span><span>Elliott</span><span>Faktoren</span><span>Setups</span></div>
+          <div class="desk-main">
+            <div class="desk-kpis">
+              <div class="desk-kpi"><b>%%NVDA_WAVE_SHORT%%</b><small>Elliott Wave</small></div>
+              <div class="desk-kpi"><b data-count>%%NVDA_TREND%%</b><small>Trend-Score · %%NVDA_TREND_DIR%%</small></div>
+              <div class="desk-kpi"><b data-count>%%NVDA_RSI%%</b><small>RSI 14</small></div>
+            </div>
+            <div class="desk-chart">
+              <div class="lbl"><b>NVIDIA · Kursstruktur &amp; Elliott</b><span>1J</span></div>
+              <svg class="chart intro-chart" viewBox="0 -14 690 298">
+    %%CHART_BODY%%
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smartphone: Aktienseite NVIDIA -->
+      <div class="phone">
+        <div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="stock-head">
+            <span class="app-logo big">NVDA</span>
+            <div><b>NVIDIA</b><small>%%NVDA_WHAT%%</small></div>
+            <div class="px"><b data-count>%%NVDA_PRICE%%</b><small class="%%NVDA_CHG_CLASS%%">%%NVDA_CHG%%</small></div>
+          </div>
+          <div class="app-badges">%%NVDA_BADGES%%</div>
+          <div class="app-tabs"><span class="on">Überblick</span><span>Zahlen</span><span>Technik</span><span>Elliott</span><span>Quant</span></div>
+          <div class="app-mini"><svg viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
+          <div class="app-grid">
+            <div><small>Umsatz TTM</small><b data-count>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%%</em></div>
+            <div><small>Nettomarge</small><b data-count>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
+            <div><small>Elliott Wave</small><b>%%NVDA_WAVE_SHORT%%</b><em>Beta</em></div>
+            <div><small>Supertrader</small><b>%%NVDA_SIGNAL%%</b><em class="up">%%NVDA_SIGNAL_STATE%%</em></div>
+          </div>
+          <div class="app-tabbar">
+            <span class="on"><svg><use href="#i-home"/></svg>Start</span>
+            <span><svg><use href="#i-globe"/></svg>Welten</span>
+            <span><svg><use href="#i-chart"/></svg>Analyse</span>
+            <span><svg><use href="#i-search"/></svg>Suchen</span>
+            <span><svg><use href="#i-heart"/></svg>Watchlist</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="orbit" aria-hidden="true"><span class="hud hud-sm orb" style="--k:0"><svg><use href="#h-discover"/></svg></span><span class="hud hud-sm orb" style="--k:1"><svg><use href="#h-quant"/></svg></span><span class="hud hud-sm orb" style="--k:2"><svg><use href="#h-screener"/></svg></span><span class="hud hud-sm orb" style="--k:3"><svg><use href="#h-super"/></svg></span><span class="hud hud-sm orb" style="--k:4"><svg><use href="#h-elliott"/></svg></span><span class="hud hud-sm orb" style="--k:5"><svg><use href="#h-technical"/></svg></span><span class="hud hud-sm orb" style="--k:6"><svg><use href="#h-fundamental"/></svg></span><span class="hud hud-sm orb" style="--k:7"><svg><use href="#h-vorsorge"/></svg></span><span class="hud hud-sm orb" style="--k:8"><svg><use href="#h-atlas"/></svg></span></div>
+      <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Szenarien &amp; Zielzonen</small></div></div>
+      <div class="float-card fc-2"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>12 Geschäftsjahre</b><small>Fundamentaldaten aus SEC-Berichten</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KENNZAHLEN ============ -->
+<section class="stats" aria-label="Vision Universe in Zahlen">
+  <div class="shell stats-grid">
+    <div class="stat"><b><span data-count-to="6000">6.000</span><i>+</i></b><span>US-Aktien im Universum</span></div>
+    <div class="stat"><b><span data-count-to="9">9</span></b><span>Module in einer App</span></div>
+    <div class="stat"><b><span data-count-to="12">12</span><i>&nbsp;J.</i></b><span>Fundamentaldaten je Aktie</span></div>
+    <div class="stat"><b><span data-count-to="7000">7.000</span><i>+</i></b><span>ETFs für deine Vorsorge</span></div>
+  </div>
+</section>
+
+<!-- ============ APP-MODULE + SCHAUBILD ============ -->
+<section class="section" id="app-module">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="kicker">Die Vision Universe App</span>
+        <h2 class="h2">Ein System. Neun Module.<br>Von der Aktie bis zur Vorsorge.</h2>
+      </div>
+      <p class="lead">Alle Analysen greifen auf dieselben Daten zu und sind miteinander verbunden: Von jeder Aktie kommst du mit einem Tipp zu Zahlen, Chart, Elliott-Zählung, Faktoren und Setups – und von dort direkt zu deinem Vorsorgeplan.</p>
+    </div>
+
+    <div class="eco">
+      <div class="hub" aria-hidden="true">
+        <div class="hub-ring">
+        <svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width=".25" stroke-dasharray=".8 1.2"/>
+          <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width=".2" opacity=".6"/>
+          <g stroke="#c8f531" stroke-width=".35" opacity=".8">
+            <path d="M50 50 50.0 10.0M50 50 75.7 19.4M50 50 89.4 43.1M50 50 84.6 70.0M50 50 63.7 87.6M50 50 36.3 87.6M50 50 15.4 70.0M50 50 10.6 43.1M50 50 24.3 19.4"/>
+          </g>
+          <g fill="#c8f531"><circle cx="50.0" cy="23.0" r=".9"/><circle cx="67.4" cy="29.3" r=".9"/><circle cx="76.6" cy="45.3" r=".9"/><circle cx="73.4" cy="63.5" r=".9"/><circle cx="59.2" cy="75.4" r=".9"/><circle cx="40.8" cy="75.4" r=".9"/><circle cx="26.6" cy="63.5" r=".9"/><circle cx="23.4" cy="45.3" r=".9"/><circle cx="32.6" cy="29.3" r=".9"/></g>
+        </svg>
+        <span class="node" data-mod="discover" style="--x:50.0%;--y:10.0%"><span class="hud"><svg><use href="#h-discover"/></svg></span><em>Discover</em></span>
+        <span class="node" data-mod="quant" style="--x:75.7%;--y:19.4%"><span class="hud"><svg><use href="#h-quant"/></svg></span><em>Quant</em></span>
+        <span class="node" data-mod="screener" style="--x:89.4%;--y:43.1%"><span class="hud"><svg><use href="#h-screener"/></svg></span><em>Screener</em></span>
+        <span class="node" data-mod="super" style="--x:84.6%;--y:70.0%"><span class="hud"><svg><use href="#h-super"/></svg></span><em>Supertrader</em></span>
+        <span class="node" data-mod="elliott" style="--x:63.7%;--y:87.6%"><span class="hud"><svg><use href="#h-elliott"/></svg></span><em>Elliott Wave</em></span>
+        <span class="node" data-mod="technik" style="--x:36.3%;--y:87.6%"><span class="hud"><svg><use href="#h-technical"/></svg></span><em>Technik</em></span>
+        <span class="node" data-mod="fundamental" style="--x:15.4%;--y:70.0%"><span class="hud"><svg><use href="#h-fundamental"/></svg></span><em>Fundamental</em></span>
+        <span class="node" data-mod="vorsorge" style="--x:10.6%;--y:43.1%"><span class="hud"><svg><use href="#h-vorsorge"/></svg></span><em>Vorsorge</em></span>
+        <span class="node" data-mod="atlas" style="--x:24.3%;--y:19.4%"><span class="hud"><svg><use href="#h-atlas"/></svg></span><em>AI Atlas</em></span>
+        </div>
+        <div class="hub-core"><img src="/assets/vision-universe-logo.png" alt=""><b>APP</b><span class="hub-active">Discover</span></div>
+      </div>
+
+      <div class="modules">
+        <a class="module" data-mod="discover" href="/discover/"><span class="hud hud-sm"><svg><use href="#h-discover"/></svg></span><div><b>Discover</b><span>Aktien entdecken: Themenwelten, Rankings und Märkte zum Swipen.</span></div></a>
+        <a class="module" data-mod="quant" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
+        <a class="module" data-mod="screener" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
+        <a class="module" data-mod="super" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
+        <a class="module" data-mod="elliott" href="/quant/#/aktie/NVDA/technik?elliott=1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></a>
+        <a class="module" data-mod="technik" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
+        <a class="module" data-mod="fundamental" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
+        <a class="module" data-mod="atlas" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
+        <a class="module module-wide" data-mod="vorsorge" href="/vorsorge/"><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Altersvorsorge <span class="tag-new">Neu</span></b><span>Vorsorgelücke berechnen, ETFs vergleichen, Kosten prüfen und staatliche Förderung nutzen.</span></div></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EINE AKTIE, JEDE PERSPEKTIVE ============ -->
+<section class="section dark-band" id="analyse">
+  <div class="shell">
+    <div class="feature">
+      <div class="feature-copy">
+        <span class="kicker">Aktienanalyse komplett</span>
+        <h2 class="h2">Eine Aktie. Jede Perspektive.</h2>
+        <p class="lead">Fundamental, technisch, Elliott Wave und Quant auf einer Seite – regelbasiert berechnet, reproduzierbar und ohne menschliches Einzeichnen.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten &amp; Einschätzung</b><span>12 Geschäftsjahre aus SEC-Berichten: Umsatz, Gewinn, Margen, Verschuldung, Bewertung.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Details</b><span>Trend, Momentum, gleitende Durchschnitte, Unterstützungen, Widerstände und Fibonacci.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/quant/#/aktie/NVDA/technik?elliott=1">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual visual-dark" aria-hidden="true">
+        <div class="panel panel-wide">
+          <div class="panel-head"><b>NVIDIA (NVDA) · Technik &amp; Elliott</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="chips"><span class="chip on">Elliott</span><span class="chip">SMA 50</span><span class="chip">SMA 200</span><span class="chip">Zonen</span></div>
+          <div style="padding:0 14px 6px"><svg class="chart" viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
+          <div class="kv">
+            <div><small>Elliott</small><b>%%NVDA_WAVE_LONG%%</b><em>regelbasiert · Beta</em></div>
+            <div><small>Trend</small><b class="%%NVDA_TREND_CLASS%%">%%NVDA_TREND_DIR_CAP%% · %%NVDA_TREND%%</b><em>%%NVDA_TREND_NOTE%%</em></div>
+            <div><small>Umsatz TTM</small><b>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%% ggü. Vorjahr</em></div>
+            <div><small>Nettomarge</small><b>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UNTERNEHMENSENTWICKLUNG (aus Discover) ============ -->
+<section class="section" id="entwicklung">
+  <div class="shell">
+    <div class="feature flip">
+      <div class="feature-copy">
+        <span class="kicker">Discover · Unternehmensentwicklung</span>
+        <h2 class="h2">Wachstum, das man sieht.</h2>
+        <p class="lead">Zwölf Geschäftsjahre aus den SEC-Berichten auf einen Blick: Umsatz, Gewinn und Cashflow. Kennzahl wählen, Balken antippen, Jahre vergleichen.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Zwölf Jahre Historie</b><span>Jede Zahl mit Geschäftsjahr und Quelle – direkt aus den Pflichtberichten.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Klare Einordnung</b><span>Wachstum, Margen und Cashflow – verständlich statt Tabellenwüste.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/discover/#/s/US_REAL/NVDA">NVIDIA in Discover ansehen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual visual-dark" aria-hidden="false">
+        <div class="journey" id="journey">
+          <div class="journey-head"><b>Wie sich NVIDIA entwickelt hat</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="journey-tabs" role="tablist" aria-label="Kennzahl wählen">%%JOURNEY_TABS%%</div>
+          <div class="journey-kpis">
+            <div><b data-j="from">%%JOURNEY_FROM%%</b><small data-j="fromYear">%%JOURNEY_FROM_YEAR%%</small></div>
+            <div><b data-j="to">%%JOURNEY_TO%%</b><small data-j="toYear">%%JOURNEY_TO_YEAR%%</small></div>
+          </div>
+          <div class="journey-growth"><b data-j="growth">%%JOURNEY_GROWTH%%</b><small data-j="span">%%JOURNEY_SPAN%%</small></div>
+          <div class="journey-bars" role="list">%%JOURNEY_BARS%%</div>
+          <script type="application/json" id="journey-data">%%JOURNEY_JSON%%</script>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DISCOVER: SWIPE-FEED & THEMENWELTEN ============ -->
+<section class="section swipe-sec" id="swipe">
+  <div class="shell">
+    <div class="section-head">
+      <div><span class="kicker">Discover · Swipe-Feed &amp; Themenwelten</span><h2 class="h2">Swipen statt suchen.</h2></div>
+      <p class="lead">Wische dich durch die stärksten Aktien – nach rechts merken, nach links weiter. Und tauche in 54 Themenwelten ein, von KI bis Raumfahrt. Probier es direkt aus.</p>
+    </div>
+    <div class="swipe-grid">
+      <div class="swipe-phone">
+        <div class="phone"><div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="app-h"><b>Entdecken · Thema KI</b><span class="live"><i></i>Live</span></div>
+          <div class="deck" id="deck" aria-label="Aktien zum Swipen">%%SWIPE_CARDS%%</div>
+          <div class="deck-actions"><button type="button" class="deck-btn no" data-swipe="left" aria-label="Weiter">✕</button><span class="deck-hint">Ziehen oder tippen</span><button type="button" class="deck-btn yes" data-swipe="right" aria-label="Merken"><svg><use href="#i-heart"/></svg></button></div>
+        </div></div>
+        <div class="deck-saved" aria-live="polite"><svg><use href="#i-heart"/></svg> <span id="deck-saved">0</span> gemerkt</div>
+      </div>
+      <div class="worlds" aria-label="Themenwelten">
+        %%WORLD_ROWS%%
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE IM DETAIL ============ -->
+<section class="section">
+  <div class="shell">
+
+    <!-- Discover -->
+    <div class="feature flip" id="discover">
+      <div class="feature-copy">
+        <span class="kicker">Discover</span>
+        <h2 class="h2">Entdecke Aktien, wie du Musik entdeckst.</h2>
+        <p class="lead">Swipe durch Themenwelten, Rankings und Märkte. Discover zeigt dir, was sich bewegt – und von dort geht es direkt in die volle Analyse.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-globe"/></svg></span><div><b>54 Themenwelten</b><span>Künstliche Intelligenz, Halbleiter, Raumfahrt, Wasserstoff und viele mehr.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Rankings &amp; Perspektiven</b><span>Die stärksten Aktien je Index, Branche und Thema.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-heart"/></svg></span><div><b>Deine Watchlist</b><span>Merke dir Ideen und verfolge sie über alle Module hinweg.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/discover/">Discover öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="disc">
+          <div class="disc-hero"><img src="/assets/themen/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span><small>Themenwelt</small>Künstliche Intelligenz</span></div>
+          <div class="panel">
+            <div class="panel-head"><b>Stärkste Aktien · Thema KI</b><span class="live"><i></i>Live-Daten</span></div>
+            <table class="tbl">
+              <thead><tr><th>Rang</th><th>Unternehmen</th><th>3 Monate</th></tr></thead>
+              <tbody>
+                %%KI_ROWS%%
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screener -->
+    <div class="feature" id="screener">
+      <div class="feature-copy">
+        <span class="kicker">Screener</span>
+        <h2 class="h2">Dein Universum. Deine Kriterien.</h2>
+        <p class="lead">Filtere über 6.000 US-Aktien Schritt für Schritt – einfach für den Einstieg, im Pro-Modus mit Gruppen, gewichtetem Ranking und allen Kriterien.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-sliders"/></svg></span><div><b>Einfach &amp; Pro</b><span>Starte mit wenigen Kriterien und vertiefe, wann du willst.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Gewichtetes Ranking</b><span>Bestimme selbst, welche Faktoren dir wichtig sind.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-save"/></svg></span><div><b>Screens speichern</b><span>Gespeicherte und zuletzt genutzte Screens immer griffbereit.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/screener/">Screener öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>Screen: Wachstum mit Marge</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="chips"><span class="chip on">Umsatzwachstum &gt; 10 %</span><span class="chip on">Nettomarge &gt; 10 %</span><span class="chip on">KGV &lt; 50</span><span class="chip">+ Kriterium</span></div>
+          <table class="tbl">
+            <thead><tr><th>Unternehmen</th><th>Umsatz&nbsp;+</th><th class="hide-s">Marge</th><th>KGV</th></tr></thead>
+            <tbody>
+              %%SCREENER_ROWS%%
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supertrader -->
+    <div class="feature flip" id="supertrader">
+      <div class="feature-copy">
+        <span class="kicker">Supertrader</span>
+        <h2 class="h2">Methoden. Setups. Klare Regeln.</h2>
+        <p class="lead">Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale – von CAN SLIM über Darvas Boxes bis Weinstein Stages.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-rules"/></svg></span><div><b>11 Methoden, feste Regeln</b><span>Jede Regelversion ist dokumentiert und nachvollziehbar.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-eye"/></svg></span><div><b>Was die Modelle beobachten</b><span>Setups in Vorbereitung, bestätigte Einstiege und Modellpositionen.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-shield"/></svg></span><div><b>Ehrliche Evidenz</b><span>Wie belastbar jede Methode ist – als Forschung, nicht als Empfehlung.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/supertrader/">Supertrader öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>Was die Modelle gerade beobachten</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="sig-list">
+            %%SIGNAL_ROWS%%
+          </div>
+        </div>
+        <div class="float-note" style="right:18px;bottom:18px"><i></i>Modellbeobachtung, keine Empfehlung</div>
+      </div>
+    </div>
+
+    <!-- Quant -->
+    <div class="feature" id="quant">
+      <div class="feature-copy">
+        <span class="kicker">Quant</span>
+        <h2 class="h2">Von der Frage zur Entscheidung.</h2>
+        <p class="lead">Quant prüft über 6.000 US-Aktien nach festen Daten und Regeln – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-layers"/></svg></span><div><b>Faktor-DNA</b><span>Qualität, Wachstum, Momentum, Bewertung, Profitabilität und Risiko.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Historische Vergleichsfälle</b><span>Was früher in ähnlichen Situationen geschah – mit Backtests.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-data"/></svg></span><div><b>Bis zu den Rohdaten</b><span>Offene Methodik und Datenherkunft statt Blackbox.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/quant/#/aktie/NVDA">Quant öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>NVIDIA · Faktor-DNA</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="factors">
+            %%FACTOR_ROWS%%
+          </div>
+          <div class="event"><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Ereignis-Radar</b><small>Neue Hochs, bestätigte Setups und Faktorwechsel – jeden Handelstag, mit historischen Vergleichsfällen. Historisch, kein Versprechen.</small></div></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Vorsorge -->
+    <div class="feature flip" id="vorsorge">
+      <div class="feature-copy">
+        <span class="kicker">Altersvorsorge</span>
+        <h2 class="h2">Deine Vorsorge. Klar geplant.</h2>
+        <p class="lead">Wie groß ist deine Vorsorgelücke, welcher ETF passt, was kosten Produkte wirklich – und welche Förderung steht dir zu? Analyse statt Produktverkauf.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Vorsorgeplaner</b><span>Vorsorgelücke berechnen und Sparplan durchspielen – mit eigenen Annahmen.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-layers"/></svg></span><div><b>ETF Intelligence &amp; X-Ray</b><span>Über 7.000 ETFs mit echter Kurshistorie, Kostenanalyse und Portfolio-Durchleuchtung.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-shield"/></svg></span><div><b>Förderrechner</b><span>Altersvorsorgedepot ab 2027, Riester und Frühstart-Rente – nach Gesetzestext geprüft.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/vorsorge/">Vorsorge planen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>Vorsorgeplaner · Sparplan</b><small>Beispielrechnung</small></div>
+          <div class="plan">
+            <div class="plan-kpis">
+              <div><small>Sparrate</small><b>200 € / Monat</b></div>
+              <div><small>Laufzeit</small><b>30 Jahre</b></div>
+              <div><small>Endwert</small><b class="lime">166.452 €</b></div>
+            </div>
+            <div class="plan-bars">
+              <div><i style="height:8.2%"></i><em style="height:7.2%"></em><span>5 J.</span></div>
+              <div><i style="height:18.7%"></i><em style="height:14.4%"></em><span>10 J.</span></div>
+              <div><i style="height:32.1%"></i><em style="height:21.6%"></em><span>15 J.</span></div>
+              <div><i style="height:49.4%"></i><em style="height:28.8%"></em><span>20 J.</span></div>
+              <div><i style="height:71.6%"></i><em style="height:36%"></em><span>25 J.</span></div>
+              <div><i style="height:100%"></i><em style="height:43.3%"></em><span>30 J.</span></div>
+            </div>
+            <div class="plan-legend"><span><i class="l1"></i>Depotwert</span><span><i class="l2"></i>Eingezahlt 72.000 €</span><span class="note">5 % p. a. angenommen, vor Kosten und Steuern</span></div>
+            <div class="chips" style="padding:12px 0 0"><span class="chip on">Altersvorsorgedepot 2027</span><span class="chip">Riester</span><span class="chip">Frühstart-Rente</span><span class="chip">Kostenanalyse</span></div>
+          </div>
+        </div>
+        <div class="float-note" style="right:18px;top:18px"><i></i>Analyse statt Produktverkauf</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ ATLAS ============ -->
+<section class="section" style="padding-top:0">
+  <div class="shell">
+    <div class="atlas-band">
+      <div>
+        <span class="hud hud-lg" style="margin-bottom:22px"><svg><use href="#h-atlas"/></svg></span>
+        <span class="kicker">AI Atlas</span>
+        <h2 class="h2">Frag einfach. Atlas rechnet auf echten Daten.</h2>
+        <p class="lead">Stelle eine Investmentfrage in eigenen Worten – Atlas übersetzt sie in Filter und rechnet sie auf den Daten aus Screener, Supertrader und Quant aus.</p>
+        <div class="hero-cta"><a class="btn btn-app" href="/ask/">AI Atlas fragen <svg><use href="#i-arrow"/></svg></a></div>
+      </div>
+      <div class="chat" aria-hidden="true">
+        <div class="bubble q">Zeig mir günstig bewertete Small Caps mit wenig Schulden.</div>
+        <div class="bubble a">Ich habe das in <b>drei Filter</b> übersetzt: Marktkapitalisierung unter 2 Mrd. USD, KGV unter Branchenschnitt und niedrige Nettoverschuldung.<div class="src"><span>Screener</span><span>Quant</span><span>Live-Daten</span></div></div>
+        <div class="chat-input"><span>Deine Frage an Atlas …</span><i>→</i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SO FUNKTIONIERT'S ============ -->
+<section class="section" style="background:var(--bg-soft);border-block:1px solid var(--line)">
+  <div class="shell">
+    <div class="section-head">
+      <div><span class="kicker">So einfach geht's</span><h2 class="h2">In drei Schritten zur klaren Einordnung.</h2></div>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="hud"><svg><use href="#h-discover"/></svg></span><h3>Entdecken</h3><p>Starte mit Themenwelten, Rankings und Perspektiven und finde Unternehmen, die dich interessieren.</p></div>
+      <div class="step"><span class="hud"><svg><use href="#h-screener"/></svg></span><h3>Eingrenzen</h3><p>Filtere nach deinen Kriterien und sieh, welche Methoden und Setups gerade anschlagen.</p></div>
+      <div class="step"><span class="hud"><svg><use href="#h-elliott"/></svg></span><h3>Verstehen</h3><p>Prüfe Fundamentaldaten, Chart, Elliott-Zählung und Faktoren – mit klarer Einschätzung.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP-EINSTIEG ============ -->
+<section class="section" id="app">
+  <div class="shell">
+    <div class="appcta">
+      <div class="appcta-copy">
+        <span class="kicker">Die Vision Universe App</span>
+        <h2 class="h2">Dein Research. Auf jedem Gerät.</h2>
+        <p class="lead">Alle Module in einer App – am Desktop, auf dem Tablet und auf dem Smartphone. Auf dem Handy einfach zum Home-Bildschirm hinzufügen und wie eine native App nutzen.</p>
+        <div class="hero-cta">
+          <a class="btn btn-dark btn-xl" href="/discover/">Jetzt App öffnen <svg><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost btn-xl" href="/ask/">AI Atlas</a>
+        </div>
+        <div class="devices">
+          <span><svg><use href="#i-laptop"/></svg>Desktop</span>
+          <span><svg><use href="#i-tablet"/></svg>Tablet</span>
+          <span><svg><use href="#i-phone"/></svg>Smartphone</span>
+        </div>
+      </div>
+      <div class="appcta-phones" aria-hidden="true">
+        <div class="phone p1"><div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="app-h"><b>Themenwelten</b><span>Alle 54</span></div>
+          <div class="app-tiles">
+            <div class="app-tile"><img src="/assets/themen/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span>Künstliche<br>Intelligenz</span></div>
+            <div class="app-tile"><img src="/assets/themen/02-halbleiter-chips.webp" alt="" loading="lazy"><span>Halbleiter</span></div>
+            <div class="app-tile"><img src="/assets/themen/16-raumfahrt.webp" alt="" loading="lazy"><span>Raumfahrt</span></div>
+            <div class="app-tile"><img src="/assets/themen/05-quantencomputing.webp" alt="" loading="lazy"><span>Quanten&shy;computing</span></div>
+            <div class="app-tile"><img src="/assets/themen/12-erneuerbare-energien.webp" alt="" loading="lazy"><span>Erneuerbare</span></div>
+            <div class="app-tile"><img src="/assets/themen/04-cybersecurity.webp" alt="" loading="lazy"><span>Cyber&shy;security</span></div>
+          </div>
+        </div></div>
+        <div class="phone p2"><div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="app-h"><b>Watchlist</b><span>Live</span></div>
+          <div class="app-list" style="margin-top:0">
+            %%WATCH_ROWS%%
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRINZIPIEN ============ -->
+<section class="section" style="padding-top:20px">
+  <div class="shell">
+    <div class="section-head">
+      <div><span class="kicker">Worauf du dich verlassen kannst</span><h2 class="h2">Research mit Haltung.</h2></div>
+      <p class="lead">Farbe ist Signal, nicht Schmuck. Und jede Zahl hat eine Quelle.</p>
+    </div>
+    <div class="principles">
+      <div class="principle"><span class="hud"><svg><use href="#h-shield"/></svg></span><h3>Unabhängig</h3><p>Keine Produktvermittlung, keine bezahlten Platzierungen – nur Daten und Methode.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-data"/></svg></span><h3>Transparent</h3><p>Datenstand, Regelversion und Methodik stehen offen – nachvollziehbar bis zu den Rohdaten.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-eye"/></svg></span><h3>Ehrlich</h3><p>Wo es keine belastbare Evidenz gibt, sagen wir es. Keine Stufe ist ein Versprechen.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-spark"/></svg></span><h3>Verständlich</h3><p>Klare Sprache statt Fachjargon – für Einsteiger und Profis gleichermaßen.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" style="padding-top:20px" id="faq">
+  <div class="shell faq-grid">
+    <div><span class="kicker">FAQ</span><h2 class="h2">Häufige Fragen</h2><p class="lead">Noch etwas unklar? Frag einfach AI Atlas.</p></div>
+    <div class="faq">
+      <details open><summary>Was ist die Vision Universe App?</summary><p>Eine App für das komplette Aktien-Research: Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Analyse, Fundamentaldaten mit Einschätzungen, Altersvorsorge und AI Atlas – alles auf denselben Daten und miteinander verbunden.</p></details>
+      <details><summary>Was bietet der Vorsorge-Bereich?</summary><p>Einen Vorsorgeplaner für deine Vorsorgelücke, ETF Intelligence mit echter Kurshistorie, Kostenanalyse, Portfolio-X-Ray und einen Förderrechner für Altersvorsorgedepot, Riester und Frühstart-Rente – unabhängig, ohne Produktverkauf.</p></details>
+      <details><summary>Muss ich etwas installieren?</summary><p>Nein. Die App läuft im Browser auf Desktop, Tablet und Smartphone. Auf dem Handy kannst du sie zum Home-Bildschirm hinzufügen und wie eine native App starten.</p></details>
+      <details><summary>Welche Aktien sind abgedeckt?</summary><p>Aktuell über 6.000 US-Aktien mit Kursdaten, Fundamentaldaten aus bis zu 12 Geschäftsjahren, technischer Analyse und Elliott-Zählung – geordnet nach Branchen, Märkten und 54 Themenwelten.</p></details>
+      <details><summary>Wie entstehen die Elliott-Wave-Analysen?</summary><p>Regelbasiert und reproduzierbar: Die Zählung wird aus bestätigten Wendepunkten berechnet – mit Szenarien, Invalidierung und Zielzonen, ohne menschliches Einzeichnen. Die Elliott-Analyse ist als Beta gekennzeichnet.</p></details>
+      <details><summary>Sind die Signale Kaufempfehlungen?</summary><p>Nein. Alle Inhalte dienen der Information und Forschung. Setups sind Modellbeobachtungen nach festen Regeln, keine Anlageberatung und keine Empfehlung.</p></details>
+      <details><summary>Woher kommen die Daten?</summary><p>Aus Markt- und Unternehmensdaten, unter anderem Tageskursen und SEC-Berichten. Datenstand und Methodik sind in jedem Modul ausgewiesen.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCHLUSS ============ -->
+<section class="final">
+  <div class="shell">
+    <span class="kicker">Entdecken. Verstehen. Investieren.</span>
+    <h2 class="h2">Sieh den Markt mit anderen Augen.</h2>
+    <p class="lead">Öffne die App und starte deine Recherche – in wenigen Sekunden.</p>
+    <div class="hero-cta"><a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a></div>
+  </div>
+</section>
+
+</main>
+
+<!-- Mitlaufender App-Einstieg: erscheint nach dem Hero, verschwindet am Seitenende -->
+<div class="sticky-cta" id="sticky-cta" aria-hidden="true">
+  <div class="sticky-inner">
+    <span class="hud hud-sm"><svg><use href="#h-spark"/></svg></span>
+    <div class="sticky-copy"><b>Vision Universe App</b><span>Aktien, Analysen &amp; Vorsorge</span></div>
+    <a class="btn btn-app" href="/discover/" tabindex="-1">App öffnen <svg><use href="#i-arrow"/></svg></a>
+  </div>
+</div>
+
+<!-- ============ IMAGEFILM ============ -->
+<section class="film" id="film" aria-label="Vision Universe Imagefilm">
+  <div class="shell film-grid">
+    <div class="film-copy">
+      <span class="kicker">Der Film</span>
+      <h2 class="h2">Vision Universe in 22 Sekunden.</h2>
+      <p class="lead">Elliott Wave, Fundamentaldaten, Quant, Themenwelten und Vorsorge – einmal im Schnelldurchlauf. Zum Anschauen und Teilen.</p>
+      <div class="hero-cta"><button class="btn btn-app" type="button" data-film-play>Film ansehen <svg><use href="#i-arrow"/></svg></button><a class="btn btn-ghost" href="/discover/">App öffnen</a></div>
+    </div>
+    <div class="film-frame">
+      <button class="film-poster" type="button" data-film-play aria-label="Imagefilm abspielen">
+        <picture>
+          <source media="(max-width:760px)" srcset="/assets/home/clip/vu-imageclip-9x16.jpg">
+          <img src="/assets/home/clip/vu-imageclip-16x9.jpg" width="1280" height="720" alt="Vision Universe Imagefilm" loading="lazy" decoding="async">
+        </picture>
+        <span class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+        <span class="film-len">0:22</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER (Shopify-Kundenformular von visionuniverse.de) ============ -->
+<section class="newsletter" id="newsletter" aria-labelledby="nl-title">
+  <div class="shell nl-box">
+    <div class="nl-copy">
+      <span class="hud"><svg><use href="#h-spark"/></svg></span>
+      <div><span class="kicker">Newsletter</span><h2 class="h2" id="nl-title">Analysen direkt ins Postfach.</h2><p class="lead">Neue Reports, Marktbriefings und Funktionen der App – kompakt und kostenlos.</p></div>
+    </div>
+    <form class="nl-form" method="post" action="https://www.visionuniverse.de/contact#contact_form" accept-charset="UTF-8" target="_blank" rel="noopener">
+      <input type="hidden" name="form_type" value="customer">
+      <input type="hidden" name="utf8" value="✓">
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <label class="nl-field"><span class="sr">E-Mail-Adresse</span><input type="email" name="contact[email]" placeholder="Deine E-Mail-Adresse" autocomplete="email" autocapitalize="off" autocorrect="off" required></label>
+      <button class="btn btn-app" type="submit">Abonnieren <svg><use href="#i-arrow"/></svg></button>
+      <p class="nl-note">Abmeldung jederzeit möglich. Hinweise zum Datenschutz in der <a href="https://www.visionuniverse.de/policies/privacy-policy" target="_blank" rel="noopener">Datenschutzerklärung</a>.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ============ SOCIAL ============ -->
+<section class="social-bar" aria-label="Vision Universe in sozialen Netzwerken">
+  <div class="shell social-row">
+    <div><span class="kicker">Folge Vision Universe</span><p>Analysen, Reports und Einblicke – jeden Tag auf deinen Kanälen.</p></div>
+    <div class="social-links">
+      <a href="https://www.instagram.com/visionuniverse.aktienreports" aria-label="Instagram" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.1" class="f"/></svg></a>
+      <a href="https://www.tiktok.com/@visionuniverse.reports" aria-label="TikTok" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.3 4.4 5 4.6"/></svg></a>
+      <a href="https://youtube.com/@visionuniverse.aktienreports" aria-label="YouTube" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9 5 3-5 3z" class="f"/></svg></a>
+      <a href="https://x.com/visionuniverse_" aria-label="X" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+      <a href="https://www.facebook.com/share/18Tq5kPjQw/" aria-label="Facebook" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M15 3.5h-2.2A3.8 3.8 0 0 0 9 7.3V10H6.5v3.5H9V21h3.5v-7.5h2.7l.5-3.5h-3.2V7.6c0-.6.5-1 1-1H15z"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><img class="footer-logo" src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"><p>Unabhängiges Aktien-Research: entdecken, verstehen, investieren.</p></div>
+      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/quant/#/aktie/NVDA/technik?elliott=1">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
+      <div><h4>Märkte &amp; Research</h4><ul><li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li></ul></div>
+      <div><h4>Rechtliches</h4><ul>
+        <li><a href="https://www.visionuniverse.de/policies/legal-notice">Impressum</a></li>
+        <li><a href="https://www.visionuniverse.de/policies/privacy-policy">Datenschutz</a></li>
+        <li><a href="https://www.visionuniverse.de/policies/terms-of-service">AGB</a></li>
+        <li><a href="https://www.visionuniverse.de/pages/nutzungsbedingungen">Nutzungsbedingungen</a></li>
+        <li><a href="https://www.visionuniverse.de/pages/transparenz-und-rechtshinweise">Transparenz &amp; Rechtshinweise</a></li>
+        <li><a href="https://www.visionuniverse.de/policies/contact-information">Kontakt</a></li>
+      </ul></div>
+    </div>
+    <div class="disclaimer">
+      <p>Alle Inhalte dienen ausschließlich der Information und stellen keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Wertpapieren dar. Historische Entwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Die Werte in den Produktabbildungen stammen aus den Daten der App und werden nach jedem Datenlauf automatisch aktualisiert.</p>
+      <span>© <span data-year>2026</span> Vision Universe®</span>
+    </div>
+  </div>
+</footer>
+<script>
+document.querySelector("[data-year]").textContent=new Date().getFullYear();
+/* Mitlaufender App-Button: sichtbar, sobald der Hero-Button aus dem Bild ist,
+   ausgeblendet, solange der Schluss-Button oder die Fusszeile sichtbar sind. */
+(function(){
+  var bar=document.getElementById("sticky-cta");if(!bar||!("IntersectionObserver" in window))return;
+  var link=bar.querySelector("a"),heroGone=false,endIn=false;
+  function sync(){var on=heroGone&&!endIn;bar.classList.toggle("on",on);bar.setAttribute("aria-hidden",String(!on));link.tabIndex=on?0:-1;}
+  new IntersectionObserver(function(e){heroGone=!e[0].isIntersecting;sync();}).observe(document.querySelector(".hero-cta"));
+  var seen=new Set(),end=new IntersectionObserver(function(es){es.forEach(function(x){x.isIntersecting?seen.add(x.target):seen.delete(x.target);});endIn=seen.size>0;sync();});
+  [".final",".footer"].forEach(function(q){var n=document.querySelector(q);if(n)end.observe(n);});
+})();
+</script>
+</body>
+</html>

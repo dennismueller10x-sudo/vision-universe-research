@@ -132,6 +132,10 @@ export function baueKandidat(brief, ergebnis, slideUrls, options) {
       slideCount: slides.length,
       plannedSlideCount: lieferung.geplant,
       deliveryMode: lieferung.modus,
+      designMode: ergebnis.design_mode || null,
+      visualConcept: ergebnis.visual_concept || null,
+      aiClicheCheck: ergebnis.ai_cliche_check || null,
+      atlasPresent: slides.some((s) => s.brand_elements && s.brand_elements.includes_atlas === true),
       styleReferences: options.styleReferences || null,
       carouselPlan: plan,
       editorialGate: ergebnis.editorial_gate || null,
@@ -255,7 +259,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const alleSlidesDa = dateien.every((d) => d.bytes && d.bytes.length > 0);
     const gate = CreativeGate.pruefe(kandidat, {
       rendered: true,
-      atlasBefund: { passed: slides[0].brand_elements && slides[0].brand_elements.includes_atlas === true,
+      atlasVerboten: true,
+      atlasBefund: { passed: slides.some((s) => s.brand_elements && s.brand_elements.includes_atlas === true),
         quelle: "agent_announced" },
       logoBefund: { passed: slides.every((s) => s.brand_elements && s.brand_elements.includes_logo === true),
         quelle: "agent_announced" },

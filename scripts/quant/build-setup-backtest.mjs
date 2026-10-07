@@ -26,12 +26,12 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { fromBars } from "./lib/daily-prices.mjs";
+import { workingStoreFromBars } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SB = require(join(ROOT, "quant/engines/signal-backtest.js"));
-const MarketQualityVersion = () => require(join(ROOT, "quant/engines/market-quality.js")).TR_CONTRACT_VERSION;
+const MarketQualityVersion = () => require(join(ROOT, "quant/engines/canonical-total-return.js")).VERSION;
 const REPLAY = join(ROOT, "quant/data/product/setup-replay-v1");
 const OUT = join(ROOT, "quant/data/product/setup-backtest-v1.json");
 const HIST = join(ROOT, "quant/data/product/setup-observation-history/setup-mapping-1.0.0");
@@ -40,6 +40,60 @@ export const SETUP_BACKTEST_SCHEMA = "setup-backtest-1.0.0";
 export const DAY_HORIZONS = [{ id: "m1", days: 21, label: "1 Monat" }, { id: "m3", days: 63, label: "3 Monate" }, { id: "m6", days: 126, label: "6 Monate" }, { id: "m12", days: 252, label: "12 Monate" }];
 export const MAX_HOLD = 126;
 const UP = { NO_SETUP: 0, WATCH: 1, SETUP_FORMING: 2, CONFIRMED: 3 };
+/* NACHRECHNUNG NUR GEGEN DIESELBE REIHE (03.10.2026).
+   Die Paritaet rechnet veroeffentlichte Setup-Staende exakt nach. Hat die
+   Listing-Regel (survivorship-control currentListingSegment) die Reihe
+   eines Titels NACH der Veroeffentlichung gekuerzt - Kerzen einer frueheren
+   Firma unter demselben Kuerzel entfernt -, ist der alte Stand mit der
+   korrigierten Reihe nicht reproduzierbar, und das ist kein PIT-Verstoss.
+   Ausgenommen wird nur, was der Bericht des Listing-Schutzes belegt
+   (quant/data/market/listing-continuity-v1.json): Titel mit Schnitt,
+   Staende vor dem Bericht. Jede andere Abweichung bleibt ein Fehler. */
+export function seriesRevisions(report) {
+  const pu = (report && report.productUniverse) || {};
+  const col = (pu.columns || []).indexOf("firstCutAt");
+  const fallback = report && report.generatedAt ? String(report.generatedAt).slice(0, 10) : null;
+  const ids = new Map((pu.rows || []).map((r) => [r[0], col >= 0 && r[col] ? r[col] : fallback]));
+  return { at: fallback, ids };
+}
+/** Wurde die Reihe nach dem Stichtag dieses veroeffentlichten Stands korrigiert? */
+export function revisedSincePublication(revisions, securityId, asOf) {
+  const cutAt = revisions && revisions.ids ? revisions.ids.get(securityId) : null;
+  return !!(cutAt && asOf <= cutAt);
+}
+
+/* WIEDERHOLTE ALT-BEOBACHTUNG IST KEIN PIT-VERSTOSS - ABER SICHTBAR (04.10.2026).
+   Bis 04.10.2026 hat build-setup-observations jedes Technical-Bundle unter dem
+   juengsten Stichtag veroeffentlicht, auch wenn das Bundle selbst aelter war.
+   Sechs Titel (AMC, CHPT, EJH, LGHL, VEEE, VIVO) stehen seit dem 2026-09-10
+   mit identischer Zeile in jeder Beobachtung; nachdem ihre Reihen wieder
+   fortgeschrieben wurden, rechnet die Wiederholung an diesen Stichtagen
+   andere Werte - 33 Abweichungen. Das ist Veraltung, kein Blick in die
+   Zukunft. Als solche gilt eine Abweichung NUR, wenn
+     1. die veroeffentlichte Zeile seit einem frueheren Stichtag E unveraendert ist und
+     2. die Wiederholung an genau diesem E exakt uebereinstimmt.
+   Sie wird gezaehlt und ausgewiesen (parity.staleRepeats), nicht verschwiegen.
+   Jede andere Abweichung bleibt ein PIT-Fehler. Neue Beobachtungen nehmen
+   veraltete Bundles nicht mehr auf (build-setup-observations, staleBundles). */
+export function classifyStaleRepeats(parityRows, publishedByTicker) {
+  const key = (t, d) => t + "|" + d;
+  const byKey = new Map(parityRows.map((x) => [key(x.ticker, x.asOf), x]));
+  const same = (a, b) => !!a && !!b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+  let stale = 0;
+  for (const x of parityRows) {
+    if (x.same) continue;
+    const hist = (publishedByTicker.get(x.ticker) || []).filter((h) => h.asOf <= x.asOf).sort((a, b) => (a.asOf < b.asOf ? -1 : 1));
+    let i = hist.length - 1;
+    if (i < 0 || hist[i].asOf !== x.asOf) continue;
+    while (i > 0 && same(hist[i - 1].row, x.published)) i--;
+    const origin = hist[i];
+    if (!origin || origin.asOf === x.asOf) continue;
+    const proof = byKey.get(key(x.ticker, origin.asOf));
+    if (proof && proof.same) { x.staleRepeatOf = origin.asOf; stale++; }
+  }
+  return stale;
+}
+
 export function transitionType(a, b) {
   if (!(a in UP) || !(b in UP) || a === b) return null;
   if (b === "CONFIRMED") return "SETUP_CONFIRMED";
@@ -69,14 +123,13 @@ export function contractExit(obs, j, dayIndexOf, sa, e, maxHold) {
 /* Tageskurse eines Replays: splitbereinigt (Marken, Ausloeser) und
    Gesamtrendite (Ergebnis). Nur zur Laufzeit, nie im Artefakt. Derselbe
    Lader und derselbe Gesamtrendite-Vertrag wie die Signal-Studie
-   (scripts/quant/lib/daily-prices.mjs fromBars -> market-quality.js
-   totalReturnVerdict): eine Reihe mit nicht eingerechneter Ausschuettung
-   traegt keine Gesamtrendite. */
-function dailyOf(securityId, workDir) {
+   (scripts/quant/lib/daily-prices.mjs fromBars -> canonical-total-return.js):
+   Gesamtrendite aus Rohkurs, Split und Dividende, fail closed. */
+function dailyOf(securityId, workDir, opts = {}) {
   const candidates = [workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null, join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json")].filter(Boolean);
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
-  const d = fromBars(JSON.parse(readFileSync(file, "utf8")));
+  const d = workingStoreFromBars(JSON.parse(readFileSync(file, "utf8")), opts);
   return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
 }
 
@@ -93,23 +146,30 @@ function main() {
   /* SPY taeglich: Vergleich und Marktphase (126 Handelstage, +-5 %). */
   const spyPts = JSON.parse(readFileSync(join(ROOT, "quant/data/market/multi-asset/series/SPY.json"), "utf8")).points;
   const spyIdx = new Map(spyPts.map(([d], i) => [d, i]));
-  const spyRet = (d0, d1) => { const a = spyIdx.get(d0), b = spyIdx.get(d1); return a !== undefined && b !== undefined ? (spyPts[b][1] / spyPts[a][1]) * F - 1 : null; };
+  let spyRet = (d0, d1) => { const a = spyIdx.get(d0), b = spyIdx.get(d1); return a !== undefined && b !== undefined ? (spyPts[b][1] / spyPts[a][1]) * F - 1 : null; };
   const regimeAt = (d) => { const i = spyIdx.get(d); if (i === undefined || i < 126) return null; const r = spyPts[i][1] / spyPts[i - 126][1] - 1; return r > 0.05 ? "UP" : r < -0.05 ? "DOWN" : "SIDEWAYS"; };
 
   /* Paritaet: dieselben Stichtage wie die veroeffentlichte Setup-Historie. */
-  let parityChecked = 0, parityMismatch = 0;
+  let parityChecked = 0, parityMismatch = 0, parityRevised = 0;
   const parityRows = [];
+  const LC = join(ROOT, "quant/data/market/listing-continuity-v1.json");
+  const revisions = seriesRevisions(existsSync(LC) ? JSON.parse(readFileSync(LC, "utf8")) : null);
+  const publishedByTicker = new Map();
   if (existsSync(HIST)) for (const f of readdirSync(HIST).filter((x) => x.endsWith(".json.gz"))) {
     const h = JSON.parse(gunzipSync(readFileSync(join(HIST, f))).toString("utf8"));
+    for (const [t, row] of Object.entries(h.rows || {})) (publishedByTicker.get(t) || publishedByTicker.set(t, []).get(t)).push({ asOf: h.asOf, row });
     for (const r of replays) {
       /* Nachrechnung genau dieses Stichtags, Marken in der Skala des Stichtags. */
       const pub = h.rows[r.ticker], mine = (r.parity || []).find((x) => x[0] === h.asOf);
       if (!pub || !mine) continue;
+      if (revisedSincePublication(revisions, r.securityId, h.asOf)) { parityRevised++; continue; }
       const same = pub[0] === mine[1] && pub[1] === mine[4] && pub[2] === mine[5];
       parityChecked++; if (!same) parityMismatch++;
       parityRows.push({ ticker: r.ticker, asOf: h.asOf, published: pub, replay: [mine[1], mine[4], mine[5]], same });
     }
   }
+  const parityStaleRepeats = classifyStaleRepeats(parityRows, publishedByTicker);
+  parityMismatch -= parityStaleRepeats;
   const pitViolations = replays.reduce((s, r) => s + r.pitViolations, 0);
   /* Gesamtrendite-Vertrag: Replays ohne bestaetigte Gesamtrendite fallen
      heraus (gezaehlt), solange >= 95 % bestaetigt sind - dann rechnet die
@@ -120,7 +180,18 @@ function main() {
   const trConfirmed = replays.filter((r) => r.totalReturn === "AVAILABLE");
   const trQuality = { contract: MarketQualityVersion(), replays: replays.length, confirmed: trConfirmed.length, legacyConfirmed: replays.filter((r) => r.daily.legacyTotalReturn).length,
     share: replays.length ? SB.round(trConfirmed.length / replays.length, 3) : null, reasons: trReasons, excluded: [] };
-  const allTR = replays.length > 0 && trConfirmed.length / replays.length >= 0.95;
+  /* SPY als Vergleich auf DERSELBEN Basis: in Gesamtrendite durch dieselbe
+     Engine (Rolle BENCHMARK_REFERENCE). Fehlt sie, rechnet die ganze Studie
+     in Kursrendite - nie Aktie in Gesamtrendite gegen SPY als Kurs. */
+  const bench = JSON.parse(readFileSync(join(ROOT, "quant/config/tiingo-scale.json"), "utf8")).benchmark || {};
+  const spyDaily = bench.securityId ? dailyOf(bench.securityId, workDir, { role: "BENCHMARK_REFERENCE" }) : null;
+  const spyTotalReturn = !!(spyDaily && spyDaily.totalReturn);
+  trQuality.benchmark = { securityId: bench.securityId || null, totalReturn: spyTotalReturn, reason: spyDaily ? spyDaily.trVerdict.reason : "NO_CANONICAL_HISTORY" };
+  const allTR = replays.length > 0 && trConfirmed.length / replays.length >= 0.95 && spyTotalReturn;
+  if (allTR) {
+    const idx = new Map(spyDaily.rows.map(([d], i) => [d, i]));
+    spyRet = (d0, d1) => { const a = idx.get(d0), b = idx.get(d1); return a !== undefined && b !== undefined ? (spyDaily.rows[b][3] / spyDaily.rows[a][3]) * F - 1 : null; };
+  }
   if (allTR && trConfirmed.length < replays.length) {
     trQuality.excluded = replays.filter((r) => r.totalReturn !== "AVAILABLE").map((r) => ({ ticker: r.ticker, reason: r.daily.trVerdict.reason }));
     replays.splice(0, replays.length, ...trConfirmed);
@@ -222,7 +293,9 @@ function main() {
       oos: { state: oosPass ? "PASS" : "FAIL", reason: oosPass ? null : "OOS_DIRECTION_NOT_CONFIRMED", value: oos },
       walkForward: { state: agreeShare >= 0.75 ? "PASS" : "FAIL", reason: agreeShare >= 0.75 ? null : "FOLDS_DISAGREE", value: Math.round(agreeShare * folds.length) + " von " + folds.length + " Folds in derselben Richtung" },
       survivorship: { state: "FAIL", reason: "HAND_PICKED_SURVIVORS", value: "Nur Titel mit vollständiger Tageshistorie im Repository (" + replays.map((r) => r.ticker).join(", ") + "); alle heute gelistet" },
-      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden" } : { state: "FAIL", reason: "TOTAL_RETURN_COVERAGE_SHORT", value: "Kursrendite ohne Dividenden (Gesamtrendite nur für " + trQuality.confirmed + " von " + trQuality.replays + " Titeln bestätigt)" },
+      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden (eigene Rekonstruktion aus Kurs, Split und Dividende)" }
+        : trQuality.share >= 0.95 ? { state: "FAIL", reason: "BENCHMARK_TOTAL_RETURN_UNAVAILABLE", value: "Kursrendite ohne Dividenden (Gesamtrendite des Vergleichs SPY nicht verfügbar)" }
+        : { state: "FAIL", reason: "TOTAL_RETURN_COVERAGE_SHORT", value: "Kursrendite ohne Dividenden (Gesamtrendite nur für " + trQuality.confirmed + " von " + trQuality.replays + " Titeln bestätigt)" },
       costs: { state: "PASS", value: SB.FRICTIONS.roundTripBps + " bps je Runde" },
       slippage: { state: "PASS", value: SB.FRICTIONS.slippageBps + " bps je Runde" },
       benchmark: { state: "PASS", value: "SPY-Kurs über dasselbe Fenster; Basis aller Beobachtungstage derselben Titel" },
@@ -263,7 +336,10 @@ function main() {
     source: { replay: "quant/data/product/setup-replay-v1", replaysWithoutPriceSource: withoutPrices, totalReturnQuality: trQuality, prices: workDir ? "runner-private canonical history + golden preview" : "golden preview", titles: replays.map((r) => ({ ticker: r.ticker, from: r.rows[0]?.[0] || null, to: r.to, observations: r.rows.length, cadence: r.cadence })),
       setupEngine: replays[0]?.engine || null },
     returnType: allTR ? "TOTAL_RETURN" : SB.RETURN_TYPE, semantics: SB.SEMANTICS.setup, frictions: SB.FRICTIONS, horizons: DAY_HORIZONS, maxHoldDays: MAX_HOLD,
-    parity: { checked: parityChecked, mismatches: parityMismatch, rows: parityRows },
+    parity: { checked: parityChecked, mismatches: parityMismatch, rows: parityRows,
+      staleRepeats: parityStaleRepeats,
+      staleRepeatRule: "Veroeffentlichte Zeile seit Stichtag E unveraendert und an E exakt nachgerechnet: wiederholte Alt-Beobachtung (Veraltung), kein PIT-Verstoss; seit 04.10.2026 nimmt die Beobachtung veraltete Bundles nicht mehr auf.",
+      excludedSeriesRevised: parityRevised, revisionSource: revisions.at ? "listing-continuity-v1.json " + revisions.at : null },
     pitViolations, trustRule: SB.TRUST_RULE, trustChecks: SB.TRUST_CHECKS,
     certification, certificationSource: "quant/methodology/setup-state-v1.json requirements.backtestCertification",
     certificationPlain: "Die Setup-Methodik gibt Ausgangszahlen erst nach ihrer Zertifizierung frei. Die Zertifizierung ist eine Owner-Entscheidung auf Grundlage dieser Messung.",
@@ -275,7 +351,8 @@ function main() {
   if (errors.length) { console.error(errors); process.exit(1); }
   writeFileSync(OUT, JSON.stringify(out) + "\n");
   for (const s of studies) console.log(s.id.padEnd(16), "occ", s.occurrences, "titles", s.titles, "m6", s.horizons.m6.n, s.horizons.m6.positiveShare, s.horizons.m6.median, "trade", s.contractTrade.n ?? "-", "rev", s.reversalNextObservation, "trust", s.trust, s.trustReasons.map((x) => x.id).join(","));
-  console.log("parity", parityChecked, "mismatch", parityMismatch, "pitViolations", pitViolations);
+  console.log("parity", parityChecked, "mismatch", parityMismatch, "staleRepeats", parityStaleRepeats, "excludedSeriesRevised", parityRevised, "pitViolations", pitViolations);
+  for (const x of parityRows.filter((x) => !x.same)) console.log(x.staleRepeatOf ? "  staleRepeat" : "  mismatch", x.ticker, x.asOf, x.staleRepeatOf ? "(seit " + x.staleRepeatOf + ")" : "", JSON.stringify(x.published), JSON.stringify(x.replay));
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

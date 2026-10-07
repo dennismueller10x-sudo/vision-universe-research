@@ -16,7 +16,7 @@ const bar=(date,close=10)=>({securityId:member.securityId,date,close,adjustedClo
 function fixture(t){
  const dir=mkdtempSync(join(tmpdir(),'vu2-sync-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const files=['scripts/market/sync-history-store.mjs','scripts/market/preflight-zero-cost.mjs','scripts/market/storage/fs-driver.mjs',
- 'quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/config/tiingo-scale.json',
+ 'quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/engines/survivorship-control.js','quant/config/tiingo-scale.json',
  'scripts/market/benchmark-reference.mjs'];
  for(const f of files){mkdirSync(dirname(join(dir,f)),{recursive:true});copyFileSync(new URL(f,root),join(dir,f));}
  const universe=join(dir,'quant/data/market/scale/universe-TEST.json');mkdirSync(dirname(universe),{recursive:true});writeFileSync(universe,JSON.stringify({securities:[member]}));

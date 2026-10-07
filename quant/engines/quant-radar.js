@@ -32,7 +32,7 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-radar-1.2.0";
+  var VERSION = "quant-radar-1.3.0";
   var ALERT_EVENT_SCHEMA = "quant-alert-event-3.0.0";
 
   /* Die Ereignistypen. `tone` ordnet ein (up = verbessert, down =
@@ -206,7 +206,70 @@
     return keys;
   }
 
+  /* DIE STARTSEITE BRAUCHT NICHT DEN GANZEN RADAR.
+     Sie zeigt die Kennzahlen und die sechs ersten Karten; beobachtete
+     Titel holt sie aus ihren Ticker-Scherben. Gemessen am 03.10.2026: der
+     ganze Radar wuchs mit zwei neu geoeffneten Ereignisarten (Muster,
+     Evidenz) von 120 auf 211 KB und hob die Startseite ueber ihr
+     Ressourcenbudget (1.879.569 von 1.820.000 Byte). Die Projektion ist
+     eine Teilmenge desselben Artefakts - keine zweite Rechnung. */
+  var HOME_PROJECTION_SCHEMA = "quant-radar-home-1.0.0";
+  var HOME_CARDS = 6;
+  function homeProjection(radar) {
+    var cards = (radar.cards || []).slice(0, HOME_CARDS);
+    var ids = {};
+    cards.forEach(function (c) { (c.events || []).forEach(function (e) { ids[e.id] = true; }); });
+    return { schemaVersion: HOME_PROJECTION_SCHEMA, engineVersion: VERSION, generatedAt: radar.generatedAt, asOf: radar.asOf,
+      sources: radar.sources, summary: radar.summary, cardCount: (radar.cards || []).length,
+      /* Die vollstaendigen Ereignisse der Karten: der Dienst prueft sie gegen
+         den Alert-Vertrag wie beim ganzen Radar. */
+      events: (radar.events || []).filter(function (e) { return ids[e.id]; }), cards: cards };
+  }
+
+  /* METHODIKWECHSEL IST KEIN MARKTEREIGNIS (seit 1.3.0, 03.10.2026).
+   *
+   * Ereignisse wie "Evidenz veraendert", "Faktor-Stufe gewechselt", "neues
+   * Muster" oder "neu in einer Strategie" sind Unterschiede zwischen zwei
+   * veroeffentlichten Staenden. Aendert sich dazwischen die Methodik - die
+   * Gattungsregel des Wertpapierstamms (DEBT), die Grundgesamtheit der
+   * Faktorevidenz, die Listing-Regel der Kursreihen, eine Engine-Version -,
+   * dann misst der Unterschied die Methodik und nicht die Aktie. Gemessen
+   * am 02.10.2026: 571 "Evidenz veraendert" nach der DEBT-Umstufung.
+   *
+   * Jeder Stand traegt deshalb seine Methodik (snapshotMethod). Weichen die
+   * beiden Staende ab - oder fehlt einem die Angabe, sodass Gleichheit nicht
+   * belegt ist -, entstehen KEINE Ereignisse: kein Radar, keine Watchlist,
+   * kein Alert. Der Wechsel wird intern als METHOD_REBASE gefuehrt, mit der
+   * Zahl der unterdrueckten Uebergaenge; der juengere Stand ist die neue
+   * Vergleichsbasis. */
+  function snapshotMethod(components) {
+    var keys = Object.keys(components || {}).sort();
+    var c = {};
+    keys.forEach(function (k) { c[k] = components[k] === null || components[k] === undefined ? null : String(components[k]); });
+    return { id: keys.map(function (k) { return k + "=" + c[k]; }).join("|"), components: c };
+  }
+  function methodChange(prev, cur) {
+    var p = prev && prev.id ? prev : null, q = cur && cur.id ? cur : null;
+    if (!p || !q) return { reason: !p ? "PREVIOUS_SNAPSHOT_UNVERSIONED" : "CURRENT_SNAPSHOT_UNVERSIONED", from: p ? p.id : null, to: q ? q.id : null, changed: [] };
+    if (p.id === q.id) return null;
+    var keys = Object.keys(p.components || {}).concat(Object.keys(q.components || {}))
+      .filter(function (k, i, a) { return a.indexOf(k) === i; }).sort();
+    return { reason: "METHOD_CHANGED", from: p.id, to: q.id,
+      changed: keys.filter(function (k) { return (p.components || {})[k] !== (q.components || {})[k]; })
+        .map(function (k) { return { component: k, from: (p.components || {})[k] === undefined ? null : p.components[k], to: (q.components || {})[k] === undefined ? null : q.components[k] }; }) };
+  }
+  /** Uebergaenge zweier Staende - oder, bei Methodikwechsel, keine und ein internes REBASE. */
+  function compareSnapshots(source, prev, cur, transitions) {
+    var change = methodChange(prev && prev.method, cur && cur.method);
+    if (!change) return { transitions: transitions, rebase: null };
+    return { transitions: [], rebase: { eventType: "METHOD_REBASE", source: source, previousAsOf: prev && prev.asOf || null,
+      asOf: cur && cur.asOf || null, reason: change.reason, from: change.from, to: change.to, changed: change.changed,
+      suppressedTransitions: transitions.length, userVisible: false, alerts: false, watchlist: false } };
+  }
+
   var api = {
+    snapshotMethod: snapshotMethod, methodChange: methodChange, compareSnapshots: compareSnapshots,
+    HOME_PROJECTION_SCHEMA: HOME_PROJECTION_SCHEMA, HOME_CARDS: HOME_CARDS, homeProjection: homeProjection,
     VERSION: VERSION, ALERT_EVENT_SCHEMA: ALERT_EVENT_SCHEMA,
     EVENT_TYPES: EVENT_TYPES, TYPE: TYPE, EVENT_FIELDS: EVENT_FIELDS,
     LIFECYCLE: LIFECYCLE, MATURITY: MATURITY, PRIORITY_RULE: PRIORITY_RULE,

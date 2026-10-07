@@ -56,9 +56,11 @@ export const LONG_SERIES_SCHEMA = "discover-series-long-1.0.0";
 const OUT_DIR = join(root, LONG_SERIES_DIR);
 
 const Sampling = require(join(root, "quant", "engines", "series-sampling.js"));
+const PublishedClose = require(join(root, "quant", "engines", "published-close.js"));
 const Store = require(join(root, "quant", "engines", "history-store.js"));
 const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
+const SC = require(join(root, "quant", "engines", "survivorship-control.js"));
 const GATE_CONFIG = JSON.parse(readFileSync(join(root, "quant", "config", "feature-gates.json"), "utf8"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -95,7 +97,6 @@ const store = Store.createHistoryStore({ driver, provider: "tiingo", market: "US
                                          prefix: history.prefix || undefined, codec: history.codec || undefined });
 
 /* --------------------------------------------------- Lauf */
-function round2(v) { return Math.round(v * 100) / 100; }
 const bilanz = { requested: securities.length, written: 0, unchanged: 0, missing: 0, tooShort: 0, failed: 0 };
 const t0 = Date.now();
 mkdirSync(OUT_DIR, { recursive: true });
@@ -107,7 +108,10 @@ async function einer(s) {
   try { reihe = await store.getSeries(s.ticker); }
   catch (err) { bilanz.failed++; console.error(`  ${s.ticker}: ${String(err.message).slice(0, 100)}`); return; }
   if (!reihe || !reihe.bars || !reihe.bars.length) { bilanz.missing++; return; }
-  const closes = splitAdjustedCloses(reihe.bars).filter((b) => Number.isFinite(b.close));
+  /* Nur das juengste Listing: nach mehr als einem Jahr ohne Kerze traegt
+     das Kuerzel eine andere Firma (survivorship-control.js). */
+  const aktuell = SC.currentListingSegment(reihe.bars).bars;
+  const closes = splitAdjustedCloses(aktuell).filter((b) => Number.isFinite(b.close) && b.close > 0);
   const weekly = Sampling.weeklyPoints(closes.map((b) => [b.date, b.close]));
   if (weekly.length < MIN_WEEKS) { bilanz.tooShort++; return; }
   const doc = {
@@ -118,9 +122,9 @@ async function einer(s) {
     priceSeriesType: "SPLIT_ADJUSTED", currency: "USD",
     range: "MAX", grain: "weekly",
     from: weekly[0][0], to: weekly[weekly.length - 1][0], asOf: weekly[weekly.length - 1][0],
-    points: weekly.map((p) => [p[0], round2(p[1])]),
-    barCount: weekly.length, sourceBarCount: reihe.bars.length,
-    sourceFirst: reihe.first || closes[0].date, sourceLast: reihe.last || closes[closes.length - 1].date,
+    points: weekly.map((p) => [p[0], PublishedClose.roundClose(p[1])]),
+    barCount: weekly.length, sourceBarCount: aktuell.length,
+    sourceFirst: aktuell[0].date, sourceLast: aktuell[aktuell.length - 1].date,
     publishBasis: permission.basis, publishCheckedAt: permission.checkedAt || null,
     note: "Lange Reihe fuer Discover (5J, Max): Schlusskurs des letzten Handelstags jeder ISO-Woche, split-bereinigt, " +
           weekly.length + " Wochen ab " + weekly[0][0] + ". Kein Intraday, keine Volumina, keine OHLC, nichts interpoliert."

@@ -1,0 +1,56 @@
+name: "Startseite: Werte der Produktabbildungen"
+
+# Die Startseite zeigt in ihren Produktabbildungen echte Werte (Kurse,
+# Fundamentaldaten, Technik, Elliott, Faktoren, Signale, Rankings). Damit sie
+# nie veraltet wirken, setzt dieser Lauf sie nach den Datenlaeufen neu ein:
+# scripts/home/build-home.mjs schreibt index.html aus dem Template. Ohne
+# Aenderung kein Commit.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/home/**"
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Supertrader Signale"
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: home-refresh-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (ADR-005)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Startseite aus den Produktdaten erzeugen
+        run: node scripts/home/build-home.mjs
+      - name: Commit, wenn sich Werte geaendert haben
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- index.html; then
+            echo "Startseite unveraendert."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Startseite: Werte der Produktabbildungen aktualisiert (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

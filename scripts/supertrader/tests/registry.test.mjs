@@ -45,7 +45,11 @@ test('Gate B: Source Ledger ist dauerhaft (echte URL oder ausdruecklich keine) u
     for (const f of ['source_id', 'title', 'author', 'source_type', 'access', 'retrieved_at', 'url_verification', 'evidence_status_ceiling']) assert.ok(s[f] !== undefined, `${s.source_id}.${f}`);
     if (s.url) assert.match(s.url, /^https:\/\//, s.source_id);
     else assert.equal(s.url_verification, 'NO_URL_FOUND', s.source_id);
-    assert.equal(s.content_retrieved_by_vu, false, `${s.source_id}: Inhaltsabruf nicht behaupten`);
+    // Runde 8: Ein Inhaltsabruf darf nur mit Nachweis behauptet werden (Datum, Weg,
+    // verschluesselte Ablage beim Eigentuemer, kein Text im oeffentlichen Repo).
+    if (s.content_retrieved_by_vu) {
+      assert.ok(s.source_type === 'VU_INTERNAL' || (s.retrieval && /^\d{4}-\d{2}-\d{2}$/.test(s.retrieval.date) && s.retrieval.storage === 'SEALED_OWNER_KEY' && s.retrieval.inRepo === false && s.access === 'PUBLIC_FULL'), `${s.source_id}: Inhaltsabruf ohne Nachweis`);
+    } else assert.notEqual(s.access, 'PUBLIC_FULL', `${s.source_id}: Volltext ohne Abrufnachweis`);
   }
 });
 

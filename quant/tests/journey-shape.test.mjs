@@ -217,9 +217,17 @@ test("the measured titles land in the shape their data justifies", async () => {
   const tage = Number((tiefe.explanation.match(/(\d+)\s+Handelstage/) || [])[1]);
   assert.ok(Number.isFinite(tage) && tage > 0, "die genannte Tiefe ist keine Zahl: " + tiefe.explanation);
 
-  /* EDVA: kein Kurs, kein Verlauf - das ist keine kurze Reise, sondern eine
-     eigene Aussage. */
-  const edva = await shapeFor("EDVA");
+  /* Kein Kurs, kein Verlauf - das ist keine kurze Reise, sondern eine
+     eigene Aussage. Hier stand EDVA, bis der Titel am 02.10.2026 eine
+     veroeffentlichte Reihe bekam; der Fall kommt jetzt aus den Daten: der
+     erste Titel ohne veroeffentlichte Kursreihe. */
+  let ohneReihe = null;
+  for (const t of ["EDVA", ...(await api.getUniverse()).stocks.map((x) => x.ticker).sort()]) {
+    const s = await api.getStockIntelligence(t).catch(() => null);
+    if (s && s.price && s.price.value === null && s.price.reason === "NO_PUBLISHED_PRICE_SERIES") { ohneReihe = t; break; }
+  }
+  assert.ok(ohneReihe, "kein Titel ohne veroeffentlichte Reihe gefunden");
+  const edva = await shapeFor(ohneReihe);
   assert.equal(edva.shape, "MINIMAL");
   assert.ok(edva.groups.length >= 1);
 });

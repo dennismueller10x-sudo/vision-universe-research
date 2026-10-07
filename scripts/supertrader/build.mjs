@@ -20,6 +20,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import { createRequire } from 'node:module';
+// Die eine securityId-Regel des Company Master (company-master.js#legacySecurityId,
+// byte-gleich zu core/identity.js): BRK-A liegt als ref_BRK_A, nicht ref_BRK-A.
+// Vorher bildete der Build `ref_${symbol}` roh - Wochencharts fuer BRK-A, MOG-A,
+// PBR-A und BF-B zeigten auf Dateien, die es nicht gibt (Plattform-Audit 03.10.2026).
+const CompanyMaster = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+export const weeklySeriesId = (symbol) => CompanyMaster.legacySecurityId(symbol);
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
 import { simulate, rescaleSignal } from './engine/simulator.mjs';
@@ -34,25 +41,50 @@ import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
 import donchian from './engine/strategies/donchian.mjs';
 import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
+import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
+import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
+import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
+import darvas302 from './engine/strategies/darvas-v302.mjs';
+import donchian201 from './engine/strategies/donchian-v201.mjs';
+import donchian202 from './engine/strategies/donchian-v202.mjs';
+import weinstein4 from './engine/strategies/weinstein-v4.mjs';
+import { marketOkMap } from './validation/portfolio.mjs';
+import donchian2 from './engine/strategies/donchian-v2.mjs';
+import darvas3 from './engine/strategies/darvas-v3.mjs';
+import darvas301 from './engine/strategies/darvas-v301.mjs';
+import weinstein3 from './engine/strategies/weinstein-v3.mjs';
 import darvas2 from './engine/strategies/darvas-v2.mjs';
 import minervini2 from './engine/strategies/minervini-v2.mjs';
 import weinstein2 from './engine/strategies/weinstein-v2.mjs';
 import { fidelityFor, FIDELITY_VERSION, RULE_CLASS, SOURCE_ACCESS, PRODUCT_STATUS as FIDELITY_STATUS } from './fidelity.mjs';
 import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from './model-portfolio.mjs';
+import { runTrend52Live, trend52View } from './trend52-live.mjs';
+import { PROCESS_CHAIN, STEPS as PROCESS_STEPS } from './process-chain.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
+import { createOracle } from './validation/intraday-oracle.mjs';
+import { nonStockProduct } from './validation/lib.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { PHASE1_VERSION } from './registry-p1.mjs';
+import { PROVENANCE_LABELS, PRODUCT_CLASS_LABELS, FIDELITY_AREA_LABELS } from './fidelity/provenance-labels.mjs';
+import { LIVE_CLASSIFICATION } from './fidelity/product-classes.mjs';
 import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
+let TREND52_SYMBOLS = [];
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout2, weinstein2, darvas2, minervini2, donchian];
-export const PREVIOUS_ENGINES = [kkBreakout, weinstein, darvas, minervini];
+// Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
+// verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
+// Runde 12: Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1 (vorab festgelegt bestanden).
+// Runde 13 (Audit, Entscheidungen mit S1C neu angewendet): Weinstein 4.0.0 (Fortsetzungskaeufe) live,
+// Turtle 2.0.2 ohne Marktampel (2.0.1 zurueckgenommen); Darvas 3.0.2 behaelt die Ampel.
+export const LIVE_ENGINES = [kkBreakout32, weinstein4, darvas302, minervini2, donchian202];
+export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -71,12 +103,24 @@ function writeJson(file, obj) {
 }
 
 /* ------------------------------------------------------------ Laden */
-function loadUniverse() {
+export function loadUniverse() {
   const idx = readJson(rel('discover/data/stock-index/US_REAL.json'));
-  return new Set(idx.symbols);
+  // Runde 10 (PREREGISTRATION-R10-FIXES U1): ETFs, bankemittierte ETNs und geschlossene Fonds,
+  // die die Stammdaten als Aktie fuehren, gehoeren nicht ins Aktienuniversum der Methoden.
+  const names = exists(rel('quant/data/market/security-master/company-names.json')) ? readJson(rel('quant/data/market/security-master/company-names.json')).rows || [] : [];
+  const byTicker = new Map(names.map((r) => [r.ticker, r]));
+  const out = new Set();
+  UNIVERSE_EXCLUDED.length = 0;
+  for (const sym of idx.symbols) {
+    const r = byTicker.get(sym);
+    const why = r ? nonStockProduct({ ticker: sym, exchange: r.exchange, name: r.companyName }) : null;
+    if (why) UNIVERSE_EXCLUDED.push([sym, why]); else out.add(sym);
+  }
+  return out;
 }
+export const UNIVERSE_EXCLUDED = [];
 
-function loadBars(universe) {
+export function loadBars(universe) {
   const dir = rel('quant/data/product/technical-signals-v1');
   const out = new Map();
   let generatedAt = null, unavailable = 0;
@@ -99,7 +143,7 @@ function loadBars(universe) {
 }
 
 function loadWeeklyLong(sym) {
-  const p = rel('quant/data/market/discover-series-long', `ref_${sym}.json`);
+  const p = rel('quant/data/market/discover-series-long', `${weeklySeriesId(sym)}.json`);
   if (!exists(p)) return null;
   const j = readJson(p);
   return j.points || null;
@@ -151,7 +195,7 @@ function measureCoverage(instruments, weeklySpans) {
   const dailySpans = [...instruments.values()].map((i) => yearsBetween(i.bars.date[0], i.bars.date[i.bars.date.length - 1]));
   const sm = readJson(rel('quant/data/market/security-master/us-security-master.json'));
   const inactive = sm.rows.filter((r) => r.active_status === 'INACTIVE');
-  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `ref_${r.ticker}.json`))).length;
+  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `${weeklySeriesId(r.ticker)}.json`))).length;
   const pitGates = readJson(rel('quant/data/sec/pit_gates.json'));
   const histDir = rel('quant/data/market/index-membership/history/SP500');
   const membershipDates = exists(histDir) ? fs.readdirSync(histDir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).length : 0;
@@ -232,7 +276,7 @@ function greenblattCoverage() {
 
 /* ------------------------------------------------------- Ledger */
 function ledgerPath(id) { return path.join(DATA, 'ledger', `${id}.json`); }
-function loadLedger(engine) {
+export function loadLedger(engine) {
   const p = ledgerPath(engine.id);
   if (exists(p)) return readJson(p);
   return { schema: 'supertrader-ledger-1.0.0', strategyId: engine.id, variant: engine.variant, liveSince: null, lastProcessed: null, open: [], closed: [], invalidated: [] };
@@ -266,6 +310,9 @@ export function applyVersionPolicy(engine, open, lastProcessed, recordedAt) {
   for (const s of open) {
     const v = s.version || '1.0.0';
     if (v === engine.version) { kept.push(s); continue; }
+    // Runde 10: Eine Version mit unveraenderten Signalregeln (engine.signalCompatible, z. B. Darvas
+    // 3.0.1 = 3.0.0 mit anderem Modellportfolio) fuehrt wartende Setups unter ihrer Version weiter.
+    if ((engine.signalCompatible || []).includes(v)) { kept.push(s); continue; }
     if (PENDING.has(s.state) || s.state === 'TRIGGERED') {
       s.state = 'INVALIDATED';
       s.transitions.push({ state: 'INVALIDATED', date: lastProcessed, dataAsOf: lastProcessed, ruleId: 'LC-VERSION-RETIRED', ruleVersion: engine.version, recordedAt,
@@ -314,7 +361,21 @@ export const isReassessment = (s) => s.discovery?.kind === 'RULE_VERSION_REASSES
 export const isRetired = (s) => s.state === 'INVALIDATED' && s.transitions?.[s.transitions.length - 1]?.ruleId === 'LC-VERSION-RETIRED';
 
 /* ------------------------------------------------------------ Main */
+// Runde 9: Minutenquelle fuer Kauf-Stop-Tage im Live-Lauf. intraday-prefetch.mjs legt
+// IEX-Minuten der wartenden Setups, deren Tageshoch den Trigger erreichte, in eine Datei
+// AUSSERHALB des Repositorys (SUPERTRADER_INTRADAY_CACHE). Ohne Datei (lokal, CI) gilt die
+// Tagesbalken-Annahme. Ins Protokoll gelangen nur Belegart und Entscheidung, keine
+// Minutenwerte oder Uhrzeiten.
+let LIVE_ORACLE = null;
+export function liveOracleFrom(file) {
+  if (!file || !exists(file)) return null;
+  const j = readJson(file);
+  const { oracle } = createOracle(j.days || {}, { from: '2017-01-01' });
+  return (ctx, t, sig, e) => { const r = oracle(ctx, t, sig, e); if (r && r.status === 'RESOLVED') delete r.entryMinute; return r; };
+}
+
 export function build() {
+  LIVE_ORACLE = liveOracleFrom(process.env.SUPERTRADER_INTRADAY_CACHE);
   const t0 = Date.now();
   const universe = loadUniverse();
   const { instruments, generatedAt: barsGeneratedAt, unavailable } = loadBars(universe);
@@ -402,7 +463,7 @@ export function build() {
       // Abschluss (naechster Lauf) - ein Titel hat je Methode ein Signal.
       const legacyEngine = open && open.version !== engine.version && !(engine.manageCompatible || []).includes(open.version) ? engine.legacy?.[open.version] : null;
       if (from < n && legacyEngine) res = simulate(legacyEngine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, manageOnly: true });
-      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt });
+      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, ...(LIVE_ORACLE && engine.entryMode === 'BUY_STOP_INTRADAY' ? { intradayOracle: LIVE_ORACLE } : {}) });
       for (const s of res.finished) finishedNow.push(s);
       if (state.signal) {
         const last = n - 1;
@@ -489,26 +550,75 @@ export function build() {
 
   // Laufendes Modellportfolio je Methode aus dem Live-Protokoll (alle Versionen).
   const portfolios = { schema: MODEL_PORTFOLIO_VERSION, asOf, strategies: {} };
+  // Runde 12: Marktampel (SPY ueber GD 200 am Vortag) fuer Methoden mit portfolio.marketFilter.
+  const spyAll = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+  const MARKET_OK = marketOkMap({ date: spyAll.map(([d]) => String(d).slice(0, 10)), close: spyAll.map(([, v]) => v) });
   for (const engine of LIVE_ENGINES) {
     const L = ledgers[engine.id];
     const barsOf = (sym) => instruments.get(sym)?.bars || null;
-    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf });
+    // Runde 10 (K3): relative Staerke am Vortag des Einstiegs fuer die Rangfolge gleichzeitiger Einstiege.
+    const rsOf = (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? cross.get(sym)?.rs?.[t - 1] ?? null : null; };
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, marketOk: MARKET_OK, calendar, asOf, rsOf });
   }
   writeJson(path.join(DATA, 'portfolio.json'), portfolios);
+  // Runde 12: VU Trendfolge 52W - Modelldepot mit monatlicher Umschichtung (eigenes Ledger, keine Rueckrechnung).
+  {
+    const spyPts = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+    const spy = { date: spyPts.map(([d]) => String(d).slice(0, 10)), close: spyPts.map(([, v]) => v) };
+    const lp = ledgerPath('VU_TREND_52W');
+    const prev = exists(lp) ? readJson(lp) : null;
+    const { ledger: tl, preview, stocks } = runTrend52Live({ instruments, spy, ledger: prev, asOf });
+    writeJson(lp, tl);
+    const t52 = trend52View({ ledger: tl, preview, stocks, spy, asOf });
+    writeJson(path.join(DATA, 'trend52.json'), t52);
+    TREND52_SYMBOLS = [...new Set([...t52.portfolio.positions, ...t52.prepared.candidates, ...t52.nearMisses, ...t52.closed].map((x) => x.symbol))];
+    log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
+  }
   writeJson(path.join(DATA, 'registry.json'), registry);
+  /* registry-core.json fuer alle Seiten ausser der Strategie-Detailseite:
+     ohne Regeltexte (rules, processChain, fidelity.rules, weitere Regelkarten). */
+  writeJson(path.join(DATA, 'registry-core.json'), registryCore(registry));
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
+  /* Discover-Verfuegbarkeit explizit ausweisen (LOGI, 03.10.2026: Signal mit
+     offener Position, Discover-Seite durch das Faktor-Qualitaetsgate entfallen ->
+     toter Link). Signale und Positionen bleiben unveraendert; die Seite zeigt fuer
+     ausgewiesene Titel einen Hinweis statt des Links. */
+  /* Geprueft werden genau die Titel, fuer die unten eine Aktienseite
+     entsteht - auch die Teilpruefungs-Titel, deren Seite ebenfalls den
+     Discover-Link traegt. */
+  signals.discoverAvailability = discoverAvailability(
+    [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
+    readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
   writeJson(path.join(DATA, 'signals.json'), signals);
+  /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
+     signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
+     Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
+     bleibt vollstaendig fuer die Signalliste. */
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
+  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
+     bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
+     die vollstaendige Datei. */
+  const sliceDir = path.join(DATA, 'stock');
+  if (exists(sliceDir)) for (const f of fs.readdirSync(sliceDir)) if (f.endsWith('.json') && !slices[f.slice(0, -5)]) fs.rmSync(path.join(sliceDir, f));
+  for (const [sym, slice] of Object.entries(slices)) writeIfChanged(path.join(sliceDir, sym + '.json'), JSON.stringify(slice) + '\n');
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
   writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
-  writeStockPages(signals);
+  /* Jede Karte verlinkt auf /supertrader/stock/<SYM>/ (supertrader.js
+     stockUrl) - auch die Teilpruefungs-Karten, deren Titel nicht unter den
+     Kandidaten stehen. Ohne Seite war das ein 404 (DAR, ROKU, PECO, ...,
+     Plattform-Audit 03.10.2026). */
+  writeStockPages(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   writeStrategyPages(registry);
   writeStaticPages();
-  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
+  /* slices: die Seite fragt nur Ausschnitte an, die dieser Lauf geschrieben hat. */
+  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt,
+    slices: { version: SLICES_VERSION, registry: true, stock: Object.keys(slices).sort() } });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -605,13 +715,32 @@ function buildMarket(asOf, barsGeneratedAt) {
   };
 }
 
+/* Migration Phase 1: Produktklasse und Fidelity je Live-Strategie (Datenbasis, aus fidelity/product-classes.mjs und R15-FIDELITY-MATRIX.json). */
+let FIDELITY_MATRIX = null;
+export function productOf(s) {
+  const c = LIVE_CLASSIFICATION[s.strategy_id];
+  if (!c) return null;
+  FIDELITY_MATRIX ||= readJson(rel('scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json'));
+  const m = FIDELITY_MATRIX.strategies[s.strategy_id];
+  if (!m || m.liveVersion !== c.version || c.version !== s.strategy_version) throw new Error(`Produktklasse ${s.strategy_id}: Version ${c.version} passt nicht zur Registry ${s.strategy_version}`);
+  const f = m.fidelity;
+  return {
+    schema: 'supertrader-product-1.0.0', product_class: c.productClass, product_class_label: PRODUCT_CLASS_LABELS[c.productClass].label, display_name: c.displayName, live_version: c.version,
+    entry_fidelity: f.entry, exit_fidelity: f.exit, position_sizing_fidelity: f.sizing, portfolio_fidelity: f.portfolio,
+    fundamental_fidelity: f.fundamental, market_fidelity: f.marketRegime, risk_fidelity: f.risk,
+    replication_claim_allowed: m.REPLICATION_CLAIM_ALLOWED, hard_gate: { required: m.hardGate.required, not_high: m.hardGate.notHigh, blocking_portfolio_fields: m.hardGate.blockingPortfolioFields },
+    original_fidelity_overall: m.originalFidelityOverall, note: m.overallNote,
+  };
+}
+
 function buildRegistry(coverage, gbCoverage) {
   const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe, portfolio: portfolioConfig(e), legacyVersions: Object.keys(e.legacy || {}) }]));
   return {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id) })),
+    provenanceClasses: PROVENANCE_LABELS, productClasses: PRODUCT_CLASS_LABELS, fidelityAreas: FIDELITY_AREA_LABELS, migrationPhase: PHASE1_VERSION,
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null, product: productOf(s) })),
     fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
       accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
     evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
@@ -638,7 +767,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
     const si = sicInfo().get(s.symbol) || {};
-    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
+    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/${weeklySeriesId(s.symbol)}.json` } : null };
     if (s.strategyId === 'MINERVINI_VCP' && fund) out.fundamentalsDisplay = { revenueGrowthTTM: fund.revenueGrowthTTM, earningsAcceleration: fund.earningsAcceleration, asOf: fund.fundamentalsAsOf, filtered: false };
     return out;
   };
@@ -657,7 +786,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.REASSESSED_AFTER_RULE_CHANGE += open.filter(isReassessment).length;
     counts.NEW_SINCE_PREVIOUS_DATA += open.filter((x) => !isReassessment(x) && x.createdAt > (l.previousDataAsOf || '')).length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
-    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
+    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/${weeklySeriesId(x.symbol)}.json` } : null }));
     const quality = qualitySummary(open);
     strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
@@ -674,9 +803,21 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
 // tatsaechliche Modellausfuehrung (nur wenn vorhanden) und die naechste Handlung.
 const CARD_BY_STRATEGY = new Map(STRATEGIES.filter((x) => x.rule_cards).map((x) => [x.strategy_id, x.rule_cards[0]]));
 const fmtP = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('.', ',') : '—');
+// Plan der Regelversion des Signals: exakt, sonst die naechstaeltere gespeicherte,
+// sonst die aelteste gespeicherte (z. B. 1.0.0 bei gleicher Regel wie 1.1.0).
+const vnum = (v) => String(v || '').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
+export function planForVersion(card, version) {
+  if (!card) return null;
+  if (!version || version === card.rule_version || !card.plans_by_version) return card.plan;
+  const vs = Object.keys(card.plans_by_version).sort((a, b) => vnum(a) - vnum(b));
+  if (card.plans_by_version[version]) return card.plans_by_version[version];
+  if (vnum(version) > vnum(card.rule_version)) return card.plan;
+  const older = vs.filter((x) => vnum(x) <= vnum(version)).pop();
+  return card.plans_by_version[older || vs[0]] || card.plan;
+}
 export function planOf(s) {
   const card = CARD_BY_STRATEGY.get(s.strategyId);
-  const p = card?.plan;
+  const p = planForVersion(card, s.version);
   if (!p) return null;
   const last = s.transitions[s.transitions.length - 1] || {};
   const levelsAsOf = s.levelHistory?.[s.levelHistory.length - 1]?.date || s.createdAt;
@@ -687,7 +828,7 @@ export function planOf(s) {
     trigger: { value: r4(s.levels?.trigger), kind: 'PLANNED_THRESHOLD', label: 'geplanter Schwellenwert', basis: p.confirmBasis, dataAsOf: levelsAsOf, ruleId: p.confirmRuleId },
     invalidation: { value: r4(s.levels?.invalidation), kind: 'PLANNED_THRESHOLD', label: 'geplante Invalidation', basis: p.invalidationBasis, dataAsOf: levelsAsOf, ruleId: p.invalidationRuleId },
     confirmation: s.confirmation ? { date: s.confirmation.date, close: s.confirmation.close, basis: s.confirmation.basis, ruleId: s.transitions.find((x) => x.state === 'TRIGGERED')?.ruleId || p.confirmRuleId } : null,
-    entry: s.entry ? { date: s.entry.date, price: r4(s.entry.price), rawOpen: s.entry.rawOpen, basis: s.entry.priceBasis, gappedAboveTrigger: !!s.entry.gappedAboveTrigger, kind: 'MODEL_EXECUTION' } : null,
+    entry: s.entry ? { date: s.entry.date, price: r4(s.entry.price), rawOpen: s.entry.rawOpen, basis: s.entry.priceBasis, gappedAboveTrigger: !!s.entry.gappedAboveTrigger, kind: 'MODEL_EXECUTION', evidence: s.entry.evidence || (s.entry.priceBasis === 'BUY_STOP' ? 'DAILY_BAR_HIGH_REACHED_TRIGGER' : 'DAILY_BAR_OPEN'), sameDayOrder: s.entry.sameDayOrder || null } : null,
     stop: Number.isFinite(s.stop) ? { value: r4(s.stop), ruleId: s.stopRuleId, dataAsOf: s.stopHistory?.[s.stopHistory.length - 1]?.date || null } : null,
     exits: (s.exits || []).map((x) => ({ date: x.date, price: r4(x.price), fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis, kind: 'MODEL_EXECUTION' })),
     exitSummary: p.exitSummary,
@@ -698,7 +839,9 @@ export function planOf(s) {
     text = 'Keine Entscheidung: im aktuellen Datenstand fehlen Kursdaten für diesen Titel.'; ruleId = 'LC-DATA-GAP';
   } else if (PENDING.has(s.state)) {
     const inv = `${p.invalidationText} ${fmtP(s.levels?.invalidation)} → ungültig`;
-    text = `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
+    text = p.confirmBasis === 'INTRADAY_BUY_STOP'
+      ? `Kauf-Stop über ${fmtP(s.levels?.trigger)} für den nächsten Handelstag. ${inv}.`
+      : `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
     ruleId = p.confirmRuleId;
   } else if (s.state === 'TRIGGERED') {
     text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';
@@ -785,6 +928,10 @@ function mapVariant(v) {
 }
 
 /* ----------------------------------------------- statische Routen */
+// Farbschema: Standard dunkel (Supertrader-Identitaet). Das Inline-Skript im
+// <head> uebernimmt vor dem ersten Zeichnen die gespeicherte Wahl des
+// plattformweiten Hell/Dunkel-Schalters (localStorage "vu-discover-theme-v1"),
+// damit nichts aufblitzt; die Navigation zeigt den Schalter (theme-switch).
 function pageShell({ title, description, page, depth, attrs = '' }) {
   const up = '../'.repeat(depth);
   return `<!DOCTYPE html>
@@ -793,13 +940,14 @@ function pageShell({ title, description, page, depth, attrs = '' }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080c">
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/supertrader/assets/supertrader.css">
 </head>
 <body class="st" data-page="${page}"${attrs}>
-<vu-navigation theme="dark" no-preview></vu-navigation>
+<vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>
 <script src="/assets/site-navigation.js"></script>
 <a class="st-skip" href="#st-main">Zum Inhalt</a>
 <main id="st-main" class="st-main" tabindex="-1"><div class="st-boot" aria-live="polite">Supertrader lädt …</div></main>
@@ -835,12 +983,96 @@ function writeStaticPages() {
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
 }
 
-function writeStockPages(signals) {
-  for (const sym of Object.keys(signals.bySymbol)) {
+/** Alle Symbole, die irgendwo in einem Ausgabeobjekt als `symbol` stehen. */
+export function symbolsIn(x, out = new Set()) {
+  if (Array.isArray(x)) for (const y of x) symbolsIn(y, out);
+  else if (x && typeof x === 'object') {
+    if (typeof x.symbol === 'string') out.add(x.symbol);
+    for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
+  }
+  return out;
+}
+
+/* Was nur die Strategie-Detailseite (renderStrategy) aus der Registry liest. */
+export const REGISTRY_DETAIL_FIELDS = ['rules', 'processChain'];
+
+/** registry.json ohne Detailtexte: Regeln, Prozesskette, Regel-Herkunft
+    (fidelity.rules) und alle Regelkarten ausser der ersten (card0). */
+export function registryCore(registry) {
+  const strategies = registry.strategies.map((s) => {
+    const c = { ...s };
+    for (const k of REGISTRY_DETAIL_FIELDS) delete c[k];
+    if (c.fidelity) { c.fidelity = { ...c.fidelity }; delete c.fidelity.rules; }
+    if (Array.isArray(c.rule_cards)) c.rule_cards = c.rule_cards.slice(0, 1);
+    return c;
+  });
+  return { ...registry, slice: 'core', strategies };
+}
+
+/* Die Listen, die nur Signalliste und Aktienseite brauchen. */
+export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+
+/* Steht in build.json, sobald signals-core.json und stock/<SYM>.json geschrieben sind. */
+export const SLICES_VERSION = 'signals-slices-1';
+
+/** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
+export function signalsCore(signals) {
+  const strategies = {};
+  for (const [id, st] of Object.entries(signals.strategies || {})) {
+    const c = { ...st };
+    for (const k of HISTORY_LISTS) delete c[k];
+    strategies[id] = c;
+  }
+  return { ...signals, slice: 'core', strategies };
+}
+
+/** Je Symbol genau die Eintraege, die die Aktienseite liest (renderStock). */
+export function signalsBySymbol(signals, extra = []) {
+  const out = {};
+  const syms = new Set([...Object.keys(signals.bySymbol || {}), ...extra].filter((x) => /^[A-Z0-9.\-]+$/.test(x)));
+  /* Ohne asOf/inputsGeneratedAt/counts: die wechseln jeden Tag und haetten
+     sonst jeden Ausschnitt taeglich neu geschrieben (Repo-Wachstum). Den
+     Stand liefert build.json; die Seite setzt ihn ein. */
+  const head = { schema: signals.schema, policy: signals.policy, disclaimer: signals.disclaimer };
+  for (const sym of syms) {
+    const strategies = {};
+    for (const [id, st] of Object.entries(signals.strategies || {})) {
+      const mine = (list) => (list || []).filter((x) => x.symbol === sym);
+      const scanner = st.scanner ? { ...st.scanner, top: mine(st.scanner.top) } : { top: [] };
+      strategies[id] = { ...st, open: mine(st.open), closed: mine(st.closed), invalidated: mine(st.invalidated), retired: mine(st.retired), scanner };
+    }
+    const partialChecks = {};
+    for (const [id, pc] of Object.entries(signals.partialChecks || {})) {
+      partialChecks[id] = { ...pc, candidates: (pc.candidates || []).filter((r) => r.symbol === sym), near: (pc.near || []).filter((r) => r.symbol === sym) };
+    }
+    /* Die Aktienseite liest nur den Ausschnitt: er traegt die
+       Discover-Verfuegbarkeit seines Symbols mit, sonst zeigte sie fuer LOGI
+       wieder den toten Link (#418). */
+    const av = signals.discoverAvailability;
+    const discoverAvailability = av ? { source: av.source, unavailable: (av.unavailable || []).filter((x) => x === sym), note: av.note } : undefined;
+    out[sym] = { ...head, slice: 'stock', symbol: sym, bySymbol: signals.bySymbol && signals.bySymbol[sym] ? { [sym]: signals.bySymbol[sym] } : {}, strategies, partialChecks, discoverAvailability };
+  }
+  return out;
+}
+
+/** Welche Titel mit Supertrader-Seite haben (k)eine Discover-Aktienseite? */
+export function discoverAvailability(symbols, indexSymbols) {
+  const index = new Set(indexSymbols);
+  const checked = [...new Set(symbols)].sort();
+  return {
+    source: 'discover/data/stock-index/US_REAL.json',
+    checked: checked.length,
+    unavailable: checked.filter((s) => !index.has(s)),
+    note: 'Titel mit Supertrader-Seite ohne Discover-Aktienseite (z. B. vom Faktor-Qualitaetsgate gesperrt). Signale bleiben unveraendert; die Seite zeigt einen Hinweis statt des Links.'
+  };
+}
+
+function writeStockPages(signals, extra = []) {
+  for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
     writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"` }));
   }

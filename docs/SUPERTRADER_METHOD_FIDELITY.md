@@ -1,4 +1,99 @@
-# Supertrader — Methodentreue, Ursachen, neue Versionen (Runde 7, 02.10.2026)
+# Supertrader — Methodentreue (Runde 8, 02.10.2026: Volltext der Originalquellen)
+
+Runde 8 ersetzt die Suchauszüge aus Runde 7 durch tatsächlich gelesene Originalseiten. Die Arbeitsumgebung sperrt die
+Websites der Trader weiterhin; abgerufen wurden sie deshalb vom GitHub-Actions-Runner
+(`scripts/supertrader/validation/fetch-sources.mjs`, Workflow-Modus `sources`). Die Texte sind urheberrechtlich
+geschützt und liegen nur verschlüsselt beim Eigentümer, nicht im Repository.
+
+> **Stand und Gültigkeit (Migration Phase 1, 05.10.2026):** Dieses Dokument hält die Stände von Runde 7 und 8 fest. Mehrere der beschriebenen
+> Versionen sind abgelöst (Momentum 3.1.0, Turtle 1.1.0 und 2.0.0, Darvas 1.2.0 und 2.0.0, Weinstein 1.1.0 bis 3.0.0, Minervini 1.1.0). **Laufend sind:**
+> Momentum 3.2.0, Weinstein 4.0.0, Darvas 3.0.2, Minervini 2.0.0, Turtle 2.0.2 und VU Trendfolge 52W 1.0.0. Die Methodentreue-Tabellen im
+> zweiten Teil (ab „Runde 7“) sind **historisch** und gelten nicht für die laufenden Versionen. Maßgeblich sind die Herkunft je Regel
+> (`scripts/supertrader/fidelity/`, R15), die Regelkarten und Methodenseiten (`supertrader/`), `scripts/supertrader/fidelity.mjs` und
+> `docs/SUPERTRADER_ENTRY_EXIT_RULES.md`.
+
+## Gelesen
+
+| Methode | Im Volltext gelesen | Nicht zugänglich (Versuche) |
+|---|---|---|
+| Kullamägi | „3 TIMELESS setups“ (08.01.2021) mit allen Beispielcharts, FAQ, „Episodic Pivots“ | – (Bilder über das Internet Archive, die Website sperrt Bots) |
+| Turtle | „The Original Turtle Trading Rules“, PDF, 27 Seiten | – |
+| Darvas | TIME 25.05.1959 „Pas de Dough“, TIME 01.08.1960 „The Darvas Effect“ | Buch (1960): keine freie Fassung |
+| Weinstein | Bulkowski (thepatternsite.com) mit wörtlichen Buchzitaten; stageanalysis.net | Buch (1988): keine freie Fassung |
+| Minervini | – | minervini.com (Bezahlangebot, keine freien Regeln), /blog liefert 404; Bücher 2013/2017 nicht frei |
+
+## Wo die Kette Deep Research → Regel → Code → Trade riss
+
+**Befund:** Die Deep Research hatte die Einstiegsregeln richtig wiedergegeben. Jede Quelle beschreibt einen Kauf
+**per Order am Ausbruchspunkt im Tagesverlauf**:
+
+- **Kullamägi:** „just look at the daily chart and enter when the stock is starting to break out“; Stop „always lows of
+  the day“.
+- **Turtle Rules:** „Turtles always traded at the breakout when it was exceeded during the day, and did not wait until
+  the daily close or the open of the following day.“
+- **Darvas:** „places buy orders at breakout points“, Stop „just below his buy order“ (TIME 1959).
+- **Weinstein** (zitiert bei Bulkowski): „If you have purchased it with a buy-stop order …“
+
+Der Code verwendete bis Runde 7 für **alle** Methoden dieselbe VU-Konvention `LC-CONFIRM-CLOSE`: Bestätigung erst am
+Tagesschluss (Weinstein: Wochenschluss), Kauf zur nächsten Eröffnung. Begründet wurde das mit „Intraday nicht
+belegbar“ – Tageshoch und Eröffnung zeigen aber, ob und zu welchem Preis eine Kauforder ausgeführt worden wäre. Das war
+ein **Übertragungsfehler in den Code**, kein Lesefehler der Recherche.
+
+Weitere Abweichungen je Methode (Details in `fidelity.mjs`, Methodenseite „Von der Quelle zum Modell“):
+
+| Methode | Abweichung bis Runde 7 | Art | Wirkung |
+|---|---|---|---|
+| Kullamägi | Stop am Tief des Bestätigungstags statt Tagestief des Einstiegstags | Folge des Schlusskurs-Einstiegs | anderer Stop-Bezug |
+| Kullamägi | Gap-Sperre 0,5 ADR | unbelegte VU-Annahme | Ausbrüche mit großem Gap fehlten |
+| Kullamägi | Höchstgewicht 20 % | zu eng gelesen (FAQ: 5–25 %) | kleinere Positionen |
+| Turtle | N als einfaches 20-Tage-Mittel statt EMA 19/20 | ausgelassen | anderer Stop/Größe |
+| Turtle | kein System-1-Filter, kein 55-Tage-Failsafe | ausgelassen | andere Einstiegsauswahl |
+| Turtle | 0,5 % Risiko statt 1 % je N, kein notionelles Konto | VU-Standard statt Quelle | andere Größe und Verlustphasen |
+| Turtle | Ausstieg nach Schluss unter dem 10-Tage-Tief zur nächsten Eröffnung | Schlusskurs-Konvention | ein Tag zu spät |
+| Darvas | 10 Positionen statt fünf bis sechs | VU-Standard statt Quelle | Streuung |
+| Darvas 2.0.0 | Stop knapp unter der Kauforder **mit** Kauf zur nächsten Eröffnung | Mischung aus Quelle und Konvention | sehr viele Sofort-Ausstiege |
+| Weinstein | Widerstand = höchster Wochenschluss; Volumen als Filter vor dem Kauf | Konvention | Einstieg bis eine Woche später; Volumenregel falsch verortet |
+
+## Korrektur nach Runde 9 (Minutenkurse)
+
+Die Annahme „Tagestief vor dem Kauf“ war für Kullamägi systematisch zu günstig: Das Tagestief entstand oft erst nach
+dem Kauf, der Stop „lows of the day“ zum Kaufzeitpunkt lag dann höher und wurde am selben Tag erreicht. Mit Minutenkursen
+(intern, ab 2017) ist Momentum 3.1.0 auch 2016–2020 unter SPY; Darvas 3.0.0 bleibt ohne Vorteil. Die frühere Aussage
+„Momentum 3.x nicht robust, 2016–2020 über SPY“ ist damit zurückgenommen. Unabhängige Beispielprüfung: AXON 2004 trifft
+3.1.0 am markierten Tag, MNKD 2013 verfehlen beide Versionen; TSLA 2020 ist ein Entwicklungsbeispiel und kauft einen Tag zu früh.
+
+## Ergebnis in einem Satz
+
+Die Übertragung ist korrigiert, die Kette Quelle → Regel → Code → Trade ist je Regel sichtbar. Keine quellennähere Version
+zeigt historisch einen Vorteil gegenüber SPY. Die Gegenproben tragen für Weinstein eine Teilursache (Einstieg/Volumen),
+für Kullamägi nicht; für Darvas sind sie mit Tagesbalken nicht entscheidbar.
+
+## Neue Versionen (vor jedem Test festgelegt)
+
+- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json) und **3.1.0** (`kk-breakout-v31.mjs`, PREREGISTRATION-R8C.json). 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte: Kurs über beiden Linien, 5 Sitzungen Sperre. 3.1.0 lief live bis zur Fehlerkorrektur 3.2.0 (Runde 11); laufend ist heute 3.2.0.
+- **Donchian/Turtle 2.0.0** (`donchian-v2.mjs`, PREREGISTRATION-R8-TURTLE.json)
+- **Darvas 3.0.0, Weinstein 3.0.0** (`darvas-v3.mjs`, `weinstein-v3.mjs`, PREREGISTRATION-R8B.json)
+- **Minervini** bleibt 2.0.0: Ohne frei lesbare Primärquelle gibt es keinen belegten Grund für eine neue Version.
+
+Die Simulator-Erweiterung `BUY_STOP_INTRADAY` arbeitet so:
+
+- **Ausführung:** zu max(Eröffnung, Trigger) plus Slippage.
+- **Gleichtags-Ausstieg:** sicher bei Schluss ≤ Stop (Nachtrag vor der Auswertung, siehe PREREGISTRATION-R8B.json).
+- **Vorsichtige Gegenprobe:** zählt jedes Tagestief unter dem Stop als Ausstieg, weil Tagesbalken die Reihenfolge von
+  Hoch und Tief nicht zeigen.
+
+Weiterhin VU, gekennzeichnet:
+
+- Trigger als 5-Tage-Hoch (statt des Opening-Range-Hochs der ersten Minuten)
+- Basis-Algorithmus, Darvas-3-Tage-Box, Stop 1 % unter der Kauforder
+- Turtle auf Aktien statt Futures, eine Unit je Titel ohne Nachkaufen
+- Liquiditätsgrenzen
+
+---
+
+# Supertrader — Methodentreue, Ursachen, neue Versionen (Runde 7, 02.10.2026) — historischer Stand, überholt
+
+> **Historisch:** Die Matrix unten beschreibt die Versionen von Runde 7 (u. a. Momentum 1.1.0, Weinstein 1.1.0, Darvas 1.2.0, Minervini 1.1.0, Turtle 1.1.0) und ist für die laufenden Versionen überholt. Gültig ist die Tabelle in `fidelity.mjs` bzw. auf den Methodenseiten.
 
 Dieses Dokument trennt für jede Methode, **was eine Quelle tatsächlich sagt**, **welche Regel im Code steht**
 und **wie diese Regel einzuordnen ist**. Einzige Datenquelle für Produktstatus und Matrix ist
@@ -35,7 +130,7 @@ Die Gründe, warum keine Methode quellentreu ist:
 
 ## Methodentreue-Matrix
 
-### Minervini (SEPA/VCP) — Vision-Universe-Variante
+### Minervini (SEPA/VCP) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot liegt und wann in die Stärke verkauft wird, entscheidet Minervini nach Augenmaß.
 
@@ -58,7 +153,7 @@ Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot li
 **Daten:** historisch Tageskurse aller damals gelisteten US-Aktien ab 2016 (inkl. delisteter); live Tageskurse ~6.000 US-Aktien, ein Jahr Tageshistorie; Lücken: keine Gewinne/Umsätze zum Stichtag; kein IBD-RS.  
 **Benötigtes Originalmaterial:** Trade Like a Stock Market Wizard (2013): Trend Template, VCP, Risiko-Kapitel; Think & Trade Like a Champion (2017): Einstiege, Größe, Einstand; Schwager, Stock Market Wizards (2001): Minervini-Kapitel (10-%-Grenze).
 
-### Weinstein (Stage Analysis) — Vision-Universe-Variante
+### Weinstein (Stage Analysis) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Stufen und Steigung der 30-Wochen-Linie beurteilt Weinstein nach Augenmaß; Gruppenstärke und Marktindikatoren werden gewichtet, ohne feste Zahl.
 
@@ -79,7 +174,7 @@ Stufen und Steigung der 30-Wochen-Linie beurteilt Weinstein nach Augenmaß; Grup
 **Daten:** historisch Wochenreihen aus Point-in-Time-Tagesbalken ab 2016, SPY-Wochenschluss; live Lange Wochenschlusskurse + ein Jahr Tagesbalken (Wochenvolumen nur im Tagesfenster); Lücken: keine Gruppenzuordnung zum Stichtag; keine Marktbreite.  
 **Benötigtes Originalmaterial:** Secrets for Profiting in Bull and Bear Markets (1988): Kapitel Kaufzeitpunkt, Verkauf, Langfristindikatoren; Stocks & Commodities Interview V.39:11 (2021).
 
-### Momentum Breakout (Kullamägi) — Vision-Universe-Variante
+### Momentum Breakout (Kullamägi) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Kullamägi kauft im Tagesverlauf am Hoch der ersten Minuten (Opening Range); dafür fehlen historische Intraday-Kurse. Basisqualität beurteilt er nach Augenmaß.
 
@@ -99,7 +194,7 @@ Kullamägi kauft im Tagesverlauf am Hoch der ersten Minuten (Opening Range); daf
 **Daten:** historisch Tageskurse ab 2016 (inkl. delisteter); live Tageskurse; Lücken: keine Intraday-Historie; keine Nachrichten-/Gap-Ursache.  
 **Benötigtes Originalmaterial:** qullamaggie.com Beiträge im Volltext (3 timeless setups, FAQ, Episodic Pivots) – frei verfügbar, in dieser Umgebung gesperrt; Historische 1-/5-Minuten-Kurse (kostenpflichtig).
 
-### Darvas Box — Vision-Universe-Variante
+### Darvas Box — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Regel ist eine spätere Rekonstruktion.
 
@@ -116,7 +211,7 @@ Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Reg
 **Daten:** historisch Tageskurse ab 2016; live Tageskurse; Lücken: keine Gewinndaten zum Stichtag.  
 **Benötigtes Originalmaterial:** How I Made $2,000,000 in the Stock Market (1960), z. B. über die Ausleihe im Internet Archive.
 
-### Donchian/Turtle — Vision-Universe-Variante
+### Donchian/Turtle — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Die Turtle-Regeln sind vollständig mechanisch – aber für ein gestreutes Futures-Portfolio geschrieben, nicht für Einzelaktien.
 

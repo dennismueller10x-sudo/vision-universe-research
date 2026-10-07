@@ -1,0 +1,57 @@
+{
+  "schema": "supertrader-validation-prereg-r12-1.0.0",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor Implementierung und vor jedem Lauf. Regeln der neuen Methode stammen aus öffentlich beschriebenen Regelwerken (TraderFox, 2018–2019) und wurden nicht an unseren Fällen oder Ergebnissen entwickelt; keine Schwelle wird nach dem Lauf verändert.",
+  "naming": "Getestet werden VU-Versionen. VU_TREND_52W ist eine eigene Vision-Universe-Methode, die sich auf öffentlich beschriebene Regeln einer TraderFox-Variante stützt. Sie ist weder „Original Darvas“ noch TraderFox' System; TraderFox' Renditen sind nicht von uns reproduziert.",
+  "comparisonSources": {
+    "TF-NEO-2018-03": "TraderFox, „TraderFox entwickelt NEO-DARVAS-SCREENING mit Marktampel und 20-Jahre-Backtest“, 24.03.2018: Kauf bei neuem 52-Wochen-Hoch in den letzten 4 Wochen, mindestens 70 % seit 52-Wochen-Tief, S&P 500 über GD 200; Depot = 10 Aktien mit der höchsten „Trendstabilität“; Verkauf bei kein neues 52-Wochen-Hoch in 65 Handelstagen, Performance < 70 % seit Jahrestief, S&P 500 < GD 200.",
+    "TF-NEO-2019-PP": "TraderFox (aktien Magazin / QualitInvest-Beitrag), „exakte Regeln von NEO-DARVAS MIT PIVOTAL-POINTS“: größte 1.800 US-Unternehmen, monatliche Umschichtung, Zielgewicht 10 % bei Kauf (10 Positionen), Ranking nach Trendstabilität; Kauf: ≥ 1 Mio. USD Tagesumsatz, ≥ 100 % seit Jahrestief, neues Jahreshoch in 20 Handelstagen, S&P 500 > GD 200, Up-Gap ≥ 6 % in 20 Handelstagen; Verkauf: Gewicht < 3 %, < 100 % seit Jahrestief, bei S&P 500 < GD 200 alle Positionen auf höchstens 5 %, kein neues Hoch in 65 Handelstagen, Gewicht > 20 % → auf 15 %.",
+    "evidenceTypes": "TraderFox nennt einen Point-in-Time-Backtest seit 1999 (Basis ca. 21 % p. a., max. Drawdown 34,91 %; Pivotal-Variante ca. 25 % p. a.) auf Morningstar-Daten, ein regelbasiertes Musterdepot seit April/Mai 2018 mit vorab veröffentlichten Transaktionen und eine dynamisierte Echtgeld-Variante. Kosten des Backtests sind im öffentlichen Material nicht beziffert. Nicht öffentlich: Definition der „Trendstabilität“."
+  },
+  "newMethod": {
+    "id": "VU_TREND_52W",
+    "version": "1.0.0",
+    "label": "VU Trendfolge 52W",
+    "primary": "PP",
+    "variants": {
+      "PP": {
+        "basis": "TF-NEO-2019-PP, vollständig mechanisch",
+        "universe": "Aktien des bereinigten Universums (ohne ETF/ETN/Fonds, U1), täglich die 1.800 Titel mit dem höchsten 63-Tage-Durchschnittsumsatz in USD (VU-Ersatz für „größte 1.800 Unternehmen“: keine Point-in-Time-Marktkapitalisierung verfügbar).",
+        "schedule": "Entscheidung am letzten Handelstag des Monats nach Schluss, Ausführung zur Eröffnung des ersten Handelstags des Folgemonats (VU: TraderFox kündigt drei Tage vorher an).",
+        "buy": ["20-Tage-Durchschnittsumsatz ≥ 1 Mio. USD", "Schluss / tiefstes Tief der letzten 252 Sitzungen − 1 ≥ 100 %", "höchstes Hoch der letzten 20 Sitzungen ≥ höchstes Hoch der letzten 252 Sitzungen", "SPY-Schluss > SPY-GD 200 (Ersatz für S&P 500)", "mindestens eine Eröffnung ≥ 6 % über dem Vortagesschluss in den letzten 20 Sitzungen"],
+        "rank": "VU-Ersatz für die nicht öffentliche „Trendstabilität“: Clenow-Trendmaß (Stocks on the Move, 2015) = annualisierte Steigung der Regression des Log-Schlusskurses über 90 Sitzungen × R². Gleichstand alphabetisch.",
+        "sizing": "Zielgewicht 10 % des Depotwerts je Neukauf, höchstens 10 Positionen, kein Hebel; freie Plätze werden in Rangfolge gefüllt, solange Bargeld reicht.",
+        "sell": ["Gewicht < 3 % → Verkauf", "Schluss / 252-Tage-Tief − 1 < 100 % → Verkauf", "kein neues 252-Tage-Hoch in den letzten 65 Sitzungen → Verkauf", "SPY < GD 200 → jede Position auf höchstens 5 % reduzieren", "Gewicht > 20 % → auf 15 % reduzieren"],
+        "noStop": "Kein Stop zwischen den Monatsterminen (wie in der Quelle)."
+      },
+      "BASE": {
+        "basis": "TF-NEO-2018-03 (Sensitivität)",
+        "buy": ["wie PP, aber ≥ 70 % seit 252-Tage-Tief und ohne Gap-Regel"],
+        "sell": ["kein neues 252-Tage-Hoch in 65 Sitzungen ODER < 70 % seit Tief ODER SPY < GD 200 → Verkauf der ganzen Position (Quelle nennt drei Bedingungen; ein späterer Beitrag präzisiert „einer der folgenden“)"],
+        "other": "Universum, Termin, Rang, Gewicht und Plätze wie PP; keine Gewichtsregeln 3 %/20 %."
+      },
+      "PP-RS": { "basis": "Sensitivität Rang", "rank": "VU-RS-Perzentil (wie Portfoliorang R10) statt Clenow-Trendmaß" },
+      "PP-RANDOM": { "basis": "Referenz", "rank": "20 Zufallsreihenfolgen statt Rang (Wirkung der Rangfolge)" }
+    },
+    "costs": "Slippage 10 bp je Seite, Gebühr 1 bp je Seite (wie alle VU-Tests); COST2: 20 bp + 2 bp.",
+    "delisting": "Offene Positionen am letzten Handelstag nach S0/S1/S2 abgerechnet; SURVIVORS_ONLY als Gegenprobe; Dividenden als Bargeld."
+  },
+  "hypothesisMarketFilter": {
+    "id": "PORT-MARKET-200",
+    "applies": ["MOMENTUM_BREAKOUT@3.2.0", "WEINSTEIN_STAGE@3.0.0", "DARVAS_BOX@3.0.1", "MINERVINI_VCP@2.0.0", "DONCHIAN_TURTLE@2.0.0"],
+    "rule": "Keine neue Modellposition, wenn der SPY-Schluss am Vortag unter seinem GD 200 lag; offene Positionen laufen nach den Regeln der Methode weiter. Signale werden weiter erzeugt und protokolliert (Grund: Marktampel).",
+    "basis": "Marktampel TF-NEO (S&P 500 > GD 200); O'Neil-Kriterium M und Weinsteins Marktstufe als verwandte, nicht identische Regeln. Für Kullamägi und die Turtles keine Marktregel in den Quellen – dort VU-Annahme.",
+    "variantSuffix": "-M"
+  },
+  "evaluation": {
+    "E1_full_portfolio": "Vollportfolio 2016–2026 (bereinigtes Universum, inklusive delisteter Titel): S0, S1, S2, COST2_S1, SURVIVORS_ONLY, Zufallsreihenfolgen; Kennzahlen Überrendite ggü. SPY, Drawdown, mittlere Investitionsquote/Cash, Haltedauer.",
+    "E2_subperiods": "Zeitlich getrennte Teilzeiträume 2016–2020 und 2021–2026 getrennt berichtet.",
+    "E3_cases": "Alle bisherigen Fallmengen (Diagnose R10, Prüfmenge W3, W4): Kandidat zum richtigen Zeitpunkt, Kapital erhalten, Haltedauer, erfasster Anteil der Bewegung; Fehlkandidaten: aufgenommen und Verlust. Für VU_TREND_52W unabhängig, weil dessen Regeln extern festgelegt sind; für -M nur Beschreibung.",
+    "E4_live": "Vorwärtsbeobachtung im Live-Produkt ab Übernahme."
+  },
+  "decisionRules": {
+    "VU_TREND_52W": "Wird als nachvollziehbares Live-Modell (öffentlich „In Prüfung“, Vorwärtsbeobachtung) übernommen, wenn die technischen Kontrollen bestehen (Abstimmung Endwert, Plausibilität jedes Kaufs/Verkaufs gegen Rohbalken). Ein historischer Vorteil gilt nur als belegt, wenn für die Primärvariante PP gilt: R1 S1-Überrendite > 0, R2 in beiden Teilzeiträumen > 0, R3 mindestens 16 von 20 Zufallsreihenfolgen > 0, R4 COST2 > 0. Varianten werden nicht nachträglich zur Primärvariante gemacht.",
+    "PORT-MARKET-200": "Je Methode live, wenn (a) S1-Überrendite mit Marktampel höher als ohne und (b) in keinem der beiden Teilzeiträume niedriger als ohne. Sonst bleibt die Methode ohne Marktampel.",
+    "claims": "Öffentlich weiter keine Kennzahlen aus Tiingo-Daten; kein Vorteil ohne R1–R4."
+  }
+}

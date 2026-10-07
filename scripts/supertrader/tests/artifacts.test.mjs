@@ -113,12 +113,14 @@ test('Regelkarten: jede Live-Variante hat eine vollstaendige Karte mit existiere
     assert.deepEqual(card.sections.map((x) => x.id), need, id);
     for (const e of ['gap', 'volume', 'missingData', 'conflictPre', 'conflictPos', 'version']) assert.ok(card.edge_cases.some((x) => x.id === e), `${id}: Randfall ${e}`);
     const ids = new Set(s.rules.map((r) => r.rule_id));
-    for (const x of [...card.sections, ...card.edge_cases]) { for (const r of x.rules) assert.ok(ids.has(r), `${id}: ${r}`); assert.ok(['ORIGINAL', 'VU', 'MIXED', 'NONE'].includes(x.provenance)); }
+    for (const x of [...card.sections, ...card.edge_cases]) { for (const r of x.rules) assert.ok(ids.has(r), `${id}: ${r}`); assert.ok(['ORIGINAL', 'ORIGINAL_INTERPRETATION', 'VU_FORMALIZATION', 'VU_OWN', 'FOREIGN_RULE', 'NOT_PUBLIC', 'UNRESOLVED', 'VU', 'MIXED', 'NONE'].includes(x.provenance), `${id}/${x.id}: Herkunft ${x.provenance}`); }
     // Drei getrennte Aussagen: ausfuehrbar, Quellenlage, historische Validierung.
     assert.equal(card.executable.status, 'EXECUTABLE', id);
     // Runde 7: Quellenpruefung nur auf Suchauszuegen - nie als vollstaendige Originalpruefung ausgegeben.
-    assert.ok(card.source_basis.status && ['NOT_PERFORMED', 'PERFORMED_R7_SNIPPETS'].includes(card.source_basis.fidelityReview), `${id}: Originaltreue als geprueft ausgegeben`);
-    if (card.source_basis.fidelityReview === 'PERFORMED_R7_SNIPPETS') assert.match(card.source_basis.fidelityNote, /Suchauszug/, id);
+    assert.ok(card.source_basis.status && ['NOT_PERFORMED', 'PERFORMED_R7_SNIPPETS', 'PERFORMED_R8_FULLTEXT', 'PERFORMED_R8_SECONDARY_QUOTES'].includes(card.source_basis.fidelityReview), `${id}: Originaltreue als geprueft ausgegeben`);
+    if (card.source_basis.fidelityReview === 'PERFORMED_R7_SNIPPETS') assert.match(card.source_basis.fidelityNote, /Suchauszüg|Suchauszug/, id);
+    // Runde 8: Volltext nur behaupten, wenn die Quelle im Ledger mit Abrufnachweis steht.
+    if (card.source_basis.fidelityReview === 'PERFORMED_R8_FULLTEXT') assert.match(card.source_basis.fidelityNote, /Volltext gelesen/, id);
     assert.ok(card.source_basis.ruleCounts.original + card.source_basis.ruleCounts.vu > 0);
     assert.equal(card.historical_validation.status, 'NOT_VALIDATED', `${id}: ohne bestandene Gates keine Validierung`);
     assert.ok(card.historical_validation.failedGates.length > 0);
@@ -141,7 +143,13 @@ test('Plan je Signal: geplante Schwellen mit Datenstand; Einstieg nur als echte 
     assert.match(s.plan.trigger.dataAsOf, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(s.plan.nextAction.text && s.plan.nextAction.ruleId, s.id);
     if (['SETUP', 'ENTRY_READY', 'TRIGGERED'].includes(s.state)) assert.equal(s.plan.entry, null, `${s.id}: Einstieg vor Ausfuehrung`);
-    if (s.entry) { assert.equal(s.entry.priceBasis, 'NEXT_OPEN'); assert.ok(s.entry.date > s.confirmation.date, `${s.id}: Einstieg nach Bestaetigung`); }
+    // Schlusskurs-Methoden kaufen zur naechsten Eroeffnung nach der Bestaetigung; Kauf-Stop-Methoden
+    // (ab Runde 8) am Tag, an dem das Tageshoch den Trigger erreicht (Bestaetigung = Einstiegstag).
+    if (s.entry) {
+      assert.ok(['NEXT_OPEN', 'BUY_STOP'].includes(s.entry.priceBasis), `${s.id}: Preisbasis ${s.entry.priceBasis}`);
+      if (s.entry.priceBasis === 'NEXT_OPEN') assert.ok(s.entry.date > s.confirmation.date, `${s.id}: Einstieg nach Bestaetigung`);
+      else { assert.equal(s.entry.date, s.confirmation.date, `${s.id}: Kauf-Stop am Ausloesetag`); assert.ok(s.entry.evidence, `${s.id}: Belegart fehlt`); }
+    }
   }
 });
 

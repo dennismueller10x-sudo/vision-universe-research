@@ -337,7 +337,19 @@
     "50.000 DOLLAR FÜR EIN AUTO?",
     "493,78 USD SCHLUSSKURS – MSFT",
     "420 VON 5954 GEPRÜFTEN TITELN",
-    "10-year U.S. Treasury yield tops ..."
+    "10-year U.S. Treasury yield tops ...",
+    /* Owner-Urteil 02.10.: brav, beschreibend, kein Scroll-Stopper. */
+    "RIVIAN SCHALTET EINEN GANG HÖHER.",
+    "REKORD GESCHAFFT. JETZT KOMMT DER SCHWERE TEIL."
+  ];
+
+  /* Owner-Urteil 02.10.: "genau in die Richtung muss es gehen". Beispiele
+     fuer die Tonlage - nicht zum Kopieren, und nur zulaessig, wenn die
+     Quelle die Zuspitzung traegt. */
+  var HOOK_TONLAGE = [
+    "RIVIAN SCHLÄGT DIE WALL STREET.",
+    "TOTGESAGT. JETZT REKORD.",
+    "DIE NÄCHSTEN 90 TAGE ENTSCHEIDEN ALLES."
   ];
 
   function carouselSlidePfad(contentId, index) {
@@ -366,59 +378,96 @@
      DIE DESIGNSPRACHE DER OWNER-REFERENZEN (30.09., §2-§9)
      Ein Rahmen, den Work fuellt - der Wortlaut folgt der Direktive.
      ------------------------------------------------------------------- */
+  var DESIGN_MODE = "PREMIUM_CAMPAIGN_EDITORIAL";
+
+  /* -------------------------------------------------------------------
+     OWNER ART-DIRECTION UPDATE "PREMIUM CAMPAIGN EDITORIAL" (02.10.)
+     Loest den Stand vom 30.09. ab. Wichtigste Aenderung: das Bild wirkt
+     zuerst wie hochwertige Kampagnenfotografie, die KI wird moeglichst
+     unsichtbar - und Atlas wird NICHT mehr verwendet. Ein Rahmen, den
+     Work als Creative Director fuellt, keine Schablone.
+     ------------------------------------------------------------------- */
   var ART_DIRECTION = {
-    principle: "Kein starres Template. Nicht: jeder Vision-Universe-Post sieht gleich aus. " +
-      "Sondern: jeder Post sieht aus, als kaeme er von derselben hochwertigen Marke. Du " +
-      "entwickelst je Story eigene Layouts, Perspektiven, Bildideen und Kompositionen - auf " +
-      "der Qualitaetsstufe und in der Designsprache der Referenzbilder.",
-    design_language: "PREMIUM FINANCE EDITORIAL x HIGH-END TECHNOLOGY x MODERN CAMPAIGN DESIGN",
-    characteristics: [
-      "tiefschwarze bzw. sehr dunkle, hochwertige Grundflaeche",
-      "starke Kontraste",
-      "grosse, selbstbewusste Typografie",
-      "klare Informationshierarchie",
-      "wenige dominante Elemente, kontrollierter Negativraum",
-      "hochwertige Produkt-, Technologie- oder Finanzvisualisierung",
-      "Weiss als primaere Schriftfarbe",
-      "wenige gezielte Akzentfarben - bevorzugt Vision-Universe-Blau; Rot nur, wenn es " +
-        "inhaltlich traegt (z. B. Risiko)",
-      "hochwertige Licht- und Materialwirkung",
-      "klare mobile Lesbarkeit, keine visuelle Ueberladung"
+    design_mode: DESIGN_MODE,
+    target: "PREMIUM GLOBAL BRAND CAMPAIGN x HIGH-END EDITORIAL x MODERN FINANCIAL MEDIA",
+    not_this: ["AI Art", "Fintech-Sci-Fi", "Finfluencer-Thumbnail", "Canva-Infografik",
+      "Generative-AI-Showcase"],
+    principle: "Das Bild wirkt zuerst wie hochwertige Kampagnenfotografie bzw. Premium " +
+      "Editorial Photography - als waere es fuer eine internationale Werbekampagne fotografiert " +
+      "worden. Die KI soll moeglichst unsichtbar sein. Frage nicht 'Wie mache ich daraus ein " +
+      "spektakulaeres KI-Bild?', sondern 'Wie wuerde eine hochwertige globale Marke diese Story " +
+      "als Social Campaign visualisieren?'",
+    image_quality: [
+      "glaubwuerdige, hochwertige Fotografie",
+      "natuerliche Materialien und reale Lichtstimmung",
+      "hochwertige Architektur, Produkte, Orte und Details",
+      "glaubwuerdige Menschen nur, wenn die Story sie braucht",
+      "kontrollierte Tiefenschaerfe, ruhige Komposition, viel visueller Raum",
+      "premium Color Grading - dunkle, hochwertige Markenwelt; Weiss als Schriftfarbe, wenige " +
+        "gezielte Akzente (bevorzugt Vision-Universe-Blau, Rot nur wenn es inhaltlich traegt)"
     ],
-    not_wanted: [
-      "billige Flat-Vector-Grafiken", "Comic-Poster", "Canva-Look", "klassische Infografik",
-      "Finfluencer-Thumbnail", "ueberladene Collagen", "zehn kleine Zahlen gleichzeitig",
+    forbidden_visuals: [
+      "humanoide Roboter", "Hologramme", "Neon-Trading-Charts", "futuristische Kontrollraeume",
+      "Cyberpunk", "generische Serverhallen", "schwebende Interfaces",
+      "kuenstliche 3D-Metaphern", "uebertriebene KI-Lichteffekte",
+      "offensichtlich generierte Fantasy-Szenen", "billige Flat-Vector-Grafiken", "Comic-Poster",
+      "klassische Infografik", "ueberladene Collagen", "zehn kleine Zahlen gleichzeitig",
       "zahlreiche Pfeile, Kaesten und Icons", "generische Stockbilder",
-      "zufaellige KI-Landschaften", "surrealistische Metaphern nur um kreativ zu wirken",
-      "aufgerissene Buecher, Abgruende und aehnliche KI-Klischees, wenn die Story sie nicht traegt",
-      "generische Serverraeume fuer jedes KI-Thema", "Text einfach auf ein beliebiges Bild gelegt"
+      "Text nachtraeglich irgendwo auf ein beliebiges Bild geklebt"
     ],
-    one_idea_per_slide: "ONE SLIDE = ONE IDEA = ONE VISUAL HIERARCHY. Jede Slide hat genau eine " +
-      "dominante Aussage (etwa eine grosse Zahl oder ein kurzer Satz) - nicht sechs Zahlen, drei " +
-      "Headlines, vier Icons, Diagramm und Karte auf derselben Seite.",
-    typography: "Typografie ist Gestaltungselement. Die Hook darf gross und selbstbewusst sein. " +
-      "Keine Bandwurmsaetze, keine winzige Textwueste, keine schlechte Worttrennung, keine Woerter " +
-      "ueber Bildkanten oder Falze zerlegt, keine drei konkurrierenden Headlines. Auf dem " +
-      "Smartphone muss innerhalb einer Sekunde klar sein: WAS IST DIE AUSSAGE?",
-    brand_system: "Vision-Universe-Logo auf ALLEN Slides, bevorzugt oben links, innerhalb eines " +
-      "Carousels in identischer Position, Groesse und Sicherheitsabstand. Atlas NUR auf Slide 1 - " +
-      "als Host und Markenfigur hochwertig in die Komposition integriert, nicht wie ein Sticker " +
-      "auf ein fertiges Bild gesetzt.",
-    carousel_coherence: "Die Slides duerfen unterschiedliche Layouts haben (z. B. Slide 1 Atlas + " +
-      "grosses Motiv + Hook, Slide 2 dominante Zahl + Produkt-/Technologievisual, Slide 3 Split " +
-      "Chance/Risiko) - erwuenscht. Gemeinsam teilen sie Logo-System, Typografie-Familie, " +
-      "Farbwelt, Material- und Lichtqualitaet, Designniveau und visuelle Sprache. Pruefe: lege ich " +
-      "die Slides nebeneinander, erkenne ich sofort EINEN Vision-Universe-Post?",
-    story_decides_motif: "Die Referenzen definieren die Designsprache, nicht das Motiv. Das Motiv " +
-      "entsteht aus der Story (Halbleiter: Wafer, Lithografie, Chip-Strukturen; Rohstoffe: " +
-      "Material, industrielle Anwendung; Unternehmen: Produkt, Technologie, Infrastruktur, " +
-      "Geschaeftsmodell; Makro: hochwertige, nachvollziehbare finanzielle Visualisierung). Keine " +
-      "mechanische Zuordnung: erst die Story verstehen, dann das Visual Concept entwickeln.",
-    creative_director: "Das ist ein Rahmen, keine Schablone. Du bleibst Creative Director und " +
-      "entscheidest Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie, den Einsatz " +
-      "von Zahlen und die Layouts von Slide 2 und 3 - innerhalb der Qualitaetswelt der Referenzen.",
-    success: "Nicht: drei Bilder wurden technisch erzeugt. Sondern: das sieht aus wie ein " +
-      "professionelles Vision-Universe-Carousel, das der Owner freiwillig posten wuerde."
+    subtlety: "Das Motiv muss nicht jeden Begriff der Hook illustrieren. Subtilitaet ist " +
+      "ausdruecklich erlaubt: eine starke reale Szene plus hervorragende Typografie ist besser " +
+      "als eine komplizierte visuelle Metapher.",
+    brand_anchor: "Das originale VISION UNIVERSE(R)-Logo (brand_assets.logo) erscheint auf JEDEM " +
+      "Slide, fest OBEN LINKS. Innerhalb eines Carousels sind Position, Groesse und " +
+      "Sicherheitsabstand identisch - keine freie Neuplatzierung pro Slide. Das Logo ist die " +
+      "konstante visuelle Signatur.",
+    no_atlas: "Atlas wird NICHT mehr verwendet. Kein Atlas, kein Ersatzroboter, keine humanoide " +
+      "Markenfigur - auch nicht, wenn eine Referenz eine zeigt.",
+    hook: "Jeder Cover-Slide braucht eine starke, deutlich sichtbare DEUTSCHE Hook als eines der " +
+      "dominanten Gestaltungselemente: kurz, dick, klar, hoechstens etwa 2-3 Zeilen, mobile-first, " +
+      "sofort verstaendlich. Gross, aber im Einklang mit dem Bild. Plane Bildkomposition und " +
+      "Textposition GEMEINSAM - das Motiv besitzt bereits den Raum fuer die Typografie.",
+    supporting_copy: "Optional unter der Hook EINE kurze Supporting Line (kurze Einordnung oder " +
+      "die zentrale Zahl). Nicht mehr: keine Textwaende, keine zehn Kennzahlen, keine " +
+      "Mini-Infografik.",
+    typography: "Keine Worttrennung ueber Bildkanten, Falze oder Motive, keine drei " +
+      "konkurrierenden Headlines. Auf dem Smartphone ist innerhalb einer Sekunde klar: WAS IST " +
+      "DIE AUSSAGE?",
+    coherence: "Alle Slides teilen Art Direction, Typografie, Farbgrading, Qualitaetsniveau, " +
+      "Logo-System und Spacing-System - aber nicht dreimal dasselbe Bild. Wie bei einer " +
+      "professionellen Produktkampagne erzaehlen verschiedene Motive und Ausschnitte dieselbe " +
+      "Geschichte.",
+    story_decides_motif: "Die Story bestimmt das Motiv, du entscheidest kreativ. Denkprinzip, " +
+      "keine Tabelle: Unternehmensstory -> reales Produkt, Umfeld, Branche, Detail; Makro -> " +
+      "glaubwuerdige reale Wirtschafts-, Arbeits- oder Stadtszene; Rohstoffe -> hochwertiges " +
+      "Material-, Industrie- oder Anwendungsbild; Technologie -> hochwertiges reales Produkt-, " +
+      "Komponenten- oder Anwendungsvisual. Nicht mechanisch (nicht: KI = Server, Boerse = " +
+      "Trading Floor, Risiko = rote Kurve). Erst die Story verstehen.",
+    references: "Zwei Referenzgruppen, nur ihre STAERKEN kombinieren, keine Inhalte kopieren. " +
+      "(1) Eine internationale Automobil-Produktkampagne (vom Owner gezeigt, nicht im Checkout): " +
+      "ruhige, bilddominante Kampagnenfotografie in realen Orten mit natuerlichem Licht, klare " +
+      "Headline oben links mit EINER kurzen Unterzeile, die zentrale Zahl farbig hervorgehoben, " +
+      "Markenzeichen an fester Stelle, vier verschiedene Motive derselben Produktwelt als eine " +
+      "Serie. Keine Logos, Fahrzeuge, Texte oder Layouts daraus uebernehmen. (2) Die Vision-" +
+      "Universe-Beispiele unter style_references: dunkle Markenwelt, starke Hooks, Finanz-/Tech-" +
+      "Editorialitaet, Typografie, Akzentfarben - deren Roboter (Atlas) ist ueberholt.",
+    creative_director: "Ein Art-Direction-Rahmen, KEIN starres Template. Du bleibst Creative " +
+      "Director und entscheidest Motiv, Perspektive, fotografische Situation, Layout, " +
+      "Typografie-Hierarchie, Supporting Line und visuelle Dramaturgie - innerhalb dieser " +
+      "Premiumwelt.",
+    success: "Nicht: ein Bild wurde technisch erzeugt. Sondern: das sieht aus wie eine " +
+      "professionelle Vision-Universe-Kampagne, die der Owner freiwillig posten wuerde."
+  };
+
+  /* Das Negative Creative Gate (§9): vor der Auslieferung selbst pruefen. */
+  var AI_CLICHE_GATE = {
+    question: "Sieht das Bild auf den ersten Blick offensichtlich KI-generiert aus?",
+    criteria: ["kuenstliche Hochglanzoptik", "unrealistische Beleuchtung",
+      "generische Sci-Fi-Szene", "Hologramme", "Roboter", "uebertriebene Symmetrie",
+      "sinnlose visuelle Metaphern", "zu viele Effekte"],
+    on_fail: "Wenn JA: intern verwerfen und neu gestalten. Ausgeliefert wird nur ein Bild mit " +
+      "ai_cliche_check.result = 'PASS'."
   };
 
   /** Die Referenzbilder im Brief: echte Dateien im Checkout, dazu die Pflicht, sie anzusehen. */
@@ -431,8 +480,9 @@
       }),
       instruction: "Oeffne und betrachte diese Bilddateien selbst, BEVOR du gestaltest - sie liegen " +
         "unveraendert im selben Checkout wie dieser Brief. Sie sind die visuelle Qualitaetsreferenz " +
-        "(Art Direction, Typografie, Hierarchie, Komposition, Markenwirkung, Informationsdichte, " +
-        "Atlas- und Logo-Integration). Nicht pixelgenau kopieren - diese Qualitaetswelt treffen.",
+        "(dunkle Markenwelt, Hook-Staerke, Typografie, Hierarchie, Akzentfarben, Logo-Integration). " +
+        "Nicht pixelgenau kopieren. Der Roboter (Atlas) und die Hologramm-/Neon-Effekte darin " +
+        "sind UEBERHOLT - nicht uebernehmen (siehe art_direction).",
       not_facts: "Inhalte, Unternehmen, Aktien, Zahlen und Aussagen dieser Bilder sind KEINE " +
         "Faktenquelle und KEIN Themenvorschlag. Die Story kommt ausschliesslich aus der Recherche.",
       check_required: "Gib in `style_references_check` je Referenzdatei { path, dominant_text } an: " +
@@ -510,7 +560,10 @@
           ? "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie " +
             "redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, " +
             "Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke " +
-            "der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche " +
+            "der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. " +
+            "Routinemeldungen, die jedes Quartal wiederkommen (Auslieferungszahlen, gewoehnliche " +
+            "Quartalszahlen, Kalendertermine), nur dann, wenn sie wirklich ueberraschen - sonst " +
+            "lieber die Story mit Konflikt, Wendepunkt oder echter Neuigkeit. Moegliche " +
             "Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, " +
             "Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, " +
             "Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche " +
@@ -556,16 +609,33 @@
       hook_strategy: {
         strategy_id: "vu-carousel-editorial-v1",
         hook_type: CAROUSEL_HOOK_TYPE,
-        instruction: "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder " +
-          "Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende " +
-          "Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, " +
-          "belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben " +
-          "Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, " +
-          "kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch " +
-          "korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+        instruction: "Die Hook ist ein SCROLL-STOPPER, keine Ueberschrift. Sie entsteht aus der " +
+          "Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich " +
+          "unterschiedliche Richtungen und waehle die AGGRESSIVSTE, die die Quelle noch traegt. " +
+          "Liefere GENAU EINE finale Hook. Die verworfenen Richtungen gehoeren in " +
+          "`hook_exploration`.",
+        tone: [
+          "Konfrontation statt Beschreibung: Konflikt, Gewinner gegen Verlierer, Widerspruch zur " +
+            "Erwartung, Kampfansage, Schicksalsfrage oder eine harte Zahl als Schlag",
+          "3 bis 6 Woerter, Grossbuchstaben, gerne als direkte Ansage oder provokante Frage",
+          "ein Leser, der nur scrollt, muss nach einer Sekunde anhalten wollen",
+          "Deutsch, sofort verstaendlich, anlegerrelevant"
+        ],
+        forbidden: [
+          "Wortspiele und Redewendungen ohne Aussage (\"schaltet einen Gang hoeher\")",
+          "reine Beschreibung des Ereignisses (\"neuer Rekord\", \"Zahlen gemeldet\")",
+          "brave Einordnung (\"jetzt kommt der schwere Teil\")",
+          "Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel"
+        ],
+        tone_examples: HOOK_TONLAGE,
+        tone_examples_note: "So klingt die richtige Tonlage (Rivian-Rekordquartal, 02.10.). " +
+          "Nicht kopieren - fuer jede Story neu, aus ihren eigenen Fakten.",
+        fact_limit: "Jede Zuspitzung muss belegt sein: 'schlaegt die Wall Street' nur mit " +
+          "genannter Erwartung, 'totgesagt' nur, wenn die Quelle das Umfeld so beschreibt. Keine " +
+          "erfundenen Behauptungen, keine Kurs- oder Renditeversprechen, keine Kaufaufforderung.",
         negative_fixtures: NEGATIVE_HOOKS,
         negative_fixture_note: "Diese Hooks gelten ausdruecklich NICHT als gelungene Social " +
-          "Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+          "Hooks - zu brav, zu beschreibend oder Systemsprache."
       },
 
       editorial_gate: {
@@ -588,6 +658,7 @@
         "im Array. Keine Standardliste, keine internen Systembegriffe.",
 
       art_direction: ART_DIRECTION,
+      ai_cliche_gate: AI_CLICHE_GATE,
       style_references: referenzen,
 
       carousel: {
@@ -596,25 +667,30 @@
         plan_first: "Plane ZUERST das ganze Carousel als eine Geschichte (`carousel_plan`), dann " +
           "erst das Bild. Die Slides sind eine Serie, keine unabhaengigen Einzelbilder.",
         slides: [
-          { slide_index: 1, role: "HOOK / COVER", task: "Scroll Stop.",
-            contains: "staerkste deutsche Hook, starkes Hauptmotiv aus der Story, Vision-Universe-" +
-              "Logo, Atlas - moeglichst wenig weiterer Text." },
-          { slide_index: 2, role: "KEY INSIGHT", task: "Die staerkste Information der Story " +
-              "vermitteln: dominante Zahl, Vergleich, ueberraschender Fakt, Entwicklung oder " +
-              "zentrale Erkenntnis.",
-            contains: "Vision-Universe-Logo, KEIN Atlas." },
-          { slide_index: 3, role: "EINORDNUNG", task: "Warum ist das fuer Anleger relevant? " +
-              "Chance/Risiko, Konsequenz, was jetzt wichtig wird, Vergleich, Ausblick oder die " +
-              "entscheidende Frage.",
-            contains: "Vision-Universe-Logo, KEIN Atlas." }
+          { slide_index: 1, role: "HERO / HOOK", task: "Scroll Stop.",
+            contains: "staerkstes Kampagnenmotiv, starke deutsche Hook, Logo oben links, " +
+              "optional EINE kurze Supporting Line." },
+          { slide_index: 2, role: "DETAIL / KEY INSIGHT", task: "Ein anderes hochwertiges Motiv " +
+              "oder Detail derselben Storywelt mit EINER zentralen Erkenntnis oder Zahl.",
+            contains: "PFLICHT: eine starke deutsche Headline im Bild (die zentrale Zahl oder " +
+              "Erkenntnis), optional EINE kurze Supporting Line. Logo exakt gleich positioniert, " +
+              "keine Informationsueberladung." },
+          { slide_index: 3, role: "CONTEXT / INVESTOR RELEVANCE", task: "Eine dritte hochwertige " +
+              "visuelle Perspektive mit kurzer Einordnung, Konsequenz oder Frage fuer Anleger.",
+            contains: "PFLICHT: eine starke deutsche Headline im Bild (Konsequenz, Einordnung oder " +
+              "die entscheidende Frage), optional EINE kurze Supporting Line. Logo exakt gleich " +
+              "positioniert." }
         ],
-        atlas_contract: "Atlas erscheint AUSSCHLIESSLICH auf Slide 1 - als Host und Markenfigur, " +
-          "natuerlich integriert, nicht aufgeklebt. Nutze die echte Datei brand_assets.atlas; " +
-          "keine neu erfundene Roboterfigur, Gesicht und Mimik wie im Referenzbild.",
+        atlas_contract: "KEIN Atlas auf keinem Slide. Kein Ersatzroboter, keine humanoide " +
+          "Markenfigur.",
         logo_contract: "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, " +
-          "bevorzugt oben links, in identischer Position, Groesse und Safe Area. Kein " +
+          "fest OBEN LINKS, in identischer Position, Groesse und Safe Area. Kein " +
           "approximiertes Logo, kein neu generierter Schriftzug.",
-        text_on_image: "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine " +
+        text_on_image: "Text im Bild ist auf JEDEM Slide Pflicht. Slide 1 traegt die Hook - " +
+          "der aggressivste Satz des Posts. Slide 2 und 3 tragen je eine starke deutsche " +
+          "Headline: klar, selbstbewusst, gut lesbar, aber weniger extrem als die Hook - sie " +
+          "fuehren die Geschichte weiter, statt sie zu wiederholen. Ein Slide ohne Text gibt es " +
+          "nicht. Keine " +
           "Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche " +
           "(Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
       },
@@ -632,23 +708,27 @@
         }
         : {
           mode: MULTI_ASSET,
-          deliver_now: "Jede Slide als eigenes finales Bild unter den Pfaden in " +
-            "asset_requirements.deterministic_paths."
+          deliver_now: "ALLE Slides in DIESEM einen Auftrag, jede als eigenes finales 4:5-Bild " +
+            "unter den Pfaden in asset_requirements.deterministic_paths (Standard: slide-01, " +
+            "slide-02, slide-03). Erzeuge die Bilder nacheinander und nimm Slide 1 als " +
+            "Stilanker fuer 2 und 3: gleiche Art Direction, Typografie, Farbgrading und " +
+            "Logo-Position. Keine Mini-Slides auf einer Leinwand, kein Bogen.",
+          why: "Owner-Entscheidung 03.10.: drei Bilder auf einmal - ein Auftrag, ein Carousel."
         },
 
       visual_strategy: {
-        strategy_id: "VU_EDITORIAL_PREMIUM",
-        instruction: "Premium Finance Editorial x High-End Technology x Modern Campaign Design, " +
-          "in der Qualitaetswelt der Referenzbilder (style_references, art_direction). Eine " +
-          "dominante Aussage je Slide, Motiv aus der Story.",
+        strategy_id: DESIGN_MODE,
+        instruction: "Premium Global Brand Campaign x High-End Editorial x Modern Financial " +
+          "Media: hochwertige Kampagnenfotografie aus der Storywelt, die KI unsichtbar, eine " +
+          "starke deutsche Hook in einem Raum, den die Komposition dafuer laesst (art_direction).",
         creative_freedom: "Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie und " +
           "Layout entscheidest du aus der Story heraus.",
         restrictions: [
           "Kein Template, keine pixelgenaue Kopie der Referenzen",
-          "Atlas nur auf Slide 1, Logo auf allen Slides an derselben Stelle",
+          "Kein Atlas, keine Roboter; Logo auf allen Slides fest oben links",
           "Keine Worttrennung ueber Kanten, Falze oder Motive",
           "Keine erfundenen Zahlen im Bild",
-          "Nichts aus der Liste art_direction.not_wanted"
+          "Nichts aus der Liste art_direction.forbidden_visuals"
         ]
       },
 
@@ -661,11 +741,9 @@
 
       brand_assets: {
         logo: (options.brandAssets && options.brandAssets.logo) || "assets/vision-universe-logo.png",
-        atlas: (options.brandAssets && options.brandAssets.atlas) || "assets/atlas.png",
-        instruction: "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als " +
-          "echte Bildreferenz verwenden und nur skaliert, zugeschnitten oder neu positioniert " +
-          "einsetzen - keine Neuzeichnung, keine Farb- oder Stiltransformation. Atlas' Gesicht, " +
-          "Mimik und Proportionen exakt wie im Referenzbild; Pose und Blickwinkel sind frei."
+        instruction: "Die Logo-Datei liegt unveraendert im selben Checkout wie dieser Brief. " +
+          "Als echte Bildreferenz verwenden und nur skaliert einsetzen - keine Neuzeichnung, keine " +
+          "Farb- oder Stiltransformation. Atlas wird nicht verwendet."
       },
 
       asset_requirements: nurCover
@@ -677,7 +755,7 @@
           deterministic_path: coverPfad(contentId),
           format_note: "Hochformat 4:5 (Ziel 1080x1350). Das Bildwerkzeug liefert eigene " +
             "Pixelmasse - waehle das Hochformat, skaliere oder beschneide nicht nachtraeglich, und " +
-            "halte Hook, Logo und Atlas mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt " +
+            "halte Hook und Logo mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt " +
             "nichts Wichtiges verliert. Melde die tatsaechlichen Masse ehrlich.",
           announced_fields_required: [
             "slide_index", "asset_path", "mime_type", "width", "height",
@@ -686,7 +764,7 @@
           announcement_note: "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, " +
             "asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen " +
             "Commit frisch zurueckgelesen und verglichen. brand_elements: { includes_logo, " +
-            "includes_atlas, includes_hook_text_de } als Booleans."
+            "includes_atlas (muss false sein), includes_hook_text_de } als Booleans."
         }
         : {
           count: STANDARD_SLIDES + "-" + Contract.CAROUSEL_MAX,
@@ -702,8 +780,12 @@
             "slide_index", "asset_path", "mime_type", "width", "height",
             "asset_byte_size", "asset_sha256", "brand_elements"
           ],
+          format_note: "Jede Slide im Hochformat 4:5 (Ziel 1080x1350), alle Slides in denselben " +
+            "Pixelmassen. Nicht nachtraeglich skalieren oder beschneiden; Text und Logo mit " +
+            "Sicherheitsabstand vom Rand. Melde die tatsaechlichen Masse ehrlich.",
           announcement_note: "Je Slide eine Datei. brand_elements je Slide: { includes_logo, " +
-            "includes_atlas } - Slide 1 zusaetzlich includes_hook_text_de."
+            "includes_atlas: false, includes_text_de } - Slide 1 zusaetzlich " +
+            "includes_hook_text_de."
         },
 
       authoring_requirements: {
@@ -718,6 +800,7 @@
         brand_elements_announcement_required: true,
         sources_required: true,
         editorial_gate_required: true,
+        ai_cliche_check_required: true,
         style_references_check_required: !!referenzen,
         publishing_allowed: false
       },
@@ -740,8 +823,8 @@
           recommended_hook: "{ recommended_hook_variant_id, recommendation_reason, is_canonical_selection: false }",
           caption: "deutsche Caption fuer den ganzen Beitrag",
           hashtags: "[bis zu 5 Strings ohne #]",
-          carousel_plan: "[je Slide: { slide_index, role, headline_de, key_content, visual_concept, " +
-            "atlas: bool }] - alle Slides, auch die noch nicht gezeichneten",
+          carousel_plan: "[je Slide: { slide_index, role, headline_de, supporting_line_de, " +
+            "key_content, visual_concept }] - alle Slides, auch die noch nicht gezeichneten",
           slide_count: "Zahl der geplanten Slides (Standard 3)",
           editorial_gate: "{ story_quality, hook_standalone_quality, caption_standalone_quality, fact_grounding } - je 'PASS'",
           visual_variants: nurCover
@@ -751,8 +834,12 @@
             : "[je Slide: { visual_variant_id, visual_strategy, slide_index (1..n), slide_role, " +
               "brief_revision, asset_path, mime_type, width, height, asset_byte_size, asset_sha256, " +
               "brand_elements }]",
-          carousel_checks: "{ atlas_only_on_slide_1, logo_on_all_slides, logo_position_consistent } - " +
+          carousel_checks: "{ no_atlas, logo_on_all_slides, logo_position_consistent } - " +
             "je true (bei COVER_FIRST: so geplant)",
+          design_mode: "'" + DESIGN_MODE + "'",
+          visual_concept: "ein Satz: welche reale Szene, warum sie die Story traegt",
+          ai_cliche_check: "{ result: 'PASS', checked: [die Kriterien aus ai_cliche_gate], " +
+            "redesigned: bool, note }",
           style_references_check: "[je Referenzdatei: { path, dominant_text }]",
           processing: "{ status: 'completed', ... }",
           publishing_allowed: false
@@ -762,6 +849,7 @@
       constraints: [
         "Keine erfundenen Zahlen, Fakten oder Quellen. Jede Zahl im Text stammt aus einer genannten Quelle.",
         "Keine Fakten aus den Referenzbildern.",
+        "Kein Atlas, keine Roboter, keine humanoide Markenfigur.",
         "Keine Prognose, keine Kauf- oder Verkaufsempfehlung.",
         "Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen.",
         "Kein `selected_hook` - nur `recommended_hook`.",
@@ -791,16 +879,16 @@
       befunde.push({ id: "slideCountMismatch", message: "slide_count=" + r.slide_count +
         ", geplant/geliefert " + n + " Slides." });
     }
-    if (l.modus === COVER_FIRST) {
+    if (l.modus === COVER_FIRST || Array.isArray(r.carousel_plan)) {
       var plan = (r.carousel_plan || []).slice()
         .sort(function (a, b) { return Number(a && a.slide_index) - Number(b && b.slide_index); });
       plan.forEach(function (p, i) {
         if (!p || Number(p.slide_index) !== i + 1 || !p.headline_de || !p.visual_concept) {
           befunde.push({ id: "planIncomplete", message: "carousel_plan Slide " + (i + 1) +
             " braucht slide_index, headline_de und visual_concept." });
-        } else if (i > 0 && p.atlas === true) {
-          befunde.push({ id: "atlasOutsideCover", message: "carousel_plan Slide " + (i + 1) +
-            " plant Atlas - Atlas gehoert nur auf Slide 1." });
+        } else if (p.atlas === true) {
+          befunde.push({ id: "atlasPresent", message: "carousel_plan Slide " + (i + 1) +
+            " plant Atlas - Atlas wird nicht mehr verwendet." });
         }
       });
     }
@@ -814,15 +902,18 @@
       if (be.includes_logo !== true) {
         befunde.push({ id: "logoMissing", message: "Slide " + (i + 1) + " meldet kein Logo." });
       }
-      if (i === 0 && be.includes_atlas !== true) {
-        befunde.push({ id: "atlasMissingOnCover", message: "Slide 1 meldet keinen Atlas." });
-      }
+
       if (i === 0 && be.includes_hook_text_de !== true) {
         befunde.push({ id: "hookTextMissingOnCover", message: "Slide 1 meldet keine deutsche Hook im Bild." });
       }
-      if (i > 0 && be.includes_atlas !== false) {
-        befunde.push({ id: "atlasOutsideCover", message: "Slide " + (i + 1) +
-          " meldet includes_atlas=" + be.includes_atlas + " - Atlas gehoert nur auf Slide 1." });
+      /* Owner 03.10.: auf Slide 2 und 3 muss ebenfalls Text stehen. */
+      if (i > 0 && be.includes_text_de !== true) {
+        befunde.push({ id: "slideTextMissing", message: "Slide " + (i + 1) +
+          " meldet keinen deutschen Text im Bild (brand_elements.includes_text_de)." });
+      }
+      if (be.includes_atlas !== false) {
+        befunde.push({ id: "atlasPresent", message: "Slide " + (i + 1) +
+          " meldet includes_atlas=" + be.includes_atlas + " - Atlas wird nicht mehr verwendet." });
       }
     });
     var tags = r.hashtags;
@@ -843,11 +934,20 @@
         }
       });
     var checks = r.carousel_checks || {};
-    ["atlas_only_on_slide_1", "logo_on_all_slides", "logo_position_consistent"].forEach(function (k) {
+    ["no_atlas", "logo_on_all_slides", "logo_position_consistent"].forEach(function (k) {
       if (checks[k] !== true) {
         befunde.push({ id: "carouselCheck:" + k, message: "carousel_checks." + k + " ist nicht true." });
       }
     });
+    if (r.design_mode !== DESIGN_MODE) {
+      befunde.push({ id: "designMode", message: "design_mode=" + r.design_mode + ", verlangt " +
+        DESIGN_MODE + "." });
+    }
+    var klischee = r.ai_cliche_check || {};
+    if (String(klischee.result || "").toUpperCase() !== "PASS") {
+      befunde.push({ id: "aiClicheCheck", message: "ai_cliche_check.result ist nicht PASS - " +
+        "das Bild wirkt nach eigener Pruefung offensichtlich KI-generiert oder wurde nicht geprueft." });
+    }
     var story = r.story || {};
     if (!story.title_de || !story.why_interesting) {
       befunde.push({ id: "story", message: "story.title_de und story.why_interesting sind Pflicht." });
@@ -1455,7 +1555,11 @@
     carouselLieferung: carouselLieferung,
     COVER_FIRST: COVER_FIRST,
     MULTI_ASSET: MULTI_ASSET,
+    NEGATIVE_HOOKS: NEGATIVE_HOOKS,
+    HOOK_TONLAGE: HOOK_TONLAGE,
     ART_DIRECTION: ART_DIRECTION,
+    AI_CLICHE_GATE: AI_CLICHE_GATE,
+    DESIGN_MODE: DESIGN_MODE,
     CAROUSEL_HOOK_TYPE: CAROUSEL_HOOK_TYPE,
     NEGATIVE_HOOKS: NEGATIVE_HOOKS,
     verifyResult: verifyResult,

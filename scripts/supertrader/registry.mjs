@@ -11,6 +11,12 @@
 
 import { buildR4 } from './registry-r4.mjs';
 import { applyR7 } from './registry-r7.mjs';
+import { applyR8 } from './registry-r8.mjs';
+import { applyR10 } from './registry-r10.mjs';
+import { applyR11 } from './registry-r11.mjs';
+import { buildR12, applyR12 } from './registry-r12.mjs';
+import { applyR13 } from './registry-r13.mjs';
+import { applyPhase1, derivePhase1Provenance } from './registry-p1.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -467,6 +473,7 @@ const minervini = {
 
 /* ===================== RUNDE 4: Donchian, CAN SLIM, Piotroski ===================== */
 const { donchian, canslim, piotroski } = buildR4({ f, NONE, NV, rule, DNA_FIELDS });
+const { trend: trend52 } = buildR12({ f, NONE, NV, rule, DNA_FIELDS });
 
 /* ============================ ADVANCED ============================ */
 function advanced(id, slug, name, originator, family, why, sources, status = ['ADVANCED_RESEARCH']) {
@@ -647,8 +654,10 @@ greenblatt.rule_cards = [{
   historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
-// Herkunft je Sektion aus den Regeln ableiten.
-for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, canslim, piotroski]) {
+// Herkunft je Sektion aus den Regeln ableiten (nach allen Versionsrunden,
+// sonst zeigten geaenderte Sektionen die Herkunft der alten Regeln).
+function deriveProvenance() {
+for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, canslim, piotroski, trend52]) {
   const byId = new Map(s.rules.map((r) => [r.rule_id, r]));
   for (const card of s.rule_cards) {
     for (const x of [...card.sections, ...card.edge_cases]) {
@@ -660,9 +669,19 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, c
     card.source_basis.ruleCounts = { original: ids.filter((r) => !r.VU_formalization_flag).length, vu: ids.filter((r) => r.VU_formalization_flag).length };
   }
 }
+}
 
 applyR7({ momentum, weinstein, darvas, minervini, donchian, rule });
-export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
+applyR8({ momentum, weinstein, darvas, minervini, donchian, rule });
+applyR10({ momentum, weinstein, darvas, minervini, donchian, rule });
+applyR11({ momentum, rule });
+applyR12({ darvas, donchian, rule });
+applyR13({ weinstein, donchian, rule, strategies: [momentum, weinstein, darvas, minervini, donchian, trend52, canslim, piotroski, greenblatt, ...advancedList] });
+// Migration Phase 1: Version-zu-Regel-Zuordnung, R15-Herkunftsklassen, Textkorrekturen (keine Strategieregel ändert sich).
+applyPhase1({ strategies: [momentum, weinstein, darvas, minervini, donchian, trend52], rule });
+deriveProvenance();
+derivePhase1Provenance([momentum, weinstein, darvas, minervini, donchian, trend52]);
+export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, trend52, canslim, piotroski, greenblatt, ...advancedList];
 // Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
 // pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten
 // fehlen), RESEARCH (nur Namenskarte, keine Regeln).

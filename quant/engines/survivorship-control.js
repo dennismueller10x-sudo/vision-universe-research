@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE — survivorship-control.js   (survivorship-control-1.0.0)
+   VISION UNIVERSE — survivorship-control.js   (survivorship-control-1.1.0)
 
    Owner-Programm 02.10.2026, §2-§9. Zwei Begriffe, zwei Zustaende:
 
@@ -30,7 +30,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var VERSION = "survivorship-control-1.0.0";
+  var VERSION = "survivorship-control-1.1.0";
   var DAY = 86400000;
   var CLASSES = {
     A: "delistet, verwendbare Historie bis zum Listing-Ende",
@@ -52,6 +52,38 @@
     if (days(listing.start, series.from) < -tol) return false;            // Reihe beginnt vor dem Listing
     if (listing.end && days(listing.end, series.to) > tol) return false;  // Reihe laeuft ueber das Ende hinaus
     return true;
+  }
+
+  /**
+   * DAS AKTUELLE LISTING EINER REIHE (seit 1.1.0, 03.10.2026).
+   *
+   * Der Anbieter fuehrt unter einem Kuerzel die Kerzen jeder Firma, die es
+   * je trug. Gemessen am 03.10.2026: DINE traegt 2010-05-11 bis 2011-01-03
+   * (Kurs um 12) und ab 2026-05-05 (um 25) - 15 Jahre ohne eine Kerze
+   * dazwischen; 127 veroeffentlichte Reihen haben eine solche Luecke von
+   * mehr als einem Jahr in ihren letzten 270 Kerzen. Ein Chart, eine
+   * 12-Monats-Rendite oder ein 200-Tage-Schnitt ueber diese Luecke vergleicht
+   * zwei Wertpapiere.
+   *
+   * Regel: nach einer Luecke von mehr als maxGapDays Kalendertagen (Standard
+   * 365) beginnt ein neues Listing; gilt nur das juengste. Kuerzere Luecken
+   * (Handelsaussetzungen) bleiben unberuehrt. Kein Ticker, kein Name -
+   * nur die Kerzen selbst.
+   *
+   * @returns {{bars: Array, cut: null|{gapDays, droppedBars, droppedFrom, droppedTo, keptFrom}}}
+   */
+  var LISTING_GAP_DAYS = 365;
+  function currentListingSegment(bars, opts) {
+    var max = opts && opts.maxGapDays !== undefined ? opts.maxGapDays : LISTING_GAP_DAYS;
+    if (!Array.isArray(bars) || bars.length < 2) return { bars: bars || [], cut: null };
+    for (var i = bars.length - 1; i > 0; i--) {
+      var g = days(String(bars[i - 1].date).slice(0, 10), String(bars[i].date).slice(0, 10));
+      if (g > max) {
+        return { bars: bars.slice(i), cut: { gapDays: g, droppedBars: i, droppedFrom: String(bars[0].date).slice(0, 10),
+          droppedTo: String(bars[i - 1].date).slice(0, 10), keptFrom: String(bars[i].date).slice(0, 10) } };
+      }
+    }
+    return { bars: bars, cut: null };
   }
 
   /** Listing-Kennung aus dem Security Master: tiingo:EXCH:TICKER:start. */
@@ -127,6 +159,7 @@
   }
 
   var api = { VERSION: VERSION, CLASSES: CLASSES, OUTCOME: OUTCOME, ownsSeries: ownsSeries, listingIdOf: listingIdOf,
+    currentListingSegment: currentListingSegment, LISTING_GAP_DAYS: LISTING_GAP_DAYS,
     classifyInactiveRow: classifyInactiveRow, classifyFetchedListing: classifyFetchedListing, emptyClasses: emptyClasses, status: status };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else global.VUSurvivorshipControl = api;

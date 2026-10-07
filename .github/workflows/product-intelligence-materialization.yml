@@ -123,18 +123,12 @@ jobs:
           # gerechnet - ohne force (scripts/quant/methodology-fingerprint.mjs).
           METHOD=$(node scripts/quant/methodology-fingerprint.mjs --compare | sed 's/^changed=//')
           echo "Methodik geaendert: ${METHOD:-nein}"
-          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Manuell erzwungen (force) - Stichtag $STORE wird neu materialisiert."
-          elif [ -n "$METHOD" ]; then
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Methodikwechsel ($METHOD) - Stichtag $STORE wird neu materialisiert."
-          elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
-            echo "noop=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
-          else
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-          fi
+          # Entscheidung in scripts/quant/materialization-decision.mjs (getestet):
+          # force > Methodikwechsel > Faktorzeilen neuer als Faktor-Evidenz
+          # (Same-Day-Refresh) > Stichtag Ablage = Produkt -> No-Op.
+          node scripts/quant/materialization-decision.mjs --store="$STORE" --product="$PRODUCT" \
+            --method="$METHOD" --force="${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" >> "$GITHUB_OUTPUT"
+          grep -E '^(noop|reason)=' "$GITHUB_OUTPUT" | tail -2
 
       - name: Existing R2 credentials are available
         if: steps.noetig.outputs.noop != 'true'
@@ -423,7 +417,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/product/total-return-quality-v1.json quant/data/product/survivorship-control-v1.json quant/data/product/methodology-fingerprint-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/radar-home-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/product/total-return-quality-v1.json quant/data/product/survivorship-control-v1.json quant/data/product/methodology-fingerprint-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

@@ -56,6 +56,7 @@ async function main() {
     bewertungVerfuegbar: 0, bewertungZu: 0,
     zurueckgehaltenWegenZuordnung: 0,
     ohneAnteilsbestand: 0, ohneKurs: 0,
+    nichtAusstehend: 0, andereWaehrung: 0,
     zeilenOhneJedenFaktor: 0,
     sectorTemplateMissing: 0
   };
@@ -77,6 +78,8 @@ async function main() {
       if (row.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") z.zurueckgehaltenWegenZuordnung += 1;
       if (row.marketCapReason === "NO_PIT_SHARE_COUNT") z.ohneAnteilsbestand += 1;
       if (row.marketCapReason === "NO_PUBLISHED_CLOSE") z.ohneKurs += 1;
+      if (row.marketCapReason === "SHARE_COUNT_NOT_OUTSTANDING") z.nichtAusstehend += 1;
+      if (row.marketCapReason === "REPORTING_CURRENCY_NOT_LISTING_CURRENCY") z.andereWaehrung += 1;
 
       if (!Object.values(row.factors).some((f) => f.state === "AVAILABLE")) z.zeilenOhneJedenFaktor += 1;
       if (Object.values(row.factors).some((f) => f.reason === "SECTOR_TEMPLATE_MISSING")) z.sectorTemplateMissing += 1;
@@ -144,7 +147,9 @@ async function main() {
     MARKET_CAP_WITHHELD_BY_REASON: {
       SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: z.zurueckgehaltenWegenZuordnung,
       NO_PIT_SHARE_COUNT: z.ohneAnteilsbestand,
-      NO_PUBLISHED_CLOSE: z.ohneKurs
+      NO_PUBLISHED_CLOSE: z.ohneKurs,
+      SHARE_COUNT_NOT_OUTSTANDING: z.nichtAusstehend,
+      REPORTING_CURRENCY_NOT_LISTING_CURRENCY: z.andereWaehrung
     },
     VALUE_FACTOR_REASONS: gruende,
     ZERO_FACTOR_ROWS: z.zeilenOhneJedenFaktor,

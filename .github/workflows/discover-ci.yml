@@ -14,6 +14,10 @@ on:
     paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   workflow_dispatch:
 
+# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -84,14 +88,19 @@ jobs:
         # Debt Register): verschiebt Discover eine Datei, muessen sie den
         # neuen Pfad kennen, sonst waere der Nachweis gruen und unwahr.
         # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
+        # Bis 10/2026 verglich der Schritt origin/<base>...HEAD in einem
+        # flachen Checkout. Ohne gemeinsame Basis bricht git diff ab, wc -l
+        # zaehlte 0 und das Gate war immer gruen. Jetzt: der Merge-Commit
+        # gegen seinen ersten Elternteil, und ein Git-Fehler bricht ab.
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
+          set -euo pipefail
+          git rev-parse --verify --quiet HEAD^2 >/dev/null || { echo "::error::HEAD ist kein PR-Merge-Commit"; exit 1; }
           scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
           nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
-          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise | wc -l)
-          if [ "$changed" -gt 0 ]; then
+          geaendert=$(git diff --name-only HEAD^1 HEAD -- $scope $nachweise)
+          if [ -n "$geaendert" ]; then
             echo "Discover veraendert Dateien ausserhalb seines Moduls:"
-            git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise
+            echo "$geaendert"
             exit 1
           fi
           echo "Keine bestehende Engine veraendert."

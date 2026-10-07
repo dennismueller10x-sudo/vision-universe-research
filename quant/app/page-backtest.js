@@ -115,8 +115,8 @@
         el("tbody", {}, [
           line("Fälle", A.cases, B.cases, B.cases - A.cases, int),
           line("Anteil im Plus", A.positiveShare, B.positiveShare, D.positiveShare, function (v) { return share(v); }),
-          line("Base Rate", A.baseRate, B.baseRate, D.baseRate, function (v) { return share(v); }),
-          line("Abstand zur Base Rate", A.delta, B.delta, D.delta, function (v) { return pp(v); }),
+          line("Markt (gleiche Wochen)", A.baseRate, B.baseRate, D.baseRate, function (v) { return share(v); }),
+          line("Abstand zum Markt", A.delta, B.delta, D.delta, function (v) { return pp(v); }),
           line("Median", A.median, B.median, D.median, function (v) { return pct(v, 1, true); }),
           line("Rückgang (Median)", A.maxDrawdownMedian, B.maxDrawdownMedian, D.maxDrawdownMedian, function (v) { return pct(v, 1, true); })])])]),
       el("p", { class: "qx-small", text: int(B.censored) + " Fälle reichen über das Ende eines delisteten Titels hinaus. Ihr Ausgang (Übernahme, Insolvenz oder Rückzug) ist unbekannt; sie werden nicht gewertet. Vor 2016 fehlen delistete Titel ganz. Aus diesem Vergleich folgt keine höhere Vertrauensstufe." })]);
@@ -125,7 +125,7 @@
   function ruleBody(r, study, kind) {
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
-    if (kind === "signal") out.push(X.section("Vertrauen auf einen Blick", null, [evidenceFlags(r, study), trustComponents(r)]));
+    if (kind === "signal") out.push(X.section("Auf einen Blick", "Wie oft lag das Signal nach 6 Monaten höher – und wie oft der Markt in denselben Wochen.", [evidenceFlags(r, study), global.QXEvidence.signalEvidence(ruleEvidence(r)), global.QXEvidence.certifiedLine(null)]));
     out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: r.plain }),
       el("dl", { class: "qx-kv" }, [].concat.apply([], [
         ["Version", (r.version ? r.id + " " + r.version : r.id) + " · " + (study.engineVersion || "")],
@@ -157,7 +157,7 @@
         el("div", { class: "q-evidence" }, [
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: int(m6.n) }), el("span", { text: "Fälle" }), el("small", { text: "≈ " + int(r.independence ? r.independence.effectiveN : null) + " unabhängig (" + int(r.independence ? r.independence.independentClusters : null) + " Quartale)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (m6.baseRate && m6.baseRate.deltaPositiveShare > 0 ? "up" : m6.baseRate && m6.baseRate.deltaPositiveShare < 0 ? "down" : ""), text: m6.baseRate ? pp(m6.baseRate.deltaPositiveShare) : share(m6.positiveShare) }),
-            el("span", { text: "gegenüber Base Rate" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
+            el("span", { text: "gegenüber dem Markt" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: pct(m6.median, 1, true) }), el("span", { text: "Median 6 M." }), el("small", { text: "Markt derselben Woche: Abstand " + pct(m6.vsMarket.medianExcess, 1, true) + " · Mittel " + pct(m6.mean, 1, true) })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num down", text: pct(m6.maxDrawdown.median, 1) }), el("span", { text: "typischer Rückgang" }), el("small", { text: "größter Rückgang im Zeitraum (Median)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: num(m6.chanceRisk) }), el("span", { text: "Chance / Risiko" }), el("small", { text: "Median größter Anstieg ÷ größter Rückgang" })])]),
@@ -189,7 +189,7 @@
         bars(years.map(function (y) { return { label: y.year.slice(2), value: y.medianExcess }; }), { label: "Median-Abstand zum Markt je Jahr", fmt: function (v) { return pct(v, 0, true); }, signed: true })]));
     }
 
-    out.push(X.section("Vertrauen", null, [el("p", {}, [trustPill(r.trust)]),
+    out.push(X.section("Vertrauen im Detail", "Alle Prüfungen der Vertrauensregel mit Messwert – für alle, die es genau wissen wollen.", [el("p", {}, [trustPill(r.trust)]), trustComponents(r),
       el("ul", { class: "q-checks" }, study.trustChecks.map(function (c) {
         var k = r.checks[c.id] || {};
         return el("li", { class: k.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (k.state === "PASS" ? "✓ " : "✗ ") + c.label }),
@@ -247,15 +247,72 @@
         ["Freigabe", kindCert.ownerApproval && kindCert.ownerApproval.required ? "Die Setup-Methodik verlangt nach bestandenen Gates eine ausdrückliche Owner-Freigabe." : "automatisch"]
       ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; }))) : null,
       el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Invalidierung, Schluss an der ersten Zielzone, veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
-      kindCert.replay ? el("p", { class: "qx-small", text: "Nachweis der Engine: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
+      kindCert.replay ? el("p", { class: "qx-small", text: "Nachgeprüft: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
     ]));
     return out;
   }
 
+  /* Renditebasis der Signal-Studie in Klartext: eigene Gesamtrendite (aus
+     Kurs, Splits und Dividenden) oder nur Kursrendite - nie gemischt. */
+  function returnBasisLine(study) {
+    var tr = study.returnBasis === "CANONICAL_TOTAL_RETURN";
+    var cov = study.source && study.source.totalReturnCoverage;
+    var detail = cov && cov.titles ? " Gesamtrendite vollständig belegt für " + int(cov.TOTAL_RETURN_CONFIRMED_AFTER) + " von " + int(cov.titles) + " Aktien." : "";
+    return el("p", { class: "q-bt-basis qx-small", "data-return-basis": tr ? "total" : "price" }, [
+      el("b", { text: "Renditebasis: " + (tr ? "Gesamtrendite mit Dividenden (selbst berechnet)" : "Nur Kursrendite, ohne Dividenden") }),
+      el("span", { text: " " + (study.returnTypeNote || "") + detail })]);
+  }
+
+  /* Studienregel -> dieselbe Evidenzform wie auf Radar und Aktienseite. */
+  function ruleEvidence(r) {
+    var m = r.horizons && r.horizons.m6, br = (m && m.baseRate) || {};
+    if (!m) return null;
+    var checks = r.checks || {};
+    return { state: "AVAILABLE", positiveShare: m.positiveShare, basePositiveShare: br.matchedPositiveShare, deltaPositiveShare: br.deltaPositiveShare, deltaCi: br.ci,
+      n: m.n, effectiveN: r.independence ? r.independence.effectiveN : null, typicalDrawdown: m.maxDrawdown ? m.maxDrawdown.median : null, median: m.median,
+      returnType: r.returnType, trust: r.trust, edgeOutOfSample: r.edgeOutOfSample,
+      openChecks: Object.keys(checks).filter(function (k) { return checks[k] && checks[k].state !== "PASS"; }), checkedIds: Object.keys(checks) };
+  }
+  function lowerFirst(t) { return t ? t.charAt(0).toLowerCase() + t.slice(1) : t; }
+  /* Was allen getesteten Regeln zur Zertifizierung fehlt - aus den offenen Pruefungen. */
+  function missingForCertification(signal, cert) {
+    var E = global.QXEvidence, common = null;
+    signal.rules.forEach(function (r) {
+      var open = Object.keys(r.checks || {}).filter(function (k) { return r.checks[k] && r.checks[k].state !== "PASS"; });
+      common = common === null ? open : common.filter(function (k) { return open.indexOf(k) >= 0; });
+    });
+    var words = (common || []).map(function (id) { var w = E.CHECK_WORDS.filter(function (c) { return c[0] === id; })[0]; return w ? w[2] : null; }).filter(Boolean);
+    return words.length ? " Allen getesteten Signalen fehlt noch: " + words.join(" ") : "";
+  }
+  /* WAS IST HIER BEREITS BELASTBAR? Drei Gruppen aus dem Zertifizierungsstand. */
+  function trustOverview(signal, cert) {
+    var E = global.QXEvidence;
+    var by = function (tier) { return cert.kinds.filter(function (k) { return k.tier === tier && k.status !== "CERTIFIED"; }); };
+    var certified = cert.kinds.filter(function (k) { return k.status === "CERTIFIED"; });
+    var obs = by("OBSERVED"), tested = by("TESTED");
+    var group = function (cls, title, plain, items) {
+      return el("div", { class: "q-belast-col " + cls }, [el("span", { class: "q-ev-tier " + cls, text: title }), el("p", { class: "q-belast-plain", text: plain }), el("ul", {}, items)]);
+    };
+    var signalItems = signal.rules.map(function (r) {
+      var b = ruleEvidence(r);
+      return el("li", {}, [el("a", { href: X.routes.backtest(r.id), text: RULE_LABEL[r.id] || r.id }), el("span", { text: ": " + (b ? E.pp(b.deltaPositiveShare) + " gegenüber dem Markt – " + lowerFirst(E.edgeOf(b).label) : "–") })]);
+    });
+    return el("section", { class: "q-belast", "aria-label": "Was ist hier bereits belastbar?" }, [
+      el("h2", { class: "qx-h2", text: "Was ist hier bereits belastbar?" }),
+      el("div", { class: "q-belast-grid" }, [
+        group("tier-observed", "Historisch beobachtet", "Beschreibt, was früher geschah – ohne eine Regel zu prüfen und ohne Vergleich mit dem Markt.",
+          obs.map(function (k) { return el("li", { text: k.label + ": verfügbar" }); })),
+        group("tier-tested", "Historisch getestet", "Feste Regeln, marktweit ausgewertet und mit dem Markt derselben Wochen verglichen. Evidenz vorhanden, aber noch nicht vollständig belastbar.",
+          signalItems.concat(tested.filter(function (k) { return k.id !== "SIGNAL_BACKTEST"; }).map(function (k) { return el("li", { text: k.label + ": " + (STATUS_WORD[k.status] || k.status) }); }))),
+        group("tier-certified" + (certified.length ? "" : " is-off"), "Zertifiziert", certified.length ? "Alle methodischen Prüfungen bestanden." : "Noch keine Backtest-Art ist zertifiziert. Das ist der ehrliche Stand, kein Fehler." + missingForCertification(signal, cert),
+          certified.map(function (k) { return el("li", { text: k.label }); }))
+      ])]);
+  }
+
   async function render(main, ctx, ruleId) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
-      el("h1", { class: "qx-h1", text: "Wähle eine Regel oder ein Setup" }),
-      el("p", { class: "q-hero-lead v2-lead", text: "Was geschah früher, nachdem dieselbe Regel galt – im Vergleich zur Base Rate derselben Wochen, mit Vertrauensstufe und klaren Grenzen. Keine Prognose, keine Empfehlung." })]));
+      el("h1", { class: "qx-h1", text: "Hatte ein Signal früher wirklich einen Vorteil?" }),
+      el("p", { class: "q-hero-lead v2-lead", text: "Für jede Regel: wie oft die Fälle nach 6 Monaten höher lagen – und wie oft der ganze Markt in denselben Wochen. Dazu, wie belastbar der Vergleich ist und was noch fehlt. Keine Prognose, keine Empfehlung." })]));
     var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
     var signal = all[0], cert = all[1], outcomes = all[2].state === "AVAILABLE" ? all[2] : null;
     if (signal.state !== "AVAILABLE" || cert.state !== "AVAILABLE") { main.append(X.notice("Backtests derzeit nicht verfügbar", "Die Studien konnten nicht geladen werden.")); return; }
@@ -265,13 +322,15 @@
     var picks = [];
     signal.rules.forEach(function (r) { var rc = ruleCert(r.id);
       picks.push(el("a", { class: "q-bt-pick" + (r.display.allowed ? " is-on" : " is-off"), href: X.routes.backtest(r.id) }, [el("small", { text: "Radar-Signal · marktweit" }), el("b", { text: RULE_LABEL[r.id] || r.id }),
-        el("span", { text: r.horizons.m6.baseRate ? pp(r.horizons.m6.baseRate.deltaPositiveShare) + " vs. Base Rate · " + (STATUS_WORD[rc ? rc.status : "LIMITED"]) : STATUS_WORD.LIMITED })])); });
+        el("span", { text: r.horizons.m6.baseRate ? pp(r.horizons.m6.baseRate.deltaPositiveShare) + " gegenüber dem Markt · " + global.QXEvidence.edgeOf(ruleEvidence(r)).label : STATUS_WORD.LIMITED })])); });
     ["SETUP_CONFIRMED", "SETUP_NEW"].forEach(function (id) {
       picks.push(el("a", { class: "q-bt-pick is-off", href: X.routes.backtest(id) }, [el("small", { text: "Setup-Wechsel · veröffentlicht" }), el("b", { text: RULE_LABEL[id] }), el("span", { text: STATUS_WORD[setupCert.status] })]));
     });
     ["STRATEGY_BACKTEST", "FACTOR_RANKING_BACKTEST"].forEach(function (id) { var k = kindOf(id);
       picks.push(el("div", { class: "q-bt-pick is-off" }, [el("small", { text: id === "STRATEGY_BACKTEST" ? "Anlagestil" : "Faktor-Ranking" }), el("b", { text: k.label }), el("span", { text: STATUS_WORD[k.status] })])); });
+    main.append(trustOverview(signal, cert));
     main.append(el("nav", { class: "q-bt-picks", "aria-label": "Regel oder Setup wählen" }, picks));
+    main.append(returnBasisLine(signal));
 
     var rule = ruleId ? signal.rules.filter(function (r) { return r.id === ruleId; })[0] || null : null;
     main.querySelectorAll(".q-bt-pick").forEach(function (a) { if (ruleId && a.getAttribute("href") === X.routes.backtest(ruleId)) a.setAttribute("aria-current", "page"); });

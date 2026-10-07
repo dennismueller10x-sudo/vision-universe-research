@@ -186,9 +186,23 @@ test("Unter zehn abgeschlossenen Fällen entsteht keine Kennzahl", () => {
      genau EINE mit abgeschlossenem Zwölf-Monats-Fenster. Das Mockup zeigte
      an dieser Stelle "+12,8 % in 8 von 10 Fällen" - für diesen Titel nicht
      belegbar. */
-  const nvda = assess("NVDA");
+  /* Der Fall kommt aus den Daten, nicht aus einem festen Symbol: hier stand
+     NVDA, bis die Materialisierung vom 03.10.2026 NVDA neue Musterzustaende
+     gab (seitdem mindestens zehn abgeschlossene Faelle). Gesucht wird der
+     erste Titel mit verfuegbarer Rueckschau unter der Schwelle - NVDA zuerst. */
+  const { readdirSync, existsSync } = require("node:fs");
+  const kandidaten = ["NVDA"].concat(readdirSync(join(ROOT, "quant/data/product/pattern-match-v1"))
+    .filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f)).sort()
+    .flatMap((f) => Object.keys(JSON.parse(gunzipSync(readFileSync(join(ROOT, "quant/data/product/pattern-match-v1", f)))).instruments || {}).sort()));
+  let nvda = null;
+  for (const t of kandidaten) {
+    if (!existsSync(join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json"))) continue;
+    const r = assess(t);
+    if (r.state === "AVAILABLE" && r.episodes > 0 && r.episodes < HistoricalCases.MIN_EPISODES) { nvda = r; break; }
+  }
+  assert.ok(nvda, "kein Titel mit Rueckschau unter der Schwelle gefunden");
   assert.equal(nvda.state, "AVAILABLE");
-  assert.ok(nvda.episodes < HistoricalCases.MIN_EPISODES, "NVDA soll unter der Schwelle liegen");
+  assert.ok(nvda.episodes < HistoricalCases.MIN_EPISODES, "der Fall soll unter der Schwelle liegen");
   for (const h of Object.values(nvda.horizons)) {
     if (h.sufficient) continue;
     assert.equal(h.medianReturn, null, "unter der Schwelle darf kein Median im Objekt stehen");

@@ -76,7 +76,10 @@ concurrency:
   # bricht den laufenden NICHT ab (das waere Datenverlust mitten im
   # Zyklus), sondern wartet - und uebernimmt nahtlos, sobald der
   # Vorgaenger endet.
-  group: intraday-pacemaker
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: intraday-pacemaker-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -88,6 +91,9 @@ jobs:
     timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

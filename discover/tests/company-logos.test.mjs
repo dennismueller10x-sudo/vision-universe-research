@@ -456,3 +456,13 @@ test("Kuratierte Websites: gueltige Adressen, nur Titel des Universums", () => {
     assert.ok(normalizeSite(url), sym + ": " + url);
   }
 });
+
+test("Gewaehlte Logo-Adressen: nur https, nur gueltige Ticker, nicht gesperrt", () => {
+  const urls = JSON.parse(readFileSync(join(root, "discover", "config", "logo-urls.json"), "utf8")).symbols;
+  const rejects = JSON.parse(readFileSync(join(root, "discover", "config", "logo-rejects.json"), "utf8"));
+  for (const [sym, url] of Object.entries(urls)) {
+    assert.ok(safeSymbol(sym), sym);
+    assert.match(url, /^https:\/\//, sym);
+    assert.ok(!(rejects.urls || {})[url], "Gesperrte Adresse gewaehlt: " + sym);
+  }
+});
