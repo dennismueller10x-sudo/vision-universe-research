@@ -1,13 +1,17 @@
 // Diagnose fuer die eingefrorenen Minervini-Faelle: SEPA (eingefrorenes Modul, unveraendert) unter drei Datenstaenden
 // am selben Ausfuehrungstag: P9 (Research-Parser, oeffentliche companyfacts), Kern vor dem Fix, Kern nach dem Fix;
 // dazu SEC-GAAP-EPS des juengsten sichtbaren Quartals und des Vorjahresquartals aus der Ground Truth.
-// node minervini-sepa-diagnosis.mjs <gt-branch-worktree> <work-dir> <out.json>
+// node minervini-sepa-diagnosis.mjs <gt-branch-worktree> <work-dir> <out.json> [--window <tage>]
+// --window: SEPA zusaetzlich an jedem Kalendertag exec +- tage unter P9 und Kern-nachher vergleichen (Timing-Toleranz der
+// eingefrorenen Bewertung: 12 Tage). Abweichende Tage werden je Fall ausgegeben.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadCompanyFacts, groundTruthQuarters } from './sec-ground-truth.mjs';
 
 const [WT, W, OUT] = process.argv.slice(2);
+const WINDOW = process.argv.includes('--window') ? Number(process.argv[process.argv.indexOf('--window') + 1]) : 0;
+const shiftDay = (d, n) => new Date(Date.parse(d) + n * 864e5).toISOString().slice(0, 10);
 const imp = (p) => import(pathToFileURL(path.join(WT, p)).href);
 const { extractCompanyFacts } = await imp('scripts/supertrader/replication/minervini/sec-facts.mjs');
 const { evaluateSepa } = await imp('scripts/supertrader/replication/minervini/sepa.mjs');
@@ -41,8 +45,17 @@ for (const c of cases.filter((x) => ['MAIN', 'SENSITIVITY', 'WATCHLIST', 'ENTRY_
       gaap = { quarterEnd: q0.end, eps: q0.value, knownFrom: q0.known_from, priorYearEnd: py?.end || null, priorYearEps: py?.value ?? null };
     }
   }
+  const windowDiffs = [];
+  if (WINDOW && cf) {
+    const p9f = extractCompanyFacts(cf); const af = asFund(after[String(cik)]) || null;
+    for (let n = -WINDOW; n <= WINDOW; n += 1) {
+      const day = shiftDay(exec, n);
+      const x = evaluateSepa(p9f, day, one, P); const y = evaluateSepa(af, day, one, P);
+      if (Boolean(x?.ok) !== Boolean(y?.ok)) windowDiffs.push({ day, p9: x?.ok ? 'ok' : x?.reason, coreAfter: y?.ok ? 'ok' : y?.reason });
+    }
+  }
   const s = (x) => x && { ok: x.ok, reason: x.reason, q: x.facts?.quarterEnd || null, eps: x.facts?.epsGrowth ?? null, epsPrev: x.facts?.epsGrowthPrev ?? null, rev: x.facts?.revGrowth ?? null };
-  out.push({ case_id: c.case_id, ticker: c.ticker, group: c.evaluation_group, stratum: c.stratum, exec, frozenDecision: rp.decision, frozenSepa: rp.sepa?.reason || (rp.sepa?.ok ? 'ok' : null), trendOk: rp.trend?.ok, vcpOk: rp.vcp?.ok, universeOk: rp.universe?.ok, setupAtTStar: rp.setupAtTStar, p9Public: s(p9), coreBefore: s(b), coreAfter: s(a), secGaap: gaap });
+  out.push({ case_id: c.case_id, ticker: c.ticker, group: c.evaluation_group, stratum: c.stratum, exec, frozenDecision: rp.decision, frozenSepa: rp.sepa?.reason || (rp.sepa?.ok ? 'ok' : null), trendOk: rp.trend?.ok, vcpOk: rp.vcp?.ok, universeOk: rp.universe?.ok, setupAtTStar: rp.setupAtTStar, p9Public: s(p9), coreBefore: s(b), coreAfter: s(a), secGaap: gaap, window: WINDOW ? { days: 2 * WINDOW + 1, passFailDiffersFromP9: windowDiffs } : undefined });
 }
 fs.writeFileSync(OUT, JSON.stringify(out, null, 1));
 for (const o of out) console.log([o.case_id, o.ticker, o.group, o.frozenDecision, 'frozen=' + o.frozenSepa, 'p9=' + (o.p9Public?.reason || (o.p9Public?.ok ? 'ok' : '-')), 'before=' + (o.coreBefore?.reason || (o.coreBefore?.ok ? 'ok' : '-')), 'after=' + (o.coreAfter?.reason || (o.coreAfter?.ok ? 'ok' : '-')), 'TT=' + o.trendOk, 'VCP=' + o.vcpOk, 'gaap=' + JSON.stringify(o.secGaap)].join(' | '));
