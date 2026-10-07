@@ -1,5 +1,5 @@
 {
-  "status": "V2_DEPLOYED_FULL_REVIEW_PENDING",
+  "status": "V2_MERGED_GATE_OFF_SEQUENTIAL_REACTIVATION_PENDING",
   "initialPushRun": 37653514427,
   "initialPushResult": "package PASS; workflow failure before any deploy job; no error annotation available",
   "fullRetryEndpointResult": "HTTP 500; no new attempt created",
@@ -10,5 +10,26 @@
   "fullReviewDispatch": "Explicit native boolean company_intelligence_acceptance=true",
   "readOnlyRestoreReviewRun": 37657080862,
   "immutableConsumerGeneration": "d700d480d9b2858eb8fa34f4",
-  "privateStateChanged": false
+  "privateStateChanged": false,
+  "proofFixPR": 483,
+  "proofFixMerge": "d1ccb96d90cbb6f4c9a7b73774a2d15918583e59",
+  "failures": [
+    {
+      "run": 37648837955,
+      "reason": "One transient immutable TOST payload HTTP 503; fixed bounded transient retry",
+      "rollback": 37650122560
+    },
+    {
+      "run": 37657071735,
+      "reason": "Verifier incorrectly rejected two legitimate HTTP 200 responses for one resource; fixture reproduced and strengthened proof now accepts one/two bounded mounts while requiring original resolved load plus rendered issuer/generation",
+      "rollback": 37658106982
+    },
+    {
+      "run": 37662858865,
+      "reason": "Full acceptance package built OFF before parallel gate enable completed; controlled activation refused OFF artifact before browser",
+      "rollback": 37663766124
+    }
+  ],
+  "canceledReadOnlyReview": 37663659680,
+  "correction": "Wait for emergency OFF completion, then enable and verify gate, then explicitly build new full-acceptance package. Independent read-only full review after deployment has separate concurrency."
 }
