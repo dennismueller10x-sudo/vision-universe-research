@@ -1,0 +1,2439 @@
+{
+ "schema": "vu-fundamental-ground-truth-1.0.0",
+ "label": "BEFORE_CORE_FIX (main 829b35bdce4)",
+ "source": "SEC data.sec.gov companyfacts + submissions (Primaerquelle), abgerufen 2026-10-07; Filing-XBRL nur fuer den GDDY-Dimensionsbefund",
+ "method": {
+  "extractor": "scripts/fundamentals-audit/sec-ground-truth.mjs (importiert keinen VU-Parser)",
+  "concepts": {
+   "EPS_DILUTED": [
+    "EarningsPerShareDiluted",
+    "EarningsPerShareBasicAndDiluted"
+   ],
+   "EPS_BASIC": [
+    "EarningsPerShareBasic",
+    "EarningsPerShareBasicAndDiluted"
+   ],
+   "NET_INCOME": [
+    "NetIncomeLoss"
+   ],
+   "REVENUE": [
+    "Revenues (Gesamtumsatz, Vorrang in derselben Einreichung)",
+    "SalesRevenueNet",
+    "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "RevenueFromContractWithCustomerIncludingAssessedTax"
+   ]
+  },
+  "knownFrom": "frueheste periodische Einreichung (10-K/10-Q/20-F/40-F/6-K, /A), die den Wert fuer genau dieses Quartal unter irgendeinem Tag des Konzepts meldet; Quartalsenden innerhalb 7 Tagen = ein Quartal",
+  "derivableFrom": "fruehester Zeitpunkt, zu dem der Wert aus oeffentlichen kumulierten Werten ableitbar war (YTD-Differenz, FY - 9M); fruehere Sichtbarkeit nur dann Lookahead, wenn vor derivable_from",
+  "q4": "additive Groessen: FY - Q1..Q3 bzw. FY - 9M; EPS wird nicht abgeleitet (nicht additiv)",
+  "limitations": [
+   "companyfacts enthaelt nur Fakten ohne Dimension (z. B. GDDY-EPS je Aktiengattung fehlt fuer ALLE Pipelines)",
+   "Konzeptdefinition ist eine Audit-Festlegung; abweichende, wirtschaftlich gleichwertige Tags werden als EARLIER_VIA_OTHER_PUBLIC_TAG gewertet, nicht als Fehler",
+   "FRC (First Republic) companyfacts nicht abrufbar"
+  ]
+ },
+ "sample": {
+  "issuers": 99,
+  "issuersWithData": 92,
+  "facts": 18155,
+  "byConcept": {
+   "EPS_DILUTED": 4257,
+   "EPS_BASIC": 4272,
+   "NET_INCOME": 4955,
+   "REVENUE": 4671
+  },
+  "issuerTypes": {
+   "JPM": "BANK",
+   "BAC": "BANK",
+   "WFC": "BANK",
+   "C": "BANK",
+   "FRC": "BANK",
+   "PGR": "INSURER",
+   "AIG": "INSURER",
+   "BRK-B": "INSURER",
+   "O": "REIT",
+   "PLD": "REIT",
+   "AMT": "REIT",
+   "ARCC": "BDC",
+   "EPD": "PARTNERSHIP",
+   "DKL": "PARTNERSHIP",
+   "TSM": "FOREIGN_FILER",
+   "ASML": "FOREIGN_FILER",
+   "SAP": "FOREIGN_FILER",
+   "NVO": "FOREIGN_FILER",
+   "BABA": "FOREIGN_FILER",
+   "SHOP": "FOREIGN_FILER",
+   "AEM": "FOREIGN_FILER",
+   "MTLS": "FOREIGN_FILER",
+   "RVNC": "DELISTED_OR_ACQUIRED",
+   "WBA": "DELISTED_OR_ACQUIRED",
+   "ZGNX": "DELISTED_OR_ACQUIRED",
+   "GTHX": "DELISTED_OR_ACQUIRED",
+   "TWTR": "DELISTED_OR_ACQUIRED",
+   "ATVI": "DELISTED_OR_ACQUIRED",
+   "XLNX": "DELISTED_OR_ACQUIRED",
+   "CERN": "DELISTED_OR_ACQUIRED",
+   "PXD": "DELISTED_OR_ACQUIRED",
+   "SPLK": "DELISTED_OR_ACQUIRED",
+   "AVDY_RNA": "DELISTED_OR_ACQUIRED",
+   "TNDM": "SMALL_CAP",
+   "REPL": "SMALL_CAP",
+   "RICK": "SMALL_CAP",
+   "LMB": "SMALL_CAP",
+   "CELH": "SMALL_CAP",
+   "ROIV": "SMALL_CAP",
+   "UPST": "SMALL_CAP",
+   "NMIH": "SMALL_CAP",
+   "SG": "SMALL_CAP",
+   "ACAD": "SMALL_CAP",
+   "DKNG": "SMALL_CAP",
+   "LCID": "SMALL_CAP",
+   "SOFI": "SMALL_CAP",
+   "AAPL": "MEGA_CAP",
+   "NVDA": "MEGA_CAP",
+   "MSFT": "MEGA_CAP",
+   "AMZN": "MEGA_CAP",
+   "META": "MEGA_CAP",
+   "GOOGL": "MEGA_CAP",
+   "GOOG_ALPH": "MEGA_CAP",
+   "AVGO": "MEGA_CAP",
+   "WMT": "MEGA_CAP"
+  },
+  "selection": "Pflichtfaelle (TNDM, RVNC, REPL, RICK, GDDY), Kontrollen (AAPL, NVDA, MSFT, AMZN, META, PLTR), Tagwechsel, Geschaeftsjahr != Kalenderjahr, Verlust<->Gewinn, Splits/Reverse Splits, Restatements, Auslandsemittenten, Delistings/M&A, Tickerwechsel, Small Caps, Banken/Versicherer/REIT/BDC/Partnerships/SPAC, Aktiengattungen"
+ },
+ "pipelines": {
+  "QUANT": "P1 Quant-SEC-Kern (normalize/PeriodResolver, POLICY_ORIGINAL fuer Erstmeldung, AS_OF_LATEST am Stichtag)",
+  "P7": "sec-pit.mjs extractFactsR12 (main, Supertrader-Validierung)",
+  "P9": "sec-facts.mjs extractCompanyFacts (Branch PR #471/#475)"
+ },
+ "rates": {
+  "byPipelineMetric": {
+   "P7|EPS_BASIC": {
+    "facts": 4272,
+    "covered": 0,
+    "factAccuracy": null,
+    "valueAccuracy": null,
+    "pitAccuracy": null,
+    "falseMissingRate": null,
+    "missingRate": null,
+    "lateRate": null,
+    "falseAvailableRate": null,
+    "wrongValueRate": null,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|EPS_DILUTED": {
+    "facts": 4257,
+    "covered": 4257,
+    "factAccuracy": 0.9114,
+    "valueAccuracy": 0.9333,
+    "pitAccuracy": 0.9766,
+    "falseMissingRate": 0.086,
+    "missingRate": 0.0641,
+    "lateRate": 0.0218,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0026,
+    "byCategory": {
+     "TAG_SELECTION": 273,
+     "FILING_VISIBILITY": 93,
+     "RESTATEMENT": 8,
+     "Q4_DERIVATION": 3
+    },
+    "issuersAffected": 29
+   },
+   "P7|NET_INCOME": {
+    "facts": 4955,
+    "covered": 0,
+    "factAccuracy": null,
+    "valueAccuracy": null,
+    "pitAccuracy": null,
+    "falseMissingRate": null,
+    "missingRate": null,
+    "lateRate": null,
+    "falseAvailableRate": null,
+    "wrongValueRate": null,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|REVENUE": {
+    "facts": 4671,
+    "covered": 4671,
+    "factAccuracy": 0.9497,
+    "valueAccuracy": 0.9925,
+    "pitAccuracy": 0.9569,
+    "falseMissingRate": 0.043,
+    "missingRate": 0.0009,
+    "lateRate": 0.0422,
+    "falseAvailableRate": 0.0006,
+    "wrongValueRate": 0.0066,
+    "byCategory": {
+     "FILING_VISIBILITY": 190,
+     "RESTATEMENT": 28,
+     "Q4_DERIVATION": 14,
+     "YTD_QUARTER": 3
+    },
+    "issuersAffected": 45
+   },
+   "P9|EPS_BASIC": {
+    "facts": 4272,
+    "covered": 0,
+    "factAccuracy": null,
+    "valueAccuracy": null,
+    "pitAccuracy": null,
+    "falseMissingRate": null,
+    "missingRate": null,
+    "lateRate": null,
+    "falseAvailableRate": null,
+    "wrongValueRate": null,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|EPS_DILUTED": {
+    "facts": 4257,
+    "covered": 4257,
+    "factAccuracy": 0.9756,
+    "valueAccuracy": 0.9974,
+    "pitAccuracy": 0.9781,
+    "falseMissingRate": 0.0218,
+    "missingRate": 0,
+    "lateRate": 0.0218,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0026,
+    "byCategory": {
+     "TAG_SELECTION": 87,
+     "RESTATEMENT": 8,
+     "FILING_VISIBILITY": 6,
+     "WRONG_CONCEPT": 3
+    },
+    "issuersAffected": 27
+   },
+   "P9|NET_INCOME": {
+    "facts": 4955,
+    "covered": 4955,
+    "factAccuracy": 0.9962,
+    "valueAccuracy": 0.9972,
+    "pitAccuracy": 0.999,
+    "falseMissingRate": 0.0032,
+    "missingRate": 0.0022,
+    "lateRate": 0.001,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0006,
+    "byCategory": {
+     "YTD_QUARTER": 10,
+     "FILING_VISIBILITY": 5,
+     "OTHER": 2,
+     "Q4_DERIVATION": 1,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 10
+   },
+   "P9|REVENUE": {
+    "facts": 4671,
+    "covered": 4671,
+    "factAccuracy": 0.9475,
+    "valueAccuracy": 0.9925,
+    "pitAccuracy": 0.9547,
+    "falseMissingRate": 0.0458,
+    "missingRate": 0.0009,
+    "lateRate": 0.045,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0066,
+    "byCategory": {
+     "TAG_SELECTION": 187,
+     "RESTATEMENT": 28,
+     "Q4_DERIVATION": 20,
+     "FILING_VISIBILITY": 4,
+     "YTD_QUARTER": 3,
+     "WRONG_CONCEPT": 3
+    },
+    "issuersAffected": 45
+   },
+   "QUANT|EPS_BASIC": {
+    "facts": 4272,
+    "covered": 4272,
+    "factAccuracy": 0.9052,
+    "valueAccuracy": 0.9291,
+    "pitAccuracy": 0.9743,
+    "falseMissingRate": 0.0854,
+    "missingRate": 0.0616,
+    "lateRate": 0.0239,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0094,
+    "byCategory": {
+     "WRONG_CONCEPT": 352,
+     "PERIOD_MAPPING": 24,
+     "MISSING_FACT": 17,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 4,
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 33
+   },
+   "QUANT|EPS_DILUTED": {
+    "facts": 4257,
+    "covered": 4257,
+    "factAccuracy": 0.903,
+    "valueAccuracy": 0.9269,
+    "pitAccuracy": 0.9742,
+    "falseMissingRate": 0.0879,
+    "missingRate": 0.0639,
+    "lateRate": 0.024,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0092,
+    "byCategory": {
+     "WRONG_CONCEPT": 360,
+     "PERIOD_MAPPING": 24,
+     "MISSING_FACT": 17,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 4,
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 33
+   },
+   "QUANT|NET_INCOME": {
+    "facts": 4955,
+    "covered": 4955,
+    "factAccuracy": 0.9816,
+    "valueAccuracy": 0.9818,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0008,
+    "missingRate": 0.0006,
+    "lateRate": 0.0002,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0176,
+    "byCategory": {
+     "WRONG_CONCEPT": 43,
+     "PERIOD_MAPPING": 24,
+     "Q4_DERIVATION": 21,
+     "YTD_QUARTER": 2,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 30
+   },
+   "QUANT|REVENUE": {
+    "facts": 4671,
+    "covered": 4671,
+    "factAccuracy": 0.9533,
+    "valueAccuracy": 0.9535,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0013,
+    "missingRate": 0.0011,
+    "lateRate": 0.0002,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0454,
+    "byCategory": {
+     "WRONG_CONCEPT": 144,
+     "Q4_DERIVATION": 45,
+     "PERIOD_MAPPING": 24,
+     "MISSING_FACT": 2,
+     "YTD_QUARTER": 2,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 28
+   }
+  },
+  "byPipelineYearBucket": {
+   "P7|2009-2010": {
+    "facts": 1504,
+    "covered": 729,
+    "factAccuracy": 0.9808,
+    "valueAccuracy": 0.9863,
+    "pitAccuracy": 0.9944,
+    "falseMissingRate": 0.0165,
+    "missingRate": 0.011,
+    "lateRate": 0.0055,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0027,
+    "byCategory": {
+     "TAG_SELECTION": 8,
+     "FILING_VISIBILITY": 4,
+     "Q4_DERIVATION": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 7
+   },
+   "P7|2011-2014": {
+    "facts": 3487,
+    "covered": 1673,
+    "factAccuracy": 0.9342,
+    "valueAccuracy": 0.9456,
+    "pitAccuracy": 0.988,
+    "falseMissingRate": 0.0628,
+    "missingRate": 0.052,
+    "lateRate": 0.0108,
+    "falseAvailableRate": 0.0006,
+    "wrongValueRate": 0.0024,
+    "byCategory": {
+     "TAG_SELECTION": 86,
+     "FILING_VISIBILITY": 18,
+     "Q4_DERIVATION": 3,
+     "RESTATEMENT": 2,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 20
+   },
+   "P7|2015-2019": {
+    "facts": 5510,
+    "covered": 2701,
+    "factAccuracy": 0.8675,
+    "valueAccuracy": 0.933,
+    "pitAccuracy": 0.9298,
+    "falseMissingRate": 0.1237,
+    "missingRate": 0.0585,
+    "lateRate": 0.0652,
+    "falseAvailableRate": 0.0004,
+    "wrongValueRate": 0.0085,
+    "byCategory": {
+     "FILING_VISIBILITY": 174,
+     "TAG_SELECTION": 156,
+     "RESTATEMENT": 22,
+     "Q4_DERIVATION": 4,
+     "YTD_QUARTER": 2
+    },
+    "issuersAffected": 46
+   },
+   "P7|2020-2026": {
+    "facts": 7654,
+    "covered": 3825,
+    "factAccuracy": 0.966,
+    "valueAccuracy": 0.9903,
+    "pitAccuracy": 0.9754,
+    "falseMissingRate": 0.0303,
+    "missingRate": 0.0063,
+    "lateRate": 0.0241,
+    "falseAvailableRate": 0.0003,
+    "wrongValueRate": 0.0034,
+    "byCategory": {
+     "FILING_VISIBILITY": 87,
+     "TAG_SELECTION": 23,
+     "RESTATEMENT": 11,
+     "Q4_DERIVATION": 9
+    },
+    "issuersAffected": 28
+   },
+   "P9|2009-2010": {
+    "facts": 1504,
+    "covered": 1118,
+    "factAccuracy": 0.9928,
+    "valueAccuracy": 0.9982,
+    "pitAccuracy": 0.9946,
+    "falseMissingRate": 0.0054,
+    "missingRate": 0,
+    "lateRate": 0.0054,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0018,
+    "byCategory": {
+     "FILING_VISIBILITY": 5,
+     "WRONG_CONCEPT": 1,
+     "TAG_SELECTION": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 4
+   },
+   "P9|2011-2014": {
+    "facts": 3487,
+    "covered": 2618,
+    "factAccuracy": 0.9885,
+    "valueAccuracy": 0.9966,
+    "pitAccuracy": 0.992,
+    "falseMissingRate": 0.0088,
+    "missingRate": 0.0008,
+    "lateRate": 0.008,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0027,
+    "byCategory": {
+     "TAG_SELECTION": 15,
+     "FILING_VISIBILITY": 4,
+     "WRONG_CONCEPT": 3,
+     "RESTATEMENT": 2,
+     "Q4_DERIVATION": 2,
+     "YTD_QUARTER": 2,
+     "OTHER": 2
+    },
+    "issuersAffected": 11
+   },
+   "P9|2015-2019": {
+    "facts": 5510,
+    "covered": 4193,
+    "factAccuracy": 0.9502,
+    "valueAccuracy": 0.9938,
+    "pitAccuracy": 0.9561,
+    "falseMissingRate": 0.0444,
+    "missingRate": 0.0007,
+    "lateRate": 0.0436,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0055,
+    "byCategory": {
+     "TAG_SELECTION": 173,
+     "RESTATEMENT": 22,
+     "Q4_DERIVATION": 7,
+     "YTD_QUARTER": 3,
+     "FILING_VISIBILITY": 3,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 41
+   },
+   "P9|2020-2026": {
+    "facts": 7654,
+    "covered": 5954,
+    "factAccuracy": 0.9797,
+    "valueAccuracy": 0.9961,
+    "pitAccuracy": 0.9835,
+    "falseMissingRate": 0.0181,
+    "missingRate": 0.0017,
+    "lateRate": 0.0165,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0022,
+    "byCategory": {
+     "TAG_SELECTION": 85,
+     "Q4_DERIVATION": 12,
+     "RESTATEMENT": 11,
+     "YTD_QUARTER": 8,
+     "FILING_VISIBILITY": 3,
+     "WRONG_CONCEPT": 2
+    },
+    "issuersAffected": 28
+   },
+   "QUANT|2009-2010": {
+    "facts": 1504,
+    "covered": 1504,
+    "factAccuracy": 0.9754,
+    "valueAccuracy": 0.9761,
+    "pitAccuracy": 0.9993,
+    "falseMissingRate": 0.0206,
+    "missingRate": 0.0199,
+    "lateRate": 0.0007,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.004,
+    "byCategory": {
+     "WRONG_CONCEPT": 19,
+     "MISSING_FACT": 14,
+     "Q4_DERIVATION": 4
+    },
+    "issuersAffected": 8
+   },
+   "QUANT|2011-2014": {
+    "facts": 3487,
+    "covered": 3487,
+    "factAccuracy": 0.9274,
+    "valueAccuracy": 0.9343,
+    "pitAccuracy": 0.9926,
+    "falseMissingRate": 0.0579,
+    "missingRate": 0.051,
+    "lateRate": 0.0069,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0146,
+    "byCategory": {
+     "WRONG_CONCEPT": 196,
+     "PERIOD_MAPPING": 24,
+     "MISSING_FACT": 22,
+     "Q4_DERIVATION": 7,
+     "FILING_VISIBILITY": 2,
+     "YTD_QUARTER": 2
+    },
+    "issuersAffected": 26
+   },
+   "QUANT|2015-2019": {
+    "facts": 5510,
+    "covered": 5510,
+    "factAccuracy": 0.9132,
+    "valueAccuracy": 0.9296,
+    "pitAccuracy": 0.9824,
+    "falseMissingRate": 0.0688,
+    "missingRate": 0.0525,
+    "lateRate": 0.0163,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.018,
+    "byCategory": {
+     "WRONG_CONCEPT": 427,
+     "PERIOD_MAPPING": 34,
+     "Q4_DERIVATION": 14,
+     "YTD_QUARTER": 2,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 35
+   },
+   "QUANT|2020-2026": {
+    "facts": 7654,
+    "covered": 7654,
+    "factAccuracy": 0.9531,
+    "valueAccuracy": 0.965,
+    "pitAccuracy": 0.9877,
+    "falseMissingRate": 0.0179,
+    "missingRate": 0.006,
+    "lateRate": 0.0119,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.029,
+    "byCategory": {
+     "WRONG_CONCEPT": 257,
+     "Q4_DERIVATION": 49,
+     "PERIOD_MAPPING": 38,
+     "RESTATEMENT": 15
+    },
+    "issuersAffected": 36
+   }
+  },
+  "byPipelineYear": {
+   "P7|2007": {
+    "facts": 8,
+    "covered": 4,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|2008": {
+    "facts": 246,
+    "covered": 120,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|2009": {
+    "facts": 543,
+    "covered": 264,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|2010": {
+    "facts": 707,
+    "covered": 341,
+    "factAccuracy": 0.9589,
+    "valueAccuracy": 0.9707,
+    "pitAccuracy": 0.9879,
+    "falseMissingRate": 0.0352,
+    "missingRate": 0.0235,
+    "lateRate": 0.0117,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0059,
+    "byCategory": {
+     "TAG_SELECTION": 8,
+     "FILING_VISIBILITY": 4,
+     "Q4_DERIVATION": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 7
+   },
+   "P7|2011": {
+    "facts": 799,
+    "covered": 384,
+    "factAccuracy": 0.9531,
+    "valueAccuracy": 0.9583,
+    "pitAccuracy": 0.9946,
+    "falseMissingRate": 0.0443,
+    "missingRate": 0.0391,
+    "lateRate": 0.0052,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0026,
+    "byCategory": {
+     "TAG_SELECTION": 15,
+     "FILING_VISIBILITY": 2,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 6
+   },
+   "P7|2012": {
+    "facts": 825,
+    "covered": 396,
+    "factAccuracy": 0.947,
+    "valueAccuracy": 0.9495,
+    "pitAccuracy": 0.9973,
+    "falseMissingRate": 0.048,
+    "missingRate": 0.048,
+    "lateRate": 0,
+    "falseAvailableRate": 0.0025,
+    "wrongValueRate": 0.0025,
+    "byCategory": {
+     "TAG_SELECTION": 19,
+     "RESTATEMENT": 1,
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 7
+   },
+   "P7|2013": {
+    "facts": 897,
+    "covered": 431,
+    "factAccuracy": 0.9304,
+    "valueAccuracy": 0.9443,
+    "pitAccuracy": 0.9853,
+    "falseMissingRate": 0.0673,
+    "missingRate": 0.0534,
+    "lateRate": 0.0139,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0023,
+    "byCategory": {
+     "TAG_SELECTION": 23,
+     "FILING_VISIBILITY": 6,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 8
+   },
+   "P7|2014": {
+    "facts": 966,
+    "covered": 462,
+    "factAccuracy": 0.9113,
+    "valueAccuracy": 0.9329,
+    "pitAccuracy": 0.9768,
+    "falseMissingRate": 0.0866,
+    "missingRate": 0.0649,
+    "lateRate": 0.0216,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0022,
+    "byCategory": {
+     "TAG_SELECTION": 29,
+     "FILING_VISIBILITY": 9,
+     "Q4_DERIVATION": 1,
+     "YTD_QUARTER": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 16
+   },
+   "P7|2015": {
+    "facts": 978,
+    "covered": 464,
+    "factAccuracy": 0.9224,
+    "valueAccuracy": 0.944,
+    "pitAccuracy": 0.9772,
+    "falseMissingRate": 0.0711,
+    "missingRate": 0.0496,
+    "lateRate": 0.0216,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0065,
+    "byCategory": {
+     "TAG_SELECTION": 23,
+     "FILING_VISIBILITY": 10,
+     "RESTATEMENT": 2,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 14
+   },
+   "P7|2016": {
+    "facts": 1064,
+    "covered": 506,
+    "factAccuracy": 0.9012,
+    "valueAccuracy": 0.9269,
+    "pitAccuracy": 0.9723,
+    "falseMissingRate": 0.087,
+    "missingRate": 0.0613,
+    "lateRate": 0.0257,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0119,
+    "byCategory": {
+     "TAG_SELECTION": 30,
+     "FILING_VISIBILITY": 13,
+     "RESTATEMENT": 6,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 21
+   },
+   "P7|2017": {
+    "facts": 1117,
+    "covered": 557,
+    "factAccuracy": 0.7882,
+    "valueAccuracy": 0.9192,
+    "pitAccuracy": 0.8574,
+    "falseMissingRate": 0.1867,
+    "missingRate": 0.0575,
+    "lateRate": 0.1293,
+    "falseAvailableRate": 0.0018,
+    "wrongValueRate": 0.0233,
+    "byCategory": {
+     "FILING_VISIBILITY": 73,
+     "TAG_SELECTION": 32,
+     "RESTATEMENT": 13
+    },
+    "issuersAffected": 34
+   },
+   "P7|2018": {
+    "facts": 1165,
+    "covered": 582,
+    "factAccuracy": 0.8471,
+    "valueAccuracy": 0.9433,
+    "pitAccuracy": 0.898,
+    "falseMissingRate": 0.1512,
+    "missingRate": 0.055,
+    "lateRate": 0.0962,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0017,
+    "byCategory": {
+     "FILING_VISIBILITY": 54,
+     "TAG_SELECTION": 31,
+     "Q4_DERIVATION": 2,
+     "YTD_QUARTER": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 32
+   },
+   "P7|2019": {
+    "facts": 1186,
+    "covered": 592,
+    "factAccuracy": 0.8902,
+    "valueAccuracy": 0.9324,
+    "pitAccuracy": 0.9547,
+    "falseMissingRate": 0.1098,
+    "missingRate": 0.0676,
+    "lateRate": 0.0422,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 40,
+     "FILING_VISIBILITY": 24,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 19
+   },
+   "P7|2020": {
+    "facts": 1234,
+    "covered": 618,
+    "factAccuracy": 0.8981,
+    "valueAccuracy": 0.9595,
+    "pitAccuracy": 0.9359,
+    "falseMissingRate": 0.0955,
+    "missingRate": 0.034,
+    "lateRate": 0.0615,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0065,
+    "byCategory": {
+     "FILING_VISIBILITY": 35,
+     "TAG_SELECTION": 21,
+     "RESTATEMENT": 4,
+     "Q4_DERIVATION": 3
+    },
+    "issuersAffected": 22
+   },
+   "P7|2021": {
+    "facts": 1222,
+    "covered": 613,
+    "factAccuracy": 0.9413,
+    "valueAccuracy": 0.9837,
+    "pitAccuracy": 0.9569,
+    "falseMissingRate": 0.0457,
+    "missingRate": 0.0033,
+    "lateRate": 0.0424,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0131,
+    "byCategory": {
+     "FILING_VISIBILITY": 24,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 3,
+     "TAG_SELECTION": 2
+    },
+    "issuersAffected": 14
+   },
+   "P7|2022": {
+    "facts": 1181,
+    "covered": 589,
+    "factAccuracy": 0.9813,
+    "valueAccuracy": 0.9983,
+    "pitAccuracy": 0.983,
+    "falseMissingRate": 0.0187,
+    "missingRate": 0.0017,
+    "lateRate": 0.017,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 10,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 5
+   },
+   "P7|2023": {
+    "facts": 1172,
+    "covered": 586,
+    "factAccuracy": 0.9863,
+    "valueAccuracy": 0.9983,
+    "pitAccuracy": 0.988,
+    "falseMissingRate": 0.0119,
+    "missingRate": 0,
+    "lateRate": 0.0119,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0017,
+    "byCategory": {
+     "FILING_VISIBILITY": 7,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 4
+   },
+   "P7|2024": {
+    "facts": 1138,
+    "covered": 566,
+    "factAccuracy": 0.9806,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.9806,
+    "falseMissingRate": 0.0177,
+    "missingRate": 0,
+    "lateRate": 0.0177,
+    "falseAvailableRate": 0.0018,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 10,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 6
+   },
+   "P7|2025": {
+    "facts": 1098,
+    "covered": 547,
+    "factAccuracy": 0.9982,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.9982,
+    "falseMissingRate": 0.0018,
+    "missingRate": 0,
+    "lateRate": 0.0018,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 1
+   },
+   "P7|2026": {
+    "facts": 609,
+    "covered": 306,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|2007": {
+    "facts": 8,
+    "covered": 6,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|2008": {
+    "facts": 246,
+    "covered": 181,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|2009": {
+    "facts": 543,
+    "covered": 404,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|2010": {
+    "facts": 707,
+    "covered": 527,
+    "factAccuracy": 0.9848,
+    "valueAccuracy": 0.9962,
+    "pitAccuracy": 0.9886,
+    "falseMissingRate": 0.0114,
+    "missingRate": 0,
+    "lateRate": 0.0114,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0038,
+    "byCategory": {
+     "FILING_VISIBILITY": 5,
+     "WRONG_CONCEPT": 1,
+     "TAG_SELECTION": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 4
+   },
+   "P9|2011": {
+    "facts": 799,
+    "covered": 600,
+    "factAccuracy": 0.9933,
+    "valueAccuracy": 0.9983,
+    "pitAccuracy": 0.995,
+    "falseMissingRate": 0.005,
+    "missingRate": 0,
+    "lateRate": 0.005,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0017,
+    "byCategory": {
+     "TAG_SELECTION": 3,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 2
+   },
+   "P9|2012": {
+    "facts": 825,
+    "covered": 620,
+    "factAccuracy": 0.9984,
+    "valueAccuracy": 0.9984,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0016,
+    "byCategory": {
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 1
+   },
+   "P9|2013": {
+    "facts": 897,
+    "covered": 672,
+    "factAccuracy": 0.9896,
+    "valueAccuracy": 0.9985,
+    "pitAccuracy": 0.9911,
+    "falseMissingRate": 0.0089,
+    "missingRate": 0,
+    "lateRate": 0.0089,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0015,
+    "byCategory": {
+     "TAG_SELECTION": 6,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 2
+   },
+   "P9|2014": {
+    "facts": 966,
+    "covered": 726,
+    "factAccuracy": 0.9752,
+    "valueAccuracy": 0.9917,
+    "pitAccuracy": 0.9833,
+    "falseMissingRate": 0.0193,
+    "missingRate": 0.0028,
+    "lateRate": 0.0165,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0055,
+    "byCategory": {
+     "TAG_SELECTION": 6,
+     "FILING_VISIBILITY": 4,
+     "Q4_DERIVATION": 2,
+     "YTD_QUARTER": 2,
+     "OTHER": 2,
+     "RESTATEMENT": 1,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 8
+   },
+   "P9|2015": {
+    "facts": 978,
+    "covered": 738,
+    "factAccuracy": 0.981,
+    "valueAccuracy": 0.9959,
+    "pitAccuracy": 0.985,
+    "falseMissingRate": 0.0149,
+    "missingRate": 0,
+    "lateRate": 0.0149,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0041,
+    "byCategory": {
+     "TAG_SELECTION": 11,
+     "RESTATEMENT": 2,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 9
+   },
+   "P9|2016": {
+    "facts": 1064,
+    "covered": 801,
+    "factAccuracy": 0.9713,
+    "valueAccuracy": 0.99,
+    "pitAccuracy": 0.9811,
+    "falseMissingRate": 0.0212,
+    "missingRate": 0.0025,
+    "lateRate": 0.0187,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0075,
+    "byCategory": {
+     "TAG_SELECTION": 12,
+     "RESTATEMENT": 6,
+     "FILING_VISIBILITY": 3,
+     "YTD_QUARTER": 2
+    },
+    "issuersAffected": 12
+   },
+   "P9|2017": {
+    "facts": 1117,
+    "covered": 855,
+    "factAccuracy": 0.9006,
+    "valueAccuracy": 0.9848,
+    "pitAccuracy": 0.9145,
+    "falseMissingRate": 0.0842,
+    "missingRate": 0,
+    "lateRate": 0.0842,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0152,
+    "byCategory": {
+     "TAG_SELECTION": 72,
+     "RESTATEMENT": 13
+    },
+    "issuersAffected": 26
+   },
+   "P9|2018": {
+    "facts": 1165,
+    "covered": 892,
+    "factAccuracy": 0.9316,
+    "valueAccuracy": 0.9978,
+    "pitAccuracy": 0.9337,
+    "falseMissingRate": 0.0673,
+    "missingRate": 0.0011,
+    "lateRate": 0.0661,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0011,
+    "byCategory": {
+     "TAG_SELECTION": 54,
+     "Q4_DERIVATION": 5,
+     "YTD_QUARTER": 1,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 28
+   },
+   "P9|2019": {
+    "facts": 1186,
+    "covered": 907,
+    "factAccuracy": 0.9713,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.9713,
+    "falseMissingRate": 0.0287,
+    "missingRate": 0,
+    "lateRate": 0.0287,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 24,
+     "Q4_DERIVATION": 2
+    },
+    "issuersAffected": 13
+   },
+   "P9|2020": {
+    "facts": 1234,
+    "covered": 948,
+    "factAccuracy": 0.9525,
+    "valueAccuracy": 0.9947,
+    "pitAccuracy": 0.9576,
+    "falseMissingRate": 0.0432,
+    "missingRate": 0.0011,
+    "lateRate": 0.0422,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0042,
+    "byCategory": {
+     "TAG_SELECTION": 36,
+     "Q4_DERIVATION": 4,
+     "RESTATEMENT": 4,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 20
+   },
+   "P9|2021": {
+    "facts": 1222,
+    "covered": 954,
+    "factAccuracy": 0.9623,
+    "valueAccuracy": 0.9895,
+    "pitAccuracy": 0.9725,
+    "falseMissingRate": 0.0294,
+    "missingRate": 0.0021,
+    "lateRate": 0.0273,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0084,
+    "byCategory": {
+     "TAG_SELECTION": 24,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 2,
+     "YTD_QUARTER": 2,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 15
+   },
+   "P9|2022": {
+    "facts": 1181,
+    "covered": 924,
+    "factAccuracy": 0.9848,
+    "valueAccuracy": 0.9957,
+    "pitAccuracy": 0.9891,
+    "falseMissingRate": 0.0152,
+    "missingRate": 0.0043,
+    "lateRate": 0.0108,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 10,
+     "YTD_QUARTER": 2,
+     "Q4_DERIVATION": 2
+    },
+    "issuersAffected": 7
+   },
+   "P9|2023": {
+    "facts": 1172,
+    "covered": 914,
+    "factAccuracy": 0.9902,
+    "valueAccuracy": 0.9978,
+    "pitAccuracy": 0.9923,
+    "falseMissingRate": 0.0088,
+    "missingRate": 0.0011,
+    "lateRate": 0.0077,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0011,
+    "byCategory": {
+     "TAG_SELECTION": 7,
+     "YTD_QUARTER": 1,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 5
+   },
+   "P9|2024": {
+    "facts": 1138,
+    "covered": 890,
+    "factAccuracy": 0.9843,
+    "valueAccuracy": 0.9989,
+    "pitAccuracy": 0.9854,
+    "falseMissingRate": 0.0157,
+    "missingRate": 0.0011,
+    "lateRate": 0.0146,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 7,
+     "FILING_VISIBILITY": 3,
+     "Q4_DERIVATION": 3,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 6
+   },
+   "P9|2025": {
+    "facts": 1098,
+    "covered": 860,
+    "factAccuracy": 0.9965,
+    "valueAccuracy": 0.9988,
+    "pitAccuracy": 0.9977,
+    "falseMissingRate": 0.0035,
+    "missingRate": 0.0012,
+    "lateRate": 0.0023,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 1,
+     "Q4_DERIVATION": 1,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 2
+   },
+   "P9|2026": {
+    "facts": 609,
+    "covered": 464,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|2007": {
+    "facts": 8,
+    "covered": 8,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|2008": {
+    "facts": 246,
+    "covered": 246,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|2009": {
+    "facts": 543,
+    "covered": 543,
+    "factAccuracy": 0.9797,
+    "valueAccuracy": 0.9797,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0.0129,
+    "missingRate": 0.0129,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0074,
+    "byCategory": {
+     "MISSING_FACT": 7,
+     "Q4_DERIVATION": 2,
+     "WRONG_CONCEPT": 2
+    },
+    "issuersAffected": 4
+   },
+   "QUANT|2010": {
+    "facts": 707,
+    "covered": 707,
+    "factAccuracy": 0.9632,
+    "valueAccuracy": 0.9646,
+    "pitAccuracy": 0.9985,
+    "falseMissingRate": 0.0339,
+    "missingRate": 0.0325,
+    "lateRate": 0.0014,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0028,
+    "byCategory": {
+     "WRONG_CONCEPT": 17,
+     "MISSING_FACT": 7,
+     "Q4_DERIVATION": 2
+    },
+    "issuersAffected": 6
+   },
+   "QUANT|2011": {
+    "facts": 799,
+    "covered": 799,
+    "factAccuracy": 0.9274,
+    "valueAccuracy": 0.9274,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0.0451,
+    "missingRate": 0.0451,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0275,
+    "byCategory": {
+     "WRONG_CONCEPT": 36,
+     "PERIOD_MAPPING": 16,
+     "MISSING_FACT": 6
+    },
+    "issuersAffected": 8
+   },
+   "QUANT|2012": {
+    "facts": 825,
+    "covered": 825,
+    "factAccuracy": 0.9333,
+    "valueAccuracy": 0.9333,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0.0533,
+    "missingRate": 0.0533,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0133,
+    "byCategory": {
+     "WRONG_CONCEPT": 46,
+     "MISSING_FACT": 6,
+     "Q4_DERIVATION": 2,
+     "PERIOD_MAPPING": 1
+    },
+    "issuersAffected": 12
+   },
+   "QUANT|2013": {
+    "facts": 897,
+    "covered": 897,
+    "factAccuracy": 0.9309,
+    "valueAccuracy": 0.942,
+    "pitAccuracy": 0.9882,
+    "falseMissingRate": 0.0602,
+    "missingRate": 0.0491,
+    "lateRate": 0.0111,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0089,
+    "byCategory": {
+     "WRONG_CONCEPT": 52,
+     "MISSING_FACT": 6,
+     "Q4_DERIVATION": 4
+    },
+    "issuersAffected": 14
+   },
+   "QUANT|2014": {
+    "facts": 966,
+    "covered": 966,
+    "factAccuracy": 0.9193,
+    "valueAccuracy": 0.9337,
+    "pitAccuracy": 0.9845,
+    "falseMissingRate": 0.0704,
+    "missingRate": 0.0559,
+    "lateRate": 0.0145,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0104,
+    "byCategory": {
+     "WRONG_CONCEPT": 62,
+     "PERIOD_MAPPING": 7,
+     "MISSING_FACT": 4,
+     "FILING_VISIBILITY": 2,
+     "YTD_QUARTER": 2,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 17
+   },
+   "QUANT|2015": {
+    "facts": 978,
+    "covered": 978,
+    "factAccuracy": 0.9172,
+    "valueAccuracy": 0.9438,
+    "pitAccuracy": 0.9718,
+    "falseMissingRate": 0.0654,
+    "missingRate": 0.0389,
+    "lateRate": 0.0266,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0174,
+    "byCategory": {
+     "WRONG_CONCEPT": 68,
+     "PERIOD_MAPPING": 10,
+     "Q4_DERIVATION": 3
+    },
+    "issuersAffected": 16
+   },
+   "QUANT|2016": {
+    "facts": 1064,
+    "covered": 1064,
+    "factAccuracy": 0.9135,
+    "valueAccuracy": 0.9286,
+    "pitAccuracy": 0.9838,
+    "falseMissingRate": 0.062,
+    "missingRate": 0.047,
+    "lateRate": 0.015,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0244,
+    "byCategory": {
+     "WRONG_CONCEPT": 66,
+     "PERIOD_MAPPING": 20,
+     "Q4_DERIVATION": 4,
+     "YTD_QUARTER": 2
+    },
+    "issuersAffected": 19
+   },
+   "QUANT|2017": {
+    "facts": 1117,
+    "covered": 1117,
+    "factAccuracy": 0.9158,
+    "valueAccuracy": 0.9293,
+    "pitAccuracy": 0.9855,
+    "falseMissingRate": 0.0716,
+    "missingRate": 0.0582,
+    "lateRate": 0.0134,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0125,
+    "byCategory": {
+     "WRONG_CONCEPT": 91,
+     "Q4_DERIVATION": 3
+    },
+    "issuersAffected": 17
+   },
+   "QUANT|2018": {
+    "facts": 1165,
+    "covered": 1165,
+    "factAccuracy": 0.9133,
+    "valueAccuracy": 0.9305,
+    "pitAccuracy": 0.9815,
+    "falseMissingRate": 0.0687,
+    "missingRate": 0.0515,
+    "lateRate": 0.0172,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.018,
+    "byCategory": {
+     "WRONG_CONCEPT": 94,
+     "PERIOD_MAPPING": 4,
+     "Q4_DERIVATION": 2,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 22
+   },
+   "QUANT|2019": {
+    "facts": 1186,
+    "covered": 1186,
+    "factAccuracy": 0.9073,
+    "valueAccuracy": 0.9182,
+    "pitAccuracy": 0.9881,
+    "falseMissingRate": 0.075,
+    "missingRate": 0.0641,
+    "lateRate": 0.011,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0177,
+    "byCategory": {
+     "WRONG_CONCEPT": 108,
+     "Q4_DERIVATION": 2
+    },
+    "issuersAffected": 22
+   },
+   "QUANT|2020": {
+    "facts": 1234,
+    "covered": 1234,
+    "factAccuracy": 0.8995,
+    "valueAccuracy": 0.9335,
+    "pitAccuracy": 0.9635,
+    "falseMissingRate": 0.0681,
+    "missingRate": 0.034,
+    "lateRate": 0.034,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0324,
+    "byCategory": {
+     "WRONG_CONCEPT": 107,
+     "Q4_DERIVATION": 9,
+     "RESTATEMENT": 8
+    },
+    "issuersAffected": 28
+   },
+   "QUANT|2021": {
+    "facts": 1222,
+    "covered": 1222,
+    "factAccuracy": 0.9296,
+    "valueAccuracy": 0.964,
+    "pitAccuracy": 0.9643,
+    "falseMissingRate": 0.0376,
+    "missingRate": 0.0033,
+    "lateRate": 0.0344,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0327,
+    "byCategory": {
+     "WRONG_CONCEPT": 68,
+     "Q4_DERIVATION": 12,
+     "RESTATEMENT": 6
+    },
+    "issuersAffected": 21
+   },
+   "QUANT|2022": {
+    "facts": 1181,
+    "covered": 1181,
+    "factAccuracy": 0.9695,
+    "valueAccuracy": 0.9754,
+    "pitAccuracy": 0.9939,
+    "falseMissingRate": 0.0059,
+    "missingRate": 0,
+    "lateRate": 0.0059,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0246,
+    "byCategory": {
+     "WRONG_CONCEPT": 27,
+     "Q4_DERIVATION": 8,
+     "RESTATEMENT": 1
+    },
+    "issuersAffected": 14
+   },
+   "QUANT|2023": {
+    "facts": 1172,
+    "covered": 1172,
+    "factAccuracy": 0.9505,
+    "valueAccuracy": 0.9505,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0495,
+    "byCategory": {
+     "PERIOD_MAPPING": 34,
+     "WRONG_CONCEPT": 18,
+     "Q4_DERIVATION": 6
+    },
+    "issuersAffected": 13
+   },
+   "QUANT|2024": {
+    "facts": 1138,
+    "covered": 1138,
+    "factAccuracy": 0.9763,
+    "valueAccuracy": 0.9763,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0237,
+    "byCategory": {
+     "WRONG_CONCEPT": 16,
+     "Q4_DERIVATION": 7,
+     "PERIOD_MAPPING": 4
+    },
+    "issuersAffected": 12
+   },
+   "QUANT|2025": {
+    "facts": 1098,
+    "covered": 1098,
+    "factAccuracy": 0.9827,
+    "valueAccuracy": 0.9827,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0173,
+    "byCategory": {
+     "WRONG_CONCEPT": 13,
+     "Q4_DERIVATION": 6
+    },
+    "issuersAffected": 7
+   },
+   "QUANT|2026": {
+    "facts": 609,
+    "covered": 609,
+    "factAccuracy": 0.9852,
+    "valueAccuracy": 0.9852,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0148,
+    "byCategory": {
+     "WRONG_CONCEPT": 8,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 4
+   }
+  },
+  "byPipelineIssuerType": {
+   "P7|BANK": {
+    "facts": 927,
+    "covered": 412,
+    "factAccuracy": 0.9976,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.9976,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0.0024,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 1
+   },
+   "P7|BDC": {
+    "facts": 49,
+    "covered": 15,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|DELISTED_OR_ACQUIRED": {
+    "facts": 1853,
+    "covered": 939,
+    "factAccuracy": 0.8285,
+    "valueAccuracy": 0.8765,
+    "pitAccuracy": 0.9453,
+    "falseMissingRate": 0.1619,
+    "missingRate": 0.114,
+    "lateRate": 0.0479,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0096,
+    "byCategory": {
+     "TAG_SELECTION": 107,
+     "FILING_VISIBILITY": 43,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 4
+    },
+    "issuersAffected": 9
+   },
+   "P7|FOREIGN_FILER": {
+    "facts": 72,
+    "covered": 37,
+    "factAccuracy": 0.973,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.973,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0.027,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 1
+    },
+    "issuersAffected": 1
+   },
+   "P7|INSURER": {
+    "facts": 655,
+    "covered": 318,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|MEGA_CAP": {
+    "facts": 1887,
+    "covered": 960,
+    "factAccuracy": 0.9635,
+    "valueAccuracy": 0.9927,
+    "pitAccuracy": 0.9706,
+    "falseMissingRate": 0.0292,
+    "missingRate": 0,
+    "lateRate": 0.0292,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0073,
+    "byCategory": {
+     "FILING_VISIBILITY": 23,
+     "Q4_DERIVATION": 7,
+     "RESTATEMENT": 5
+    },
+    "issuersAffected": 6
+   },
+   "P7|OTHER": {
+    "facts": 9858,
+    "covered": 4848,
+    "factAccuracy": 0.9569,
+    "valueAccuracy": 0.9856,
+    "pitAccuracy": 0.9709,
+    "falseMissingRate": 0.0394,
+    "missingRate": 0.0109,
+    "lateRate": 0.0285,
+    "falseAvailableRate": 0.0002,
+    "wrongValueRate": 0.0035,
+    "byCategory": {
+     "FILING_VISIBILITY": 136,
+     "TAG_SELECTION": 52,
+     "RESTATEMENT": 16,
+     "Q4_DERIVATION": 5
+    },
+    "issuersAffected": 27
+   },
+   "P7|PARTNERSHIP": {
+    "facts": 271,
+    "covered": 143,
+    "factAccuracy": 0.9371,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0.9371,
+    "falseMissingRate": 0.0629,
+    "missingRate": 0,
+    "lateRate": 0.0629,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 9
+    },
+    "issuersAffected": 2
+   },
+   "P7|REIT": {
+    "facts": 707,
+    "covered": 340,
+    "factAccuracy": 0.9206,
+    "valueAccuracy": 0.95,
+    "pitAccuracy": 0.969,
+    "falseMissingRate": 0.0706,
+    "missingRate": 0.0412,
+    "lateRate": 0.0294,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0088,
+    "byCategory": {
+     "TAG_SELECTION": 14,
+     "FILING_VISIBILITY": 10,
+     "RESTATEMENT": 3
+    },
+    "issuersAffected": 2
+   },
+   "P7|SMALL_CAP": {
+    "facts": 1876,
+    "covered": 916,
+    "factAccuracy": 0.8155,
+    "valueAccuracy": 0.881,
+    "pitAccuracy": 0.9257,
+    "falseMissingRate": 0.1779,
+    "missingRate": 0.1124,
+    "lateRate": 0.0655,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0066,
+    "byCategory": {
+     "TAG_SELECTION": 100,
+     "FILING_VISIBILITY": 60,
+     "RESTATEMENT": 5,
+     "YTD_QUARTER": 3,
+     "Q4_DERIVATION": 1
+    },
+    "issuersAffected": 10
+   },
+   "P9|BANK": {
+    "facts": 927,
+    "covered": 697,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|BDC": {
+    "facts": 49,
+    "covered": 34,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|DELISTED_OR_ACQUIRED": {
+    "facts": 1853,
+    "covered": 1392,
+    "factAccuracy": 0.9591,
+    "valueAccuracy": 0.9935,
+    "pitAccuracy": 0.9653,
+    "falseMissingRate": 0.0345,
+    "missingRate": 0,
+    "lateRate": 0.0345,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0065,
+    "byCategory": {
+     "TAG_SELECTION": 44,
+     "RESTATEMENT": 7,
+     "Q4_DERIVATION": 4,
+     "WRONG_CONCEPT": 2
+    },
+    "issuersAffected": 9
+   },
+   "P9|FOREIGN_FILER": {
+    "facts": 72,
+    "covered": 47,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|INSURER": {
+    "facts": 655,
+    "covered": 531,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|MEGA_CAP": {
+    "facts": 1887,
+    "covered": 1442,
+    "factAccuracy": 0.9743,
+    "valueAccuracy": 0.9951,
+    "pitAccuracy": 0.9791,
+    "falseMissingRate": 0.0208,
+    "missingRate": 0,
+    "lateRate": 0.0208,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0049,
+    "byCategory": {
+     "TAG_SELECTION": 22,
+     "Q4_DERIVATION": 5,
+     "RESTATEMENT": 5,
+     "FILING_VISIBILITY": 3,
+     "WRONG_CONCEPT": 2
+    },
+    "issuersAffected": 6
+   },
+   "P9|OTHER": {
+    "facts": 9858,
+    "covered": 7525,
+    "factAccuracy": 0.9773,
+    "valueAccuracy": 0.9968,
+    "pitAccuracy": 0.9804,
+    "falseMissingRate": 0.0201,
+    "missingRate": 0.0005,
+    "lateRate": 0.0195,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0027,
+    "byCategory": {
+     "TAG_SELECTION": 131,
+     "RESTATEMENT": 16,
+     "Q4_DERIVATION": 9,
+     "FILING_VISIBILITY": 9,
+     "YTD_QUARTER": 2,
+     "WRONG_CONCEPT": 2,
+     "OTHER": 2
+    },
+    "issuersAffected": 26
+   },
+   "P9|PARTNERSHIP": {
+    "facts": 271,
+    "covered": 262,
+    "factAccuracy": 0.9466,
+    "valueAccuracy": 0.9809,
+    "pitAccuracy": 0.965,
+    "falseMissingRate": 0.0534,
+    "missingRate": 0.0191,
+    "lateRate": 0.0344,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "TAG_SELECTION": 9,
+     "YTD_QUARTER": 5
+    },
+    "issuersAffected": 2
+   },
+   "P9|REIT": {
+    "facts": 707,
+    "covered": 525,
+    "factAccuracy": 0.9752,
+    "valueAccuracy": 0.9943,
+    "pitAccuracy": 0.9808,
+    "falseMissingRate": 0.019,
+    "missingRate": 0,
+    "lateRate": 0.019,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0057,
+    "byCategory": {
+     "TAG_SELECTION": 10,
+     "RESTATEMENT": 3
+    },
+    "issuersAffected": 2
+   },
+   "P9|SMALL_CAP": {
+    "facts": 1876,
+    "covered": 1428,
+    "factAccuracy": 0.9468,
+    "valueAccuracy": 0.9916,
+    "pitAccuracy": 0.9548,
+    "falseMissingRate": 0.049,
+    "missingRate": 0.0042,
+    "lateRate": 0.0448,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0042,
+    "byCategory": {
+     "TAG_SELECTION": 58,
+     "YTD_QUARTER": 6,
+     "RESTATEMENT": 5,
+     "FILING_VISIBILITY": 3,
+     "Q4_DERIVATION": 3,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 10
+   },
+   "QUANT|BANK": {
+    "facts": 927,
+    "covered": 927,
+    "factAccuracy": 0.9946,
+    "valueAccuracy": 0.9946,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0054,
+    "byCategory": {
+     "Q4_DERIVATION": 5
+    },
+    "issuersAffected": 3
+   },
+   "QUANT|BDC": {
+    "facts": 49,
+    "covered": 49,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|DELISTED_OR_ACQUIRED": {
+    "facts": 1853,
+    "covered": 1853,
+    "factAccuracy": 0.8219,
+    "valueAccuracy": 0.8446,
+    "pitAccuracy": 0.9732,
+    "falseMissingRate": 0.136,
+    "missingRate": 0.1133,
+    "lateRate": 0.0227,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0421,
+    "byCategory": {
+     "WRONG_CONCEPT": 278,
+     "PERIOD_MAPPING": 32,
+     "Q4_DERIVATION": 16,
+     "RESTATEMENT": 4
+    },
+    "issuersAffected": 9
+   },
+   "QUANT|FOREIGN_FILER": {
+    "facts": 72,
+    "covered": 72,
+    "factAccuracy": 0.5,
+    "valueAccuracy": 0.5,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0.5,
+    "missingRate": 0.5,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "MISSING_FACT": 36
+    },
+    "issuersAffected": 1
+   },
+   "QUANT|INSURER": {
+    "facts": 655,
+    "covered": 655,
+    "factAccuracy": 0.9481,
+    "valueAccuracy": 0.9481,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0519,
+    "byCategory": {
+     "WRONG_CONCEPT": 27,
+     "Q4_DERIVATION": 7
+    },
+    "issuersAffected": 3
+   },
+   "QUANT|MEGA_CAP": {
+    "facts": 1887,
+    "covered": 1887,
+    "factAccuracy": 0.9825,
+    "valueAccuracy": 0.9825,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0175,
+    "byCategory": {
+     "WRONG_CONCEPT": 27,
+     "Q4_DERIVATION": 6
+    },
+    "issuersAffected": 2
+   },
+   "QUANT|OTHER": {
+    "facts": 9858,
+    "covered": 9858,
+    "factAccuracy": 0.9709,
+    "valueAccuracy": 0.9801,
+    "pitAccuracy": 0.9906,
+    "falseMissingRate": 0.0164,
+    "missingRate": 0.0072,
+    "lateRate": 0.0092,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0127,
+    "byCategory": {
+     "WRONG_CONCEPT": 210,
+     "PERIOD_MAPPING": 50,
+     "Q4_DERIVATION": 23,
+     "RESTATEMENT": 2,
+     "FILING_VISIBILITY": 2
+    },
+    "issuersAffected": 25
+   },
+   "QUANT|PARTNERSHIP": {
+    "facts": 271,
+    "covered": 271,
+    "factAccuracy": 0.9852,
+    "valueAccuracy": 0.9852,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0148,
+    "byCategory": {
+     "WRONG_CONCEPT": 4
+    },
+    "issuersAffected": 1
+   },
+   "QUANT|REIT": {
+    "facts": 707,
+    "covered": 707,
+    "factAccuracy": 0.8769,
+    "valueAccuracy": 0.8925,
+    "pitAccuracy": 0.9826,
+    "falseMissingRate": 0.0495,
+    "missingRate": 0.0339,
+    "lateRate": 0.0156,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0736,
+    "byCategory": {
+     "WRONG_CONCEPT": 81,
+     "Q4_DERIVATION": 6
+    },
+    "issuersAffected": 3
+   },
+   "QUANT|SMALL_CAP": {
+    "facts": 1876,
+    "covered": 1876,
+    "factAccuracy": 0.8342,
+    "valueAccuracy": 0.8673,
+    "pitAccuracy": 0.9619,
+    "falseMissingRate": 0.1407,
+    "missingRate": 0.1077,
+    "lateRate": 0.033,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0251,
+    "byCategory": {
+     "WRONG_CONCEPT": 272,
+     "PERIOD_MAPPING": 14,
+     "Q4_DERIVATION": 11,
+     "RESTATEMENT": 10,
+     "YTD_QUARTER": 4
+    },
+    "issuersAffected": 10
+   }
+  },
+  "byPipelineForm": {
+   "P7|10-K": {
+    "facts": 3606,
+    "covered": 1765,
+    "factAccuracy": 0.9246,
+    "valueAccuracy": 0.9552,
+    "pitAccuracy": 0.968,
+    "falseMissingRate": 0.0669,
+    "missingRate": 0.038,
+    "lateRate": 0.0289,
+    "falseAvailableRate": 0.0017,
+    "wrongValueRate": 0.0068,
+    "byCategory": {
+     "TAG_SELECTION": 64,
+     "FILING_VISIBILITY": 44,
+     "Q4_DERIVATION": 17,
+     "RESTATEMENT": 6,
+     "YTD_QUARTER": 2
+    },
+    "issuersAffected": 46
+   },
+   "P7|10-K/A": {
+    "facts": 14,
+    "covered": 8,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|10-Q": {
+    "facts": 14456,
+    "covered": 7117,
+    "factAccuracy": 0.9327,
+    "valueAccuracy": 0.9663,
+    "pitAccuracy": 0.9652,
+    "falseMissingRate": 0.0631,
+    "missingRate": 0.0295,
+    "lateRate": 0.0336,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0042,
+    "byCategory": {
+     "FILING_VISIBILITY": 239,
+     "TAG_SELECTION": 209,
+     "RESTATEMENT": 30,
+     "YTD_QUARTER": 1
+    },
+    "issuersAffected": 51
+   },
+   "P7|10-Q/A": {
+    "facts": 41,
+    "covered": 18,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|10-QT": {
+    "facts": 2,
+    "covered": 1,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P7|6-K": {
+    "facts": 36,
+    "covered": 19,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|10-K": {
+    "facts": 3606,
+    "covered": 2995,
+    "factAccuracy": 0.9713,
+    "valueAccuracy": 0.9933,
+    "pitAccuracy": 0.9778,
+    "falseMissingRate": 0.0244,
+    "missingRate": 0.0023,
+    "lateRate": 0.022,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0043,
+    "byCategory": {
+     "TAG_SELECTION": 40,
+     "Q4_DERIVATION": 21,
+     "FILING_VISIBILITY": 7,
+     "WRONG_CONCEPT": 6,
+     "RESTATEMENT": 6,
+     "YTD_QUARTER": 5,
+     "OTHER": 1
+    },
+    "issuersAffected": 46
+   },
+   "P9|10-K/A": {
+    "facts": 14,
+    "covered": 12,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|10-Q": {
+    "facts": 14456,
+    "covered": 10827,
+    "factAccuracy": 0.974,
+    "valueAccuracy": 0.9963,
+    "pitAccuracy": 0.9776,
+    "falseMissingRate": 0.0231,
+    "missingRate": 0.0007,
+    "lateRate": 0.0224,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.003,
+    "byCategory": {
+     "TAG_SELECTION": 234,
+     "RESTATEMENT": 30,
+     "YTD_QUARTER": 8,
+     "FILING_VISIBILITY": 8,
+     "OTHER": 1,
+     "WRONG_CONCEPT": 1
+    },
+    "issuersAffected": 52
+   },
+   "P9|10-Q/A": {
+    "facts": 41,
+    "covered": 29,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|10-QT": {
+    "facts": 2,
+    "covered": 1,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "P9|6-K": {
+    "facts": 36,
+    "covered": 19,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|10-K": {
+    "facts": 3606,
+    "covered": 3606,
+    "factAccuracy": 0.9224,
+    "valueAccuracy": 0.929,
+    "pitAccuracy": 0.9928,
+    "falseMissingRate": 0.0399,
+    "missingRate": 0.0333,
+    "lateRate": 0.0067,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0377,
+    "byCategory": {
+     "WRONG_CONCEPT": 179,
+     "Q4_DERIVATION": 74,
+     "PERIOD_MAPPING": 23,
+     "YTD_QUARTER": 4
+    },
+    "issuersAffected": 49
+   },
+   "QUANT|10-K/A": {
+    "facts": 14,
+    "covered": 14,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|10-Q": {
+    "facts": 14456,
+    "covered": 14456,
+    "factAccuracy": 0.944,
+    "valueAccuracy": 0.9565,
+    "pitAccuracy": 0.987,
+    "falseMissingRate": 0.0392,
+    "missingRate": 0.0268,
+    "lateRate": 0.0125,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0167,
+    "byCategory": {
+     "WRONG_CONCEPT": 720,
+     "PERIOD_MAPPING": 73,
+     "RESTATEMENT": 16
+    },
+    "issuersAffected": 43
+   },
+   "QUANT|10-Q/A": {
+    "facts": 41,
+    "covered": 41,
+    "factAccuracy": 1,
+    "valueAccuracy": 1,
+    "pitAccuracy": 1,
+    "falseMissingRate": 0,
+    "missingRate": 0,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {},
+    "issuersAffected": 0
+   },
+   "QUANT|10-QT": {
+    "facts": 2,
+    "covered": 2,
+    "factAccuracy": 0,
+    "valueAccuracy": 1,
+    "pitAccuracy": 0,
+    "falseMissingRate": 1,
+    "missingRate": 0,
+    "lateRate": 1,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "FILING_VISIBILITY": 2
+    },
+    "issuersAffected": 1
+   },
+   "QUANT|6-K": {
+    "facts": 36,
+    "covered": 36,
+    "factAccuracy": 0,
+    "valueAccuracy": 0,
+    "pitAccuracy": null,
+    "falseMissingRate": 1,
+    "missingRate": 1,
+    "lateRate": 0,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0,
+    "byCategory": {
+     "MISSING_FACT": 36
+    },
+    "issuersAffected": 1
+   }
+  }
+ }
+}

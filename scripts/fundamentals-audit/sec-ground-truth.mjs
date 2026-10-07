@@ -26,7 +26,7 @@ export const CONCEPTS = Object.freeze({
   EPS_DILUTED: { tags: ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted'], unitRe: /\/shares$/i, additive: false },
   EPS_BASIC: { tags: ['EarningsPerShareBasic', 'EarningsPerShareBasicAndDiluted'], unitRe: /\/shares$/i, additive: false },
   NET_INCOME: { tags: ['NetIncomeLoss'], unitRe: /^[A-Z]{3}$/, additive: true },
-  REVENUE: { tags: ['Revenues', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractWithCustomerIncludingAssessedTax', 'SalesRevenueNet'], unitRe: /^[A-Z]{3}$/, additive: true },
+  REVENUE: { tags: ['Revenues', 'SalesRevenueNet', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractWithCustomerIncludingAssessedTax'], unitRe: /^[A-Z]{3}$/, additive: true },
 });
 export const PERIODIC = new Set(['10-Q', '10-Q/A', '10-K', '10-K/A', '10-KT', '10-KT/A', '10-QT', '10-QT/A', '20-F', '20-F/A', '40-F', '40-F/A', '6-K', '6-K/A', '10-KSB', '10-QSB', '10-KSB/A', '10-QSB/A']);
 const DAY = 864e5;
@@ -66,14 +66,29 @@ export function groundTruthQuarters(cf, conceptId) {
   }
   const first = (arr) => arr.reduce((a, b) => (firstOf(b, a) ? b : a));
   const last = (arr) => arr.reduce((a, b) => (b.filed > a.filed || (b.filed === a.filed && b.accn > a.accn) ? b : a));
+  // Dasselbe Geschaeftsquartal wird mitunter mit leicht abweichendem Periodenende gemeldet (52/53-Wochen-Rundung,
+  // spaetere Vergleichsspalten): Enden innerhalb von 7 Tagen bilden EIN Quartal (fruehestes Ende als Schluessel).
+  const ends = [...byEnd.keys()].sort();
+  for (let i = 1; i < ends.length; i++) {
+    const prev = ends.slice(0, i).reverse().find((e) => byEnd.has(e));
+    if (prev && dur(prev, ends[i]) <= 7) { byEnd.get(prev).push(...byEnd.get(ends[i]).map((f) => ({ ...f, endAlias: ends[i] }))); byEnd.delete(ends[i]); }
+  }
   const out = new Map();
   for (const [end, arr] of byEnd) {
-    const f0 = first(arr), fl = last(arr);
-    const sameFiling = arr.filter((x) => x.accn === f0.accn);
-    const ambiguous = new Set(sameFiling.map((x) => x.val)).size > 1;
+    // Erstmeldung = frueheste Einreichung; innerhalb DIESER Einreichung entscheidet die Konzeptrangfolge
+    // (REVENUE: Revenues = Gesamtumsatz laut US-GAAP-Taxonomie vor dem Teilbetrag aus Kundenvertraegen ASC 606).
+    const order = CONCEPTS[conceptId].tags;
+    const rank = (x) => { const i = order.indexOf(x.tag); return i < 0 ? 99 : i; };
+    const firstFiling = first(arr).accn;
+    const sameFiling = arr.filter((x) => x.accn === firstFiling).sort((a, b) => rank(a) - rank(b));
+    const f0 = sameFiling[0], fl = last(arr);
+    const byTag = new Map(sameFiling.map((x) => [x.tag, x.val]));
+    const ambiguous = [...byTag.values()].length > 1 && new Set([...byTag.values()]).size > 1 && new Set(sameFiling.filter((x) => x.tag === f0.tag).map((x) => x.val)).size > 1;
+    const multiTag = new Set([...byTag.values()]).size > 1 ? Object.fromEntries(byTag) : null;
     const tagsFirst = {};
     for (const x of arr) if (!tagsFirst[x.tag] || x.filed < tagsFirst[x.tag]) tagsFirst[x.tag] = x.filed;
-    out.set(end, { end, start: f0.start, value: f0.val, known_from: f0.filed, accn: f0.accn, form: f0.form, tag: f0.tag, fy: f0.fy ?? null, fp: f0.fp ?? null, latest_value: fl.val, latest_filed: fl.filed, quality: ambiguous ? 'AMBIGUOUS_VALUES' : 'VERIFIED', tagsFirstFiled: tagsFirst, ns, unit });
+    const aliases = [...new Set(arr.map((x) => x.endAlias).filter(Boolean))];
+    out.set(end, { end, endAliases: aliases, start: f0.start, value: f0.val, known_from: f0.filed, accn: f0.accn, form: f0.form, tag: f0.tag, fy: f0.fy ?? null, fp: f0.fp ?? null, latest_value: fl.val, latest_filed: fl.filed, quality: ambiguous ? 'AMBIGUOUS_VALUES' : 'VERIFIED', multiTagValues: multiTag, tagsFirstFiled: tagsFirst, ns, unit });
   }
   if (CONCEPTS[conceptId].additive) {
     // Q4 = FY - Q1..Q3 (Erstmeldungen), nur wenn kein Einzelquartal gemeldet.
@@ -92,6 +107,41 @@ export function groundTruthQuarters(cf, conceptId) {
       if (a.s !== b.s || !(b.e < a.e)) continue;
       const d = dur(b.e, a.e); if (d < 80 || d > 100 || out.has(a.e)) continue;
       out.set(a.e, { end: a.e, start: b.e, value: a.f0.val - b.f0.val, known_from: [a.f0.filed, b.f0.filed].sort().at(-1), accn: a.f0.accn, form: a.f0.form, tag: a.f0.tag, fy: a.f0.fy ?? null, fp: a.f0.fp ?? null, latest_value: null, latest_filed: null, quality: 'DERIVED_YTD', tagsFirstFiled: {}, ns, unit });
+    }
+  }
+  // Fruehester Zeitpunkt, zu dem der Quartalswert aus oeffentlichen periodischen Berichten ABLEITBAR war
+  // (additive Groessen): YTD(S,e) - YTD(S,s-1) mit gleichem Beginn, oder FY - YTD9M, oder FY - Q1 - Q2 - Q3.
+  // Ein Wert, den eine Pipeline vor known_from, aber nicht vor derivable_from zeigt, ist KEIN Lookahead.
+  if (CONCEPTS[conceptId].additive) {
+    const cum = new Map(); // start -> [{end, filed, val}]
+    for (const f of facts) if (f.start && !isQ(f)) { const a = cum.get(f.start) || cum.set(f.start, []).get(f.start); a.push(f); }
+    for (const [s0, arr] of byEnd) void s0;
+    for (const q of out.values()) {
+      if (!q.start && q.quality !== 'DERIVED_Q4') continue;
+      let best = q.known_from;
+      for (const [S, arr] of cum) {
+        const atEnd = arr.filter((f) => Math.abs(dur(f.end, q.end)) <= 7);
+        if (!atEnd.length) continue;
+        const qStart = q.start || null;
+        // Vorperiode endet am Tag vor dem Quartalsbeginn (+-7 Tage); bei Q1 ist YTD(S,e) selbst das Quartal.
+        const prev = qStart ? arr.filter((f) => Math.abs(dur(f.end, qStart) + 1) <= 7) : [];
+        const e1 = atEnd.reduce((a, b) => (b.filed < a.filed ? b : a));
+        if (qStart && Math.abs(dur(S, qStart)) <= 7) { if (e1.filed < best) best = e1.filed; continue; }
+        if (!qStart) {
+          // Abgeleitetes Q4 ohne Beginn: FY(S,e) - YTD(S, e - 80..100 Tage).
+          const ytd9 = arr.filter((f) => { const d = dur(f.end, q.end); return d >= 80 && d <= 100; });
+          if (!ytd9.length) continue;
+          const y1 = ytd9.reduce((a, b) => (b.filed < a.filed ? b : a));
+          const when = e1.filed > y1.filed ? e1.filed : y1.filed;
+          if (when < best) best = when;
+          continue;
+        }
+        if (!prev.length) continue;
+        const p1 = prev.reduce((a, b) => (b.filed < a.filed ? b : a));
+        const when = e1.filed > p1.filed ? e1.filed : p1.filed;
+        if (when < best) best = when;
+      }
+      q.derivable_from = best;
     }
   }
   return [...out.values()].sort((a, b) => a.end.localeCompare(b.end));
