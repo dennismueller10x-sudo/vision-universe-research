@@ -41,13 +41,13 @@ Korrektheit vor Abdeckung. Point-in-Time vor Bequemlichkeit. UNKNOWN vor einem f
 
 ## 3. Kanonische Konzepte (Concept Identity statt Tag Identity)
 
-P1 modelliert bereits Konzepte (Registry-Metriken) mit erlaubten Quell-Tags. Der Audit belegt, dass dieser Ansatz trägt, wenn die Konzeptlisten stimmen. Die Registry 1.7.0 korrigiert sie.
+P1 modelliert bereits Konzepte (Registry-Metriken) mit erlaubten Quell-Tags. Der Audit belegt, dass dieser Ansatz trägt, wenn die Konzeptlisten stimmen. Die Registry 1.8.0 korrigiert sie. Eine reine Prioritätsliste reicht aber nicht: Ein Tag, der laut Taxonomie den Gesamtbetrag trägt, wird von manchen Einreichern für Teilbeträge benutzt (E2-R). Deshalb gilt eine wirtschaftliche Plausibilitätsregel: Ein Gesamtbetrag ist nie kleiner als ein Teilbetrag derselben Einreichung. Dazu kommt eine Währungsregel (E9).
 
 | Konzept | Erlaubte Quellen (Rang in derselben Einreichung) | Periodensemantik | Einheit |
 |---|---|---|---|
 | EPS_DILUTED | EarningsPerShareDiluted, EarningsPerShareBasicAndDiluted, IncomeLossFromContinuingOperationsPerDilutedShare*, ifrs DilutedEarningsLossPerShare | Dauer; nur gemeldete Quartale (nicht additiv, keine Ableitung) | Währung/Aktie |
 | EPS_BASIC | EarningsPerShareBasic, EarningsPerShareBasicAndDiluted, …PerBasicShare*, ifrs BasicEarningsLossPerShare | wie oben | Währung/Aktie |
-| REVENUE | **Revenues (Gesamtumsatz)**, ASC-606-Vertragsumsatz, SalesRevenueNet, …, ifrs Revenue | Dauer; additiv; Q4 = FY − 9M zulässig | Währung |
+| REVENUE | **Revenues (Gesamtumsatz, `aggregate`)** – gilt nur, wenn nicht kleiner als ein anderes Umsatzkonzept derselben Einreichung und Währung (E2-R); dann ASC-606-Vertragsumsatz, SalesRevenueNet, …, ifrs Revenue | Dauer; additiv; Q4 = FY − 9M zulässig | Währung (der Einreichung, E9) |
 | NET_INCOME | NetIncomeLoss; Ersatz ProfitLoss / …AvailableToCommon nur mit Kennzeichen (E5, offen) | additiv | Währung |
 | GROSS_PROFIT, OPERATING_INCOME, OCF, CAPEX, CASH, DEBT, SHARES_OUTSTANDING | siehe `quant/config/sec-metric-registry.json` | | |
 
@@ -101,10 +101,14 @@ Soll: Jeder Consumer-Wert trägt dieselben Angaben kompakt. Heute tragen Bundle-
 - **C-X-1** Gleiches Konzept, gleiche Periode, gleiche Sicht ergibt denselben Wert in allen Consumern (Cross-Consumer-Test).
 
 Umgesetzt in diesem Audit:
-- D1 (Ground-Truth-Vergleich, FALSE_AVAILABLE = 0 als Gate)
-- D6 und D7 (Regressionstests `scripts/quant/tests/test_sec_ground_truth_regressions.py`)
+- D1: Ground-Truth-Vergleich, FALSE_AVAILABLE = 0 als Gate.
+- D6 und D7: Regressionstests `scripts/quant/tests/test_sec_ground_truth_regressions.py`.
+- D4 auf Kandidatenebene (E9): Innerhalb einer Einreichung entscheidet die Währung der Einreichung vor der Konzeptpriorität (Normalisierung 1.12.0).
+- C-X-1 sowie D2, D4, D6 und D7 auf Bundle-Ebene: `core/tests/fundamental-cross-consumer.test.mjs`.
+  - Quant, Aktienseite, Screener-Spur und Geschäftszahlen-Karte lesen denselben Wert.
+  - Die eine bewusste Abweichung (KGV ohne TTM-EPS rechnet mit TTM-Gewinn / Aktien) ist ausdrücklich festgehalten.
 
-Die übrigen Verträge stehen im Migrationsplan.
+Die übrigen Verträge stehen im Migrationsplan: D3 (Konzept je Bundle-Zeile, F5), C-PIT-1 (F4) und C-CI-1.
 
 ## 7. Ein Parser
 

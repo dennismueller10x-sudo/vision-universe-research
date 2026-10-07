@@ -42,8 +42,8 @@
     {
       "id": "M-B4",
       "title": "Umsatz: verbleibende Konzept-Mehrdeutigkeit (E2-R)",
-      "evidence": "Ist us-gaap:Revenues in einer Einreichung kleiner als der Vertragsumsatz, gibt es zwei wirtschaftlich plausible Lesarten: Teilbetrag (FLS, PESI, VTSI, GEN, VRRM) oder Gesamtumsatz nach negativen Bestandteilen (FCX, PXD, UPST: Derivate, Preisanpassungen, Fair-Value). companyfacts entscheidet das nicht (Abbruchbedingung 81).",
-      "stateInThisPR": "Kern 1.14.0 nimmt in solchen Zellen den Wert von main und markiert CONCEPT_DISAGREEMENT - nie schlechter als Produktion, aber fuer FCX/PXD/UPST-Typ weiterhin der Bruttowert.",
+      "evidence": "Revenues kleiner als der Vertragsumsatz: Teilbetrag (FLS, PESI, VTSI, GEN, VRRM; <= 12 %) oder Nettogesamtumsatz mit negativem Bestandteil (UPST belegt per ASC-606-Identitaet, PXD, FCX, PENN; 80-98 %). Zwischen ca. 12 % und 50 % liegt kein gepruefter Fall.",
+      "stateInThisPR": "Kern 1.15.0: Revenues gilt, ausser er ist nicht positiv oder < 50 % eines anderen Umsatzkonzepts derselben Einreichung; dann Wert von main. Widerspruch bleibt als CONCEPT_DISAGREEMENT in den Reconciliation-Berichten sichtbar (im Bundle nicht, F5).",
       "options": [
         "A: so ausrollen (empfohlen)",
         "B: Folge-PR F9 abwarten (Abschlusszeile aus dem Presentation-Linkbase des Filing-XBRL)"
