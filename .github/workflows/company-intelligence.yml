@@ -161,8 +161,8 @@ jobs:
           python3 -m http.server 8793 --bind 127.0.0.1 --directory "$RUNNER_TEMP/production-site" > "$RUNNER_TEMP/production-server.log" 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
-          node scripts/company_intelligence/discover-beta-qa.mjs --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase actual --out "$RUNNER_TEMP/production-cohort-qa"
-          node scripts/company_intelligence/discover-beta-qa.mjs --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase dark --out "$RUNNER_TEMP/production-dark-qa"
+          node scripts/company_intelligence/discover-beta-qa.mjs --production --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase actual --out "$RUNNER_TEMP/production-cohort-qa"
+          node scripts/company_intelligence/discover-beta-qa.mjs --production --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase dark --out "$RUNNER_TEMP/production-dark-qa"
       - name: Approved immutable consumer publication and independent read-back
         if: inputs.production_release == 'publish'
         env:
@@ -194,7 +194,7 @@ jobs:
             ${{ runner.temp }}/production-dark-qa/
           retention-days: 14
   validate:
-    if: github.event_name != 'schedule' && !inputs.current_restore_only && inputs.production_release != 'disable' && inputs.production_release != 'numeric' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
+    if: github.event_name != 'schedule' && !inputs.current_restore_only && inputs.production_release != 'disable' && inputs.production_release != 'enable' && inputs.production_release != 'numeric' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
