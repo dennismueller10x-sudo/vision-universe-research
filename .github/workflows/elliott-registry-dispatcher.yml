@@ -1,12 +1,11 @@
-name: Elliott Registry Dispatcher (main → Mission-Branch)
+name: Elliott Registry Dispatcher (Zeitplaene → Register auf main)
 
-# WOZU: Das prospektive Elliott-Register (Mission X, Registry 1.1.0) lebt auf dem Branch
-# claude/vision-universe-mission-viii-7hjwma: Code, Ledger, Snapshots und der Workflow
-# elliott-prospective-registry.yml. GitHub fuehrt Zeitplaene nur auf dem Default-Branch aus.
-# Diese Datei ist deshalb der einzige Teil auf main. Sie rechnet nichts, kopiert nichts und
-# startet zu den Registerzeiten genau den Register-Workflow auf dem Mission-Branch
-# (workflow_dispatch mit ref = Mission-Branch). Nach main gelangen dadurch weder Engine,
-# Setup Library, Methodik, Evidenz noch Produktdaten.
+# WOZU: Uebergang. Das prospektive Elliott-Register (Registry 1.1.0) liegt seit der Produktmigration
+# Technical Intelligence v3 auf main (Code, Ledger, Snapshots, elliott-prospective-registry.yml) und misst
+# das Chartbild von main. Bis ein direkter Lauf auf main verifiziert ist, behalten die vier Zeitplaene
+# ihren Platz hier und starten den Register-Workflow auf main. Danach wandern sie in den Register-Workflow
+# und diese Datei entfaellt. Vorher zielte sie auf den Forschungsbranch claude/vision-universe-mission-viii-7hjwma;
+# der registriert nicht mehr (ein Schreiber).
 #
 # Doppelstarts:
 #   * Laeuft oder wartet schon ein Register-Lauf auf dem Branch, wird nicht erneut ausgeloest.
@@ -17,9 +16,8 @@ name: Elliott Registry Dispatcher (main → Mission-Branch)
 # Ein Workflow darf mit dem eingebauten GITHUB_TOKEN workflow_dispatch ausloesen (GitHub-Ausnahme
 # fuer workflow_dispatch und repository_dispatch). Ein persoenlicher Token ist nicht noetig.
 #
-# Offener Architekturpunkt (hier nicht behoben): Auf main nutzt die Elliott-Ansicht des Produkts
-# noch technical-signals-v1 (elliott-v1.0.0-beta). Die Kundenprodukt-Sicht des Registers entspricht
-# dem Chartbild v3 des Mission-Branches.
+# Der fruehere offene Architekturpunkt (main zeigte Elliott V1 aus technical-signals-v1) ist mit der
+# Produktmigration erledigt: Kundenprodukt und Register-Kundensicht sind beide das Chartbild v3 von main.
 
 on:
   schedule:
@@ -48,7 +46,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      TARGET_REF: claude/vision-universe-mission-viii-7hjwma
+      TARGET_REF: main
       TARGET_WORKFLOW: elliott-prospective-registry.yml
       MAX_WEEKS_INPUT: ${{ inputs.max_weeks }}
     steps:
@@ -56,7 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           SHA=$(gh api "repos/$REPO/branches/$TARGET_REF" --jq .commit.sha)
-          echo "Mission-Branch $TARGET_REF auf $SHA"
+          echo "Zielbranch $TARGET_REF auf $SHA"
           gh api "repos/$REPO/contents/.github/workflows/$TARGET_WORKFLOW?ref=$TARGET_REF" --jq .content | base64 -d > "$RUNNER_TEMP/target.yml"
           grep -q '^  workflow_dispatch:' "$RUNNER_TEMP/target.yml" || { echo "::error::$TARGET_WORKFLOW auf $TARGET_REF hat keinen workflow_dispatch"; exit 1; }
           grep -q 'scripts/technical/elliott-registry/register.mjs' "$RUNNER_TEMP/target.yml" || { echo "::error::$TARGET_WORKFLOW auf $TARGET_REF ist nicht der Register-Workflow"; exit 1; }
@@ -73,7 +71,7 @@ jobs:
           echo "busy=$N" >> "$GITHUB_OUTPUT"
           if [ "$N" -gt 0 ]; then echo "::notice::Register-Lauf auf $TARGET_REF laeuft bereits oder wartet ($N) - kein weiterer Start."; fi
 
-      - name: Register-Workflow auf dem Mission-Branch ausloesen
+      - name: Register-Workflow auf dem Zielbranch ausloesen
         if: steps.busy.outputs.busy == '0'
         id: fire
         run: |
