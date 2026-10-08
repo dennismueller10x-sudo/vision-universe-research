@@ -558,19 +558,19 @@
     {
       "id": "qualitaet-zum-preis",
       "title": "QUALITÄT ZUM VERNÜNFTIGEN PREIS",
-      "subtitle": "Mindestens zehn Prozent Nettomarge bei einem Kurs-Gewinn-Verhältnis bis 20.",
-      "sort": "f_pe",
+      "subtitle": "Mindestens zehn Prozent Nettomarge bei einem Kurs-Gewinn-Verhältnis (Geschäftsjahr) bis 20.",
+      "sort": "f_peFy",
       "direction": "asc",
       "limit": 30,
       "filter": "fundQualitaetPreis",
       "require": [
-        "f_pe",
+        "f_peFy",
         "f_netMargin"
       ],
       "minMembers": 5,
       "world": "cashflow",
       "microRange": "1J",
-      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / verwässerter Gewinn je Aktie des Geschäftsjahres) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
     },
     {
       "id": "starke-bilanz-wachstum",

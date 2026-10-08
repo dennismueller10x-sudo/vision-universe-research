@@ -344,7 +344,7 @@
     {
       id: "fGuenstig",
       wenn: function (s) {
-        var pe = fnum(s, "f_pe"), m = fnum(s, "f_netMargin");
+        var pe = fnum(s, "f_peFy"), m = fnum(s, "f_netMargin");
         return pe !== null && pe > 0 && pe <= 20 && m !== null && m >= 0.10;
       },
       satz: function () { return "Profitabel und moderat bewertet"; },

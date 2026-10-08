@@ -41,6 +41,10 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var ENGINE_VERSION = "discover-einordnung-1.0.0";
 
+  /* Basis des KGV im Beleg (M-B1): "(12 Monate)" nur bei verifiziertem
+     TTM-EPS, sonst "(Geschäftsjahr)". */
+  function kgvBasisText(g) { return g && g.kgvBasis === "TTM" ? "(12 Monate) " : g && g.kgvBasis === "FY" ? "(Geschäftsjahr) " : ""; }
+
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
   function K() {
@@ -133,7 +137,7 @@
     var b = g.kgvStatus === "CALCULATED" ? stufeFuer("bewertung", g.kgv) : null;
     zeilen.push(b
       ? { id: "bewertung", label: "Bewertung", wert: b.stufe, ton: b.ton,
-          beleg: "Kurs-Gewinn-Verhältnis " + zahl(g.kgv) }
+          beleg: "Kurs-Gewinn-Verhältnis " + kgvBasisText(g) + zahl(g.kgv) }
       : { id: "bewertung", label: "Bewertung", wert: null, ton: null,
           fehlt: g.kgvStatus === "WITHHELD_REDISTRIBUTION"
             ? "Ohne ausgelieferten Kurs lässt sich die Bewertung nicht berechnen."
@@ -201,7 +205,7 @@
     if (bewertungsStufeDafuer(g)) {
       dafuer.push({ id: "guenstig",
                     text: "Gemessen am Gewinn ist die Aktie günstig bewertet",
-                    beleg: "Kurs-Gewinn-Verhältnis " + zahl(g.kgv) });
+                    beleg: "Kurs-Gewinn-Verhältnis " + kgvBasisText(g) + zahl(g.kgv) });
     }
     if (s.new52WeekHigh) {
       dafuer.push({ id: "hoch", text: "Der Kurs steht auf dem höchsten Stand des Jahres",
@@ -232,7 +236,7 @@
     if (bewertungsStufe && (bewertungsStufe.stufe === "Hoch" ||
                             bewertungsStufe.stufe === "Sehr hoch")) {
       beachten.push({ id: "bewertung", text: "Die Bewertung ist hoch — im Kurs steckt bereits " +
-                      "viel erwartetes Wachstum", beleg: "Kurs-Gewinn-Verhältnis " + zahl(g.kgv) });
+                      "viel erwartetes Wachstum", beleg: "Kurs-Gewinn-Verhältnis " + kgvBasisText(g) + zahl(g.kgv) });
     }
     if (isNum(m.volatility252d) && m.volatility252d >= 0.40) {
       beachten.push({ id: "schwankung", text: "Der Kurs schwankt stark",

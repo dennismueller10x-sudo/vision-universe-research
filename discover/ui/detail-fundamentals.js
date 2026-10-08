@@ -597,6 +597,9 @@
      winzigem Nenner (Nettomarge unter 3 % oder KGV ueber 75) heisst
      "nur eingeschraenkt aussagekraeftig", und die Umsatz-Sicht kommt zuerst. */
   var BEWERTUNG_SANITY = { maxPe: 75, minNetMargin: 0.03 };
+  /* Basis einer Kennzahl im Klartext (M-B1): TTM nur, wo der Wert aus vier
+     gemeldeten Quartalen stammt; sonst Geschaeftsjahr - nie stillschweigend. */
+  function basisText(b) { return b === "TTM" ? "letzte zwölf Monate" : b === "FY" ? "Geschäftsjahr" : (b || "Basis unbekannt"); }
   function bewertung(detail) {
     var f = detail.fundamentals;
     if (!f || !f.available) return null;
@@ -615,32 +618,35 @@
     ]);
     var rel = v.relative, ctx = v.context || {};
     var netMargin = f.latest && f.latest.derived ? f.latest.derived.netMargin : null;
+    /* Verglichen wird auf EINER Basis: KGV des Geschaeftsjahres gegen den
+       Median desselben Masses (v.peFy, ctx.peBasis "FY"). */
+    var peVgl = v.peFy || null;
     var eingeschraenkt = !!(v.pe && (v.pe.value > BEWERTUNG_SANITY.maxPe || (isNum(netMargin) && netMargin < BEWERTUNG_SANITY.minNetMargin)));
     var runde = function (x) { return (Math.round(x * 10) / 10).toFixed(1).replace(".", ","); };
     /* Der Satz zuerst. */
     if (eingeschraenkt) {
       section.appendChild(el("p", { class: "dx-bewertung-satz", "data-stufe": "eingeschraenkt" }, [
         el("b", { text: "Das Kurs-Gewinn-Verhältnis ist derzeit nur eingeschränkt aussagekräftig." }),
-        document.createTextNode(" Bei " + runde(v.pe.value) + " ist der Gewinn sehr klein im Verhältnis zum Kurs" +
+        document.createTextNode(" Bei " + runde(v.pe.value) + " (" + basisText(v.pe.basis) + ") ist der Gewinn sehr klein im Verhältnis zum Kurs" +
           (isNum(netMargin) ? " (Nettomarge " + prozentOhneVz(netMargin) + ")" : "") + " — ein solches Vielfaches misst eher, wie wenig Gewinn übrig bleibt, als wie teuer die Aktie ist." +
           (v.ps && isNum(ctx.psMedian) ? " Aussagekräftiger ist hier das Kurs-Umsatz-Verhältnis: " + runde(v.ps.value) + " gegenüber " + runde(ctx.psMedian) + " im breiten Markt." : ""))
       ]));
-    } else if (rel && rel.label) {
+    } else if (rel && rel.label && peVgl) {
       section.appendChild(el("p", { class: "dx-bewertung-satz", "data-stufe": rel.stufe }, [
         el("b", { text: rel.label + "." }),
-        document.createTextNode(" Die Aktie kostet das " + runde(v.pe.value) + "-Fache des Jahresgewinns; im breiten Markt sind es " + runde(rel.peMedian) + " (Median von " + rel.universeCount.toLocaleString("de-DE") + " Unternehmen mit Gewinn).")
+        document.createTextNode(" Die Aktie kostet das " + runde(peVgl.value) + "-Fache des Gewinns im Geschäftsjahr " + (peVgl.period && peVgl.period.fy ? peVgl.period.fy : "") + "; im breiten Markt sind es " + runde(rel.peMedian) + " (Median von " + rel.universeCount.toLocaleString("de-DE") + " Unternehmen mit Gewinn, ebenfalls Geschäftsjahr).")
       ]));
     } else if (v.peReason) {
       section.appendChild(el("p", { class: "dx-bewertung-satz", text: v.peReason === "SOURCE_MISSING" ? "Kein Kurs-Gewinn-Verhältnis: das Unternehmen schreibt zuletzt keinen Gewinn oder es fehlt der Gewinn je Aktie." : "Kein Kurs-Gewinn-Verhältnis berechenbar." }));
     }
     /* Das Bild: der Titel gegen den Markt, drei Sichten. */
     var sichten = [];
-    if (v.pe && isNum(ctx.peMedian)) sichten.push({ id: "pe", label: "Gewinn", titel: "Kurs-Gewinn-Verhältnis", wert: v.pe.value, markt: ctx.peMedian, fmt: runde,
-      erklaerung: "Das Wievielfache des Jahresgewinns (" + v.pe.basis + ") die Aktie kostet. Höher heißt: mehr Erwartung im Kurs.", eingeschraenkt: eingeschraenkt });
+    if (peVgl && isNum(ctx.peMedian)) sichten.push({ id: "pe", label: "Gewinn", titel: "Kurs-Gewinn-Verhältnis (Geschäftsjahr)", wert: peVgl.value, markt: ctx.peMedian, fmt: runde,
+      erklaerung: "Das Wievielfache des Gewinns im letzten Geschäftsjahr die Aktie kostet. Höher heißt: mehr Erwartung im Kurs.", eingeschraenkt: eingeschraenkt });
     if (v.ps && isNum(ctx.psMedian)) sichten.push({ id: "ps", label: "Umsatz", titel: "Kurs-Umsatz-Verhältnis", wert: v.ps.value, markt: ctx.psMedian, fmt: runde,
-      erklaerung: "Der Marktwert im Verhältnis zum Umsatz (" + v.ps.basis + "). Unabhängig davon, ob gerade Gewinn übrig bleibt." });
+      erklaerung: "Der Marktwert im Verhältnis zum Umsatz (" + basisText(v.ps.basis) + "). Unabhängig davon, ob gerade Gewinn übrig bleibt." });
     if (v.fcfYield) sichten.push({ id: "fcf", label: "Cashflow", titel: "Free-Cashflow-Rendite", wert: v.fcfYield.value, markt: null, fmt: function (x) { return prozentOhneVz(x); },
-      erklaerung: "Wie viel freier Cashflow (" + v.fcfYield.basis + ") je Jahr auf den Marktwert entfällt — wie ein Zins, den das Geschäft selbst erwirtschaftet." });
+      erklaerung: "Wie viel freier Cashflow (" + basisText(v.fcfYield.basis) + ") je Jahr auf den Marktwert entfällt — wie ein Zins, den das Geschäft selbst erwirtschaftet." });
     if (sichten.length) {
       var start = eingeschraenkt && sichten.some(function (s) { return s.id === "ps"; }) ? "ps" : sichten[0].id;
       var tabs = el("div", { class: "dx-journey-tabs dx-bewertung-tabs", role: "tablist", "aria-label": "Bewertungssicht" });
@@ -683,8 +689,9 @@
     var weitere = [
       v.marketCap ? { label: "Marktwert", wert: geld(v.marketCap.value, "USD", stichtag, null, "MARKET_PRICE"),
                       zusatz: "Kurs × " + geld(v.marketCap.shares, "shares") + " Aktien" } : null,
-      v.pe ? { label: "Gewinn je Aktie (" + v.pe.basis + ")",
+      v.pe ? { label: "Gewinn je Aktie, verwässert (" + basisText(v.pe.basis) + ")",
                wert: geld(v.pe.eps, "USD/shares", stichtag, null, "MARKET_PRICE"), zusatz: null } : null,
+      v.pe && v.pe.basis === "TTM" ? { label: "Kurs-Gewinn-Verhältnis (letzte zwölf Monate)", wert: (Math.round(v.pe.value * 10) / 10).toFixed(1).replace(".", ","), zusatz: "aus vier gemeldeten Quartalen" } : null,
       isNum(v.price) ? { label: "Kurs der Rechnung",
                          wert: geld(v.price, "USD/shares", stichtag, null, "MARKET_PRICE"),
                          zusatz: "Stand " + (bewertungsTag || "") } : null
@@ -768,9 +775,9 @@
     if (byId.dilution && (byId.dilution.grade === "Hoch" || byId.dilution.grade === "Moderat")) beachten.push({ id: "f_dilution", text: "Die Aktienanzahl steigt — bestehende Anteile werden verwässert", beleg: byId.dilution.detail });
     if (byId.cashflow && byId.cashflow.grade === "Negativ") beachten.push({ id: "f_fcfneg", text: "Das Unternehmen verbrennt Geld", beleg: byId.cashflow.detail });
     var v = f.valuation;
-    if (v && v.relative && v.relative.stufe === "hoch") beachten.push({ id: "f_val", text: "Die Aktie ist deutlich höher bewertet als der breite Markt", beleg: "KGV " + (Math.round(v.pe.value * 10) / 10).toFixed(1).replace(".", ",") + " gegen Median " + (Math.round(v.relative.peMedian * 10) / 10).toFixed(1).replace(".", ",") });
+    if (v && v.relative && v.relative.stufe === "hoch") beachten.push({ id: "f_val", text: "Die Aktie ist deutlich höher bewertet als der breite Markt", beleg: "KGV (Geschäftsjahr) " + (Math.round(v.peFy.value * 10) / 10).toFixed(1).replace(".", ",") + " gegen Median " + (Math.round(v.relative.peMedian * 10) / 10).toFixed(1).replace(".", ",") });
     if (v && v.relative && v.relative.stufe === "niedrig" && byId.profitability && (byId.profitability.grade === "Stark" || byId.profitability.grade === "Sehr stark"))
-      dafuer.push({ id: "f_valniedrig", text: "Günstiger bewertet als der breite Markt — bei guter Profitabilität", beleg: "KGV " + (Math.round(v.pe.value * 10) / 10).toFixed(1).replace(".", ",") });
+      dafuer.push({ id: "f_valniedrig", text: "Günstiger bewertet als der breite Markt — bei guter Profitabilität", beleg: "KGV (Geschäftsjahr) " + (Math.round(v.peFy.value * 10) / 10).toFixed(1).replace(".", ",") });
     return { dafuer: dafuer, beachten: beachten };
   }
 

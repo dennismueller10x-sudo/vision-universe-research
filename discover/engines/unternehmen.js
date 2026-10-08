@@ -39,7 +39,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "discover-unternehmen-1.0.0";
+  var ENGINE_VERSION = "discover-unternehmen-1.1.0";
 
   /* Warum eine Kennzahl fehlt, ist eine Auskunft - kein leeres Feld. */
   var STATUS = {
@@ -149,7 +149,10 @@
       engineVersion: ENGINE_VERSION,
       quelle: "SEC_CANONICAL",
       status: STATUS.CALCULATED,
+      basis: "TTM",
       zeitraum: { von: umsatz.von, bis: umsatz.bis },
+      umsatz: round(umsatz.wert, 2),
+      gewinn: round(gewinn.wert, 2),
       umsatzTTM: round(umsatz.wert, 2),
       gewinnTTM: round(gewinn.wert, 2),
       einheit: "usd_m",
@@ -157,7 +160,11 @@
       gewinnWachstum: round(wachstum(gewinn.wert, gewinnVor && gewinnVor.wert), 4),
       marge: round(umsatz.wert > 0 ? gewinn.wert / umsatz.wert : null, 4),
       gewinnJeAktie: round(gewinnJeAktie, 4),
+      /* Jahresueberschuss der vier Quartale je ausstehender Aktie: ein
+         TTM-Ergebnis je Aktie, kein gemeldetes EPS - so benannt. */
+      gewinnJeAktieBasis: isNum(gewinnJeAktie) ? "TTM_NET_INCOME_PER_SHARE" : null,
       kgv: round(kgv, 2),
+      kgvBasis: kgvStatus === STATUS.CALCULATED ? "TTM_NET_INCOME_PER_SHARE" : null,
       kgvStatus: kgvStatus,
       dividendenRendite: null,
       dividendenRenditeStatus: STATUS.SOURCE_MISSING,
@@ -180,7 +187,10 @@
       engineVersion: ENGINE_VERSION,
       quelle: "VU_MODEL",
       status: STATUS.CALCULATED,
+      basis: "MODEL",
       zeitraum: { von: null, bis: zeile.asOf || null },
+      umsatz: isNum(zeile.revenue) ? round(zeile.revenue, 2) : null,
+      gewinn: isNum(zeile.netIncome) ? round(zeile.netIncome, 2) : null,
       umsatzTTM: isNum(zeile.revenue) ? round(zeile.revenue, 2) : null,
       gewinnTTM: isNum(zeile.netIncome) ? round(zeile.netIncome, 2) : null,
       einheit: "usd_m",
@@ -256,15 +266,25 @@
     var aktienReihe = a.shares_outstanding && a.shares_outstanding.length ? a.shares_outstanding
                     : (a.diluted_weighted_average_shares || []);
     var aktien = aktienReihe.length ? aktienReihe[aktienReihe.length - 1].v : null;
-    var gewinnJeAktie = (ttm.eps_diluted && isNum(ttm.eps_diluted.v)) ? ttm.eps_diluted.v
-                      : (basis === "FY" && jahr("eps_diluted", latestFy)) ? jahr("eps_diluted", latestFy).v
-                      : (isNum(aktien) && aktien > 0 ? gewinn / aktien : null);
+    /* KGV-SEMANTIK (Migrationsblocker M-B1): PE_TTM = Kurs / verwaessertes
+       TTM-EPS, nur wenn der Kern es als VERIFIED ausweist; PE_FY = Kurs /
+       verwaessertes EPS des letzten Geschaeftsjahres (Gesamt-EPS). Fehlt
+       das TTM-EPS, steht das KGV ausdruecklich als Geschaeftsjahres-KGV da -
+       nie als TTM. Ein aus Jahresueberschuss und Aktienzahl zusammengesetztes
+       EPS gibt es nicht mehr: es vermischte TTM-Ergebnis und Jahresaktien. */
+    var epsTtm = verifiedTtmEps(model);
+    var epsFy = fyEps(model, latestFy);
+    var gewinnJeAktie = null, epsBasis = null;
+    if (epsTtm) { gewinnJeAktie = epsTtm.v; epsBasis = "TTM"; }
+    else if (epsFy) { gewinnJeAktie = epsFy.v; epsBasis = "FY"; }
     var kgv = null, kgvStatus = STATUS.SOURCE_MISSING;
     if (!isNum(opt.preis)) {
       kgvStatus = opt.preisStatus === STATUS.WITHHELD_REDISTRIBUTION ? STATUS.WITHHELD_REDISTRIBUTION : STATUS.SOURCE_MISSING;
     } else if (!isNum(gewinnJeAktie) || gewinnJeAktie <= 0) {
       kgvStatus = STATUS.SOURCE_MISSING;
     } else { kgv = opt.preis / gewinnJeAktie; kgvStatus = STATUS.CALCULATED; }
+    var kgvTtm = epsTtm && isNum(opt.preis) && epsTtm.v > 0 ? opt.preis / epsTtm.v : null;
+    var kgvFy = epsFy && isNum(opt.preis) && epsFy.v > 0 ? opt.preis / epsFy.v : null;
     /* Dividendenrendite: gezahlte Dividende (FY) zu Marktwert (Kurs x Aktien). */
     var divRow = jahr("dividends_paid", latestFy);
     var divRendite = null, divStatus = STATUS.SOURCE_MISSING;
@@ -277,15 +297,27 @@
       status: STATUS.CALCULATED,
       basis: basis,
       zeitraum: zeitraum,
-      umsatzTTM: round(umsatz / M, 2),
-      gewinnTTM: round(gewinn / M, 2),
+      /* umsatz/gewinn tragen die Basis (TTM oder FY) in `basis`;
+         umsatzTTM/gewinnTTM sind NUR gesetzt, wenn die Basis TTM ist. */
+      umsatz: round(umsatz / M, 2),
+      gewinn: round(gewinn / M, 2),
+      umsatzTTM: basis === "TTM" ? round(umsatz / M, 2) : null,
+      gewinnTTM: basis === "TTM" ? round(gewinn / M, 2) : null,
       einheit: "usd_m",
       umsatzWachstum: round(wachstum(umsatz, umsatzVor), 4),
       gewinnWachstum: round(wachstum(gewinn, gewinnVor), 4),
       marge: round(umsatz > 0 ? gewinn / umsatz : null, 4),
       gewinnJeAktie: round(gewinnJeAktie, 4),
+      gewinnJeAktieBasis: epsBasis,
+      epsTtm: epsTtm ? round(epsTtm.v, 4) : null,
+      epsTtmStatus: epsTtm ? "VERIFIED" : "NOT_AVAILABLE",
+      epsFy: epsFy ? round(epsFy.v, 4) : null,
+      epsFyGeschaeftsjahr: epsFy ? epsFy.fy : null,
       kgv: round(kgv, 2),
+      kgvBasis: kgvStatus === STATUS.CALCULATED ? epsBasis : null,
       kgvStatus: kgvStatus,
+      kgvTtm: round(kgvTtm, 2),
+      kgvFy: round(kgvFy, 2),
       dividendenRendite: round(divRendite, 4),
       dividendenRenditeStatus: divStatus,
       asOf: model.asOf || null,
@@ -293,12 +325,33 @@
     };
   }
 
+  /* Verwaessertes TTM-EPS nur mit Pruefsiegel des Kerns (eps.ttmDiluted
+     VERIFIED, ab normalization_logic 1.16.0). Bundles ohne eps-Block
+     summierten ein aus FY minus 9M abgeleitetes Q4: kein TTM. */
+  function verifiedTtmEps(model) {
+    var e = model && model.eps && model.eps.ttmDiluted;
+    return e && e.status === "VERIFIED" && isNum(e.v) ? { v: e.v, end: e.end || null, through: e.through || null } : null;
+  }
+
+  /* Verwaessertes Gesamt-EPS des letzten Geschaeftsjahres. EPS nur
+     fortgefuehrter Bereiche (Kern: class CONTINUING) ist ein anderes Mass. */
+  function fyEps(model, fy) {
+    var reihe = (model.annual && model.annual.eps_diluted) || [];
+    var row = null;
+    for (var i = 0; i < reihe.length; i++) if (reihe[i].fy === fy && isNum(reihe[i].v)) row = reihe[i];
+    if (!row) return null;
+    var core = model.eps && model.eps.fyDiluted;
+    if (core && core.fy === fy && core.class === "CONTINUING") return null;
+    return { v: row.v, fy: fy, end: row.end || null };
+  }
+
   function leer(status, message) {
     return {
       engineVersion: ENGINE_VERSION, quelle: null, status: status,
-      zeitraum: null, umsatzTTM: null, gewinnTTM: null, einheit: null,
+      zeitraum: null, umsatz: null, gewinn: null, umsatzTTM: null, gewinnTTM: null, einheit: null,
       umsatzWachstum: null, gewinnWachstum: null, marge: null,
-      gewinnJeAktie: null, kgv: null, kgvStatus: status,
+      gewinnJeAktie: null, gewinnJeAktieBasis: null, epsTtm: null, epsTtmStatus: "NOT_AVAILABLE", epsFy: null,
+      kgv: null, kgvBasis: null, kgvStatus: status, kgvTtm: null, kgvFy: null,
       dividendenRendite: null, dividendenRenditeStatus: status,
       message: message
     };
@@ -307,7 +360,7 @@
   var api = {
     ENGINE_VERSION: ENGINE_VERSION, STATUS: STATUS,
     ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, ausModellzeile: ausModellzeile, leer: leer,
-    zwoelfMonate: zwoelfMonate, wachstum: wachstum
+    zwoelfMonate: zwoelfMonate, wachstum: wachstum, verifiedTtmEps: verifiedTtmEps, fyEps: fyEps
   };
 
   if (isNode) module.exports = api;

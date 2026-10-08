@@ -1,0 +1,152 @@
+{
+ "schema": "vu-fundamentals-mb1-impact-1.0.0",
+ "method": "Discover-Engines main vs. M-B1 ueber alle 5.072 Consumer-Bundles; Kurs fest 100 (misst Basis und Filter, nicht Niveau); Screener-Spalten wie build-universe.mjs",
+ "bundlesMain": "main (Kern 1.10.0, Registry 1.6.0)",
+ "bundlesV4": "Freeze v4 (Kern 1.19.0, Registry 1.9.0)",
+ "onMainBundles": {
+  "bundles": 5072,
+  "old": {
+   "epsTtmShown": 3394,
+   "epsShownAny": 4279,
+   "epsPositive": 2433,
+   "peBasis": {
+    "card:TTM/epsTTM": 1719,
+    "card:FY/epsFY": 459,
+    "none": 2754,
+    "card:TTM/NI_TTM\u00f7shares": 65,
+    "card:FY/epsTTM": 75
+   },
+   "revTtmLabelled": 4188,
+   "revFyUnderTtm": 1164,
+   "niGrowthTtm": 2336,
+   "niGrowthFyUnderTtm": 586,
+   "revGrowthTtm": 4041,
+   "revGrowthFyUnderTtm": 1070
+  },
+  "new": {
+   "epsTtm": 0,
+   "epsFy": 3903,
+   "epsTtmPositive": 0,
+   "epsFyPositive": 2203,
+   "peBasis": {
+    "FY": 2202,
+    "none": 2870
+   },
+   "revTtm": 3024,
+   "niGrowthTtm": 1750,
+   "revGrowthTtm": 2971
+  },
+  "flips": {
+   "epsPositiveLost": 2433,
+   "epsPositiveGained": 0
+  },
+  "pePresets": {
+   "old": {
+    "lt15": 536,
+    "lt25": 844,
+    "b15_30": 437
+   },
+   "newTtm": {
+    "lt15": 0,
+    "lt25": 0,
+    "b15_30": 0
+   },
+   "newFy": {
+    "lt15": 453,
+    "lt25": 740,
+    "b15_30": 405
+   }
+  },
+  "fyUnderTtmOld": 885
+ },
+ "onV4Bundles": {
+  "bundles": 5072,
+  "old": {
+   "epsTtmShown": 138,
+   "epsShownAny": 3949,
+   "epsPositive": 2218,
+   "peBasis": {
+    "card:TTM/NI_TTM\u00f7shares": 1553,
+    "card:FY/epsFY": 666,
+    "none": 2767,
+    "card:TTM/epsTTM": 78,
+    "card:FY/epsTTM": 8
+   },
+   "revTtmLabelled": 4186,
+   "revFyUnderTtm": 1181,
+   "niGrowthTtm": 2346,
+   "niGrowthFyUnderTtm": 738,
+   "revGrowthTtm": 4044,
+   "revGrowthFyUnderTtm": 1311
+  },
+  "new": {
+   "epsTtm": 138,
+   "epsFy": 3876,
+   "epsTtmPositive": 103,
+   "epsFyPositive": 2181,
+   "peBasis": {
+    "FY": 2091,
+    "none": 2895,
+    "TTM": 86
+   },
+   "revTtm": 3005,
+   "niGrowthTtm": 1608,
+   "revGrowthTtm": 2733
+  },
+  "flips": {
+   "epsPositiveLost": 2115,
+   "epsPositiveGained": 0
+  },
+  "pePresets": {
+   "old": {
+    "lt15": 534,
+    "lt25": 830,
+    "b15_30": 434
+   },
+   "newTtm": {
+    "lt15": 25,
+    "lt25": 35,
+    "b15_30": 19
+   },
+   "newFy": {
+    "lt15": 448,
+    "lt25": 735,
+    "b15_30": 406
+   }
+  },
+  "fyUnderTtmOld": 3811
+ },
+ "screenerCoverageMainBundles": {
+  "mainCode": {
+   "eps": 3751,
+   "epsFy": null,
+   "pe": 1981,
+   "peFy": null,
+   "peg": 810,
+   "revenue": 3746,
+   "revGrowth": 3869,
+   "niGrowthTtm": 2366,
+   "ps": 3265,
+   "fcfYield": 3463,
+   "fcf": 3432,
+   "evEbitda": 928,
+   "evSales": 1410
+  },
+  "mb1": {
+   "eps": 0,
+   "epsFy": 3370,
+   "pe": 0,
+   "peFy": 1897,
+   "peg": 825,
+   "revenue": 2982,
+   "revGrowth": 2944,
+   "niGrowthTtm": 1756,
+   "ps": 2825,
+   "fcfYield": 2647,
+   "fcf": 2782,
+   "evEbitda": 860,
+   "evSales": 1249
+  },
+  "titles": 5700
+ }
+}

@@ -696,17 +696,18 @@
       return section;
     }
     var zahlen = [
-      { label: g.basis === "FY" ? "Umsatz (Geschäftsjahr)" : "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
+      { label: g.basis === "FY" ? "Umsatz (Geschäftsjahr)" : "Umsatz (12 Monate)", wert: geld(isNum(g.umsatz) ? g.umsatz : g.umsatzTTM),
         zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.umsatzWachstum) },
-      { label: g.basis === "FY" ? "Gewinn (Geschäftsjahr)" : "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
+      { label: g.basis === "FY" ? "Gewinn (Geschäftsjahr)" : "Gewinn (12 Monate)", wert: geld(isNum(g.gewinn) ? g.gewinn : g.gewinnTTM),
         zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.gewinnWachstum) },
       { label: "Vom Umsatz bleibt als Gewinn", wert: isNum(g.marge) ? K.prozent(g.marge, false) : "–",
         zusatz: null, ton: null },
       g.kgvStatus === "CALCULATED"
-        ? { label: "Kurs-Gewinn-Verhältnis", wert: String(Math.round(g.kgv * 10) / 10).replace(".", ","),
-            zusatz: "Das Wievielfache des Jahresgewinns die Aktie kostet", ton: null }
+        ? { label: g.kgvBasis === "TTM" ? "Kurs-Gewinn-Verhältnis (12 Monate)" : g.kgvBasis === "FY" ? "Kurs-Gewinn-Verhältnis (Geschäftsjahr)" : "Kurs-Gewinn-Verhältnis",
+            wert: String(Math.round(g.kgv * 10) / 10).replace(".", ","),
+            zusatz: g.kgvBasis === "TTM" ? "Das Wievielfache des Gewinns je Aktie der letzten zwölf Monate" : "Das Wievielfache des Gewinns je Aktie im letzten Geschäftsjahr", ton: null }
         : null,
       isNum(g.dividendenRendite)
         ? { label: "Dividendenrendite", wert: K.prozent(g.dividendenRendite, false),

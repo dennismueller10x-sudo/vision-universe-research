@@ -166,7 +166,7 @@
     momentum: [['perf6m', 1], ['perf1y', 1], ['relativeStrengthPct', 1], ['distance52wHigh', 1]],
     growth: [['revenueGrowth', 1], ['revenueCagr3', 1], ['epsGrowth', 1]],
     quality: [['grossMargin', 1], ['fcfMargin', 1], ['roe', 1], ['roic', 1]],
-    value: [['pe', -1], ['ps', -1], ['evEbitda', -1], ['fcfYield', 1]]
+    value: [['peFy', -1], ['ps', -1], ['evEbitda', -1], ['fcfYield', 1]]
   };
   var FAMILY_LABELS = { momentum: 'Momentum', growth: 'Wachstum', quality: 'Qualität', value: 'Bewertung' };
 
