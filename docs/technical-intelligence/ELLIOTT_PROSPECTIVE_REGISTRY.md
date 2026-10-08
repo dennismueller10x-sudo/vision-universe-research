@@ -36,6 +36,13 @@ Alle historischen Wochendaten sind verbraucht. Ob ein Setup der Library V1 echte
 * Bestand: Der erste Lauf mit Produktsicht markiert seine Produkt-Ereignisse als `initialStock` (`productView.initialStockRun`).
 * Bestehende Einträge (Version 1.0.0) bleiben unverändert. Die Kette läuft über beide Versionen weiter.
 
+## Projektionsthese (ab Registry 1.2.0)
+
+* Neue `CUSTOMER_PRODUCT`-Ereignisse tragen zusätzlich `projectionThesis` (Elliott Projection Engine `elliott-projection-1.0.0`, siehe [ELLIOTT_PROJECTION_ENGINE.md](ELLIOTT_PROJECTION_ENGINE.md)) und `projectionEngine`; der RUN-Eintrag nennt `code.projection`.
+* Eingabe ist dieselbe veröffentlichte Form `pro.elliott` wie im Produkt; die Relative Stärke ist der RS26-Rang des Registerlaufs.
+* Zusätzliche Revisionsarten nur für Ereignisse mit Projektionsthese: `PROJECTION_BASE_REACHED`, `PROJECTION_EXTENDED_REACHED`, `PROJECTION_EXTREME_REACHED`, `PROJECTION_INVALIDATED`.
+* Frühere Ereignisse und Revisionen bleiben unverändert; Kohorten, Setup-Library und Auswertung sind unverändert.
+
 ## Ablauf je Lauf (eine abgeschlossene ISO-Woche)
 
 1. **Woche W\*:**

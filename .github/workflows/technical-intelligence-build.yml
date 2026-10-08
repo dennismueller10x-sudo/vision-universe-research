@@ -61,7 +61,7 @@ jobs:
           set -euo pipefail
           FP=$(for p in quant/data/market/discover-series-long quant/data/market/golden-preview/daily \
                         quant/data/market/index-membership \
-                        quant/engines/technical/ti quant/engines/technical/elliott \
+                        quant/engines/technical/ti quant/engines/technical/elliott quant/engines/technical/projection \
                         quant/engines/technical/feature-store.js quant/engines/technical/pivot-engine.js \
                         quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js \
                         scripts/technical/lib scripts/technical/build-technical-intelligence.mjs \

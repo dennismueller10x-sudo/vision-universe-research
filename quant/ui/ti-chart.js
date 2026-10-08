@@ -11,6 +11,10 @@
      • bei unklarer Struktur: breiterer, blasserer Korridor statt Fehler
      • Wellenmarken als antippbare Punkte (oeffnen den Wellen-Inspektor)
      • Zeitreise: nur Bars bis zum gewaehlten Tag (Rest ausgegraut)
+     • Elliott-Projektion (o.projection): Basis / Erweitert / Extrem als
+       zurueckhaltende Baender rechts von heute (abnehmende Betonung),
+       Bestaetigungs- und Ungueltig-Linie, struktureller Pfad ohne Zeitachse;
+       optional logarithmische Preisachse (o.logScale) fuer grosse Spannen
    SVG statt Canvas: scharf, druckbar, fuer Screenreader beschreibbar.
    Farbe ist nie die einzige Information: jede Zone traegt ein Textlabel,
    die Ungueltig-Linie ist gestrichelt.
@@ -70,7 +74,8 @@
     var step = histW / nb;
     function x(k) { return x0 + step * (k + 0.5); }
     var xNow = x(cut) + step * 0.5;
-    var v = viewOf(o);
+    var PJ = o.projection || null;
+    var v = PJ ? { kind: "PROJECTION", entry: null, targets: [], range: [], invalidation: null, path: null } : viewOf(o);
     /* ---------------------------------------------------------- y-Domain */
     var vals = [];
     for (var i = 0; i < nb; i++) vals.push(hi[i], lo[i]);
@@ -79,24 +84,28 @@
     function add(z) { if (z && isNum(z.low)) extra.push(z.low, z.high); }
     add(v.entry); v.targets.slice(0, 2).forEach(add); v.range.forEach(add);
     if (v.invalidation) extra.push(v.invalidation.price);
-    var lim = { lo: dataMin - span * 1.0, hi: dataMax + span * 1.0 }, offChart = [];
+    if (PJ) { PJ.zones.forEach(add); [PJ.invalidation, PJ.confirmation].forEach(function (l) { if (l && isNum(l.price)) extra.push(l.price); }); }
+    var LOG = !!(PJ && o.logScale) && dataMin > 0;
+    var lim = LOG ? { lo: 1e-12, hi: Infinity } : { lo: dataMin - span * (PJ ? 2.5 : 1.0), hi: dataMax + span * (PJ ? 2.5 : 1.0) }, offChart = [];
     extra.forEach(function (e) { if (e < lim.lo || e > lim.hi) offChart.push(e); });
     var inn = extra.filter(function (e) { return e >= lim.lo && e <= lim.hi; });
     var yMin = Math.min.apply(null, [dataMin].concat(inn)), yMax = Math.max.apply(null, [dataMax].concat(inn));
-    var pad = (yMax - yMin) * 0.07; yMin -= pad; yMax += pad;
-    function y(val) { return padT + (yMax - val) / (yMax - yMin) * plotH; }
+    var pad = (yMax - yMin) * 0.07;
+    if (LOG) { var lp = (Math.log(yMax) - Math.log(yMin)) * 0.06; yMin = Math.exp(Math.log(yMin) - lp); yMax = Math.exp(Math.log(yMax) + lp); }
+    else { yMin -= pad; yMax += pad; if (PJ && yMin < 0 && dataMin > 0) yMin = 0; }
+    function y(val) { return LOG ? padT + (Math.log(yMax) - Math.log(Math.max(val, yMin * 1e-3))) / (Math.log(yMax) - Math.log(yMin)) * plotH : padT + (yMax - val) / (yMax - yMin) * plotH; }
     function clampY(val) { return Math.max(padT, Math.min(padT + plotH, y(val))); }
 
     var root = svg("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", class: "ti-chart" + (o.uncertain ? " is-uncertain" : ""), role: "img", "aria-labelledby": "ti-chart-title ti-chart-desc", preserveAspectRatio: "xMidYMid meet" });
     root.appendChild(svg("title", { id: "ti-chart-title" }, [o.title || "Chartbild"]));
-    root.appendChild(svg("desc", { id: "ti-chart-desc" }, [describe(v, o.uncertain)]));
+    root.appendChild(svg("desc", { id: "ti-chart-desc" }, [PJ ? describeProjection(PJ) : describe(v, o.uncertain)]));
     var defs = svg("defs", {});
     defs.appendChild(svg("linearGradient", { id: "ti-area", x1: "0", y1: "0", x2: "0", y2: "1" }, [svg("stop", { offset: "0%", class: "ti-area-top" }), svg("stop", { offset: "100%", class: "ti-area-bottom" })]));
     defs.appendChild(svg("linearGradient", { id: "ti-corr", x1: "0", y1: "0", x2: "1", y2: "0" }, [svg("stop", { offset: "0%", class: "ti-corr-a" }), svg("stop", { offset: "100%", class: "ti-corr-b" })]));
     root.appendChild(defs);
     /* ---------------------------------------------------------- Gitter */
     var grid = svg("g", { class: "ti-grid" });
-    niceTicks(yMin, yMax, H < 320 ? 4 : 5).forEach(function (t) { grid.appendChild(svg("line", { x1: x0, x2: xEnd, y1: y(t), y2: y(t) })); grid.appendChild(svg("text", { x: xEnd + 6, y: y(t) + 4, class: "ti-axis" }, [fmt(t)])); });
+    (LOG ? logTicks(yMin, yMax, H < 320 ? 4 : 6) : niceTicks(yMin, yMax, H < 320 ? 4 : 5)).forEach(function (t) { grid.appendChild(svg("line", { x1: x0, x2: xEnd, y1: y(t), y2: y(t) })); grid.appendChild(svg("text", { x: xEnd + 6, y: y(t) + 4, class: "ti-axis" }, [fmt(t)])); });
     var lastLabel = -999, weekly = c.timeframe === "1W" || nb > 400;
     for (var k = 1; k < nb; k++) {
       var newP = weekly ? ts[k].slice(0, 4) !== ts[k - 1].slice(0, 4) : ts[k].slice(5, 7) !== ts[k - 1].slice(5, 7);
@@ -107,7 +116,7 @@
     root.appendChild(grid);
     /* ---------------------------------------------------------- Szenario-Raum */
     root.appendChild(svg("rect", { x: xNow, y: padT, width: Math.max(0, xEnd - xNow), height: plotH, class: "ti-proj-bg" }));
-    root.appendChild(svg("text", { x: xNow + 8, y: padT + plotH - 8, class: "ti-proj-label" }, [narrow ? "Szenario" : "Szenario · keine Zeitangabe"]));
+    root.appendChild(svg("text", { x: xNow + 8, y: padT + plotH - 8, class: "ti-proj-label" }, [PJ ? (narrow ? "Projektion" : "Projektion · keine Zeitangabe" + (LOG ? " · log" : "")) : narrow ? "Szenario" : "Szenario · keine Zeitangabe"]));
     /* ---------------------------------------------------------- Zonen */
     var zoneStart = Math.max(x0, xNow - histW * 0.2);
     function band(z, cls, label) {
@@ -126,6 +135,30 @@
       ig.appendChild(svg("line", { x1: x0, x2: xEnd, y1: iy, y2: iy }));
       if (o.labels !== false) ig.appendChild(svg("text", { x: xEnd - 8, y: iy + (v.invalidation.direction === "below" ? 15 : -7), "text-anchor": "end", class: "ti-invalid-label" }, ["Ungültig " + (v.invalidation.direction === "below" ? "unter " : "über ") + fmt(v.invalidation.price)]));
       root.appendChild(ig);
+    }
+    /* ---------------------------------------------------------- Elliott-Projektion */
+    if (PJ) {
+      var pg = svg("g", { class: "ti-pj" + (PJ.tone === "alt" ? " is-alt" : "") }), px0 = xNow + 4, pw = Math.max(20, xEnd - px0 - 2);
+      var TL = { BASE: narrow ? "Basis" : "Basis", EXTENDED: narrow ? "Erw." : "Erweitert", EXTREME: narrow ? "Extrem" : "Extrem" };
+      PJ.zones.forEach(function (z, q) {
+        if (!isNum(z.low) || !isNum(z.high)) return;
+        var y1 = clampY(z.high), y2 = clampY(z.low), off = (z.high < yMin || z.low > yMax);
+        if (off) return;
+        var g4 = svg("g", { class: "ti-pz ti-pz-" + z.tier.toLowerCase() + (z.passed ? " is-passed" : "") });
+        g4.appendChild(svg("rect", { x: px0 + q * 6, y: y1, width: Math.max(8, pw - q * 6), height: Math.max(3, y2 - y1), rx: 4 }));
+        if (o.labels !== false) g4.appendChild(svg("text", { x: xEnd - 6, y: Math.max(padT + 11, Math.min(padT + plotH - 4, (y1 + y2) / 2 + 4)), "text-anchor": "end", class: "ti-pz-label" }, [TL[z.tier] + (narrow ? "" : " " + fmt(z.dLow) + "–" + fmt(z.dHigh))]));
+        pg.appendChild(g4);
+      });
+      function hline(l, cls, text, below) {
+        if (!l || !isNum(l.price) || l.price < yMin || l.price > yMax) return;
+        var ly0 = y(l.price), g5 = svg("g", { class: cls });
+        g5.appendChild(svg("line", { x1: x0, x2: xEnd, y1: ly0, y2: ly0 }));
+        if (o.labels !== false) g5.appendChild(svg("text", { x: x0 + 6, y: ly0 + (below ? 14 : -6), class: cls + "-label" }, [text]));
+        pg.appendChild(g5);
+      }
+      hline(PJ.confirmation, "ti-pj-conf", "Bestätigung " + (PJ.direction === "DOWN" ? "unter " : "über ") + fmt(PJ.confirmation && PJ.confirmation.price), PJ.direction === "DOWN");
+      hline(PJ.invalidation, "ti-invalid", "Ungültig " + (PJ.invalidation && PJ.invalidation.direction === "below" ? "unter " : "über ") + fmt(PJ.invalidation && PJ.invalidation.price), PJ.invalidation && PJ.invalidation.direction === "below");
+      root.appendChild(pg);
     }
     /* ---------------------------------------------------------- Kurs */
     var price = svg("g", { class: "ti-price" });
@@ -168,6 +201,15 @@
       gp.appendChild(svg("path", { d: smooth(P), class: "ti-path-line" }));
       P.slice(1).forEach(function (p) { gp.appendChild(svg("circle", { cx: p.x, cy: p.y, r: 3.2, class: "ti-path-dot" })); });
       root.appendChild(gp);
+    }
+    if (PJ && PJ.zones.length && o.showPath !== false) {
+      var wQ = xEnd - xNow, pp = [{ x: x(cut), y: ly }];
+      /* Pfad nur zu noch offenen Zonen (bereits erreichte bleiben als blasse Baender sichtbar) */
+      PJ.zones.forEach(function (z, q) { var m = Math.sqrt(z.low * z.high); if (!z.passed && m >= yMin && m <= yMax) pp.push({ x: xNow + wQ * (0.22 + 0.62 * (q + 1) / PJ.zones.length), y: y(m), tier: z.tier }); });
+      var pgp = svg("g", { class: "ti-pj-path" });
+      for (var q5 = 1; q5 < pp.length; q5++) pgp.appendChild(svg("path", { d: "M" + pp[q5 - 1].x.toFixed(1) + " " + pp[q5 - 1].y.toFixed(1) + "L" + pp[q5].x.toFixed(1) + " " + pp[q5].y.toFixed(1), class: "ti-pj-seg ti-pj-seg-" + String(pp[q5].tier).toLowerCase() }));
+      pp.slice(1).forEach(function (p) { pgp.appendChild(svg("circle", { cx: p.x, cy: p.y, r: 3, class: "ti-pj-dot ti-pj-dot-" + String(p.tier).toLowerCase() })); });
+      root.appendChild(pgp);
     }
     /* ---------------------------------------------------------- Wellenmarken */
     if (o.waves && o.waves.length) {
@@ -241,6 +283,14 @@
     return out;
   }
 
+  /** Logarithmische Achse: 1-2-5-Raster je Dekade, ausgeduennt auf hoechstens n Marken. */
+  function logTicks(a, b, n) {
+    var out = [];
+    for (var e = Math.floor(Math.log10(a)); e <= Math.ceil(Math.log10(b)); e++) [1, 2, 5].forEach(function (m) { var t = m * Math.pow(10, e); if (t >= a && t <= b) out.push(Math.round(t * 1e6) / 1e6); });
+    while (out.length > n) out = out.filter(function (_, i) { return i % 2 === 0; });
+    return out.length ? out : niceTicks(a, b, n);
+  }
+
   /** Textfassung fuer Screenreader. */
   function describe(v, uncertain) {
     if (!v || (!v.entry && !v.targets.length && !v.range.length)) return "Kursverlauf ohne Szenario.";
@@ -251,5 +301,10 @@
     return "Kursverlauf mit Szenario. " + t.join(", ") + ". Der Bereich rechts von heute zeigt ein Szenario ohne Zeitangabe" + (uncertain ? "; die Struktur ist derzeit unklar, deshalb ist der Korridor breiter" : "") + ".";
   }
 
-  global.VUTIChart = { render: render, describe: function (s) { return describe(viewOf({ scenario: s })); }, niceTicks: niceTicks, smooth: smooth, viewOf: viewOf };
+  function describeProjection(P) {
+    var t = (P.zones || []).map(function (z) { return ({ BASE: "Basis", EXTENDED: "Erweitert", EXTREME: "Extrem" }[z.tier] || z.tier) + " " + fmt(z.dLow) + " bis " + fmt(z.dHigh); });
+    if (P.invalidation) t.push("ungültig " + (P.invalidation.direction === "below" ? "unter " : "über ") + fmt(P.invalidation.price));
+    return "Kursverlauf mit Elliott-Projektion (keine Zeitangabe, keine Wahrscheinlichkeit). " + t.join(", ") + ".";
+  }
+  global.VUTIChart = { render: render, describe: function (s) { return describe(viewOf({ scenario: s })); }, niceTicks: niceTicks, logTicks: logTicks, smooth: smooth, viewOf: viewOf };
 })(typeof window !== "undefined" ? window : globalThis);

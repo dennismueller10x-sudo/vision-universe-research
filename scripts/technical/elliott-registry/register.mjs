@@ -37,12 +37,13 @@ import * as Core from "../hsab/lib/replay-core.mjs";
 import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 import { classify, researchInternalWave3, SPEC_SHA256, LIBRARY_VERSION, SPEC } from "../elliott-setups/setup-library.mjs";
 import { readLedger, append, verifyChain, eventId, LEDGER_VERSION } from "./ledger.mjs";
+import { Projection, registryProjection, PROJECTION_VERSION } from "../lib/ti-projection.mjs";
 import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
 
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const SC = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
-export const REGISTRY_VERSION = "elliott-registry-1.1.0";
+export const REGISTRY_VERSION = "elliott-registry-1.2.0";   // 1.2.0: Projektionsthese (elliott-projection-1.0.0) an neuen Kundenprodukt-Ereignissen, Revisionen PROJECTION_*
 export const VIEWS = Object.freeze({ STATELESS: "STATELESS_ENGINE", PRODUCT: "CUSTOMER_PRODUCT" });
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -87,7 +88,7 @@ function productRow(sym, used, ticker, F, W) {
   const r = productElliottAt(sym, used, ticker, F, W.ctx, W.pub);
   if (r.skip) return { skip: r.skip, tf: r.tf };
   return { ...r.view, tfRule: r.tfRule, E: r.E && r.E.primary ? { primary: r.E.primary, alternatives: (r.E.alternatives || []).slice(0, 1), applicability: r.E.applicability,
-           higherDegree: r.E.higherDegree ? { current: r.E.higherDegree.current, pattern: r.E.higherDegree.pattern } : null } : null, px: r.px, atr: r4(r.atr) };
+           higherDegree: r.E.higherDegree ? { current: r.E.higherDegree.current, pattern: r.E.higherDegree.pattern } : null } : null, px: r.px, atr: r4(r.atr), projIn: r.projIn || null };
 }
 
 /* Stimmen die frisch gebauten Wochenschluesse mit den Eingangsdaten des veroeffentlichten Produkts ueberein?
@@ -157,10 +158,28 @@ export function revisionsFor(ev, closes, dates, currentKey, already) {
   return out;
 }
 
+/* Registry 1.2.0: Revisionen der eingefrorenen Projektionsthese (nur Ereignisse, die eine tragen; aeltere Eintraege bleiben unberuehrt).
+   Gleiche Kursbasis wie revisionsFor (Wochenschluesse nach der Registrierung). */
+export function projectionRevisionsFor(ev, closes, dates, already) {
+  const th = ev.payload.projectionThesis && ev.payload.projectionThesis.thesis, out = [];
+  if (!th || !th.zones || !th.zones.length) return out;
+  const s = th.direction === "UP" ? 1 : -1, has = (t) => already.has(t), inv = th.invalidation;
+  for (let j = 0; j < closes.length; j++) {
+    const c = closes[j], d = dates[j]; if (d <= ev.payload.registeredBarDate) continue;
+    if (inv && isNum(inv.price) && !has("PROJECTION_INVALIDATED") && (inv.direction === "below" ? c < inv.price : c > inv.price)) { out.push({ type: "PROJECTION_INVALIDATED", barDate: d, close: c }); already.add("PROJECTION_INVALIDATED"); break; }
+    for (const z of th.zones) {
+      const t = "PROJECTION_" + z.tier + "_REACHED";
+      if (z.state !== "OPEN" || has(t) || has("PROJECTION_INVALIDATED")) continue;
+      if (s > 0 ? c >= z.low : c <= z.high) { out.push({ type: t, barDate: d, close: c }); already.add(t); }
+    }
+  }
+  return out;
+}
+
 function codeVersion() {
   let commit = process.env.GITHUB_SHA || null; try { if (!commit) commit = execSync("git rev-parse HEAD", { cwd: ROOT }).toString().trim(); } catch { /* ohne Git */ }
   return { commit, registry: REGISTRY_VERSION, ledger: LEDGER_VERSION, library: LIBRARY_VERSION, setupSpecSha256: SPEC_SHA256, setupVersion: SPEC.setupVersion,
-           engine: { elliott: EV3.ENGINE_VERSION, scenario: SC.ENGINE_VERSION } };
+           engine: { elliott: EV3.ENGINE_VERSION, scenario: SC.ENGINE_VERSION }, projection: PROJECTION_VERSION };
 }
 
 /** Registriert eine Woche (o.week) oder holt fehlende Wochen nach (hoechstens o.maxWeeks, aelteste zuerst). */
@@ -260,7 +279,8 @@ async function registerWeek(o, F) {
           setupType: S.setupId, setupVersion: S.setupVersion, dir: S.dir, pattern: S.pattern, wave: S.wave,
           persistenceKey: S.persistenceKey, degree: S.degree, applicability: S.applicability, displayed: S.displayed, primaryCount: { pattern: r.pv.E.primary.pattern, complete: r.pv.E.primary.complete, currentWave: r.pv.E.primary.currentWave, direction: r.pv.E.primary.direction, nextMove: r.pv.E.primary.nextMove,
             waves: (r.pv.E.primary.waves || []).map((w) => ({ label: w.label, fromTime: w.fromTime, toTime: w.toTime, fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status })) },
-          alternative: S.alternative, higherDegree: r.pv.E.higherDegree, levels: S.levels, projection: S.projection, geometry: S.geometry, confirmations: S.confirmations, variants: S.variants, setupStatus: "OPEN" };
+          alternative: S.alternative, higherDegree: r.pv.E.higherDegree, levels: S.levels, projection: S.projection, geometry: S.geometry, confirmations: S.confirmations, variants: S.variants, setupStatus: "OPEN",
+          ...(r.pv.projIn ? { projectionThesis: registryProjection(Projection.build(r.pv.projIn.E, { ...r.pv.projIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null })), projectionEngine: PROJECTION_VERSION } : {}) };
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }
     if (r.rw3 && r.rw3.qualifies) {
@@ -287,7 +307,7 @@ async function registerWeek(o, F) {
     const curKey = ev.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3" ? undefined
       : ev.payload.view === VIEWS.PRODUCT ? (cur && cur.pv && !cur.pv.skip ? cur.pv.key : undefined)
       : cur && cur.ew ? cur.ew.key : undefined;
-    const rv = revisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), curKey, done);
+    const rv = revisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), curKey, done).concat(projectionRevisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), done));
     if (pts.length >= TRACK_WEEKS && !done.has("INVALIDATED")) rv.push({ type: "EXPIRED", barDate: pts[pts.length - 1][0], note: "Beobachtung nach 156 Wochen beendet" });
     for (const v of rv) entries.push({ type: "REVISION", id: eventId({ ref: ev.id, ...v }), ref: ev.id, week: F, recordedAt, payload: { ...v, eventSetupType: ev.payload.setupType, symbol: ev.payload.symbol } });
   }
