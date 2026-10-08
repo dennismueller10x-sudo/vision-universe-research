@@ -163,3 +163,48 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 | F9 | Quant-SEC-Kern | Umsatz-Abschlusszeile je Einreichung aus dem Presentation-Linkbase statt Schwelle (M-B4) |
 | F10 | Quant-SEC-Kern | Konzeptmenge in der Provenienz abgeleiteter Werte; TTM- und Jahressummen über gemischte Konzepte kennzeichnen oder verweigern (Red Team F5) |
 | F8 | Quant-Werkzeug | `cli.py consumer --out` schreibt `consumer_coverage.json` trotzdem nach `quant/data/sec/` (Test-Isolation) |
+
+## Migrationsplan nach M-B1/M-B5/M-B6 (Stand 2026-10-08)
+
+**Status:**
+- **#481:** BLOCKED. Der TTM-Holdout v2 ist FAIL (`artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json`); offen sind F-TTM-2 und F-TTM-3.
+- **Freeze v5:** keiner.
+- **Voraussetzung für Schritt 4 ff.:** ein bestandener, neu präregistrierter Holdout nach Behebung von F-TTM-2/F-TTM-3.
+
+| # | Schritt | Abhängigkeit | Prüfung |
+|---|---|---|---|
+| 1 | #504 (M-B1) nach main | keine; alte Bundles gelten als unverifiziert | Discover-CI (verify + Reproduzierbarkeit), Screener, Frontend-Budget, Startseite (KGV (GJ)) |
+| 2 | Ein Datenlauf auf main mit #504 | 1 | 0 FY-Werte unter TTM-Namen; EPS GJ ≈ 3.900; Startseite gefüllt |
+| 3 | F-TTM-2/F-TTM-3 beheben (eigener Kern-PR auf #481), neuer ungesehener Holdout | – | präregistriert, alle Gates PASS |
+| 4 | Freeze v5 schreiben | 3 | `freeze.mjs --check` grün |
+| 5 | #510 (M-B6) in #505 mergen | 4 | Evidence-Tests, Python-Suite |
+| 6 | #505 (M-B5) in #481 mergen | 5 | PIT-Tests, Budget-Test PIT-Speicher |
+| 7 | main in #481 mergen (bringt #504) | 1, 6 | alle Suiten; Rest = die 4 bekannten Basisfehler |
+| 8 | Freigabe #481 durch den Owner (READY_FOR_CONTROLLED_MIGRATION) | 7 | – |
+| 9 | #481 nach main | 8 | – |
+| 10 | Sofort `sec-consumer-fundamentals` auf main per Dispatch | 9 | Belegstufe complete=true; `revenueEvidence.check=COMPATIBLE`, 0 fehlend; `consumer-pit` 5.072 Dokumente |
+| 11 | `product-intelligence-materialization` auf main | 10 | Pattern-Studie 1.0.1 (~61 Urteilswechsel erwartet); Faktor-Evidenz-Rangkorrelation gegen `quantRankImpact` |
+| 12 | Beobachtung über zwei Wochenläufe, dann Blocker schließen | 11 | system-health, data-quality, `/status/` |
+
+Die Materialisierung bricht zwischen Schritt 9 und 10 gewollt ab, solange `consumer-pit` fehlt. Deshalb folgt Schritt 10 unmittelbar.
+
+### Rollback-Kriterien (eines genügt)
+
+1. **Vertragsfehler** in einem planmäßigen Lauf:
+   - `PIT_CONTRACT`, `VIEW_CONTRACT` oder `REVENUE_EVIDENCE_*`;
+   - ausgenommen ist ein einmaliger vorübergehender SEC-Fehler mit `pending`.
+2. **Abdeckungsanomalie:** mehr als 5 % unter der Impact-Vorhersage, also
+   - `secAvailable` < 4.800,
+   - Umsatz (Screener) < 2.830,
+   - EPS GJ < 3.700.
+3. **Falsches Label:** irgendein FY-Wert unter einem TTM-Namen (Hard-Gate-Test oder Stichprobe).
+4. **PIT/LATEST-Verletzung:** ein historischer Leser liest `quant/data/sec/consumer` oder einen LATEST-Wert.
+5. **Gescheiterter Datenbau** in zwei Läufen in Folge, oder zweimal `complete=false`.
+6. **Unerklärte Rangverschiebung:** Spearman einer Faktor-Rangfolge mehr als 0,02 unter `quantRankImpact`, oder mehr als doppelt so viele Rangsprünge > 10 Punkte.
+7. **Beschädigtes Artefakt:** JSON-, Schema- oder Budgetfehler, `data-quality` rot.
+
+**Vorgehen:**
+- Revert-PR des Merge-Commits auf main.
+- Revert des Datencommits.
+- Der Belegstore 2.0.0 ist für alten Code lesbar, weil der alte Code nur `decisions` liest.
+- `consumer-pit` wird von altem Code nicht gelesen und darf liegen bleiben.
