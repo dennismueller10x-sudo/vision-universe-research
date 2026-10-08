@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 // PR checkout is GitHub's synthetic merge, including independent main data
 // updates. Its trusted event base is the correct unchanged production control.
 const event=process.env.GITHUB_EVENT_NAME==='pull_request'&&process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):null;
-const baseline=event?.pull_request?.base?.sha||'eec8dceb176f8a84d635a9dfc36ff3c8ae1e1e92';
+const baseline=event?.pull_request?.base?.sha||'68f1854c4f769aa21f6ec38d1a539080295f2c0a';
 if(!/^[a-f0-9]{40}$/.test(baseline))throw Error('EXACT_PRODUCTION_BASE_SHA_REQUIRED');
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
 const protectedPaths=['quant','discover','supertrader','screener','providers','scripts/market','scripts/quant'];
