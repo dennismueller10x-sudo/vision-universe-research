@@ -57,9 +57,9 @@ def project(payload):
         if key == 'earnings':
             rows = [e for e in rows if e.get('eventType') != 'EARNINGS_CANDIDATE']
         if key == 'news':
-            rows = [e for e in rows if (e.get('publishedAt') or e.get('observedAt') or '')[:10] >= news_cutoff]
+            rows = [e for e in rows if (e.get('publishedAt') or e.get('publishedDate') or e.get('observedAt') or '')[:10] >= news_cutoff]
         if key in ('materialEvents', 'timeline'):
-            rows = [e for e in rows if (e.get('date') or e.get('publishedAt') or e.get('observedAt') or '')[:10] >= event_cutoff and e.get('eventType') not in ('SEC_FILING', 'EARNINGS_CANDIDATE', 'EARNINGS_ESTIMATED')]
+            rows = [e for e in rows if (e.get('date') or e.get('publishedAt') or e.get('publishedDate') or e.get('observedAt') or '')[:10] >= event_cutoff and e.get('eventType') not in ('SEC_FILING', 'EARNINGS_CANDIDATE', 'EARNINGS_ESTIMATED')]
         if key == 'materials' and len(rows) > cap:
             # A long report archive must not hide the latest available remarks,
             # transcript or webcast. Preserve order and the same payload bound.

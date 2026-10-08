@@ -2,10 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
+import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {approval,reviewed,approvedForPublication,approve} from '../production-approval.mjs';
 import {stageProduction,setProductionGate} from '../production-release.mjs';
 const approved=()=>({...structuredClone(reviewed),releaseState:'APPROVED_CONTROLLED_PRODUCTION',productionApproval:approval.approvalId});
+test('rollout loader, approval and reviewed consumer bind the same exact generation and unchanged cohort',()=>{
+ const require=createRequire(import.meta.url),rollout=require('../../../company-intelligence/config/rollout.js');
+ assert.equal(rollout.expectedGeneration,approval.consumerGeneration);
+ assert.equal(rollout.expectedGeneration,reviewed.generation);
+ assert.deepEqual([...rollout.cohort].sort(),reviewed.tickers);
+ assert.equal(rollout.stage,1);
+});
 test('production authorization is bound to the exact reviewed assets, source policy, time and cohort',()=>{
  assert.equal(approvedForPublication(approved()),true);
  for(const change of [m=>m.tickers.push('ZZZZ'),m=>m.generation='a'.repeat(24),m=>m.sourceUsagePolicy='ALL_PUBLISHERS',m=>m.generatedAt='2026-10-07T00:00:00Z',m=>m.assets['index.json'].sha256='0'.repeat(64),m=>delete m.assets['index.json'],m=>m.productionApproval='another-approval']){const m=approved();change(m);assert.equal(approvedForPublication(m),false);}

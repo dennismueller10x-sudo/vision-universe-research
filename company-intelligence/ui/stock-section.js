@@ -146,7 +146,7 @@ function render(host,payload){
  }
  const proof=details(host,'Datenstand und Quellenhinweise');proof.classList.add('ci-sources');proof.append(node('p','Aufbereitungsstand: '+day(payload.generatedAt)+'. Originalquellen können neuer sein. Nachrichten sind keine vollständige Marktberichterstattung.','ci-meta'));
  if(f?.state==='AVAILABLE')proof.append(node('p','Stand der zugrunde liegenden Zahlen: '+day(f.sourceAsOf)+'. Nachträglich aktualisierte Zahlen; kein historischer Echtzeitstand. Zahlenvergleiche sind keine Bewertung der Aktie.','ci-meta'));
- if(f?.stale)proof.append(node('p','Neuere Berichte sind in diesem Datenstand nicht enthalten.','ci-meta'));
+ if(f?.stale)proof.append(node('p','Neuere normalisierte Geschäftszahlen sind in diesem Datenstand nicht enthalten.','ci-meta'));
  if(vm.estimates.length)proof.append(node('p','Geschätzte Zeitfenster beruhen auf früheren Berichten. Sie sind keine bestätigten Termine und keine Vorhersage eines Veröffentlichungstags.','ci-meta'));
  for(const source of profile?.sources||[])link(proof,source.type==='SEC'?'Profilquelle · Jahresbericht'+(source.filedAt?' vom '+day(source.filedAt):''):'Profilquelle · Unternehmen',source.url);
  if(profile&&profile.language!=='de'){proof.append(node('p','Quellenbeschreibung (Englisch), noch nicht als deutsches Profil freigegeben:','ci-meta'));const p=node('p',profile.description);p.lang='en';proof.append(p);}

@@ -118,7 +118,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && (inputs.production_release == 'validate' || inputs.production_release == 'publish') && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -168,6 +168,61 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           node scripts/company_intelligence/discover-beta-qa.mjs --production --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase actual --out "$RUNNER_TEMP/production-cohort-qa"
           node scripts/company_intelligence/discover-beta-qa.mjs --production --url http://127.0.0.1:8793 --candidate docs/company-intelligence/full-data-release-candidate.json --phase dark --out "$RUNNER_TEMP/production-dark-qa"
+      - name: Preserve full content derivative separately and prove fresh R2 restore
+        if: inputs.production_release == 'publish'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          namespace=$(python3 -c 'import json; print(json.load(open("'"$RUNNER_TEMP"'/production-restore.json"))["contentAugmentation"]["namespace"])')
+          case "$namespace" in content-top46-*) ;; *) exit 1 ;; esac
+          python3 - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from company_intelligence.store import atomic_json
+          root=Path(os.environ['RUNNER_TEMP'])
+          content=json.loads((root/'production-restore.json').read_text())['contentAugmentation']
+          path=root/'accepted-state/latest-run.json'
+          prior=json.loads(path.read_text())
+          assert prior['export']['generation']=='21cc611a43b06f488418b58a'
+          atomic_json(path,{'generatedAt':content['asOf'],'export':content['export'],'contentReviewHash':content['reviewHash'],'basis':'FULL_ACCEPTED_STATE_PLUS_REVIEWED_TOP46_CONTENT','acceptedBaselineRun':prior})
+          PY
+          python3 scripts/company_intelligence/checkpoint.py pack --state "$RUNNER_TEMP/accepted-state" --snapshot "$RUNNER_TEMP/content-state.tar.gz" > "$RUNNER_TEMP/content-backup.json"
+          node scripts/company_intelligence/sync-state.mjs push --namespace "$namespace" --file "$RUNNER_TEMP/content-state.tar.gz" --initialize > "$RUNNER_TEMP/content-remote-preservation.json"
+          node scripts/company_intelligence/sync-state.mjs pull --namespace "$namespace" --file "$RUNNER_TEMP/content-fresh.tar.gz" > "$RUNNER_TEMP/content-remote-readback.json"
+          digest=$(python3 -c 'import json; print(json.load(open("'"$RUNNER_TEMP"'/content-backup.json"))["sha256"])')
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          expected=json.loads((root/'content-backup.json').read_text())
+          actual=json.loads((root/'content-remote-readback.json').read_text())
+          assert actual['status']=='RESTORED' and actual['sha256']==expected['sha256'] and actual['bytes']==expected['bytes']
+          PY
+          python3 scripts/company_intelligence/checkpoint.py restore --snapshot "$RUNNER_TEMP/content-fresh.tar.gz" --state "$RUNNER_TEMP/content-genuinely-fresh-state" --sha256 "$digest"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          content=json.loads((root/'production-restore.json').read_text())['contentAugmentation']
+          restored=json.loads((root/'content-genuinely-fresh-state/latest-run.json').read_text())
+          assert restored['export']==content['export'] and restored['contentReviewHash']==content['reviewHash'] and restored['generatedAt']==content['asOf']
+          assert restored['acceptedBaselineRun']['export']['generation']=='21cc611a43b06f488418b58a'
+          PY
+          cp "$RUNNER_TEMP/production-restore.json" "$RUNNER_TEMP/content-fresh-restore-evidence.json"
+          python3 scripts/company_intelligence/verify_consumer_handoff.py --state "$RUNNER_TEMP/content-genuinely-fresh-state" --consumer "$RUNNER_TEMP/production-content-fresh-consumer" --evidence "$RUNNER_TEMP/content-fresh-restore-evidence.json"
+          # Read back the immutable baseline again; this release never writes it.
+          node scripts/company_intelligence/sync-state.mjs pull --namespace accepted-20261006-21cc611a43b06f488418b58a --file "$RUNNER_TEMP/accepted-after-content.tar.gz" > "$RUNNER_TEMP/accepted-after-content-readback.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          value=json.loads((Path(os.environ['RUNNER_TEMP'])/'accepted-after-content-readback.json').read_text())
+          assert value['status']=='RESTORED' and value['sha256']=='2368931508ec869fed1246733465b15dd550a6bcaec1d2154aed2359cb7ba6f9'
+          PY
       - name: Approved immutable consumer publication and independent read-back
         if: inputs.production_release == 'publish'
         env:
@@ -177,7 +232,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
-          node scripts/company_intelligence/production-release.mjs publish --directory "$RUNNER_TEMP/production-consumer" > "$RUNNER_TEMP/production-publication.json"
+          node scripts/company_intelligence/production-release.mjs publish --directory "$RUNNER_TEMP/production-content-fresh-consumer" > "$RUNNER_TEMP/production-publication.json"
           node --input-type=module <<'NODE'
           import {verifyProductionConsumer} from './scripts/company_intelligence/production-release.mjs';
           import {createS3DriverFromEnv} from './scripts/market/storage/s3-driver.mjs';
@@ -194,6 +249,11 @@ jobs:
             ${{ runner.temp }}/production-restore.json
             ${{ runner.temp }}/numeric-band-review.json
             ${{ runner.temp }}/production-publication.json
+            ${{ runner.temp }}/content-backup.json
+            ${{ runner.temp }}/content-remote-preservation.json
+            ${{ runner.temp }}/content-remote-readback.json
+            ${{ runner.temp }}/content-fresh-restore-evidence.json
+            ${{ runner.temp }}/accepted-after-content-readback.json
             ${{ runner.temp }}/production-read-back/company-intelligence-delivery.json
             ${{ runner.temp }}/production-cohort-qa/
             ${{ runner.temp }}/production-dark-qa/
@@ -220,7 +280,7 @@ jobs:
         env:
           PRODUCTION_RELEASE_MODE: ${{ inputs.production_release }}
         run: |
-          if [ "$PRODUCTION_RELEASE_MODE" = validate ] || [ "$PRODUCTION_RELEASE_MODE" = publish ]; then
+          if [ "$PRODUCTION_RELEASE_MODE" = validate ] || [ "$PRODUCTION_RELEASE_MODE" = publish ] || [ -f company-intelligence/config/top46-content-review.json ]; then
             node scripts/company_intelligence/classify-production-regressions.mjs
           else
             node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs

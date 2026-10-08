@@ -203,6 +203,9 @@ class Pipeline:
                     entries = parse_news_sitemap(response['body'], response['finalUrl'])
                 elif source.get('format') == 'WORDPRESS_REST_NEWS':
                     entries = wordpress_entries
+                elif source.get('format') == 'Q4_NEWS':
+                    from .q4_news import parse as parse_q4_news
+                    entries = parse_q4_news(response['body'], source)
                 else:
                     entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
             from .news_quality import wordpress_feed,eligible,promotional_solicitation,shadowed_actor
@@ -217,7 +220,7 @@ class Pipeline:
                     rejected+=1
                     self.store.audit(self.now,sid,'CMS_NON_ANNOUNCEMENT_REJECTED',headline=entry.get('headline'),url=entry.get('url'))
                     continue
-                entry_time = entry.get('publishedAt') or entry.get('updatedAt')
+                entry_time = entry.get('publishedAt') or (entry['publishedDate'] + 'T00:00:00Z' if entry.get('publishedDate') else entry.get('updatedAt'))
                 if not entry.get('headline') or not entry.get('url') or not entry_time or entry_time > self.now:
                     self.run['invalid'] += 1
                     rejected += 1
