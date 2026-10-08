@@ -2,48 +2,16 @@
   "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-10-08T13:01:40.438Z",
-    "runId": "37781041392",
-    "runNumber": "506",
+    "startedAt": "2026-10-08T18:56:36.272Z",
+    "runId": "37828043493",
+    "runNumber": "507",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
     "blockMaxMs": 20700000,
-    "branch": "main",
-    "endedAt": "2026-10-08T18:50:31.174Z",
-    "reason": "blockEnde",
-    "cycles": 22
+    "branch": "main"
   },
-  "updatedAt": "2026-10-08T18:50:31.174Z",
+  "updatedAt": "2026-10-08T19:10:38.529Z",
   "cycles": [
-    {
-      "cycle": 2,
-      "runId": "37669311719",
-      "triggerAt": "2026-10-07T19:00:59.535Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "15:00:59",
-      "fetchStartAt": "2026-10-07T19:00:59.535Z",
-      "fetchEndAt": "2026-10-07T19:15:02.029Z",
-      "session": "2026-10-07",
-      "written": 1283,
-      "requests": 1440,
-      "notPublishable": 76,
-      "addAt": "2026-10-07T19:15:02.031Z",
-      "commitAt": "2026-10-07T19:15:02.486Z",
-      "pushAt": "2026-10-07T19:25:04.006Z",
-      "sha": "eb010ccba4",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-10-07T19:15:01.999Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "taktVerspaetet",
-          "auslieferungZuWeitHinterher"
-        ]
-      }
-    },
     {
       "cycle": 3,
       "runId": "37669311719",
@@ -729,6 +697,27 @@
       "ok": true,
       "reason": null,
       "snapshotAt": "2026-10-08T18:50:26.707Z"
+    },
+    {
+      "cycle": 1,
+      "runId": "37828043493",
+      "triggerAt": "2026-10-08T18:56:36.282Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "14:56:36",
+      "fetchStartAt": "2026-10-08T18:56:36.316Z",
+      "fetchEndAt": "2026-10-08T19:10:38.526Z",
+      "session": "2026-10-08",
+      "written": 1306,
+      "requests": 1440,
+      "notPublishable": 75,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-10-08T19:10:38.492Z"
     }
   ]
 }
