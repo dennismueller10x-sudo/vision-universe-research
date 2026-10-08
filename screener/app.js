@@ -307,11 +307,12 @@
     var left = h('div', {}), right = h('div', {});
     var productIcon = h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true' });
     productIcon.innerHTML = '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#screener"></use></svg>';
-    left.append(h('section', { class: 'sc-hero sc-product-hero vu-product-hero', 'aria-labelledby': 'sc-product-title' }, [
+    left.append(h('section', { class: 'sc-hero sc-product-hero vu-product-hero vu-hero-fidelity', 'data-product': 'screener', 'aria-labelledby': 'sc-product-title' }, [
+      h('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }),
       h('div', { class: 'sc-product-top' }, [productIcon, iconBtn('gear', 'Einstellungen', openSettings)]),
-      h('p', { class: 'vu-product-hero__eyebrow' }, ['Vision Universe ', h('strong', { text: 'Screener' })]),
-      h('h1', { class: 'vu-product-hero__title', id: 'sc-product-title', text: 'Deine Kriterien. Dein Aktienuniversum.' }),
-      h('p', { class: 'sc-lead vu-product-hero__lead', text: 'Filtere Aktien nach deinen eigenen Kriterien. Gewichte Kennzahlen und vergleiche Unternehmen – schnell, präzise, unabhängig.' }),
+      h('p', { class: 'vu-hero-name', text: 'Screener' }),
+      h('h1', { class: 'vu-hero-headline', id: 'sc-product-title', text: 'Finde genau die Aktien, die zu dir passen.' }),
+      h('p', { class: 'vu-hero-description', text: 'Filtere Aktien nach deinen eigenen Kriterien. Gewichte Kennzahlen und vergleiche Unternehmen – schnell, präzise, unabhängig.' }),
       h('div', { class: 'sc-hero-actions' }, [
         h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
         h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“'])]),

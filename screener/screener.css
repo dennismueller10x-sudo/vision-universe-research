@@ -508,3 +508,115 @@ html[data-theme=dark] .sc-check[aria-checked=true],html[data-theme=dark] .sc-bad
 .sc-section-head{align-items:center}
 .sc-seg button{min-height:44px}
 @media(min-width:1024px){.sc-product-top{margin-bottom:26px}.sc-hero-universe{display:flex;align-items:center;gap:24px}.sc-hero-universe .sc-globe{flex:0 1 240px}.sc-hero-universe .sc-globe svg{width:100%}.sc-hero-universe .sc-universe{align-items:flex-start;text-align:left}.sc-start{gap:64px}}
+
+/* Home-only scene: the original globe remains decorative below the actions. */
+.sc-product-hero.vu-hero-fidelity .sc-product-top{position:relative;z-index:1;margin-bottom:0}
+.sc-product-hero.vu-hero-fidelity .sc-hero-actions,.sc-product-hero.vu-hero-fidelity .sc-hero-universe{position:relative;z-index:1}
+.sc-product-hero.vu-hero-fidelity .sc-hero-universe{display:flex;align-items:center;gap:16px;margin-top:20px}
+.sc-product-hero.vu-hero-fidelity .sc-globe{flex:0 0 116px}
+.sc-product-hero.vu-hero-fidelity .sc-globe svg{width:100%}
+.sc-product-hero.vu-hero-fidelity .sc-universe{align-items:flex-start;text-align:left}
+.sc-product-hero.vu-hero-fidelity .sc-universe strong{font-size:32px}
+.sc-product-hero.vu-hero-fidelity .sc-universe span{font-size:12px}
+.sc-product-hero.vu-hero-fidelity .sc-universe small{font-size:11px}
+
+/* BEGIN GENERATED HERO FIDELITY — edit assets/product-hero.css */
+/* Hero-only composition. Source for scripts/design/sync-product-hero.mjs.
+   Compiled into existing product styles: no delayed CSS or extra requests. */
+html body .vu-product-hero.vu-hero-fidelity[data-product]{
+  --vu-hero-icon-size:104px;
+  position:relative;isolation:isolate;display:block;box-sizing:border-box;
+  padding:24px 0 28px;margin:0 0 24px;min-height:0;gap:0;
+  background:none;border:0;border-radius:0;color:var(--vu-text,#f4f5f2);
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product]::before,
+html body .vu-product-hero.vu-hero-fidelity[data-product]::after{display:none}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-icon--hero{
+  position:relative;z-index:1;display:grid;place-items:center;flex:none;
+  width:var(--vu-hero-icon-size);height:var(--vu-hero-icon-size);
+  margin:0 0 16px;border-radius:23px;
+  box-shadow:0 0 0 1px #c8f53155,0 10px 30px -10px #c8f53159,inset 0 0 18px #c8f5311a;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-icon--hero svg{width:64%;height:64%;filter:drop-shadow(0 0 6px #c8f53166)}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name{
+  position:relative;z-index:1;display:block;margin:0 0 5px;padding:0;
+  color:var(--vu-text,#f4f5f2);font-size:32px;line-height:1.08;
+  font-weight:800;letter-spacing:-.045em;text-transform:none;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name::before{display:none}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-headline{
+  position:relative;z-index:1;margin:0 0 14px;padding:0;max-width:24ch;
+  color:var(--vu-text,#f4f5f2);font-size:24px;line-height:1.16;
+  font-weight:680;letter-spacing:-.025em;text-wrap:balance;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-description{
+  position:relative;z-index:1;margin:0 0 20px;max-width:46ch;
+  color:var(--vu-text-secondary,#bbc0c2);font-size:14px;line-height:1.5;font-weight:400;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{
+  position:absolute;z-index:0;inset:0 0 auto auto;width:min(300px,77%);height:285px;
+  max-width:none;margin:0;padding:0;pointer-events:none;opacity:.95;
+  background:var(--vu-hero-art,none) center top/contain no-repeat;
+  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 82%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 45%,transparent 96%);
+  mask-composite:intersect;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 82%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 45%,transparent 96%);
+  -webkit-mask-composite:source-in;
+}
+html body .vu-hero-fidelity[data-product=discover]{--vu-hero-art:url('/assets/hero-visuals/discover.webp')}
+html body .vu-hero-fidelity[data-product=screener]{--vu-hero-art:url('/assets/hero-visuals/screener.webp')}
+html body .vu-hero-fidelity[data-product=vorsorge]{--vu-hero-art:url('/assets/hero-visuals/vorsorge.webp')}
+html body .vu-hero-fidelity[data-product=supertrader]{--vu-hero-art:url('/assets/hero-visuals/supertrader.svg')}
+html body .vu-hero-fidelity[data-product=hedgefonds]{--vu-hero-art:url('/assets/hero-visuals/hedgefonds.webp')}
+html body .vu-product-hero.vu-hero-fidelity[data-product=quant] .q-globe{
+  width:min(285px,74%);height:285px;top:0;right:0;transform:none;
+  --q-globe-1:#142214;--q-globe-2:#0b140c;--q-globe-3:#080c09;
+  --q-globe-glow:#c8f53122;--q-globe-rim:#c8f53177;--q-globe-grid:#c8f53122;
+  --q-globe-link:#c8f531aa;--q-globe-dot:#d3fc65;
+}
+html[data-theme=light] body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{
+  opacity:.42;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-prompt,.q-searchbar,.vs-search,.hf-search,.sc-hero-cta){
+  position:relative;z-index:2;box-sizing:border-box;min-height:52px;max-width:560px;
+  margin:0 0 12px;border:1px solid var(--vu-line,#343a3d);border-radius:999px;
+  background:#fff;color:#111619;box-shadow:none;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-prompt,.q-searchbar){font-size:13px;padding:5px 5px 5px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-arrow,.q-searchbar>i){
+  display:grid;place-items:center;flex:none;width:40px;height:40px;min-height:40px;
+  border-radius:50%;background:var(--vu-accent,#c8f531);color:#101318;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search{padding:5px 5px 5px 16px;gap:10px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search input{color:#111619;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] input::placeholder{color:#606870;opacity:1;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search button{min-height:44px;font-size:13px;padding:8px 16px;border-radius:999px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-search{padding:12px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-search input{color:#111619;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-hsearch{position:relative;z-index:2;max-width:560px;margin:0 0 12px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-live{position:relative;z-index:1;font-size:11px;line-height:1.5;margin:0 0 14px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-intro-actions,.vs-hero-actions,.st-hero-actions,.hf-pop){
+  position:relative;z-index:1;max-width:640px;margin:0;gap:8px;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-pill,.vs-hero-actions .vs-pill,.hf-chip){font-size:12px;min-height:44px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{position:relative;z-index:1;max-width:68ch;font-size:12px;line-height:1.5;margin:18px 0}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-hero-more{position:relative;z-index:1;font-size:12px;margin:12px 0 0;gap:4px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .sc-hero-actions .sc-btn-primary{min-height:52px;background:#fff;color:#111619;border-color:var(--vu-line)}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-hero__actions{position:relative;z-index:1;max-width:560px;margin:0;gap:8px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min-height:48px;font-size:13px}
+@media(max-width:767px){
+  /* 16px inputs prevent Safari focus zoom; the placeholder stays compact. */
+  html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.vs-search,.hf-search) input{font-size:16px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=discover]{margin-top:-6px;margin-inline:-4px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=quant]{margin-top:-4px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=hedgefonds]{margin-top:-8px}
+}
+@media(min-width:768px){
+  html body .vu-product-hero.vu-hero-fidelity[data-product]{--vu-hero-icon-size:120px;padding:40px 0 36px;margin-bottom:32px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name{font-size:40px;margin-bottom:8px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-headline{font-size:clamp(28px,3vw,40px);max-width:23ch;margin-bottom:18px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-description{font-size:16px;max-width:58ch;margin-bottom:24px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{width:52%;height:460px;top:0;right:0}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=quant] .q-globe{width:440px;height:440px;max-width:52%}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
+}
+/* END GENERATED HERO FIDELITY */
