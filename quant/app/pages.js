@@ -235,7 +235,7 @@
     var productIcon = el("span", { class: "vu-product-icon vu-product-icon--hero", "aria-hidden": "true" });
     var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), use = document.createElementNS(ns, "use");
     svg.setAttribute("viewBox", "0 0 24 24"); use.setAttribute("href", "/assets/product-icons.svg#quant"); svg.appendChild(use); productIcon.appendChild(svg);
-    var scene = X.globe(); scene.classList.add("vu-hero-scene");
+    var scene = X.globe(); scene.setAttribute("class", "q-globe vu-hero-scene");
     page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero vu-hero-fidelity", "data-product": "quant" }, [
       scene,
       productIcon,
