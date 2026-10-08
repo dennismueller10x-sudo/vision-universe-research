@@ -154,9 +154,11 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const home=await ctx.newPage();
   try{
    await home.goto(base+'/',{waitUntil:'domcontentloaded'});
-   const bounds=await home.locator('vu-navigation').evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),button:button.toJSON(),tagline:getComputedStyle(root.querySelector('.section')).display};});
-   assert(bounds.brand.left>=0&&bounds.button.right<=bounds.viewport&&bounds.button.left>=bounds.brand.right,'Platform header overflows: '+JSON.stringify(bounds));
-   assert.equal(bounds.tagline,'none');
+   /* Seit 06.10.2026 traegt die Startseite ihren eigenen Landingpage-Kopf
+      (<meta name="vu-navigation" content="none">) statt der Plattform-Navigation. */
+   assert.equal(await home.locator('vu-navigation').count(),0,'Landing page must not stack the platform header on its own');
+   const bounds=await home.locator('#lp-head').evaluate(n=>{const logo=n.querySelector('.lp-logo').getBoundingClientRect();return {viewport:innerWidth,logo:logo.toJSON(),overflow:document.documentElement.scrollWidth-innerWidth};});
+   assert(bounds.logo.left>=0&&bounds.logo.right<=bounds.viewport&&bounds.overflow<=1,'Landing header overflows: '+JSON.stringify(bounds));
   }finally{await home.close();}
  });
  await screenshot(page,key+'-home');
