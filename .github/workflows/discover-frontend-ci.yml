@@ -4,10 +4,10 @@ name: Discover Frontend Quality Gates
 # Pruefungen sind dieselben, nur die Adresse ist jetzt die kanonische.
 on:
   pull_request:
-    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
+    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
   push:
     branches: [main]
-    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
+    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
   workflow_dispatch:
     inputs:
       site:

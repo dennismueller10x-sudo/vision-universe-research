@@ -6,10 +6,10 @@ name: Shell Quality Gates
 # und Seitenende - in Chromium (390 bis 1440 px) und in WebKit (iPhone-Profil).
 on:
   pull_request:
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'scripts/quality/shell-browser-qa.mjs', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
   push:
     branches: [main]
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'scripts/quality/shell-browser-qa.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', '.github/workflows/shell-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read

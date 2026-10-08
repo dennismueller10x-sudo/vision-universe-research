@@ -56,6 +56,9 @@ async function state(page) {
       labels: links.map((a) => a.textContent.trim()),
       current: links.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
       menu: !!nav.querySelector('button.menu'),
+      menuIconsDeferred: [...head.querySelectorAll('.menu-product-icon use')].every(n=>!n.hasAttribute('href')&&n.hasAttribute('data-href')),
+      dockOriginalInline: !!nav.querySelector('.product svg g')&&!nav.querySelector('.product svg use'),
+      spriteRequested: performance.getEntriesByType('resource').some(r=>new URL(r.name).pathname==='/assets/product-icons.svg'),
       dock: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width },
       toggle: getComputedStyle(head.querySelector('.toggle')).display,
       overflow: document.documentElement.scrollWidth - innerWidth,
@@ -86,12 +89,31 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (s.labels[0] !== product) fail(where, 'erster Eintrag ist nicht der Produktname: ' + s.labels[0]);
         if (s.labels.length !== 4 || !s.menu) fail(where, 'Leiste ist nicht [Produkt] + 3 Funktionen + ☰: ' + s.labels.join('|'));
         if ((s.current[0] || null) !== expected || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${expected || '-'}`);
+        if(!s.menuIconsDeferred||!s.dockOriginalInline) fail(where,'Icon-Laden ist nicht menu-lazy bzw Dock inline');
+        if(path==='/quant/#/screener'&&s.spriteRequested) fail(where,'Quant Screener lädt ungeöffneten Menü-Sprite');
         if (s.toggle !== 'none') fail(where, 'Menue-Knopf im Kopf doppelt');
         if (s.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + s.overflow + ' px');
         if (s.dock.left < 0 || s.dock.right > s.vw || s.dock.bottom > s.vh || s.dock.bottom < s.vh - 40) fail(where, 'Leiste ausserhalb ihres Platzes ' + JSON.stringify(s.dock));
         if (s.small) fail(where, s.small + ' Ziele kleiner als 44 px');
         if (s.clipped.length) fail(where, 'abgeschnittene Beschriftung: ' + s.clipped.join(', '));
       }
+      // Direkt geladene Unterseiten öffnen genau ihren Produktbereich; Home bleibt kompakt.
+      await page.locator('#vu-dock button.menu').click();
+      const routeMenu = await page.evaluate(() => {
+        const root=document.querySelector('vu-navigation').shadowRoot;
+        const groups=[...root.querySelectorAll('.group')];
+        const expanded=groups.filter(g=>g.querySelector('.disclosure').getAttribute('aria-expanded')==='true');
+        const product=groups.find(g=>g.classList.contains('is-current'));
+        return {expanded:expanded.map(g=>g.dataset.group),current:product?.querySelector('.group-link')?.textContent.trim(),
+          marked:groups.flatMap(g=>[...g.querySelectorAll('.links a[aria-current=page]')]).map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length})),
+          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
+      });
+      const home=['/discover/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
+      if(routeMenu.current!==product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
+      if(home ? routeMenu.expanded.length!==0 : routeMenu.expanded.length!==1||routeMenu.expanded[0]!==product.toLowerCase()) fail(where,'Accordion-Direkteinstieg falsch: '+JSON.stringify(routeMenu));
+      if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));
+      if(routeMenu.small) fail(where,routeMenu.small+' sichtbare Menüziele kleiner als 44 px');
+      await page.keyboard.press('Escape');
       // Seitenende: das letzte sichtbare Element liegt ueber der Leiste.
       const end = await page.evaluate(async () => {
         // Bis zum Ende scrollen, bis nachgeladene Abschnitte die Hoehe nicht mehr aendern.
@@ -143,14 +165,52 @@ for (const [vpName, width, height] of VIEWPORTS) {
         return { groups: [...root.querySelectorAll('.group h2')].map((h) => h.textContent), links: root.querySelectorAll('.links a').length,
           locked: document.documentElement.classList.contains('vu-menu-open') && getComputedStyle(document.documentElement).overflow === 'hidden',
           dockInert: dock.inert, dockCovered: top !== dock, scrollable: panel.scrollHeight <= panel.clientHeight || getComputedStyle(panel).overflowY === 'auto',
-          panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight };
+          panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight,
+          expanded: root.querySelectorAll('.disclosure[aria-expanded=true]').length,
+          icons: [...root.querySelectorAll('.menu-product-icon use')].map(n=>n.getAttribute('href')),
+          small: [...panel.querySelectorAll('a,button')].filter(n=>n.getClientRects().length).filter(n=>{const b=n.getBoundingClientRect();return b.width<44||b.height<44}).length,
+          hiddenVisible: [...root.querySelectorAll('.links[hidden] a')].some(n=>n.getClientRects().length) };
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
+      if(m.groups.join('|')!=='Discover|Quant|Screener|Vorsorge|Supertrader|Hedgefonds|Weitere Produkte') fail(where,'Produktstruktur falsch: '+m.groups.join('|'));
+      if(m.expanded!==0||m.hiddenVisible) fail(where,'Home-Menü ist nicht eingeklappt');
+      if(m.icons.length!==7||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      if(m.small) fail(where,m.small+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
       if (!m.dockInert || !m.dockCovered) fail(where, 'Leiste liegt ueber dem Menue oder bleibt fokussierbar');
       if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten');
       if (path === '/quant/#/') await page.screenshot({ path: `${out}/menu-${vpName}.png` });
+      const quantToggle=page.locator('vu-navigation .group[data-group=quant] .disclosure');
+      await quantToggle.focus();await page.keyboard.press('Enter');
+      if(!await quantToggle.evaluate(n=>n.getAttribute('aria-expanded')==='true')) fail(where,'Enter öffnet Quant nicht');
+      const discoverToggle=page.locator('vu-navigation .group[data-group=discover] .disclosure');
+      await discoverToggle.focus();await page.keyboard.press('Space');
+      const accordion=await page.evaluate(()=>{
+        const root=document.querySelector('vu-navigation').shadowRoot;
+        return {expanded:[...root.querySelectorAll('.disclosure[aria-expanded=true]')].map(n=>n.closest('.group').dataset.group),
+          quantHidden:root.querySelector('.group[data-group=quant] .links').hidden,
+          discoverVisible:!!root.querySelector('.group[data-group=discover] .links a').getClientRects().length,
+          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
+      });
+      if(accordion.expanded.join('|')!=='discover'||!accordion.quantHidden||!accordion.discoverVisible) fail(where,'Accordion schließt vorherigen Bereich nicht: '+JSON.stringify(accordion));
+      if(accordion.small) fail(where,accordion.small+' aufgeklappte Menüziele kleiner als 44 px');
+      // Fokusfalle darf eingeklappte Unterlinks nicht berücksichtigen.
+      await page.evaluate(()=>{
+        const root=document.querySelector('vu-navigation').shadowRoot;
+        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled)')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
+        nodes[0].focus();
+      });
+      await page.keyboard.press('Shift+Tab');
+      const trappedLast=await page.evaluate(()=>{
+        const root=document.querySelector('vu-navigation').shadowRoot;
+        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled)')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
+        return root.activeElement===nodes.at(-1);
+      });
+      if(!trappedLast) fail(where,'Shift+Tab verlässt die Fokusfalle');
+      await page.keyboard.press('Tab');
+      if(!await page.evaluate(()=>{const root=document.querySelector('vu-navigation').shadowRoot;return root.activeElement===root.querySelector('.panel-head a')})) fail(where,'Tab kehrt nicht zum ersten Menülink zurück');
+      if(path==='/quant/#/') await page.screenshot({path:`${out}/menu-expanded-${vpName}.png`});
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.querySelector('vu-navigation').hasAttribute('open'), null, { timeout: 3000 });
       if (!await menu.evaluate((n) => n.getRootNode().activeElement === n)) fail(where, 'Fokus kehrt nicht zu ☰ zurueck');
