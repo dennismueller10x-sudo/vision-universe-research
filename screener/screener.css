@@ -18,7 +18,7 @@
   --sc-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
   --sc-shadow-lg:0 -10px 40px rgba(0,0,0,.14);
   --sc-radius:16px;--sc-radius-sm:12px;--sc-radius-lg:22px;
-  --sc-tabbar:64px;--sc-safe-b:env(safe-area-inset-bottom,0px);
+  --sc-tabbar:calc(var(--vu-dock-height,66px) + var(--vu-dock-gap,10px));--sc-safe-b:env(safe-area-inset-bottom,0px);
   --sc-gutter:16px;--sc-max:1440px;
   --sc-ease:cubic-bezier(.22,.7,.26,1);
   color-scheme:light;
@@ -50,7 +50,7 @@ body.sc.sc-locked{overflow:hidden}
 svg.sc-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* ---------------------------------------------------------------- Shell */
-.sc-app{max-width:var(--sc-max);margin:0 auto;padding:0 var(--sc-gutter) calc(var(--sc-tabbar) + var(--sc-safe-b) + 96px);min-height:calc(100vh - var(--vu-navigation-height))}
+.sc-app{max-width:var(--sc-max);margin:0 auto;padding:0 var(--sc-gutter) 96px;min-height:calc(100vh - var(--vu-navigation-height))}
 .sc-bar{position:sticky;top:var(--vu-navigation-height);z-index:30;background:color-mix(in srgb,var(--sc-bg) 90%,transparent);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);margin:0 calc(var(--sc-gutter) * -1);padding:0 var(--sc-gutter);border-bottom:1px solid transparent}
 .sc-bar.is-stuck{border-bottom-color:var(--sc-line)}
 .sc-bar-row{display:flex;align-items:center;gap:8px;height:56px}
@@ -59,7 +59,6 @@ svg.sc-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;s
 .sc-icon-btn{width:44px;height:44px;display:inline-grid;place-items:center;border-radius:12px;border:0;background:transparent;color:var(--sc-text);flex:none}
 .sc-icon-btn:hover{background:var(--sc-surface-2)}
 .sc-icon-btn[aria-pressed=true]{color:var(--sc-accent)}
-.sc-deskNav{display:none}
 
 /* Segment (Einfach/Pro, Ansicht) */
 .sc-seg{display:inline-flex;background:var(--sc-surface-2);border-radius:12px;padding:3px;gap:2px;flex:none}
@@ -175,11 +174,6 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-cta .sc-btn{box-shadow:0 8px 24px rgba(0,0,0,.18)}
 
 /* Tabbar */
-.sc-tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:color-mix(in srgb,var(--sc-surface) 92%,transparent);backdrop-filter:saturate(1.6) blur(20px);-webkit-backdrop-filter:saturate(1.6) blur(20px);border-top:1px solid var(--sc-line);padding-bottom:var(--sc-safe-b)}
-.sc-tabbar nav{display:grid;grid-template-columns:repeat(4,1fr);height:var(--sc-tabbar);max-width:640px;margin:0 auto}
-.sc-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;font-size:10.5px;font-weight:600;color:var(--sc-dim);position:relative;border:0;background:transparent;min-height:44px}
-.sc-tab svg{width:23px;height:23px}
-.sc-tab[aria-current=page]{color:var(--sc-text)}
 .sc-badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:20px;height:18px;padding:0 5px;border-radius:9px;background:var(--sc-accent);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums}
 
 /* ---------------------------------------------------------------- Ergebnisse */
@@ -389,15 +383,12 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 @media (min-width:1024px){
   :root{--sc-gutter:32px}
   .sc-app{padding-bottom:64px}
-  .sc-tabbar,.sc-cta{display:none}
-  .sc-deskNav{display:flex;gap:4px}
-  .sc-deskNav a{text-decoration:none;padding:8px 14px;border-radius:10px;font-weight:600;font-size:14px;color:var(--sc-muted);min-height:40px;display:inline-flex;align-items:center;gap:6px}
-  .sc-deskNav a[aria-current=page]{color:var(--sc-text);background:var(--sc-surface-2)}
+  .sc-cta{display:none}
   .sc-layout{display:grid;grid-template-columns:minmax(340px,400px) minmax(0,1fr);gap:32px;align-items:start}
   .sc-layout>.sc-side{position:sticky;top:calc(var(--vu-navigation-height) + 72px);max-height:calc(100vh - var(--vu-navigation-height) - 88px);overflow-y:auto;padding-right:6px;scrollbar-width:thin}
   .sc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .sc-comparebar{bottom:24px}
-  .sc-toast{bottom:32px}
+  .sc-comparebar{bottom:calc(var(--sc-tabbar) + var(--sc-safe-b) + 16px)}
+  .sc-toast{bottom:calc(var(--sc-tabbar) + var(--sc-safe-b) + 24px)}
   .sc-hero{padding:48px 0 12px}
   .sc-start{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:start}
   /* Sheets werden zu Seitenpaneelen */
