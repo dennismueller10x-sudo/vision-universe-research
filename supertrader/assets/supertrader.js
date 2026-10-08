@@ -255,7 +255,7 @@
       h('span', { class: 'st-stamp', text: asOf ? 'Kurse ' + dateShort(asOf) : '' }),
       h('a', { class: 'st-productlink', href: BASE + 'sources/', 'aria-current': page === 'sources' ? 'page' : null, text: 'Quellen' }),
     ]);
-    main.insertBefore(line, main.firstChild);
+    if (page !== 'home') main.insertBefore(line, main.firstChild);
     // Produkt-Leiste der gemeinsamen Shell anfordern (aktiver Eintrag aus dem Pfad)
     if (window.VUNavigation) window.VUNavigation.dock({});
   }
@@ -283,9 +283,19 @@
     var closed = 0; Object.keys(sig.strategies).forEach(function (k) { if (!isResearchId(k)) closed += sig.strategies[k].closed.length; });
     var stale = staleness(D) >= 2;
 
-    main.appendChild(h('header', { class: 'st-hero' }, [
-      h('h1', { text: 'Methoden. Setups. Klare Regeln.' }),
-      h('p', { class: 'st-lead', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
+    main.appendChild(h('header', { class: 'st-hero st-home-hero vu-product-hero' }, [
+      h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true', html: '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"></use></svg>' }),
+      h('div', { class: 'vu-product-eyebrow', text: 'Vision Universe Supertrader' }),
+      h('h1', { class: 'vu-product-title', text: 'Methoden. Setups. Klare Regeln.' }),
+      h('p', { class: 'st-lead vu-product-lead', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
+      h('div', { class: 'vu-product-hero__actions' }, [
+        h('a', { class: 'vu-product-action', href: BASE + 'strategies/' }, ['Methoden entdecken', icon(IC.arrow)]),
+        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Signale ansehen' }),
+      ]),
+      h('nav', { class: 'st-hero-quick', 'aria-label': 'Supertrader Schnellzugriff' }, [
+        h('a', { class: 'vu-product-chip', href: BASE + 'backtests/', text: 'Backtests & Evidenz' }),
+        h('a', { class: 'vu-product-chip', href: BASE + 'sources/', text: 'Quellen' }),
+      ]),
     ]));
     main.appendChild(freshness(D, true));
 
