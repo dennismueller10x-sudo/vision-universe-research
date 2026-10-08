@@ -1,0 +1,36 @@
+{
+  "status": "FAIL",
+  "ticker": "ACU",
+  "companyId": "iss_cik_0000002098",
+  "width": 390,
+  "theme": "dark",
+  "generation": "6c3fb74e36086a0b86dfdf3b",
+  "error": {
+    "name": "TimeoutError",
+    "message": "page.waitForFunction: Timeout 15000ms exceeded."
+  },
+  "consumerResponses": [
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 200
+    },
+    {
+      "path": "/company-intelligence/data/snapshots/6c3fb74e36086a0b86dfdf3b/lookup/AC.json",
+      "status": 200
+    },
+    {
+      "path": "/company-intelligence/data/snapshots/6c3fb74e36086a0b86dfdf3b/iss_cik_0000002098.json",
+      "status": 200
+    }
+  ],
+  "requestFailures": [],
+  "loads": [
+    {
+      "ticker": "ACU",
+      "state": "AVAILABLE",
+      "companyId": "iss_cik_0000002098"
+    }
+  ],
+  "visibleText": "Auf einen Blick\nDatenstand 8. Okt. 2026\nUNTERNEHMEN\n\nAcme United liefert Erste-Hilfe- und Medizinprodukte sowie Schneid- und Schärfwerkzeuge. Die Produkte richten sich unter anderem an Schulen, Haushalte, Büros, Handel und Industrie.\n\nMehr zum Unternehmen\nWebsite\nDatenstand und Quellenhinweise",
+  "completedCases": 0
+}

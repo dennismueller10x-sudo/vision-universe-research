@@ -7,3 +7,5 @@
 5. **Produktion/Rollback:** Die erste vollständige Live-Prüfung traf CHE während legitimer FX-Neudarstellung. Fail-closed-Abschaltung erfolgreich; acht tatsächliche OFF-Fälle, keine Consumer-Anfrage. Prüfung wartet jetzt auf echte FX-ready-/Route-Abschlüsse und exakten Datenstand; keine Wiederholung fehlgeschlagener Assertions und keine abgeschwächten Grenzwerte.
 
 Die endgültige vollständige Live-Prüfung und der manuelle Screenshot-Review werden separat in production-review.json und dem Abschlussbericht festgehalten.
+
+6. **Echte Zugriffssperre reproduziert:** document.open()/write() beim erlaubten Zugang entfernt Beobachter des ursprünglichen Dokuments. Die erste Ereignis-Korrektur war deshalb falsch. Die reale lokale Sperre und verzögerte Neudarstellung reproduzieren dies; Netzwerk-Hydration plus exakte DOM-Marker bestehen und lehnen falsche IDs/Zeitstempel ab. Keine Produktionsergebnisse werden aus diesem Fixture abgeleitet.
