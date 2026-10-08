@@ -1,0 +1,40 @@
+{
+  "status": "FAIL",
+  "ticker": "CHE",
+  "companyId": "iss_cik_0000019584",
+  "width": 768,
+  "theme": "light",
+  "generation": "6c3fb74e36086a0b86dfdf3b",
+  "error": {
+    "name": "AssertionError",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ null\n- '2026-10-08T14:36:50Z'\n"
+  },
+  "consumerResponses": [
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 200
+    },
+    {
+      "path": "/company-intelligence/data/snapshots/6c3fb74e36086a0b86dfdf3b/lookup/CH.json",
+      "status": 200
+    },
+    {
+      "path": "/company-intelligence/data/snapshots/6c3fb74e36086a0b86dfdf3b/iss_cik_0000019584.json",
+      "status": 200
+    },
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 200
+    }
+  ],
+  "requestFailures": [],
+  "loads": [
+    {
+      "ticker": "CHE",
+      "state": "AVAILABLE",
+      "companyId": "iss_cik_0000019584"
+    }
+  ],
+  "visibleText": "Unternehmensinformationen werden geladen …",
+  "completedCases": 30
+}

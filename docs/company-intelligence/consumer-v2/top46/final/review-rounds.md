@@ -1,0 +1,9 @@
+# Abschließende inhaltliche Reviews
+
+1. **Nutzen:** Alle 14 Profillücken anhand exakter Quellen geschlossen; gezielte offizielle Meldungen statt Publisher-Füllmaterial. TSLA 1, PLTR 8, XPEV 5 belegte News; keine behaupteten Transkripte. 45 Profile und 43 Emittenten mit 90-Tage-Aktuelles. Keine unkontrollierte Coverage-Ausweitung.
+2. **Quellen und Zeit:** 60 ausgewählte Originalartikel erreichbar; Date-only bleibt Date-only. Apple-Datum aus sichtbaren Veröffentlichungsangaben, nicht Atom-Änderung. Tesla-CDT/EDT → UTC → Berlin/MESZ sowie MET/VEON-Novemberzeiten mit MEZ geprüft. Unfreigegebene Publisher/HTTP-Datensätze bleiben ausgeschlossen.
+3. **Darstellung und Ehrlichkeit:** Neuere XPeng-Ergebnis-News ändert keine alten normalisierten KPIs; vier Stale-Marken bleiben. Bestätigte Ergebnisse verdrängen nur Schätzungen desselben Emittenten und Fiskalzeitraums aus der Anzeige, Rohdaten bleiben erhalten. Überholte Prognose neben Tesla-Q3-Bestätigung beim manuellen Gegenlesen erkannt und korrigiert; Randfälle getestet.
+4. **Speicher/Restore:** Ein erster Restore-Exportfehler wurde vor Consumer-Veröffentlichung gestoppt. Shared-Resolver-Identität entkoppelt; neu hochgeladener vollständiger Privatbestand frisch wiederhergestellt, alle logischen Tabellen und Exportbytes identisch. Original Accepted-Archiv danach nochmals mit gleichem Hash gelesen.
+5. **Produktion/Rollback:** Die erste vollständige Live-Prüfung traf CHE während legitimer FX-Neudarstellung. Fail-closed-Abschaltung erfolgreich; acht tatsächliche OFF-Fälle, keine Consumer-Anfrage. Prüfung wartet jetzt auf echte FX-ready-/Route-Abschlüsse und exakten Datenstand; keine Wiederholung fehlgeschlagener Assertions und keine abgeschwächten Grenzwerte.
+
+Die endgültige vollständige Live-Prüfung und der manuelle Screenshot-Review werden separat in production-review.json und dem Abschlussbericht festgehalten.

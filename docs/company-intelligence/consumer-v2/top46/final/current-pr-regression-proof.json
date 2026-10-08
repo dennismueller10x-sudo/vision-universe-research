@@ -1,0 +1,44 @@
+{
+  "baselineBasis": "TRUSTED_GITHUB_PR_CHECKOUT_FIRST_PARENT",
+  "eventBaseSha": "68f1854c4f769aa21f6ec38d1a539080295f2c0a",
+  "status": "PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES",
+  "baselineSha": "2165c4bb70542962d2d22741a018470f84815bcf",
+  "protectedPaths": [
+    "quant",
+    "discover",
+    "supertrader",
+    "screener",
+    "providers",
+    "scripts/market",
+    "scripts/quant"
+  ],
+  "protectedInputDiff": [],
+  "candidate": {
+    "status": 1,
+    "failures": [
+      "AL-2 \u00b7 Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobachtete Titel, neutral formuliert",
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "testCount": 3107,
+    "passCount": 3097,
+    "skipCount": 5
+  },
+  "independentBaseline": {
+    "status": 1,
+    "failures": [
+      "AL-2 \u00b7 Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobachtete Titel, neutral formuliert",
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "testCount": 3107,
+    "passCount": 3097,
+    "skipCount": 5
+  },
+  "newBranchFailures": 0,
+  "productionPriceDataChanged": false
+}
