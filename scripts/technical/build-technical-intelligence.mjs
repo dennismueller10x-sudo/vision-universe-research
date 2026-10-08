@@ -27,7 +27,7 @@
    evidence-1D*.json (vom Backtest ti-evidence.mjs). Ohne Datei: keine
    empirischen Zahlen im Produkt (ehrlich "NO_HISTORY").
 
-   Aufruf: node scripts/technical/build-technical-intelligence.mjs [--work-dir DIR] [--limit N] [--workers N]
+   Aufruf: node scripts/technical/build-technical-intelligence.mjs [--work-dir DIR] [--limit N] [--workers N] [--out DIR]
    Mission III: Elliott Engine 3.x (PRODUCT_METHODOLOGY), parallel in Worker-Threads (Standard: CPU-Kerne − 0),
    Versionsfelder je Titel (versions: analysis, elliott, ruleSet, dataAsOf).
    ========================================================================= */
@@ -38,6 +38,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
+import { projectFor, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -48,10 +49,11 @@ const Explain = require(join(ROOT, "quant/engines/technical/ti/explain.js"));
 const Alerts = require(join(ROOT, "quant/engines/technical/ti/alerts.js"));
 const Scenario = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
 
-const OUT = join(ROOT, "quant/data/technical-intelligence/v3");
+const OUT = arg("out", join(ROOT, "quant/data/technical-intelligence/v3"));   // --out: Testlaeufe schreiben nie in die veroeffentlichten Daten
 const Patterns = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
 const EVID = join(ROOT, "quant/data/technical-intelligence/evidence");
 const API_VERSION = "vu-ti-api-3.0.0";
+const Identity = require(join(ROOT, "core/identity.js"));   // eine Identitaetsregel (ADR-001)
 function arg(name, def) { const i = process.argv.indexOf("--" + name); return i >= 0 ? process.argv[i + 1] : def; }
 function r(v, d = 4) { return typeof v === "number" && Number.isFinite(v) ? Math.round(v * 10 ** d) / 10 ** d : v; }
 export function shardKey(ticker) { return (String(ticker).toUpperCase() + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); }
@@ -146,8 +148,16 @@ function indexRow(p) {
     clarity: p.clarity.level, evidence: p.evidenceBadge.level, higherAligned: E && E.primary && E.primary.rankComponents ? E.primary.rankComponents.higherDegree >= 0.8 : null,
     patterns: p.pro.patterns.patterns.filter((x) => x.status !== "FAILED").map((x) => x.type + ":" + x.status), wyckoff: p.pro.wyckoff.phase ? p.pro.wyckoff.schematic + ":" + p.pro.wyckoff.phase : null,
     stage: p.regime.stage, vol: p.regime.volatility, alignment: p.timeframes.alignment, empirical: p.confidence.empirical && p.confidence.empirical.status === "OK" ? { n: p.confidence.empirical.n, hit: p.confidence.empirical.t1HitRate, base: p.confidence.empirical.baselineRate } : null,
-    alerts: p.alerts
+    alerts: p.alerts,
+    proj: projRow(p.projectionWeekly && p.projectionWeekly.consumerVisible ? p.projectionWeekly : p.projection)
   };
+}
+/** Kompakte Projektionszeile fuer Listen (nur angezeigte Thesen). */
+function projRow(pr) {
+  const t = pr && pr.consumerVisible ? pr.primary || pr.alternative : null;
+  if (!t) return pr ? { st: pr.status } : null;
+  const z = (tier) => { const x = t.zones.find((q) => q.tier === tier); return x ? [x.display.low, x.display.high] : null; };
+  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside };
 }
 
 /** Indexmitglieder (S&P 500, Nasdaq-100, Dow) als Relevanz- und Liquiditaetsfilter fuer Consumer-Reihen. */
@@ -235,12 +245,23 @@ export function productOpts(kind, C, symbol) {
     ? { evidenceTable: C.ev1D, weeklyEvidenceTable: C.ev1W, calibration: C.ev1D && C.ev1D.calibration, symbol, methodology: PRODUCT_METHODOLOGY }
     : { evidenceTable: C.ev1W, calibration: C.ev1W && C.ev1W.calibration, symbol, methodology: PRODUCT_METHODOLOGY };
 }
+/* Elliott Projection Engine, Wochen-zuerst: Fuer Titel mit Tagesanalyse wird die grosse These auf der Wochenreihe gerechnet
+   (dieselbe Produktfunktion wie fuer alle Wochentitel). Nur fuer die Projektion; das Chartbild bleibt die Tagesanalyse. */
+function weeklyFor(ticker, C) {
+  const f = join(C.wdir, Identity.securityIdForTicker(ticker) + ".json");
+  if (!existsSync(f)) return null;
+  const j = readJson(f), series = weeklySeriesFromPoints(j.points || [], j.ticker);
+  if (series.length < 160) return null;
+  const p = payload(series, analyzeProduct(series, productOpts("weekly", C, j.ticker)), "$", null);
+  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence,
+           timeframes: null, dataQuality: p.dataQuality, chart: { timestamps: p.chart.timestamps, close: p.chart.close } };
+}
 function runUnit(u, C) {
   if (u.kind === "daily") {
     const j = readJson(join(C.dailyDir, u.f)), series = dailySeriesFromPayload(j, j.ticker);
     if (series.length < 300) return { skip: true };
     const opts = productOpts("daily", C, j.ticker);
-    return { p: payload(series, analyzeProduct(series, opts), "$", opts), daily: true };
+    return { p: payload(series, analyzeProduct(series, opts), "$", opts), daily: true, pW: weeklyFor(j.ticker, C) };
   }
   const j = readJson(join(C.wdir, u.f));
   const series = weeklySeriesFromPoints(j.points || [], j.ticker);
@@ -276,7 +297,7 @@ async function main() {
   const handle = (m) => {
     if (m.error) { skipped++; process.stderr.write(m.error + "\n"); return; }
     if (m.skip) { skipped++; return; }
-    if (m.p) { const prevP = got.get(m.p.symbol); if (!prevP || (m.daily && !prevP.daily)) got.set(m.p.symbol, { p: m.p, daily: !!m.daily }); }
+    if (m.p) { const prevP = got.get(m.p.symbol); if (!prevP || (m.daily && !prevP.daily)) got.set(m.p.symbol, { p: m.p, daily: !!m.daily, pW: m.pW || null }); }
     if (++done % 500 === 0) process.stderr.write("  " + done + "/" + units.length + " " + Math.round((Date.now() - t0) / 1000) + " s\n");
   };
   if (nWorkers === 1) { for (const u of units) { try { handle(runUnit(u, C)); } catch (e) { handle({ error: u.f + ": " + e.message }); } } }
@@ -289,6 +310,8 @@ async function main() {
       w.on("error", reject); w.on("exit", (code) => { if (code !== 0) reject(new Error("worker exit " + code)); });
     })));
   }
+  /* ---- Elliott Projection Engine: Relative Staerke im Querschnitt, Thesen, Lebenszyklus (nur angezeigte Thesen) */
+  const projStats = projectAll(got);
   [...got.keys()].sort().forEach((t) => { const g = got.get(t); if (g.daily) dailyDone.add(t); else weekly++; add(g.p); });
   Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
   // ---- Alerts gegen den vorherigen Index (Mission IV §51: nie aus Methoden-/Engine-Wechsel, nur bei neuen Marktdaten)
@@ -320,11 +343,40 @@ async function main() {
     migration: "docs/technical-intelligence/API_V3_MIGRATION.md",
     runtimeSec: Math.round((Date.now() - t0) / 1000)
   };
+  meta.projection = projStats;
+  meta.paths.projectionTheses = "/quant/data/technical-intelligence/v3/projection-theses.json";
   writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
   writeFileSync(join(OUT, "evidence-summary.json"), JSON.stringify(evidenceSummary(), null, 1));
   const me = join(ROOT, "quant/methodology/technical-method-evidence.json");
   if (existsSync(me)) writeFileSync(join(OUT, "method-evidence.json"), JSON.stringify(Object.assign({ schemaVersion: API_VERSION }, readJson(me)), null, 1));
   console.log(JSON.stringify(meta.counts), meta.runtimeSec + " s", alerts.length + " Alerts");
+}
+
+/** Projektionen aller Titel (Hauptthread: braucht den Querschnitt der Relativen Staerke) und Lebenszyklus-Store. */
+function projectAll(got) {
+  const rs = rsRanks([...got].map(([t, g]) => [t, rsInput(g.pW || g.p)]));
+  const items = [], stats = { version: PROJECTION_VERSION, store: STORE_SCHEMA, status: {}, consumerVisible: 0, types: {}, highUpside: 0, weeklyForDaily: 0 };
+  for (const [t, g] of got) {
+    g.p.projection = projectFor(g.p, rs.get(t) || null);
+    items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf });
+    if (g.pW) {
+      g.p.projectionWeekly = projectFor(g.pW, rs.get(t) || null); stats.weeklyForDaily++;
+      items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf });
+    }
+  }
+  const storePath = join(OUT, "projection-theses.json");
+  let prev = null; if (existsSync(storePath)) { try { prev = readJson(storePath); } catch (e) { prev = null; } }
+  const versions = { projection: PROJECTION_VERSION, elliott: EV3.ENGINE_VERSION, ruleSet: Patterns.RULE_SET_VERSION, api: API_VERSION };
+  const adv = advanceStore(prev, items, versions);
+  for (const it of items) {
+    attachLifecycle(it.proj, adv.bySymbol.get(it.symbol + "|" + it.tf));
+    stats.status[it.proj.status] = (stats.status[it.proj.status] || 0) + 1;
+    if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; }
+  }
+  mkdirSync(OUT, { recursive: true });
+  writeFileSync(storePath, JSON.stringify(adv.store, null, 1));
+  stats.lifecycleEvents = adv.events; stats.tracked = Object.values(adv.store.theses).filter((e) => e.state !== "ARCHIVED").length;
+  return stats;
 }
 
 if (isMainThread && process.argv[1] && process.argv[1].endsWith("build-technical-intelligence.mjs")) main().catch((e) => { console.error(e); process.exit(1); });

@@ -379,7 +379,7 @@
         el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Elliott " + ((a.versions && a.versions.elliott) || (a.pro.elliott && a.pro.elliott.engineVersion) || "–") + " · Regelwerk " + ((a.versions && a.versions.ruleSet) || (a.pro.elliott && a.pro.elliott.ruleSetVersion) || "–") + " · Datenstand " + X.dateDe((a.versions && a.versions.dataAsOf) || a.asOf) + "." }),
         el("p", {}, [X.link("Methodik und Quellen →", X.routes.method("chartbild"))])];
     }));
-    return [el("h2", { class: "cb-pro-title", text: "Profi-Ansicht" }), elliottPro(a, rules, methodEv),
+    return [el("h2", { class: "cb-pro-title", text: "Profi-Ansicht" }), elliottPro(a, rules, methodEv), projectionPro(a),
       el("h3", { class: "cb-pro-sub", text: "Weitere Verfahren auf einen Blick" }), el("div", { class: "cb-pro-grid" }, cards)];
   }
 
@@ -579,9 +579,16 @@
     var range = a.timeframe === "1W" ? "3J" : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
     var replayStep = null, waveSet = "primary";
+    /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
+    var pjSel = pickProjection(a, view === "pro"), lens = "scenario", pjWhich = "primary", pjLog = null;
+    function pjThesis() { var p = pjSel && pjSel.p; if (!p || (!p.consumerVisible && view !== "pro")) return null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative; }
+    function pjAutoLog(t) { if (!t || !t.zones.length) return false; var hi = Math.max.apply(null, t.zones.map(function (z) { return z.high; }).concat(a.chart.close)), lo = Math.min.apply(null, t.zones.map(function (z) { return z.low; }).concat(a.chart.close.slice(-260))); return lo > 0 && hi / lo > 4; }
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
       if (replayStep) return replayStep.ew && !replayStep.ew.ab ? replayStep.ew.waves.map(function (w) { return { label: w[2], time: w[0], price: w[1], status: w[3] ? "DEVELOPING" : "CONFIRMED" }; }) : [];
+      /* Projektions-Ebene mit These des hoeheren Grades: dessen Wellen (1)…(4) statt der Hauptgrad-Zaehlung */
+      var pt = lens === "projection" ? pjThesis() : null;
+      if (pt && pt.degree === "HIGHER" && pt.anchorWaves) return pt.anchorWaves.map(function (w) { return { label: w.label, display: "(" + w.label + ")", time: w.toTime, price: w.toPrice, fromPrice: w.fromPrice, status: w.status }; });
       var ov = a.overlays && a.overlays.waves;
       if (!ov || !ov.primary.length || (!ov.consumerVisible && view !== "pro")) return [];
       var list = waveSet === "alt" && ov.alternative && ov.alternative.length ? ov.alternative : ov.primary;
@@ -589,20 +596,38 @@
     }
     function draw() {
       var width = Math.max(300, Math.min(1100, chartHost.clientWidth || main.clientWidth - 24));
+      pjSel = pickProjection(a, view === "pro");
+      var pjT = !replayStep && lens === "projection" ? pjThesis() : null, pjOnChart = !!(pjT && pjT.zones);
+      if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative) || (!pjSel.p.consumerVisible && view !== "pro");
+      if (logSeg) logSeg.hidden = !pjOnChart;
+      /* Ebene nicht (mehr) verfuegbar (z. B. Wechsel von Profi zu Einfach bei zurueckgehaltener These) → zurueck zum Szenario */
+      if (lens === "projection" && lensSeg && lensSeg.hidden) { lens = "scenario"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 0 ? "true" : "false"); }); }
+      pjLegend.hidden = !pjOnChart; var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: replayStep ? "PRIMARY" : kind, scenario: scenarioOf(kind),
+        projection: pjOnChart ? pjChart(pjT, pjWhich === "alt" ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
         cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
-        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" ? null : function (w) { waveInspector(a, w, rules, methodEv); },
+        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && pjT.degree === "HIGHER") ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 360 : 430, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
       chartCard.classList.toggle("is-replay", !!replayStep);
     }
-    var controls = el("div", { class: "cb-controls" }, [
+    var pjLegend = el("p", { class: "cb-legend cb-legend-pj", hidden: true }, [el("span", { class: "cb-key cb-key-pj-base", text: "Basis" }), el("span", { class: "cb-key cb-key-pj-extended", text: "Erweitert" }), el("span", { class: "cb-key cb-key-pj-extreme", text: "Extrem" }),
+      el("span", { class: "cb-key cb-key-pj-conf", text: "Bestätigung" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-dim", text: "Projektion ≠ Wahrscheinlichkeit · keine Zeitangabe" })]);
+    var lensSeg = segmented("Ebene", [["scenario", "Szenario"], ["projection", "Elliott-Projektion"]], lens, function (v) { if (v === "projection") showProjection(pjWhich, true); else { lens = v; draw(); } });
+    var logSeg = segmented("Preisachse", [["lin", "Linear"], ["log", "Log"]], "lin", function (v) { pjLog = v === "log"; draw(); });
+    function showProjection(which, stay) {
+      pjWhich = which; lens = "projection"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 1 ? "true" : "false"); });
+      var t = pjThesis(), lg = pjLog === null ? pjAutoLog(t) : pjLog; logSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === lg ? "true" : "false"); });
+      draw(); if (!stay) chartCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    var controls = el("div", { class: "cb-controls" }, [lensSeg, logSeg,
       segmented("Zeitraum", ranges.map(function (x) { return [x[0], x[1]]; }), range, function (v) { range = v; draw(); }),
       a.chart.closeOnly ? null : segmented("Darstellung", [["line", "Linie"], ["candles", "Kerzen"]], mode, function (v) { mode = v; draw(); }),
       E && E.primary ? segmented("Wellen", [["off", "Wellen aus"], ["on", "Wellen an"]], wavesOn ? "on" : "off", function (v) { wavesOn = v === "on"; draw(); }) : null
     ]);
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [controls, chartHost,
-      el("p", { class: "cb-legend" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
+      pjLegend,
+      el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       el("p", { class: "cb-lead cb-lead-m", text: a.explain.summary }),
       abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Wellen." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null,
       el("p", { class: "cb-small cb-dim", text: wavesOn && !abstain && E && E.primary ? "Tipp: Eine Wellenmarke antippen erklärt die Welle." : "" }),
@@ -610,6 +635,7 @@
 
     // ---------------------------------------------- Elliott-Struktur (Mission III §41–§47, §57, §98–§100)
     var ewCard = elliottConsumerCard(a, abstain, function (set) { waveSet = set; wavesOn = true; draw(); });
+    var pjCard = projectionCard(a, showProjection);
 
     // ---------------------------------------------- Warum?
     var items = a.evidence.checklist.slice().sort(function (x, y) { var o = { SUPPORTS: 0, CONTRADICTS: 1, NEUTRAL: 2, UNAVAILABLE: 3 }; return o[x.status] - o[y.status] || FAMILY_ORDER.indexOf(x.family) - FAMILY_ORDER.indexOf(y.family); });
@@ -685,7 +711,7 @@
     /* Design-Review (UI_UX_SPEC §8): Variante „d" gewählt — Szenario-Tabs direkt über dem Chart, damit der Chart mit
        beschrifteten Zonen schon im ersten Bildschirm steht; Kacheln und Szenario-Satz darunter. a/b/c bleiben zum Vergleich. */
     var tabsBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs]), textBlock = el("div", { class: "cb-sc-after" }, [scText, scenarioDifference(scenarioOf("PRIMARY"), scenarioOf("ALTERNATIVE"))]);
-    var order = { a: [hero, chartCard, levels, tabsBlock, textBlock, ewCard], b: [hero, levels, chartCard, tabsBlock, textBlock, ewCard], c: [hero, tabsBlock, textBlock, levels, chartCard, ewCard], d: [hero, tabsBlock, chartCard, levels, textBlock, ewCard] }[layout];
+    var order = { a: [hero, chartCard, levels, tabsBlock, textBlock, pjCard, ewCard], b: [hero, levels, chartCard, tabsBlock, textBlock, pjCard, ewCard], c: [hero, tabsBlock, textBlock, levels, chartCard, pjCard, ewCard], d: [hero, tabsBlock, chartCard, levels, textBlock, pjCard, ewCard] }[layout];
     host.append(el("div", { class: "cb-viewswitch" }, [viewSeg]));
     order.forEach(function (n) { if (n) host.append(n); });
     [why, evidence, replay, tfs].forEach(function (n) { if (n) host.append(n); });
@@ -754,6 +780,138 @@
     }
     kids.push(el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“. Keine Wahrscheinlichkeit, kein Signal." }));
     return el("section", { class: "cb-ew-card", "aria-label": "Elliott-Struktur" }, kids);
+  }
+
+  // ================================================================ Elliott-Projektion (elliott-projection-1.0.0)
+  /* Die Seite rechnet nicht: Zonen, Prozentwerte, Fahrplan und Lebenszyklus stehen im Shard (projection, projectionWeekly).
+     Wochen zuerst: Die große These steht auf dem Wochenchart; die Tagesstruktur ist Detail und Timing (Kind der Woche).
+     Projektion ≠ Wahrscheinlichkeit: Prozente sind Abstand vom Kurs, keine Trefferquote. */
+  var PJ_TIER = { BASE: "Basis-Projektion", EXTENDED: "Erweiterte Projektion", EXTREME: "Extreme Projektion" };
+  var PJ_STATUS = { DEVELOPING: "Im Aufbau · noch nicht bestätigt", CONFIRMED: "Strukturell bestätigt", EXHAUSTED: "Projektionszonen bereits erreicht", INVALID: "Ungültig" };
+  var PJ_MARK = { MET: ["✓", "erfüllt", "ok"], OPEN: ["○", "offen", "open"], FAILED: ["✕", "verfehlt", "bad"], NA: ["–", "nicht verfügbar", "na"] };
+  var PJ_CLASS = { HARD_RULE: "harte Regel", DEFINITION: "Definition", GUIDELINE: "Richtlinie", REVISION: "Wellenzuordnung", VU_OPERATIONAL: "VU-Festlegung", VU_CONFIRMATION: "VU-Bestätigung", PROJECTION_RELATIONSHIP: "Projektionsverhältnis" };
+  function pctText(v) {
+    if (!isNum(v)) return "–";
+    var p = v * 100, a = Math.abs(p), r = a >= 100 ? 1 : a >= 10 ? 0.5 : 0.05;
+    if (a < r) return "±0 %";
+    var s = (p >= 0 ? "+" : "−") + (a >= 100 ? Math.round(a / (a >= 1000 ? 10 : 1)) * (a >= 1000 ? 10 : 1) : a >= 10 ? Math.round(a) : Math.round(a * 10) / 10).toLocaleString("de-DE");
+    return s + " %";
+  }
+  function pjZone(z) { return fmt(z.display.low) + "–" + fmt(z.display.high); }
+  function pjPct(z) { return pctText(z.pctLow) + " bis " + pctText(z.pctHigh); }
+  /** Welche Projektion zeigt die Seite? Wochen-These zuerst, wenn sie für Kunden sichtbar ist. */
+  function pickProjection(a, pro) {
+    var w = a.projectionWeekly, d = a.projection;
+    if (w && w.consumerVisible) return { p: w, tf: "1W", other: d && d.consumerVisible ? d : null };
+    if (d && (d.consumerVisible || pro)) return { p: d, tf: a.timeframe, other: null };
+    if (w && pro) return { p: w, tf: "1W", other: null };
+    return d || w ? { p: d || w, tf: d ? a.timeframe : "1W", other: null } : null;
+  }
+  /** These → Chart-Datenvertrag (die Chart-Komponente kennt keine Engine-Interna). */
+  function pjChart(t, tone) {
+    if (!t) return null;
+    return { zones: t.zones.map(function (z) { return { tier: z.tier, low: z.low, high: z.high, dLow: z.display.low, dHigh: z.display.high, passed: z.state === "PASSED" }; }), invalidation: t.invalidation, confirmation: t.confirmation, direction: t.direction, tone: tone || null };
+  }
+  function pjAlt(p) { return p.highUpside && p.highUpside.zones ? p.highUpside : p.alternative; }
+  function pjLadder(t, close) {
+    return el("ol", { class: "cb-pj-ladder", "aria-label": "Projektionsleiter" }, t.zones.map(function (z) {
+      var st = z.state === "PASSED" ? "bereits erreicht" : z.state === "INSIDE" ? "Kurs in der Zone" : null;
+      return el("li", { class: "cb-pj-tier cb-pj-" + z.tier.toLowerCase() + (z.state === "PASSED" ? " is-passed" : "") }, [
+        el("span", { class: "cb-pj-tier-k", text: PJ_TIER[z.tier] }),
+        el("strong", { class: "cb-pj-tier-v num", text: pjZone(z) }),
+        el("span", { class: "cb-pj-tier-p num", text: pjPct(z) }),
+        st ? el("span", { class: "cb-pj-chip", text: st }) : null
+      ]);
+    }).concat(t.zones.length < 3 ? [el("li", { class: "cb-pj-tier is-omitted" }, [el("span", { class: "cb-pj-tier-k", text: "Nicht ausgewiesen" }), el("span", { class: "cb-pj-tier-p", text: omittedText(t) })])] : []));
+  }
+  /** Entfallene Stufen, gleiche Begruendungen zusammengefasst. */
+  function omittedText(t) {
+    var by = {};
+    (t.omittedTiers || []).filter(function (o) { return t.zones.every(function (z) { return z.tier !== o.tier; }); }).forEach(function (o) { (by[o.text] = by[o.text] || []).push(PJ_TIER[o.tier]); });
+    return Object.keys(by).map(function (k) { return by[k].join(" und ") + ": " + k; }).join(" · ");
+  }
+  function pjRoad(list) {
+    return el("ul", { class: "cb-pj-road" }, list.map(function (x) {
+      var m = PJ_MARK[x.state] || PJ_MARK.OPEN;
+      return el("li", { class: "cb-pj-road-" + m[2] }, [el("span", { class: "cb-pj-road-m", "aria-hidden": "true", text: m[0] }), el("span", {}, [el("span", { text: x.text }), el("small", { class: "cb-pj-road-c", text: " · " + (PJ_CLASS[x.class] || x.class) }), el("span", { class: "cb-sr", text: " (" + m[1] + ")" })])]);
+    }));
+  }
+  function pjContext(p, t) {
+    var c = p.context; if (!c) return null;
+    var ms = t.roadmap && t.roadmap.structure;
+    var tone = function (ok, bad) { return ok ? "up" : bad ? "down" : null; };
+    var s = t.direction === "UP" ? 1 : -1;
+    return el("div", { class: "cb-pj-ctx", role: "group", "aria-label": "Unabhängige Bestätigungen" }, [
+      proTile("Trend", c.trend.label, c.trend.detail, tone(c.trend.state === (s > 0 ? "POSITIVE" : "NEGATIVE"), c.trend.state === (s > 0 ? "NEGATIVE" : "POSITIVE"))),
+      proTile("Relative Stärke", c.rs.label, c.rs.detail, tone(c.rs.state === (s > 0 ? "TOP20" : "BOTTOM20"), c.rs.state === (s > 0 ? "BOTTOM20" : "TOP20"))),
+      proTile("Marktstruktur", ms ? ms.label : "–", c.structure.detail, tone(ms && ms.state === "CONFIRMED", ms && ms.state === "CONFLICTING"))
+    ]);
+  }
+  /** Konsumenten-Karte: These in Sekunden verstehen (Leiter, Ungültig, nächste Schritte, Bestätigungen, Alternative, Evidenz). */
+  function projectionCard(a, onChart) {
+    var sel = pickProjection(a, false); if (!sel) return null;
+    var p = sel.p, t = p.consumerVisible ? p.primary || p.alternative : null, tfName = sel.tf === "1W" ? "Wochenchart" : "Tageschart";
+    var head = el("div", { class: "cb-ew-head" }, [el("span", { class: "cb-ew-k", text: "Elliott-Projektion · " + tfName }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentelles Strukturmodell" })]);
+    if (!t) {
+      var why = p.status === "DATA_INVALID" ? p.reason : p.status === "ABSTAIN" ? "Ohne verlässliche Zählung zeigt Vision Universe keine Projektion." : p.reason || "Die aktuelle Zählung liefert keine Projektion.";
+      return el("section", { class: "cb-ew-card cb-pj is-empty", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: "Keine Elliott-Projektion" }), el("p", { class: "cb-ew-sub", text: why })]);
+    }
+    var lc = t.lifecycle, alt = pjAlt(p), kids = [head,
+      el("div", { class: "cb-pj-title" }, [el("h2", { class: "cb-pj-h", text: t.label }), el("span", { class: "cb-pj-status cb-pj-st-" + t.status.toLowerCase(), text: PJ_STATUS[t.status] || t.status })]),
+      el("p", { class: "cb-pj-sub", text: (t.source === "HIGHER_DEGREE" ? "Höherer Grad: " : "") + (t.patternName || "") + " · Richtung " + dirWord(t.direction) + " · Hauptlesart (derzeit bevorzugt, nicht „die richtige Zählung“)" }),
+      el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
+      pjLadder(t, p.close),
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: t.invalidation.displayText || fmt(t.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
+      el("div", { class: "qx-actions" }, [(function () { var b = el("button", { type: "button", class: "cb-pj-btn", text: "Projektion im Chart zeigen" }); b.addEventListener("click", function () { onChart("primary"); }); return b; })()]),
+      el("h3", { class: "cb-pj-h3", text: "Was als Nächstes passieren muss" }),
+      el("div", { class: "cb-pj-roads" }, [el("div", {}, [el("p", { class: "cb-pj-road-h", text: "Elliott-Anforderung" }), pjRoad(t.roadmap.elliott)]), el("div", {}, [el("p", { class: "cb-pj-road-h", text: "VU-Bestätigung (unabhängig)" }), pjRoad(t.roadmap.vu)])]),
+      el("p", { class: "cb-small cb-dim", text: t.roadmap.note }),
+      pjContext(p, t)];
+    if (alt) {
+      var hu = !!alt.highUpside, lo = alt.zones[0], hi = alt.zones[alt.zones.length - 1];
+      var ab = el("button", { type: "button", class: "cb-pj-btn cb-pj-btn-alt", text: "Alternative im Chart zeigen" }); ab.addEventListener("click", function () { onChart("alt"); });
+      kids.push(el("div", { class: "cb-pj-alt" + (hu ? " is-high" : "") }, [
+        el("p", { class: "cb-pj-alt-k", text: hu ? "Alternative Lesart mit hohem Aufwärtspotenzial" : "Alternative Lesart" }),
+        el("strong", { text: alt.label + (alt.patternName ? " · " + alt.patternName : "") }),
+        el("p", { class: "num", text: "Zonen " + fmt(lo.display.low) + " bis " + fmt(hi.display.high) + " (" + pctText(lo.pctLow) + " bis " + pctText(hi.pctHigh) + ")" + (alt.invalidation ? " · ungültig " + (alt.invalidation.direction === "below" ? "unter " : "über ") + (alt.invalidation.displayText || fmt(alt.invalidation.price)) : "") }),
+        hu ? el("p", { class: "cb-small", text: "Nicht die bevorzugte Zählung, geringe Klarheit. Die Engine hat diese Lesart regelkonform gefunden; sie wird nicht zur Hauptlesart erhoben." }) : null,
+        el("div", { class: "qx-actions" }, [ab])]));
+    }
+    if (sel.other && sel.other.primary) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Tagesstruktur: " }), el("span", { text: sel.other.primary.label + " (" + PJ_STATUS[sel.other.primary.status] + "). Der Tageschart zeigt Detail und Timing innerhalb der Wochen-These – kein Widerspruch, sondern eine Ebene tiefer." })]));
+    kids.push(el("div", { class: "cb-pj-ev" }, [el("span", { class: "cb-layer-k", text: "Historische Evidenz" }), el("b", { text: p.evidence.label }), el("span", { class: "cb-small", text: p.evidence.text })]));
+    if (lc) kids.push(el("p", { class: "cb-small cb-dim", text: "These seit " + X.dateDe(lc.createdAt) + " · Revision " + lc.rev + " (eingefroren am " + X.dateDe(lc.frozenAt) + ") · " + lc.stateLabel + ". Zonen werden nachträglich nicht verschoben; ändert sich die Zählung, entsteht eine neue Revision." }));
+    (p.guardrails && p.guardrails.flags || []).forEach(function (f) { kids.push(el("p", { class: "cb-small", text: "Hinweis: " + f.text })); });
+    kids.push(el("p", { class: "cb-small cb-dim", text: p.disclaimer }));
+    return el("section", { class: "cb-ew-card cb-pj", id: "projektion", "aria-label": "Elliott-Projektion" }, kids);
+  }
+  /** Fachansicht: Formel, Klasse, Quelle je Stufe; Anker, Grenzen, Deckel, Lebenszyklus — auch für zurückgehaltene Thesen. */
+  function projectionPro(a) {
+    var sel = pickProjection(a, true); if (!sel) return null;
+    var p = sel.p, R = p.relations || {}, kids = [el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Projektion · Fachdetails" }), el("span", { class: "cb-badge cb-badge-experimental", text: p.version })])];
+    if (!p.primary && !p.alternative) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
+    if (!p.consumerVisible) kids.push(el("p", { class: "cb-unclear" }, [el("b", { text: "Nur Fachansicht. " }), el("span", { text: p.reason || "" })]));
+    function block(t, title) {
+      if (!t || !t.zones) return null;
+      var rows = t.zones.map(function (z) { var r = R[z.relationId] || {}; return el("tr", {}, [el("td", { text: PJ_TIER[z.tier] }), el("td", { class: "num", text: fmt(z.low) + "–" + fmt(z.high) }), el("td", { text: r.formula || z.relationId }), el("td", { text: PJ_CLASS[r.class] || r.class || "–" }), el("td", { text: (r.source || "–") + " " + (r.locator || "") })]); });
+      return el("div", { class: "cb-pj-pro" }, [el("h4", { class: "cb-pj-h4", text: title + ": " + t.label + " · " + (t.patternName || t.pattern) + (t.degree === "HIGHER" ? " (höherer Grad)" : "") }),
+        kv([["Anker", fmt(t.anchor.price) + " · " + t.anchor.text + (t.anchor.time ? " (" + X.dateDe(t.anchor.time) + ")" : "")], ["Referenz", t.reference.label + " = " + fmt(t.reference.length) + (isNum(t.reference.net13) ? " · Strecke 1–3 = " + fmt(t.reference.net13) : "")],
+            t.invalidation ? ["Invalidation", boundText(t.invalidation) + " · " + t.invalidation.ruleId + " (" + (t.invalidation.kind === "HARD_RULE" ? "harte Regel" : "Musterende/Zuordnung") + ")"] : null,
+            t.revision ? ["Neuzuordnung", boundText(t.revision) + " · " + t.revision.ruleId] : null,
+            t.confirmation ? ["Bestätigung", (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + " · " + t.confirmation.ruleId + " (" + (PJ_CLASS[t.confirmation.class] || t.confirmation.class) + ")"] : null,
+            t.cap ? ["Deckel", fmt(t.cap.price) + " · " + t.cap.ruleId] : null, t.truncation ? ["Truncation", t.truncation.statement] : null,
+            ["Status", PJ_STATUS[t.status] || t.status], t.ruleValidity ? ["Regelprüfung der Zählung", t.ruleValidity === "VALID" ? "alle harten Regeln erfüllt" : t.ruleValidity] : null]),
+        el("div", { class: "cb-table-wrap", tabindex: "0", role: "region", "aria-label": "Projektionsformeln" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, ["Stufe", "Zone", "Formel", "Klasse", "Quelle"].map(function (h) { return el("th", { text: h }); }))]), el("tbody", {}, rows)])]),
+        (t.omittedTiers || []).length ? el("p", { class: "cb-small" }, [el("b", { text: "Nicht ausgewiesen: " }), el("span", { text: omittedText(t) })]) : null,
+        (t.notes || []).length ? el("p", { class: "cb-small", text: t.notes.join(" ") }) : null,
+        t.lifecycle ? X.more("Lebenszyklus (" + t.lifecycle.events.length + " Ereignisse)", function () { return el("ol", { class: "cb-list" }, t.lifecycle.events.map(function (e) { return el("li", { class: "num", text: X.dateDe(e.d) + " · " + (e.type.replace(/_/g, " ").toLowerCase()) + " · Revision " + e.rev + (isNum(e.close) ? " · Schluss " + fmt(e.close) : "") }); })); }) : null]);
+    }
+    kids.push(block(p.primary, "Hauptlesart"));
+    if (p.primary && p.primary.subStructure) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Kurzfristige Struktur: " }), el("span", { text: p.primary.subStructure.label + " – " + p.primary.subStructure.zones.map(function (z) { return PJ_TIER[z.tier] + " " + pjZone(z); }).join(", ") })]));
+    kids.push(block(p.alternative, "Alternative"));
+    if (p.highUpside && p.highUpside.zones) kids.push(block(p.highUpside, "Alternative mit hohem Aufwärtspotenzial"));
+    kids.push(el("p", { class: "cb-small cb-dim", text: [p.presentation && p.presentation.zones, p.presentation && p.presentation.percent, p.presentation && p.presentation.rounding, "Klassen: harte Regel/Definition/Richtlinie = Elliott (Frost & Prechter); Projektionsverhältnis = Literatur; VU-Festlegung = eigene, offen gekennzeichnete Grenze; VU-Bestätigung = unabhängige Signale ohne Einfluss auf die Formel.", "Engine " + (p.engine.elliott || "–") + " · Regelwerk " + (p.engine.ruleSet || "–") + " · " + p.version].filter(Boolean).join(" ") }));
+    return X.card(kids.filter(Boolean), "cb-ew-panel cb-ewp cb-pj-panel");
   }
 
   function stat(label, value, sub) { return value ? el("div", { class: "cb-stat" }, [el("span", { class: "cb-stat-label", text: label }), el("strong", { class: "num", text: value }), el("span", { class: "cb-stat-sub", text: sub })]) : null; }
