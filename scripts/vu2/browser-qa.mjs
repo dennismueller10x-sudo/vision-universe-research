@@ -48,7 +48,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
 const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[],findings=[];
 const Q=origin+'/quant/';
 /* Jede Route, die die App kennt - mit dem Budget-Schluessel, wo eines gilt.
-   Alle neun Methodik-Themen und alle Strategien stehen mit drin: eine
+   Alle zehn Methodik-Themen und alle Strategien stehen mit drin: eine
    Unterseite ohne axe-Lauf ist eine ungepruefte Unterseite. */
 const ROUTES=[
  ['home','#/','home'],
@@ -66,12 +66,15 @@ const ROUTES=[
  ['aktie-aaac','#/aktie/AAAC'],
  ['aktie-all-p-b','#/aktie/ALL-P-B'],
  ['aktie-unbekannt','#/aktie/ZZZZZ'],
+ /* Seit Technical Intelligence v3 zeigen die alten Technik-Routen das Chartbild (Lesezeichen bleiben gueltig). */
  ['technik','#/aktie/NVDA/technik'],
  ['elliott','#/aktie/NVDA/technik?elliott=1'],
+ ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
  ['methodik','#/methodik'],
- ...['daten','faktoren','gewichtung','branchen','setups','strategien','historie','grenzen','versionen'].map(t=>['methodik-'+t,'#/methodik/'+t]),
+ ...['daten','faktoren','gewichtung','branchen','setups','strategien','chartbild','historie','grenzen','versionen'].map(t=>['methodik-'+t,'#/methodik/'+t]),
  ['nicht-gefunden','#/gibtsnicht']
 ];
 const SOLL_BEREICHE=['Home','Quant Screener','Strategien','Aktien','Methodik'];
@@ -313,7 +316,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
    if(!/keine Prognose/i.test(await page.locator('#historie').innerText()))befund(view,width,'Historical Replay ohne Prognose-Absage');
-   await page.locator('#technik').getByRole('link',{name:'Technische Analyse & Elliott öffnen',exact:true}).waitFor();
+   await page.locator('#technik').getByRole('link',{name:'Chartbild öffnen',exact:true}).waitFor();
+   /* Elliott nur im Chartbild: keine V1-Zaehlung ("Validierte Zaehlung", "Method Fit") auf der Aktienseite. */
+   if(/Validierte Zählung|Method Fit|Elliott-Wellen\b/.test(await page.locator('#technik').innerText()))befund(view,width,'V1-Elliott auf der Aktienseite');
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
    if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
   }
@@ -354,18 +359,25 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if((await page.locator('main h1').innerText()).trim()!=='Aktie nicht gefunden')befund(view,width,'unbekanntes Kuerzel ohne Absage');
    danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
-  if(view==='technik'||view==='elliott'){
-   await page.locator('#qx-main .qx-card svg').first().waitFor();
-   await page.getByRole('combobox',{name:'Zeitraum',exact:true}).selectOption('MAX');
-   await page.getByRole('combobox',{name:'Chart-Ebene',exact:true}).selectOption('ELLIOTT');
-   await page.getByRole('checkbox',{name:'Alternativen'}).check();
-   await page.locator('#qx-main .qx-card svg').first().waitFor();
-   await page.getByRole('heading',{name:'Basiszählung',exact:true}).waitFor();
-   await page.locator('#elliott details.qx-more > summary').first().click();
-   await page.locator('#elliott table tbody tr').first().waitFor();
-   if(await page.locator('#elliott table tbody tr').count()<5)befund(view,width,'wave count truncated');
-   if(!/Hauptszenario/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'kein Hauptszenario');
-   await page.getByRole('combobox',{name:'Zeitraum',exact:true}).selectOption('1Y');
+  if(view==='technik'||view==='elliott'||view==='chartbild'){
+   /* CHARTBILD (Technical Intelligence v3): Ausblick, Szenario-Wechsel, Chart mit Zonen. Die alten Routen
+      zeigen dieselbe Seite; ?elliott=1 oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
+   await page.locator('#qx-main .cb-outlook').first().waitFor();
+   await page.locator('#qx-main .cb-chart svg').first().waitFor();
+   const knoepfe=page.locator('#qx-main .cb-switch-btn');
+   if(await knoepfe.count()<2)befund(view,width,'kein Szenario-Wechsel');
+   else{await knoepfe.nth(1).click();await page.locator('#qx-main .cb-chart svg').first().waitFor();await knoepfe.nth(0).click();}
+   const text=await page.locator('#qx-main').innerText();
+   if(!/Szenario/i.test(text))befund(view,width,'kein Szenario');
+   if(!/Ungültig|Invalid/i.test(text))befund(view,width,'keine Ungueltig-Linie');
+   if(/Validierte Zählung|Method Fit/.test(text))befund(view,width,'V1-Elliott-Wortlaut im Chartbild');
+   if(view==='elliott'){
+    await page.locator('#qx-main section.cb-pro').waitFor();
+    if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
+   }
+  }
+  if(view==='chartlagen'){
+   if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
   }
   if(view==='zahlen'){
    await page.locator('#qx-main svg').first().waitFor();
@@ -390,7 +402,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByText('Auswahl prüfen',{exact:true}).waitFor();
   }
   if(view==='methodik'){
-   if(await page.locator('#qx-main .qx-method-grid a').count()!==9)befund(view,width,'nicht neun Methodik-Themen');
+   if(await page.locator('#qx-main .qx-method-grid a').count()!==10)befund(view,width,'nicht zehn Methodik-Themen');
    await page.getByRole('link',{name:/Methodik im Detail/}).first().waitFor();
   }
   if(view==='nicht-gefunden'){
