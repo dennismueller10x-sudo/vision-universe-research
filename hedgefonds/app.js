@@ -549,7 +549,7 @@
           '<div class="vu-hero-scene" aria-hidden="true"></div>' +
           '<span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#hedgefonds"></use></svg></span>' +
           '<div class="vu-hero-name">Hedgefonds</div>' +
-          '<h1 class="vu-product-title vu-hero-headline">Große Investoren. Klare Einblicke.</h1>' +
+          '<h1 class="vu-product-title vu-hero-headline">Große Investoren.<br>Klare Einblicke.</h1>' +
           '<p class="lead vu-product-lead vu-hero-description">Was große Investoren kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>' +
           '<span class="hf-live"><i></i>13F-Meldungen · ' + esc(d.latestPeriodLabel || "") + " · geprüft " + dateDE(d.generatedAt) + "</span>" +
           '<div class="hf-hsearch"><label class="hf-search">' + icon("search") +
