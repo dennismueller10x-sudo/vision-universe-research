@@ -12,7 +12,8 @@ const live=base==='https://research.visionuniverse.de';
 assert(live||base.startsWith('http://127.0.0.1:'),'APPROVED_PRODUCTION_OR_LOCAL_CANDIDATE_ONLY');
 const release=live?await (await fetchWithRetry(fetch,base+'/release-delivery.json?review='+Date.now(),{signal:AbortSignal.timeout(30000)})).json():null;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
-const cases=[],examples=['TSLA','AAPL','NVDA','PLTR','XPEV'];await mkdir(out,{recursive:true});
+const cases=[],examples=['TSLA','AAPL','NVDA','PLTR','XPEV'];
+const additionalExamples=['GOOG','GOOGL','MSFT','BOH','SBSI','AMPY','ACU'];await mkdir(out,{recursive:true});
 try{
  if(live){const locked=await browser.newPage();await locked.goto(base+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(await locked.locator('.ci-company-intelligence').count(),0);await locked.close();}
  async function reviewIssuer([cid,inventory]){for(const ticker of inventory.tickers){
@@ -58,9 +59,11 @@ try{
     assert(links.filter(a=>a.visible).every(a=>a.height>=44),'Visible links touch targets');
     if(inventory.staleFinancials&&inventory.financials==='AVAILABLE')assert(text.includes('Veraltete Geschäftszahlen'));
    }
-   if(examples.includes(ticker)&&theme==='dark'&&[390,430,1440].includes(width)){
-    await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-viewport.png`});
-    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
+   const primaryScreenshot=examples.includes(ticker)&&[390,430,1440].includes(width)&&(theme==='dark'||version==='after');
+   const additionalScreenshot=version==='after'&&additionalExamples.includes(ticker)&&width===390;
+   if(primaryScreenshot||additionalScreenshot){
+    await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-viewport.png`});
+    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
    cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors,consumerResponses:responses,requestFailures,observedLoadStates:actualLoads.map(r=>({ticker:r.ticker,state:r.payload?.state,reason:r.payload?.reason,companyId:r.payload?.companyId}))});
