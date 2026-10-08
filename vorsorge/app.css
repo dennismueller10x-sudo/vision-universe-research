@@ -361,3 +361,26 @@ main.vs-main{padding-bottom:24px}
 .vs-more div{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:6px;font-size:14px;font-weight:700}
 .vs-more:empty{display:none}
 @media(max-width:420px){.vs-steps{grid-template-columns:1fr 1fr}}
+
+/* Premium family: calm neutral surfaces; analytical charts keep their colors. */
+:root{--bg:var(--vu-bg);--bg-soft:var(--vu-surface);--card:var(--vu-elevated);--ink:var(--vu-text);--ink-2:var(--vu-text-secondary);--muted:var(--vu-muted);--dim:#747b82;--accent:var(--vu-accent,#c8f531);--accent-ink:var(--vu-on-accent,#101318);--accent-text:var(--vu-accent-text);--accent-soft:var(--vu-accent-soft)}
+html[data-theme=dark]{--bg:var(--vu-bg);--bg-soft:var(--vu-surface);--panel:#191f24;--panel-2:#242b30;--card:var(--vu-elevated);--ink:var(--vu-text);--ink-2:var(--vu-text-secondary);--muted:var(--vu-muted);--dim:#919a9e;--accent-text:var(--vu-accent-text);--accent-soft:var(--vu-accent-soft)}
+.vs :focus-visible{outline-color:var(--accent-text)}
+.vs-product-hero.vu-product-hero{padding-inline:0}
+.vs-product-hero .vu-product-icon{margin-bottom:22px}
+.vs-product-hero .vs-eyebrow:before{display:none}
+.vs-product-hero h1.vu-product-hero__title{max-width:23ch}
+.vs-product-hero .vs-lead{max-width:56ch;color:var(--muted)}
+.vs-product-hero .vs-search{margin-top:24px;max-width:620px}
+.vs-search-icon{width:20px;height:20px;flex:none;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round}
+.vs-search button{min-height:44px;background:var(--accent);color:var(--accent-ink)}
+.vs-search:focus-within{border-color:var(--accent-text)}
+.vs-product-hero .vs-hero-actions{gap:10px}
+.vs-product-hero .vs-hero-actions .vs-pill{min-height:44px;font-weight:700}
+.vs-product-hero .vs-hero-actions .primary{background:var(--ink);color:var(--bg)}
+.vs-hero-more a,.vs-more a{min-height:44px}
+.vs-card{box-shadow:none}
+.vs-pill{transition:background .16s ease,border-color .16s ease}
+.vs-pill:hover{border-color:var(--accent-text)}
+.vs-table{line-height:1.5}
+@media(min-width:1024px){.vs-product-hero .vs-lead{max-width:62ch}.vs-product-hero .vu-product-icon{margin-bottom:26px}}
