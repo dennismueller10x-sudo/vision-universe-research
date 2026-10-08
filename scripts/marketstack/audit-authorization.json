@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "pr": 479,
+  "branch": "marketstack-connector-capability-audit",
+  "hardCap": 3500,
+  "authorizationNote": "User explicitly requested authenticated Actions audit; no production writes or merge",
+  "allocations": [
+    {
+      "id": "initial-20261007",
+      "cap": 1800,
+      "plan": "docs/marketstack-audit/representative-plan.json"
+    },
+    {
+      "id": "verify-20261007",
+      "cap": 1200,
+      "plan": "docs/marketstack-audit/followup-plan.json"
+    },
+    {
+      "id": "close-20261007",
+      "cap": 400,
+      "plan": "docs/marketstack-audit/final-plan.json"
+    },
+    {
+      "id": "final-20261007",
+      "cap": 100,
+      "plan": "docs/marketstack-audit/final-verification-plan.json"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "retrievedAt": "2026-10-07T14:45:02.550915+00:00",
+  "paidProviderRequests": 0,
+  "sources": [
+    {
+      "url": "https://marketstack.com/faq",
+      "file": "current-faq.html",
+      "sha256": "a718ecea2b02a4fc250875b403a5c55ff158630cef25e38defb0ae0de34c8b6c",
+      "section": "What is an API Request?",
+      "quote": "What is an API Request? Pricing is based on the number of monthly API requests allowed. Each time the marketstack API service is used to look up data for one specific stock ticker, one API request is consumed. As a result, if a given API request contains 5 tickers (symbols), 5 API requests will be consumed. API errors are not counted towards your monthly quota."
+    },
+    {
+      "url": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json",
+      "file": "current-swagger-live-docs.json",
+      "sha256": "cf88fea6da0237b5f64fb9a15d0931c5122bbd213e24ea39788f72f55102bdf4",
+      "endpointQuotes": {
+        "/v2/etflist": "Returns a paginated list of all exchange-traded funds (ETFs) available in the Marketstack database. Each record includes the ETF name, symbol, and exchange. Note that ETF API endpoints apply a call-count multiplier of 20 toward your usage quota.",
+        "/v2/etfholdings": "Returns the holdings breakdown for a specific ETF, identified by its ticker symbol, including each constituent's name, weight, and share count. Use date_from and date_to to retrieve holdings for a specific date range and track portfolio composition changes over time. Note that ETF API endpoints apply a call-count multiplier of 20 toward your usage quota."
+      }
+    }
+  ],
+  "singletonNonETFEndpointsChecked": [
+    "/v2/stockprice",
+    "/v2/indexlist",
+    "/v2/indexinfo",
+    "/v2/bondlist",
+    "/v2/bond",
+    "/v2/commodities",
+    "/v2/commoditieshistory"
+  ],
+  "result": "ETF20 multiplier explicit; other endpoint singleton1 follows general FAQ model, no special multipliers found in current official descriptions; billed usage not observed; reserving errors is conservative"
+}

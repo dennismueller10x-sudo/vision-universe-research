@@ -1,0 +1,221 @@
+{
+  "basis": "OFFICIAL_WEBSITE_AND_AUTHENTICATED_DIRECTORY_WITH_ENDPOINT_SPECIFIC_SNAPSHOT_CODES",
+  "rows": [
+    {
+      "venue": "Xetra",
+      "websiteDropdownCode": "XETRA",
+      "observedSuffixCandidates": ".BE / .DE",
+      "discrepancy": "Website dropdown XETRA misses SAP; MIC filter XETR succeeds.",
+      "authenticatedAPICode": "XETR",
+      "referenceMIC": "XETR",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0001",
+        "endpoint": "/tickerslist",
+        "symbol": "ADN1.DE"
+      },
+      "snapshotProviderCode": "ETR",
+      "snapshotCodeMappingSource": "providers/marketstack/snapshot-exchange-mappings.json"
+    },
+    {
+      "venue": "Frankfurt",
+      "websiteDropdownCode": "XFRA",
+      "observedSuffixCandidates": ".F / .XFRA",
+      "discrepancy": null,
+      "authenticatedAPICode": "XFRA",
+      "referenceMIC": "XFRA",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0001",
+        "endpoint": "/tickerslist",
+        "symbol": "ADN1.F"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Euronext Paris",
+      "websiteDropdownCode": "XPAR",
+      "observedSuffixCandidates": ".PA / .XPAR",
+      "discrepancy": "Both MC.PA/MC.XPAR and AIR.PA/AIR.XPAR observed.",
+      "authenticatedAPICode": "XPAR",
+      "referenceMIC": "XPAR",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0013",
+        "endpoint": "/tickerslist",
+        "symbol": "ALMER.PA"
+      },
+      "snapshotProviderCode": "EPA",
+      "snapshotCodeMappingSource": "providers/marketstack/snapshot-exchange-mappings.json"
+    },
+    {
+      "venue": "Amsterdam",
+      "websiteDropdownCode": "XAMS",
+      "observedSuffixCandidates": ".AS / .NX / .XAMS",
+      "discrepancy": "ASML.AS and ASML.XAMS observed.",
+      "authenticatedAPICode": "XAMS",
+      "referenceMIC": "XAMS",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0013",
+        "endpoint": "/tickerslist",
+        "symbol": "SAPA.AS"
+      },
+      "snapshotProviderCode": "AMS",
+      "snapshotCodeMappingSource": "providers/marketstack/snapshot-exchange-mappings.json"
+    },
+    {
+      "venue": "SIX",
+      "websiteDropdownCode": "XSWX",
+      "observedSuffixCandidates": ".SW",
+      "discrepancy": "ABBN.SW/SCMN.SW workbook MIC BTEE differs website XSWX.",
+      "authenticatedAPICode": "XSWX",
+      "referenceMIC": "XSWX",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0013",
+        "endpoint": "/tickerslist",
+        "symbol": "SAPA.SW"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "LSE",
+      "websiteDropdownCode": "XLON",
+      "observedSuffixCandidates": ".IL / .L / .XLON",
+      "discrepancy": null,
+      "authenticatedAPICode": "XLON",
+      "referenceMIC": "XLON",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0001",
+        "endpoint": "/tickerslist",
+        "symbol": "0N5I.L"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Nasdaq Nordic Helsinki",
+      "websiteDropdownCode": "XHEL",
+      "observedSuffixCandidates": ".HE",
+      "discrepancy": "NDA-FI.HE observed.",
+      "authenticatedAPICode": "XHEL",
+      "referenceMIC": "XHEL",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0038",
+        "endpoint": "/tickerslist",
+        "symbol": "0P0001BHUO.F"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Nasdaq Nordic Stockholm",
+      "websiteDropdownCode": "XSTO",
+      "observedSuffixCandidates": "NOT_OBSERVED_IN_THIS_SAMPLE",
+      "discrepancy": "Dropdown observed; target primary response not measured.",
+      "authenticatedAPICode": "XSTO",
+      "referenceMIC": "XSTO",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0039",
+        "endpoint": "/tickerslist",
+        "symbol": "0P0001LECL.ST"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Nasdaq Nordic Copenhagen",
+      "websiteDropdownCode": "XCSE",
+      "observedSuffixCandidates": ".CO",
+      "discrepancy": "Dropdown observed; target primary response not measured.",
+      "authenticatedAPICode": "XCSE",
+      "referenceMIC": "XCSE",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0038",
+        "endpoint": "/tickerslist",
+        "symbol": "0P0001HQZY.CO"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Madrid",
+      "websiteDropdownCode": "BMEX",
+      "observedSuffixCandidates": ".MC",
+      "discrepancy": "Dropdown BMEX mismatches row XMAD; company filtering may miss SAN.MC.",
+      "authenticatedAPICode": "XMAD",
+      "referenceMIC": "XMAD",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0040",
+        "endpoint": "/tickerslist",
+        "symbol": "0P00000EVO.F"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Vienna",
+      "websiteDropdownCode": null,
+      "observedSuffixCandidates": ".VI",
+      "discrepancy": "Dropdown absent in observed HTML; target rows present.",
+      "authenticatedAPICode": "XWBO",
+      "referenceMIC": "XWBO",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0007",
+        "endpoint": "/tickerslist",
+        "symbol": "HFG.VI"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    },
+    {
+      "venue": "Milan",
+      "websiteDropdownCode": "XMIL",
+      "observedSuffixCandidates": ".MI",
+      "discrepancy": null,
+      "authenticatedAPICode": "XMIL",
+      "referenceMIC": "XMIL",
+      "VUCurrentMapping": "NO_MARKETSTACK_MAPPING_ON_MAIN",
+      "suffixEvidence": "CHECKED_PUBLIC_WEBSITE_RAW_RESPONSES_ONLY",
+      "authenticatedEvidence": {
+        "runId": 37636729908,
+        "responseId": "0013",
+        "endpoint": "/tickerslist",
+        "symbol": "1SAP.MI"
+      },
+      "snapshotProviderCode": null,
+      "snapshotCodeMappingSource": null
+    }
+  ]
+}
