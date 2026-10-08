@@ -220,14 +220,18 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
      der erste Bildschirm ist der Globus-Hero (q-hero) mit der Frage "Was
      möchtest du heute analysieren?" und der Suche direkt darunter. Die
      Absicht bleibt: zuerst die Antwort (Suche), keine Erklaerung. */
-  const heroAt = kopf.indexOf('el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero" }');
+  const header = kopf.match(/el\("header", \{ class: "([^"]+)"/);
+  assert.ok(header, "die Startseite hat keinen ersten Bildschirm mehr");
+  for (const cls of ["q-hero", "v2-intro", "qx-intro", "qx-hero", "vu-product-hero", "vu-hero-fidelity"]) assert.ok(header[1].split(/\s+/).includes(cls), "Hero ohne " + cls);
+  const heroAt = header.index;
   assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
   const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
   /* Produktpositionierung (Owner, 04.10.2026): die Frage wird zum Claim -
      der erste Bildschirm sagt, was Quant ist (docs/VU_QUANT_PRODUCT_POSITIONING.md). */
-  assert.match(hero, /el\("h1", \{ class: "q-claim vu-product-title", text: HERO_TITLE \}/,
-    "das Versprechen der Startseite ist verschwunden");
+  const heading = hero.match(/el\("h1", \{ class: "([^"]+)", text: HERO_TITLE \}/);
+  assert.ok(heading, "das Versprechen der Startseite ist verschwunden");
+  for (const cls of ["q-claim", "vu-product-title", "vu-hero-headline"]) assert.ok(heading[1].split(/\s+/).includes(cls), "Hero-Überschrift ohne " + cls);
   assert.match(hero, /text: CLAIM \}/, "der vollständige Claim mit Marktvergleich fehlt");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
   assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
