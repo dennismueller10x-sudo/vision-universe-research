@@ -71,9 +71,9 @@
     var lever = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis).levers[0];
     var fee = M.feeImpact({ start: VS.state.plan.start, monthly: VS.state.plan.monthly, years: p.years, annualReturn: VS.state.plan.returns.basis, costA: 0.002, costB: 0.015 });
     var root = VS.render(
-      '<section class="vs-hero vs-product-hero vu-product-hero" aria-labelledby="vs-product-title"><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"></use></svg></span>' +
-      '<p class="vs-eyebrow vu-product-hero__eyebrow">Vision Universe <strong>Vorsorge</strong></p><h1 class="vu-product-hero__title" id="vs-product-title">Plane deine Zukunft.<br>Verstehe deine ETFs.</h1>' +
-      '<p class="vs-lead vu-product-hero__lead">ETFs verstehen. Dein Portfolio durchleuchten. Veränderungen erkennen. Mit amtlichen Daten, offener Datenabdeckung und ohne Produktverkauf.</p>' +
+      '<section class="vs-hero vs-product-hero vu-product-hero vu-hero-fidelity" data-product="vorsorge" aria-labelledby="vs-product-title"><div class="vu-hero-scene" aria-hidden="true"></div><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"></use></svg></span>' +
+      '<p class="vu-hero-name">Vorsorge</p><h1 class="vu-hero-headline" id="vs-product-title">Plane deine Zukunft.<br>Verstehe deine ETFs.</h1>' +
+      '<p class="vu-hero-description">ETFs verstehen. Dein Portfolio durchleuchten. Veränderungen erkennen. Mit amtlichen Daten, offener Datenabdeckung und ohne Produktverkauf.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><svg class="vs-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><input id="vs-q" autocomplete="off" placeholder="ETF, Ziel oder Frage eingeben …" aria-label="ETF, Ziel oder Frage eingeben"><button type="submit">Suchen</button></form>' +
       '<div class="vs-suggest" id="vs-suggest"></div>' +
       '<nav class="vs-tabs vs-hero-actions" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a></nav>' +
