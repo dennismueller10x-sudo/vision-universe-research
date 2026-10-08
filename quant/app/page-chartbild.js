@@ -614,7 +614,7 @@
       chartCard.classList.toggle("is-replay", !!replayStep);
     }
     var abstainNote = abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Hauptzählung." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null;
-    var motiveNote = el("p", { class: "cb-small", hidden: true, text: "Im Chart: alternative Lesart (Welle 1 und 2 der möglichen Welle 3) – nicht die bevorzugte Zählung, niedrige Strukturklarheit." });
+    var motiveNote = el("p", { class: "cb-small", hidden: true, text: "Im Chart: Wellen der alternativen Lesart (mögliche Welle 3) – nicht die bevorzugte Zählung, niedrige Strukturklarheit." });
     var pjLegend = el("p", { class: "cb-legend cb-legend-pj", hidden: true }, [el("span", { class: "cb-key cb-key-pj-base", text: "Basis" }), el("span", { class: "cb-key cb-key-pj-extended", text: "Erweitert" }), el("span", { class: "cb-key cb-key-pj-extreme", text: "Extrem" }),
       el("span", { class: "cb-key cb-key-pj-conf", text: "Bestätigung" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-dim", text: "Projektion ≠ Wahrscheinlichkeit · keine Zeitangabe" })]);
     var lensSeg = segmented("Ebene", [["scenario", "Szenario"], ["projection", "Elliott-Projektion"]], lens, function (v) { if (v === "projection") showProjection(pjWhich, true); else { lens = v; draw(); } });

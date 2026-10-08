@@ -66,7 +66,7 @@ jobs:
                         quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js \
                         scripts/technical/lib scripts/technical/build-technical-intelligence.mjs \
                         quant/data/technical-intelligence/evidence quant/data/technical-intelligence/elliott-validation \
-                        quant/methodology/technical-method-evidence.json; do echo "$p $(git rev-parse "HEAD:$p")"; done | sha256sum | cut -c1-32)
+                        quant/methodology/technical-method-evidence.json quant/data/market/security-master/eligibility.json; do echo "$p $(git rev-parse "HEAD:$p")"; done | sha256sum | cut -c1-32)
           OLD=$(node -e 'try{console.log(require("./'"$V3"'/build-inputs.json").fingerprint||"")}catch(e){console.log("")}')
           echo "fp=$FP" >> "$GITHUB_OUTPUT"
           echo "Eingaben: $FP · zuletzt gebaut: ${OLD:-nie}"

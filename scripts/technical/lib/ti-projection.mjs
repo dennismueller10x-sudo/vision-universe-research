@@ -16,6 +16,7 @@
                                      Enthaltung: derselbe Engine-Aufruf mit dem ausgabeneutralen Haken debugAll.
    ========================================================================= */
 import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { ROOT } from "./ti-data.mjs";
 
@@ -36,7 +37,14 @@ const isNum = (v) => typeof v === "number" && Number.isFinite(v);
  * seit dem Ursprung von Welle 1 kein Schluss jenseits der harten Grenze.
  * @returns {{count:object|null, rank:number|null, pool:number, reason:string|null}}
  */
-export const MOTIVE_GATES = Object.freeze({ hierarchy: 1, snrMin: 3.0, w1MinWeeks: 26, trendContextMin: 0.5, timeframe: "1W" });
+export const MOTIVE_GATES = Object.freeze({ hierarchy: 1, snrMin: 3.0, w1MinWeeks: 26, trendContextMin: 0.5, timeframe: "1W", instrument: ["EQUITY_COMMON", "ELIGIBLE"] });
+/* G6 Wertpapierart (Security Master): Motiv-Alternativen nur fuer zugelassene Stammaktien — nicht fuer Vorzugsaktien, Anleihen,
+   Optionsscheine, Units, SPACs (Kursverlauf folgt dort Zins, Nennwert oder Struktur, nicht einer Wellenbewegung). */
+let ELIG = null;
+export function instrumentOf(ticker) {
+  if (!ELIG) { ELIG = new Map(); try { const j = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/eligibility.json"), "utf8")); (Object.values(j).find(Array.isArray) || []).forEach((x) => ELIG.set(x.ticker, [x.instrument_type, x.product_eligibility])); } catch (e) { /* ohne Security Master: keine Motiv-Alternativen */ } }
+  return ELIG.get(String(ticker || "").replace(/^ref_/, "")) || null;
+}
 function productGate(x, waves, series, atr) {
   if (series.timeframe !== MOTIVE_GATES.timeframe) return "G4_NOT_WEEKLY";
   if (!x.c || x.c.hierarchy !== MOTIVE_GATES.hierarchy) return "G2_HIERARCHY";
@@ -44,6 +52,8 @@ function productGate(x, waves, series, atr) {
   if (!(snr >= MOTIVE_GATES.snrMin)) return "G3_NOISE";
   if (waves[0].duration < MOTIVE_GATES.w1MinWeeks) return "G4_SMALL_DEGREE";
   if (!(x.c.trendContext >= MOTIVE_GATES.trendContextMin)) return "G5_AGAINST_TREND";
+  const ins = instrumentOf(series.instrumentId);
+  if (!ins || ins[0] !== MOTIVE_GATES.instrument[0] || ins[1] !== MOTIVE_GATES.instrument[1]) return "G6_INSTRUMENT";
   return null;
 }
 /** Signal/Rauschen der bestaetigten Wellen wie die Anwendbarkeit der Engine: Median |Welle| / (ATR · 1,25 · √Dauer). */
