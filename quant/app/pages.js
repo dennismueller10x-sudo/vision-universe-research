@@ -239,7 +239,7 @@
     page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero vu-hero-fidelity", "data-product": "quant" }, [
       scene,
       productIcon,
-      el("p", { class: "vu-hero-name", text: "Quant" }),
+      el("p", { class: "q-product-name vu-hero-name", text: "Quant" }),
       el("h1", { class: "q-claim vu-product-title vu-hero-headline", text: HERO_TITLE }),
       el("p", { class: "q-hero-lead qx-lead vu-product-lead vu-hero-description", text: CLAIM }),
       el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
