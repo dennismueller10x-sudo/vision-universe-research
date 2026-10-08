@@ -27,6 +27,8 @@ try{
    // Observe the exact promise returned to the real chapter. Network events alone
    // can miss a cached response or an aborted earlier mount during stock hydration.
    await page.addInitScript(()=>{
+    window.__ciReviewFxReady=false;
+    document.addEventListener('vu-fx-ready',()=>{window.__ciReviewFxReady=true;});
     window.__ciReviewLoads=[];let current;
     Object.defineProperty(window,'VUCompanyIntelligence',{configurable:true,get:()=>current,set:api=>{
      const original=api.load;api.load=function(...args){const result=original.apply(this,args);result.then(payload=>window.__ciReviewLoads.push({ticker:args[0],payload}),error=>window.__ciReviewLoads.push({ticker:args[0],error:error.name}));return result;};current=api;
@@ -41,8 +43,12 @@ try{
    await page.goto(base+'/discover/'+(live?'':'?company-intelligence=preview')+'#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence[aria-busy=false] h2');
    const chapter=page.locator('.ci-company-intelligence');
    if(version==='after'){
+    // FX hydration legitimately reroutes Discover after its first render.
+    // Inspect the completed production route, without retrying assertions or
+    // accepting an unavailable/mismatched chapter during that transition.
+    await page.waitForFunction(()=>window.__ciReviewFxReady===true,{},{timeout:15000});
     const initial=await chapter.getAttribute('data-company-id');if(initial)assert.equal(initial,cid,ticker+' initially rendered issuer');
-    await page.waitForFunction(cid=>{const e=document.querySelector('.ci-company-intelligence');return e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.getAttribute('aria-busy')==='false';},cid,{timeout:15000});
+    await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:candidate.dataTime},{timeout:15000});
    }
    const text=await chapter.innerText();const actualLoads=await page.evaluate(()=>window.__ciReviewLoads);
    const payload=actualLoads.filter(r=>String(r.ticker).trim().toUpperCase()===ticker&&r.payload?.state==='AVAILABLE').at(-1)?.payload;assert(payload&&payload.companyId===cid,ticker+' identity');
