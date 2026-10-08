@@ -392,7 +392,7 @@
   function toInput(field, v) {
     if (v === null || v === undefined || !isFinite(v)) return '';
     if (field.unit === 'pct') return String(Number((v * 100).toPrecision(6)));
-    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps') {
+    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps' && field.id !== 'epsFy') {
       var a = Math.abs(v);
       if (a >= 1e9) return String(Number((v / 1e9).toPrecision(6)));
       if (a >= 1e6) return String(Number((v / 1e6).toPrecision(6)));
@@ -402,7 +402,7 @@
   function inputUnit(field, v) {
     if (field.unit === 'pct') return '%';
     if (field.unit === 'pp') return 'Pp.';
-    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps') { var a = Math.abs(v || 0); return a >= 1e9 ? 'Mrd. $' : a >= 1e6 ? 'Mio. $' : '$'; }
+    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps' && field.id !== 'epsFy') { var a = Math.abs(v || 0); return a >= 1e9 ? 'Mrd. $' : a >= 1e6 ? 'Mio. $' : '$'; }
     if (field.unit === 'usd') return '$';
     return '';
   }

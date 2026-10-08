@@ -919,7 +919,7 @@
         var unit = F.inputUnit(f, draft[key]);
         var inp = h('input', { type: 'text', inputmode: 'decimal', value: F.toInput(f, draft[key]).replace('.', ','), 'aria-label': key === 'value' ? (draft.op === 'between' ? 'Von' : 'Wert') : 'Bis' });
         var unitEl;
-        if (f.unit === 'usd' && f.id !== 'price' && f.id !== 'eps') {
+        if (f.unit === 'usd' && f.id !== 'price' && f.id !== 'eps' && f.id !== 'epsFy') {
           unitEl = h('select', { 'aria-label': 'Einheit' }, ['Mio. $', 'Mrd. $'].map(function (u) { return h('option', { value: u, selected: u === unit ? true : null }, u); }));
           unitEl.addEventListener('change', function () { var v = F.fromInput(f, inp.value, unitEl.value); if (v !== null) { draft[key] = v; syncSliders(); updateLive(); } });
         } else unitEl = unit ? h('em', { text: unit }) : null;

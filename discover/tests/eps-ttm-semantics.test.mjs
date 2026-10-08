@@ -94,3 +94,12 @@ test('Kartenwerte tragen ihre Basis; umsatzTTM/gewinnTTM nur bei TTM-Basis', () 
   assert.equal(karte.gewinnTTM, null);
   assert.ok(karte.umsatz > 0 && karte.gewinn > 0);
 });
+
+test('EPS GJ ist ein Je-Aktie-Wert: Eingabe "5" bleibt 5 $, keine Mio.-Skalierung', () => {
+  const F = require('../../screener/engine/fields.js');
+  const field = (F.FIELDS || F.fields || []).find ? (F.FIELDS || F.fields).find((f) => f.id === 'epsFy') : F.get('epsFy');
+  assert.ok(field, 'Feld epsFy fehlt');
+  assert.equal(F.fromInput(field, '5', undefined), 5);
+  assert.equal(F.inputUnit(field, 5), '$');
+  assert.equal(F.toInput(field, 5), '5');
+});
