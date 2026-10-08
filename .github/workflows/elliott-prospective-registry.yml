@@ -26,11 +26,16 @@ name: Elliott Prospective Registry (Mission X, nur anhaengen)
 #   * Jeder rote Lauf oeffnet bzw. kommentiert ein Issue "Elliott-Registry: Wochenlauf fehlgeschlagen".
 #
 # AUF MAIN (seit der Produktmigration Technical Intelligence v3): Register und Kundenprodukt liegen auf demselben
-# Branch; die Kundenprodukt-Sicht misst das Chartbild von main. Uebergang: Die vier Zeitplaene (Sa, So, Mo, Mi)
-# liegen vorerst noch im Dispatcher (elliott-registry-dispatcher.yml, Ziel main); sie wandern hierher, sobald ein
-# direkter Lauf auf main verifiziert ist. Der Forschungsbranch registriert nicht mehr (ein Schreiber).
+# Branch; die Kundenprodukt-Sicht misst das Chartbild von main. Die vier Zeitplaene (Sa, So, Mo, Mi) liegen
+# wieder hier; der Uebergangs-Dispatcher (elliott-registry-dispatcher.yml) ist entfallen, nachdem ein direkter Lauf
+# auf main verifiziert war. Der Forschungsbranch registriert nicht mehr (ein Schreiber).
 
 on:
+  schedule:
+    - cron: '23 9 * * 6'
+    - cron: '47 7 * * 0'
+    - cron: '17 6 * * 1'
+    - cron: '41 5 * * 3'
   workflow_dispatch:
     inputs:
       max_weeks:
