@@ -312,7 +312,7 @@
     var Loader = D() && D().SeriesLoader;
     var Hub = D() && D().LiveHub;
     var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
-    var liveFaehig = !!(Hub && Hub.enabled() && card.dataMode === "real" && opts.live !== false && card.symbol);
+    var liveFaehig = !!(Hub && Hub.enabled() && card.region !== "EUROPE" && card.dataMode === "real" && opts.live !== false && card.symbol);
     host.setAttribute("data-symbol", card.symbol || "");
     if (!verweis && !liveFaehig) {
       host.appendChild(D().Artwork.stockArtwork(card, artOpts));
@@ -412,7 +412,7 @@
   /* Das Firmenlogo vor dem Namen (ui/logos.js) - fehlt das Modul, fehlt es. */
   function logo(card, size, only) {
     var L = D() && D().Logos;
-    return L ? L.mark(card.symbol, { name: card.companyName, size: size, onlyLogo: only }) : null;
+    return L ? L.mark(card.region === "EUROPE" ? (card.logoKey || "") : card.symbol, { name: card.companyName, size: size, onlyLogo: only }) : null;
   }
 
   /* ------------------------------------------------------------- Signale */
@@ -475,7 +475,7 @@
     var node = el("a", {
       class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : "") +
              (gesehen ? " dx-poster--gesehen" : ""),
-      href: "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
+      href: card.href || "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
       "data-symbol": card.symbol,
       /* Die Karte trägt die Welt ihrer REIHE; das Signal darauf trägt seine
          eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein

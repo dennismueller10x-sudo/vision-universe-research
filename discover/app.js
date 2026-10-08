@@ -22,11 +22,20 @@
     try{localStorage.setItem(WATCH_KEY,JSON.stringify(list));}catch(_){}
     return index<0;
   }
-  function watchButton(root,symbol){
+  function watchButton(root,symbol,product,displaySymbol){
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
-    button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
+    const paint=()=>{const saved=(product?product.savedIds():watchlist()).includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',(displaySymbol||symbol)+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
+    button.onclick=async()=>{if(product){const result=await product.toggle(symbol);if(result.state!=='AVAILABLE')return;}else saveWatchlist(symbol);paint();};paint();root.prepend(button);
   }
+  // Explicit injection only. No catalog, license policy or provider is selected
+  // automatically; an absent product leaves all legacy US hooks unchanged.
+  D.App={configureEurope(options){
+    if(!D.EuropeProduct)throw Error('EUROPE_PRODUCT_MODULE_REQUIRED');
+    D.europeProduct=D.EuropeProduct.create(options);if(meta&&ctx.universeId==='EUROPE')route();return D.europeProduct;
+  },selectUniverse(universeId){
+    if(!['US_REAL','EUROPE'].includes(universeId) || (universeId==='EUROPE'&&!D.europeProduct))throw Error('UNIVERSE_NOT_CONFIGURED');
+    ctx.universeId=universeId;location.hash=universeId==='EUROPE'?'#/c/EUROPE/all':'#/';return route();
+  },route};
   function settings(root){
     document.title='Einstellungen — Discover — Vision Universe®';
     root.append(el('p',{class:'v2-eyebrow',text:'Deine Ansicht'}),el('h1',{text:'Einstellungen'}),el('p',{class:'v2-lead',text:'Währung und Darstellung gelten für deine Ansicht auf diesem Gerät.'}));
@@ -102,13 +111,22 @@
     if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
     const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+    if(['s','c','u','watchlist'].includes(parts[0]) && ['US_REAL','EUROPE'].includes(parts[1]))ctx.universeId=parts[1];
+    if(parts[0]==='watchlist'&&!parts[1]&&ctx.universeId==='EUROPE'){location.hash='#/watchlist/EUROPE';return;}
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
-      await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
-      if(parts[0]==='s'&&parts[2]){
+      if(ctx.universeId!=='EUROPE')await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
+      if(parts[0]==='s'&&parts[1]==='EUROPE'&&parts[2]){
+        if(!D.europeProduct){message(root,'Europa noch nicht verfügbar','Dieses Universum ist noch nicht freigegeben.');return;}
+        const id=decodeURIComponent(parts[2]),result=await D.europeProduct.detail(id);if(!active())return;
+        if(result.state!=='AVAILABLE'){message(root,'Aktie derzeit nicht verfügbar','Identität, Datenqualität oder Anzeigerechte sind noch nicht freigegeben.');return;}
+        const detail=result.data;root.classList.add('dx-detail');
+        V.Detail.render(root,detail,Object.assign({},ctx,{universeId:'EUROPE'}));
+        watchButton(root,id,D.europeProduct,detail.symbol);document.title=(detail.companyName||detail.symbol)+' — Discover';
+      } else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
@@ -128,6 +146,19 @@
       } else if(parts[0]==='watchlist'){
         document.title='Watchlist — Discover — Vision Universe®';
         root.append(el('p',{class:'v2-eyebrow',text:'Deine Auswahl'}),el('h1',{text:'Watchlist'}));
+        if(ctx.universeId==='EUROPE'){
+          if(!D.europeProduct){root.append(el('p',{class:'v2-lead',text:'Dieses Universum ist noch nicht freigegeben.'}));return;}
+          const result=await D.europeProduct.saved();if(!active())return;
+          const members=result.data.members,list=el('div',{class:'v2-watch-list'});root.append(list);
+          if(!members.length)list.append(el('p',{class:'v2-lead',text:'Noch keine europäischen Aktien gespeichert.'}));
+          members.forEach(member=>{
+            const title=member.state==='AVAILABLE'?(member.name||member.ticker):'Gespeicherter Titel derzeit nicht verfügbar';
+            const label=member.href?el('a',{href:member.href,text:title}):el('span',{text:title});
+            const row=el('div',{class:'v2-watch-row'},[label,el('button',{type:'button',text:'Entfernen','aria-label':title+' aus Watchlist entfernen'})]);
+            row.querySelector('button').onclick=()=>{D.europeProduct.remove(member.securityId);route();};list.append(row);
+          });
+          return;
+        }
         const symbols=watchlist();
         if(!symbols.length){root.append(el('p',{class:'v2-lead',text:'Noch keine Aktien gespeichert. Öffne eine Aktie und tippe auf „Zur Watchlist“.'}),el('a',{class:'v2-pill v2-pill-dark',href:'#/',text:'Aktien entdecken →'}));}
         else{
@@ -184,6 +215,12 @@
           root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Verwandte Themenwelten'}),el('a',{href:'#/welten',text:'Alle ansehen →'})]));
           const grid=el('div',{class:'v2-theme-grid'});related.forEach(t=>grid.append(V.Home.themeTile(t,ctx)));root.append(grid);
         }
+      } else if(ctx.universeId==='EUROPE'&&(parts[0]==='c'||parts[0]==='u'||!parts.length)){
+        if(!D.europeProduct){message(root,'Europa noch nicht verfügbar','Dieses Universum ist noch nicht freigegeben.');return;}
+        const result=await D.europeProduct.browse();if(!active())return;
+        if(result.state!=='AVAILABLE'){message(root,'Europa noch nicht verfügbar','Geprüfte Daten und Anzeigerechte werden vor der Freigabe benötigt.');return;}
+        root.append(el('h1',{text:result.data.title}),el('p',{class:'v2-lead',text:result.data.rule}),
+          D.Cards.grid(result.data.cards,{universeId:'EUROPE'}));
       } else if(parts[0]==='c'&&parts[2]){
         if(!/^[a-zA-Z0-9_-]+$/.test(parts[2]))throw Error('Ungültige Sammlung');
         const row=await S.loadJSON(BASE+'rows/'+ctx.universeId+'/'+parts[2]+'.json');if(!active())return;
