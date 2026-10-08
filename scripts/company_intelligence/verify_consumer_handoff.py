@@ -17,6 +17,28 @@ def verify(state, consumer, evidence):
     result = json.loads(evidence.read_text())
     if result.get('status')!='ACCEPTED_LEDGER_AND_DETERMINISTIC_EXPORT_VERIFIED':
         raise ValueError('ACCEPTED_RESTORE_EVIDENCE_REQUIRED')
+    # A content release derives from the complete verified baseline. No remote
+    # private pointer is changed here; publication separately proves a fresh
+    # restore of the full derivative in its own content-only namespace.
+    if (ROOT/'company-intelligence/config/top46-content-review.json').is_file() and not result.get('contentAugmentation'):
+        from company_intelligence.top46_content import prepare
+        identity_root = ROOT/'.accepted-engine'
+        if not identity_root.is_dir():
+            raise ValueError('PINNED_ACCEPTED_IDENTITY_ROOT_REQUIRED')
+        content = prepare(state, identity_root, state.parent/(state.name+'-content-evidence.json'))
+        result['baselineProjectedGeneration'] = result['projectedGeneration']
+        result['projectedGeneration'] = content['export']['generation']
+        result['contentAugmentation'] = content
+    elif result.get('contentAugmentation'):
+        from current_state_acceptance import database_proof
+        from company_intelligence.top46_content import reviewed, export
+        content = result['contentAugmentation']
+        if reviewed()[1] != content['reviewHash'] or {n:database_proof(state/n) for n in content['databases']} != content['databases']:
+            raise ValueError('FRESH_CONTENT_RESTORE_PROOF_MISMATCH')
+        reproduced = export(state,ROOT/'.accepted-engine')
+        if reproduced != content['export']:
+            raise ValueError('FRESH_CONTENT_GENERATION_MISMATCH')
+        result['contentFreshRestoreVerified'] = True
     expected = json.loads((ROOT/'docs/company-intelligence/full-data-release-candidate.json').read_text())
     golden = json.loads((ROOT/'docs/company-intelligence/full-data-consumer-manifest.json').read_text())
     if result['projectedGeneration']!=expected['sourceGeneration']:

@@ -7,6 +7,6 @@ function enabled(ticker, options = {}) {
  const query = options.search === undefined ? (g.location?.search || '') : options.search;
  return cohort.includes(String(ticker).toUpperCase()) && (config.stage === 1 || options.enabled === true || new URLSearchParams(query).get('company-intelligence') === 'preview');
 }
-const config = {stage:1, cohort, enabled, expectedGeneration:'d700d480d9b2858eb8fa34f4', base:'/company-intelligence/data/'};
+const config = {stage:1, cohort, enabled, expectedGeneration:'1fc5d519f433463f4c099202', base:'/company-intelligence/data/'};
 if(typeof module !== 'undefined' && module.exports)module.exports=config;else g.VUCompanyIntelligenceRollout=config;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

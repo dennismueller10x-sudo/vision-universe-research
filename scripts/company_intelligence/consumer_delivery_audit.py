@@ -54,7 +54,7 @@ def audit(state, raw, consumer, out, origin=None):
             value = json.loads((raw/'snapshots'/index['generation']/(cid+'.json')).read_text())
             filtered, policy = filter_for_preview(value, list(sources.values()))
             final = json.loads((consumer/'snapshots'/golden['generation']/(cid+'.json')).read_text())
-            dates = [stamp(n.get('publishedAt')) for n in final['news']]
+            dates = [stamp(n.get('publishedAt') or n.get('publishedDate')) for n in final['news']]
             buckets = Counter('UNDATED' if not d else 'FUTURE' if d>now else 'TODAY' if d.date()==now.date() else '7_DAYS' if (now-d).days<7 else '30_DAYS' if (now-d).days<30 else '90_DAYS' if (now-d).days<90 else 'OLDER' for d in dates)
             losses = []
             if not ledger_news:
@@ -68,11 +68,11 @@ def audit(state, raw, consumer, out, origin=None):
             kept_ids = {n['newsId'] for n in final['news']}
             dropped = [n for n in filtered['news'] if n['newsId'] not in kept_ids]
             cutoff = stamp(value['generatedAt'])-timedelta(days=180)
-            retention = sum(bool(stamp(n.get('publishedAt') or n.get('observedAt')) and stamp(n.get('publishedAt') or n.get('observedAt')) < cutoff) for n in dropped)
+            retention = sum(bool(stamp(n.get('publishedAt') or n.get('publishedDate') or n.get('observedAt')) and stamp(n.get('publishedAt') or n.get('publishedDate') or n.get('observedAt')) < cutoff) for n in dropped)
             assert retention == len(dropped), 'UNEXPLAINED_CONSUMER_NEWS_LOSS:'+cid
             if len(filtered['news'])>len(final['news']):
                 losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'APPROVED_CONSUMER_PROJECTION','count':len(filtered['news'])-len(final['news']),'reason':'DETERMINISTIC_180_DAY_RETENTION','verifiedOlderThanRetention':retention})
-            rows.append({'companyId':cid,'tickers':inventory['tickers'],'ledgerNews':len(ledger_news),'latestLedgerNews':max((n.get('publishedAt') or '' for n in ledger_news),default=None),
+            rows.append({'companyId':cid,'tickers':inventory['tickers'],'ledgerNews':len(ledger_news),'latestLedgerNews':max((n.get('publishedAt') or n.get('publishedDate') or '' for n in ledger_news),default=None),
                          'engineExportNews':len(value['news']),'policyAllowedNews':len(filtered['news']),'consumerNews':len(final['news']),
                          'productionNews':len(final['news']) if origin else None,'newsFreshness':dict(buckets),
                          'ledgerEventTypes':dict(Counter(k for (k,) in db.execute('SELECT kind FROM events WHERE company=?',(cid,)))),

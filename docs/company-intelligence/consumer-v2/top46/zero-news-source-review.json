@@ -1,0 +1,270 @@
+{
+  "schema": 1,
+  "scope": "20_BASELINE_ZERO_APPROVED_NEWS_ISSUERS",
+  "rows": [
+    {
+      "companyId": "iss_cik_0000002098",
+      "tickers": [
+        "ACU"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + TECHNICAL GAP",
+      "reviewedMetadataItems": 0,
+      "sourceUrls": [
+        "https://www.acmeunited.com/"
+      ],
+      "reason": "Official company site known, but robots request returned HTTP 403; no news endpoint or current publication evidence could be read safely. No access circumvention."
+    },
+    {
+      "companyId": "iss_cik_0000019617",
+      "tickers": [
+        "JPM"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + TECHNICAL GAP",
+      "reviewedMetadataItems": 0,
+      "sourceUrls": [
+        "https://www.jpmorganchase.com/ir",
+        "https://www.jpmorganchase.com/newsroom/press-releases"
+      ],
+      "reason": "Official IR and newsroom indices are reachable but their dynamic release list supplies no static article metadata to the current parsers; verified SEC periodic-report intelligence remains visible."
+    },
+    {
+      "companyId": "iss_cik_0000027419",
+      "tickers": [
+        "TGT"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 1,
+      "sourceUrls": [
+        "https://corporate.target.com/press/release/2026/09/target-corporation-declares-regular-quarterly-dividend"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000070858",
+      "tickers": [
+        "BAC"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 1,
+      "sourceUrls": [
+        "https://newsroom.bankofamerica.com/content/newsroom/press-releases/2026/10/bank-of-america-personal-retirement-strategy-surpasses--100-bill.html"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000713676",
+      "tickers": [
+        "PNC"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 1,
+      "sourceUrls": [
+        "https://pnc.mediaroom.com/2026-10-02-PNC-Declares-Dividend-of-2-00-on-Common-Stock"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000789019",
+      "tickers": [
+        "MSFT"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 1,
+      "sourceUrls": [
+        "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q4/press-release-webcast"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000804328",
+      "tickers": [
+        "QCOM"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 4,
+      "sourceUrls": [
+        "https://investor.qualcomm.com/rss/pressrelease.aspx"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000886982",
+      "tickers": [
+        "GS"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 2,
+      "sourceUrls": [
+        "https://www.goldmansachs.com/pressroom/press-releases/2026/goldman-sachs-to-launch-voting-instruction-program",
+        "https://www.goldmansachs.com/pressroom/press-releases/2026/dinesh-keswani-joins-gs-as-co-head-of-core-engineering"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0000895421",
+      "tickers": [
+        "MS"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + POLICY EXCLUDED",
+      "reviewedMetadataItems": 0,
+      "sourceUrls": [
+        "https://www.morganstanley.com/press-releases"
+      ],
+      "reason": "Official press-release route is robots-disallowed for the existing crawler; no bypass or undocumented publication-date inference."
+    },
+    {
+      "companyId": "iss_cik_0001018724",
+      "tickers": [
+        "AMZN"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 2,
+      "sourceUrls": [
+        "https://ir.aboutamazon.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001099219",
+      "tickers": [
+        "MET"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 6,
+      "sourceUrls": [
+        "https://investor.metlife.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001108524",
+      "tickers": [
+        "CRM"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 6,
+      "sourceUrls": [
+        "https://investor.salesforce.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001318605",
+      "tickers": [
+        "TSLA"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 1,
+      "sourceUrls": [
+        "https://ir.tesla.com/press-release/tesla-third-quarter-2026-production-deliveries-and-deployments"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001321655",
+      "tickers": [
+        "PLTR"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 8,
+      "sourceUrls": [
+        "https://investors.palantir.com/feed/PressRelease.svc/GetPressReleaseList?bodyType=1&includeTags=true&languageId=1&pressReleaseDateFilter=1&year=2026"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001326801",
+      "tickers": [
+        "META"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 5,
+      "sourceUrls": [
+        "https://investor.atmeta.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001341439",
+      "tickers": [
+        "ORCL"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 3,
+      "sourceUrls": [
+        "https://investor.oracle.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001468091",
+      "tickers": [
+        "VEON"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 2,
+      "sourceUrls": [
+        "https://www.veon.com/newsroom/press-releases/veon-and-amdocs-enter-10-year-strategic-agreement-to-advance-digital-services-powered-by-amdocs-ai-technology",
+        "https://www.veon.com/newsroom/press-releases/veon-to-report-3q26-results-on-november-6-2026"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001515673",
+      "tickers": [
+        "RARE"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 6,
+      "sourceUrls": [
+        "https://ir.ultragenyx.com/rss/news-releases.xml"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001810806",
+      "tickers": [
+        "U"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 4,
+      "sourceUrls": [
+        "https://investors.unity.com/rss/PressRelease.aspx?LanguageId=1"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    },
+    {
+      "companyId": "iss_cik_0001810997",
+      "tickers": [
+        "XPEV"
+      ],
+      "baselineApprovedNews": 0,
+      "classification": "SOURCE FOUND + INGESTED",
+      "reviewedMetadataItems": 5,
+      "sourceUrls": [
+        "https://ir.xiaopeng.com/rss/news-releases.xml"
+      ],
+      "reason": "New reviewed issuer-owned metadata registered and ingested with existing resolver and unchanged consumer source policy."
+    }
+  ],
+  "acceptedPrivateStateReplaced": false
+}

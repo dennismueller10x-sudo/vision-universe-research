@@ -274,7 +274,7 @@ RULES = [
     ('Management', 'HIGH', r'\b(CEO|chief executive|CFO|chief financial|resigns)\b'),
     ('Regulation', 'HIGH', r'\b(FDA|antitrust|regulatory|regulator|European Medicines Agency|marketing authori[sz]ation (?:application|approval)|new drug application|biologics licen[cs]e application)\b'),
     ('Litigation', 'HIGH', r'\b(lawsuit|litigation|settlement)\b'),
-    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering)\b'),
+    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering|registered direct offering)\b'),
     ('Buyback', 'MEDIUM', r'\b(buyback|repurchase)\b'),
     ('Dividend', 'MEDIUM', r'\b(dividend)\b'),
     ('Investor Day', 'MEDIUM', r'\b(investor day|capital markets day|analyst day)\b'),
@@ -282,19 +282,19 @@ RULES = [
     ('Partnership', 'MEDIUM', r'\b(partner(?:ship|s)?|collaborat(?:ion|es))\b'),
     ('Contract', 'MEDIUM', r'\b(contract|orders|bookings)\b'),
     ('Product', 'MEDIUM', r'\b(launch|introduces|unveils)\b'),
-    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|operating results|operational results|phase[ -]?[123]|restructuring)\b'),
+    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|vehicle delivery results|operating results|operational results|phase[ -]?[123]|restructuring)\b'),
     ('Analyst', 'LOW', r'\b(price target|upgrade|downgrade|analyst rating)\b'),
 ]
 
 
 def classify(headline):
     hits = [(cat, imp, pattern) for cat, imp, pattern in RULES if re.search(pattern, headline, re.I)]
-    if re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
+    if re.search(r'\b(production|deliveries|vehicle delivery results|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
         hits = [h for h in hits if h[0] != 'Earnings']
     rank = {'LOW': 0, 'MEDIUM': 1, 'HIGH': 2, 'CRITICAL': 3}
     importance = max((h[1] for h in hits), key=lambda x: rank[x], default='LOW')
     return {'categories': [h[0] for h in hits] or ['Other'], 'importance': importance,
-            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.3.0'}
+            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.3.1'}
 
 
 def make_item(raw, source, match, discovered):
@@ -302,7 +302,13 @@ def make_item(raw, source, match, discovered):
     url = canonical_url(raw.get('url'))
     published = timestamp(raw.get('publishedAt'))
     updated = timestamp(raw.get('updatedAt'))
-    effective_time = published or updated
+    publication_day = raw.get('publishedDate')
+    if publication_day is not None:
+        from .earnings import valid_date
+        if not valid_date(publication_day):
+            raise ValueError('INVALID_PUBLICATION_DATE')
+    # Internal ordering may use a day boundary; public output never gains a clock.
+    effective_time = published or (publication_day + 'T00:00:00Z' if publication_day else updated)
     if not headline or not url or not effective_time or effective_time > discovered:
         raise ValueError('INVALID_NEWS_EVIDENCE')
     evidence = {'discoverySource': source['type'], 'sourceId': source['sourceId'],
@@ -317,7 +323,10 @@ def make_item(raw, source, match, discovered):
             'publishedAt': published, 'discoveredAt': discovered, 'language': raw.get('language'),
             'summary': None, 'confidence': match['confidence'], 'sourceConfidence': 1.0 if source.get('verified') else .7, 'eventType': 'NEWS',
             'provenance': [evidence], **classify(headline)}
-    if not published:
+    if publication_day and not published:
+        item.update(publishedDate=publication_day, date=publication_day, timestampPrecision='DATE_ONLY')
+        item['provenance'][0].update(publishedDate=publication_day, timestampPrecision='DATE_ONLY')
+    elif not published:
         item.update(observedAt=updated, timestampPrecision='SOURCE_UPDATED_TIME')
         item['provenance'][0].update(observedAt=updated, timestampPrecision='SOURCE_UPDATED_TIME')
     return item

@@ -8,7 +8,7 @@ import re
 from .model import SCHEMA, normalize, stable_id, canonical_url
 
 def item_time(item):
-    return item.get('publishedAt') or item.get('observedAt')
+    return item.get('publishedAt') or (item['publishedDate'] + 'T00:00:00Z' if item.get('publishedDate') else item.get('observedAt'))
 
 
 def export_revision():
