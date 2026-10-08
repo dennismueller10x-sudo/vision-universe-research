@@ -3,9 +3,9 @@
 import {spawnSync} from 'node:child_process';
 import {readdirSync,writeFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
-const baseline='8345d5b7e0db39a456d58ab40b9ad5c924ad7d90';
+const baseline='eec8dceb176f8a84d635a9dfc36ff3c8ae1e1e92';
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
-const protectedPaths=['quant/data','quant/engines','quant/tests','providers','scripts/market','scripts/quant'];
+const protectedPaths=['quant/data','quant/engines','quant/tests','providers','scripts/market','scripts/quant','supertrader/data'];
 const diff=run('git',['diff','--name-only',baseline,'HEAD','--',...protectedPaths]);
 if(diff.status||diff.stdout.trim())throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
 const dirs=['quant/tests','discover/tests','scripts/supertrader/tests','screener/tests'];
