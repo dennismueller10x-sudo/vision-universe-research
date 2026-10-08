@@ -206,6 +206,14 @@
       desc: 'Ø Volumen der letzten 20 Tage im Verhältnis zu den letzten 60 Tagen.', keywords: ['relative volume', 'rvol', 'volumen'], presets: [['> 1,2', 'gt', 1.2], ['> 1,5', 'gt', 1.5]] }),
     n('maxDrawdown', { col: 'maxDd', group: 'technical', unit: 'pct', label: 'Max. Drawdown (1 Jahr)', short: 'Max. Drawdown', en: 'Max Drawdown', source: 'technical', domain: [-0.9, 0, 0.01], pro: true, better: 1,
       desc: 'Größter Verlust vom Hoch zum Tief innerhalb eines Jahres.', keywords: ['drawdown', 'verlust', 'risiko'] }),
+    // Chartbild (Technical Intelligence, meist Wochenchart). Beschreibt die aktuelle
+    // Lage und das Hauptszenario - keine Prognose, keine Handlungsempfehlung.
+    n('tiOutlook', { col: 'tiOut', group: 'technical', kind: 'enum', label: 'Chartbild-Ausblick', short: 'Ausblick', en: 'Chart Outlook', source: 'technicalIntelligence', timeframe: '1W',
+      desc: 'Richtung des Hauptszenarios im Chartbild (meist Wochenchart, für wenige Titel Tageschart): aufwärts, abwärts, seitwärts oder gemischt. Ein Szenario mit Invalidierung, keine Prognose und keine Wahrscheinlichkeit.', keywords: ['chartbild', 'ausblick', 'outlook', 'szenario', 'technical intelligence'] }),
+    n('tiStructure', { col: 'tiStr', group: 'technical', kind: 'enum', label: 'Kursstruktur', en: 'Price Structure', source: 'technicalIntelligence', timeframe: '1W',
+      desc: 'Trendphase aus der Abfolge von Hochs und Tiefs im Chart (meist Wochenchart), z. B. „Rücksetzer im Aufwärtstrend“. Beschreibt den Ist-Zustand.', keywords: ['struktur', 'trend', 'dow', 'rücksetzer', 'erholung', 'chartbild'] }),
+    n('tiElliottApplicable', { col: 'tiEw', group: 'technical', kind: 'enum', label: 'Elliott-Strukturklarheit', short: 'Elliott-Klarheit', en: 'Elliott Structure Clarity', source: 'technicalIntelligence', timeframe: '1W', pro: true,
+      desc: 'Experimentell: Wie eindeutig sich der Kursverlauf als Elliott-Wellenstruktur lesen lässt. Für die meisten Titel gibt es keine belastbare Zählung („Niedrig“). Nicht von Experten validiert, fließt nicht in den Ausblick ein, keine Prognose.', keywords: ['elliott', 'wellen', 'wave', 'experimentell', 'chartbild'] }),
 
     // ---------------- ANALYSTEN & ESTIMATES ----------------
     n('revenueEstimates', { group: 'analysts', unit: 'usd', label: 'Umsatzschätzungen', en: 'Revenue Estimates', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revenue', 'estimates', 'schätzung'] }),
@@ -294,7 +302,12 @@
     country: { US: 'USA' },
     region: { NA: 'Nordamerika' },
     companyType: { EQUITY_COMMON: 'Stammaktie', REIT: 'REIT', SPAC: 'SPAC', TRUST: 'Trust', ADR: 'ADR' },
-    index: { SP500: 'S&P 500', SPX: 'S&P 500', NDX: 'Nasdaq-100', DJIA: 'Dow Jones' }
+    index: { SP500: 'S&P 500', SPX: 'S&P 500', NDX: 'Nasdaq-100', DJIA: 'Dow Jones' },
+    // Wortlaut wie im Chartbild (quant/engines/technical/ti/explain.js)
+    tiOutlook: { BULLISH: 'Aufwärts', BEARISH: 'Abwärts', NEUTRAL: 'Seitwärts', MIXED: 'Gemischt' },
+    tiStructure: { UPTREND_ADVANCING: 'Aufwärtstrend intakt', CORRECTION_IN_UPTREND: 'Rücksetzer im Aufwärtstrend', DOWNTREND_ADVANCING: 'Abwärtstrend intakt',
+      RALLY_IN_DOWNTREND: 'Erholung im Abwärtstrend', SIDEWAYS_RANGE: 'Seitwärtsphase', NO_CLEAR_TREND: 'Kein klarer Trend' },
+    tiElliottApplicable: { HIGH: 'Hoch', MODERATE: 'Mittel', LOW: 'Niedrig – keine belastbare Zählung' }
   };
   var REGION_OF = { US: 'NA', CA: 'NA' };
 

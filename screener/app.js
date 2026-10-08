@@ -835,7 +835,7 @@
     var editing = opts.filter || null;
     var s = openSheet({ title: 'Filter-Detail', full: f.kind === 'enum', back: !!opts.fromLibrary, foot: true });
     var meta = h('div', { class: 'sc-meta' }, [h('span', { class: 'sc-pill', text: F.group(f.group).label }), f.timeframe ? h('span', { class: 'sc-pill', text: f.timeframe }) : null,
-      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen' }[f.source] || f.source }),
+      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)' }[f.source] || f.source }),
       f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
     s.body.append(h('div', { class: 'sc-dhead' }, [h('span', { class: 'sc-libicon is-lg', 'aria-hidden': 'true' }, icon(F.group(f.group).icon)), h('div', {}, [h('h3', { text: f.label }), f.question ? h('p', { text: f.question }) : null])]),
       h('div', { class: 'sc-dbox' }, f.desc || f.reason || ''), meta);

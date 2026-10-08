@@ -9,6 +9,7 @@
 //   quant/data/product/sic-peer-taxonomy-v1    SIC-Code je Emittent
 //   quant/data/product/factor-evidence-v1      Quant-V2-Faktorevidenz je Faktor (0-100)
 //   discover/config/company-recognition.json   redaktionelle Einzeiler (Was macht das Unternehmen)
+//   quant/data/technical-intelligence/v3       Chartbild-Index (Ausblick, Kursstruktur, Elliott-Klarheit)
 //
 // Es werden KEINE Werte erfunden. Fehlt eine Eingabe, steht in der Spalte null.
 // Abgeleitete Kennzahlen (ROIC, EV/EBITDA, RSI ...) folgen den Formeln in
@@ -116,9 +117,38 @@ export const COLUMNS = [
   'perf1w', 'perf1m', 'perf3m', 'perf6m', 'perfYtd', 'perf1y', 'rs6m', 'rs12m', 'rsPct', 'momPct',
   'distSma20', 'distSma50', 'distSma100', 'distSma200', 'sma50vs200', 'distEma21', 'dist52wH', 'dist52wL', 'newHigh',
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
-  'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq'
+  'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
+  'tiOut', 'tiStr', 'tiEw'
 ];
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'was', 'vq']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw']);
+
+// CHARTBILD (Technical Intelligence)
+// Nur Zustaende aus dem veroeffentlichten Index, keine eigene Berechnung. Ein
+// Titel, dessen Chartbild mehr als TI_MAX_AGE_DAYS hinter dem juengsten Stand
+// des Index liegt, bekommt null statt eines veralteten Zustands.
+export const TI_MAX_AGE_DAYS = 28;
+const TI_ENUMS = {
+  outlook: ['BULLISH', 'BEARISH', 'NEUTRAL', 'MIXED'],
+  structure: ['UPTREND_ADVANCING', 'CORRECTION_IN_UPTREND', 'DOWNTREND_ADVANCING', 'RALLY_IN_DOWNTREND', 'SIDEWAYS_RANGE', 'NO_CLEAR_TREND'],
+  elliottApplicable: ['HIGH', 'MODERATE', 'LOW']
+};
+/** index.json.gz (vu-ti-api-3) -> Map(ticker -> { tiOut, tiStr, tiEw }) und Metadaten. */
+export function technicalIntelligenceColumns(index, opts = {}) {
+  const byTicker = new Map();
+  const rows = Array.isArray(index?.rows) ? index.rows : [];
+  const latest = rows.reduce((m, r) => (typeof r.asOf === 'string' && r.asOf > m ? r.asOf : m), '');
+  /* Bezug: Baudatum (opts.now), sonst juengster Stand – ein insgesamt veralteter Index gilt sonst als frisch (Code-Review M3). */
+  const ref = opts.now || latest;
+  const cutoff = ref ? new Date(Date.parse(ref) - TI_MAX_AGE_DAYS * 864e5).toISOString().slice(0, 10) : '';
+  let stale = 0;
+  const pick = (k, v) => (TI_ENUMS[k].includes(v) ? v : null);
+  for (const r of rows) {
+    if (!r || typeof r.t !== 'string') continue;
+    if (!r.asOf || r.asOf < cutoff || r.stale) { stale++; continue; }   // r.stale: unveraenderter Schlusskurs (tote Reihe)
+    byTicker.set(r.t, { tiOut: pick('outlook', r.outlook), tiStr: pick('structure', r.structure), tiEw: pick('elliottApplicable', r.elliottApplicable) });
+  }
+  return { byTicker, meta: rows.length ? { schemaVersion: index.schemaVersion || null, generatedAt: index.generatedAt || null, asOf: latest || null, maxAgeDays: TI_MAX_AGE_DAYS, stale } : null };
+}
 
 // VALUATION_POLICY
 // Marktkapitalisierung und alle Kennzahlen, die den Kurs mit einer SEC-Aktienzahl
@@ -172,6 +202,10 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       for (const [t, sec] of Object.entries(shard.securities || {})) factors.set(t, sec);
     }
   } catch (err) { log('Faktorevidenz fehlt: ' + err.message); }
+  // Chartbild
+  let ti = { byTicker: new Map(), meta: null };
+  try { ti = technicalIntelligenceColumns(JSON.parse(gunzipSync(await readFile(join(root, 'quant/data/technical-intelligence/v3/index.json.gz'))).toString('utf8')), { now: new Date().toISOString().slice(0, 10) }); }
+  catch (err) { log('Chartbild-Index fehlt: ' + err.message); }
   // Redaktionelle Einzeiler
   let recognition = { companies: {}, businessDescriptions: {} };
   try { recognition = await loadJson(join(root, 'discover/config/company-recognition.json')); } catch { /* optional */ }
@@ -272,6 +306,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     if (vq !== 'OK') for (const c of SHARE_BASIS_COLUMNS) row[c] = null;
     if (!currencyOk) for (const c of CURRENCY_COLUMNS) row[c] = null;
     row.vq = vq;
+    Object.assign(row, ti.byTicker.get(d.symbol) || { tiOut: null, tiStr: null, tiEw: null });
     for (const c of COLUMNS) {
       const v = row[c];
       cols[c].push(TEXT.has(c) || c === 'idx' ? (v ?? null) : (typeof v === 'number' ? round(v) : null));
@@ -288,8 +323,10 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       prices: 'Tiingo Tagesschluss (discover/data/stocks, quant/data/market/discover-series)',
       fundamentals: 'SEC EDGAR companyfacts (fundamentals-1.2.0)',
       classification: 'SEC SIC-Code (sic-peer-taxonomy-1.0.0) + ' + SIC_SECTOR_VERSION,
-      factors: factorMeta ? factorMeta.methodologyVersion : null
+      factors: factorMeta ? factorMeta.methodologyVersion : null,
+      technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (meist Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null
     },
+    technicalIntelligence: ti.meta,
     factorPublication: factorMeta ? { ...factorMeta.publication, asOf: factorMeta.asOf } : { compositeAllowed: false, rankingAllowed: false, reason: 'SOURCE_MISSING' },
     valuationPolicy: { minTurnover: MIN_TURNOVER, maxTurnover: MAX_TURNOVER, foreignMinTurnover: FOREIGN_MIN_TURNOVER, maxMarketCap: MAX_MARKET_CAP, withheld: SHARE_BASIS_COLUMNS },
     formulas: FORMULAS,
