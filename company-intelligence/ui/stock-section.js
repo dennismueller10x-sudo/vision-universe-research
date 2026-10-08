@@ -50,7 +50,9 @@ function viewModel(payload,now=Date.now()){
  const changes=(f?.whatChanged||[]).filter(c=>c.metric!=='shares_outstanding'&&labels[c.metric]&&bases[c.comparison]&&((Number.isFinite(c.previous)&&Number.isFinite(c.current))||(c.unit==='percentage_points'&&Number.isFinite(c.absolute))));
  const priorities=['revenue_growth','gross_margin','free_cash_flow','revenue','net_income','operating_margin','eps_diluted','cash_and_equivalents','total_debt'];changes.sort((a,b)=>priorities.indexOf(a.metric)-priorities.indexOf(b.metric));
  const upcoming=(payload.events||[]).filter(e=>activeEvent(e,now,today)&&['CONFIRMED','ESTIMATED'].includes(e.confirmationStatus)).sort((a,b)=>(a.startsAt||a.date||a.dateStart||'').localeCompare(b.startsAt||b.date||b.dateStart||''));
- return {recent,archive,metrics,changes:changes.slice(0,4),confirmed:upcoming.filter(e=>e.confirmationStatus==='CONFIRMED').slice(0,4),estimates:upcoming.filter(e=>e.confirmationStatus==='ESTIMATED').slice(0,1)};
+ const confirmed=upcoming.filter(e=>e.confirmationStatus==='CONFIRMED');
+ const estimates=upcoming.filter(e=>e.confirmationStatus==='ESTIMATED'&&!confirmed.some(c=>c.eventType==='EARNINGS_SCHEDULED'&&c.companyId===payload.companyId&&e.companyId===payload.companyId&&c.fiscalYear&&c.fiscalQuarter&&c.fiscalYear===e.fiscalYear&&c.fiscalQuarter===e.fiscalQuarter));
+ return {recent,archive,metrics,changes:changes.slice(0,4),confirmed:confirmed.slice(0,4),estimates:estimates.slice(0,1)};
 }
 function story(item,now){
  const n=node('article',undefined,'ci-story'),regulatory=item.eventType==='MATERIAL_SEC_EVENT';n.dataset.intelligenceType=item.eventType;n.dataset.storyUrl=g.VUCompanyIntelligence.safeLink(storyUrl(item))||'';
