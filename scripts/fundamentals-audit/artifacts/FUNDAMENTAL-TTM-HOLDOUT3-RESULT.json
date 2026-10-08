@@ -1,0 +1,614 @@
+{
+ "schema": "vu-fundamental-ttm-holdout3-result-1.0.0",
+ "verdict": "FAIL",
+ "gates": {
+  "FALSE_AVAILABLE": {
+   "value": 0.2345,
+   "limit": 0.1,
+   "pass": false
+  },
+  "WRONG_VALUE": {
+   "value": 0.0,
+   "limit": 0.5,
+   "pass": true
+  },
+  "WRONG_CONCEPT": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "WRONG_PERIOD": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "FALSE_MISSING": {
+   "value": 14.3155,
+   "limit": 20.0,
+   "pass": true
+  },
+  "CASES": {
+   "value": 3825,
+   "limit": 1000,
+   "pass": true
+  },
+  "EVALUATOR_ERRORS": {
+   "value": 0.0,
+   "limit": 0.5,
+   "pass": true
+  },
+  "STRATA": {
+   "failures": [
+    {
+     "stratum": "fy_change",
+     "gate": "FALSE_AVAILABLE",
+     "value": 9.0
+    },
+    {
+     "stratum": "negative",
+     "gate": "FALSE_AVAILABLE",
+     "value": 1.9313
+    }
+   ],
+   "limit": 1.0,
+   "pass": false
+  },
+  "FISCAL_CHANGE_WRONG_PERIOD": {
+   "value": 5.0279,
+   "limit": 0.5,
+   "evaluations": 179,
+   "cases": 100,
+   "bad": 9,
+   "minimumCases": 30,
+   "pass": false
+  }
+ },
+ "issuers": 2514,
+ "cases": 3825,
+ "evaluations": 10083,
+ "evaluatorErrors": [],
+ "overall": {
+  "counts": {
+   "TRUE_UNAVAILABLE": 3829,
+   "CORRECT": 5351,
+   "FALSE_MISSING": 894,
+   "FALSE_AVAILABLE": 9
+  },
+  "truthUnavailable": 3838,
+  "truthAvailable": 6245,
+  "coreAndTruthAvailable": 5351,
+  "FALSE_AVAILABLE": 0.2345,
+  "WRONG_VALUE": 0.0,
+  "WRONG_CONCEPT": 0.0,
+  "WRONG_PERIOD": 0.0,
+  "FALSE_MISSING": 14.3155
+ },
+ "byStratum": {
+  "normal": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1280,
+    "CORRECT": 2082,
+    "FALSE_MISSING": 231
+   },
+   "truthUnavailable": 1280,
+   "truthAvailable": 2313,
+   "coreAndTruthAvailable": 2082,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 9.987,
+   "cases": 1279,
+   "underpopulated": false
+  },
+  "fy_change": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 91,
+    "CORRECT": 37,
+    "FALSE_AVAILABLE": 9,
+    "FALSE_MISSING": 42
+   },
+   "truthUnavailable": 100,
+   "truthAvailable": 79,
+   "coreAndTruthAvailable": 37,
+   "FALSE_AVAILABLE": 9.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 53.1646,
+   "cases": 100,
+   "underpopulated": false
+  },
+  "week52": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 310,
+    "CORRECT": 466,
+    "FALSE_MISSING": 63
+   },
+   "truthUnavailable": 310,
+   "truthAvailable": 529,
+   "coreAndTruthAvailable": 466,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 11.9093,
+   "cases": 308,
+   "underpopulated": false
+  },
+  "stub": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 70,
+    "FALSE_MISSING": 1,
+    "CORRECT": 1
+   },
+   "truthUnavailable": 70,
+   "truthAvailable": 2,
+   "coreAndTruthAvailable": 1,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 50.0,
+   "cases": 68,
+   "underpopulated": false
+  },
+  "tag_switch": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 844,
+    "CORRECT": 1256,
+    "FALSE_MISSING": 259,
+    "FALSE_AVAILABLE": 2
+   },
+   "truthUnavailable": 846,
+   "truthAvailable": 1515,
+   "coreAndTruthAvailable": 1256,
+   "FALSE_AVAILABLE": 0.2364,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 17.0957,
+   "cases": 843,
+   "underpopulated": false
+  },
+  "split": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 45,
+    "CORRECT": 42,
+    "FALSE_MISSING": 9
+   },
+   "truthUnavailable": 45,
+   "truthAvailable": 51,
+   "coreAndTruthAvailable": 42,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 17.6471,
+   "cases": 40,
+   "underpopulated": false
+  },
+  "custom": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 103,
+    "CORRECT": 43,
+    "FALSE_MISSING": 12
+   },
+   "truthUnavailable": 103,
+   "truthAvailable": 55,
+   "coreAndTruthAvailable": 43,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 21.8182,
+   "cases": 103,
+   "underpopulated": false
+  },
+  "loss": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1667,
+    "CORRECT": 2494,
+    "FALSE_MISSING": 570
+   },
+   "truthUnavailable": 1667,
+   "truthAvailable": 3064,
+   "coreAndTruthAvailable": 2494,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 18.6031,
+   "cases": 1667,
+   "underpopulated": false
+  },
+  "profit": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1705,
+    "CORRECT": 2848,
+    "FALSE_MISSING": 320
+   },
+   "truthUnavailable": 1705,
+   "truthAvailable": 3168,
+   "coreAndTruthAvailable": 2848,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 10.101,
+   "cases": 1705,
+   "underpopulated": false
+  },
+  "small": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1026,
+    "FALSE_MISSING": 271,
+    "CORRECT": 1166
+   },
+   "truthUnavailable": 1026,
+   "truthAvailable": 1437,
+   "coreAndTruthAvailable": 1166,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 18.8587,
+   "cases": 1020,
+   "underpopulated": false
+  },
+  "large": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 341,
+    "CORRECT": 538,
+    "FALSE_MISSING": 75,
+    "FALSE_AVAILABLE": 1
+   },
+   "truthUnavailable": 342,
+   "truthAvailable": 613,
+   "coreAndTruthAvailable": 538,
+   "FALSE_AVAILABLE": 0.2924,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 12.2349,
+   "cases": 341,
+   "underpopulated": false
+  },
+  "foreign": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 104,
+    "CORRECT": 141,
+    "FALSE_MISSING": 27
+   },
+   "truthUnavailable": 104,
+   "truthAvailable": 168,
+   "coreAndTruthAvailable": 141,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 16.0714,
+   "cases": 103,
+   "underpopulated": false
+  },
+  "restated": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 744,
+    "FALSE_MISSING": 327,
+    "CORRECT": 1019
+   },
+   "truthUnavailable": 744,
+   "truthAvailable": 1346,
+   "coreAndTruthAvailable": 1019,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 24.2942,
+   "cases": 735,
+   "underpopulated": false
+  },
+  "same_day": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 33,
+    "CORRECT": 38,
+    "FALSE_MISSING": 18
+   },
+   "truthUnavailable": 33,
+   "truthAvailable": 56,
+   "coreAndTruthAvailable": 38,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 32.1429,
+   "cases": 32,
+   "underpopulated": false
+  },
+  "negative": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 457,
+    "FALSE_MISSING": 4,
+    "FALSE_AVAILABLE": 9,
+    "CORRECT": 9
+   },
+   "truthUnavailable": 466,
+   "truthAvailable": 13,
+   "coreAndTruthAvailable": 9,
+   "FALSE_AVAILABLE": 1.9313,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 30.7692,
+   "cases": 453,
+   "underpopulated": false
+  }
+ },
+ "byEval": {
+  "early": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 3385
+   },
+   "truthUnavailable": 3385,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null
+  },
+  "knownFrom": {
+   "counts": {
+    "CORRECT": 2894,
+    "FALSE_MISSING": 491
+   },
+   "truthUnavailable": 0,
+   "truthAvailable": 3385,
+   "coreAndTruthAvailable": 2894,
+   "FALSE_AVAILABLE": null,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 14.5052
+  },
+  "final": {
+   "counts": {
+    "CORRECT": 2457,
+    "TRUE_UNAVAILABLE": 444,
+    "FALSE_MISSING": 403,
+    "FALSE_AVAILABLE": 9
+   },
+   "truthUnavailable": 453,
+   "truthAvailable": 2860,
+   "coreAndTruthAvailable": 2457,
+   "FALSE_AVAILABLE": 1.9868,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 14.0909
+  }
+ },
+ "falseMissingReasons": {
+  "TTM_SHARE_BASIS_INCONSISTENT": 541,
+  "TTM_EPS_INCONSISTENT": 266,
+  "INSUFFICIENT_HISTORY": 59,
+  "NO_QUARTER_SLOT": 21,
+  "TTM_CONCEPT_MISMATCH": 6,
+  "TTM_PERIODS_NOT_CONTIGUOUS": 1
+ },
+ "failures": [
+  {
+   "cik": "0001095996",
+   "kind": "WINDOW",
+   "end": "2011-12-31",
+   "eval": "final",
+   "t": "2013-03-18",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -193330.0,
+   "coreEnd": "2011-12-31"
+  },
+  {
+   "cik": "0001635581",
+   "kind": "WINDOW",
+   "end": "2016-05-31",
+   "eval": "final",
+   "t": "2018-02-05",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": 1.7,
+   "coreEnd": "2016-05-31"
+  },
+  {
+   "cik": "0001322439",
+   "kind": "WINDOW",
+   "end": "2014-09-30",
+   "eval": "final",
+   "t": "2014-11-14",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -8.16,
+   "coreEnd": "2014-09-30"
+  },
+  {
+   "cik": "0000018172",
+   "kind": "WINDOW",
+   "end": "2017-06-30",
+   "eval": "final",
+   "t": "2017-08-09",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative",
+    "tag_switch"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -2.66,
+   "coreEnd": "2017-06-30"
+  },
+  {
+   "cik": "0000798949",
+   "kind": "WINDOW",
+   "end": "2020-06-30",
+   "eval": "final",
+   "t": "2021-08-16",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -28.77,
+   "coreEnd": "2020-06-30"
+  },
+  {
+   "cik": "0000716133",
+   "kind": "WINDOW",
+   "end": "2021-06-30",
+   "eval": "final",
+   "t": "2021-07-29",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -0.62,
+   "coreEnd": "2021-06-30"
+  },
+  {
+   "cik": "0000933136",
+   "kind": "WINDOW",
+   "end": "2019-09-30",
+   "eval": "final",
+   "t": "2020-10-29",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "large",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -3.61,
+   "coreEnd": "2019-09-30"
+  },
+  {
+   "cik": "0001062613",
+   "kind": "WINDOW",
+   "end": "2012-09-30",
+   "eval": "final",
+   "t": "2014-03-05",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -7.92,
+   "coreEnd": "2012-09-30"
+  },
+  {
+   "cik": "0001761940",
+   "kind": "WINDOW",
+   "end": "2018-12-31",
+   "eval": "final",
+   "t": "2021-03-16",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "fy_change",
+    "negative",
+    "tag_switch"
+   ],
+   "truth": null,
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -3.17,
+   "coreEnd": "2018-12-31"
+  }
+ ],
+ "prereg": "artifacts/FUNDAMENTAL-TTM-HOLDOUT3-PREREG.json",
+ "openedAt": "2026-10-08",
+ "officialRun": 1,
+ "candidate": {
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v5.json",
+  "status": "DEVELOPMENT_FREEZE",
+  "commit": "18d4d88e9bd873fdb83c4e840cd16a834464f32b",
+  "codeHash": "1fda3ed9d7c1199e0746c55036f9da8818701db1123c4a806032e150d966afaa",
+  "normalizationLogic": "1.20.0",
+  "view": "PIT_TTM via PeriodResolver.ttm_ending (Policy AS_OF_LATEST), EPS diluted",
+  "note": "Freeze v5 nach der Gate-Praezisierung neu geschrieben (nur Audit-Hash); Kern-Code-Hash identisch zu c5a1b6d"
+ },
+ "hashesVerified": {
+  "evaluator": true,
+  "gates": true,
+  "exclude": true,
+  "frame": true,
+  "archive": true,
+  "freezeV5Check": true
+ },
+ "deviations": [
+  "keine. Der Lauf meldete Exit 1 nur wegen 'tail -2' ueber mehrere Logdateien im Wrapper; alle 4 Shards liefen vollstaendig (10.083 Zeilen, 0 Evaluatorfehler), kein zweiter Lauf"
+ ],
+ "failureAnalysis": {
+  "note": "Diagnose nach Oeffnung, ohne Reparatur und ohne Einfluss auf das Urteil. Alle 9 Fehler sind FALSE_AVAILABLE in Fenstern, die die praeregistrierte Wahrheit als FISCAL_TRANSITION (Quartal im Uebergangszeitraum, NOT_QUARTER_ELIGIBLE) wertet, der Kern aber als gueltiges TTM liefert.",
+  "groups": {
+   "F-TTM-4 Geschaeftsjahreswechsel ohne bekanntes altes Jahresende": {
+    "ciks": [
+     "0001635581 8point3 Energy Partners (Dez -> Nov, 11-Monats-Uebergang 2015)",
+     "0001761940 Diamond S Shipping (Maerz -> Dez nach Fusion 2019)"
+    ],
+    "cause": "FiscalCalendar.fy_ends kennt das alte Jahresende nicht (2014-12-28 bzw. 2018-03-31 fehlen); is_transition_year greift nur zwischen zwei bekannten Jahresenden, daher werden Quartale des Uebergangszeitraums als normale Slots gezaehlt. Gleiche Fehlerklasse wie F-TTM-2, andere Eingangslage."
+   },
+   "F-TTM-5 Predecessor/Successor (Fresh Start, Fusion, Uebernahme) ohne 12-Monats-Jahresperiode": {
+    "ciks": [
+     "0001095996 William Lyon Homes (Fresh Start 2012; Predecessor-EPS -11.225..-131.300 bei ~1.000 Aktien, Kern-TTM -193.330)",
+     "0001322439 Eagle Bulk (Fresh Start 2014)",
+     "0000018172 A. M. Castle (Reorganisation 2017)",
+     "0000798949 Unit Corp (Fresh Start 2020)",
+     "0000933136 Mr. Cooper / WMIH (Fusion 2018)",
+     "0001062613 FairPoint (Fresh Start 2011)",
+     "0000716133 Cincinnati Bell (Uebernahme 2021)"
+    ],
+    "cause": "das Geschaeftsjahr ist in Predecessor- und Successor-Perioden geteilt; die Wahrheit findet keine 12-Monats-Jahresperiode und wertet das Jahr als Uebergang. Der Kern setzt fy_ends aus den Jahresberichten fort und summiert Quartale ueber den Bruch der Aktienbasis/Rechnungseinheit. Ob jeder dieser Faelle oekonomisch falsch ist (z. B. Cincinnati Bell), ist offen; nach der praeregistrierten Policy sind alle FALSE_AVAILABLE."
+   }
+  },
+  "verdictUnaffected": "FAIL bleibt FAIL. Kein Nachbessern im Holdout, keine Gate-Aenderung, kein 'formal fail, aber eigentlich pass'."
+ },
+ "conclusion": {
+  "core": "Kern 1.20.0 BLOCKED",
+  "freezeV5": "bleibt als FAILED_VALIDATION (Development Freeze, unveraendert)",
+  "pr481": "BLOCKED",
+  "F-TTM-2": "behoben, wo beide Jahresenden bekannt sind (0 WRONG_PERIOD in 179 fy_change-Auswertungen); die Fehlerklasse Geschaeftsjahreswechsel ist nicht geschlossen (F-TTM-4, F-TTM-5: 9 FALSE_AVAILABLE)",
+  "F-TTM-3": "behoben (same_day 32 Faelle: 0 Fehler)",
+  "next": "F-TTM-4/F-TTM-5 in eigenem Kern-PR (1.21.0) mit Realdaten-Regressionen; diese 9 Emittenten gelten ab jetzt als gesehen (als Fixtures zulaessig) und sind von einem neuen, wieder ungesehenen Holdout v4 ausgeschlossen"
+ }
+}

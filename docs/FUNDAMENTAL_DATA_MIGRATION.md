@@ -167,16 +167,26 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 ## Migrationsplan nach M-B1/M-B5/M-B6 (Stand 2026-10-08)
 
 **Status:**
-- **#481:** BLOCKED. Der TTM-Holdout v2 ist FAIL (`artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json`); offen sind F-TTM-2 und F-TTM-3.
-- **Freeze v5:** keiner.
-- **Voraussetzung für Schritt 4 ff.:** ein bestandener, neu präregistrierter Holdout nach Behebung von F-TTM-2/F-TTM-3.
+- **#481:** BLOCKED.
+  - Holdout v2 ist FAIL (Kern 1.19.0, `artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json`, unverändert). Dort wurden F-TTM-2 und F-TTM-3 entdeckt; spätere Kernversionen validiert v2 nicht.
+  - Kern 1.20.0 behebt F-TTM-2 und F-TTM-3 (Realdaten-Regressionen in `scripts/quant/tests/test_ttm_core_120.py`).
+  - Holdout v3 (frisch, ungesehen, 15.251 Emittenten, 3.825 Fälle) ist FAIL (`artifacts/FUNDAMENTAL-TTM-HOLDOUT3-RESULT.json`): 9 FALSE_AVAILABLE, alle über Geschäftsjahreswechsel.
+    - F-TTM-4: das alte Jahresende ist dem Kalender unbekannt.
+    - F-TTM-5: Predecessor-/Successor-Jahre (Fresh Start, Fusion).
+  - WRONG_VALUE, WRONG_CONCEPT und WRONG_PERIOD sind 0.
+- **Freeze v5:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v5.json`, Development Freeze. Er bleibt als gescheiterte Validierung bestehen und wird nicht final.
+- **Voraussetzung für Schritt 4 ff.:**
+  - F-TTM-4/F-TTM-5 in einem eigenen Kern-PR (1.21.0) beheben;
+  - danach ein neuer, wieder ungesehener Holdout v4 (ohne die v3-Fehleremittenten), alle Gates PASS.
+- **M4** (Screener-Rangfolge `pe` → `peFy`) ist eine eigene Produktentscheidung, nicht Teil dieser Migration.
+- **#504/#505/#510** bleiben getrennt.
 
 | # | Schritt | Abhängigkeit | Prüfung |
 |---|---|---|---|
 | 1 | #504 (M-B1) nach main | keine; alte Bundles gelten als unverifiziert | Discover-CI (verify + Reproduzierbarkeit), Screener, Frontend-Budget, Startseite (KGV (GJ)) |
 | 2 | Ein Datenlauf auf main mit #504 | 1 | 0 FY-Werte unter TTM-Namen; EPS GJ ≈ 3.900; Startseite gefüllt |
-| 3 | F-TTM-2/F-TTM-3 beheben (eigener Kern-PR auf #481), neuer ungesehener Holdout | – | präregistriert, alle Gates PASS |
-| 4 | Freeze v5 schreiben | 3 | `freeze.mjs --check` grün |
+| 3 | F-TTM-2/F-TTM-3 behoben (1.20.0, Holdout v3 FAIL); F-TTM-4/F-TTM-5 beheben, neuer ungesehener Holdout v4 | – | präregistriert, alle Gates PASS |
+| 4 | Finaler Freeze (v6) schreiben | 3 | `freeze.mjs --check` grün |
 | 5 | #510 (M-B6) in #505 mergen | 4 | Evidence-Tests, Python-Suite |
 | 6 | #505 (M-B5) in #481 mergen | 5 | PIT-Tests, Budget-Test PIT-Speicher |
 | 7 | main in #481 mergen (bringt #504) | 1, 6 | alle Suiten; Rest = die 4 bekannten Basisfehler |
