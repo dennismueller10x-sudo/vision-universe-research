@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const context={VUCompanyIntelligence:{safeLink:url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}}};
 vm.runInNewContext(readFileSync('company-intelligence/ui/stock-section.js','utf8'),context);
-const {viewModel,freshness,storyType}=context.VUCompanyIntelligenceStock;
+const {viewModel,freshness,storyType,changeLabel}=context.VUCompanyIntelligenceStock;
 const now=Date.parse('2026-10-07T15:00:00Z'),cid='iss_cik_0001318605';
 const news=(id,date,extra={})=>({companyId:cid,newsId:id,canonicalUrl:'https://www.tesla.com/'+id,publishedAt:date,eventType:'NEWS',...extra});
 test('publication freshness never substitutes observation/update timestamps',()=>{
@@ -31,4 +31,14 @@ test('only available metrics and supported comparisons appear; share changes req
 });
 test('type pills reuse existing deterministic categories without inferring new facts',()=>{
  assert.equal(storyType({eventType:'NEWS',categories:['Buyback']}),'Aktienrückkauf');assert.equal(storyType({eventType:'NEWS',categories:['Other']}),'Unternehmensmeldung');assert.equal(storyType({eventType:'MATERIAL_SEC_EVENT'}),'SEC / Regulatorisch');assert.equal(storyType({eventType:'EARNINGS_PUBLISHED'}),'Geschäftszahlen');
+});
+test('revenue contraction remains a decline even when its rate improves; crossing zero is explicit',()=>{
+ for(const [previous,current,label] of [
+  [-48,-22.93,'Rückgang abgeschwächt'],[-5,-10,'Rückgang verstärkt'],
+  [-5,5,'Wachstum statt Rückgang'],[5,-5,'Rückgang statt Wachstum'],
+  [-5,0,'Kein Umsatzrückgang'],[5,0,'Kein Umsatzwachstum'],
+  [0,5,'Umsatzwachstum'],[0,-5,'Umsatzrückgang'],
+  [18,24,'Beschleunigt'],[24,18,'Verlangsamt'],[-5,-5,'Unverändert']
+ ])assert.equal(changeLabel({metric:'revenue_growth',previous,current}),label);
+ assert.equal(changeLabel({metric:'total_debt',previous:1,current:2}),'Gestiegen');
 });
