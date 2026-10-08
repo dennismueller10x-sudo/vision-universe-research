@@ -1,0 +1,98 @@
+{
+ "schemaVersion": "vu-technical-method-evidence-1.0.0",
+ "purpose": "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.",
+ "generatedAt": "2026-10-04T01:21:51.342Z",
+ "definitions": {
+  "VALIDATED": "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt",
+  "SUPPORTED": "Holdout-Richtung statistisch besser als 50 % und als „immer long“, aber nicht vorab registriert bestätigt; wirtschaftlich gering (vorzeichenbereinigte Rendite unter „immer long“)",
+  "NOT_ESTABLISHED": "geprüft, kein belastbarer Effekt",
+  "DESCRIPTIVE_ONLY": "ohne Prognoseanspruch"
+ },
+ "methods": {
+  "TREND": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CORE",
+   "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 52,0 % (95 %-KI 50,5 %–53,5 %, n = 79.042); vorzeichenbereinigte Ø-Rendite -9,3 % gegenüber „immer long“ 12,7 %",
+   "consumer": "Trendrichtung ist die verlässlichste Beschreibung der Lage; einen wirtschaftlichen Vorteil belegt sie allein nicht.",
+   "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 52,0 % (95 %-KI 50,5 %–53,5 %, n = 79.042); vorzeichenbereinigte Ø-Rendite -9,3 % gegenüber „immer long“ 12,7 %"
+  },
+  "MOMENTUM": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CORE",
+   "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,6 % (95 %-KI 48,0 %–53,4 %, n = 68.760); vorzeichenbereinigte Ø-Rendite -8,9 % gegenüber „immer long“ 12,7 %",
+   "consumer": "Bewegungsstärke beschreibt den Schwung; ein Prognosevorteil gegenüber „immer long“ ist nicht belegt.",
+   "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,6 % (95 %-KI 48,0 %–53,4 %, n = 68.760); vorzeichenbereinigte Ø-Rendite -8,9 % gegenüber „immer long“ 12,7 %"
+  },
+  "STRUCTURE": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CORE",
+   "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,9 % (95 %-KI 49,6 %–52,3 %, n = 77.991); vorzeichenbereinigte Ø-Rendite -3,2 % gegenüber „immer long“ 12,7 %",
+   "consumer": "Hochs und Tiefs beschreiben die Struktur.",
+   "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,9 % (95 %-KI 49,6 %–52,3 %, n = 77.991); vorzeichenbereinigte Ø-Rendite -3,2 % gegenüber „immer long“ 12,7 %"
+  },
+  "PATTERN": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CONTEXT",
+   "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,1 % (95 %-KI 47,9 %–52,3 %, n = 38.799); vorzeichenbereinigte Ø-Rendite 4,4 % gegenüber „immer long“ 12,7 %",
+   "consumer": "Chartformationen beschreiben Lagen; ein Vorteil ist nicht belegt.",
+   "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,1 % (95 %-KI 47,9 %–52,3 %, n = 38.799); vorzeichenbereinigte Ø-Rendite 4,4 % gegenüber „immer long“ 12,7 %"
+  },
+  "CONFLUENCE": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CORE",
+   "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 51,9 % (95 %-KI 50,2 %–53,4 %, n = 78.172); vorzeichenbereinigte Ø-Rendite -9,6 % gegenüber „immer long“ 12,7 %",
+   "consumer": "Die Einigkeit der Verfahren beschreibt, wie eindeutig das Bild ist – keine Trefferwahrscheinlichkeit.",
+   "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 51,9 % (95 %-KI 50,2 %–53,4 %, n = 78.172); vorzeichenbereinigte Ø-Rendite -9,6 % gegenüber „immer long“ 12,7 %"
+  },
+  "ELLIOTT": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CONTEXT",
+   "stat": "Vorab registrierter Test auf unabhängigen Titeln: H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.); H4 nicht bestätigt (Schätzer +2,3 Pp., 95 %-KI −0,5 Pp. bis +5,4 Pp.); H5 nicht bestätigt (Schätzer −3,2 Pp., 95 %-KI −5,2 Pp. bis −0,9 Pp.)",
+   "consumer": "Experimentelles Strukturmodell: Die Elliott-Zählung beschreibt die Wellenstruktur. In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte sie keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung.",
+   "pro": "Kontext, kein Prognosebeitrag (H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.))",
+   "methodStatus": {
+    "code": "EXPERIMENTAL_STRUCTURE_MODEL",
+    "label": "Experimentelles Strukturmodell",
+    "note": "Engine 3.2; Engine-Quality-Gate (HOLDOUT-3, ELLIOTT_HOLDOUT3_PREREG.md) nicht bestanden; historischer Prognosevorteil nicht belegt; Konfluenzgewicht 0."
+   }
+  },
+  "FIBONACCI": {
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
+   "role": "CONTEXT",
+   "stat": "Häufung an Fibonacci-Niveaus insgesamt: keine (Verhältnis ≈ 1; einzelne Niveaus siehe Studie, explorativ); H7 nicht bestätigt (Schätzer −0,6 Pp., 95 %-KI −1,9 Pp. bis +0,7 Pp.)",
+   "consumer": "Wendepunkte häufen sich nicht an Fibonacci-Niveaus; Fibonacci zählt nur, wo mehrere Anker zusammenfallen.",
+   "pro": "H7 nicht bestätigt (Schätzer −0,6 Pp., 95 %-KI −1,9 Pp. bis +0,7 Pp.)"
+  },
+  "TIMING_EARLY": {
+   "level": "VALIDATED",
+   "label": "Bestätigt",
+   "role": "CONTEXT",
+   "stat": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.)",
+   "consumer": "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung durch die Engine. Das ist eine Aussage über den Zeitpunkt, kein Prognosevorteil der Zählung. Gemessen mit der Vorgänger-Engine 2.2; für die aktuelle Engine 3.x nicht neu gemessen.",
+   "pro": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.) — gemessen mit elliott-2.2 (Mission II), unter 3.x nicht neu gemessen (Red-Team 2 M1); Effekt des Zeitpunkts; bei Rückläufen ohne Fortsetzungs-Lesart zeigt sich dieselbe Richtung (Differenz +2,2 Pp., nicht separat getestet)"
+  },
+  "WYCKOFF": {
+   "level": "DESCRIPTIVE_ONLY",
+   "label": "Beschreibend",
+   "role": "CONTEXT",
+   "stat": "keine Richtungsstimme (Gewicht 0)",
+   "consumer": "Wyckoff beschreibt Handelsspannen.",
+   "pro": "Gewicht 0; Richtungstrefferquote in TRAIN/VALIDATION < 50 %"
+  },
+  "VOLUME": {
+   "level": "DESCRIPTIVE_ONLY",
+   "label": "Beschreibend",
+   "role": "CONTEXT",
+   "stat": "Wochenreihen ohne Volumen; Tagesstudie zu klein",
+   "consumer": "Volumen ergänzt die Beschreibung, wo vorhanden.",
+   "pro": "nicht belastbar geprüft (Volumen nur in Tagesdaten)"
+  }
+ }
+}

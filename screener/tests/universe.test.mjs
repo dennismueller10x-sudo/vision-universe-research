@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { indicators, COLUMNS } from '../../scripts/screener/build-universe.mjs';
+import { gunzipSync } from 'node:zlib';
+import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS } from '../../scripts/screener/build-universe.mjs';
 import { sectorFromSic } from '../../scripts/screener/sic.mjs';
 const require = createRequire(import.meta.url);
 const Fields = require('../engine/fields.js');
@@ -34,6 +35,34 @@ test('SIC-Sektorzuordnung ist deterministisch und offengelegt', () => {
   assert.equal(sectorFromSic('4911'), 'util');
   assert.equal(sectorFromSic('3711'), 'discretionary');
   assert.equal(sectorFromSic(null), null);
+});
+
+test('Chartbild-Spalten: nur bekannte Zustaende, veraltete Titel bleiben leer', () => {
+  const { byTicker, meta } = technicalIntelligenceColumns({ schemaVersion: 'vu-ti-api-3.0.0', generatedAt: '2026-10-03T00:00:00Z', rows: [
+    { t: 'AAA', asOf: '2026-10-01', outlook: 'BULLISH', structure: 'CORRECTION_IN_UPTREND', elliottApplicable: 'LOW' },
+    { t: 'BBB', asOf: '2026-09-10', outlook: 'BEARISH', structure: 'RALLY_IN_DOWNTREND', elliottApplicable: null },
+    { t: 'CCC', asOf: '2024-10-11', outlook: 'BULLISH', structure: 'UPTREND_ADVANCING', elliottApplicable: 'HIGH' },
+    { t: 'DDD', asOf: '2026-10-01', outlook: 'KAUFEN', structure: 'X', elliottApplicable: 'SURE' }] });
+  assert.deepEqual(byTicker.get('AAA'), { tiOut: 'BULLISH', tiStr: 'CORRECTION_IN_UPTREND', tiEw: 'LOW' });
+  assert.deepEqual(byTicker.get('BBB'), { tiOut: 'BEARISH', tiStr: 'RALLY_IN_DOWNTREND', tiEw: null });
+  assert.equal(byTicker.has('CCC'), false, 'aelter als ' + TI_MAX_AGE_DAYS + ' Tage');
+  assert.deepEqual(byTicker.get('DDD'), { tiOut: null, tiStr: null, tiEw: null });
+  assert.equal(meta.asOf, '2026-10-01'); assert.equal(meta.stale, 1);
+  assert.equal(technicalIntelligenceColumns(null).meta, null);
+  /* Bezug Baudatum: ein insgesamt veralteter Index liefert keine Zustaende (Code-Review M3) */
+  const old = technicalIntelligenceColumns({ rows: [{ t: 'AAA', asOf: '2026-10-01', outlook: 'BULLISH', structure: 'UPTREND_ADVANCING', elliottApplicable: 'LOW' }] }, { now: '2027-01-15' });
+  assert.equal(old.byTicker.size, 0); assert.equal(old.meta.stale, 1);
+});
+
+const tiIndex = new URL('../../quant/data/technical-intelligence/v3/index.json.gz', import.meta.url);
+test('Chartbild-Index im Repo deckt die Registry-Zustaende ab', { skip: !existsSync(tiIndex) && 'Index fehlt' }, () => {
+  const { byTicker } = technicalIntelligenceColumns(JSON.parse(gunzipSync(readFileSync(tiIndex)).toString('utf8')));
+  assert.ok(byTicker.size > 1000, 'zu wenige Chartbild-Titel: ' + byTicker.size);
+  for (const v of byTicker.values()) {
+    if (v.tiOut) assert.notEqual(Fields.enumLabel('tiOutlook', v.tiOut), v.tiOut, v.tiOut);
+    if (v.tiStr) assert.notEqual(Fields.enumLabel('tiStructure', v.tiStr), v.tiStr, v.tiStr);
+    if (v.tiEw) assert.notEqual(Fields.enumLabel('tiElliottApplicable', v.tiEw), v.tiEw, v.tiEw);
+  }
 });
 
 test('Jede verfuegbare Registry-Spalte existiert im Artefakt', () => {

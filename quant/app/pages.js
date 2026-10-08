@@ -246,8 +246,8 @@
     var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
     var radarHost = el("div", { class: "q-radar-grid q-radar-top" }, [X.loading("Radar wird geladen …")]);
     page.append(X.world("Heute bei Quant", "Was sich seit dem letzten veröffentlichten Stand verändert hat – gezählt und mit Datum. Jede Karte sagt, was passiert ist, was als Nächstes fehlt und wie es früher lief. Keine Kaufempfehlung.", [kpis, radarHost], { href: X.routes.radar(), label: "Zum Radar" }, "v2-market-today"));
-    var watchHost = el("div");
-    page.append(watchHost);
+    var watchHost = el("div"), tiAlertHost = el("div");
+    page.append(watchHost, tiAlertHost);
 
     var rails = el("div", { class: "qx-rails" });
     var proofHost = el("div");
@@ -271,6 +271,20 @@
     ])], { href: X.routes.backtest(), label: "Backtesting" }));
     page.append(X.actions([X.btn("Warum kann ich dem vertrauen?", X.routes.method(), "secondary")]),
       el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
+
+    /* Chartbild-Ereignisse der beobachteten Aktien - nur in der App. Ohne
+       sauberen Vergleichslauf (Ausgangszustand, Methodikwechsel) bleibt der
+       Bereich leer statt Migrationsartefakte zu melden. */
+    var TI = global.VUTechnicalIntelligence;
+    if (watched.length && TI && TI.getWatchlistAlerts) TI.getWatchlistAlerts(watched).then(function (a) {
+      if (a.state !== "AVAILABLE") return;
+      tiAlertHost.replaceChildren(X.world("Chartbild bei deinen beobachteten Aktien", "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose und keine Empfehlung.",
+        [el("div", { class: "q-rows" }, a.events.slice(0, 12).map(function (e) {
+          var nm = nameOf(ctx, e.symbol);
+          return el("a", { class: "q-rowlink", href: X.routes.chartbild(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
+            el("span", {}, [el("strong", { text: e.symbol + (nm ? " · " + nm : "") }), el("small", { text: e.text + (e.asOf ? " · Stand " + X.dateDe(e.asOf) : "") })])]);
+        }))]));
+    });
 
     var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
       /* Die Startseite liest nur die Radar-Projektion (Kennzahlen und

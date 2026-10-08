@@ -9,6 +9,8 @@ Browser /ask/  ──Frage──▶  Worker vu-ask  ──▶  Durable Object As
 Browser rechnet: screener/engine + /screener/data/universe-US_REAL.json + /supertrader/data/signals.json
 ```
 
+**Chartbild-Werkzeug (`getChartbildLage`, lesend):** Fragt jemand nach der Chartlage einer Aktie, setzt das Modell nur `chartbild: true`. Die Werte (Ausblick, Kursstruktur, Hauptszenario mit Zone, Ungültig-Linie, Bestätigung, Zielzone 1, Elliott-Anwendbarkeit samt Enthaltung) liest der Browser aus `/quant/data/technical-intelligence/v3/index.json.gz` über `quant/engines/technical/ti/ai-tools.js`. Jede Antwort trägt den Status „experimentell, nicht von Experten validiert“ für Elliott und einen Hinweis „keine Prognose, keine Anlageberatung“; Trefferquoten werden nicht ausgegeben. Der Worker selbst ruft keine Daten ab.
+
 ## Kosten und harte Grenzen
 
 Eine neue Frage kostet mit Haiku 4.5 ($1 / $5 je Mio. Token) nach Schätzung **etwa 0,5–0,8 Cent**. Die Rechnung dahinter: rund 5.000 Token Anweisung mit dem vollständigen Feldkatalog plus 300–500 Token Antwort. Mit 250 $ Guthaben reicht das für etwa 30.000–50.000 Fragen. Bereits gestellte Fragen, auch anders formuliert oder mit Füllwörtern, kommen **kostenlos** aus dem Cache und verbrauchen kein Kontingent.

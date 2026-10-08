@@ -71,6 +71,7 @@ export function followUpPrompt(question, previous) {
     show: pick(previous.show, 8).map((t) => String(t).slice(0, 40)),
     supertrader: previous.supertrader && typeof previous.supertrader === "object"
       ? { strategy: String(previous.supertrader.strategy || "").slice(0, 30), mode: String(previous.supertrader.mode || "").slice(0, 10) } : null,
+    chartbild: previous.chartbild === true,
   };
   return "VORHERIGE FRAGE: " + prevQ + "\nVORHERIGE INTERPRETATION (Filter als [Feld, Operator, Wert, Wert2]): " +
     JSON.stringify(compact).slice(0, 2500) + "\nNEUE NACHRICHT (Korrektur oder Ergaenzung): " + question;

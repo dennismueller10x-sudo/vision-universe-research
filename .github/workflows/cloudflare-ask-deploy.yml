@@ -27,6 +27,8 @@ on:
     branches: [main]
     paths:
       - 'workers/vu-ask/**'
+      # Der Worker buendelt das Chartbild-Werkzeug (getChartbildLage) aus dieser Datei.
+      - 'quant/engines/technical/ti/ai-tools.js'
       - '.github/workflows/cloudflare-ask-deploy.yml'
 
 permissions:

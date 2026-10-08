@@ -393,7 +393,7 @@
     return {
       question: question.length > 390 ? '…' + question.slice(-389) : question, kind: r.kind,
       filters: r.query ? Query.filters(r.query).map(function (f) { return [f.field, f.op, f.value, f.value2]; }) : [],
-      tickers: r.tickers || [], show: r.show || [], supertrader: r.supertrader || null
+      tickers: r.tickers || [], show: r.show || [], supertrader: r.supertrader || null, chartbild: r.chartbild === true
     };
   }
   function setContext(c) {
@@ -426,17 +426,29 @@
     ]));
 
     var needSignals = !!r.supertrader;
-    return (needSignals ? signals() : Promise.resolve(null)).then(function (sig) {
+    return Promise.all([needSignals ? signals() : null, r.kind === 'stock' && r.chartbild ? chartbildData() : null]).then(function (loaded) {
+      var sig = loaded[0], ti = loaded[1];
       if (needSignals && !sig) resultMount.appendChild(card('Supertrader-Signale nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
       if (r.kind === 'stock') {
         understoodMount.appendChild(understood(r, answer.source));
         var st = Ask.runStock(ds, r, sig);
-        resultMount.appendChild(stockBlock(st));
         var found = st.stocks.filter(function (x) { return x.found; });
-        var text = !found.length ? 'Ich habe keine passende Aktie im Universum gefunden.' + gapText
-          : found.map(function (x) {
-            return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', ');
-          }).join('. ') + '.' + gapText;
+        var text;
+        if (r.chartbild) {
+          /* Chartbild-Werkzeug: strukturierte Werte aus dem Index statt Freitext */
+          if (!ti) { resultMount.appendChild(card('Chartbild nicht geladen', 'Die Chartlage kann gerade nicht angezeigt werden.', true)); text = 'Das Chartbild konnte nicht geladen werden.' + gapText; }
+          else {
+            var cb = Ask.runChartbild(ti.index, ti.meta, r);
+            resultMount.appendChild(chartbildBlock(cb));
+            text = cb.stocks.map(Ask.chartbildSentence).join(' ') + gapText;
+          }
+        } else {
+          resultMount.appendChild(stockBlock(st));
+          text = !found.length ? 'Ich habe keine passende Aktie im Universum gefunden.' + gapText
+            : found.map(function (x) {
+              return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', ');
+            }).join('. ') + '.' + gapText;
+        }
         atlasMount.appendChild(atlasCard(text, [], r));
         setContext(compactOf(question, r));
         return text;
@@ -568,6 +580,44 @@
     box.appendChild(h('div', { class: 'ak-actions' }, [
       h('a', { class: 'ak-btn ak-btn-sm', href: Ask.screenerUrl(r), text: 'Im Screener weiterbearbeiten' }),
       res.strategy ? h('a', { class: 'ak-btn ak-btn-sm', href: '/supertrader/', text: 'Zum Supertrader' }) : null
+    ]));
+    return box;
+  }
+
+  /* Chartbild-Index (gz) ueber die Lese-API des Chartbilds; null bei Fehler. */
+  var chartbildPromise = null;
+  function chartbildData() {
+    var TI = window.VUTechnicalIntelligence;
+    if (!TI) return Promise.resolve(null);
+    if (!chartbildPromise) chartbildPromise = Promise.all([TI.getIndex(), TI.getMeta().catch(function () { return null; })])
+      .then(function (x) { return { index: x[0], meta: x[1] }; })
+      .catch(function () { chartbildPromise = null; return null; });
+    return chartbildPromise;
+  }
+  function chartbildBlock(res) {
+    var usd = function (v) { return v === null || v === undefined ? '–' : Fields.format('price', v); };
+    var zone = function (z) { return z ? usd(z[0]) + ' – ' + usd(z[1]) : '–'; };
+    var box = h('div', { class: 'ak-card' }, [h('h3', { text: 'Chartbild' })]);
+    res.stocks.forEach(function (x) {
+      if (!x.found) { box.appendChild(h('p', { text: x.symbol + ': Für diesen Titel liegt kein Chartbild vor.' })); return; }
+      var p = x.primaryScenario || {};
+      var rows = [
+        ['Ausblick', x.outlook && x.outlook.label], ['Kursstruktur', x.structure && x.structure.label],
+        ['Zone des Hauptszenarios', zone(p.entryZone)], ['Ungültig bei Schluss ' + (p.direction === 'BEARISH' ? 'über' : 'unter'), usd(p.invalidation)],
+        ['Bestätigung', usd(p.confirmation)], ['Zielzone 1', zone(p.target1)],
+        ['Elliott (experimentell)', x.elliott.abstained ? 'keine belastbare Zählung' : x.elliott.applicability.label + (x.elliott.count ? ' · ' + x.elliott.count : '')]
+      ];
+      box.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
+        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: x.symbol }), h('th', { scope: 'col', text: 'Stand ' + (x.asOf || '–') + (x.stale ? ' · veraltet' : '') })])]),
+        h('tbody', {}, rows.map(function (rw) { return h('tr', {}, [h('td', { text: rw[0] }), h('td', { text: rw[1] || '–' })]); }))
+      ])]));
+      if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-atlas-hint', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Linie', confirmation: 'Bestätigung', target1: 'Zielzone 1' }[k] || k; }).join(', ') + '.' }));
+      box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/quant/#/aktie/' + encodeURIComponent(x.symbol) + '/chartbild', text: x.symbol + ' im Chartbild öffnen' })]));
+    });
+    var first = res.stocks.filter(function (x) { return x.disclaimer; })[0];
+    box.appendChild(h('ul', { class: 'ak-notes' }, [
+      h('li', { text: (first && first.elliott ? first.elliott.note : 'Elliott-Wellen sind experimentell und nicht von Experten validiert.') }),
+      h('li', { text: first ? first.disclaimer : 'Keine Prognose und keine Anlageberatung.' })
     ]));
     return box;
   }

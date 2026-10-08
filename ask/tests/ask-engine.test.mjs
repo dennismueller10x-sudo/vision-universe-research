@@ -65,3 +65,45 @@ test("Link in den Screener traegt genau die Filter", () => {
   assert.match(decodeURIComponent(url), /f=newHigh52w:is:1/);
   assert.match(decodeURIComponent(url), /f=marketCap:between:300000000:2000000000/);
 });
+
+/* Chartbild-Werkzeug: Zeilen wie im echten index.json.gz (vu-ti-api-3), gekuerzt */
+const TI_INDEX = { schemaVersion: "vu-ti-api-3.0.0", methodologyKey: JSON.stringify({ elliott: "elliott-3.2.1" }), rows: [
+  { t: "AAA", tf: "1W", asOf: "2026-10-01", close: 166.68, outlook: "BULLISH", structure: "CORRECTION_IN_UPTREND", confidence: "LOW", template: "CONTINUATION", status: "EXTENDED", direction: "BULLISH",
+    entry: [148.5, 154.5], invalidation: 145, t1: [171, 175], rr: 3.27, elliott: "WXY:Y", elliottApplicable: "LOW", evidence: "NOT_ESTABLISHED", empirical: { n: 22127, hit: 0.3989, base: 0.404 },
+    alerts: { levels: { entryLow: 148.5, entryHigh: 154.5, invalidation: 145, confirmation: 159, target1: [171, 175] } } },
+  { t: "BBB", tf: "1W", asOf: "2026-10-01", close: 2.44, outlook: "BEARISH", structure: "DOWNTREND_ADVANCING", confidence: "HIGH", direction: "BEARISH",
+    entry: [1.9, 3], invalidation: 4.6, t1: [-2695.2, -2694.56], elliott: "WXY:done", elliottApplicable: "HIGH", evidence: "EXPERIMENTAL",
+    alerts: { levels: { confirmation: 949.73 } } },
+  { t: "CCC", tf: "1W", asOf: "2024-10-11", close: 10, outlook: "NEUTRAL", structure: "SIDEWAYS_RANGE", elliottApplicable: null }
+] };
+const TI_META = { elliott: { status: "EXPERIMENTAL_STRUCTURE_MODEL", confluenceWeight: 0 } };
+
+test("Chartbild-Werkzeug: strukturierte Lage, Elliott-Enthaltung, kein Freitext und keine Quoten", () => {
+  const r = translate({ kind: "stock", understood: "", filters: [], tickers: ["AAA", "BBB", "CCC", "ZZZ"], show: [], supertrader: { strategy: "NONE", mode: "none" }, chartbild: true,
+    sort: { field: "none", dir: "desc" }, limit: 25, missing: [], notes: [] });
+  assert.equal(r.chartbild, true);
+  const res = Ask.runChartbild(TI_INDEX, TI_META, r);
+  assert.equal(res.tool, "getChartbildLage");
+  const [a, b, c, z] = res.stocks;
+  assert.deepEqual([a.outlook, a.structure.label], [{ value: "BULLISH", label: "Aufwärts" }, "Rücksetzer im Aufwärtstrend"]);
+  assert.deepEqual([a.primaryScenario.entryZone, a.primaryScenario.invalidation, a.primaryScenario.confirmation, a.primaryScenario.target1], [[148.5, 154.5], 145, 159, [171, 175]]);
+  // Elliott: enthaelt sich bei LOW, nennt die Zaehlung nur bei HIGH/MODERATE - immer experimentell
+  assert.deepEqual([a.elliott.abstained, a.elliott.count, a.elliott.expertValidated, a.elliott.confluenceWeight, a.elliott.engine], [true, null, false, 0, "elliott-3.2.1"]);
+  assert.deepEqual([b.elliott.abstained, b.elliott.count, b.elliott.status], [false, "WXY:done", "EXPERIMENTAL"]);
+  // Unplausible Niveaus werden zurueckgehalten, nicht gezeigt
+  assert.equal(b.primaryScenario.target1, null); assert.equal(b.primaryScenario.confirmation, null);
+  assert.deepEqual(b.primaryScenario.withheld, ["confirmation", "target1"]);
+  assert.equal(c.stale, true); assert.equal(a.stale, false);
+  assert.deepEqual([z.found, z.reason], [false, "NOT_COVERED"]);
+  for (const x of res.stocks) {
+    assert.match(x.disclaimer, /keine Prognose/); assert.match(x.disclaimer, /keine Anlageberatung/);
+    assert.equal(x.status.isProbability, false); assert.equal(x.status.isAdvice, false);
+    const json = JSON.stringify(x);
+    assert.ok(!/"hit"|"base"|"rr"|empirical/.test(json), "keine Trefferquoten im Werkzeug");
+  }
+  const said = res.stocks.map(Ask.chartbildSentence).join(" ");
+  assert.match(said, /AAA: Ausblick Aufwärts, Rücksetzer im Aufwärtstrend\. Hauptszenario mit Zone 148,50.\$ bis 154,50.\$; es gilt, solange 145,00.\$ nicht per Schlusskurs unterschritten wird\. Elliott: keine belastbare Zählung\./);
+  assert.match(said, /BBB: .*überschritten.*Elliott \(experimentell\): Strukturklarheit hoch\./);
+  assert.match(said, /ZZZ: Für diesen Titel liegt kein Chartbild vor\./);
+  assert.doesNotMatch(said, /kaufen|verkaufen|Kaufsignal|Verkaufssignal|wird steigen|wird fallen|%/i);
+});

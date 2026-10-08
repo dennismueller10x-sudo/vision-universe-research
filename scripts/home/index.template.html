@@ -131,7 +131,7 @@
           <div class="app-grid">
             <div><small>Umsatz TTM</small><b data-count>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%%</em></div>
             <div><small>Nettomarge</small><b data-count>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
-            <div><small>Elliott Wave</small><b>%%NVDA_WAVE_SHORT%%</b><em>Beta</em></div>
+            <div><small>Elliott Wave</small><b>%%NVDA_WAVE_SHORT%%</b><em>experimentell</em></div>
             <div><small>Supertrader</small><b>%%NVDA_SIGNAL%%</b><em class="up">%%NVDA_SIGNAL_STATE%%</em></div>
           </div>
           <div class="app-tabbar">
@@ -145,7 +145,7 @@
       </div>
 
       <div class="orbit" aria-hidden="true"><span class="hud hud-sm orb" style="--k:0"><svg><use href="#h-discover"/></svg></span><span class="hud hud-sm orb" style="--k:1"><svg><use href="#h-quant"/></svg></span><span class="hud hud-sm orb" style="--k:2"><svg><use href="#h-screener"/></svg></span><span class="hud hud-sm orb" style="--k:3"><svg><use href="#h-super"/></svg></span><span class="hud hud-sm orb" style="--k:4"><svg><use href="#h-elliott"/></svg></span><span class="hud hud-sm orb" style="--k:5"><svg><use href="#h-technical"/></svg></span><span class="hud hud-sm orb" style="--k:6"><svg><use href="#h-fundamental"/></svg></span><span class="hud hud-sm orb" style="--k:7"><svg><use href="#h-vorsorge"/></svg></span><span class="hud hud-sm orb" style="--k:8"><svg><use href="#h-atlas"/></svg></span></div>
-      <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Szenarien &amp; Zielzonen</small></div></div>
+      <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Struktur · experimentell</small></div></div>
       <div class="float-card fc-2"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>12 Geschäftsjahre</b><small>Fundamentaldaten aus SEC-Berichten</small></div></div>
     </div>
   </div>
@@ -169,7 +169,7 @@
         <span class="kicker">Die Vision Universe App</span>
         <h2 class="h2">Ein System. Neun Module.<br>Von der Aktie bis zur Vorsorge.</h2>
       </div>
-      <p class="lead">Alle Analysen greifen auf dieselben Daten zu und sind miteinander verbunden: Von jeder Aktie kommst du mit einem Tipp zu Zahlen, Chart, Elliott-Zählung, Faktoren und Setups – und von dort direkt zu deinem Vorsorgeplan.</p>
+      <p class="lead">Alle Analysen greifen auf dieselben Daten zu und sind miteinander verbunden: Von jeder Aktie kommst du mit einem Tipp zu Zahlen, Chartbild, Elliott-Struktur, Faktoren und Setups – und von dort direkt zu deinem Vorsorgeplan.</p>
     </div>
 
     <div class="eco">
@@ -201,7 +201,7 @@
         <a class="module" data-mod="quant" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
         <a class="module" data-mod="screener" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
         <a class="module" data-mod="super" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
-        <a class="module" data-mod="elliott" href="/quant/#/aktie/NVDA/technik?elliott=1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></a>
+        <a class="module" data-mod="elliott" href="/quant/#/aktie/NVDA/chartbild?ansicht=profi"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></a>
         <a class="module" data-mod="technik" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
         <a class="module" data-mod="fundamental" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
         <a class="module" data-mod="atlas" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
@@ -222,9 +222,9 @@
         <ul class="points">
           <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten &amp; Einschätzung</b><span>12 Geschäftsjahre aus SEC-Berichten: Umsatz, Gewinn, Margen, Verschuldung, Bewertung.</span></div></li>
           <li><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Details</b><span>Trend, Momentum, gleitende Durchschnitte, Unterstützungen, Widerstände und Fibonacci.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></li>
         </ul>
-        <a class="btn btn-app" href="/quant/#/aktie/NVDA/technik?elliott=1">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-app" href="/quant/#/aktie/NVDA/chartbild?ansicht=profi">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
       </div>
       <div class="visual visual-dark" aria-hidden="true">
         <div class="panel panel-wide">
@@ -232,7 +232,7 @@
           <div class="chips"><span class="chip on">Elliott</span><span class="chip">SMA 50</span><span class="chip">SMA 200</span><span class="chip">Zonen</span></div>
           <div style="padding:0 14px 6px"><svg class="chart" viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
           <div class="kv">
-            <div><small>Elliott</small><b>%%NVDA_WAVE_LONG%%</b><em>regelbasiert · Beta</em></div>
+            <div><small>Elliott</small><b>%%NVDA_WAVE_LONG%%</b><em>experimentell</em></div>
             <div><small>Trend</small><b class="%%NVDA_TREND_CLASS%%">%%NVDA_TREND_DIR_CAP%% · %%NVDA_TREND%%</b><em>%%NVDA_TREND_NOTE%%</em></div>
             <div><small>Umsatz TTM</small><b>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%% ggü. Vorjahr</em></div>
             <div><small>Nettomarge</small><b>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
@@ -478,7 +478,7 @@
     <div class="steps">
       <div class="step"><span class="hud"><svg><use href="#h-discover"/></svg></span><h3>Entdecken</h3><p>Starte mit Themenwelten, Rankings und Perspektiven und finde Unternehmen, die dich interessieren.</p></div>
       <div class="step"><span class="hud"><svg><use href="#h-screener"/></svg></span><h3>Eingrenzen</h3><p>Filtere nach deinen Kriterien und sieh, welche Methoden und Setups gerade anschlagen.</p></div>
-      <div class="step"><span class="hud"><svg><use href="#h-elliott"/></svg></span><h3>Verstehen</h3><p>Prüfe Fundamentaldaten, Chart, Elliott-Zählung und Faktoren – mit klarer Einschätzung.</p></div>
+      <div class="step"><span class="hud"><svg><use href="#h-elliott"/></svg></span><h3>Verstehen</h3><p>Prüfe Fundamentaldaten, Chartbild, Elliott-Struktur und Faktoren – mit klarer Einschätzung.</p></div>
     </div>
   </div>
 </section>
@@ -552,8 +552,8 @@
       <details open><summary>Was ist die Vision Universe App?</summary><p>Eine App für das komplette Aktien-Research: Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Analyse, Fundamentaldaten mit Einschätzungen, Altersvorsorge und AI Atlas – alles auf denselben Daten und miteinander verbunden.</p></details>
       <details><summary>Was bietet der Vorsorge-Bereich?</summary><p>Einen Vorsorgeplaner für deine Vorsorgelücke, ETF Intelligence mit echter Kurshistorie, Kostenanalyse, Portfolio-X-Ray und einen Förderrechner für Altersvorsorgedepot, Riester und Frühstart-Rente – unabhängig, ohne Produktverkauf.</p></details>
       <details><summary>Muss ich etwas installieren?</summary><p>Nein. Die App läuft im Browser auf Desktop, Tablet und Smartphone. Auf dem Handy kannst du sie zum Home-Bildschirm hinzufügen und wie eine native App starten.</p></details>
-      <details><summary>Welche Aktien sind abgedeckt?</summary><p>Aktuell über 6.000 US-Aktien mit Kursdaten, Fundamentaldaten aus bis zu 12 Geschäftsjahren, technischer Analyse und Elliott-Zählung – geordnet nach Branchen, Märkten und 54 Themenwelten.</p></details>
-      <details><summary>Wie entstehen die Elliott-Wave-Analysen?</summary><p>Regelbasiert und reproduzierbar: Die Zählung wird aus bestätigten Wendepunkten berechnet – mit Szenarien, Invalidierung und Zielzonen, ohne menschliches Einzeichnen. Die Elliott-Analyse ist als Beta gekennzeichnet.</p></details>
+      <details><summary>Welche Aktien sind abgedeckt?</summary><p>Aktuell über 6.000 US-Aktien mit Kursdaten, Fundamentaldaten aus bis zu 12 Geschäftsjahren, technischer Analyse samt experimenteller Elliott-Strukturdeutung (eine belastbare Zählung gibt es nur bei wenigen Titeln) – geordnet nach Branchen, Märkten und 54 Themenwelten.</p></details>
+      <details><summary>Wie entstehen die Elliott-Wave-Analysen?</summary><p>Regelbasiert und reproduzierbar aus bestätigten Wendepunkten, ohne menschliches Einzeichnen. Elliott ist im Chartbild ein experimentelles Strukturmodell: Bei den meisten Aktien gibt es bewusst keine belastbare Zählung, und Elliott fließt nicht in den Ausblick ein. Szenarien, Invalidierung und Zielzonen kommen aus der Kursstruktur – als Bedingungen, nicht als Prognose.</p></details>
       <details><summary>Sind die Signale Kaufempfehlungen?</summary><p>Nein. Alle Inhalte dienen der Information und Forschung. Setups sind Modellbeobachtungen nach festen Regeln, keine Anlageberatung und keine Empfehlung.</p></details>
       <details><summary>Woher kommen die Daten?</summary><p>Aus Markt- und Unternehmensdaten, unter anderem Tageskursen und SEC-Berichten. Datenstand und Methodik sind in jedem Modul ausgewiesen.</p></details>
     </div>
@@ -639,7 +639,7 @@
   <div class="shell">
     <div class="footer-grid">
       <div><img class="footer-logo" src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"><p>Unabhängiges Aktien-Research: entdecken, verstehen, investieren.</p></div>
-      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/quant/#/aktie/NVDA/technik?elliott=1">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
+      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/quant/#/aktie/NVDA/chartbild?ansicht=profi">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
       <div><h4>Märkte &amp; Research</h4><ul><li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li></ul></div>
       <div><h4>Rechtliches</h4><ul>
         <li><a href="https://www.visionuniverse.de/policies/legal-notice">Impressum</a></li>
