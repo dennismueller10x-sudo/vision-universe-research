@@ -97,12 +97,12 @@ export function advanceStore(prev, items, versions) {
   const theses = Object.assign({}, prev && prev.theses ? prev.theses : {}), bySymbol = new Map();
   let events = 0;
   for (const it of items) {
-    const cur = displayedTheses(it.proj), matched = new Set();
+    const cur = displayedTheses(it.proj), matched = new Set(), withheld = !it.proj || !it.proj.consumerVisible;
     const active = Object.keys(theses).filter((id) => theses[id].symbol === it.symbol && theses[id].timeframe === it.tf && theses[id].state !== "ARCHIVED");
     for (const id of active) {
       const e = theses[id], hit = cur.find(([, th]) => th.key === e.key);
       if (hit) matched.add(hit[1].key);
-      const next = Projection.advanceLifecycle(e, hit ? hit[1] : null, it.bars, it.asOf, { id, symbol: it.symbol, timeframe: it.tf, role: hit ? hit[0] : e.role, versions });
+      const next = Projection.advanceLifecycle(e, hit ? hit[1] : null, it.bars, it.asOf, { id, symbol: it.symbol, timeframe: it.tf, role: hit ? hit[0] : e.role, versions, withheld });
       events += next.events.length - e.events.length; theses[id] = next;
     }
     for (const [role, th] of cur) {

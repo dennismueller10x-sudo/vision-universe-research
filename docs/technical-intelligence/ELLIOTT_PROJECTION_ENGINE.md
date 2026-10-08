@@ -64,7 +64,8 @@ Die vollständige Liste mit Formel, Klasse und Fundstelle steht im Code (`RELATI
 
 ## Zonen, Anzeige, Prozent
 
-* Zonen statt Punktziele. Anzeige mit drei signifikanten Stellen, nach außen gerundet (untere Grenze ab-, obere aufgerundet).
+* Zonen statt Punktziele. Anzeige mit drei signifikanten Stellen, nach außen gerundet (untere Grenze ab-, obere aufgerundet). Grenzen (Invalidation, Bestätigung) werden nie gerundet angezeigt, sondern mit vier signifikanten Stellen.
+* Zwischen zwei Stufen kann eine Lücke liegen (z. B. Welle 5: Erweitert ×W1, Extrem ×Strecke 1–3); die Bänder werden nicht künstlich verbunden.
 * Je Zone: untere/obere Grenze, geometrische Mitte, Prozent vom Kurs (Arithmetik), Zustand `OPEN` / `INSIDE` / `PASSED`.
 * Sind alle Zonen bereits erreicht: Status `EXHAUSTED` („Projektionszonen bereits erreicht“).
 
@@ -107,6 +108,8 @@ Für Titel mit Tagesanalyse (Golden-Preview) rechnet der Build zusätzlich die W
 * Ereignisse werden nur angehängt: `CREATED`, `CONFIRMED`, `BASE_/EXTENDED_/EXTREME_PROJECTION_REACHED`, `INVALIDATED`, `RELABELLED`, `ARCHIVED`, `REVISED`.
 * Kurse werden nur nach dem letzten Prüfdatum gelesen; derselbe Stand ändert nichts (idempotent, Test P-20).
 * Erscheint eine archivierte These wieder, bekommt sie eine neue Kennung (`…#2`).
+* Zeigt das Produkt eine verfolgte These vorübergehend nicht (Engine enthält sich, Datenproblem), wird sie nicht umgedeutet: `WITHHELD`, Kurse werden weiter gegen die eingefrorene Revision geprüft, beim Wiedererscheinen `SHOWN_AGAIN`.
+* Eine These, deren Grenze per Schluss bereits verletzt ist, wird weder gezeigt noch verfolgt (Hinweis `INVALID_THESIS`).
 * Die Seite zeigt „These seit …, Revision n, eingefroren am …“. Zonen werden nachträglich nie verschoben.
 
 ## Prospektives Register (Registry 1.2.0)

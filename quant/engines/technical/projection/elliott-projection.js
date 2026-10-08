@@ -38,6 +38,8 @@
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
   function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
+  /** Preise mit relativer Genauigkeit (auch Kurse unter einem Cent bleiben exakt genug). */
+  function rp(v) { return isNum(v) ? Number(v.toPrecision(8)) : null; }
 
   // =====================================================================
   //  BEZIEHUNGEN (Quelle, Klasse, Formel) — eine Quelle der Wahrheit
@@ -255,7 +257,7 @@
       if (hi > close * MAX_MULTIPLE) { omitted.push({ tier: tier, reason: "IMPLAUSIBLE_MAGNITUDE", text: "mehr als das Tausendfache des Kurses – Datenfehler wahrscheinlich, nicht angezeigt" }); return; }
       var state = s > 0 ? (close < lo ? "OPEN" : close <= hi ? "INSIDE" : "PASSED") : (close > hi ? "OPEN" : close >= lo ? "INSIDE" : "PASSED");
       out.push({ tier: tier, label: TIER_DE[tier], ratios: [row[1], row[2]], basis: row[4] === "NET13" ? "NET13" : "REF", relationId: relationId, capped: capped,
-                 low: r4(lo), high: r4(hi), mid: r4(Math.sqrt(lo * hi)), display: { low: sig3(lo, -1), high: sig3(hi, 1) },
+                 low: rp(lo), high: rp(hi), mid: rp(Math.sqrt(lo * hi)), display: { low: sig3(lo, -1), high: sig3(hi, 1) },
                  pctLow: r4(lo / close - 1), pctHigh: r4(hi / close - 1), state: state, near: near, far: far });
     });
     out.forEach(function (z) { delete z.near; delete z.far; });
@@ -315,13 +317,14 @@
   // =====================================================================
   //  THESE
   // =====================================================================
-  function fmtP(v) { if (!isNum(v)) return "–"; var d = v < 1 ? 4 : v < 10 ? 2 : v < 100 ? 1 : 0; return v.toLocaleString("de-DE", { minimumFractionDigits: v < 10 ? Math.min(2, d) : 0, maximumFractionDigits: d }); }
+  /** Grenzen exakt (vier signifikante Stellen, nie zur sicheren Seite gerundet). */
+  function fmtP(v) { if (!isNum(v)) return "–"; var a = Math.abs(v), d = a < 1 ? Math.max(4, 3 - Math.floor(Math.log10(a || 1))) : a < 10 ? 3 : a < 100 ? 2 : a < 1000 ? 1 : 0; return v.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: d }); }
   function beyond(s, close, level) { return isNum(level) && s * (close - level) > 0; }
 
   function thesis(geo, count, source, ctx, ctxOut) {
     var s = geo.s, close = ctx.close, lad = ladder(geo, close);
     var inv = geo.invalidation !== undefined ? geo.invalidation
-      : count.complete ? (count.revision ? { price: count.revision.price, direction: count.revision.direction, ruleId: count.revision.ruleId, statement: "jenseits des Musterendes wäre die Korrektur nicht abgeschlossen", kind: "REVISION" } : null)
+      : count.complete ? (count.revision ? { price: count.revision.price, direction: count.revision.direction, ruleId: count.revision.ruleId, statement: CORRECTIVE[count.pattern] ? "jenseits des Musterendes wäre die Korrektur nicht abgeschlossen" : "jenseits des Endes von Welle 5 wäre der Impuls nicht abgeschlossen", kind: "REVISION" } : null)
       : (count.invalidation ? { price: count.invalidation.price, direction: count.invalidation.direction, ruleId: count.invalidation.ruleId, statement: count.invalidation.statement, kind: count.invalidation.kind || "HARD_RULE" } : null);
     var revision = geo.revision !== undefined ? geo.revision : (!count.complete && count.revision ? { price: count.revision.price, direction: count.revision.direction, ruleId: count.revision.ruleId, statement: count.revision.statement, kind: "REVISION" } : null);
     if (revision && inv && revision.price === inv.price) revision = null;
@@ -338,16 +341,16 @@
       key: key, source: source, type: geo.type, label: label, target: geo.target, degree: source === "HIGHER_DEGREE" ? "HIGHER" : "ANALYSIS",
       pattern: geo.pattern, patternName: count.patternName || null, variant: geo.variant || count.variant || null, direction: s > 0 ? "UP" : "DOWN",
       status: status, statusLabel: { DEVELOPING: "Im Aufbau – noch nicht bestätigt", CONFIRMED: "Strukturell bestätigt", EXHAUSTED: "Alle Projektionszonen bereits erreicht", INVALID: "Ungültig" }[status],
-      anchor: { price: r4(geo.anchor), time: geo.anchorTime, provisional: !!geo.provisional, text: geo.provisional ? "vorläufig: laufendes Extrem der Vorwelle" : "Ende der Vorwelle" },
+      anchor: { price: rp(geo.anchor), time: geo.anchorTime, provisional: !!geo.provisional, text: geo.provisional ? "vorläufig: laufendes Extrem der Vorwelle" : "Ende der Vorwelle" },
       reference: { label: geo.refLabel, length: r4(geo.ref), net13: isNum(geo.net13) ? r4(geo.net13) : null },
       ladderKey: geo.ladderKey, zones: lad.zones, omittedTiers: lad.omitted,
-      invalidation: inv ? { price: r4(inv.price), direction: inv.direction, ruleId: inv.ruleId, kind: inv.kind, statement: inv.statement, display: sig3(inv.price, inv.direction === "below" ? -1 : 1),
+      invalidation: inv ? { price: rp(inv.price), direction: inv.direction, ruleId: inv.ruleId, kind: inv.kind, statement: inv.statement, display: rp(inv.price), displayText: fmtP(inv.price),
                             pct: r4(inv.price / close - 1), text: "Schließt der Kurs " + (inv.direction === "below" ? "unter " : "über ") + fmtP(inv.price) + ", gilt diese Elliott-Projektion nicht mehr." } : null,
-      revision: revision ? { price: r4(revision.price), direction: revision.direction, ruleId: revision.ruleId, statement: revision.statement } : null,
-      confirmation: isNum(geo.conf) ? { price: r4(geo.conf), ruleId: geo.confRule, class: geo.confClass, statement: geo.confText, passed: confPassed, pct: r4(geo.conf / close - 1) } : null,
-      cap: isNum(geo.cap) ? { price: r4(geo.anchor + s * geo.cap), ruleId: geo.capRule, statement: geo.capText } : null,
-      truncation: geo.truncation && !beyond(s, close, geo.truncation.price) ? { price: r4(geo.truncation.price), ruleId: geo.truncation.rule, statement: "Endet Welle 5 vor " + fmtP(geo.truncation.price) + " (Ende Welle 3), wäre sie verkürzt (Truncation) – zulässig, aber selten." } : null,
-      countQuality: count.countQuality ? count.countQuality.level : null, ruleValidity: count.ruleAudit ? count.ruleAudit.validity : null,
+      revision: revision ? { price: rp(revision.price), direction: revision.direction, ruleId: revision.ruleId, statement: revision.statement } : null,
+      confirmation: isNum(geo.conf) ? { price: rp(geo.conf), ruleId: geo.confRule, class: geo.confClass, statement: geo.confText, passed: confPassed, pct: r4(geo.conf / close - 1) } : null,
+      cap: isNum(geo.cap) ? { price: rp(geo.anchor + s * geo.cap), ruleId: geo.capRule, statement: geo.capText } : null,
+      truncation: geo.truncation && !beyond(s, close, geo.truncation.price) ? { price: rp(geo.truncation.price), ruleId: geo.truncation.rule, statement: "Endet Welle 5 vor " + fmtP(geo.truncation.price) + " (Ende Welle 3), wäre sie verkürzt (Truncation) – zulässig, aber selten." } : null,
+      countQuality: source === "HIGHER_DEGREE" ? null : count.countQuality ? count.countQuality.level : null, ruleValidity: source === "HIGHER_DEGREE" ? null : count.ruleAudit ? count.ruleAudit.validity : null,
       notes: geo.notes.slice(), anchorWaves: (geo.waves || count.waves).map(function (w) { return { label: w.label, fromTime: w.fromTime, toTime: w.toTime, fromPrice: r4(w.fromPrice), toPrice: r4(w.toPrice), status: w.status }; })
     };
     t.roadmap = roadmap(t, geo, ctx, ctxOut);
@@ -414,6 +417,8 @@
       if (j) { out.guardrails.flags.push(j); return null; }
       var th = thesis(geo, count, source, ctx, ctxOut);
       if (!th.zones.length) th.omittedTiers.forEach(function (x) { if ((x.reason === "IMPLAUSIBLE_MAGNITUDE" || x.reason === "NOT_FINITE") && !out.guardrails.flags.some(function (f) { return f.code === x.reason; })) out.guardrails.flags.push({ code: x.reason, text: x.text }); });
+      /* Eine These, deren Grenze per Schluss schon verletzt ist, ist keine These mehr (nicht zeigen, nicht verfolgen). */
+      if (th.status === "INVALID") { out.guardrails.flags.push({ code: "INVALID_THESIS", text: th.label + " (" + source.toLowerCase() + "): Grenze bereits verletzt – nicht gezeigt." }); return null; }
       return th.zones.length ? th : null;
     }
     /* Primaere Interpretation: hoeherer Grad (Motivwelle 3/5), sonst die eigene These der Primaerzaehlung. */
@@ -461,6 +466,7 @@
     var e = entry ? JSON.parse(JSON.stringify(entry)) : null;
     function ev(type, d, extra) { e.events.push(Object.assign({ d: d, type: type, rev: e.rev }, extra || {})); }
     if (e && e.state === "ARCHIVED") return e;
+    var withheld = !!(meta && meta.withheld);
     if (!e) {
       if (!th) return null;
       e = { id: meta.id, symbol: meta.symbol, timeframe: meta.timeframe, key: th.key, type: th.type, label: th.label, direction: th.direction, source: th.source, role: meta.role, createdAt: asOf, rev: 0, state: "CREATED", checkedAt: asOf, revisions: [], events: [] };
@@ -482,6 +488,9 @@
       });
     }
     e.checkedAt = asOf;
+    /* Produkt zeigt die Projektion gerade nicht (Engine enthaelt sich, Datenfehler): weiter verfolgen, nicht umdeuten */
+    if (withheld) { if (!e.withheld) { ev("WITHHELD", asOf, { note: "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt." }); e.withheld = true; } return e; }
+    if (e.withheld) { ev("SHOWN_AGAIN", asOf); e.withheld = false; }
     if (!th) { ev("RELABELLED", asOf, { note: "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)." }); e.state = "RELABELLED"; ev("ARCHIVED", asOf); e.state = "ARCHIVED"; return e; }
     e.role = meta.role;
     if (th.signature !== R.signature) {
@@ -499,7 +508,7 @@
                        versions: meta.versions || null });
   }
   var STATE_DE = { CREATED: "Neu", DEVELOPING: "Im Aufbau", CONFIRMED: "Bestätigt", BASE_PROJECTION_REACHED: "Basis-Projektion erreicht", EXTENDED_PROJECTION_REACHED: "Erweiterte Projektion erreicht",
-                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision" };
+                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", WITHHELD: "Derzeit nicht angezeigt", SHOWN_AGAIN: "Wieder angezeigt" };
 
   var api = { VERSION: VERSION, SCHEMA: SCHEMA, RELATIONSHIPS: RELATIONSHIPS, LADDERS: LADDERS, PRESENTATION: PRESENTATION, TIER_DE: TIER_DE, TYPE_DE: TYPE_DE, STATE_DE: STATE_DE,
               build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };

@@ -216,4 +216,12 @@ test("P-20 · Lebenszyklus: eingefroren, Ereignisse nur angehängt, Revision bei
   assert.deepEqual(e4.events.slice(-2).map((x) => x.type), ["INVALIDATED", "ARCHIVED"]); assert.equal(e4.state, "ARCHIVED");
   const e5 = PJ.advanceLifecycle(e2, null, { t: [], c: [] }, "2020-03-08", meta);
   assert.deepEqual(e5.events.slice(-2).map((x) => x.type), ["RELABELLED", "ARCHIVED"]);
+  /* Enthaltung/Datenproblem: nicht umgedeutet, weiter verfolgt, beim Wiedererscheinen markiert */
+  const w1 = PJ.advanceLifecycle(e2, null, { t: ["2020-03-08"], c: [30] }, "2020-03-08", Object.assign({ withheld: true }, meta));
+  assert.equal(w1.state !== "ARCHIVED", true); assert.equal(w1.events[w1.events.length - 1].type, "WITHHELD");
+  const w2 = PJ.advanceLifecycle(w1, t1, { t: ["2020-03-15"], c: [31] }, "2020-03-15", meta);
+  assert.equal(w2.events[w2.events.length - 1].type, "SHOWN_AGAIN"); assert.equal(w2.rev, 1);
+  /* Bereits verletzte Grenze: keine These */
+  const inv = PJ.build(E(count("IMPULSE", [10, 20, 15, 22], { invalidation: { price: 10, direction: "below", ruleId: "W2_NOT_BEYOND_W1_ORIGIN", kind: "HARD_RULE" } })), ctx(9));
+  assert.equal(inv.primary, null); assert.ok(inv.guardrails.flags.some((f) => f.code === "INVALID_THESIS"));
 });

@@ -581,7 +581,7 @@
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
     var pjSel = pickProjection(a, view === "pro"), lens = "scenario", pjWhich = "primary", pjLog = null;
-    function pjThesis() { var p = pjSel && pjSel.p; if (!p) return null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative; }
+    function pjThesis() { var p = pjSel && pjSel.p; if (!p || (!p.consumerVisible && view !== "pro")) return null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative; }
     function pjAutoLog(t) { if (!t || !t.zones.length) return false; var hi = Math.max.apply(null, t.zones.map(function (z) { return z.high; }).concat(a.chart.close)), lo = Math.min.apply(null, t.zones.map(function (z) { return z.low; }).concat(a.chart.close.slice(-260))); return lo > 0 && hi / lo > 4; }
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
@@ -600,11 +600,13 @@
       var pjT = !replayStep && lens === "projection" ? pjThesis() : null, pjOnChart = !!(pjT && pjT.zones);
       if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative) || (!pjSel.p.consumerVisible && view !== "pro");
       if (logSeg) logSeg.hidden = !pjOnChart;
+      /* Ebene nicht (mehr) verfuegbar (z. B. Wechsel von Profi zu Einfach bei zurueckgehaltener These) → zurueck zum Szenario */
+      if (lens === "projection" && lensSeg && lensSeg.hidden) { lens = "scenario"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 0 ? "true" : "false"); }); }
       pjLegend.hidden = !pjOnChart; var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: replayStep ? "PRIMARY" : kind, scenario: scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjWhich === "alt" ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
         cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
-        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" ? null : function (w) { waveInspector(a, w, rules, methodEv); },
+        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && pjT.degree === "HIGHER") ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 360 : 430, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
       chartCard.classList.toggle("is-replay", !!replayStep);
@@ -790,7 +792,9 @@
   var PJ_CLASS = { HARD_RULE: "harte Regel", DEFINITION: "Definition", GUIDELINE: "Richtlinie", REVISION: "Wellenzuordnung", VU_OPERATIONAL: "VU-Festlegung", VU_CONFIRMATION: "VU-Bestätigung", PROJECTION_RELATIONSHIP: "Projektionsverhältnis" };
   function pctText(v) {
     if (!isNum(v)) return "–";
-    var p = v * 100, a = Math.abs(p), s = (p >= 0 ? "+" : "−") + (a >= 100 ? Math.round(a / (a >= 1000 ? 10 : 1)) * (a >= 1000 ? 10 : 1) : a >= 10 ? Math.round(a) : Math.round(a * 10) / 10).toLocaleString("de-DE");
+    var p = v * 100, a = Math.abs(p), r = a >= 100 ? 1 : a >= 10 ? 0.5 : 0.05;
+    if (a < r) return "±0 %";
+    var s = (p >= 0 ? "+" : "−") + (a >= 100 ? Math.round(a / (a >= 1000 ? 10 : 1)) * (a >= 1000 ? 10 : 1) : a >= 10 ? Math.round(a) : Math.round(a * 10) / 10).toLocaleString("de-DE");
     return s + " %";
   }
   function pjZone(z) { return fmt(z.display.low) + "–" + fmt(z.display.high); }
@@ -857,7 +861,7 @@
       el("p", { class: "cb-pj-sub", text: (t.source === "HIGHER_DEGREE" ? "Höherer Grad: " : "") + (t.patternName || "") + " · Richtung " + dirWord(t.direction) + " · Hauptlesart (derzeit bevorzugt, nicht „die richtige Zählung“)" }),
       el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
       pjLadder(t, p.close),
-      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: fmt(t.invalidation.display) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: t.invalidation.displayText || fmt(t.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
       t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [(function () { var b = el("button", { type: "button", class: "cb-pj-btn", text: "Projektion im Chart zeigen" }); b.addEventListener("click", function () { onChart("primary"); }); return b; })()]),
       el("h3", { class: "cb-pj-h3", text: "Was als Nächstes passieren muss" }),
@@ -870,7 +874,7 @@
       kids.push(el("div", { class: "cb-pj-alt" + (hu ? " is-high" : "") }, [
         el("p", { class: "cb-pj-alt-k", text: hu ? "Alternative Lesart mit hohem Aufwärtspotenzial" : "Alternative Lesart" }),
         el("strong", { text: alt.label + (alt.patternName ? " · " + alt.patternName : "") }),
-        el("p", { class: "num", text: "Zonen " + fmt(lo.display.low) + " bis " + fmt(hi.display.high) + " (" + pctText(lo.pctLow) + " bis " + pctText(hi.pctHigh) + ")" + (alt.invalidation ? " · ungültig " + (alt.invalidation.direction === "below" ? "unter " : "über ") + fmt(alt.invalidation.display) : "") }),
+        el("p", { class: "num", text: "Zonen " + fmt(lo.display.low) + " bis " + fmt(hi.display.high) + " (" + pctText(lo.pctLow) + " bis " + pctText(hi.pctHigh) + ")" + (alt.invalidation ? " · ungültig " + (alt.invalidation.direction === "below" ? "unter " : "über ") + (alt.invalidation.displayText || fmt(alt.invalidation.price)) : "") }),
         hu ? el("p", { class: "cb-small", text: "Nicht die bevorzugte Zählung, geringe Klarheit. Die Engine hat diese Lesart regelkonform gefunden; sie wird nicht zur Hauptlesart erhoben." }) : null,
         el("div", { class: "qx-actions" }, [ab])]));
     }

@@ -299,7 +299,10 @@ async function registerWeek(o, F) {
   const byS = new Map(ok.map((r) => [r.s, r]));
   const revs = new Map(); for (const e of lines.filter((x) => x.type === "REVISION")) { const s = revs.get(e.ref) || new Set(); s.add(e.payload.type); revs.set(e.ref, s); }
   for (const ev of lines.filter((x) => x.type === "EVENT")) {
-    const done = revs.get(ev.id) || new Set(); if (done.has("INVALIDATED") || done.has("EXPIRED")) continue;
+    const done = revs.get(ev.id) || new Set();
+    /* Ereignisse ohne Projektionsthese (alle bis 1.1.0): unveraendert. Mit These laeuft nur deren Verfolgung weiter, bis sie selbst ungueltig ist. */
+    const projOnly = (done.has("INVALIDATED") || done.has("EXPIRED")) && !!ev.payload.projectionThesis && !done.has("EXPIRED") && !done.has("PROJECTION_INVALIDATED");
+    if ((done.has("INVALIDATED") || done.has("EXPIRED")) && !projOnly) continue;
     const x = readJson(join(o.weeklyDir, ev.payload.symbol + ".json")), k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
     const pts = (x.points || []).slice(0, k + 1).filter((p) => p[0] > ev.payload.registeredBarDate);
     const cur = byS.get(ev.payload.symbol);
@@ -307,8 +310,8 @@ async function registerWeek(o, F) {
     const curKey = ev.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3" ? undefined
       : ev.payload.view === VIEWS.PRODUCT ? (cur && cur.pv && !cur.pv.skip ? cur.pv.key : undefined)
       : cur && cur.ew ? cur.ew.key : undefined;
-    const rv = revisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), curKey, done).concat(projectionRevisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), done));
-    if (pts.length >= TRACK_WEEKS && !done.has("INVALIDATED")) rv.push({ type: "EXPIRED", barDate: pts[pts.length - 1][0], note: "Beobachtung nach 156 Wochen beendet" });
+    const rv = (projOnly ? [] : revisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), curKey, done)).concat(projectionRevisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), done));
+    if (!projOnly && pts.length >= TRACK_WEEKS && !done.has("INVALIDATED")) rv.push({ type: "EXPIRED", barDate: pts[pts.length - 1][0], note: "Beobachtung nach 156 Wochen beendet" });
     for (const v of rv) entries.push({ type: "REVISION", id: eventId({ ref: ev.id, ...v }), ref: ev.id, week: F, recordedAt, payload: { ...v, eventSetupType: ev.payload.setupType, symbol: ev.payload.symbol } });
   }
   const written = append(reg, lines, entries);
