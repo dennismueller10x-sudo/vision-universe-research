@@ -56,6 +56,8 @@ MARKET DATA (splitbereinigt, Tages-OHLCV oder Wochenschluss)
 | `quant/engines/technical/ti/levels.js` | S/R-Zonen, Fibonacci-Konfluenz |
 | `quant/engines/technical/ti/chart-patterns.js` | Formationen mit Ausbruchsstatus |
 | `quant/engines/technical/ti/wyckoff.js` | Wyckoff quantifiziert (beschreibend) |
+| `quant/engines/technical/projection/elliott-projection.js` | Elliott Projection Engine `elliott-projection-1.0.0`: Projektionsleiter Basis/Erweitert/Extrem auf der eingefrorenen Elliott-Ausgabe, Invalidation, Bestätigung, Fahrplan, Leitplanken, Lebenszyklus (siehe ELLIOTT_PROJECTION_ENGINE.md) |
+| `scripts/technical/lib/ti-projection.mjs` | Produktschicht der Projektion: Relative Stärke im Querschnitt, Lebenszyklus-Store `v3/projection-theses.json`, Registerform |
 | `quant/engines/technical/ti/scenario.js` | Konfluenz, Szenarien, Confidence, Setup-Signatur |
 | `quant/engines/technical/ti/engine.js` | Orchestrator, Multi-Timeframe, Ergebnis-Schema, Alert-Zustand |
 | `quant/engines/technical/ti/outcomes.js` | Outcome-Simulation, Statistik (Wilson, Lift-KI, Reliability) |

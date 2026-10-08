@@ -22,6 +22,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
+import { projectionElliott, projectionInput } from "../lib/ti-projection.mjs";
 const Identity = createRequire(import.meta.url)("../../../core/identity.js"); // eine Identitaetsregel (ADR-001)
 
 export const PRODUCT_VIEW_VERSION = "elliott-registry-product-view-1.0.0";
@@ -91,9 +92,13 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub) {
 
 function analyzeAndSummarize(series, kind, ticker, ctx) {
   const out = analyzeProduct(series, productOpts(kind, ctx.C, ticker));
-  const E = out.res.methods.elliott, pub = slim(out.res).pro.elliott, T = elliottTransparency(out.res, out.replay);
+  const S = slim(out.res), E = out.res.methods.elliott, pub = S.pro.elliott, T = elliottTransparency(out.res, out.replay);
   const p = E && E.primary, t = series.length - 1, atr = out.P.main.features.columns.atr[t];
-  return { tf: series.timeframe, d: series.timestamps[t], E, px: series.close[t], atr: Number.isFinite(atr) ? atr : null,
+  /* Elliott Projection Engine (Registry 1.2.0): dieselbe Eingabe wie das Produkt (veroeffentlichte Form, 260 Chart-Bars wie chartOf);
+     die Relative Staerke setzt der Hauptthread aus dem Querschnitt der Woche. */
+  const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : v), from = Math.max(0, series.length - 260);
+  const projIn = { E: projectionElliott(pub), ctx: projectionInput(Object.assign({}, S, { chart: { timestamps: series.timestamps.slice(from), close: series.close.slice(from).map(r4) } }), null) };
+  return { tf: series.timeframe, d: series.timestamps[t], E, px: series.close[t], atr: Number.isFinite(atr) ? atr : null, projIn,
            view: { tf: series.timeframe, d: series.timestamps[series.length - 1], p: p ? p.pattern : null, w: p ? (p.complete ? "done" : p.currentWave && p.currentWave.label) : null,
                    ab: !!(E && E.applicability && E.applicability.abstain), key: p ? p.persistenceKey || null : null, app: E && E.applicability ? E.applicability.level : null,
                    relabelRisk: T && T.relabeling ? T.relabeling.risk : null, sha: elliottSha(pub) } };
