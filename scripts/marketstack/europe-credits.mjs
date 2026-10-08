@@ -86,19 +86,28 @@ export function createEuropeBudget(file,{maxCredits=TARGET_CREDITS,runId=randomU
 export function buildRefreshCreditModel({equities=[],etfs=[],inventorySource=null,historyPagesPerListing=3,historyFetchesPerListing=1,tradingDaysPerMonth=22,corporateActionRefreshesPerMonth=4,holdingsRefreshesPerMonth=1,symbolsPerRequest=100,attempts=1,measuredRun=null}={}){
  if(!Array.isArray(equities)||!Array.isArray(etfs)||[...equities,...etfs].some(r=>!r||typeof r!=='object'||Array.isArray(r)))throw fail('OBSERVED_INVENTORY_REQUIRED');
  for(const [name,value,min] of [['HISTORY_PAGES',historyPagesPerListing,1],['HISTORY_FETCHES',historyFetchesPerListing,1],['TRADING_DAYS',tradingDaysPerMonth,0],['ACTION_REFRESHES',corporateActionRefreshesPerMonth,0],['HOLDINGS_REFRESHES',holdingsRefreshesPerMonth,0],['SYMBOLS_PER_REQUEST',symbolsPerRequest,1],['ATTEMPTS',attempts,1]])integer(value,name,min);
- const key=(row,index)=>row.listingKey??row.securityId??(row.providerSymbol&&row.mic?row.mic+':'+row.providerSymbol:'UNRESOLVED:'+index);
+ const key=(row,index)=>row.listingId??row.listingKey??((row.providerSymbol??row.providerTicker)&&row.mic?row.mic+':'+(row.providerSymbol??row.providerTicker):'UNRESOLVED:'+index);
  const eq=[...new Map(equities.map((r,i)=>[key(r,i),r])).values()],funds=[...new Map(etfs.map((r,i)=>[key(r,i),r])).values()];
  const holdings=[...new Set(funds.map((r,i)=>r.holdingsKey??r.shareClassId??r.isin??key(r,i)))];
  const listings=eq.length+funds.length,holdingsQueries=holdings.length;
+ // Native EOD requests bind one exchange. Never assume that listings from
+ // different MICs can share a request; unresolved MICs are charged separately.
+ const byMic=new Map();let unknownMicListings=0;
+ for(const row of [...eq,...funds]){
+  if(typeof row.mic!=='string'||!/^[A-Z0-9]{4}$/.test(row.mic)){unknownMicListings++;continue;}
+  byMic.set(row.mic,(byMic.get(row.mic)??0)+1);
+ }
+ const latestBatchesByMic=[...byMic].sort(([a],[b])=>a.localeCompare(b,'en')).map(([mic,count])=>({mic,listings:count,requests:Math.ceil(count/symbolsPerRequest)}));
+ const latestRequests=unknownMicListings+latestBatchesByMic.reduce((n,row)=>n+row.requests,0);
  const pair=(requests,credits)=>({requests:requests*attempts,credits:credits*attempts});
- const latest=pair(Math.ceil(listings/symbolsPerRequest),listings),history=pair(listings*historyPagesPerListing*historyFetchesPerListing,listings*historyPagesPerListing*historyFetchesPerListing),actions=pair(listings*2,listings*2),holdingsCost=pair(holdingsQueries,holdingsQueries*estimateCredits('/etfholdings'));
+ const latest=pair(latestRequests,listings),history=pair(listings*historyPagesPerListing*historyFetchesPerListing,listings*historyPagesPerListing*historyFetchesPerListing),actions=pair(listings*2,listings*2),holdingsCost=pair(holdingsQueries,holdingsQueries*estimateCredits('/etfholdings'));
  const total=parts=>({requests:parts.reduce((n,p)=>n+p.requests,0),credits:parts.reduce((n,p)=>n+p.credits,0)});
  const multiply=(p,n)=>({requests:p.requests*n,credits:p.credits*n});
  const monthlyHoldings=multiply(holdingsCost,holdingsRefreshesPerMonth);
  const optimizedMonthly=total([multiply(latest,tradingDaysPerMonth),multiply(actions,corporateActionRefreshesPerMonth),monthlyHoldings]);
- return {schemaVersion:'marketstack-refresh-credit-model-1',inventory:{source:inventorySource,equityListings:eq.length,etfListings:funds.length,holdingsQueryIdentities:holdingsQueries,unresolvedRows:[...eq,...funds].filter((r,i)=>key(r,i).startsWith('UNRESOLVED:')).length},
+ return {schemaVersion:'marketstack-refresh-credit-model-1',inventory:{source:inventorySource,equityListings:eq.length,etfListings:funds.length,holdingsQueryIdentities:holdingsQueries,latestBatchesByMic,unknownMicListings,unresolvedRows:[...eq,...funds].filter((r,i)=>key(r,i).startsWith('UNRESOLVED:')).length},
   plan:{monthlyRequests:100000,source:'USER_STATED_PROFESSIONAL_CONTRACT_PLAN',verifiedAccountPlan:false,actualBilledCredits:'UNKNOWN',remainingCredits:'UNKNOWN'},
-  assumptions:{historyPagesPerListing,historyFetchesPerListing,tradingDaysPerMonth,corporateActionRefreshesPerMonth,holdingsRefreshesPerMonth,symbolsPerRequest,attempts,pagination:'HISTORY_PAGE_COUNT_REQUIRES_MEASUREMENT',batching:'REDUCES_HTTP_REQUESTS_NOT_SYMBOL_CREDITS'},
+  assumptions:{historyPagesPerListing,historyFetchesPerListing,tradingDaysPerMonth,corporateActionRefreshesPerMonth,holdingsRefreshesPerMonth,symbolsPerRequest,attempts,pagination:'HISTORY_PAGE_COUNT_REQUIRES_MEASUREMENT',batching:'PER_MIC_ONLY_UNKNOWN_MIC_UNBATCHED_REDUCES_HTTP_NOT_SYMBOL_CREDITS'},
   measuredRun:measuredRun?structuredClone(measuredRun):null,bootstrap:{history,latest,corporateActions:actions,holdings:holdingsCost,total:total([history,latest,actions,holdingsCost])},
   daily:{latest,total:latest},etfHoldings:{perRefresh:holdingsCost,monthly:monthlyHoldings},optimizedMonthly,
   unoptimizedMonthly:total([multiply(history,tradingDaysPerMonth),multiply(latest,tradingDaysPerMonth),multiply(actions,tradingDaysPerMonth),monthlyHoldings]),

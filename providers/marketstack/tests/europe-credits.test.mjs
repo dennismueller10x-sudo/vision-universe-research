@@ -74,3 +74,14 @@ test('model does not substitute target universe sizes or hide unresolved actual 
  assert.throws(()=>buildRefreshCreditModel({equities:817}),/OBSERVED_INVENTORY/);
  assert.throws(()=>buildRefreshCreditModel({holdingsRefreshesPerMonth:-1}),/INVALID/);
 });
+test('latest HTTP batches stay separate per MIC and unknown MIC listings remain unbatched',()=>{
+ const equities=['XETR','XPAR'].flatMap(mic=>Array.from({length:101},(_,i)=>({mic,listingKey:mic+':FIXTURE'+i})));
+ const model=buildRefreshCreditModel({equities,symbolsPerRequest:100});
+ assert.equal(model.daily.latest.requests,4);assert.equal(model.daily.latest.credits,202);
+ assert.deepEqual(model.inventory.latestBatchesByMic,[{mic:'XETR',listings:101,requests:2},{mic:'XPAR',listings:101,requests:2}]);
+ const unknown=buildRefreshCreditModel({equities:[{listingKey:'UNKNOWN:1'},{listingKey:'UNKNOWN:2',mic:'xetr'},{listingKey:'KNOWN:1',mic:'XETR'},{listingKey:'KNOWN:2',mic:'XETR'}],attempts:2});
+ assert.equal(unknown.inventory.unknownMicListings,2);assert.equal(unknown.daily.latest.requests,6);assert.equal(unknown.daily.latest.credits,8);
+ assert.equal(unknown.safeMonthlyRefreshCost,null);assert.equal(unknown.monthlyFeasibility,'UNVERIFIED');
+});
+
+test('refresh inventory dedupes listing identity while preserving alternative venues for one security',()=>{const r=buildRefreshCreditModel({equities:[{securityId:'SAME',providerTicker:'SAP.DE',mic:'XETR'},{securityId:'SAME',providerTicker:'SAP.DE',mic:'XETR'},{securityId:'SAME',providerTicker:'SAP.F',mic:'XFRA'}]});assert.equal(r.inventory.equityListings,2);assert.equal(r.daily.latest.credits,2);assert.equal(r.daily.latest.requests,2);});

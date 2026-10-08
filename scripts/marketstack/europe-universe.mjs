@@ -21,7 +21,9 @@ export const EUROPE_EXCHANGE_PLAN = Object.freeze([
   { country: 'BE', priority: 13, mics: ['XBRU'] }
 ]);
 const MIC_COUNTRY = new Map(EUROPE_EXCHANGE_PLAN.flatMap(p => p.mics.map(mic => [mic, p.country])));
-const COUNTRIES = new Set(EUROPE_EXCHANGE_PLAN.map(p => p.country));
+export const EUROPE_ISSUER_COUNTRIES = Object.freeze(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE',
+  'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'CH', 'GB']);
+const COUNTRIES = new Set(EUROPE_ISSUER_COUNTRIES);
 const str = value => typeof value === 'string' ? value.trim() : '';
 const upper = value => str(value).toUpperCase();
 const copy = value => value == null ? value : structuredClone(value);
@@ -65,6 +67,7 @@ export function normalizeDirectoryObservation(observation = {}) {
     providerExchangeCode: str(row.providerExchangeCode || exchange.acronym || row.exchange_code) || null,
     name: str(row.name || row.company_name) || null,
     isin: upper(row.isin) || null, currency: upper(row.currency || exchange.currency?.code) || null,
+    providerIsin: observation.providerNormalized && Object.hasOwn(observation.providerNormalized, 'isin') ? observation.providerNormalized.isin : upper(row.isin) || null,
     active, classification: classifyEquity(row),
     // Generic row.country is often the exchange country. It is not issuer evidence.
     issuerCountry: upper(row.issuer_country || row.issuer?.country) || null,
@@ -79,6 +82,66 @@ function evidenceFor(listing, evidence) {
   ));
 }
 function one(values) { const v = distinct(values); return v.length === 1 ? v[0] : null; }
+/** Private admission policy; recent scoped trading is distinct from freshness. */
+export function verifiedHomeCashShare(e, listing) {
+  const h = e.homeActivityEvidence, c = h?.calendar;
+  const sessions = [...new Set(c?.expectedSessions || [])].sort();
+  const expected = c?.expectedLastCompletedSession;
+  const previous = sessions[sessions.indexOf(expected) - 1];
+  return e.productPrimaryPolicy === 'EUROPE_OFFICIAL_PRIMARY_MIC_EXACT_ISIN_RECENT_EOD' &&
+    e.officialInstrumentType === 'CS' && e.typeSource === 'XETRA_REFERENCE' &&
+    e.entityCategory === 'GENERAL' && e.entityStatus === 'ACTIVE' && e.active === true &&
+    validIsin(e.isin) && validLei(e.lei) && COUNTRIES.has(upper(e.issuerCountry)) &&
+    e.issuerCountryBasis === 'GLEIF_ENTITY_JURISDICTION' && upper(e.legalJurisdiction) === upper(e.issuerCountry) &&
+    upper(e.mic) === listing.mic && upper(e.primaryMic) === listing.mic && upper(e.primaryMarketMic) === listing.mic &&
+    upper(e.providerSymbol) === upper(listing.providerSymbol) && upper(e.isin) === listing.isin &&
+    h?.verified === true && h.validPrice === true && h.activityBasis === 'RECENT_SCOPED_HOME_EOD' && h.mic === listing.mic &&
+    h.providerSymbol === listing.providerSymbol && upper(h.isin) === listing.isin && h.currency === listing.currency &&
+    typeof h.volume === 'number' && Number.isFinite(h.volume) && h.volume > 0 &&
+    /^[a-f0-9]{64}$/.test(h.rawSha256 || '') && /^[a-f0-9]{64}$/.test(h.metadataRawSha256 || '') &&
+    c?.verified === true && c.mic === listing.mic && str(c.source) && validDate(expected) &&
+    sessions.every(validDate) && sessions.includes(expected) &&
+    ((h.observedDate === expected && ['CURRENT', 'LAST_VALID_SESSION'].includes(h.freshness)) ||
+      (h.observedDate === previous && h.freshness === 'DELAYED')) &&
+    e.provenance?.gleif?.httpStatus === 200 && upper(e.provenance.gleif.queryIsin) === upper(e.isin) &&
+    str(e.provenance?.gleif?.url) && str(e.provenance?.xetra?.url) &&
+    /^[a-f0-9]{64}$/.test(e.provenance?.gleif?.sha256 || '') && /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '');
+}
+function verifiedLocalCsFacts(e, listing) {
+  return e.verified === true && validIsin(e.isin) && e.isin === listing.isin && validLei(e.lei) &&
+    e.officialInstrumentType === 'CS' && e.typeSource === 'XETRA_REFERENCE' && e.active === true &&
+    e.mic === 'XETR' && e.primaryMic === 'XETR' && listing.mic === 'XETR' &&
+    ['XFRA', 'XETR'].includes(e.primaryMarketMic) && COUNTRIES.has(e.issuerCountry) &&
+    e.entityCategory === 'GENERAL' && e.entityStatus === 'ACTIVE' && e.issuerCountryBasis === 'GLEIF_ENTITY_JURISDICTION' &&
+    e.legalJurisdiction === e.issuerCountry && e.provenance?.gleif?.httpStatus === 200 && e.provenance.gleif.queryIsin === e.isin &&
+    str(e.provenance?.gleif?.url) && str(e.provenance?.xetra?.url) &&
+    /^[a-f0-9]{64}$/.test(e.provenance?.gleif?.sha256 || '') && /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '');
+}
+export function verifiedGermanIndexLocalCashShare(e, listing) {
+  const p = e.germanIndexMembershipEvidence;
+  return e.productPrimaryPolicy === 'GERMANY_OFFICIAL_INDEX_EUROPEAN_LOCAL_XETRA' && verifiedLocalCsFacts(e, listing) &&
+    p?.verified === true && p.rosterExtractionVerified === true && p.isin === e.isin &&
+    ['DAX', 'MDAX', 'SDAX', 'TecDAX'].includes(p.index) && validDate(p.asOf) && validDate(p.evaluatedAt?.slice(0, 10)) && p.asOf <= p.evaluatedAt.slice(0, 10) &&
+    /^[a-f0-9]{64}$/.test(p.source?.sha256 || '') && str(p.source?.url);
+}
+export function verifiedMeasuredGermanCashShare(e, listing) {
+  const p = e.liquidityEvidence, c = p?.calendar, rows = p?.observations || [], sessions = c?.expectedSessions || [];
+  if (e.productPrimaryPolicy !== 'GERMANY_MEASURED_LIQUID_LOCAL_XETRA' || !verifiedLocalCsFacts(e, listing) || e.issuerCountry !== 'DE' ||
+    p?.verified !== true || p.basis !== 'VALIDATED_RAW_UNADJUSTED_EOD' || p.mic !== listing.mic || p.providerSymbol !== listing.providerSymbol ||
+    p.isin !== e.isin || p.currency !== 'EUR' || listing.currency !== 'EUR' || p.minimumObservations !== 20 ||
+    p.minimumMedianDailyTurnoverEUR !== 100000 || rows.length !== 20 || c?.verified !== true || c.mic !== listing.mic || !str(c.source) ||
+    !sessions.every(validDate) || new Set(sessions).size !== sessions.length || new Set(rows.map(r => r.date)).size !== 20 ||
+    !validDate(c.expectedLastCompletedSession)) return false;
+  const last = rows.at(-1)?.date, expectedIndex = sessions.indexOf(c.expectedLastCompletedSession), lastIndex = sessions.indexOf(last);
+  if (expectedIndex < 0 || lastIndex < 19 || ![expectedIndex, expectedIndex - 1].includes(lastIndex) ||
+    digestDates(rows.map(r => r.date)) !== digestDates(sessions.slice(lastIndex - 19, lastIndex + 1))) return false;
+  if (rows.some(row => row.currency !== 'EUR' || !/^[a-f0-9]{64}$/.test(row.rawSha256 || '') ||
+    ['open', 'high', 'low', 'close', 'volume'].some(k => typeof row[k] !== 'number' || !Number.isFinite(row[k]) || row[k] <= 0) ||
+    row.high < Math.max(row.open, row.close, row.low) || row.low > Math.min(row.open, row.close, row.high))) return false;
+  const turnover = rows.map(row => row.close * row.volume).sort((a, b) => a - b), median = (turnover[9] + turnover[10]) / 2;
+  return Number.isFinite(median) && median >= 100000 && p.medianDailyTurnoverEUR === median;
+}
+const digestDates = values => JSON.stringify(values);
 function validDate(value) {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
     Number.isFinite(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
@@ -162,7 +225,8 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
       upper(e.legalJurisdiction) === 'DE' && str(e.provenance?.gleif?.url) && str(e.provenance?.xetra?.url) &&
       e.provenance?.gleif?.httpStatus === 200 && upper(e.provenance.gleif.queryIsin) === upper(e.isin) &&
       /^[a-f0-9]{64}$/.test(e.provenance?.gleif?.sha256 || '') &&
-      /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '') && n.mic === 'XETR');
+      /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '') && n.mic === 'XETR') ||
+      matches.some(e => verifiedHomeCashShare(e, n) || verifiedGermanIndexLocalCashShare(e, n) || verifiedMeasuredGermanCashShare(e, n));
     if (!classified.kind && classified.status !== 'REJECTED' && officialCashShare) {
       classified = { status: 'ACCEPTED', kind: 'EQUITY_SHARE_CLASS', reasons: [] };
     }
@@ -193,8 +257,9 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
     if (kind === 'PREFERRED' && !matches.some(e => e.preferredRelevant === true)) reasons.push('PREFERRED_RELEVANCE_UNVERIFIED');
     const primaryPolicies = distinct(matches.map(e => str(e.productPrimaryPolicy)));
     for (const e of matches.filter(e => e.productPrimaryPolicy)) {
-      if (e.productPrimaryPolicy !== 'GERMANY_LIQUID_LOCAL_XETRA' || upper(e.issuerCountry) !== 'DE' ||
-        upper(e.primaryMic) !== 'XETR' || upper(e.mic) !== 'XETR' || e.active !== true || e.regulatoryLiquid !== true) {
+      if (!verifiedHomeCashShare(e, n) && !verifiedGermanIndexLocalCashShare(e, n) && !verifiedMeasuredGermanCashShare(e, n) &&
+        (e.productPrimaryPolicy !== 'GERMANY_LIQUID_LOCAL_XETRA' || upper(e.issuerCountry) !== 'DE' ||
+        upper(e.primaryMic) !== 'XETR' || upper(e.mic) !== 'XETR' || e.active !== true || e.regulatoryLiquid !== true)) {
         reasons.push('PRODUCT_PRIMARY_POLICY_UNVERIFIED');
       }
     }
@@ -215,7 +280,8 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
       primaryMarketMic: one(matches.map(e => upper(e.primaryMarketMic))),
       canonicalTicker, proposedSecurityId, securityId: null,
       status: rejected ? 'REJECTED' : reasons.length ? 'REVIEW' : 'ACCEPTED', reasons: distinct(reasons),
-      observations: versions.map(v => ({ raw: v.raw, input: v.input, normalized: { ...v, raw: undefined, row: undefined, input: undefined }, provenance: v.provenance })),
+      observations: versions.map(v => ({ raw: v.raw, input: v.input, normalized: { ...v, isin: v.providerIsin, resolvedIsin: v.isin,
+        raw: undefined, row: undefined, input: undefined }, provenance: v.provenance })),
       identityEvidence: copy(matches), indexMembership: []
     };
   });

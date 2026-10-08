@@ -71,3 +71,43 @@ test('explicit fund/debt/warrant or inactive metadata cannot authorize expensive
   assert.equal(result.ingestionIdentityMatched,false);
  }}finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('recent scoped latest bars gate history without fabricating provider identity',async()=>{const root=mkdtempSync(join(tmpdir(),'eu-latest-gate-'));let calls=0;
+ const listing=s=>({providerTicker:s,mic:'XETR'}),bar=(symbol,date,close=12)=>({symbol,exchange:'XETR',date:date+'T00:00:00+0000',open:11,high:13,low:10,close,volume:2000});
+ const plan=basic([{kind:'latestBatch',mic:'XETR',symbols:['HAG.DE','R3NK.DE','OLD.DE'],eligibleSessions:['2026-10-07']},...['HAG.DE','R3NK.DE','OLD.DE'].map(s=>({kind:'history',listing:listing(s),requiresLatest:true}))]);
+ try{const r=await ingestEurope({plan,out:join(root,'out'),apiKey:'TESTKEY-latest',fetchImpl:async()=>{calls++;return {status:200,text:async()=>JSON.stringify({pagination:{total:calls===1?3:1,count:calls===1?3:1,limit:1000,offset:0},data:calls===1?[bar('HAG.DE','2026-10-07'),bar('R3NK.DE','2026-10-07',0),bar('OLD.DE','2026-10-06')]:[bar('HAG.DE','2026-10-07')]}),headers:{get:()=>null}}}});assert.equal(calls,2);assert.equal(r.budget.estimatedCredits,4);assert.equal(r.results[1].ok,true);assert.equal(r.results[2].reason,'LATEST_VALID_SCOPED_OBSERVATION_REQUIRED');assert.equal(r.results[3].skipped,true);assert.equal(r.publication,'BLOCKED_RIGHTS_UNVERIFIED');assert.equal(r.productionWrites,0);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('latest preconditions require a preceding calendar-bounded batch and tickerinfo preserves scope',()=>{assert.throws(()=>validatePlan(basic([{kind:'history',listing:{providerTicker:'SAP.DE',mic:'XETR'},requiresLatest:true}])),/BOUND_PRIOR_BATCH/);assert.throws(()=>validatePlan(basic([{kind:'tickerInfo',symbol:'AAPL',mic:'XNAS'}])),/SCOPE/);assert.equal(validatePlan(basic([{kind:'tickerInfo',symbol:'SXR8.DE',mic:'XETR'}])).estimatedMaximumCredits,1);});
+
+test('newer missing ambiguous failed unbounded or metadata-blocked batches revoke prior latest eligibility', async () => {
+ const root=mkdtempSync(join(tmpdir(),'eu-latest-revocation-'));
+ const row=(date='2026-10-07')=>({symbol:'SAP.DE',exchange:'XETR',date,open:100,high:101,low:99,close:100,volume:1000});
+ const page=rows=>({pagination:{offset:0,limit:1000,count:rows.length,total:rows.length},data:rows});
+ const cases=[
+  {name:'missing',rows:[]},
+  {name:'ambiguous',rows:[row(),row()]},
+  {name:'failed',rows:[],status:503},
+  {name:'unbounded stale',rows:[row('2020-01-02')],unbounded:true},
+  {name:'metadata unresolved',rows:[],requiresMetadata:true}
+ ];
+ try{for(let i=0;i<cases.length;i++){
+  const scenario=cases[i],out=join(root,String(i)),eligibleSessions=['2026-10-07'];let calls=0;
+  const second={kind:'latestBatch',mic:'XETR',symbols:['SAP.DE'],...(scenario.unbounded?{}:{eligibleSessions}),...(scenario.requiresMetadata?{requiresMetadata:true}:{})};
+  const result=await ingestEurope({plan:basic([
+   {kind:'latestBatch',mic:'XETR',symbols:['SAP.DE'],eligibleSessions},second,
+   {kind:'history',listing:{providerTicker:'SAP.DE',mic:'XETR'},requiresLatest:true},
+   {kind:'splits',listing:{providerTicker:'SAP.DE',mic:'XETR'},requiresLatest:true},
+   {kind:'snapshot',listing:{providerTicker:'SAP.DE',mic:'XETR'},requiresLatest:true}
+  ]),out,apiKey:'TESTKEY-latest-revocation',fetchImpl:async()=>{
+   calls++;return {status:calls===1?200:scenario.status??200,text:async()=>JSON.stringify(page(calls===1?[row()]:scenario.rows)),headers:{get:()=>null}};
+  }});
+  assert.equal(calls,scenario.requiresMetadata?1:2,scenario.name);
+  assert.equal(result.budget.requests,calls,scenario.name);
+  for(const operation of result.results.slice(2)){
+   assert.equal(operation.reason,'LATEST_VALID_SCOPED_OBSERVATION_REQUIRED',scenario.name);
+   assert.equal(operation.skipped,true,scenario.name);
+  }
+  assert.equal(result.productionWrites,0);
+ }}finally{rmSync(root,{recursive:true,force:true});}
+});
