@@ -1,0 +1,244 @@
+/** Private Europe foundation gates. No provider calls, publication or price repair.
+ * Calendar evidence is supplied by the caller; the US calendar is never reused.
+ * All original rows, including quarantined rows, remain available unchanged.
+ */
+import { createRequire } from 'node:module';
+import { reconcileEuropeActions } from './europe-actions.mjs';
+const require = createRequire(import.meta.url);
+const Canonical = require('../../quant/engines/technical/canonical-bars.js');
+const Features = require('../../quant/engines/technical/feature-store.js');
+const RS = require('../../quant/engines/technical/relative-strength-engine.js');
+
+export const QUALITY_VERSION = 'marketstack-europe-quality-1';
+const DAY = 86400000;
+const number = value => typeof value === 'number' && Number.isFinite(value);
+const valueOrNull = value => number(value) ? value : null;
+function day(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)?$/.test(value)
+    || value.length > 10 && !Number.isFinite(Date.parse(value))) return null;
+  const date = value.slice(0, 10), time = Date.parse(`${date}T00:00:00Z`);
+  return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === date ? date : null;
+}
+function normalizeRow(raw, index, listing) {
+  const normalized = raw?.normalized ?? raw;
+  const providerRaw = raw?.raw ?? raw;
+  const reportedMics = [...new Set([providerRaw?.exchange, providerRaw?.stock_exchange?.mic, providerRaw?.stock_exchange?.exchange_mic,
+    raw?.normalized?.providerExchange].filter(value => typeof value === 'string' && /^[A-Z0-9]{4}$/.test(value)))];
+  const reportedSymbols = [...new Set([providerRaw?.symbol, providerRaw?.ticker, raw?.normalized?.providerTicker].filter(value => typeof value === 'string' && value))];
+  const reportedCurrencies = [...new Set([providerRaw?.currency, providerRaw?.price_currency, raw?.normalized?.currency].filter(value => typeof value === 'string' && value))];
+  return { date: day(normalized?.date ?? normalized?.timestamp ?? normalized?.tradingDate ?? normalized?.marketTimestamp), open: normalized?.open, high: normalized?.high,
+    low: normalized?.low, close: normalized?.close, volume: normalized?.volume ?? null,
+    currency: normalized?.currency ?? normalized?.priceCurrency ?? normalized?.price_currency ?? listing.currency ?? null,
+    exchange: normalized?.exchange ?? normalized?.providerExchange ?? listing.exchange ?? listing.mic ?? null,
+    providerSymbol: normalized?.symbol ?? normalized?.providerTicker ?? listing.providerTicker ?? listing.providerSymbol ?? null,
+    reportedMics, reportedSymbols, reportedCurrencies, rawIndex: index, raw, providerRaw };
+}
+const US_MICS = new Set(['XNAS', 'XNYS', 'ARCX', 'BATS', 'IEXG', 'XASE']);
+function calendarBound(calendar, listing = {}) {
+  const mic = listing.mic ?? listing.exchange;
+  return Boolean(calendar.verified === true && calendar.source && mic && calendar.mic === mic && !US_MICS.has(mic)
+    && (!calendar.expectedSessions || Array.isArray(calendar.expectedSessions) && calendar.expectedSessions.every(value => day(value) === value)));
+}
+
+/** Invalid observations are quarantined, never averaged, filled, or overwritten.
+ * Abnormal returns are review flags: a genuine move is not automatically invalid.
+ * expectedSessions must be a verified, complete exchange-specific calendar slice.
+ */
+export function validateEodBars(rawBars = [], options = {}) {
+  if (!Array.isArray(rawBars)) throw new TypeError('bars must be an array');
+  const listing = options.listing ?? {};
+  const rows = rawBars.map((row, index) => normalizeRow(row, index, listing));
+  const dateCounts = new Map();
+  for (const row of rows) if (row.date) dateCounts.set(row.date, (dateCounts.get(row.date) ?? 0) + 1);
+  const currencies = [...new Set(rows.map(row => row.currency).filter(Boolean))];
+  const expectedCurrency = options.currency ?? listing.currency ?? (currencies.length === 1 ? currencies[0] : null);
+  const validBars = [], quarantine = [], warnings = [];
+  for (const row of rows) {
+    const reasons = [];
+    const expectedMic = listing.mic ?? listing.exchange;
+    const expectedSymbol = listing.providerTicker ?? listing.providerSymbol;
+    if (expectedSymbol && row.reportedSymbols.some(symbol => !new Set([expectedSymbol, ...(listing.verifiedAliases ?? [])]).has(symbol))) reasons.push('PROVIDER_SYMBOL_MISMATCH');
+    if (row.reportedMics.length > 1 || expectedMic && row.reportedMics.some(mic => mic !== expectedMic) || row.reportedMics.some(mic => US_MICS.has(mic))) reasons.push('PROVIDER_MIC_MISMATCH');
+    if (!row.date) reasons.push('INVALID_DATE');
+    if (row.date && dateCounts.get(row.date) > 1) reasons.push('DUPLICATE_DATE');
+    if (['open', 'high', 'low', 'close'].some(key => !number(row[key]))) reasons.push('NON_NUMERIC_OHLC');
+    else {
+      if (['open', 'high', 'low', 'close'].some(key => row[key] <= 0)) reasons.push('NON_POSITIVE_PRICE');
+      if (row.high < Math.max(row.open, row.close, row.low) || row.low > Math.min(row.open, row.close, row.high)) reasons.push('IMPOSSIBLE_OHLC');
+    }
+    if (row.volume !== null && (!number(row.volume) || row.volume < 0)) reasons.push('INVALID_VOLUME');
+    if (row.reportedCurrencies.length > 1 || row.currency && ((expectedCurrency && (row.currency !== expectedCurrency || row.reportedCurrencies.some(currency => currency !== expectedCurrency))) || (!expectedCurrency && currencies.length > 1))) reasons.push('CURRENCY_INCONSISTENT');
+    if (reasons.length) quarantine.push({ ...row, reasons });
+    else {
+      validBars.push(row);
+      if (row.volume === null) warnings.push({ date: row.date, code: 'VOLUME_MISSING' });
+      if (row.volume === 0) warnings.push({ date: row.date, code: 'ZERO_VOLUME' });
+      if (!row.currency) warnings.push({ date: row.date, code: 'CURRENCY_MISSING' });
+      if (expectedSymbol && !row.reportedSymbols.length) warnings.push({ date: row.date, code: 'PROVIDER_SYMBOL_NOT_REPORTED' });
+      if (expectedMic && !row.reportedMics.length) warnings.push({ date: row.date, code: 'PROVIDER_MIC_NOT_REPORTED' });
+    }
+  }
+  validBars.sort((a, b) => a.date.localeCompare(b.date));
+  const gaps = [];
+  for (let i = 1; i < validBars.length; i++) {
+    const previous = validBars[i - 1], current = validBars[i];
+    const change = current.close / previous.close - 1;
+    if (Math.abs(change) > (options.abnormalReturnThreshold ?? 0.5)) warnings.push({ code: 'ABNORMAL_PRICE_GAP', date: current.date, previousDate: previous.date, rawReturn: change });
+    const calendarDays = (Date.parse(current.date) - Date.parse(previous.date)) / DAY;
+    if (calendarDays > (options.calendarGapThreshold ?? 7)) gaps.push({ from: previous.date, to: current.date, calendarDays, code: 'OBSERVATION_GAP_REVIEW' });
+  }
+  const calendar = options.calendar ?? {};
+  const observed = new Set(validBars.map(row => row.date));
+  const missingDates = calendarBound(calendar, listing) && Array.isArray(calendar.expectedSessions)
+    ? calendar.expectedSessions.map(day).filter(date => date && !observed.has(date)) : null;
+  return { version: QUALITY_VERSION, rawBars, validBars, quarantine, warnings, gaps, missingDates,
+    calendarSource: calendar.source ?? null, currency: expectedCurrency,
+    counts: { raw: rawBars.length, valid: validBars.length, quarantined: quarantine.length },
+    volumeVerified: validBars.length > 0 && validBars.every(row => number(row.volume) && row.volume > 0),
+    status: !validBars.length ? 'INVALID' : quarantine.length || warnings.length || gaps.length || missingDates?.length ? 'REVIEW' : 'VALID' };
+}
+
+/** expectedLastCompletedSession is evidence, not a weekday approximation.
+ * CURRENT is today's completed session; LAST_VALID_SESSION is the verified
+ * prior completed session (including exchange holidays and pre-close checks).
+ */
+export function evaluateFreshness({ latestDate, now = new Date().toISOString(), calendar = {}, listing = {}, maxUnverifiedAgeDays = 7 } = {}) {
+  const latest = day(latestDate), today = day(now instanceof Date ? now.toISOString() : now);
+  const result = { latestDate: latest, evaluatedAt: now instanceof Date ? now.toISOString() : now,
+    expectedLastCompletedSession: day(calendar.expectedLastCompletedSession),
+    calendarSource: calendar.source ?? null, calendarVerified: calendarBound(calendar, listing),
+    uncertainty: null, status: 'MISSING' };
+  if (!latest) { result.status = latestDate ? 'INVALID' : 'MISSING'; return result; }
+  if (!today || latest > today) { result.status = 'INVALID'; result.uncertainty = 'INVALID_OR_FUTURE_DATE'; return result; }
+  const expected = result.expectedLastCompletedSession;
+  if (!result.calendarVerified || !expected) {
+    result.uncertainty = 'EXCHANGE_CALENDAR_UNVERIFIED';
+    result.status = (Date.parse(today) - Date.parse(latest)) / DAY > maxUnverifiedAgeDays ? 'STALE' : 'DELAYED';
+    return result;
+  }
+  if (expected > today || latest > expected) { result.status = 'INVALID'; result.uncertainty = 'UNCOMPLETED_SESSION_BAR_OR_INVALID_CALENDAR'; return result; }
+  if (latest === expected) { result.status = latest === today ? 'CURRENT' : 'LAST_VALID_SESSION'; return result; }
+  const sessions = (calendar.expectedSessions ?? []).map(day).filter(date => date && date > latest && date <= expected);
+  result.missedVerifiedSessions = sessions.length || null;
+  result.status = sessions.length === 1 ? 'DELAYED' : 'STALE';
+  return result;
+}
+
+export function assessSnapshot(snapshot, { now = new Date().toISOString(), semanticsEvidence = null, listing = {}, maxAgeMinutes = 30 } = {}) {
+  const observation = snapshot?.normalized ?? snapshot;
+  const timestamp = observation?.timestamp ?? observation?.marketTimestamp ?? observation?.trade_last ?? observation?.date;
+  const parsed = Date.parse(timestamp), nowMs = Date.parse(now);
+  const price = observation?.price ?? observation?.close ?? observation?.last;
+  if (!snapshot) return { status: 'EOD_ONLY', provenance: null };
+  const provenance = { timestamp: timestamp ?? null, source: snapshot.source ?? 'marketstack', semanticsEvidence, raw: snapshot };
+  if (!number(price) || price <= 0 || !Number.isFinite(parsed) || !Number.isFinite(nowMs) || parsed > nowMs) return { status: 'UNAVAILABLE', provenance };
+  const observed = normalizeRow(snapshot, 0, {}), mic = listing.mic ?? listing.exchange, symbol = listing.providerTicker ?? listing.providerSymbol;
+  const acceptedSymbols = new Set([symbol, ...(listing.verifiedAliases ?? [])]);
+  const symbolMatched = Boolean(symbol && observed.reportedSymbols.length && observed.reportedSymbols.every(reported => acceptedSymbols.has(reported)));
+  const micMatched = Boolean(mic && observed.reportedMics.length === 1 && observed.reportedMics[0] === mic && !US_MICS.has(mic));
+  if (symbol && observed.reportedSymbols.length && !symbolMatched || mic && observed.reportedMics.length && !micMatched) return { status: 'UNAVAILABLE', reason: 'SNAPSHOT_IDENTITY_MISMATCH', provenance };
+  if (observed.reportedCurrencies.length > 1 || listing.currency && observed.reportedCurrencies.some(currency => currency !== listing.currency)) return { status: 'UNAVAILABLE', reason: 'SNAPSHOT_CURRENCY_MISMATCH', provenance };
+  const currencyMatched = Boolean(listing.currency && observed.reportedCurrencies.length === 1 && observed.reportedCurrencies[0] === listing.currency);
+  if (typeof timestamp !== 'string' || !/T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$/.test(timestamp)) return { status: 'SNAPSHOT_DELAY_UNKNOWN', reason: 'TIMESTAMP_TIMEZONE_UNKNOWN', provenance };
+  const ageMinutes = (nowMs - parsed) / 60000;
+  if (ageMinutes > maxAgeMinutes) return { status: 'SNAPSHOT_DELAY_UNKNOWN', ageMinutes, provenance };
+  const realtimeVerified = symbolMatched && micMatched && currencyMatched && semanticsEvidence?.verified === true && semanticsEvidence?.source && semanticsEvidence?.realtime === true
+    && semanticsEvidence.mic === mic && semanticsEvidence.providerTicker === symbol;
+  return { status: realtimeVerified ? 'REALTIME_OBSERVED' : !micMatched || !symbolMatched || !currencyMatched ? 'SNAPSHOT_DELAY_UNKNOWN' : 'SNAPSHOT_CURRENT', ageMinutes,
+    currencyVerification: currencyMatched ? 'MATCHED' : 'UNKNOWN',
+    delaySemantics: semanticsEvidence?.verified ? semanticsEvidence : 'UNKNOWN', provenance };
+}
+
+export function assessCorporateActions(actions = [], bars = [], evidence = {}, listing = {}) {
+  const result = reconcileEuropeActions({ actions, bars: bars.map(bar => bar.raw ?? bar), evidence, listing });
+  return { ...result, rawActions: actions, invalid: result.issues, crossChecks: result.correlations };
+}
+
+/** Explicit independent certification is required. Presence of adj_* fields,
+ * a constant adjustment factor, or an empty actions response proves nothing.
+ */
+export function classifyAdjustment(bars = [], { evidence = {}, corporateActions = {}, canonicalSeries = null } = {}) {
+  const invalid = [];
+  let present = 0;
+  for (const bar of bars) {
+    const raw = bar.providerRaw ?? bar.raw ?? bar;
+    const fields = ['adj_open', 'adj_high', 'adj_low', 'adj_close'];
+    if (fields.some(key => raw[key] !== undefined && raw[key] !== null)) {
+      present++;
+      if (fields.some(key => !number(raw[key]) || raw[key] <= 0) || raw.adj_high < Math.max(raw.adj_open, raw.adj_close, raw.adj_low) || raw.adj_low > Math.min(raw.adj_open, raw.adj_close, raw.adj_high)) invalid.push({ date: bar.date, reason: 'INVALID_ADJUSTED_OHLC' });
+    }
+    if (raw.adj_volume !== undefined && raw.adj_volume !== null && (!number(raw.adj_volume) || raw.adj_volume < 0)) invalid.push({ date: bar.date, reason: 'INVALID_ADJUSTED_VOLUME' });
+  }
+  const matched = canonicalSeries && Canonical.validateSeries(canonicalSeries).valid && canonicalSeries.priceSeriesType === 'SPLIT_ADJUSTED'
+    && Canonical.computeDataHash(canonicalSeries) === canonicalSeries.dataHash
+    && bars.length > 0 && canonicalSeries.length === bars.length && evidence.canonicalSeriesHash === canonicalSeries.dataHash
+    && canonicalSeries.timestamps.every((timestamp, i) => day(typeof timestamp === 'number' ? new Date(timestamp).toISOString() : timestamp) === bars[i].date);
+  const certified = matched && evidence.verified === true && evidence.source && evidence.document && evidence.independent === true && evidence.basis === 'SPLIT_ADJUSTED' && evidence.seriesMatched === true && corporateActions.status === 'VERIFIED';
+  return { status: invalid.length || evidence.invalid === true || corporateActions.status === 'INVALID' ? 'ADJUSTMENT_INVALID'
+    : certified ? 'ADJUSTMENT_CERTIFIED' : evidence.verified === true && evidence.source ? 'ADJUSTMENT_PARTIAL' : 'ADJUSTMENT_UNKNOWN',
+    providerAdjustedRows: present, invalid, evidence, useProviderAdjusted: false };
+}
+
+export function assessHistory(bars = [], { calendar = {}, listing = {}, maxHistoryComplete = false } = {}) {
+  const first = bars[0]?.date ?? null, last = bars.at(-1)?.date ?? null;
+  const spanDays = first && last ? (Date.parse(last) - Date.parse(first)) / DAY : 0;
+  const horizons = {};
+  for (const years of [1, 3, 5, 10]) horizons[`${years}Y`] = { status: spanDays >= 365.25 * years - 10 ? 'SPAN_AVAILABLE' : 'LIMITED', observationCount: bars.length,
+    completeness: calendarBound(calendar, listing) && Array.isArray(calendar.expectedSessions) ? 'CALENDAR_CHECKABLE' : 'UNKNOWN' };
+  horizons.max = { status: maxHistoryComplete ? 'PROVIDER_MAX_FETCHED' : 'UNKNOWN', observationCount: bars.length };
+  return { first, last, spanDays, observations: bars.length, horizons };
+}
+
+/** Readiness is private calculation readiness, never permission to publish.
+ * The existing feature/RS engines retain all their original parameters.
+ * Caller-supplied canonical series must be independently matched and certified.
+ */
+export function assessPriceReadiness({ quality, freshness, adjustment, corporateActions, listing = {}, canonicalSeries = null, benchmark = null } = {}) {
+  const bars = quality.validBars;
+  const clean = quality.quarantine.length === 0 && quality.gaps.length === 0 && !quality.missingDates?.length
+    && !quality.warnings.some(w => ['ABNORMAL_PRICE_GAP', 'PROVIDER_SYMBOL_NOT_REPORTED', 'PROVIDER_MIC_NOT_REPORTED', 'CURRENCY_MISSING'].includes(w.code));
+  const current = ['CURRENT', 'LAST_VALID_SESSION'].includes(freshness.status);
+  const chart = !bars.length ? 'CHART_BLOCKED' : bars.length >= 2 && clean ? 'CHART_READY' : 'CHART_LIMITED';
+  let features = null, relativeStrength = null;
+  const expectedExchange = listing.mic ?? listing.exchange;
+  const seriesValid = canonicalSeries && Canonical.validateSeries(canonicalSeries).valid && canonicalSeries.length === bars.length
+    && Canonical.computeDataHash(canonicalSeries) === canonicalSeries.dataHash
+    && quality.currency && canonicalSeries.currency === quality.currency
+    && (!expectedExchange || canonicalSeries.exchange === expectedExchange)
+    && (!listing.instrumentId || canonicalSeries.instrumentId === listing.instrumentId)
+    && adjustment.evidence.canonicalSeriesHash === canonicalSeries.dataHash
+    && canonicalSeries.timestamps.every((timestamp, i) => day(typeof timestamp === 'number' ? new Date(timestamp).toISOString() : timestamp) === bars[i].date);
+  const basisVerified = Boolean(seriesValid && canonicalSeries.priceSeriesType === 'SPLIT_ADJUSTED' && adjustment.status === 'ADJUSTMENT_CERTIFIED');
+  const benchmarkVerified = Boolean(benchmark?.verified === true && benchmark?.source && benchmark?.region === 'EUROPE' && benchmark?.series && Canonical.validateSeries(benchmark.series).valid && benchmark.series.priceSeriesType === 'SPLIT_ADJUSTED');
+  if (basisVerified && clean) {
+    features = Features.computeFeatures(canonicalSeries);
+    if (benchmarkVerified) relativeStrength = RS.analyzeRelativeStrength(canonicalSeries, benchmark.series);
+  }
+  const rsReady = relativeStrength?.vsBenchmark?.status === 'OK' && relativeStrength?.rsScore !== null;
+  const calculationReady = Boolean(basisVerified && clean);
+  const inputRequirements = { SMA20: 20, SMA50: 50, SMA200: 200, '52W_HIGH': 252, MOMENTUM: 253, VOLATILITY: 21, DRAWDOWN: 252, BREAKOUT: 252 };
+  const indicators = Object.fromEntries(Object.entries(inputRequirements).map(([name, count]) => [name,
+    { status: calculationReady && bars.length >= count ? 'INPUT_READY' : bars.length >= count ? 'BASIS_BLOCKED' : 'HISTORY_BLOCKED', minimumObservations: count }]));
+  indicators.RS = { status: rsReady ? 'RS_READY' : 'RS_BLOCKED', reason: benchmarkVerified ? 'COMMON_HISTORY_OR_BASIS_REQUIRED' : 'VERIFIED_EUROPEAN_BENCHMARK_REQUIRED' };
+  const technical = !bars.length || adjustment.status === 'ADJUSTMENT_INVALID' ? 'TECHNICAL_BLOCKED'
+    : calculationReady && bars.length >= 253 && rsReady && current ? 'TECHNICAL_READY' : 'TECHNICAL_PARTIAL';
+  const strict = technical === 'TECHNICAL_READY' && quality.volumeVerified && corporateActions.status === 'VERIFIED' && freshness.calendarVerified && quality.missingDates !== null;
+  return { chart, technical, indicators, relativeStrength, basisVerified, benchmarkVerified,
+    supertrader: strict ? 'SUPERTRADER_INPUT_READY' : 'SUPERTRADER_BLOCKED',
+    backtest: strict ? 'BACKTEST_INPUT_READY' : bars.length > 1 && clean ? 'RESEARCH_ONLY' : 'BLOCKED',
+    productionReady: false, publication: 'RIGHTS_AND_PRODUCT_GATES_REQUIRED',
+    engineEvidence: features ? { featureVersion: features.featureVersion ?? Features.FEATURE_VERSION, parametersHash: features.parametersHash,
+      latest: Object.fromEntries(Object.entries(features.columns).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [key, valueOrNull(value.at(-1))])) } : null,
+    listing };
+}
+
+export function evaluateEuropePriceSeries({ bars = [], listing = {}, now, calendar = {}, corporateActions = [], corporateActionEvidence = {}, adjustmentEvidence = {}, canonicalSeries = null, benchmark = null, snapshot = null, snapshotSemantics = null, maxHistoryComplete = false } = {}) {
+  const quality = validateEodBars(bars, { listing, calendar });
+  const freshness = evaluateFreshness({ latestDate: quality.validBars.at(-1)?.date, now, calendar, listing });
+  const actions = assessCorporateActions(corporateActions, quality.validBars, corporateActionEvidence, listing);
+  const adjustment = classifyAdjustment(quality.validBars, { evidence: adjustmentEvidence, corporateActions: actions, canonicalSeries });
+  return { version: QUALITY_VERSION, quality, freshness, adjustment, corporateActions: actions,
+    history: assessHistory(quality.validBars, { calendar, listing, maxHistoryComplete }),
+    snapshot: assessSnapshot(snapshot, { now, listing, semanticsEvidence: snapshotSemantics }),
+    readiness: assessPriceReadiness({ quality, freshness, adjustment, corporateActions: actions, listing, canonicalSeries, benchmark }) };
+}

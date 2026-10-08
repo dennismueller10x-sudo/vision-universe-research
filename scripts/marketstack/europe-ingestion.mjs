@@ -5,9 +5,9 @@ import {fileURLToPath} from 'node:url';
 import {createHash,createPublicKey,verify,constants} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {execFileSync} from 'node:child_process';
-import {EUROPE_EXCHANGE_PLAN} from './europe-universe.mjs';
+import {EUROPE_EXCHANGE_PLAN,validIsin} from './europe-universe.mjs';
 const require=createRequire(import.meta.url);
-const {createAuditAdapter}=require('../../providers/marketstack/audit-adapter.js');
+const {createAuditAdapter,normalizeObservation}=require('../../providers/marketstack/audit-adapter.js');
 const {estimateCredits}=require('../../providers/marketstack/client.js');
 const ROOT=realpathSync(resolve(dirname(fileURLToPath(import.meta.url)),'../..'));
 export const hash=x=>createHash('sha256').update(x).digest('hex');
@@ -20,20 +20,21 @@ export function privateRoot(path){
 }
 export function validatePlan(plan){
  if(plan?.version!==1||!Object.hasOwn(ALLOCATIONS,plan.lease)||plan.maxCredits!==ALLOCATIONS[plan.lease])throw Error('INVALID_EUROPE_ALLOCATION');
- if(!Array.isArray(plan.operations)||plan.operations.length>4000)throw Error('INVALID_EUROPE_OPERATIONS');
- const allowed=new Set(['directory','search','metadata','latest','history','splits','dividends','snapshot','holdings','etfs']);
+ if(!Array.isArray(plan.operations)||plan.operations.length>8000)throw Error('INVALID_EUROPE_OPERATIONS');
+ const allowed=new Set(['directory','search','metadata','latest','latestBatch','history','splits','dividends','snapshot','holdings','etfs']);
  for(const op of plan.operations){if(!allowed.has(op.kind))throw Error('INVALID_INGESTION_OPERATION');if(op.kind==='directory'&&!EUROPE_MICS.has(op.mic))throw Error('INVALID_DIRECTORY_MIC');
   if(!Number.isInteger(op.maxPages??1)||(op.maxPages??1)<1||(op.maxPages??1)>100)throw Error('INVALID_PAGE_BOUND');
   if(['metadata','holdings'].includes(op.kind)&&typeof op.symbol!=='string')throw Error('SYMBOL_REQUIRED');
   if(op.kind==='metadata'&&!EUROPE_MICS.has(op.mic))throw Error('EUROPE_METADATA_SCOPE_REQUIRED');
   if(op.kind==='search'&&!EUROPE_MICS.has(op.mic))throw Error('EUROPE_SEARCH_SCOPE_REQUIRED');
+  if(op.kind==='latestBatch'&&(!EUROPE_MICS.has(op.mic)||!Array.isArray(op.symbols)||op.symbols.length<1||op.symbols.length>100||op.symbols.some(x=>typeof x!=='string'||!x||x.includes(','))))throw Error('INVALID_EUROPE_LATEST_BATCH');
   if(op.kind==='holdings'&&op.market!=='EUROPE'&&!(op.comparisonOnly===true&&['VOO','VTI','SCHD'].includes(op.symbol)))throw Error('ETF_SCOPE_REQUIRED');
   if(['latest','history','splits','dividends','snapshot'].includes(op.kind)&&(!op.listing?.providerTicker||!/^[A-Z0-9]{4}$/.test(op.listing.mic||'')))throw Error('LISTING_REQUIRED');
   if(op.listing&&!EUROPE_MICS.has(op.listing.mic))throw Error('US_LISTINGS_PROTECTED');
   if(op.retry504Once!==undefined&&typeof op.retry504Once!=='boolean')throw Error('INVALID_RETRY_POLICY');
  }
- const endpoints={directory:'/exchanges/XXXX/tickers',search:'/tickerslist',metadata:'/tickers/EXACT',latest:'/eod/latest',history:'/eod',splits:'/splits',dividends:'/dividends',snapshot:'/stockprice',holdings:'/etfholdings',etfs:'/etflist'};
- const estimate=plan.operations.reduce((n,o)=>n+estimateCredits(endpoints[o.kind],o.listing?{symbols:o.listing.providerTicker}:{})*(o.maxPages??1)*(o.retry504Once?2:1),0);
+ const endpoints={directory:'/exchanges/XXXX/tickers',search:'/tickerslist',metadata:'/tickers/EXACT',latest:'/eod/latest',latestBatch:'/eod/latest',history:'/eod',splits:'/splits',dividends:'/dividends',snapshot:'/stockprice',holdings:'/etfholdings',etfs:'/etflist'};
+ const estimate=plan.operations.reduce((n,o)=>n+estimateCredits(endpoints[o.kind],o.symbols?{symbols:o.symbols.join(',')}:o.listing?{symbols:o.listing.providerTicker}:{})*(o.maxPages??1)*(o.retry504Once?2:1),0);
  if(estimate>plan.maxCredits)throw Error('PLANNED_BATCH_EXCEEDS_ALLOCATION');return {estimatedMaximumCredits:estimate,operations:plan.operations.length};
 }
 export function signedPayload(marker){return JSON.stringify({version:1,branch:'marketstack-europe-foundation',lease:marker.lease,sourceSha:marker.sourceSha,planHash:marker.planHash});}
@@ -49,16 +50,20 @@ export async function ingestEurope({plan,out,apiKey=process.env.MARKETSTACK_API_
  const budget=(budgetFactory??createEuropeBudget)(join(out,'credits.json'),{maxCredits:plan.maxCredits,runId:plan.lease});
  const rawDir=join(out,'raw'),normalizedDir=join(out,'normalized');mkdirSync(rawDir,{mode:0o700});mkdirSync(normalizedDir,{mode:0o700});
  const write=(file,obj)=>writeFileSync(file,JSON.stringify(obj)+'\n',{mode:0o600});
- let sequence=0,terminalReason=null;const manifest=[],results=[];
+ let sequence=0,terminalReason=null;const manifest=[],results=[],metadataAdmission=new Map();
  const api=createAuditAdapter({apiKey,fetchImpl,sharedBudget:budget,maxCredits:plan.maxCredits,maxRequests:plan.maxCredits,maxRetries:0,cacheTtlMs:0,timeoutMs:90000,minIntervalMs:fetchImpl?0:250,endpointIntervals:fetchImpl?{'/stockprice':0}:undefined,
   onResponse:async response=>{const id=String(++sequence).padStart(6,'0'),sha256=hash(response.rawText);writeFileSync(join(rawDir,id+'.json'),response.rawText,{mode:0o600});const meta={...response,rawText:undefined,body:undefined,id,sha256};write(join(rawDir,id+'.meta.json'),meta);manifest.push(meta);}});
  async function perform(op){const o={maxPages:op.maxPages??1,limit:1000,from:op.from,to:op.to};
-  switch(op.kind){case'directory':return api.listExchangeTickers(op.mic,o);case'search':return api.searchTicker(op.query,{...o,exchange:op.mic});case'metadata':return api.getTicker(op.symbol);case'latest':return api.getLatestEOD(op.listing,o);case'history':return api.getHistoricalEOD(op.listing,o);case'splits':return api.getSplits(op.listing,o);case'dividends':return api.getDividends(op.listing,o);case'snapshot':return api.getRealtimePrice(op.listing,o);case'holdings':return api.getETFHoldings(op.symbol,o);case'etfs':return api.listETFs(o);default:throw Error('INVALID_INGESTION_OPERATION');}
+  if(op.requiresMetadata&&op.listing&&!metadataAdmission.get(op.listing.mic+':'+op.listing.providerTicker))return {ok:false,reason:'METADATA_IDENTITY_UNRESOLVED',skipped:true};
+  switch(op.kind){case'directory':return api.listExchangeTickers(op.mic,o);case'search':return api.searchTicker(op.query,{...o,exchange:op.mic});
+  case'metadata':{const r=await api.getTicker(op.symbol);const matches=(r.observations??[]).filter(x=>{const raw=x.raw,n=x.normalized,mics=[n.providerExchange,...(raw.stock_exchanges??[]).map(e=>e.mic||e.exchange_mic)].filter(Boolean);return n.providerTicker===op.symbol&&mics.includes(op.mic)&&validIsin(n.isin)&&(!op.expectedIsin||n.isin===op.expectedIsin)&&!(op.assetKind==='EQUITY'&&/\b(ETF|UCITS|FUND|WARRANT|CERTIFICATE|RIGHTS?|BOND|UNITS?|ADR|GDR)\b/i.test(n.name||''));});metadataAdmission.set(op.mic+':'+op.symbol,r.ok&&matches.length===1);return {...r,ingestionIdentityMatched:matches.length===1};}
+  case'latestBatch':{const symbols=op.requiresMetadata?op.symbols.filter(s=>metadataAdmission.get(op.mic+':'+s)):op.symbols;if(!symbols.length)return {ok:false,reason:'METADATA_IDENTITY_UNRESOLVED',skipped:true};const r=await api.client.paginate('/eod/latest',{symbols:symbols.join(','),exchange:op.mic,limit:1000},{maxPages:op.maxPages??1,cacheTtlMs:0});const expected=new Set(symbols),observations=(r.data??[]).map(raw=>normalizeObservation(raw,{kind:'EOD',retrievedAt:r.retrievedAt}));const data=observations.filter(x=>expected.has(x.normalized.providerTicker)&&x.normalized.providerExchange===op.mic);return {...r,raw:r.rawPages,data,rejectedObservations:observations.filter(x=>!data.includes(x)),requestedSymbols:symbols,canonicalAdmission:false};}
+  case'latest':return api.getLatestEOD(op.listing,o);case'history':return api.getHistoricalEOD(op.listing,o);case'splits':return api.getSplits(op.listing,o);case'dividends':return api.getDividends(op.listing,o);case'snapshot':return api.getRealtimePrice(op.listing,o);case'holdings':return api.getETFHoldings(op.symbol,o);case'etfs':return api.listETFs(o);default:throw Error('INVALID_INGESTION_OPERATION');}
  }
  try{for(let i=0;i<plan.operations.length;i++){
   const op=plan.operations[i],before=sequence;if(terminalReason){results.push({operation:op,skipped:true,reason:terminalReason});continue;}
-  let result;try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}
-  if(op.retry504Once&&result.status===504){await sleep(15000);try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}}
+  let result;try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}finally{api.client.clearCache();}
+  if(op.retry504Once&&result.status===504){await sleep(15000);try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}finally{api.client.clearCache();}}
   if(['authError','quotaExceeded','budgetExceeded','RUN_BUDGET_EXCEEDED','EUROPE_RUN_BUDGET_EXCEEDED','responsePersistenceFailed','accountingPersistenceFailed','budgetReservationFailed'].includes(result.reason)||String(result.reason).startsWith('LEDGER_'))terminalReason=result.reason;
   const resultPath='normalized/'+String(i).padStart(6,'0')+'.json';
   const entry={ordinal:i,operation:op,responseIds:manifest.slice(before).map(r=>r.id),result};write(join(out,resultPath),entry);
