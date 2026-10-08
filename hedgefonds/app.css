@@ -34,7 +34,7 @@ html[data-theme=dark]{
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
 html,body{background:var(--bg)}
-body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:88px;overflow-x:hidden;line-height:1.45}
+body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:var(--vu-navigation-height,72px);overflow-x:hidden;line-height:1.45}
 body.hf-noscroll{overflow:hidden}
 :where(.hf) a{color:inherit}
 :where(.hf) button{font-family:inherit;color:inherit}
@@ -45,20 +45,12 @@ body.hf-noscroll{overflow:hidden}
 .hf-i{width:18px;height:18px;flex:none}
 .hf-i.big{width:28px;height:28px}
 .hf-wrap{padding:0 var(--gutter)}
-.hf-main{padding-bottom:90px}
+.hf-main{padding-bottom:24px}
 .pos{color:var(--up)} .neg{color:var(--down)}
 .hf-center{text-align:center;margin-top:14px}
 
 /* ---------------------------------------------------- Menüleiste (Dock) */
-.hf-dock{position:sticky;top:96px;z-index:60;display:flex;gap:4px;width:max-content;max-width:calc(100% - 32px);margin:14px auto 0;padding:4px;border:1px solid color-mix(in srgb,var(--line) 72%,transparent);border-radius:999px;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 8px 28px rgba(0,0,0,.06)}
-body.hf>.hf-dock{position:fixed;left:50%;transform:translateX(-50%);top:96px;margin:0}
-.hf-dock-item{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:9px 15px;border:0;border-radius:99px;background:none;color:var(--muted);font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background-color .18s ease,color .18s ease}
-.hf-dock-item:hover{color:var(--ink);background:color-mix(in srgb,var(--panel) 80%,transparent)}
-.hf-dock-item[aria-current=page]{background:#111214;color:#fff;box-shadow:0 5px 14px rgba(0,0,0,.14)}
-html[data-theme=dark] .hf-dock-item[aria-current=page]{background:#f4f2e9;color:#0b0d10}
-.hf-dock-search{background:var(--accent);color:var(--accent-ink)}
-.hf-dock-search:hover{background:var(--accent);color:var(--accent-ink);filter:brightness(.97)}
-.hf-main{padding-top:64px}
+.hf-main{padding-top:8px}
 
 /* --------------------------------------------------------- Such-Overlay */
 .hf-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(10,12,16,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px}
@@ -390,14 +382,8 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
 @media (max-width:760px){
   body.hf{padding-top:72px}
   .hf-wrap{padding:0 16px}
-  .hf-main{padding-bottom:110px}
+  .hf-main{padding-bottom:24px}
   /* Menüleiste unten, fünf Ziele wie bei Discover */
-  body.hf>.hf-dock{top:auto;bottom:0;left:0;right:0;transform:none;width:auto;max-width:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));border-radius:0;border:0;border-top:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);box-shadow:0 -8px 30px rgba(0,0,0,.06)}
-  .hf-dock-item{flex-direction:column;gap:3px;min-height:52px;padding:6px 2px;font-size:10.5px;border-radius:14px}
-  .hf-dock-item .hf-i{width:21px;height:21px}
-  .hf-dock-item[aria-current=page]{box-shadow:none}
-  .hf-dock-search{background:none;color:var(--muted)}
-  .hf-dock-search .hf-i{color:var(--accent-text)}
   .hf-main{padding-top:8px}
   .hf-overlay{padding:0;align-items:stretch}
   .hf-ov-box{max-height:none;height:100%;border-radius:0;border:0}
@@ -441,3 +427,11 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
   .hf-seg button{flex:1}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ------------------------------------------------ Vision-Universe-Shell
+   UI-Vereinheitlichung 10/2026: Kopf und Produkt-Leiste kommen aus der
+   gemeinsamen Shell. Heros als offene Flaeche statt gerahmter Kasten;
+   die Investoren-Abbildung bleibt die Produktidentitaet. */
+.hf-hero{background:none;border-radius:0;padding:clamp(20px,4vw,48px) 0 clamp(8px,2vw,24px);box-shadow:none}
+.hf-hero h1{font-size:clamp(36px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em}
+.hf-phead,.hf-dhero{background:none;border-radius:0;padding:clamp(20px,3.5vw,40px) 0 clamp(8px,2vw,16px);margin-top:0}
+@media(max-width:760px){.hf-hero,.hf-phead,.hf-dhero{padding:20px 0 8px;border-radius:0}}

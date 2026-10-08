@@ -36,7 +36,7 @@ async function checkLayout(page, vp, label) {
   const r = await page.evaluate(() => {
     const doc = document.documentElement;
     const overflow = doc.scrollWidth - doc.clientWidth;
-    const bar = document.querySelector('.sc-tabbar');
+    const bar = document.querySelector('#vu-dock'); // gemeinsame Produkt-Leiste der Shell
     const barTop = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : Infinity;
     const offenders = [];
     for (const el of document.querySelectorAll('body *')) {
@@ -44,8 +44,10 @@ async function checkLayout(page, vp, label) {
       if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
       if (offenders.length > 4) break;
     }
-    const nav = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('.toggle')?.getBoundingClientRect();
-    if (nav && nav.right > doc.clientWidth + 1) offenders.push('vu-navigation Menü abgeschnitten');
+    /* Das globale Menue oeffnet ☰ in der Produkt-Leiste (der Kopf traegt dann keinen eigenen Knopf). */
+    const nav = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('button.menu')?.getBoundingClientRect();
+    if (!nav || !nav.width) offenders.push('vu-navigation Menü fehlt');
+    else if (nav.right > doc.clientWidth + 1 || nav.bottom > innerHeight + 1) offenders.push('vu-navigation Menü abgeschnitten');
     // Inhalte, die aus ihrer Karte ragen (abgeschnitten)
     const clipped = [];
     for (const card of document.querySelectorAll('.sc-rc, .sc-chip, .sc-kpi, .sc-why-item, .sc-row, .sc-cr, .sc-tl, .sc-libitem')) {
@@ -56,10 +58,10 @@ async function checkLayout(page, vp, label) {
     // Zugaenglichkeit: Buttons ohne Namen
     const unnamed = [...document.querySelectorAll('button,a[href]')].filter((b) => b.offsetParent && !(b.getAttribute('aria-label') || b.textContent.trim() || b.title)).length;
     // Kleine Touch-Ziele (nur mobil relevant)
-    const small = [...document.querySelectorAll('.sc-app button, .sc-app a[href], .sc-tabbar a, .sc-sheet button')].filter((b) => { const rc = b.getBoundingClientRect(); return b.offsetParent && rc.width && rc.height && (rc.height < 32 || rc.width < 32); }).map((b) => (b.className || b.tagName) + ':' + (b.textContent || b.getAttribute('aria-label') || '').trim().slice(0, 20)).slice(0, 5);
+    const small = [...document.querySelectorAll('.sc-app button, .sc-app a[href], .sc-sheet button')].filter((b) => { const rc = b.getBoundingClientRect(); return b.offsetParent && rc.width && rc.height && (rc.height < 32 || rc.width < 32); }).map((b) => (b.className || b.tagName) + ':' + (b.textContent || b.getAttribute('aria-label') || '').trim().slice(0, 20)).slice(0, 5);
     return { overflow, offenders, unnamed, small, barTop, clipped };
   });
-  if (r.offenders.some((o) => o.startsWith('vu-navigation'))) fail(vp, label + ': Menü-Button abgeschnitten');
+  if (r.offenders.some((o) => o.startsWith('vu-navigation'))) fail(vp, label + ': Menü-Button fehlt oder abgeschnitten');
   if (r.overflow > 1) fail(vp, label + ': horizontaler Overflow ' + r.overflow + 'px ' + r.offenders.join(', '));
   if (r.clipped.length) fail(vp, label + ': Inhalt ragt aus Karte: ' + r.clipped.join(' | '));
   if (r.unnamed) fail(vp, label + ': ' + r.unnamed + ' Bedienelemente ohne Namen');
@@ -136,8 +138,8 @@ for (const theme of ['light', 'dark']) {
       if (!desk) {
         const cta = await page.$('.sc-cta button');
         const box = cta && await cta.boundingBox();
-        const tb = await page.$('.sc-tabbar'); const tbb = await tb.boundingBox();
-        if (!box || box.y + box.height > tbb.y + 1) fail(vp, 'Sticky CTA überlappt Tab-Leiste'); else ok('Sticky CTA über Tab-Leiste');
+        const tbb = await page.locator('#vu-dock nav').boundingBox();
+        if (!box || !tbb || box.y + box.height > tbb.y + 1) fail(vp, 'Sticky CTA überlappt Produkt-Leiste'); else ok('Sticky CTA über Produkt-Leiste');
       }
 
       // 4 Filter bearbeiten (Market Cap -> < 2 Mrd per Operator "kleiner als" bleibt) und Browser-Zurueck

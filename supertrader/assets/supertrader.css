@@ -7,7 +7,7 @@
    Hell/Dunkel-Schalter der Navigation setzt html[data-theme=light|dark];
    :root trägt die dunklen Werte als Rückfall, falls kein Attribut gesetzt ist. */
 :root {
-  --st-radius: 18px; --st-radius-s: 12px; --st-gutter: 16px; --st-max: 1120px; --st-bottom-nav: 64px;
+  --st-radius: 18px; --st-radius-s: 12px; --st-gutter: 16px; --st-max: 1240px;
   --world: #c8f531; --world-2: #3987e5;
 }
 :root, html[data-theme=dark] {
@@ -56,26 +56,21 @@ body.st a { color: inherit; }
 body.st * { box-sizing: border-box; }
 .st-skip { position: absolute; left: -9999px; top: 8px; background: var(--st-accent); color: var(--st-on-accent); padding: 8px 12px; border-radius: 8px; z-index: 100; }
 .st-skip:focus { left: 8px; }
-.st-main { max-width: var(--st-max); margin: 0 auto; padding: 0 var(--st-gutter) calc(var(--st-bottom-nav) + env(safe-area-inset-bottom) + 28px); outline: none; }
+.st-main { max-width: var(--st-max); margin: 0 auto; padding: 0 var(--st-gutter) 28px; outline: none; }
 .st-boot, .st-noscript { padding: 48px 0; color: var(--st-muted); }
 h1, h2, h3 { margin: 0; letter-spacing: -0.01em; }
 p { margin: 0; }
 
 /* Kopf und Navigation */
-.st-bar { position: relative; z-index: 30; background: var(--st-bar-bg); backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px); border-bottom: 1px solid var(--st-line); padding: 0 var(--st-gutter); }
-.st-bar-inner { display: flex; align-items: center; gap: 18px; height: 48px; max-width: var(--st-max); margin: 0 auto; }
 .st-logo { font-weight: 900; letter-spacing: .18em; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 8px; }
 .st-logo i { width: 9px; height: 9px; border-radius: 3px; background: linear-gradient(135deg, var(--st-accent), #3987e5); display: inline-block; transform: rotate(45deg); }
-.st-tabs { display: none; gap: 4px; margin-left: auto; }
-.st-tabs a { text-decoration: none; color: var(--st-text-2); font-size: 14px; padding: 7px 12px; border-radius: 999px; }
-.st-tabs a[aria-current="page"] { color: var(--st-on-accent); background: var(--st-accent); font-weight: 600; }
+/* Produktzeile im Inhalt (UI-Vereinheitlichung 10/2026): Kopf und Produkt-Leiste
+   kommen aus der gemeinsamen Shell; hier stehen nur Produktname, Kursstand, Quellen. */
+.st-productline { display: flex; align-items: center; gap: 14px; padding: 18px 0 0; min-height: 44px; }
 .st-stamp { margin-left: auto; font-size: 12px; color: var(--st-muted); white-space: nowrap; }
-@media (min-width: 900px) { .st-tabs { display: flex; } .st-stamp { margin-left: 12px; } }
-.st-bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: calc(var(--st-bottom-nav) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: var(--st-bottom-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--st-line); display: grid; grid-template-columns: repeat(5, 1fr); }
-.st-bottom a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: var(--st-muted); font-size: 11px; min-height: 44px; }
-.st-bottom a svg { width: 22px; height: 22px; }
-.st-bottom a[aria-current="page"] { color: var(--st-accent-ink); }
-@media (min-width: 900px) { .st-bottom { display: none; } .st-main { padding-bottom: 64px; } }
+.st-productlink { font-size: 12px; font-weight: 700; color: var(--st-text-2); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.st-productlink:hover, .st-productlink[aria-current="page"] { color: var(--st-text); text-decoration: underline; text-underline-offset: 4px; }
+@media (min-width: 900px) {  .st-main { padding-bottom: 28px; } }
 
 /* Typo-Bausteine */
 .st-kick { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--st-muted); }
@@ -344,7 +339,6 @@ p { margin: 0; }
 .st-fresh.mini strong { font-size: 13px; display: inline; }
 .st-fresh.mini > span { display: block; margin-top: 6px; }
 @media (max-width: 640px) {
-  .st-bar-inner { height: 40px; }
   .st-hero { padding: 14px 0 8px; gap: 6px; }
   .st-hero h1 { font-size: 27px; }
   .st-lens-h { padding: 10px 0 4px; }

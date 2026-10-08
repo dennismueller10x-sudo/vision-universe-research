@@ -75,7 +75,8 @@
       '<p class="vs-lead">Plane deine finanzielle Zukunft. Verstehe ETFs. Durchleuchte dein Portfolio. Erkenne Veränderungen. Mit amtlichen Daten, offener Datenabdeckung und ohne Produktverkauf.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" placeholder="ETF, Ziel oder Frage eingeben …" aria-label="ETF, Ziel oder Frage eingeben"><button type="submit">Suchen</button></form>' +
       '<div class="vs-suggest" id="vs-suggest"></div>' +
-      '<nav class="vs-tabs" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a><a class="vs-pill" href="#/vergleichen">Vergleichen</a><a class="vs-pill" href="#/foerderung">Förderung</a><a class="vs-pill" href="#/wissen">Wissen</a></nav></section>' +
+      '<nav class="vs-tabs vs-hero-actions" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a></nav>' +
+      '<p class="vs-hero-more"><a href="#/vergleichen">Vergleichen</a><a href="#/foerderung">Förderung</a><a href="#/monitor">Veränderungen</a><a href="#/wissen">Wissen</a></p></section>' +
 
       '<section class="vs-section" aria-label="So gehst du vor"><div class="vs-steps">' + [["#/plan", "Planen"], ["#/etfs", "ETFs entdecken"], ["#/etf/VT", "ETF verstehen"], ["#/portfolio", "Portfolio durchleuchten"], ["#/monitor", "Veränderungen erkennen"]].map(function (x, i) {
         return '<a class="vs-step" href="' + x[0] + '"><b>' + (i + 1) + '</b><span>' + x[1] + '</span></a>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Nichts davon ist Pflicht. Jeder Schritt funktioniert für sich.</p></section>' +

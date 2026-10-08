@@ -744,9 +744,14 @@
       }).catch(function () { return null; }); };
       if (!global.IntersectionObserver) cbLoad();
       else {
+        /* Erst laden, wenn das Teaser-Feld spuerbar im Bild steht (80 px), nicht
+           schon, wenn seine Oberkante den Rand beruehrt: Ohne die eigene
+           Kopf- und Bereichsleiste von Quant rueckt es nach oben und lag am
+           Desktop (1000 px Hoehe) zufaellig an der Kante - das hob den
+           Ressourcenbudget-Wert der Aktienseite um 185 KB. */
         var cbSpy = new global.IntersectionObserver(function (entries) {
           if (entries.some(function (e) { return e.isIntersecting; })) { cbSpy.disconnect(); cbLoad(); }
-        }, { rootMargin: "0px" });
+        }, { rootMargin: "0px 0px -80px 0px" });
         cbSpy.observe(cbHost);
       }
     }

@@ -382,25 +382,14 @@
     }
   }
 
-  /* -------------------------------------------- Menüleiste (wie Discover) */
-  var DOCK = [["start", "Start", "#/", "home"], ["investoren", "Investoren", "#/investoren", "users"],
-    ["datenbank", "Datenbank", "#/datenbank", "table"], ["aktien", "Aktien", "#/aktien", "chart"], ["suche", "Suchen", null, "search"]];
-  function buildDock() {
-    var nav = document.createElement("nav");
-    nav.className = "hf-dock";
-    nav.setAttribute("aria-label", "Hedgefonds");
-    nav.innerHTML = DOCK.map(function (d) {
-      var inner = icon(d[3]) + "<span>" + d[1] + "</span>";
-      return d[2] ? '<a class="hf-dock-item" data-key="' + d[0] + '" href="' + d[2] + '">' + inner + "</a>"
-        : '<button class="hf-dock-item hf-dock-search" type="button" data-key="' + d[0] + '" aria-haspopup="dialog">' + inner + "</button>";
-    }).join("");
-    document.body.appendChild(nav);
-    nav.querySelector(".hf-dock-search").addEventListener("click", openSearch);
-  }
+  /* ------------------------------------------------- Produkt-Leiste
+     Kopf und Leiste kommen aus der gemeinsamen Vision-Universe-Shell
+     (assets/site-navigation.js): Hedgefonds | Investoren | Datenbank |
+     Aktien | ☰. Hedgefonds meldet ihr nur den aktiven Bereich. Die Suche
+     bleibt die Hedgefonds-Suche: im Hero, mit / und als Overlay. */
+  var DOCK = { start: "hedgefonds", investoren: "investoren", datenbank: "datenbank", aktien: "aktien" };
   function setDock(key) {
-    [].forEach.call(document.querySelectorAll(".hf-dock-item"), function (a) {
-      if (a.getAttribute("data-key") === key) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
-    });
+    if (window.VUNavigation) window.VUNavigation.dock({ active: key && DOCK[key] ? DOCK[key] : null });
   }
 
   /* ------------------------------------------------------ Such-Overlay */
@@ -1050,7 +1039,6 @@
     if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName) && overlay && overlay.hidden) { e.preventDefault(); openSearch(); }
   });
 
-  buildDock();
   buildOverlay();
   root.innerHTML = '<div class="hf-skeleton" style="margin-top:24px;height:420px"></div>';
   load().then(route).catch(function (err) {

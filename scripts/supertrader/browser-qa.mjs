@@ -129,7 +129,8 @@ async function main() {
       const m = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
-        bottomNav: (() => { const b = document.querySelector('.st-bottom'); return b ? getComputedStyle(b).display !== 'none' : false; })(),
+        // Gemeinsame Produkt-Leiste der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, mit ☰ fuer das globale Menue.
+        bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'); if (!n) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && n.querySelectorAll('a').length === 4 && !!n.querySelector('button.menu') && n.querySelector('a').textContent.trim() === 'Supertrader'; })(),
         homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
         researchSection: !!document.querySelector('.st-research'),
         researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten am Einstieg/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
@@ -158,8 +159,7 @@ async function main() {
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
       if (m.failedLoad) errors.push('Ladefehler-Zustand sichtbar');
-      if (isMobile && !m.bottomNav) errors.push('Bottom-Navigation fehlt');
-      if (!isMobile && m.bottomNav) errors.push('Bottom-Navigation auf Desktop sichtbar');
+      if (!m.bottomNav) errors.push('Produkt-Leiste fehlt oder steht nicht unten');
       if (m.buyTone) errors.push('Kaufaufforderungs-Ton gefunden');
       if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
       if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);
