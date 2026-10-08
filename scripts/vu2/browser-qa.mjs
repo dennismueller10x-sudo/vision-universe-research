@@ -168,7 +168,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='home'){
    /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE: ein Satz, was Quant ist,
       eine Suche, und die Wege dorthin mit ihrem Ziel. */
-   if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   if(!(await page.locator('.qx-hero .q-intro-note').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('wie oft das früher besser lief als der Markt'))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qx-searchbox').waitFor();
    const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('h2,strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
    for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Quant Screener','#/screener'],['Strategien','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
@@ -461,8 +462,10 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  /* Produktpositionierung: die Startseite traegt den Claim. */
-  await page.locator('#qx-main h1').filter({hasText:'Quant zeigt dir jeden Tag'}).waitFor();
+  /* Premium-Hero: kurze H1, vollständiger Nutzen und Methodik bleiben sichtbar. */
+  await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
+  await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();
+  await page.locator('#qx-main .q-intro-note').filter({hasText:'Quant beobachtet über 6.000 US-Aktien nach festen Regeln'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 

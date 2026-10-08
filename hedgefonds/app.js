@@ -545,12 +545,14 @@
     document.title = "Hedgefonds — Vision Universe®";
 
     root.innerHTML =
-      '<section class="hf-hero">' +
+      '<section class="hf-hero vu-product-hero">' +
         '<div class="hf-hero-copy">' +
-          '<span class="hf-live"><i></i>13F-Meldungen · ' + esc(d.latestPeriodLabel || "") + " · geprüft " + dateDE(d.generatedAt) + "</span>" +
-          "<h1>Folge dem <em>Smart Money</em>.</h1>" +
-          '<p class="lead">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
+          '<span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#hedgefonds"></use></svg></span>' +
+          '<div class="vu-product-eyebrow">Vision Universe Hedgefonds</div>' +
+          '<h1 class="vu-product-title">Große Investoren. Klare Einblicke.</h1>' +
+          '<p class="lead vu-product-lead">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
             " weitere Hedgefonds kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
+          '<span class="hf-live"><i></i>13F-Meldungen · ' + esc(d.latestPeriodLabel || "") + " · geprüft " + dateDE(d.generatedAt) + "</span>" +
           '<div class="hf-hsearch"><label class="hf-search">' + icon("search") +
             '<input id="hf-q" type="search" placeholder="Investor, Fonds oder Aktie suchen …" autocomplete="off" aria-label="Investor, Fonds oder Aktie suchen"></label>' +
             '<div class="hf-spanel" id="hf-qres" hidden></div></div>' +

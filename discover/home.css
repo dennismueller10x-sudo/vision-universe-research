@@ -87,7 +87,7 @@ body.dv2 .v2-feature{margin-top:68px}
 body.dv2 .v2-journey>.dx-rail-section,body.dv2 .v2-journey>.dx-immersive{margin-top:68px}body.dv2 .v2-load-state,body.dv2 .v2-load-more{color:var(--v2-ink);font-size:14px;margin:36px auto;display:block}body.dv2 .v2-load-more{background:var(--v2-panel);border:1px solid var(--v2-line);border-radius:99px;padding:16px 25px;min-height:48px;cursor:pointer}
 body.dv2 .v2-finish{padding:65px 30px;text-align:center;margin-top:68px;background:#0a0b0e;color:#fff;border-radius:26px;box-shadow:0 22px 70px rgba(5,6,8,.2)}body.dv2 .v2-finish .v2-eyebrow{color:#aaaeb7}body.dv2 .v2-finish h2{font-size:clamp(30px,4vw,52px);letter-spacing:-.055em;line-height:1.05;max-width:650px;margin:10px auto 26px}body.dv2 .v2-finish-link{display:inline-block;background:#fff;color:#0a0b0e;padding:16px 24px;border-radius:99px;text-decoration:none;font-weight:700;font-size:13px}
 body.dv2 .v2-journey>.dx-rail-section,body.dv2 .v2-journey>.dx-immersive{margin-top:40px}
-body.dv2 .v2-home a:focus-visible,body.dv2 .v2-home button:focus-visible{outline:3px solid #faab3f;outline-offset:3px}
+body.dv2 .v2-home a:focus-visible,body.dv2 .v2-home button:focus-visible{outline:3px solid var(--vu-premium-accent-text,#9ec000);outline-offset:3px}
 @media(max-width:1100px){
   body.dv2 .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4.3)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.6)}
   body.dv2 .v2-hero-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.4)}
@@ -296,3 +296,32 @@ html:not([data-theme=light]) body.dv2 .v2-intro h1{color:#101318}
   body.dv2 .v2-motion-art{opacity:.55}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-spotlight .dx-art-line,body.dv2 .v2-motion-orbit{animation:none}}
+
+/* Premium family: the eye stays Discover's visual, the original icon its identity. */
+html body.dv2 .v2-intro.vu-product-hero{padding:40px 0 28px;margin:0 0 28px;background:none;border-radius:0;color:var(--v2-ink);grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px}
+html body.dv2 .v2-intro.vu-product-hero:before{display:none}
+html body.dv2 .v2-intro-copy>.vu-product-icon{margin-bottom:18px}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-kicker{color:var(--vu-premium-accent-text,#9fcd32);margin:0 0 14px}
+html body.dv2 .v2-intro-kicker.vu-product-eyebrow:before{display:none}
+html body.dv2 .v2-intro.vu-product-hero h1{color:var(--v2-ink);font-size:clamp(36px,4.6vw,64px);line-height:1.04;letter-spacing:-.045em;max-width:16ch;margin:0 0 18px}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-lead{color:var(--v2-muted);font-size:16px;line-height:1.6;max-width:46ch;margin:0 0 24px}
+html body.dv2 .v2-intro.vu-product-hero .v2-search-prompt{min-height:56px;background:#fff;color:#101318;border-color:var(--v2-line);margin:0 0 16px;padding:6px 6px 6px 18px;font-size:14px;max-width:520px}
+html body.dv2 .v2-intro.vu-product-hero .v2-search-arrow{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;background:var(--vu-premium-accent,#c8f531);color:#101318;font-size:20px}
+html body.dv2 .v2-search-prompt>svg{flex:none;color:#626872}
+html body.dv2 .v2-intro.vu-product-hero .v2-pill-ghost{background:transparent;color:var(--v2-ink);border-color:var(--v2-line)}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-actions{margin:0}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-actions .v2-intro-cta{background:var(--vu-premium-accent,#c8f531);color:#101318;box-shadow:none}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-visual img{height:clamp(240px,30vw,430px);border-radius:24px}
+html body.dv2 .v2-intro.vu-product-hero .v2-intro-tag{color:var(--v2-muted);font-size:12px}
+@media(max-width:760px){
+  html body.dv2 .v2-intro.vu-product-hero{gap:0;padding:24px 0 12px;margin:0 0 24px;overflow:visible}
+  html body.dv2 .v2-intro-copy>.vu-product-icon{order:0;align-self:flex-start;margin-bottom:16px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-kicker{order:1;align-self:flex-start;font-size:10px;margin-bottom:12px}
+  html body.dv2 .v2-intro.vu-product-hero h1{order:2;align-self:flex-start;font-size:clamp(34px,8.6vw,48px);max-width:17ch;margin-bottom:14px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-lead{order:3;align-self:flex-start;font-size:15px;line-height:1.55;margin-bottom:22px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-search-prompt{order:4;font-size:12px;margin-bottom:14px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-actions{order:5;grid-template-columns:1.25fr 1fr 1fr;gap:8px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-actions .v2-pill{min-height:44px;font-size:11px}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-visual{order:6;margin:24px 0 0}
+  html body.dv2 .v2-intro.vu-product-hero .v2-intro-visual img{height:clamp(145px,40vw,250px);border-radius:18px}
+}

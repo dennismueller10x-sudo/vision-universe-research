@@ -460,3 +460,32 @@ html[data-theme=light] .st-hero.world h1 { color: color-mix(in oklab, var(--worl
 html[data-theme=light] .st-card2 .meth { color: color-mix(in oklab, var(--w, var(--st-text-2)) 56%, #000); }
 html[data-theme=light] .st-mtile h3, html[data-theme=light] .st-cmp h3, html[data-theme=light] .st-btrow .h a { color: color-mix(in oklab, var(--w) 62%, #000); }
 html[data-theme=light] .st-mtile { background: linear-gradient(160deg, color-mix(in srgb, var(--w) 14%, var(--st-surface)), var(--st-surface) 70%); }
+
+/* Premium 2.0: shared presentation roles; strategy, phase and chart colours
+   retain their semantic meanings and their existing theme definitions. */
+:root, html[data-theme=dark], html[data-theme=light] {
+  --st-bg: var(--vu-bg); --st-bg-2: var(--vu-surface);
+  --st-surface: var(--vu-elevated); --st-surface-2: var(--vu-surface);
+  --st-text: var(--vu-text); --st-text-2: var(--vu-text-secondary);
+  --st-muted: var(--vu-muted); --st-line: var(--vu-line); --st-line-2: var(--vu-line-strong);
+  --st-accent: var(--vu-accent); --st-accent-ink: var(--vu-accent-text);
+}
+.st-home-hero.vu-product-hero { gap: 0; padding: 28px 0 32px; }
+.st-home-hero .vu-product-title { max-width: 18ch; }
+.st-home-hero a.vu-product-action { color: var(--vu-on-accent); }
+.st-home-hero a.vu-product-action--secondary { color: var(--vu-text); }
+.st-hero-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.st-home-hero a.vu-product-chip { color: var(--vu-text-secondary); }
+.st-sec { margin-top: 32px; }
+.st-sec-h { margin-bottom: 14px; }
+.st-sec-h h2 { font-size: clamp(20px, 2.2vw, 26px); letter-spacing: -.025em; }
+.st-chips:not(.lens) button { min-height: 44px; }
+.st-main :focus-visible { outline: 2px solid var(--vu-focus); outline-offset: 3px; }
+@media (max-width: 480px) {
+  .st-home-hero .vu-product-hero__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .st-home-hero .vu-product-action { padding-inline: 10px; font-size: 13px; }
+  .st-home-hero .vu-product-action .st-ic { display: none; }
+}
+@media (min-width: 768px) {
+  .st-home-hero.vu-product-hero { padding: 44px 0 48px; }
+}

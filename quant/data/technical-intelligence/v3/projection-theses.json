@@ -1,0 +1,6335 @@
+{
+ "schemaVersion": "vu-elliott-projection-theses-1.0.0",
+ "engine": "elliott-projection-1.0.0",
+ "rule": "Nur anhängen: eine eingefrorene Revision wird nie geändert; neue Anker → neue Revision; Wegfall → RELABELLED/ARCHIVED.",
+ "theses": {
+  "AFCG|1W|FLAT|112|1|NEXT_MOVE|Folgebewegung": {
+   "id": "AFCG|1W|FLAT|112|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "AFCG",
+   "timeframe": "1W",
+   "key": "FLAT|112|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|112|1|NEXT_MOVE|Folgebewegung|10.7|0|3.62||10.7|7.27|BASE:7.08-8.46284,EXTENDED:4.84284-7.08,EXTREME:1.22284-4.84284",
+     "anchor": {
+      "price": 10.7,
+      "time": "2024-09-20",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 3.62,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.08,
+       "high": 8.46284,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 4.84284,
+       "high": 7.08,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 1.22284,
+       "high": 4.84284,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 10.7,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 7.27,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "AFCG|1W|WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung": {
+   "id": "AFCG|1W|WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "AFCG",
+   "timeframe": "1W",
+   "key": "WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung|8.53|0|1.45||8.53|8.13|BASE:7.08-7.6339,EXTENDED:6.1839-7.08,EXTREME:4.7339-6.1839",
+     "anchor": {
+      "price": 8.53,
+      "time": "2025-02-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.45,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.08,
+       "high": 7.6339,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.1839,
+       "high": 7.08,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.7339,
+       "high": 6.1839,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 8.53,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 8.13,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "AHL-P-E|1W|WXY|2023-10-27|1|WAVE_C|Y": {
+   "id": "AHL-P-E|1W|WXY|2023-10-27|1|WAVE_C|Y",
+   "symbol": "AHL-P-E",
+   "timeframe": "1W",
+   "key": "WXY|2023-10-27|1|WAVE_C|Y",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle Y",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-10-27|1|WAVE_C|Y|17.51|0|5.96||15.9|21.86|BASE:21.19328-23.47,EXTENDED:23.47-27.15328,EXTREME:27.15328-33.11328",
+     "anchor": {
+      "price": 17.51,
+      "time": "2026-09-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle W",
+      "length": 5.96,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 21.19328,
+       "high": 23.47,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 23.47,
+       "high": 27.15328,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 27.15328,
+       "high": 33.11328,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 15.9,
+      "direction": "below",
+      "ruleId": "X_NOT_BEYOND_W_ORIGIN"
+     },
+     "confirmation": {
+      "price": 21.86,
+      "ruleId": "Y_BEYOND_W_END_OP"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "AHL-P-E|1W|ZIGZAG|220|1|NEXT_MOVE|Folgebewegung": {
+   "id": "AHL-P-E|1W|ZIGZAG|220|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "AHL-P-E",
+   "timeframe": "1W",
+   "key": "ZIGZAG|220|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|220|1|NEXT_MOVE|Folgebewegung|22.63|0|6.73||22.63|19.35|BASE:15.9-18.47086,EXTENDED:11.74086-15.9,EXTREME:5.01086-11.74086",
+     "anchor": {
+      "price": 22.63,
+      "time": "2024-11-08",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 6.73,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 15.9,
+       "high": 18.47086,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 11.74086,
+       "high": 15.9,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 5.01086,
+       "high": 11.74086,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 22.63,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 19.35,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "BLND|1W|TRIPLE_ZIGZAG|93|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BLND|1W|TRIPLE_ZIGZAG|93|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BLND",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|93|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|93|1|NEXT_MOVE|Folgebewegung|5.35|0|4.7579||5.35|3.35|BASE:0.5921-2.4096178",
+     "anchor": {
+      "price": 5.35,
+      "time": "2024-12-06",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.7579,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.5921,
+       "high": 2.4096178,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 5.35,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.35,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "BLND|1W|WXY|2023-04-28|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BLND|1W|WXY|2023-04-28|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BLND",
+   "timeframe": "1W",
+   "key": "WXY|2023-04-28|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-04-28|1|NEXT_MOVE|Folgebewegung|4.3|0|3.7079||4.3|3.1|BASE:0.5921-2.0085178",
+     "anchor": {
+      "price": 4.3,
+      "time": "2025-09-12",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 3.7079,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.5921,
+       "high": 2.0085178,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 4.3,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.1,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "BOOM|1W|FLAT|1708|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BOOM|1W|FLAT|1708|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BOOM",
+   "timeframe": "1W",
+   "key": "FLAT|1708|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|1708|1|NEXT_MOVE|Folgebewegung|27.08|0|11.1||27.08|15.88|BASE:15.98-20.2202,EXTENDED:9.1202-15.98",
+     "anchor": {
+      "price": 27.08,
+      "time": "2023-03-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 11.1,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 15.98,
+       "high": 20.2202,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 9.1202,
+       "high": 15.98,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 27.08,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 15.88,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "BOOM|1W|ZIGZAG|2024-12-20|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BOOM|1W|ZIGZAG|2024-12-20|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BOOM",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-12-20|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2024-12-20|1|NEXT_MOVE|Folgebewegung|8.77|0|1.93||8.77|8.09|BASE:6.84-7.57726,EXTENDED:5.64726-6.84,EXTREME:3.71726-5.64726",
+     "anchor": {
+      "price": 8.77,
+      "time": "2025-03-21",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.93,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.84,
+       "high": 7.57726,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 5.64726,
+       "high": 6.84,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 3.71726,
+       "high": 5.64726,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 8.77,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 8.09,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "BUR|1W|FLAT|521|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BUR|1W|FLAT|521|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BUR",
+   "timeframe": "1W",
+   "key": "FLAT|521|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|521|1|NEXT_MOVE|Folgebewegung|14.18|0|2.26||14.18|11.03|BASE:11.92-12.78332,EXTENDED:10.52332-11.92,EXTREME:8.26332-10.52332",
+     "anchor": {
+      "price": 14.18,
+      "time": "2025-07-11",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.26,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.92,
+       "high": 12.78332,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 10.52332,
+       "high": 11.92,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 8.26332,
+       "high": 10.52332,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 14.18,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 11.03,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "BUR|1W|ZIGZAG|2025-11-14|1|NEXT_MOVE|Folgebewegung": {
+   "id": "BUR|1W|ZIGZAG|2025-11-14|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "BUR",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-11-14|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2025-11-14|1|NEXT_MOVE|Folgebewegung|9.75|0|1.16||9.75|8.75|BASE:8.59-9.03312,EXTENDED:7.87312-8.59,EXTREME:6.71312-7.87312",
+     "anchor": {
+      "price": 9.75,
+      "time": "2026-01-23",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.16,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.59,
+       "high": 9.03312,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.87312,
+       "high": 8.59,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 6.71312,
+       "high": 7.87312,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 9.75,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 8.75,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CCC|1W|FLAT|191|1|NEXT_MOVE|Folgebewegung": {
+   "id": "CCC|1W|FLAT|191|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "CCC",
+   "timeframe": "1W",
+   "key": "FLAT|191|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|191|1|NEXT_MOVE|Folgebewegung|10.02|0|1.5||10.02|8.47|BASE:8.52-9.093,EXTENDED:7.593-8.52,EXTREME:6.093-7.593",
+     "anchor": {
+      "price": 10.02,
+      "time": "2025-07-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.5,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.52,
+       "high": 9.093,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.593,
+       "high": 8.52,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 6.093,
+       "high": 7.593,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 10.02,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 8.47,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "CCC|1W|TRIANGLE|2023-09-29|-1|THRUST|Ausbruch": {
+   "id": "CCC|1W|TRIANGLE|2023-09-29|-1|THRUST|Ausbruch",
+   "symbol": "CCC",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2023-09-29|-1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2023-09-29|-1|THRUST|Ausbruch|4.32|0|2.62||4.32|12.67|BASE:5.93916-6.94,EXTENDED:6.94-8.55916",
+     "anchor": {
+      "price": 4.32,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 2.62,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.93916,
+       "high": 6.94,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.94,
+       "high": 8.55916,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 4.32,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 12.67,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CHGA|1W|FLAT|2026-02-06|1|WAVE_C|C": {
+   "id": "CHGA|1W|FLAT|2026-02-06|1|WAVE_C|C",
+   "symbol": "CHGA",
+   "timeframe": "1W",
+   "key": "FLAT|2026-02-06|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2026-02-06|1|WAVE_C|C|2.07|1|17.09||-4.38|29.8|BASE:25.68838-29.72162,EXTENDED:29.72162-46.81162",
+     "anchor": {
+      "price": 2.07,
+      "time": "2026-09-18",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 17.09,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 25.68838,
+       "high": 29.72162,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 29.72162,
+       "high": 46.81162,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": -4.38,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 29.8,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CLSK|1W|ENDING_DIAGONAL|359|1|REVERSAL|Rücklauf": {
+   "id": "CLSK|1W|ENDING_DIAGONAL|359|1|REVERSAL|Rücklauf",
+   "symbol": "CLSK",
+   "timeframe": "1W",
+   "key": "ENDING_DIAGONAL|359|1|REVERSAL|Rücklauf",
+   "type": "REVERSAL",
+   "label": "Mögliche Gegenbewegung nach Impuls",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ENDING_DIAGONAL|359|1|REVERSAL|Rücklauf|21.21|0|19.32||21.21|6.87|BASE:1.89-9.27024",
+     "anchor": {
+      "price": 21.21,
+      "time": "2024-03-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Diagonale",
+      "length": 19.32,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.89,
+       "high": 9.27024,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.21,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 6.87,
+      "ruleId": "W4_AREA"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CLSK|1W|TRIPLE_ZIGZAG|2022-12-16|1|NEXT_MOVE|Folgebewegung": {
+   "id": "CLSK|1W|TRIPLE_ZIGZAG|2022-12-16|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "CLSK",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|2022-12-16|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|2022-12-16|1|NEXT_MOVE|Folgebewegung|21.21|0|19.32||21.21|6.87|BASE:1.89-9.27024",
+     "anchor": {
+      "price": 21.21,
+      "time": "2024-03-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 19.32,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.89,
+       "high": 9.27024,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.21,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 6.87,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "COCP|1W|WXY|2025-04-11|1|NEXT_MOVE|Folgebewegung": {
+   "id": "COCP|1W|WXY|2025-04-11|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "COCP",
+   "timeframe": "1W",
+   "key": "WXY|2025-04-11|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2025-04-11|1|NEXT_MOVE|Folgebewegung|1.85|0|0.57||1.85|1.49|BASE:1.28-1.49774,EXTENDED:0.92774-1.28,EXTREME:0.35774-0.92774",
+     "anchor": {
+      "price": 1.85,
+      "time": "2025-08-01",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 0.57,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.28,
+       "high": 1.49774,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.92774,
+       "high": 1.28,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 0.35774,
+       "high": 0.92774,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.85,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.49,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "COCP|1W|ZIGZAG|671|1|NEXT_MOVE|Folgebewegung": {
+   "id": "COCP|1W|ZIGZAG|671|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "COCP",
+   "timeframe": "1W",
+   "key": "ZIGZAG|671|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|671|1|NEXT_MOVE|Folgebewegung|3.09|0|1.69||3.09|1.67|BASE:1.4-2.04558,EXTENDED:0.35558-1.4",
+     "anchor": {
+      "price": 3.09,
+      "time": "2024-12-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.4,
+       "high": 2.04558,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.35558,
+       "high": 1.4,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 3.09,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.67,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "CPSS|1W|FLAT|1702|1|NEXT_MOVE|Folgebewegung": {
+   "id": "CPSS|1W|FLAT|1702|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "CPSS",
+   "timeframe": "1W",
+   "key": "FLAT|1702|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|1702|1|NEXT_MOVE|Folgebewegung|10.17|0|2.57||10.17|7.53|BASE:7.6-8.58174,EXTENDED:6.01174-7.6,EXTREME:3.44174-6.01174",
+     "anchor": {
+      "price": 10.17,
+      "time": "2026-05-08",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.57,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.6,
+       "high": 8.58174,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.01174,
+       "high": 7.6,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 3.44174,
+       "high": 6.01174,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 10.17,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 7.53,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CPSS|1W|TRIANGLE|2021-12-31|-1|THRUST|Ausbruch": {
+   "id": "CPSS|1W|TRIANGLE|2021-12-31|-1|THRUST|Ausbruch",
+   "symbol": "CPSS",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2021-12-31|-1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2021-12-31|-1|THRUST|Ausbruch|4.73|0|1.34||4.73|14.01|BASE:5.55812-6.07,EXTENDED:6.07-6.89812",
+     "anchor": {
+      "price": 4.73,
+      "time": "2022-10-14",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 1.34,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.55812,
+       "high": 6.07,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.07,
+       "high": 6.89812,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 4.73,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 14.01,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CVGI|1W|WXY|2026-05-29|-1|WAVE_C|Y": {
+   "id": "CVGI|1W|WXY|2026-05-29|-1|WAVE_C|Y",
+   "symbol": "CVGI",
+   "timeframe": "1W",
+   "key": "WXY|2026-05-29|-1|WAVE_C|Y",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle Y",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2026-05-29|-1|WAVE_C|Y|4.86|0|0.75||5.15|4.4|BASE:4.11-4.3965,EXTENDED:3.6465-4.11,EXTREME:2.8965-3.6465",
+     "anchor": {
+      "price": 4.86,
+      "time": "2026-07-10",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle W",
+      "length": 0.75,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.11,
+       "high": 4.3965,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.6465,
+       "high": 4.11,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.8965,
+       "high": 3.6465,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 5.15,
+      "direction": "above",
+      "ruleId": "X_NOT_BEYOND_W_ORIGIN"
+     },
+     "confirmation": {
+      "price": 4.4,
+      "ruleId": "Y_BEYOND_W_END_OP"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "CVGI|1W|ZIGZAG|948|1|NEXT_MOVE|Folgebewegung": {
+   "id": "CVGI|1W|ZIGZAG|948|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "CVGI",
+   "timeframe": "1W",
+   "key": "ZIGZAG|948|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|948|1|NEXT_MOVE|Folgebewegung|11.1|0|7.05||11.1|6.61|BASE:4.05-6.7431",
+     "anchor": {
+      "price": 11.1,
+      "time": "2023-06-30",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 7.05,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.05,
+       "high": 6.7431,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 11.1,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 6.61,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "DVLT|1W|ZIGZAG|2025-09-05|1|NEXT_MOVE|Folgebewegung": {
+   "id": "DVLT|1W|ZIGZAG|2025-09-05|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "DVLT",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-09-05|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2025-09-05|1|NEXT_MOVE|Folgebewegung|2.47|0|2.173||2.47|1.64|BASE:0.297-1.127086",
+     "anchor": {
+      "price": 2.47,
+      "time": "2025-11-21",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.173,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.297,
+       "high": 1.127086,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 2.47,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.64,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "EGP|1W|TRIPLE_ZIGZAG|1554|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "EGP|1W|TRIPLE_ZIGZAG|1554|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "EGP",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|1554|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|1554|-1|NEXT_MOVE|Folgebewegung|138.16|0|89.69||138.16|177.34|BASE:193.58842-227.85,EXTENDED:227.85-283.27842,EXTREME:283.27842-372.96842",
+     "anchor": {
+      "price": 138.16,
+      "time": "2022-10-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 89.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 193.58842,
+       "high": 227.85,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 227.85,
+       "high": 283.27842,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 283.27842,
+       "high": 372.96842,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 138.16,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 177.34,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "EGP|1W|WXY|2021-12-31|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "EGP|1W|WXY|2021-12-31|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "EGP",
+   "timeframe": "1W",
+   "key": "WXY|2021-12-31|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2021-12-31|-1|NEXT_MOVE|Folgebewegung|138.16|0|89.69||138.16|177.34|BASE:193.58842-227.85,EXTENDED:227.85-283.27842,EXTREME:283.27842-372.96842",
+     "anchor": {
+      "price": 138.16,
+      "time": "2022-10-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 89.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 193.58842,
+       "high": 227.85,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 227.85,
+       "high": 283.27842,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 283.27842,
+       "high": 372.96842,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 138.16,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 177.34,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "FRME|1W|TRIANGLE|1515|-1|THRUST|Ausbruch": {
+   "id": "FRME|1W|TRIANGLE|1515|-1|THRUST|Ausbruch",
+   "symbol": "FRME",
+   "timeframe": "1W",
+   "key": "TRIANGLE|1515|-1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|1515|-1|THRUST|Ausbruch|35.48|0|25.03||35.48|40.99|BASE:50.94854-60.51,EXTENDED:60.51-75.97854",
+     "anchor": {
+      "price": 35.48,
+      "time": "2025-10-31",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 25.03,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 50.94854,
+       "high": 60.51,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 60.51,
+       "high": 75.97854,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 35.48,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 40.99,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "FRME|1W|WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "FRME|1W|WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "FRME",
+   "timeframe": "1W",
+   "key": "WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung|25.01|0|25.03||25.01|44.5|BASE:40.47854-50.04,EXTENDED:50.04-65.50854,EXTREME:65.50854-90.53854",
+     "anchor": {
+      "price": 25.01,
+      "time": "2023-05-12",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 25.03,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 40.47854,
+       "high": 50.04,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 50.04,
+       "high": 65.50854,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 65.50854,
+       "high": 90.53854,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 25.01,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 44.5,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "FVRR|1W|FLAT|161|1|NEXT_MOVE|Folgebewegung": {
+   "id": "FVRR|1W|FLAT|161|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "FVRR",
+   "timeframe": "1W",
+   "key": "FLAT|161|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|161|1|NEXT_MOVE|Folgebewegung|43.98|0|12.81||43.98|26.46|BASE:31.17-36.06342,EXTENDED:23.25342-31.17,EXTREME:10.44342-23.25342",
+     "anchor": {
+      "price": 43.98,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 12.81,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 31.17,
+       "high": 36.06342,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 23.25342,
+       "high": 31.17,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 10.44342,
+       "high": 23.25342,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 43.98,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 26.46,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "FVRR|1W|WXY|2026-03-27|1|NEXT_MOVE|Folgebewegung": {
+   "id": "FVRR|1W|WXY|2026-03-27|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "FVRR",
+   "timeframe": "1W",
+   "key": "WXY|2026-03-27|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2026-03-27|1|NEXT_MOVE|Folgebewegung|11.22|0|1.46||11.22|9.96|BASE:9.76-10.31772,EXTENDED:8.85772-9.76,EXTREME:7.39772-8.85772",
+     "anchor": {
+      "price": 11.22,
+      "time": "2026-07-17",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.46,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 9.76,
+       "high": 10.31772,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 8.85772,
+       "high": 9.76,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 7.39772,
+       "high": 8.85772,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 11.22,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 9.96,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "GPRO|1W|FLAT|431|1|NEXT_MOVE|Folgebewegung": {
+   "id": "GPRO|1W|FLAT|431|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "GPRO",
+   "timeframe": "1W",
+   "key": "FLAT|431|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|431|1|NEXT_MOVE|Folgebewegung|6.16|0|1.23||6.16|4.91|BASE:4.93-5.39986,EXTENDED:4.16986-4.93,EXTREME:2.93986-4.16986",
+     "anchor": {
+      "price": 6.16,
+      "time": "2023-01-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.23,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.93,
+       "high": 5.39986,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 4.16986,
+       "high": 4.93,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.93986,
+       "high": 4.16986,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 6.16,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 4.91,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "GPRO|1W|ZIGZAG|2025-04-11|1|NEXT_MOVE|Folgebewegung": {
+   "id": "GPRO|1W|ZIGZAG|2025-04-11|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "GPRO",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-04-11|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2025-04-11|1|NEXT_MOVE|Folgebewegung|1.83|0|1.3344||1.83|1.51|BASE:0.4956-1.0053408",
+     "anchor": {
+      "price": 1.83,
+      "time": "2025-12-05",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.3344,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.4956,
+       "high": 1.0053408,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.83,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.51,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "HWKN|1W|FLAT|1609|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "HWKN|1W|FLAT|1609|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "HWKN",
+   "timeframe": "1W",
+   "key": "FLAT|1609|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|1609|-1|NEXT_MOVE|Folgebewegung|103.93|0|22.74||103.93|135.21|BASE:117.98332-126.67,EXTENDED:126.67-140.72332,EXTREME:140.72332-163.46332",
+     "anchor": {
+      "price": 103.93,
+      "time": "2025-03-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 22.74,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 117.98332,
+       "high": 126.67,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 126.67,
+       "high": 140.72332,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 140.72332,
+       "high": 163.46332,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 103.93,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 135.21,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "HWKN|1W|WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "HWKN|1W|WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "HWKN",
+   "timeframe": "1W",
+   "key": "WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2021-03-12|-1|NEXT_MOVE|Folgebewegung|30.87|0|8.04||30.87|34.65|BASE:35.83872-38.91,EXTENDED:38.91-43.87872,EXTREME:43.87872-51.91872",
+     "anchor": {
+      "price": 30.87,
+      "time": "2021-07-16",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 8.04,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 35.83872,
+       "high": 38.91,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 38.91,
+       "high": 43.87872,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 43.87872,
+       "high": 51.91872,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 30.87,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 34.65,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "LUXE|1W|ENDING_DIAGONAL|2023-11-17|1|WAVE_5|5": {
+   "id": "LUXE|1W|ENDING_DIAGONAL|2023-11-17|1|WAVE_5|5",
+   "symbol": "LUXE",
+   "timeframe": "1W",
+   "key": "ENDING_DIAGONAL|2023-11-17|1|WAVE_5|5",
+   "type": "WAVE_5",
+   "label": "Mögliche Welle 5",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ENDING_DIAGONAL|2023-11-17|1|WAVE_5|5|3.54|0|3.54|3.64|2.55|6.09|BASE:7.08-9.26772,EXTENDED:9.26772-12.80772",
+     "anchor": {
+      "price": 3.54,
+      "time": "2024-08-09",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 3",
+      "length": 3.54,
+      "net13": 3.64
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.08,
+       "high": 9.26772,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 9.26772,
+       "high": 12.80772,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 2.55,
+      "direction": "below",
+      "ruleId": "W4_NOT_BEYOND_W3_ORIGIN"
+     },
+     "confirmation": {
+      "price": 6.09,
+      "ruleId": "THROW_OVER"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "LUXE|1W|FLAT|91|1|NEXT_MOVE|Folgebewegung": {
+   "id": "LUXE|1W|FLAT|91|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "LUXE",
+   "timeframe": "1W",
+   "key": "FLAT|91|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|91|1|NEXT_MOVE|Folgebewegung|11.94|0|2.73||11.94|8.91|BASE:9.21-10.25286,EXTENDED:7.52286-9.21,EXTREME:4.79286-7.52286",
+     "anchor": {
+      "price": 11.94,
+      "time": "2023-01-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.73,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 9.21,
+       "high": 10.25286,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.52286,
+       "high": 9.21,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.79286,
+       "high": 7.52286,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 11.94,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 8.91,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "MAX|1W|FLAT|98|1|NEXT_MOVE|Folgebewegung": {
+   "id": "MAX|1W|FLAT|98|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "MAX",
+   "timeframe": "1W",
+   "key": "FLAT|98|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|98|1|NEXT_MOVE|Folgebewegung|22.2|0|14.05||22.2|5.86|BASE:8.15-13.5171",
+     "anchor": {
+      "price": 22.2,
+      "time": "2024-05-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 14.05,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.15,
+       "high": 13.5171,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 22.2,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 5.86,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "MAX|1W|TRIANGLE|2022-06-10|1|THRUST|Ausbruch": {
+   "id": "MAX|1W|TRIANGLE|2022-06-10|1|THRUST|Ausbruch",
+   "symbol": "MAX",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2022-06-10|1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2022-06-10|1|THRUST|Ausbruch|22.2|0|2.97||22.2|5.86|BASE:19.23-20.36454,EXTENDED:17.39454-19.23",
+     "anchor": {
+      "price": 22.2,
+      "time": "2024-05-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 2.97,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 19.23,
+       "high": 20.36454,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 17.39454,
+       "high": 19.23,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 22.2,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 5.86,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "MNSBP|1W|FLAT|84|1|NEXT_MOVE|Folgebewegung": {
+   "id": "MNSBP|1W|FLAT|84|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "MNSBP",
+   "timeframe": "1W",
+   "key": "FLAT|84|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|84|1|NEXT_MOVE|Folgebewegung|26.3|0|1.08||26.3|25.31|BASE:25.22-25.63256,EXTENDED:24.55256-25.22,EXTREME:23.47256-24.55256",
+     "anchor": {
+      "price": 26.3,
+      "time": "2022-08-05",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.08,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 25.22,
+       "high": 25.63256,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 24.55256,
+       "high": 25.22,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 23.47256,
+       "high": 24.55256,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 26.3,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 25.31,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "MNSBP|1W|ZIGZAG|2021-09-03|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "MNSBP|1W|ZIGZAG|2021-09-03|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "MNSBP",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-09-03|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2021-09-03|-1|NEXT_MOVE|Folgebewegung|20.47|0|7.53||20.47|26|BASE:25.12354-28,EXTENDED:28-32.65354,EXTREME:32.65354-40.18354",
+     "anchor": {
+      "price": 20.47,
+      "time": "2023-10-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 7.53,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 25.12354,
+       "high": 28,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 28,
+       "high": 32.65354,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 32.65354,
+       "high": 40.18354,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 20.47,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 26,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "MNSO|1W|WXY|2020-12-24|-1|WAVE_C|Y": {
+   "id": "MNSO|1W|WXY|2020-12-24|-1|WAVE_C|Y",
+   "symbol": "MNSO",
+   "timeframe": "1W",
+   "key": "WXY|2020-12-24|-1|WAVE_C|Y",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle Y",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2020-12-24|-1|WAVE_C|Y|28.15|0|15.45||31.04|15.59|BASE:12.7-18.6019,EXTENDED:3.1519-12.7",
+     "anchor": {
+      "price": 28.15,
+      "time": "2023-09-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle W",
+      "length": 15.45,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.7,
+       "high": 18.6019,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.1519,
+       "high": 12.7,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 31.04,
+      "direction": "above",
+      "ruleId": "X_NOT_BEYOND_W_ORIGIN"
+     },
+     "confirmation": {
+      "price": 15.59,
+      "ruleId": "Y_BEYOND_W_END_OP"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "MNSO|1W|ZIGZAG|101|1|NEXT_MOVE|Folgebewegung": {
+   "id": "MNSO|1W|ZIGZAG|101|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "MNSO",
+   "timeframe": "1W",
+   "key": "ZIGZAG|101|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|101|1|NEXT_MOVE|Folgebewegung|28.15|0|23.55||28.15|15.05|BASE:4.6-13.5961",
+     "anchor": {
+      "price": 28.15,
+      "time": "2023-09-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 23.55,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.6,
+       "high": 13.5961,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 28.15,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 15.05,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "NVO|1W|FLAT|2025-08-01|1|WAVE_C|C": {
+   "id": "NVO|1W|FLAT|2025-08-01|1|WAVE_C|C",
+   "symbol": "NVO",
+   "timeframe": "1W",
+   "key": "FLAT|2025-08-01|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2025-08-01|1|WAVE_C|C|45.68|0|13.21||34.98|61.4|BASE:63.93622-67.05378,EXTENDED:67.05378-80.26378",
+     "anchor": {
+      "price": 45.68,
+      "time": "2025-11-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 13.21,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 63.93622,
+       "high": 67.05378,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 67.05378,
+       "high": 80.26378,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 34.98,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 61.4,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "NVO|1W|HD|ENDING_DIAGONAL|2024-06-07|-1|WAVE_5|5": {
+   "id": "NVO|1W|HD|ENDING_DIAGONAL|2024-06-07|-1|WAVE_5|5",
+   "symbol": "NVO",
+   "timeframe": "1W",
+   "key": "HD|ENDING_DIAGONAL|2024-06-07|-1|WAVE_5|5",
+   "type": "WAVE_5",
+   "label": "Mögliche Welle 5 (höherer Grad)",
+   "direction": "DOWN",
+   "source": "HIGHER_DEGREE",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "HD|ENDING_DIAGONAL|2024-06-07|-1|WAVE_5|5|50.43|0|19.37|99.92|62.33|42.96|BASE:31.06-38.45934",
+     "anchor": {
+      "price": 50.43,
+      "time": "2026-07-02",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 3",
+      "length": 19.37,
+      "net13": 99.92
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 31.06,
+       "high": 38.45934,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 62.33,
+      "direction": "above",
+      "ruleId": "W4_NOT_BEYOND_W3_ORIGIN"
+     },
+     "confirmation": {
+      "price": 42.96,
+      "ruleId": "THROW_OVER"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "OGI|1W|FLAT|409|1|NEXT_MOVE|Folgebewegung": {
+   "id": "OGI|1W|FLAT|409|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "OGI",
+   "timeframe": "1W",
+   "key": "FLAT|409|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|409|1|NEXT_MOVE|Folgebewegung|4.76|0|1||4.76|3.49|BASE:3.76-4.142,EXTENDED:3.142-3.76,EXTREME:2.142-3.142",
+     "anchor": {
+      "price": 4.76,
+      "time": "2022-12-02",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 3.76,
+       "high": 4.142,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.142,
+       "high": 3.76,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.142,
+       "high": 3.142,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 4.76,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.49,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "OGI|1W|WXY|2023-08-11|1|NEXT_MOVE|Folgebewegung": {
+   "id": "OGI|1W|WXY|2023-08-11|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "OGI",
+   "timeframe": "1W",
+   "key": "WXY|2023-08-11|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-08-11|1|NEXT_MOVE|Folgebewegung|2.07|0|0.74||2.07|1.53|BASE:1.33-1.61268,EXTENDED:0.87268-1.33,EXTREME:0.13268-0.87268",
+     "anchor": {
+      "price": 2.07,
+      "time": "2024-08-16",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 0.74,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.33,
+       "high": 1.61268,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.87268,
+       "high": 1.33,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 0.13268,
+       "high": 0.87268,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 2.07,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.53,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "OLOX|1W|TRIANGLE|2024-09-06|1|THRUST|Ausbruch": {
+   "id": "OLOX|1W|TRIANGLE|2024-09-06|1|THRUST|Ausbruch",
+   "symbol": "OLOX",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2024-09-06|1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2024-09-06|1|THRUST|Ausbruch|497.92|0|229.76||497.92|381.18|BASE:268.16-355.92832,EXTENDED:126.16832-268.16",
+     "anchor": {
+      "price": 497.92,
+      "time": "2025-06-20",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 229.76,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 268.16,
+       "high": 355.92832,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 126.16832,
+       "high": 268.16,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 497.92,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 381.18,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "ORIO|1W|FLAT|347|1|NEXT_MOVE|Folgebewegung": {
+   "id": "ORIO|1W|FLAT|347|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "ORIO",
+   "timeframe": "1W",
+   "key": "FLAT|347|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|347|1|NEXT_MOVE|Folgebewegung|2.2|0|1.18||2.2|0.8|BASE:1.02-1.47076,EXTENDED:0.29076-1.02",
+     "anchor": {
+      "price": 2.2,
+      "time": "2025-07-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.18,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.02,
+       "high": 1.47076,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.29076,
+       "high": 1.02,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 2.2,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 0.8,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "ORIO|1W|TRIANGLE|2022-07-15|1|THRUST|Ausbruch": {
+   "id": "ORIO|1W|TRIANGLE|2022-07-15|1|THRUST|Ausbruch",
+   "symbol": "ORIO",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2022-07-15|1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2022-07-15|1|THRUST|Ausbruch|2.42|0|1.5||2.42|1.62|BASE:0.92-1.493",
+     "anchor": {
+      "price": 2.42,
+      "time": "2023-07-14",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 1.5,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.92,
+       "high": 1.493,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 2.42,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.62,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "PEB-P-H|1W|FLAT|2022-05-13|1|NEXT_MOVE|Folgebewegung": {
+   "id": "PEB-P-H|1W|FLAT|2022-05-13|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "PEB-P-H",
+   "timeframe": "1W",
+   "key": "FLAT|2022-05-13|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2022-05-13|1|NEXT_MOVE|Folgebewegung|20.75|0|2.95||20.75|15.82|BASE:17.8-18.9269,EXTENDED:15.9769-17.8,EXTREME:13.0269-15.9769",
+     "anchor": {
+      "price": 20.75,
+      "time": "2024-10-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.95,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 17.8,
+       "high": 18.9269,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 15.9769,
+       "high": 17.8,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 13.0269,
+       "high": 15.9769,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 20.75,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 15.82,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "PEB-P-H|1W|ZIGZAG|42|1|NEXT_MOVE|Folgebewegung": {
+   "id": "PEB-P-H|1W|ZIGZAG|42|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "PEB-P-H",
+   "timeframe": "1W",
+   "key": "ZIGZAG|42|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|42|1|NEXT_MOVE|Folgebewegung|20.97|0|3.17||20.97|18.6|BASE:17.8-19.01094,EXTENDED:15.84094-17.8,EXTREME:12.67094-15.84094",
+     "anchor": {
+      "price": 20.97,
+      "time": "2022-08-12",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 3.17,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 17.8,
+       "high": 19.01094,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 15.84094,
+       "high": 17.8,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 12.67094,
+       "high": 15.84094,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 20.97,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 18.6,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "PFGC|1W|FLAT|395|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "PFGC|1W|FLAT|395|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "PFGC",
+   "timeframe": "1W",
+   "key": "FLAT|395|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|395|-1|NEXT_MOVE|Folgebewegung|53.67|0|9.02||53.67|63|BASE:59.24436-62.69,EXTENDED:62.69-68.26436,EXTREME:68.26436-77.28436",
+     "anchor": {
+      "price": 53.67,
+      "time": "2023-10-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 9.02,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 59.24436,
+       "high": 62.69,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 62.69,
+       "high": 68.26436,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 68.26436,
+       "high": 77.28436,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 53.67,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 63,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "PFGC|1W|TRIANGLE|2022-12-02|-1|THRUST|Ausbruch": {
+   "id": "PFGC|1W|TRIANGLE|2022-12-02|-1|THRUST|Ausbruch",
+   "symbol": "PFGC",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2022-12-02|-1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2022-12-02|-1|THRUST|Ausbruch|53.67|0|2.39||53.67|61.97|BASE:55.14702-56.06,EXTENDED:56.06-57.53702",
+     "anchor": {
+      "price": 53.67,
+      "time": "2023-10-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 2.39,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 55.14702,
+       "high": 56.06,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 56.06,
+       "high": 57.53702,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 53.67,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 61.97,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "PTON|1W|FLAT|146|1|NEXT_MOVE|Folgebewegung": {
+   "id": "PTON|1W|FLAT|146|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "PTON",
+   "timeframe": "1W",
+   "key": "FLAT|146|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|146|1|NEXT_MOVE|Folgebewegung|16.28|0|7.8||16.28|6.93|BASE:8.48-11.4596,EXTENDED:3.6596-8.48",
+     "anchor": {
+      "price": 16.28,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 7.8,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.48,
+       "high": 11.4596,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.6596,
+       "high": 8.48,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 16.28,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 6.93,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "PTON|1W|WXY|2022-09-30|1|NEXT_MOVE|Folgebewegung": {
+   "id": "PTON|1W|WXY|2022-09-30|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "PTON",
+   "timeframe": "1W",
+   "key": "WXY|2022-09-30|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2022-09-30|1|NEXT_MOVE|Folgebewegung|16.28|0|9.35||16.28|7.94|BASE:6.93-10.5017,EXTENDED:1.1517-6.93",
+     "anchor": {
+      "price": 16.28,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 9.35,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.93,
+       "high": 10.5017,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 1.1517,
+       "high": 6.93,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 16.28,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 7.94,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "QRHC|1W|FLAT|823|1|NEXT_MOVE|Folgebewegung": {
+   "id": "QRHC|1W|FLAT|823|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "QRHC",
+   "timeframe": "1W",
+   "key": "FLAT|823|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|823|1|NEXT_MOVE|Folgebewegung|1.6|0|0.38||1.6|1.03|BASE:1.22-1.36516,EXTENDED:0.98516-1.22,EXTREME:0.60516-0.98516",
+     "anchor": {
+      "price": 1.6,
+      "time": "2026-08-14",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 0.38,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.22,
+       "high": 1.36516,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.98516,
+       "high": 1.22,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 0.60516,
+       "high": 0.98516,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.6,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.03,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "QRHC|1W|WXY|2026-03-20|1|NEXT_MOVE|Folgebewegung": {
+   "id": "QRHC|1W|WXY|2026-03-20|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "QRHC",
+   "timeframe": "1W",
+   "key": "WXY|2026-03-20|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2026-03-20|1|NEXT_MOVE|Folgebewegung|1.6|0|0.57||1.6|1.24|BASE:1.03-1.24774,EXTENDED:0.67774-1.03,EXTREME:0.10774-0.67774",
+     "anchor": {
+      "price": 1.6,
+      "time": "2026-08-14",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 0.57,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.03,
+       "high": 1.24774,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.67774,
+       "high": 1.03,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 0.10774,
+       "high": 0.67774,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.6,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 1.24,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "RLMD|1W|WXY|2026-05-01|-1|WAVE_C|Y": {
+   "id": "RLMD|1W|WXY|2026-05-01|-1|WAVE_C|Y",
+   "symbol": "RLMD",
+   "timeframe": "1W",
+   "key": "WXY|2026-05-01|-1|WAVE_C|Y",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle Y",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2026-05-01|-1|WAVE_C|Y|6.73|0|1.69||7.64|5.95|BASE:5.04-5.68558,EXTENDED:3.99558-5.04,EXTREME:2.30558-3.99558",
+     "anchor": {
+      "price": 6.73,
+      "time": "2026-06-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle W",
+      "length": 1.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.04,
+       "high": 5.68558,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.99558,
+       "high": 5.04,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.30558,
+       "high": 3.99558,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 7.64,
+      "direction": "above",
+      "ruleId": "X_NOT_BEYOND_W_ORIGIN"
+     },
+     "confirmation": {
+      "price": 5.95,
+      "ruleId": "Y_BEYOND_W_END_OP"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "RLYB|1W|FLAT|2022-03-25|1|WAVE_C|C": {
+   "id": "RLYB|1W|FLAT|2022-03-25|1|WAVE_C|C",
+   "symbol": "RLYB",
+   "timeframe": "1W",
+   "key": "FLAT|2022-03-25|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2022-03-25|1|WAVE_C|C|2|0|60.08||-4.4|115.76|BASE:85.03056-99.20944,EXTENDED:99.20944-159.28944",
+     "anchor": {
+      "price": 2,
+      "time": "2025-04-11",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 60.08,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 85.03056,
+       "high": 99.20944,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 99.20944,
+       "high": 159.28944,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": -4.4,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 115.76,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "RLYB|1W|FLAT|71|1|NEXT_MOVE|Folgebewegung": {
+   "id": "RLYB|1W|FLAT|71|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RLYB",
+   "timeframe": "1W",
+   "key": "FLAT|71|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|71|1|NEXT_MOVE|Folgebewegung|65.12|0|25.68||65.12|34.48|BASE:39.44-49.24976,EXTENDED:23.56976-39.44",
+     "anchor": {
+      "price": 65.12,
+      "time": "2023-06-23",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 25.68,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 39.44,
+       "high": 49.24976,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 23.56976,
+       "high": 39.44,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 65.12,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 34.48,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "RNAC|1W|FLAT|458|1|NEXT_MOVE|Folgebewegung": {
+   "id": "RNAC|1W|FLAT|458|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RNAC",
+   "timeframe": "1W",
+   "key": "FLAT|458|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|458|1|NEXT_MOVE|Folgebewegung|13.33|0|3.33||13.33|9.16|BASE:10-11.27206,EXTENDED:7.94206-10,EXTREME:4.61206-7.94206",
+     "anchor": {
+      "price": 13.33,
+      "time": "2025-07-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 3.33,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10,
+       "high": 11.27206,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.94206,
+       "high": 10,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.61206,
+       "high": 7.94206,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 13.33,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 9.16,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "RNAC|1W|WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung": {
+   "id": "RNAC|1W|WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RNAC",
+   "timeframe": "1W",
+   "key": "WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung|19.67|0|6.69||19.67|16.84|BASE:12.98-15.53558,EXTENDED:8.84558-12.98,EXTREME:2.15558-8.84558",
+     "anchor": {
+      "price": 19.67,
+      "time": "2025-02-14",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 6.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.98,
+       "high": 15.53558,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 8.84558,
+       "high": 12.98,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.15558,
+       "high": 8.84558,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 19.67,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 16.84,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "RPT|1W|FLAT|398|1|NEXT_MOVE|Folgebewegung": {
+   "id": "RPT|1W|FLAT|398|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RPT",
+   "timeframe": "1W",
+   "key": "FLAT|398|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|398|1|NEXT_MOVE|Folgebewegung|54.6|0|9.54||54.6|43.5|BASE:45.06-48.70428,EXTENDED:39.16428-45.06,EXTREME:29.62428-39.16428",
+     "anchor": {
+      "price": 54.6,
+      "time": "2023-02-17",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 9.54,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 45.06,
+       "high": 48.70428,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 39.16428,
+       "high": 45.06,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 29.62428,
+       "high": 39.16428,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 54.6,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 43.5,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "RPT|1W|WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung": {
+   "id": "RPT|1W|WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RPT",
+   "timeframe": "1W",
+   "key": "WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-05-12|1|NEXT_MOVE|Folgebewegung|40.56|0|8.58||40.56|38.88|BASE:31.98-35.25756,EXTENDED:26.67756-31.98,EXTREME:18.09756-26.67756",
+     "anchor": {
+      "price": 40.56,
+      "time": "2023-09-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 8.58,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 31.98,
+       "high": 35.25756,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 26.67756,
+       "high": 31.98,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 18.09756,
+       "high": 26.67756,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 40.56,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 38.88,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SCE-P-L|1W|FLAT|280|1|NEXT_MOVE|Folgebewegung": {
+   "id": "SCE-P-L|1W|FLAT|280|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SCE-P-L",
+   "timeframe": "1W",
+   "key": "FLAT|280|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|280|1|NEXT_MOVE|Folgebewegung|21.12|0|4.24||21.12|16.94|BASE:16.88-18.49968,EXTENDED:14.25968-16.88,EXTREME:10.01968-14.25968",
+     "anchor": {
+      "price": 21.12,
+      "time": "2024-03-22",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.24,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 16.88,
+       "high": 18.49968,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 14.25968,
+       "high": 16.88,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 10.01968,
+       "high": 14.25968,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.12,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 16.94,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "SCE-P-L|1W|WXY|2023-10-27|1|NEXT_MOVE|Folgebewegung": {
+   "id": "SCE-P-L|1W|WXY|2023-10-27|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SCE-P-L",
+   "timeframe": "1W",
+   "key": "WXY|2023-10-27|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2023-10-27|1|NEXT_MOVE|Folgebewegung|21.12|0|4.18||21.12|19.99|BASE:16.94-18.53676,EXTENDED:14.35676-16.94,EXTREME:10.17676-14.35676",
+     "anchor": {
+      "price": 21.12,
+      "time": "2024-03-22",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.18,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 16.94,
+       "high": 18.53676,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 14.35676,
+       "high": 16.94,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 10.17676,
+       "high": 14.35676,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.12,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 19.99,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "SITC|1W|FLAT|1266|1|NEXT_MOVE|Folgebewegung": {
+   "id": "SITC|1W|FLAT|1266|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SITC",
+   "timeframe": "1W",
+   "key": "FLAT|1266|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|1266|1|NEXT_MOVE|Folgebewegung|13.03|0|1.67||13.03|11.41|BASE:11.36-11.99794,EXTENDED:10.32794-11.36,EXTREME:8.65794-10.32794",
+     "anchor": {
+      "price": 13.03,
+      "time": "2025-06-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 1.67,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.36,
+       "high": 11.99794,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 10.32794,
+       "high": 11.36,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 8.65794,
+       "high": 10.32794,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 13.03,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 11.41,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SKYW|1W|FLAT|2024-11-29|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "SKYW|1W|FLAT|2024-11-29|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SKYW",
+   "timeframe": "1W",
+   "key": "FLAT|2024-11-29|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2024-11-29|-1|NEXT_MOVE|Folgebewegung|81.25|0|33.49||81.25|121.4|BASE:101.94682-114.74,EXTENDED:114.74-135.43682,EXTREME:135.43682-168.92682",
+     "anchor": {
+      "price": 81.25,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 33.49,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 101.94682,
+       "high": 114.74,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 114.74,
+       "high": 135.43682,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 135.43682,
+       "high": 168.92682,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 81.25,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 121.4,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SKYW|1W|TRIPLE_ZIGZAG|1848|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "SKYW|1W|TRIPLE_ZIGZAG|1848|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SKYW",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|1848|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|1848|-1|NEXT_MOVE|Folgebewegung|81.25|0|40.15||81.25|99.3|BASE:106.0627-121.4,EXTENDED:121.4-146.2127,EXTREME:146.2127-186.3627",
+     "anchor": {
+      "price": 81.25,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 40.15,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 106.0627,
+       "high": 121.4,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 121.4,
+       "high": 146.2127,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 146.2127,
+       "high": 186.3627,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 81.25,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 99.3,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SMR|1W|ENDING_DIAGONAL|162|1|REVERSAL|Rücklauf": {
+   "id": "SMR|1W|ENDING_DIAGONAL|162|1|REVERSAL|Rücklauf",
+   "symbol": "SMR",
+   "timeframe": "1W",
+   "key": "ENDING_DIAGONAL|162|1|REVERSAL|Rücklauf",
+   "type": "REVERSAL",
+   "label": "Mögliche Gegenbewegung nach Impuls",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ENDING_DIAGONAL|162|1|REVERSAL|Rücklauf|51.67|0|49.68||51.67|12.6|BASE:1.99-20.96776",
+     "anchor": {
+      "price": 51.67,
+      "time": "2025-07-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Diagonale",
+      "length": 49.68,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.99,
+       "high": 20.96776,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 51.67,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 12.6,
+      "ruleId": "W4_AREA"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "SMR|1W|TRIPLE_ZIGZAG|2024-01-19|1|NEXT_MOVE|Folgebewegung": {
+   "id": "SMR|1W|TRIPLE_ZIGZAG|2024-01-19|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SMR",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|2024-01-19|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|2024-01-19|1|NEXT_MOVE|Folgebewegung|51.67|0|49.68||51.67|12.6|BASE:1.99-20.96776",
+     "anchor": {
+      "price": 51.67,
+      "time": "2025-07-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 49.68,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.99,
+       "high": 20.96776,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 51.67,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 12.6,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "SN|1W|FLAT|79|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "SN|1W|FLAT|79|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SN",
+   "timeframe": "1W",
+   "key": "FLAT|79|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|79|-1|NEXT_MOVE|Folgebewegung|85.5|0|28.33||85.5|120.34|BASE:103.00794-113.83,EXTENDED:113.83-131.33794,EXTREME:131.33794-159.66794",
+     "anchor": {
+      "price": 85.5,
+      "time": "2025-10-31",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 28.33,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 103.00794,
+       "high": 113.83,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 113.83,
+       "high": 131.33794,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 131.33794,
+       "high": 159.66794,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 85.5,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 120.34,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SN|1W|TRIANGLE|2025-07-25|-1|THRUST|Ausbruch": {
+   "id": "SN|1W|TRIANGLE|2025-07-25|-1|THRUST|Ausbruch",
+   "symbol": "SN",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2025-07-25|-1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2025-07-25|-1|THRUST|Ausbruch|105.63|0|31.97||105.63|119.6|BASE:125.38746-137.6,EXTENDED:137.6-157.35746",
+     "anchor": {
+      "price": 105.63,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 31.97,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 125.38746,
+       "high": 137.6,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 137.6,
+       "high": 157.35746,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 105.63,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 119.6,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SVM|1W|FLAT|1081|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "SVM|1W|FLAT|1081|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "SVM",
+   "timeframe": "1W",
+   "key": "FLAT|1081|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|1081|-1|NEXT_MOVE|Folgebewegung|8.92|0|4.02||8.92|13.57|BASE:11.40436-12.94,EXTENDED:12.94-15.42436,EXTREME:15.42436-19.44436",
+     "anchor": {
+      "price": 8.92,
+      "time": "2026-07-17",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.02,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.40436,
+       "high": 12.94,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 12.94,
+       "high": 15.42436,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 15.42436,
+       "high": 19.44436,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 8.92,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 13.57,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SVM|1W|FLAT|2026-01-23|-1|WAVE_C|C": {
+   "id": "SVM|1W|FLAT|2026-01-23|-1|WAVE_C|C",
+   "symbol": "SVM",
+   "timeframe": "1W",
+   "key": "FLAT|2026-01-23|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2026-01-23|-1|WAVE_C|C|12.77|0|3.81||16.75|9.13|BASE:8.06084-8.96,EXTENDED:6.60542-8.06084",
+     "anchor": {
+      "price": 12.77,
+      "time": "2026-08-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.81,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.06084,
+       "high": 8.96,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.60542,
+       "high": 8.06084,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 16.75,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 9.13,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "TRTN-P-E|1W|FLAT|62|1|NEXT_MOVE|Folgebewegung": {
+   "id": "TRTN-P-E|1W|FLAT|62|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "TRTN-P-E",
+   "timeframe": "1W",
+   "key": "FLAT|62|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|62|1|NEXT_MOVE|Folgebewegung|23.04|0|4.64||23.04|17.54|BASE:18.4-20.17248,EXTENDED:15.53248-18.4,EXTREME:10.89248-15.53248",
+     "anchor": {
+      "price": 23.04,
+      "time": "2024-10-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.64,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 18.4,
+       "high": 20.17248,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 15.53248,
+       "high": 18.4,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 10.89248,
+       "high": 15.53248,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 23.04,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 17.54,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "TRTN-P-E|1W|ZIGZAG|2023-04-14|1|NEXT_MOVE|Folgebewegung": {
+   "id": "TRTN-P-E|1W|ZIGZAG|2023-04-14|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "TRTN-P-E",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-04-14|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2023-04-14|1|NEXT_MOVE|Folgebewegung|23.04|0|5.5||23.04|19.84|BASE:17.54-19.641,EXTENDED:14.141-17.54,EXTREME:8.641-14.141",
+     "anchor": {
+      "price": 23.04,
+      "time": "2024-10-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 5.5,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 17.54,
+       "high": 19.641,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 14.141,
+       "high": 17.54,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 8.641,
+       "high": 14.141,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 23.04,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 19.84,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "TYGO|1W|FLAT|2024-04-19|1|NEXT_MOVE|Folgebewegung": {
+   "id": "TYGO|1W|FLAT|2024-04-19|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "TYGO",
+   "timeframe": "1W",
+   "key": "FLAT|2024-04-19|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|2024-04-19|1|NEXT_MOVE|Folgebewegung|5.01|0|4.0928||5.01|0.73|BASE:0.9172-2.4806496",
+     "anchor": {
+      "price": 5.01,
+      "time": "2026-04-24",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.0928,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.9172,
+       "high": 2.4806496,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 5.01,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 0.73,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "TYGO|1W|TRIPLE_ZIGZAG|187|1|NEXT_MOVE|Folgebewegung": {
+   "id": "TYGO|1W|TRIPLE_ZIGZAG|187|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "TYGO",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|187|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|187|1|NEXT_MOVE|Folgebewegung|5.01|0|4.28||5.01|3.37|BASE:0.73-2.36496",
+     "anchor": {
+      "price": 5.01,
+      "time": "2026-04-24",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 4.28,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.73,
+       "high": 2.36496,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 5.01,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.37,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "UTSI|1W|TRIPLE_ZIGZAG|1159|1|NEXT_MOVE|Folgebewegung": {
+   "id": "UTSI|1W|TRIPLE_ZIGZAG|1159|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "UTSI",
+   "timeframe": "1W",
+   "key": "TRIPLE_ZIGZAG|1159|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIPLE_ZIGZAG|1159|1|NEXT_MOVE|Folgebewegung|4.9|0|2.46||4.9|3.55|BASE:2.44-3.37972,EXTENDED:0.91972-2.44",
+     "anchor": {
+      "price": 4.9,
+      "time": "2023-01-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.46,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.44,
+       "high": 3.37972,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.91972,
+       "high": 2.44,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 4.9,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.55,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "UTSI|1W|WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung": {
+   "id": "UTSI|1W|WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "UTSI",
+   "timeframe": "1W",
+   "key": "WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung|4.9|0|2.46||4.9|3.55|BASE:2.44-3.37972,EXTENDED:0.91972-2.44",
+     "anchor": {
+      "price": 4.9,
+      "time": "2023-01-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.46,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.44,
+       "high": 3.37972,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.91972,
+       "high": 2.44,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 4.9,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 3.55,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "VERI|1W|FLAT|266|1|NEXT_MOVE|Folgebewegung": {
+   "id": "VERI|1W|FLAT|266|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "VERI",
+   "timeframe": "1W",
+   "key": "FLAT|266|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|266|1|NEXT_MOVE|Folgebewegung|9.03|0|2.88||9.03|5.03|BASE:6.15-7.25016,EXTENDED:4.37016-6.15,EXTREME:1.49016-4.37016",
+     "anchor": {
+      "price": 9.03,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.88,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.15,
+       "high": 7.25016,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 4.37016,
+       "high": 6.15,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 1.49016,
+       "high": 4.37016,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 9.03,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 5.03,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "VERI|1W|ZIGZAG|2021-02-12|-1|WAVE_C|C": {
+   "id": "VERI|1W|ZIGZAG|2021-02-12|-1|WAVE_C|C",
+   "symbol": "VERI",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-02-12|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "ZIGZAG|2021-02-12|-1|WAVE_C|C|34.08|0|29.94||47|17.06|BASE:4.14-15.57708",
+     "anchor": {
+      "price": 34.08,
+      "time": "2021-11-12",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 29.94,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.14,
+       "high": 15.57708,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 47,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 17.06,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "WOOF|1W|FLAT|92|1|NEXT_MOVE|Folgebewegung": {
+   "id": "WOOF|1W|FLAT|92|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "WOOF",
+   "timeframe": "1W",
+   "key": "FLAT|92|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "FLAT|92|1|NEXT_MOVE|Folgebewegung|11.89|0|2.53||11.89|9.31|BASE:9.36-10.32646,EXTENDED:7.79646-9.36,EXTREME:5.26646-7.79646",
+     "anchor": {
+      "price": 11.89,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 2.53,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 9.36,
+       "high": 10.32646,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.79646,
+       "high": 9.36,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 5.26646,
+       "high": 7.79646,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 11.89,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 9.31,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "WOOF|1W|TRIANGLE|2022-10-21|1|THRUST|Ausbruch": {
+   "id": "WOOF|1W|TRIANGLE|2022-10-21|1|THRUST|Ausbruch",
+   "symbol": "WOOF",
+   "timeframe": "1W",
+   "key": "TRIANGLE|2022-10-21|1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|2022-10-21|1|THRUST|Ausbruch|9.1|0|2.22||9.1|7.97|BASE:6.88-7.72804,EXTENDED:5.50804-6.88",
+     "anchor": {
+      "price": 9.1,
+      "time": "2023-07-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 2.22,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.88,
+       "high": 7.72804,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 5.50804,
+       "high": 6.88,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 9.1,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 7.97,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "YI|1W|TRIANGLE|284|1|THRUST|Ausbruch": {
+   "id": "YI|1W|TRIANGLE|284|1|THRUST|Ausbruch",
+   "symbol": "YI",
+   "timeframe": "1W",
+   "key": "TRIANGLE|284|1|THRUST|Ausbruch",
+   "type": "THRUST",
+   "label": "Möglicher Ausbruch aus dem Dreieck",
+   "direction": "DOWN",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "TRIANGLE|284|1|THRUST|Ausbruch|11.9|0|1.7||11.9|10.15|BASE:10.2-10.8494,EXTENDED:9.1494-10.2",
+     "anchor": {
+      "price": 11.9,
+      "time": "2024-07-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Breite von Welle A",
+      "length": 1.7,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10.2,
+       "high": 10.8494,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 9.1494,
+       "high": 10.2,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 11.9,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 10.15,
+      "ruleId": "S4_TRIANGLE_THRUST"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "YI|1W|WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung": {
+   "id": "YI|1W|WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung",
+   "symbol": "YI",
+   "timeframe": "1W",
+   "key": "WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "DOWN",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-10-06",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-06",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-06",
+     "signature": "WXY|2022-05-20|1|NEXT_MOVE|Folgebewegung|33.38|0|17.48||33.38|25.9|BASE:15.9-22.57736,EXTENDED:5.09736-15.9",
+     "anchor": {
+      "price": 33.38,
+      "time": "2023-07-21",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 17.48,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 15.9,
+       "high": 22.57736,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 5.09736,
+       "high": 15.9,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 33.38,
+      "direction": "above",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 25.9,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.0.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  }
+ }
+}

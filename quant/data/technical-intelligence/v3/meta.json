@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-08T08:05:54.542Z",
+ "generatedAt": "2026-10-08T11:34:15.124Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -39,8 +39,31 @@
   "shard": "/quant/data/technical-intelligence/v3/shards/<XX>.json.gz",
   "discoverRows": "/quant/data/technical-intelligence/v3/discover-rows.json",
   "alerts": "/quant/data/technical-intelligence/v3/alerts.json",
-  "methodEvidence": "/quant/data/technical-intelligence/v3/method-evidence.json"
+  "methodEvidence": "/quant/data/technical-intelligence/v3/method-evidence.json",
+  "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4332
+ "runtimeSec": 4315,
+ "projection": {
+  "version": "elliott-projection-1.0.0",
+  "store": "vu-elliott-projection-theses-1.0.0",
+  "status": {
+   "ABSTAIN": 4366,
+   "DATA_INVALID": 655,
+   "NO_PROJECTION": 69,
+   "AVAILABLE": 45
+  },
+  "consumerVisible": 45,
+  "types": {
+   "NEXT_MOVE": 37,
+   "WAVE_C": 2,
+   "REVERSAL": 2,
+   "THRUST": 3,
+   "WAVE_5": 1
+  },
+  "highUpside": 0,
+  "weeklyForDaily": 5,
+  "lifecycleEvents": 119,
+  "tracked": 85
+ }
 }

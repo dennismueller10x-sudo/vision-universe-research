@@ -1,8 +1,8 @@
 {
  "schemaVersion": "vu-multi-asset-snapshot-1.0.0",
  "contractVersion": "multi-asset-contract-1.1.0",
- "generatedAt": "2026-10-08T01:06:50.499Z",
- "asOfRun": "2026-10-08T01:06:16.334Z",
+ "generatedAt": "2026-10-08T10:47:12.199Z",
+ "asOfRun": "2026-10-08T10:46:36.053Z",
  "note": "Product Contract des Multi-Asset-Segments. Freshness ist zum Bauzeitpunkt bewertet; Consumer bewerten sie mit VUMultiAssetContract.refresh() zur Anzeigezeit neu.",
  "summary": {
   "INDEX:CAPABILITY_GAP": 12,
@@ -73,7 +73,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -215,7 +215,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -350,7 +350,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -472,7 +472,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "CLOSED",
+    "state": "OPEN",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XETR",
     "publisherProfile": null,
@@ -490,7 +490,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -607,7 +607,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "CLOSED",
+    "state": "OPEN",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XETR",
     "publisherProfile": null,
@@ -625,7 +625,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -747,7 +747,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "CLOSED",
+    "state": "OPEN",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XLON",
     "publisherProfile": null,
@@ -765,7 +765,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -891,7 +891,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_ASIA",
     "sessionExchange": "XTKS",
     "publisherProfile": null,
@@ -910,13 +910,13 @@
      "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
     },
     "freshness": {
-     "state": "CURRENT",
-     "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "state": "LAST_SESSION",
+     "reason": "closePendingWithinGrace",
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
-    "sourceState": "CURRENT",
+    "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:16.375Z",
+    "checkedAt": "2026-10-08T10:46:36.115Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -928,7 +928,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
      "priceSemantics": "INDEX_CLOSE_DAILY",
-     "fetchedAt": "2026-10-08T01:06:16.375Z"
+     "fetchedAt": "2026-10-08T10:46:36.115Z"
     }
    },
    "history": {
@@ -1349,7 +1349,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1489,7 +1489,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1604,7 +1604,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "CLOSED",
+    "state": "OPEN",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XPAR",
     "publisherProfile": null,
@@ -1622,7 +1622,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1734,7 +1734,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "CLOSED",
+    "state": "OPEN",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XSWX",
     "publisherProfile": null,
@@ -1752,7 +1752,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1882,7 +1882,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -2020,7 +2020,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -2118,7 +2118,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 4133.22,
+    "value": 4117.46,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2126,12 +2126,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:06:18.108000+00:00",
+    "asOf": "2026-10-08T10:46:37.244000+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -11.35,
-     "percent": -0.27
+     "absolute": 9.13,
+     "percent": 0.22
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -2156,11 +2156,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:18.155Z",
+    "checkedAt": "2026-10-08T10:46:36.823Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -2172,7 +2172,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-10-08T01:06:18.155Z"
+     "fetchedAt": "2026-10-08T10:46:36.823Z"
     }
    },
    "history": {
@@ -2457,7 +2457,7 @@
      ],
      [
       "2026-10-07",
-      4144.57
+      4108.33
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/XAUUSD.json",
@@ -2466,32 +2466,32 @@
    "performance": {
     "1W": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -11.6,
-     "percent": -0.28,
+     "absolute": -47.84,
+     "percent": -1.15,
      "fromDate": "2026-09-30"
     },
     "1M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -278.51,
-     "percent": -6.3,
+     "absolute": -314.75,
+     "percent": -7.12,
      "fromDate": "2026-09-07"
     },
     "3M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 68.14,
-     "percent": 1.67,
+     "absolute": 31.9,
+     "percent": 0.78,
      "fromDate": "2026-07-08"
     },
     "1Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 150.14,
-     "percent": 3.76,
+     "absolute": 113.9,
+     "percent": 2.85,
      "fromDate": "2025-10-07"
     },
     "MAX": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 2367.32,
-     "percent": 133.2,
+     "absolute": 2331.08,
+     "percent": 131.16,
      "fromDate": "2021-11-03"
     }
    },
@@ -2553,7 +2553,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 60.5325,
+    "value": 58.694,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2561,12 +2561,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:06:18.077000+00:00",
+    "asOf": "2026-10-08T10:46:37.231000+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -0.358,
-     "percent": -0.59
+     "absolute": -1.084,
+     "percent": -1.81
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -2591,11 +2591,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:18.670Z",
+    "checkedAt": "2026-10-08T10:46:37.798Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -2607,7 +2607,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-10-08T01:06:18.670Z"
+     "fetchedAt": "2026-10-08T10:46:37.798Z"
     }
    },
    "history": {
@@ -2892,7 +2892,7 @@
      ],
      [
       "2026-10-07",
-      60.8905
+      59.778
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/XAGUSD.json",
@@ -2901,32 +2901,32 @@
    "performance": {
     "1W": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.4955,
-     "percent": 0.82,
+     "absolute": -0.617,
+     "percent": -1.02,
      "fromDate": "2026-09-30"
     },
     "1M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -5.675,
-     "percent": -8.53,
+     "absolute": -6.7875,
+     "percent": -10.2,
      "fromDate": "2026-09-07"
     },
     "3M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 2.4415,
-     "percent": 4.18,
+     "absolute": 1.329,
+     "percent": 2.27,
      "fromDate": "2026-07-08"
     },
     "1Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 12.9545,
-     "percent": 27.02,
+     "absolute": 11.842,
+     "percent": 24.7,
      "fromDate": "2025-10-07"
     },
     "MAX": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 37.1685,
-     "percent": 156.68,
+     "absolute": 36.056,
+     "percent": 151.99,
      "fromDate": "2021-11-03"
     }
    },
@@ -2987,7 +2987,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 1660.11,
+    "value": 1646.75,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2995,12 +2995,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:06:17.652000+00:00",
+    "asOf": "2026-10-08T10:46:36.646000+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -39.49,
-     "percent": -2.32
+     "absolute": 12.82,
+     "percent": 0.78
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -3025,11 +3025,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:19.025Z",
+    "checkedAt": "2026-10-08T10:46:38.368Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3041,7 +3041,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-10-08T01:06:19.025Z"
+     "fetchedAt": "2026-10-08T10:46:38.368Z"
     }
    },
    "history": {
@@ -3326,7 +3326,7 @@
      ],
      [
       "2026-10-07",
-      1699.6
+      1633.93
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/XPTUSD.json",
@@ -3335,32 +3335,32 @@
    "performance": {
     "1W": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -10.19,
-     "percent": -0.6,
+     "absolute": -75.86,
+     "percent": -4.44,
      "fromDate": "2026-09-30"
     },
     "1M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -138.5,
-     "percent": -7.53,
+     "absolute": -204.17,
+     "percent": -11.11,
      "fromDate": "2026-09-07"
     },
     "3M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 105.79,
-     "percent": 6.64,
+     "absolute": 40.12,
+     "percent": 2.52,
      "fromDate": "2026-07-08"
     },
     "1Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 64.445,
-     "percent": 3.94,
+     "absolute": -1.225,
+     "percent": -0.07,
      "fromDate": "2025-10-07"
     },
     "MAX": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 724.62,
-     "percent": 74.32,
+     "absolute": 658.95,
+     "percent": 67.59,
      "fromDate": "2021-12-27"
     }
    },
@@ -3420,7 +3420,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 1140.975,
+    "value": 1134.645,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -3428,12 +3428,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:06:19.257000+00:00",
+    "asOf": "2026-10-08T10:46:28.832000+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -22.93,
-     "percent": -1.97
+     "absolute": 12.995,
+     "percent": 1.16
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -3458,11 +3458,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:19.292Z",
+    "checkedAt": "2026-10-08T10:46:38.998Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3474,7 +3474,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-10-08T01:06:19.292Z"
+     "fetchedAt": "2026-10-08T10:46:38.998Z"
     }
    },
    "history": {
@@ -3759,7 +3759,7 @@
      ],
      [
       "2026-10-07",
-      1163.905
+      1121.65
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/XPDUSD.json",
@@ -3768,32 +3768,32 @@
    "performance": {
     "1W": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -42.47,
-     "percent": -3.52,
+     "absolute": -84.725,
+     "percent": -7.02,
      "fromDate": "2026-09-30"
     },
     "1M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -238.075,
-     "percent": -16.98,
+     "absolute": -280.33,
+     "percent": -20,
      "fromDate": "2026-09-07"
     },
     "3M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -57.85,
-     "percent": -4.73,
+     "absolute": -100.105,
+     "percent": -8.19,
      "fromDate": "2026-07-08"
     },
     "1Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -189.145,
-     "percent": -13.98,
+     "absolute": -231.4,
+     "percent": -17.1,
      "fromDate": "2025-10-07"
     },
     "MAX": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -802.53,
-     "percent": -40.81,
+     "absolute": -844.785,
+     "percent": -42.96,
      "fromDate": "2021-12-27"
     }
    },
@@ -3891,11 +3891,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:19.555Z",
+    "checkedAt": "2026-10-08T10:46:39.458Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -3907,7 +3907,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-10-08T01:06:19.555Z"
+     "fetchedAt": "2026-10-08T10:46:39.458Z"
     }
    },
    "history": {
@@ -4337,11 +4337,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:19.569Z",
+    "checkedAt": "2026-10-08T10:46:39.501Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4353,7 +4353,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-10-08T01:06:19.569Z"
+     "fetchedAt": "2026-10-08T10:46:39.501Z"
     }
    },
    "history": {
@@ -4776,7 +4776,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -4915,11 +4915,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:19.578Z",
+    "checkedAt": "2026-10-08T10:46:39.548Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4931,7 +4931,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_DAILY",
-     "fetchedAt": "2026-10-08T01:06:19.578Z"
+     "fetchedAt": "2026-10-08T10:46:39.548Z"
     }
    },
    "history": {
@@ -5323,7 +5323,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 83496.1851534034,
+    "value": 82631.4489466173,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_BTC",
@@ -5331,12 +5331,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:05:00+00:00",
+    "asOf": "2026-10-08T10:45:00+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 199.403046,
-     "percent": 0.24
+     "absolute": -665.333161,
+     "percent": -0.8
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -5361,11 +5361,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:19.584Z",
+    "checkedAt": "2026-10-08T10:46:39.562Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -5377,7 +5377,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-10-08T01:06:19.584Z"
+     "fetchedAt": "2026-10-08T10:46:39.562Z"
     }
    },
    "history": {
@@ -5770,7 +5770,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 2584.7504103071415,
+    "value": 2552.994219367113,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_ETH",
@@ -5778,12 +5778,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:05:00+00:00",
+    "asOf": "2026-10-08T10:45:00+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 8.408908,
-     "percent": 0.33
+     "absolute": -23.347282,
+     "percent": -0.91
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -5808,11 +5808,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:21.461Z",
+    "checkedAt": "2026-10-08T10:46:41.207Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -5824,7 +5824,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-10-08T01:06:21.461Z"
+     "fetchedAt": "2026-10-08T10:46:41.207Z"
     }
    },
    "history": {
@@ -6215,7 +6215,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 116.70644495573802,
+    "value": 114.3733336374657,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_SOL",
@@ -6223,12 +6223,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:05:00+00:00",
+    "asOf": "2026-10-08T10:45:00+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.454453,
-     "percent": 0.39
+     "absolute": -1.878658,
+     "percent": -1.62
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -6253,11 +6253,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:23.063Z",
+    "checkedAt": "2026-10-08T10:46:42.655Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -6269,7 +6269,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-10-08T01:06:23.063Z"
+     "fetchedAt": "2026-10-08T10:46:42.655Z"
     }
    },
    "history": {
@@ -6652,7 +6652,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 1.427283469254062,
+    "value": 1.403103777592728,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_XRP",
@@ -6660,12 +6660,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-10-08T01:05:00+00:00",
+    "asOf": "2026-10-08T10:45:00+00:00",
     "observationDate": "2026-10-08",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.006381,
-     "percent": 0.45
+     "absolute": -0.017799,
+     "percent": -1.25
     },
     "changeReferenceDate": "2026-10-07"
    },
@@ -6690,11 +6690,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-10-08T01:06:23.950Z",
+    "checkedAt": "2026-10-08T10:46:43.604Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -6706,7 +6706,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-10-08T01:06:23.950Z"
+     "fetchedAt": "2026-10-08T10:46:43.604Z"
     }
    },
    "history": {
@@ -7133,7 +7133,7 @@
     "freshness": {
      "state": "STALE",
      "reason": "ageExceedsLimit",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "STALE",
     "frequency": "DAILY",
@@ -7580,11 +7580,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:25.094Z",
+    "checkedAt": "2026-10-08T10:46:44.792Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -7596,7 +7596,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-10-08T01:06:25.094Z"
+     "fetchedAt": "2026-10-08T10:46:44.792Z"
     }
    },
    "history": {
@@ -8041,11 +8041,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:41.381Z",
+    "checkedAt": "2026-10-08T10:47:01.153Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8057,7 +8057,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-10-08T01:06:41.381Z"
+     "fetchedAt": "2026-10-08T10:47:01.153Z"
     }
    },
    "history": {
@@ -8500,11 +8500,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:41.390Z",
+    "checkedAt": "2026-10-08T10:47:01.171Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8516,7 +8516,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-10-08T01:06:41.390Z"
+     "fetchedAt": "2026-10-08T10:47:01.171Z"
     }
    },
    "history": {
@@ -8962,11 +8962,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:41.400Z",
+    "checkedAt": "2026-10-08T10:47:01.185Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8978,7 +8978,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-10-08T01:06:41.400Z"
+     "fetchedAt": "2026-10-08T10:47:01.185Z"
     }
    },
    "history": {
@@ -9381,7 +9381,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "YIELD",
     "valueKind": "SCALAR",
-    "value": 3.07,
+    "value": 3.08,
     "range": null,
     "unit": "PERCENT",
     "unitId": "PERCENT",
@@ -9389,16 +9389,16 @@
     "decimals": 2,
     "nativeCurrency": null,
     "currencyContext": "EUR",
-    "asOf": "2026-10-07",
-    "observationDate": "2026-10-07",
+    "asOf": "2026-10-08",
+    "observationDate": "2026-10-08",
     "change": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -0.01,
-     "basisPoints": -1,
-     "relativePercent": -0.32,
+     "absolutePercentagePoints": 0.01,
+     "basisPoints": 1,
+     "relativePercent": 0.33,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
     },
-    "changeReferenceDate": "2026-10-06"
+    "changeReferenceDate": "2026-10-07"
    },
    "market": {
     "state": "PUBLICATION_SCHEDULE",
@@ -9421,11 +9421,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:41.408Z",
+    "checkedAt": "2026-10-08T10:47:01.200Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -9437,14 +9437,14 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-10-08T01:06:41.408Z"
+     "fetchedAt": "2026-10-08T10:47:01.200Z"
     }
    },
    "history": {
     "available": true,
     "availableFrom": "1997-08-07",
-    "availableTo": "2026-10-07",
-    "observations": 7404,
+    "availableTo": "2026-10-08",
+    "observations": 7405,
     "frequency": "DAILY",
     "representation": "OBSERVATIONS",
     "observedThrough": null,
@@ -9460,10 +9460,6 @@
      "MAX": true
     },
     "recent": [
-     [
-      "2026-07-08",
-      2.66
-     ],
      [
       "2026-07-09",
       2.66
@@ -9723,6 +9719,10 @@
      [
       "2026-10-07",
       3.07
+     ],
+     [
+      "2026-10-08",
+      3.08
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/DE2Y.json",
@@ -9731,57 +9731,57 @@
    "performance": {
     "1W": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -0.17,
-     "basisPoints": -17,
-     "relativePercent": -5.25,
+     "absolutePercentagePoints": -0.13,
+     "basisPoints": -13,
+     "relativePercent": -4.05,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-30"
+     "fromDate": "2026-10-01"
     },
     "1M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.13,
-     "basisPoints": 13,
-     "relativePercent": 4.42,
+     "absolutePercentagePoints": 0.09,
+     "basisPoints": 9,
+     "relativePercent": 3.01,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-07"
+     "fromDate": "2026-09-08"
     },
     "3M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.41,
-     "basisPoints": 41,
-     "relativePercent": 15.41,
+     "absolutePercentagePoints": 0.42,
+     "basisPoints": 42,
+     "relativePercent": 15.79,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-07-08"
+     "fromDate": "2026-07-09"
     },
     "1Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 1.07,
-     "basisPoints": 107,
-     "relativePercent": 53.5,
+     "absolutePercentagePoints": 1.09,
+     "basisPoints": 109,
+     "relativePercent": 54.77,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2025-10-07"
+     "fromDate": "2025-10-08"
     },
     "5Y": {
      "semantics": "BASIS_POINTS",
      "absolutePercentagePoints": 3.81,
      "basisPoints": 381,
-     "relativePercent": 514.86,
+     "relativePercent": 521.92,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2021-10-07"
+     "fromDate": "2021-10-08"
     },
     "10Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 3.74,
-     "basisPoints": 374,
-     "relativePercent": 558.21,
+     "absolutePercentagePoints": 3.75,
+     "basisPoints": 375,
+     "relativePercent": 559.7,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "2016-10-07"
     },
     "MAX": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -0.83,
-     "basisPoints": -83,
-     "relativePercent": -21.28,
+     "absolutePercentagePoints": -0.82,
+     "basisPoints": -82,
+     "relativePercent": -21.03,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "1997-08-07"
     }
@@ -9840,7 +9840,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "YIELD",
     "valueKind": "SCALAR",
-    "value": 3.55,
+    "value": 3.57,
     "range": null,
     "unit": "PERCENT",
     "unitId": "PERCENT",
@@ -9848,16 +9848,16 @@
     "decimals": 2,
     "nativeCurrency": null,
     "currencyContext": "EUR",
-    "asOf": "2026-10-07",
-    "observationDate": "2026-10-07",
+    "asOf": "2026-10-08",
+    "observationDate": "2026-10-08",
     "change": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.03,
-     "basisPoints": 3,
-     "relativePercent": 0.85,
+     "absolutePercentagePoints": 0.02,
+     "basisPoints": 2,
+     "relativePercent": 0.56,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
     },
-    "changeReferenceDate": "2026-10-06"
+    "changeReferenceDate": "2026-10-07"
    },
    "market": {
     "state": "PUBLICATION_SCHEDULE",
@@ -9880,11 +9880,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:43.444Z",
+    "checkedAt": "2026-10-08T10:47:02.886Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -9896,14 +9896,14 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-10-08T01:06:43.444Z"
+     "fetchedAt": "2026-10-08T10:47:02.886Z"
     }
    },
    "history": {
     "available": true,
     "availableFrom": "1997-08-07",
-    "availableTo": "2026-10-07",
-    "observations": 7404,
+    "availableTo": "2026-10-08",
+    "observations": 7405,
     "frequency": "DAILY",
     "representation": "OBSERVATIONS",
     "observedThrough": null,
@@ -9919,10 +9919,6 @@
      "MAX": true
     },
     "recent": [
-     [
-      "2026-07-08",
-      3.16
-     ],
      [
       "2026-07-09",
       3.17
@@ -10182,6 +10178,10 @@
      [
       "2026-10-07",
       3.55
+     ],
+     [
+      "2026-10-08",
+      3.57
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/DE10Y.json",
@@ -10192,55 +10192,55 @@
      "semantics": "BASIS_POINTS",
      "absolutePercentagePoints": -0.09,
      "basisPoints": -9,
-     "relativePercent": -2.47,
+     "relativePercent": -2.46,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-30"
+     "fromDate": "2026-10-01"
     },
     "1M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.14,
-     "basisPoints": 14,
-     "relativePercent": 4.11,
+     "absolutePercentagePoints": 0.12,
+     "basisPoints": 12,
+     "relativePercent": 3.48,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-07"
+     "fromDate": "2026-09-08"
     },
     "3M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.39,
-     "basisPoints": 39,
-     "relativePercent": 12.34,
+     "absolutePercentagePoints": 0.4,
+     "basisPoints": 40,
+     "relativePercent": 12.62,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-07-08"
+     "fromDate": "2026-07-09"
     },
     "1Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.75,
-     "basisPoints": 75,
-     "relativePercent": 26.79,
+     "absolutePercentagePoints": 0.81,
+     "basisPoints": 81,
+     "relativePercent": 29.35,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2025-10-07"
+     "fromDate": "2025-10-08"
     },
     "5Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 3.76,
-     "basisPoints": 376,
-     "relativePercent": 1790.48,
+     "absolutePercentagePoints": 3.75,
+     "basisPoints": 375,
+     "relativePercent": 2083.33,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2021-10-07"
+     "fromDate": "2021-10-08"
     },
     "10Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 3.58,
-     "basisPoints": 358,
-     "relativePercent": 11933.33,
+     "absolutePercentagePoints": 3.6,
+     "basisPoints": 360,
+     "relativePercent": 12000,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "2016-10-07"
     },
     "MAX": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -2.4,
-     "basisPoints": -240,
-     "relativePercent": -40.34,
+     "absolutePercentagePoints": -2.38,
+     "basisPoints": -238,
+     "relativePercent": -40,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "1997-08-07"
     }
@@ -10299,7 +10299,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "YIELD",
     "valueKind": "SCALAR",
-    "value": 3.96,
+    "value": 3.99,
     "range": null,
     "unit": "PERCENT",
     "unitId": "PERCENT",
@@ -10307,16 +10307,16 @@
     "decimals": 2,
     "nativeCurrency": null,
     "currencyContext": "EUR",
-    "asOf": "2026-10-07",
-    "observationDate": "2026-10-07",
+    "asOf": "2026-10-08",
+    "observationDate": "2026-10-08",
     "change": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.04,
-     "basisPoints": 4,
-     "relativePercent": 1.02,
+     "absolutePercentagePoints": 0.03,
+     "basisPoints": 3,
+     "relativePercent": 0.76,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
     },
-    "changeReferenceDate": "2026-10-06"
+    "changeReferenceDate": "2026-10-07"
    },
    "market": {
     "state": "PUBLICATION_SCHEDULE",
@@ -10339,11 +10339,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:44.451Z",
+    "checkedAt": "2026-10-08T10:47:03.913Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -10355,14 +10355,14 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-10-08T01:06:44.451Z"
+     "fetchedAt": "2026-10-08T10:47:03.913Z"
     }
    },
    "history": {
     "available": true,
     "availableFrom": "2000-08-01",
-    "availableTo": "2026-10-07",
-    "observations": 6652,
+    "availableTo": "2026-10-08",
+    "observations": 6653,
     "frequency": "DAILY",
     "representation": "OBSERVATIONS",
     "observedThrough": null,
@@ -10378,10 +10378,6 @@
      "MAX": true
     },
     "recent": [
-     [
-      "2026-07-08",
-      3.74
-     ],
      [
       "2026-07-09",
       3.76
@@ -10641,6 +10637,10 @@
      [
       "2026-10-07",
       3.96
+     ],
+     [
+      "2026-10-08",
+      3.99
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/DE30Y.json",
@@ -10649,57 +10649,57 @@
    "performance": {
     "1W": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -0.03,
-     "basisPoints": -3,
-     "relativePercent": -0.75,
+     "absolutePercentagePoints": -0.04,
+     "basisPoints": -4,
+     "relativePercent": -0.99,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-30"
+     "fromDate": "2026-10-01"
     },
     "1M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.03,
-     "basisPoints": 3,
-     "relativePercent": 0.76,
+     "absolutePercentagePoints": 0.04,
+     "basisPoints": 4,
+     "relativePercent": 1.01,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-09-07"
+     "fromDate": "2026-09-08"
     },
     "3M": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.22,
-     "basisPoints": 22,
-     "relativePercent": 5.88,
+     "absolutePercentagePoints": 0.23,
+     "basisPoints": 23,
+     "relativePercent": 6.12,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2026-07-08"
+     "fromDate": "2026-07-09"
     },
     "1Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 0.61,
-     "basisPoints": 61,
-     "relativePercent": 18.21,
+     "absolutePercentagePoints": 0.67,
+     "basisPoints": 67,
+     "relativePercent": 20.18,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2025-10-07"
+     "fromDate": "2025-10-08"
     },
     "5Y": {
      "semantics": "BASIS_POINTS",
      "absolutePercentagePoints": 3.66,
      "basisPoints": 366,
-     "relativePercent": 1220,
+     "relativePercent": 1109.09,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
-     "fromDate": "2021-10-07"
+     "fromDate": "2021-10-08"
     },
     "10Y": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": 3.21,
-     "basisPoints": 321,
-     "relativePercent": 428,
+     "absolutePercentagePoints": 3.24,
+     "basisPoints": 324,
+     "relativePercent": 432,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "2016-10-07"
     },
     "MAX": {
      "semantics": "BASIS_POINTS",
-     "absolutePercentagePoints": -1.53,
-     "basisPoints": -153,
-     "relativePercent": -27.87,
+     "absolutePercentagePoints": -1.5,
+     "basisPoints": -150,
+     "relativePercent": -27.32,
      "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
      "fromDate": "2000-08-01"
     }
@@ -10801,11 +10801,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-10-08T01:06:45.325Z",
+    "checkedAt": "2026-10-08T10:47:04.798Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -10817,7 +10817,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "POLICY_TARGET_RANGE",
-     "fetchedAt": "2026-10-08T01:06:45.325Z"
+     "fetchedAt": "2026-10-08T10:47:04.798Z"
     }
    },
    "history": {
@@ -11128,11 +11128,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:46.408Z",
+    "checkedAt": "2026-10-08T10:47:05.564Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -11144,7 +11144,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "VOLUME_WEIGHTED_MEDIAN",
-     "fetchedAt": "2026-10-08T01:06:46.408Z"
+     "fetchedAt": "2026-10-08T10:47:05.564Z"
     }
    },
    "history": {
@@ -11587,11 +11587,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-10-08T01:06:46.413Z",
+    "checkedAt": "2026-10-08T10:47:05.576Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -11603,7 +11603,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Europaeische Zentralbank",
      "priceSemantics": "POLICY_RATE",
-     "fetchedAt": "2026-10-08T01:06:46.413Z"
+     "fetchedAt": "2026-10-08T10:47:05.576Z"
     }
    },
    "history": {
@@ -12016,7 +12016,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -12036,11 +12036,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:48.194Z",
+    "checkedAt": "2026-10-08T10:47:07.976Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -12052,7 +12052,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:48.194Z"
+     "fetchedAt": "2026-10-08T10:47:07.976Z"
     }
    },
    "history": {
@@ -12493,7 +12493,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -12513,11 +12513,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:48.850Z",
+    "checkedAt": "2026-10-08T10:47:09.273Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -12529,7 +12529,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:48.850Z"
+     "fetchedAt": "2026-10-08T10:47:09.273Z"
     }
    },
    "history": {
@@ -12970,7 +12970,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -12990,11 +12990,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:49.340Z",
+    "checkedAt": "2026-10-08T10:47:10.198Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13006,7 +13006,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:49.340Z"
+     "fetchedAt": "2026-10-08T10:47:10.198Z"
     }
    },
    "history": {
@@ -13447,7 +13447,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -13467,11 +13467,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:49.624Z",
+    "checkedAt": "2026-10-08T10:47:10.635Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13483,7 +13483,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:49.624Z"
+     "fetchedAt": "2026-10-08T10:47:10.635Z"
     }
    },
    "history": {
@@ -13924,7 +13924,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -13944,11 +13944,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:49.884Z",
+    "checkedAt": "2026-10-08T10:47:11.123Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13960,7 +13960,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:49.884Z"
+     "fetchedAt": "2026-10-08T10:47:11.123Z"
     }
    },
    "history": {
@@ -14401,7 +14401,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -14421,11 +14421,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:50.127Z",
+    "checkedAt": "2026-10-08T10:47:11.494Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -14437,7 +14437,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:50.127Z"
+     "fetchedAt": "2026-10-08T10:47:11.494Z"
     }
    },
    "history": {
@@ -14878,7 +14878,7 @@
     "changeReferenceDate": "2026-10-06"
    },
    "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "sessionProfile": "US_EQUITY_ETF",
     "sessionExchange": "XNYS",
     "publisherProfile": null,
@@ -14898,11 +14898,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-10-08T01:06:16.334Z"
+     "checkedAt": "2026-10-08T10:46:36.053Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-10-08T01:06:50.302Z",
+    "checkedAt": "2026-10-08T10:47:11.837Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -14914,7 +14914,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-10-08T01:06:50.302Z"
+     "fetchedAt": "2026-10-08T10:47:11.837Z"
     }
    },
    "history": {

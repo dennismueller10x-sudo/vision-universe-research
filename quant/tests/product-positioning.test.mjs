@@ -14,10 +14,17 @@ const backtest = read("quant/app/page-backtest.js"), evidence = read("quant/app/
 const slice = (src, from, to) => { const a = src.indexOf(from); assert.ok(a >= 0, "fehlt: " + from); const b = src.indexOf(to, a + from.length); return src.slice(a, b < 0 ? undefined : b); };
 const str = (name) => { const m = pages.match(new RegExp("var " + name + " = \"([^\"]+)\"")); assert.ok(m, name + " fehlt"); return m[1]; };
 
-test("Ein Satz: der Claim steht im Code und im Positionierungsdokument gleich", () => {
+test("Der vollständige Claim bleibt erhalten, die Hero-Überschrift ist kurz", () => {
   const claim = str("CLAIM");
   assert.equal(claim, "Quant zeigt dir jeden Tag, bei welchen Aktien sich etwas verändert – und wie oft das früher besser lief als der Markt.");
-  assert.ok(doc.includes("**Hauptclaim (H1 der Startseite):** " + claim.slice(0, 60)), "Dokument und Seite sagen nicht dasselbe");
+  assert.ok(doc.includes(claim), "Dokument und Seite sagen nicht dasselbe");
+  const title = str("HERO_TITLE");
+  assert.equal(title, "Jeden Tag sehen, was sich verändert.");
+  assert.ok(title.split(/\s+/).length <= 10, "Hero-Überschrift zu lang");
+  assert.match(title, /Jeden Tag/);
+  assert.match(title, /verändert/);
+  assert.match(pages, /class: "q-hero-lead qx-lead vu-product-lead", text: CLAIM/, "der tägliche Nutzen und Marktvergleich fehlen im Hero");
+  assert.match(pages, /class: "q-intro-note", text: CLAIM_LEAD/, "die fachliche Beschreibung fehlt im Hero");
   /* Kein Fachwort, keine Note, kein Gewinnversprechen im ersten Satz. */
   for (const w of ["Score", "Faktor", "Quantitative", "Edge", "Base Rate", "Backtest", "Rendite", "Gewinn", "kaufen"]) assert.ok(!claim.includes(w), "Claim enthaelt " + w);
   assert.ok(claim.split(/\s+/).length <= 22, "Claim zu lang fuer den ersten Bildschirm");
@@ -37,7 +44,7 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
 test("Home: erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, dann Werkzeuge", () => {
   const home = slice(pages, "async function home(", "/* ============================================================ SCREENER");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
-  const hero = at('el("h1", { class: "q-claim", text: CLAIM })'), search = at("onclick: ctx.openSearch"), promises = at("promiseList()");
+  const hero = at('el("h1", { class: "q-claim vu-product-title", text: HERO_TITLE })'), search = at("onclick: ctx.openSearch"), promises = at("promiseList()");
   const today = at('X.world("Heute bei Quant"'), mine = at('X.world("Deine Aktien"'), rails = at("page.append(rails)");
   const proof = at('X.world("Warum Quant mehr ist als ein Screener"'), tools = at('X.section("Selbst suchen"'), trust = at('"Warum kann ich dem vertrauen?"');
   assert.ok(hero < search && search < promises && promises < today, "der erste Bildschirm ist nicht Claim → Suche → Versprechen");

@@ -34,6 +34,7 @@
      live ist. Quant verkauft keine Note, sondern eine nachvollziehbare Situation. */
   var CLAIM = "Quant zeigt dir jeden Tag, bei welchen Aktien sich etwas verändert – und wie oft das früher besser lief als der Markt.";
   var CLAIM_LEAD = "Quant beobachtet über 6.000 US-Aktien nach festen Regeln, erklärt jede Veränderung mit Auslöser und nächster Bedingung – und sagt offen, wie belastbar der historische Vergleich ist.";
+  var HERO_TITLE = "Jeden Tag sehen, was sich verändert.";
   var PROMISES = [
     { id: "neu", title: "Sehen, was heute neu ist", text: "Neue Setups, neue Jahreshochs, Strategie-Wechsel und steigende Risiken – täglich, mit Datum.", route: function () { return X.routes.radar(); } },
     { id: "warum", title: "Verstehen, warum es zählt", text: "Auslöser, Ungültig-Marke und die nächste Bedingung – erst die Bedeutung, dann die Zahlen.", route: function () { return X.routes.stocks(); } },
@@ -231,13 +232,18 @@
   async function home(main, ctx) {
     var page = el("div", { class: "q-home" });
     main.append(page);
-    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero" }, [
+    var productIcon = el("span", { class: "vu-product-icon vu-product-icon--hero", "aria-hidden": "true" });
+    var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), use = document.createElementNS(ns, "use");
+    svg.setAttribute("viewBox", "0 0 24 24"); use.setAttribute("href", "/assets/product-icons.svg#quant"); svg.appendChild(use); productIcon.appendChild(svg);
+    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero" }, [
       X.globe(),
-      el("p", { class: "q-kicker", text: "Vision Universe Quant" }),
-      el("h1", { class: "q-claim", text: CLAIM }),
-      el("p", { class: "q-hero-lead qx-lead", text: CLAIM_LEAD }),
+      productIcon,
+      el("p", { class: "q-kicker vu-product-eyebrow", text: "Vision Universe Quant" }),
+      el("h1", { class: "q-claim vu-product-title", text: HERO_TITLE }),
+      el("p", { class: "q-hero-lead qx-lead vu-product-lead", text: CLAIM }),
       el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
         X.icon("search"), el("span", { text: "Aktie suchen, z. B. Apple oder NVDA …" }), el("i", { "aria-hidden": "true", text: "→" })]),
+      el("p", { class: "q-intro-note", text: CLAIM_LEAD }),
       promiseList()
     ]));
 

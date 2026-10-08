@@ -435,3 +435,27 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
 .hf-hero h1{font-size:clamp(36px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em}
 .hf-phead,.hf-dhero{background:none;border-radius:0;padding:clamp(20px,3.5vw,40px) 0 clamp(8px,2vw,16px);margin-top:0}
 @media(max-width:760px){.hf-hero,.hf-phead,.hf-dhero{padding:20px 0 8px;border-radius:0}}
+
+/* Premium 2.0: institutional research on the common platform palette.
+   Returns, holdings, chart categories and warnings retain their own colours. */
+:root, html[data-theme=dark], html[data-theme=light]{
+  --bg:var(--vu-bg);--bg-soft:var(--vu-surface);--panel:var(--vu-surface);--card:var(--vu-elevated);
+  --ink:var(--vu-text);--ink-2:var(--vu-text-secondary);--muted:var(--vu-muted);
+  --line:var(--vu-line-strong);--line-soft:var(--vu-line);
+  --accent:var(--vu-accent);--accent-ink:var(--vu-on-accent);--accent-text:var(--vu-accent-text);--accent-soft:var(--vu-accent-soft);
+}
+.hf-hero.vu-product-hero{margin-top:0;padding:28px 0 32px;gap:40px}
+.hf-hero .vu-product-title{max-width:16ch}
+.hf-hero .hf-live{margin-top:18px;padding:0;border:0;background:none;box-shadow:none;font-size:11px;line-height:1.5;flex-wrap:wrap}
+.hf-hero .hf-live i{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);flex:none}
+.hf-search:focus-within{border-color:var(--vu-focus);box-shadow:0 0 0 3px var(--accent-soft)}
+.hf-hero .hf-search{min-height:56px;border-color:var(--line-soft);box-shadow:var(--shadow)}
+.hf-hero .hf-pop{gap:8px;padding-top:12px}
+.hf-hero .hf-chip{background:none}
+.hf-chip,.hf-tab,.hf-seg button{min-height:44px}
+.hf-kpi .hf-tile-ico,.hf-phead .hf-tile-ico,.hf-door .hf-tile-ico,.hf-float .hf-tile-ico{background:var(--accent-soft);color:var(--accent-text);box-shadow:none}
+.hf :focus-visible{outline-color:var(--vu-focus)}
+.hf-section{margin-top:40px}
+.hf-dhero .bio,.hf-phead .lead{line-height:1.65}
+@media(min-width:768px){.hf-hero.vu-product-hero{padding:44px 0 48px}}
+@media(min-width:1024px){.hf-hero-art{min-height:440px}}
