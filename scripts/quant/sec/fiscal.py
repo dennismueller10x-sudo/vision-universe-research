@@ -50,6 +50,9 @@ FY_CLUSTER_TOLERANCE_DAYS = 60
 FY_BOUNDARY_TOLERANCE_DAYS = 5
 
 QUARTER_LENGTH_DAYS = 91.31
+# Length of a fiscal year with four quarter slots (1.20.0): 52/53-week years
+# are 364/371 days, calendar-anniversary years 365/366. Outside: transition year.
+TRANSITION_YEAR_DAYS = (350, 380)
 
 def _base_form(form):
     """'10-K/A' -> '10-K'; None -> ''."""
@@ -485,17 +488,35 @@ class FiscalCalendar:
             return self.labels[fy_end]
         return _fallback_label(fy_end, self.label_offset, self.label_mid_offset)
 
+    def is_transition_year(self, previous_fy_end, fy_end):
+        """A fiscal year that is not one year long: the filer changed its year end.
+
+        A normal year spans 365/366 days, a 52/53-week year 364/371. Anything
+        outside TRANSITION_YEAR_DAYS (a 15-month bridge, a 3-month transition
+        period) has no four-quarter structure (1.20.0, F-TTM-2)."""
+        span = (parse_date(fy_end) - parse_date(previous_fy_end)).days
+        return not TRANSITION_YEAR_DAYS[0] <= span <= TRANSITION_YEAR_DAYS[1]
+
     def quarter_index(self, period_end):
-        """1..4 by elapsed fraction of the fiscal year, or None if undecidable."""
+        """1..4 by elapsed fraction of the fiscal year, or None if undecidable.
+
+        1.20.0 (F-TTM-2): no clamping. A period whose position is not one of the
+        four quarters of a normal fiscal year - in particular every period of a
+        transition year after a change of fiscal year end - has no quarter slot
+        (NOT_QUARTER_ELIGIBLE). Clamping put Multi-Fineline's Oct-Dec 2015 (the
+        fifth quarter of a 15-month FY2015) on the slot of Jul-Sep 2015, and a
+        TTM asked for 2015-12-31 ended a quarter early."""
         period_end = parse_date(period_end)
         previous, fy_end = self._boundaries_covering(period_end)
         if fy_end is None or previous is None:
+            return None
+        if self.is_transition_year(previous, fy_end):
             return None
         elapsed = (period_end - previous).days
         if elapsed <= 0:
             return None
         index = int(round(elapsed / QUARTER_LENGTH_DAYS))
-        return min(4, max(1, index))
+        return index if 1 <= index <= 4 else None
 
     def _is_extrapolated_fy_end(self, period_end):
         """A projected year end (no annual report yet) still counts as FY end."""

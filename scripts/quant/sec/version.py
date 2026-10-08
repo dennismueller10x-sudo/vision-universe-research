@@ -189,7 +189,20 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          -590000); (5) keine Summe ueber Einheiten/Waehrungen; (6) der im Beleg
 #          genannte Umsatz-Zeilenbegriff wird genau gewaehlt. restatements.py
 #          gehoert jetzt zu den Normalisierungsquellen.
-NORMALIZATION_LOGIC_VERSION = "1.19.0"
+# 1.20.0 — TTM-Holdout v2 (FAIL): (1) F-TTM-2: ein Geschaeftsjahr ausserhalb
+#          350-380 Tagen ist ein Uebergangsjahr; seine Perioden haben keinen
+#          Quartalsslot, und ein Index ausserhalb 1..4 wird nicht mehr auf 4
+#          geklemmt (Multi-Fineline FY2015, 15 Monate: Okt-Dez 2015 lag auf dem
+#          Slot von Jul-Sep 2015, das TTM endete ein Quartal zu frueh). (2) Ein
+#          TTM ist eine Kette tatsaechlicher Perioden: je 77-119 Tage, Beginn
+#          0-8 Tage nach dem Ende der vorigen, zusammen 357-374 Tage; sonst
+#          TTM_STUB_PERIOD (Rumpfperiode nach Fresh Start, Denbury 2020) bzw.
+#          TTM_PERIODS_NOT_CONTIGUOUS. Abgeleitete Quartale beginnen am Tag nach
+#          dem abgezogenen Kumulwert. (3) F-TTM-3: zwei Fassungen zum selben
+#          Zeitpunkt mit verschiedenen Werten sind AMBIGUOUS_SAME_DAY (keine
+#          Entscheidung per Formular/Accession) bis zur naechsten eindeutigen
+#          Fassung (Landmark Apartment Trust 2013-03-20: 10-K vs. 10-Q/A).
+NORMALIZATION_LOGIC_VERSION = "1.20.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -221,7 +234,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "5caec18102481bb3003b3ad3a6d9eddb040fc7c59b46bcb4eae4b495d91406b4"
+    "9a214020915219784d33c412d4a7552b3f6d9337e51e6ec9c787615d603dd88c"
 )
 
 

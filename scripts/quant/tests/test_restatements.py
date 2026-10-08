@@ -119,19 +119,38 @@ class RestatementTests(unittest.TestCase):
 
 
 class ConflictTests(unittest.TestCase):
-    def test_two_values_available_at_the_same_instant_are_flagged(self):
-        timeline = FactTimeline("revenue", 2018, "FY")
-        timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K"))
-        timeline.add(observation(1100.0, "2019-02-15", accession="a-2", form="10-K/A"))
-        resolved = timeline.resolve(as_of=date(2019, 3, 1))
-        self.assertIn("CONFLICTING_FACTS", resolved.flags)
-        self.assertEqual(resolved.quality, "MEDIUM")
+    """1.20.0 (F-TTM-3): widerspruechliche Fassungen am selben Zeitpunkt werden nicht per Formular,
+    Accession oder Dateireihenfolge entschieden. Ohne Uhrzeit ist die Zelle AMBIGUOUS_SAME_DAY."""
 
-    def test_the_amendment_wins_a_same_day_tie(self):
+    def test_two_conflicting_values_at_the_same_instant_resolve_to_nothing(self):
         timeline = FactTimeline("revenue", 2018, "FY")
         timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K"))
         timeline.add(observation(1100.0, "2019-02-15", accession="a-2", form="10-K/A"))
+        self.assertIsNone(timeline.resolve(as_of=date(2019, 3, 1)))
+
+    def test_the_amendment_wins_only_by_its_later_acceptance_time(self):
+        timeline = FactTimeline("revenue", 2018, "FY")
+        timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K",
+                                 available_from="2019-02-15T09:00:00Z"))
+        timeline.add(observation(1100.0, "2019-02-15", accession="a-2", form="10-K/A",
+                                 available_from="2019-02-15T16:30:00Z"))
         self.assertEqual(timeline.resolve(as_of=date(2019, 3, 1)).value, 1100.0)
+        # und nicht vor seiner eigenen Veroeffentlichung
+        self.assertEqual(timeline.resolve(as_of="2019-02-15T12:00:00Z").value, 1000.0)
+
+    def test_a_later_unambiguous_filing_ends_the_ambiguity(self):
+        timeline = FactTimeline("revenue", 2018, "FY")
+        timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K"))
+        timeline.add(observation(1100.0, "2019-02-15", accession="a-2", form="10-K/A"))
+        timeline.add(observation(1000.0, "2020-02-14", accession="a-3", form="10-K"))
+        self.assertIsNone(timeline.resolve(as_of=date(2020, 2, 13)))
+        self.assertEqual(timeline.resolve(as_of=date(2020, 2, 14)).value, 1000.0)
+
+    def test_identical_values_on_the_same_day_are_not_a_conflict(self):
+        timeline = FactTimeline("revenue", 2018, "FY")
+        timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K"))
+        timeline.add(observation(1000.0, "2019-02-15", accession="a-2", form="10-K/A"))
+        self.assertEqual(timeline.resolve(as_of=date(2019, 3, 1)).value, 1000.0)
 
 
 class FactBookTests(unittest.TestCase):

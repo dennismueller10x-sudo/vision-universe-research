@@ -45,6 +45,10 @@ MIXED_CURRENCY = "MIXED_CURRENCY"
 # Quartalen derselben Konzeptklasse auf derselben Aktienbasis. Sonst gibt es
 # kein TTM - und nie ersatzweise das Geschaeftsjahr.
 TTM_PERIODS_NOT_CONTIGUOUS = "TTM_PERIODS_NOT_CONTIGUOUS"
+# 1.20.0: ein Fensterquartal ist eine Rumpfperiode (kein NORMAL_QUARTER von 80-100
+# Tagen: SHORT_STUB < 80, LONG_STUB > 100) - etwa die 104-Tage-Nachfolgeperiode
+# nach einem Fresh Start (Denbury 2020) - und ergibt keine zwoelf Monate.
+TTM_STUB_PERIOD = "TTM_STUB_PERIOD"
 TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
 TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
 # Ein Quartals-EPS, das zu Ergebnis und Aktienzahl desselben Quartals um eine

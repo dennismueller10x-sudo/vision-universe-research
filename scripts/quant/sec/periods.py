@@ -14,13 +14,14 @@ Labels used in storage:
 """
 import dataclasses
 import logging
+from datetime import date, timedelta
 
 from .model import (
     NormalizedFact, Provenance, SOURCE_SEC, TRANSFORM_NONE, TRANSFORM_YTD_DIFF,
     TRANSFORM_FY_MINUS_YTD, TRANSFORM_SUM, QUALITY_HIGH, QUALITY_MEDIUM,
     PERIOD_QUARTER, PERIOD_ANNUAL, PERIOD_INSTANT, PERIOD_TTM,
     MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY, NOT_APPLICABLE_FOR_SECTOR,
-    NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_CONCEPT_MISMATCH,
+    NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_STUB_PERIOD, TTM_CONCEPT_MISMATCH,
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, missing,
 )
 from .registry import KIND_INSTANT
@@ -36,6 +37,16 @@ MAX_FIXPOINT_PASSES = 8
 # TTM-Integritaet. Abstand zweier Quartalsenden: 12 bis 17 Wochen (52/53-
 # Wochen-Jahre: 12/12/12/16 bzw. 17 Wochen, PepsiCo), mit einer Woche Spiel.
 TTM_GAP_DAYS = (77, 126)
+# 1.20.0 Stub-Policy. NORMAL_QUARTER: ein Fiskalquartal von 11-17 Wochen (77-119 Tage;
+# 12/12/12/16-Wochen-Kalender wie PepsiCo). SHORT_STUB (< 77) und LONG_STUB (> 119) sind
+# NOT_QUARTER_ELIGIBLE. Entscheidend ist das Fenster: vier Perioden als luecken- und
+# ueberlappungsfreie Kette (Beginn 0-8 Tage nach dem Ende der vorigen), zusammen ein
+# Geschaeftsjahr von 357-374 Tagen (52 Wochen 364, 53 Wochen 371, Kalenderjahr 365/366,
+# plus Datumskonventionen). Eine Rumpfperiode nach Fresh Start oder Gruendung macht das
+# Fenster laenger (Denbury 2020-09-19..2021-09-30: 377 Tage) und ergibt kein TTM.
+TTM_QUARTER_DAYS = (77, 119)
+TTM_CHAIN_GAP_DAYS = 7
+TTM_SPAN_DAYS = (357, 374)
 # A published fiscal year ending this much after the window's last quarter
 # makes the window stale.
 TTM_STALE_DAYS = 7
@@ -275,6 +286,12 @@ class PeriodResolver:
                     [current, previous], current.value - previous.value,
                     transformation, current.unit,
                 )
+                # 1.20.0: the difference covers the days after the subtracted
+                # cumulative period - not the whole year (_combine takes the
+                # earliest start). The TTM chain reads real periods.
+                if previous.period_end:
+                    natives[index].period_start = (
+                        date.fromisoformat(str(previous.period_end)[:10]) + timedelta(days=1)).isoformat()
                 concepts[id(natives[index])] = shared
                 changed = True
 
@@ -411,6 +428,20 @@ class PeriodResolver:
         for newer, older in zip(dates, dates[1:]):
             if not TTM_GAP_DAYS[0] <= (newer - older).days <= TTM_GAP_DAYS[1]:
                 return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
+        # 1.20.0: die Kette aus tatsaechlichen Perioden (Beginn/Ende), nicht aus Labels.
+        starts = [str(obs.period_start or "")[:10] for obs in observations]
+        if not all(starts):
+            return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
+        begins = [to_instant(start) for start in starts]
+        for begin, end in zip(begins, dates):
+            if not TTM_QUARTER_DAYS[0] <= (end - begin).days + 1 <= TTM_QUARTER_DAYS[1]:
+                return observations, TTM_STUB_PERIOD, []
+        # observations: newest first - each quarter begins right after the older one ends
+        for newer_begin, older_end in zip(begins, dates[1:]):
+            if not 0 <= (newer_begin - older_end).days <= TTM_CHAIN_GAP_DAYS + 1:
+                return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
+        if not TTM_SPAN_DAYS[0] <= (dates[0] - begins[-1]).days + 1 <= TTM_SPAN_DAYS[1]:
+            return observations, TTM_STUB_PERIOD, []
 
         definition = self._definition(metric)
         if definition.is_per_share:

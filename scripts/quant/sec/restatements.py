@@ -182,8 +182,12 @@ class FactTimeline:
             flags.append(FLAG_RESTATED)
         peers = [obs for obs in candidates if obs.available_instant == chosen.available_instant]
         if len(peers) > 1 and self._values_differ(peers):
-            flags.append(FLAG_CONFLICTING_FACTS)
-            quality = QUALITY_MEDIUM
+            # 1.20.0 (F-TTM-3): two filings available at the same instant disagree.
+            # Without an acceptance time that orders them, which one was the last
+            # word is unknown - form, accession or file order must not decide
+            # (Landmark Apartment Trust 2013-03-20: 10-K Q3 -1.03, 10-Q/A +1.03).
+            # The cell is AMBIGUOUS_SAME_DAY until a later, unambiguous filing.
+            return None
         if flags == chosen.flags and quality == chosen.quality:
             return chosen
         return Observation(
