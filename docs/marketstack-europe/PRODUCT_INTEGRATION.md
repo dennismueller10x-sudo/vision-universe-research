@@ -139,3 +139,37 @@ European details also suppress US Company Intelligence fetches, US live/intraday
 `node --test core/tests/europe-market-data.test.mjs` covers US pass-through using the actual existing Core client, closed display gates with zero loader calls, duplicate-free identity search, canonical watchlist persistence, null/zero distinction, explicit raw chart basis, adjustment certification, invalid series refusal, recovery/caching, official fundamentals/European benchmark readiness, snapshot uncertainty, central logo fallback, and accepted-only foundation bridging.
 
 Full Core and repository isolation runs are tracked in the run report; missing local generated production artifacts must be reported separately from fixture-driven adapter results. Tests write only an in-memory storage object and never production data.
+
+## Final private artifact replay — 2026-10-08
+
+The actual private compiler artifacts were replayed through `Core.fromFoundation/create`, with `audience: 'research'`, empty public rights and no provider or UI calls. This is independent of the synthetic browser coverage above. The final source code is frozen at Core branch commit `c55c`; the final scoped Core/logo/replay tests passed **33/33**, with an independent review.
+
+| Actual Core consumer check | Result |
+|---|---:|
+| Accepted canonical securities/listings | 259 / 259 |
+| Identity available and searchable | 259 |
+| Ticker/name/alias/ISIN query proofs | 1,679 passed; zero duplicate results |
+| Watchlist Add/Save/Reload/Remove | 259 passed for each operation |
+| Raw chart projections | 259 available, all `CHART_LIMITED` |
+| Observed multi-session / single-EOD series | 258 / 1 |
+| Raw technical API projections | 258 `TECHNICAL_PARTIAL`; 1 unavailable |
+| Existing central logos, counted per security | 13 valid assets / 243 fallback / 3 suspect |
+| Public identity/chart reads blocked | 259 / 259; zero public loader calls |
+| Strict Core Screener | 259 blocked; all latest EOD statuses `DELAYED` |
+| Quant / SuperTrader ready | 0 / 0 |
+| Backtest | 259 `RESEARCH_ONLY` |
+| Provider requests / credits from this replay | 0 / 0 |
+
+Partial technical availability does not mean every indicator exists. The producer measured finite metric coverage across the admitted securities: SMA20 5, SMA50 4, SMA200 0, 52W high 0, momentum 0, volatility 5, drawdown 258, relative strength 0 and breakout 0. Inputs use the unchanged engine defaults on the observed contiguous raw research segment. Missing values remain null. Admitted adjustment evidence is `ADJUSTMENT_PARTIAL` for 258 series and `ADJUSTMENT_UNKNOWN` for one; no adjusted series is certified. The requested `MAX` chart label does not establish maximum-history completeness.
+
+The first actual replay exposed two compiler-contract errors: identity compaction omitted its verification flag, and the chart projection supplied OHLC objects instead of `[date, close]` tuples. Both were corrected in the producer while retaining raw source evidence. The central-logo probe also rejected the lossy E.ON → On Holding and NN Group → NN Inc matches through the stricter legal-entity-name gate. Baseline reports remain separate from the final report.
+
+Final private evidence:
+
+- Core replay: `/workspace/marketstack-europe-private/product-replay-final-adjustment/marketstack_europe_product_contract_replay.json`; SHA-256 `07ae31324d87fe33e964434f176ae986a70e0ee30d3fad2b2522ee5e64bb5f91`.
+- Strict Core Screener proof: the same directory, `marketstack_europe_core_screener_replay.json`; SHA-256 `93ba947c86fb27d8a2a587a36687a5a80dff56be03d14b15fb4f7f602728e493`.
+- Replay input manifest SHA-256: `97b86784c3a292e27994b81ebbd09762947041eda44fd371c4ae20487db6b081`.
+- Final producer manifest after readiness-only replay attachment: `2110b0aca8cd391ef31dc9cf8e808f7d32eea98766cc9ff1e9c7a27ce751a19b`.
+- Core projection SHA-256: `9d8324d92f70ac3721c88e04a4ec7838438936e7dfd5249a157dbcdca12457ff`, independently confirmed byte-identical before and after the readiness attachment.
+
+The producer verifies the exact prior manifest, generation time, canonical security/listing associations, query/watchlist proofs, private scope and zero US/provider/public-loader calls before recording consumer readiness. Its targeted preservation test passed independently. That attachment changes readiness evidence only; existing price series, IDs and public gates remain intact. These results authorize no public catalog, licensed raw display, adjustment certification, scheduled refresh or production deployment.
