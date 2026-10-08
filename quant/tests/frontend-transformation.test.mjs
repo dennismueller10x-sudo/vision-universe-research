@@ -86,47 +86,44 @@ function assess(ticker) {
 }
 
 /* ---------------------------------------------------------------- 1 */
-test("Die Quant-Navigation führt genau die fünf Bereiche", () => {
-  /* Frontend-Rebuild: die Liste steht jetzt in quant/app/ui.js (NAV) und
-     wird von app.js fuer Kopfleiste UND Tab-Leiste verwendet. */
-  const ids = daten(QX.NAV.map((n) => [n.id, n.label]));
-  /* Owner-Entscheid 29.09.2026 (Produktarchitektur): Quant hat genau fuenf
-     Bereiche, und der Screener heisst darin "Quant Screener". "Screener"
-     allein ist der Name eines EIGENSTAENDIGEN Produkts unter /screener/,
-     das nicht zu Quant gehoert. Wer beide kennt, muss an der Beschriftung
-     sehen, in welchem er steht. */
-  assert.deepEqual(ids, [
-    ["home", "Home"], ["screener", "Quant Screener"], ["strategien", "Strategien"],
-    ["aktien", "Aktien"], ["methodik", "Methodik"]
+/* UI-Vereinheitlichung 10/2026: die Bereiche von Quant stehen in der
+   gemeinsamen Produkt-Leiste der Vision-Universe-Shell (PRODUCTS in
+   assets/site-navigation.js). Quant baut keine eigene Leiste mehr. */
+const navSource = src("assets/site-navigation.js");
+const navBox = { HTMLElement: class {}, URLSearchParams, customElements: { define() {} } };
+vm.runInNewContext(navSource.replace(/\}\)\(\);\s*$/, "globalThis.__p = PRODUCTS;})();"), navBox);
+const QUANT_DOCK = navBox.__p.find((p) => p.id === "quant");
+
+test("Die Quant-Navigation führt genau die vier Hauptbereiche plus das globale Menü", () => {
+  const items = daten(QUANT_DOCK.items.map(([id, label, href, , name]) => [id, label, href, name || null]));
+  /* Erster Eintrag = Produktname (nie "Home"), dann Screener, Strategien, Aktien. */
+  assert.deepEqual(items, [
+    ["quant", "Quant", "/quant/#/", null], ["screener", "Screener", "/quant/#/screener", "Quant Screener"],
+    ["strategien", "Strategien", "/quant/#/strategien", null], ["aktien", "Aktien", "/quant/#/aktien", null]
   ]);
-  /* Und kein Bereich darf schlicht "Screener" heissen. */
-  for (const [, label] of ids) {
-    assert.notEqual(label, "Screener",
-      'ein Quant-Bereich traegt den Namen des eigenstaendigen Produkts');
-  }
   /* Jeder Bereich fuehrt auf eine Route, die der Router kennt. */
-  for (const n of QX.NAV) {
-    assert.notEqual(routing.parse(n.href).view, "notfound", n.label + " fuehrt ins Leere: " + n.href);
+  for (const [, label, href] of QUANT_DOCK.items) {
+    assert.notEqual(routing.parse(href.replace(/^\/quant\//, "")).view, "notfound", label + " fuehrt ins Leere: " + href);
   }
-  /* Die Bereichsleiste wird aus derselben Liste gebaut - keine zweite,
-     abweichende Navigation. Discover-Angleichung (30.09.2026): Kopf- und
-     Tab-Leiste sind jetzt EINE Leiste wie Discovers v2-dock (am Desktop
-     oben mittig, am Handy unten) - also genau ein Aufbau aus X.NAV, und
-     keine weitere Liste von Bereichen daneben. */
-  assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 1, "die Bereichsleiste muss aus X.NAV entstehen - genau einmal");
-  assert.match(appSrc, /el\("nav", \{ class: "[^"]*\bv2-dock[^"]*qx-nav[^"]*qx-tabbar"[^\n]*X\.NAV\.map\(/, "Kopf- und Tab-Leiste sind nicht dieselbe, aus X.NAV gebaute Leiste");
+  /* Methodik bleibt erreichbar - als sekundaerer Bereich im Fuss und im Hero. */
+  assert.match(appSrc, /el\("a", \{ href: "#\/methodik", text: "Methodik" \}\)/);
+  assert.match(pagesSrc, /X\.btn\("Warum kann ich dem vertrauen\?", X\.routes\.method\(\)/);
+  /* Keine zweite, abweichende Navigation: Quant baut keine eigene Leiste. */
+  assert.doesNotMatch(ohneKommentare(appSrc), /v2-dock|qx-tabbar|qx-nav|q-top/, "Quant baut wieder eine eigene Bereichsleiste");
+  /* Der Router meldet den aktiven Bereich an die gemeinsame Leiste. */
+  assert.match(appSrc, /global\.VUNavigation\.dock\(\{ active:/);
 });
 
 test("Kein fremdes Produkt steht in der Quant-Navigation", () => {
   /* Discover, Research und Markets sind andere Produkte, Portfolio ist
      ausdrücklich nicht Teil dieser Transformation. Sie standen alle vier
      in der alten Leiste. */
-  const text = JSON.stringify(QX.NAV).toLowerCase();
+  const text = JSON.stringify(QUANT_DOCK.items).toLowerCase();
   for (const fremd of ["discover", "research", "markets", "portfolio"]) {
     assert.ok(!text.includes(fremd), fremd + " gehört nicht in die Quant-Navigation");
   }
   /* Und alle Bereiche bleiben innerhalb von Quant (Hash-Routen unter /quant/). */
-  for (const n of QX.NAV) assert.match(n.href, /^#\//, n.label + " verlaesst Quant: " + n.href);
+  for (const [, label, href] of QUANT_DOCK.items) assert.match(href, /^\/quant\/#\//, label + " verlaesst Quant: " + href);
 });
 
 test("Die Navigationsänderung hat keine Ansicht entfernt", () => {
