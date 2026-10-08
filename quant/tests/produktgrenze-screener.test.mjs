@@ -54,6 +54,9 @@ sandbox.window = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(readFileSync(join(ROOT, "quant/app/ui.js"), "utf8"), sandbox);
 const QX = sandbox.QX;
+const navBox = { HTMLElement: class {}, URLSearchParams, customElements: { define() {} } };
+vm.runInNewContext(readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8").replace(/\}\)\(\);\s*$/, "globalThis.__p = PRODUCTS;})();"), navBox);
+const QUANT_DOCK = navBox.__p.find((p) => p.id === "quant");
 const NAV = readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8");
 
 /** Quelltext ohne Kommentare: die Regeln gelten fuer das, was die
@@ -79,15 +82,16 @@ test("Quant verlinkt niemals das eigenstaendige Screener-Produkt als seinen eige
   /* Quant DARF auf /screener/ verweisen - aber nur als fremdes Produkt,
      nie als eigener Bereich. Der gefaehrliche Fall ist ein Eintrag in der
      Bereichsleiste oder eine Ansicht, die dorthin fuehrt. */
-  assert.ok(QX.NAV.length === 5, "die Bereichsleiste hat nicht mehr fuenf Bereiche");
-  for (const n of QX.NAV) {
-    assert.doesNotMatch(n.href, /\/screener\//,
+  /* Seit der UI-Vereinheitlichung steht die Bereichsleiste in der
+     gemeinsamen Shell (PRODUCTS, Produkt "quant"). */
+  assert.ok(QUANT_DOCK.items.length === 4, "die Quant-Leiste hat nicht mehr vier Bereiche (plus Menue)");
+  for (const [, label, href] of QUANT_DOCK.items) {
+    assert.doesNotMatch(href, /^\/screener\//,
       "die Bereichsleiste von Quant fuehrt aus dem Produkt heraus in das eigenstaendige Screener-Produkt");
-    assert.match(n.href, /^#\//, n.label + " fuehrt aus Quant heraus: " + n.href);
+    assert.match(href, /^\/quant\/#\//, label + " fuehrt aus Quant heraus: " + href);
   }
-  /* Die Bereichsleiste entsteht aus dieser Liste - seit der Discover-
-     Angleichung ist sie EINE Leiste (Kopf am Desktop, Tab am Handy). */
-  assert.equal((ohneKommentare(APP).match(/X\.NAV\.map\(/g) || []).length, 1);
+  /* Quant baut daneben keine eigene Bereichsleiste mehr. */
+  assert.doesNotMatch(ohneKommentare(APP), /X\.NAV|qx-tabbar/);
   /* Und die Routen des Quant Screeners bleiben innerhalb von /quant/. */
   assert.match(QX.routes.screener(), /^#\/screener/);
   assert.match(QX.routes.screenerPro(), /^#\/screener\/profi/);
@@ -110,10 +114,14 @@ test("der Quant-interne Screener heisst im UI auch nach Quant", () => {
      namens nur "Screener", der in Quants eigenen Screener fuehrt, ist
      genau die Verwechslung, die vermieden werden soll. Frontend-Rebuild:
      der Bereichseintrag steht in NAV. */
-  const treffer = QX.NAV.filter((n) => /^#\/screener/.test(n.href)).map((n) => n.label);
+  /* In der gemeinsamen Leiste steht "Screener" direkt neben dem immer
+     sichtbaren Produktnamen "Quant"; fuer Screenreader heisst der Eintrag
+     ausdruecklich "Quant Screener". */
+  const treffer = QUANT_DOCK.items.filter(([, , href]) => /^\/quant\/#\/screener/.test(href));
   assert.ok(treffer.length > 0, "kein beschrifteter Verweis auf den Quant-Screener gefunden");
-  for (const label of treffer) {
-    assert.match(label, /Quant/,
+  assert.equal(QUANT_DOCK.items[0][1], "Quant", "der Produktname steht nicht vor dem Screener-Eintrag");
+  for (const [, label, , , name] of treffer) {
+    assert.match(name || label, /Quant/,
       'ein Verweis auf den Quant-Screener heisst nur "' + label + '" - das ist der Name des anderen Produkts');
   }
 });
