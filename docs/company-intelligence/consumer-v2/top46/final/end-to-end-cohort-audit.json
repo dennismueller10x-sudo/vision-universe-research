@@ -1,0 +1,2061 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "acceptedGeneration": "21cc611a43b06f488418b58a",
+  "sourceGeneration": "6d4f35263848d87c4d3549d8",
+  "consumerGeneration": "6c3fb74e36086a0b86dfdf3b",
+  "auditedAt": "2026-10-08T17:40:11.928993+00:00",
+  "issuers": 45,
+  "stocks": 46,
+  "productionAssetHashesVerified": 86,
+  "sourceUsagePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "privateOperationalRowsIncluded": false,
+  "ledgerMutations": false,
+  "lossClasses": {
+    "DATA_DOES_NOT_EXIST": {
+      "issuers": 3,
+      "records": 0
+    },
+    "DATA_EXISTS_BUT_IS_FILTERED": {
+      "issuers": 8,
+      "records": 24
+    },
+    "DATA_EXISTS_BUT_IS_NOT_EXPORTED": {
+      "issuers": 10,
+      "records": 42
+    },
+    "DATA_EXPORTED_BUT_NOT_RENDERED": {
+      "issuers": 0,
+      "records": 0
+    }
+  },
+  "issuersAudit": [
+    {
+      "companyId": "iss_cik_0000002098",
+      "tickers": [
+        "ACU"
+      ],
+      "ledgerNews": 0,
+      "latestLedgerNews": null,
+      "engineExportNews": 0,
+      "policyAllowedNews": 0,
+      "consumerNews": 0,
+      "productionNews": 0,
+      "newsFreshness": {},
+      "ledgerEventTypes": {},
+      "acceptedModules": {
+        "news": 0,
+        "earnings": 0,
+        "events": 0,
+        "calls": 0,
+        "materials": 0,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "UNAVAILABLE",
+      "whatChanged": 0,
+      "losses": [
+        {
+          "class": "DATA_DOES_NOT_EXIST",
+          "stage": "PRIVATE_LEDGER_NEWS",
+          "count": 0
+        }
+      ],
+      "renderedNewsIncludingSecondary": 0,
+      "initiallyVisibleNewsRange": [
+        0,
+        0
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": true,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000002488",
+      "tickers": [
+        "AMD"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-28T20:05:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 9
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 9,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000004977",
+      "tickers": [
+        "AFL"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-30T20:05:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 4,
+        "90_DAYS": 5,
+        "OLDER": 1
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 5,
+        "EARNINGS_SCHEDULED": 4,
+        "PRESENTATION_PUBLISHED": 2
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 2,
+        "calls": 0,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 5,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000019584",
+      "tickers": [
+        "CHE"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-01T13:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 2,
+        "90_DAYS": 3,
+        "OLDER": 5
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 9,
+        "EARNINGS_SCHEDULED": 2,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 2,
+        "calls": 1,
+        "materials": 25,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000019617",
+      "tickers": [
+        "JPM"
+      ],
+      "ledgerNews": 0,
+      "latestLedgerNews": null,
+      "engineExportNews": 0,
+      "policyAllowedNews": 0,
+      "consumerNews": 0,
+      "productionNews": 0,
+      "newsFreshness": {},
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "SEC_FILING": 20,
+        "PERIODIC_REPORT_PUBLISHED": 20
+      },
+      "acceptedModules": {
+        "news": 0,
+        "earnings": 12,
+        "events": 1,
+        "calls": 0,
+        "materials": 28,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 3,
+      "losses": [
+        {
+          "class": "DATA_DOES_NOT_EXIST",
+          "stage": "PRIVATE_LEDGER_NEWS",
+          "count": 0
+        }
+      ],
+      "renderedNewsIncludingSecondary": 0,
+      "initiallyVisibleNewsRange": [
+        0,
+        0
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000027419",
+      "tickers": [
+        "TGT"
+      ],
+      "ledgerNews": 1,
+      "latestLedgerNews": "2026-09-23",
+      "engineExportNews": 1,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "30_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 22,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000046195",
+      "tickers": [
+        "BOH"
+      ],
+      "ledgerNews": 9,
+      "latestLedgerNews": "2026-10-02T20:02:00Z",
+      "engineExportNews": 9,
+      "policyAllowedNews": 9,
+      "consumerNews": 4,
+      "productionNews": 4,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "90_DAYS": 1,
+        "OLDER": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_CALL": 5,
+        "IR_EVENT": 2
+      },
+      "acceptedModules": {
+        "news": 4,
+        "earnings": 0,
+        "events": 1,
+        "calls": 5,
+        "materials": 22,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 4,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 5,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 5
+        }
+      ],
+      "renderedNewsIncludingSecondary": 4,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000070858",
+      "tickers": [
+        "BAC"
+      ],
+      "ledgerNews": 2,
+      "latestLedgerNews": "2026-10-06T12:00:00Z",
+      "engineExportNews": 2,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "30_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 6,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 1,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 1
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000091142",
+      "tickers": [
+        "AOS"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-02T13:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 8,
+      "productionNews": 8,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "90_DAYS": 2,
+        "OLDER": 5
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_PUBLISHED": 2
+      },
+      "acceptedModules": {
+        "news": 8,
+        "earnings": 2,
+        "events": 1,
+        "calls": 0,
+        "materials": 28,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 2,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 2
+        }
+      ],
+      "renderedNewsIncludingSecondary": 8,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000320193",
+      "tickers": [
+        "AAPL"
+      ],
+      "ledgerNews": 20,
+      "latestLedgerNews": "2026-09-29",
+      "engineExportNews": 20,
+      "policyAllowedNews": 20,
+      "consumerNews": 20,
+      "productionNews": 20,
+      "newsFreshness": {
+        "30_DAYS": 18,
+        "90_DAYS": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "SEC_FILING": 20,
+        "PERIODIC_REPORT_PUBLISHED": 20
+      },
+      "acceptedModules": {
+        "news": 20,
+        "earnings": 12,
+        "events": 1,
+        "calls": 0,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 20,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000705432",
+      "tickers": [
+        "SBSI"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-08-06T20:30:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 6,
+      "productionNews": 6,
+      "newsFreshness": {
+        "90_DAYS": 3,
+        "OLDER": 3
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_CALL": 4,
+        "IR_EVENT": 1,
+        "EARNINGS_PUBLISHED": 3
+      },
+      "acceptedModules": {
+        "news": 6,
+        "earnings": 3,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 4,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 4,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 4
+        }
+      ],
+      "renderedNewsIncludingSecondary": 6,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000713676",
+      "tickers": [
+        "PNC"
+      ],
+      "ledgerNews": 1,
+      "latestLedgerNews": "2026-10-02",
+      "engineExportNews": 1,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "7_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 5,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000750686",
+      "tickers": [
+        "CAC"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-01T17:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 6,
+      "productionNews": 6,
+      "newsFreshness": {
+        "30_DAYS": 2,
+        "90_DAYS": 1,
+        "OLDER": 3
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 2,
+        "EARNINGS_CALL": 5,
+        "EARNINGS_SCHEDULED": 4
+      },
+      "acceptedModules": {
+        "news": 6,
+        "earnings": 0,
+        "events": 2,
+        "calls": 5,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 6,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 4,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 4
+        }
+      ],
+      "renderedNewsIncludingSecondary": 6,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000788965",
+      "tickers": [
+        "HNRG"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-17T12:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 7,
+      "productionNews": 7,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 2,
+        "OLDER": 4
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 2
+      },
+      "acceptedModules": {
+        "news": 7,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 25,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 3,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 3
+        }
+      ],
+      "renderedNewsIncludingSecondary": 7,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000789019",
+      "tickers": [
+        "MSFT"
+      ],
+      "ledgerNews": 1,
+      "latestLedgerNews": "2026-07-29",
+      "engineExportNews": 1,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "90_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "SEC_FILING": 20,
+        "PERIODIC_REPORT_PUBLISHED": 20
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 12,
+        "events": 1,
+        "calls": 0,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000804328",
+      "tickers": [
+        "QCOM"
+      ],
+      "ledgerNews": 5,
+      "latestLedgerNews": "2026-10-05T11:29:00Z",
+      "engineExportNews": 5,
+      "policyAllowedNews": 4,
+      "consumerNews": 4,
+      "productionNews": 4,
+      "newsFreshness": {
+        "90_DAYS": 4
+      },
+      "ledgerEventTypes": {},
+      "acceptedModules": {
+        "news": 4,
+        "earnings": 0,
+        "events": 0,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 1,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 1
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 4,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000886982",
+      "tickers": [
+        "GS"
+      ],
+      "ledgerNews": 2,
+      "latestLedgerNews": "2026-09-28",
+      "engineExportNews": 2,
+      "policyAllowedNews": 2,
+      "consumerNews": 2,
+      "productionNews": 2,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 2,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 11,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 5,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 2,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000895421",
+      "tickers": [
+        "MS"
+      ],
+      "ledgerNews": 0,
+      "latestLedgerNews": null,
+      "engineExportNews": 0,
+      "policyAllowedNews": 0,
+      "consumerNews": 0,
+      "productionNews": 0,
+      "newsFreshness": {},
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 0,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 4,
+      "losses": [
+        {
+          "class": "DATA_DOES_NOT_EXIST",
+          "stage": "PRIVATE_LEDGER_NEWS",
+          "count": 0
+        }
+      ],
+      "renderedNewsIncludingSecondary": 0,
+      "initiallyVisibleNewsRange": [
+        0,
+        0
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0000911971",
+      "tickers": [
+        "TK"
+      ],
+      "ledgerNews": 6,
+      "latestLedgerNews": "2026-08-01T19:56:36Z",
+      "engineExportNews": 6,
+      "policyAllowedNews": 6,
+      "consumerNews": 6,
+      "productionNews": 6,
+      "newsFreshness": {
+        "90_DAYS": 5,
+        "OLDER": 1
+      },
+      "ledgerEventTypes": {},
+      "acceptedModules": {
+        "news": 6,
+        "earnings": 0,
+        "events": 0,
+        "calls": 0,
+        "materials": 21,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 2,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 6,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": true,
+      "availableStaleFinancials": true,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001018724",
+      "tickers": [
+        "AMZN"
+      ],
+      "ledgerNews": 2,
+      "latestLedgerNews": "2026-07-30T20:01:00Z",
+      "engineExportNews": 2,
+      "policyAllowedNews": 2,
+      "consumerNews": 2,
+      "productionNews": 2,
+      "newsFreshness": {
+        "90_DAYS": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 2,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 2,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001045810",
+      "tickers": [
+        "NVDA"
+      ],
+      "ledgerNews": 14,
+      "latestLedgerNews": "2026-10-06T13:00:00Z",
+      "engineExportNews": 14,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 4,
+        "90_DAYS": 6
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 7,
+        "EARNINGS_CALL": 4,
+        "EARNINGS_PUBLISHED": 1,
+        "SEC_FILING": 20,
+        "PERIODIC_REPORT_PUBLISHED": 20
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 12,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 4,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 4
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001099219",
+      "tickers": [
+        "MET"
+      ],
+      "ledgerNews": 6,
+      "latestLedgerNews": "2026-10-07T20:15:00Z",
+      "engineExportNews": 6,
+      "policyAllowedNews": 6,
+      "consumerNews": 6,
+      "productionNews": 6,
+      "newsFreshness": {
+        "7_DAYS": 2,
+        "90_DAYS": 4
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_SCHEDULED": 1,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 6,
+        "earnings": 0,
+        "events": 3,
+        "calls": 1,
+        "materials": 5,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 6,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 6,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001108524",
+      "tickers": [
+        "CRM"
+      ],
+      "ledgerNews": 6,
+      "latestLedgerNews": "2026-09-16T12:00:00Z",
+      "engineExportNews": 6,
+      "policyAllowedNews": 6,
+      "consumerNews": 6,
+      "productionNews": 6,
+      "newsFreshness": {
+        "30_DAYS": 6
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 6,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 6,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001129928",
+      "tickers": [
+        "ONCY"
+      ],
+      "ledgerNews": 19,
+      "latestLedgerNews": "2026-09-29T13:30:00Z",
+      "engineExportNews": 19,
+      "policyAllowedNews": 19,
+      "consumerNews": 11,
+      "productionNews": 11,
+      "newsFreshness": {
+        "30_DAYS": 3,
+        "90_DAYS": 3,
+        "OLDER": 5
+      },
+      "ledgerEventTypes": {},
+      "acceptedModules": {
+        "news": 11,
+        "earnings": 0,
+        "events": 0,
+        "calls": 0,
+        "materials": 4,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 3,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 8,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 8
+        }
+      ],
+      "renderedNewsIncludingSecondary": 11,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001318605",
+      "tickers": [
+        "TSLA"
+      ],
+      "ledgerNews": 2,
+      "latestLedgerNews": "2026-10-02T12:00:00Z",
+      "engineExportNews": 2,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "7_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_SCHEDULED": 1,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 0,
+        "events": 3,
+        "calls": 1,
+        "materials": 5,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 1,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 1
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001321655",
+      "tickers": [
+        "PLTR"
+      ],
+      "ledgerNews": 8,
+      "latestLedgerNews": "2026-10-01",
+      "engineExportNews": 8,
+      "policyAllowedNews": 8,
+      "consumerNews": 8,
+      "productionNews": 8,
+      "newsFreshness": {
+        "30_DAYS": 5,
+        "90_DAYS": 3
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 8,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 8,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001326801",
+      "tickers": [
+        "META"
+      ],
+      "ledgerNews": 5,
+      "latestLedgerNews": "2026-09-10T23:01:00Z",
+      "engineExportNews": 5,
+      "policyAllowedNews": 5,
+      "consumerNews": 5,
+      "productionNews": 5,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 4
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_CALL": 4,
+        "IR_EVENT": 2
+      },
+      "acceptedModules": {
+        "news": 5,
+        "earnings": 0,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 7,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 5,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001341439",
+      "tickers": [
+        "ORCL"
+      ],
+      "ledgerNews": 3,
+      "latestLedgerNews": "2026-09-12T16:16:00Z",
+      "engineExportNews": 3,
+      "policyAllowedNews": 3,
+      "consumerNews": 3,
+      "productionNews": 3,
+      "newsFreshness": {
+        "30_DAYS": 2,
+        "90_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 3,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 3,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 7,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 3,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001384101",
+      "tickers": [
+        "VCYT"
+      ],
+      "ledgerNews": 5,
+      "latestLedgerNews": "2026-09-30T00:37:23Z",
+      "engineExportNews": 5,
+      "policyAllowedNews": 1,
+      "consumerNews": 1,
+      "productionNews": 1,
+      "newsFreshness": {
+        "30_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 6,
+        "EARNINGS_CALL": 3
+      },
+      "acceptedModules": {
+        "news": 1,
+        "earnings": 0,
+        "events": 1,
+        "calls": 3,
+        "materials": 12,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 4,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 4
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 1,
+      "initiallyVisibleNewsRange": [
+        1,
+        1
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001468091",
+      "tickers": [
+        "VEON"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-08",
+      "engineExportNews": 10,
+      "policyAllowedNews": 2,
+      "consumerNews": 2,
+      "productionNews": 2,
+      "newsFreshness": {
+        "TODAY": 1,
+        "7_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_SCHEDULED": 1,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 2,
+        "earnings": 0,
+        "events": 2,
+        "calls": 1,
+        "materials": 24,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 3,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 8,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 8
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 2,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": true,
+      "availableStaleFinancials": true,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001512673",
+      "tickers": [
+        "XYZ"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-05T13:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "7_DAYS": 2,
+        "30_DAYS": 7,
+        "90_DAYS": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 5,
+        "EARNINGS_CALL": 4
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 7,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001515673",
+      "tickers": [
+        "RARE"
+      ],
+      "ledgerNews": 11,
+      "latestLedgerNews": "2026-10-07T12:30:09Z",
+      "engineExportNews": 11,
+      "policyAllowedNews": 8,
+      "consumerNews": 8,
+      "productionNews": 8,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "30_DAYS": 1,
+        "90_DAYS": 6
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 8,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 4,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 7,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 3,
+          "reasons": {
+            "INSECURE_HTTP_LINK_WITHOUT_EXACT_HTTPS_RECONFIRMATION": 3
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        }
+      ],
+      "renderedNewsIncludingSecondary": 8,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001518715",
+      "tickers": [
+        "MCHB"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-16T22:18:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 9,
+      "productionNews": 9,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 3,
+        "OLDER": 5
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_CALL": 4
+      },
+      "acceptedModules": {
+        "news": 9,
+        "earnings": 0,
+        "events": 1,
+        "calls": 4,
+        "materials": 24,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 6,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 1,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 1
+        }
+      ],
+      "renderedNewsIncludingSecondary": 9,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001533924",
+      "tickers": [
+        "AMPY"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-08-10T20:15:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 3,
+      "productionNews": 3,
+      "newsFreshness": {
+        "90_DAYS": 2,
+        "OLDER": 1
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 1,
+        "EARNINGS_SCHEDULED": 3,
+        "PRESENTATION_PUBLISHED": 1
+      },
+      "acceptedModules": {
+        "news": 3,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 27,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 7,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 7
+        }
+      ],
+      "renderedNewsIncludingSecondary": 3,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001650164",
+      "tickers": [
+        "TOST"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-29T12:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 4,
+        "90_DAYS": 6
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 4,
+        "EARNINGS_CALL": 4,
+        "EARNINGS_PUBLISHED": 1,
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 1,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 7,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001652044",
+      "tickers": [
+        "GOOG",
+        "GOOGL"
+      ],
+      "ledgerNews": 12,
+      "latestLedgerNews": "2026-10-02T13:00:00Z",
+      "engineExportNews": 12,
+      "policyAllowedNews": 10,
+      "consumerNews": 7,
+      "productionNews": 7,
+      "newsFreshness": {
+        "90_DAYS": 2,
+        "OLDER": 5
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 4,
+        "EARNINGS_CALL": 4
+      },
+      "acceptedModules": {
+        "news": 7,
+        "earnings": 0,
+        "events": 1,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_FILTERED",
+          "stage": "SOURCE_USAGE",
+          "count": 2,
+          "reasons": {
+            "UNAPPROVED_PUBLISHER": 2
+          },
+          "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+        },
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 3,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 3
+        }
+      ],
+      "renderedNewsIncludingSecondary": 7,
+      "initiallyVisibleNewsRange": [
+        2,
+        2
+      ],
+      "browserCasesVerified": 16,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001702780",
+      "tickers": [
+        "OPTU"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-10-01T14:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 4,
+        "90_DAYS": 4,
+        "OLDER": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 1,
+        "calls": 1,
+        "materials": 9,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001782223",
+      "tickers": [
+        "PYXS"
+      ],
+      "ledgerNews": 9,
+      "latestLedgerNews": "2026-10-02T11:00:32Z",
+      "engineExportNews": 9,
+      "policyAllowedNews": 9,
+      "consumerNews": 9,
+      "productionNews": 9,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "30_DAYS": 3,
+        "90_DAYS": 3,
+        "OLDER": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 9,
+        "EARNINGS_PUBLISHED": 3
+      },
+      "acceptedModules": {
+        "news": 9,
+        "earnings": 2,
+        "events": 1,
+        "calls": 0,
+        "materials": 12,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 3,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 9,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001788882",
+      "tickers": [
+        "ROOT"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-03T20:30:29Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "90_DAYS": 6,
+        "OLDER": 4
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 10,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 1,
+        "calls": 1,
+        "materials": 14,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 5,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001810806",
+      "tickers": [
+        "U"
+      ],
+      "ledgerNews": 4,
+      "latestLedgerNews": "2026-10-07T12:00:00Z",
+      "engineExportNews": 4,
+      "policyAllowedNews": 4,
+      "consumerNews": 4,
+      "productionNews": 4,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "30_DAYS": 1,
+        "90_DAYS": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1
+      },
+      "acceptedModules": {
+        "news": 4,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 25,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 4,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001810997",
+      "tickers": [
+        "XPEV"
+      ],
+      "ledgerNews": 5,
+      "latestLedgerNews": "2026-10-01T05:08:00Z",
+      "engineExportNews": 5,
+      "policyAllowedNews": 5,
+      "consumerNews": 5,
+      "productionNews": 5,
+      "newsFreshness": {
+        "30_DAYS": 1,
+        "90_DAYS": 4
+      },
+      "ledgerEventTypes": {},
+      "acceptedModules": {
+        "news": 5,
+        "earnings": 0,
+        "events": 0,
+        "calls": 0,
+        "materials": 1,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 2,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 5,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": true,
+      "availableStaleFinancials": true,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001818874",
+      "tickers": [
+        "SOFI"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-29T12:00:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 3,
+        "90_DAYS": 5,
+        "OLDER": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 5
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 1,
+        "calls": 0,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 8,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001820953",
+      "tickers": [
+        "AFRM"
+      ],
+      "ledgerNews": 11,
+      "latestLedgerNews": "2026-10-05T20:07:00Z",
+      "engineExportNews": 11,
+      "policyAllowedNews": 11,
+      "consumerNews": 11,
+      "productionNews": 11,
+      "newsFreshness": {
+        "7_DAYS": 1,
+        "30_DAYS": 4,
+        "90_DAYS": 6
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 4,
+        "EARNINGS_CALL": 4,
+        "EARNINGS_SCHEDULED": 2
+      },
+      "acceptedModules": {
+        "news": 11,
+        "earnings": 0,
+        "events": 2,
+        "calls": 4,
+        "materials": 30,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 6,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 11,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001839839",
+      "tickers": [
+        "JBI"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-02T10:50:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 5,
+      "productionNews": 5,
+      "newsFreshness": {
+        "90_DAYS": 3,
+        "OLDER": 2
+      },
+      "ledgerEventTypes": {
+        "EARNINGS_PUBLISHED": 3,
+        "EARNINGS_SCHEDULED": 3,
+        "EARNINGS_ESTIMATED": 1,
+        "IR_EVENT": 1,
+        "EARNINGS_CALL": 1
+      },
+      "acceptedModules": {
+        "news": 5,
+        "earnings": 3,
+        "events": 1,
+        "calls": 1,
+        "materials": 20,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 9,
+      "losses": [
+        {
+          "class": "DATA_EXISTS_BUT_IS_NOT_EXPORTED",
+          "stage": "APPROVED_CONSUMER_PROJECTION",
+          "count": 5,
+          "reason": "DETERMINISTIC_180_DAY_RETENTION",
+          "verifiedOlderThanRetention": 5
+        }
+      ],
+      "renderedNewsIncludingSecondary": 5,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": false,
+      "availableStaleFinancials": false,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    },
+    {
+      "companyId": "iss_cik_0001861841",
+      "tickers": [
+        "ARBE"
+      ],
+      "ledgerNews": 10,
+      "latestLedgerNews": "2026-09-28T20:15:00Z",
+      "engineExportNews": 10,
+      "policyAllowedNews": 10,
+      "consumerNews": 10,
+      "productionNews": 10,
+      "newsFreshness": {
+        "30_DAYS": 3,
+        "90_DAYS": 7
+      },
+      "ledgerEventTypes": {
+        "IR_EVENT": 2,
+        "EARNINGS_CALL": 2
+      },
+      "acceptedModules": {
+        "news": 10,
+        "earnings": 0,
+        "events": 0,
+        "calls": 2,
+        "materials": 6,
+        "materialEvents": 0
+      },
+      "germanProfile": true,
+      "financials": "AVAILABLE",
+      "whatChanged": 2,
+      "losses": [],
+      "renderedNewsIncludingSecondary": 10,
+      "initiallyVisibleNewsRange": [
+        3,
+        3
+      ],
+      "browserCasesVerified": 8,
+      "rawFinancialStaleFlag": true,
+      "availableStaleFinancials": true,
+      "renderingPolicy": "INITIAL_3_PLUS_EXPANDABLE_CURRENT_AND_ARCHIVE; NOT_ALL_ON_FIRST_SCREEN"
+    }
+  ],
+  "browserOrigin": "https://research.visionuniverse.de",
+  "productionSHA": "5ee2ae4acd14c4a3bac29da5a81af4dd7c53bc97",
+  "browserCases": 368,
+  "browserVerified": true,
+  "physicalIPhoneTest": false
+}
