@@ -130,7 +130,7 @@ Das Register selbst ändert die Auswertung nie. Sie ist ein abgeleiteter Bericht
   * Sa 09:23, So 07:47, Mo 06:17, Mi 05:41 UTC.
   * Der erste registriert die Woche. Die anderen holen nach, wenn ein Lauf gescheitert ist.
   * Ist nichts fällig, endet ein Lauf nach der Stufe „Fällig?“, ohne Datenabruf (`register.mjs --pending`).
-* **Übergang:** Bis ein direkter Lauf auf `main` verifiziert ist, starten die vier Zeitpläne den Register-Workflow über `elliott-registry-dispatcher.yml`. Danach liegen sie im Register-Workflow selbst, und der Dispatcher entfällt.
+* **Übergang (abgeschlossen):** Bis ein direkter Lauf auf `main` verifiziert war, starteten die vier Zeitpläne den Register-Workflow über `elliott-registry-dispatcher.yml`. Seitdem liegen sie im Register-Workflow selbst; der Dispatcher ist entfernt.
 * **Manuell:** `workflow_dispatch` (Eingabe `max_weeks`, 1–4).
 * **Nachholen:**
   * Ohne `--week` registriert ein Lauf die fehlenden abgeschlossenen Wochen nach dem letzten Lauf der Reihe nach, im Workflow höchstens 2.
