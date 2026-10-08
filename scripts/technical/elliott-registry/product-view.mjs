@@ -18,9 +18,11 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
+const Identity = createRequire(import.meta.url)("../../../core/identity.js"); // eine Identitaetsregel (ADR-001)
 
 export const PRODUCT_VIEW_VERSION = "elliott-registry-product-view-1.0.0";
 export const PUBLISHED_DIR = join(ROOT, "quant/data/technical-intelligence/v3");
@@ -112,7 +114,7 @@ export function identityOne(sym, ctx, pub, productInputDir) {
     const f = ctx.daily.get(sym); if (!f) return { s: sym, status: "NO_INPUT" };
     const j = readJson(f); series = dailySeriesFromPayload(j, j.ticker); kind = "daily";
   } else {
-    const f = join(productInputDir, "ref_" + sym + ".json"); if (!existsSync(f)) return { s: sym, status: "NO_INPUT" };
+    const f = join(productInputDir, Identity.securityIdForTicker(sym) + ".json"); if (!existsSync(f)) return { s: sym, status: "NO_INPUT" };
     const j = readJson(f); series = weeklySeriesFromPoints(j.points || [], j.ticker); kind = "weekly";
   }
   if (series.timestamps[series.length - 1] !== P.asOf) return { s: sym, status: "INPUT_NEWER_OR_OLDER", inputAsOf: series.timestamps[series.length - 1], publishedAsOf: P.asOf };
