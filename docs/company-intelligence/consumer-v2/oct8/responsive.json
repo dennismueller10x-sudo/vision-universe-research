@@ -2,7 +2,7 @@
   "status": "PASS",
   "version": "after",
   "origin": "https://research.visionuniverse.de",
-  "productionSHA": "f05ed84844dcba6557d821b9d53fd5cff8f50fe7",
+  "productionSHA": "b15db54c9f05e096f9e6ba49f605ebce89c94160",
   "generation": "d700d480d9b2858eb8fa34f4",
   "stocks": 46,
   "issuers": 45,
@@ -74,10 +74,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AC.json",
           "status": 200
         },
@@ -88,11 +84,6 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "ACU",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "ACU",
           "state": "AVAILABLE",
@@ -161,10 +152,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AC.json",
           "status": 200
         },
@@ -173,18 +160,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "ACU",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "ACU",
           "state": "AVAILABLE",
@@ -214,10 +191,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AC.json",
           "status": 200
         },
@@ -228,11 +201,6 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "ACU",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "ACU",
           "state": "AVAILABLE",
@@ -813,10 +781,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AF.json",
           "status": 200
         },
@@ -827,11 +791,6 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AFL",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AFL",
           "state": "AVAILABLE",
@@ -1373,6 +1332,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/CH.json",
           "status": 200
         },
@@ -1381,8 +1344,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "CHE",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "CHE",
           "state": "AVAILABLE",
@@ -1667,10 +1640,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/JP.json",
           "status": 200
         },
@@ -1679,18 +1648,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "JPM",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "JPM",
           "state": "AVAILABLE",
@@ -2493,10 +2452,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/BA.json",
           "status": 200
         },
@@ -2505,18 +2460,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "BAC",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "BAC",
           "state": "AVAILABLE",
@@ -2589,10 +2534,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/BA.json",
           "status": 200
         },
@@ -2601,18 +2542,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "BAC",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "BAC",
           "state": "AVAILABLE",
@@ -3369,10 +3300,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AA.json",
           "status": 200
         },
@@ -3381,18 +3308,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AAPL",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AAPL",
           "state": "AVAILABLE",
@@ -3733,6 +3650,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/SB.json",
           "status": 200
         },
@@ -3741,8 +3662,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "SBSI",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "SBSI",
           "state": "AVAILABLE",
@@ -3947,10 +3878,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/PN.json",
           "status": 200
         },
@@ -3959,18 +3886,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "PNC",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "PNC",
           "state": "AVAILABLE",
@@ -4045,10 +3962,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/PN.json",
           "status": 200
         },
@@ -4057,18 +3970,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "PNC",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "PNC",
           "state": "AVAILABLE",
@@ -4314,49 +4217,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/CA.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000750686.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "CAC",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000750686"
-        }
-      ]
-    },
-    {
-      "ticker": "CAC",
-      "companyId": "iss_cik_0000750686",
-      "width": 1440,
-      "theme": "dark",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 6,
-      "initiallyVisibleNews": 3,
-      "consumerUniqueNewsURLs": 6,
-      "newsRenderedIncludingSecondary": 6,
-      "renderedStoryElements": 3,
-      "headings": [
-        "Aktuelles",
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes",
-        "Calls / Webcasts"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/index.json",
           "status": 200
         },
@@ -4391,8 +4251,8 @@
     {
       "ticker": "CAC",
       "companyId": "iss_cik_0000750686",
-      "width": 390,
-      "theme": "light",
+      "width": 1440,
+      "theme": "dark",
       "status": "PASS",
       "generation": "d700d480d9b2858eb8fa34f4",
       "consumerNews": 6,
@@ -4434,7 +4294,7 @@
     {
       "ticker": "CAC",
       "companyId": "iss_cik_0000750686",
-      "width": 430,
+      "width": 390,
       "theme": "light",
       "status": "PASS",
       "generation": "d700d480d9b2858eb8fa34f4",
@@ -4477,6 +4337,49 @@
     {
       "ticker": "CAC",
       "companyId": "iss_cik_0000750686",
+      "width": 430,
+      "theme": "light",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 6,
+      "initiallyVisibleNews": 3,
+      "consumerUniqueNewsURLs": 6,
+      "newsRenderedIncludingSecondary": 6,
+      "renderedStoryElements": 3,
+      "headings": [
+        "Aktuelles",
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes",
+        "Calls / Webcasts"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/CA.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000750686.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [],
+      "observedLoadStates": [
+        {
+          "ticker": "CAC",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000750686"
+        }
+      ]
+    },
+    {
+      "ticker": "CAC",
+      "companyId": "iss_cik_0000750686",
       "width": 768,
       "theme": "light",
       "status": "PASS",
@@ -4973,92 +4876,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "MSFT",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000789019"
-        }
-      ]
-    },
-    {
-      "ticker": "MSFT",
-      "companyId": "iss_cik_0000789019",
-      "width": 768,
-      "theme": "dark",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 0,
-      "initiallyVisibleNews": 0,
-      "consumerUniqueNewsURLs": 0,
-      "newsRenderedIncludingSecondary": 0,
-      "renderedStoryElements": 1,
-      "headings": [
-        "Unternehmen",
-        "Aktuelles",
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "MSFT",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000789019"
-        }
-      ]
-    },
-    {
-      "ticker": "MSFT",
-      "companyId": "iss_cik_0000789019",
-      "width": 1440,
-      "theme": "dark",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 0,
-      "initiallyVisibleNews": 0,
-      "consumerUniqueNewsURLs": 0,
-      "newsRenderedIncludingSecondary": 0,
-      "renderedStoryElements": 1,
-      "headings": [
-        "Unternehmen",
-        "Aktuelles",
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/index.json",
           "status": 200
         },
@@ -5093,94 +4910,8 @@
     {
       "ticker": "MSFT",
       "companyId": "iss_cik_0000789019",
-      "width": 390,
-      "theme": "light",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 0,
-      "initiallyVisibleNews": 0,
-      "consumerUniqueNewsURLs": 0,
-      "newsRenderedIncludingSecondary": 0,
-      "renderedStoryElements": 1,
-      "headings": [
-        "Unternehmen",
-        "Aktuelles",
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "MSFT",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000789019"
-        }
-      ]
-    },
-    {
-      "ticker": "MSFT",
-      "companyId": "iss_cik_0000789019",
-      "width": 430,
-      "theme": "light",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 0,
-      "initiallyVisibleNews": 0,
-      "consumerUniqueNewsURLs": 0,
-      "newsRenderedIncludingSecondary": 0,
-      "renderedStoryElements": 1,
-      "headings": [
-        "Unternehmen",
-        "Aktuelles",
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "MSFT",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000789019"
-        }
-      ]
-    },
-    {
-      "ticker": "MSFT",
-      "companyId": "iss_cik_0000789019",
       "width": 768,
-      "theme": "light",
+      "theme": "dark",
       "status": "PASS",
       "generation": "d700d480d9b2858eb8fa34f4",
       "consumerNews": 0,
@@ -5223,6 +4954,63 @@
       "ticker": "MSFT",
       "companyId": "iss_cik_0000789019",
       "width": 1440,
+      "theme": "dark",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 0,
+      "initiallyVisibleNews": 0,
+      "consumerUniqueNewsURLs": 0,
+      "newsRenderedIncludingSecondary": 0,
+      "renderedStoryElements": 1,
+      "headings": [
+        "Unternehmen",
+        "Aktuelles",
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "observedLoadStates": [
+        {
+          "ticker": "MSFT",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
+        {
+          "ticker": "MSFT",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000789019"
+        }
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "companyId": "iss_cik_0000789019",
+      "width": 390,
       "theme": "light",
       "status": "PASS",
       "generation": "d700d480d9b2858eb8fa34f4",
@@ -5269,6 +5057,135 @@
           "state": "UNAVAILABLE",
           "reason": "REQUEST_ABORTED"
         },
+        {
+          "ticker": "MSFT",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000789019"
+        }
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "companyId": "iss_cik_0000789019",
+      "width": 430,
+      "theme": "light",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 0,
+      "initiallyVisibleNews": 0,
+      "consumerUniqueNewsURLs": 0,
+      "newsRenderedIncludingSecondary": 0,
+      "renderedStoryElements": 1,
+      "headings": [
+        "Unternehmen",
+        "Aktuelles",
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [],
+      "observedLoadStates": [
+        {
+          "ticker": "MSFT",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000789019"
+        }
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "companyId": "iss_cik_0000789019",
+      "width": 768,
+      "theme": "light",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 0,
+      "initiallyVisibleNews": 0,
+      "consumerUniqueNewsURLs": 0,
+      "newsRenderedIncludingSecondary": 0,
+      "renderedStoryElements": 1,
+      "headings": [
+        "Unternehmen",
+        "Aktuelles",
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [],
+      "observedLoadStates": [
+        {
+          "ticker": "MSFT",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000789019"
+        }
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "companyId": "iss_cik_0000789019",
+      "width": 1440,
+      "theme": "light",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 0,
+      "initiallyVisibleNews": 0,
+      "consumerUniqueNewsURLs": 0,
+      "newsRenderedIncludingSecondary": 0,
+      "renderedStoryElements": 1,
+      "headings": [
+        "Unternehmen",
+        "Aktuelles",
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000789019.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [],
+      "observedLoadStates": [
         {
           "ticker": "MSFT",
           "state": "AVAILABLE",
@@ -5437,10 +5354,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/QC.json",
           "status": 200
         },
@@ -5449,18 +5362,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "QCOM",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "QCOM",
           "state": "AVAILABLE",
@@ -5697,10 +5600,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/GS.json",
           "status": 200
         },
@@ -5709,18 +5608,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "GS",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "GS",
           "state": "AVAILABLE",
@@ -6039,10 +5928,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
           "status": 200
         },
@@ -6051,18 +5936,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "MS",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "MS",
           "state": "AVAILABLE",
@@ -6176,47 +6051,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000895421.json",
-          "status": 200
-        }
-      ],
-      "requestFailures": [],
-      "observedLoadStates": [
-        {
-          "ticker": "MS",
-          "state": "AVAILABLE",
-          "companyId": "iss_cik_0000895421"
-        }
-      ]
-    },
-    {
-      "ticker": "MS",
-      "companyId": "iss_cik_0000895421",
-      "width": 430,
-      "theme": "light",
-      "status": "PASS",
-      "generation": "d700d480d9b2858eb8fa34f4",
-      "consumerNews": 0,
-      "initiallyVisibleNews": 0,
-      "consumerUniqueNewsURLs": 0,
-      "newsRenderedIncludingSecondary": 0,
-      "renderedStoryElements": 0,
-      "headings": [
-        "Geschäftszahlen",
-        "Was hat sich verändert?",
-        "Als Nächstes"
-      ],
-      "errors": [],
-      "consumerResponses": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/index.json",
           "status": 200
         },
@@ -6251,6 +6085,61 @@
     {
       "ticker": "MS",
       "companyId": "iss_cik_0000895421",
+      "width": 430,
+      "theme": "light",
+      "status": "PASS",
+      "generation": "d700d480d9b2858eb8fa34f4",
+      "consumerNews": 0,
+      "initiallyVisibleNews": 0,
+      "consumerUniqueNewsURLs": 0,
+      "newsRenderedIncludingSecondary": 0,
+      "renderedStoryElements": 0,
+      "headings": [
+        "Geschäftszahlen",
+        "Was hat sich verändert?",
+        "Als Nächstes"
+      ],
+      "errors": [],
+      "consumerResponses": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MS.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0000895421.json",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "observedLoadStates": [
+        {
+          "ticker": "MS",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
+        {
+          "ticker": "MS",
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0000895421"
+        }
+      ]
+    },
+    {
+      "ticker": "MS",
+      "companyId": "iss_cik_0000895421",
       "width": 768,
       "theme": "light",
       "status": "PASS",
@@ -6559,6 +6448,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TK.json",
           "status": 200
         },
@@ -6567,8 +6460,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "TK",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "TK",
           "state": "AVAILABLE",
@@ -6641,10 +6544,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TK.json",
           "status": 200
         },
@@ -6653,18 +6552,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "TK",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "TK",
           "state": "AVAILABLE",
@@ -6697,10 +6586,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -6709,18 +6594,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AMZN",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AMZN",
           "state": "AVAILABLE",
@@ -6963,6 +6838,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -6971,8 +6850,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "AMZN",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "AMZN",
           "state": "AVAILABLE",
@@ -7269,6 +7158,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/NV.json",
           "status": 200
         },
@@ -7277,8 +7170,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "NVDA",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "NVDA",
           "state": "AVAILABLE",
@@ -7521,10 +7424,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/ME.json",
           "status": 200
         },
@@ -7533,18 +7432,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "MET",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "MET",
           "state": "AVAILABLE",
@@ -7699,10 +7588,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/ME.json",
           "status": 200
         },
@@ -7711,18 +7596,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "MET",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "MET",
           "state": "AVAILABLE",
@@ -8000,10 +7875,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/CR.json",
           "status": 200
         },
@@ -8012,18 +7883,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "CRM",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "CRM",
           "state": "AVAILABLE",
@@ -8643,10 +8504,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TS.json",
           "status": 200
         },
@@ -8655,18 +8512,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "TSLA",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "TSLA",
           "state": "AVAILABLE",
@@ -8825,10 +8672,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/PL.json",
           "status": 200
         },
@@ -8837,18 +8680,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "PLTR",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "PLTR",
           "state": "AVAILABLE",
@@ -9091,6 +8924,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/PL.json",
           "status": 200
         },
@@ -9099,8 +8936,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "PLTR",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "PLTR",
           "state": "AVAILABLE",
@@ -9603,10 +9450,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/OR.json",
           "status": 200
         },
@@ -9615,18 +9458,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "ORCL",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "ORCL",
           "state": "AVAILABLE",
@@ -9957,10 +9790,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/VC.json",
           "status": 200
         },
@@ -9969,18 +9798,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "VCYT",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "VCYT",
           "state": "AVAILABLE",
@@ -10014,10 +9833,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/VC.json",
           "status": 200
         },
@@ -10026,18 +9841,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "VCYT",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "VCYT",
           "state": "AVAILABLE",
@@ -10485,6 +10290,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/VE.json",
           "status": 200
         },
@@ -10493,8 +10302,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "VEON",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "VEON",
           "state": "AVAILABLE",
@@ -10749,6 +10568,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XY.json",
           "status": 200
         },
@@ -10759,6 +10582,11 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
+        {
+          "ticker": "XYZ",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "XYZ",
           "state": "AVAILABLE",
@@ -10793,10 +10621,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XY.json",
           "status": 200
         },
@@ -10805,18 +10629,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "XYZ",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "XYZ",
           "state": "AVAILABLE",
@@ -10935,6 +10749,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/RA.json",
           "status": 200
         },
@@ -10943,8 +10761,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/RA.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "RARE",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "RARE",
           "state": "AVAILABLE",
@@ -11316,6 +11144,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/MC.json",
           "status": 200
         },
@@ -11324,8 +11156,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "MCHB",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "MCHB",
           "state": "AVAILABLE",
@@ -11500,12 +11342,7 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
         {
           "ticker": "MCHB",
@@ -11588,10 +11425,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -11600,18 +11433,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AMPY",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AMPY",
           "state": "AVAILABLE",
@@ -11688,6 +11511,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -11696,8 +11523,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "AMPY",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "AMPY",
           "state": "AVAILABLE",
@@ -11774,10 +11611,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -11788,11 +11621,6 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AMPY",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AMPY",
           "state": "AVAILABLE",
@@ -11826,10 +11654,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/AM.json",
           "status": 200
         },
@@ -11840,11 +11664,6 @@
       ],
       "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "AMPY",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "AMPY",
           "state": "AVAILABLE",
@@ -12053,10 +11872,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TO.json",
           "status": 200
         },
@@ -12065,18 +11880,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "TOST",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "TOST",
           "state": "AVAILABLE",
@@ -12155,10 +11960,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TO.json",
           "status": 200
         },
@@ -12167,18 +11968,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "TOST",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "TOST",
           "state": "AVAILABLE",
@@ -12257,6 +12048,14 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/TO.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001650164.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/index.json",
           "status": 200
         },
@@ -12273,8 +12072,8 @@
       "observedLoadStates": [
         {
           "ticker": "TOST",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0001650164"
         },
         {
           "ticker": "TOST",
@@ -12611,10 +12410,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/GO.json",
           "status": 200
         },
@@ -12623,18 +12418,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "GOOG",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "GOOG",
           "state": "AVAILABLE",
@@ -12674,32 +12459,10 @@
         {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001652044.json",
           "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/GO.json",
-          "status": 200
-        },
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001652044.json",
-          "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001652044.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "GOOG",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "GOOG",
           "state": "AVAILABLE",
@@ -12948,6 +12711,14 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/GO.json",
+          "status": 200
+        },
+        {
+          "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001652044.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/index.json",
           "status": 200
         },
@@ -12960,17 +12731,12 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
         {
           "ticker": "GOOGL",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
+          "state": "AVAILABLE",
+          "companyId": "iss_cik_0001652044"
         },
         {
           "ticker": "GOOGL",
@@ -13177,10 +12943,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/OP.json",
           "status": 200
         },
@@ -13189,18 +12951,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "OPTU",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "OPTU",
           "state": "AVAILABLE",
@@ -13363,6 +13115,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/OP.json",
           "status": 200
         },
@@ -13371,8 +13127,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "OPTU",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "OPTU",
           "state": "AVAILABLE",
@@ -14051,10 +13817,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/RO.json",
           "status": 200
         },
@@ -14063,18 +13825,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "ROOT",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "ROOT",
           "state": "AVAILABLE",
@@ -14649,10 +14401,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XP.json",
           "status": 200
         },
@@ -14661,18 +14409,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "XPEV",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "XPEV",
           "state": "AVAILABLE",
@@ -14704,10 +14442,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XP.json",
           "status": 200
         },
@@ -14716,18 +14450,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "XPEV",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "XPEV",
           "state": "AVAILABLE",
@@ -14759,10 +14483,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XP.json",
           "status": 200
         },
@@ -14771,18 +14491,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "XPEV",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "XPEV",
           "state": "AVAILABLE",
@@ -14814,6 +14524,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/XP.json",
           "status": 200
         },
@@ -14822,8 +14536,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "XPEV",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "XPEV",
           "state": "AVAILABLE",
@@ -14943,10 +14667,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/SO.json",
           "status": 200
         },
@@ -14955,18 +14675,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "SOFI",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "SOFI",
           "state": "AVAILABLE",
@@ -15129,10 +14839,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/SO.json",
           "status": 200
         },
@@ -15141,18 +14847,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "SOFI",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "SOFI",
           "state": "AVAILABLE",
@@ -15186,6 +14882,10 @@
           "status": 200
         },
         {
+          "path": "/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/SO.json",
           "status": 200
         },
@@ -15194,8 +14894,18 @@
           "status": 200
         }
       ],
-      "requestFailures": [],
+      "requestFailures": [
+        {
+          "path": "/company-intelligence/data/index.json",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
       "observedLoadStates": [
+        {
+          "ticker": "SOFI",
+          "state": "UNAVAILABLE",
+          "reason": "REQUEST_ABORTED"
+        },
         {
           "ticker": "SOFI",
           "state": "AVAILABLE",
@@ -15832,10 +15542,6 @@
           "status": 200
         },
         {
-          "path": "/company-intelligence/data/index.json",
-          "status": 200
-        },
-        {
           "path": "/company-intelligence/data/snapshots/d700d480d9b2858eb8fa34f4/lookup/JB.json",
           "status": 200
         },
@@ -15844,18 +15550,8 @@
           "status": 200
         }
       ],
-      "requestFailures": [
-        {
-          "path": "/company-intelligence/data/index.json",
-          "error": "net::ERR_ABORTED"
-        }
-      ],
+      "requestFailures": [],
       "observedLoadStates": [
-        {
-          "ticker": "JBI",
-          "state": "UNAVAILABLE",
-          "reason": "REQUEST_ABORTED"
-        },
         {
           "ticker": "JBI",
           "state": "AVAILABLE",

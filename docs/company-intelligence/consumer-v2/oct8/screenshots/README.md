@@ -4,7 +4,7 @@ All captures are from the existing protected production origin, without preview 
 
 Viewport captures retain the real shared navigation. Chapter captures temporarily hide the header and fixed dock for the screenshot only. The actual page keeps them visible; all 368 cases require the chapter end to scroll clear of the fixed dock. These are Chromium viewport tests, not physical iPhone/Safari certification.
 
-Original V1 → V2 dark comparisons remain in the [before/after gallery](../../screenshots/README.md). These new V2 captures show the current shared shell and both themes.
+Original V1 → V2 dark comparisons remain in the [before/after gallery](../../screenshots/README.md). These final post-update V2 captures show actual protected production source `b15db54c9f05e096f9e6ba49f605ebce89c94160`, the current shared shell and both themes. Full final production review: run [37762784135](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37762784135).
 
 | Stock | Width | Dark viewport / chapter | Light viewport / chapter |
 |---|---:|---|---|
