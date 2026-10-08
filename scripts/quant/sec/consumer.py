@@ -249,6 +249,12 @@ def _pit_annual(resolver, registry, fiscal_years, as_of, policy):
                     fact = reconstruct(resolver, fiscal_year, "FY", day, policy=policy).get(metric)
                 if fact is None or not fact.available:
                     continue
+                # Ein Jahreswert, der vor dem Ende seines Geschaeftsjahres bekannt
+                # sein soll, ist ein falsch getaggter Zwischenwert (Gorman-Rupp
+                # FY2023: Q1-Ergebnis im 10-Q vom 2023-05-01 mit Jahreskontext) -
+                # dieselbe Regel wie das Gate PIT_NO_FUTURE_DATA_LEAK.
+                if fact.period_end and day < str(fact.period_end)[:10]:
+                    continue
                 accession = getattr(fact.provenance, "accession", None)
                 # Eine neue Version nur bei neuem Wert: dasselbe Jahr mit um einen
                 # Tag verschobenem Ende (52/53-Wochen-Varianten) ist kein neues Wissen.
