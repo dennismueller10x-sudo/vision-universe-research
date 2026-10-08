@@ -62,12 +62,18 @@ try{
     assert.equal(await chapter.locator('details.ci-documents[open], details.ci-sources[open]').count(),0,'Evidence collapsed by default');
     assert(links.filter(a=>a.visible).every(a=>a.height>=44),'Visible links touch targets');
     if(inventory.staleFinancials&&inventory.financials==='AVAILABLE')assert(text.includes('Veraltete Geschäftszahlen'));
+    if(await page.locator('#vu-dock').count()){
+     assert(await page.locator('#vu-dock').isVisible(),'Shared product navigation visible');
+     await chapter.evaluate(e=>e.scrollIntoView({block:'end',behavior:'instant'}));
+     const end=await chapter.boundingBox(),dock=await page.locator('#vu-dock').boundingBox();
+     assert(end&&dock&&end.y+end.height<=dock.y+1,'Chapter end can scroll clear of fixed product navigation');
+    }
    }
    const primaryScreenshot=examples.includes(ticker)&&[390,430,1440].includes(width)&&(theme==='dark'||version==='after');
    const additionalScreenshot=version==='after'&&additionalExamples.includes(ticker)&&width===390;
    if(primaryScreenshot||additionalScreenshot){
     await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-viewport.png`});
-    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
+    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-chapter.png`,style:'vu-navigation,#vu-dock,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
    cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors,consumerResponses:responses,requestFailures,observedLoadStates:actualLoads.map(r=>({ticker:r.ticker,state:r.payload?.state,reason:r.payload?.reason,companyId:r.payload?.companyId}))});
