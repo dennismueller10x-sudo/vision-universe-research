@@ -105,6 +105,9 @@ wird zusätzlich auf freien Dock-Abstand und tatsächliche Trefferfläche geprü
 Der Screener begrenzt deren Höhe um Dock, Safe Area und 16px Abstand.
 Negative Browserkontrollen erkennen fehlendes Bottom-Padding, Scroll-Lock
 und unterdrücktes Scrollen. Kein Clearance-Grenzwert wird abgeschwächt.
+Vollbildansichten mit eigenem Scrollbereich (Discover-Feed) dürfen den Body
+sperren, wenn kein Dokument-Scrollweg besteht. Ein gesperrtes HTML oder ein
+gesperrter Body bei erforderlichem Dokument-Scrollen bleiben Fehler.
 
 Browser-, Navigations-, Theme- und Performance-Evidenz wird im Delivery-
 Bericht geführt; dieses Dokument behauptet keine abgeschlossene QA und

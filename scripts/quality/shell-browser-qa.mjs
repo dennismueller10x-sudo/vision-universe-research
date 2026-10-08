@@ -140,7 +140,11 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const scrolling = document.scrollingElement;
         scrollTo({top:scrolling.scrollHeight,behavior:'instant'});
         const remaining = scrolling.scrollHeight-scrolling.clientHeight-scrolling.scrollTop;
-        const locked = [document.documentElement,document.body].some(n=>['hidden','clip'].includes(getComputedStyle(n).overflowY));
+        // Vollbild-Ansichten wie der Discover-Feed scrollen absichtlich in
+        // einem eigenen Bereich. Body-Lock ist nur bei nötigem Dokument-
+        // Scrollen ein Fehler; ein gesperrtes HTML (globales Menü) bleibt es immer.
+        const isBlocked = n=>['hidden','clip'].includes(getComputedStyle(n).overflowY);
+        const locked = isBlocked(document.documentElement)||(scrolling.scrollHeight>scrolling.clientHeight+1&&isBlocked(document.body));
         const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
         // Aeussere Bloecke des Dokuments (Inhalt in eigenen Scroll-Containern zaehlt nicht).
         const blocks = [...document.body.children].filter((n) => n.id !== 'vu-dock' && n.getClientRects().length && !['fixed', 'sticky'].includes(getComputedStyle(n).position) && !['SCRIPT', 'STYLE', 'DIALOG', 'VU-NAVIGATION'].includes(n.tagName));
