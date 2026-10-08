@@ -3,12 +3,20 @@
 import {spawnSync} from 'node:child_process';
 import {readdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
-// PR checkout is GitHub's synthetic merge, including independent main data
-// updates. Its trusted event base is the correct unchanged production control.
-const event=process.env.GITHUB_EVENT_NAME==='pull_request'&&process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):null;
-const baseline=event?.pull_request?.base?.sha||'68f1854c4f769aa21f6ec38d1a539080295f2c0a';
-if(!/^[a-f0-9]{40}$/.test(baseline))throw Error('EXACT_PRODUCTION_BASE_SHA_REQUIRED');
+// A PR event may name an older base while GitHub's checked-out merge already
+// includes a subsequent scheduled main data commit. Use its verified first
+// parent, never a caller-provided override or an unrelated checkout.
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
+const event=process.env.GITHUB_EVENT_NAME==='pull_request'&&process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):null;
+let baseline='68f1854c4f769aa21f6ec38d1a539080295f2c0a',baselineBasis='PINNED_PREPARATION_PRODUCTION_BASE';
+if(event){
+ const eventBase=event.pull_request?.base?.sha,eventHead=event.pull_request?.head?.sha;
+ const ancestry=run('git',['show','-s','--format=%P','HEAD']);
+ const parents=ancestry.stdout.trim().split(/\s+/);
+ if(ancestry.status||parents.length!==2||parents[1]!==eventHead||!parents.every(p=>/^[a-f0-9]{40}$/.test(p))||!/^[a-f0-9]{40}$/.test(eventBase||'')||run('git',['merge-base','--is-ancestor',eventBase,parents[0]]).status)throw Error('TRUSTED_PR_CHECKED_OUT_MERGE_ANCESTRY_REQUIRED');
+ baseline=parents[0];baselineBasis='TRUSTED_GITHUB_PR_CHECKOUT_FIRST_PARENT';
+}
+if(!/^[a-f0-9]{40}$/.test(baseline))throw Error('EXACT_PRODUCTION_BASE_SHA_REQUIRED');
 const protectedPaths=['quant','discover','supertrader','screener','providers','scripts/market','scripts/quant'];
 const diff=run('git',['diff','--name-only',baseline,'HEAD','--',...protectedPaths]);
 if(diff.status||diff.stdout.trim())throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
@@ -25,5 +33,5 @@ if(candidate.status){
  try{control=parse(run(process.execPath,['--test','--test-reporter=tap',...files],root));}finally{run('git',['worktree','remove',root]);}
  if(control.status!==candidate.status||JSON.stringify(control.failures)!==JSON.stringify(candidate.failures)||control.testCount!==candidate.testCount)throw Error('BASELINE_DOES_NOT_REPRODUCE_CANDIDATE_FAILURES');
 }
-const report={baselineBasis:event?'TRUSTED_GITHUB_PR_EVENT_BASE':'PINNED_PREPARATION_PRODUCTION_BASE',status:candidate.status?'PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES':'PASS',baselineSha:baseline,protectedPaths,protectedInputDiff:[],candidate,independentBaseline:control,newBranchFailures:0,productionPriceDataChanged:false};
+const report={baselineBasis,eventBaseSha:event?.pull_request?.base?.sha||null,status:candidate.status?'PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES':'PASS',baselineSha:baseline,protectedPaths,protectedInputDiff:[],candidate,independentBaseline:control,newBranchFailures:0,productionPriceDataChanged:false};
 writeFileSync(resolve(process.env.RUNNER_TEMP||'/tmp','production-regression-classification.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
