@@ -1,0 +1,52 @@
+name: Marketstack Europe private ingestion
+run-name: Marketstack Europe ${{ github.event.head_commit.message }}
+on:
+  push:
+    branches: [marketstack-europe-foundation]
+    paths: [scripts/marketstack/europe-live-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-europe-private-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  ingest:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline connector and ingestion tests before paid requests
+        run: node --test providers/marketstack/tests/*.test.mjs
+      - name: Verify reviewed source, frozen allocation and no replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/actions-europe.mjs guard
+      - name: Ingest into private ephemeral storage
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/actions-europe.mjs live
+      - name: Encrypt all evidence and failed-run accounting
+        if: always()
+        run: node scripts/marketstack/actions-europe.mjs seal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-europe-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-marketstack-europe-encrypted/evidence.enc.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Verify no tracked production writes
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Remove plaintext
+        if: always()
+        run: node scripts/marketstack/actions-europe.mjs clean

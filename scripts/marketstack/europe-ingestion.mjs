@@ -1,0 +1,69 @@
+/** Bounded private product ingestion, not capability probing or publication. */
+import {mkdirSync,writeFileSync,readFileSync,existsSync,lstatSync,realpathSync} from 'node:fs';
+import {resolve,dirname,join,relative,sep,isAbsolute} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash,createPublicKey,verify,constants} from 'node:crypto';
+import {createRequire} from 'node:module';
+import {execFileSync} from 'node:child_process';
+import {EUROPE_EXCHANGE_PLAN} from './europe-universe.mjs';
+const require=createRequire(import.meta.url);
+const {createAuditAdapter}=require('../../providers/marketstack/audit-adapter.js');
+const {estimateCredits}=require('../../providers/marketstack/client.js');
+const ROOT=realpathSync(resolve(dirname(fileURLToPath(import.meta.url)),'../..'));
+export const hash=x=>createHash('sha256').update(x).digest('hex');
+export const ALLOCATIONS=Object.freeze({discovery:1000,foundation:14000,completion:10000});
+const EUROPE_MICS=new Set(EUROPE_EXCHANGE_PLAN.flatMap(x=>x.mics));
+export function privateRoot(path){
+ if(!isAbsolute(path||''))throw Error('ABSOLUTE_PRIVATE_OUTPUT_REQUIRED');
+ const out=resolve(path),r=relative(ROOT,out);if(!(r==='..'||r.startsWith('..'+sep)||isAbsolute(r)))throw Error('PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED');
+ for(let p=out;;p=dirname(p)){try{if(lstatSync(p).isSymbolicLink())throw Error('PRIVATE_OUTPUT_SYMLINK_REFUSED');}catch(e){if(e.code!=='ENOENT')throw e;}if(dirname(p)===p)break;}return out;
+}
+export function validatePlan(plan){
+ if(plan?.version!==1||!Object.hasOwn(ALLOCATIONS,plan.lease)||plan.maxCredits!==ALLOCATIONS[plan.lease])throw Error('INVALID_EUROPE_ALLOCATION');
+ if(!Array.isArray(plan.operations)||plan.operations.length>4000)throw Error('INVALID_EUROPE_OPERATIONS');
+ const allowed=new Set(['directory','search','metadata','latest','history','splits','dividends','snapshot','holdings','etfs']);
+ for(const op of plan.operations){if(!allowed.has(op.kind))throw Error('INVALID_INGESTION_OPERATION');if(op.kind==='directory'&&!EUROPE_MICS.has(op.mic))throw Error('INVALID_DIRECTORY_MIC');
+  if(!Number.isInteger(op.maxPages??1)||(op.maxPages??1)<1||(op.maxPages??1)>100)throw Error('INVALID_PAGE_BOUND');
+  if(['metadata','holdings'].includes(op.kind)&&typeof op.symbol!=='string')throw Error('SYMBOL_REQUIRED');
+  if(op.kind==='metadata'&&!EUROPE_MICS.has(op.mic))throw Error('EUROPE_METADATA_SCOPE_REQUIRED');
+  if(op.kind==='search'&&!EUROPE_MICS.has(op.mic))throw Error('EUROPE_SEARCH_SCOPE_REQUIRED');
+  if(op.kind==='holdings'&&op.market!=='EUROPE'&&!(op.comparisonOnly===true&&['VOO','VTI','SCHD'].includes(op.symbol)))throw Error('ETF_SCOPE_REQUIRED');
+  if(['latest','history','splits','dividends','snapshot'].includes(op.kind)&&(!op.listing?.providerTicker||!/^[A-Z0-9]{4}$/.test(op.listing.mic||'')))throw Error('LISTING_REQUIRED');
+  if(op.listing&&!EUROPE_MICS.has(op.listing.mic))throw Error('US_LISTINGS_PROTECTED');
+  if(op.retry504Once!==undefined&&typeof op.retry504Once!=='boolean')throw Error('INVALID_RETRY_POLICY');
+ }
+ const endpoints={directory:'/exchanges/XXXX/tickers',search:'/tickerslist',metadata:'/tickers/EXACT',latest:'/eod/latest',history:'/eod',splits:'/splits',dividends:'/dividends',snapshot:'/stockprice',holdings:'/etfholdings',etfs:'/etflist'};
+ const estimate=plan.operations.reduce((n,o)=>n+estimateCredits(endpoints[o.kind],o.listing?{symbols:o.listing.providerTicker}:{})*(o.maxPages??1)*(o.retry504Once?2:1),0);
+ if(estimate>plan.maxCredits)throw Error('PLANNED_BATCH_EXCEEDS_ALLOCATION');return {estimatedMaximumCredits:estimate,operations:plan.operations.length};
+}
+export function signedPayload(marker){return JSON.stringify({version:1,branch:'marketstack-europe-foundation',lease:marker.lease,sourceSha:marker.sourceSha,planHash:marker.planHash});}
+export function verifyIngestionMarker(marker,{before,parents,changedPaths,plan,publicKey}){
+ validatePlan(plan);
+ if(marker?.version!==1||marker.lease!==plan.lease||marker.sourceSha!==before||!/^[a-f0-9]{40}$/.test(before||'')||parents?.length!==1||parents[0]!==before||changedPaths?.length!==1||changedPaths[0]!=='scripts/marketstack/europe-live-trigger.json'||marker.planHash!==hash(JSON.stringify(plan)))throw Error('EUROPE_SIGNED_SOURCE_MISMATCH');
+ if(!verify('sha256',Buffer.from(signedPayload(marker)),{key:createPublicKey(publicKey),padding:constants.RSA_PKCS1_PSS_PADDING,saltLength:32},Buffer.from(marker.signature||'','base64')))throw Error('EUROPE_SIGNATURE_INVALID');return true;
+}
+export async function ingestEurope({plan,out,apiKey=process.env.MARKETSTACK_API_KEY,fetchImpl,budgetFactory,sleep=ms=>new Promise(r=>setTimeout(r,ms))}={}){
+ const planned=validatePlan(plan);out=privateRoot(out);if(!apiKey)throw Error('MARKETSTACK_API_KEY_NOT_CONFIGURED');
+ mkdirSync(out,{recursive:true,mode:0o700});if(existsSync(join(out,'credits.json')))throw Error('INGESTION_REENTRY_REFUSED');
+ const {createEuropeBudget}=await import('./europe-credits.mjs');
+ const budget=(budgetFactory??createEuropeBudget)(join(out,'credits.json'),{maxCredits:plan.maxCredits,runId:plan.lease});
+ const rawDir=join(out,'raw'),normalizedDir=join(out,'normalized');mkdirSync(rawDir,{mode:0o700});mkdirSync(normalizedDir,{mode:0o700});
+ const write=(file,obj)=>writeFileSync(file,JSON.stringify(obj)+'\n',{mode:0o600});
+ let sequence=0,terminalReason=null;const manifest=[],results=[];
+ const api=createAuditAdapter({apiKey,fetchImpl,sharedBudget:budget,maxCredits:plan.maxCredits,maxRequests:plan.maxCredits,maxRetries:0,cacheTtlMs:0,timeoutMs:90000,minIntervalMs:fetchImpl?0:250,endpointIntervals:fetchImpl?{'/stockprice':0}:undefined,
+  onResponse:async response=>{const id=String(++sequence).padStart(6,'0'),sha256=hash(response.rawText);writeFileSync(join(rawDir,id+'.json'),response.rawText,{mode:0o600});const meta={...response,rawText:undefined,body:undefined,id,sha256};write(join(rawDir,id+'.meta.json'),meta);manifest.push(meta);}});
+ async function perform(op){const o={maxPages:op.maxPages??1,limit:1000,from:op.from,to:op.to};
+  switch(op.kind){case'directory':return api.listExchangeTickers(op.mic,o);case'search':return api.searchTicker(op.query,{...o,exchange:op.mic});case'metadata':return api.getTicker(op.symbol);case'latest':return api.getLatestEOD(op.listing,o);case'history':return api.getHistoricalEOD(op.listing,o);case'splits':return api.getSplits(op.listing,o);case'dividends':return api.getDividends(op.listing,o);case'snapshot':return api.getRealtimePrice(op.listing,o);case'holdings':return api.getETFHoldings(op.symbol,o);case'etfs':return api.listETFs(o);default:throw Error('INVALID_INGESTION_OPERATION');}
+ }
+ try{for(let i=0;i<plan.operations.length;i++){
+  const op=plan.operations[i],before=sequence;if(terminalReason){results.push({operation:op,skipped:true,reason:terminalReason});continue;}
+  let result;try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}
+  if(op.retry504Once&&result.status===504){await sleep(15000);try{result=await perform(op);}catch{result={ok:false,reason:'INGESTION_OPERATION_FAILED'};}}
+  if(['authError','quotaExceeded','budgetExceeded','RUN_BUDGET_EXCEEDED','EUROPE_RUN_BUDGET_EXCEEDED','responsePersistenceFailed','accountingPersistenceFailed','budgetReservationFailed'].includes(result.reason)||String(result.reason).startsWith('LEDGER_'))terminalReason=result.reason;
+  const resultPath='normalized/'+String(i).padStart(6,'0')+'.json';
+  const entry={ordinal:i,operation:op,responseIds:manifest.slice(before).map(r=>r.id),result};write(join(out,resultPath),entry);
+  results.push({ordinal:i,operation:op,responseIds:entry.responseIds,resultPath,ok:result.ok,reason:result.reason??null,status:result.status??null,complete:result.complete??null,downloadedCount:result.downloadedCount??result.data?.length??null});
+  if(i%25===0)console.log(JSON.stringify({operationsCompleted:i+1,reserved:budget.status().reservedCredits??budget.status().estimatedCredits,rawResponses:manifest.length}));
+ }const summary={version:'marketstack-europe-ingestion-1',generatedAt:new Date().toISOString(),lease:plan.lease,planHash:hash(JSON.stringify(plan)),planned,budget:budget.status(),transport:api.client.stats(),terminalReason,results,rawResponses:manifest.length,productionWrites:0,publication:'BLOCKED_RIGHTS_UNVERIFIED'};write(join(out,'summary.json'),summary);return summary;
+ }finally{write(join(out,'raw-manifest.json'),manifest);budget.close?.();}
+}
