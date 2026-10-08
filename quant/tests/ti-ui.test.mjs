@@ -41,10 +41,20 @@ test("UI-2 · Ueberschriften nennen keine internen Produktnamen ('Intelligence')
 test("UI-3 · Seite laedt nur Anzeige-Bausteine (keine rechnenden Engines) in der richtigen Reihenfolge", () => {
   const html = read("quant/index.html");
   ["/quant/engines/technical/ti/engine.js", "/quant/engines/technical/elliott/", "/quant/engines/technical/ti/scenario.js"].forEach((p) => assert.ok(!html.includes(p), "laedt " + p));
-  const order = ["/quant/engines/technical/ti/explain.js", "/quant/api/technical-intelligence-workspace.js", "/quant/ui/ti-chart.js", "/quant/app/page-chartbild.js", "/quant/app/app.js"].map((p) => html.indexOf(p));
+  /* Im Buendel jeder Quant-Ansicht nur Texte und Lese-API; Chart, Seite und Stile laedt app.js erst bei Bedarf
+     (Ressourcen-Budget der Startseite und des Screeners). */
+  const order = ["/quant/engines/technical/ti/explain.js", "/quant/api/technical-intelligence-workspace.js", "/quant/app/app.js"].map((p) => html.indexOf(p));
   order.forEach((i) => assert.ok(i > 0));
   assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Ladereihenfolge");
-  assert.ok(html.includes("/quant/app/chartbild.css"));
+  ["/quant/ui/ti-chart.js", "/quant/app/page-chartbild.js", "/quant/app/chartbild.css"].forEach((p) => assert.ok(!html.includes(p), "nicht im Buendel: " + p));
+  const app = read("quant/app/app.js");
+  const lazy = ["/quant/app/chartbild.css", "/quant/ui/ti-chart.js", "/quant/app/page-chartbild.js"].map((p) => app.indexOf(p));
+  lazy.forEach((i) => assert.ok(i > 0, "app.js laedt nach"));
+  assert.ok(lazy[1] < lazy[2], "ti-chart.js vor page-chartbild.js");
+  /* Jede Chartbild-Route geht ueber den Nachlader */
+  assert.ok(!/global\.QXChartbild\.(chartbild|overview)\(/.test(app), "Route ohne Nachlader");
+  assert.match(read("quant/app/page-method.js"), /QXLoadChartbild\(\)/);
+  assert.match(read("quant/app/page-stock.js"), /QXChartbildCss\(\)/);
 });
 
 test("UI-4 · Datenzugriff nur ueber erlaubte Pfade", async () => {

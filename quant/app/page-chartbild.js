@@ -49,7 +49,7 @@
   }
   function levelTile(kind, label, value, sub) {
     var icon = { entry: "M3 9h18M3 15h18", target: "M5 21V4M5 4h11l-2 4 2 4H5", invalid: "M3 12h4M10 12h4M17 12h4", range: "M4 7h16M4 17h16" }[kind];
-    return el("div", { class: "cb-level cb-level-" + kind }, [
+    return el("div", { class: "cb-level cb-level-" + kind, role: "listitem" }, [
       el("span", { class: "cb-level-icon", "aria-hidden": "true" }, [svgIcon(icon)]),
       el("span", { class: "cb-level-label", text: label }),
       el("strong", { class: "cb-level-value num", text: value }),
@@ -373,7 +373,7 @@
     var cf = a.confluence;
     cards.push(proCard("Konfluenz und Methodik", [["Einigkeit", (cf.agreement > 0 ? "+" : "") + dec(cf.agreement, 2), cf.agreement > 0.1 ? "up" : cf.agreement < -0.1 ? "down" : null], ["Abdeckung", pct(cf.coverage)], ["Verfahren", String(cf.families.length)]],
       "Gewichtete Richtung der Verfahren; Wyckoff ohne Stimmgewicht.", function () {
-      return [el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Verfahren" }), el("th", { text: "Richtung" }), el("th", { text: "Gewicht" })])]),
+      return [el("div", { class: "cb-table-wrap", tabindex: "0", role: "region", "aria-label": "Tabelle, waagrecht scrollbar" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Verfahren" }), el("th", { text: "Richtung" }), el("th", { text: "Gewicht" })])]),
         el("tbody", {}, cf.families.map(function (f) { return el("tr", {}, [el("td", { text: (Ex && Ex.FAMILY[f.family]) || f.family }), el("td", { class: "num", text: (f.direction > 0 ? "+" : "") + f.direction.toFixed(2).replace(".", ",") }), el("td", { class: "num", text: f.weight.toFixed(2).replace(".", ",") })]); }))])]),
         el("p", { class: "cb-small", text: "Einigkeit (gewichtete Richtung): " + (cf.agreement > 0 ? "+" : "") + String(cf.agreement).replace(".", ",") + " · Abdeckung " + pct(cf.coverage) + ". Gewichte aus Evidenzgraden der Literatur; Wyckoff ohne Stimmgewicht." }),
         el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Elliott " + ((a.versions && a.versions.elliott) || (a.pro.elliott && a.pro.elliott.engineVersion) || "–") + " · Regelwerk " + ((a.versions && a.versions.ruleSet) || (a.pro.elliott && a.pro.elliott.ruleSetVersion) || "–") + " · Datenstand " + X.dateDe((a.versions && a.versions.dataAsOf) || a.asOf) + "." }),
@@ -557,8 +557,14 @@
     });
 
     // ---------------------------------------------- Schluessel-Kacheln
-    var levels = el("div", { class: "cb-levels", role: "list" });
+    /* Barrierefreiheit: eine Liste nur mit Eintraegen (axe aria-required-children; jede Kachel ist ein listitem).
+       Am Handy scrollt die Reihe waagrecht und muss deshalb per Tastatur erreichbar sein (scrollable-region-focusable). */
+    var levels = el("div", { class: "cb-levels", tabindex: "0", "aria-label": "Schlüsselniveaus des Szenarios" });
     function fillLevels(s) {
+      fillLevelTiles(s);
+      if (levels.childElementCount) levels.setAttribute("role", "list"); else levels.removeAttribute("role");
+    }
+    function fillLevelTiles(s) {
       levels.replaceChildren();
       if (!s) return;
       if (s.range) { levels.append(levelTile("range", "Untergrenze", zoneText(s.range.support)), levelTile("range", "Obergrenze", zoneText(s.range.resistance))); return; }
@@ -866,7 +872,7 @@
     var NAME = { TREND: "Trend", MOMENTUM: "Bewegungsstärke", STRUCTURE: "Hochs und Tiefs", CONFLUENCE: "Einigkeit der Verfahren", PATTERN: "Chartformationen", ELLIOTT: "Elliott-Wellen", FIBONACCI: "Fibonacci", TIMING_EARLY: "Früher Einstieg im Rücklauf", WYCKOFF: "Wyckoff", VOLUME: "Volumen" };
     var ROLE = { CORE: "Kern", CONTEXT: "Kontext", EXPERIMENTAL: "experimentell", REMOVE: "entfernt" };
     return X.card([el("h3", { class: "qx-h3", text: "Was jede Methode leisten kann" }),
-      el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Methode" }), el("th", { text: "Evidenz" }), el("th", { text: "Rolle" }), el("th", { text: "In Worten" })])]),
+      el("div", { class: "cb-table-wrap", tabindex: "0", role: "region", "aria-label": "Tabelle, waagrecht scrollbar" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Methode" }), el("th", { text: "Evidenz" }), el("th", { text: "Rolle" }), el("th", { text: "In Worten" })])]),
         el("tbody", {}, Object.keys(mev.methods).map(function (k) { var m = mev.methods[k]; return el("tr", {}, [el("td", { text: NAME[k] || k }), el("td", {}, [el("span", { class: "cb-badge cb-badge-" + String(m.level).toLowerCase(), text: m.label })]), el("td", { text: (ROLE[m.role] || m.role) + (m.methodStatus ? " · " + m.methodStatus.label : "") }), el("td", { text: m.consumer })]); }))])]),
       el("p", { class: "cb-small cb-dim", text: "Bestätigt = vorab registrierter Test auf unabhängigen Daten bestanden · Gestützt (schwach) = statistisch messbar, aber nicht vorab registriert bestätigt und wirtschaftlich gering · Kein Vorteil belegt = geprüft, ohne belastbaren Effekt · Beschreibend = ohne Prognoseanspruch." })]);
   }

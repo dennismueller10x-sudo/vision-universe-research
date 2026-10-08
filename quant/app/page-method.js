@@ -57,7 +57,7 @@
   async function render(main, ctx, topic, params) {
     var t = TOPICS.filter(function (x) { return x.id === topic; })[0];
     if (!t) return start(main, ctx);
-    return ({ daten: daten, faktoren: faktoren, gewichtung: gewichtung, branchen: branchen, setups: setups, strategien: strategien, chartbild: function (m, c, t, p) { return global.QXChartbild.method(m, c, t, topicHead); }, historie: historie, grenzen: grenzen, versionen: versionen })[t.id](main, ctx, t, params);
+    return ({ daten: daten, faktoren: faktoren, gewichtung: gewichtung, branchen: branchen, setups: setups, strategien: strategien, chartbild: function (m, c, t, p) { return global.QXLoadChartbild().then(function (CB) { return CB.method(m, c, t, topicHead); }); }, historie: historie, grenzen: grenzen, versionen: versionen })[t.id](main, ctx, t, params);
   }
 
   var TOPIC_ICON = { daten: "data", faktoren: "bars", gewichtung: "filter", branchen: "network", setups: "setups", strategien: "trend", chartbild: "setups", historie: "clock", grenzen: "warn", versionen: "doc" };

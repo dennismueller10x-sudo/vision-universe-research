@@ -77,6 +77,27 @@
   var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
+  /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
+     Seite, Chart und Stile (rund 130 KB) gehoeren nicht ins Buendel jeder Quant-Ansicht (Ressourcen-Budget der
+     Startseite und des Screeners). Im Buendel bleiben nur die Lese-API und die Texte (Teaser, Beobachtungsliste).
+     Stile und ti-chart.js vor page-chartbild.js. */
+  var CB_CSS = "/quant/app/chartbild.css", cbCss = null;
+  function chartbildCss() {
+    if (!cbCss) cbCss = new Promise(function (ok) {
+      var l = document.createElement("link"); l.rel = "stylesheet"; l.href = CB_CSS;
+      l.onload = function () { ok(true); }; l.onerror = function () { cbCss = null; ok(false); };
+      document.head.appendChild(l);
+    });
+    return cbCss;
+  }
+  /* Ueber loadScript (wie Backtesting): gleiche Versionsmarke wie das Buendel, Fehler wird beim naechsten Aufruf erneut versucht. */
+  function loadChartbild() {
+    return Promise.all([chartbildCss(), global.QXChartbild ? true : loadScript("/quant/ui/ti-chart.js").then(function () { return loadScript("/quant/app/page-chartbild.js"); })])
+      .then(function () { if (!global.QXChartbild) throw new Error("CHARTBILD_LOAD_FAILED"); return global.QXChartbild; });
+  }
+  global.QXLoadChartbild = loadChartbild;
+  global.QXChartbildCss = chartbildCss;
+
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
@@ -284,9 +305,9 @@
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
-        case "technik": { var tp = new URLSearchParams(r.params.toString()); if (tp.get("elliott") === "1") tp.set("ansicht", "profi"); await global.QXChartbild.chartbild(main, ctx, r.ticker, tp); break; }
-        case "chartbild": await global.QXChartbild.chartbild(main, ctx, r.ticker, r.params); break;
-        case "chartlagen": await global.QXChartbild.overview(main, ctx, r.params); break;
+        case "technik": { var tp = new URLSearchParams(r.params.toString()); if (tp.get("elliott") === "1") tp.set("ansicht", "profi"); await (await loadChartbild()).chartbild(main, ctx, r.ticker, tp); break; }
+        case "chartbild": await (await loadChartbild()).chartbild(main, ctx, r.ticker, r.params); break;
+        case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;

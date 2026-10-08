@@ -719,12 +719,15 @@
       setupEvidence.replaceChildren(el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Evidenz zu Setups" }),
         el("span", { text: k && k.state !== "WITHHELD" ? " Setup-Ergebnisse siehe Backtesting." : " Zu wenige echte Setup-Fälle für eine Aussage. " + (k ? closedKindSentence(k) : "") + " Setup-Ergebnisse werden nicht mit den marktweiten Signal-Backtests vermischt." }));
     });
-    /* Chartbild-Teaser: Ausblick in einem Satz, Weg zur ganzen Seite. Laedt unabhaengig. */
+    /* Chartbild-Teaser: Ausblick in einem Satz, Weg zur ganzen Seite. Laedt unabhaengig und erst in Sichtweite
+       (wie die Bilder oben): Shard und Stile kosten rund 180 KB, das Ressourcenbudget der Aktienseite gilt dem
+       ersten Bild. */
     if (global.VUTechnicalIntelligence) {
-      var cbHost = el("div", { class: "cb-teaser-host" });
+      var cbHost = el("div", { class: "cb-teaser-host", style: "min-height:1px" });
       bodyHost.append(cbHost);
-      global.VUTechnicalIntelligence.getAnalysis(ticker).then(function (r) {
+      var cbLoad = function () { global.VUTechnicalIntelligence.getAnalysis(ticker).then(function (r) {
         if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
+        if (global.QXChartbildCss) global.QXChartbildCss();   // Stile der Teaser-Karte (lazy, siehe app.js)
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
         /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
         var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
@@ -738,7 +741,14 @@
             cl ? el("span", {}, [el("small", { text: "Struktur" }), el("strong", { text: cl })]) : null
           ]),
           el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })]));
-      }).catch(function () { return null; });
+      }).catch(function () { return null; }); };
+      if (!global.IntersectionObserver) cbLoad();
+      else {
+        var cbSpy = new global.IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) { cbSpy.disconnect(); cbLoad(); }
+        }, { rootMargin: "0px" });
+        cbSpy.observe(cbHost);
+      }
     }
     bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo ein Einstieg im Szenario ansetzt, was ihn bestätigt und wo es ungültig wird – keine Empfehlung.",
       [setupCard, setupEvidence].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return setupSection(vm); })] : []), null, "01 / Setup & Trigger", "setup"));
