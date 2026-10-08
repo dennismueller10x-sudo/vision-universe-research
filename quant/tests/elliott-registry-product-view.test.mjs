@@ -97,3 +97,21 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   Led.append(bad, [], [{ type: "RUN", id: "RUN-x", week: "2026-09-11", recordedAt: "t", payload: { views: ["CUSTOMER_PRODUCT"], productView: { identity: { ok: false } }, snapshot: { file: "snapshots/none" } } }]);
   const v = Ver.verifyRegistry(bad); assert.equal(v.ok, false); assert.ok(v.errors.some((e) => /Produkt-Identitaet/.test(e)));
 });
+
+test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eigene Kohorte eingefroren; Forschungskohorte meldet Sichtbarkeit wahrheitsgemäß", async () => {
+  const w = weeklyDir(["ref_SE", "ref_AA", "ref_AACG", "ref_ABBV"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-m-"));
+  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
+  const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
+  assert.equal(run.payload.code.registry, "elliott-registry-1.3.0"); assert.equal(run.payload.code.projection, "elliott-projection-1.1.0");
+  const mv = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE");
+  assert.ok(mv.some((e) => e.payload.symbol === "ref_SE"), "SE: verborgene Welle-3-Lesart als Alternative registriert");
+  for (const e of mv) {
+    const th = e.payload.projectionThesis.thesis;
+    assert.equal(e.payload.interpretation, "ALTERNATIVE"); assert.equal(th.source, "MOTIVE_ALTERNATIVE"); assert.equal(th.type, "WAVE_3");
+    assert.ok(th.zones.length >= 1 && th.invalidation && th.confirmation); assert.equal(e.payload.projectionEngine, "elliott-projection-1.1.0");
+    assert.ok(e.payload.persistenceKey !== (e.payload.primaryShownAs || ""), "nie die Primärzählung");
+  }
+  for (const e of L.filter((x) => x.type === "EVENT" && x.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3")) assert.equal(typeof e.payload.productVisible, "boolean");
+  assert.equal(Ver.verifyRegistry(reg).ok, true);
+});

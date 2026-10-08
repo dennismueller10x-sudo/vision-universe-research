@@ -43,7 +43,7 @@ import { publishedProduct, productContext, productElliottAt, identitySample, ide
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const SC = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
-export const REGISTRY_VERSION = "elliott-registry-1.2.0";   // 1.2.0: Projektionsthese (elliott-projection-1.0.0) an neuen Kundenprodukt-Ereignissen, Revisionen PROJECTION_*
+export const REGISTRY_VERSION = "elliott-registry-1.3.0";   // 1.3.0: Kohorte CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE (Projection Engine 1.1.0, Produkt-Sichtbarkeit); productVisible der Forschungskohorte wahrheitsgemaess   // 1.2.0: Projektionsthese (elliott-projection-1.0.0) an neuen Kundenprodukt-Ereignissen, Revisionen PROJECTION_*
 export const VIEWS = Object.freeze({ STATELESS: "STATELESS_ENGINE", PRODUCT: "CUSTOMER_PRODUCT" });
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -248,6 +248,8 @@ async function registerWeek(o, F) {
   const initialStock = !lines.some((e) => e.type === "RUN");
   /* Bestand der Kundenprodukt-Sicht: erster Lauf, der diese Sicht fuehrt */
   const initialStockProduct = !lines.some((e) => e.type === "RUN" && (e.payload.views || []).includes(VIEWS.PRODUCT));
+  /* Bestand der Motiv-Alternativen: erster Lauf mit Registry >= 1.3.0 */
+  const initialStockMotive = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE") && !lines.some((e) => e.type === "RUN" && /^elliott-registry-1\.(3|[4-9])/.test(e.payload.code && e.payload.code.registry || ""));
   const skipReasons = {}; for (const r of rows) if (r.skip || r.error) { const k = r.skip || "ERROR"; skipReasons[k] = (skipReasons[k] || 0) + 1; }
   const pvStats = productView ? (() => { const s = { analysed: 0, timeframes: {}, skipReasons: {}, inputAgreement: { compared: 0, equal: 0 } };
     for (const r of ok) { if (r.pv && !r.pv.skip) { s.analysed++; s.timeframes[r.pv.tf] = (s.timeframes[r.pv.tf] || 0) + 1; } else { const k = r.pv ? r.pv.skip : "NOT_RUN"; s.skipReasons[k] = (s.skipReasons[k] || 0) + 1; }
@@ -283,6 +285,20 @@ async function registerWeek(o, F) {
           ...(r.pv.projIn ? { projectionThesis: registryProjection(Projection.build(r.pv.projIn.E, { ...r.pv.projIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null })), projectionEngine: PROJECTION_VERSION } : {}) };
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }
+    /* Registry 1.3.0: angezeigte Motiv-Alternative der Kundenprodukt-Sicht (Welle 3, nicht Hauptlesart), eigene Kohorte, eingefroren */
+    if (productView && r.pv && !r.pv.skip && r.pv.projIn && r.pv.projIn.E && r.pv.projIn.E.hiddenMotive) {
+      const proj = Projection.build(r.pv.projIn.E, { ...r.pv.projIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null }), m = proj.motiveAlternative;
+      if (m) {
+        const dk = [r.s, "MOTIVE_ALTERNATIVE", m.key, VIEWS.PRODUCT].join("|");
+        if (!registered.has(dk)) { registered.add(dk);
+          const reg = registryProjection(Object.assign({}, proj, { primary: m, alternative: null }));
+          const payload = { ...base, initialStock: initialStockMotive, view: VIEWS.PRODUCT, cohort: "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE", dedupeKey: dk, setupType: "MOTIVE_ALTERNATIVE_WAVE3",
+            timeframe: r.pv.tf, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, interpretation: "ALTERNATIVE", primaryShownAs: r.pv.p, primaryAbstained: r.pv.ab,
+            dir: m.direction === "UP" ? 1 : -1, pattern: m.pattern, wave: m.target, degree: m.degree, persistenceKey: m.key, pool: m.pool, highUpside: !!m.highUpside,
+            projectionThesis: reg, projectionEngine: PROJECTION_VERSION, setupStatus: "OPEN" };
+          entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
+      }
+    }
     if (r.rw3 && r.rw3.qualifies) {
       const dk = [r.s, "RESEARCH_ONLY_INTERNAL_WAVE3", r.rw3.pivotIdx[0]].join("|");
       if (!registered.has(dk)) { registered.add(dk);
@@ -291,7 +307,9 @@ async function registerWeek(o, F) {
         const payload = { ...base, cohort: "RESEARCH_ONLY_INTERNAL_WAVE3", dedupeKey: dk, setupType: "RESEARCH_ONLY_INTERNAL_WAVE3", dir: 1, internal: r.rw3,
           levels: { invalidation: r4(pp[0]), confirmation: r4(pp[1]), confirmationState: r.px > pp[1] ? "ALREADY_CONFIRMED" : "PENDING" },
           projection: { primary: { low: proj[1], high: proj[1] }, extended: { low: proj[2], high: proj[2] }, all: proj, basis: "Welle 3 = 1,0 / 1,618 / 2,618 × Welle 1 ab Ende Welle 2 (patterns.js-Proportionen); Invalidation = Ursprung Welle 1" },
-          productVisible: false, displayedPrimary: r.ew, setupStatus: "OPEN" };
+          /* 1.3.0: wahrheitsgemaess — seit der Motiv-Alternative (Projection Engine 1.1.0) kann derselbe Kandidat im Produkt sichtbar sein */
+          productVisible: !!(r.pv && r.pv.projIn && r.pv.projIn.E && r.pv.projIn.E.hiddenMotive && r.pv.projIn.E.hiddenMotive.count && r.pv.projIn.E.hiddenMotive.count.persistenceKey === "IMPULSE|" + r.rw3.pivotIdx[0] + "|1"),
+          displayedPrimary: r.ew, setupStatus: "OPEN" };
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }
   }
@@ -317,7 +335,7 @@ async function registerWeek(o, F) {
   const written = append(reg, lines, entries);
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
-           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
+           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
            productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), seconds: Math.round((Date.now() - t0) / 1000) };
 }
 

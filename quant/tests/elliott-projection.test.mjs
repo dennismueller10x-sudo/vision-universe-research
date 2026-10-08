@@ -225,3 +225,59 @@ test("P-20 · Lebenszyklus: eingefroren, Ereignisse nur angehängt, Revision bei
   const inv = PJ.build(E(count("IMPULSE", [10, 20, 15, 22], { invalidation: { price: 10, direction: "below", ruleId: "W2_NOT_BEYOND_W1_ORIGIN", kind: "HARD_RULE" } })), ctx(9));
   assert.equal(inv.primary, null); assert.ok(inv.guardrails.flags.some((f) => f.code === "INVALID_THESIS"));
 });
+
+/* ---------------- Projection Engine 1.1.0: Motiv-Alternative (nur Produkt-Sichtbarkeit) ---------------- */
+const hidden = (prices, o = {}) => ({ count: Object.assign(count("IMPULSE", prices, { invalidation: { price: prices[0], direction: prices[1] > prices[0] ? "below" : "above", ruleId: "W2_NOT_BEYOND_W1_ORIGIN", kind: "HARD_RULE" } }), o), rank: 41, pool: 200, reason: null });
+const corr = () => count("FLAT", [30, 20, 29, 21], { complete: true, nextMove: "UP", revision: { price: 21, direction: "below", ruleId: "PATTERN_END" } });
+
+test("P-21 · Verborgene gültige Welle-3-Lesart wird als Alternative sichtbar – auch bei Enthaltung, nie als Hauptlesart", () => {
+  const e = E(corr(), { abstain: true }); e.hiddenMotive = hidden([10, 30, 16]);
+  const o = PJ.build(e, ctx(22));
+  assert.equal(o.status, "ABSTAIN"); assert.equal(o.consumerVisible, false, "Hauptlesart bleibt zurückgehalten");
+  assert.equal(o.motiveVisible, true); const m = o.motiveAlternative;
+  assert.equal(m.source, "MOTIVE_ALTERNATIVE"); assert.equal(m.type, "WAVE_3"); assert.equal(m.status, "DEVELOPING"); assert.equal(m.clarity.level, "LOW");
+  assert.equal(o.primary.source, "PRIMARY"); assert.notEqual(o.primary.key, m.key, "nie die Hauptlesart");
+  assert.ok(close(zone(m, "BASE").low, 36) && close(zone(m, "EXTREME").high, 16 + 20 * 4.236), "Leiter 1,0–4,236 × W1 ab Ende W2");
+  assert.equal(m.invalidation.price, 10); assert.equal(m.pool.rank, 41); assert.equal(m.highUpside, true);
+  assert.ok(m.roadmap.elliott.length && m.roadmap.vu.every((x) => x.class === "VU_CONFIRMATION"));
+});
+
+test("P-22 · Ungültige oder ausgeschöpfte Kandidaten bleiben verborgen", () => {
+  const a = E(corr()); a.hiddenMotive = hidden([10, 30, 16]);
+  assert.equal(PJ.build(a, ctx(9)).motiveAlternative, null, "Schluss unter der harten Grenze");
+  const b = E(corr()); b.hiddenMotive = hidden([10, 12, 11, 30]);
+  assert.equal(PJ.build(b, ctx(60)).motiveAlternative, null, "alle Zonen schon erreicht");
+  const c = E(corr(), { dataQuality: { suspectedSplits: 1 } }); c.hiddenMotive = hidden([10, 30, 16]);
+  assert.equal(PJ.build(c, ctx(22)).motiveAlternative, null, "Datenfehler sperrt alles");
+});
+
+test("P-23 · Höchstens eine Welle-3-Alternative: keine Motiv-Alternative, wenn eine angezeigte Alternative schon Welle 3 ist", () => {
+  const e = E(corr(), { alternatives: [count("IMPULSE", [1, 21, 8, 21])] }); e.hiddenMotive = hidden([10, 30, 16]);
+  const o = PJ.build(e, ctx(21));
+  assert.equal(o.alternative.type, "WAVE_3"); assert.equal(o.motiveAlternative, null);
+  const shown = [o.highUpside && o.highUpside.zones ? 1 : 0, o.alternative && o.alternative.highUpside ? 1 : 0, o.motiveAlternative && o.motiveAlternative.highUpside ? 1 : 0].reduce((x, y) => x + y, 0);
+  assert.ok(shown <= 1, "nur eine Hochpotenzial-Alternative");
+});
+
+test("P-24 · Keine Wahrscheinlichkeitssprache in Thesen-Texten", () => {
+  const e = E(corr(), { abstain: true }); e.hiddenMotive = hidden([10, 30, 16]);
+  const txt = JSON.stringify(PJ.build(e, ctx(22)));
+  [/\d+\s*%\s*(Wahrscheinlichkeit|Chance)/i, /wahrscheinlich(er)? (steigt|erreicht)/i, /garantiert/i, /Kursziel/i, /probability/i].forEach((re) => assert.ok(!re.test(txt), String(re)));
+});
+
+test("P-25 · Echte Reihe (SE, Woche): Kandidat aus dem Pool der unveränderten Engine, Regeln erneut geprüft, Identität mit dem Produkt", async () => {
+  const { readJson, weeklySeriesFromPoints } = await import("../../scripts/technical/lib/ti-data.mjs");
+  const { analyzeProduct, PRODUCT_METHODOLOGY } = await import("../../scripts/technical/lib/ti-product.mjs");
+  const { motiveCandidateFor } = await import("../../scripts/technical/lib/ti-projection.mjs");
+  const Pt = require("../engines/technical/elliott/patterns.js");
+  const j = readJson(new URL("../data/market/discover-series-long/ref_SE.json", import.meta.url).pathname), cut = j.points.filter((p) => p[0] <= "2026-10-02");
+  const series = weeklySeriesFromPoints(cut, "SE"), out = analyzeProduct(series, { symbol: "SE" });
+  const mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
+  assert.notEqual(mc.reason, "IDENTITY_MISMATCH");
+  if (mc.count) {
+    const legs = mc.count.waves.map((w) => ({ fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status, duration: 1 }));
+    assert.equal(Pt.evaluate(mc.count.pattern, legs).valid, true, "harte Regeln erfüllt");
+    assert.ok(/^(IMPULSE|LEADING_DIAGONAL)$/.test(mc.count.pattern) && (mc.count.waves.length === 2 || mc.count.waves.length === 3));
+    assert.notEqual(mc.count.persistenceKey, out.res.methods.elliott.primary.persistenceKey, "nicht die Primärzählung");
+  }
+});

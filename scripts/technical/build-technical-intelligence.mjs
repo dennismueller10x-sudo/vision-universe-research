@@ -38,7 +38,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-import { projectFor, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
+import { projectFor, motiveCandidateFor, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -129,6 +129,8 @@ function payload(series, out, currency, withReplay) {
   s.overlays = overlaysOf(res);
   s.pro.elliottTransparency = elliottTransparency(res, out.replay);
   s.chart = chartOf(series, 260);
+  /* Projection Engine 1.1.0 (Produkt-Sichtbarkeit): beste verborgene Motiv-Lesart aus dem Kandidatenpool (ausgabeneutraler Engine-Lauf) */
+  s.motiveCandidate = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
   if (withReplay) s.replay = { every: 1, unit: series.timeframe === "1W" ? "Woche" : "Tag", steps: replaySnapshots(series, out.P, out.replay, withReplay, 1),
                                note: "Jeder Schritt zeigt, was die Analyse an diesem Tag mit den damals verfügbaren Daten gezeigt hätte." };
   return s;
@@ -253,7 +255,7 @@ function weeklyFor(ticker, C) {
   const j = readJson(f), series = weeklySeriesFromPoints(j.points || [], j.ticker);
   if (series.length < 160) return null;
   const p = payload(series, analyzeProduct(series, productOpts("weekly", C, j.ticker)), "$", null);
-  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence,
+  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence, motiveCandidate: p.motiveCandidate,
            timeframes: null, dataQuality: p.dataQuality, chart: { timestamps: p.chart.timestamps, close: p.chart.close } };
 }
 function runUnit(u, C) {
