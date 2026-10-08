@@ -385,7 +385,7 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
   .sc-app{padding-bottom:64px}
   .sc-cta{display:none}
   .sc-layout{display:grid;grid-template-columns:minmax(340px,400px) minmax(0,1fr);gap:32px;align-items:start}
-  .sc-layout>.sc-side{position:sticky;top:calc(var(--vu-navigation-height) + 72px);max-height:calc(100vh - var(--vu-navigation-height) - 88px);overflow-y:auto;padding-right:6px;scrollbar-width:thin}
+  .sc-layout>.sc-side{position:sticky;top:calc(var(--vu-navigation-height) + 72px);max-height:calc(100vh - var(--vu-navigation-height) - 72px - var(--sc-tabbar) - var(--sc-safe-b) - 16px);max-height:calc(100dvh - var(--vu-navigation-height) - 72px - var(--sc-tabbar) - var(--sc-safe-b) - 16px);overflow-y:auto;padding-right:6px;scrollbar-width:thin}
   .sc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sc-comparebar{bottom:calc(var(--sc-tabbar) + var(--sc-safe-b) + 16px)}
   .sc-toast{bottom:calc(var(--sc-tabbar) + var(--sc-safe-b) + 24px)}

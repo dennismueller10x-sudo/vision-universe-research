@@ -10,17 +10,17 @@ const source = readFileSync(join(root, 'assets/site-navigation.js'), 'utf8');
 let Navigation;
 const sandbox = {
   HTMLElement: class {},
-  URLSearchParams,
+  URL, URLSearchParams,
   customElements: { define(name, type) { assert.equal(name, 'vu-navigation'); Navigation = type; } }
 };
 vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { groups, styles, THEMES, PRODUCTS, dockStyles };})();'), sandbox);
 const { groups, styles, THEMES, PRODUCTS, dockStyles } = sandbox.__nav;
-const normalized = JSON.parse(JSON.stringify(groups.map(([heading, entries]) => [heading, entries.map(([label, href]) => [label, href])])));
+const normalized = JSON.parse(JSON.stringify(groups.map(({label, entries}) => [label, entries.map(([label, href]) => [label, href])])));
 
 // Discover shortcuts stay within Discover; the other groups link to platform products.
 test('the shared menu groups product routes and Discover destinations', () => {
   assert.deepEqual(normalized.map(([heading]) => heading),
-    ['Discover','Markets & Data','Vorsorge','Analyse','Research','Learn','Tools & Personal']);
+    ['Discover','Quant','Screener','Vorsorge','Supertrader','Hedgefonds','Weitere Produkte']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
@@ -28,12 +28,16 @@ test('the shared menu groups product routes and Discover destinations', () => {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
   assert.deepEqual(normalized[0][1], [
-    ['Start','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],
+    ['Übersicht','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],
     ['Entdecken','/discover/#/einzeln/US_REAL'],['Suchen','/discover/#/suche'],
     ['Märkte','/discover/#/maerkte'],['Watchlist','/discover/#/watchlist']
   ]);
-  // Hash-Routen gehoeren zu ihrer eigenen Produkt-App (Discover, Vorsorge).
-  assert.ok(routes.filter(route => route.includes('#/')).every(route => route.startsWith('/discover/#/') || route.startsWith('/vorsorge/#/')));
+  // Hash-Routen gehoeren zu vorhandenen Produkt-Apps; Screener nutzt Query-Routen.
+  assert.ok(routes.filter(route => route.includes('#/')).every(route => /^\/(discover|vorsorge|quant|hedgefonds)\/#\//.test(route)));
+  for (const group of groups.filter(g=>g.id!=='more')) {
+    const prefix=group.href.split('#')[0];
+    assert.ok(group.entries.every(([,href])=>href.startsWith(prefix)),group.label+' stays within its product');
+  }
 });
 
 test('Discover has separate worlds and strategies routes and uses the shared product dock', () => {

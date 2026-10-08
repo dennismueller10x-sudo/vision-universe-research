@@ -135,9 +135,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
  await check(key+' shared menu separates Discover from platform products',async()=>{
   const nav=page.locator('vu-navigation');
-  const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
-  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
-  assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
+  const destinations=await nav.locator('[data-group="discover"] .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
+  assert.equal(await nav.locator('[data-group="discover"] .group-link').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   /* Gemeinsame Shell: der Kopf traegt Marke, AI Atlas und Farbschema; das
      globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */

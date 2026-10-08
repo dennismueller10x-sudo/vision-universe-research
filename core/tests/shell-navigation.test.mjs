@@ -11,9 +11,9 @@ import vm from 'node:vm';
    Zustaende und Gestaltung unabhaengig von den einzelnen Produkten. */
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const source = readFileSync(join(root, 'assets/site-navigation.js'), 'utf8');
-const sandbox = { HTMLElement: class {}, URLSearchParams, customElements: { define() {} } };
-vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles };})();'), sandbox);
-const { styles, THEMES, PRODUCTS, dockStyles } = sandbox.__nav;
+const sandbox = { HTMLElement: class {}, URL, URLSearchParams, customElements: { define() {} } };
+vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon };})();'), sandbox);
+const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon } = sandbox.__nav;
 
 const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.de'); return { pathname: u.pathname, hash: u.hash, search: u.search }; };
 
@@ -109,4 +109,69 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
   // gleiches Seitenverhaeltnis wie das Original (3:1), damit width/height-Attribute stimmen
   const png = readFileSync(join(root, 'assets/vision-universe-logo-web.png'));
   assert.equal(png.readUInt32BE(16) / png.readUInt32BE(20), 2172 / 724);
+});
+
+
+test('compact menu preserves every old destination in six products and one additional group', () => {
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','screener','vorsorge','supertrader','hedgefonds','more']);
+  const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
+  const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
+  for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
+  for(const g of groups.slice(0,6)) assert.equal(g.href, g.entries[0][1]);
+  assert.equal(groups.find(g=>g.id==='quant').entries.find(([,href])=>href==='/quant/#/screener')[0],'Quant Screener');
+});
+
+test('menu routes distinguish home, query, hash segment boundaries and detail parents', () => {
+  const state=url=>menuState(loc(url));
+  for(const url of ['/discover/#/','/quant/','/quant/#/','/vorsorge/#/','/screener/','/screener/?view=start','/supertrader/','/hedgefonds/#/']) assert.equal(state(url).expanded,null,url);
+  const examples = [
+    ['/quant/#/methodik/faktoren','quant','/quant/#/methodik'],
+    ['/quant/#/aktie/AAPL/technik','quant','/quant/#/aktien'],
+    ['/quant/stock/?ticker=AAPL','quant','/quant/#/aktien'],
+    ['/quant/strategies/builder/','quant','/quant/#/strategien'],
+    ['/quant/methodology/','quant','/quant/#/methodik'],
+    ['/screener/?view=saved&f=pe','screener','/screener/?view=saved'],
+    ['/screener/?view=compare','screener','/screener/?view=results'],
+    ['/screener/?view=changes&id=example','screener','/screener/?view=saved'],
+    ['/screener/?f=roic:gt:0.1','screener','/screener/?view=build'],
+    ['/screener/?mode=pro','screener','/screener/?view=build'],
+    ['/screener/?view=unknown&mode=pro','screener','/screener/?view=build'],
+    ['/vorsorge/#/etf/IWDA','vorsorge','/vorsorge/#/etfs'],
+    ['/supertrader/strategies/darvas-boxes/','supertrader','/supertrader/strategies/'],
+    ['/hedgefonds/#/fonds/berkshire','hedgefonds','/hedgefonds/#/datenbank'],
+    ['/discover/#/s/US_REAL/NVDA','discover','/discover/#/einzeln/US_REAL'],
+    ['/news/','more','/news/'],
+    ['/reports/xpeng/research/','more','/reports/xpeng/']
+  ];
+  for(const [url,group,href] of examples){assert.equal(state(url).group,group,url);assert.equal(state(url).href,href,url);assert.equal(state(url).expanded,group,url);}
+  assert.equal(state('/screener/?view=start&mode=pro').href,'/screener/');
+  assert.equal(state('/screener/?view=start&mode=pro').expanded,null);
+  assert.equal(state('/screener/?view=start&f=roic:gt:0.1').expanded,null);
+  assert.equal(routeScore('/discover/#/welten',loc('/discover/#/weltenfremd')),-1);
+  assert.equal(routeScore('/screener/',loc('/screener/?view=saved')),-1);
+  assert.equal(routeScore('/quant/',loc('/quant/#/aktien')),-1);
+});
+
+test('accordion and original product symbols retain accessible shell behavior', () => {
+  const sprite=readFileSync(join(root,'assets/product-icons.svg'),'utf8');
+  for(const group of groups) {
+    const icon=productIcon(group.icon);
+    assert.match(icon,new RegExp('data-href="/assets/product-icons\\.svg#'+group.icon+'"'));
+    assert.doesNotMatch(icon,/<use href=/,'hidden menu must not request its sprite');
+  }
+  for(const group of groups.slice(0,6)) {
+    const original=sprite.match(new RegExp('<symbol id="'+group.icon+'"[^>]*>([\\s\\S]*?)</symbol>'))[1];
+    assert.equal(DOCK_PRODUCT_ICONS[group.icon],original,group.icon+': exact original geometry and presentation');
+    assert.doesNotMatch(dockProductIcon(group.icon),/use|href/,'dock requires no sprite request');
+  }
+  assert.match(source,/icon\.setAttribute\('href',icon\.getAttribute\('data-href'\)\)/);
+  assert.match(source,/icon\.removeAttribute\('data-href'\)/);
+  assert.match(source,/disclosure\.setAttribute\('aria-controls','menu-links-'\+id\)/);
+  assert.match(source,/links\.hidden=true/);
+  assert.match(source,/section\.querySelector\('\.links'\)\.hidden = !open/);
+  assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
+  assert.match(source,/dockProductIcon\(groups\.find\(g=>g\.id===product\.id\)\.icon\)/);
+  assert.match(styles(THEMES.light),/\.mode\{width:44px;height:44px\}/);
+  assert.match(styles(THEMES.light),/\.links a\{[^}]*min-height:44px/);
+  assert.match(styles(THEMES.light),/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
 });
