@@ -266,6 +266,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Keep complete ancestry for the independent baseline; only historic
+          # file bodies are lazy. Current and baseline files remain exact.
+          filter: blob:none
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
