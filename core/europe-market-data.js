@@ -157,13 +157,19 @@
           priceQuality: clone(evidence.priceQuality || {}), adjustment: clone(evidence.adjustment || {}),
           corporateActions: clone(evidence.corporateActions || {}), benchmark: clone(evidence.benchmark || {}),
           technical: clone(evidence.technical || {}), snapshot: clone(evidence.snapshot || {}),
-          provenance: { identityEvidence: clone(l.identityEvidence) } };
+          provenance: Object.assign({}, clone(evidence.provenance || {}), { identityEvidence: clone(l.identityEvidence) }) };
       });
       var companyEvidence = opts.companyEvidence && opts.companyEvidence[s.companyKey] || {};
+      var issuerNames = Array.from(new Set((primary.identityEvidence || []).filter(function (e) {
+        return e.verified === true && e.lei && s.companyKey === "LEI:" + e.lei && typeof e.issuerName === "string" &&
+          (e.source || e.provenance && e.provenance.source);
+      }).map(function (e) { return e.issuerName; })));
+      var companyName = issuerNames.length === 1 ? issuerNames[0] : primary.name || null;
       result.push({ region: "EUROPE", securityId: s.securityId, companyId: s.companyKey,
-        instrumentId: primary.instrumentId || null, name: primary.name || null,
+        instrumentId: primary.instrumentId || null, name: companyName,
         ticker: primary.symbol || primary.providerSymbol, canonicalTicker: s.canonicalTicker,
-        isin: s.isin || null, shareClassId: s.securityKey || null, aliases: clone(s.aliases || []), primaryListingId: s.primaryListing,
+        isin: s.isin || null, shareClassId: s.securityKey || null,
+        aliases: Array.from(new Set(clone(s.aliases || []).concat(issuerNames, primary.name && primary.name !== companyName ? [primary.name] : []))), primaryListingId: s.primaryListing,
         acceptance: "ACCEPTED", identity: { status: "VERIFIED" }, listings: listings,
         indexes: clone(primary.indexMembership || []),
         fundamentals: clone(companyEvidence.fundamentals || {}), logo: clone(companyEvidence.logo || {}) });
@@ -207,7 +213,7 @@
         listingId: l.listingId, primaryListingId: s.primaryListingId, name: s.name || null,
         ticker: l.ticker || s.ticker || null, providerSymbol: l.providerSymbol || null, mic: l.mic || null,
         exchange: l.exchange || null, country: l.country || null, currency: l.currency || null,
-        isin: s.isin || null, aliases: clone(s.aliases || []), contract: CONTRACT_VERSION };
+        isin: s.isin || null, aliases: clone(s.aliases || []), provenance: clone(l.provenance || {}), contract: CONTRACT_VERSION };
     }
     function readHit(ref, scope) {
       if (!gate(scope)) return { error: unavailable("DISPLAY_RIGHTS_UNCONFIRMED", source) };

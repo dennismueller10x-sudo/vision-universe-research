@@ -240,6 +240,28 @@ test('freshness cannot transfer from catalog to a stale loaded series', async ()
   assert.equal((await client({ catalog: data }).getPriceSeries(ref)).reason, 'CHART_BLOCKED');
 });
 
+test('verified official issuer name remains searchable and raw provider name survives as an alias', async () => {
+  const key = 'marketstack:XETR:SAP', foundation = {
+    securities: [{ securityId: ref.securityId, companyKey: 'LEI:SAP', primaryListing: key, listings: [key], aliases: ['SAP.DE'] }],
+    listings: [{ status: 'ACCEPTED', listingKey: key, securityId: ref.securityId, companyKey: 'LEI:SAP', symbol: 'SAP.DE', name: 'SAP &amp; Company SE',
+      mic: 'XETR', currency: 'EUR', identityEvidence: [{ verified: true, lei: 'SAP', issuerName: 'SAP & Company SE', source: 'OFFICIAL_GLEIF_TEST' },
+        { verified: true, lei: 'FOREIGN', issuerName: 'Foreign Entity', source: 'OFFICIAL_GLEIF_TEST' }] }]
+  };
+  const evidence = { [key]: { provenance: { currencyBasis: 'CANONICAL_REFERENCE_CURRENCY', currencyEvidence: { source: 'OFFICIAL_XETRA_CSV', sha256: 'a'.repeat(64) }, identityEvidence: ['FOREIGN_OVERLAY'] } } };
+  const catalog = Europe.fromFoundation(foundation, { listingEvidence: evidence }), c = client({ catalog });
+  assert.equal(catalog.securities[0].name, 'SAP & Company SE');
+  assert.ok(catalog.securities[0].aliases.includes('SAP &amp; Company SE'));
+  assert.equal((await c.search('SAP & Company SE')).data.results[0].securityId, ref.securityId);
+  assert.equal((await c.search('SAP &amp; Company SE')).data.results[0].securityId, ref.securityId);
+  assert.equal((await c.search('Foreign Entity')).data.results.length, 0);
+  const identity = (await c.getSecurity(ref)).data;
+  assert.equal(identity.provenance.currencyBasis, 'CANONICAL_REFERENCE_CURRENCY');
+  assert.equal(identity.provenance.currencyEvidence.source, 'OFFICIAL_XETRA_CSV');
+  assert.equal(identity.provenance.identityEvidence[0].lei, 'SAP', 'overlay never replaces identity proof');
+  evidence[key].provenance.currencyEvidence.source = 'MUTATED';
+  assert.equal((await c.getSecurity(ref)).data.provenance.currencyEvidence.source, 'OFFICIAL_XETRA_CSV');
+});
+
 test('rights for canonical adjusted data never authorize raw EOD display', async () => {
   const c = client({ audience: 'public', rights: { ...rights, dataPaths: ['IDENTITY', 'CANONICAL_EOD'] } });
   assert.equal((await c.getPriceSeries(ref)).reason, 'DISPLAY_RIGHTS_UNCONFIRMED');
