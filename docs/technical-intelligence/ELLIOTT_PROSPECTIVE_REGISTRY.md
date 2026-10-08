@@ -44,6 +44,12 @@ Alle historischen Wochendaten sind verbraucht. Ob ein Setup der Library V1 echte
 * Zusätzliche Revisionsarten nur für Ereignisse mit Projektionsthese: `PROJECTION_BASE_REACHED`, `PROJECTION_EXTENDED_REACHED`, `PROJECTION_EXTREME_REACHED`, `PROJECTION_INVALIDATED`.
 * Frühere Ereignisse und Revisionen bleiben unverändert; Kohorten, Setup-Library und Auswertung sind unverändert.
 
+## Motiv-Alternative (ab Registry 1.3.0)
+
+* Kohorte `CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE`: die im Chartbild angezeigte Motiv-Alternative (Projection Engine 1.1.0, „Mögliche Welle 3 · Alternative Lesart“) wird je Titel × Lesart einmal eingefroren: `interpretation: "ALTERNATIVE"`, Welle, Grad, Rang im Kandidatenpool, Zonen, Invalidation, Bestätigungsstatus, Engine- und Projektionsversion. Revisionen `PROJECTION_*` wie bei 1.2.0.
+* Der erste Lauf mit 1.3.0 markiert seine Motiv-Ereignisse als Bestand (`initialStock`).
+* `RESEARCH_ONLY_INTERNAL_WAVE3`: `productVisible` wird ab 1.3.0 wahrheitsgemäß gesetzt (vorher fest `false`), weil derselbe interne Kandidat jetzt im Produkt erscheinen kann. Die Definition der Forschungskohorte ist unverändert; frühere Einträge bleiben unverändert.
+
 ## Ablauf je Lauf (eine abgeschlossene ISO-Woche)
 
 1. **Woche W\*:**

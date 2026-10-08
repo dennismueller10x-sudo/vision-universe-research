@@ -38,7 +38,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-import { projectFor, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
+import { projectFor, motiveCandidateFor, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -129,6 +129,8 @@ function payload(series, out, currency, withReplay) {
   s.overlays = overlaysOf(res);
   s.pro.elliottTransparency = elliottTransparency(res, out.replay);
   s.chart = chartOf(series, 260);
+  /* Projection Engine 1.1.0 (Produkt-Sichtbarkeit): beste verborgene Motiv-Lesart aus dem Kandidatenpool (ausgabeneutraler Engine-Lauf) */
+  s.motiveCandidate = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
   if (withReplay) s.replay = { every: 1, unit: series.timeframe === "1W" ? "Woche" : "Tag", steps: replaySnapshots(series, out.P, out.replay, withReplay, 1),
                                note: "Jeder Schritt zeigt, was die Analyse an diesem Tag mit den damals verfügbaren Daten gezeigt hätte." };
   return s;
@@ -155,9 +157,10 @@ function indexRow(p) {
 /** Kompakte Projektionszeile fuer Listen (nur angezeigte Thesen). */
 function projRow(pr) {
   const t = pr && pr.consumerVisible ? pr.primary || pr.alternative : null;
-  if (!t) return pr ? { st: pr.status } : null;
+  const mv = pr && pr.motiveAlternative ? { dir: pr.motiveAlternative.direction, ts: pr.motiveAlternative.status, hu: !!pr.motiveAlternative.highUpside } : undefined;
+  if (!t) return pr ? { st: pr.status, mv } : null;
   const z = (tier) => { const x = t.zones.find((q) => q.tier === tier); return x ? [x.display.low, x.display.high] : null; };
-  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside };
+  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside, mv };
 }
 
 /** Indexmitglieder (S&P 500, Nasdaq-100, Dow) als Relevanz- und Liquiditaetsfilter fuer Consumer-Reihen. */
@@ -253,7 +256,7 @@ function weeklyFor(ticker, C) {
   const j = readJson(f), series = weeklySeriesFromPoints(j.points || [], j.ticker);
   if (series.length < 160) return null;
   const p = payload(series, analyzeProduct(series, productOpts("weekly", C, j.ticker)), "$", null);
-  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence,
+  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence, motiveCandidate: p.motiveCandidate,
            timeframes: null, dataQuality: p.dataQuality, chart: { timestamps: p.chart.timestamps, close: p.chart.close } };
 }
 function runUnit(u, C) {
@@ -364,6 +367,8 @@ function projectAll(got) {
       items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf });
     }
   }
+  /* oeffentlich nur Herkunft und Grund der Motiv-Suche, nicht das ganze Kandidatenobjekt */
+  for (const [, g] of got) if (g.p.motiveCandidate) g.p.motiveCandidate = { reason: g.p.motiveCandidate.reason, rank: g.p.motiveCandidate.rank, pool: g.p.motiveCandidate.pool };
   const storePath = join(OUT, "projection-theses.json");
   let prev = null; if (existsSync(storePath)) { try { prev = readJson(storePath); } catch (e) { prev = null; } }
   const versions = { projection: PROJECTION_VERSION, elliott: EV3.ENGINE_VERSION, ruleSet: Patterns.RULE_SET_VERSION, api: API_VERSION };
@@ -371,6 +376,7 @@ function projectAll(got) {
   for (const it of items) {
     attachLifecycle(it.proj, adv.bySymbol.get(it.symbol + "|" + it.tf));
     stats.status[it.proj.status] = (stats.status[it.proj.status] || 0) + 1;
+    if (it.proj.motiveAlternative) { stats.motiveAlternative = (stats.motiveAlternative || 0) + 1; const d = "motive" + it.proj.motiveAlternative.direction; stats[d] = (stats[d] || 0) + 1; if (it.proj.motiveAlternative.highUpside) stats.motiveHighUpside = (stats.motiveHighUpside || 0) + 1; }
     if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; }
   }
   mkdirSync(OUT, { recursive: true });
