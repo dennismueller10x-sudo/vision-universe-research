@@ -85,7 +85,7 @@ Prospektives Register (Kundensicht)     → analyzeProduct + productOpts + slim 
 | Elliott V1 (`elliott-engine.js`, `elliott-v1.0.0-beta`) | main | – | ja (in `technical-signals-v1`) | nein (nach Migration) | Build | im Bundle | bestehend | **REQUIRED LEGACY (unsichtbar)** | im Bundle von Setups, Radar und Faktoren mitgerechnet; keine Kundenanzeige mehr |
 | Forschung | Mission I–X: `scripts/technical/{hsab,practitioner,elliott-forensics,elliott-calibration,elliott-setups/*-eval*,…}`, `elliott-33-research`, Holdouts, Korpora, Workbenches, `quant/research/**`, `technical-intelligence/{historical-accuracy,practitioner-v1,elliott-forensics,elliott-validation/* außer 2 Berichten}`, Mission-Berichte, UI-Audit-Screenshots, Mission-Workflows | – | nein | nein | nein | – | – | **DO NOT** | Forschung bleibt auf dem Forschungsbranch |
 | Evidenz-Neuberechnung | `scripts/technical/ti-evidence.mjs`, `derive-method-evidence.mjs`, `technical-intelligence-evidence.yml` | – | nein | nein | nein | – | – | **DO NOT** | würde neue Evidenz erzeugen; die Eingaben werden als feste Kopie übernommen |
-| Andere Arbeitsstränge des Branches | Supertrader R8, Social, Firmenlogos, Gesamtrendite-Reparatur, `market-data-refresh.yml`, `product-intelligence-materialization.yml` (Universums-Tagesanalyse) | – | nein | – | – | – | – | **DO NOT** | gehören nicht zur TI-Migration. Der Universums-Tageslauf wäre eine Verhaltensänderung (heute 5 Tages- und 5.287 Wochentitel). |
+| Andere Arbeitsstränge des Branches | Supertrader R8, Social, Firmenlogos, Gesamtrendite-Reparatur, `market-data-refresh.yml`, `product-intelligence-materialization.yml` (Universums-Tagesanalyse) | – | nein | – | – | – | – | **DO NOT** | gehören nicht zur TI-Migration. Der Universums-Tageslauf wäre eine Verhaltensänderung (heute 5 Tagestitel und rund 5.100–5.300 Wochentitel, je nach Datenstand; Neubau auf main: 5.125). |
 
 ## 4. Routenkarte (vorher → nachher)
 
@@ -115,6 +115,7 @@ Prospektives Register (Kundensicht)     → analyzeProduct + productOpts + slim 
 | `quant/technical/app.js` | STALE, NICHT MEHR ERREICHBAR | Seite leitet weiter |
 | `discover/engines/technical-intelligence.js` (`layers.elliottWave`) | REQUIRED LEGACY (Daten) | nicht mehr angezeigt |
 | `quant/engines/technical/technical-tools.js` `getElliottAnalysis` | REQUIRED LEGACY (interne Werkzeugliste) | kein Kundenpfad |
+| Quant-Pro-Screener-Feld `elliottCountStatus` (`quant/api/screener-workspace.js`, Katalog, Backtest-Vorpruefung) | REQUIRED LEGACY (gespeicherte Abfragen loesen darauf auf) | bleibt; Etikett jetzt „Elliott V1 (alte Methode) · Status“, damit es nicht als Elliott-Aussage des Produkts gelesen wird (Befund der unabhaengigen Pruefung) |
 | Startseite `NVDA_WAVE_*`, Wellenpunkte | STALE → umgestellt | aus v3 |
 | Aktienseite „Elliott-Wellen“-Kachel | STALE → entfernt | – |
 
@@ -127,6 +128,11 @@ Prospektives Register (Kundensicht)     → analyzeProduct + productOpts + slim 
   2. Datenstand: Die Unterschiede zwischen Neubau und Branch-Shards entstehen nur aus neueren Kursen.
 
 ## 7. Betrieb auf main
+
+* **Laden im Browser:**
+  * Im Bündel jeder Quant-Ansicht stehen nur die Lese-API und die Texte (`explain.js`, rund 10 KB).
+  * Chartbild-Seite, Chart und Stile (rund 130 KB) lädt `app.js` erst auf den Chartbild-Routen; die Stile auch für den Teaser.
+  * Grund: Ressourcen-Budget der Startseite und des Screeners in der Quant-Browser-QA.
 
 * `technical-intelligence-build.yml`:
   * täglich nach dem Marktlauf und manuell;

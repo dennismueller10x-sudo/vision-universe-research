@@ -22,7 +22,9 @@ const LEGACY_FIELDS=[
  ['technicalOpportunityScore','Technical Opportunity Score','technicalOpportunityScore'],
  ['technicalTrend','Technical Trend','technicalTrend'],
  ['technicalPrimaryDirection','Primärszenario · Richtung','technicalPrimaryDirection'],
- ['elliottCountStatus','Elliott Count · Methodenstatus','elliottCountStatus']
+ /* V1-Methodenstatus (technical-signals-v1), bleibt fuer gespeicherte Abfragen. Die Elliott-Aussage des Produkts
+    ist das Chartbild (Elliott 3.2.2); das Etikett sagt deshalb, dass es die alte Methode ist. */
+ ['elliottCountStatus','Elliott V1 (alte Methode) · Status','elliottCountStatus']
 ];
 const EVIDENCE_NAMESPACE='quantV2.factorEvidence';
 /* Die Feldliste kommt aus dem Katalog, nicht aus einer zweiten Aufzaehlung:
