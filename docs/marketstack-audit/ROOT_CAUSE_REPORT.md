@@ -91,7 +91,7 @@ Geändert wurden ausschließlich Provider-/Audit-Code, Tests, Dokumentation und 
 | [37642262870](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37642262870) | 55 | 302 | 53 | 400 |
 | [37645399592](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37645399592) | 21 | 78 | 21 | 100 |
 
-**Gesamt: 547 Requests, 1573 konservativ reservierte Credits, 542 erhaltene und hashgeprüfte Raw Responses.** Ziel <2.000 erreicht, Hard Cap 3.500 eingehalten. Die fünf früheren Timeouts und ggf. Final-Timeouts sind vor dem Request reserviert; eine ausbleibende Response wird nicht als leere Provider-Response erfunden. Alle Runs ohne Retries, Cache-Hits oder Produktionswrites; kein Entitlement-/Quota-/Auth-Denial. Ein Rechnungs- bzw. Monatsverbrauchszähler ist nicht verfügbar. Frozen Leases 1800+1200+400+100=3500 bleiben auch bei Fehlern verbraucht und können nicht wiederverwendet werden.
+**Gesamt: 547 Requests, 1573 konservativ reservierte Credits, 542 erhaltene und hashgeprüfte Raw Responses.** Ziel <2.000 erreicht, Hard Cap 3.500 eingehalten. Die fünf früheren Client-Timeouts wurden vor dem Request reserviert; im Final-Run wurden alle21 Responses einschließlich dreier HTTP504-Antworten erhalten; eine ausbleibende Response wird nicht als leere Provider-Response erfunden. Alle Runs ohne Retries, Cache-Hits oder Produktionswrites; kein Entitlement-/Quota-/Auth-Denial. Ein Rechnungs- bzw. Monatsverbrauchszähler ist nicht verfügbar. Frozen Leases 1800+1200+400+100=3500 bleiben auch bei Fehlern verbraucht und können nicht wiederverwendet werden.
 
 Final geprüfter Connector: `86c22095e57fb1cada304b10ea3e572efc52fee9`; signierter Marker-Child `0cf0f30402d7499b3c241688e770fd1db67cd5ab`. CLI-Authentifizierung lief nach dem dritten manuellen Start ab; der vorhandene GitHub-Connector startete deshalb den letzten Lauf durch einen kryptografisch signierten, auf exakten Parent/Branch/Lease beschränkten Marker. Dieser Trigger hat keinen Schedule und keine freie Code-/Parameterauswahl.
 
@@ -166,3 +166,26 @@ Die sieben Final-EOD-Abfragen erfolgten etwa 11–17 Minuten nach dem kontinenta
 Die Paritätsmatrix umfasst 39 Fälle (27 europäische Firmen und 12 ETFs); der 42-Case-Plan enthält zusätzlich AAPL/TSLA/NVDA als separate US-History-/Corporate-Action-Kontrollen. VU Found bedeutet ausschließlich Marketstack-Provider-Beobachtung im Draft, keine Aussage über bestehende VU-Produktwerte anderer Provider.
 
 Der Holdings-Feldvergleich prüft alle 4.243 gelieferten Positionen und die vollständigen basics/attributes/signature-Objekte direkt gegen das erste Raw-Filing. Raw-Verlust 0; nicht typisiert projizierte Zusatzfelder bleiben in jeder Originalposition erhalten.
+
+## Verbindlicher Abschluss — 8.10.2026
+
+Der technische Lauf ist beendet. Bei dieser Konsolidierung wurden ausschließlich vorhandene Tabellen gegengeprüft und Abschlussdokumentation ergänzt: **keine neuen Marketstack-Requests, Provider-Probes, Review-Schleifen, Tests oder Architektur-/Produktänderungen**. Die Summen aus Run-, Raw-, Paritäts- und Holdings-Tabellen stimmen überein:547 Requests,1.573 konservativ reservierte Credits,542 Raw Responses,39 Paritätsfälle und4.243 erhaltene Holdings-Positionen. Der abschließende Live-Run war erfolgreich;103 Tests und die bereits abgeschlossenen unabhängigen Reviews bleiben die Validierungsbasis.
+
+### Verbleibende UNKNOWNs
+
+| Punkt | Status | Warum offen / vorhandener Befund |
+|---|---|---|
+| UCITS-Holdings-Coverage bei SXR8.DE, CSPX.AS, SPY5.L | UNKNOWN | Die tatsächlichen HTTP504-Gatewayfehler belegen weder fehlende Daten noch eine Tarifgrenze. Das operative UNSUPPORTED-Flag bezeichnet ausschließlich fehlende verifizierte Lieferung im Test-Scope. |
+| Exakte Snapshot-Zeitzone, Provider-Update-Zeit und Realtime-/Delay-SLA | UNKNOWN | Raw-Zeitstempel ohne Zeitzone; fünf aktuelle Europa-Snapshots vorhanden. Etwa24–34 Minuten Alter nur bei angenommener lokaler Börsenzeit, keine zertifizierte Latenz. |
+| Interner EOD-Publication-/Provider-Cache-Grund und früherer VU-Cache-Zustand | UNKNOWN | Aktuelle ungecachte Routen stimmen überein. Frühere Abrufzustände und verbindliche Publication-Frist fehlen. Final-EOD kurz nach Close ist kein Overdue-Beweis. |
+| Verifizierter Account-Planname, Monatsrestbudget und tatsächlich abgerechnete Credits | UNKNOWN | Professional ist Nutzerangabe; erfolgreiche Routen und konservative Reservierungen sind belegt. Kein Rechnungs-/Accountzähler in den Responses. |
+| Kanonische Issuer-/Share-Class-Zuordnung unvollständiger Treffer | UNKNOWN | KTN.DE ist kein bestätigter Kontron-Alias; Schaeffler-Heimatlisting nicht gefunden; fehlende ISINs dürfen nicht erfunden werden. SSSPF ist als widersprüchlicher SPDR-Kandidat ausgeschlossen. |
+| Wirtschaftliche Vollständigkeit und aktuelle Issuer-Coverage der Holdings | UNKNOWN | Alle gelieferten Rows erhalten, aber kein Provider-total; Filings stale. Keine FULL-Zertifizierung aus Gewichtssummen oder ignorierter Pagination. |
+| Universelle Adjustierungs-/Volumenbasis und lückenlose Historie | UNKNOWN | Stichproben belegen tiefe Historie und Corporate Actions, zugleich Adjusted-Defekte. Keine universelle Basis-/Kontinuitätszulassung; europäische Corporate-Action-Vollständigkeit unbestätigt. |
+| Anbieterweite Verfügbarkeit fehlender strukturierter ETF-Felder / Verlust in einer konkreten alten Materialisierung | UNKNOWN | Geprüfte Responses enthalten die angefragten strukturierten Attribute nicht. Anbieterweite Abwesenheit und historische Truncation benötigen zusätzliche, hier nicht erhobene Evidence. |
+
+### Merge-Empfehlung
+
+**READY für den isolierten Connector-/Audit-PR #479.** Die notwendigen Root-Cause-Fixes wurden getestet und abschließend live bestätigt; Originalfelder und Gewichte bleiben erhalten, Identitäts-/Qualitätsunsicherheiten werden sichtbar ausgewiesen, Produktzulassung bleibt gesperrt. Die offenen Provider-/Evidence-Fragen verhindern keine Zusammenführung dieses inaktiven Beobachtungsadapters und seiner Dokumentation.
+
+**Keine Produktionsfreigabe:** Keine garantierte Europa-Realtime-SLA, keine bestätigte UCITS-Holdings-Coverage, keine universelle Adjusted-Basis und keine automatische Identitätszulassung. PR bleibt auf Nutzeranweisung Draft und ungemergt; diese Empfehlung führt keinen Merge aus. Keine Schedules oder Production Data wurden geändert. Der laufende Audit ist damit abgeschlossen.
