@@ -18,6 +18,8 @@ offline against what has already been ingested.
 import argparse
 import json
 import logging
+import os
+import subprocess
 import sys
 from collections import Counter
 from datetime import date, datetime, timezone
@@ -1528,6 +1530,25 @@ def cmd_consumer(args):
     pit_dir = Path(args.pit_out) if args.pit_out else out_dir.parent / consumer_module.PIT_STORE
     pit_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
+    # M-B6: Umsatzbelege sind eine eigene Stufe vor dem Bundle. Ein Speicher,
+    # der nicht zu diesem Lauf passt (Schema, Kern, Universum, Alter,
+    # unvollstaendig), bricht hier ab - bevor ein Wert gelesen wird.
+    from quant.sec import revenue_evidence as rev
+    evidence_store = rev.load_store(rev.REVENUE_EVIDENCE_PATH)
+    if args.unverified_evidence_for_local_research:
+        evidence_check = {"check": "SKIPPED_LOCAL_RESEARCH", "schema": evidence_store.get("schema"),
+                          "version": evidence_store.get("version")}
+        print("  WARNUNG: Umsatzbeleg-Pruefung abgeschaltet (nur lokale Forschung, nie im Datenlauf)")
+    else:
+        try:
+            build = rev.check_compatible(evidence_store, as_of, registry.version, names_file, repo_root=ROOT)
+        except rev.EvidenceIncompatible as exc:
+            print(f"::error::{exc}")
+            return 2
+        evidence_check = {"check": "COMPATIBLE", "schema": evidence_store["schema"], "version": evidence_store["version"],
+                          "asOf": build["asOf"], "buildCommit": build["buildCommit"], "required": build["required"]}
+    evidence_decisions = evidence_store.get("decisions") or {}
+    evidence_missing = {}
     print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
 
     index_rows, seen, failures = [], set(), []
@@ -1556,6 +1577,11 @@ def cmd_consumer(args):
         if bundle is None:
             failures.append({"cik": cik, "tickers": entry["tickers"], "error": "NO_PERIODIC_FACTS"})
             continue
+        # Laufzeitbeweis der Universumskompatibilitaet: jede Einreichung, fuer die
+        # der Kern einen Beleg braucht, hat eine Entscheidung.
+        missing = sorted(rev.required_accessions(cik, payload, registry, provider) - set(evidence_decisions))
+        if missing:
+            evidence_missing[cik] = missing
         bundle, pit_document = split_pit(bundle)
         path = out_dir / f"CIK{cik}.json"
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
@@ -1591,12 +1617,55 @@ def cmd_consumer(args):
     coverage["generated_at_utc"] = _utcnow()
     coverage["versions"] = version_stamp(registry.version)
     coverage["namesLayer"] = str(names_file.relative_to(ROOT)) if names_file.is_absolute() else str(names_file)
+    evidence_check["missingFilings"] = sum(len(v) for v in evidence_missing.values())
+    evidence_check["missingByCik"] = evidence_missing
+    coverage["revenueEvidence"] = evidence_check
     _write(out_dir / "index.json", {"schema": consumer_module.SCHEMA, "generated_at_utc": _utcnow(),
                                     "versions": version_stamp(registry.version),
                                     "asOf": as_of, "count": len(index_rows), "byTicker": by_ticker})
     _write(DATA_DIR / "consumer_coverage.json", coverage)
     print(f"  fertig: {len(index_rows)} Bundles, {len(failures)} Fehler, {len(unmatched)} CIKs nicht im Archiv")
+    if evidence_missing and not args.unverified_evidence_for_local_research:
+        print(f"::error::REVENUE_EVIDENCE_UNIVERSE: {evidence_check['missingFilings']} Einreichungen in "
+              f"{len(evidence_missing)} Emittenten ohne Beleg - der Belegspeicher passt nicht zu diesem Lauf")
+        return 2
     return 0
+
+
+def cmd_revenue_evidence(args):
+    """Revenue statement evidence for the product universe (M-B6, before the consumer build).
+
+    Resumable (earlier decisions are kept), deterministic (sorted, no run
+    counters in the file), request-safe (fair-access client, --max-filings) and
+    observable (run counters on stdout and in the step summary). Exit 0 only
+    when the store is complete; a partial store is written with complete=false
+    and exit 3, and the consumer build refuses it.
+    """
+    from quant.sec import revenue_evidence as rev
+    from quant.sec.consumer import load_product_universe_ciks
+    from quant.sec.http_client import DiskCache, SECHttpClient
+    registry = MetricRegistry.load()
+    names_file = Path(args.names)
+    by_cik, _ = load_product_universe_ciks(names_file)
+    provider = SECProvider()
+    commit = args.build_commit or subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+                                                   text=True, check=True).stdout.strip()
+    # EDGAR-Archivdokumente aendern sich nicht: lange Cache-Gueltigkeit.
+    client = SECHttpClient(cache=DiskCache(ttl_seconds=args.cache_days * 86400))
+    sources = provider.iter_bulk_company_facts(ciks=set(by_cik), archive_path=args.archive)
+    payload, run = rev.build_store(sources, Path(args.out), client, registry, args.as_of or str(date.today()),
+                                   commit, names_file, max_filings=args.max_filings)
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a", encoding="utf-8") as handle:
+            build = payload["build"]
+            handle.write("### Umsatzbelege (Revenue Evidence)\n\n| Kennzahl | Wert |\n|---|---|\n")
+            for key, value in (("complete", build["complete"]), ("required", build["required"]),
+                               ("pending", len(build["pending"])), ("decidedThisRun", run["decidedThisRun"]),
+                               ("requests", run["requests"]), ("cacheHits", run["cacheHits"]),
+                               ("summary", json.dumps(payload["summary"], sort_keys=True))):
+                handle.write(f"| {key} | {value} |\n")
+    return 0 if payload["build"]["complete"] else 3
 
 
 def cmd_test(args):
@@ -1770,7 +1839,20 @@ def build_parser():
     consumer.add_argument("--annual-years", type=int, default=consumer_module.DEFAULT_ANNUAL_YEARS)
     consumer.add_argument("--quarters", type=int, default=consumer_module.DEFAULT_QUARTERS)
     consumer.add_argument("--keep-stale", action="store_true")
+    consumer.add_argument("--unverified-evidence-for-local-research", action="store_true",
+                          help="skip the revenue evidence compatibility gate (local research only; never in a data run)")
     consumer.set_defaults(func=cmd_consumer)
+
+    evidence = subparsers.add_parser("revenue-evidence",
+                                     help="revenue statement evidence for the product universe (before consumer)")
+    evidence.add_argument("--archive", required=True, help="local companyfacts.zip")
+    evidence.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
+    evidence.add_argument("--out", default=str(ROOT / "quant" / "config" / "sec-revenue-statement-evidence.json"))
+    evidence.add_argument("--as-of")
+    evidence.add_argument("--build-commit", help="default: git rev-parse HEAD")
+    evidence.add_argument("--max-filings", type=int, help="request budget: filings decided in this run")
+    evidence.add_argument("--cache-days", type=int, default=60)
+    evidence.set_defaults(func=cmd_revenue_evidence)
 
     census = subparsers.add_parser("concept-census",
                                    help="measure which XBRL concepts the product universe tags (report only)")
