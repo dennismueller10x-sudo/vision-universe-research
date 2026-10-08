@@ -213,7 +213,9 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          ist kein EPS (Stanley Black & Decker 10-Q/A 2022); (f) eine neuere
 #          sichtbare Periode derselben Kennzahl, auch eine nicht einordbare
 #          (Quartal eines Uebergangsjahres), macht ein aelteres Fenster nicht
-#          aktuell: TTM_WINDOW_NOT_CURRENT (e.l.f. Beauty 2019, Royal Gold 2022).
+#          aktuell: TTM_WINDOW_NOT_CURRENT (e.l.f. Beauty 2019, Royal Gold 2022);
+#          (g) ein Jahresende nach dem Einreichungsdatum ist kein Geschaeftsjahr
+#          (Nucor 10-K 2011: Annahme fuer 2027).
 NORMALIZATION_LOGIC_VERSION = "1.20.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -246,7 +248,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "afc3b95dfb5543daa9d05a6bab013ddd81dfe52d4911950d7ca606cc4300c819"
+    "0215a4539795d5212dc32632c747f536b86e86be7dd3d96ae81f6c96bc09be59"
 )
 
 

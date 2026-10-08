@@ -257,3 +257,13 @@ class StaleAfterFiscalYearChangeTests(unittest.TestCase):
         fact = resolver.ttm("eps_diluted", "2016-03-01")
         if fact.available:
             self.assertLessEqual(days(fact.period_end, "2015-12-31"), 7, f"veraltetes Fenster bis {fact.period_end}")
+
+
+class FutureYearEndTests(unittest.TestCase):
+    def test_a_year_end_after_the_filing_date_is_not_a_fiscal_year(self):
+        """Red Team (MEDIUM): Nucors 10-K vom 2011-02-28 traegt eine Annahme fuer 2027-01-01..2027-12-31; als
+        Jahresende machte sie 2026 zu einem Uebergangsjahr ohne Quartale (Umsatz-TTM 2026 fehlte)."""
+        calendar, resolver = build("NUE")
+        ends = [f["period_end"] for f in calendar.to_dict()["fiscal_years"]]
+        self.assertNotIn("2027-12-31", ends)
+        self.assertTrue(resolver.ttm("revenue", "2026-10-01").available)

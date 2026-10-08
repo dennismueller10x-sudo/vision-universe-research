@@ -159,6 +159,12 @@ class FiscalCalendar:
             kind = classify_duration(fact.start, fact.end)
             if kind != "FY":
                 continue
+            # 1.20.0: a fiscal year cannot end after the report that carries it.
+            # Nucor's 10-K of 2011-02-28 tags an assumption for 2027
+            # (health-care cost trend rate, 2027-01-01..2027-12-31); as a year
+            # end it turned 2026 into a 730-day "transition year".
+            if fact.filed and fact.end and str(fact.end)[:10] > str(fact.filed)[:10]:
+                continue
             # Fiscal-year boundaries are learned from annual reports only. A
             # 10-Q can carry twelve-month figures too (Amazon discloses trailing
             # twelve-month net income and cash flows every quarter); those end
@@ -280,6 +286,8 @@ class FiscalCalendar:
             if fact.start is not None or fact.taxonomy == "dei":
                 continue
             if fact.form not in ANNUAL_FORMS or fact.filing_fp != "FY":
+                continue
+            if fact.filed and fact.end and str(fact.end)[:10] > str(fact.filed)[:10]:
                 continue
             end = parse_date(fact.end)
             if end is None:
