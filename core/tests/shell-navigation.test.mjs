@@ -99,3 +99,14 @@ test('the dock is opt-in: pages that never call VUNavigation.dock keep their hea
   assert.doesNotMatch(source, /connectedCallback\(\)\{[^}]*\n[^]*?\n      this\.mountDock\(\);/);
 });
 
+
+test('the shell header loads the slim web logo, not the 129 KB master (stock page budget is razor-thin)', async () => {
+  const { statSync } = await import('node:fs');
+  assert.doesNotMatch(source, /vision-universe-logo\.png/);
+  assert.match(source, /\/assets\/vision-universe-logo-web\.png/);
+  const bytes = statSync(join(root, 'assets/vision-universe-logo-web.png')).size;
+  assert.ok(bytes < 20000, `web logo ${bytes} B`);
+  // gleiches Seitenverhaeltnis wie das Original (3:1), damit width/height-Attribute stimmen
+  const png = readFileSync(join(root, 'assets/vision-universe-logo-web.png'));
+  assert.equal(png.readUInt32BE(16) / png.readUInt32BE(20), 2172 / 724);
+});
