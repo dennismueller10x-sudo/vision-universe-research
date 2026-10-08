@@ -1,0 +1,155 @@
+{
+ "schema": "vu-mb5-pit-impact-1.0.0",
+ "date": "2026-10-08",
+ "core": "1.19.0 + AS_REPORTED_AT_TIME (PR #505)",
+ "asOf": "2026-10-05",
+ "source": "companyfacts.zip (2026-10-07), Produktuniversum 5.072 Emittenten",
+ "store": {
+  "files": 5072,
+  "kilobytes": 34944,
+  "medianBytes": 7584,
+  "maxBytes": 15724
+ },
+ "values": {
+  "metricYears": 361328,
+  "metricYearsWithMoreThanOneVersion": 76684,
+  "latestRowDatedAfterFirstKnown": 314754,
+  "note": "LATEST-Zeilen tragen das Datum der juengsten Einreichung, die den Wert wiederholte (Vergleichsspalte des Folgejahres); als Historie gelesen erscheint ein Jahr bis zu einem Jahr zu spaet (USAU FY2015: bekannt 2015-08-13, LATEST-Zeile 2016-07-29)."
+ },
+ "observations": {
+  "grid": "Monatsenden 2010-01..2026-09 je Emittent",
+  "compared": 413766,
+  "visibleOnlyWithPit": 46801,
+  "visibleOnlyWithLatest": 0,
+  "anyFeatureDiffers": 349807,
+  "featureDiffers": {
+   "revenueGrowthYoy": 312742,
+   "grossMargin": 220766,
+   "fcfMargin": 303863,
+   "netMargin": 327107,
+   "equityToAssets": 346195,
+   "capexIntensity": 301867,
+   "cashToAssets": 347811,
+   "visibleFiscalYears": 316451,
+   "revenueCagr3y": 259495,
+   "shareCountChange3y": 196724,
+   "profitableLastYear": 64695
+  },
+  "featureCompared": {
+   "revenueCagr3y": 366965,
+   "revenueGrowthYoy": 366965,
+   "grossMargin": 366965,
+   "fcfMargin": 366965,
+   "netMargin": 366965,
+   "equityToAssets": 366965,
+   "profitableLastYear": 366965,
+   "shareCountChange3y": 366965,
+   "capexIntensity": 366965,
+   "cashToAssets": 366965,
+   "visibleFiscalYears": 366965
+  }
+ },
+ "patternStudy": {
+  "methodology": "pattern-research-fundamentals 1.0.0 -> 1.0.1 (nur Datenquelle)",
+  "publishedMain": {
+   "ROBUST": 184,
+   "PARAMETER_SENSITIVE": 3,
+   "IN_SAMPLE_ONLY": 110,
+   "NOT_SIGNIFICANT": 39,
+   "INSUFFICIENT_SUPPORT": 1
+  },
+  "core119Latest": {
+   "ROBUST": 192,
+   "PARAMETER_SENSITIVE": 3,
+   "IN_SAMPLE_ONLY": 105,
+   "NOT_SIGNIFICANT": 35,
+   "INSUFFICIENT_SUPPORT": 2
+  },
+  "core119Pit": {
+   "ROBUST": 178,
+   "PARAMETER_SENSITIVE": 3,
+   "IN_SAMPLE_ONLY": 129,
+   "NOT_SIGNIFICANT": 27
+  },
+  "viewOnlyFlips": 61,
+  "viewOnlyFlipsByType": {
+   "ROBUST->NOT_SIGNIFICANT": 8,
+   "ROBUST->IN_SAMPLE_ONLY": 20,
+   "IN_SAMPLE_ONLY->NOT_SIGNIFICANT": 6,
+   "IN_SAMPLE_ONLY->ROBUST": 2,
+   "NOT_SIGNIFICANT->IN_SAMPLE_ONLY": 11,
+   "NOT_SIGNIFICANT->ROBUST": 12,
+   "INSUFFICIENT_SUPPORT->NOT_SIGNIFICANT": 1,
+   "INSUFFICIENT_SUPPORT->IN_SAMPLE_ONLY": 1
+  },
+  "robustInBoth": 164,
+  "observations": {
+   "core119Latest": 326290,
+   "core119Pit": 328403
+  },
+  "baseRate": {
+   "core119Latest": 0.115512,
+   "core119Pit": 0.115656
+  },
+  "hypotheses": {
+   "core119Latest": 335,
+   "core119Pit": 337
+  },
+  "bhThreshold": {
+   "core119Latest": 0.0273238,
+   "core119Pit": 0.02055731
+  }
+ },
+ "examples": [
+  {
+   "cik": "0000001750",
+   "tickers": [
+    "AIR"
+   ],
+   "t": "2017-07-31",
+   "k": "revenueGrowthYoy",
+   "old": null,
+   "pit": 0.040437930425569535
+  },
+  {
+   "cik": "0000001750",
+   "tickers": [
+    "AIR"
+   ],
+   "t": "2017-08-31",
+   "k": "revenueGrowthYoy",
+   "old": null,
+   "pit": 0.040437930425569535
+  },
+  {
+   "cik": "0000001750",
+   "tickers": [
+    "AIR"
+   ],
+   "t": "2017-09-30",
+   "k": "revenueGrowthYoy",
+   "old": null,
+   "pit": 0.040437930425569535
+  },
+  {
+   "cik": "0000001750",
+   "tickers": [
+    "AIR"
+   ],
+   "t": "2017-10-31",
+   "k": "revenueGrowthYoy",
+   "old": null,
+   "pit": 0.040437930425569535
+  },
+  {
+   "cik": "0000001750",
+   "tickers": [
+    "AIR"
+   ],
+   "t": "2017-11-30",
+   "k": "revenueGrowthYoy",
+   "old": null,
+   "pit": 0.040437930425569535
+  }
+ ]
+}
