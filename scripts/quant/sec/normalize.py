@@ -202,6 +202,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
     raw_facts = list(raw_facts)
     issues = []
+    unplaced = []   # (metric, period_end, available) the calendar could not place (1.20.0)
     availability = build_availability_map(filing_metadata)
 
     if calendar is None:
@@ -269,6 +270,10 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                 issues.append(_issue(ISSUE_UNPLACEABLE_PERIOD, fact,
                                      "period could not be placed in the company's fiscal calendar",
                                      metric=metric_name))
+                # 1.20.0: an unplaceable period (a quarter of a transition year)
+                # still proves that newer information exists - a trailing window
+                # ending before it is not current (Red Team: e.l.f. Beauty 2019).
+                unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
                 continue
 
             targets = [(fiscal_year, fiscal_period)]
@@ -291,6 +296,8 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                     observed_period_ends[(fiscal_year, period)][fact.end] += 1
 
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
+    for metric_name, period_end, available in unplaced:
+        factbook.note_unplaced(metric_name, period_end, available)
     registry_version = registry.version
 
     for (metric_name, fiscal_year, fiscal_period, accession), entries in candidates.items():

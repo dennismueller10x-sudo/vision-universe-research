@@ -21,7 +21,7 @@ from .model import (
     TRANSFORM_FY_MINUS_YTD, TRANSFORM_SUM, QUALITY_HIGH, QUALITY_MEDIUM,
     PERIOD_QUARTER, PERIOD_ANNUAL, PERIOD_INSTANT, PERIOD_TTM,
     MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY, NOT_APPLICABLE_FOR_SECTOR,
-    NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_STUB_PERIOD, TTM_CONCEPT_MISMATCH,
+    NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_STUB_PERIOD, TTM_WINDOW_NOT_CURRENT, TTM_CONCEPT_MISMATCH,
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, missing,
 )
 from .registry import KIND_INSTANT
@@ -435,6 +435,14 @@ class PeriodResolver:
                     and (to_instant(year.period_end) - window_end).days > TTM_STALE_DAYS:
                 return missing(self.factbook.cik, metric, TTM_PERIODS_NOT_CONTIGUOUS,
                                fiscal_year=quarters[0][0], fiscal_period=PERIOD_TTM)
+        # 1.20.0 (Red Team): any newer visible period of this metric - also one
+        # the calendar could not place (a transition-year quarter) - means the
+        # window is not trailing. e.l.f. Beauty 2019-08-20: the window ended
+        # 2018-12-31 although 2019-06-30 was filed (EPS 0.32 labelled current).
+        newest = self.factbook.newest_period_end(metric, as_of, lag_days=lag_days)
+        if newest and window_end is not None and (to_instant(newest) - window_end).days > TTM_STALE_DAYS:
+            return missing(self.factbook.cik, metric, TTM_WINDOW_NOT_CURRENT,
+                           fiscal_year=quarters[0][0], fiscal_period=PERIOD_TTM)
         return self._ttm_fact(metric, quarters, as_of, policy, lag_days)
 
     def _ttm_fact(self, metric, quarters, as_of, policy, lag_days):

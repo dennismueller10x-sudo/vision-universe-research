@@ -49,6 +49,9 @@ TTM_PERIODS_NOT_CONTIGUOUS = "TTM_PERIODS_NOT_CONTIGUOUS"
 # Tagen: SHORT_STUB < 80, LONG_STUB > 100) - etwa die 104-Tage-Nachfolgeperiode
 # nach einem Fresh Start (Denbury 2020) - und ergibt keine zwoelf Monate.
 TTM_STUB_PERIOD = "TTM_STUB_PERIOD"
+# 1.20.0: es gibt eine neuere sichtbare Periode als das Fensterende (auch eine, die
+# der Kalender nicht einordnen kann) - das Fenster ist nicht "trailing".
+TTM_WINDOW_NOT_CURRENT = "TTM_WINDOW_NOT_CURRENT"
 TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
 TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
 # Ein Quartals-EPS, das zu Ergebnis und Aktienzahl desselben Quartals um eine

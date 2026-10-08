@@ -236,6 +236,31 @@ class CompanyFactBook:
         # (metric, fy, fp) -> earliest filing date of a filing that reported
         # more than one period into that cell (normalize, AMBIGUOUS_PERIOD).
         self.ambiguous = {}
+        # metric -> [(period_end, available)] of periods the calendar could not place.
+        self.unplaced = {}
+
+    def note_unplaced(self, metric, period_end, available):
+        if period_end and available:
+            self.unplaced.setdefault(metric, []).append((str(period_end)[:10], available))
+
+    def newest_period_end(self, metric, as_of, lag_days=0):
+        """Newest period end of any visible observation of `metric` (placed or not) at as_of."""
+        newest = None
+        for (name, _, _), timeline in self.timelines.items():
+            if name != metric:
+                continue
+            for obs in timeline.visible(as_of, lag_days=lag_days):
+                end = str(obs.period_end or "")[:10]
+                if end and (newest is None or end > newest):
+                    newest = end
+        cutoff = to_instant(as_of, end_of_day=True)
+        if cutoff is not None and lag_days:
+            cutoff = cutoff - timedelta(days=lag_days)
+        for end, available in self.unplaced.get(metric, []):
+            moment = to_instant(available)
+            if moment is not None and (cutoff is None or moment <= cutoff) and (newest is None or end > newest):
+                newest = end
+        return newest
 
     def mark_ambiguous(self, metric, fiscal_year, fiscal_period, filed):
         key = (metric, fiscal_year, fiscal_period)

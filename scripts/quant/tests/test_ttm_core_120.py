@@ -238,3 +238,22 @@ class RedTeamRegressionTests(unittest.TestCase):
                         end = str(cell.period_end)[:10]
                         self.assertEqual((calendar.fiscal_year_for(end), calendar.quarter_index(end)), (year, index),
                                          f"{name} {metric} {year}Q{index} {end}")
+
+
+class StaleAfterFiscalYearChangeTests(unittest.TestCase):
+    """Red Team (Nachpruefung): ein neueres, im Kalender nicht einordbares Quartal macht ein aelteres Fenster nicht
+    aktuell. MFLX: das 10-K vom 2016-02-11 meldet Okt-Dez 2015 (Uebergangsjahr, kein Slot)."""
+
+    def test_elf_window_through_2018_is_not_current_in_august_2019(self):
+        """e.l.f. Beauty: Geschaeftsjahreswechsel Dezember -> Maerz 2019; 1.20.0 vor der Nachpruefung lieferte am
+        2019-08-20 EPS 0,32 bis 2018-12-31 als aktuelles TTM, obwohl Apr-Jun 2019 eingereicht war."""
+        _, resolver = build("ELF")
+        for as_of in ("2019-08-20", "2019-11-20"):
+            fact = resolver.ttm("eps_diluted", as_of)
+            self.assertFalse(fact.available and str(fact.period_end)[:10] <= "2018-12-31", (as_of, fact.value))
+
+    def test_current_ttm_is_not_an_older_window(self):
+        calendar, resolver = build("MFLX")
+        fact = resolver.ttm("eps_diluted", "2016-03-01")
+        if fact.available:
+            self.assertLessEqual(days(fact.period_end, "2015-12-31"), 7, f"veraltetes Fenster bis {fact.period_end}")
