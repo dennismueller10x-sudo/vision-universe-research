@@ -8,8 +8,10 @@ Wahrheit = AS_KNOWN_AT(t) einschliesslich bis t veroeffentlichter Korrekturen - 
   Wert zu t    juengste Einreichung mit filed <= t; in derselben Einreichung Diluted vor BasicAndDiluted.
                Same-Day-Policy: melden am juengsten Tag zwei verschiedene Einreichungen verschiedene Werte, ist das
                Quartal zu t AMBIGUOUS_SAME_DAY (keine Uhrzeit in companyfacts; nicht per Formular/Accession entschieden)
-  Fenster      vier Quartale als Kette tatsaechlicher Perioden: Beginn 0-8 Tage nach dem Ende des vorigen, zusammen
+  Fenster      vier Quartale als Kette tatsaechlicher Perioden: Beginn -3 bis +8 Tage um das Ende des vorigen, zusammen
                357-374 Tage (Stub-Policy), eine Einheit
+  EPS-Plausib. ein EPS, dessen implizite Aktienzahl (Dreimonats-Ergebnis / EPS) unter 1.000 liegt, ist kein EPS
+               (gewichtete Aktien als EPS getaggt); das Quartal ist dann ungueltig (Wahrheit nicht verfuegbar)
   Aktienbasis  kein Split zwischen benachbarten Quartalen (verwaesserte Aktien zu t; is_split_ratio wie Holdout v2)
   Geschaeftsjahr  Jahresenden = Periodenende jedes 10-K/20-F/40-F (Ende seiner laengsten Periode); ein Abstand zweier
                Jahresenden ausserhalb 350-380 Tagen ist ein Uebergangszeitraum; seine Quartale sind
@@ -42,7 +44,7 @@ SHARES = ("WeightedAverageNumberOfDilutedSharesOutstanding",)
 ANNUAL_FORMS = {"10-K", "10-K/A", "20-F", "20-F/A", "40-F", "40-F/A"}
 TRUTH_SINCE = "2009-06-01"
 QUARTER_DAYS = (77, 105)
-CHAIN_GAP_DAYS = (0, 8)
+CHAIN_GAP_DAYS = (-3, 8)
 SPAN_DAYS = (357, 374)
 YEAR_DAYS = (350, 380)
 FY_END_MIN_CONCEPTS = 5
@@ -191,7 +193,15 @@ def transition_gaps(years):
     return [(a[1], b[0]) for a, b in zip(years, years[1:]) if days(a[1], b[0]) > 8]
 
 
-def truth_at(four, share_clusters, t, reported, eligible):
+def income_at(income_clusters, end, t):
+    for c in income_clusters or []:
+        if abs(days(c["end"], end)) <= 7:
+            v, ambiguous = version_at(c, t)
+            return None if ambiguous or v is None else v[3]
+    return None
+
+
+def truth_at(four, share_clusters, t, reported, eligible, income_clusters=None):
     versions = []
     for c in four:
         v, ambiguous = version_at(c, t)
@@ -211,6 +221,10 @@ def truth_at(four, share_clusters, t, reported, eligible):
     span = days(versions[0][6], versions[-1][7]) + 1
     if not SPAN_DAYS[0] <= span <= SPAN_DAYS[1]:
         return {"available": False, "reason": "STUB_SPAN"}
+    for c, v in zip(four, versions):
+        income = income_at(income_clusters, c["end"], t)
+        if income and abs(v[3]) >= 0.05 and abs(income / v[3]) < 1000:
+            return {"available": False, "reason": "EPS_IMPLAUSIBLE"}
     shares = [shares_at(share_clusters, c["end"], t) for c in four]
     if split_between(shares, reported):
         return {"available": False, "reason": "SHARE_BASIS_MIXED"}
@@ -335,10 +349,10 @@ def classify(truth, core):
     return "WRONG_VALUE", None
 
 
-def known_from(four, shares, reported, eligible):
+def known_from(four, shares, reported, eligible, income=None):
     """Erster Einreichungstag, an dem die Wahrheit verfuegbar ist (oder None)."""
     for t in sorted({r[0] for c in four for r in c["rows"]}):
-        if truth_at(four, shares, t, reported, eligible)["available"]:
+        if truth_at(four, shares, t, reported, eligible, income)["available"]:
             return t
     return None
 
@@ -346,6 +360,7 @@ def known_from(four, shares, reported, eligible):
 def evaluate_issuer(cik, cf, registry, provider, blocked_quarters):
     eps = cluster_quarters(cf, FAMILY, "/shares")
     shares = cluster_quarters(cf, SHARES, "shares")
+    income = cluster_quarters(cf, ("NetIncomeLoss",), "USD")
     years = fiscal_years(cf)
     last_data = max([r[7] for c in eps for r in c["rows"]] + [TRUTH_SINCE])
     eligible = eligible_windows(years, last_data)
@@ -366,8 +381,8 @@ def evaluate_issuer(cik, cf, registry, provider, blocked_quarters):
     candidates = []
     for four in positives:
         final = max(r[0] for c in four for r in c["rows"])
-        final_truth = truth_at(four, shares, final, traits["split_ratios"], eligible)
-        kf = known_from(four, shares, traits["split_ratios"], eligible)
+        final_truth = truth_at(four, shares, final, traits["split_ratios"], eligible, income)
+        kf = known_from(four, shares, traits["split_ratios"], eligible, income)
         tags = case_strata(traits, [c["end"] for c in four], four, shares, final_truth, gaps)
         if not final_truth["available"]:
             tags = tags | {"negative"}
@@ -394,15 +409,15 @@ def evaluate_issuer(cik, cf, registry, provider, blocked_quarters):
         evals = []
         if c["kind"] == "MISSING_QUARTER" or c["knownFrom"] is None:
             truth = {"available": False, "reason": "QUARTER_EPS_NOT_REPORTED"} if c["kind"] == "MISSING_QUARTER" else \
-                truth_at(c["four"], shares, c["final"], traits["split_ratios"], eligible)
+                truth_at(c["four"], shares, c["final"], traits["split_ratios"], eligible, income)
             evals.append(("final", c["final"], truth))
         else:
             kf = c["knownFrom"]
             if kf > TRUTH_SINCE:
-                evals.append(("early", shift(kf, -1), truth_at(c["four"], shares, shift(kf, -1), traits["split_ratios"], eligible)))
-            evals.append(("knownFrom", kf, truth_at(c["four"], shares, kf, traits["split_ratios"], eligible)))
+                evals.append(("early", shift(kf, -1), truth_at(c["four"], shares, shift(kf, -1), traits["split_ratios"], eligible, income)))
+            evals.append(("knownFrom", kf, truth_at(c["four"], shares, kf, traits["split_ratios"], eligible, income)))
             if c["final"] > kf:
-                evals.append(("final", c["final"], truth_at(c["four"], shares, c["final"], traits["split_ratios"], eligible)))
+                evals.append(("final", c["final"], truth_at(c["four"], shares, c["final"], traits["split_ratios"], eligible, income)))
         for label, t, truth in evals:
             core = core_at(resolver, calendar, c["end"], t)
             cls, detail = classify(truth, core)
