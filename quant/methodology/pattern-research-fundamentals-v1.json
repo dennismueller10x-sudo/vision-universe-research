@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "methodologyVersion": "pattern-research-fundamentals-1.0.0",
+  "methodologyVersion": "pattern-research-fundamentals-1.0.1",
   "extends": "pattern-research-1.0.0",
   "status": "ACTIVE_RESEARCH_ONLY",
   "publication": {
@@ -12,13 +12,20 @@
   "question": "Sah das UNTERNEHMEN vorher anders aus - nicht nur der Kurs? Und traegt eine Geschaeftseigenschaft zusaetzlich zu dem, was die Kursmerkmale schon sagen?",
   "whySeparate": "Diese Familie hat ihre eigene Datei, ihre eigene Version und ihre eigene Mehrfachtestkorrektur. Sie in die Kursstudie hineinzuschreiben haette deren Hypothesenzahl nachtraeglich veraendert - und eine Korrektur ueber eine nachtraeglich veraenderte Zahl ist keine Korrektur. Die Kursstudie bleibt unveraendert bei pattern-research-1.0.0 und wird durch diese Datei nicht neu erzaehlt.",
   "pitSource": {
-    "artifact": "quant/data/sec/consumer/CIK*.json (vu-consumer-fundamentals-1.0.0)",
+    "artifact": "quant/data/sec/consumer-pit/CIK*.json (view AS_REPORTED_AT_TIME, pit-fundamental-history-2.0.0), eigener Speicher neben den LATEST-Bundles",
     "rebuilt": false,
-    "series": "annual",
+    "series": "pit.annual: jede Fassung eines Jahreswerts mit dem Tag, ab dem sie bekannt war",
     "visibilityRule": "filed <= t",
     "visibilityNote": "Massgeblich ist das Einreichungsdatum, nicht das Geschaeftsjahresende. Eine Bilanz fuer 2019, die im Maerz 2020 eingereicht wurde, ist im Januar 2020 nicht bekannt und wird an einem Stichtag im Januar 2020 nicht gelesen.",
     "restatementPolicy": "AS_FILED_FIRST_VISIBLE",
-    "restatementNote": "Sichtbar ist, was zum Stichtag eingereicht war. Eine spaetere Korrektur desselben Geschaeftsjahres aendert nicht, was man damals wusste."
+    "restatementNote": "Sichtbar ist, was zum Stichtag eingereicht war. Eine spaetere Korrektur desselben Geschaeftsjahres aendert nicht, was man damals wusste.",
+    "correction": {
+      "version": "1.0.1",
+      "date": "2026-10-08",
+      "what": "Die Datenquelle wird an die bereits registrierte Regel angepasst; Hypothesen, Kandidaten, Fenster und Korrektur bleiben unveraendert.",
+      "why": "Version 1.0.0 las den annual-Block (LATEST_RESTATED): eine Zeile je Geschaeftsjahr, die juengste Fassung, datiert auf die Einreichung, die sie trug. Ein korrigiertes Jahr zeigte so den heutigen Wert oder fehlte bis zum Korrekturdatum - die registrierte Regel AS_FILED_FIRST_VISIBLE war damit nicht erfuellt (Fundamentals-Audit E6, Migrationsblocker M-B5).",
+      "effect": "Ergebnisse von 1.0.0 sind mit 1.0.1 nicht vergleichbar und werden neu erzeugt; kein Kandidat wird nach dem Ergebnis veraendert."
+    }
   },
   "coverageWindow": {
     "usableFrom": "2018",

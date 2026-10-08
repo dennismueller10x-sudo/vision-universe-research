@@ -209,12 +209,17 @@ class DataBudgetTests(unittest.TestCase):
     # is an owner decision recorded in docs/VU_DISCOVER_V3_NETFLIX_BUILD.md.
     CONSUMER_BUDGET_KB = 160 * 1024
     CONSUMER_DIR = "consumer"
+    # Die AS_REPORTED_AT_TIME-Sicht derselben Emittenten (M-B5), ein eigener
+    # Speicher mit eigenem Budget: gemessen 34,9 MB fuer 5.072 Emittenten
+    # (2026-10-08, Median 7,6 KB, groesste Datei 15,7 KB).
+    PIT_BUDGET_KB = 48 * 1024
+    PIT_DIR = "consumer-pit"
 
     @classmethod
     def files(cls):
         root = ROOT / "quant" / "data" / "sec"
         return [p for p in root.rglob("*")
-                if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts]
+                if p.is_file() and not {cls.CONSUMER_DIR, cls.PIT_DIR} & set(p.relative_to(root).parts)]
 
     @classmethod
     def consumer_files(cls):
@@ -228,6 +233,16 @@ class DataBudgetTests(unittest.TestCase):
         total = sum(p.stat().st_size for p in files) // 1024
         self.assertLessEqual(total, self.CONSUMER_BUDGET_KB,
                              f"quant/data/sec/consumer is {total}KB, over the {self.CONSUMER_BUDGET_KB}KB budget")
+        for path in files:
+            self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
+
+    def test_the_pit_store_stays_within_its_own_budget(self):
+        files = [p for p in (ROOT / "quant" / "data" / "sec" / self.PIT_DIR).rglob("*") if p.is_file()]
+        if not files:
+            self.skipTest("no pit store committed")
+        total = sum(p.stat().st_size for p in files) // 1024
+        self.assertLessEqual(total, self.PIT_BUDGET_KB,
+                             f"quant/data/sec/{self.PIT_DIR} is {total}KB, over the {self.PIT_BUDGET_KB}KB budget")
         for path in files:
             self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
 

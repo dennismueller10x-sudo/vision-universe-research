@@ -4,7 +4,7 @@
 
    Reads only artifacts that already exist:
      quant/data/market/discover-series-long/ref_*.json     weekly closes
-     quant/data/sec/consumer/CIK*.json                     PIT annual filings
+     quant/data/sec/consumer-pit/CIK*.json                     AS_REPORTED_AT_TIME
      quant/methodology/pattern-research-v1.json            the price family
      quant/methodology/pattern-research-fundamentals-v1.json  this family
 
@@ -25,6 +25,8 @@
 
    POINT-IN-TIME IS THE FILING DATE
 
+   Read from the AS_REPORTED_AT_TIME store (consumer-pit), never from the bundle's
+   annual block (LATEST_RESTATED) - see quant/engines/pit-fundamental-history.js.
    A fiscal year is visible only once it was filed. The population is
    therefore restricted to observations where at least one filing was
    visible - and the base rate is computed over that restricted population,
@@ -44,7 +46,29 @@ const Patterns = require(join(ROOT, "quant/engines/pattern-research.js"));
 const PIT = require(join(ROOT, "quant/engines/pit-fundamental-history.js"));
 
 const SERIES_DIR = join(ROOT, "quant/data/market/discover-series-long");
-const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer");
+/* AS_REPORTED_AT_TIME store (M-B5), written next to the LATEST bundles by
+   scripts/quant/cli.py consumer. Missing store = hard failure, never a fallback
+   to quant/data/sec/consumer (LATEST_RESTATED). */
+const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer-pit");
+/* Missing, empty or partial store = hard failure: the store must hold one
+   document per LATEST bundle of the same consumer run (same asOf). */
+let PIT_AS_OF = null;
+function assertPitStore() {
+  if (!existsSync(CONSUMER_DIR)) {
+    throw new Error("PIT_CONTRACT: " + CONSUMER_DIR + " missing - build it with scripts/quant/cli.py consumer (AS_REPORTED_AT_TIME store)");
+  }
+  const latestIndex = JSON.parse(readFileSync(join(ROOT, "quant/data/sec/consumer/index.json"), "utf8"));
+  const documents = readdirSync(CONSUMER_DIR).filter((f) => f.startsWith("CIK") && f.endsWith(".json")).length;
+  if (documents !== latestIndex.count) {
+    throw new Error("PIT_CONTRACT: " + documents + " AS_REPORTED_AT_TIME documents for " + latestIndex.count + " LATEST bundles - partial store");
+  }
+  PIT_AS_OF = latestIndex.asOf;
+}
+function assertPitDocument(payload, file) {
+  if (payload.view !== PIT.VIEW || payload.asOf !== PIT_AS_OF) {
+    throw new Error("PIT_CONTRACT: " + file + " view " + payload.view + " asOf " + payload.asOf + " - not the AS_REPORTED_AT_TIME document of the LATEST run " + PIT_AS_OF);
+  }
+}
 const OUT_DIR = join(ROOT, "quant/data/product/pattern-research-fundamentals-v1");
 
 const priceMethodology = JSON.parse(readFileSync(join(ROOT, "quant/methodology/pattern-research-v1.json"), "utf8"));
@@ -95,17 +119,18 @@ const USED_METRICS = ["revenue", "net_income", "gross_profit", "free_cash_flow",
 function loadFundamentals(tickers) {
   const byTicker = new Map();
   let bundles = 0;
+  assertPitStore();
   for (const file of readdirSync(CONSUMER_DIR)) {
     if (!file.startsWith("CIK") || !file.endsWith(".json")) continue;
     const payload = JSON.parse(readFileSync(join(CONSUMER_DIR, file), "utf8"));
+    assertPitDocument(payload, file);
     const names = payload.tickers || [];
     if (!names.some((name) => tickers.has(name))) continue;
     bundles += 1;
-    const annual = {};
-    for (const metric of USED_METRICS) {
-      if (Array.isArray(payload.annual?.[metric])) annual[metric] = payload.annual[metric];
-    }
-    const trimmed = { annual };
+    /* AS_REPORTED_AT_TIME only (M-B5): the annual block is LATEST_RESTATED and
+       must not be read at a historical date. pitSlice throws for a bundle
+       without that view - the study does not run on the wrong view. */
+    const trimmed = PIT.pitSlice(payload, USED_METRICS);
     for (const name of names) if (tickers.has(name)) byTicker.set(name, trimmed);
   }
   return { byTicker, bundles };
@@ -139,7 +164,7 @@ function buildObservations(series, fundamentalsByTicker) {
       /* The filing date decides. Nothing filed by this date means this
          observation has no fundamental evidence and leaves the population
          rather than entering it with empty conditions. */
-      const fundamentalFeatures = PIT.featuresAt(bundle, date);
+      const fundamentalFeatures = PIT.featuresAt(bundle, date, { view: PIT.VIEW });
       if (!fundamentalFeatures) { dropped.noFundamentals += 1; continue; }
 
       const forward = {};

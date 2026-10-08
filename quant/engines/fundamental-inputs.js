@@ -7,9 +7,15 @@
 
    Three rules run through all of it:
 
-   1. Point in time. A value is usable only once its filing date is on or
-      before the cutoff. A derived value has no filing of its own, so its
-      availability is the latest filing among its named inputs.
+   1. Current view, declared. The document is LATEST_RESTATED (one row per
+      period, the newest version). It is correct for the CURRENT state and
+      wrong for a historical date: a restated year would show today's value.
+      Every call therefore declares { view: "LATEST_RESTATED" }, and a
+      cutoff more than CURRENT_VIEW_MAX_LAG_DAYS before the document's asOf
+      is a hard failure (M-B5) - a historical reader uses the AS_REPORTED_AT_TIME store via
+      quant/engines/pit-fundamental-history.js. Within that window a value
+      is usable only once its filing date is on or before the cutoff; a
+      derived value's availability is the latest filing among its inputs.
    2. Period alignment. A balance-sheet instant more than 400 days older
       than the reported period is not a current figure, and pairing it with
       a current TTM would read like one number when it is two. It is
@@ -26,7 +32,29 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var VERSION = "fundamental-inputs-1.0.0";
+  var VERSION = "fundamental-inputs-1.1.0";
+  var VIEW = "LATEST_RESTATED";
+  /* Price data and bundle builds run on different days (weekend, holiday):
+     a cutoff a few days before the bundle's asOf is still "current". */
+  var CURRENT_VIEW_MAX_LAG_DAYS = 14;
+
+  function viewError(message) {
+    var error = new Error("VIEW_CONTRACT: " + message);
+    error.code = "VIEW_CONTRACT";
+    return error;
+  }
+
+  function assertCurrentView(doc, cutoff, opts) {
+    if (!opts || opts.view !== VIEW) throw viewError("compute() must declare view " + VIEW + " (got " + (opts && opts.view) + ")");
+    if (typeof cutoff !== "string") throw viewError("cutoff must be an ISO date");
+    if (doc && typeof doc.asOf === "string") {
+      var lag = (Date.parse(doc.asOf) - Date.parse(cutoff)) / 86400000;
+      if (lag > CURRENT_VIEW_MAX_LAG_DAYS) {
+        throw viewError("cutoff " + cutoff + " is " + Math.round(lag) + " days before the bundle asOf " + doc.asOf +
+                        ": a historical date needs AS_REPORTED_AT_TIME (pit-fundamental-history), not " + VIEW);
+      }
+    }
+  }
   var CONSUMER_SCHEMA = "vu-consumer-fundamentals-1.0.0";
 
   /* Column order of the consumer contract's compact rows. */
@@ -176,7 +204,8 @@
    * `marketCap` may be null; the price-dependent block is then simply
    * absent rather than zero.
    */
-  function compute(doc, cutoff, marketCap) {
+  function compute(doc, cutoff, marketCap, opts) {
+    assertCurrentView(doc, cutoff, opts);
     if (!doc || doc.schema !== CONSUMER_SCHEMA) return null;
 
     var revenueA = annualSeries(doc, "revenue", cutoff),
@@ -515,7 +544,9 @@
     median: median,
     effectiveTaxRate: effectiveTaxRate,
     roic: roic,
-    compute: compute
+    compute: compute,
+    VIEW: VIEW,
+    CURRENT_VIEW_MAX_LAG_DAYS: CURRENT_VIEW_MAX_LAG_DAYS
   };
 
   if (isNode) module.exports = api;

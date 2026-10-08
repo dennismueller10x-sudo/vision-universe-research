@@ -6,7 +6,7 @@
      quant/data/market/discover-series-long/ref_*.json        weekly closes
      quant/data/product/pattern-research-v1/study.json        the findings
      quant/data/product/pattern-research-fundamentals-v1/…    the overlay
-     quant/data/sec/consumer/CIK*.json                        PIT filings
+     quant/data/sec/consumer-pit/CIK*.json                      AS_REPORTED_AT_TIME
 
    Writes quant/data/product/pattern-match-v1/.
 
@@ -41,7 +41,29 @@ const Patterns = require(join(ROOT, "quant/engines/pattern-research.js"));
 const PIT = require(join(ROOT, "quant/engines/pit-fundamental-history.js"));
 
 const SERIES_DIR = join(ROOT, "quant/data/market/discover-series-long");
-const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer");
+/* AS_REPORTED_AT_TIME store (M-B5), written next to the LATEST bundles by
+   scripts/quant/cli.py consumer. Missing store = hard failure, never a fallback
+   to quant/data/sec/consumer (LATEST_RESTATED). */
+const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer-pit");
+/* Missing, empty or partial store = hard failure: the store must hold one
+   document per LATEST bundle of the same consumer run (same asOf). */
+let PIT_AS_OF = null;
+function assertPitStore() {
+  if (!existsSync(CONSUMER_DIR)) {
+    throw new Error("PIT_CONTRACT: " + CONSUMER_DIR + " missing - build it with scripts/quant/cli.py consumer (AS_REPORTED_AT_TIME store)");
+  }
+  const latestIndex = JSON.parse(readFileSync(join(ROOT, "quant/data/sec/consumer/index.json"), "utf8"));
+  const documents = readdirSync(CONSUMER_DIR).filter((f) => f.startsWith("CIK") && f.endsWith(".json")).length;
+  if (documents !== latestIndex.count) {
+    throw new Error("PIT_CONTRACT: " + documents + " AS_REPORTED_AT_TIME documents for " + latestIndex.count + " LATEST bundles - partial store");
+  }
+  PIT_AS_OF = latestIndex.asOf;
+}
+function assertPitDocument(payload, file) {
+  if (payload.view !== PIT.VIEW || payload.asOf !== PIT_AS_OF) {
+    throw new Error("PIT_CONTRACT: " + file + " view " + payload.view + " asOf " + payload.asOf + " - not the AS_REPORTED_AT_TIME document of the LATEST run " + PIT_AS_OF);
+  }
+}
 const PRICE_STUDY = join(ROOT, "quant/data/product/pattern-research-v1/study.json");
 const FUNDAMENTAL_STUDY = join(ROOT, "quant/data/product/pattern-research-fundamentals-v1/study.json");
 const OUT_DIR = join(ROOT, "quant/data/product/pattern-match-v1");
@@ -127,14 +149,14 @@ function main() {
   const candidates = priceMethodology.candidates.concat(fundamentalMethodology.candidates);
 
   const bundlesByTicker = new Map();
+  assertPitStore();
   for (const file of readdirSync(CONSUMER_DIR)) {
     if (!file.startsWith("CIK") || !file.endsWith(".json")) continue;
     const payload = JSON.parse(readFileSync(join(CONSUMER_DIR, file), "utf8"));
-    const annual = {};
-    for (const metric of USED_METRICS) {
-      if (Array.isArray(payload.annual?.[metric])) annual[metric] = payload.annual[metric];
-    }
-    for (const name of payload.tickers || []) bundlesByTicker.set(name, { annual });
+    assertPitDocument(payload, file);
+    /* Same view as the study the findings come from (M-B5). */
+    const sliced = PIT.pitSlice(payload, USED_METRICS);
+    for (const name of payload.tickers || []) bundlesByTicker.set(name, sliced);
   }
 
   const shards = new Map();
@@ -192,7 +214,7 @@ function main() {
     const priceFeatures = Patterns.featuresAt(closes, index, { runningMax: Patterns.runningMaxOf(closes) });
     if (!priceFeatures) { noteUnavailable(payload.ticker, "NO_MEASURABLE_FEATURES", points.length); continue; }
     const bundle = bundlesByTicker.get(payload.ticker);
-    const fundamentalFeatures = bundle ? PIT.featuresAt(bundle, asOf) : null;
+    const fundamentalFeatures = bundle ? PIT.featuresAt(bundle, asOf, { view: PIT.VIEW }) : null;
     if (!fundamentalFeatures) withoutFundamentals += 1;
     const features = { ...priceFeatures, ...(fundamentalFeatures || {}) };
 

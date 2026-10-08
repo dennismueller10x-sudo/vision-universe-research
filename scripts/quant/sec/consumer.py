@@ -76,6 +76,23 @@ TTM_WINDOW_NOT_CURRENT = "TTM_WINDOW_NOT_CURRENT"
 # the resolver, not this bundle.
 VIEW_LATEST_RESTATED = "LATEST_RESTATED"
 VIEW_CURRENT_TTM = "CURRENT_TTM"
+VIEW_AS_REPORTED_AT_TIME = "AS_REPORTED_AT_TIME"
+# AS_REPORTED_AT_TIME (Migrationsblocker M-B5): je Geschaeftsjahr jede Fassung
+# eines Jahreswerts mit dem Tag, ab dem sie bekannt war. Der Wert zu einem
+# historischen Stichtag t ist die juengste Fassung mit known <= t - derselbe
+# Kern (PeriodResolver.annual bzw. derived.reconstruct zum Stichtag), nur
+# vorab zu jedem Einreichungstag ausgewertet. Umfang: die Kennzahlen, die
+# historische Consumer lesen (quant/engines/pit-fundamental-history.js).
+PIT_ANNUAL_METRICS = ("revenue", "net_income", "gross_profit", "free_cash_flow", "capital_expenditures",
+                      "total_assets", "stockholders_equity", "cash_and_equivalents", "shares_outstanding")
+PIT_INPUTS = {"free_cash_flow": ("operating_cash_flow", "capital_expenditures"),
+              "gross_profit": ("gross_profit", "revenue", "cost_of_revenue")}
+PIT_COLUMNS = ["fy", "end", "v", "known", "accn"]
+# Eigener Speicher neben den LATEST-Bundles (quant/data/sec/consumer-pit/CIK*.json):
+# die Sicht ist physisch getrennt, und das LATEST-Bundle bleibt im Groessenbudget.
+PIT_SCHEMA = "vu-consumer-pit-1.0.0"
+PIT_STORE = "consumer-pit"
+DERIVED_FALLBACK_METRICS = DERIVED_METRICS + ("gross_profit", "total_debt")
 
 
 def _utcnow():
@@ -129,7 +146,7 @@ def _facts_for_period(resolver, registry, fiscal_year, fiscal_period, as_of, pol
         if fact.available:
             out[metric] = (fact, False)
     derived = reconstruct(resolver, fiscal_year, fiscal_period, as_of, policy=policy)
-    for metric in DERIVED_METRICS + ("gross_profit", "total_debt"):
+    for metric in DERIVED_FALLBACK_METRICS:
         fact = derived.get(metric)
         if fact is not None and fact.available and metric not in out:
             out[metric] = (fact, True)
@@ -199,6 +216,55 @@ def _ttm(resolver, registry, as_of, policy):
         out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"], "unit": debt["unit"],
                            "kind": "INSTANT", "derived": True, "inputs": ["total_debt", "cash_and_equivalents"]}
     return out, through, absent
+
+
+def _pit_annual(resolver, registry, fiscal_years, as_of, policy):
+    """{metric: [[fy, end, v, known, accn], ...]} - every version of each fiscal
+    year's value as it became known, oldest first, up to as_of."""
+    factbook = resolver.factbook
+    as_of_date = str(as_of)[:10]
+    dates_by_year = {}
+    for (metric, fiscal_year, _period), timeline in factbook.timelines.items():
+        if fiscal_year not in fiscal_years:
+            continue
+        for observation in timeline.observations:
+            known = str(observation.available_from or observation.filed or "")[:10]
+            if known and known <= as_of_date:
+                dates_by_year.setdefault((metric, fiscal_year), set()).add(known)
+    out = {}
+    for metric in PIT_ANNUAL_METRICS:
+        if registry.get(metric) is None and metric not in DERIVED_FALLBACK_METRICS:
+            continue
+        rows = []
+        inputs = PIT_INPUTS.get(metric, (metric,))
+        for fiscal_year in fiscal_years:
+            dates = sorted(set().union(*(dates_by_year.get((m, fiscal_year), set()) for m in inputs)))
+            previous = None
+            for day in dates:
+                # Dieselbe Regel wie _facts_for_period: gemeldet, sonst abgeleitet.
+                fact = None
+                if registry.get(metric) is not None:
+                    fact = resolver.annual(metric, fiscal_year, day, policy=policy)
+                if (fact is None or not fact.available) and metric in DERIVED_FALLBACK_METRICS:
+                    fact = reconstruct(resolver, fiscal_year, "FY", day, policy=policy).get(metric)
+                if fact is None or not fact.available:
+                    continue
+                # Ein Jahreswert, der vor dem Ende seines Geschaeftsjahres bekannt
+                # sein soll, ist ein falsch getaggter Zwischenwert (Gorman-Rupp
+                # FY2023: Q1-Ergebnis im 10-Q vom 2023-05-01 mit Jahreskontext) -
+                # dieselbe Regel wie das Gate PIT_NO_FUTURE_DATA_LEAK.
+                if fact.period_end and day < str(fact.period_end)[:10]:
+                    continue
+                accession = getattr(fact.provenance, "accession", None)
+                # Eine neue Version nur bei neuem Wert: dasselbe Jahr mit um einen
+                # Tag verschobenem Ende (52/53-Wochen-Varianten) ist kein neues Wissen.
+                if fact.value == previous:
+                    continue
+                previous = fact.value
+                rows.append([fiscal_year, fact.period_end, fact.value, day, accession])
+        if rows:
+            out[metric] = rows
+    return out
 
 
 def _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver=None, as_of=None, policy=POLICY_AS_OF_LATEST):
@@ -356,9 +422,9 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
                        "licenseStatus": "public_domain", "pitCapable": True},
         "cik": cik, "name": name, "tickers": list(tickers), "securityIds": list(security_ids),
         "asOf": as_of_text, "policy": policy,
-        "views": {"bundle": VIEW_LATEST_RESTATED, "ttm": VIEW_CURRENT_TTM,
-                  "note": "latest restated values; historical (point-in-time) consumers must not read this bundle "
-                          "as AS_REPORTED_AT_TIME or PIT_TTM"},
+        "views": {"bundle": VIEW_LATEST_RESTATED, "ttm": VIEW_CURRENT_TTM, "pit": VIEW_AS_REPORTED_AT_TIME,
+                  "note": "annual/quarterly/ttm are latest restated values; a historical (point-in-time) consumer "
+                          "reads the AS_REPORTED_AT_TIME document (" + PIT_STORE + "/CIK*.json) and nothing else"},
         "availability": "filing-date granularity (bulk companyfacts carries filed, not acceptance time); "
                         "a value is never visible before its filing date",
         "calendar": {"fiscalYearEnd": calendar.to_dict().get("fiscal_year_end_hint") or fiscal_year_end_hint,
@@ -377,8 +443,23 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         "quarterly": quarterly,
         "ttm": ttm,
         "ttmAbsent": ttm_absent,
+        "pit": {"view": VIEW_AS_REPORTED_AT_TIME, "columns": PIT_COLUMNS, "metrics": list(PIT_ANNUAL_METRICS),
+                "granularity": "filing date (known = first day the version was public)",
+                "annual": _pit_annual(resolver, registry, set(annual_scope), as_of_text, policy)},
         "eps": _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver, as_of_text, policy),
     }
+
+
+def split_pit(bundle):
+    """(LATEST-Bundle, PIT-Dokument). Das Bundle aus build_consumer_bundle traegt beide
+    Sichten; geschrieben werden sie getrennt (PIT_STORE), damit ein historischer Consumer
+    nie ein LATEST-Bundle oeffnet und das LATEST-Bundle kompakt bleibt."""
+    latest = {k: v for k, v in bundle.items() if k != "pit"}
+    document = {"schema": PIT_SCHEMA, "generatedAtUtc": bundle["generatedAtUtc"], "versions": bundle["versions"],
+                "cik": bundle["cik"], "name": bundle.get("name"), "tickers": bundle["tickers"],
+                "securityIds": bundle["securityIds"], "asOf": bundle["asOf"], "policy": bundle["policy"],
+                "view": VIEW_AS_REPORTED_AT_TIME, "pit": bundle["pit"]}
+    return latest, document
 
 
 # ---------------------------------------------------------------- universe run
