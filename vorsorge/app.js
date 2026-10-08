@@ -303,15 +303,19 @@
   };
 
   /* ------------------------------------------------------------ Router */
-  var NAV = [["home", "#/", "Home"], ["plan", "#/plan", "Plan"], ["etfs", "#/etfs", "ETFs"], ["portfolio", "#/portfolio", "Portfolio"],
-    ["vergleichen", "#/vergleichen", "Vergleichen"], ["foerderung", "#/foerderung", "Förderung"], ["monitor", "#/monitor", "Monitor"], ["wissen", "#/wissen", "Wissen"]];
+  /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
+     traegt Vorsorge | Plan | ETFs | Portfolio | ☰. Die weiteren Bereiche
+     stehen am Ende jeder Ansicht (#vs-more) und im globalen Menue. */
+  var DOCK = { home: "vorsorge", plan: "plan", etfs: "etfs", portfolio: "portfolio" };
+  var MORE = [["vergleichen", "#/vergleichen", "Vergleichen"], ["foerderung", "#/foerderung", "Förderung"], ["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]];
   VS.SECTION_OF = { home: "home", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
     vergleich: "vergleichen", vergleichen: "vergleichen", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
     fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen" };
 
-  function subnav(active) {
-    var el = document.getElementById("vs-subnav");
-    el.innerHTML = '<div class="vs-subnav-inner"><span class="vs-brand"><i></i>VORSORGE</span>' + NAV.map(function (n) {
+  function sections(active) {
+    if (global.VUNavigation) global.VUNavigation.dock({ active: DOCK[active] || null });
+    var el = document.getElementById("vs-more"); if (!el) return;
+    el.innerHTML = '<p class="vs-label">Mehr in Vorsorge</p><div>' + MORE.map(function (n) {
       return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>';
     }).join("") + '</div>';
   }
@@ -328,7 +332,7 @@
   function route() {
     var r = VS.parseHash();
     var view = VS.views[r.name] || VS.views.notfound;
-    subnav(VS.SECTION_OF[r.name] || "home");
+    sections(VS.SECTION_OF[r.name] || "home");
     if (first) { VS.analytics.track("vorsorge_open", {}); VS.analytics.track("retirement_open", {}); first = false; }
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
@@ -354,22 +358,9 @@
     return isFinite(v) ? v * (scale || 1) : fallback;
   };
 
-  /* ------------------------------------------------------------- Theme */
-  VS.initTheme = function () {
-    var b = document.getElementById("vs-theme"); if (!b) return;
-    function label() { b.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀ Hell" : "☾ Dunkel"; }
-    label();
-    b.onclick = function () {
-      var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      try { localStorage.setItem("vu-discover-theme-v1", next); } catch (e) { /* ignorieren */ }
-      var nav = document.querySelector("vu-navigation"); if (nav) nav.setAttribute("theme", next);
-      label();
-    };
-  };
-
+  /* Theme: Hell/Dunkel schaltet der Knopf im gemeinsamen Kopf (theme-switch,
+     dieselbe gemerkte Wahl vu-discover-theme-v1 wie alle Produkte). */
   VS.start = function () {
-    VS.initTheme();
     global.addEventListener("hashchange", route);
     route();
   };
