@@ -44,7 +44,7 @@ const VIEWPORTS = (arg('viewports', '390x844,430x932,768x1024,1024x768,1440x900'
 const findings = [], checks = [];
 const fail = (where, msg) => { findings.push({ where, msg }); console.log('FAIL ' + where + ': ' + msg); };
 
-const browser = await pw[engine].launch(engine === 'chromium' && process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+const browser = await pw[engine].launch(engine === 'chromium' ? { ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--disable-dev-shm-usage'] } : {});
 async function state(page) {
   return page.evaluate(() => {
     const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav');
@@ -70,9 +70,13 @@ async function settle(page) { await page.waitForLoadState('networkidle', { timeo
 for (const [vpName, width, height] of VIEWPORTS) {
   const phone = engine === 'webkit' && width <= 430;
   const ctx = await browser.newContext(phone ? { ...pw.devices['iPhone 14'], viewport: { width, height } } : { viewport: { width, height } });
-  const page = await ctx.newPage();
+  /* Jede Pruefung bekommt eine frische Seite: ein Absturz des Renderers (CI-Runner,
+     /dev/shm) darf nicht alle folgenden Navigationen derselben Seite mitreissen. */
+  let page = null;
+  const fresh = async () => { if (page) await page.close().catch(() => {}); page = await ctx.newPage(); };
   for (const [product, path, expected] of ROUTES) {
     const where = `${product} ${path} @${vpName}`;
+    await fresh();
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       for (const pass of ['first', 'reload']) {
@@ -105,6 +109,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
   // Farbschema: der Schalter im gemeinsamen Kopf wechselt Hell/Dunkel auf jedem Produkt; Leiste und Menue bleiben lesbar.
   for (const path of ['/discover/#/', '/quant/#/', '/vorsorge/#/', '/screener/', '/supertrader/', '/hedgefonds/#/']) {
     const where = `theme ${path} @${vpName}`;
+    await fresh();
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const before = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
@@ -125,6 +130,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
   let firstMenu = null;
   for (const path of ['/discover/#/', '/quant/#/', '/vorsorge/#/', '/screener/', '/supertrader/', '/hedgefonds/#/']) {
     const where = `menu ${path} @${vpName}`;
+    await fresh();
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const menu = page.locator('#vu-dock button.menu');
@@ -155,6 +161,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
   // Zurueck/Vor ueber die Leiste (Hash-Produkte und Seiten-Produkte).
   for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Signale', 'Backtests']], ['/discover/#/', ['Welten', 'Strategien']]]) {
     const where = `history ${start} @${vpName}`;
+    await fresh();
     try {
       await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const first = (await state(page)).current[0];
