@@ -1,4 +1,4 @@
-:root{--vu-navigation-height:88px}
+:root{--vu-navigation-height:72px}
 html{scroll-padding-top:calc(var(--vu-navigation-height) + 16px)}
 body{padding-top:var(--vu-navigation-height)!important}
 vu-navigation{display:block!important}
@@ -11,5 +11,13 @@ body.vu-magazine-one .mag{height:calc(100dvh - var(--nav) - var(--vu-navigation-
 body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
-@media(max-width:760px){:root{--vu-navigation-height:70px}}
+@media(max-width:760px){:root{--vu-navigation-height:64px}}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
+/* Produkt-Leiste (Dock) der gemeinsamen Shell: Abstand fuer den Inhalt als
+   ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
+   sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
+:root{--vu-dock-height:66px;--vu-dock-gap:10px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
+html[data-vu-dock]{scroll-padding-bottom:var(--vu-dock-space)}
+html[data-vu-dock] body{padding-bottom:var(--vu-dock-space)!important}
+html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
+@media(min-width:761px){:root{--vu-dock-height:56px;--vu-dock-gap:16px}}
