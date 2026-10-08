@@ -70,13 +70,22 @@ test("Radar: Bedeutung, naechste Bedingung, Vergleich mit dem Markt - und keine 
 });
 
 test("Aktie: 'Was ist jetzt wichtig?' trennt getestet (mit Markt) von beobachtet (ohne Markt)", () => {
-  const now = slice(stock, "function nowContent(", "function lifecycleLabel(");
-  const tested = now.indexOf("Historisch getestet"), observed = now.indexOf("Bei dieser Aktie beobachtet");
+  /* Progressive Disclosure (07.10.2026): die Historie steht oben als
+     Antwortkarte (evidenceAnswer), nicht mehr als Zeile in nowContent.
+     Die Regel bleibt: zuerst das GETESTETE Signal, immer mit dem Markt
+     daneben und der Einordnung des Unterschieds; die nur BEOBACHTETE
+     Quote dieser Aktie sagt, dass der Vergleich fehlt. */
+  const now = slice(stock, "function evidenceAnswer(", "function verdictCard(");
+  const tested = now.indexOf("Historisch getestet"), observed = now.indexOf("Historisch beobachtet");
   assert.ok(tested > 0 && observed > tested, "getestet steht nicht vor beobachtet");
-  assert.match(now, /der Markt " \+ E\.share1\(b\.basePositiveShare\)/, "die getestete Quote steht ohne Markt");
-  assert.match(now, /E\.edgeSentence\(b\)/);
+  assert.match(now, /Markt[\s\S]{0,120}E\.share1\(b\.basePositiveShare\)/, "die getestete Quote steht ohne Markt");
+  assert.match(now, /E\.edgeOf\(b\)[\s\S]*answerTitle\(e\.label\)/, "der Unterschied zum Markt ist nicht eingeordnet");
+  assert.match(now, /E\.pp\(b\.deltaPositiveShare\)/, "die Differenz zum Markt fehlt");
   assert.match(now, /ohne Marktvergleich/, "die beobachtete Quote sagt nicht, dass ein Vergleich fehlt");
   assert.ok(!now.includes("Früher in derselben Kurslage:"), "nackte Trefferquote ohne Stufe");
+  /* nowContent selbst traegt keine Quote mehr - nur die Ereignisse. */
+  const events = slice(stock, "function nowContent(", "function lifecycleLabel(");
+  assert.ok(!/positiveShare/.test(events), "eine Quote ohne ihre Antwortkarte");
 });
 
 test("Quant vs. Screener vs. Discover: getrennt und benannt", () => {

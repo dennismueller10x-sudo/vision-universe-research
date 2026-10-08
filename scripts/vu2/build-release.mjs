@@ -24,6 +24,15 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
+/* Auslieferung der Quant-Stile ohne Kommentare und Einrueckung. Die Quelle
+   (quant/app/app.css) behaelt ihre Begruendungen; das Release traegt nur die
+   Regeln - wie das Bundle, das esbuild ohne Kommentare verdichtet. Strings
+   mit Kommentarzeichen gibt es in der Datei nicht; kommt einer dazu, bricht
+   das Packen ab, statt eine Regel zu verschlucken. */
+export function compactCss(css){
+ for(const m of css.matchAll(/"[^"\n]*"|'[^'\n]*'/g))if(m[0].includes('/*')||m[0].includes('*/'))throw Error('CSS_COMMENT_MARK_IN_STRING');
+ return css.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\n[ \t]*/g,'\n').replace(/\n{2,}/g,'\n').trim()+'\n';
+}
 export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
@@ -112,6 +121,12 @@ export async function buildRelease({root,output}){
   return bundleVersion;
  }
  const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js');
+ let quantCss=null;
+ if(paths.includes('quant/app/app.css')){
+  const source=await readFile(resolve(root,'quant/app/app.css'),'utf8'),compact=compactCss(source);
+  await writeFile(resolve(output,'quant/app/app.css'),compact);
+  quantCss={sourceBytes:Buffer.byteLength(source),bytes:Buffer.byteLength(compact)};
+ }
  // Former entries (/vu2/, /Quant/) are one hop to the canonical product.
  // The query string travels along; /quant/ maps ?view=... to its routes.
  const legacyEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><link rel="canonical" href="/quant/"><title>Vision Universe® Quant</title><script>location.replace("/quant/"+location.search+location.hash)</script></head><body><p><a href="/quant/">Vision Universe® Quant öffnen</a></p></body></html>';
@@ -129,7 +144,7 @@ export async function buildRelease({root,output}){
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
- const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
+ const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,quantCss,status:'PASS'};
  await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

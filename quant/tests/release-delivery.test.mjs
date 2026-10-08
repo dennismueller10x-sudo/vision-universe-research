@@ -76,3 +76,19 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await assert.rejects(buildRelease({root,output:join(tmp,'symlink-site')}),/NON_FILE_INPUT/);
  }finally{await rm(tmp,{recursive:true,force:true});}
 });
+
+test('the release ships the quant styles without comments, rule for rule', async () => {
+ /* Ressourcenbudget der Aktienseite: die Quelle behaelt ihre Begruendungen,
+    ausgeliefert werden nur die Regeln. */
+ const {compactCss}=await import('../../scripts/vu2/build-release.mjs');
+ const {readFileSync}=await import('node:fs');
+ const source=readFileSync(new URL('../app/app.css',import.meta.url),'utf8');
+ const out=compactCss(source);
+ assert.ok(!out.includes('/*'),'a comment survived');
+ assert.ok(out.length<source.length);
+ assert.equal(compactCss(out),out,'compaction is not idempotent');
+ const rules=css=>css.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,'');
+ assert.equal(rules(out),rules(source),'a rule changed');
+ assert.equal(compactCss('/* a */\n  .x{content:"›"}\n\n\n.y{}'),'.x{content:"›"}\n.y{}\n');
+ assert.throws(()=>compactCss('.x{content:"/*"}'),/CSS_COMMENT_MARK_IN_STRING/);
+});

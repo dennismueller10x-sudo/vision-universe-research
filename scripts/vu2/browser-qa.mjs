@@ -283,7 +283,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
-   /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
+   /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund.
+      Progressive Disclosure (07.10.2026): die geschlossenen Arten stehen im
+      Kopf eines Aufklappers ("Noch ohne Test: ..."), der Grund einen Tipp
+      tiefer - geprueft wird nach diesem einen Tipp. */
+   await alleAufklappen(page,'#historie');
    {const hist=await page.locator('#historie').innerText();
     if(!/C · Zertifizierter Backtest/i.test(hist)||!/kein vollständig zertifizierter Backtest vor/.test(hist)||!/noch keine Zahlen\. Es fehlt unter anderem: .+\(nötig .+, heute .+\)/.test(hist))befund(view,width,'Backtest-Stand fehlt im Rueckblick');}
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
@@ -304,11 +308,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   /* Reihenfolge nach Owner-Auftrag "Quant Daily Usefulness" (01.10.2026). */
-   const soll=['setup','historie','dafuer','einordnung','veraenderung','strategie','technik','zahlen','grenzen'];
+   /* Reihenfolge nach Owner-Auftrag "Progressive Disclosure" (07.10.2026):
+      Setup, Evidenz, Faktoren - dann unter "Mehr" je einen Tipp tief
+      Pro/Contra, Bewegung, Anlagestil, Technik, Zahlen, Daten und Grenzen. */
+   const soll=['setup','historie','einordnung','dafuer','veraenderung','strategie','technik','zahlen','grenzen'];
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
+   /* "Mehr": jede Zeile ein Tipp. Die Pruefung tippt sie auf und liest dann. */
+   for(let i=0;i<20&&await page.locator('#mehr details.q-fold:not([open]) > summary').count();i++)await page.locator('#mehr details.q-fold:not([open]) > summary').first().click();
    const grenzen=await page.locator('#grenzen').innerText();
    for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');

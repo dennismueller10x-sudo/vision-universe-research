@@ -309,6 +309,11 @@
     if (!target) return;
     e.preventDefault();
     if (target.tagName === "DETAILS" && !target.open) { target.open = true; target.dispatchEvent(new Event("toggle")); }
+    /* Liegt das Ziel in einem zugeklappten Bereich (Aktienseite: "Mehr"),
+       klappt der Sprung ihn auf - sonst scrollte er zu etwas Unsichtbarem. */
+    for (var up = target.parentElement && target.parentElement.closest("details"); up; up = up.parentElement && up.parentElement.closest("details")) {
+      if (!up.open) up.open = true;
+    }
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 

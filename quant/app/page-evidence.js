@@ -222,6 +222,7 @@
         bar("Signal", b.positiveShare, "is-signal"), bar("Markt", b.basePositiveShare, "is-base")]),
       el("p", { class: "q-ev-edge tone-" + e.tone }, [el("b", { class: "num", text: pp(b.deltaPositiveShare) }), el("span", { text: edgeSentence(b) })])
     ];
+    if (opts.stock) return stockEvidence(b, e, horizon, kids, opts);
     if (opts.compact) {
       kids.push(el("p", { class: "q-ev-mini" }, [el("span", { text: "Evidenz " + (TRUST_SHORT[b.trust] || "nicht bereit") }), el("span", { text: int(b.n) + " Fälle · ≈ " + int(b.effectiveN) + " unabhängig" })]));
       return el("div", { class: "q-evx is-compact" }, kids);
@@ -236,6 +237,41 @@
     kids.push(el("p", { class: "q-ev-why", text: SAMPLE_WHY }));
     kids.push(trustChecklist(b));
     return el("div", { class: "q-evx" }, kids);
+  }
+  /* Aktienseite (Aussage -> Beweis -> Tiefe): zuerst die Einordnung des
+     Unterschieds als Satz und als Zahl, darunter Signal gegen Markt als
+     Balken, drei Kennzahlen und das Vertrauen. Die Pruefliste, die Fakten
+     in Saetzen und wie getestet wurde, liegen je einen Tipp tiefer - nichts
+     davon entfaellt. Eine Quote steht nie ohne den Markt daneben. */
+  function stockEvidence(b, e, horizon, kids, opts) {
+    var trust = TRUST_SHORT[b.trust] || "nicht bereit";
+    function fold(title, body) {
+      return el("details", { class: "q-ev-more q-drill" }, [el("summary", { text: title })].concat(body));
+    }
+    function kpi(value, label, cls) { return el("div", {}, [el("b", { class: "num" + (cls ? " " + cls : ""), text: value }), el("small", { text: label })]); }
+    var dd = drawdownSentence(b.typicalDrawdown);
+    return el("div", { class: "q-evx q-evx--stock tone-" + e.tone }, [
+      kids[0],
+      el("p", { class: "q-ev-verdict" }, [el("b", { text: e.label }), el("span", { class: "num", text: pp(b.deltaPositiveShare) + " gegenüber dem Markt" })]),
+      kids[2],
+      el("p", { class: "q-ev-caption", text: "Anteil der Fälle, die " + horizon + " höher lagen – Signal und Markt in denselben Wochen." }),
+      el("div", { class: "q-ev-kpis" }, [
+        kpi(int(b.n), "Fälle"),
+        kpi(pct(b.median, 1, true), "typisches Ergebnis", typeof b.median === "number" ? (b.median > 0 ? "up" : b.median < 0 ? "down" : "") : ""),
+        kpi(typeof b.typicalDrawdown === "number" ? "−" + Math.abs(Math.round(b.typicalDrawdown * 100)) + " %" : "–", "typ. Rückgang zwischendurch", "down")]),
+      el("p", { class: "q-ev-trustline trust-" + String(b.trust || "NOT_READY").toLowerCase() }, [el("span", { text: "Vertrauen" }), el("b", { text: trust }), el("small", { text: trustPlain(b.trust) })]),
+      el("div", { class: "q-drills" }, [
+        fold("Warum " + trust + "?", [trustChecklist(b, { title: "Was geprüft ist – und was fehlt" })]),
+        fold("Wie viele Fälle?", [el("p", { text: sampleSentence(b.n, b.effectiveN) || "–" }), el("p", { class: "q-ev-why", text: SAMPLE_WHY })]),
+        fold("Wie groß war das Risiko?", [el("p", { text: dd || "Der Rückgang zwischendurch ist nicht gemessen." }),
+          el("p", { class: "q-ev-why", text: "Typisches Ergebnis: Median " + pct(b.median, 1, true) + " " + horizon + (b.returnType === "TOTAL_RETURN" ? ", mit Dividenden." : ", ohne Dividenden.") })]),
+        fold("Wie wurde getestet?", [el("dl", { class: "q-ev-facts" }, [
+          el("dt", { text: "Ist der Unterschied zum Markt auch in neueren Daten deutlich?" }), el("dd", { class: oosAnswer(b) === "Ja" ? "is-yes" : "is-no", text: oosAnswer(b) || "nicht gemessen" }),
+          el("dt", { text: "Womit wird verglichen?" }), el("dd", { text: "Mit allen Aktien des Markts in denselben Wochen." }),
+          el("dt", { text: "Welche Rendite?" }), el("dd", { text: returnWord(b.returnType) })]),
+          opts.backtestHref ? el("p", {}, [el("a", { class: "q-ev-link", href: opts.backtestHref, text: "Alle getesteten Signale im Backtesting →" })]) : null])
+      ])
+    ]);
   }
   /* Zertifiziert: nur mit Status CERTIFIED - sonst ein ruhiger Satz. */
   function certifiedLine(cert, opts) {
