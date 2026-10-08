@@ -68,6 +68,7 @@ export function normalizeDirectoryObservation(observation = {}) {
     name: str(row.name || row.company_name) || null,
     isin: upper(row.isin) || null, currency: upper(row.currency || exchange.currency?.code) || null,
     providerIsin: observation.providerNormalized && Object.hasOwn(observation.providerNormalized, 'isin') ? observation.providerNormalized.isin : upper(row.isin) || null,
+    providerCurrency: observation.providerNormalized && Object.hasOwn(observation.providerNormalized, 'currency') ? observation.providerNormalized.currency : upper(row.currency) || null,
     active, classification: classifyEquity(row),
     // Generic row.country is often the exchange country. It is not issuer evidence.
     issuerCountry: upper(row.issuer_country || row.issuer?.country) || null,
@@ -254,7 +255,11 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
     if (types.length > 1 || distinct(versions.map(v => v.classification.kind)).length > 1) reasons.push('CONFLICTING_INSTRUMENT_TYPE');
     if (classified.kind && versions.some(v => v.classification.kind && v.classification.kind !== classified.kind)) reasons.push('CONFLICTING_INSTRUMENT_TYPE');
     if (distinct(versions.map(v => v.currency)).length > 1) reasons.push('CONFLICTING_LISTING_CURRENCY');
+    const officialCurrencies = distinct(matches.filter(e => upper(e.mic) === n.mic).map(e => upper(e.listingCurrency)));
+    if (officialCurrencies.length > 1 || versions.some(v => v.currency && officialCurrencies.some(currency => currency !== v.currency))) reasons.push('CONFLICTING_OFFICIAL_LISTING_CURRENCY');
     if (kind === 'PREFERRED' && !matches.some(e => e.preferredRelevant === true)) reasons.push('PREFERRED_RELEVANCE_UNVERIFIED');
+    if (options.candidatePriceStatus?.[listingKey] === 'STALE') reasons.push('STALE_PRICE_CONSUMER_REVIEW');
+    if (options.candidatePriceCurrencyConflict?.[listingKey] === true) reasons.push('PROVIDER_QUOTE_CURRENCY_CONFLICT');
     const primaryPolicies = distinct(matches.map(e => str(e.productPrimaryPolicy)));
     for (const e of matches.filter(e => e.productPrimaryPolicy)) {
       if (!verifiedHomeCashShare(e, n) && !verifiedGermanIndexLocalCashShare(e, n) && !verifiedMeasuredGermanCashShare(e, n) &&
@@ -281,6 +286,7 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
       canonicalTicker, proposedSecurityId, securityId: null,
       status: rejected ? 'REJECTED' : reasons.length ? 'REVIEW' : 'ACCEPTED', reasons: distinct(reasons),
       observations: versions.map(v => ({ raw: v.raw, input: v.input, normalized: { ...v, isin: v.providerIsin, resolvedIsin: v.isin,
+        currency: v.providerCurrency, resolvedCurrency: v.currency,
         raw: undefined, row: undefined, input: undefined }, provenance: v.provenance })),
       identityEvidence: copy(matches), indexMembership: []
     };

@@ -111,3 +111,39 @@ test('newer missing ambiguous failed unbounded or metadata-blocked batches revok
   assert.equal(result.productionWrites,0);
  }}finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('incomplete latest pagination or a later transport failure cannot authorize further collection', async () => {
+ const root=mkdtempSync(join(tmpdir(),'eu-latest-incomplete-'));
+ const row={symbol:'SAP.DE',exchange:'XETR',date:'2026-10-07',open:100,high:101,low:99,close:100,volume:1000};
+ const cases=[
+  {name:'page limit reached',maxPages:1,pagination:{offset:0,limit:1,count:1,total:2},expectedCalls:1},
+  {name:'unverified pagination',maxPages:1,expectedCalls:1},
+  {name:'failure after first valid page',maxPages:2,pagination:{offset:0,limit:1,count:1,total:2},expectedCalls:2}
+ ];
+ try{for(let i=0;i<cases.length;i++){
+  const scenario=cases[i],out=join(root,String(i));let calls=0;
+  const summary=await ingestEurope({plan:basic([
+   {kind:'latestBatch',mic:'XETR',symbols:['SAP.DE'],eligibleSessions:['2026-10-07'],maxPages:scenario.maxPages},
+   ...['history','splits','dividends','snapshot'].map(kind=>({kind,listing:{providerTicker:'SAP.DE',mic:'XETR'},requiresLatest:true}))
+  ]),out,apiKey:'TESTKEY-latest-incomplete',fetchImpl:async()=>{
+   calls++;return {status:calls===1?200:503,text:async()=>JSON.stringify(calls===1?{
+    ...(scenario.pagination?{pagination:scenario.pagination}:{}),data:[row]
+   }:{error:{message:'Temporary provider failure'}}),headers:{get:()=>null}};
+  }});
+  assert.equal(calls,scenario.expectedCalls,scenario.name);
+  assert.equal(summary.budget.requests,scenario.expectedCalls,scenario.name);
+  assert.equal(summary.budget.estimatedCredits,scenario.expectedCalls,scenario.name);
+  const latest=JSON.parse(readFileSync(join(out,summary.results[0].resultPath))).result;
+  assert.equal(latest.complete,false,scenario.name);
+  assert.equal(latest.paginationComplete,false,scenario.name);
+  assert.equal(latest.canonicalAdmission,false,scenario.name);
+  assert.equal(latest.data.length,1,scenario.name);
+  assert.deepEqual(latest.data[0].raw,row,scenario.name);
+  assert.equal(latest.raw[0].data.length,1,scenario.name);
+  for(const operation of summary.results.slice(1)){
+   assert.equal(operation.reason,'LATEST_VALID_SCOPED_OBSERVATION_REQUIRED',scenario.name);
+   assert.equal(operation.skipped,true,scenario.name);
+  }
+  assert.equal(summary.productionWrites,0,scenario.name);
+ }}finally{rmSync(root,{recursive:true,force:true});}
+});
