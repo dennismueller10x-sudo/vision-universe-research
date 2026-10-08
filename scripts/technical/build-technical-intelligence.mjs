@@ -367,6 +367,8 @@ function projectAll(got) {
       items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf });
     }
   }
+  /* oeffentlich nur Herkunft und Grund der Motiv-Suche, nicht das ganze Kandidatenobjekt */
+  for (const [, g] of got) if (g.p.motiveCandidate) g.p.motiveCandidate = { reason: g.p.motiveCandidate.reason, rank: g.p.motiveCandidate.rank, pool: g.p.motiveCandidate.pool };
   const storePath = join(OUT, "projection-theses.json");
   let prev = null; if (existsSync(storePath)) { try { prev = readJson(storePath); } catch (e) { prev = null; } }
   const versions = { projection: PROJECTION_VERSION, elliott: EV3.ENGINE_VERSION, ruleSet: Patterns.RULE_SET_VERSION, api: API_VERSION };

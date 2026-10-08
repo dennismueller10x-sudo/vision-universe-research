@@ -283,3 +283,11 @@ test("P-25 · Echte Reihe (SE, Woche): Kandidat aus dem Pool der unveränderten 
     assert.notEqual(mc.count.persistenceKey, out.res.methods.elliott.primary.persistenceKey, "nicht die Primärzählung");
   }
 });
+
+test("P-26 · Gleiche Lesart, gleicher Schlüssel: wechselt eine These zwischen Alternative und Motiv-Alternative, bleibt der Lebenszyklus derselbe", () => {
+  const c = Object.assign(count("IMPULSE", [10, 30, 16]), { persistenceKey: null });
+  const asAlt = PJ.build(E(corr(), { alternatives: [c] }), ctx(22)).alternative;
+  const e = E(corr()); e.hiddenMotive = { count: c, rank: 7, pool: 90 };
+  const asMotive = PJ.build(e, ctx(22)).motiveAlternative;
+  assert.equal(asAlt.key, asMotive.key);
+});

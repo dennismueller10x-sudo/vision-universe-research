@@ -581,8 +581,8 @@
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
     var pjSel = pickProjection(a, view === "pro"), lens = "scenario", pjWhich = "primary", pjLog = null;
-    function pjThesis() { var p = pjSel && pjSel.p; if (!p) return null; if (pjWhich === "motive") return p.motiveAlternative || null;
-      if (!p.consumerVisible && view !== "pro") return p.motiveAlternative || null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative || p.motiveAlternative; }
+    function pjThesis() { var p = pjSel && pjSel.p; if (!p) return null; if (pjWhich === "motive") return pjSel.motive || null;
+      if (!p.consumerVisible && view !== "pro") return pjSel.motive || null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative || pjSel.motive; }
     function pjAutoLog(t) { if (!t || !t.zones.length) return false; var hi = Math.max.apply(null, t.zones.map(function (z) { return z.high; }).concat(a.chart.close)), lo = Math.min.apply(null, t.zones.map(function (z) { return z.low; }).concat(a.chart.close.slice(-260))); return lo > 0 && hi / lo > 4; }
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
@@ -599,7 +599,7 @@
       var width = Math.max(300, Math.min(1100, chartHost.clientWidth || main.clientWidth - 24));
       pjSel = pickProjection(a, view === "pro");
       var pjT = !replayStep && lens === "projection" ? pjThesis() : null, pjOnChart = !!(pjT && pjT.zones);
-      if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative || pjSel.p.motiveAlternative) || (!pjSel.p.consumerVisible && !pjSel.p.motiveAlternative && view !== "pro");
+      if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative || pjSel.motive) || (!pjSel.p.consumerVisible && !pjSel.motive && view !== "pro");
       if (logSeg) logSeg.hidden = !pjOnChart;
       /* Ebene nicht (mehr) verfuegbar (z. B. Wechsel von Profi zu Einfach bei zurueckgehaltener These) → zurueck zum Szenario */
       if (lens === "projection" && lensSeg && lensSeg.hidden) { lens = "scenario"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 0 ? "true" : "false"); }); }
@@ -807,11 +807,14 @@
   /** Welche Projektion zeigt die Seite? Wochen-These zuerst, wenn sie für Kunden sichtbar ist. */
   function pickProjection(a, pro) {
     var w = a.projectionWeekly, d = a.projection;
-    var vis = function (x) { return x && (x.consumerVisible || x.motiveVisible); };
-    if (vis(w)) return { p: w, tf: "1W", other: vis(d) ? d : null };
-    if (d && (vis(d) || pro)) return { p: d, tf: a.timeframe, other: null };
-    if (w && pro) return { p: w, tf: "1W", other: null };
-    return d || w ? { p: d || w, tf: d ? a.timeframe : "1W", other: null } : null;
+    /* Hauptthese: Woche zuerst, sonst Tag (wie bisher). Motiv-Alternative unabhängig davon: Woche zuerst, sonst Tag. */
+    var mo = w && w.motiveAlternative ? w : d && d.motiveAlternative ? d : null;
+    var withMotive = function (x) { x.motive = mo ? mo.motiveAlternative : null; x.motiveP = mo; x.motiveTf = mo ? (mo === w ? "1W" : a.timeframe) : null; return x; };
+    if (w && w.consumerVisible) return withMotive({ p: w, tf: "1W", other: d && d.consumerVisible ? d : null });
+    if (d && (d.consumerVisible || pro)) return withMotive({ p: d, tf: a.timeframe, other: null });
+    if (w && pro) return withMotive({ p: w, tf: "1W", other: null });
+    if (mo) return withMotive({ p: mo, tf: mo === w ? "1W" : a.timeframe, other: null });
+    return d || w ? withMotive({ p: d || w, tf: d ? a.timeframe : "1W", other: null }) : null;
   }
   /** These → Chart-Datenvertrag (die Chart-Komponente kennt keine Engine-Interna). */
   function pjChart(t, tone) {
@@ -875,14 +878,14 @@
   /** Konsumenten-Karte: These in Sekunden verstehen (Leiter, Ungültig, nächste Schritte, Bestätigungen, Alternative, Evidenz). */
   function projectionCard(a, onChart) {
     var sel = pickProjection(a, false); if (!sel) return null;
-    var p = sel.p, t = p.consumerVisible ? p.primary || p.alternative : null, tfName = sel.tf === "1W" ? "Wochenchart" : "Tageschart", m = p.motiveAlternative;
+    var p = sel.p, t = p.consumerVisible ? p.primary || p.alternative : null, tfName = sel.tf === "1W" ? "Wochenchart" : "Tageschart", m = sel.motive;
     var head = el("div", { class: "cb-ew-head" }, [el("span", { class: "cb-ew-k", text: "Elliott-Projektion · " + tfName }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentelles Strukturmodell" })]);
     if (!t) {
-      var why = p.status === "DATA_INVALID" ? p.reason : p.status === "ABSTAIN" ? "Ohne verlässliche Zählung zeigt Vision Universe keine Hauptprojektion." : p.reason || "Die aktuelle Zählung liefert keine Projektion.";
+      var why = p.status === "DATA_INVALID" ? p.reason : p.status === "ABSTAIN" ? "Ohne verlässliche Zählung zeigt Vision Universe keine Hauptprojektion." : p.reason || "Die aktuelle Zählung liefert keine Hauptprojektion.";
       if (!m) return el("section", { class: "cb-ew-card cb-pj is-empty", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: "Keine Elliott-Projektion" }), el("p", { class: "cb-ew-sub", text: why })]);
-      return el("section", { class: "cb-ew-card cb-pj", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: "Keine verlässliche Hauptzählung" }), el("p", { class: "cb-ew-sub", text: why }),
+      return el("section", { class: "cb-ew-card cb-pj", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: p.status === "ABSTAIN" ? "Keine verlässliche Hauptzählung" : "Keine Hauptprojektion" }), el("p", { class: "cb-ew-sub", text: why }),
         el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
-        motiveBlock(m, p, onChart), pjContext(p, m),
+        motiveBlock(m, sel.motiveP, onChart), pjContext(sel.motiveP, m),
         el("div", { class: "cb-pj-ev" }, [el("span", { class: "cb-layer-k", text: "Historische Evidenz" }), el("b", { text: p.evidence.label }), el("span", { class: "cb-small", text: p.evidence.text })]),
         m.lifecycle ? el("p", { class: "cb-small cb-dim", text: "These seit " + X.dateDe(m.lifecycle.createdAt) + " · Revision " + m.lifecycle.rev + " · " + m.lifecycle.stateLabel + ". Zonen werden nachträglich nicht verschoben." }) : null,
         el("p", { class: "cb-small cb-dim", text: p.disclaimer })]);
@@ -909,7 +912,7 @@
         hu ? el("p", { class: "cb-small", text: "Nicht die bevorzugte Zählung, geringe Klarheit. Die Engine hat diese Lesart regelkonform gefunden; sie wird nicht zur Hauptlesart erhoben." }) : null,
         el("div", { class: "qx-actions" }, [ab])]));
     }
-    if (m) kids.push(motiveBlock(m, p, onChart));
+    if (m) kids.push(motiveBlock(m, sel.motiveP, onChart));
     if (sel.other && sel.other.primary) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Tagesstruktur: " }), el("span", { text: sel.other.primary.label + " (" + PJ_STATUS[sel.other.primary.status] + "). Der Tageschart zeigt Detail und Timing innerhalb der Wochen-These – kein Widerspruch, sondern eine Ebene tiefer." })]));
     kids.push(el("div", { class: "cb-pj-ev" }, [el("span", { class: "cb-layer-k", text: "Historische Evidenz" }), el("b", { text: p.evidence.label }), el("span", { class: "cb-small", text: p.evidence.text })]));
     if (lc) kids.push(el("p", { class: "cb-small cb-dim", text: "These seit " + X.dateDe(lc.createdAt) + " · Revision " + lc.rev + " (eingefroren am " + X.dateDe(lc.frozenAt) + ") · " + lc.stateLabel + ". Zonen werden nachträglich nicht verschoben; ändert sich die Zählung, entsteht eine neue Revision." }));
@@ -921,7 +924,8 @@
   function projectionPro(a) {
     var sel = pickProjection(a, true); if (!sel) return null;
     var p = sel.p, R = p.relations || {}, kids = [el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Projektion · Fachdetails" }), el("span", { class: "cb-badge cb-badge-experimental", text: p.version })])];
-    if (!p.primary && !p.alternative && !p.motiveAlternative) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
+    var mot = sel.motive;
+    if (!p.primary && !p.alternative && !mot) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
     if (!p.consumerVisible) kids.push(el("p", { class: "cb-unclear" }, [el("b", { text: "Nur Fachansicht. " }), el("span", { text: p.reason || "" })]));
     function block(t, title) {
       if (!t || !t.zones) return null;
@@ -941,9 +945,9 @@
     kids.push(block(p.primary, "Hauptlesart"));
     if (p.primary && p.primary.subStructure) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Kurzfristige Struktur: " }), el("span", { text: p.primary.subStructure.label + " – " + p.primary.subStructure.zones.map(function (z) { return PJ_TIER[z.tier] + " " + pjZone(z); }).join(", ") })]));
     kids.push(block(p.alternative, "Alternative"));
-    if (p.motiveAlternative) {
-      kids.push(block(p.motiveAlternative, "Motiv-Alternative (Produkt-Sichtbarkeit)"));
-      kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Herkunft: " }), el("span", { text: "Regelkonforme Lesart aus der Kandidatensuche der Engine (Rang " + (p.motiveAlternative.pool.rank + 1) + " von " + p.motiveAlternative.pool.size + "), nicht unter den zwei angezeigten Alternativen. Grammatik, Ranking und Enthaltung der Engine sind unverändert; geändert ist nur, dass diese Lesart sichtbar ist." })]));
+    if (mot) {
+      kids.push(block(mot, "Motiv-Alternative (Produkt-Sichtbarkeit" + (sel.motiveTf === "1W" ? ", Woche" : "") + ")"));
+      kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Herkunft: " }), el("span", { text: "Regelkonforme Lesart aus der Kandidatensuche der Engine (Rang " + (mot.pool.rank + 1) + " von " + mot.pool.size + "), nicht unter den zwei angezeigten Alternativen. Grammatik, Ranking und Enthaltung der Engine sind unverändert; geändert ist nur, dass diese Lesart sichtbar ist." })]));
     }
     if (p.highUpside && p.highUpside.zones) kids.push(block(p.highUpside, "Alternative mit hohem Aufwärtspotenzial"));
     kids.push(el("p", { class: "cb-small cb-dim", text: [p.presentation && p.presentation.zones, p.presentation && p.presentation.percent, p.presentation && p.presentation.rounding, "Klassen: harte Regel/Definition/Richtlinie = Elliott (Frost & Prechter); Projektionsverhältnis = Literatur; VU-Festlegung = eigene, offen gekennzeichnete Grenze; VU-Bestätigung = unabhängige Signale ohne Einfluss auf die Formel.", "Engine " + (p.engine.elliott || "–") + " · Regelwerk " + (p.engine.ruleSet || "–") + " · " + p.version].filter(Boolean).join(" ") }));

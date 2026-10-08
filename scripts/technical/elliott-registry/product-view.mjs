@@ -88,7 +88,14 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub) {
     series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly";
     if (series.length < MIN_WEEKLY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   }
-  return Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
+  const res = Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
+  /* Motiv-Alternative wie im Produkt: Wochen zuerst. Tagestitel zeigen sie aus der Wochenanalyse (projectionWeekly). */
+  if (kind === "weekly") res.motiveIn = res.projIn && res.projIn.E && res.projIn.E.hiddenMotive ? res.projIn : null;
+  else {
+    const ws = weeklySeriesFromPoints(weeklyUsed, ticker);
+    res.motiveIn = ws.length >= MIN_WEEKLY ? (() => { const w = analyzeAndSummarize(ws, "weekly", T, ctx); return w.projIn && w.projIn.E && w.projIn.E.hiddenMotive ? w.projIn : null; })() : null;
+  }
+  return res;
 }
 
 function analyzeAndSummarize(series, kind, ticker, ctx) {

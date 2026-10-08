@@ -79,7 +79,7 @@ function analyzeSymbol(file, F, W) {
   return { s: sym, d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
            ew: rec.ew ? { p: rec.ew.p, w: rec.ew.w, ab: rec.ew.ab, d: rec.ew.d, key: rec.ew.key, app: rec.ew.app } : null, outlook: rec.o, clarity: rec.cl,
            E: E && E.primary ? { primary: E.primary, alternatives: (E.alternatives || []).slice(0, 1), applicability: E.applicability, higherDegree: E.higherDegree ? { current: E.higherDegree.current, pattern: E.higherDegree.pattern } : null } : null,
-           rw3: researchInternalWave3(E, c, t), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to,
+           rw3: researchInternalWave3(E, c, t), rw3Start: (() => { const q = researchInternalWave3(E, c, t); return q ? series.timestamps[q.pivotIdx[0]] : null; })(), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to,
            pv: W && W.ctx ? productRow(sym, used, x.ticker || sym, F, W) : null, inAgree: W && W.productInputDir ? inputAgreement(sym, used, F, W.productInputDir) : null };
 }
 
@@ -88,7 +88,7 @@ function productRow(sym, used, ticker, F, W) {
   const r = productElliottAt(sym, used, ticker, F, W.ctx, W.pub);
   if (r.skip) return { skip: r.skip, tf: r.tf };
   return { ...r.view, tfRule: r.tfRule, E: r.E && r.E.primary ? { primary: r.E.primary, alternatives: (r.E.alternatives || []).slice(0, 1), applicability: r.E.applicability,
-           higherDegree: r.E.higherDegree ? { current: r.E.higherDegree.current, pattern: r.E.higherDegree.pattern } : null } : null, px: r.px, atr: r4(r.atr), projIn: r.projIn || null };
+           higherDegree: r.E.higherDegree ? { current: r.E.higherDegree.current, pattern: r.E.higherDegree.pattern } : null } : null, px: r.px, atr: r4(r.atr), projIn: r.projIn || null, motiveIn: r.motiveIn || null };
 }
 
 /* Stimmen die frisch gebauten Wochenschluesse mit den Eingangsdaten des veroeffentlichten Produkts ueberein?
@@ -249,7 +249,7 @@ async function registerWeek(o, F) {
   /* Bestand der Kundenprodukt-Sicht: erster Lauf, der diese Sicht fuehrt */
   const initialStockProduct = !lines.some((e) => e.type === "RUN" && (e.payload.views || []).includes(VIEWS.PRODUCT));
   /* Bestand der Motiv-Alternativen: erster Lauf mit Registry >= 1.3.0 */
-  const initialStockMotive = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE") && !lines.some((e) => e.type === "RUN" && /^elliott-registry-1\.(3|[4-9])/.test(e.payload.code && e.payload.code.registry || ""));
+  const initialStockMotive = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE") && !lines.some((e) => { if (e.type !== "RUN") return false; const v = /^elliott-registry-(\d+)\.(\d+)/.exec(e.payload.code && e.payload.code.registry || ""); return !!v && (+v[1] > 1 || +v[2] >= 3); });
   const skipReasons = {}; for (const r of rows) if (r.skip || r.error) { const k = r.skip || "ERROR"; skipReasons[k] = (skipReasons[k] || 0) + 1; }
   const pvStats = productView ? (() => { const s = { analysed: 0, timeframes: {}, skipReasons: {}, inputAgreement: { compared: 0, equal: 0 } };
     for (const r of ok) { if (r.pv && !r.pv.skip) { s.analysed++; s.timeframes[r.pv.tf] = (s.timeframes[r.pv.tf] || 0) + 1; } else { const k = r.pv ? r.pv.skip : "NOT_RUN"; s.skipReasons[k] = (s.skipReasons[k] || 0) + 1; }
@@ -286,14 +286,16 @@ async function registerWeek(o, F) {
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }
     /* Registry 1.3.0: angezeigte Motiv-Alternative der Kundenprodukt-Sicht (Welle 3, nicht Hauptlesart), eigene Kohorte, eingefroren */
-    if (productView && r.pv && !r.pv.skip && r.pv.projIn && r.pv.projIn.E && r.pv.projIn.E.hiddenMotive) {
-      const proj = Projection.build(r.pv.projIn.E, { ...r.pv.projIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null }), m = proj.motiveAlternative;
+    /* angezeigte Motiv-Alternative der Produktsicht (Wochenanalyse, auch fuer Tagestitel) — dieselbe Pruefung wie im Produkt */
+    const mvProj = productView && r.pv && !r.pv.skip && r.pv.motiveIn ? Projection.build(r.pv.motiveIn.E, { ...r.pv.motiveIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null }) : null;
+    if (mvProj && mvProj.motiveAlternative) {
+      const proj = mvProj, m = proj.motiveAlternative;
       if (m) {
         const dk = [r.s, "MOTIVE_ALTERNATIVE", m.key, VIEWS.PRODUCT].join("|");
         if (!registered.has(dk)) { registered.add(dk);
-          const reg = registryProjection(Object.assign({}, proj, { primary: m, alternative: null }));
+          const reg = registryProjection(Object.assign({}, proj, { primary: m, alternative: null, consumerVisible: true }));
           const payload = { ...base, initialStock: initialStockMotive, view: VIEWS.PRODUCT, cohort: "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE", dedupeKey: dk, setupType: "MOTIVE_ALTERNATIVE_WAVE3",
-            timeframe: r.pv.tf, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, interpretation: "ALTERNATIVE", primaryShownAs: r.pv.p, primaryAbstained: r.pv.ab,
+            timeframe: proj.timeframe, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, interpretation: "ALTERNATIVE", primaryShownAs: r.pv.p, primaryAbstained: r.pv.ab,
             dir: m.direction === "UP" ? 1 : -1, pattern: m.pattern, wave: m.target, degree: m.degree, persistenceKey: m.key, pool: m.pool, highUpside: !!m.highUpside,
             projectionThesis: reg, projectionEngine: PROJECTION_VERSION, setupStatus: "OPEN" };
           entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
@@ -308,7 +310,7 @@ async function registerWeek(o, F) {
           levels: { invalidation: r4(pp[0]), confirmation: r4(pp[1]), confirmationState: r.px > pp[1] ? "ALREADY_CONFIRMED" : "PENDING" },
           projection: { primary: { low: proj[1], high: proj[1] }, extended: { low: proj[2], high: proj[2] }, all: proj, basis: "Welle 3 = 1,0 / 1,618 / 2,618 × Welle 1 ab Ende Welle 2 (patterns.js-Proportionen); Invalidation = Ursprung Welle 1" },
           /* 1.3.0: wahrheitsgemaess — seit der Motiv-Alternative (Projection Engine 1.1.0) kann derselbe Kandidat im Produkt sichtbar sein */
-          productVisible: !!(r.pv && r.pv.projIn && r.pv.projIn.E && r.pv.projIn.E.hiddenMotive && r.pv.projIn.E.hiddenMotive.count && r.pv.projIn.E.hiddenMotive.count.persistenceKey === "IMPULSE|" + r.rw3.pivotIdx[0] + "|1"),
+          productVisible: !!(mvProj && mvProj.motiveAlternative && mvProj.motiveAlternative.key.indexOf("IMPULSE|" + r.rw3Start + "|1|") === 0),
           displayedPrimary: r.ew, setupStatus: "OPEN" };
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }

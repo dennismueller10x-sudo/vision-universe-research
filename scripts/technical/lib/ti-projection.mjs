@@ -65,12 +65,13 @@ function snrOf(waves, atr) {
 export function motiveCandidateFor(series, out, meth) {
   const E = out.res.methods.elliott, P = out.P.main, t = series.length - 1;
   if (!E || !E.primary) return { count: null, rank: null, pool: 0, reason: "NO_PRIMARY" };
+  if (series.timeframe !== MOTIVE_GATES.timeframe) return { count: null, rank: null, pool: 0, reason: "G4_NOT_WEEKLY" };   // vor dem zweiten Engine-Lauf
   const E2 = EV3.analyzeElliottV3({ series, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: P.profile.barsPerYear, previous: out.replay.states[t] || null,
                                     methodology: meth || { elliottEngine: "v3" }, debugAll: true });
   const same = E2.primary && E2.primary.persistenceKey === E.primary.persistenceKey && E2.alternatives.map((a) => a.countId).join() === (E.alternatives || []).map((a) => a.countId).join();
   if (!same) return { count: null, rank: null, pool: 0, reason: "IDENTITY_MISMATCH" };
   const all = (E2.trace && E2.trace.allCands) || [], c = series.close, ts = series.timestamps;
-  const shown = new Set([E.primary].concat(E.alternatives || []).map((x) => x.pattern + "|" + x.waves.map((w) => w.toTime).join(",")));
+  const shown = new Set([E.primary].concat(E.alternatives || []).map((x) => x.pattern + "|" + x.waves[0].fromTime + "|" + x.waves.map((w) => w.toTime).join(",")));
   for (let ix = 0; ix < all.length; ix++) {
     const x = all[ix];
     if (!(x.type === "IMPULSE" || x.type === "LEADING_DIAGONAL") || x.complete) continue;
@@ -79,7 +80,7 @@ export function motiveCandidateFor(series, out, meth) {
     const waves = [];
     for (let k = 1; k <= n; k++) waves.push({ label: String(k), fromIndex: x.pts[k - 1], toIndex: x.pts[k], fromTime: ts[x.pts[k - 1]], toTime: ts[x.pts[k]], fromPrice: c[x.pts[k - 1]], toPrice: c[x.pts[k]],
                                               status: k === n ? "DEVELOPING" : "CONFIRMED", duration: Math.max(1, x.pts[k] - x.pts[k - 1]) });
-    if (shown.has(x.type + "|" + waves.map((w) => w.toTime).join(","))) return { count: null, rank: ix, pool: all.length, reason: "ALREADY_SHOWN" };
+    if (shown.has(x.type + "|" + waves[0].fromTime + "|" + waves.map((w) => w.toTime).join(","))) return { count: null, rank: ix, pool: all.length, reason: "ALREADY_SHOWN" };
     /* PRODUKT-LEITPLANKEN (vor jeder Auswertung festgelegt, aus Kriterien der Engine selbst; nicht an Einzeltiteln eingestellt):
        G2 Grad-Konsistenz: keine Kreuzung mit einer vergleichbar starken abgeschlossenen Struktur (Komponente hierarchy = 1)
        G3 deutlich ueber Rauschen: Signal/Rauschen der bestaetigten Wellen >= Schwelle "voll" der Anwendbarkeit (3,0)
@@ -89,17 +90,19 @@ export function motiveCandidateFor(series, out, meth) {
     const gate = productGate(x, waves, series, P.features.columns.atr[t]);
     if (gate) return { count: null, rank: ix, pool: all.length, reason: gate };
     const ev = Patterns.evaluate(x.type, waves);
-    if (!ev || !ev.valid) continue;                                   // nur regelkonforme Lesarten (Doppelpruefung)
+    if (!ev || !ev.valid) return { count: null, rank: ix, pool: all.length, reason: "RECHECK_INVALID" };   // nur regelkonforme Lesarten (Doppelpruefung)
     const inv = Patterns.invalidation(x.type, waves, n), s = waves[0].toPrice >= waves[0].fromPrice ? 1 : -1;
     /* seit dem Ursprung kein Schluss jenseits der harten Grenze (sonst waere die Lesart schon verworfen) */
-    if (inv.hard && c.slice(x.pts[0] + 1, t + 1).some((v) => (inv.hard.direction === "below" ? v < inv.hard.price : v > inv.hard.price))) continue;
+    if (inv.hard && c.slice(x.pts[0] + 1, t + 1).some((v) => (inv.hard.direction === "below" ? v < inv.hard.price : v > inv.hard.price))) return { count: null, rank: ix, pool: all.length, reason: "HARD_LIMIT_BREACHED" };
     const round4 = (v) => Math.round(v * 1e4) / 1e4;
     const count = { pattern: x.type, patternName: x.type === "IMPULSE" ? "Impuls" : "Leading Diagonal", variant: null, direction: s > 0 ? "UP" : "DOWN", complete: false,
       currentWave: { label: String(n), role: n === 3 ? "MOTIVE" : "CORRECTIVE", wave: n, of: 5 }, nextMove: n === 2 ? (s > 0 ? "UP" : "DOWN") : (s > 0 ? "DOWN" : "UP"),
       waves: waves.map((w) => ({ label: w.label, fromTime: w.fromTime, toTime: w.toTime, fromPrice: round4(w.fromPrice), toPrice: round4(w.toPrice), status: w.status })),
       invalidation: inv.hard ? { price: round4(inv.hard.price), direction: inv.hard.direction, ruleId: inv.hard.ruleId, statement: inv.hard.statement, kind: "HARD_RULE" } : null,
       revision: inv.revision ? { price: round4(inv.revision.price), direction: inv.revision.direction, ruleId: inv.revision.ruleId, statement: inv.revision.statement, kind: "REVISION" } : null,
-      persistenceKey: x.type + "|" + x.pts[0] + "|" + s, ruleAudit: { validity: "VALID", openRules: ev.openRules }, countQuality: null,
+      /* Schluessel wie bei Engine-Alternativen (Muster|Beginn|Richtung): wechselt die Lesart zwischen Alternative und Motiv-Alternative,
+         bleibt es dieselbe These (Lebenszyklus, Register). */
+      persistenceKey: null, ruleAudit: { validity: "VALID", openRules: ev.openRules }, countQuality: null,
       pool: { rank: ix, size: all.length, components: x.c || null, snr: snrOf(waves, P.features.columns.atr[t]) } };
     return { count, rank: ix, pool: all.length, reason: null };
   }
