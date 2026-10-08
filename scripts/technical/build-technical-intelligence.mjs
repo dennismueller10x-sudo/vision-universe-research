@@ -157,9 +157,10 @@ function indexRow(p) {
 /** Kompakte Projektionszeile fuer Listen (nur angezeigte Thesen). */
 function projRow(pr) {
   const t = pr && pr.consumerVisible ? pr.primary || pr.alternative : null;
-  if (!t) return pr ? { st: pr.status } : null;
+  const mv = pr && pr.motiveAlternative ? { dir: pr.motiveAlternative.direction, ts: pr.motiveAlternative.status, hu: !!pr.motiveAlternative.highUpside } : undefined;
+  if (!t) return pr ? { st: pr.status, mv } : null;
   const z = (tier) => { const x = t.zones.find((q) => q.tier === tier); return x ? [x.display.low, x.display.high] : null; };
-  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside };
+  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside, mv };
 }
 
 /** Indexmitglieder (S&P 500, Nasdaq-100, Dow) als Relevanz- und Liquiditaetsfilter fuer Consumer-Reihen. */
@@ -373,6 +374,7 @@ function projectAll(got) {
   for (const it of items) {
     attachLifecycle(it.proj, adv.bySymbol.get(it.symbol + "|" + it.tf));
     stats.status[it.proj.status] = (stats.status[it.proj.status] || 0) + 1;
+    if (it.proj.motiveAlternative) { stats.motiveAlternative = (stats.motiveAlternative || 0) + 1; const d = "motive" + it.proj.motiveAlternative.direction; stats[d] = (stats[d] || 0) + 1; if (it.proj.motiveAlternative.highUpside) stats.motiveHighUpside = (stats.motiveHighUpside || 0) + 1; }
     if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; }
   }
   mkdirSync(OUT, { recursive: true });
