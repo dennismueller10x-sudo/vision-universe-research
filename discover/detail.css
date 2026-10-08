@@ -76,7 +76,6 @@ body.dv2 .dv2-stock :is(button,a,summary):focus-visible{outline:3px solid var(--
 body.dv2 .dv2-stock :is(section,details)[id]{scroll-margin-top:110px}
 body.dv2 .dv2-stock :is(button,a,summary){scroll-margin-top:110px;scroll-margin-bottom:130px}
 @media(max-width:860px){
-  body.dv2:has(.dv2-stock) .v2-bar{display:none}
   body.dv2 .dv2-stock{padding:0 20px 100px}
   body.dv2 .dv2-stock .dx-back{margin-bottom:0;min-height:44px;display:inline-flex;align-items:center}
   body.dv2 .dv2-stock .dx-dhero{padding-top:8px}
@@ -341,7 +340,7 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#1a1c1f;--disc
 /* Premium QA convergence. This stylesheet loads last, so these rules also
    protect the shell material from earlier cascade rules in the same file. */
 body.dv2 .v2-main{overflow-x:clip}
-@media(min-width:761px){body.dv2 .v2-dock{z-index:320}body.dv2 .v2-journey{min-height:calc(100vh - 280px)}}
+@media(min-width:761px){body.dv2 .v2-journey{min-height:calc(100vh - 280px)}}
 @media(max-width:760px){
   body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{margin-inline:-12px}
   body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:20px}
