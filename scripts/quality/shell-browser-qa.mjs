@@ -114,18 +114,42 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));
       if(routeMenu.small) fail(where,routeMenu.small+' sichtbare Menüziele kleiner als 44 px');
       await page.keyboard.press('Escape');
+      // Die Desktop-Filter haben einen eigenen Scrollbereich. Sein letztes
+      // Bedienelement muss auch bei feststehender Leiste erreichbar bleiben.
+      const sidebarEnd = await page.evaluate(() => {
+        const side = document.querySelector('.sc-layout > .sc-side');
+        if (!side) return null;
+        scrollTo({top: scrollY + side.getBoundingClientRect().top, behavior: 'instant'});
+        side.scrollTop = side.scrollHeight;
+        const controls = [...side.querySelectorAll('a,button:not(:disabled),input:not(:disabled),select:not(:disabled)')].filter(n=>n.getClientRects().length);
+        const last = controls.at(-1);
+        if (!last) return {missing: true};
+        const r = last.getBoundingClientRect(), hit = document.elementFromPoint(r.left+r.width/2, r.top+r.height/2);
+        return {bottom:r.bottom, dockTop:document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top,
+          reachable:!!hit&&(hit===last||last.contains(hit)), label:last.textContent.trim(), remaining:side.scrollHeight-side.clientHeight-side.scrollTop};
+      });
+      if(sidebarEnd&&(sidebarEnd.missing||!sidebarEnd.reachable||sidebarEnd.bottom>sidebarEnd.dockTop+1||sidebarEnd.remaining>1)) fail(where,'Filter-Scrollende verdeckt: '+JSON.stringify(sidebarEnd));
       // Seitenende: das letzte sichtbare Element liegt ueber der Leiste.
       const end = await page.evaluate(async () => {
         // Bis zum Ende scrollen, bis nachgeladene Abschnitte die Hoehe nicht mehr aendern.
         for (let i = 0, h = -1; i < 8 && h !== document.documentElement.scrollHeight; i++) { h = document.documentElement.scrollHeight; scrollTo(0, h); await new Promise((r) => setTimeout(r, 700)); }
+        // Trefferlisten laden am unteren Rand weitere Seiten nach. Nach dem
+        // begrenzten Warmup das AKTUELLE Ende instant erreichen und im selben
+        // Task messen, bevor IntersectionObserver die Liste erneut erweitert.
+        // Keine Hochrechnung oder gekappte Geometrie: die Dock-Grenze bleibt gleich.
+        const scrolling = document.scrollingElement;
+        scrollTo({top:scrolling.scrollHeight,behavior:'instant'});
+        const remaining = scrolling.scrollHeight-scrolling.clientHeight-scrolling.scrollTop;
+        const locked = [document.documentElement,document.body].some(n=>['hidden','clip'].includes(getComputedStyle(n).overflowY));
         const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
         // Aeussere Bloecke des Dokuments (Inhalt in eigenen Scroll-Containern zaehlt nicht).
         const blocks = [...document.body.children].filter((n) => n.id !== 'vu-dock' && n.getClientRects().length && !['fixed', 'sticky'].includes(getComputedStyle(n).position) && !['SCRIPT', 'STYLE', 'DIALOG', 'VU-NAVIGATION'].includes(n.tagName));
         const last = blocks.reduce((m, n) => Math.max(m, n.getBoundingClientRect().bottom - parseFloat(getComputedStyle(n).paddingBottom || 0)), 0);
-        return { dockTop, last };
+        return { dockTop, last, remaining, locked };
       });
+      if(end.locked||end.remaining>1) fail(where,'Dokumentende nicht scrollbar/erreicht: '+JSON.stringify(end));
       if (end.last > end.dockTop + 1) fail(where, `Seitenende verdeckt (Inhalt bis ${Math.round(end.last)}, Leiste ab ${Math.round(end.dockTop)})`);
-      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+      checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Farbschema: der Schalter im gemeinsamen Kopf wechselt Hell/Dunkel auf jedem Produkt; Leiste und Menue bleiben lesbar.
