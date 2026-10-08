@@ -12,6 +12,8 @@ Entscheidung:
                                 dort ein Summand von Revenues
   OTHER_STATEMENT_LINE          nur das andere Konzept steht in der Ergebnisrechnung (Revenues nur im Anhang)
   AMBIGUOUS                     beide ohne Summenbeziehung, keines, oder keine lesbare Ergebnisrechnung
+Produktion (M-B6): scripts/quant/sec/revenue_evidence.py (cli.py revenue-evidence) mit derselben Entscheidung
+als Stufe vor dem Consumer-Bundle; dieses Skript bleibt das Audit-Werkzeug, das 1.0.0/1.1.0 erzeugt hat.
 Kein Raten: ohne Beleg AMBIGUOUS. SEC Fair Access ueber sec_filing_xbrl (<= 5 Anfragen/s, Cache).
   python3 build_revenue_evidence.py <conflicts.json> <cache-dir> <out.json> [--limit N] [--redecide]
 """
