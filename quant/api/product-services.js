@@ -34,6 +34,11 @@ const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engin
 const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
+ /* Tages-OHLCV liegt nur fuer die Golden-Preview-Titel im Repository. Vorher wurde die Datei fuer JEDEN Titel angefragt (404 im
+    Browser, z. B. ABBV). Jetzt nur, wenn der Titel in der Golden-Preview-Liste steht (Mission IV §62). */
+ let goldenSet=null;
+ async function goldenDaily(id){if(!goldenSet){try{const s=await load('/quant/data/market/golden-preview/capabilities/summary.json');goldenSet=new Set((s.tickers||[]).map(t=>'ref_'+t));}catch{goldenSet=new Set();}}
+  if(!goldenSet.has(id))throw Error('NOT_IN_GOLDEN_PREVIEW');return load('/quant/data/market/golden-preview/daily/'+id+'.json');}
  const directory=Directory.create({loadJSON:load});
  async function compressedJSON(path){
   const loader=options.loadCompressedJSON||g.QuantShell?.loadCompressedJSON;
@@ -227,7 +232,12 @@ function create(options){
   stock.availableAt=latest.annual?.revenue?.filed||stock.availableAt||stock.asOf;
   return stock;
  }
- async function consumerFor(ticker){try{return await load('/discover/data/stocks/US_REAL/'+ticker+'.json');}catch{return null;}}
+ /* Nur Titel aus dem Discover-Index anfragen (Mission IV: kein 404 in der Konsole fuer Titel ausserhalb von Discover, z. B. HCTI). */
+ let consumerSet=null;
+ async function consumerFor(ticker){if(!consumerSet){try{const s=await load('/discover/data/stock-index/US_REAL.json');consumerSet=new Set(s.symbols||[]);}catch{consumerSet=null;}}
+  if(consumerSet&&!consumerSet.has(ticker))return null;try{return await load('/discover/data/stocks/US_REAL/'+ticker+'.json');}catch{return null;}}
+ let dailySeriesSet=null;
+ async function hasDailySeries(ticker){if(!dailySeriesSet){try{const s=await load('/quant/data/market/discover-series/index.json');dailySeriesSet=new Set(s.tickers||[]);}catch{dailySeriesSet=new Set();}}return dailySeriesSet.size===0||dailySeriesSet.has(ticker);}
  function broadQuantWorkspace(stock){
   const finite=v=>typeof v==='number'&&Number.isFinite(v), metric=(id,label,value,unit,reason,asOf)=>({metricId:id,label,unit:unit||'pct',value:finite(value)?value:null,state:finite(value)?'AVAILABLE':'SOURCE_MISSING',reason:reason||(!finite(value)?'SOURCE_MISSING':null),description:'Bestehende veröffentlichte Evidenz; kein aktivierter Quant-V2-Score.',owner:'quant/engines/factors.js',registryId:'factor.'+id,definitionVersion:'1.0.0',catalog:'quant/engines/metric-registry.js',panelVersion:'quant-evidence-1.0.0',asOf:asOf||stock.asOf,availableAt:asOf||stock.asOf});
   const v=stock._factorValues||{};
@@ -783,6 +793,7 @@ function create(options){
   * den Stand der Geschaeftszahlen (AMD 2026-09-08, ASML null). */
  async function publishedPriceAsOf(securityId){
   if(!/^[A-Za-z0-9_-]+$/.test(String(securityId||'')))return null;
+  if(!(await hasDailySeries(String(securityId).replace(/^ref_/,''))))return null;
   try{const series=await load('/quant/data/market/discover-series/'+securityId+'.json');
    return series&&series.status==='CALCULATED'&&validDate(series.asOf)?series.asOf:null;}catch{return null;}
  }
@@ -1048,7 +1059,7 @@ function create(options){
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
    const consumer=await consumerFor(ticker);if(consumer)stock=applyConsumer(stock,consumer);if(!permission(c,ticker,'raw').allowed)stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};
-   try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
+   try{const p=await goldenDaily(stock.masterMemberId);
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
     /* DER CHART TRAEGT DIE BASIS, DIE SEIN VERTRAG BINDET.
@@ -1133,7 +1144,7 @@ function create(options){
    }catch{}
    const calendar=await load('/quant/config/market-calendar.json'),results=await Promise.all((c.preview.scope||[]).map(async ticker=>{
    if(!permission(c,ticker,'raw').allowed||!permission(c,ticker).allowed)return {ticker,state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED',events:[]};
-   try{const stock=await row(c,ticker);if(!stock)return {ticker,state:'UNAVAILABLE',reason:'INVALID_IDENTITY',events:[]};return {ticker,...MarketSignals.build(await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json'),{ticker,recipes:getRecipes(),lookback,calendar})};}catch{return {ticker,state:'UNAVAILABLE',reason:'SOURCE_MISSING',events:[]};}
+   try{const stock=await row(c,ticker);if(!stock)return {ticker,state:'UNAVAILABLE',reason:'INVALID_IDENTITY',events:[]};return {ticker,...MarketSignals.build(await goldenDaily(stock.masterMemberId),{ticker,recipes:getRecipes(),lookback,calendar})};}catch{return {ticker,state:'UNAVAILABLE',reason:'SOURCE_MISSING',events:[]};}
   }));const available=results.filter(r=>r.state==='AVAILABLE');return {state:available.length?'AVAILABLE':'UNAVAILABLE',partial:available.length!==results.length,results,events:available.flatMap(r=>r.events).sort((a,b)=>b.asOf.localeCompare(a.asOf)||a.ticker.localeCompare(b.ticker)),scope:'APPROVED_DISPLAY_SET'};
   }catch{return {state:'UNAVAILABLE',events:[],results:[],reason:'SOURCE_MISSING'};}
  }
@@ -1253,6 +1264,7 @@ function create(options){
    if(!/^[A-Za-z0-9_-]+$/.test(instrument.masterMemberId))return unavailable('INVALID_IDENTITY');
    const long=selection.range==='MAX'||selection.grain==='weekly';
    const path='/quant/data/market/discover-series'+(long?'-long':'')+'/'+instrument.masterMemberId+'.json';
+   if(!long&&!(await hasDailySeries(ticker)))return unavailable('SOURCE_MISSING');
    const source=await load(path),today=new Date().toISOString().slice(0,10);
    if(source.schemaVersion!==(long?'discover-series-long-1.0.0':'discover-series-1.1.0')||source.securityId!==instrument.masterMemberId||source.ticker!==ticker||source.dataMode!=='real'||source.source!=='tiingo'||source.provider!=='tiingo'||source.status!=='CALCULATED'||source.priceSeriesType!=='SPLIT_ADJUSTED'||source.grain!==(long?'weekly':'daily')||!source.publishBasis||!validDate(source.asOf)||source.asOf>today||!source.currency||!Array.isArray(source.points))return unavailable('INVALID_HISTORY_CONTRACT');
    let previous='';
