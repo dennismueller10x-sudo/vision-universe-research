@@ -192,6 +192,65 @@ class EvidenceStageTests(unittest.TestCase):
         self.assertEqual(payload["schema"], rev.SCHEMA)
 
 
+class CachedClient(FakeClient):
+    """Wie EDGAR mit Cache: eine schon geholte URL kostet keine Anfrage."""
+
+    def __init__(self, cache):
+        super().__init__()
+        self.cache = cache
+
+    def get_bytes(self, url, expected_statuses=()):
+        if url in self.cache:
+            self.stats["cache_hits"] += 1
+            return self.cache[url]
+        payload = super().get_bytes(url, expected_statuses)
+        self.cache[url] = payload
+        return payload
+
+
+class EvidenceBudgetTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.out = self.tmp / "evidence.json"
+        self.names = self.tmp / "names.json"
+        self.names.write_text("{}")
+
+    def build(self, client, max_filings):
+        return rev.build_store(sources("ESCA"), self.out, client, REGISTRY, "2026-10-05", COMMIT, self.names,
+                               max_filings=max_filings, log=lambda *_: None)
+
+    def test_a_partial_run_that_is_not_committed_still_progresses_through_the_cache(self):
+        """Red Team M5: der partielle Store wird nicht committet, nur der HTTP-Cache bleibt.
+        Aus dem Cache entschiedene Einreichungen verbrauchen kein Budget - der naechste Lauf kommt weiter."""
+        cache = {}
+        payload, run = self.build(CachedClient(cache), max_filings=4)
+        self.assertEqual(len(payload["build"]["pending"]), 6)
+        self.out.unlink()                                   # nicht committet
+        payload, run = self.build(CachedClient(cache), max_filings=4)
+        self.assertEqual(run["decidedFromNetwork"], 4)
+        self.assertEqual(len(payload["build"]["pending"]), 2)
+        self.out.unlink()
+        payload, run = self.build(CachedClient(cache), max_filings=4)
+        self.assertTrue(payload["build"]["complete"])
+
+    def test_unknown_previous_store_is_not_carried_over(self):
+        """Red Team M6: Entscheidungen werden nur aus bekannten Stores uebernommen, sonst neu entschieden."""
+        cf = json.loads((FIXTURES / "ESCA.json").read_text())
+        required = sorted(rev.required_accessions(cf["cik"], cf, REGISTRY))
+        self.out.write_text(json.dumps({"schema": "vu-sec-revenue-statement-evidence-9.9.9", "version": "9",
+                                        "decisions": {a: "OTHER:SalesRevenueNet" for a in required}}))
+        client = FakeClient()
+        payload, run = self.build(client, max_filings=None)
+        self.assertEqual(run["decidedThisRun"], 10)
+        self.assertEqual(set(payload["decisions"].values()), {"TOTAL"})
+        self.assertFalse(payload["build"]["carriedFrom"]["accepted"])
+        stale = json.loads(self.out.read_text())
+        stale["build"]["builder"] = "revenue-evidence-builder-0.1.0"
+        self.out.write_text(json.dumps(stale))
+        payload, run = self.build(FakeClient(), max_filings=None)
+        self.assertEqual(run["decidedThisRun"], 10, "anderer Builder: neu entscheiden")
+
+
 class EvidenceWorkflowTests(unittest.TestCase):
     """Die Workflow-Reihenfolge ist der DAG: Belege vor dem Bundle, Pruefung im Bundle-Lauf."""
 

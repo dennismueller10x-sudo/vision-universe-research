@@ -241,6 +241,24 @@ def required_fingerprint(required):
     return _sha256("\n".join(sorted(required)))
 
 
+# Fruehere Stores, deren Entscheidungen weiter gelten: der Audit-Store, der 1.0.0/1.1.0
+# mit derselben Entscheidungslogik erzeugte, und Stores dieses Builders.
+LEGACY_SCHEMAS = {"vu-sec-revenue-statement-evidence-1.0.0": ("1.0.0", "1.1.0")}
+
+
+def carried_decisions(previous):
+    """Entscheidungen, die ohne erneutes Lesen der Einreichung weiter gelten - sonst keine."""
+    schema, version = previous.get("schema"), previous.get("version")
+    if schema == SCHEMA and (previous.get("build") or {}).get("builder") == BUILDER_VERSION:
+        source = "SAME_BUILDER"
+    elif schema in LEGACY_SCHEMAS and version in LEGACY_SCHEMAS[schema]:
+        source = "AUDIT_STORE"
+    else:
+        return {"decisions": {}, "from": {"schema": schema, "version": version, "accepted": False}}
+    return {"decisions": dict(previous.get("decisions") or {}),
+            "from": {"schema": schema, "version": version, "accepted": True, "source": source}}
+
+
 def build_store(sources, out_path, client, registry, as_of, build_commit, names_file,
                 max_filings=None, log=print):
     """Decide every required filing that has no decision yet; write atomically.
@@ -249,8 +267,9 @@ def build_store(sources, out_path, client, registry, as_of, build_commit, names_
     Returns (written payload, run counters). complete is True only if every required filing
     has a decision and nothing is pending."""
     previous = load_store(out_path)
-    decisions = dict(previous.get("decisions") or {})
-    bases = dict(previous.get("bases") or {})
+    carried = carried_decisions(previous)
+    decisions = dict(carried["decisions"])
+    bases = {a: b for a, b in (previous.get("bases") or {}).items() if a in decisions}
     required = {}
     issuers = scanned = 0
     for cik, payload in sources:
@@ -282,26 +301,33 @@ def build_store(sources, out_path, client, registry, as_of, build_commit, names_
                       "universe": {"namesSha256": universe_fingerprint(names_file), "issuers": issuers,
                                    "issuersWithConflicts": scanned},
                       "required": len(required), "requiredSha256": required_fingerprint(required),
+                      "carriedFrom": carried["from"],
                       "complete": complete, "pending": dict(sorted(pending.items()))},
             "summary": counts,
             "decisions": dict(sorted(decisions.items())),
             "bases": dict(sorted(bases.items())),
         }
 
+    networked = 0   # Budget = Einreichungen, die SEC-Anfragen ausloesten; aus dem Cache entschiedene zaehlen nicht
     for k, accession in enumerate(todo):
-        if max_filings is not None and fetched >= max_filings:
+        if max_filings is not None and networked >= max_filings:
             pending[accession] = PENDING_BUDGET
             continue
+        before = client.stats.get("requests", 0) if client else 0
         try:
             result = decide(Filing(required[accession], accession, client))
         except TransientFetch as exc:
             pending[accession] = f"{PENDING_TRANSIENT}: {str(exc)[:160]}"
+            if client and client.stats.get("requests", 0) > before:
+                networked += 1
             continue
         except (FilingUnreadable, ET.ParseError, KeyError, ValueError) as exc:
             result = {"decision": "AMBIGUOUS", "basis": "FILING_NOT_READABLE", "error": str(exc)[:160]}
         decisions[accession] = result["decision"]
         bases[accession] = result["basis"]
         fetched += 1
+        if client and client.stats.get("requests", 0) > before:
+            networked += 1
         if fetched % CHECKPOINT_EVERY == 0:
             # Resumable, and never a store that looks complete.
             write_atomic(out_path, snapshot(False))
@@ -309,7 +335,7 @@ def build_store(sources, out_path, client, registry, as_of, build_commit, names_
     payload = snapshot(not pending and all(a in decisions for a in required))
     write_atomic(out_path, payload)
     # Run counters are reported, not stored: the same inputs give the same file.
-    run = {"decidedThisRun": fetched, "pending": len(pending), "requests": client.stats.get("requests", 0) if client else 0,
+    run = {"decidedThisRun": fetched, "decidedFromNetwork": networked, "pending": len(pending), "requests": client.stats.get("requests", 0) if client else 0,
            "cacheHits": client.stats.get("cache_hits", 0) if client else 0}
     log(f"  evidence: complete={payload['build']['complete']} {json.dumps(run)} {json.dumps(payload['summary'], sort_keys=True)}")
     return payload, run
