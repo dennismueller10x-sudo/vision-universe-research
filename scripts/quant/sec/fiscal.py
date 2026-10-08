@@ -589,13 +589,15 @@ class FiscalCalendar:
         if kind == "9M":
             return fiscal_year, "YTD3", kind
         if kind in ("Q", "instant"):
-            index = self.quarter_index(end)
-            if index is None:
-                return fiscal_year, None, kind
             if kind == "instant" and self.period_end_is_fy_end(end):
                 # A balance sheet dated on the fiscal year end is the FY balance
                 # sheet and the Q4 balance sheet; both keys are emitted upstream.
+                # Checked before the quarter slot: a transition year (1.20.0) has
+                # no quarter slots but still a year-end balance sheet.
                 return fiscal_year, "FY", kind
+            index = self.quarter_index(end)
+            if index is None:
+                return fiscal_year, None, kind
             return fiscal_year, f"Q{index}", kind
         return fiscal_year, None, kind
 

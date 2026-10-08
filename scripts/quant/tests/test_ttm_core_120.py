@@ -90,6 +90,15 @@ class FiscalYearChangeTests(unittest.TestCase):
         self.assertEqual(calendar.quarter_index("2016-06-30"), 2)
 
 
+class TransitionYearBalanceSheetTests(unittest.TestCase):
+    def test_year_end_balance_sheet_of_a_transition_year_stays_fy(self):
+        """Ein Uebergangsjahr hat keine Quartalsslots, aber eine Jahresbilanz (Multi-Fineline 2015-12-31)."""
+        calendar, resolver = build("MFLX")
+        fact = resolver.annual("total_assets", calendar.fiscal_year_for("2015-12-31"), "2016-06-01")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertEqual(str(fact.period_end)[:10], "2015-12-31")
+
+
 class SameDayConflictTests(unittest.TestCase):
     """F-TTM-3: Landmark Apartment Trust reichte am 2013-03-20 das 10-K (Q3 2012 EPS -1,03) und ein 10-Q/A
     (Q3 2012 EPS +1,03) ein. Ohne Uhrzeit ist nicht bekannt, welche Fassung zuletzt galt; 1.19.0 nahm per

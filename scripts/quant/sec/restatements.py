@@ -39,6 +39,10 @@ FLAG_CONFLICTING_FACTS = "CONFLICTING_FACTS"
 # Values differing by less than this relative amount are treated as the same
 # number reported twice, not as a restatement (rounding across filings).
 RESTATEMENT_RELATIVE_TOLERANCE = 1e-9
+# 1.20.0 Same-Day-Policy: zwei Fassungen zum selben Zeitpunkt widersprechen sich, wenn
+# ihre Werte um mehr als eine Rundung auseinanderliegen (relativ 1e-4: 246.634 vs. 246.635
+# ist dieselbe Angabe; ein EPS mit zwei Nachkommastellen muss gleich sein).
+SAME_DAY_CONFLICT_TOLERANCE = 1e-4
 
 
 def to_instant(value, end_of_day=False):
@@ -181,7 +185,7 @@ class FactTimeline:
         if len(candidates) > 1 and self._values_differ(candidates):
             flags.append(FLAG_RESTATED)
         peers = [obs for obs in candidates if obs.available_instant == chosen.available_instant]
-        if len(peers) > 1 and self._values_differ(peers):
+        if len(peers) > 1 and self._values_differ(peers, SAME_DAY_CONFLICT_TOLERANCE):
             # 1.20.0 (F-TTM-3): two filings available at the same instant disagree.
             # Without an acceptance time that orders them, which one was the last
             # word is unknown - form, accession or file order must not decide
@@ -198,13 +202,13 @@ class FactTimeline:
         )
 
     @staticmethod
-    def _values_differ(observations):
+    def _values_differ(observations, tolerance=RESTATEMENT_RELATIVE_TOLERANCE):
         values = [obs.value for obs in observations if obs.value is not None]
         if len(values) < 2:
             return False
         low, high = min(values), max(values)
         scale = max(abs(low), abs(high), 1.0)
-        return (high - low) / scale > RESTATEMENT_RELATIVE_TOLERANCE
+        return (high - low) / scale > tolerance
 
     def is_restated(self):
         return self._values_differ(self.observations)

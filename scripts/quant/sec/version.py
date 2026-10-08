@@ -201,7 +201,10 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          dem abgezogenen Kumulwert. (3) F-TTM-3: zwei Fassungen zum selben
 #          Zeitpunkt mit verschiedenen Werten sind AMBIGUOUS_SAME_DAY (keine
 #          Entscheidung per Formular/Accession) bis zur naechsten eindeutigen
-#          Fassung (Landmark Apartment Trust 2013-03-20: 10-K vs. 10-Q/A).
+#          Fassung (Landmark Apartment Trust 2013-03-20: 10-K vs. 10-Q/A);
+#          eine Rundungsdifferenz (relativ < 1e-4) ist kein Widerspruch. Eine
+#          Jahresbilanz am Ende eines Uebergangsjahres bleibt FY (vor dem
+#          Freeze nachgezogen: die Slot-Regel liess sie zuerst fallen).
 NORMALIZATION_LOGIC_VERSION = "1.20.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -234,7 +237,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "9a214020915219784d33c412d4a7552b3f6d9337e51e6ec9c787615d603dd88c"
+    "a5fd91c88a05ca22e5d2fac85d21a1ee0e384ebb07803706a4b48fdd1ed52ec7"
 )
 
 

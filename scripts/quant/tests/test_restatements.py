@@ -146,6 +146,12 @@ class ConflictTests(unittest.TestCase):
         self.assertIsNone(timeline.resolve(as_of=date(2020, 2, 13)))
         self.assertEqual(timeline.resolve(as_of=date(2020, 2, 14)).value, 1000.0)
 
+    def test_a_rounding_difference_is_not_a_conflict(self):
+        timeline = FactTimeline("income_tax_expense", 2024, "FY")
+        timeline.add(observation(-246634.0, "2025-03-31", accession="a-1", form="10-K"))
+        timeline.add(observation(-246635.0, "2025-03-31", accession="a-2", form="10-K/A"))
+        self.assertIsNotNone(timeline.resolve(as_of=date(2025, 4, 1)))
+
     def test_identical_values_on_the_same_day_are_not_a_conflict(self):
         timeline = FactTimeline("revenue", 2018, "FY")
         timeline.add(observation(1000.0, "2019-02-15", accession="a-1", form="10-K"))
