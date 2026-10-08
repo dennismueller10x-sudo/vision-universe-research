@@ -2,9 +2,9 @@
   "schema": 1,
   "status": "PASS",
   "acceptedGeneration": "21cc611a43b06f488418b58a",
-  "sourceGeneration": "7be49e388790501b2fcd487d",
-  "consumerGeneration": "1fc5d519f433463f4c099202",
-  "auditedAt": "2026-10-08T13:31:20.021501+00:00",
+  "sourceGeneration": "ea74c9b55f3953dc6d772629",
+  "consumerGeneration": "217cde9b4949deb7a4d5be84",
+  "auditedAt": "2026-10-08T13:45:55.129615+00:00",
   "issuers": 45,
   "stocks": 46,
   "productionAssetHashesVerified": 0,
@@ -18,7 +18,7 @@
     },
     "DATA_EXISTS_BUT_IS_FILTERED": {
       "issuers": 8,
-      "records": 26
+      "records": 24
     },
     "DATA_EXISTS_BUT_IS_NOT_EXPORTED": {
       "issuers": 10,
@@ -1164,19 +1164,19 @@
       "ledgerNews": 11,
       "latestLedgerNews": "2026-10-07T12:30:09Z",
       "engineExportNews": 11,
-      "policyAllowedNews": 6,
-      "consumerNews": 6,
+      "policyAllowedNews": 8,
+      "consumerNews": 8,
       "productionNews": null,
       "newsFreshness": {
         "7_DAYS": 1,
         "30_DAYS": 1,
-        "90_DAYS": 4
+        "90_DAYS": 6
       },
       "ledgerEventTypes": {
         "EARNINGS_ESTIMATED": 1
       },
       "acceptedModules": {
-        "news": 6,
+        "news": 8,
         "earnings": 0,
         "events": 1,
         "calls": 0,
@@ -1191,9 +1191,9 @@
         {
           "class": "DATA_EXISTS_BUT_IS_FILTERED",
           "stage": "SOURCE_USAGE",
-          "count": 5,
+          "count": 3,
           "reasons": {
-            "NO_VERIFIED_OWNED_HOST": 5
+            "INSECURE_HTTP_LINK_WITHOUT_EXACT_HTTPS_RECONFIRMATION": 3
           },
           "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
         }

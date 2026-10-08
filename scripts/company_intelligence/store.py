@@ -167,7 +167,17 @@ class Store:
                         refs[key] = p
                 merged['provenanceTruncated'] = old.get('provenanceTruncated', False) or len(refs) > 32
                 merged['provenance'] = sorted(refs.values(), key=lambda p: (PRIORITY.get(p['discoverySource'], 9), p['sourceId'], p['originalUrl']))[:32]
-                merged['deduplicationEvidence'] = sorted(set(old.get('deduplicationEvidence', []) + [reason]))
+                evidence = old.get('deduplicationEvidence', []) + [reason]
+                # A fresh, exact owned-source sighting may repair an old insecure
+                # primary URL. Never infer another host/path or rewrite identity.
+                old_url, new_url = old.get('canonicalUrl',''), item.get('canonicalUrl','')
+                explicit_owned = any('VERIFIED_FIRST_PARTY_SOURCE' in p.get('match',{}).get('evidence',[]) and p.get('originalUrl') == new_url for p in item['provenance'])
+                if (old_url.startswith('http://') and new_url == 'https://' + old_url[7:]
+                        and normalize(old['headline']) == normalize(item['headline'])
+                        and item_time(old) == item_time(item) and explicit_owned):
+                    merged['canonicalUrl'] = new_url
+                    evidence.append('EXACT_OWNED_HTTPS_SOURCE_LINK_RECONFIRMED')
+                merged['deduplicationEvidence'] = sorted(set(evidence))
                 from .model import classify
                 merged.update(classify(merged['headline']))
                 self.db.execute('INSERT OR REPLACE INTO items VALUES(?,?,?,?)',

@@ -62,7 +62,7 @@ def audit(state, raw, consumer, out, origin=None):
             if len(ledger_news)>len(value['news']):
                 losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'LEDGER_TO_ENGINE_EXPORT','count':len(ledger_news)-len(value['news']),'reason':'ENGINE_SELECTION_OR_DEDUPLICATION; investigate before treating as defect'})
             allowed_ids = {n['newsId'] for n in filtered['news']}
-            excluded_reasons = Counter('UNAPPROVED_PUBLISHER' if publisher(n.get('canonicalUrl') or n.get('sourceUrl')) else 'NO_VERIFIED_OWNED_HOST' for n in value['news'] if n['newsId'] not in allowed_ids)
+            excluded_reasons = Counter('UNAPPROVED_PUBLISHER' if publisher(n.get('canonicalUrl') or n.get('sourceUrl')) else 'INSECURE_HTTP_LINK_WITHOUT_EXACT_HTTPS_RECONFIRMATION' if str(n.get('canonicalUrl') or n.get('sourceUrl') or '').startswith('http://') else 'NO_VERIFIED_OWNED_HOST' for n in value['news'] if n['newsId'] not in allowed_ids)
             if policy['excluded']['news']:
                 losses.append({'class':'DATA_EXISTS_BUT_IS_FILTERED','stage':'SOURCE_USAGE','count':policy['excluded']['news'],'reasons':dict(excluded_reasons),'reason':'SOURCE_POLICY_EXCLUSION; not a transport defect'})
             kept_ids = {n['newsId'] for n in final['news']}

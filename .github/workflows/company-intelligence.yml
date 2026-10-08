@@ -179,6 +179,18 @@ jobs:
         run: |
           namespace=$(python3 -c 'import json; print(json.load(open("'"$RUNNER_TEMP"'/production-restore.json"))["contentAugmentation"]["namespace"])')
           case "$namespace" in content-top46-*) ;; *) exit 1 ;; esac
+          python3 - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from company_intelligence.store import atomic_json
+          root=Path(os.environ['RUNNER_TEMP'])
+          content=json.loads((root/'production-restore.json').read_text())['contentAugmentation']
+          path=root/'accepted-state/latest-run.json'
+          prior=json.loads(path.read_text())
+          assert prior['export']['generation']=='21cc611a43b06f488418b58a'
+          atomic_json(path,{'generatedAt':content['asOf'],'export':content['export'],'contentReviewHash':content['reviewHash'],'basis':'FULL_ACCEPTED_STATE_PLUS_REVIEWED_TOP46_CONTENT','acceptedBaselineRun':prior})
+          PY
           python3 scripts/company_intelligence/checkpoint.py pack --state "$RUNNER_TEMP/accepted-state" --snapshot "$RUNNER_TEMP/content-state.tar.gz" > "$RUNNER_TEMP/content-backup.json"
           node scripts/company_intelligence/sync-state.mjs push --namespace "$namespace" --file "$RUNNER_TEMP/content-state.tar.gz" --initialize > "$RUNNER_TEMP/content-remote-preservation.json"
           node scripts/company_intelligence/sync-state.mjs pull --namespace "$namespace" --file "$RUNNER_TEMP/content-fresh.tar.gz" > "$RUNNER_TEMP/content-remote-readback.json"
@@ -192,6 +204,15 @@ jobs:
           assert actual['status']=='RESTORED' and actual['sha256']==expected['sha256'] and actual['bytes']==expected['bytes']
           PY
           python3 scripts/company_intelligence/checkpoint.py restore --snapshot "$RUNNER_TEMP/content-fresh.tar.gz" --state "$RUNNER_TEMP/content-genuinely-fresh-state" --sha256 "$digest"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          content=json.loads((root/'production-restore.json').read_text())['contentAugmentation']
+          restored=json.loads((root/'content-genuinely-fresh-state/latest-run.json').read_text())
+          assert restored['export']==content['export'] and restored['contentReviewHash']==content['reviewHash'] and restored['generatedAt']==content['asOf']
+          assert restored['acceptedBaselineRun']['export']['generation']=='21cc611a43b06f488418b58a'
+          PY
           cp "$RUNNER_TEMP/production-restore.json" "$RUNNER_TEMP/content-fresh-restore-evidence.json"
           python3 scripts/company_intelligence/verify_consumer_handoff.py --state "$RUNNER_TEMP/content-genuinely-fresh-state" --consumer "$RUNNER_TEMP/production-content-fresh-consumer" --evidence "$RUNNER_TEMP/content-fresh-restore-evidence.json"
           # Read back the immutable baseline again; this release never writes it.

@@ -23,6 +23,23 @@ class TargetedContentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             store=Store(Path(d)/'state.sqlite');self.assertEqual(store.ingest(item),'NEW');self.assertEqual(store.ingest(item),'DUPLICATE');self.assertEqual(store.db.execute('select count(*) from items').fetchone()[0],1);store.close()
 
+    def test_exact_owned_https_reconfirmation_repairs_duplicate_primary_but_not_unverified_sighting(self):
+        match={'companyId':CID,'confidence':1,'evidence':['VERIFIED_FIRST_PARTY_SOURCE']}
+        url='https://investors.palantir.com/news/exact'
+        raw={'headline':'Palantir announces partnership','url':url,'publishedAt':'2026-10-01T12:00:00Z'}
+        old=make_item({**raw,'url':url.replace('https://','http://')},SOURCE,match,NOW)
+        fresh=make_item(raw,SOURCE,match,NOW)
+        with tempfile.TemporaryDirectory() as d:
+            store=Store(Path(d)/'state.sqlite');store.ingest(old)
+            unverified=make_item(raw,SOURCE,{'companyId':CID,'confidence':1},NOW)
+            self.assertEqual(store.ingest(unverified),'DUPLICATE')
+            self.assertEqual(json.loads(store.db.execute('select payload from items').fetchone()[0])['canonicalUrl'],old['canonicalUrl'])
+            self.assertEqual(store.ingest(fresh),'DUPLICATE')
+            merged=json.loads(store.db.execute('select payload from items').fetchone()[0]);store.close()
+            self.assertEqual(merged['newsId'],old['newsId']);self.assertEqual(merged['canonicalUrl'],url)
+            self.assertIn('EXACT_OWNED_HTTPS_SOURCE_LINK_RECONFIRMED',merged['deduplicationEvidence'])
+            self.assertEqual({r['originalUrl'] for r in merged['provenance']},{url,old['canonicalUrl']})
+
     def test_foreign_links_unverified_ownership_and_invalid_service_dates_fail_closed(self):
         data={'GetPressReleaseListResult':[{'Headline':'Wrong actor','PressReleaseDate':'10/01/2026 18:00:00','LinkToDetailPage':'https://www.businesswire.com/news/1'},{'Headline':'Invalid date','PressReleaseDate':'02/30/2026 10:00:00','LinkToDetailPage':'/news/2'}]}
         self.assertEqual(parse(json.dumps(data).encode(),SOURCE),[])
