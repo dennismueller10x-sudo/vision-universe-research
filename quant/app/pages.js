@@ -235,12 +235,13 @@
     var productIcon = el("span", { class: "vu-product-icon vu-product-icon--hero", "aria-hidden": "true" });
     var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), use = document.createElementNS(ns, "use");
     svg.setAttribute("viewBox", "0 0 24 24"); use.setAttribute("href", "/assets/product-icons.svg#quant"); svg.appendChild(use); productIcon.appendChild(svg);
-    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero" }, [
-      X.globe(),
+    var scene = X.globe(); scene.setAttribute("class", "q-globe vu-hero-scene");
+    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero vu-hero-fidelity", "data-product": "quant" }, [
+      scene,
       productIcon,
-      el("p", { class: "q-kicker vu-product-eyebrow", text: "Vision Universe Quant" }),
-      el("h1", { class: "q-claim vu-product-title", text: HERO_TITLE }),
-      el("p", { class: "q-hero-lead qx-lead vu-product-lead", text: CLAIM }),
+      el("p", { class: "q-product-name vu-hero-name", text: "Quant" }),
+      el("h1", { class: "q-claim vu-product-title vu-hero-headline", text: HERO_TITLE }),
+      el("p", { class: "q-hero-lead qx-lead vu-product-lead vu-hero-description", text: CLAIM }),
       el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
         X.icon("search"), el("span", { text: "Aktie suchen, z. B. Apple oder NVDA …" }), el("i", { "aria-hidden": "true", text: "→" })]),
       el("p", { class: "q-intro-note", text: CLAIM_LEAD }),

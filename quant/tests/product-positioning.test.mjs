@@ -23,7 +23,9 @@ test("Der vollständige Claim bleibt erhalten, die Hero-Überschrift ist kurz", 
   assert.ok(title.split(/\s+/).length <= 10, "Hero-Überschrift zu lang");
   assert.match(title, /Jeden Tag/);
   assert.match(title, /verändert/);
-  assert.match(pages, /class: "q-hero-lead qx-lead vu-product-lead", text: CLAIM/, "der tägliche Nutzen und Marktvergleich fehlen im Hero");
+  const lead = pages.match(/el\("p", \{ class: "([^"]+)", text: CLAIM \}\)/);
+  assert.ok(lead, "der tägliche Nutzen und Marktvergleich fehlen im Hero");
+  for (const cls of ["q-hero-lead", "qx-lead", "vu-product-lead", "vu-hero-description"]) assert.ok(lead[1].split(/\s+/).includes(cls), "Hero-Beschreibung ohne " + cls);
   assert.match(pages, /class: "q-intro-note", text: CLAIM_LEAD/, "die fachliche Beschreibung fehlt im Hero");
   /* Kein Fachwort, keine Note, kein Gewinnversprechen im ersten Satz. */
   for (const w of ["Score", "Faktor", "Quantitative", "Edge", "Base Rate", "Backtest", "Rendite", "Gewinn", "kaufen"]) assert.ok(!claim.includes(w), "Claim enthaelt " + w);
@@ -44,7 +46,10 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
 test("Home: erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, dann Werkzeuge", () => {
   const home = slice(pages, "async function home(", "/* ============================================================ SCREENER");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
-  const hero = at('el("h1", { class: "q-claim vu-product-title", text: HERO_TITLE })'), search = at("onclick: ctx.openSearch"), promises = at("promiseList()");
+  const heading = home.match(/el\("h1", \{ class: "([^"]+)", text: HERO_TITLE \}\)/);
+  assert.ok(heading, "Hero-Überschrift fehlt auf Home");
+  for (const cls of ["q-claim", "vu-product-title", "vu-hero-headline"]) assert.ok(heading[1].split(/\s+/).includes(cls), "Hero-Überschrift ohne " + cls);
+  const hero = at(heading[0]), search = at("onclick: ctx.openSearch"), promises = at("promiseList()");
   const today = at('X.world("Heute bei Quant"'), mine = at('X.world("Deine Aktien"'), rails = at("page.append(rails)");
   const proof = at('X.world("Warum Quant mehr ist als ein Screener"'), tools = at('X.section("Selbst suchen"'), trust = at('"Warum kann ich dem vertrauen?"');
   assert.ok(hero < search && search < promises && promises < today, "der erste Bildschirm ist nicht Claim → Suche → Versprechen");
