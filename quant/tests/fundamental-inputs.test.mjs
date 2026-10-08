@@ -4,6 +4,9 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const Inputs = require("../engines/fundamental-inputs.js");
+/* Current-view consumer (M-B5): every call declares LATEST_RESTATED. */
+const CURRENT = { view: Inputs.VIEW };
+const computeCurrent = (document, cutoff, marketCap) => Inputs.compute(document, cutoff, marketCap, CURRENT);
 
 /* A consumer document in the shape the SEC layer publishes: compact rows in
    ROW_COLUMNS order (fy, fp, end, value, filed, accession, derived). */
@@ -55,12 +58,12 @@ function doc(overrides = {}) {
 const CUTOFF = "2026-09-18";
 
 test("a document that is not the consumer contract produces nothing", () => {
-  assert.equal(Inputs.compute({ schema: "something-else" }, CUTOFF, 1000), null);
-  assert.equal(Inputs.compute(null, CUTOFF, 1000), null);
+  assert.equal(computeCurrent({ schema: "something-else" }, CUTOFF, 1000), null);
+  assert.equal(computeCurrent(null, CUTOFF, 1000), null);
 });
 
 test("nothing is visible before its filing date", () => {
-  const early = Inputs.compute(doc(), "2025-06-01", null);
+  const early = computeCurrent(doc(), "2025-06-01", null);
   /* Only the 2022, 2023 and 2024 filings had been made by then. */
   assert.equal(early.annualYears, 3);
   assert.equal(early.fundamentalsAsOf, "2024-12-31", "the TTM block filed in 2026 must be invisible");
@@ -82,7 +85,7 @@ test("ROIC is after-tax operating income over debt plus equity less cash", () =>
 });
 
 test("the ROIC components compute from a complete document", () => {
-  const model = Inputs.compute(doc(), CUTOFF, 10000);
+  const model = computeCurrent(doc(), CUTOFF, 10000);
   const rate = 60 / 280;
   assert.ok(Math.abs(model.raws.effectiveTaxRateTtm - rate) < 1e-12);
   assert.ok(Math.abs(model.raws.roicTtm - (300 * (1 - rate)) / 1400) < 1e-12);
@@ -95,20 +98,20 @@ test("without tax inputs there is no ROIC, and the rest of the factor survives",
   delete withoutTax.ttm.pretax_income;
   delete withoutTax.annual.income_tax_expense;
   delete withoutTax.annual.pretax_income;
-  const model = Inputs.compute(withoutTax, CUTOFF, 10000);
+  const model = computeCurrent(withoutTax, CUTOFF, 10000);
   assert.equal(model.raws.roicTtm, undefined);
   assert.equal(model.raws.roicMedian3y, undefined);
   assert.ok(Number.isFinite(model.raws.operatingMarginTtm), "the margin does not depend on the tax charge");
 });
 
 test("EBITDA yield exists only when the SEC layer actually derived an EBITDA", () => {
-  const without = Inputs.compute(doc(), CUTOFF, 10000);
+  const without = computeCurrent(doc(), CUTOFF, 10000);
   assert.equal(without.raws.ebitdaYield, undefined, "no EBITDA in the document means no yield, not the operating income");
 
   const withEbitda = doc();
   withEbitda.ttm.ebitda = ttm("2025-12-31", 380, "2026-02-15", { derived: true, inputs: ["operating_income", "depreciation_and_amortization"] });
   withEbitda.ttm.net_debt = { fp: "LATEST", end: "2025-12-31", v: 400, filed: "2026-02-15", unit: "USD", kind: "INSTANT" };
-  const model = Inputs.compute(withEbitda, CUTOFF, 10000);
+  const model = computeCurrent(withEbitda, CUTOFF, 10000);
   assert.ok(Math.abs(model.raws.ebitdaYield - 380 / 10400) < 1e-12, "enterprise value is market cap plus net debt");
 });
 
@@ -117,11 +120,11 @@ test("a derived value without a filing date is dated by its own inputs", () => {
   derived.annual.operating_cash_flow = derived.annual.operating_income;
   derived.annual.capital_expenditures = derived.annual.free_cash_flow;
   derived.ttm.free_cash_flow = { fp: "TTM", end: "2025-12-31", v: 130, unit: "USD", kind: "TTM", derived: true, inputs: ["operating_cash_flow", "capital_expenditures"] };
-  const model = Inputs.compute(derived, CUTOFF, 10000);
+  const model = computeCurrent(derived, CUTOFF, 10000);
   assert.ok(Number.isFinite(model.raws.fcfYield), "a derived TTM whose inputs are filed is usable");
 
   /* Before those inputs were filed it must stay invisible. */
-  const early = Inputs.compute(derived, "2024-06-01", 10000);
+  const early = computeCurrent(derived, "2024-06-01", 10000);
   assert.equal(early.raws.fcfYield, undefined);
 });
 
@@ -129,7 +132,7 @@ test("a balance-sheet instant from years earlier is dropped, not mixed into a cu
   const stale = doc();
   stale.ttm.total_debt = { fp: "Q2", end: "2021-06-30", v: 500, filed: "2021-08-01", unit: "USD", kind: "INSTANT" };
   stale.ttm.net_debt = { fp: "LATEST", end: "2021-06-30", v: 400, filed: "2021-08-01", unit: "USD", kind: "INSTANT" };
-  const model = Inputs.compute(stale, CUTOFF, 10000);
+  const model = computeCurrent(stale, CUTOFF, 10000);
   assert.equal(model.raws.netDebtToAssets, undefined, "a 2021 debt figure is not this year's leverage");
   assert.equal(model.raws.salesYield, undefined, "and it must not silently become an enterprise value");
   assert.ok(Number.isFinite(model.raws.earningsYield), "the price-based figures are unaffected");
@@ -140,14 +143,14 @@ test("margins pair operating income and revenue on the same closing date", () =>
   /* The operating income series reports one year on a different closing
      date. That year has no revenue to divide by, so it yields no margin. */
   shifted.annual.operating_income[2] = row(2024, "2024-11-30", 250, "2025-02-15");
-  const model = Inputs.compute(shifted, CUTOFF, 10000);
+  const model = computeCurrent(shifted, CUTOFF, 10000);
   /* Three paired years is below the minimum of four, so both stay absent
      rather than being computed across a mismatched period. */
   assert.equal(model.raws.operatingMarginStability, undefined);
   assert.equal(model.raws.operatingMarginExpansion3y, undefined);
 
   /* The counter-check: with all four years paired, both exist. */
-  const whole = Inputs.compute(doc(), CUTOFF, 10000);
+  const whole = computeCurrent(doc(), CUTOFF, 10000);
   assert.ok(Number.isFinite(whole.raws.operatingMarginStability));
   assert.ok(Math.abs(whole.raws.operatingMarginExpansion3y - (300 / 1500 - 180 / 900)) < 1e-12);
 });
@@ -155,7 +158,7 @@ test("margins pair operating income and revenue on the same closing date", () =>
 test("a compound growth rate across a sign change is absent, not a number", () => {
   const swing = doc();
   swing.annual.free_cash_flow[0] = row(2022, "2022-12-31", -80, "2023-02-15");
-  const model = Inputs.compute(swing, CUTOFF, null);
+  const model = computeCurrent(swing, CUTOFF, null);
   assert.equal(model.raws.fcfCagr3y, null);
   assert.ok(Number.isFinite(model.raws.revenueCagr3y), "the counter-check needs a series that does not cross zero");
 });
@@ -207,7 +210,7 @@ function bankDoc(overrides = {}) {
 }
 
 test("ein Abschluss ohne Umsatzzeile hat trotzdem eine Berichtsperiode", () => {
-  const model = Inputs.compute(bankDoc(), CUTOFF, null);
+  const model = computeCurrent(bankDoc(), CUTOFF, null);
   assert.equal(model.referenceEnd, "2026-06-30", "die juengste berichtete Periode, hier das Ergebnisfenster");
   assert.equal(model.fundamentalsAsOf, "2026-06-30", "vorher stand hier null, weil nur der Umsatz zaehlte");
   assert.equal(model.annualYears, 4, "vier Geschaeftsjahre - vorher 0, weil die Umsatzreihe leer ist");
@@ -225,13 +228,13 @@ test("der juengste Stichtag zaehlt, nicht der des Umsatzes", () => {
   delete gemischt.ttm.operating_cash_flow;
   delete gemischt.ttm.pretax_income;
   gemischt.ttm.shares_outstanding = { fp: "FY", end: "2015-12-31", v: 100, filed: "2016-02-15", unit: "shares", kind: "INSTANT" };
-  const model = Inputs.compute(gemischt, CUTOFF, null);
+  const model = computeCurrent(gemischt, CUTOFF, null);
   assert.equal(model.referenceEnd, "2025-12-31", "nicht 2013-03-31");
   assert.equal(model.shares, null, "ein Anteilsbestand von 2015 ist kein heutiger Boersenwert");
 });
 
 test("die Branchenkennzahlen entstehen aus denselben Abschluessen", () => {
-  const model = Inputs.compute(bankDoc(), CUTOFF, 4000);
+  const model = computeCurrent(bankDoc(), CUTOFF, 4000);
   const durchschnittlicheBilanz = (11000 + 10000) / 2;
   assert.ok(Math.abs(model.raws.roaTtm - 210 / durchschnittlicheBilanz) < 1e-12);
   assert.ok(Math.abs(model.raws.roeTtm - 210 / 1400) < 1e-12, "Eigenkapital ist der Bestand des letzten Abschlusses");
@@ -265,7 +268,7 @@ test("eine Ausschuettung wird nicht aus einem Vorzeichen gemacht", () => {
   const negativ = bankDoc();
   negativ.annual.dividends_paid = negativ.annual.dividends_paid.map((entry) =>
     row(entry[0], entry[2], -Math.abs(entry[3]), entry[4]));
-  const model = Inputs.compute(negativ, CUTOFF, 4000);
+  const model = computeCurrent(negativ, CUTOFF, 4000);
   assert.equal(model.raws.dividendCoverageByOcf, undefined, "ein negativer Betrag wird nicht in einen Betrag umgedeutet");
   assert.equal(model.raws.dividendYield, undefined);
 
@@ -273,7 +276,7 @@ test("eine Ausschuettung wird nicht aus einem Vorzeichen gemacht", () => {
      Periode endet, ist keine laufende Ausschuettung. */
   const alt = bankDoc();
   alt.annual.dividends_paid = [row(2021, "2021-12-31", 40, "2022-02-15")];
-  const veraltet = Inputs.compute(alt, CUTOFF, 4000);
+  const veraltet = computeCurrent(alt, CUTOFF, 4000);
   assert.equal(veraltet.raws.dividendYield, undefined);
   assert.equal(veraltet.raws.dividendCoverageByOcf, undefined);
 });
@@ -285,20 +288,20 @@ test("die Traegermarge braucht denselben Stichtag wie ihr Umsatz", () => {
     row(2025, "2025-12-31", 3400, "2026-02-15")
   ];
   traeger.ttm.revenue = ttm("2026-06-30", 3600, "2026-07-30");
-  const model = Inputs.compute(traeger, CUTOFF, 4000);
+  const model = computeCurrent(traeger, CUTOFF, 4000);
   assert.ok(Math.abs(model.raws.netMarginTtm - 210 / 3600) < 1e-12);
   assert.ok(Math.abs(model.raws.ocfMarginTtm - 250 / 3600) < 1e-12);
 
   /* Zwei Fenster mit verschiedenen Stichtagen sind keine Marge. */
   const versetzt = bankDoc();
   versetzt.ttm.revenue = ttm("2026-03-31", 3600, "2026-07-30");
-  const schief = Inputs.compute(versetzt, CUTOFF, 4000);
+  const schief = computeCurrent(versetzt, CUTOFF, 4000);
   assert.equal(schief.raws.netMarginTtm, undefined);
   assert.equal(schief.raws.ocfMarginTtm, undefined);
 });
 
 test("change inputs describe growth against the prior year, from the same series", () => {
-  const model = Inputs.compute(doc(), CUTOFF, null);
+  const model = computeCurrent(doc(), CUTOFF, null);
   assert.ok(Math.abs(model.change.revenueGrowthCurrent - (1500 / 1200 - 1)) < 1e-12);
   assert.ok(Math.abs(model.change.revenueGrowthPrior - (1200 / 1000 - 1)) < 1e-12);
   assert.ok(Math.abs(model.raws.revenueCagr3y - (Math.pow(1500 / 900, 1 / 3) - 1)) < 1e-12);
@@ -322,8 +325,8 @@ test("welche Rohwerte am Boersenwert haengen, sagt das Verhalten", () => {
   vollstaendig.ttm.ebitda = ttm("2026-06-30", 320, "2026-07-30");
   vollstaendig.ttm.net_debt = { fp: "LATEST", end: "2026-06-30", v: 400, filed: "2026-07-30", unit: "USD", kind: "INSTANT" };
 
-  const ohne = Inputs.compute(vollstaendig, CUTOFF, null);
-  const mit = Inputs.compute(vollstaendig, CUTOFF, 4000);
+  const ohne = computeCurrent(vollstaendig, CUTOFF, null);
+  const mit = computeCurrent(vollstaendig, CUTOFF, 4000);
   const nurMitBoersenwert = Object.keys(mit.raws)
     .filter((k) => Number.isFinite(mit.raws[k]) && !Number.isFinite(ohne.raws[k]))
     .sort();
@@ -338,4 +341,16 @@ test("welche Rohwerte am Boersenwert haengen, sagt das Verhalten", () => {
     assert.equal(Number.isFinite(ohne.raws[id]), false,
       id + " steht in der Liste, entsteht aber auch ohne Boersenwert");
   }
+});
+
+
+test("VIEW CONTRACT: compute() without a declared view is a hard failure", () => {
+  assert.throws(() => Inputs.compute(doc(), CUTOFF, 1000), /VIEW_CONTRACT/);
+  assert.throws(() => Inputs.compute(doc(), CUTOFF, 1000, { view: "AS_REPORTED_AT_TIME" }), /VIEW_CONTRACT/);
+});
+
+test("VIEW CONTRACT: a historical cutoff on the LATEST_RESTATED bundle is a hard failure", () => {
+  const latest = doc({ asOf: "2026-09-18" });
+  assert.ok(Inputs.compute(latest, "2026-09-10", 1000, CURRENT), "a few days of price/bundle lag stay current");
+  assert.throws(() => Inputs.compute(latest, "2025-06-01", 1000, CURRENT), /AS_REPORTED_AT_TIME/);
 });
