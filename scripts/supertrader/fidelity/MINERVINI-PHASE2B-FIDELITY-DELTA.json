@@ -1,0 +1,816 @@
+{
+  "schema": "vu-minervini-phase2b-fidelity-delta-1.0.0",
+  "createdAt": "2026-10-06",
+  "parent": {
+    "freeze": "scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE.json",
+    "commit": "b365b66e5",
+    "rulebookHash": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5",
+    "codeHash": "f20a12a7a26750daf6dd08732ccaab0dcb7f7bdd5eff6955d03e8f7398acbdcb",
+    "name": "minervini-adaptation-1.0.0"
+  },
+  "candidate": {
+    "rulebook": "scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION-1.1.0.json",
+    "version": "1.1.0"
+  },
+  "method": "Phase 2B (scripts/supertrader/replication/minervini-1.1/fidelity-2b.mjs): Belegstaerke nach Zugangsstufe der Quellen begrenzt (HIGH nur mit Primaerquelle im Volltext oder zwei eigenen Beitraegen); Regel-Fidelity = min(Umsetzungs-Fidelity, Belegstaerke); Bereich wie 2A, ohne filternde Regel NONE. Gleich angewendet auf die Neubewertung von 2A.",
+  "note": "phase2AAsFrozen = Werte des eingefrorenen 2A-Regelbuchs, in die zehn Berichtsbereiche umgelegt (Industrie in 2A: kein filternder Inhalt -> NONE). phase2ARescored = 2A nach der 2B-Methode. Der faire Vergleich ist phase2ARescored -> phase2B.",
+  "areas": [
+    {
+      "area": "trend",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "MEDIUM",
+      "phase2B": "MEDIUM",
+      "change": "unveraendert",
+      "reason": "Belegstaerke Trend Template auf MEDIUM begrenzt (Wortlaut nur ueber Buchnotizen; Modellwissen zaehlt nicht). Regeln unveraendert."
+    },
+    {
+      "area": "fundamental",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "Unveraendert; Schaetzungen/Ueberraschungen NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES, 13F keine Minervini-Regel. Margen: Regressionstests ergaenzt, Regel bleibt protokolliert."
+    },
+    {
+      "area": "vcp",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "Unveraendert; keine Primaerzahlen fuer VCP gefunden. Belegstaerke auf MEDIUM begrenzt."
+    },
+    {
+      "area": "entry",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "Unveraendert; Intraday-Volumen am Ausbruch mit Tagesdaten nicht bestaetigbar, keine bezahlte Intraday-Pipeline."
+    },
+    {
+      "area": "exit",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "Unveraendert; Einstand 3R nur Buchaera (CF-09), keine Zahl fuer Verkauf in die Staerke, kein Zeitstop."
+    },
+    {
+      "area": "sizing",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "MR-SIZ-02 Herkunft korrigiert (ORIGINAL_INTERPRETATION); Startstufe begrenzt die Positionsgroesse jetzt auf 5 % (MR-PF-02)."
+    },
+    {
+      "area": "portfolio",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "MR-PF-02 Startstufe 25 % / 5 % nach Primaerbeleg 2022 (Regel-Fidelity LOW -> MEDIUM gegen die Neubewertung); Bereich bleibt LOW wegen Margin (MR-PF-04, out of scope)."
+    },
+    {
+      "area": "risk",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW",
+      "change": "unveraendert",
+      "reason": "Unveraendert; MR-ERN-01 bleibt nicht reproduzierbar (kommender Termin fehlt), vergangene Termine jetzt point-in-time vorhanden."
+    },
+    {
+      "area": "market",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "MEDIUM",
+      "phase2B": "MEDIUM",
+      "change": "unveraendert",
+      "reason": "Unveraendert; kein Indexfilter in der Aera 2013-2022, Marktmodell 2023+ proprietaer (CF-10)."
+    },
+    {
+      "area": "industry",
+      "phase2AAsFrozen": "NONE",
+      "phase2ARescored": "NONE",
+      "phase2B": "NONE",
+      "change": "unveraendert",
+      "reason": "Daten point-in-time neu (SIC je Einreichung); Regel nur protokolliert, kein Gate (CF-12)."
+    }
+  ],
+  "gateAreas": {
+    "phase2AAsFrozen": {
+      "trend": "MEDIUM",
+      "entry": "LOW",
+      "fundamental": "LOW",
+      "exit": "LOW",
+      "sizing": "MEDIUM",
+      "portfolio": "LOW",
+      "marketRegime": "MEDIUM",
+      "risk": "MEDIUM"
+    },
+    "phase2ARescored": {
+      "trend": "MEDIUM",
+      "entry": "LOW",
+      "fundamental": "LOW",
+      "exit": "LOW",
+      "sizing": "LOW",
+      "portfolio": "LOW",
+      "marketRegime": "MEDIUM",
+      "risk": "LOW"
+    },
+    "phase2B": {
+      "trend": "MEDIUM",
+      "entry": "LOW",
+      "fundamental": "LOW",
+      "exit": "LOW",
+      "sizing": "LOW",
+      "portfolio": "LOW",
+      "marketRegime": "MEDIUM",
+      "risk": "LOW"
+    },
+    "overall": {
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    }
+  },
+  "rules": [
+    {
+      "ruleId": "MR-TT-01",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-02",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-03",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-04",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-05",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-06",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-07",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-TT-08",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-02",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-03",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-04",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-05",
+      "phase2A": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "LOW"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "LOW"
+      },
+      "phase2B": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "LOW"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-06",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-VCP-07",
+      "phase2A": {
+        "status": "RECORDED_ONLY",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "RECORDED_ONLY",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-ENT-01",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-SEPA-12",
+      "phase2A": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      },
+      "phase2B": {
+        "status": "RECORDED_ONLY",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "LOW"
+      }
+    },
+    {
+      "ruleId": "MR-RSK-01",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-RSK-02",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-EXIT-01",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-SIZ-02",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "HIGH"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-PF-01",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-PF-02",
+      "phase2A": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "HIGH",
+        "fidelity": "LOW"
+      },
+      "phase2B": {
+        "status": "IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "MEDIUM"
+      }
+    },
+    {
+      "ruleId": "MR-PF-04",
+      "phase2A": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "NONE"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      },
+      "phase2B": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      }
+    },
+    {
+      "ruleId": "MR-PF-05",
+      "phase2A": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "HIGH",
+        "fidelity": "NONE"
+      },
+      "phase2ARescored": {
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      },
+      "phase2B": {
+        "status": "NOT_IMPLEMENTED",
+        "sourceConfidence": "MEDIUM",
+        "fidelity": "NONE"
+      }
+    }
+  ],
+  "changes": [
+    {
+      "ruleId": "MR-PF-02",
+      "kind": "RULE_CHANGE",
+      "strategyAffecting": true,
+      "sourceConfidence": "HIGH (Grundsatz: SRC-INT-STOCKOPEDIA-2018 im Volltext); Zahlen MEDIUM (ein eigener Beitrag, Suchindex)",
+      "era": "LATER_PUBLIC (2022) innerhalb SEPA-PUBLISHED-2013-2022",
+      "performanceUsedForDecision": false,
+      "source": "SRC-X-2022-07-18-EXPOSURE (primaer, LATER_PUBLIC) konkretisiert SRC-NOTES-WHB-2014-05-04 (25-50 %) am unteren Ende",
+      "newData": "keine",
+      "old": "Startphase: Exposure-Obergrenze 50 %, je Position bis 25 % (size.maxPositionPct)",
+      "new": "Startphase: Exposure-Obergrenze 25 %, je Position hoechstens 5 % (pf.initialMaxPositionPct); nach einem Gewinn-Trade volle Stufe 100 % / 25 %, nach einem Verlust-Trade zurueck (Uebergang unveraendert VU_FORMALIZATION)",
+      "why": "Primaerbeleg fuer die Zahlen der Startphase; widerspricht der Buchspanne nicht (Konflikt CF-06). Keine Messung beteiligt."
+    },
+    {
+      "ruleId": "MR-SIZ-02",
+      "kind": "PROVENANCE_CORRECTION",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA / LATER_PUBLIC",
+      "performanceUsedForDecision": false,
+      "source": "Konflikt CF-04: 25 % nur als Rechenbeispiel (SRC-X-2018-04-24) und Interviewnotizen; 50 % nur in Drittzitaten",
+      "newData": "keine",
+      "old": "size.maxPositionPct 0,25 als ORIGINAL",
+      "new": "size.maxPositionPct 0,25 als ORIGINAL_INTERPRETATION; gilt in der vollen Stufe (Startstufe: MR-PF-02)",
+      "why": "Keine Primaerfundstelle nennt 25 % ausdruecklich als Obergrenze."
+    },
+    {
+      "ruleId": "MR-PF-01",
+      "kind": "PROVENANCE_CORRECTION",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA / LATER_PUBLIC",
+      "performanceUsedForDecision": false,
+      "source": "Konflikt CF-05: SRC-X-2020-10-20 nennt \"8, 12 or more\" (keine Obergrenze)",
+      "newData": "keine",
+      "old": "pf.maxPositions 12 als ORIGINAL_INTERPRETATION",
+      "new": "pf.maxPositions 12 als VU_FORMALIZATION",
+      "why": "'or more' ist keine Obergrenze; 12 ist eine VU-Wahl am oberen Ende der normalen Spanne."
+    },
+    {
+      "ruleId": "MR-SEPA-12",
+      "kind": "DATA_AND_STATUS",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM (Buchnotizen)",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
+      "source": "SRC-SEC-HEADER-SIC (Daten); Regel: SRC-NOTES-WHB-2014-05-04",
+      "newData": "SIC point-in-time je Einreichung (data-layer/sec/industry-sic.mjs, Speicher sec-events-sic-1)",
+      "old": "NOT_IMPLEMENTED, NOT_REPRODUCIBLE_WITH_CURRENT_DATA (nur heutige SIC)",
+      "new": "RECORDED_ONLY: Rang des Titels in seiner SIC-Gruppe (point-in-time) nach VU-RS und Gruppenstaerke werden je Setup protokolliert, filtern nicht",
+      "why": "Die Daten sind jetzt point-in-time vorhanden. Kein Filter: Minervinis Branchen (vermutlich IBD-Gruppen) sind nicht oeffentlich abbildbar, SIC ist eine andere Taxonomie, und '4-5 fuehrende Sektoren' ist ohne Sektordefinition. Ein Gate waere eine VU-Taxonomie-Entscheidung mit Wirkung auf die Auswahl (Konflikt CF-12)."
+    },
+    {
+      "ruleId": "MR-ERN-01",
+      "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "LATER_PUBLIC (2017) kanonisch; CURRENT_PUBLIC (2024) nicht uebernommen",
+      "performanceUsedForDecision": false,
+      "source": "SRC-SEC-8K-ITEM202; Regel SRC-X-2017-10-25 (kanonisch in Aera 2013-2022), SRC-X-2024-EARNINGS (CURRENT_PUBLIC, nicht uebernommen)",
+      "newData": "Ergebnis-Ereignisse 8-K Item 2.02 point-in-time (data-layer/sec/earnings-events.mjs)",
+      "old": "NOT_REPRODUCIBLE: Meldetermin fehlt",
+      "new": "weiter NOT_REPRODUCIBLE: vergangene Termine sind jetzt point-in-time vorhanden, die Regel braucht den NAECHSTEN Termin; den kennen SEC-Daten nicht. Keine Fortschreibung aus Vorjahresterminen (Proxy).",
+      "why": "Neue Daten aendern die Reproduzierbarkeit nicht; ehrlich ausgewiesen statt Proxy."
+    },
+    {
+      "ruleId": "MR-SEPA-07",
+      "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
+      "source": "Worker E/B: keine amtliche kostenlose Quelle fuer Erwartungen",
+      "newData": "keine",
+      "old": "NOT_REPRODUCIBLE",
+      "new": "NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES",
+      "why": "Konsens und Ueberraschung sind Anbieterdaten; kein Proxy (Kurssprung am Meldetag)."
+    },
+    {
+      "ruleId": "MR-SEPA-08",
+      "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
+      "source": "Worker E/B",
+      "newData": "keine",
+      "old": "NOT_REPRODUCIBLE",
+      "new": "NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES",
+      "why": "Schaetzungsrevisionen sind Anbieterdaten."
+    },
+    {
+      "ruleId": "MR-SEPA-11",
+      "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
+      "source": "Worker A/C: Minervini beschreibt institutionelle Nachfrage ueber Kurs-Volumen-Akkumulation; 13F-Zaehlung ist O'Neils \"I\" (CAN SLIM)",
+      "newData": "keine (13F bewusst nicht gebaut)",
+      "old": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA (13F dokumentiert)",
+      "new": "DISCRETIONARY_NOT_FORMALIZED; 13F nicht als Minervini-Regel",
+      "why": "13F-Daten erst ab 2013Q2 strukturiert, bekannt erst ab Einreichung (bis 45 Tage nach Quartalsende), CUSIP-Zuordnung lizenzpflichtig; vor allem keine Minervini-Fundstelle fuer eine 13F-Regel."
+    }
+  ],
+  "strategyDiff": {
+    "parameters": [
+      {
+        "name": "ind.fallbackLevel",
+        "ruleId": "MR-SEPA-12",
+        "old": null,
+        "new": {
+          "ruleId": "MR-SEPA-12",
+          "value": 2,
+          "provenance": "VU_FORMALIZATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "ind.groupLevel",
+        "ruleId": "MR-SEPA-12",
+        "old": null,
+        "new": {
+          "ruleId": "MR-SEPA-12",
+          "value": 3,
+          "provenance": "VU_FORMALIZATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "ind.minMembers",
+        "ruleId": "MR-SEPA-12",
+        "old": null,
+        "new": {
+          "ruleId": "MR-SEPA-12",
+          "value": 5,
+          "provenance": "VU_FORMALIZATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "ind.topN",
+        "ruleId": "MR-SEPA-12",
+        "old": null,
+        "new": {
+          "ruleId": "MR-SEPA-12",
+          "value": 3,
+          "provenance": "ORIGINAL_INTERPRETATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "pf.initialExposureCeiling",
+        "ruleId": "MR-PF-02",
+        "old": {
+          "ruleId": "MR-PF-02",
+          "value": 0.5,
+          "provenance": "VU_FORMALIZATION"
+        },
+        "new": {
+          "ruleId": "MR-PF-02",
+          "value": 0.25,
+          "provenance": "ORIGINAL_INTERPRETATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "pf.initialMaxPositionPct",
+        "ruleId": "MR-PF-02",
+        "old": null,
+        "new": {
+          "ruleId": "MR-PF-02",
+          "value": 0.05,
+          "provenance": "ORIGINAL_INTERPRETATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "pf.maxPositions",
+        "ruleId": "MR-PF-01",
+        "old": {
+          "ruleId": "MR-PF-01",
+          "value": 12,
+          "provenance": "ORIGINAL_INTERPRETATION"
+        },
+        "new": {
+          "ruleId": "MR-PF-01",
+          "value": 12,
+          "provenance": "VU_FORMALIZATION"
+        },
+        "documentedIn": true
+      },
+      {
+        "name": "size.maxPositionPct",
+        "ruleId": "MR-SIZ-02",
+        "old": {
+          "ruleId": "MR-SIZ-02",
+          "value": 0.25,
+          "provenance": "ORIGINAL"
+        },
+        "new": {
+          "ruleId": "MR-SIZ-02",
+          "value": 0.25,
+          "provenance": "ORIGINAL_INTERPRETATION"
+        },
+        "documentedIn": true
+      }
+    ],
+    "status": [
+      {
+        "ruleId": "MR-SEPA-11",
+        "old": {
+          "status": "NOT_IMPLEMENTED",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA"
+        },
+        "new": {
+          "status": "NOT_IMPLEMENTED",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "reproducibility": "DISCRETIONARY_NOT_FORMALIZED"
+        },
+        "documentedIn": true
+      },
+      {
+        "ruleId": "MR-SEPA-12",
+        "old": {
+          "status": "NOT_IMPLEMENTED",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA"
+        },
+        "new": {
+          "status": "RECORDED_ONLY",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "reproducibility": "RECORDED_OTHER_TAXONOMY"
+        },
+        "documentedIn": true
+      },
+      {
+        "ruleId": "MR-SIZ-02",
+        "old": {
+          "status": "IMPLEMENTED",
+          "provenance": "ORIGINAL",
+          "reproducibility": "REPRODUCIBLE"
+        },
+        "new": {
+          "status": "IMPLEMENTED",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "reproducibility": "REPRODUCIBLE"
+        },
+        "documentedIn": true
+      }
+    ],
+    "behaviourChangingParameters": [
+      "pf.initialExposureCeiling",
+      "pf.initialMaxPositionPct"
+    ],
+    "note": "Nur MR-PF-02 aendert Handelsverhalten; ind.* (MR-SEPA-12) wirkt nur im Protokoll. Leistung wurde fuer keine Entscheidung verwendet."
+  },
+  "hardQuestion": {
+    "question": "Hat Phase 2B die Fidelity tatsaechlich erhoeht?",
+    "improvedRulesVsRescored2A": [
+      "MR-SEPA-12",
+      "MR-PF-02"
+    ],
+    "areaGradesImproved": [],
+    "circularityNote": "MR-PF-02 hatte im eingefrorenen 2A die Umsetzungs-Fidelity MEDIUM. Die Neubewertung senkt sie mit der in 2B gefundenen Quelle auf LOW, 1.1 hebt sie wieder auf MEDIUM. Gegen 2A wie eingefroren ist MR-PF-02 also unveraendert MEDIUM; die Verbesserung besteht darin, dass die Umsetzung der Primaerquelle nicht mehr widerspricht. Der Sprung von 25 % auf 100 % nach einem Gewinn-Trade bleibt eine grobe VU-Formalisierung.",
+    "answer": "Ja, aber nur auf Regelebene: MR-PF-02 setzt jetzt die primaer belegten Zahlen der Startphase um (LOW -> MEDIUM) und MR-SEPA-12 wird point-in-time protokolliert statt fehlend. Keine Bereichsnote steigt (Portfolio bleibt wegen Margin LOW, Fundamental wegen Schaetzungen LOW). Die Gesamtnote bleibt LOW. Die 2A-Noten waren teils zu hoch (Belegstaerke), das zeigt die Neubewertung.",
+    "newVersionJustified": "ja: eine quellengetriebene Regelaenderung mit Wirkung (MR-PF-02), nicht nur zusaetzliche Daten"
+  }
+}

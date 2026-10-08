@@ -1,0 +1,103 @@
+{
+  "schema": "vu-minervini-source-conflicts-1.0.0",
+  "createdAt": "2026-10-06",
+  "phase": "2B",
+  "policy": "Bei Widerspruch wird nicht einfach eine Aussage gewaehlt: Quelle, Zeitpunkt, Kontext und moeglicher Grund werden festgehalten; die Entscheidung folgt der Belegstaerke (Primaer > Buch > Buchnotizen > Sekundaer) und der definierten Methodenaera. Sekundaerquellen heben nie auf HIGH. Modellwissen ist keine Quelle.",
+  "accessNote": "Primaerbeitraege auf X nur als Suchindex-Ausschnitt der Primaerseite (x.com, minervini.com, stockopedia.com, web.archive.org per Egress gesperrt). Buecher nicht im Volltext. Jahresangaben der Beitraege aus der Status-ID abgeleitet.",
+  "methodEra": {
+    "id": "SEPA-PUBLISHED-2013-2022",
+    "definition": "Die Engine bildet SEPA so ab, wie Minervini sie in 'Trade Like a Stock Market Wizard' (2013) und 'Think & Trade Like a Champion' (2017) veroeffentlicht und in eigenen oeffentlichen Beitraegen 2017-2022 konkretisiert hat.",
+    "eras": [
+      { "id": "BOOK_ERA", "period": "2013-2017", "sources": ["SRC-BOOK-TLSMW", "SRC-BOOK-TTLAC", "Buchnotizen 2014/2019"], "status": "Grundlage (Regelwortlaut, nur ueber Notizen zugaenglich)" },
+      { "id": "LATER_PUBLIC", "period": "2017-2022", "sources": ["eigene X-Beitraege 2017-2022", "Stockopedia 2018"], "status": "konkretisiert die Buchregeln (Risiko 1,25 %/2,5 %, Einstieg mit 25 % Exposure, 'sell half', Positionszahl, Quartalszahlen mit Polster)" },
+      { "id": "CURRENT_PUBLIC", "period": "2023-2026", "sources": ["eigene X-Beitraege 2023-2026", "Plattformtexte"], "status": "nicht uebernommen, soweit es neue oder ermessensbasierte Regeln sind: Quartalszahlen nach impliziter Volatilitaet (2024), proprietaeres SPY-Marktmodell (2023+), Ranglisten mit Schaetzungsrevisionen (2026). Bestaetigungen ohne Aenderung (VCP 'nothing has changed', 2023) werden als Konsistenzbeleg genutzt." }
+    ],
+    "consequence": "Keine Vermischung zu einem 'Universal-Minervini': Spaetere Regeln werden nur uebernommen, wenn sie eine Buchregel konkretisieren und ihr nicht widersprechen."
+  },
+  "conflicts": [
+    {
+      "id": "CF-01", "ruleId": "MR-TT-06",
+      "sourceA": { "ref": "Buchnotizen TLSMW 2013 (whatheheckaboom 2014)", "claim": "Kurs mindestens 30 % ueber dem 52-Wochen-Tief", "date": "2013", "context": "Trend Template" },
+      "sourceB": { "ref": "dieselben Notizen, Abschnitt Uebergang Stufe 1 -> 2; aeltere Fassungen", "claim": "25-30 %", "date": "2013 / frueher", "context": "Stufenuebergang, nicht das Template" },
+      "possibleReason": "verschiedene Kontexte (Template vs. Stufenbeschreibung) bzw. aeltere Fassung",
+      "decision": "30 % (Template-Wortlaut); unveraendert gegenueber Phase 2A", "confidence": "MEDIUM (nur Buchnotizen; Primaertext nicht zugaenglich)"
+    },
+    {
+      "id": "CF-02", "ruleId": "MR-VCP-01",
+      "sourceA": { "ref": "Buchnotizen tradershall 2019", "claim": "Basisdauer 3-45 Wochen", "date": "2013 (Buch)", "context": "VCP" },
+      "sourceB": { "ref": "Sekundaere Web-Zusammenfassungen 2026", "claim": "3-65 Wochen", "date": "unbekannt", "context": "VCP" },
+      "possibleReason": "Uebertragungsfehler einer Seite; Primaertext nicht zugaenglich",
+      "decision": "45 Wochen (abgerufene Notizen schlagen nicht abgerufene Zusammenfassung); unveraendert", "confidence": "LOW-MEDIUM"
+    },
+    {
+      "id": "CF-03", "ruleId": "MR-SEPA-01",
+      "sourceA": { "ref": "Buchnotizen TLSMW", "claim": "Marktfuehrer mindestens ca. 20 %, Superperformer 30-40 %+", "date": "2013", "context": "EPS-Wachstum" },
+      "sourceB": { "ref": "Sekundaere Listen / VU 3.0.0", "claim": "25 %", "date": "-", "context": "EPS-Wachstum (eher O'Neil-Konvention)" },
+      "possibleReason": "Vermischung mit CAN SLIM (O'Neil)",
+      "decision": "20 %; unveraendert", "confidence": "MEDIUM (Buchnotizen)"
+    },
+    {
+      "id": "CF-04", "ruleId": "MR-SIZ-02",
+      "sourceA": { "ref": "SRC-X-2018-04-24 (primaer)", "claim": "Beispiel: 25-%-Position nur mit Stop <= 5 %", "date": "2018-04-24", "context": "Groesse als Rechenbeispiel, keine ausdrueckliche Obergrenze" },
+      "sourceB": { "ref": "Drittbeitraege auf X (Zitate)", "claim": "nie ueber 50 % in einer Position", "date": "2024-2025", "context": "angebliches Zitat ohne Primaerbeleg" },
+      "possibleReason": "50 % gilt sinngemaess mit Margin; Zitat nicht primaer auffindbar",
+      "decision": "Obergrenze 25 % bleibt (Interviewnotizen + primaeres Beispiel); Herkunft der Obergrenze als ORIGINAL_INTERPRETATION statt ORIGINAL gefuehrt", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-05", "ruleId": "MR-PF-01",
+      "sourceA": { "ref": "Interviewnotizen 2014", "claim": "kleine Konten 4-6, grosse 10-12; nie ueber 15-20", "date": "<=2014", "context": "Positionszahl" },
+      "sourceB": { "ref": "SRC-X-2020-10-20 (primaer)", "claim": "mitunter 8, 12 oder mehr Positionen; nicht zu breit streuen", "date": "2020-10-20", "context": "Teilpositionen nach Gewinnmitnahmen" },
+      "possibleReason": "B beschreibt den Zustand nach Teilverkaeufen (viele Teilpositionen), A die Zielkonzentration",
+      "decision": "12 bleibt als Obergrenze, jetzt ausdruecklich VU_FORMALIZATION ('or more' ist keine Obergrenze); die Konzentration ergibt sich aus Risiko und Bargeld", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-06", "ruleId": "MR-PF-02",
+      "sourceA": { "ref": "Buchnotizen TLSMW (whatheheckaboom)", "claim": "mit Pilotpositionen auf 25-50 % gehen, erst bei Erfolg erhoehen", "date": "2013", "context": "progressive Exposure" },
+      "sourceB": { "ref": "SRC-X-2022-07-18-EXPOSURE (primaer)", "claim": "Einstieg mit 25 % Exposure: fuenf 5-%-Positionen mit 8-%-Stops", "date": "2022-07-18", "context": "Rechenbeispiel progressive Exposure" },
+      "possibleReason": "B konkretisiert A am unteren Ende der Spanne und nennt die Positionsgroesse der Startphase",
+      "decision": "Phase 2B-Kandidat: Startphase 25 % Exposure und hoechstens 5 % je Position (statt 50 % / 25 % in Phase 2A). Primaer belegt, widerspricht A nicht.", "confidence": "MEDIUM-HIGH (primaer, Suchindex-Ausschnitt; Uebergangsregel bleibt VU)"
+    },
+    {
+      "id": "CF-07", "ruleId": "MR-TT-08",
+      "sourceA": { "ref": "Buchnotizen TLSMW", "claim": "RS-Rang mindestens 70, besser 80-90", "date": "2013", "context": "Trend Template (Mindestbedingung)" },
+      "sourceB": { "ref": "@markminervini 2021-12 (Status 1468677355979915265, primaer)", "claim": "90 % der Trades mit RS mindestens 89, Schnitt in den 90ern", "date": "2021", "context": "eigene Praxis-Statistik" },
+      "possibleReason": "Mindestbedingung vs. tatsaechliche Auswahl",
+      "decision": "Kein Widerspruch: 70 bleibt Mindestbedingung; die Praxis wird ueber die RS-Reihenfolge (MR-PF-06) abgebildet, nicht ueber eine neue Schwelle", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-08", "ruleId": "MR-ERN-01",
+      "sourceA": { "ref": "SRC-X-2017-10-25 (primaer)", "claim": "mit Polster halten; ohne Polster Groesse fuer 10-15 % Rueckgang", "date": "2017", "context": "Quartalszahlen" },
+      "sourceB": { "ref": "@markminervini 2024 (Status 1851690456607752491, primaer)", "claim": "implizite Volatilitaet gegen Polster und Groesse abwaegen; persoenliche Risikotoleranz", "date": "2024", "context": "Quartalszahlen" },
+      "possibleReason": "Methodenentwicklung: spaeter ermessensbasiert",
+      "decision": "Aera SEPA-PUBLISHED-2013-2022: Regel von 2017 ist kanonisch. Nicht reproduzierbar, weil kuenftige Termine nicht zeitpunktgenau vorliegen (SEC-Daten enthalten nur vergangene Ereignisse)", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-09", "ruleId": "MR-EXIT-01",
+      "sourceA": { "ref": "Buchnotizen TLSMW", "claim": "steigt der Kurs um das Dreifache des Risikos, Stop fast immer mindestens auf Einstand", "date": "2013", "context": "Einstand" },
+      "sourceB": { "ref": "eigene Beitraege 2018-2024", "claim": "'never let a good size gain turn into a loss' - ohne Zahl; Einstand oder Teilverkauf nach Ermessen", "date": "2018-2024", "context": "Einstand" },
+      "possibleReason": "Beitraege nennen das Prinzip, das Buch die Zahl",
+      "decision": "3R bleibt (Buchaera); Belegstaerke MEDIUM statt HIGH", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-10", "ruleId": "MR-PF-07",
+      "sourceA": { "ref": "Stockopedia 2018 / Beitraege 2020", "claim": "Aktie fuer Aktie; Indizes vom Bildschirm nehmen", "date": "2018-2020", "context": "Marktlage" },
+      "sourceB": { "ref": "@markminervini 2023-2024 (Status 1811407645506474084, 1874139838313574883)", "claim": "langfristiges mechanisches SPY-Modell mit Kaufsignal 13.01.2023", "date": "2023-2024", "context": "Marktmodell (proprietaer)" },
+      "possibleReason": "Methodenentwicklung bzw. separates Produkt",
+      "decision": "Kein Indexfilter (Aera 2013-2022); das Modell ist NOT_PUBLIC und wird nicht ersetzt", "confidence": "MEDIUM"
+    },
+    {
+      "id": "CF-11", "ruleId": "MR-EXIT-04",
+      "sourceA": { "ref": "@markminervini 2022-07-18 (Status 1549118930140254214)", "claim": "Verkauf beim ersten Schluss unter der 50-Tage-Linie (ein Modellbuch-Trade)", "date": "2022", "context": "Einzelfall" },
+      "sourceB": { "ref": "Drittbeitraege", "claim": "Schluss unter SMA50 mit hohem Volumen als allgemeine Regel", "date": "2024-2025", "context": "Zuschreibung" },
+      "possibleReason": "Verallgemeinerung eines Einzelfalls",
+      "decision": "nicht uebernommen (wie Phase 2A)", "confidence": "LOW"
+    },
+    {
+      "id": "CF-12", "ruleId": "MR-SEPA-12",
+      "sourceA": { "ref": "Buchnotizen TLSMW (whatheheckaboom 2014)", "claim": "Nr. 1-3 der Branche kaufen, Titel aus den 4-5 fuehrenden Sektoren", "date": "2013", "context": "Fuehrerschaft und Branche" },
+      "sourceB": { "ref": "Suchindex-Zusammenfassungen (sekundaer; Primaerseiten gesperrt)", "claim": "starke Einzeltitel fuehren zur Gruppe; Gruppe als Bestaetigung", "date": "unbekannt", "context": "Rolle der Gruppe" },
+      "possibleReason": "B ist nicht primaer belegt; A nennt keine Taxonomie (Minervinis Branchen entsprechen vermutlich IBD-Gruppen, nicht oeffentlich und lizenzpflichtig)",
+      "decision": "A bleibt kanonisch. Umsetzung nur als Protokoll (RECORDED_ONLY) auf SIC point-in-time: Rang in der SIC-Gruppe und Gruppenstaerke je Setup. Kein Gate: SIC ist eine andere Taxonomie, und '4-5 fuehrende Sektoren' waere ohne Sektordefinition eine VU-Erfindung. B wird nicht als Beleg genutzt.", "confidence": "MEDIUM (Buchnotizen)"
+    }
+  ]
+}

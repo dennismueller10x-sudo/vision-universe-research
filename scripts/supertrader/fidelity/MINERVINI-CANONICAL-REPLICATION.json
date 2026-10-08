@@ -1,0 +1,795 @@
+{
+  "schema": "vu-minervini-canonical-replication-1.0.0",
+  "rulebookVersion": "minervini-canonical-replication-1.0.0",
+  "engine": { "id": "MINERVINI_CANONICAL", "version": "1.0.0", "status": "RESEARCH_ONLY_NOT_LIVE" },
+  "createdAt": "2026-10-06",
+  "basedOn": {
+    "r15Rulebook": "scripts/supertrader/fidelity/canonical/minervini.json (minervini-canonical-1.0.0, 69 Regeln) - Ausgangspunkt, erneut validiert",
+    "workerAudits": "Phase 2A: Fundamentals (A), Technik/VCP (B), Portfolio/Risiko/Exit (C), Legacy-Code (D); Entscheidungen durch den Lead",
+    "decisionRule": "Bei widerspruechlichen Quellen entscheidet die Belegstaerke (Primaer > Buch > Buchnotizen > Sekundaer), nie eine Backtest-Kennzahl."
+  },
+  "copyrightPolicy": "Keine laengeren Buchpassagen. Zitate hoechstens etwa 15 Woerter, sonst Paraphrase. Keine Seitenzahlen, weil die Buecher nicht seitengenau geprueft wurden.",
+  "classes": {
+    "provenance": ["ORIGINAL", "ORIGINAL_INTERPRETATION", "VU_FORMALIZATION", "VU_OWN", "FOREIGN_RULE", "NOT_PUBLIC", "UNRESOLVED"],
+    "reproducibility": {
+      "REPRODUCIBLE": "Regel ist mechanisch und mit vorhandenen Daten abbildbar.",
+      "REPRODUCIBLE_FORMALIZED": "Originalregel, fuer Code ist eine sichtbare VU-Formalisierung noetig.",
+      "DISCRETIONARY_NOT_FORMALIZED": "Diskretionaere Beurteilung; bewusst nicht formalisiert (keine Scheingenauigkeit).",
+      "NOT_REPRODUCIBLE_WITH_CURRENT_DATA": "Regel ist belegt, die Daten fehlen in VU (point-in-time).",
+      "NOT_PUBLIC": "Wortlaut oder Methode nicht oeffentlich (z. B. proprietaer).",
+      "PARAMETER_NOT_PUBLIC": "Regel belegt, aber ohne oeffentliche Zahl; nicht erfunden.",
+      "UNRESOLVED_NOT_ADOPTED": "Keine belastbare Minervini-Fundstelle; nicht uebernommen.",
+      "OUT_OF_SCOPE": "Bewusst ausgeschlossen (Margin, Short) - als Fidelity-Verlust ausgewiesen.",
+      "MEASUREMENT_SCOPE": "Keine Minervini-Regel: VU-Messrahmen (Universum, Kosten, Ausfuehrung), offen ausgewiesen."
+    },
+    "implementation": {
+      "IMPLEMENTED": "Regel wirkt im Code.",
+      "RECORDED_ONLY": "Wird berechnet und protokolliert, filtert aber nicht (Quelle nennt es Ideal, keine Mindestbedingung).",
+      "NOT_IMPLEMENTED": "Nicht im Code; Grund in decision."
+    },
+    "fidelity": ["HIGH", "MEDIUM", "LOW", "NONE"]
+  },
+  "sources": [
+    { "id": "SRC-BOOK-TLSMW", "title": "Mark Minervini: Trade Like a Stock Market Wizard (McGraw-Hill, 2013)", "type": "BOOK", "primary": true, "access": "Nicht im Volltext abgerufen. Inhalt ueber die in R10 abgerufenen Buchnotizen (SRC-NOTES-*) und die Buchkenntnis des Lead; nicht seitengenau verifiziert.", "confidenceCap": "MEDIUM_UNLESS_CORROBORATED" },
+    { "id": "SRC-BOOK-TTLAC", "title": "Mark Minervini: Think & Trade Like a Champion (Access Publishing, 2017)", "type": "BOOK", "primary": true, "access": "Nicht im Volltext abgerufen; Aussagen nur, wenn durch Primaerbeitrag oder Notizen gestuetzt.", "confidenceCap": "MEDIUM_UNLESS_CORROBORATED" },
+    { "id": "SRC-NOTES-WHB-2014-05-04", "title": "whatheheckaboom.wordpress.com, 2014-05-04: Buchnotizen zu Trade Like a Stock Market Wizard", "type": "BOOK_NOTES", "primary": false, "access": "R10-Abruf (verschluesselt); Kurzzitate in canonical/minervini.json" },
+    { "id": "SRC-NOTES-WHB-2014-05-11", "title": "whatheheckaboom.wordpress.com, 2014-05-11: Notes from Mark Minervini interviews", "type": "INTERVIEW_NOTES", "primary": false, "access": "R10-Abruf (verschluesselt)" },
+    { "id": "SRC-NOTES-TH-2019-07-15", "title": "tradershall.wordpress.com, 2019-07-15: Buchnotizen TLSMW", "type": "BOOK_NOTES", "primary": false, "access": "R10-Abruf (verschluesselt)" },
+    { "id": "SRC-INT-STOCKOPEDIA-2018", "title": "Stockopedia, 2018-04-18: Mark Minervini Interview - How to trade like a champion", "type": "INTERVIEW", "primary": true, "access": "R10-Abruf Volltext (verschluesselt); 2026-10-06 per Egress gesperrt" },
+    { "id": "SRC-INT-MARKETWATCH", "title": "MarketWatch-Interview (Michael Sincere) mit Mark Minervini", "type": "INTERVIEW", "primary": true, "access": "R10-Abruf (verschluesselt)" },
+    { "id": "SRC-X-2017-10-25", "title": "@markminervini auf X, Status 923256235784359936 (2017-10-25): Halten in Quartalszahlen nur mit Gewinnpolster; ohne Polster Groesse fuer 10-15 % Rueckgang waehlen; nie grosse Position ungeschuetzt in die Zahlen", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06; x.com per Egress gesperrt (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2018-04-24", "title": "@markminervini auf X, Status 988883629530058752 (2018-04-24): im Schnitt nicht mehr als 1,25 % des Kapitals je Trade; Beispiel 10-%-Stop -> hoechstens 12,5 % Position, 25-%-Position -> hoechstens 5 % Stop", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2021-04-16", "title": "@markminervini auf X, Status 1383099725092691971 (2021-04-16): unabhaengig von der Positionsgroesse im Schnitt nie mehr als 1,25 % Risiko, hoechstens 2,5 %", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2019-07-11", "title": "@markminervini auf X, Status 1149345462589251584 (2019-07-11): 'When in doubt sell half' - bei ordentlichem Gewinn und Unsicherheit die Haelfte verkaufen", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2021-04-03", "title": "@markminervini auf X, Status 1378477630220025858 (2021-04-03): unentschlossen beim Gewinnmitnehmen -> Haelfte verkaufen", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2020-10-20", "title": "@markminervini auf X, Status 1318562658052984834 (2020-10-20): Gewinne trimmen fuehrt zu Teilpositionen (1/2, 1/4); mitunter 8, 12 oder mehr Positionen; progressiv exponieren, nicht zu breit streuen", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2020-10-21", "title": "@markminervini auf X, Status 1318914809941970944 (2020-10-21): nie am Tief kaufen, immer zu frueh verkaufen - in die Staerke verkaufen", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen)" },
+    { "id": "SRC-X-2021-01-17", "title": "@markminervini auf X, Status 1350857583498821633 (2021-01-17): eine seitwaerts laufende Aktie kostet Zeit oder Geld", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen); keine Zahl" },
+    { "id": "SRC-X-2022-07-18", "title": "@markminervini auf X, Status 1549118930140254214 (2022-07-18): bei einem einzelnen Modellbuch-Trade war der Verkauf der erste Schluss unter der 50-Tage-Linie", "type": "OWN_POST", "primary": true, "access": "Text ueber Suchindex 2026-10-06 (nicht direkt abgerufen); Einzelfall, keine allgemeine Regel" },
+    { "id": "SRC-X-2022-01-20", "title": "@markminervini auf X, Status 1484178830889738240 (2022-01-20, Archivkopie R10): Margin sparsam und opportunistisch; Wettbewerb 2021 long und short", "type": "OWN_POST", "primary": true, "access": "R10-Abruf (Archivkopie)" },
+    { "id": "SRC-SECONDARY-WEB-2026", "title": "Sekundaere Web-Zusammenfassungen (z. B. finermarketpoints, chartmill, traderlion), Suchindex 2026-10-06", "type": "SECONDARY", "primary": false, "access": "Nur als Hinweis auf Widersprueche; nie alleinige Grundlage einer Regel" },
+    { "id": "SRC-SEC-FILING-RULES", "title": "SEC: Fristen fuer 10-Q (40/45 Tage) und 10-K (60/75/90 Tage); EDGAR: Einreichungen nach 17:30 Uhr ET erhalten das Datum des naechsten Werktags", "type": "REGULATION", "primary": true, "access": "Oeffentliche Regelung; nur fuer Datenregeln (point-in-time), nicht fuer Minervini-Regeln" }
+  ],
+  "rules": [
+    {
+      "id": "MR-TT-01", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 1: Kurs ueber der 150- und der 200-Tage-Linie.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tagesschluss", "SMA150", "SMA200"], "availableData": "Tageskurse (split-bereinigt, validation/lib.mjs#adjustSeries)",
+      "formalization": { "text": "close[t] > SMA150[t] und close[t] > SMA200[t]; einfache gleitende Durchschnitte der Tagesschluesse.", "parameters": {
+        "tt.ma150Len": { "value": 150, "unit": "sessions", "provenance": "ORIGINAL", "rationale": "150-Tage-Linie laut Trend Template" },
+        "tt.ma200Len": { "value": 200, "unit": "sessions", "provenance": "ORIGINAL", "rationale": "200-Tage-Linie laut Trend Template" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-01", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-TT-02", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 2: 150-Tage-Linie ueber der 200-Tage-Linie.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["SMA150", "SMA200"], "availableData": "Tageskurse",
+      "formalization": { "text": "SMA150[t] > SMA200[t].", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-02", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-TT-03", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 3: Die 200-Tage-Linie steigt seit mindestens einem Monat (bevorzugt 4-5 Monate).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["SMA200-Historie"], "availableData": "Tageskurse",
+      "formalization": { "text": "SMA200[t] > SMA200[t - 21]. Mindestbedingung = 1 Monat; die 4-5 Monate sind eine Praeferenz, keine Mindestbedingung, und werden nur protokolliert (Steigdauer in Sitzungen).", "parameters": {
+        "tt.ma200RisingSessions": { "value": 21, "unit": "sessions", "provenance": "VU_FORMALIZATION", "rationale": "1 Monat = 21 Handelstage; Netto-Vergleich als Lesart von 'trending up'" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-03", "decision": "uebernommen; Praeferenz 4-5 Monate nur protokolliert"
+    },
+    {
+      "id": "MR-TT-04", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 4: 50-Tage-Linie ueber der 150- und der 200-Tage-Linie.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["SMA50", "SMA150", "SMA200"], "availableData": "Tageskurse",
+      "formalization": { "text": "SMA50[t] > SMA150[t] und SMA50[t] > SMA200[t].", "parameters": {
+        "tt.ma50Len": { "value": 50, "unit": "sessions", "provenance": "ORIGINAL", "rationale": "50-Tage-Linie laut Trend Template" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-04", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-TT-05", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 5: Kurs ueber der 50-Tage-Linie.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tagesschluss", "SMA50"], "availableData": "Tageskurse",
+      "formalization": { "text": "close[t] > SMA50[t].", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-05", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-TT-06", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 6: Kurs mindestens 30 % ueber dem 52-Wochen-Tief.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15", "SRC-SECONDARY-WEB-2026"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tagestiefs 52 Wochen"], "availableData": "Tageskurse",
+      "formalization": { "text": "close[t] >= 1,30 x min(low[t-251..t]). Widerspruch 25 % vs. 30 %: Die Buchnotizen 2013 nennen 'at least 30%' fuer das Template, 25-30 % nur im Abschnitt zum Uebergang Stufe 1->2 -> 30 % (Entscheidung nach Belegstaerke, wie R15).", "parameters": {
+        "tt.minAbove52wLow": { "value": 0.30, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "'at least 30%' (Buchnotizen 2013)" },
+        "tt.lookback52wSessions": { "value": 252, "unit": "sessions", "provenance": "VU_FORMALIZATION", "rationale": "52 Wochen = 252 Handelstage, Tageshochs/-tiefs inkl. Tag t" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-06", "decision": "uebernommen (30 %)"
+    },
+    {
+      "id": "MR-TT-07", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 7: Kurs hoechstens 25 % unter dem 52-Wochen-Hoch (je naeher, desto besser).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tageshochs 52 Wochen"], "availableData": "Tageskurse",
+      "formalization": { "text": "close[t] >= 0,75 x max(high[t-251..t]).", "parameters": {
+        "tt.maxBelow52wHigh": { "value": 0.25, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "'within at least 25%' des 52-Wochen-Hochs" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-ALL", "MR-T-TT-FAIL-EACH"], "fidelity": "HIGH", "r15Ref": "MIN-C-TT-07", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-TT-08", "category": "TREND", "layer": "A_CANONICAL",
+      "canonicalDescription": "Trend Template 8: Relative-Strength-Rang (IBD) mindestens 70, besser 80-90.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "HIGH",
+      "provenanceClass": "VU_FORMALIZATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["IBD-RS-Rang (proprietaer, NOT_PUBLIC)"], "availableData": "VU-RS-Perzentil im point-in-time Querschnitt des damaligen Universums (validation/analyze-methods.mjs#loadPitData, cross.rs)",
+      "formalization": { "text": "Perzentil (0-100) des Werts 0,4 x r63 + 0,2 x r126 + 0,2 x r189 + 0,2 x r252 unter allen Titeln mit Dollarumsatz20 >= 1 Mio. USD am selben Tag; Schwelle 70 an JEDEM Bewertungstag (keine Ausnahme 'nur bei Entdeckung' wie in 2.0.0). Die Gewichtung bildet die oeffentlich beschriebene IBD-Logik (juengstes Quartal doppelt) nach; der IBD-Wert selbst ist nicht reproduzierbar.", "parameters": {
+        "tt.rsMinPercentile": { "value": 70, "unit": "percentile", "provenance": "ORIGINAL", "rationale": "Mindestrang 70 laut Trend Template" },
+        "rs.definitionId": { "value": "VU-RS-PCT-0.4r63-0.2r126-0.2r189-0.2r252-DV20GE1M", "unit": "id", "provenance": "VU_FORMALIZATION", "rationale": "Ersatz fuer proprietaeren IBD-RS; Definition der Datenschicht muss diese Kennung tragen" },
+        "rs.weights": { "value": [0.4, 0.2, 0.2, 0.2], "unit": "weights", "provenance": "VU_FORMALIZATION", "rationale": "IBD-artig: juengstes Quartal doppelt; nur fuer den Rangwert (Auswahl gleichzeitiger Signale)" },
+        "rs.horizons": { "value": [63, 126, 189, 252], "unit": "sessions", "provenance": "VU_FORMALIZATION", "rationale": "3/6/9/12 Monate" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/trend-template.mjs", "function": "trendTemplate" },
+      "test": ["MR-T-TT-FAIL-EACH", "MR-T-RS-EVERY-DAY"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-TT-08", "decision": "VU-Proxy offen ausgewiesen; 2.0.0-Ausnahme LC-RANK-AT-DISCOVERY verworfen"
+    },
+    {
+      "id": "MR-VCP-01", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "VCP: Basis nach einem Stufe-2-Anstieg, Dauer etwa 3 bis 45 Wochen.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-TH-2019-07-15", "SRC-SECONDARY-WEB-2026"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tageshochs/-tiefs"], "availableData": "Tageskurse",
+      "formalization": { "text": "Basisbeginn = hoechstes Tageshoch der letzten maxBaseSessions Sitzungen (bei Gleichstand das juengere). Basisdauer t - Basisbeginn muss zwischen minBaseSessions und maxBaseSessions liegen. Stufe 2 ist durch das Trend Template (MR-TT-*) am selben Tag belegt. Widerspruch 45 vs. 65 Wochen: Die abgerufenen Buchnotizen nennen 3-45 Wochen, 65 Wochen nur eine nicht abgerufene Web-Zusammenfassung -> 45 Wochen.", "parameters": {
+        "vcp.minBaseSessions": { "value": 15, "unit": "sessions", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "3 Wochen x 5 Handelstage" },
+        "vcp.maxBaseSessions": { "value": 225, "unit": "sessions", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "45 Wochen x 5 Handelstage (Buchnotizen tradershall 2019)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC", "MR-T-VCP-BASE-TOO-SHORT"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-VCP-01", "decision": "ersetzt 65-Sitzungen-Fenster von 2.0.0"
+    },
+    {
+      "id": "MR-VCP-02", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "VCP: 2 bis 6 Kontraktionen (Ruecksetzer).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Kontraktionsfolge"], "availableData": "aus Tageskursen (MR-VCP-08)",
+      "formalization": { "text": "Anzahl Kontraktionen nach MR-VCP-08 zwischen 2 und 6 (einschliesslich).", "parameters": {
+        "vcp.minContractions": { "value": 2, "unit": "count", "provenance": "ORIGINAL", "rationale": "'anywhere from 2 to 6 contractions'" },
+        "vcp.maxContractions": { "value": 6, "unit": "count", "provenance": "ORIGINAL", "rationale": "'anywhere from 2 to 6 contractions'" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC", "MR-T-VCP-ONE-CONTRACTION", "MR-T-VCP-SEVEN"], "fidelity": "HIGH", "r15Ref": "MIN-C-VCP-01", "decision": "Obergrenze 6 neu (2.0.0 hatte keine)"
+    },
+    {
+      "id": "MR-VCP-03", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "VCP: Jede Kontraktion kleiner als die vorige (Faustregel etwa halb so tief, z. B. 25 -> 15 -> 8 %).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Kontraktionstiefen"], "availableData": "aus Tageskursen",
+      "formalization": { "text": "Tiefe jeder Kontraktion streng kleiner als die der vorigen. In der Formalisierung MR-VCP-08 folgt das aus der Konstruktion (streng tiefere Hochs, streng hoehere Tiefe); ein groesserer spaeterer Ruecksetzer mit tieferem Tief verschmilzt mit dem Basisbeginn zu einer Kontraktion. Die Pruefung bleibt als Sicherung im Code. Die Faustregel 'etwa halb so tief' ist ein Richtwert und wird NICHT als Schwelle verlangt (keine Scheingenauigkeit). Keine Obergrenze fuer die erste Kontraktion: 10-35 % konstruktiv, ueber 60 % fehleranfaellig ist eine Einordnung, keine Regel (MR-VCP-07).", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC", "MR-T-VCP-EXPANDING"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-VCP-02", "decision": "2.0.0-Grenzen 35 %/10 % verworfen (VU)"
+    },
+    {
+      "id": "MR-VCP-04", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "VCP: Volumen trocknet in der engsten Zone aus (unter dem 50-Tage-Schnitt).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tagesvolumen"], "availableData": "Tageskurse (Volumen split-bereinigt)",
+      "formalization": { "text": "Mittleres Volumen der letzten Kontraktion (Balken nach ihrem Hoch bis einschliesslich t) < dryUpMaxRatio x SMA50(Volumen)[t]. 2.0.0 nutzte 10 Tage und < 0,8 (VU) - verworfen.", "parameters": {
+        "vcp.volumeAvgSessions": { "value": 50, "unit": "sessions", "provenance": "ORIGINAL", "rationale": "Bezug '50-Tage-Durchschnitt' in den Notizen" },
+        "vcp.dryUpMaxRatio": { "value": 1.0, "unit": "ratio", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "'unter dem 50-Tage-Schnitt' -> Verhaeltnis < 1; keine schaerfere VU-Zahl" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC", "MR-T-VCP-NO-DRYUP"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-VCP-03", "decision": "uebernommen mit Quellbezug statt 0,8"
+    },
+    {
+      "id": "MR-VCP-05", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "VCP: Enge ('tight and light') - enge Schlusskurse bei geringem Volumen im rechten Teil der Basis.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["visuelle Beurteilung"], "availableData": "Tageskurse",
+      "formalization": { "text": "Keine eigene Zahl. Teilweise abgedeckt: letzte Kontraktion ist die kleinste (MR-VCP-03) und volumenarm (MR-VCP-04). Die Engstellung der Schlusskurse wird nicht als Schwelle verlangt; es gibt keine Quellenzahl.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "LOW", "r15Ref": "MIN-C-VCP-04", "decision": "diskretionaer, nicht formalisiert"
+    },
+    {
+      "id": "MR-VCP-06", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "Pivot = Hoch der letzten, engsten Zone; der Kauf erfolgt, wenn der Kurs den Pivot ueberschreitet.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Kontraktionsfolge"], "availableData": "aus Tageskursen",
+      "formalization": { "text": "Pivot = Tageshoch am Beginn der letzten Kontraktion (MR-VCP-08). Technischer Stop = tiefstes Tagestief dieser Kontraktion.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC"], "fidelity": "HIGH", "r15Ref": "MIN-C-VCP-05", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-VCP-07", "category": "VCP", "layer": "A_CANONICAL",
+      "canonicalDescription": "Basistiefe: konstruktive Basen korrigieren meist 10-35 %, ueber 60 % fehleranfaellig.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tiefe der ersten Kontraktion"], "availableData": "aus Tageskursen",
+      "formalization": { "text": "Einordnung, keine Ausschlussregel: Tiefe der ersten Kontraktion wird protokolliert (CONSTRUCTIVE <= 35 %, DEEP bis 60 %, FAILURE_PRONE darueber), filtert nicht.", "parameters": {
+        "vcp.constructiveMaxDepth": { "value": 0.35, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "konstruktive Basen 10-35 % (nur Protokoll)" },
+        "vcp.failureProneMinDepth": { "value": 0.60, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "ueber 60 % fehleranfaellig (nur Protokoll)" } } },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-VCP-CLASSIC"], "fidelity": "HIGH", "r15Ref": "MIN-C-VCP-02", "decision": "nur protokolliert"
+    },
+    {
+      "id": "MR-VCP-08", "category": "VCP", "layer": "B_FORMALIZATION",
+      "canonicalDescription": "VU-Formalisierung der diskretionaeren VCP-Erkennung: Zerlegung der Basis in aufeinanderfolgende Extremwerte.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_FORMALIZATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tageshochs/-tiefs"], "availableData": "Tageskurse",
+      "formalization": { "text": "Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Ab dem Basisbeginn H1: L1 = tiefstes Tief danach; H2 = hoechstes Hoch nach L1; L2 = tiefstes Tief nach H2; usw. bis Tag t. Daraus folgen von selbst tiefer werdende Hochs und hoeher werdende Tiefs - die Geometrie, die Minervini beschreibt. Keine Zickzack-Schwelle, kein Fenster ausser der Basisdauer, also keine erfundene Zahl. Bei Gleichstand gilt jeweils der juengere Balken. Eine Kontraktion der Tiefe 0 am rechten Rand zaehlt nicht. Bekannte Grenze: kleine Tageswellen am rechten Rand koennen als zusaetzliche Kontraktionen zaehlen; dann greift MR-VCP-02/03 strenger als ein menschliches Auge.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "decomposeBase" },
+      "test": ["MR-T-VCP-DECOMPOSE", "MR-T-VCP-NO-LOOKAHEAD"], "fidelity": "MEDIUM", "r15Ref": "MIN-B-VCP-ZZ", "decision": "ersetzt 4-%-Zickzack von 2.0.0"
+    },
+    {
+      "id": "MR-ENT-01", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Einstieg im Moment, in dem der Kurs den Pivot ueberschreitet (im Tagesverlauf), nicht erst nach Tagesschluss.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Intraday-Kurs am Pivot"], "availableData": "nur Tagesbalken (Eroeffnung/Hoch)",
+      "formalization": { "text": "Kauf-Stop-Order fuer Tag t+1 am Pivot aus dem Setup von Schluss t. Ausgeloest, wenn high[t+1] > Pivot; Fuellung max(open[t+1], Pivot) plus Slippage (MR-EXE-02). Ein Gap ueber den Pivot fuellt zur Eroeffnung. Ersetzt die Schlussbestaetigung plus Folgetag-Eroeffnung von 2.0.0.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-ENTRY-BUYSTOP", "MR-T-ENTRY-GAP"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-ENT-01", "decision": "Tagesbalken-Annahme ausgewiesen"
+    },
+    {
+      "id": "MR-ENT-02", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Ausbruch mit zunehmendem Volumen.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Intraday-Volumen bis zum Ausloesezeitpunkt"], "availableData": "nur Tagesvolumen (erst nach Schluss bekannt)",
+      "formalization": { "text": "Bei einem Kauf im Moment des Pivot-Durchbruchs ist das Tagesvolumen noch unbekannt; es als Filter zu nutzen waere Zukunftswissen. Das Verhaeltnis Volumen(t+1)/SMA50(Volumen)[t] wird nur protokolliert. Die Schwelle 1,4x aus 2.0.0 ist eine O'Neil-Konvention (FOREIGN_RULE) und wird verworfen.", "parameters": {} },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-NO-FOREIGN-RULES"], "fidelity": "LOW", "r15Ref": "MIN-C-ENT-02", "decision": "1,4x verworfen; nicht reproduzierbar ohne Intraday-Volumenhistorie"
+    },
+    {
+      "id": "MR-ENT-03", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Cheat-, Low-Cheat- und 3C-Einstiege (Kauf ueber dem Hoch einer engen Pause vor dem eigentlichen Pivot, oft als Teilposition).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-BOOK-TTLAC", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["Beurteilung einer Pause im Cup"], "availableData": "Tageskurse",
+      "formalization": { "text": "Nicht formalisiert: Definition der 'Pause' und ihres Ortes im Cup ist diskretionaer; eine Zahl muesste erfunden werden.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-ENT-03", "decision": "Fidelity-Verlust im Einstieg ausgewiesen"
+    },
+    {
+      "id": "MR-ENT-04", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Power Play / High Tight Flag: +100 % in weniger als 8 Wochen, danach 3-6 Wochen enge Korrektur bis 20-25 %; einziges Setup auch mit duennen Fundamentaldaten.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tageskurse"], "availableData": "Tageskurse",
+      "formalization": { "text": "Nicht Teil von 1.0.0: eigenes Setup mit eigener Ausnahme von SEPA; die Zahlen sind belegt, aber die Abgrenzung zum VCP (Pivot, Stop) braucht weitere Lesarten. Ausgewiesen als fehlender Baustein.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-ENT-04", "decision": "Umfang 1.0.0: nur VCP-Pivot; Power Play als offene Luecke"
+    },
+    {
+      "id": "MR-ENT-05", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Begrenzung des Einstiegs ueber dem Pivot (Chase-Grenze).",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "UNRESOLVED", "reproducibility": "UNRESOLVED_NOT_ADOPTED",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Keine Minervini-Fundstelle fuer eine Prozentgrenze; keine Regel eingefuehrt. Ein Gap ueber den Pivot wird gekauft; der Hoechstverlust MR-RSK-02 begrenzt das Risiko.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-ENT-05", "decision": "nicht erfunden"
+    },
+    {
+      "id": "MR-RE-01", "category": "ENTRY", "layer": "A_CANONICAL",
+      "canonicalDescription": "Wiedereinstieg: Nach dem Ausstoppen eine neue Basis / ein neues Setup abwarten und erneut kaufen; grosse Gewinner brauchen oft 2-3 Versuche.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Ausstiegstag", "neue Basis"], "availableData": "Tageskurse",
+      "formalization": { "text": "Ein Titel mit offener Position erzeugt keine neue Order. Nach dem vollstaendigen Ausstieg gilt ein Setup nur, wenn sein Basisbeginn (H1) NACH dem Ausstiegstag liegt (neue Basis). Keine feste Sperrfrist (die 5-Sitzungen-Sperre von 2.0.0 ist VU_OWN und verworfen).", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-REENTRY-NEW-BASE"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-RE-01", "decision": "Sperre verworfen"
+    },
+    {
+      "id": "MR-SEPA-00", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "SEPA: Ausser beim Power Play muss eine Aktie fundamental belegt sein ('earnings, sales and margins - and the chart').",
+      "sources": ["SRC-INT-STOCKOPEDIA-2018", "SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Quartals-EPS und -Umsatz point-in-time"], "availableData": "privater Speicher sec-pit-mrepl-1 (Erweiterung von sec-pit.mjs, EDGAR companyfacts)",
+      "formalization": { "text": "Fehlen die point-in-time-Daten fuer MR-SEPA-01/02/04, gibt es keinen Einstieg (kein Nachweis = kein Kauf). Keine Fallback-Regel.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-MISSING"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-01", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-SEPA-01", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "EPS-Wachstum: deutliches Plus im zuletzt gemeldeten Quartal gegenueber dem Vorjahresquartal; Marktfuehrer mindestens etwa 20 %, Superperformer meist 30-40 % und mehr.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Quartals-EPS (verwaessert) als Erstmeldung mit Einreichungsdatum", "Split-Ereignisse"], "availableData": "sec-pit-mrepl-1 (eps), Split-Faktoren aus quant/engines/return-series.js#splitFactors (ADR-002)",
+      "formalization": { "text": "g0 = EPS(q0) / EPS_split(q0-4) - 1 >= 0,20. q0 = juengstes sichtbares Quartal, Vorjahresquartal per Periodenende (+-yoyToleranceDays). Das Vorjahres-EPS (Erstmeldung) wird um Splits zwischen seinem und dem aktuellen Einreichungstag bereinigt. Vorjahres-EPS <= 0 -> Wachstum nicht bewertbar -> kein Einstieg (siehe MR-SEPA-10). 20 % statt 25 % (3.0.0): 20 % ist die untere Zahl, die die Quelle fuer Marktfuehrer nennt; jede hoehere Zahl waere eine VU-Verschaerfung.", "parameters": {
+        "sepa.minEpsGrowth": { "value": 0.20, "unit": "fraction", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "Untergrenze fuer Marktfuehrer laut Buchnotizen; Superperformer-Werte (30-40 %) sind Praeferenz" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-PASS", "MR-T-SEPA-EPS-LOW", "MR-T-SEPA-SPLIT"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-01", "decision": "3.0.0-Schwelle 25 % verworfen (VU)"
+    },
+    {
+      "id": "MR-SEPA-02", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Gewinnbeschleunigung: Die Wachstumsrate steigt von Quartal zu Quartal (ueber 90 % der Superperformer zeigten Beschleunigung).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["EPS q0..q-5 point-in-time"], "availableData": "sec-pit-mrepl-1",
+      "formalization": { "text": "g0 > g1, wobei q1 das direkt vorangehende Quartal ist (Periodenende q0 minus ca. 91 Tage +- yoyToleranceDays). Ist g1 nicht bewertbar (fehlende Daten, Vorjahresbasis <= 0), ist Beschleunigung nicht nachweisbar -> kein Einstieg (3.0.0 zaehlte das als Beschleunigung - VU, verworfen).", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-PASS", "MR-T-SEPA-NO-ACCEL", "MR-T-SEPA-GAP-QUARTER"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-02", "decision": "eine Stufe Beschleunigung als Mindestbedingung"
+    },
+    {
+      "id": "MR-SEPA-03", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Code 33: drei Quartale Beschleunigung bei Gewinn, Umsatz und Marge.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["EPS, Umsatz, Marge je Quartal point-in-time"], "availableData": "sec-pit-mrepl-1 (eps, rev, gp/opinc/ni)",
+      "formalization": { "text": "Wird berechnet und protokolliert (code33: true/false/null), filtert nicht: Die Quelle beschreibt Code 33 als besonders starkes Merkmal, nicht als Mindestbedingung.", "parameters": {} },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-CODE33"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-02", "decision": "nur protokolliert"
+    },
+    {
+      "id": "MR-SEPA-04", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Umsatz: Gewinne muessen von Umsatzwachstum getragen sein.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-INT-STOCKOPEDIA-2018"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Quartalsumsatz point-in-time"], "availableData": "sec-pit-mrepl-1 (rev)",
+      "formalization": { "text": "Umsatz desselben Quartals q0 (gleiches Periodenende wie das EPS - in 3.0.0 nicht abgeglichen) liegt ueber dem Vorjahresquartal. Keine Mindestzahl, weil die Quelle keine nennt.", "parameters": {
+        "sepa.minRevenueGrowth": { "value": 0.0, "unit": "fraction", "provenance": "VU_FORMALIZATION", "rationale": "'getragen von Umsatz' -> Umsatz waechst (> 0); keine Quellenzahl" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-PASS", "MR-T-SEPA-REV-DOWN"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-03", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-SEPA-05", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Umsatzbeschleunigung.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Quartalsumsatz point-in-time"], "availableData": "sec-pit-mrepl-1 (rev)",
+      "formalization": { "text": "Protokolliert (revAccel), filtert nicht - Teil des Ideals Code 33.", "parameters": {} },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-CODE33"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-03", "decision": "nur protokolliert"
+    },
+    {
+      "id": "MR-SEPA-06", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Margen: steigende Gewinnmargen ('earnings, sales and margins').",
+      "sources": ["SRC-INT-STOCKOPEDIA-2018", "SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["GrossProfit/OperatingIncome/NetIncome und Umsatz je Quartal point-in-time"], "availableData": "NEU: sec-pit-mrepl-1 (gp, opinc, ni) - Erweiterung der bestehenden companyfacts-Extraktion, keine neue Quelle",
+      "formalization": { "text": "Brutto-, operative und Nettomarge je Quartal = Zaehler / Umsatz bei gleichem Periodenende; sichtbar ab max(Einreichung Zaehler, Einreichung Umsatz). Veraenderung gegen das Vorjahresquartal in Prozentpunkten wird protokolliert (marginExpansion) und geht in Code 33 ein. Kein Filter, weil die Quelle keine Mindestbedingung nennt; Abdeckung (GrossProfit nur ca. 55 % der Emittenten) wuerde sonst das Universum verzerren.", "parameters": {} },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "marginsAt" },
+      "test": ["MR-T-MARGIN-PIT"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-SEPA-04", "decision": "Margen erstmals point-in-time verfuegbar; nur protokolliert"
+    },
+    {
+      "id": "MR-SEPA-07", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Gewinn- und Umsatzueberraschungen (Ergebnis ueber Erwartung).",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "NOT_PUBLIC", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Konsensschaetzungen zum damaligen Stand"], "availableData": "keine (quant/data/sec/pit_gates.json: analystEstimates false)",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA. Kein Ersatzwert (z. B. Kurssprung am Meldetag) - das waere ein erfundener Proxy.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-05", "decision": "Datenluecke"
+    },
+    {
+      "id": "MR-SEPA-08", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Steigende Analystenschaetzungen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "NOT_PUBLIC", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Schaetzungshistorie"], "availableData": "keine",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-06", "decision": "Datenluecke"
+    },
+    {
+      "id": "MR-SEPA-09", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Gewinnqualitaet: nachhaltige, nicht einmalige Gewinne; starke Jahreszahlen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Kennzeichnung von Einmalposten"], "availableData": "kein Tag-Mapping fuer Einmalposten",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA (Einmalposten). Nettomarge wird protokolliert (MR-SEPA-06).", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-07", "decision": "Datenluecke"
+    },
+    {
+      "id": "MR-SEPA-10", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Turnarounds nur mit sehr starkem Quartal (+100 % in 1-2 Quartalen) oder Rueckkehr zum alten Gewinnhoch.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["EPS-Historie"], "availableData": "sec-pit-mrepl-1",
+      "formalization": { "text": "Bei Vorjahres-EPS <= 0 ist eine prozentuale Rate nicht definiert; die Turnaround-Bedingung ist ohne erfundene Lesart nicht pruefbar -> kein Einstieg (Grund SEPA_BASE_NOT_POSITIVE). Fidelity-Verlust fuer echte Turnarounds ausgewiesen.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "evaluateSepa" },
+      "test": ["MR-T-SEPA-NEG-BASE"], "fidelity": "LOW", "r15Ref": "MIN-C-SEPA-07", "decision": "konservativ ausgeschlossen"
+    },
+    {
+      "id": "MR-SEPA-11", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Institutionelle Nachfrage / Sponsorship.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["13F-Bestaende point-in-time"], "availableData": "keine",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA. Offiziell kostenlos beschaffbar: SEC 13F-Datensaetze (EDGAR) - dokumentiert, keine Pipeline eingefuehrt.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-08", "decision": "Datenluecke"
+    },
+    {
+      "id": "MR-SEPA-12", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Fuehrerschaft und Branche: Nr. 1-3 der Branche, Titel aus den 4-5 fuehrenden Sektoren.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Branchenzugehoerigkeit und Gruppenrang point-in-time"], "availableData": "nur heutige SIC-Zuordnung",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA. Kein Proxy aus heutiger Branchenzuordnung (Zukunftswissen).", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-09", "decision": "Datenluecke"
+    },
+    {
+      "id": "MR-SEPA-13", "category": "FUNDAMENTAL", "layer": "A_CANONICAL",
+      "canonicalDescription": "Katalysator (neues Produkt, Management, Zulassung).",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-WHB-2014-05-11"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "NOT_PUBLIC", "reproducibility": "NOT_PUBLIC",
+      "requiredData": ["qualitative Nachrichtenbeurteilung"], "availableData": "keine",
+      "formalization": { "text": "Nicht reproduzierbar.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-SEPA-10", "decision": "nicht reproduzierbar"
+    },
+    {
+      "id": "MR-PIT-01", "category": "DATA", "layer": "B_FORMALIZATION",
+      "canonicalDescription": "Point-in-time-Regel fuer alle Fundamentalwerte: available_date <= signal_date (Ausfuehrungstag), nie Periodenende <= Signaltag.",
+      "sources": ["SRC-SEC-FILING-RULES"], "sourceConfidence": "HIGH",
+      "provenanceClass": "VU_FORMALIZATION", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Einreichungsdatum je Wert", "Accession", "Formular", "Einheit"], "availableData": "sec-pit-mrepl-1 (neu: accn, form, unit je Zeile)",
+      "formalization": { "text": "Ein Wert mit Einreichungsdatum f ist fuer eine Order am Handelstag d sichtbar, wenn f < d (EDGAR datiert Einreichungen nach 17:30 Uhr ET auf den naechsten Werktag; alles mit Datum vor d lag vor der Eroeffnung von d vor). Je Periode nur die ERSTE Einreichung (Original; spaetere 10-Q/A, 10-K/A und Vergleichsspalten aendern keine fruehere Entscheidung). Nur periodische Formulare (10-Q, 10-K, 20-F, 40-F, 6-K und deren /A, 10-QT, 10-KT). Quartal = 80-100 Tage; Geschaeftsjahr = 350-380 Tage; YTD-Werte (6/9 Monate) werden nie als Quartal gelesen. Q4 fuer Flussgroessen = Jahr minus drei Quartale, sichtbar ab der spaeteren Einreichung; Q4-EPS nur abgeleitet, wenn zwischen der ersten Quartalseinreichung und dem Jahreswert kein Split lag. Eine Einheit je Reihe (Werte anderer Einheit werden nicht gemischt). Das juengste Quartal muss frisch sein (Periodenende hoechstens maxQuarterAgeDays vor d). EPS-Vorjahreswerte werden um Splits mit Datum zwischen beiden Einreichungen bereinigt (quant/engines/return-series.js#splitFactors, ADR-002); reicht die Kurshistorie nicht bis zur Vorjahres-Einreichung zurueck, ist das Wachstum nicht bewertbar (keine Annahme 'kein Split'; Grund PIT_SPLIT_HISTORY_UNKNOWN). Folge: In den ersten Monaten jedes Messfensters (Kursvorlauf nur 1 Jahr) entstehen kaum Setups.", "parameters": {
+        "pit.yoyToleranceDays": { "value": 14, "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "52/53-Wochen-Geschaeftsjahre verschieben Periodenenden um bis zu 7 Tage; Toleranz doppelt so gross" },
+        "pit.maxQuarterAgeDays": { "value": 180, "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "Quartal (ca. 90 Tage) plus laengste 10-K-Frist (90 Tage); aelter heisst: Meldung fehlt" },
+        "pit.quarterDays": { "value": [80, 100], "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "3-Monats-Periode inkl. 52/53-Wochen-Kalender; wie validation/sec-pit.mjs#quarterly" },
+        "pit.yearDays": { "value": [350, 380], "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "Geschaeftsjahr inkl. 52/53-Wochen-Kalender; wie validation/sec-pit.mjs#quarterly" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "visibleRows" },
+      "test": ["MR-T-PIT-FILED-DAY", "MR-T-PIT-AMENDMENT", "MR-T-PIT-YTD", "MR-T-PIT-DUP", "MR-T-PIT-UNIT", "MR-T-PIT-Q4", "MR-T-PIT-Q4-SPLIT", "MR-T-PIT-STALE", "MR-T-SEPA-SPLIT", "MR-T-RT-SPLIT-HISTORY", "MR-T-RT-UNIT-MAJORITY"], "fidelity": "HIGH", "r15Ref": "R15 Abschnitt 6", "decision": "Fehler P4/P5/P6/P8/P12/P13/P15 aus dem Worker-A-Audit behoben"
+    },
+    {
+      "id": "MR-RSK-01", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "Anfangsstop vorab am technischen Punkt, wenn mathematisch akzeptabel; absolute Grenze 10 %.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-WHB-2014-05-11"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tief der letzten Kontraktion"], "availableData": "aus Tageskursen",
+      "formalization": { "text": "Stop = Tief der letzten Kontraktion. 'Mathematisch akzeptabel' heisst: Abstand Pivot -> Stop hoechstens maxStopPct; sonst gibt es kein Setup (statt eines mitten im Chart liegenden 10-%-Stops wie in 2.0.0).", "parameters": {
+        "risk.maxStopPct": { "value": 0.10, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "absolute Verlustgrenze 10 %" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/vcp.mjs", "function": "detectVcp" },
+      "test": ["MR-T-STOP-TECHNICAL", "MR-T-STOP-TOO-WIDE"], "fidelity": "HIGH", "r15Ref": "MIN-C-RSK-01", "decision": "10 % ist Grenze, nicht Regelfall"
+    },
+    {
+      "id": "MR-RSK-02", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "Kein Verlust ueber 10 % (absolute Grenze).",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Fuellkurs"], "availableData": "Tageskurse",
+      "formalization": { "text": "Nach der Fuellung (z. B. Gap ueber den Pivot) gilt Stop = max(technischer Stop, Fuellkurs vor Kosten x (1 - maxStopPct)).", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/exit-policy.mjs", "function": "openPosition" },
+      "test": ["MR-T-ENTRY-GAP"], "fidelity": "HIGH", "r15Ref": "MIN-C-RSK-01", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-RSK-03", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "Durchschnittsverlust deutlich unter dem Maximum (3-7 % je nach Quelle und Marktphase).",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-WHB-2014-05-11", "SRC-INT-STOCKOPEDIA-2018"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tradeergebnisse"], "availableData": "Messung",
+      "formalization": { "text": "Ergebnisziel, keine Handelsregel; wird im Backtest gemessen (Durchschnittsverlust), nicht erzwungen.", "parameters": {} },
+      "implementation": { "status": "RECORDED_ONLY", "module": "scripts/supertrader/replication/minervini/metrics.mjs", "function": "tradeStats" },
+      "test": ["MR-T-METRICS"], "fidelity": "HIGH", "r15Ref": "MIN-C-RSK-01", "decision": "nur gemessen"
+    },
+    {
+      "id": "MR-RSK-04", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "Gestaffelte Stops (Beispiel: halbe Position bei 6 %, halbe bei 10 %).",
+      "sources": ["SRC-INT-STOCKOPEDIA-2018", "SRC-BOOK-TTLAC"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Optionales Werkzeug mit Beispielzahlen, keine Pflichtregel; nicht umgesetzt.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-RSK-02", "decision": "optional, nicht umgesetzt"
+    },
+    {
+      "id": "MR-RSK-05", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "In schwierigen Maerkten engere Stops und kleinere Gewinnziele.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-INT-STOCKOPEDIA-2018"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["Urteil ueber die Marktlage"], "availableData": "-",
+      "formalization": { "text": "Diskretionaer (welcher Markt ist 'schwierig'?). Nicht formalisiert; die Exposure-Rueckfuehrung MR-PF-02 deckt den Teil 'Exposure verkleinern' ab.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "LOW", "r15Ref": "MIN-C-RSK-03", "decision": "diskretionaer"
+    },
+    {
+      "id": "MR-EXIT-01", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Einstand: Steigt der Kurs um das Dreifache des Risikos, Stop fast immer mindestens auf Einstand.",
+      "sources": ["SRC-BOOK-TLSMW", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Tageshochs"], "availableData": "Tageskurse",
+      "formalization": { "text": "Erreicht das Tageshoch Einstieg + breakevenR x R (R = Einstieg - Anfangsstop), gilt ab dem Folgetag Stop >= Einstieg. Einstieg = Fuellkurs vor Kosten.", "parameters": {
+        "exit.breakevenR": { "value": 3, "unit": "R", "provenance": "ORIGINAL", "rationale": "'rises by 3x my risk' (Buchnotizen)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/exit-policy.mjs", "function": "stepBar" },
+      "test": ["MR-T-EXIT-BREAKEVEN"], "fidelity": "HIGH", "r15Ref": "MIN-C-EXIT-01", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-EXIT-02", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Verkauf in die Staerke: bei einem Vielfachen des Risikos Gewinne mitnehmen, oft die Haelfte; Rest mit Stop auf Einstand.",
+      "sources": ["SRC-NOTES-WHB-2014-05-11", "SRC-NOTES-WHB-2014-05-04", "SRC-X-2019-07-11", "SRC-X-2021-04-03", "SRC-X-2020-10-20", "SRC-X-2020-10-21"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tageshochs"], "availableData": "Tageskurse",
+      "formalization": { "text": "Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Erreicht das Tageshoch Einstieg + partialR x R, wird partialFraction der Ausgangsstueckzahl zum Kurs max(open, Ziel) verkauft (einmalig). Ausloeser = dasselbe 3R-Ereignis wie der Einstand (MR-EXIT-01), weil die Quelle beides als Paar beschreibt ('Haelfte verkaufen, Rest auf Einstand'). 'Die Haelfte' ist primaer belegt (eigene Beitraege); das Vielfache 3 ist die Lesart.", "parameters": {
+        "exit.partialR": { "value": 3, "unit": "R", "provenance": "VU_FORMALIZATION", "rationale": "an den belegten 3R-Einstand gekoppelt; keine eigene Quellenzahl fuer den Teilverkauf" },
+        "exit.partialFraction": { "value": 0.5, "unit": "fraction", "provenance": "ORIGINAL", "rationale": "'sell half' (eigene Beitraege 2019/2021)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/exit-policy.mjs", "function": "stepBar" },
+      "test": ["MR-T-EXIT-PARTIAL", "MR-T-EXIT-GAP-PARTIAL"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-EXIT-03", "decision": "neu (fehlte in 2.0.0 und 3.0.0)"
+    },
+    {
+      "id": "MR-EXIT-03", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Stop nachziehen, sobald der Gewinn das 2-3-fache des Risikos uebersteigt, um den Grossteil des Gewinns zu sichern.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-WHB-2014-05-11"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Tagesschluesse"], "availableData": "Tageskurse",
+      "formalization": { "text": "Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Nach dem 3R-Ereignis gilt ab dem Folgetag Stop >= Einstieg + trailProtectFraction x (hoechster Schluss seit Einstieg - Einstieg). 'Grossteil' -> mindestens die Haelfte (kleinste Lesart). Aktivierung bei 3R = oberes Ende der Spanne 2-3R, gekoppelt an MR-EXIT-01. Kein gleitender Durchschnitt, weil keiner belegt ist (MR-EXIT-04).", "parameters": {
+        "exit.trailActivationR": { "value": 3, "unit": "R", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "2-3R; an den Einstand gekoppelt" },
+        "exit.trailProtectFraction": { "value": 0.5, "unit": "fraction", "provenance": "VU_FORMALIZATION", "rationale": "'Grossteil des Gewinns' -> mindestens 50 % des hoechsten Schlussgewinns" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/exit-policy.mjs", "function": "endOfDay" },
+      "test": ["MR-T-EXIT-TRAIL"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-EXIT-02", "decision": "neu"
+    },
+    {
+      "id": "MR-EXIT-04", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Verkauf in die Schwaeche; Ausstieg bei Schluss unter der 50-Tage-Linie (mit hohem Volumen).",
+      "sources": ["SRC-X-2022-07-18", "SRC-SECONDARY-WEB-2026"], "sourceConfidence": "LOW",
+      "provenanceClass": "UNRESOLVED", "reproducibility": "UNRESOLVED_NOT_ADOPTED",
+      "requiredData": ["SMA50"], "availableData": "Tageskurse",
+      "formalization": { "text": "Nicht uebernommen. Primaer belegt ist nur ein Einzelfall (erster Schluss unter der 50-Tage-Linie bei einem Modellbuch-Trade); die Volumenvariante aus 2.0.0 hat keine Minervini-Fundstelle (eher O'Neil). Eine allgemeine Regel daraus zu machen, waere eine Zuschreibung ohne Beleg.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": ["MR-T-NO-FOREIGN-RULES"], "fidelity": "NONE", "r15Ref": "MIN-C-EXIT-04", "decision": "2.0.0-Hauptausstieg verworfen"
+    },
+    {
+      "id": "MR-EXIT-05", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Zeitstop: eine seitwaerts laufende Aktie verkaufen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-11", "SRC-X-2021-01-17"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "PARAMETER_NOT_PUBLIC",
+      "requiredData": ["Dauer"], "availableData": "-",
+      "formalization": { "text": "Keine oeffentliche Zahl (Tage/Wochen). Nicht erfunden -> nicht umgesetzt. Folge: Positionen zwischen Stop und 3R koennen lange laufen; als Fidelity-Verlust im Ausstieg ausgewiesen.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-EXIT-05", "decision": "Zahl nicht oeffentlich"
+    },
+    {
+      "id": "MR-EXIT-06", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Nach dem Ausbruch soll der Kurs die 20-Tage-Linie halten; Verletzungen direkt nach dem Ausbruch sind Warnzeichen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-SECONDARY-WEB-2026"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["SMA20"], "availableData": "Tageskurse",
+      "formalization": { "text": "Ermessensverkauf; mehrere 'Verletzungen' werden zusammen gewichtet. Nicht formalisiert.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-EXIT-06", "decision": "diskretionaer"
+    },
+    {
+      "id": "MR-EXIT-07", "category": "EXIT", "layer": "A_CANONICAL",
+      "canonicalDescription": "Klimax- und Top-Signale (groesster Tages-/Wochenanstieg seit Beginn von Stufe 2, Erschoepfungsluecke, Umkehr mit hohem Volumen).",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-NOTES-TH-2019-07-15"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["Beginn von Stufe 2", "Kursverlauf"], "availableData": "Tageskurse",
+      "formalization": { "text": "Beginn von Stufe 2 und die Gewichtung der Signale sind diskretionaer; nicht formalisiert. Der Verkauf in die Staerke wird durch MR-EXIT-02/03 abgebildet.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-EXIT-07", "decision": "diskretionaer"
+    },
+    {
+      "id": "MR-ERN-01", "category": "RISK", "layer": "A_CANONICAL",
+      "canonicalDescription": "Quartalszahlen: Halten nur mit Gewinnpolster; ohne Polster Groesse fuer 10-15 % Rueckgang waehlen; nie eine grosse Position ungeschuetzt in die Zahlen.",
+      "sources": ["SRC-X-2017-10-25", "SRC-BOOK-TTLAC"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA",
+      "requiredData": ["Meldetermine (Ankuendigung) point-in-time"], "availableData": "keine: das 10-Q/10-K-Einreichungsdatum ist nicht der Meldetermin",
+      "formalization": { "text": "NOT REPRODUCIBLE WITH CURRENT DATA. Offiziell kostenlos beschaffbar: EDGAR-8-K Item 2.02 (Ergebnismitteilung) - dokumentiert, keine Pipeline eingefuehrt. Kein Ersatz aus dem Vorjahrestermin (Proxy).", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-ERN-01", "decision": "R15 UNRESOLVED -> jetzt primaer belegt, aber Daten fehlen"
+    },
+    {
+      "id": "MR-SIZ-01", "category": "SIZING", "layer": "A_CANONICAL",
+      "canonicalDescription": "Risiko je Trade im Schnitt 1,25 % des Kapitals, hoechstens 2,5 %.",
+      "sources": ["SRC-X-2018-04-24", "SRC-X-2021-04-16", "SRC-BOOK-TTLAC", "SRC-NOTES-WHB-2014-05-11"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Kapital", "Stopabstand"], "availableData": "Simulation",
+      "formalization": { "text": "Stueckzahl = abrunden(min(Kapital x riskPerTrade / (Pivot - Stop), Kapital x maxPositionPct / Pivot)). Kapital = Bargeld + Positionen zum Vortagesschluss. Die 1,25 % sind der belegte Durchschnitt; die 2,5 % sind eine Obergrenze und bleiben ungenutzt (kein Ermessen fuer 'beste Ideen').", "parameters": {
+        "size.riskPerTrade": { "value": 0.0125, "unit": "fraction_of_equity", "provenance": "ORIGINAL", "rationale": "eigene Beitraege 2018 und 2021" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "sizeOrder" },
+      "test": ["MR-T-SIZE-RISK", "MR-T-SIZE-CAP"], "fidelity": "HIGH", "r15Ref": "MIN-C-SIZ-01", "decision": "1,25 % jetzt primaer belegt (R15: nicht im Abruf)"
+    },
+    {
+      "id": "MR-SIZ-02", "category": "SIZING", "layer": "A_CANONICAL",
+      "canonicalDescription": "Hoechstens 25 % des Kapitals in einer Position (optimal 20-25 %); Beispiel: 25-%-Position nur mit Stop <= 5 %.",
+      "sources": ["SRC-X-2018-04-24", "SRC-NOTES-WHB-2014-05-11", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "REPRODUCIBLE",
+      "requiredData": ["Kapital"], "availableData": "Simulation",
+      "formalization": { "text": "Gewicht beim Kauf <= maxPositionPct. Die in Sekundaerquellen genannte 50-%-Grenze gilt fuer Konten mit Margin und ist ohne Margin (MR-PF-04) nicht anwendbar.", "parameters": {
+        "size.maxPositionPct": { "value": 0.25, "unit": "fraction_of_equity", "provenance": "ORIGINAL", "rationale": "25 % (Interviewnotizen, eigener Beitrag 2018)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "sizeOrder" },
+      "test": ["MR-T-SIZE-CAP"], "fidelity": "HIGH", "r15Ref": "MIN-C-SIZ-02", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-PF-01", "category": "PORTFOLIO", "layer": "A_CANONICAL",
+      "canonicalDescription": "Anzahl Positionen: kleine Konten 4-6, grosse 10-12; 8-10, evtl. 12; mitunter mehr, nie mehr als 15-20; nicht zu breit streuen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-11", "SRC-NOTES-WHB-2014-05-04", "SRC-X-2020-10-20"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": [], "availableData": "Simulation",
+      "formalization": { "text": "Hoechstens maxPositions offene Positionen. 12 = obere Grenze der normalen Spanne; die Konzentration ergibt sich vor allem aus MR-SIZ-01/02 und dem Bargeld (bei 12,5-25 % je Position praktisch 4-8 Titel).", "parameters": {
+        "pf.maxPositions": { "value": 12, "unit": "count", "provenance": "ORIGINAL_INTERPRETATION", "rationale": "'8-10, maybe 12' / 'large accounts 10-12'" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "reserveOrders" },
+      "test": ["MR-T-PF-MAXPOS"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-PF-01", "decision": "10 (2.0.0) -> 12 mit Begruendung"
+    },
+    {
+      "id": "MR-PF-02", "category": "PORTFOLIO", "layer": "A_CANONICAL",
+      "canonicalDescription": "Progressive Exposure: nie von 0 auf 100 %; mit Pilotpositionen auf 25-50 % gehen, erst bei Erfolg erhoehen; laufen die Trades nicht, zurueckfahren.",
+      "sources": ["SRC-INT-STOCKOPEDIA-2018", "SRC-X-2020-10-20", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Ergebnis der abgeschlossenen Trades"], "availableData": "Simulation",
+      "formalization": { "text": "Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Exposure-Obergrenze (Wert der Positionen zum Vortagesschluss + reservierte Orders) = initialExposureCeiling zu Beginn und nach jedem verlustbringenden abgeschlossenen Trade; fullExposureCeiling nach jedem gewinnbringenden abgeschlossenen Trade (Ergebnis = alle Teilverkaeufe inkl. Kosten und Dividenden). Bestehende Positionen werden nicht zwangsverkauft. Ersetzt die 2.0.0-Halbierungsregel (5 Trades, Faktor 0,5 - VU).", "parameters": {
+        "pf.initialExposureCeiling": { "value": 0.5, "unit": "fraction_of_equity", "provenance": "VU_FORMALIZATION", "rationale": "obere Grenze der Quellspanne 25-50 % (keine zusaetzliche VU-Verschaerfung)" },
+        "pf.fullExposureCeiling": { "value": 1.0, "unit": "fraction_of_equity", "provenance": "VU_FORMALIZATION", "rationale": "voll investiert ohne Margin (MR-PF-04)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "exposureCeiling" },
+      "test": ["MR-T-PF-PROGRESSIVE"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-PF-02", "decision": "Startquote neu"
+    },
+    {
+      "id": "MR-PF-03", "category": "SIZING", "layer": "A_CANONICAL",
+      "canonicalDescription": "Positionsaufbau: Pilotkaeufe, bei Erfolg aufstocken (Pyramidisieren); in Cheat-Zonen gestaffelt einsteigen.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04", "SRC-INT-STOCKOPEDIA-2018"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL", "reproducibility": "DISCRETIONARY_NOT_FORMALIZED",
+      "requiredData": ["Zukaufpunkte"], "availableData": "-",
+      "formalization": { "text": "Je Titel nicht formalisiert (Zukaufpunkte und -mengen nicht oeffentlich festgelegt). Auf Portfolioebene durch MR-PF-02 abgebildet. Fidelity-Verlust im Sizing ausgewiesen.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "LOW", "r15Ref": "MIN-C-ADD-01", "decision": "nicht formalisiert"
+    },
+    {
+      "id": "MR-PF-04", "category": "PORTFOLIO", "layer": "A_CANONICAL",
+      "canonicalDescription": "Hebel/Margin in starken Phasen, sparsam und opportunistisch.",
+      "sources": ["SRC-X-2022-01-20", "SRC-NOTES-WHB-2014-05-11"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "OUT_OF_SCOPE",
+      "requiredData": ["Margin-Regel"], "availableData": "-",
+      "formalization": { "text": "Bargeldkonto ohne Hebel; 'sparsam und opportunistisch' ist ohne Zahl. Fidelity-Verlust im Portfolio ausgewiesen.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-PF-03", "decision": "out of scope"
+    },
+    {
+      "id": "MR-PF-05", "category": "PORTFOLIO", "layer": "A_CANONICAL",
+      "canonicalDescription": "Leerverkaeufe.",
+      "sources": ["SRC-X-2022-01-20"], "sourceConfidence": "HIGH",
+      "provenanceClass": "ORIGINAL", "reproducibility": "OUT_OF_SCOPE",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Nur Long. Die Short-Methode ist nicht oeffentlich beschrieben.", "parameters": {} },
+      "implementation": { "status": "NOT_IMPLEMENTED", "module": null, "function": null },
+      "test": [], "fidelity": "NONE", "r15Ref": "MIN-C-PF-05", "decision": "out of scope"
+    },
+    {
+      "id": "MR-PF-06", "category": "PORTFOLIO", "layer": "A_CANONICAL",
+      "canonicalDescription": "Reihenfolge: nach einem Markttief in der Reihenfolge der Ausbrueche kaufen; die Fuehrer brechen zuerst aus.",
+      "sources": ["SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "VU_FORMALIZATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": ["Intraday-Ausloesezeit"], "availableData": "nur Tagesbalken",
+      "formalization": { "text": "Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Ueber Tage gilt die Reihenfolge der Ausbrueche von selbst (frueher reserviert = frueher gekauft). Innerhalb eines Tages ist die Ausloesezeit unbekannt; die Orders werden VOR dem Tag nach VU-RS-Rangwert (MR-TT-08, Stand Vortag) absteigend, dann nach kleinerem Stopabstand gereiht - Fuehrer zuerst, engere (konstruktivere) Basis zuerst. Exakter Gleichstand in beiden Werten: die ganze Gruppe wird nur reserviert, wenn sie vollstaendig passt. Nicht alphabetisch, nicht zufaellig, nicht nach Dateireihenfolge.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "rankOrders" },
+      "test": ["MR-T-RANK-RS", "MR-T-RANK-NOT-ALPHA", "MR-T-RANK-TIE"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-PF-04", "decision": "alphabetischer Gleichstand von 2.0.0 verworfen"
+    },
+    {
+      "id": "MR-PF-07", "category": "MARKET", "layer": "A_CANONICAL",
+      "canonicalDescription": "Marktlage: Aktie fuer Aktie; Fuehrer zeigen die Wende; Verlustserien und Ausbruchsqualitaet als Marktsignal; kein mechanischer Indexfilter.",
+      "sources": ["SRC-INT-STOCKOPEDIA-2018", "SRC-NOTES-WHB-2014-05-04"], "sourceConfidence": "MEDIUM",
+      "provenanceClass": "ORIGINAL_INTERPRETATION", "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Kein Indexfilter. Die Rueckmeldung aus den eigenen Trades wirkt ueber MR-PF-02. Minervinis eigenes Risikomodell (Verkaufssignale im Markt) ist nicht oeffentlich (NOT_PUBLIC).", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-policy.mjs", "function": "exposureCeiling" },
+      "test": ["MR-T-NO-FOREIGN-RULES"], "fidelity": "MEDIUM", "r15Ref": "MIN-C-MKT-01", "decision": "uebernommen"
+    },
+    {
+      "id": "MR-UNI-01", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
+      "canonicalDescription": "VU-Messrahmen: Universum = US-Stammaktien, ADR, REIT des Validierungsuniversums (inkl. delisteter Titel), Rohschluss >= 5 USD und Dollarumsatz20 >= 5 Mio. USD am Setup-Tag.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
+      "requiredData": ["Rohkurs", "Volumen"], "availableData": "Validierungsdaten R14",
+      "formalization": { "text": "Keine Minervini-Regel (er nennt keine feste Liquiditaetsgrenze). Offen ausgewiesener Messrahmen, identisch mit R14, damit ein 100.000-USD-Konto handelbar bleibt und die Messung vergleichbar ist.", "parameters": {
+        "uni.minRawClose": { "value": 5, "unit": "USD", "provenance": "VU_OWN", "rationale": "Messrahmen R14 (Reverse-Split-Artefakte, Handelbarkeit)" },
+        "uni.minDollarVolume20": { "value": 5000000, "unit": "USD", "provenance": "VU_OWN", "rationale": "Messrahmen R14 (Handelbarkeit)" },
+        "uni.dollarVolumeSessions": { "value": 20, "unit": "sessions", "provenance": "VU_OWN", "rationale": "Messrahmen R14 (20-Tage-Durchschnitt Dollarumsatz)" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/signal-engine.mjs", "function": "scanSegment" },
+      "test": ["MR-T-UNIVERSE"], "fidelity": "NONE", "r15Ref": "MIN-C-LIQ-01", "decision": "als VU-Messrahmen, nicht als Minervini-Regel"
+    },
+    {
+      "id": "MR-EXE-01", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
+      "canonicalDescription": "VU-Ausfuehrung ohne Zukunftswissen: Orders werden vor dem Handelstag aus dem Stand zum Vortagesschluss reserviert.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Vor Tag d: Rang (MR-PF-06), Stueckzahl (MR-SIZ-01/02), Platz- und Exposure-Grenzen (MR-PF-01/02) und Bargeld werden aus dem Stand zum Schluss d-1 reserviert. Ob eine Order ausloest, entscheidet nur der Balken d; eine nicht ausgeloeste Order gibt ihren Platz am Ende von d frei; folgt auf das Setup kein Balken am naechsten Kalendertag, verfaellt die Order. Fehlt die Eroeffnung, gilt der Pivot als Fuellkurs. Erloese aus Verkaeufen am Tag d finanzieren erst Kaeufe ab d+1 (keine Gleichtagsfinanzierung). Ganze Stueck.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-NO-SAME-DAY-FUNDING", "MR-T-RESERVE-NO-LOOKAHEAD", "MR-T-RT-UNIT", "MR-T-RT-ORDER-GAP", "MR-T-RT-NAN-OPEN"], "fidelity": "NONE", "r15Ref": "R15 Abschnitt 7", "decision": "ersetzt die 2.0.0-Konvention 'Ausstiege finanzieren Einstiege desselben Tages'"
+    },
+    {
+      "id": "MR-EXE-02", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
+      "canonicalDescription": "VU-Kostenannahme: 10 bp Slippage und 1 bp Gebuehr je Seite.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Wie R14 (DEFAULT_EXECUTION), aber ausdruecklich uebergeben statt still geerbt.", "parameters": {
+        "exe.slippageBps": { "value": 10, "unit": "bps", "provenance": "VU_OWN", "rationale": "Messrahmen R14" },
+        "exe.commissionBps": { "value": 1, "unit": "bps", "provenance": "VU_OWN", "rationale": "Messrahmen R14" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-COSTS"], "fidelity": "NONE", "r15Ref": "MIN-P-EXEC-01", "decision": "Messrahmen"
+    },
+    {
+      "id": "MR-EXE-03", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
+      "canonicalDescription": "VU-Balkenreihenfolge: Beruehrt ein Tagesbalken Stop und Gewinnziel, gilt der Stop zuerst (konservativ). Am Einstiegstag zaehlt ein Tief <= Stop als Ausstoppen.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Ohne Intraday-Daten unbekannt; die pessimistische Lesart wird gewaehlt.", "parameters": {} },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/exit-policy.mjs", "function": "stepBar" },
+      "test": ["MR-T-EXIT-SAME-BAR"], "fidelity": "NONE", "r15Ref": "MIN-P-EXEC-02", "decision": "Messrahmen"
+    },
+    {
+      "id": "MR-EXE-04", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
+      "canonicalDescription": "VU-Messrahmen: Startkapital 100.000 USD; Dividenden am Ex-Tag gutgeschrieben; Delisting zum letzten Schluss (Szenario S0 wie R14); offene Positionen am Ende zum Schluss bewertet; Kauf am Ex-Tag erhaelt keine Dividende.",
+      "sources": [], "sourceConfidence": "NONE",
+      "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
+      "requiredData": [], "availableData": "-",
+      "formalization": { "text": "Messkonvention, keine Minervini-Regel.", "parameters": {
+        "pf.initialEquity": { "value": 100000, "unit": "USD", "provenance": "VU_OWN", "rationale": "Messrahmen R14" } } },
+      "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
+      "test": ["MR-T-DELIST", "MR-T-DIVIDEND", "MR-T-RT-DIVIDEND-ENTRY-DAY", "MR-T-RT-SIGNAL-DELIST"], "fidelity": "NONE", "r15Ref": "MIN-P-LEGACY-01", "decision": "Messrahmen"
+    }
+  ],
+  "legacyDisposition": {
+    "discardedFrom2_0_0": [
+      { "item": "Ausbruchsvolumen >= 1,4x (MIN-ENTRY-D2)", "class": "FOREIGN_RULE", "reason": "O'Neil-Konvention; zudem am Kaufzeitpunkt unbekannt" },
+      { "item": "Ausstieg Schluss < SMA50 mit Volumen (MIN-EXIT-02)", "class": "UNRESOLVED", "reason": "keine allgemeine Minervini-Fundstelle" },
+      { "item": "VCP: 4-%-Zickzack, 65-Sitzungen-Fenster, erste <= 35 %, letzte <= 10 %, Vol10/Vol50 < 0,8", "class": "VU_FORMALIZATION", "reason": "Zahlen ohne Quelle; ersetzt durch MR-VCP-01..08" },
+      { "item": "Schlussbestaetigung + Kauf zur naechsten Eroeffnung", "class": "VU_FORMALIZATION", "reason": "Quelle: Kauf im Moment des Durchbruchs (MR-ENT-01)" },
+      { "item": "Stop = max(Kontraktionstief, Eroeffnung - 10 %)", "class": "VU_FORMALIZATION", "reason": "10 % als Regelfall statt Grenze (MR-RSK-01)" },
+      { "item": "Verfall nach 20 Sitzungen, ENTRY_READY 3 %, 5-Sitzungen-Sperre, ein Signal je Titel blockiert den Titel ohne Portfolioplatz", "class": "VU_OWN", "reason": "keine Quelle" },
+      { "item": "RS nur bei Entdeckung (LC-RANK-AT-DISCOVERY)", "class": "VU_OWN", "reason": "Template gilt an jedem Tag" },
+      { "item": "Halbierungsregel nach 5 Trades", "class": "VU_FORMALIZATION", "reason": "ersetzt durch MR-PF-02 mit Startquote" },
+      { "item": "10 Plaetze, alphabetischer Gleichstand", "class": "VU_OWN/ORIGINAL_INTERPRETATION", "reason": "12 mit Begruendung; Gleichstand ohne Alphabet (MR-PF-06)" },
+      { "item": "Gleichtagsfinanzierung (Ausstiege vor Einstiegen)", "class": "VU_OWN", "reason": "ersetzt durch MR-EXE-01" }
+    ],
+    "discardedFrom3_0_0": [
+      { "item": "EPS >= 25 %", "class": "VU_FORMALIZATION", "reason": "Quelle nennt 20 % als Untergrenze fuer Fuehrer" },
+      { "item": "Vorquartal mit Verlustbasis zaehlt als Beschleunigung", "class": "VU_OWN", "reason": "Beschleunigung muss nachweisbar sein" },
+      { "item": "EPS-Vorjahresvergleich ohne Split-Bereinigung", "class": "DATA_ERROR", "reason": "Erstmeldungen ueber ein Splitdatum nicht vergleichbar" },
+      { "item": "Umsatz-Quartal nicht mit EPS-Quartal abgeglichen; Vorquartal ohne Kontinuitaetspruefung; keine Frischepruefung", "class": "DATA_ERROR", "reason": "Worker-A-Befunde P6/P7/P8" },
+      { "item": "Alle Preis-, Portfolio- und Ausstiegsregeln (identisch mit 2.0.0)", "class": "siehe 2.0.0", "reason": "siehe oben" }
+    ],
+    "reusedUnchanged": [
+      { "item": "engine/indicators.mjs: sma, rollingMax, rollingMin (rein, kausal)", "use": "Trend Template, Volumenschnitt" },
+      { "item": "validation/analyze-methods.mjs: loadPitData, segCtx (Datenschicht, Querschnitt-RS point-in-time)", "use": "Messlauf" },
+      { "item": "validation/lib.mjs: adjustSeries, encryptForOwner, WINDOWS", "use": "Messlauf" },
+      { "item": "quant/engines/return-series.js#splitFactors (ADR-002)", "use": "Split-Bereinigung der EPS-Erstmeldungen" },
+      { "item": "validation/sec-pit.mjs: Store-Zuordnung Listing -> CIK (sec-pit-r12/r11)", "use": "CIK je Listing ohne neue Namenszuordnung" }
+    ],
+    "reusedConceptOnly": [
+      { "item": "Trend-Template-Kriterien 1-7 (2.0.0)", "note": "fachlich gleich, neu implementiert mit Parametern aus dem Regelbuch" },
+      { "item": "Einstand bei 3R (2.0.0 MIN-BE-01)", "note": "gleich, aber Ausloesung am Tageshoch und gekoppelt an Teilverkauf" },
+      { "item": "1,25 %, 25 % (2.0.0 PORTFOLIO)", "note": "Werte gleich, jetzt primaer belegt und mit Rule-ID" },
+      { "item": "PIT-Sichtbarkeit filed < Tag (3.0.0 earnings.mjs)", "note": "gleiches Prinzip, neu implementiert mit Fehlerbehebungen" }
+    ]
+  },
+  "fidelityAssessment": {
+    "method": "Je Bereich die niedrigste Fidelity der filternden (IMPLEMENTED) Regeln, abgesenkt um eine Stufe (nicht unter LOW), wenn eine Kernregel des Bereichs nicht filternd umgesetzt ist (Status != IMPLEMENTED). Gesamtwert = niedrigster Bereich. Berechnet in replication/minervini/engine.mjs#fidelityByArea; der Test prueft Gleichheit mit dieser Tabelle.",
+    "areas": {
+      "trend": "MEDIUM",
+      "entry": "LOW",
+      "fundamental": "LOW",
+      "exit": "LOW",
+      "sizing": "MEDIUM",
+      "portfolio": "LOW",
+      "marketRegime": "MEDIUM",
+      "risk": "MEDIUM"
+    },
+    "areaMembers": {
+      "trend": ["MR-TT-01", "MR-TT-02", "MR-TT-03", "MR-TT-04", "MR-TT-05", "MR-TT-06", "MR-TT-07", "MR-TT-08"],
+      "entry": ["MR-VCP-01", "MR-VCP-02", "MR-VCP-03", "MR-VCP-04", "MR-VCP-05", "MR-VCP-06", "MR-VCP-08", "MR-ENT-01", "MR-ENT-02", "MR-ENT-03", "MR-ENT-04", "MR-RE-01"],
+      "fundamental": ["MR-SEPA-00", "MR-SEPA-01", "MR-SEPA-02", "MR-SEPA-03", "MR-SEPA-04", "MR-SEPA-05", "MR-SEPA-06", "MR-SEPA-07", "MR-SEPA-08", "MR-SEPA-09", "MR-SEPA-10", "MR-SEPA-11", "MR-SEPA-12", "MR-PIT-01"],
+      "exit": ["MR-EXIT-01", "MR-EXIT-02", "MR-EXIT-03", "MR-EXIT-05", "MR-EXIT-06", "MR-EXIT-07"],
+      "sizing": ["MR-SIZ-01", "MR-SIZ-02", "MR-PF-03"],
+      "portfolio": ["MR-PF-01", "MR-PF-02", "MR-PF-04", "MR-PF-06"],
+      "marketRegime": ["MR-PF-07"],
+      "risk": ["MR-RSK-01", "MR-RSK-02", "MR-RSK-04", "MR-RSK-05", "MR-ERN-01"]
+    },
+    "coreRulesForDowngrade": ["MR-VCP-05", "MR-ENT-02", "MR-ENT-03", "MR-ENT-04", "MR-SEPA-07", "MR-SEPA-08", "MR-SEPA-11", "MR-SEPA-12", "MR-EXIT-05", "MR-EXIT-07", "MR-PF-03", "MR-PF-04", "MR-ERN-01"]
+  }
+}
