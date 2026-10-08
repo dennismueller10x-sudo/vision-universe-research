@@ -220,14 +220,15 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
      der erste Bildschirm ist der Globus-Hero (q-hero) mit der Frage "Was
      möchtest du heute analysieren?" und der Suche direkt darunter. Die
      Absicht bleibt: zuerst die Antwort (Suche), keine Erklaerung. */
-  const heroAt = kopf.indexOf('el("header", { class: "q-hero v2-intro qx-intro qx-hero" }');
+  const heroAt = kopf.indexOf('el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero" }');
   assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
   const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
   /* Produktpositionierung (Owner, 04.10.2026): die Frage wird zum Claim -
      der erste Bildschirm sagt, was Quant ist (docs/VU_QUANT_PRODUCT_POSITIONING.md). */
-  assert.match(hero, /el\("h1", \{ class: "q-claim", text: CLAIM \}/,
+  assert.match(hero, /el\("h1", \{ class: "q-claim vu-product-title", text: HERO_TITLE \}/,
     "das Versprechen der Startseite ist verschwunden");
+  assert.match(hero, /text: CLAIM \}/, "der vollständige Claim mit Marktvergleich fehlt");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
   assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
   /* Eine feste, kleine Zahl von Wegen - keine Auswahlwand. Vereinbart
