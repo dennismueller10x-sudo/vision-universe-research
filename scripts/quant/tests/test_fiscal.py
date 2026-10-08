@@ -116,10 +116,10 @@ class CalendarLearningTests(unittest.TestCase):
 
 
 def _fact(concept, start, end, form="10-K", fp="FY", fy=2008, accession="a1",
-          taxonomy="us-gaap"):
+          taxonomy="us-gaap", filed="2009-03-01"):
     return RawFact(cik="1", taxonomy=taxonomy, concept=concept, unit="USD", value=1.0,
                    start=start, end=end, accession=accession, form=form,
-                   filed="2009-03-01", filing_fy=fy, filing_fp=fp)
+                   filed=filed, filing_fy=fy, filing_fp=fp)
 
 
 class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):
@@ -142,8 +142,9 @@ class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):
 
     def test_forty_f_comparatives_three_years_back_keep_their_own_labels(self):
         calendar = FiscalCalendar.from_raw_facts("1", [
-            _fact("Revenues", "2022-01-01", "2022-12-31", form="40-F", fy=2022),
-            _fact("Revenues", "2021-01-01", "2021-12-31", form="40-F", fy=2022),
+            # filed after its year end (1.20.0: a year end after the filing date is no fiscal year)
+            _fact("Revenues", "2022-01-01", "2022-12-31", form="40-F", fy=2022, filed="2023-03-01"),
+            _fact("Revenues", "2021-01-01", "2021-12-31", form="40-F", fy=2022, filed="2023-03-01"),
         ])
         self.assertEqual(calendar.assign("2020-01-01", "2020-12-31"), (2020, "FY", "FY"))
         self.assertEqual(calendar.assign(None, "2019-12-31"), (2019, "FY", "instant"))
