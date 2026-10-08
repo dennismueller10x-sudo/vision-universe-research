@@ -55,7 +55,7 @@ vm.createContext(sandbox);
 vm.runInContext(readFileSync(join(ROOT, "quant/app/ui.js"), "utf8"), sandbox);
 const QX = sandbox.QX;
 const navBox = { HTMLElement: class {}, URLSearchParams, customElements: { define() {} } };
-vm.runInNewContext(readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8").replace(/\}\)\(\);\s*$/, "globalThis.__p = PRODUCTS;})();"), navBox);
+vm.runInNewContext(readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8").replace(/\}\)\(\);\s*$/, "globalThis.__p = PRODUCTS; globalThis.__groups = groups;})();"), navBox);
 const QUANT_DOCK = navBox.__p.find((p) => p.id === "quant");
 const NAV = readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8");
 
@@ -98,10 +98,13 @@ test("Quant verlinkt niemals das eigenstaendige Screener-Produkt als seinen eige
 });
 
 test("die Plattform-Navigation fuehrt Screener als eigenstaendiges Produkt", () => {
-  assert.match(NAV, /\['Screener','\/screener\/'/,
-    "der Menueeintrag Screener zeigt nicht mehr auf das eigenstaendige Produkt");
-  assert.doesNotMatch(NAV, /\['Screener','\/quant\//,
-    "der Menueeintrag Screener zeigt in den Quant-internen Screener - das sind zwei Produkte");
+  // Resolve the actual product configuration in both list and accordion
+  // layouts; a matching comment or an internal Quant link is insufficient.
+  const groups = navBox.__groups;
+  const product = groups.find(g => !Array.isArray(g) && g.id === "screener");
+  const legacy = groups.flatMap(g => Array.isArray(g) ? g[1] : []).find(([label]) => label === "Screener");
+  assert.equal(product ? product.href : legacy?.[1], "/screener/",
+    "der eigenstaendige Screener darf nicht in den Quant-internen Screener fuehren");
 });
 
 /* ---------------------------------------------------------------------

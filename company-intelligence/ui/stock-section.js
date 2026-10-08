@@ -82,7 +82,15 @@ function eventRow(e){
  return n;
 }
 function changeLabel(c){
- if(c.metric==='revenue_growth')return c.current>c.previous?'Beschleunigt':c.current<c.previous?'Verlangsamt':'Unverändert';
+ if(c.metric==='revenue_growth'){
+  if(c.current===c.previous)return 'Unverändert';
+  if(c.current<0&&c.previous<0)return c.current>c.previous?'Rückgang abgeschwächt':'Rückgang verstärkt';
+  if(c.current>0&&c.previous<0)return 'Wachstum statt Rückgang';
+  if(c.current<0&&c.previous>0)return 'Rückgang statt Wachstum';
+  if(c.current===0)return c.previous<0?'Kein Umsatzrückgang':'Kein Umsatzwachstum';
+  if(c.previous===0)return c.current<0?'Umsatzrückgang':'Umsatzwachstum';
+  return c.current>c.previous?'Beschleunigt':'Verlangsamt';
+ }
  if(['gross_margin','operating_margin'].includes(c.metric))return c.absolute>0?'Ausgeweitet':c.absolute<0?'Verringert':'Unverändert';
  return c.current>c.previous?'Gestiegen':c.current<c.previous?'Gesunken':'Unverändert';
 }
@@ -150,5 +158,5 @@ function mount(parent,ticker,options={}){
  g.VUCompanyIntelligence.load(ticker,{enabled:true,base:options.base||config.base,expectedGeneration:config.stage===1?config.expectedGeneration:undefined,signal:controller.signal}).then(p=>{if(!disposed&&host.isConnected)render(host,p);}).catch(()=>{if(!disposed&&host.isConnected)render(host,{state:'UNAVAILABLE'});}).finally(()=>{clearTimeout(timeout);host.setAttribute('aria-busy','false');});
  return ()=>{disposed=true;clearTimeout(timeout);controller.abort();host.remove();};
 }
-g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType};
+g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType,changeLabel};
 })(typeof globalThis!=='undefined'?globalThis:this);

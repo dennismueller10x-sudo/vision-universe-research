@@ -118,6 +118,7 @@ test('compact menu preserves every old destination in six products and one addit
   const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
   for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
   for(const g of groups.slice(0,6)) assert.equal(g.href, g.entries[0][1]);
+  assert.equal(groups.find(g=>g.id==='quant').entries.find(([,href])=>href==='/quant/#/screener')[0],'Quant Screener');
 });
 
 test('menu routes distinguish home, query, hash segment boundaries and detail parents', () => {
@@ -132,6 +133,9 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
     ['/screener/?view=saved&f=pe','screener','/screener/?view=saved'],
     ['/screener/?view=compare','screener','/screener/?view=results'],
     ['/screener/?view=changes&id=example','screener','/screener/?view=saved'],
+    ['/screener/?f=roic:gt:0.1','screener','/screener/?view=build'],
+    ['/screener/?mode=pro','screener','/screener/?view=build'],
+    ['/screener/?view=unknown&mode=pro','screener','/screener/?view=build'],
     ['/vorsorge/#/etf/IWDA','vorsorge','/vorsorge/#/etfs'],
     ['/supertrader/strategies/darvas-boxes/','supertrader','/supertrader/strategies/'],
     ['/hedgefonds/#/fonds/berkshire','hedgefonds','/hedgefonds/#/datenbank'],
@@ -142,6 +146,7 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
   for(const [url,group,href] of examples){assert.equal(state(url).group,group,url);assert.equal(state(url).href,href,url);assert.equal(state(url).expanded,group,url);}
   assert.equal(state('/screener/?view=start&mode=pro').href,'/screener/');
   assert.equal(state('/screener/?view=start&mode=pro').expanded,null);
+  assert.equal(state('/screener/?view=start&f=roic:gt:0.1').expanded,null);
   assert.equal(routeScore('/discover/#/welten',loc('/discover/#/weltenfremd')),-1);
   assert.equal(routeScore('/screener/',loc('/screener/?view=saved')),-1);
   assert.equal(routeScore('/quant/',loc('/quant/#/aktien')),-1);

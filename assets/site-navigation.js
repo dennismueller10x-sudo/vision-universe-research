@@ -3,7 +3,7 @@
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
-    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Elliott Wave','/quant/#/aktie/NVDA/chartbild?ansicht=profi','◬'],['Technische Analyse','/quant/#/aktie/NVDA/technik','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Elliott Wave','/quant/#/aktie/NVDA/chartbild?ansicht=profi','◬'],['Technische Analyse','/quant/#/aktie/NVDA/technik','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
@@ -101,7 +101,11 @@
       if (product.id === 'hedgefonds' && hashPart(loc, 0) === 'fonds') href = '/hedgefonds/#/datenbank';
       if (product.id === 'discover' && hashPart(loc, 0) === 's') href = '/discover/#/einzeln/US_REAL';
     }
-    const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && (!new URLSearchParams(loc.search).has('view') || (product.id === 'screener' && new URLSearchParams(loc.search).get('view') === 'start'));
+    // Screener omits view=build on its default filtered/pro URLs (app.readURL/buildURL).
+    const params = new URLSearchParams(loc.search), explicit = params.get('view');
+    const screenerView = ['start','build','results','saved','changes','compare','watchlist'].includes(explicit) ? explicit : (params.getAll('f').some(f=>f.trim()) || params.get('mode') === 'pro' ? 'build' : 'start');
+    if(product && product.id === 'screener') href = {start:'/screener/',build:'/screener/?view=build',results:'/screener/?view=results',compare:'/screener/?view=results',saved:'/screener/?view=saved',changes:'/screener/?view=saved',watchlist:'/screener/?view=watchlist'}[screenerView];
+    const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && (product.id === 'screener' ? screenerView === 'start' : !params.has('view'));
     return {group: group && group.id, href, expanded: group && !home ? group.id : null};
   };
   /* Linien-Icons der Leiste: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
@@ -346,7 +350,7 @@
       const setExpanded=open=>{[button,this.dockMenuButton].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
       const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
       const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:button;if(target&&target.focus)target.focus();};
-      this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;root.querySelector('.close').focus();};
+      this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
       button.onclick=()=>this.openMenu(button);
       root.querySelector('.close').onclick=()=>{close();restore();};root.querySelector('.backdrop').onclick=()=>{close();restore();};
       panel.addEventListener('click',event=>{if(event.target.closest('a'))close();});

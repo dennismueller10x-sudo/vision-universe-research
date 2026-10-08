@@ -26,7 +26,8 @@ Die Token-Aliases `--vu-premium-background` / `--vu-premium-bg`,
 `--vu-premium-accent-text` erlauben einfache Produktintegration.
 Die Klassen definieren Typografie und Rhythmus;
 Produkte behalten ihr eigenes Layout und ihre Bilder. Der Titel wächst von
-34–48 px auf Mobile auf 44–64 px am Desktop. Benefit-Texte erhalten
+34–48 px auf Mobile auf bis zu 64 px am Desktop. Produktlayouts dürfen
+an Tablet-Breiten eine kompaktere Überschrift beibehalten. Benefit-Texte erhalten
 1,6-fachen Zeilenabstand und eine begrenzte Lesebreite. Aktionen und Chips
 stehen als `vu-product-action`, `vu-product-action--secondary` und
 `vu-product-chip` bereit; Touch-Ziele sind mindestens 44 px hoch.
@@ -79,7 +80,10 @@ dekorativ (`aria-hidden="true"`); Produktnamen bleiben echte Texte.
 
 ## Ressourcen und Änderungsgrenzen
 
-Ein gemeinsamer Sprite ersetzt mehrfach kopierte Produktgeometrie. Kein
+Ein gemeinsamer Sprite versorgt Hero und Menü; das Menü lädt ihn erst beim
+Öffnen. Der kleine Dock zeichnet dieselben Originalgeometrien inline, damit
+datenreiche Quant-Unterseiten keine zusätzliche Anfrage benötigen. Ein
+Provenienztest vergleicht diese Geometrien exakt mit dem Sprite. Kein
 Preload auf unbeteiligten Seiten, keine separaten Größen-Assets, keine
 zusätzliche Bibliothek und keine neue Schrift. Die HUDs besitzen eine feste
 Breite und Höhe und verursachen keinen Layout Shift beim Laden des Sprites.
