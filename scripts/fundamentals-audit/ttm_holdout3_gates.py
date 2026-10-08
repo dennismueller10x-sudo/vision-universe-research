@@ -60,11 +60,17 @@ def main():
             if denominator >= gates["stratumMinimumEvaluations"] and (s[name] or 0) > gates["stratumMaxPercent"]:
                 stratum_fail.append({"stratum": stratum, "gate": name, "value": s[name]})
     results["STRATA"] = {"failures": stratum_fail, "limit": gates["stratumMaxPercent"], "pass": not stratum_fail}
-    fc = by_stratum.get("fy_change") or {}
-    value = fc.get("WRONG_PERIOD")
+    # FISCAL_CHANGE_WRONG_PERIOD: Fenster ueber einen Geschaeftsjahreswechsel falsch gesetzt = WRONG_PERIOD oder
+    # FALSE_AVAILABLE in der Schicht fy_change, bezogen auf alle ihre Auswertungen; zu wenige Faelle = nicht pruefbar = FAIL
+    fc_rows = tagged.get("fy_change", [])
+    fc_cases = len({(r["cik"], r["end"], r["kind"]) for r in fc_rows})
+    fc_bad = sum(1 for r in fc_rows if r["class"] in ("WRONG_PERIOD", "FALSE_AVAILABLE"))
+    value = rate(fc_bad, len(fc_rows))
     results["FISCAL_CHANGE_WRONG_PERIOD"] = {"value": value, "limit": gates["fiscalChangeWrongPeriodMaxPercent"],
-                                             "evaluations": fc.get("coreAndTruthAvailable"),
-                                             "pass": (value or 0) <= gates["fiscalChangeWrongPeriodMaxPercent"]}
+                                             "evaluations": len(fc_rows), "cases": fc_cases, "bad": fc_bad,
+                                             "minimumCases": gates["fiscalChangeMinimumCases"],
+                                             "pass": fc_cases >= gates["fiscalChangeMinimumCases"] and value is not None
+                                             and value <= gates["fiscalChangeWrongPeriodMaxPercent"]}
     verdict = "PASS" if all(v["pass"] for v in results.values()) else "FAIL"
     print(json.dumps({"schema": "vu-fundamental-ttm-holdout3-result-1.0.0", "verdict": verdict, "gates": results,
                       "issuers": len(issuers), "cases": len(cases), "evaluations": len(rows),

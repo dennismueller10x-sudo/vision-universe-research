@@ -1,0 +1,136 @@
+{
+ "schema": "vu-fundamental-ttm-holdout3-prereg-1.0.0",
+ "registeredAt": "2026-10-08",
+ "status": "REGISTERED_NOT_OPENED",
+ "question": "Liefert der eingefrorene Kern 1.20.0 (Freeze v5) auf voellig ungesehenen Emittent/Perioden-Faellen ein korrektes PIT-TTM-EPS (verwaessert), insbesondere ueber Geschaeftsjahreswechsel (F-TTM-2) und Same-Day-Konflikte (F-TTM-3)?",
+ "candidate": {
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v5.json",
+  "status": "DEVELOPMENT_FREEZE",
+  "commit": "c5a1b6d28d7a36eeb4131fd67a98777d5dee45a4",
+  "codeHash": "1fda3ed9d7c1199e0746c55036f9da8818701db1123c4a806032e150d966afaa",
+  "normalizationLogic": "1.20.0",
+  "view": "PIT_TTM via PeriodResolver.ttm_ending (Policy AS_OF_LATEST), EPS diluted"
+ },
+ "source": {
+  "archive": "SEC companyfacts.zip, Stand 2026-10-07 (dieselbe Datei wie alle Laeufe dieser Runde)",
+  "sha256": "6d3b6e096457193db30cc72eecb9c2fee0ba6a854d7c048938a58f28449864a9"
+ },
+ "sampling": {
+  "frame": "die Emittenten des Holdout-v2-Rahmens (alle companyfacts-CIKs ausserhalb des Produktuniversums und der v2-Exclude-Liste) abzueglich der Exclude-Liste v3: v2-Exclude-Liste, alle Fixture-CIKs (sec-real, inkl. der neuen 1.20.0-Fixtures MFLX, CIK1463208, LANDMARK, DENBURY, TDW, BBY, WEN, RYN, VSH, SWK, ELF, NUE), alle Holdout-v2-Fehleremittenten und jeder CIK, der in dieser Arbeitsrunde (Haupt- und Red-Team-Transkripte) genannt wurde",
+  "frameSize": 15251,
+  "excludedTotal": 3621,
+  "unseenPeriods": "je Emittent ist jedes Quartal gesperrt, das in [Fensterende - 380 Tage, Fensterende + 7 Tage] eines gewerteten Holdout-v2-Falls liegt (blockedQuarters im Rahmen); kein v3-Fall teilt ein Quartal mit einem v2-Fall",
+  "blockedV2Windows": 6139,
+  "order": "sha256('vu-ttm-holdout-3|' + cik)",
+  "population": "der GESAMTE Rahmen wird ausgewertet - keine Quote, keine Abbruchregel",
+  "casesPerIssuer": "bis zu 3 Faelle (Emittent x Fensterende), deterministisch: seltene Schicht zuerst (fy_change, stub, same_day, negative, tag_switch, split, week52, custom, foreign, restated, large, small, loss, normal, profit), dann sha256(SALT|cik+end+kind); ein weiterer Fall nur, wenn er eine neue Schicht abdeckt",
+  "caseKinds": {
+   "WINDOW": "vier als Kette aufeinanderfolgende gemeldete Dreimonats-EPS",
+   "MISSING_QUARTER": "vier aufeinanderfolgende Berichtsquartale, von denen mindestens einem ein Dreimonats-EPS fehlt (negativ)"
+  },
+  "strata": [
+   "normal",
+   "fy_change",
+   "week52",
+   "stub",
+   "tag_switch",
+   "split",
+   "custom",
+   "loss",
+   "profit",
+   "small",
+   "large",
+   "foreign",
+   "restated",
+   "same_day",
+   "negative"
+  ],
+  "evaluations": "je Fall t = knownFrom - 1 (frueh), knownFrom, final (wenn spaeter); Negativfaelle zu final",
+  "frozenBeforeOpening": true
+ },
+ "truth": {
+  "definition": "AS_KNOWN_AT(t) einschliesslich bis t veroeffentlichter gueltiger Korrekturen, unabhaengig vom Kern direkt aus companyfacts gerechnet (ttm_holdout3_eval.py)",
+  "forms": "10-K, 10-K/A, 10-Q, 10-Q/A, 20-F(/A), 40-F(/A); 10-KT nicht",
+  "concept": "EarningsPerShareDiluted / EarningsPerShareBasicAndDiluted (Gesamt-EPS); in derselben Einreichung Diluted vor BasicAndDiluted",
+  "tolerance": "abs 0,01 oder rel 0,5 %"
+ },
+ "policies": {
+  "acceptance": "Fassung sichtbar ab ihrem Einreichungstag (filed <= t)",
+  "amendment": "eine Korrektur ersetzt erst ab ihrer eigenen Veroeffentlichung; kein Rueckwirken (kein Lookahead)",
+  "sameDay": "melden am juengsten Tag zwei verschiedene Einreichungen verschiedene Werte: AMBIGUOUS_SAME_DAY (Wahrheit nicht verfuegbar) bis zur naechsten eindeutigen Fassung; nie per Formular/Accession/Dateireihenfolge",
+  "split": "kein Split zwischen benachbarten Quartalen (verwaesserte Aktien zu t, is_split_ratio wie Holdout v2); sonst SHARE_BASIS_MIXED",
+  "restatement": "die zu t juengste sichtbare Fassung gilt",
+  "fiscalPeriod": "Geschaeftsjahre = 12-Monats-Jahresperioden mit mind. 5 stuetzenden Konzepten; Abstand zweier Jahresenden ausserhalb 350-380 Tagen = Uebergangszeitraum, seine Quartale NOT_QUARTER_ELIGIBLE; kein Kalenderjahr angenommen",
+  "stub": "NORMAL_QUARTER 77-105 Tage gemeldet (Kern: 77-119); SHORT_STUB/LONG_STUB = NOT_QUARTER_ELIGIBLE; Kette -3..+8 Tage, Spanne 357-374 Tage",
+  "epsPlausibility": "implizite Aktienzahl < 1.000 = kein EPS"
+ },
+ "classes": {
+  "CORRECT": "beide verfuegbar, gleicher Wert und gleiches Fensterende",
+  "TRUE_UNAVAILABLE": "beide nicht verfuegbar",
+  "FALSE_AVAILABLE": "Wahrheit nicht verfuegbar, Kern liefert",
+  "FALSE_MISSING": "Wahrheit verfuegbar, Kern nicht",
+  "WRONG_PERIOD": "anderes Fensterende",
+  "WRONG_CONCEPT": "anderes Konzept (Basic statt Diluted u. a.)",
+  "WRONG_VALUE": "gleiches Fenster, Wert ausserhalb Toleranz"
+ },
+ "gates": {
+  "overallMaxPercent": {
+   "FALSE_AVAILABLE": 0.1,
+   "WRONG_VALUE": 0.5,
+   "WRONG_CONCEPT": 0.1,
+   "WRONG_PERIOD": 0.1,
+   "FALSE_MISSING": 20.0
+  },
+  "fiscalChangeWrongPeriodMaxPercent": 0.5,
+  "fiscalChangeMinimumCases": 30,
+  "fiscalChangeDefinition": "(WRONG_PERIOD + FALSE_AVAILABLE) / alle Auswertungen der Schicht fy_change; weniger als 30 fy_change-Faelle = nicht pruefbar = FAIL",
+  "denominators": {
+   "FALSE_AVAILABLE": "Auswertungen mit nicht verfuegbarer Wahrheit",
+   "WRONG_*": "Auswertungen mit verfuegbarer Wahrheit UND Kernwert",
+   "FALSE_MISSING": "Auswertungen mit verfuegbarer Wahrheit"
+  },
+  "minimumCases": 1000,
+  "maxEvaluatorErrorPercentOfIssuers": 0.5,
+  "stratumCorrectnessGates": [
+   "FALSE_AVAILABLE",
+   "WRONG_VALUE",
+   "WRONG_CONCEPT",
+   "WRONG_PERIOD"
+  ],
+  "stratumMinimumEvaluations": 100,
+  "stratumMaxPercent": 1.0,
+  "stratumMinimumCases": 30,
+  "rationale": "identisch zu Holdout v2 plus FISCAL_CHANGE_WRONG_PERIOD; kalibriert nur an gesehenen Daten (Entwicklungslauf 600 Universums-CIKs, 575 Faelle: FALSE_AVAILABLE 0, WRONG_* 0, FALSE_MISSING 15,6 %)",
+  "verdict": "PASS nur, wenn ALLE Gates bestehen. Keine Gate-Aenderung nach Oeffnung, kein Nachbessern im Holdout, kein 'formal fail, aber eigentlich pass'."
+ },
+ "rules": [
+  "genau ein offizieller Lauf ueber den gesamten Rahmen (4 Shards)",
+  "keine Kern- oder Evaluator-Aenderung nach Oeffnung",
+  "Ergebnis wird unveraendert committet, PASS oder FAIL"
+ ],
+ "development": {
+  "v2": "FAIL (Kern 1.19.0, unveraendert); F-TTM-2 und F-TTM-3 dort entdeckt; spaetere Kernversionen sind durch v2 nicht validiert",
+  "devSample": "600 CIKs aus dem gesehenen Produktuniversum, nicht im Rahmen"
+ },
+ "files": {
+  "evaluator": {
+   "path": "scripts/fundamentals-audit/ttm_holdout3_eval.py",
+   "sha256": "51a9f596376958ee4169f8209df2aec177b9869df5177b6268fb79b9241f6214"
+  },
+  "gates": {
+   "path": "scripts/fundamentals-audit/ttm_holdout3_gates.py",
+   "sha256": "e068c3bd9b20e3bf1ce2a813d02ed74d0b6778526166dc561e4f61116040b3e0"
+  },
+  "exclude": {
+   "path": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-EXCLUDE.json",
+   "sha256": "1a8fa94ed655e3eeb82139334867eecdeda49fc1c05f0600cd67f430943b4882"
+  },
+  "frameSha256": "4c8fe79e875ab70f92ccfab5ca89997b2436c189091e3edd81aa0b0e161e33b5",
+  "holdout2FrameSha256": "0d34522b99dea236a50411080e6729a2449e922587b81bf307abbbfcfd768a3c"
+ },
+ "commands": [
+  "python3 ttm_holdout3_eval.py sample <companyfacts.zip> <holdout2-frame.json> '<holdout2-rows.*.jsonl>' artifacts/FUNDAMENTAL-TTM-HOLDOUT3-EXCLUDE.json frame.json",
+  "python3 ttm_holdout3_eval.py <companyfacts.zip> frame.json rows.<i>.jsonl --shard <i>/4",
+  "python3 ttm_holdout3_gates.py artifacts/FUNDAMENTAL-TTM-HOLDOUT3-PREREG.json rows.*.jsonl"
+ ]
+}
