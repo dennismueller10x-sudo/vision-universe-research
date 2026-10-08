@@ -86,7 +86,7 @@ try{
   console.log(ticker+' '+version+' PASS');
  }
  }
- const queue=Object.entries(candidate.inventory);await Promise.all(Array.from({length:live?1:3},async()=>{while(queue.length)await reviewIssuer(queue.shift());}));
+ const queue=Object.entries(candidate.inventory);await Promise.all(Array.from({length:1},async()=>{while(queue.length)await reviewIssuer(queue.shift());}));
  const outside=await browser.newPage();if(process.env.RESEARCH_ACCESS_PASSWORD){await outside.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state:accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD)});}const outsideRequests=[];outside.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))outsideRequests.push(r.url())});await outside.goto(base+'/discover/#/s/US_REAL/ZZZZZ');await outside.waitForTimeout(1000);assert.equal(await outside.locator('.ci-company-intelligence').count(),0);assert.deepEqual(outsideRequests,[]);await outside.close();
- await writeFile(out+'/report.json',JSON.stringify({status:'PASS',version,origin:base,productionSHA:release?.sourceCommit,generation:candidate.generation,stocks:46,issuers:45,protectedAccess:live,cohortUnchanged:true,reviewTraffic:{workers:live?1:3,minimumBetweenCasesMs:live?1000:0},cases},null,2)+'\n');
+ await writeFile(out+'/report.json',JSON.stringify({status:'PASS',version,origin:base,productionSHA:release?.sourceCommit,generation:candidate.generation,stocks:46,issuers:45,protectedAccess:live,cohortUnchanged:true,reviewTraffic:{workers:1,minimumBetweenCasesMs:live?1000:0},cases},null,2)+'\n');
 }finally{await browser.close();}
