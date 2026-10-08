@@ -96,6 +96,16 @@ Foundation und Produktmigrationen werden deshalb getrennt geliefert.
 Business-Engines, erzeugte Daten, Rankings, Berechnungen und Datenpipelines
 gehören nicht zum visuellen Änderungsumfang.
 
+Die Shell-QA erreicht nach begrenztem Scroll-Warmup das aktuell geladene
+Dokumentende mit einem synchronen Instant-Scroll und misst im selben Task,
+bevor paginierte Listen weitere Treffer nachladen. Der tatsächliche Endpunkt
+muss über dem Dock liegen; verbleibender Scrollweg sowie gesperrtes Scrollen
+führen weiterhin zum Fehler. Die letzte Bedienfläche der Desktop-Filterleiste
+wird zusätzlich auf freien Dock-Abstand und tatsächliche Trefferfläche geprüft.
+Der Screener begrenzt deren Höhe um Dock, Safe Area und 16px Abstand.
+Negative Browserkontrollen erkennen fehlendes Bottom-Padding, Scroll-Lock
+und unterdrücktes Scrollen. Kein Clearance-Grenzwert wird abgeschwächt.
+
 Browser-, Navigations-, Theme- und Performance-Evidenz wird im Delivery-
 Bericht geführt; dieses Dokument behauptet keine abgeschlossene QA und
 keinen Live- oder Deployment-Status.
