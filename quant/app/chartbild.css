@@ -445,3 +445,52 @@
   .qd .cb-pt-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
   .qd .cb-pt-grid > .cb-pt{grid-column:span 2} .qd .cb-pt-grid > .cb-pt:nth-child(n+4){grid-column:span 3}
 }
+/* ---------- Elliott-Projektion (elliott-projection-1.0.0): Leiter, Fahrplan, Chart-Ebene ---------- */
+.qd .cb{--cb-pj-base:#8cc8ff;--cb-pj-ext:#b3a6ff;--cb-pj-xt:#f2c14e}
+.qd .cb-pj{border-color:rgba(140,200,255,.28)}
+.qd .cb-pj-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:6px 0 2px}
+.qd .cb-pj-h{margin:0;font-size:clamp(20px,5.2vw,26px);line-height:1.15;letter-spacing:-.01em}
+.qd .cb-pj-status{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--q-dim)}
+.qd .cb-pj-st-confirmed{color:var(--cb-up);background:rgba(185,238,60,.12)} .qd .cb-pj-st-developing{color:var(--cb-mixed);background:rgba(242,193,78,.1)}
+.qd .cb-pj-sub{margin:0 0 10px;font-size:13px;color:var(--q-dim)}
+.qd .cb-pj-now{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px;font-size:13px;color:var(--q-dim)} .qd .cb-pj-now strong{font-size:20px;color:var(--q-text)}
+.qd .cb-pj-ladder{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
+.qd .cb-pj-tier{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 12px;border-radius:12px;border:1px solid var(--q-line);border-left:4px solid var(--cb-pj-base);background:rgba(140,200,255,.06);min-width:0}
+.qd .cb-pj-extended{border-left-color:var(--cb-pj-ext);background:rgba(179,166,255,.05)}
+.qd .cb-pj-extreme{border-left-color:var(--cb-pj-xt);background:rgba(242,193,78,.035)}
+.qd .cb-pj-tier.is-passed{opacity:.6} .qd .cb-pj-tier.is-omitted{border-left-color:var(--q-line);background:none;grid-template-columns:1fr}
+.qd .cb-pj-tier-k{font-size:12px;font-weight:800;color:var(--q-dim);text-transform:uppercase;letter-spacing:.04em}
+.qd .cb-pj-tier-v{grid-row:2;font-size:clamp(18px,4.6vw,22px);overflow-wrap:anywhere;min-width:0}
+.qd .cb-pj-tier-p{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right;font-weight:800;font-size:14px;overflow-wrap:anywhere;max-width:16ch}
+.qd .cb-pj-tier.is-omitted .cb-pj-tier-p{grid-column:1;grid-row:2;text-align:left;max-width:none;font-weight:500;font-size:12px;color:var(--q-dim)}
+.qd .cb-pj-chip{grid-column:1 / -1;font-size:11px;font-weight:800;color:var(--cb-up)}
+.qd .cb-pj-inv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;padding:10px 12px;border-radius:12px;border:1px dashed rgba(255,107,94,.5);margin:0 0 10px}
+.qd .cb-pj-inv-k{font-size:12px;font-weight:800;color:var(--cb-invalid);text-transform:uppercase;letter-spacing:.04em} .qd .cb-pj-inv strong{font-size:18px;text-align:right}
+.qd .cb-pj-inv-t{grid-column:1 / -1;font-size:13px;color:var(--q-dim)}
+.qd .cb-pj-conf{margin:0 0 10px;font-size:13px}
+.qd .cb-pj-btn{min-height:44px;padding:8px 16px;border-radius:99px;border:1px solid rgba(140,200,255,.5);background:rgba(140,200,255,.1);color:var(--q-text);font-weight:800;cursor:pointer}
+.qd .cb-pj-btn-alt{border-color:rgba(179,166,255,.5);background:rgba(179,166,255,.1)}
+.qd .cb-pj-h3{margin:16px 0 8px;font-size:16px}
+.qd .cb-pj-roads{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.qd .cb-pj-road-h{margin:0 0 4px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--q-dim)}
+.qd .cb-pj-road{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
+.qd .cb-pj-road li{display:grid;grid-template-columns:20px 1fr;gap:6px;overflow-wrap:anywhere}
+.qd .cb-pj-road-m{font-weight:900;text-align:center} .qd .cb-pj-road-ok .cb-pj-road-m{color:var(--cb-up)} .qd .cb-pj-road-bad .cb-pj-road-m{color:var(--cb-down)} .qd .cb-pj-road-open .cb-pj-road-m{color:var(--cb-mixed)}
+.qd .cb-pj-road-c{color:var(--q-dim)}
+.qd .cb-pj-ctx{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));margin:12px 0}
+.qd .cb-pj-alt{margin:12px 0;padding:12px;border-radius:12px;border:1px solid rgba(179,166,255,.3);background:rgba(179,166,255,.05);overflow-wrap:anywhere}
+.qd .cb-pj-alt.is-high{border-color:rgba(242,193,78,.4)}
+.qd .cb-pj-alt-k{margin:0 0 2px;font-size:12px;font-weight:800;color:var(--cb-alt);text-transform:uppercase;letter-spacing:.04em} .qd .cb-pj-alt.is-high .cb-pj-alt-k{color:var(--cb-mixed)}
+.qd .cb-pj-ev{display:grid;gap:2px;margin:12px 0 6px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03)}
+.qd .cb-pj-pro{margin:12px 0;overflow-wrap:anywhere} .qd .cb-pj-h4{margin:0 0 6px;font-size:15px}
+.qd .ti-pz rect{stroke-width:1} .qd .ti-pz-base rect{fill:rgba(140,200,255,.16);stroke:rgba(140,200,255,.55)}
+.qd .ti-pz-extended rect{fill:rgba(179,166,255,.1);stroke:rgba(179,166,255,.4)} .qd .ti-pz-extreme rect{fill:rgba(242,193,78,.05);stroke:rgba(242,193,78,.28);stroke-dasharray:4 4}
+.qd .ti-pz-label{font-size:11px;font-weight:800;paint-order:stroke;stroke:#0b0d10;stroke-width:3px} .qd .ti-pz-base .ti-pz-label{fill:var(--cb-pj-base)} .qd .ti-pz-extended .ti-pz-label{fill:var(--cb-pj-ext)} .qd .ti-pz-extreme .ti-pz-label{fill:var(--cb-pj-xt);opacity:.8}
+.qd .ti-pj-conf line{stroke:var(--cb-up);stroke-width:1.2;stroke-dasharray:2 4} .qd .ti-pj-conf-label{fill:var(--cb-up);font-size:11px;font-weight:700;paint-order:stroke;stroke:#0b0d10;stroke-width:3px}
+.qd .ti-pj-seg{fill:none;stroke:var(--cb-pj-base);stroke-width:2;stroke-dasharray:5 5} .qd .ti-pj-seg-extended{stroke:var(--cb-pj-ext);opacity:.75} .qd .ti-pj-seg-extreme{stroke:var(--cb-pj-xt);opacity:.45}
+.qd .ti-pj-dot{fill:var(--cb-pj-base)} .qd .ti-pj-dot-extended{fill:var(--cb-pj-ext)} .qd .ti-pj-dot-extreme{fill:var(--cb-pj-xt);opacity:.6}
+.qd .ti-pj.is-alt .ti-pz-base rect{fill:rgba(179,166,255,.14);stroke:rgba(179,166,255,.5)}
+.qd .cb-key-pj-base::before{background:rgba(140,200,255,.4)} .qd .cb-key-pj-extended::before{background:rgba(179,166,255,.35)} .qd .cb-key-pj-extreme::before{background:rgba(242,193,78,.25)}
+.qd .cb-key-pj-conf::before{height:0;border-top:2px dotted var(--cb-up);border-radius:0;vertical-align:3px}
+.qd .ti-pz.is-passed{opacity:.45}
+.qd .cb-pj-pro .cb-table{min-width:560px}.qd .cb-pj-pro .cb-table-wrap{overflow-x:auto}

@@ -85,6 +85,10 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   assert.ok(runs[1].payload.registrationLagDays > 7);
   const pe = L.filter((e) => e.type === "EVENT" && e.payload.view === "CUSTOMER_PRODUCT");
   for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED)$/); assert.equal(e.payload.productElliottSha.length, 32); }
+  /* Registry 1.2.0: neue Kundenprodukt-Ereignisse tragen die eingefrorene Projektionsthese (elliott-projection-1.0.0) */
+  assert.ok(pe.length > 0, "mindestens ein Produkt-Ereignis");
+  for (const e of pe) { assert.equal(e.payload.projectionEngine, "elliott-projection-1.0.0"); assert.equal(e.payload.projectionThesis.version, "elliott-projection-1.0.0"); assert.ok("thesis" in e.payload.projectionThesis); }
+  assert.equal(runs[0].payload.code.projection, "elliott-projection-1.0.0");
   const snap = gunzipSync(readFileSync(join(reg, "snapshots", "2026-09-11.jsonl.gz"))).toString().split("\n").map((l) => JSON.parse(l));
   assert.equal(snap.find((u) => u.s === "ref_XOM").pv.tf, "1D");
   assert.equal(Ver.verifyRegistry(reg).ok, true);

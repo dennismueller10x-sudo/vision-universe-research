@@ -12,12 +12,17 @@ const live=base==='https://research.visionuniverse.de';
 assert(live||base.startsWith('http://127.0.0.1:'),'APPROVED_PRODUCTION_OR_LOCAL_CANDIDATE_ONLY');
 const release=live?await (await fetchWithRetry(fetch,base+'/release-delivery.json?review='+Date.now(),{signal:AbortSignal.timeout(30000)})).json():null;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
-const cases=[],examples=['TSLA','AAPL','NVDA','PLTR','XPEV'];await mkdir(out,{recursive:true});
+const cases=[],examples=['TSLA','AAPL','NVDA','PLTR','XPEV'];
+const additionalExamples=['GOOG','GOOGL','MSFT','BOH','SBSI','AMPY','ACU'];await mkdir(out,{recursive:true});
 try{
  if(live){const locked=await browser.newPage();await locked.goto(base+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(await locked.locator('.ci-company-intelligence').count(),0);await locked.close();}
  async function reviewIssuer([cid,inventory]){for(const ticker of inventory.tickers){
   const combinations=version==='after'?['dark','light'].flatMap(theme=>[390,430,768,1440].map(width=>({theme,width}))):examples.includes(ticker)?[390,430,1440].map(width=>({theme:'dark',width})):[{theme:'dark',width:390}];
   for(const {theme,width} of combinations){
+   // This is a read-only production review, not a traffic stress test. Fresh
+   // contexts repeatedly fetch the same index; pace them without waiving 429
+   // or retrying a failed assertion. All cases must still pass on one run.
+   if(live)await new Promise(resolve=>setTimeout(resolve,1000));
    const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],responses=[],requestFailures=[];
    // Observe the exact promise returned to the real chapter. Network events alone
    // can miss a cached response or an aborted earlier mount during stock hydration.
@@ -57,10 +62,18 @@ try{
     assert.equal(await chapter.locator('details.ci-documents[open], details.ci-sources[open]').count(),0,'Evidence collapsed by default');
     assert(links.filter(a=>a.visible).every(a=>a.height>=44),'Visible links touch targets');
     if(inventory.staleFinancials&&inventory.financials==='AVAILABLE')assert(text.includes('Veraltete Geschäftszahlen'));
+    if(await page.locator('#vu-dock').count()){
+     assert(await page.locator('#vu-dock').isVisible(),'Shared product navigation visible');
+     await chapter.evaluate(e=>e.scrollIntoView({block:'end',behavior:'instant'}));
+     const end=await chapter.boundingBox(),dock=await page.locator('#vu-dock').boundingBox();
+     assert(end&&dock&&end.y+end.height<=dock.y+1,'Chapter end can scroll clear of fixed product navigation');
+    }
    }
-   if(examples.includes(ticker)&&theme==='dark'&&[390,430,1440].includes(width)){
-    await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-viewport.png`});
-    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-dark-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
+   const primaryScreenshot=examples.includes(ticker)&&[390,430,1440].includes(width)&&(theme==='dark'||version==='after');
+   const additionalScreenshot=version==='after'&&additionalExamples.includes(ticker)&&width===390;
+   if(primaryScreenshot||additionalScreenshot){
+    await chapter.evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));await page.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-viewport.png`});
+    await chapter.screenshot({path:`${out}/${version}-${ticker}-${width}-${theme}-chapter.png`,style:'vu-navigation,#vu-dock,.v2-skip,.v2-dock{visibility:hidden!important}'});
    }
    const storyCount=await intelligence.locator('article.ci-story').count();
    cases.push({ticker,companyId:cid,width,theme,status:'PASS',generation:candidate.generation,consumerNews:payload.news.length,initiallyVisibleNews:visibleNews.size,consumerUniqueNewsURLs:newsURLs.size,newsRenderedIncludingSecondary:new Set(renderedNewsLinks.filter(u=>newsURLs.has(u))).size,renderedStoryElements:storyCount,headings:await chapter.locator('h3').allTextContents(),errors,consumerResponses:responses,requestFailures,observedLoadStates:actualLoads.map(r=>({ticker:r.ticker,state:r.payload?.state,reason:r.payload?.reason,companyId:r.payload?.companyId}))});
@@ -73,7 +86,7 @@ try{
   console.log(ticker+' '+version+' PASS');
  }
  }
- const queue=Object.entries(candidate.inventory);await Promise.all(Array.from({length:3},async()=>{while(queue.length)await reviewIssuer(queue.shift());}));
+ const queue=Object.entries(candidate.inventory);await Promise.all(Array.from({length:1},async()=>{while(queue.length)await reviewIssuer(queue.shift());}));
  const outside=await browser.newPage();if(process.env.RESEARCH_ACCESS_PASSWORD){await outside.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state:accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD)});}const outsideRequests=[];outside.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))outsideRequests.push(r.url())});await outside.goto(base+'/discover/#/s/US_REAL/ZZZZZ');await outside.waitForTimeout(1000);assert.equal(await outside.locator('.ci-company-intelligence').count(),0);assert.deepEqual(outsideRequests,[]);await outside.close();
- await writeFile(out+'/report.json',JSON.stringify({status:'PASS',version,origin:base,productionSHA:release?.sourceCommit,generation:candidate.generation,stocks:46,issuers:45,protectedAccess:live,cohortUnchanged:true,cases},null,2)+'\n');
+ await writeFile(out+'/report.json',JSON.stringify({status:'PASS',version,origin:base,productionSHA:release?.sourceCommit,generation:candidate.generation,stocks:46,issuers:45,protectedAccess:live,cohortUnchanged:true,reviewTraffic:{workers:1,minimumBetweenCasesMs:live?1000:0},cases},null,2)+'\n');
 }finally{await browser.close();}
