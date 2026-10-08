@@ -31,7 +31,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Patterns = isNode ? require("../elliott/patterns.js") : (global.VUTechnical && global.VUTechnical.ElliottPatterns);
 
-  var VERSION = "elliott-projection-1.0.0";
+  var VERSION = "elliott-projection-1.1.0";   // 1.1.0: Motiv-Alternative aus dem Kandidatenpool der Engine (nur Produkt-Sichtbarkeit, Formeln unveraendert)
   var SCHEMA = "vu-elliott-projection-1.0.0";
   var EWP = "EWP", EWI = "EWI", VU = "VU";
   var MAX_MULTIPLE = 1000;   // Zone > 1000 × Kurs (+99.900 %) gilt als Datenfehler, nicht als Projektion
@@ -402,7 +402,7 @@
   function build(E, ctx) {
     var out = { schemaVersion: SCHEMA, version: VERSION, timeframe: ctx.timeframe || null, asOf: ctx.asOf || null, close: r4(ctx.close),
                 engine: { elliott: E ? E.engineVersion || null : null, ruleSet: E ? E.ruleSetVersion || null : null },
-                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null,
+                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null,
                 context: null, guardrails: { flags: [] },
                 evidence: { status: "INSUFFICIENT", label: "Experimentell – noch keine ausreichende Evidenz", text: "Für Projektionszonen gibt es noch keine belastbare historische Prüfung. Das prospektive Register zeichnet jede angezeigte These ab jetzt ohne Rückblick auf." },
                 disclaimer: "Projektion ≠ Wahrscheinlichkeit: Die Zonen zeigen, wohin die Welle rechnerisch laufen könnte, wenn die Zählung stimmt. Prozentwerte sind Arithmetik vom aktuellen Kurs, keine Trefferquote." };
@@ -439,13 +439,34 @@
       if (up >= 1.0 && up >= 2 * Math.max(0, base)) { th.highUpside = true; th.highUpsideText = "Alternative Lesart mit hohem Aufwärtspotenzial – nicht die bevorzugte Zählung, geringe Klarheit."; out.highUpside = th; }
     });
     if (out.highUpside && out.alternative && out.highUpside.key === out.alternative.key) out.highUpside = { ref: "ALTERNATIVE", key: out.alternative.key };
+    /* PRODUKT-SICHTBARKEIT (1.1.0) — Motiv-Alternative: die beste regelkonforme Lesart mit laufender Welle 2/3 aus dem Kandidatenpool
+       der Engine (E.hiddenMotive, geprueft in ti-projection.mjs#motiveCandidateFor), die nicht unter den zwei angezeigten Alternativen
+       steht. Nie Hauptlesart; hoechstens eine; nur, wenn keine angezeigte Alternative schon eine Welle-3-These ist. Formeln,
+       Invalidation und Leitplanken sind dieselben wie fuer jede These. Sichtbar auch, wenn sich die Engine fuer die Hauptzaehlung
+       enthaelt — dann ausdruecklich als Alternative mit niedriger Strukturklarheit. */
+    var hm = E.hiddenMotive;
+    if (hm && hm.count && !(out.alternative && out.alternative.type === "WAVE_3") && !(out.primary && out.primary.type === "WAVE_3" && out.primary.direction === hm.count.direction)) {
+      var mt = mk(geometry(hm.count), hm.count, "MOTIVE_ALTERNATIVE");
+      /* ausgeschoepft (alle Zonen schon erreicht) hat als Alternative keinen Nutzen → nicht zeigen */
+      if (mt && mt.status === "EXHAUSTED") { out.guardrails.flags.push({ code: "MOTIVE_EXHAUSTED", text: "Motiv-Alternative: alle Projektionszonen bereits erreicht – nicht gezeigt." }); mt = null; }
+      if (mt && mt.type === "WAVE_3") {
+        mt.label = "Mögliche Welle 3 · Alternative Lesart";
+        mt.clarity = { level: "LOW", label: "Niedrig", text: "Regelkonforme Lesart aus der Kandidatensuche der Engine, Rang " + (hm.rank + 1) + " von " + hm.pool + " – nicht die bevorzugte Zählung." };
+        mt.pool = { rank: hm.rank, size: hm.pool };
+        mt.visibility = "PRODUCT_VISIBILITY_1.1.0";
+        var upM = upside(mt) / ctx.close - 1;
+        if (!out.highUpside && mt.direction === "UP" && upM >= 1.0 && upM >= 2 * Math.max(0, base)) { mt.highUpside = true; mt.highUpsideText = "Alternative Lesart mit hohem Aufwärtspotenzial – nicht die bevorzugte Zählung, niedrige Strukturklarheit."; }
+        out.motiveAlternative = mt;
+      }
+    }
     /* Verwendete Beziehungen mitliefern (Fachansicht: Formel, Klasse, Quelle) — die Oberflaeche rechnet nicht. */
     var used = {};
-    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside].forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
+    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside, out.motiveAlternative].forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
     out.relations = used;
     out.presentation = PRESENTATION;
     out.status = out.primary || out.alternative ? (abstain ? "ABSTAIN" : "AVAILABLE") : "NO_PROJECTION";
     out.consumerVisible = out.status === "AVAILABLE";
+    out.motiveVisible = !!out.motiveAlternative;
     if (abstain) out.reason = "Die Engine enthält sich (keine verlässliche Zählung). Die Projektion steht nur in der Fachansicht und ist keine Produktaussage.";
     else if (!out.primary && !out.alternative) out.reason = "Die aktuelle Zählung liefert keine Projektion (z. B. Welle 1 läuft oder ein Dreieck ist noch nicht abgeschlossen).";
     return out;

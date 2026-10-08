@@ -18,6 +18,7 @@ const { weeklySeriesFromPoints, readJson } = await import(join(ROOT, "scripts/te
 const { analyzeProduct } = await import(join(ROOT, "scripts/technical/lib/ti-product.mjs"));
 const Build = await import(join(ROOT, "scripts/technical/build-technical-intelligence.mjs"));
 const LONG = join(ROOT, "quant/data/market/discover-series-long");
+const PJV = (await import(join(ROOT, "scripts/technical/lib/ti-projection.mjs"))).PROJECTION_VERSION;
 const V3 = join(ROOT, "quant/data/technical-intelligence/v3");
 
 /* until: Reihen auf einen festen Datenstand kuerzen, damit Tests mit Wochengrenzen nicht vom Alter der Daten abhaengen */
@@ -87,8 +88,8 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED)$/); assert.equal(e.payload.productElliottSha.length, 32); }
   /* Registry 1.2.0: neue Kundenprodukt-Ereignisse tragen die eingefrorene Projektionsthese (elliott-projection-1.0.0) */
   assert.ok(pe.length > 0, "mindestens ein Produkt-Ereignis");
-  for (const e of pe) { assert.equal(e.payload.projectionEngine, "elliott-projection-1.0.0"); assert.equal(e.payload.projectionThesis.version, "elliott-projection-1.0.0"); assert.ok("thesis" in e.payload.projectionThesis); }
-  assert.equal(runs[0].payload.code.projection, "elliott-projection-1.0.0");
+  for (const e of pe) { assert.equal(e.payload.projectionEngine, PJV); assert.equal(e.payload.projectionThesis.version, PJV); assert.ok("thesis" in e.payload.projectionThesis); }
+  assert.equal(runs[0].payload.code.projection, PJV);
   const snap = gunzipSync(readFileSync(join(reg, "snapshots", "2026-09-11.jsonl.gz"))).toString().split("\n").map((l) => JSON.parse(l));
   assert.equal(snap.find((u) => u.s === "ref_XOM").pv.tf, "1D");
   assert.equal(Ver.verifyRegistry(reg).ok, true);
@@ -96,4 +97,23 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   const bad = mkdtempSync(join(tmpdir(), "pv-bad-"));
   Led.append(bad, [], [{ type: "RUN", id: "RUN-x", week: "2026-09-11", recordedAt: "t", payload: { views: ["CUSTOMER_PRODUCT"], productView: { identity: { ok: false } }, snapshot: { file: "snapshots/none" } } }]);
   const v = Ver.verifyRegistry(bad); assert.equal(v.ok, false); assert.ok(v.errors.some((e) => /Produkt-Identitaet/.test(e)));
+});
+
+test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eigene Kohorte eingefroren; Forschungskohorte meldet Sichtbarkeit wahrheitsgemäß", async () => {
+  const w = weeklyDir(["ref_SE", "ref_VTEX", "ref_BCE", "ref_COLM", "ref_CE", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-m-"));
+  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
+  const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
+  assert.equal(run.payload.code.registry, "elliott-registry-1.3.0"); assert.equal(run.payload.code.projection, "elliott-projection-1.1.0");
+  const mv = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE");
+  assert.ok(mv.length >= 1, "mindestens eine angezeigte Motiv-Alternative registriert");
+  assert.ok(!mv.some((e) => e.payload.symbol === "ref_SE"), "SE: Kandidat verletzt die Grad-Konsistenz (G2) → nicht angezeigt, nicht registriert");
+  for (const e of mv) {
+    const th = e.payload.projectionThesis.thesis;
+    assert.equal(e.payload.interpretation, "ALTERNATIVE"); assert.equal(th.source, "MOTIVE_ALTERNATIVE"); assert.equal(th.type, "WAVE_3");
+    assert.ok(th.zones.length >= 1 && th.invalidation && th.confirmation); assert.equal(e.payload.projectionEngine, "elliott-projection-1.1.0");
+    assert.ok(e.payload.persistenceKey !== (e.payload.primaryShownAs || ""), "nie die Primärzählung");
+  }
+  for (const e of L.filter((x) => x.type === "EVENT" && x.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3")) assert.equal(typeof e.payload.productVisible, "boolean");
+  assert.equal(Ver.verifyRegistry(reg).ok, true);
 });
