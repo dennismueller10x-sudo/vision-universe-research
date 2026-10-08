@@ -1,0 +1,69 @@
+{
+  "status": "FIVE_PRE_EXISTING_FAILURES_INDEPENDENTLY_REPRODUCED",
+  "baselineSha": "be6ade0c8b4479facbf203b80404a3b9b07247b3",
+  "broadSuite": {
+    "tests": 3087,
+    "pass": 3077,
+    "fail": 5,
+    "skipped": 5
+  },
+  "targetedCandidate": {
+    "failures": [
+      "AL-2 \u00b7 Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobachtete Titel, neutral formuliert",
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "tests": 59,
+    "pass": 54,
+    "fail": 5,
+    "skipped": 0
+  },
+  "independentTargetedBaseline": {
+    "failures": [
+      "AL-2 \u00b7 Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobachtete Titel, neutral formuliert",
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "tests": 59,
+    "pass": 54,
+    "fail": 5,
+    "skipped": 0
+  },
+  "targetedFiles": [
+    "quant/tests/canonical-total-return.test.mjs",
+    "quant/tests/return-series.test.mjs",
+    "quant/tests/ti-ui.test.mjs",
+    "quant/tests/total-return-verification.test.mjs"
+  ],
+  "protectedInputDiff": [],
+  "newBranchFailures": 0,
+  "note": "The full suite ran on the candidate. All five failing cases were independently reproduced in 59 targeted tests on a separate exact-main checkout. This is not a claim of a second full-suite run.",
+  "candidateSha": "7b87ac4ef64eb5166f4b8721c977aae4a737762d",
+  "candidateCIRun": 37755876232,
+  "candidateCIFullSuiteMatchesFiveFailures": true,
+  "candidateCompanyIntelligencePythonTests": 669,
+  "candidateCompanyIntelligenceNodeTests": 75,
+  "finalCandidateSHA": "18e15363e80a2b498bb640b044d28a69527b821b",
+  "finalCandidateCIRun": 37759200867,
+  "finalCandidateCIJob": 113251200139,
+  "finalCandidateSameFiveFailuresVerified": true,
+  "rebasedCandidateSHA": "151c2ae86926a250457e5caa6d5f3e7dc02a0840",
+  "newMainSHA": "8289b6fb2336397cddeafd1902c02551e505aef5",
+  "newMainOnlyChanges": [
+    ".github/workflows/shell-ci.yml",
+    "scripts/quality/shell-browser-qa.mjs",
+    "dashboard/data/news_feed.json"
+  ],
+  "vercelStatus": {
+    "state": "failure",
+    "description": "Deployment rate limited \u2014 retry in 24 hours.",
+    "classifiedAs": "Account build quota on unrelated preview provider; actual protected production uses independently verified GitHub Pages package/deploy path. No quota override or paid upgrade requested."
+  },
+  "rebasedCandidateCIRun": 37761415893,
+  "rebasedCandidateCIJob": 113258460012,
+  "rebasedCandidateSameFiveFailuresVerified": true
+}

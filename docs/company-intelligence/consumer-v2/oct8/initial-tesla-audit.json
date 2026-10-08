@@ -1,0 +1,43 @@
+{
+  "scope": "Fresh authenticated R2 restore plus 86 actual production asset hashes; first browser run failed at CAC because of sustained 429, so this is not a full browser PASS",
+  "run": 37750929907,
+  "issuer": {
+    "companyId": "iss_cik_0001318605",
+    "tickers": [
+      "TSLA"
+    ],
+    "ledgerNews": 1,
+    "latestLedgerNews": "2026-10-01T14:13:00Z",
+    "engineExportNews": 1,
+    "policyAllowedNews": 0,
+    "consumerNews": 0,
+    "productionNews": 0,
+    "newsFreshness": {},
+    "ledgerEventTypes": {
+      "EARNINGS_ESTIMATED": 1
+    },
+    "acceptedModules": {
+      "news": 0,
+      "earnings": 0,
+      "events": 1,
+      "calls": 0,
+      "materials": 3,
+      "materialEvents": 0
+    },
+    "germanProfile": true,
+    "financials": "AVAILABLE",
+    "whatChanged": 9,
+    "staleFinancials": false,
+    "losses": [
+      {
+        "class": "DATA_EXISTS_BUT_IS_FILTERED",
+        "stage": "SOURCE_USAGE",
+        "count": 1,
+        "reasons": {
+          "UNAPPROVED_PUBLISHER": 1
+        },
+        "reason": "SOURCE_POLICY_EXCLUSION; not a transport defect"
+      }
+    ]
+  }
+}

@@ -6,6 +6,8 @@ Open [Tesla on real Discover](https://research.visionuniverse.de/discover/#/s/US
 
 V2 [#480](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/480) merged as `b65889f247b463d585e794fa1d703806536cfde7`; delivery resilience #482 as `e4c258020c5aef260cf50fcf6308113eeb704814`; strict resolved-load/DOM identity proof and staged asset cache versions #483 as `d1ccb96d90cbb6f4c9a7b73774a2d15918583e59`; bounded signed Ubuntu browser setup #486 as `fbba85fb0674428b2d2471c772900e9bd1040aff`.
 
+The [8 October continuation](consumer-v2/oct8/README.md) verifies the current shared shell, both themes and all mandatory examples, and records the controlled contraction-wording correction without changing the accepted data or cohort.
+
 ## Consumer structure
 
 The existing shared Discover/Quant chapter now uses `Auf einen Blick`, a compact company card and website action; labelled `Aktuelles` cards; financial KPI cards; metric-aware factual comparisons; and concise confirmed/estimated next-event cards. Three stories appear initially, with an explicit expansion. News, relevant high/critical material regulatory events and published earnings/report events are unified and deduplicated by original URL. Routine filings and amendments do not become news.
