@@ -100,6 +100,7 @@ test('EPS GJ ist ein Je-Aktie-Wert: Eingabe "5" bleibt 5 $, keine Mio.-Skalierun
   const field = (F.FIELDS || F.fields || []).find ? (F.FIELDS || F.fields).find((f) => f.id === 'epsFy') : F.get('epsFy');
   assert.ok(field, 'Feld epsFy fehlt');
   assert.equal(F.fromInput(field, '5', undefined), 5);
-  assert.equal(F.inputUnit(field, 5), '$');
+  const epsTtm = (F.FIELDS || F.fields || []).find ? (F.FIELDS || F.fields).find((f) => f.id === 'eps') : F.get('eps');
+  assert.equal(F.inputUnit(field, 5e6), F.inputUnit(epsTtm, 5e6), 'dieselbe Je-Aktie-Einheit wie EPS TTM, keine Mio.-Einheit');
   assert.equal(F.toInput(field, 5), '5');
 });
