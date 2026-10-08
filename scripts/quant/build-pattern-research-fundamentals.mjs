@@ -50,9 +50,23 @@ const SERIES_DIR = join(ROOT, "quant/data/market/discover-series-long");
    scripts/quant/cli.py consumer. Missing store = hard failure, never a fallback
    to quant/data/sec/consumer (LATEST_RESTATED). */
 const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer-pit");
+/* Missing, empty or partial store = hard failure: the store must hold one
+   document per LATEST bundle of the same consumer run (same asOf). */
+let PIT_AS_OF = null;
 function assertPitStore() {
   if (!existsSync(CONSUMER_DIR)) {
     throw new Error("PIT_CONTRACT: " + CONSUMER_DIR + " missing - build it with scripts/quant/cli.py consumer (AS_REPORTED_AT_TIME store)");
+  }
+  const latestIndex = JSON.parse(readFileSync(join(ROOT, "quant/data/sec/consumer/index.json"), "utf8"));
+  const documents = readdirSync(CONSUMER_DIR).filter((f) => f.startsWith("CIK") && f.endsWith(".json")).length;
+  if (documents !== latestIndex.count) {
+    throw new Error("PIT_CONTRACT: " + documents + " AS_REPORTED_AT_TIME documents for " + latestIndex.count + " LATEST bundles - partial store");
+  }
+  PIT_AS_OF = latestIndex.asOf;
+}
+function assertPitDocument(payload, file) {
+  if (payload.view !== PIT.VIEW || payload.asOf !== PIT_AS_OF) {
+    throw new Error("PIT_CONTRACT: " + file + " view " + payload.view + " asOf " + payload.asOf + " - not the AS_REPORTED_AT_TIME document of the LATEST run " + PIT_AS_OF);
   }
 }
 const OUT_DIR = join(ROOT, "quant/data/product/pattern-research-fundamentals-v1");
@@ -109,6 +123,7 @@ function loadFundamentals(tickers) {
   for (const file of readdirSync(CONSUMER_DIR)) {
     if (!file.startsWith("CIK") || !file.endsWith(".json")) continue;
     const payload = JSON.parse(readFileSync(join(CONSUMER_DIR, file), "utf8"));
+    assertPitDocument(payload, file);
     const names = payload.tickers || [];
     if (!names.some((name) => tickers.has(name))) continue;
     bundles += 1;
