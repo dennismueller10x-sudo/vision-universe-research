@@ -29,8 +29,10 @@ POLICY_ORIGINAL = "original"
 POLICY_LATEST_KNOWN = "latest_known"
 POLICIES = (POLICY_AS_OF_LATEST, POLICY_ORIGINAL, POLICY_LATEST_KNOWN)
 
-# Amendments supersede the filing they amend when both are visible at the same
-# instant; otherwise the later publication wins on its own.
+# Ordering inside one availability instant (amendment last, then accession) only
+# decides between values that agree within SAME_DAY_CONFLICT_TOLERANCE; values
+# that disagree at the same instant are AMBIGUOUS_SAME_DAY (1.20.0). Otherwise
+# the later publication wins on its own.
 _AMENDMENT_FORMS = frozenset({"10-K/A", "10-Q/A", "20-F/A", "40-F/A"})
 
 FLAG_RESTATED = "RESTATED"

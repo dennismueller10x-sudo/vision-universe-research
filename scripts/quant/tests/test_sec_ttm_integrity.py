@@ -26,9 +26,15 @@ class TtmPeriods(unittest.TestCase):
         TTM-Umsatz zaehlte 1.481,7 Mio. doppelt (6,09 Mrd.). Zwei Quartale mit demselben Ende sind kein TTM."""
         _, resolver = build("FUBO")
         fact = resolver.ttm("revenue", AS_OF)
-        self.assertFalse(fact.available, f"TTM {fact.value} aus doppeltem Quartal")
-        self.assertEqual(fact.reason, TTM_PERIODS_NOT_CONTIGUOUS)
-        self.assertFalse(resolver.ttm("net_income", AS_OF).available)
+        # 1.20.0: jedes Quartal hat genau einen Kalenderslot (_on_calendar); das doppelte Quartal ist weg.
+        # Das Fenster ist jetzt Jul 2025 - Jun 2026 aus vier verschiedenen gemeldeten Quartalen.
+        self.assertGreater(abs(fact.value - 6.09e9), 1e8, f"TTM {fact.value} aus doppeltem Quartal")
+        if fact.available:
+            y, q = resolver.latest_reported_quarter("revenue", AS_OF)
+            ends = [str(resolver.quarter_grid("revenue", yy, AS_OF).get(qq).period_end)[:10]
+                    for yy, qq in (resolver.step_back(y, q, k) for k in range(4))]
+            self.assertEqual(len(set(ends)), 4, ends)
+            self.assertAlmostEqual(fact.value, 1481714000 + 1573867000 + 1548688000 + 377195000, delta=1)
 
     def test_52_53_week_quarters_are_contiguous(self):
         """PepsiCo: 12/12/12/16-Wochen-Quartale (Enden 2025-09-06, 2025-12-27, 2026-03-21, 2026-06-13).

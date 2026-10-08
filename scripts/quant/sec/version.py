@@ -205,6 +205,12 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          eine Rundungsdifferenz (relativ < 1e-4) ist kein Widerspruch. Eine
 #          Jahresbilanz am Ende eines Uebergangsjahres bleibt FY (vor dem
 #          Freeze nachgezogen: die Slot-Regel liess sie zuerst fallen).
+#          Red Team vor dem Freeze: (a) ein Quartal aus zwei Kumulwerten nur bei
+#          gleichem Beginn (Best Buy FY2013, Wendy's FY2009); (b) eine am selben
+#          Tag mehrdeutige Zelle wird nicht abgeleitet (Rayonier 2013 Q2);
+#          (c) jede Quartalszelle sitzt auf ihrem Kalenderslot; (d) Kette -3..+8
+#          Tage (Vishay, Loews); (e) ein EPS, das unter 1.000 Aktien impliziert,
+#          ist kein EPS (Stanley Black & Decker 10-Q/A 2022).
 NORMALIZATION_LOGIC_VERSION = "1.20.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -237,7 +243,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "a5fd91c88a05ca22e5d2fac85d21a1ee0e384ebb07803706a4b48fdd1ed52ec7"
+    "2d3d3b0f94b49fb231a4851d06844516252c4d835804ef3b9866886487e9bfc9"
 )
 
 

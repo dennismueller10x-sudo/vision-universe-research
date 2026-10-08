@@ -40,12 +40,15 @@ TTM_GAP_DAYS = (77, 126)
 # 1.20.0 Stub-Policy. NORMAL_QUARTER: ein Fiskalquartal von 11-17 Wochen (77-119 Tage;
 # 12/12/12/16-Wochen-Kalender wie PepsiCo). SHORT_STUB (< 77) und LONG_STUB (> 119) sind
 # NOT_QUARTER_ELIGIBLE. Entscheidend ist das Fenster: vier Perioden als luecken- und
-# ueberlappungsfreie Kette (Beginn 0-8 Tage nach dem Ende der vorigen), zusammen ein
+# ueberlappungsfreie Kette (Beginn -3 bis +8 Tage um das Ende der vorigen), zusammen ein
 # Geschaeftsjahr von 357-374 Tagen (52 Wochen 364, 53 Wochen 371, Kalenderjahr 365/366,
 # plus Datumskonventionen). Eine Rumpfperiode nach Fresh Start oder Gruendung macht das
 # Fenster laenger (Denbury 2020-09-19..2021-09-30: 377 Tage) und ergibt kein TTM.
 TTM_QUARTER_DAYS = (77, 119)
 TTM_CHAIN_GAP_DAYS = 7
+# A quarter may start up to 3 days before the previous one ends (date conventions:
+# Loews Q1 2011 from 2010-12-30, Vishay Q4 2015 from 2015-10-01 after Q3 to 10-03).
+TTM_CHAIN_OVERLAP_DAYS = 3
 TTM_SPAN_DAYS = (357, 374)
 # A published fiscal year ending this much after the window's last quarter
 # makes the window stale.
@@ -144,6 +147,15 @@ def _combine(observations, value, transformation, unit):
     )
 
 
+def _same_start(current, previous):
+    """Two cumulative points of one fiscal year begin on the same day (+-8 days)."""
+    if not current.period_start or not previous.period_start:
+        return False
+    a = date.fromisoformat(str(current.period_start)[:10])
+    b = date.fromisoformat(str(previous.period_start)[:10])
+    return abs((a - b).days) <= TTM_CHAIN_GAP_DAYS + 1
+
+
 class PeriodResolver:
     """Resolves canonical periods for one company at a given point in time."""
 
@@ -184,16 +196,22 @@ class PeriodResolver:
             index: self._raw(metric, fiscal_year, f"Q{index}", as_of, policy, lag_days)
             for index in range(1, 5)
         }
+        # 1.20.0 (Red Team HIGH-2): a cell whose visible filings disagree at the
+        # same instant is AMBIGUOUS_SAME_DAY, not missing - it is never replaced
+        # by a difference of cumulative points (Rayonier 2013 Q2: YTD2 restated
+        # minus Q1 unrestated gave -131.8 million).
+        ambiguous = {index for index in range(1, 5)
+                     if natives[index] is None and self._has_visible(metric, fiscal_year, f"Q{index}", as_of, lag_days)}
         if definition.kind == KIND_INSTANT:
             # Balance-sheet dates are already standalone; nothing to de-accumulate.
-            return natives
+            return self._on_calendar(fiscal_year, natives)
         if not definition.is_additive:
             # Per-share amounts and averages are not additive: each period divides by its own
             # weighted share count, so FY - 9M or H1 - Q1 is not the quarter's EPS.
             # Replimune FY2021 Q4: reported -0.42, FY minus nine months gave -0.41.
             # The same holds for weighted average share counts (E12).
             # Only reported quarters count; an unreported one stays a gap.
-            return natives
+            return self._on_calendar(fiscal_year, natives)
 
         # Concepts behind each observation in this grid. A difference of two
         # cumulative points is a quarter only within ONE concept. NTRS reports
@@ -234,7 +252,7 @@ class PeriodResolver:
 
             # Standalone quarter from two cumulative points (YTDn - YTDn-1).
             for index in range(1, 5):
-                if natives[index] is not None:
+                if natives[index] is not None or index in ambiguous:
                     continue
                 current = cumulative[index]
                 if current is None:
@@ -261,6 +279,13 @@ class PeriodResolver:
                         "(%s <= %s); refusing to reconstruct",
                         self.factbook.cik, metric, fiscal_year, index,
                         current.period_end, previous.period_end)
+                    continue
+                # 1.20.0 (Red Team HIGH-1): a difference is a quarter only if both
+                # cumulative points start on the same day (+-8). Best Buy FY2013
+                # (11-month transition year): FY 2012-03-04.. minus YTD3
+                # 2012-01-29.. gave a "Q4" of 10.73 billion; Wendy's FY2009:
+                # restated FY minus an older YTD3 with another start, Q4 -242.8M.
+                if not _same_start(current, previous):
                     continue
                 shared = concepts_of(current) & concepts_of(previous)
                 if not shared:
@@ -298,7 +323,29 @@ class PeriodResolver:
             if not changed:
                 break
 
-        return natives
+        return self._on_calendar(fiscal_year, natives)
+
+    def _has_visible(self, metric, fiscal_year, fiscal_period, as_of, lag_days):
+        timeline = self.factbook.get(metric, fiscal_year, fiscal_period)
+        return bool(timeline is not None and timeline.visible(as_of, lag_days=lag_days))
+
+    def _on_calendar(self, fiscal_year, cells):
+        """1.20.0 (Red Team MEDIUM-2): a quarter cell exists only on its calendar slot.
+
+        A cell whose period end the fiscal calendar places elsewhere - every
+        cell of a transition year, which has no quarter slots - is dropped,
+        so the quarterly series and the TTM agree with quarter_index."""
+        calendar = getattr(self.factbook, "calendar", None)
+        if calendar is None:
+            return cells
+        out = {}
+        for index, cell in cells.items():
+            if cell is not None and cell.period_end:
+                end = str(cell.period_end)[:10]
+                if calendar.fiscal_year_for(end) != fiscal_year or calendar.quarter_index(end) != index:
+                    cell = None
+            out[index] = cell
+        return out
 
     # ------------------------------------------------------------ public reads
 
@@ -438,7 +485,7 @@ class PeriodResolver:
                 return observations, TTM_STUB_PERIOD, []
         # observations: newest first - each quarter begins right after the older one ends
         for newer_begin, older_end in zip(begins, dates[1:]):
-            if not 0 <= (newer_begin - older_end).days <= TTM_CHAIN_GAP_DAYS + 1:
+            if not -TTM_CHAIN_OVERLAP_DAYS <= (newer_begin - older_end).days <= TTM_CHAIN_GAP_DAYS + 1:
                 return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
         if not TTM_SPAN_DAYS[0] <= (dates[0] - begins[-1]).days + 1 <= TTM_SPAN_DAYS[1]:
             return observations, TTM_STUB_PERIOD, []
@@ -507,6 +554,11 @@ class PeriodResolver:
                 count = abs(income / obs.value)
                 if count >= TTM_MIN_SHARES:
                     implied.append(count)
+                elif income:
+                    # 1.20.0 (Red Team): an "EPS" that implies fewer than 1,000
+                    # shares is not a per-share amount (Stanley Black & Decker
+                    # 10-Q/A 2022: weighted shares tagged as EPS, TTM 329,535,005).
+                    return TTM_EPS_INCONSISTENT
         # Reported weighted shares decide where at least two quarters carry them;
         # net income / EPS only stands in without them, because net income can
         # differ from the EPS numerator (non-controlling interests, preferred

@@ -184,3 +184,57 @@ class CustomTagTests(unittest.TestCase):
         for metric in ("eps_diluted", "eps_basic"):
             self.assertFalse(resolver.ttm(metric, "2026-10-05").available, metric)
         self.assertTrue(resolver.ttm("net_income", "2026-10-05").available, "Gegenprobe: Ergebnis-TTM vorhanden")
+
+
+class RedTeamRegressionTests(unittest.TestCase):
+    """Red Team 1.20.0 vor dem Freeze (alle Emittenten aus dem bereits gesehenen Produktuniversum)."""
+
+    def test_no_quarter_from_cumulative_points_with_different_starts(self):
+        """HIGH-1 Best Buy FY2013 (11-Monats-Uebergangsjahr): FY 2012-03-04.. minus YTD3 2012-01-29.. ergab
+        einen Q4 von 10,73 Mrd.; TTM 2014Q2 zum 2014-09-15 war 38,728 statt 42,877 Mrd."""
+        calendar, resolver = build("BBY")
+        fact = resolver.ttm_ending("revenue", 2014, 2, "2014-09-15")
+        self.assertFalse(fact.available and abs(fact.value - 38.728e9) < 1e7, fact.value)
+        for year in (2013, 2014):
+            for index, cell in resolver.quarter_grid("revenue", year, "2015-06-01").items():
+                if cell is not None and cell.provenance.transformation != "AS_REPORTED":
+                    self.assertTrue(77 <= days(cell.period_start, cell.period_end) + 1 <= 119, (year, index))
+
+    def test_restated_fy_minus_old_ytd_with_other_start_is_not_a_quarter(self):
+        """HIGH-1 Wendy's FY2009: restated FY minus YTD3 mit anderem Beginn (2008-12-09 vs. 2008-12-29) = -242,8 Mio."""
+        _, resolver = build("WEN")
+        cell = resolver.quarter_grid("revenue", 2009, "2013-01-01").get(4)
+        self.assertTrue(cell is None or cell.value > 0, cell and cell.value)
+
+    def test_ambiguous_same_day_quarter_is_not_derived(self):
+        """HIGH-2 Rayonier 2013 Q2: 10-K/A 409,1 Mio. und 10-Q/A 154,9 Mio. am selben Tag; YTD2 (restated) minus
+        Q1 (unrestated) ergab -131,8 Mio."""
+        _, resolver = build("RYN")
+        self.assertIsNone(resolver.quarter_grid("revenue", 2013, "2014-12-01").get(2))
+        self.assertFalse(resolver.ttm_ending("revenue", 2013, 2, "2014-12-01").available)
+
+    def test_weighted_shares_tagged_as_eps_are_not_summed(self):
+        """Stanley Black & Decker 10-Q/A (2022): gewichtete Aktien als EPS getaggt, TTM 329.535.005,31."""
+        _, resolver = build("SWK")
+        fact = resolver.ttm("eps_diluted", "2022-02-01")
+        self.assertFalse(fact.available, fact.value)
+        self.assertTrue(resolver.ttm("eps_diluted", "2022-03-01").available)
+
+    def test_quarter_starting_before_the_previous_end_is_contiguous(self):
+        """MEDIUM-1 Vishay Q4 2015 beginnt 2015-10-01, Q3 endete 2015-10-03 (Datumskonvention)."""
+        _, resolver = build("VSH")
+        fact = resolver.ttm_ending("revenue", 2015, 4, "2016-06-01")
+        self.assertTrue(fact.available, fact.reason)
+
+    def test_every_quarter_cell_sits_on_its_calendar_slot_for_all_metrics(self):
+        """MEDIUM-2: die Invariante gilt fuer alle Kennzahlen, auch abgeleitete Quartale."""
+        for name in ("MFLX", "BBY", "WEN", "DENBURY", "TDW", "CIK1463208", "FUBO", "VFC"):
+            calendar, resolver = build(name)
+            for metric in ("revenue", "net_income", "operating_cash_flow", "eps_diluted"):
+                for year in range(2009, 2027):
+                    for index, cell in resolver.quarter_grid(metric, year, "2099-12-31").items():
+                        if cell is None:
+                            continue
+                        end = str(cell.period_end)[:10]
+                        self.assertEqual((calendar.fiscal_year_for(end), calendar.quarter_index(end)), (year, index),
+                                         f"{name} {metric} {year}Q{index} {end}")
