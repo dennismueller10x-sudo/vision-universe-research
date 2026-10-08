@@ -303,21 +303,23 @@
   // ------------------------------------------------------------ START
   function viewStart(main) {
     var i = info(), q = state.query;
-    main.append(bar('Screener', { right: [mqDesk.matches ? null : modeSeg(), iconBtn('gear', 'Einstellungen', openSettings)] }));
     if (state.invalidLink) main.append(invalidNotice());
     var left = h('div', {}), right = h('div', {});
-    left.append(h('section', { class: 'sc-hero' }, [
-      h('h2', { text: 'Baue dein Aktienuniversum.' }),
-      h('p', { class: 'sc-lead', text: 'Finde genau die Unternehmen, die zu deinen Kriterien passen. Mit deinen eigenen Filtern – schnell, präzise, unabhängig.' }),
-      globe(),
+    var productIcon = h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true' });
+    productIcon.innerHTML = '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#screener"></use></svg>';
+    left.append(h('section', { class: 'sc-hero sc-product-hero vu-product-hero', 'aria-labelledby': 'sc-product-title' }, [
+      h('div', { class: 'sc-product-top' }, [productIcon, iconBtn('gear', 'Einstellungen', openSettings)]),
+      h('p', { class: 'vu-product-hero__eyebrow' }, ['Vision Universe ', h('strong', { text: 'Screener' })]),
+      h('h1', { class: 'vu-product-hero__title', id: 'sc-product-title', text: 'Deine Kriterien. Dein Aktienuniversum.' }),
+      h('p', { class: 'sc-lead vu-product-hero__lead', text: 'Filtere Aktien nach deinen eigenen Kriterien. Gewichte Kennzahlen und vergleiche Unternehmen – schnell, präzise, unabhängig.' }),
+      h('div', { class: 'sc-hero-actions' }, [
+        h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
+        h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“'])]),
+      h('div', { class: 'sc-hero-universe' }, [globe(),
       h('div', { class: 'sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }),
         h('span', {}, ['Aktien im Universum', h('button', { class: 'sc-info', type: 'button', 'aria-label': 'Was gehört zum Universum?', onclick: openUniverseInfo }, 'i')]),
-        h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })]),
-      h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
-      h('div', { style: { height: '10px' } }),
-      h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“']),
-      h('p', { class: 'sc-quote', text: '„Bessere Entscheidungen beginnen mit den richtigen Filtern.“' })]));
-    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), mqDesk.matches ? modeSeg() : null]),
+        h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })])]) ]));
+    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), modeSeg()]),
       h('div', { class: 'sc-quickgrid', style: { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } }, [
         modeCard('simple', 'Einfach', 'Schnell starten mit den wichtigsten Kriterien – Größe, Wachstum, Bewertung, Qualität, Momentum, Technik.'),
         modeCard('pro', 'Pro', 'Zusätzlich Bilanz, Perzentile, Quant-Faktoren, Gruppen mit UND/ODER und gewichtetes Ranking.')])]));
