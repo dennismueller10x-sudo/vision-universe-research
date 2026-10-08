@@ -78,7 +78,7 @@ Alle sieben UI-PRs regulär gemergt. Die Foundation wurde mit erhaltener Abstamm
 
 Finale PR-CI: 34 tatsächlich ausgelöste Läufe abgeschlossen, 31 grün und drei ausschließlich mit den fünf bewiesenen Quant-Baselinefehlern. Alle sieben Shell-Läufe bestehen 15/15 Tests sowie jeweils 270 Chromium- und 162 WebKit-Prüfungen ohne Befund: insgesamt 3.024 Browserprüfungen. Nachweise: `ci-classification.md/.json`, `final-shell-jobs-summary.json`, `integrated-main-ui-verification.json` und `merge-manifest.json` im Browser-Archiv.
 
-GitHub-Pages-Auslieferung und zusätzlicher Main-Shell-Nachlauf sind derzeit noch aktiv; deren endgültiger Status wird vor Abschluss dieses Berichts verifiziert. Vercel-Preview weiterhin Anbieter-Quota. Eine lokale Aufnahme beweist keinen Live-Status.
+**GitHub Pages ist ausgeliefert und verifiziert.** [Lauf 37817311179](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37817311179): Package, Deploy und nachgelagerte Live-Akzeptanz erfolgreich. Öffentliche Produktion: https://research.visionuniverse.de/. Cache-busted `release-delivery.json`: PASS, tatsächlicher Source-SHA `5ee2ae4acd14c4a3bac29da5a81af4dd7c53bc97`, Bundle-Version `58284c63ad0e7d8f`. 20 öffentliche Dateien — Originalsprite, Shell-JS/CSS, fünf neue Hintergründe, sechs Produktstyles und sechs Produktprogramme einschließlich Quant-Bundle — bytegenau identisch mit dem geprüften Runtime-Artefakt. Nachweis: `production-verification.json`. Der separate Main-Shell-Nachlauf ist noch aktiv und wird vor Abschluss dieses Berichts ergänzt. Vercel-Preview weiterhin Anbieter-Quota. Dieser Bericht wird separat über [#539](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/539) integriert.
 
 ## Verbleibende tatsächliche Punkte
 
