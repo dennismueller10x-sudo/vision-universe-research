@@ -42,3 +42,9 @@ test('revenue contraction remains a decline even when its rate improves; crossin
  ])assert.equal(changeLabel({metric:'revenue_growth',previous,current}),label);
  assert.equal(changeLabel({metric:'total_debt',previous:1,current:2}),'Gestiegen');
 });
+
+test('new official earnings news does not silently freshen stale normalized financial metrics',()=>{
+ const f={state:'AVAILABLE',stale:true,reportingPeriod:'2025-12-31',metrics:{cash_and_equivalents:{current:{value:100,unit:'CNY'}}},whatChanged:[]};
+ const payload={companyId:cid,latestFinancials:f,news:[news('q2-release','2026-08-24',{categories:['Earnings'],headline:'Second Quarter 2026 Unaudited Financial Results'})]};
+ const m=viewModel(payload,now);assert.equal(m.recent.length,1);assert.equal(storyType(m.recent[0]),'Geschäftszahlen');assert.equal(payload.latestFinancials.stale,true);assert.equal(payload.latestFinancials.reportingPeriod,'2025-12-31');assert.deepEqual(Array.from(m.metrics),['cash_and_equivalents']);
+});

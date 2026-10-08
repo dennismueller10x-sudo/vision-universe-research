@@ -2,7 +2,7 @@
   "schema": 1,
   "scope": "EXISTING_PRODUCTION_COHORT_ONLY",
   "acceptedGeneration": "21cc611a43b06f488418b58a",
-  "asOf": "2026-10-08T13:00:18Z",
+  "asOf": "2026-10-08T14:36:50Z",
   "tickers": [
     "AAPL",
     "ACU",
@@ -1810,6 +1810,136 @@
         "sourceContentHash": "7a43be07d05a6b2fd9daf0010b64c4fb7d80a9601803340d44a27a604f129e9b",
         "method": "DATE_ONLY_RESULTS; CALL_16_30_CDT_EQUALS_17_30_EDT; UTC_FROM_IANA_ZONE; REPLAY_NOT_YET_CLAIMED"
       }
+    },
+    {
+      "eventId": "16a02aeccd80885944cf4c39",
+      "companyId": "iss_cik_0001099219",
+      "eventType": "EARNINGS_SCHEDULED",
+      "headline": "MetLife Q3 2026 Financial Results",
+      "date": "2026-11-04",
+      "startsAt": null,
+      "confirmationStatus": "CONFIRMED",
+      "confidence": 1,
+      "sourceId": "4e50548062a73d40e11ae424",
+      "sourceUrl": "https://investor.metlife.com/news/news-details/2026/MetLife-to-Announce-Third-Quarter-2026-Results/default.aspx",
+      "fiscalYear": 2026,
+      "fiscalQuarter": "Q3",
+      "reportingPeriod": "2026-09-30",
+      "sourceTimeZone": null,
+      "discoveredAt": "2026-10-08T14:36:50Z",
+      "sourceDocuments": [
+        {
+          "type": "OFFICIAL_COMPANY_EVENT",
+          "url": "https://investor.metlife.com/news/news-details/2026/MetLife-to-Announce-Third-Quarter-2026-Results/default.aspx"
+        }
+      ],
+      "detectionEvidence": [
+        "EXPLICIT_FIRST_PARTY_RELEASE_BODY_DISTINCT_RESULTS_AND_CALL_DATE_TIME"
+      ],
+      "reviewEvidence": {
+        "sourceContentHash": "f09528bc6e4056d813b90ce05a4f33340dc066eafbd8daefae90b4b83735145a",
+        "method": "EXPLICIT_NOV4_AFTER_MARKET_CLOSE_RESULTS_DATE_ONLY; NOV5_09_00_ET_CALL_EQUALS_14_00_UTC_15_00_BERLIN_CET; FUTURE_WEBCAST_NOT_RECORDING"
+      }
+    },
+    {
+      "eventId": "d4c38006a323fcaabe5a9840",
+      "companyId": "iss_cik_0001099219",
+      "eventType": "EARNINGS_CALL",
+      "headline": "MetLife Q3 2026 Results Presentation / Earnings Call",
+      "date": "2026-11-05",
+      "startsAt": "2026-11-05T14:00:00Z",
+      "confirmationStatus": "CONFIRMED",
+      "confidence": 1,
+      "sourceId": "4e50548062a73d40e11ae424",
+      "sourceUrl": "https://investor.metlife.com/news/news-details/2026/MetLife-to-Announce-Third-Quarter-2026-Results/default.aspx",
+      "fiscalYear": 2026,
+      "fiscalQuarter": "Q3",
+      "reportingPeriod": "2026-09-30",
+      "sourceTimeZone": "America/New_York",
+      "discoveredAt": "2026-10-08T14:36:50Z",
+      "sourceDocuments": [
+        {
+          "type": "OFFICIAL_COMPANY_EVENT",
+          "url": "https://investor.metlife.com/news/news-details/2026/MetLife-to-Announce-Third-Quarter-2026-Results/default.aspx"
+        },
+        {
+          "type": "WEBCAST",
+          "url": "https://events.q4inc.com/attendee/435085807"
+        }
+      ],
+      "detectionEvidence": [
+        "EXPLICIT_FIRST_PARTY_RELEASE_BODY_DISTINCT_RESULTS_AND_CALL_DATE_TIME"
+      ],
+      "reviewEvidence": {
+        "sourceContentHash": "f09528bc6e4056d813b90ce05a4f33340dc066eafbd8daefae90b4b83735145a",
+        "method": "EXPLICIT_NOV4_AFTER_MARKET_CLOSE_RESULTS_DATE_ONLY; NOV5_09_00_ET_CALL_EQUALS_14_00_UTC_15_00_BERLIN_CET; FUTURE_WEBCAST_NOT_RECORDING"
+      },
+      "webcastUrl": "https://events.q4inc.com/attendee/435085807"
+    },
+    {
+      "eventId": "c1d2cb9693c7207386c44854",
+      "companyId": "iss_cik_0001468091",
+      "eventType": "EARNINGS_SCHEDULED",
+      "headline": "VEON Q3 2026 Financial Results",
+      "date": "2026-11-06",
+      "startsAt": "2026-11-06T05:00:00Z",
+      "confirmationStatus": "CONFIRMED",
+      "confidence": 1,
+      "sourceId": "d90a7df6f636e21e94ccd00f",
+      "sourceUrl": "https://www.veon.com/newsroom/press-releases/veon-to-report-3q26-results-on-november-6-2026",
+      "fiscalYear": 2026,
+      "fiscalQuarter": "Q3",
+      "reportingPeriod": "2026-09-30",
+      "sourceTimeZone": "Asia/Dubai",
+      "discoveredAt": "2026-10-08T14:36:50Z",
+      "sourceDocuments": [
+        {
+          "type": "OFFICIAL_COMPANY_EVENT",
+          "url": "https://www.veon.com/newsroom/press-releases/veon-to-report-3q26-results-on-november-6-2026"
+        }
+      ],
+      "detectionEvidence": [
+        "EXPLICIT_FIRST_PARTY_RELEASE_BODY_DISTINCT_RESULTS_AND_CALL_DATE_TIME"
+      ],
+      "reviewEvidence": {
+        "sourceContentHash": "e2b3fa99a8c5e298be707ec50e587ea20a85861cad3cba64cefebe9fb707e293",
+        "method": "EXPLICIT_RESULTS_09_00_GST_EQUALS_00_00_ET_05_00_UTC; PRESENTATION_16_00_GST_EQUALS_07_00_ET_12_00_UTC_13_00_BERLIN_CET; FUTURE_WEBCAST_NOT_RECORDING"
+      }
+    },
+    {
+      "eventId": "d8abe0c07dd47c44e36bf4df",
+      "companyId": "iss_cik_0001468091",
+      "eventType": "EARNINGS_CALL",
+      "headline": "VEON Q3 2026 Results Presentation / Earnings Call",
+      "date": "2026-11-06",
+      "startsAt": "2026-11-06T12:00:00Z",
+      "confirmationStatus": "CONFIRMED",
+      "confidence": 1,
+      "sourceId": "d90a7df6f636e21e94ccd00f",
+      "sourceUrl": "https://www.veon.com/newsroom/press-releases/veon-to-report-3q26-results-on-november-6-2026",
+      "fiscalYear": 2026,
+      "fiscalQuarter": "Q3",
+      "reportingPeriod": "2026-09-30",
+      "sourceTimeZone": "Asia/Dubai",
+      "discoveredAt": "2026-10-08T14:36:50Z",
+      "sourceDocuments": [
+        {
+          "type": "OFFICIAL_COMPANY_EVENT",
+          "url": "https://www.veon.com/newsroom/press-releases/veon-to-report-3q26-results-on-november-6-2026"
+        },
+        {
+          "type": "WEBCAST",
+          "url": "https://veon-3q-2026-results-presentation.open-exchange.net/registration"
+        }
+      ],
+      "detectionEvidence": [
+        "EXPLICIT_FIRST_PARTY_RELEASE_BODY_DISTINCT_RESULTS_AND_CALL_DATE_TIME"
+      ],
+      "reviewEvidence": {
+        "sourceContentHash": "e2b3fa99a8c5e298be707ec50e587ea20a85861cad3cba64cefebe9fb707e293",
+        "method": "EXPLICIT_RESULTS_09_00_GST_EQUALS_00_00_ET_05_00_UTC; PRESENTATION_16_00_GST_EQUALS_07_00_ET_12_00_UTC_13_00_BERLIN_CET; FUTURE_WEBCAST_NOT_RECORDING"
+      },
+      "webcastUrl": "https://veon-3q-2026-results-presentation.open-exchange.net/registration"
     }
   ],
   "sourceUsagePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
@@ -1823,5 +1953,7 @@
       "reason": "Verified Qualcomm IR navigation links to the corporate qualcomm.com domain; prior third-party wiki is not the company website."
     }
   ],
-  "reviewedAt": "2026-10-08T13:40:00Z"
+  "reviewedAt": "2026-10-08T14:36:50Z",
+  "contentRevision": 3,
+  "revisionReason": "Isolate resolution-only SEC aliases from persistent export identity and attach distinct explicitly confirmed MetLife/VEON result and call dates already found in reviewed releases; require fresh full-state restore proof."
 }

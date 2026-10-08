@@ -2,9 +2,9 @@
   "schema": 1,
   "status": "PASS",
   "acceptedGeneration": "21cc611a43b06f488418b58a",
-  "sourceGeneration": "ea74c9b55f3953dc6d772629",
-  "consumerGeneration": "217cde9b4949deb7a4d5be84",
-  "auditedAt": "2026-10-08T13:45:55.129615+00:00",
+  "sourceGeneration": "6d4f35263848d87c4d3549d8",
+  "consumerGeneration": "6c3fb74e36086a0b86dfdf3b",
+  "auditedAt": "2026-10-08T14:40:32.919625+00:00",
   "issuers": 45,
   "stocks": 46,
   "productionAssetHashesVerified": 0,
@@ -811,14 +811,16 @@
         "90_DAYS": 4
       },
       "ledgerEventTypes": {
-        "EARNINGS_ESTIMATED": 1
+        "EARNINGS_ESTIMATED": 1,
+        "EARNINGS_SCHEDULED": 1,
+        "EARNINGS_CALL": 1
       },
       "acceptedModules": {
         "news": 6,
         "earnings": 0,
-        "events": 1,
-        "calls": 0,
-        "materials": 3,
+        "events": 3,
+        "calls": 1,
+        "materials": 5,
         "materialEvents": 0
       },
       "germanProfile": true,
@@ -1096,13 +1098,16 @@
         "TODAY": 1,
         "7_DAYS": 1
       },
-      "ledgerEventTypes": {},
+      "ledgerEventTypes": {
+        "EARNINGS_SCHEDULED": 1,
+        "EARNINGS_CALL": 1
+      },
       "acceptedModules": {
         "news": 2,
         "earnings": 0,
-        "events": 0,
-        "calls": 0,
-        "materials": 22,
+        "events": 2,
+        "calls": 1,
+        "materials": 24,
         "materialEvents": 0
       },
       "germanProfile": true,
@@ -1383,8 +1388,7 @@
       "consumerNews": 10,
       "productionNews": null,
       "newsFreshness": {
-        "7_DAYS": 1,
-        "30_DAYS": 3,
+        "30_DAYS": 4,
         "90_DAYS": 4,
         "OLDER": 2
       },

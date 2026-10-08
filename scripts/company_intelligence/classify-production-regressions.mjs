@@ -1,9 +1,13 @@
 /* Never waive a branch regression: independently reproduce known price-data failures
    on the exact production base, with identical protected data/engine/test inputs. */
 import {spawnSync} from 'node:child_process';
-import {readdirSync,writeFileSync} from 'node:fs';
+import {readdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
-const baseline='eec8dceb176f8a84d635a9dfc36ff3c8ae1e1e92';
+// PR checkout is GitHub's synthetic merge, including independent main data
+// updates. Its trusted event base is the correct unchanged production control.
+const event=process.env.GITHUB_EVENT_NAME==='pull_request'&&process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):null;
+const baseline=event?.pull_request?.base?.sha||'eec8dceb176f8a84d635a9dfc36ff3c8ae1e1e92';
+if(!/^[a-f0-9]{40}$/.test(baseline))throw Error('EXACT_PRODUCTION_BASE_SHA_REQUIRED');
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
 const protectedPaths=['quant','discover','supertrader','screener','providers','scripts/market','scripts/quant'];
 const diff=run('git',['diff','--name-only',baseline,'HEAD','--',...protectedPaths]);
@@ -21,5 +25,5 @@ if(candidate.status){
  try{control=parse(run(process.execPath,['--test','--test-reporter=tap',...files],root));}finally{run('git',['worktree','remove',root]);}
  if(control.status!==candidate.status||JSON.stringify(control.failures)!==JSON.stringify(candidate.failures)||control.testCount!==candidate.testCount)throw Error('BASELINE_DOES_NOT_REPRODUCE_CANDIDATE_FAILURES');
 }
-const report={status:candidate.status?'PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES':'PASS',baselineSha:baseline,protectedPaths,protectedInputDiff:[],candidate,independentBaseline:control,newBranchFailures:0,productionPriceDataChanged:false};
+const report={baselineBasis:event?'TRUSTED_GITHUB_PR_EVENT_BASE':'PINNED_PREPARATION_PRODUCTION_BASE',status:candidate.status?'PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES':'PASS',baselineSha:baseline,protectedPaths,protectedInputDiff:[],candidate,independentBaseline:control,newBranchFailures:0,productionPriceDataChanged:false};
 writeFileSync(resolve(process.env.RUNNER_TEMP||'/tmp','production-regression-classification.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

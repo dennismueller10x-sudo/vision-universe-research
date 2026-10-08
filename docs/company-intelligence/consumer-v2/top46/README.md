@@ -1,6 +1,6 @@
 # Top-46 content release: acceptance evidence
 
-This release keeps the existing V2 interface and the approved 46-stock / 45-issuer cohort. It adds reviewed German profiles and first-party news metadata, repairs exact publication days, and adds explicitly announced Tesla dates. It does not broaden production or change the accepted private baseline.
+This release keeps the existing V2 interface and the approved 46-stock / 45-issuer cohort. It adds reviewed German profiles and first-party news metadata, repairs exact publication days, and adds explicitly announced, distinct results/call dates for Tesla, MetLife and VEON. It does not broaden production or change the accepted private baseline.
 
 ## Preserved baseline
 

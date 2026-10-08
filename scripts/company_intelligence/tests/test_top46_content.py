@@ -8,6 +8,7 @@ from company_intelligence.q4_news import parse
 from company_intelligence.model import make_item, classify
 from company_intelligence.store import Store
 from company_intelligence.product import project
+from company_intelligence.top46_content import matching_resolver
 from company_intelligence.transport import SourceError
 
 CID='iss_cik_0001321655'
@@ -45,6 +46,23 @@ class TargetedContentTests(unittest.TestCase):
         self.assertEqual(parse(json.dumps(data).encode(),SOURCE),[])
         with self.assertRaises(SourceError):parse(json.dumps(data).encode(),{**SOURCE,'verified':False})
         with self.assertRaises(ValueError):make_item({'headline':'Palantir','url':'https://investors.palantir.com/news','publishedDate':'2026-10-09'},SOURCE,{'companyId':CID,'confidence':1},NOW)
+
+    def test_sec_matching_aliases_cannot_change_pinned_export_identity_or_fresh_restore_generation(self):
+        from copy import deepcopy
+        companies={CID:{'companyId':CID,'cik':'0001321655','names':['Palantir'],'listings':[{'symbol':'PLTR','instrumentId':'vu_12345678901234','exchange':'NASDAQ'}]}}
+        original=deepcopy(companies)
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);facts=root/'quant/data/sec/consumer/CIK0001321655.json';facts.parent.mkdir(parents=True);facts.write_text(json.dumps({'cik':'0001321655','name':'PALANTIR TECHNOLOGIES INC'}))
+            resolver=matching_resolver(companies,root)
+            self.assertIn('PALANTIR TECHNOLOGIES INC',resolver.companies[CID]['names'])
+            self.assertEqual(companies,original)
+            item=make_item({'headline':'Palantir announces partnership','url':'https://investors.palantir.com/news/one','publishedAt':'2026-10-01T12:00:00Z'},SOURCE,{'companyId':CID,'confidence':1},NOW)
+            store=Store(root/'state.sqlite');store.ingest(item);first=store.export(companies,root/'before',NOW);store.close()
+            restored=Store(root/'state.sqlite');fresh=deepcopy(original);matching_resolver(fresh,root);second=restored.export(fresh,root/'after',NOW);restored.close()
+            self.assertEqual(first,second)
+            self.assertEqual((root/'before/index.json').read_bytes(),(root/'after/index.json').read_bytes())
+            before=(root/'before'/'snapshots'/first['generation']/(CID+'.json')).read_bytes()
+            self.assertEqual(before,(root/'after'/'snapshots'/second['generation']/(CID+'.json')).read_bytes())
 
     def test_current_observation_cannot_promote_old_date_only_release(self):
         item=make_item({'headline':'Palantir announces partnership','url':'https://investors.palantir.com/news/old','publishedDate':'2025-10-01','updatedAt':NOW},SOURCE,{'companyId':CID,'confidence':1},NOW)

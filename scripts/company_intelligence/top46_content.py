@@ -4,6 +4,7 @@ Never reads credentials, polls sources, initializes a missing ledger or writes t
 accepted R2 namespace. Public inputs contain reviewed facts/metadata, not bodies.
 """
 import argparse
+from copy import deepcopy
 import hashlib
 import json
 import sqlite3
@@ -16,7 +17,7 @@ from company_intelligence.profiles import public_profile
 from company_intelligence.store import Store, dumps, atomic_json, item_time
 from company_intelligence.consumer_usage import filter_for_preview, first_party, publisher
 from company_intelligence.acceptance import fingerprint
-from current_state_acceptance import database_proof
+from company_intelligence.current_state_acceptance import database_proof
 
 
 def reviewed():
@@ -56,6 +57,19 @@ def untouched(db, cids):
     out['state'] = hashlib.sha256(dumps(protected).encode()).hexdigest()
     out['event_alias'] = hashlib.sha256(dumps([list(r) for r in db.execute('SELECT * FROM event_alias ORDER BY 1')]).encode()).hexdigest()
     return out
+
+
+def matching_resolver(selected, root=ROOT):
+    # Resolution-only SEC aliases must not mutate the pinned export identity.
+    # Otherwise a fresh restore has identical tables but hashes different names.
+    resolver = Resolver(deepcopy(selected))
+    for cid, company in selected.items():
+        consumer_path = Path(root)/'quant/data/sec/consumer'/('CIK'+company['cik']+'.json')
+        if consumer_path.is_file():
+            data=json.loads(consumer_path.read_text())
+            if data.get('cik')==company['cik'] and data.get('name'):
+                resolver.add_alias(cid,data['name'])
+    return resolver
 
 
 def export(state, identity_root):
@@ -124,13 +138,7 @@ def prepare(state, identity_root, evidence):
             if s.get('companyId') not in selected or not first_party(s,s['companyId']) or publisher(s['url']):
                 raise ValueError('UNAPPROVED_SOURCE_CLASS_OR_ISSUER')
             store.source(s)
-        resolver = Resolver(selected)
-        for cid in cids:
-            consumer_path = ROOT/'quant/data/sec/consumer'/('CIK'+companies[cid]['cik']+'.json')
-            if consumer_path.is_file():
-                data=json.loads(consumer_path.read_text())
-                if data.get('cik')==companies[cid]['cik'] and data.get('name'):
-                    resolver.add_alias(cid,data['name'])
+        resolver = matching_resolver(selected)
         outcomes = {}
         for row in review['news']:
             source = sources[row['sourceId']]
