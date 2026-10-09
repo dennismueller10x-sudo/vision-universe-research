@@ -146,7 +146,7 @@ QA candidates preserve current and previous GOOD slots across repeated attempts.
 The authenticated first candidate rejection independently demonstrated that a
 fresh private-state update cannot publish an unaccepted consumer to production.
 
-Relevant refresh tests: seven Node storage/publication/SLO/longevity contracts and seven
+Relevant refresh tests: eight Node storage/publication/SLO/longevity/hydration contracts and seven
 Python parser/isolation/financial-cursor contracts. Existing Company Intelligence,
 SEC/Quant, release and product regression suites remain required. No assertions
 were weakened. Core CI's pre-existing invalid-news-symbol assertion was reproduced
@@ -238,3 +238,45 @@ It reuses protected hydration, real-Discover/Quant and 368-case V2 browser tests
 It has no cron, R2 credentials, source polling, publication or gate mutation.
 This closes the observed pending-Pages eviction by market-data workflow runs
 (37966408643 was cancelled before any job started).
+
+
+## Observed production acceptance, 9 October 2026
+
+The production implementation was merged as PR #548, merge
+`d6be3635678669f666e6fceac9bb25c4ccb25c42`. The live product remains protected at
+https://research.visionuniverse.de/discover/#/s/US_REAL/TSLA .
+No opt-in query or replacement application is required after unlocking Research.
+
+Production run 1, [37963602683](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37963602683),
+passed on a clean main runner. It restored certified full generation
+`47850e8e655d07b900b15a62`, preserved all 5,120 private consumer companies, advanced
+private generation to `46f7fdd7d385681b90d7b885`, uploaded/read back checkpoint
+`442a74848f1a51a00d7086c62d454c9578b2cb4dd56ac301e1e2b89630940ff9`
+(31,141,602 bytes), and freshly reproduced all table proofs and 86 consumer assets.
+The fixed consumer retained 45 German profiles, 314 NEWS records across 42 issuers,
+46 listings and the approved source policy. There were 45 successful SEC checks,
+zero new filings, zero facts requests and no due feed requests. Persisted source
+cursors prevented redundant first-party polling; this is a successful no-change
+refresh, not a source deletion.
+
+Consumer `40afe02bad7b0a64facdde95` passed all 46 contracts and 16 candidate UI cases.
+Child Pages run 37964570749 deployed through the existing production pipeline.
+Sixteen unintercepted live cases passed, including all 86 asset hashes, exact
+issuer/generation identity, locked access, 390/1440px, navigation, no overflow and
+zero JavaScript errors. The actually served release was
+`c263d885a0fe517ee4244c6715cb0b5d3473fff5`; unrelated accepted main updates were
+preserved. The private refresh clock was 17:08:19Z, consumer build 17:11:42.998Z,
+and actual publication acceptance 17:26:23.317Z. The later ordinary market-data
+Pages release retained this consumer on main `2f10ea21e8fa933edc8d2d3437b64ce38c6b6e6b`.
+
+Read-only health run 37966449250 independently read R2: refresh, build and actual
+publication SLOs were all HEALTHY. Safe aggregate reports are preserved under
+`evidence/company-intelligence-continuous-refresh-20261009/`. No private SQLite,
+checkpoint archive, source rows or credentials are included.
+
+The first full browser attempt found a test-adapter expectation defect: generation
+was dynamic but the expected hydration timestamp still came from the fixed old
+preview. All 216 real Discover/Quant cases and eight dark checks had passed before
+that exact timestamp assertion rejected ACU. The adapter now binds both fields
+to the current manifest; a new contract rejects contradictory generation/time.
+No assertion, browser timeout, product data or source policy was relaxed.
