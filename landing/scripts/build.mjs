@@ -27,7 +27,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','newsletter.js','impressum/index.html','datenschutz/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -42,17 +42,26 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   if (ready) {
     html = html.replace('data-ready="false"',`data-ready="true" action="${esc(config.actionUrl)}"`).replace('<fieldset disabled>','<fieldset>')
       .replace('<input type="hidden" name="locale" value="de">',`<input type="hidden" name="locale" value="de"><input type="hidden" name="${esc(config.sourceAttribute)}" value="Coming-soon-Landingpage">`)
-      .replace('Die Anmeldung wird gerade vorbereitet. Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden erhältst du eine E-Mail. Bestätige darin deine Anmeldung, um die Launch-News zu erhalten.')
+      .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden erhältst du eine E-Mail. Bestätige darin deine Anmeldung.')
       .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Du wirst nach dem Absenden zum Anmeldeformular weitergeleitet. Bestätige anschließend deine E-Mail-Adresse.')
       .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
     // Native validity remains available without JavaScript. JS adds German inline messages.
   }
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
-  await writeFile(resolve(output,'index.html'),html);
   const formOrigin = ready ? new URL(config.actionUrl).origin : "'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action ${formOrigin}; base-uri 'none'; frame-ancestors 'none'; object-src 'none'`;
+  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action ${formOrigin}; base-uri 'none'; object-src 'none'`;
+  // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
+  html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+  await writeFile(resolve(output,'index.html'),html);
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
-  await writeFile(resolve(output,'_redirects'),'https://visionuniverse.de/* https://www.visionuniverse.de/:splat 301\n/policies/legal-notice /impressum/ 301\n/policies/privacy-policy /datenschutz/ 301\n');
+  // Pages handles apex -> www in custom-domain settings, not _redirects.
+  // Static aliases keep the existing Research legal links working later.
+  for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
+    await mkdir(resolve(output,'policies',alias),{recursive:true});
+    const legal=await readFile(resolve(output,target,'index.html'),'utf8');
+    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../'));
+  }
+  await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
   if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
   const files = await readdir(output);
@@ -68,7 +77,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       actionUrl: process.env.BREVO_FORM_ACTION || '',
       doubleOptInVerified: process.env.BREVO_DOUBLE_OPT_IN_VERIFIED === 'true',
       privacyReviewed: process.env.LANDING_PRIVACY_REVIEWED === 'true',
-      sourceAttribute: process.env.BREVO_SOURCE_ATTRIBUTE || 'SOURCE',
+      sourceAttribute: process.env.BREVO_SOURCE_ATTRIBUTE || 'VU_SOURCE',
       privacyHtmlPath: process.env.LANDING_PRIVACY_HTML_PATH || ''
     } : {};
     console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')})));

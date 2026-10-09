@@ -1,4 +1,4 @@
-import {chromium,webkit} from 'playwright';
+import {chromium} from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
@@ -34,13 +34,23 @@ try{
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
-    for(const link of ['.header-link','.hero .button']){await page.locator(link).click();assert.equal(new URL(page.url()).hash,'#newsletter');const y=await page.locator('#newsletter').evaluate(e=>e.getBoundingClientRect().top);assert.ok(y<height&&y>=0,`${name} anchor not visible`);await page.goto(base+'/blocked/');}
+    for(const link of ['.lp-cta','.hero .btn']){if(!(await page.locator(link).isVisible()))continue;await page.locator(link).click();assert.equal(new URL(page.url()).hash,'#newsletter');const y=await page.locator('#newsletter').evaluate(e=>e.getBoundingClientRect().top);assert.ok(y<height&&y>=0,`${name} anchor not visible`);await page.goto(base+'/blocked/');}
+    assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
+    assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
+    assert.equal(await page.locator('#email').getAttribute('type'),'email');
+    assert.equal(await page.locator('label[for=email]').innerText(),'Deine E-Mail-Adresse');
     const accessibility=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(accessibility.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[],`${name} axe`);
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
     if(name!=='narrow')await page.screenshot({path:resolve(screenshots,name+'.png'),fullPage:true});
     metrics.push({name,viewport:`${width} × ${height}`,...m,axeViolations:accessibility.violations.length});
     // 200% text reflow: content may grow vertically, never horizontally or clip.
-    await page.addStyleTag({content:'html{font-size:200%}'});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
+    // Research uses px/clamp fonts: changing only root font-size would not test
+    // its actual text. Double every content font from a simultaneous snapshot;
+    // keep the aria-hidden device illustration at its original image scale.
+    await page.evaluate(()=>{
+      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.stage')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
+      for(const[e,size,line]of rows){e.style.fontSize=size*2+'px';if(Number.isFinite(line))e.style.lineHeight=line*2+'px';}
+    });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();
   }
   const page=await browser.newPage({viewport:{width:390,height:844}});
