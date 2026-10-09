@@ -108,6 +108,16 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const qa='scripts/company_intelligence/refresh-qa.mjs';
   execFileSync('node',[qa,'--consumer',consumer,'--out',join(root,'candidate-qa.json')],{encoding:'utf8',timeout:300000,maxBuffer:1024*1024});
   report.candidateQA=json(join(root,'candidate-qa.json'));
+  if(verification){
+   stage='CERTIFIED_FULL_BOOTSTRAP';
+   const sha256=hash(readFileSync(packed)),namespace='continuous-bootstrap-'+sha256.slice(0,24);
+   const existing=await driver.get(privatePrefix(namespace)+'index.json');
+   if(existing&&JSON.parse(existing).sha256!==sha256)throw Error('IMMUTABLE_BOOTSTRAP_COLLISION');
+   if(!existing)await sync(driver,{direction:'push',namespace,file:packed,initialize:true});
+   const proof=join(root,'certified-bootstrap.tar.gz');await sync(driver,{direction:'pull',namespace,file:proof});
+   if(hash(readFileSync(proof))!==sha256)throw Error('CERTIFIED_BOOTSTRAP_READBACK_FAILED');
+   report.certifiedBootstrap={namespace,sha256,sourceGeneration:engine.sourceGeneration,privateCompanies:engine.privateCompanies};
+  }
   stage='CONSUMER_UPLOAD';
   const result=await prepareCandidate(driver,{namespace:consumerNamespace,directory:consumer,good});
   const health={...engine.health,lastSuccessfulConsumerBuild:new Date().toISOString(),lastSuccessfulConsumerCommit:new Date().toISOString()};
