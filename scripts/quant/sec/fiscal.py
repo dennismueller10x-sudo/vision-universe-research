@@ -180,8 +180,9 @@ class FiscalCalendar:
         # accession -> every reporting period (start, end) of the annual report, any length,
         # with the number of facts reported for it (1.21.0)
         periods_by_accession = defaultdict(Counter)
-        # accession -> base form, for transition reports (10-KT)
+        # accession -> base form, for transition reports (10-KT), and filing date
         form_by_accession = {}
+        filed_by_accession = {}
 
         for fact in raw_facts:
             if fact.start is None:
@@ -205,10 +206,16 @@ class FiscalCalendar:
                 continue
             periods_by_accession[fact.accession][(start, end)] += 1
             form_by_accession[fact.accession] = _base_form(fact.form)
+            if fact.filed:
+                filed_by_accession[fact.accession] = max(filed_by_accession.get(fact.accession, ""), str(fact.filed)[:10])
             if classify_duration(fact.start, fact.end) != "FY":
                 continue
             ends_by_accession[fact.accession][end] += 1
-            if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
+            # A transition report's `fy` names its transition period, which has no
+            # twelve-month duration: read as the label of its latest twelve-month
+            # (comparative) year it shifted every year after it (1.21.0, red team).
+            # 10-KT bounds the calendar, it never labels it.
+            if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY" and _base_form(fact.form) != "10-KT":
                 bucket = anchors_by_accession[fact.accession]
                 bucket["ends"].add(end)
                 if fact.filing_fy is not None:
@@ -233,10 +240,17 @@ class FiscalCalendar:
         for accession, ends in ends_by_accession.items():
             own_end = max(ends, key=lambda end: (ends[end], end))
             accepted = {end for end in ends if _same_annual_cycle(end, own_end)}
-            annual_ends.update(accepted)
             periods = periods_by_accession[accession]
-            declared_years.extend((p[0], p[1], accession) for p in periods
-                                  if p[1] in accepted and classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY")
+            if form_by_accession.get(accession) == "10-KT":
+                # A transition report bounds the calendar but does not declare its
+                # comparative years (Leafbuyer: the accounting acquirer's December
+                # years in the 10-KT against the registrant's own June years); its
+                # own chain is read below.
+                continue
+            else:
+                annual_ends.update(accepted)
+                declared_years.extend((p[0], p[1], accession) for p in periods
+                                      if p[1] in accepted and classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY")
             # 1.21.0 (F-TTM-4): the cycle rule cannot tell a disclosure on another
             # cycle from the fiscal year BEFORE a change of year end, which the
             # report also carries on the old cycle. 8point3's 10-K for the year to
@@ -252,16 +266,18 @@ class FiscalCalendar:
         for accession, periods in periods_by_accession.items():
             if form_by_accession.get(accession) != "10-KT":
                 continue
-            own = [p for p in periods if (p[1] - p[0]).days + 1 >= TRANSITION_PERIOD_DAYS[0]]
-            if own:
-                learned.append((max(p[1] for p in own), accession))
+            learned.extend((end, accession) for end in cls._transition_report_ends(periods))
         # A learned end is used only where it does not contradict the filer's other
-        # reports: never inside a twelve-month year another report declares, never
+        # reports: never inside a twelve-month year that an EARLIER report declared
+        # (a later report may recast history - Rentech Nitrogen's calendar 2011 -
+        # but the filer's own earlier fiscal years stand: Dawson, Leafbuyer), never
         # within the clustering window of a known year end.
         margin = timedelta(days=YEAR_INTERIOR_MARGIN_DAYS)
         for end, accession in learned:
+            filed = filed_by_accession.get(accession, "")
             if any(start + margin < end < stop - margin
-                   for start, stop, source in declared_years if source != accession):
+                   for start, stop, source in declared_years
+                   if source != accession and filed_by_accession.get(source, "") < filed):
                 continue
             if any(0 < abs((end - known).days) <= FY_CLUSTER_TOLERANCE_DAYS for known in annual_ends):
                 continue
@@ -425,6 +441,26 @@ class FiscalCalendar:
         return found
 
     @staticmethod
+    def _transition_report_ends(periods):
+        """The year ends a transition report (10-KT) declares by its own chain.
+
+        Its own period is the best supported period ending on its latest period
+        end; that end closes the transition period. The twelve-month period right
+        before it (-3..+8 days) is the last fiscal year of the old cycle."""
+        candidates = [p for p in periods if (p[1] - p[0]).days + 1 >= TRANSITION_PERIOD_DAYS[0]]
+        if not candidates:
+            return set()
+        last = max(p[1] for p in candidates)
+        own = max((p for p in candidates if p[1] == last), key=lambda p: (periods[p], p[0]))
+        found = {last}
+        for p in periods:
+            gap = (own[0] - p[1]).days - 1
+            if classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY" \
+                    and -FISCAL_CHAIN_OVERLAP_DAYS <= gap <= FISCAL_CHAIN_GAP_DAYS:
+                found.add(p[1])
+        return found
+
+    @staticmethod
     def _year_ends_from_annual_filings(raw_facts):
         """Year ends declared by annual filings that contain no full-year duration.
 
@@ -557,14 +593,15 @@ class FiscalCalendar:
         for end in fy_ends:
             fallback = _fallback_label(end, label_offset, label_mid_offset)
             label = anchors.get(end, fallback)
-            if previous is not None and label <= previous and end not in anchors \
+            if previous_end is not None and end not in anchors \
                     and (end - previous_end).days < TRANSITION_YEAR_DAYS[0]:
-                # 1.21.0: the end of a transition period shorter than a year shares
-                # the label year of the fiscal year before it and the filer gives it
-                # no label of its own. It stays a boundary but takes no label: bumped
-                # to previous+1 it pushed the next year's own label off as a repeat
-                # and shifted every later year (red team, D1: Multi-Fineline,
-                # Oshkosh, Deckers, ServiceNow).
+                # 1.21.0: the end of a period shorter than a fiscal year that no
+                # annual report claims as its own year closes a transition period.
+                # It stays a boundary but takes no label: labelled (bumped to
+                # previous+1, or by a fallback offset learned on the other cycle)
+                # it pushed the next year's own label off as a repeat and shifted
+                # every later year (red team, D1: Multi-Fineline, Oshkosh, Deckers,
+                # ServiceNow; Mosaic ImmunoEngineering May -> December).
                 unlabeled.add(end)
                 previous_end = end
                 continue

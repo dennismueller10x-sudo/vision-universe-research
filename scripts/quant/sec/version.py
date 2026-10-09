@@ -245,7 +245,13 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          geteilt in Predecessor/Successor: 2010-12-31 wurde "FY2011", jede
 #          spaetere Kennung +1); der eigene Jahresanker eines Spaetmelders bleibt
 #          (RocketFuel). Red Team vor dem Freeze: D1-D5, P1, P2 mit Realdaten-
-#          Regressionen (test_ttm_core_121.RedTeam121Tests).
+#          Regressionen (test_ttm_core_121.RedTeam121Tests). Nachgezogen nach dem
+#          Vollarchiv-Vergleich: ein 10-KT liefert keinen Kennungsanker (sein fy
+#          benennt den Uebergangszeitraum) und nur seine eigene Kette (Ende des
+#          Uebergangs, letztes Jahr des alten Zyklus); ein Ende ohne Anker, das
+#          einen Zeitraum unter 350 Tagen schliesst, bleibt ohne Kennung; gegen
+#          Jahre anderer Berichte zaehlen nur FRUEHER eingereichte (Leafbuyer,
+#          Mosaic ImmunoEngineering).
 NORMALIZATION_LOGIC_VERSION = "1.21.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -278,7 +284,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "c0109da48f72ebf0cdaf6a527e04c1fc163fdacb4322df7a8cca76c977d85b55"
+    "13531f41750284d467a27b9767098a9a56ff775e7f52c5d8591ee843ee13c21c"
 )
 
 
