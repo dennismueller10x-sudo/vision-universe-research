@@ -1,12 +1,16 @@
-# VU Elliott Projection Engine (`elliott-projection-1.1.0`)
+# VU Elliott Projection Engine (`elliott-projection-1.2.0`)
 
-Stand: 08.10.2026.
+Stand: 09.10.2026.
 
 * **Code:** `quant/engines/technical/projection/elliott-projection.js` (UMD, ohne Abhängigkeiten außer dem eingefrorenen Regelwerk `elliott/patterns.js`).
 * **Produktschicht:** `scripts/technical/lib/ti-projection.mjs` (Build und Register).
 * **Daten:** Feld `projection` (und für Tagestitel `projectionWeekly`) in `quant/data/technical-intelligence/v3/shards/*`, Spalte `proj` im Index, Lebenszyklus `v3/projection-theses.json`, Kennzahlen `meta.json → projection`.
 * **Oberfläche:** Chartbild (`quant/app/page-chartbild.js`), Karte „Elliott-Projektion“, Chart-Ebene „Elliott-Projektion“ (`quant/ui/ti-chart.js`), Profi-Ansicht „Elliott-Projektion · Fachdetails“.
-* **Tests:** `quant/tests/elliott-projection.test.mjs` (P-1 bis P-20), `quant/tests/elliott-registry-product-view.test.mjs` (M11-P4, Registerform).
+* **Tests:**
+  * `quant/tests/elliott-projection.test.mjs` (P-1 bis P-26)
+  * `quant/tests/elliott-explore.test.mjs` (X-1 bis X-15, Explore)
+  * `quant/tests/corporate-action-evidence.test.mjs` (CA-1 bis CA-6, Split-Beleg)
+  * `quant/tests/elliott-registry-product-view.test.mjs` (M11-P4 bis M11-P6, Registerform)
 
 ## Grundsatz
 
@@ -181,3 +185,117 @@ Bekannte Grenze: Der Security Master führt einige börsengehandelte Anleihen al
 | XPEV | nicht verifiziert | beste Motivlesart abwärts (Welle 3 seit 2020); aufwärts nur Rang 234/256 | ja | Woche | bester Kandidat zu kleiner Grad (G4) | keine |
 | CGC | nicht verifiziert | aktuelle Motivlesarten nur abwärts | ja | Woche | G4; keine gültige Aufwärts-Welle-3 | keine |
 | BTC | FXEmpire 20.08.2026: W-3 aufwärts, Ziel ≈ 77.000, ungültig unter 65.418 | Welle 1 aufwärts ab 59.490 läuft; bester Welle-2/3-Kandidat abwärts (Rang 128/157) | ja | Woche (Referenz aus BTCUSD-Tagesreihe, nicht im Produktuniversum) | G2 | nicht im Produkt |
+
+## 1.2.0 · Explore Elliott („Weitere Elliott-Lesarten“) und Split-Beleg
+
+Stand 09.10.2026. Nur Sichtbarkeit und Datenqualität. Unverändert bleiben:
+- Grammatik, harte Regeln, Ranking, Kandidatensuche und Grad-Logik der Engine;
+- Projektionsformeln;
+- Hauptlesart, reguläre Alternative und Motiv-Alternative (Leitplanken G2–G6 unverändert).
+
+### Drei Ebenen
+
+| Ebene | Was | Freigabe |
+|---|---|---|
+| 1 Primär | bevorzugte Zählung der Engine | wie bisher |
+| 2 Alternative | Engine-Alternative bzw. Motiv-Alternative (1.1.0), besteht alle Produkt-Leitplanken | wie bisher |
+| 3 Explore | weitere regelkonforme Lesarten, die mindestens eine Produkt-Leitplanke G2–G5 verfehlen | eingeklappt, „Explorativ“, „Nicht als reguläre Alternative freigegeben“ |
+
+### Zulassung (`ti-projection.mjs#exploreCandidatesFor`, vor der Auswertung festgelegt)
+
+**Kandidat:**
+- stammt aus dem Pool der unveränderten Engine (derselbe ausgabeneutrale Lauf `debugAll` wie für die Motiv-Alternative, einmal je Titel);
+- nicht abgeschlossen, die letzte Welle läuft;
+- Muster mit Projektionsformel: Impuls oder Diagonale mit laufender Welle 2–5; Zigzag, Flat oder W-X-Y mit laufender Welle B/C bzw. X/Y; Doppel- und Dreifach-Zigzag;
+- nicht schon angezeigt (Primär, Alternativen, Motiv-Alternative), auch nicht mit derselben Thesenkennung (Muster, Ursprung, Richtung);
+- **alle Regeln des Regelwerks erfüllt** (erneut geprüft), seit dem Ursprung kein Schluss jenseits der harten Grenze;
+- harte Invalidation vorhanden und > 0;
+- mindestens eine Projektionszone noch offen;
+- **mindestens eine Produkt-Leitplanke G2–G5 verfehlt.** Eine Lesart ohne verfehlte Leitplanke gehört nicht in Explore.
+
+**Titel:**
+- nur Wochenanalyse (Tagestitel: aus ihrer Wochenreihe);
+- Wertpapierart `EQUITY_COMMON/ELIGIBLE`. G6 sperrt den Titel und wird nie als Explore-Grund gezeigt.
+- Datenintegrität sauber (`dataIntegrity`). Gesperrt bei: Kurs ≤ 0 oder nicht endlich, tote oder fixierte Reihe, Lücken (`maxGapBars ≥ 4` oder `gaps ≥ 3`), ungeklärter Split-Verdacht.
+
+### Auswahl (Anti-Spam, deterministisch)
+
+1. **Rangqualität:** nur Lesarten in der besseren Hälfte des Pools (Rang ≤ 50 %), für jeden Platz. Lesarten vom Ende des Pools sind Rauschen der Suche. Der Rang wird angezeigt: „Rang 44 von 171 gültigen Interpretationen“ (nie als Wahrscheinlichkeit).
+2. **Platz 1:** die bestplatzierte Motiv-Lesart (These Welle 3); gibt es keine, der bestplatzierte Kandidat.
+3. **Platz 2:** die bestplatzierte Lesart mit der **Gegenrichtung** zu Platz 1 (materiell anderes Szenario).
+4. **Platz 3:** die bestplatzierte Lesart mit einem **anderen Thesentyp** als beide, nur im oberen Viertel des Pools. Höchstens 3; lieber eine als drei ähnliche. Nach dem ersten Universumslauf vor der Freigabe verschärft (Produktgesundheit, nicht Ergebnis): Die erste Fassung ließ für Platz 2 und 3 jede andere Kombination aus Typ und Richtung zu und füllte so auf 1.184 Titeln alle drei Plätze, überwiegend mit Flat-C-Lesarten (7.445 Lesarten auf 3.639 Titeln).
+5. **Anzeige (Projection Engine):** verworfen werden nahezu gleiche Leitern, also die Mitte der erweiterten Stufe innerhalb von 10 % einer angezeigten These derselben Richtung und desselben Typs.
+
+### Leitplanken in Kundensprache
+
+| Leitplanke | Kunde | Fachansicht |
+|---|---|---|
+| G2 | Grad-Zuordnung uneindeutig – erfüllt alle Elliott-Regeln, der Wellengrad kollidiert aber mit einer anderen abgeschlossenen Struktur vergleichbarer Größe | `hierarchy` (= 1) |
+| G3 | Struktur zu verrauscht – die Wellen heben sich nicht deutlich vom Kursrauschen ab | Signal/Rauschen (≥ 3,0) |
+| G4 | Struktur für den Wochenchart noch zu kurz | Länge Welle 1 (≥ 26 Wochen) |
+| G5 | Gegen aktuellen Trend | `trendContext` (≥ 0,5) |
+
+Die Fachansicht trennt ausdrücklich „ELLIOTT-REGELN: ERFÜLLT“ (mit Regelkennungen) von „PRODUKT-LEITPLANKEN: VERFEHLT G…“ (Tabelle mit Wert und Schwelle), dazu Rang, Wellenanker, Formel je Stufe und Versionen.
+
+### Oberfläche
+
+- Eingeklappt unter Haupt- und Alternativlesart: „Weitere Elliott-Lesarten (n)“.
+- Die Karte zeigt:
+  - Kopf „Weitere Elliott-Lesart“ und Thesentyp (z. B. „Mögliche Welle 3 · Wochenchart“), Status „Explorativ“, Strukturklarheit „Niedrig“ und den Rang;
+  - „Nicht als reguläre Alternative freigegeben:“ mit den Gründen;
+  - Leiter Basis/Erweitert/Extrem, Invalidation und Bestätigung;
+  - die Schaltfläche „Im Chart zeigen“ (eigene Wellen im Alternativ-Ton);
+  - den Fahrplan eingeklappt.
+- Neutrale, zurückhaltende Gestaltung; keine Hochpotenzial-Hervorhebung.
+
+### Universum (Produktgesundheit, keine Vorhersage; Lauf 09.10.2026, 5.130 Titel)
+
+Haupt- und Alternativebene, vor und nach Explore unverändert:
+
+| Kennzahl | vorher | nachher |
+|---|---|---|
+| Hauptprojektionen (sichtbar) | 45 | 45 |
+| reguläre Alternativen | 44 | 44 |
+| Motiv-Alternativen | 47 (5 auf, 42 ab, 1 Hochpotenzial) | 47 (5 auf, 42 ab, 1 Hochpotenzial) |
+| Status ABSTAIN / DATA_INVALID / NO_PROJECTION / AVAILABLE | 4.366 / 655 / 69 / 45 | 4.366 / 655 / 69 / 45 |
+
+Explore Elliott:
+
+| Kennzahl | Wert |
+|---|---|
+| Titel mit Explore | 3.638 (1 Lesart: 967 · 2: 2.458 · 3: 213) |
+| Lesarten gesamt | 6.522 (aufwärts 3.140, abwärts 3.382) |
+| Typ | Welle 3: 2.334 · Welle C: 3.902 · Welle 5: 286 |
+| Muster | Impuls 2.334 · Flat 2.296 · Zigzag 1.543 · Ending Diagonal 219 · Leading Diagonal 67 · Doppel-Zigzag 63 |
+| verfehlte Leitplanken (Mehrfachnennung) | G3 5.252 · G2 4.417 · G4 4.616 · G5 2.358 |
+| Rang im Pool | oberste 10 %: 1.770 · 10–25 %: 2.366 · 25–50 %: 2.386 · untere Hälfte: 0 |
+| aufwärts mit Mitte der erweiterten Stufe ≥ +100 % | 873 (nicht hervorgehoben) |
+
+Explore erscheint bei 71 % der Titel, weil sich die Engine bei 85 % der Wochentitel enthält und der Pool fast immer regelkonforme Lesarten enthält. Die Ebene ist deshalb eingeklappt, nachrangig und je Titel auf höchstens 3 Lesarten begrenzt.
+
+### Lebenszyklus und Register
+
+- **Lebenszyklus:** Explore-Thesen werden verfolgt wie die Motiv-Alternative und nur bei Datenproblemen zurückgehalten. Wechselt eine These ihre Rolle, entsteht das Ereignis `ROLE_CHANGED`; Kennung, frühere Revisionen und Ereignisse bleiben.
+- **Register 1.4.0:** Kohorte `CUSTOMER_PRODUCT_EXPLORE_ELLIOTT` (siehe `ELLIOTT_PROSPECTIVE_REGISTRY.md`).
+
+### Split-Verdacht und Kapitalmaßnahmen-Beleg (OSCR)
+
+**Befund:** OSCR war gesperrt (DATA_INVALID), weil die Woche zum 31.03.2023 von 3,36 auf 6,54 lief (Verhältnis 1,946, innerhalb 3 % von 2:1). Laut Anbieter gab es keinen Split. Tagesverlauf: 3,59 → 5,61 (28.03., 71 Mio. Stück) → 6,40 → 6,62 → 6,54. Die Bewegung ist echt.
+
+**Ursache:** Die Wochenreihe trug keinen Beleg der Kapitalmaßnahmen. Die Verhältnisregel der Engine (`elliott-v3.js#dataQuality`, eingefroren) kann eine echte Bewegung in Split-Größe nicht von einer verpassten Bereinigung unterscheiden.
+
+**Lösung:**
+1. `publish-long-series.mjs` schreibt je Reihe `corporateActions` (`quant/engines/corporate-action-evidence.js`):
+   - die Splittage des Anbieters (`splitFactor`);
+   - jede Woche mit Sprung in Split-Größe, mit dem größten Tagesverhältnis dieser Woche.
+2. Die Produktschicht löst einen Verdacht nur auf, wenn
+   - der Anbieter in dieser Woche **keinen** Split führt **und**
+   - der Sprung **nicht** an einem Tag in Split-Größe geschah (eine verpasste Bereinigung wirkt immer über Nacht in voller Größe).
+3. Ohne Beleg (alte Reihe), mit verzeichnetem Split oder bei einem Tagessprung in Split-Größe bleibt die Sperre.
+
+**Folge:**
+- Die Engine selbst enthält sich weiter (eingefroren).
+- Aufgelöste Titel gehen von DATA_INVALID auf ABSTAIN bzw. AVAILABLE. Das Produkt zeigt den Hinweis „Kurssprung in Split-Größe ist laut Anbieter keine Kapitalmaßnahme“.
+- Explore wird dann geprüft.
+
+Der Beleg erscheint mit dem nächsten Lauf von `long-series.yml`.

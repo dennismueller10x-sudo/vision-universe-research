@@ -63,7 +63,7 @@ jobs:
                         quant/data/market/index-membership \
                         quant/engines/technical/ti quant/engines/technical/elliott quant/engines/technical/projection \
                         quant/engines/technical/feature-store.js quant/engines/technical/pivot-engine.js \
-                        quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js \
+                        quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js quant/engines/corporate-action-evidence.js \
                         scripts/technical/lib scripts/technical/build-technical-intelligence.mjs \
                         quant/data/technical-intelligence/evidence quant/data/technical-intelligence/elliott-validation \
                         quant/methodology/technical-method-evidence.json quant/data/market/security-master/eligibility.json; do echo "$p $(git rev-parse "HEAD:$p")"; done | sha256sum | cut -c1-32)
