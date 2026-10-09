@@ -116,6 +116,16 @@
 
   function loadSeries(detail) {
     var series = detail.series || {};
+    if (detail.region === "EUROPE" && series.source === "vu-core-europe") {
+      if (!D.europeProduct) return Promise.resolve(null);
+      return D.europeProduct.series(series.ref).then(function (result) {
+        if (result.state !== "AVAILABLE") return null;
+        var data = result.data;
+        return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null,
+          weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to,
+          priceSeriesType: data.basis };
+      });
+    }
     if (series.source === "technical-instrument" && series.path) {
       return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
         var payload = teile[0], lang = teile[1];
@@ -225,7 +235,7 @@
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
+    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock && detail.region !== "EUROPE") intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
@@ -242,7 +252,7 @@
     var analyse = el("details", { class: "dx-analyse dx-fade" }, [kapitelTrenner()]);
     var telefon = !!(global.matchMedia && global.matchMedia("(max-width: 860px)").matches);
     if (!telefon) analyse.open = true;
-    [belege(detail), panels(detail), technicalIntelligence(detail)].forEach(function (node) {
+    (detail.region === "EUROPE" ? [] : [belege(detail), panels(detail), technicalIntelligence(detail)]).forEach(function (node) {
       if (node) analyse.appendChild(node);
     });
     kapitel(analyse);
@@ -255,7 +265,7 @@
        Standard-Zeitraum 1T ist, wenn es einen gibt, und 1J, wenn nicht. */
     var Hub = D.LiveHub;
     var liveErst = new Promise(function (resolve) {
-      if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
+      if (!Hub || !Hub.enabled() || detail.region === "EUROPE" || detail.dataMode !== "real") { resolve(null); return; }
       var erledigt = false;
       /* Die Aktienseite ist der EINZIGE Ort, der den Strom benutzt
          (Zero-Cost Realtime V1 §6). live() beginnt mit demselben
@@ -373,7 +383,7 @@
     var preisKnoten = null;
     var rechts = isNum(preis)
       ? (preisKnoten = el("div", { class: "dx-price" }, [
-          el("b", { class: "num", text: C().money(preis) }),
+          el("b", { class: "num", text: detail.region === "EUROPE" ? nativePrice(preis, detail.currency) : C().money(preis) }),
           el("span", { class: C().toneClass(change),
                        /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute".
                           Mit laufendem Kurs ist es das sehr wohl, und dann steht es auch da. */
@@ -420,7 +430,7 @@
           /* Logo und Name: am Desktop uebereinander, am Handy in einer Zeile,
              damit der Kurs weit oben bleibt. */
           el("div", { class: "dx-dhero-title" }, [
-            D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
+            D.Logos ? D.Logos.mark(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
             el("h1", { text: detail.companyName || detail.symbol })
           ]),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
@@ -1023,7 +1033,13 @@
      Chartreihe ist oben bereits umgerechnet worden, und sie danach durch
      money() zu schicken hiesse, sie ein zweites Mal mit dem Kurs zu
      multiplizieren. */
-  function alsAngezeigt(v) {
+  function nativePrice(v, currency) {
+    if (!isNum(v)) return "–";
+    var result = vuFormat("formatPrice", v, currency, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
+    return result || v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + " " + currency;
+  }
+  function alsAngezeigt(v, currency) {
+    if (currency) return nativePrice(v, currency);
     if (!isNum(v)) return "–";
     var FX = (typeof VUFx !== "undefined") ? VUFx : null;
     var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
@@ -1056,7 +1072,10 @@
     return kopie;
   }
 
-  function inAnzeigewaehrung(punkte) {
+  function inAnzeigewaehrung(punkte, currency) {
+    // Europe retains its explicit native listing currency until an audited
+    // FX contract covers it; never treat European prices as US dollars.
+    if (currency) return { punkte: punkte || [], gekuerzt: false };
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false };
     var r = L.series(punkte, "USD");
@@ -1089,7 +1108,8 @@
        Deshalb ist die EUR-Rendite auch eine andere als die USD-Rendite -
        und sie wird unten aus DIESER Reihe gerechnet, nicht uebernommen
        (§41). */
-    var anzeige = inAnzeigewaehrung(sel.points);
+    var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
+    var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
                                             complete: sel.complete && !anzeige.gekuerzt };
@@ -1100,13 +1120,14 @@
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: alsAngezeigt(letzter) }),
+        el("b", { class: "num", text: alsAngezeigt(letzter, nativeCurrency) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt" }),
+          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") }),
         frischeTages(state)
       ])
     ]);
@@ -1126,7 +1147,7 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return alsAngezeigt(pt.close); },
+      preis: function (pt) { return alsAngezeigt(pt.close, nativeCurrency); },
       delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
@@ -1140,6 +1161,13 @@
   /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
      der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
   function frischeTages(state) {
+    if (state.detail.region === "EUROPE") {
+      var status = state.detail.freshness || "MISSING";
+      return el("span", { class: "dx-live-label", "data-freshness": status }, [
+        document.createTextNode("Schluss " + C().dateShort(state.seriesAsOf) + " · " +
+          (["CURRENT", "LAST_VALID_SESSION"].indexOf(status) >= 0 ? "letzte gültige Sitzung" : "nicht aktuell"))
+      ]);
+    }
     var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
     var asOf = state.seriesAsOf;
     if (!asOf || !FR || !Hub || !Hub.resolution) return null;
@@ -1421,6 +1449,10 @@
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
   function controlBar(state, redraw) {
     var host = el("div", {});
+    if (state.detail.region === "EUROPE") {
+      host.appendChild(el("p", { text: "Technische Analyse benötigt eine separate Freigabe der Eingabedaten." }));
+      return host;
+    }
     /* V4 §15: der Analyse-Chart ist ein Werkzeug, kein Standard. */
     var pro = el("label", { class: "dx-pro-toggle" }, [
       el("input", { type: "checkbox", checked: state.pro ? "checked" : null }),
@@ -1860,7 +1892,7 @@
         document.createTextNode(" · " + (detail.disclaimer || "Keine Anlageempfehlung."))
       ]),
       /* Herkunft des Logos (Urheber und Lizenz bzw. Website/SEC). */
-      D.Logos ? D.Logos.creditLine(detail.symbol) : null
+      D.Logos ? D.Logos.creditLine(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol) : null
     ]);
   }
 

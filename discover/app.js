@@ -27,6 +27,7 @@
     const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
     button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
   }
+  D.EuropeView.attachApp({ctx,route,isReady:()=>meta});
   function settings(root){
     document.title='Einstellungen — Discover — Vision Universe®';
     root.append(el('p',{class:'v2-eyebrow',text:'Deine Ansicht'}),el('h1',{text:'Einstellungen'}),el('p',{class:'v2-lead',text:'Währung und Darstellung gelten für deine Ansicht auf diesem Gerät.'}));
@@ -102,13 +103,15 @@
     if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
     const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+    if(D.EuropeView.bindRoute(parts,ctx))return;
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
-      await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
-      if(parts[0]==='s'&&parts[2]){
+      await D.EuropeView.loadIndex(ctx);if(!active())return;
+      if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
+      else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
