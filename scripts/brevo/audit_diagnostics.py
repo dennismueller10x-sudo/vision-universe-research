@@ -210,7 +210,7 @@ def main():
     key = os.environ.get("BREVO_API_KEY", "")
     result = diagnose_audit(key)
     print(json.dumps(result, ensure_ascii=True))
-    if result.get("error", {}).get("error_code") == 1010:
+    if (result.get("error") or {}).get("error_code") == 1010:
         # Single controlled comparison of client identity, never a mutation or general retry loop.
         result = diagnose_audit(key, user_agent=INTEGRATION_AGENT)
         print(json.dumps(result, ensure_ascii=True))
