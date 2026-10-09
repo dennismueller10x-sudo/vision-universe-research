@@ -1,0 +1,26 @@
+{
+  "purpose": "Candidate verification only; not customer cadence",
+  "firstTwoAttempts": {
+    "workers": 3,
+    "outcome": "FAIL",
+    "reason": "REQUEST_ABORTED under local concurrent page load; 10-second deadline and assertions retained",
+    "passingCasesBeforeFailure": [
+      319,
+      136
+    ]
+  },
+  "final": {
+    "workers": 1,
+    "cases": 368,
+    "outcome": "PASS",
+    "deadlineRelaxed": false,
+    "assertionsWeakened": false
+  },
+  "production": {
+    "workers": 1,
+    "minimumBetweenCasesMs": 1000,
+    "acceptanceRun": 37752977461,
+    "cases": 368,
+    "outcome": "PASS"
+  }
+}

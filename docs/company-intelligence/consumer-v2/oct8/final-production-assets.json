@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-08T10:27:22.715958+00:00",
+  "sourceCommit": "b15db54c9f05e096f9e6ba49f605ebce89c94160",
+  "delivery": {
+    "status": "PASS",
+    "generation": "d700d480d9b2858eb8fa34f4",
+    "files": 86,
+    "bytes": 1780647,
+    "retainedGenerations": 1,
+    "privateObjectsRead": 0,
+    "approvalId": "dennis-controlled-production-20261007",
+    "acceptedGeneration": "21cc611a43b06f488418b58a",
+    "cohortStocks": 46,
+    "issuers": 45,
+    "sourceUsagePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+    "checkedAt": "2026-10-08T10:21:47.905Z"
+  },
+  "assets": [
+    {
+      "path": "/company-intelligence/api/contract.js",
+      "sha256": "39f6cee6937fa9df052ac71046fe4e3c3f0e1aac99e80054cf7cd004bf425631",
+      "matchesSource": true
+    },
+    {
+      "path": "/company-intelligence/ui/stock-section.js",
+      "sha256": "9debc66779fc692abcd52f519801c3d7f26c59db0a4fd0ad5bfeb70cac2802cb",
+      "matchesSource": true
+    },
+    {
+      "path": "/company-intelligence/ui/stock-section.css",
+      "sha256": "ad9e526926c1681f83ca9f1aa457f58dd00c712e3aca9753dc290989a4342a52",
+      "matchesSource": true
+    }
+  ],
+  "scope": "Actual production source and consumer metadata readback, confirmed by complete final live acceptance",
+  "fullProductionReview": 37762784135,
+  "fullBrowserReviewPassed": true
+}
