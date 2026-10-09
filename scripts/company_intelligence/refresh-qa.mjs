@@ -34,7 +34,7 @@ try{
   const page=await browser.newPage({viewport:{width,height:860},colorScheme:'dark'}),errors=[],requests=[];
   active={ticker,cid,width,errors,requests};activePage=page;
   if(!live){
-   await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];assert(payloads.has(p),'UNKNOWN_CANDIDATE_ASSET');return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
+   await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];if(!payloads.has(p)){active.unknownAssets=[...(active.unknownAssets||[]),p];return route.fulfill({status:404,body:'UNKNOWN_CANDIDATE_ASSET'});}return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
    await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();assert(/expectedGeneration:\s*['"][a-f0-9]{24}['"]/.test(text),'CANDIDATE_UI_BASELINE_MISMATCH');await route.fulfill({response,body:text.replace(/(expectedGeneration:\s*['"])[a-f0-9]{24}(['"])/,'$1'+manifest.generation+'$2')});});
   }
   await page.addInitScript(({key,state})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1','dark');},{key:STORAGE_KEY,state});

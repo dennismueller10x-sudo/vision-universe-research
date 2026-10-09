@@ -123,7 +123,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             if not network and not financial: break
             old_fin=deepcopy(store.state('financials:'+cid)); old_profile=deepcopy(store.state('companyProfile:'+cid))
             old_sec=store.state('sec:'+cid,{})
-            poll_sec=network and not sec_exhausted and sec.clock()<sec.deadline and consecutive<4 and old_sec.get('retryAfter','')<=now
+            poll_sec=network and not sec_exhausted and sec.clock()<sec.deadline and consecutive<4 and (old_sec.get('retryAfter') or '')<=now
             if not poll_sec and not financial: continue
             if poll_sec:
                 failures=sec.run['secFailures']

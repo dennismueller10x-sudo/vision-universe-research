@@ -31,7 +31,8 @@ export async function consumerContracts(directory){
 }
 function py(script,args){try{return execFileSync('python3',['scripts/company_intelligence/'+script,...args],{encoding:'utf8',maxBuffer:4*1024*1024,timeout:1200000});}catch(e){
  const text=String(e.stderr||''),code=text.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)\s*$/)?.[1];
- throw Error(code||'PYTHON_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase());
+ const line=[...text.matchAll(/File "[^\n]*\/(continuous_refresh\.py|pipeline\.py)", line (\d+)/g)].at(-1);
+ throw Error(code||'PYTHON_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
 }}
 export function validateChanges(directory,previous){
  const m=json(join(directory,'manifest.json')),old=json(join(previous,'index.json'));
