@@ -42,7 +42,12 @@ SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES)
     "endpoints account accounts in on from to by with without an a if and or but version feature features "
     "operation action request invalid error forbidden this enabled enable status under validation "
     "available include includes include included plan plans no api api's api-key permission permissions "
-    "not is at for yet needs need use using contact limited login denied functionality accepted".split())
+    "not is at for yet needs need use using contact limited login denied functionality accepted "
+    "sender senders list lists campaign deactivated deactivate us check due reason reasons because "
+    "set activated activate activation validated validate invalid credentials authorization forbidden "
+    "authorization authorisation enable enabling enabled disabled disabling get read read-only "
+    "retrieve fetching unable failed granted allowed grant valid validate value wrong unavailable "
+    "still before after or required email emails activated activation blocked not_activation".split())
 
 
 def secret_status(key):
@@ -69,9 +74,13 @@ def safe_error(raw, key):
     message = next((fields.get(k) for k in ("message", "error_message", "errormessage", "error_description", "detail", "error")
                     if isinstance(fields.get(k), str)), None)
     allowed_code = (code if type(code) is int and 100 <= code <= 599 else
-                    code if isinstance(code, str) and code.casefold() in SAFE_CODES and code != key else None)
+                    code if isinstance(code, str) and code != key and (
+                        code.casefold() in SAFE_CODES
+                        or (re.fullmatch(r"[a-z_]{1,64}", code) is not None
+                            and all(w in SAFE_WORDS for w in code.split("_")))
+                        or (code.isdecimal() and len(code) == 3 and 100 <= int(code) <= 599)) else None)
     allowed_message = None
-    if isinstance(message, str) and len(message) <= 256:
+    if isinstance(message, str) and len(message) <= 4096:
         # Preserve the actual generic Brevo message when it exactly matches the allowlist.
         normalized = message.strip().casefold()
         generic = re.fullmatch(r"[A-Za-z ',.!?:;-]+", message.strip()) is not None
@@ -80,8 +89,20 @@ def safe_error(raw, key):
             generic and len(words) >= 2 and all(w in SAFE_WORDS for w in words))
         if allowed and (not key or key not in message):
             allowed_message = message.strip()
+        elif not key or key not in message:
+            # Generic independent sentences may be retained; any unknown sentence is withheld whole.
+            kept = []
+            for sentence in re.split(r"(?<=[.!?])\s+", message.strip()):
+                words = re.findall(r"[a-z]+(?:'[a-z]+)?", sentence.casefold())
+                if (re.fullmatch(r"[A-Za-z ',.!?:;-]+", sentence) is not None
+                        and len(words) >= 2 and all(w in SAFE_WORDS for w in words)):
+                    kept.append(sentence)
+            if kept:
+                allowed_message = " ".join(kept) + " [additional text withheld]"
     return {"error_code": allowed_code, "error_message": allowed_message, "response_kind": "json",
             "message_withheld": allowed_message is None,
+            "error_field_types": {k: ("string" if isinstance(fields[k], str) else "number" if type(fields[k]) is int
+                else "object" if isinstance(fields[k], dict) else "other") for k in ("error_code", "detail") if k in fields},
             "error_fields_present": [k for k in ("code", "error_code", "errorcode", "message", "error_message",
                 "errormessage", "error_description", "detail", "error") if k in fields]}
 

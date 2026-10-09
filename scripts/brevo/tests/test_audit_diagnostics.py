@@ -58,6 +58,10 @@ class AuditDiagnostics(unittest.TestCase):
         for text in ("Your account Person Example is disabled", "Contact john@example.invalid",
                      "IP 192.0.2.1 denied", "Visit https://example.invalid", "Your API key abcdef12345 is invalid"):
             self.assertIsNone(safe_error(json.dumps({"error_message":text}).encode(), "synthetic-only")["error_message"])
+        result = safe_error(b'{"error_code":"smtp_not_activated","detail":"Your SMTP account is not activated. Contact person@example.invalid."}', "synthetic-only")
+        self.assertEqual(result["error_code"], "smtp_not_activated")
+        self.assertEqual(result["error_message"], "Your SMTP account is not activated. [additional text withheld]")
+        self.assertNotIn("person@example.invalid", json.dumps(result))
 
     def test_no_secret_or_wrong_operation_cannot_call_api(self):
         class FailIfCalled:
