@@ -85,7 +85,6 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
   if(!network)args.push('--offline');if(financial)args.push('--financial');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
-  if(engine.status!=='SUCCESS')throw Error('NO_HEALTHY_REFRESH_LANE');
   report.consumerContracts=await consumerContracts(consumer);
   const checks=validateChanges(consumer,old);report.consumerChecks=checks;
   stage='PRIVATE_CHECKPOINT';
@@ -104,6 +103,10 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   m.refreshValidation={status:'PASS',profiles:checks.profiles,privateCompanies:engine.privateCompanies,checkpointSha256:hash(readFileSync(packed)),codeSha:process.env.GITHUB_SHA||'local'};
   if(!refreshApproved(m))throw Error('REFRESH_APPROVAL_FAILED');save(join(consumer,'manifest.json'),m);preflight(consumer,m);
   report.freshRestoreVerified=true;report.consumerGeneration=m.generation;report.newPrivateGeneration=engine.sourceGeneration;
+  // Persist verified failure/cooldown state even during a complete upstream
+  // outage. It is operational state, never authorization to advance live GOOD.
+  stage='REFRESH_HEALTH';
+  if(engine.status!=='SUCCESS')throw Error('NO_HEALTHY_REFRESH_LANE');
   stage='CANDIDATE_QA';
   const qa='scripts/company_intelligence/refresh-qa.mjs';
   execFileSync('node',[qa,'--consumer',consumer,'--out',join(root,'candidate-qa.json')],{encoding:'utf8',timeout:300000,maxBuffer:1024*1024});
