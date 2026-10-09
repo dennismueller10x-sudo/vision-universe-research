@@ -581,14 +581,15 @@
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
     var pjSel = pickProjection(a, view === "pro"), lens = "scenario", pjWhich = "primary", pjLog = null;
-    function pjThesis() { var p = pjSel && pjSel.p; if (!p || (!p.consumerVisible && view !== "pro")) return null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative; }
+    function pjThesis() { var p = pjSel && pjSel.p; if (!p) return null; if (pjWhich === "motive") return pjSel.motive || null;
+      if (!p.consumerVisible && view !== "pro") return pjSel.motive || null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative || pjSel.motive; }
     function pjAutoLog(t) { if (!t || !t.zones.length) return false; var hi = Math.max.apply(null, t.zones.map(function (z) { return z.high; }).concat(a.chart.close)), lo = Math.min.apply(null, t.zones.map(function (z) { return z.low; }).concat(a.chart.close.slice(-260))); return lo > 0 && hi / lo > 4; }
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
       if (replayStep) return replayStep.ew && !replayStep.ew.ab ? replayStep.ew.waves.map(function (w) { return { label: w[2], time: w[0], price: w[1], status: w[3] ? "DEVELOPING" : "CONFIRMED" }; }) : [];
       /* Projektions-Ebene mit These des hoeheren Grades: dessen Wellen (1)…(4) statt der Hauptgrad-Zaehlung */
       var pt = lens === "projection" ? pjThesis() : null;
-      if (pt && pt.degree === "HIGHER" && pt.anchorWaves) return pt.anchorWaves.map(function (w) { return { label: w.label, display: "(" + w.label + ")", time: w.toTime, price: w.toPrice, fromPrice: w.fromPrice, status: w.status }; });
+      if (pt && (pt.degree === "HIGHER" || pt.source === "MOTIVE_ALTERNATIVE") && pt.anchorWaves) return pt.anchorWaves.map(function (w) { return { label: w.label, display: pt.degree === "HIGHER" ? "(" + w.label + ")" : w.label, time: w.toTime, price: w.toPrice, fromPrice: w.fromPrice, status: w.status }; });
       var ov = a.overlays && a.overlays.waves;
       if (!ov || !ov.primary.length || (!ov.consumerVisible && view !== "pro")) return [];
       var list = waveSet === "alt" && ov.alternative && ov.alternative.length ? ov.alternative : ov.primary;
@@ -598,38 +599,42 @@
       var width = Math.max(300, Math.min(1100, chartHost.clientWidth || main.clientWidth - 24));
       pjSel = pickProjection(a, view === "pro");
       var pjT = !replayStep && lens === "projection" ? pjThesis() : null, pjOnChart = !!(pjT && pjT.zones);
-      if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative) || (!pjSel.p.consumerVisible && view !== "pro");
+      if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative || pjSel.motive) || (!pjSel.p.consumerVisible && !pjSel.motive && view !== "pro");
       if (logSeg) logSeg.hidden = !pjOnChart;
       /* Ebene nicht (mehr) verfuegbar (z. B. Wechsel von Profi zu Einfach bei zurueckgehaltener These) → zurueck zum Szenario */
       if (lens === "projection" && lensSeg && lensSeg.hidden) { lens = "scenario"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 0 ? "true" : "false"); }); }
-      pjLegend.hidden = !pjOnChart; var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
+      pjLegend.hidden = !pjOnChart; motiveNote.hidden = !(pjOnChart && pjT.source === "MOTIVE_ALTERNATIVE");
+      if (waveSeg) waveSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === !!wavesOn ? "true" : "false"); }); var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: replayStep ? "PRIMARY" : kind, scenario: scenarioOf(kind),
-        projection: pjOnChart ? pjChart(pjT, pjWhich === "alt" ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
+        projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || pjT.source === "MOTIVE_ALTERNATIVE" ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
         cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
-        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && pjT.degree === "HIGHER") ? null : function (w) { waveInspector(a, w, rules, methodEv); },
+        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && pjT.source === "MOTIVE_ALTERNATIVE")) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || pjT.source === "MOTIVE_ALTERNATIVE")) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 360 : 430, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
       chartCard.classList.toggle("is-replay", !!replayStep);
     }
+    var abstainNote = abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Hauptzählung." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null;
+    var motiveNote = el("p", { class: "cb-small", hidden: true, text: "Im Chart: Wellen der alternativen Lesart (mögliche Welle 3) – nicht die bevorzugte Zählung, niedrige Strukturklarheit." });
     var pjLegend = el("p", { class: "cb-legend cb-legend-pj", hidden: true }, [el("span", { class: "cb-key cb-key-pj-base", text: "Basis" }), el("span", { class: "cb-key cb-key-pj-extended", text: "Erweitert" }), el("span", { class: "cb-key cb-key-pj-extreme", text: "Extrem" }),
       el("span", { class: "cb-key cb-key-pj-conf", text: "Bestätigung" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-dim", text: "Projektion ≠ Wahrscheinlichkeit · keine Zeitangabe" })]);
     var lensSeg = segmented("Ebene", [["scenario", "Szenario"], ["projection", "Elliott-Projektion"]], lens, function (v) { if (v === "projection") showProjection(pjWhich, true); else { lens = v; draw(); } });
     var logSeg = segmented("Preisachse", [["lin", "Linear"], ["log", "Log"]], "lin", function (v) { pjLog = v === "log"; draw(); });
     function showProjection(which, stay) {
-      pjWhich = which; lens = "projection"; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 1 ? "true" : "false"); });
+      pjWhich = which; lens = "projection"; if (which === "motive") wavesOn = true; lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 1 ? "true" : "false"); });
       var t = pjThesis(), lg = pjLog === null ? pjAutoLog(t) : pjLog; logSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === lg ? "true" : "false"); });
       draw(); if (!stay) chartCard.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+    var waveSeg = E && E.primary ? segmented("Wellen", [["off", "Wellen aus"], ["on", "Wellen an"]], wavesOn ? "on" : "off", function (v) { wavesOn = v === "on"; draw(); }) : null;
     var controls = el("div", { class: "cb-controls" }, [lensSeg, logSeg,
       segmented("Zeitraum", ranges.map(function (x) { return [x[0], x[1]]; }), range, function (v) { range = v; draw(); }),
       a.chart.closeOnly ? null : segmented("Darstellung", [["line", "Linie"], ["candles", "Kerzen"]], mode, function (v) { mode = v; draw(); }),
-      E && E.primary ? segmented("Wellen", [["off", "Wellen aus"], ["on", "Wellen an"]], wavesOn ? "on" : "off", function (v) { wavesOn = v === "on"; draw(); }) : null
+      waveSeg
     ]);
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [controls, chartHost,
-      pjLegend,
+      pjLegend, motiveNote,
       el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       el("p", { class: "cb-lead cb-lead-m", text: a.explain.summary }),
-      abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Wellen." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null,
+      abstainNote,
       el("p", { class: "cb-small cb-dim", text: wavesOn && !abstain && E && E.primary ? "Tipp: Eine Wellenmarke antippen erklärt die Welle." : "" }),
       a.chart.closeOnly ? el("p", { class: "cb-small cb-dim", text: "Wochenschlusskurse ohne Volumen: Kerzen und Volumenbefunde sind für diesen Titel nicht verfügbar." }) : null]);
 
@@ -802,10 +807,14 @@
   /** Welche Projektion zeigt die Seite? Wochen-These zuerst, wenn sie für Kunden sichtbar ist. */
   function pickProjection(a, pro) {
     var w = a.projectionWeekly, d = a.projection;
-    if (w && w.consumerVisible) return { p: w, tf: "1W", other: d && d.consumerVisible ? d : null };
-    if (d && (d.consumerVisible || pro)) return { p: d, tf: a.timeframe, other: null };
-    if (w && pro) return { p: w, tf: "1W", other: null };
-    return d || w ? { p: d || w, tf: d ? a.timeframe : "1W", other: null } : null;
+    /* Hauptthese: Woche zuerst, sonst Tag (wie bisher). Motiv-Alternative unabhängig davon: Woche zuerst, sonst Tag. */
+    var mo = w && w.motiveAlternative ? w : d && d.motiveAlternative ? d : null;
+    var withMotive = function (x) { x.motive = mo ? mo.motiveAlternative : null; x.motiveP = mo; x.motiveTf = mo ? (mo === w ? "1W" : a.timeframe) : null; return x; };
+    if (w && w.consumerVisible) return withMotive({ p: w, tf: "1W", other: d && d.consumerVisible ? d : null });
+    if (d && (d.consumerVisible || pro)) return withMotive({ p: d, tf: a.timeframe, other: null });
+    if (w && pro) return withMotive({ p: w, tf: "1W", other: null });
+    if (mo) return withMotive({ p: mo, tf: mo === w ? "1W" : a.timeframe, other: null });
+    return d || w ? withMotive({ p: d || w, tf: d ? a.timeframe : "1W", other: null }) : null;
   }
   /** These → Chart-Datenvertrag (die Chart-Komponente kennt keine Engine-Interna). */
   function pjChart(t, tone) {
@@ -813,6 +822,25 @@
     return { zones: t.zones.map(function (z) { return { tier: z.tier, low: z.low, high: z.high, dLow: z.display.low, dHigh: z.display.high, passed: z.state === "PASSED" }; }), invalidation: t.invalidation, confirmation: t.confirmation, direction: t.direction, tone: tone || null };
   }
   function pjAlt(p) { return p.highUpside && p.highUpside.zones ? p.highUpside : p.alternative; }
+  /** Motiv-Alternative (Projection Engine 1.1.0, Produkt-Sichtbarkeit): beste regelkonforme Welle-3-Lesart aus dem Kandidatenpool der
+      Engine – nie Hauptlesart, immer als Alternative mit niedriger Strukturklarheit beschriftet. */
+  function motiveBlock(m, p, onChart) {
+    var b = el("button", { type: "button", class: "cb-pj-btn cb-pj-btn-alt", text: "Alternative im Chart zeigen" }); b.addEventListener("click", function () { onChart("motive"); });
+    return el("div", { class: "cb-pj-motive" + (m.highUpside ? " is-high" : "") }, [
+      el("p", { class: "cb-pj-alt-k", text: m.highUpside ? "Alternative Lesart mit hohem Aufwärtspotenzial" : "Alternative Lesart" }),
+      el("div", { class: "cb-pj-title" }, [el("h3", { class: "cb-pj-h", text: "Mögliche Welle 3 · " + (p.timeframe === "1W" ? "Woche" : "Tag") }), el("span", { class: "cb-pj-status cb-pj-st-" + m.status.toLowerCase(), text: PJ_STATUS[m.status] || m.status })]),
+      el("p", { class: "cb-pj-sub", text: (m.patternName || "") + " · Richtung " + dirWord(m.direction) + " · Strukturklarheit: " + (m.clarity ? m.clarity.label : "Niedrig") + " · Experimentell" }),
+      m.clarity ? el("p", { class: "cb-small", text: m.clarity.text }) : null,
+      pjLadder(m, p.close),
+      m.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: m.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: m.invalidation.displayText || fmt(m.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: m.invalidation.text })]) : null,
+      m.revision ? el("p", { class: "cb-small" }, [el("b", { text: "Neubewertung: " }), el("span", { text: "Schluss " + (m.revision.direction === "below" ? "unter " : "über ") + fmt(m.revision.price) + " – dann wäre die Vorwelle noch nicht beendet." })]) : null,
+      m.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: m.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (m.direction === "DOWN" ? "unter " : "über ") + fmt(m.confirmation.price) + ": " }), el("span", { text: m.confirmation.statement })]) : null,
+      el("div", { class: "qx-actions" }, [b]),
+      el("p", { class: "cb-pj-road-h", text: "Was diese Lesart stärken würde" }),
+      el("div", { class: "cb-pj-roads" }, [el("div", {}, [el("p", { class: "cb-pj-road-h", text: "Elliott-Anforderung" }), pjRoad(m.roadmap.elliott)]), el("div", {}, [el("p", { class: "cb-pj-road-h", text: "VU-Bestätigung (unabhängig)" }), pjRoad(m.roadmap.vu)])]),
+      el("p", { class: "cb-small cb-dim", text: "Nicht die bevorzugte Zählung. Vision Universe zeigt sie, weil die Engine sie regelkonform gefunden hat – nicht, weil sie wahrscheinlicher wäre." })
+    ]);
+  }
   function pjLadder(t, close) {
     return el("ol", { class: "cb-pj-ladder", "aria-label": "Projektionsleiter" }, t.zones.map(function (z) {
       var st = z.state === "PASSED" ? "bereits erreicht" : z.state === "INSIDE" ? "Kurs in der Zone" : null;
@@ -850,11 +878,17 @@
   /** Konsumenten-Karte: These in Sekunden verstehen (Leiter, Ungültig, nächste Schritte, Bestätigungen, Alternative, Evidenz). */
   function projectionCard(a, onChart) {
     var sel = pickProjection(a, false); if (!sel) return null;
-    var p = sel.p, t = p.consumerVisible ? p.primary || p.alternative : null, tfName = sel.tf === "1W" ? "Wochenchart" : "Tageschart";
+    var p = sel.p, t = p.consumerVisible ? p.primary || p.alternative : null, tfName = sel.tf === "1W" ? "Wochenchart" : "Tageschart", m = sel.motive;
     var head = el("div", { class: "cb-ew-head" }, [el("span", { class: "cb-ew-k", text: "Elliott-Projektion · " + tfName }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentelles Strukturmodell" })]);
     if (!t) {
-      var why = p.status === "DATA_INVALID" ? p.reason : p.status === "ABSTAIN" ? "Ohne verlässliche Zählung zeigt Vision Universe keine Projektion." : p.reason || "Die aktuelle Zählung liefert keine Projektion.";
-      return el("section", { class: "cb-ew-card cb-pj is-empty", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: "Keine Elliott-Projektion" }), el("p", { class: "cb-ew-sub", text: why })]);
+      var why = p.status === "DATA_INVALID" ? p.reason : p.status === "ABSTAIN" ? "Ohne verlässliche Zählung zeigt Vision Universe keine Hauptprojektion." : p.reason || "Die aktuelle Zählung liefert keine Hauptprojektion.";
+      if (!m) return el("section", { class: "cb-ew-card cb-pj is-empty", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: "Keine Elliott-Projektion" }), el("p", { class: "cb-ew-sub", text: why })]);
+      return el("section", { class: "cb-ew-card cb-pj", id: "projektion", "aria-label": "Elliott-Projektion" }, [head, el("p", { class: "cb-ew-main", text: p.status === "ABSTAIN" ? "Keine verlässliche Hauptzählung" : "Keine Hauptprojektion" }), el("p", { class: "cb-ew-sub", text: why }),
+        el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
+        motiveBlock(m, sel.motiveP, onChart), pjContext(sel.motiveP, m),
+        el("div", { class: "cb-pj-ev" }, [el("span", { class: "cb-layer-k", text: "Historische Evidenz" }), el("b", { text: p.evidence.label }), el("span", { class: "cb-small", text: p.evidence.text })]),
+        m.lifecycle ? el("p", { class: "cb-small cb-dim", text: "These seit " + X.dateDe(m.lifecycle.createdAt) + " · Revision " + m.lifecycle.rev + " · " + m.lifecycle.stateLabel + ". Zonen werden nachträglich nicht verschoben." }) : null,
+        el("p", { class: "cb-small cb-dim", text: p.disclaimer })]);
     }
     var lc = t.lifecycle, alt = pjAlt(p), kids = [head,
       el("div", { class: "cb-pj-title" }, [el("h2", { class: "cb-pj-h", text: t.label }), el("span", { class: "cb-pj-status cb-pj-st-" + t.status.toLowerCase(), text: PJ_STATUS[t.status] || t.status })]),
@@ -878,6 +912,7 @@
         hu ? el("p", { class: "cb-small", text: "Nicht die bevorzugte Zählung, geringe Klarheit. Die Engine hat diese Lesart regelkonform gefunden; sie wird nicht zur Hauptlesart erhoben." }) : null,
         el("div", { class: "qx-actions" }, [ab])]));
     }
+    if (m) kids.push(motiveBlock(m, sel.motiveP, onChart));
     if (sel.other && sel.other.primary) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Tagesstruktur: " }), el("span", { text: sel.other.primary.label + " (" + PJ_STATUS[sel.other.primary.status] + "). Der Tageschart zeigt Detail und Timing innerhalb der Wochen-These – kein Widerspruch, sondern eine Ebene tiefer." })]));
     kids.push(el("div", { class: "cb-pj-ev" }, [el("span", { class: "cb-layer-k", text: "Historische Evidenz" }), el("b", { text: p.evidence.label }), el("span", { class: "cb-small", text: p.evidence.text })]));
     if (lc) kids.push(el("p", { class: "cb-small cb-dim", text: "These seit " + X.dateDe(lc.createdAt) + " · Revision " + lc.rev + " (eingefroren am " + X.dateDe(lc.frozenAt) + ") · " + lc.stateLabel + ". Zonen werden nachträglich nicht verschoben; ändert sich die Zählung, entsteht eine neue Revision." }));
@@ -889,7 +924,8 @@
   function projectionPro(a) {
     var sel = pickProjection(a, true); if (!sel) return null;
     var p = sel.p, R = p.relations || {}, kids = [el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Projektion · Fachdetails" }), el("span", { class: "cb-badge cb-badge-experimental", text: p.version })])];
-    if (!p.primary && !p.alternative) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
+    var mot = sel.motive;
+    if (!p.primary && !p.alternative && !mot) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
     if (!p.consumerVisible) kids.push(el("p", { class: "cb-unclear" }, [el("b", { text: "Nur Fachansicht. " }), el("span", { text: p.reason || "" })]));
     function block(t, title) {
       if (!t || !t.zones) return null;
@@ -909,6 +945,10 @@
     kids.push(block(p.primary, "Hauptlesart"));
     if (p.primary && p.primary.subStructure) kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Kurzfristige Struktur: " }), el("span", { text: p.primary.subStructure.label + " – " + p.primary.subStructure.zones.map(function (z) { return PJ_TIER[z.tier] + " " + pjZone(z); }).join(", ") })]));
     kids.push(block(p.alternative, "Alternative"));
+    if (mot) {
+      kids.push(block(mot, "Motiv-Alternative (Produkt-Sichtbarkeit" + (sel.motiveTf === "1W" ? ", Woche" : "") + ")"));
+      kids.push(el("p", { class: "cb-small" }, [el("b", { text: "Herkunft: " }), el("span", { text: "Regelkonforme Lesart aus der Kandidatensuche der Engine (Rang " + (mot.pool.rank + 1) + " von " + mot.pool.size + "), nicht unter den zwei angezeigten Alternativen. Grammatik, Ranking und Enthaltung der Engine sind unverändert; geändert ist nur, dass diese Lesart sichtbar ist." })]));
+    }
     if (p.highUpside && p.highUpside.zones) kids.push(block(p.highUpside, "Alternative mit hohem Aufwärtspotenzial"));
     kids.push(el("p", { class: "cb-small cb-dim", text: [p.presentation && p.presentation.zones, p.presentation && p.presentation.percent, p.presentation && p.presentation.rounding, "Klassen: harte Regel/Definition/Richtlinie = Elliott (Frost & Prechter); Projektionsverhältnis = Literatur; VU-Festlegung = eigene, offen gekennzeichnete Grenze; VU-Bestätigung = unabhängige Signale ohne Einfluss auf die Formel.", "Engine " + (p.engine.elliott || "–") + " · Regelwerk " + (p.engine.ruleSet || "–") + " · " + p.version].filter(Boolean).join(" ") }));
     return X.card(kids.filter(Boolean), "cb-ew-panel cb-ewp cb-pj-panel");

@@ -7,6 +7,7 @@ import {dirname,join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {frozenInventory,refreshConfig} from './refresh-approval.mjs';
+import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live');
@@ -38,6 +39,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({url:new URL(r.url()).pathname,status:r.status()});});
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(cid=>{const e=document.querySelector('.ci-company-intelligence');return e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.getAttribute('aria-busy')==='false';},cid,{timeout:30000});
+  await waitForHydratedConsumer(page,{companyId:cid,generatedAt:expected.generatedAt,timeout:30000});
   const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
   assert.equal(await chapter.getAttribute('data-generated-at'),expected.generatedAt);assert.equal(await chapter.getAttribute('data-experience'),'v2');
   assert.equal(await chapter.locator('.ci-profile[lang=de]').count(),1);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

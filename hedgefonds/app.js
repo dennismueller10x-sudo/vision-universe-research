@@ -545,19 +545,22 @@
     document.title = "Hedgefonds — Vision Universe®";
 
     root.innerHTML =
-      '<section class="hf-hero vu-product-hero">' +
-        '<div class="hf-hero-copy">' +
+      '<section class="hf-hero vu-product-hero vu-hero-fidelity" data-product="hedgefonds">' +
+          '<div class="vu-hero-scene" aria-hidden="true"></div>' +
           '<span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#hedgefonds"></use></svg></span>' +
-          '<div class="vu-product-eyebrow">Vision Universe Hedgefonds</div>' +
-          '<h1 class="vu-product-title">Große Investoren. Klare Einblicke.</h1>' +
-          '<p class="lead vu-product-lead">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
-            " weitere Hedgefonds kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
+          '<div class="vu-hero-name">Hedgefonds</div>' +
+          '<h1 class="vu-product-title vu-hero-headline">Große Investoren.<br>Klare Einblicke.</h1>' +
+          '<p class="lead vu-product-lead vu-hero-description">Was große Investoren kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>' +
           '<span class="hf-live"><i></i>13F-Meldungen · ' + esc(d.latestPeriodLabel || "") + " · geprüft " + dateDE(d.generatedAt) + "</span>" +
           '<div class="hf-hsearch"><label class="hf-search">' + icon("search") +
             '<input id="hf-q" type="search" placeholder="Investor, Fonds oder Aktie suchen …" autocomplete="off" aria-label="Investor, Fonds oder Aktie suchen"></label>' +
             '<div class="hf-spanel" id="hf-qres" hidden></div></div>' +
           '<div class="hf-pop">' + POPULAR.map(function (p) { return '<a class="hf-chip" href="#/' + p[1] + "/" + p[2] + '">' + esc(p[0]) + "</a>"; }).join("") + "</div>" +
-        "</div>" +
+      "</section>" +
+
+      '<section class="hf-research-overview" aria-label="Investoren und Quartalsüberblick">' +
+        '<p class="hf-research-description">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
+          " weitere Hedgefonds kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
         '<div class="hf-hero-art">' +
           '<div class="hf-orbit">' + faces.map(function (f, i) {
             return '<a class="hf-face f' + i + '" href="#/fonds/' + esc(f.slug) + '" title="' + esc(fundLabel(f)) + '">' + avatar(f, "face") + "<span>" + esc(String(f.manager).split(" ").slice(-1)[0]) + "</span></a>";

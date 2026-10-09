@@ -1,11 +1,16 @@
 {
-  "updated_at": "2026-10-08T10:04:32.453Z",
+  "updated_at": "2026-10-09T14:01:59.460Z",
   "freshness_hours": 24,
   "sources": [
-    "Federal Reserve",
+    "Shelly Group",
+    "EQS News",
+    "Devon Energy",
+    "SEC",
     "Associated Press",
-    "Axios",
-    "Deutsche Börse"
+    "Deutsche Börse",
+    "SpaceX",
+    "Grain Management",
+    "Reuters"
   ],
   "coverage": [
     "Nasdaq 100",
@@ -20,71 +25,136 @@
   "methodology": "Eigenständig formulierte Kurzanalysen der Vision Universe Redaktion auf Basis aktueller, verlinkter Primärquellen und etablierter Nachrichtenagenturen. Es erscheinen nur potenziell marktbewegende Themen der letzten 24 Stunden; ältere Meldungen und Dubletten werden entfernt.",
   "items": [
     {
-      "id": "oil-surge-dax-pressure-2026-10-08",
-      "symbol": null,
-      "company": "Weltmärkte",
-      "market": "DAX / S&P 500 / Nasdaq 100",
+      "id": "spacex-starlink-mobile-spectrum-2026-10-09",
+      "symbol": "SPCX / TMUS / VZ / T",
+      "company": "SpaceX / US-Telekomsektor",
+      "market": "Nasdaq 100 / S&P 500",
       "tags": [
-        "Öl",
-        "DAX",
-        "Nahost",
-        "Inflation"
+        "SpaceX",
+        "Starlink Mobile",
+        "T-Mobile US",
+        "Verizon",
+        "AT&T"
       ],
-      "category": "Rohstoffe & Märkte",
-      "title": "Ölpreis springt über vier Prozent: DAX gerät unter Druck",
-      "summary": "Brent-Öl verteuerte sich am Donnerstag zeitweise um mehr als vier Prozent auf gut 104 US-Dollar je Barrel, nachdem neue Spannungen im Nahen Osten die Sorge vor Lieferausfällen verstärkten. Europas Börsen gaben nach; der DAX lag am Vormittag rund 0,8 Prozent im Minus, während auch MDAX, TecDAX und SDAX verloren.",
-      "why_it_matters": "Ein erneuter Ölpreisschub verschärft den Inflationsdruck, erschwert Zinssenkungen und belastet besonders energieintensive Unternehmen sowie hoch bewertete Wachstumsaktien.",
-      "source": "Associated Press",
-      "source_url": "https://apnews.com/article/6a096d714c874db13632794a32cebaa6",
+      "category": "Unternehmen & Telekommunikation",
+      "title": "SpaceX greift Mobilfunkmarkt an: Telekom-Aktien geraten unter Druck",
+      "summary": "SpaceX übernimmt von Grain Management ein landesweites Paket mit bis zu 14 Megahertz gepaartem 800-MHz-Spektrum und will Starlink Mobile damit zu einem großen US-Mobilfunkanbieter ausbauen. Das besonders reichweitenstarke Frequenzband soll auch die Versorgung innerhalb von Gebäuden verbessern; T-Mobile US, Verizon und AT&T verloren vorbörslich zeitweise zwischen 5,5 und 7,4 Prozent.",
+      "why_it_matters": "Mit eigenem Niedrigbandspektrum wird Starlink vom ergänzenden Satellitendienst zum potenziell direkten Wettbewerber der etablierten US-Mobilfunkkonzerne.",
+      "source": "SpaceX",
+      "source_url": "https://www.spacex.com/updates/starship-moon-announcement",
       "research_sources": [
         {
-          "name": "Associated Press",
-          "url": "https://apnews.com/article/6a096d714c874db13632794a32cebaa6"
+          "name": "SpaceX",
+          "url": "https://www.spacex.com/updates/starship-moon-announcement"
         },
         {
-          "name": "Deutsche Börse",
-          "url": "https://www.cashmarket.deutsche-boerse.com/cash-de/?frag=1698766"
+          "name": "Grain Management",
+          "url": "https://www.prnewswire.com/news-releases/grain-management-announces-definitive-agreement-to-sell-nationwide-800-mhz-spectrum-portfolio-to-spacex-302902974.html"
+        },
+        {
+          "name": "Reuters",
+          "url": "https://uk.marketscreener.com/news/us-european-telecom-stocks-slide-as-spacex-spectrum-deal-rattles-sector-ce785ddfd18af221"
         }
       ],
       "image_url": "/dashboard/assets/news-us-tech.jpg",
-      "published_at": "2026-10-08T05:17:19.000Z",
+      "published_at": "2026-10-09T09:58:00.000Z",
+      "relevance": 97,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "dax-rebound-oil-eases-2026-10-09",
+      "symbol": null,
+      "company": "Weltmärkte",
+      "market": "DAX / Nasdaq 100 / S&P 500",
+      "tags": [
+        "DAX",
+        "Öl",
+        "Anleiherenditen",
+        "Technologie"
+      ],
+      "category": "Markt & Makro",
+      "title": "Öl und Renditen entspannen sich: DAX startet Erholung",
+      "summary": "Europas Börsen erholen sich am Freitag, nachdem Ölpreise und langfristige US-Renditen von ihren jüngsten Spitzen zurückgekommen sind. Der DAX legte im frühen Handel rund 0,7 Prozent zu und US-Futures zeigten nach dem technologiegetriebenen Nasdaq-Rückgang von 1,3 Prozent wieder nach oben.",
+      "why_it_matters": "Sinkende Energiepreise und Renditen verschaffen Aktien kurzfristig Luft, doch der starke Rückschlag bei Halbleitern zeigt, dass die hohen Erwartungen an das KI-Geschäft empfindlich bleiben.",
+      "source": "Associated Press",
+      "source_url": "https://apnews.com/article/5d0f953dbf96febb0690c1aef23fa8a9",
+      "research_sources": [
+        {
+          "name": "Associated Press",
+          "url": "https://apnews.com/article/5d0f953dbf96febb0690c1aef23fa8a9"
+        },
+        {
+          "name": "Deutsche Börse",
+          "url": "https://live.deutsche-boerse.com/aktien/indizes"
+        }
+      ],
+      "image_url": "/dashboard/assets/news-us-tech.jpg",
+      "published_at": "2026-10-09T04:53:11.000Z",
+      "relevance": 91,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "devon-crescent-eagle-ford-deal-2026-10-09",
+      "symbol": "DVN / CRGY",
+      "company": "Devon Energy / Crescent Energy",
+      "market": "S&P 500 / US-Energie",
+      "tags": [
+        "Devon Energy",
+        "Crescent Energy",
+        "Eagle Ford",
+        "Übernahme"
+      ],
+      "category": "Unternehmen & Energie",
+      "title": "Devon verkauft Eagle-Ford-Geschäft für 4,2 Milliarden Dollar an Crescent",
+      "summary": "Devon Energy verkauft seine Eagle-Ford-Assets für 4,2 Milliarden US-Dollar in bar an Crescent Energy; nach üblichen Anpassungen nennt Crescent einen erwarteten Nettokaufpreis von rund 3,85 Milliarden Dollar. Das Paket umfasst etwa 68.000 Barrel Öläquivalent Tagesproduktion und mehr als 600 erstklassige Bohrstandorte; der Abschluss ist für das vierte Quartal 2026 oder Anfang 2027 vorgesehen.",
+      "why_it_matters": "Devon verschlankt sein Portfolio und gewinnt Spielraum für Aktienrückkäufe und Schuldenabbau, während Crescent seine Position im Eagle-Ford-Becken mit einem großen, teils fremdfinanzierten Zukauf ausbaut.",
+      "source": "Devon Energy",
+      "source_url": "https://investors.devonenergy.com/investors/press-releases/press-release-details/2026/Devon-Energy-Announces-Agreement-to-Exit-the-Eagle-Ford-for-4-2-Billion/",
+      "research_sources": [
+        {
+          "name": "Devon Energy Investor Relations",
+          "url": "https://investors.devonenergy.com/investors/press-releases/press-release-details/2026/Devon-Energy-Announces-Agreement-to-Exit-the-Eagle-Ford-for-4-2-Billion/"
+        },
+        {
+          "name": "SEC – Crescent Energy Form 8-K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1866175/000162828026065385/crgy-20261008.htm"
+        }
+      ],
+      "image_url": "/dashboard/assets/news-us-tech.jpg",
+      "published_at": "2026-10-09T07:57:02.313Z",
       "relevance": 95,
       "editorial": "Vision Universe Redaktion"
     },
     {
-      "id": "fed-minutes-rate-hike-2026-10-08",
-      "symbol": null,
-      "company": "US-Notenbank",
-      "market": "Nasdaq 100 / S&P 500 / Russell 2000 / Weltmärkte",
+      "id": "shelly-group-revenue-growth-2026-10-08",
+      "symbol": "SLYG",
+      "company": "Shelly Group",
+      "market": "SDAX",
       "tags": [
-        "Federal Reserve",
-        "Zinsen",
-        "Inflation",
-        "Anleiherenditen"
+        "Shelly Group",
+        "SDAX",
+        "Smart Home",
+        "Umsatz"
       ],
-      "category": "Geldpolitik & Märkte",
-      "title": "Fed hält weitere Zinserhöhung 2026 für wahrscheinlich",
-      "summary": "Die Mehrheit der US-Notenbanker hält laut Protokoll der September-Sitzung eine weitere Zinserhöhung bis zum Jahresende für wahrscheinlich. Steigende Anleiherenditen und höhere Ölpreise belasteten daraufhin vor allem zinssensitive Aktienmärkte; der Russell 2000 verlor am Mittwoch 1,3 Prozent.",
-      "why_it_matters": "Eine weitere Straffung würde Finanzierungskosten und Bewertungsdruck erhöhen – besonders für wachstumsstarke Technologiewerte und kleinere, stärker fremdfinanzierte Unternehmen.",
-      "source": "Federal Reserve",
-      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm",
+      "category": "Unternehmen & Nebenwerte",
+      "title": "Shelly Group beschleunigt Wachstum: Neunmonatsumsatz steigt um 30 Prozent",
+      "summary": "Shelly Group hat den Umsatz mit Geräten und verbundenen Dienstleistungen in den ersten neun Monaten 2026 vorläufig um rund 30 Prozent auf etwa 112,8 Millionen Euro gesteigert. Nach Unternehmensangaben beschleunigte sich das Wachstum im dritten Quartal gegenüber den beiden Vorquartalen und liegt weiterhin im Rahmen der ursprünglichen internen Erwartungen.",
+      "why_it_matters": "Die beschleunigte Umsatzdynamik stärkt die operative Grundlage des SDAX-Unternehmens während des laufenden Übernahmeangebots von Schneider Electric.",
+      "source": "Shelly Group",
+      "source_url": "https://corporate.shelly.com/en/news/shelly-group-reports-preliminary-consolidated-revenue-for-the-first-nine-months-of-2026",
       "research_sources": [
         {
-          "name": "Federal Reserve",
-          "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm"
+          "name": "Shelly Group Investor Relations",
+          "url": "https://corporate.shelly.com/en/news/shelly-group-reports-preliminary-consolidated-revenue-for-the-first-nine-months-of-2026"
         },
         {
-          "name": "Associated Press",
-          "url": "https://apnews.com/article/b7ed20e31e1a6fa5da6d78e5fe35b0c3"
-        },
-        {
-          "name": "Axios",
-          "url": "https://www.axios.com/2026/10/07/fed-warsh-minutes-rates"
+          "name": "EQS News",
+          "url": "https://www.eqs-news.com/news/ad-hoc/shelly-group-reports-preliminary-consolidated-revenue-for-the-first-nine-months-of-2026/882569a0-8dc9-4831-a6d4-223d41b998b4_en"
         }
       ],
       "image_url": "/dashboard/assets/news-us-tech.jpg",
-      "published_at": "2026-10-07T18:05:47.000Z",
-      "relevance": 96,
+      "published_at": "2026-10-08T15:30:00.000Z",
+      "relevance": 92,
       "editorial": "Vision Universe Redaktion"
     }
   ]

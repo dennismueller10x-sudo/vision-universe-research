@@ -329,15 +329,16 @@
   async function render(root, ctx) {
     ctx = Object.assign({}, ctx, { artworkDisposers: [] });
     var page = node('div', 'v2-home'); root.appendChild(page);
-    var intro = node('header', 'v2-intro vu-product-hero');
+    var intro = el('header', { class: 'v2-intro vu-product-hero vu-hero-fidelity', 'data-product': 'discover' });
+    intro.appendChild(el('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }));
     var introCopy = node('div', 'v2-intro-copy vu-product-hero__copy');
     var icon = node('span', 'vu-product-icon vu-product-icon--hero'); icon.setAttribute('aria-hidden', 'true');
     var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), use = document.createElementNS(ns, 'use');
     svg.setAttribute('viewBox', '0 0 24 24'); use.setAttribute('href', '/assets/product-icons.svg#discover'); svg.appendChild(use); icon.appendChild(svg);
     introCopy.appendChild(icon);
-    introCopy.appendChild(node('p', 'v2-intro-kicker vu-product-eyebrow', 'Vision Universe Discover'));
-    introCopy.appendChild(node('h1', 'vu-product-title', 'Sieh den Markt mit anderen Augen.'));
-    introCopy.appendChild(node('p', 'v2-intro-lead vu-product-lead', 'Entdecke Unternehmen, Trends und Themenwelten – und verstehe, was die Märkte von morgen bewegt.'));
+    introCopy.appendChild(node('p', 'vu-hero-name', 'Discover'));
+    introCopy.appendChild(node('h1', 'vu-product-title vu-hero-headline', 'Sieh den Markt mit anderen Augen.'));
+    introCopy.appendChild(node('p', 'v2-intro-lead vu-product-lead vu-hero-description', 'Entdecke Unternehmen, Trends und Themenwelten – und verstehe, was die Märkte von morgen bewegt.'));
     var actions = node('div', 'v2-intro-actions');
     actions.appendChild(link('Jetzt entdecken →', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-dark v2-intro-cta'));
     actions.appendChild(link('Themenwelten', '#/welten', 'v2-pill v2-pill-ghost'));
@@ -352,10 +353,6 @@
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
     introCopy.appendChild(actions);
     intro.appendChild(introCopy);
-    var visual = node('div', 'v2-intro-visual vu-product-hero__visual'); visual.setAttribute('aria-hidden', 'true');
-    visual.appendChild(el('img', { src: '/assets/themen/00-discovery-hero.webp', alt: '', width: '1672', height: '941', decoding: 'async', fetchpriority: 'high' }));
-    visual.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
-    intro.appendChild(visual);
     page.appendChild(intro);
     var body = node('div', 'v2-journey'); page.appendChild(body);
     body.appendChild(marketToday(ctx));

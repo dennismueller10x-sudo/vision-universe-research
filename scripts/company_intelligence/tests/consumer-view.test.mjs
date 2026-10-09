@@ -29,6 +29,13 @@ test('only available metrics and supported comparisons appear; share changes req
  const m=viewModel({companyId:cid,latestFinancials:{metrics:{revenue:{current:{value:0,unit:'USD'}},eps_diluted:{current:{value:NaN}}},whatChanged:[{metric:'shares_outstanding',comparison:'YEAR_AGO_QUARTER',previous:1,current:2},{metric:'revenue',comparison:'UNKNOWN',previous:1,current:2},{metric:'revenue_growth',comparison:'PREVIOUS_QUARTER_YOY_GROWTH',previous:18,current:24}]}},now);
  assert.deepEqual(Array.from(m.metrics),['revenue']);assert.equal(m.changes.length,1);assert.equal(m.changes[0].metric,'revenue_growth');
 });
+test('confirmed results supersede only the same issuer and fiscal-period estimate, retaining the raw evidence',()=>{
+ const estimate={companyId:cid,eventType:'EARNINGS_ESTIMATED',confirmationStatus:'ESTIMATED',fiscalYear:2026,fiscalQuarter:'Q3',dateStart:'2026-10-09',dateEnd:'2026-10-30'};
+ const result={companyId:cid,eventType:'EARNINGS_SCHEDULED',confirmationStatus:'CONFIRMED',fiscalYear:2026,fiscalQuarter:'Q3',date:'2026-10-21'};
+ const payload={companyId:cid,events:[estimate,result,{...result,eventType:'EARNINGS_CALL',startsAt:'2026-10-21T21:30:00Z'}]};
+ assert.equal(viewModel(payload,now).estimates.length,0);assert.equal(viewModel(payload,now).confirmed.length,2);assert.equal(payload.events.length,3);
+ for(const change of [{companyId:'other'},{fiscalQuarter:'Q4'},{fiscalYear:2025},{fiscalQuarter:null},{eventType:'EARNINGS_CALL'},{confirmationStatus:'ESTIMATED'},{eventStatus:'CANCELLED'}])assert.equal(viewModel({companyId:cid,events:[estimate,{...result,...change}]},now).estimates.length,1);
+});
 test('type pills reuse existing deterministic categories without inferring new facts',()=>{
  assert.equal(storyType({eventType:'NEWS',categories:['Buyback']}),'Aktienrückkauf');assert.equal(storyType({eventType:'NEWS',categories:['Other']}),'Unternehmensmeldung');assert.equal(storyType({eventType:'MATERIAL_SEC_EVENT'}),'SEC / Regulatorisch');assert.equal(storyType({eventType:'EARNINGS_PUBLISHED'}),'Geschäftszahlen');
 });

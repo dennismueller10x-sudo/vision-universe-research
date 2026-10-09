@@ -4,6 +4,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
+import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
@@ -43,8 +44,10 @@ try{
    await page.goto(base+'/discover/'+(live?'':'?company-intelligence=preview')+'#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence[aria-busy=false] h2');
    const chapter=page.locator('.ci-company-intelligence');
    if(version==='after'){
+    // Observe the unlocked document and its completed hydration; the access
+    // gate replaces the original document and removes its event listeners.
+    await waitForHydratedConsumer(page,{companyId:cid,generatedAt:candidate.dataTime});
     const initial=await chapter.getAttribute('data-company-id');if(initial)assert.equal(initial,cid,ticker+' initially rendered issuer');
-    await page.waitForFunction(cid=>{const e=document.querySelector('.ci-company-intelligence');return e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.getAttribute('aria-busy')==='false';},cid,{timeout:15000});
    }
    const text=await chapter.innerText();const actualLoads=await page.evaluate(()=>window.__ciReviewLoads);
    const payload=actualLoads.filter(r=>String(r.ticker).trim().toUpperCase()===ticker&&r.payload?.state==='AVAILABLE').at(-1)?.payload;assert(payload&&payload.companyId===cid,ticker+' identity');

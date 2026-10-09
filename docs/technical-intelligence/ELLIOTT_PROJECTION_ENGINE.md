@@ -1,4 +1,4 @@
-# VU Elliott Projection Engine (`elliott-projection-1.0.0`)
+# VU Elliott Projection Engine (`elliott-projection-1.1.0`)
 
 Stand: 08.10.2026.
 
@@ -130,3 +130,54 @@ Die Projektion rechnet aus der fertigen Elliott-Ausgabe: alle 5.130 veröffentli
 * Relative Stärke ist ein Rang im Querschnitt des Laufs (Kurs, ohne Dividenden), nicht gegen einen Index.
 * Wochenreihen ohne Volumen: Volumen-Bestätigung „nicht verfügbar“.
 * Fundstellen auf Kapitelebene (wie `elliott/sources.js`), nicht gegen den Volltext geprüft.
+
+## 1.1.0 · Welle-3-Sichtbarkeit (nur PRODUKT-SICHTBARKEIT, keine Methodenänderung)
+
+Stand 08.10.2026. Anlass: Die Projection Engine war live, aber kaum ein Titel zeigte eine laufende Welle-3-These. Diagnose an fünf Referenzfällen (SE, OSCR, XPEV, CGC, BTC – Referenz, keine Wahrheit) und am ganzen Universum.
+
+**Wo die Information verloren ging:** gültiger Kandidat im Suchpool der Engine (bis 400 regelkonforme Lesarten) → Ranking → Ausgabe nur Primärzählung + 2 materiell verschiedene Alternativen (`maxAlternatives: 2`) → Enthaltung (98 % der Wochentitel) → Produkt zeigt bei Enthaltung nichts. Regelkonforme Welle-3-Lesarten mit niedrigerem Rang erreichten das Produkt nie.
+
+**Was sich ändert (nur Sichtbarkeit):**
+* `motiveCandidateFor` (`scripts/technical/lib/ti-projection.mjs`) ruft die **unveränderte** Engine ein zweites Mal mit derselben Eingabe und dem ausgabeneutralen Haken `debugAll` auf; die Identität (Primärzählung, Alternativen) wird geprüft.
+* Aus dem Pool wird die **bestplatzierte** Lesart IMPULSE/LEADING_DIAGONAL mit laufender Welle 2 oder 3 genommen, die nicht schon angezeigt ist; die Regeln werden mit dem Regelwerk erneut geprüft; seit dem Ursprung darf kein Schluss jenseits der harten Grenze liegen.
+* Nur dieser eine Kandidat wird gegen die Produkt-Leitplanken geprüft (vor der Auswertung festgelegt, aus Kriterien der Engine, nicht an Titeln eingestellt):
+
+| Gate | Regel | Herkunft |
+|---|---|---|
+| G2 | `hierarchy = 1`: keine Kreuzung mit einer vergleichbar starken abgeschlossenen Struktur | Grad-Prüfung der Engine 3.2 |
+| G3 | Signal/Rauschen der bestätigten Wellen ≥ 3,0 | Schwelle „voll“ der Anwendbarkeit |
+| G4 | nur Wochenanalyse; Welle 1 ≥ 26 Wochen | Wochen zuerst, großer Grad |
+| G5 | `trendContext ≥ 0,5` (nicht gegen den gemessenen Jahrestrend) | Trendkontext der Engine |
+| G6 | Security Master: `EQUITY_COMMON` und `ELIGIBLE` | keine Vorzugsaktien, Anleihen, Optionsscheine, Units, SPACs |
+
+* Danach gelten alle Leitplanken der Projektion (Datenfehler, ≤ 0, > 1.000 × Kurs, ungültig, ausgeschöpft).
+* Ergebnis: `projection.motiveAlternative` – „Mögliche Welle 3 · Alternative Lesart“, Strukturklarheit niedrig, Rang im Pool, Leiter, Invalidation, Bestätigung, Fahrplan. Nie Hauptlesart; höchstens eine; keine, wenn eine angezeigte Alternative schon eine Welle-3-These ist. Sichtbar auch, wenn sich die Engine für die Hauptzählung enthält (die Hauptzählung bleibt zurückgehalten).
+* Register 1.3.0: Kohorte `CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE` (eingefrorene These, Rang, Status, Versionen); `productVisible` der Forschungskohorte `RESEARCH_ONLY_INTERNAL_WAVE3` wird ab jetzt wahrheitsgemäß gesetzt. Bestehende Einträge unverändert.
+
+**Nicht geändert:** Grammatik, harte Regeln, Grad-Logik, Pivots, Ranking, Enthaltung, historische Evidenz, Formeln der Leiter.
+
+**Universum (5.130 Titel, Stand 06.10.2026):**
+
+| Stufe | Titel |
+|---|---|
+| Pool enthält eine regelkonforme Welle-2/3-Motivlesart | 4.923 |
+| ohne Leitplanken sichtbar (verworfen: Spam) | 3.223 (365 „Hochpotenzial“) |
+| scheitert an G2 Grad | 3.208 |
+| an G3 Rauschen | 936 |
+| an G4 Grad/Woche | 404 |
+| an G5 Trend | 54 |
+| an G6 Wertpapierart | 62 |
+| bereits angezeigt / kein Kandidat | 8 / 199 |
+| **sichtbar nach allen Prüfungen** | **51** (45 abwärts, 6 aufwärts; 2 Hochpotenzial) |
+
+Bekannte Grenze: Der Security Master führt einige börsengehandelte Anleihen als Stammaktie (z. B. AFGC, OXLCZ, KMPB); sie passieren G6.
+
+**Referenzfälle:**
+
+| Titel | Praktiker-Referenz | Kandidat in VU | gültig? | Grad | warum nicht sichtbar | Ergebnis |
+|---|---|---|---|---|---|---|
+| SE | keine verifizierbare datierte 2026-Zählung gefunden | IMPULSE W1 35,74→196,05, W2 → 78,16 (Rang 97/171) | harte Regeln ja | Woche, groß | kreuzt eine vergleichbar starke abgeschlossene Struktur (G2) – dieselbe Gradunsicherheit, aus der sich die Engine enthält | weiter verborgen |
+| OSCR | nicht verifiziert | IMPULSE W3 läuft 2,21→22,93→11,14→32,77 (Rang 67/202) | ja | Woche | Split-Verdacht der Engine (+95 % in einer Woche, 03/2023) → Datensperre; zudem Rauschen (G3) | gesperrt (Daten) |
+| XPEV | nicht verifiziert | beste Motivlesart abwärts (Welle 3 seit 2020); aufwärts nur Rang 234/256 | ja | Woche | bester Kandidat zu kleiner Grad (G4) | keine |
+| CGC | nicht verifiziert | aktuelle Motivlesarten nur abwärts | ja | Woche | G4; keine gültige Aufwärts-Welle-3 | keine |
+| BTC | FXEmpire 20.08.2026: W-3 aufwärts, Ziel ≈ 77.000, ungültig unter 65.418 | Welle 1 aufwärts ab 59.490 läuft; bester Welle-2/3-Kandidat abwärts (Rang 128/157) | ja | Woche (Referenz aus BTCUSD-Tagesreihe, nicht im Produktuniversum) | G2 | nicht im Produkt |

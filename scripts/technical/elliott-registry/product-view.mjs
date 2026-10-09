@@ -22,7 +22,8 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
-import { projectionElliott, projectionInput } from "../lib/ti-projection.mjs";
+import { projectionElliott, projectionInput, motiveCandidateFor } from "../lib/ti-projection.mjs";
+import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 const Identity = createRequire(import.meta.url)("../../../core/identity.js"); // eine Identitaetsregel (ADR-001)
 
 export const PRODUCT_VIEW_VERSION = "elliott-registry-product-view-1.0.0";
@@ -87,7 +88,14 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub) {
     series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly";
     if (series.length < MIN_WEEKLY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   }
-  return Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
+  const res = Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
+  /* Motiv-Alternative wie im Produkt: Wochen zuerst. Tagestitel zeigen sie aus der Wochenanalyse (projectionWeekly). */
+  if (kind === "weekly") res.motiveIn = res.projIn && res.projIn.E && res.projIn.E.hiddenMotive ? res.projIn : null;
+  else {
+    const ws = weeklySeriesFromPoints(weeklyUsed, ticker);
+    res.motiveIn = ws.length >= MIN_WEEKLY ? (() => { const w = analyzeAndSummarize(ws, "weekly", T, ctx); return w.projIn && w.projIn.E && w.projIn.E.hiddenMotive ? w.projIn : null; })() : null;
+  }
+  return res;
 }
 
 function analyzeAndSummarize(series, kind, ticker, ctx) {
@@ -97,7 +105,9 @@ function analyzeAndSummarize(series, kind, ticker, ctx) {
   /* Elliott Projection Engine (Registry 1.2.0): dieselbe Eingabe wie das Produkt (veroeffentlichte Form, 260 Chart-Bars wie chartOf);
      die Relative Staerke setzt der Hauptthread aus dem Querschnitt der Woche. */
   const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : v), from = Math.max(0, series.length - 260);
-  const projIn = { E: projectionElliott(pub), ctx: projectionInput(Object.assign({}, S, { chart: { timestamps: series.timestamps.slice(from), close: series.close.slice(from).map(r4) } }), null) };
+  const projE = projectionElliott(pub), mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
+  if (projE && mc.count) projE.hiddenMotive = mc;
+  const projIn = { E: projE, ctx: projectionInput(Object.assign({}, S, { chart: { timestamps: series.timestamps.slice(from), close: series.close.slice(from).map(r4) } }), null) };
   return { tf: series.timeframe, d: series.timestamps[t], E, px: series.close[t], atr: Number.isFinite(atr) ? atr : null, projIn,
            view: { tf: series.timeframe, d: series.timestamps[series.length - 1], p: p ? p.pattern : null, w: p ? (p.complete ? "done" : p.currentWave && p.currentWave.label) : null,
                    ab: !!(E && E.applicability && E.applicability.abstain), key: p ? p.persistenceKey || null : null, app: E && E.applicability ? E.applicability.level : null,
