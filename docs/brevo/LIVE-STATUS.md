@@ -29,6 +29,8 @@ Offizielle Quelle: [IP-Adressen für API-/SMTP-Sicherheit autorisieren und sperr
 
 ## Manuelle Importgrenzen
 
+Der vorhandene Navigations-Sync fügte nach dem Merge in Commit `f268fe0` automatisch Website-CSS und JavaScript in `scripts/brevo/newsletter.html` ein. Die E-Mail-Vorlage wird deshalb als `newsletter.html.tmpl` isoliert und von `render` unter diesem Namen gelesen. Der Sync verarbeitet ausschließlich Dateien mit Endung `.html` und überspringt sie damit. Kein fremder Workflow oder Navigationscode wird verändert; die Vorlage enthält wieder ausschließlich E-Mail-Inhalt.
+
 Der Owner wählt manuelle private CSVs; zusätzliche Import-Secrets werden nicht angelegt. CSV-Boolean-Werte müssen nach [offiziellem Format](https://help.brevo.com/hc/en-us/articles/208729849-Create-a-file-to-import-your-contacts) `Yes`/`No` sein. Die private API-JSON bleibt unverändert.
 
 Vorbereitet: 135 reguläre Kontakte, zwei eindeutige interne Testkontakte, 13 nicht angemeldete Kontakte; sechs Käufer insgesamt, davon einer nicht angemeldet. Der tatsächliche Brevo-Bestand ist unbekannt. Daher sind **alle 150 Kontakte zurückgestellt**. Absender-/Domainwerte und Listen-IDs dürfen erst nach erfolgreichem Kontoabruf als tatsächlich eingerichtet gemeldet werden.

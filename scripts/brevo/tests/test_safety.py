@@ -269,6 +269,9 @@ class Safety(unittest.TestCase):
         self.assertIn("{{ unsubscribe }}", output)
         self.assertIn("@media", output)
         self.assertIn("vision-universe-logo-web.png", output)
+        self.assertNotIn("<script", output.lower())
+        self.assertNotIn("site-navigation", output)
+        self.assertNotIn("<vu-navigation", output)
         content["company_details_verified"] = False
         with self.assertRaises(Blocked): render(content)
 
