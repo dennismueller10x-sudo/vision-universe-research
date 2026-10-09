@@ -1,6 +1,7 @@
 """Brevo v3 REST, stdlib only. No response bodies or sensitive URLs in errors."""
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -13,7 +14,8 @@ ATTRS = {"VU_SOURCE": "text", "VU_EMAIL_CONSENT": "text", "VU_BUYER": "boolean",
 
 
 class Client:
-    def __init__(self):
+    def __init__(self, mode="normal"):
+        self.mode = mode
         self._key = os.environ.get("BREVO_API_KEY")
         if not self._key:
             raise Blocked("BREVO_API_KEY ist im sicheren Prozess nicht verfügbar.")
@@ -21,6 +23,8 @@ class Client:
     def call(self, method, path, body=None, missing=False):
         if not path.startswith("/") or ".." in path:
             raise Blocked("Ungültiger API-Pfad.")
+        if self.mode != "normal" and not permitted_call(self.mode, method, path):
+            raise Blocked("API-Aufruf liegt außerhalb des freigegebenen Betriebsumfangs.")
         req = urllib.request.Request("https://api.brevo.com/v3" + path,
               data=None if body is None else json.dumps(body).encode(), method=method,
               headers={"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json"})
@@ -42,7 +46,7 @@ class Client:
     def pages(self, path, key, limit=50):
         result, offset = [], 0
         while True:
-            page = self.call("GET", path + "?" + urllib.parse.urlencode({"limit": limit, "offset": offset}))[key]
+            page = self.call("GET", path + "?" + urllib.parse.urlencode({"limit": limit, "offset": offset})).get(key) or []
             result.extend(page)
             if len(page) < limit:
                 return result
@@ -50,6 +54,25 @@ class Client:
 
     def contact(self, email):
         return self.call("GET", "/contacts/" + urllib.parse.quote(email, safe=""), missing=True)
+
+
+def permitted_call(mode, method, path):
+    clean = path.split("?", 1)[0]
+    if mode not in ("admin", "import"):
+        return False
+    if method == "GET":
+        return clean == "/account" or clean == "/senders" or clean.startswith("/senders/domains") or clean == "/contacts" or clean.startswith("/contacts/")
+    if mode == "admin":
+        return method == "POST" and (clean in ("/contacts/folders", "/contacts/lists")
+               or re.fullmatch(r"/contacts/attributes/normal/VU_[A-Z_]+", clean) is not None)
+    return (method == "POST" and clean == "/contacts") or (
+        method == "PUT" and clean.startswith("/contacts/") and "%40" in clean and "/" not in clean[len("/contacts/"):])
+
+
+def positive_id(value):
+    if type(value) is not int or value < 1:
+        raise Blocked("Brevo-Struktur enthält eine ungültige ID.")
+    return value
 
 
 def free_account(client):
@@ -67,7 +90,7 @@ def structures(client):
         if len(matches) > 1:
             raise Blocked("Mehrdeutige VU-Listenstruktur; manuell zuordnen.")
         if matches:
-            found[name] = matches[0]["id"]
+            found[name] = positive_id(matches[0]["id"])
     return found
 
 
@@ -90,7 +113,7 @@ def setup(client):
         folder_id = folder[0]["id"] if folder else client.call("POST", "/contacts/folders", {"name": "Vision Universe"})["id"]
         for name in LISTS:
             if name not in found:
-                found[name] = client.call("POST", "/contacts/lists", {"name": name, "folderId": folder_id})["id"]
+                found[name] = positive_id(client.call("POST", "/contacts/lists", {"name": name, "folderId": folder_id})["id"])
     return found
 
 
@@ -99,9 +122,23 @@ def audit(client):
     senders = client.call("GET", "/senders").get("senders", [])
     domains = client.call("GET", "/senders/domains").get("domains", [])
     segments = client.pages("/contacts/segments", "segments")
+    attrs = client.call("GET", "/contacts/attributes").get("attributes", [])
+    inventory = client.call("GET", "/contacts?limit=1&offset=0")
+    count = inventory.get("count")
+    if type(count) is not int or count < 0:
+        raise Blocked("Kontaktinventar enthält keinen verlässlichen Zählwert.")
+    domain_configs = [client.call("GET", "/senders/domains/" + urllib.parse.quote(d["domain_name"], safe=""))
+                      for d in domains if isinstance(d.get("domain_name"), str)]
     # Only allowlisted aggregate information may enter public Actions logs.
-    return {"plan_types": sorted({p.get("type", "unknown") for p in account.get("plan", [])}),
+    plans = {p.get("type") for p in account.get("plan", [])}
+    return {"plan_types": sorted(p if p in ("free", "payAsYouGo", "subscription", "sms") else "unknown" for p in plans),
             "vu_lists": structures(client), "segments_count": len(segments),
+            "existing_contacts_count": count,
+            "vu_attributes_present": sum(any(a.get("name") == n for a in attrs) for n in ATTRS),
+            "vu_attribute_conflicts": sum(any(a.get("name") == n and (a.get("type") != t or a.get("category") != "normal") for a in attrs) for n, t in ATTRS.items()),
             "senders_count": len(senders), "active_senders_count": sum(s.get("active") is True for s in senders),
-            "domains_count": len(domains), "automation_review": "Brevo UI required; no documented enumeration API",
+            "domains_count": len(domains), "domains_checked": len(domain_configs),
+            "verified_domains_count": sum(d.get("verified") is True for d in domain_configs),
+            "authenticated_domains_count": sum(d.get("authenticated") is True for d in domain_configs),
+            "automation_review": "Brevo UI required; no documented enumeration API",
             "contacts_imported": 0, "emails_sent": 0}

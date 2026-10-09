@@ -15,6 +15,10 @@ class Blocked(Exception):
     pass
 
 
+def prepared_digest(data):
+    return hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 def private_path(path):
     path = Path(path).expanduser().resolve()
     if path == ROOT or ROOT in path.parents:

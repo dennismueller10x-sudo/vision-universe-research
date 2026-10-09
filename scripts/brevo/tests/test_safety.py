@@ -12,7 +12,7 @@ from unittest.mock import patch
 from urllib.parse import unquote, urlsplit, parse_qs
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from prepare import Blocked, ROOT, normalize, prepare, private_path, manual_csvs
+from prepare import Blocked, ROOT, normalize, prepare, prepared_digest, private_path, manual_csvs
 from client import ATTRS, LISTS, setup
 from import_contacts import import_contacts, merge_attributes
 from campaigns import Process, render, version
@@ -127,6 +127,7 @@ class Safety(unittest.TestCase):
 
     def review(self, data):
         return {"reviewed_at": dt.datetime.now(dt.timezone.utc).isoformat(), "source_sha256": data["source_sha256"],
+                "prepared_sha256": prepared_digest(data),
                 "list_ids": self.fake.lists, "all_active_automations_checked": True,
                 "no_contact_create_update_or_list_entry_triggers": True, "reviewer": "Synthetic", "evidence_note": "Synthetic only"}
 

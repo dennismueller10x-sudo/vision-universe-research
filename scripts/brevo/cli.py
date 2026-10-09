@@ -1,4 +1,4 @@
-"""No implicit send: audit/setup are the only operations available in Actions."""
+"""No implicit send. Actions import requires private temporary secrets and UI review."""
 import argparse
 import json
 import os
@@ -17,7 +17,7 @@ def read_private(path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("operation", choices=("audit", "setup", "domain", "import", "draft", "test", "check", "send"))
+    p.add_argument("operation", choices=("audit", "setup", "import-preview", "import", "domain", "draft", "test", "check", "send"))
     p.add_argument("--prepared")
     p.add_argument("--review")
     p.add_argument("--config")
@@ -31,9 +31,12 @@ def main():
     args = p.parse_args()
     proc = None
     try:
-        if os.environ.get("GITHUB_ACTIONS") and args.operation not in ("audit", "setup"):
-            raise Blocked("In Actions sind nur datensparsame Prüfung und Struktureinrichtung erlaubt.")
-        client = Client()
+        actions = bool(os.environ.get("GITHUB_ACTIONS"))
+        if actions:
+            from transfer import trusted_dispatch
+            if not trusted_dispatch() or args.operation not in ("audit", "setup", "import-preview", "import"):
+                raise Blocked("In Actions sind nur manuelle Brevo-Verwaltungsaufrufe auf dem Standardbranch erlaubt.")
+        client = Client(mode="admin" if args.operation in ("audit", "setup") else "normal")
         if args.operation == "audit":
             result = audit(client)
         elif args.operation == "setup":
@@ -43,6 +46,12 @@ def main():
             # Store full Brevo-provided DNS records privately; do not print them or change DNS.
             private_write(args.out, json.dumps(client.call("GET", "/senders/domains/" + quote(args.domain, safe="")), indent=2))
             result = {"domain_configuration": "Privat gespeichert; keine DNS-Änderung"}
+        elif args.operation in ("import-preview", "import") and actions:
+            from transfer import run
+            result = run(args.operation)
+        elif args.operation == "import-preview":
+            from import_contacts import preflight
+            result = preflight(client, read_private(args.prepared))
         elif args.operation == "import":
             result = import_contacts(client, read_private(args.prepared), read_private(args.review))
         else:
