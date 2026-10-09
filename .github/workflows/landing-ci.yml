@@ -26,7 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: landing/package-lock.json
       - run: npm ci --ignore-scripts
-      - run: npx playwright install --with-deps chromium
+      - run: node node_modules/playwright/cli.js install --with-deps chromium
       - run: npm test
       - run: npm run test:browser
       - run: npm run build
