@@ -3,6 +3,8 @@ import json
 import os
 import urllib.error
 import urllib.request
+from client import Client, audit
+from prepare import Blocked
 
 ENDPOINT = "https://api.brevo.com/v3/account"
 BRANCH = "refs/heads/fix/brevo-audit-diagnostics"
@@ -16,6 +18,13 @@ SAFE_MESSAGES = (
     "Access denied", "Forbidden", "IP is not authorized", "Your account is not activated",
     "Your account is not validated", "Account under validation", "Invalid authentication",
     "Authentication failed", "Not found", "Invalid api-key", "Unauthorized: key not found",
+    "You do not have access to this feature", "You don't have access to this feature",
+    "You do not have permission to access this endpoint", "Permission denied to access this resource",
+    "This endpoint is not allowed for your account", "This endpoint is not available for your account",
+    "You cannot access this feature on your current plan", "This feature is not available on your plan",
+    "This endpoint is only accessible to master accounts", "This API is only accessible to master accounts",
+    "This endpoint is only available to enterprise accounts", "This feature is not enabled for your account",
+    "You do not have access to this functionality", "Access to this endpoint is forbidden",
 )
 
 
@@ -52,6 +61,59 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def audit_stage(path):
+    clean = path.split("?", 1)[0]
+    allowed = {"/account", "/senders", "/senders/domains", "/contacts/segments",
+               "/contacts/attributes", "/contacts", "/contacts/lists"}
+    if clean in allowed:
+        return clean
+    if clean.startswith("/senders/domains/"):
+        return "/senders/domains/{domain}"
+    raise Blocked("Endpoint außerhalb des reinen Audits.")
+
+
+class ReadOnlyAudit(Client):
+    def __init__(self, key, opener=None):
+        self._key = key
+        self.mode = "audit"
+        self.transport = opener or urllib.request.build_opener(NoRedirect())
+        self.stages = []
+        self.error = None
+
+    def call(self, method, path, body=None, missing=False):
+        stage = audit_stage(path)
+        if method != "GET" or body is not None:
+            raise Blocked("Nur lesende Audit-Aufrufe sind erlaubt.")
+        request = urllib.request.Request("https://api.brevo.com/v3" + path, method="GET",
+            headers={"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json"})
+        try:
+            with self.transport.open(request, timeout=30) as response:
+                self.stages.append({"endpoint": stage, "http_status": response.status})
+                # Account/contact/sender data are consumed by the existing aggregate audit only.
+                raw = response.read()
+                return json.loads(raw) if raw else {}
+        except urllib.error.HTTPError as exc:
+            self.stages.append({"endpoint": stage, "http_status": exc.code})
+            raw = exc.read(16385)
+            self.error = {"endpoint": stage, "http_status": exc.code,
+                          **(safe_error(raw, self._key) if len(raw) <= 16384 else {
+                              "error_code": None, "error_message": None, "response_kind": "too_large"})}
+            raise Blocked("Audit-Abruf abgelehnt.") from None
+
+
+def diagnose_audit(key, opener=None):
+    result = {"operation": "audit", "scope": "existing read-only audit", "auth_header": "api-key",
+              **secret_status(key)}
+    if not key:
+        return {**result, "stages": [], "audit_complete": False}
+    client = ReadOnlyAudit(key, opener)
+    try:
+        summary = audit(client)
+    except Exception:
+        return {**result, "stages": client.stages, "audit_complete": False, "error": client.error}
+    return {**result, "stages": client.stages, "audit_complete": True, "summary": summary}
+
+
 def diagnose(key, opener=None):
     result = {"operation": "audit", "scope": "GET /v3/account", "auth_header": "api-key",
               **secret_status(key)}
@@ -82,9 +144,9 @@ def main():
             and os.environ.get("BREVO_OPERATION") == "audit"):
         print("Audit-Diagnose gesperrt: falscher Branch, Trigger oder Modus.")
         return 1
-    result = diagnose(os.environ.get("BREVO_API_KEY", ""))
+    result = diagnose_audit(os.environ.get("BREVO_API_KEY", ""))
     print(json.dumps(result, ensure_ascii=True))
-    return 0 if result.get("http_status") == 200 else 1
+    return 0 if result.get("audit_complete") else 1
 
 
 if __name__ == "__main__":

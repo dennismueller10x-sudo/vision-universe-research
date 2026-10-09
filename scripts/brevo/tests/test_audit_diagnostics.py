@@ -8,7 +8,8 @@ from unittest.mock import patch
 import urllib.error
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from audit_diagnostics import ENDPOINT, diagnose, safe_error, secret_status, main
+from audit_diagnostics import ENDPOINT, diagnose, diagnose_audit, safe_error, secret_status, main, ReadOnlyAudit
+from prepare import Blocked
 
 
 class AuditDiagnostics(unittest.TestCase):
@@ -56,7 +57,7 @@ class AuditDiagnostics(unittest.TestCase):
         self.assertFalse(diagnose("", FailIfCalled())["request_attempted"])
         with patch.dict("os.environ", {"GITHUB_ACTIONS":"true", "GITHUB_EVENT_NAME":"workflow_dispatch",
                     "GITHUB_REF":"refs/heads/fix/brevo-audit-diagnostics", "BREVO_OPERATION":"setup"}), \
-                patch("audit_diagnostics.diagnose", side_effect=AssertionError("No request allowed")), \
+                patch("audit_diagnostics.diagnose_audit", side_effect=AssertionError("No request allowed")), \
                 patch("sys.stdout", new_callable=io.StringIO):
             self.assertEqual(main(), 1)
 
@@ -69,3 +70,32 @@ class AuditDiagnostics(unittest.TestCase):
         class Fake:
             def open(self, *args, **kwargs):return Response()
         self.assertEqual(diagnose("xkeysib-synthetic-only", Fake())["http_status"], 200)
+
+    def test_later_endpoint_failure_does_not_blame_successful_account(self):
+        class Response(io.BytesIO):
+            status = 200
+            def __enter__(self):return self
+            def __exit__(self, *args):self.close()
+        class Fake:
+            calls = []
+            def open(self, request, timeout):
+                self.calls.append(request)
+                if request.full_url == ENDPOINT:
+                    return Response(b'{"email":"person@example.invalid"}')
+                raise urllib.error.HTTPError(request.full_url, 403, "ignored", {},
+                    io.BytesIO(b'{"code":"permission_denied","message":"Permission denied"}'))
+        result = diagnose_audit("xkeysib-synthetic-only", Fake())
+        self.assertEqual(result["stages"], [{"endpoint":"/account","http_status":200},
+                                           {"endpoint":"/senders","http_status":403}])
+        self.assertEqual(result["error"]["endpoint"], "/senders")
+        self.assertNotIn("person@example.invalid", json.dumps(result))
+        self.assertFalse(result["audit_complete"])
+
+    def test_diagnostic_transport_blocks_mutations_and_contact_lookups(self):
+        class FailIfCalled:
+            def open(self, *args, **kwargs):raise AssertionError("No request allowed")
+        client = ReadOnlyAudit("synthetic-only", FailIfCalled())
+        for method, path in (("POST","/contacts/lists"),("PUT","/contacts"),
+                             ("GET","/contacts/person%40example.invalid"),
+                             ("POST","/smtp/email"),("POST","/emailCampaigns/1/sendTest")):
+            with self.assertRaises(Blocked):client.call(method,path)
