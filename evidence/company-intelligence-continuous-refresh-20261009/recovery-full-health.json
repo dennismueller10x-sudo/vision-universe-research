@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "runId": "37987633999",
+  "startedAt": "2026-10-09T20:33:51.758Z",
+  "status": "SUCCESS",
+  "published": true,
+  "retainedLastGood": false,
+  "verification": false,
+  "sourcePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "cohortStocks": 46,
+  "cohortIssuers": 45,
+  "privateOperationalRowsIncluded": false,
+  "restoredGeneration": "07cf7fbab640023fff9d2739",
+  "asOf": "2026-10-09T20:34:20Z",
+  "consumerGeneration": "b294efcf1cb0ff275a3d5481",
+  "eventsAdded": 0,
+  "financialFactAttempts": 0,
+  "financialFactOutcomes": {
+    "NO_NEW_FILING": 45
+  },
+  "financialUpdates": 0,
+  "health": {
+    "lastAttempt": "2026-10-09T20:34:20Z",
+    "lastFinancialAttempt": "2026-10-09T20:34:20Z",
+    "lastSuccessfulEventRefresh": "2026-10-09T15:47:18Z",
+    "lastSuccessfulFinancialProjection": "2026-10-09T20:34:20Z",
+    "lastSuccessfulMaterialRefresh": "2026-10-09T15:47:18Z",
+    "lastSuccessfulNewsRefresh": "2026-10-09T20:34:20Z",
+    "lastSuccessfulRefresh": "2026-10-09T20:34:20Z",
+    "lastSuccessfulSecRefresh": "2026-10-09T20:34:20Z"
+  },
+  "httpStats": {
+    "bytesDownloaded": 1410787,
+    "cacheHits": 28,
+    "memoHits": 0,
+    "notModified": 14,
+    "retries": 0
+  },
+  "newsAdded": 0,
+  "privateCompanies": 5120,
+  "publicRequests": 30,
+  "runtimeSeconds": 117.982,
+  "secFailures": 0,
+  "secIssuersChecked": 45,
+  "secRequests": 45,
+  "secSuccess": 45,
+  "sourceGeneration": "f93b34d8640b84b195590c51",
+  "sourceLaneSuccess": {
+    "IR_FEED": 28
+  },
+  "sourceOutcomes": {
+    "NO_CHANGE": 16,
+    "SUCCESS": 12,
+    "TEMPORARY_FAILURE": 2
+  },
+  "sourcesChecked": 30,
+  "sourcesDeferredByBudget": 0,
+  "sourcesEligible": 105,
+  "unsupportedInactiveSources": 9,
+  "updatedIssuers": 0,
+  "consumerContracts": {
+    "status": "PASS",
+    "listings": 46,
+    "issuers": 45
+  },
+  "consumerChecks": {
+    "status": "PASS",
+    "profiles": 45,
+    "news": 314,
+    "newsIssuers": 42,
+    "expiredNews": 0
+  },
+  "privatePreservation": {
+    "status": "PRESERVED",
+    "sha256": "ced43907fcfb605fbc3cc0b665116b6a25f200cf2878736c89c45968d2bd2274",
+    "bytes": 31144806,
+    "operations": 7
+  },
+  "freshRestoreVerified": true,
+  "newPrivateGeneration": "f93b34d8640b84b195590c51",
+  "candidateQA": {
+    "status": "PASS",
+    "mode": "REAL_UI_ROUTED_CANDIDATE",
+    "sourceCommit": "9b180aa5b35ad68ee8e7d492b2796a66b453902f",
+    "generation": "b294efcf1cb0ff275a3d5481",
+    "verifiedAssets": 86,
+    "protectedAccess": true,
+    "cohortStocks": 46,
+    "cohortIssuers": 45,
+    "cases": [
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 390,
+        "status": "PASS",
+        "news": 11,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 1440,
+        "status": "PASS",
+        "news": 11,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 390,
+        "status": "PASS",
+        "news": 5,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 1440,
+        "status": "PASS",
+        "news": 5,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 390,
+        "status": "PASS",
+        "news": 0,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 1440,
+        "status": "PASS",
+        "news": 0,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 390,
+        "status": "PASS",
+        "news": 2,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 1440,
+        "status": "PASS",
+        "news": 2,
+        "generation": "b294efcf1cb0ff275a3d5481"
+      }
+    ]
+  },
+  "publication": {
+    "generation": "b294efcf1cb0ff275a3d5481",
+    "status": "PUBLISHED",
+    "uploadedObjects": 86,
+    "uploadedBytes": 2074680,
+    "unchangedObjects": 0
+  },
+  "failureStage": null,
+  "lastSuccessfulProductionPublication": "2026-10-09T20:47:37.058Z",
+  "refreshSLO": "HEALTHY",
+  "publicationSLO": "HEALTHY",
+  "finishedAt": "2026-10-09T20:40:22.197Z",
+  "durationSeconds": 390,
+  "productionVerified": true
+}
