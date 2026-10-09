@@ -64,6 +64,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  const state=join(root,'state'),consumer=join(root,'consumer'),old=join(root,'previous-consumer'),evidence=join(root,'engine-evidence.json');
  let stage='RESTORE';
  try{
+  if(!refreshConfig.enabled)throw Error('REFRESH_DISABLED_BY_APPROVED_CONFIG');
   if(!verification&&(process.env.GITHUB_REF!=='refs/heads/main'||process.env.GITHUB_REPOSITORY!=='dennismueller10x-sudo/vision-universe-research'))throw Error('PRODUCTION_MAIN_ONLY');
   const pointerKey=privatePrefix(namespace)+'index.json',initial=await driver.get(pointerKey); const good=await goodState(driver,consumerNamespace);
   const snapshot=join(root,'restore.tar.gz');
@@ -108,7 +109,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const health={...engine.health,lastSuccessfulConsumerBuild:new Date().toISOString(),lastSuccessfulConsumerCommit:new Date().toISOString()};
   stage='GOOD_POINTER';
   await commitGood(driver,{namespace:consumerNamespace,payloadNamespace:result.payloadNamespace,manifest:result.manifest,health,inventory,expectedGood:good});
-  report.published=true;report.retainedLastGood=false;report.publication={generation:result.generation,status:result.status};report.status='SUCCESS';report.failureStage=null;
+  report.published=true;report.retainedLastGood=false;report.publication={generation:result.generation,status:result.status,uploadedObjects:result.uploadedObjects,uploadedBytes:result.uploadedBytes,unchangedObjects:result.unchangedObjects};report.status='SUCCESS';report.failureStage=null;
  }catch(error){report.status='PIPELINE_FAILURE';report.failureStage=stage;report.failureCode=/^[A-Z0-9_:-]+$/.test(error.message)?error.message:'REFRESH_STAGE_FAILED';}
  const observed=await driver.get(prefixFor(consumerNamespace)+'observed.json').catch(()=>null);
  report.lastSuccessfulProductionPublication=observed?JSON.parse(observed).lastSuccessfulProductionPublication:null;
@@ -121,6 +122,20 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=createS3DriverFromEnv();
  try{
   if(args[0]==='rollback')console.log(JSON.stringify(await rollbackGood(driver)));
+  else if(args[0]==='health'){
+   const good=await goodState(driver),raw=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
+   const observed=raw?JSON.parse(raw):{};
+   const status={schema:1,checkedAt:new Date().toISOString(),generation:good?.generation||null,
+    lastSuccessfulPrivateRefresh:good?.health.lastSuccessfulRefresh||null,
+    lastSuccessfulConsumerBuild:good?.health.lastSuccessfulConsumerBuild||null,
+    lastSuccessfulProductionPublication:observed.lastSuccessfulProductionPublication||null};
+   status.refreshSLO=freshness(status.lastSuccessfulPrivateRefresh);status.buildSLO=freshness(status.lastSuccessfulConsumerBuild);status.publicationSLO=freshness(status.lastSuccessfulProductionPublication);
+   status.status=[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('CRITICAL')?'CRITICAL':[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('WARNING')?'WARNING':'HEALTHY';
+   if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));
+   if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,JSON.stringify(status,null,2)+'\n');
+   if(status.status==='CRITICAL')process.exitCode=1;
+   if(status.status==='WARNING')console.log('::warning::Company Intelligence successful refresh/publication older than eight hours');
+  }
   else if(args[0]==='observe'){
    const origin='https://research.visionuniverse.de',d=await(await fetch(origin+'/company-intelligence-delivery.json?observe='+Date.now())).json();
    const good=await goodState(driver);if(!good||d.generation!==good.generation)throw Error('OBSERVED_PRODUCTION_GENERATION_MISMATCH');
