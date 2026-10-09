@@ -84,7 +84,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
         prior_events=store.db.execute('SELECT count(*) FROM events').fetchone()[0]
         http=http or CheckedHTTP(state/'http',budget=config['publicRequestBudget'],max_seconds=config['publicMaxSeconds'])
-        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); checked=0; deferred=0; updated=set()
+        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set()
         all_sources=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         sources=[s for s in all_sources if s.get('companyId') in selected]
         eligible=[s for s in sources if s.get('active') and first_party(s,s['companyId']) and not publisher(s['url'])]
@@ -108,6 +108,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             outcome=source_result(current,now,unchanged=http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
             checked+=1; outcomes[outcome]+=1
             if outcome in ('SUCCESS','NO_CHANGE'):
+                lane_success[s['type']]+=1
                 store.set_state('refreshSource:'+s['sourceId'],{'status':outcome,'lastSuccess':now,'bodySha256':http.last_body_sha,'health':'healthy'})
             else:
                 store.set_state('refreshSource:'+s['sourceId'],{**old,'status':outcome,'lastFailure':now,'health':'disabled_policy' if outcome=='POLICY_REJECTED' else 'temporarily_failed'})
@@ -142,9 +143,13 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 store.set_state('profileRefreshPending:'+cid,new_profile); store.set_state('companyProfile:'+cid,old_profile)
         successes=outcomes['SUCCESS']+outcomes['NO_CHANGE']+sec_success
         health={**prior,'lastAttempt':now,'lastSuccessfulRefresh':now if successes else prior.get('lastSuccessfulRefresh'),
-                'lastSuccessfulNewsRefresh':now if outcomes['SUCCESS']+outcomes['NO_CHANGE'] else prior.get('lastSuccessfulNewsRefresh'),
+                'lastSuccessfulNewsRefresh':now if lane_success['IR_FEED'] else prior.get('lastSuccessfulNewsRefresh'),
                 'lastSuccessfulSecRefresh':now if sec_success else prior.get('lastSuccessfulSecRefresh')}
-        if financial: health['lastFinancialAttempt']=now
+        if lane_success['IR_EVENTS']: health['lastSuccessfulEventRefresh']=now
+        if lane_success['IR_MATERIALS']: health['lastSuccessfulMaterialRefresh']=now
+        if financial:
+            health['lastFinancialAttempt']=now
+            health['lastSuccessfulFinancialProjection']=now
         store.set_state('continuousRefresh',health)
         if outside_proof(store.db,cids)!=before: raise ValueError('NON_COHORT_PRIVATE_CONTENT_CHANGED')
         exported=store.export(companies,state/'public/company-intelligence/data',now)
@@ -162,7 +167,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
         report={'schema':1,'status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
                 'consumerGeneration':prepared['generation'],'privateCompanies':exported['exportedCompanies'],'sourcesEligible':len(eligible),'sourcesChecked':checked,
-                'sourceOutcomes':dict(outcomes),'sourcesDeferredByBudget':deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
+                'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
                 'publicRequests':http.requests,'secRequests':getattr(sec,'_sec_client',None).stats['requests'] if getattr(sec,'_sec_client',None) else 0,

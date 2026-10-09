@@ -108,9 +108,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   else if(args[0]==='observe'){
    const origin='https://research.visionuniverse.de',d=await(await fetch(origin+'/company-intelligence-delivery.json?observe='+Date.now())).json();
    const good=await goodState(driver);if(!good||d.generation!==good.generation)throw Error('OBSERVED_PRODUCTION_GENERATION_MISMATCH');
-   const bytes=Buffer.from(JSON.stringify({schema:1,generation:d.generation,lastSuccessfulProductionPublication:new Date().toISOString()}));
+   const observation={schema:1,generation:d.generation,lastSuccessfulProductionPublication:new Date().toISOString()};
+   const bytes=Buffer.from(JSON.stringify(observation));
    const key=prefixFor(refreshConfig.consumerNamespace)+'observed.json';await driver.put(key,bytes);
    if(!Buffer.from(await driver.get(key)).equals(bytes))throw Error('OBSERVABILITY_READBACK_FAILED');
+   if(args.includes('--health')){
+    const p=arg('--health'),health=json(p);Object.assign(health,{lastSuccessfulProductionPublication:observation.lastSuccessfulProductionPublication,publicationSLO:'HEALTHY',productionVerified:true});save(p,health);
+   }
    console.log(JSON.stringify({status:'PASS',generation:d.generation}));
   }else{
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
