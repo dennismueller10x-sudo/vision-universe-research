@@ -216,7 +216,26 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          aktuell: TTM_WINDOW_NOT_CURRENT (e.l.f. Beauty 2019, Royal Gold 2022);
 #          (g) ein Jahresende nach dem Einreichungsdatum ist kein Geschaeftsjahr
 #          (Nucor 10-K 2011: Annahme fuer 2027).
-NORMALIZATION_LOGIC_VERSION = "1.20.0"
+#
+# 1.21.0 — TTM-Holdout v3 (FAIL gegen 1.20.0): (1) F-TTM-4: ein Jahresbericht
+#          traegt das Geschaeftsjahr VOR einem Wechsel des Jahresendes auf dem
+#          alten Zyklus (8point3 2013-12-30..2014-12-28 vor dem Uebergangs-
+#          zeitraum 2014-12-29..2015-11-30). Die Zyklusregel (Deere, Hovnanian)
+#          verwarf es, der Kalender schrieb das neue Jahresende rueckwaerts fort
+#          und das Uebergangsjahr bekam Quartalsslots. Jetzt folgt der Kalender
+#          der Periodenkette des Berichts rueckwaerts: ein 12-Monats-Zeitraum
+#          direkt (-3..+8 Tage) vor einem anerkannten Geschaeftsjahr ist dessen
+#          Vorjahr, ein kuerzerer Zeitraum auf dem Zyklus des Berichts direkt
+#          davor, dem selbst ein 12-Monats-Zeitraum vorausgeht, ist ein
+#          Uebergangszeitraum (Diamond S 2018-04-01..12-31; Multi-Fineline
+#          10-KT 2014-10-01..12-31). Ein Zeitraum, der ein anerkanntes
+#          Geschaeftsjahr ueberlappt, zaehlt nie. (2) F-TTM-5: ein Jahresbericht
+#          ist nach seinem eigenen Jahresende eingereicht; ein 12-Monats-
+#          Zeitraum, der mehr als ein Jahr vor der Einreichung endete, ist ein
+#          Vergleichsjahr und kein Anker der Jahreskennung (FairPoint FY2011,
+#          geteilt in Predecessor/Successor: 2010-12-31 wurde "FY2011", jede
+#          spaetere Kennung +1).
+NORMALIZATION_LOGIC_VERSION = "1.21.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -248,7 +267,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "0215a4539795d5212dc32632c747f536b86e86be7dd3d96ae81f6c96bc09be59"
+    "19700277c0fa8dc5d49c37a225429df2586f1d3f60b9fcde01908e768a045a0e"
 )
 
 

@@ -54,6 +54,17 @@ QUARTER_LENGTH_DAYS = 91.31
 # are 364/371 days, calendar-anniversary years 365/366. Outside: transition year.
 TRANSITION_YEAR_DAYS = (350, 380)
 
+# 1.21.0 (F-TTM-4): a fiscal period of an annual report follows the previous one
+# within the tolerance of a TTM chain (52/53-week years: Saturday to Monday).
+FISCAL_CHAIN_OVERLAP_DAYS = 3
+FISCAL_CHAIN_GAP_DAYS = 8
+# A transition period after a change of year end is at least one month long and
+# shorter than a fiscal year (a longer bridge is a twelve-month-plus "year").
+TRANSITION_PERIOD_DAYS = (28, 330)
+# 1.21.0 (F-TTM-5): an annual report's own year ended less than a year before it
+# was filed; an older twelve-month period in it is a comparative.
+OWN_YEAR_MAX_FILING_LAG_DAYS = 366
+
 def _base_form(form):
     """'10-K/A' -> '10-K'; None -> ''."""
     return str(form or "").split("/")[0].strip().upper()
@@ -150,14 +161,15 @@ class FiscalCalendar:
     @classmethod
     def from_raw_facts(cls, cik, raw_facts, fiscal_year_end_hint=None):
         annual_ends = set()
-        # accession -> {"ends": set, "fy": int} for 10-K/20-F filings only
-        anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})
+        # accession -> {"ends": set, "fy": int, "filed": date} for 10-K/20-F filings only
+        anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None, "filed": None})
         # accession -> every twelve-month end the annual report carries
         ends_by_accession = defaultdict(Counter)
+        # accession -> every reporting period (start, end) of the annual report, any length (1.21.0)
+        periods_by_accession = defaultdict(set)
 
         for fact in raw_facts:
-            kind = classify_duration(fact.start, fact.end)
-            if kind != "FY":
+            if fact.start is None:
                 continue
             # 1.20.0: a fiscal year cannot end after the report that carries it.
             # Nucor's 10-K of 2011-02-28 tags an assumption for 2027
@@ -173,13 +185,20 @@ class FiscalCalendar:
             # relabelled Q2 as Q1 and overwrote FY2025 with a June figure.
             if _base_form(fact.form) not in ANNUAL_FORMS:
                 continue
-            end = parse_date(fact.end)
+            start, end = parse_date(fact.start), parse_date(fact.end)
+            if start is None or end is None:
+                continue
+            periods_by_accession[fact.accession].add((start, end))
+            if classify_duration(fact.start, fact.end) != "FY":
+                continue
             ends_by_accession[fact.accession][end] += 1
             if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
                 bucket = anchors_by_accession[fact.accession]
                 bucket["ends"].add(end)
                 if fact.filing_fy is not None:
                     bucket["fy"] = int(fact.filing_fy)
+                if fact.filed:
+                    bucket["filed"] = parse_date(fact.filed)
 
         # A twelve-month figure in an annual report is a fiscal year only if it ends
         # on that report's own fiscal-year cycle (month/day within a fortnight of
@@ -193,9 +212,18 @@ class FiscalCalendar:
         # calendar-year tax rate reconciliation to 2021-12-31 in its FY2021 10-K;
         # max() made December the year end and labelled the year to 2025-10-31
         # FY2028 (red team, HIGH-3). Ties go to the later date, as before.
-        for ends in ends_by_accession.values():
+        for accession, ends in ends_by_accession.items():
             own_end = max(ends, key=lambda end: (ends[end], end))
-            annual_ends.update(end for end in ends if _same_annual_cycle(end, own_end))
+            accepted = {end for end in ends if _same_annual_cycle(end, own_end)}
+            annual_ends.update(accepted)
+            # 1.21.0 (F-TTM-4): the cycle rule cannot tell a disclosure on another
+            # cycle from the fiscal year BEFORE a change of year end, which the
+            # report also carries on the old cycle. 8point3's 10-K for the year to
+            # 2016-11-30 shows 2013-12-30..2014-12-28 right before its transition
+            # period 2014-12-29..2015-11-30; dropped, the calendar projected the
+            # November cycle backwards and the 336-day transition year looked like
+            # a normal one (TTM holdout v3: 1.70 through the transition period).
+            annual_ends.update(cls._prior_fiscal_year_ends(periods_by_accession[accession], accepted, own_end))
         anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if annual_ends else ANCHOR_SOURCE_NONE
         if not annual_ends:
             # No full-year duration anywhere: a first fiscal year shorter than
@@ -233,7 +261,18 @@ class FiscalCalendar:
         for bucket in anchors_by_accession.values():
             if bucket["fy"] is None or not bucket["ends"]:
                 continue
-            anchors[max(bucket["ends"])] = bucket["fy"]
+            own = max(bucket["ends"])
+            # 1.21.0 (F-TTM-5): a report is filed after its own year end; a twelve-
+            # month period that ended more than a year before the filing is a
+            # comparative. FairPoint split FY2011 at its emergence (2011-01-01..
+            # 01-24 / 01-25..12-31): the FY2011 10-K (filed 2012-03-09, fy=2011)
+            # carries no twelve-month 2011, only the comparative 2010. Read as the
+            # report's own year it made 2010-12-31 "FY2011", every later 10-K's own
+            # label was refused as a repeat and each year moved up by one (the
+            # 2012 annual EPS stood under FY2013).
+            if bucket.get("filed") and (bucket["filed"] - own).days > OWN_YEAR_MAX_FILING_LAG_DAYS:
+                continue
+            anchors[own] = bucket["fy"]
 
         offsets = Counter(fy - end.year for end, fy in anchors.items())
         if offsets:
@@ -271,6 +310,62 @@ class FiscalCalendar:
                 cik, end, claimed, used,
             )
         return calendar
+
+    @staticmethod
+    def _prior_fiscal_year_ends(periods, accepted, own_end):
+        """Year ends of the fiscal periods an annual report places right before its fiscal years.
+
+        Walks the report's own chain of periods backwards from every twelve-month
+        period that ends on an accepted year end:
+          - a twelve-month period ending right before (-3..+8 days) that year begins
+            is the previous fiscal year, also on another cycle (the year before a
+            change of year end: 8point3 2014-12-28);
+          - a shorter period ending on the report's own cycle right before it, which
+            itself follows a twelve-month period of the report, is a transition
+            period; both ends are fiscal year ends (Diamond S: the year to
+            2018-03-31, the transition period to 2018-12-31).
+        A period that overlaps an accepted fiscal year never qualifies: Deere's
+        calendar-year tax rate inside an October year, Hovnanian's calendar year to
+        December inside an October year, and every quarter of an accepted year.
+        """
+        def is_year(period):
+            return classify_duration(period[0].isoformat(), period[1].isoformat()) == "FY"
+
+        years = {p for p in periods if p[1] in accepted and is_year(p)}
+
+        def adjacent(earlier, later):
+            gap = (later[0] - earlier[1]).days - 1
+            return -FISCAL_CHAIN_OVERLAP_DAYS <= gap <= FISCAL_CHAIN_GAP_DAYS
+
+        def overlaps_a_year(period):
+            margin = timedelta(days=FISCAL_CHAIN_OVERLAP_DAYS)
+            return any(period[0] < year[1] - margin and period[1] > year[0] + margin for year in years)
+
+        found = set()
+        frontier = sorted(years, key=lambda p: p[1], reverse=True)
+        while frontier:
+            year = frontier.pop(0)
+            for period in sorted(periods, key=lambda p: p[1], reverse=True):
+                if period in years or not adjacent(period, year) or overlaps_a_year(period):
+                    continue
+                if is_year(period):
+                    found.add(period[1])
+                    years.add(period)
+                    frontier.append(period)
+                    break
+                length = (period[1] - period[0]).days + 1
+                if not TRANSITION_PERIOD_DAYS[0] <= length < TRANSITION_PERIOD_DAYS[1] \
+                        or not _same_annual_cycle(period[1], own_end):
+                    continue
+                before = [p for p in periods if p not in years and is_year(p) and adjacent(p, period)
+                          and not overlaps_a_year(p)]
+                if before:
+                    previous_year = max(before, key=lambda p: p[1])
+                    found.update({period[1], previous_year[1]})
+                    years.update({period, previous_year})
+                    frontier.append(previous_year)
+                    break
+        return found
 
     @staticmethod
     def _year_ends_from_annual_filings(raw_facts):
@@ -511,9 +606,11 @@ class FiscalCalendar:
         1.20.0 (F-TTM-2): no clamping. A period whose position is not one of the
         four quarters of a normal fiscal year - in particular every period of a
         transition year after a change of fiscal year end - has no quarter slot
-        (NOT_QUARTER_ELIGIBLE). Clamping put Multi-Fineline's Oct-Dec 2015 (the
-        fifth quarter of a 15-month FY2015) on the slot of Jul-Sep 2015, and a
-        TTM asked for 2015-12-31 ended a quarter early."""
+        (NOT_QUARTER_ELIGIBLE). Clamping put Multi-Fineline's Oct-Dec 2015 on
+        the slot of Jul-Sep 2015 (the calendar, still without the end of the
+        10-KT's transition period 2014-10-01..2014-12-31, saw 2014-09-30 to
+        2015-12-31 as one year; 1.21.0 learns that end), and a TTM asked for
+        2015-12-31 ended a quarter early."""
         period_end = parse_date(period_end)
         previous, fy_end = self._boundaries_covering(period_end)
         if fy_end is None or previous is None:

@@ -43,9 +43,10 @@ def days(a, b):
 
 
 class FiscalYearChangeTests(unittest.TestCase):
-    """F-TTM-2: Multi-Fineline wechselte 2015 das Geschaeftsjahresende von September auf Dezember
-    (FY2015 = 2014-10-01..2015-12-31, fuenf Quartale). 1.19.0 legte Okt-Dez 2015 auf denselben Slot wie
-    Jul-Sep 2015 und lieferte fuer das Ende 2015-12-31 das Fenster bis 2015-09-30 (2,02 statt 1,78)."""
+    """F-TTM-2: Multi-Fineline wechselte das Geschaeftsjahresende von September auf Dezember (10-KT fuer den
+    Uebergangszeitraum 2014-10-01..2014-12-31). Ohne dessen Ende sah der Kalender 2014-09-30..2015-12-31 als ein
+    Jahr mit fuenf Quartalen; 1.19.0 legte Okt-Dez 2015 auf denselben Slot wie Jul-Sep 2015 und lieferte fuer das
+    Ende 2015-12-31 das Fenster bis 2015-09-30 (2,02 statt 1,78). 1.21.0 (F-TTM-4) kennt den Uebergangszeitraum."""
 
     def test_no_window_ends_a_quarter_early(self):
         calendar, resolver = build("MFLX")
@@ -81,22 +82,33 @@ class FiscalYearChangeTests(unittest.TestCase):
                                      f"{name}: TTM {year}Q{index} endet {end}")
 
     def test_transition_year_quarters_are_not_quarter_eligible(self):
-        calendar, _ = build("MFLX")
-        # 2014-09-30 -> 2015-12-31 sind 457 Tage: ein Uebergangsjahr, keine vier Quartale
-        self.assertIsNone(calendar.quarter_index("2015-12-31"))
-        self.assertIsNone(calendar.quarter_index("2015-03-31"))
+        calendar, resolver = build("MFLX")
+        # SEC: 10-KT 0001564590-15-000668 (2015-02-13, reportDate 2014-12-31) - Uebergangszeitraum 2014-10-01..
+        # 2014-12-31; FY2015 ist das Kalenderjahr 2015 (10-K 0001564590-16-012666). Bis 1.20.0 fehlte das Ende des
+        # Uebergangszeitraums im Kalender, 2014-09-30 -> 2015-12-31 sah wie ein 457-Tage-Jahr aus (diese Annahme
+        # stand hier bis 1.21.0; korrigiert nach SEC-Primaerquelle, F-TTM-4).
+        self.assertIsNone(calendar.quarter_index("2014-12-31"))
         # das Jahr davor und danach sind normale Jahre
         self.assertEqual(calendar.quarter_index("2014-06-30"), 3)
+        self.assertEqual([calendar.quarter_index(e) for e in ("2015-03-31", "2015-06-30", "2015-09-30", "2015-12-31")],
+                         [1, 2, 3, 4])
         self.assertEqual(calendar.quarter_index("2016-06-30"), 2)
+        # Holdout-v2-Wahrheit fuer das Fenster bis 2015-12-31: 0,36 + 0,47 + 0,54 + 0,41 = 1,78
+        fact = ttm_for_end(calendar, resolver, "2015-12-31", "2016-05-05")
+        self.assertTrue(fact is not None and fact.available, fact and fact.reason)
+        self.assertAlmostEqual(fact.value, 1.78, places=6)
+        self.assertEqual(str(fact.period_start)[:10], "2015-01-01")
 
 
 class TransitionYearBalanceSheetTests(unittest.TestCase):
     def test_year_end_balance_sheet_of_a_transition_year_stays_fy(self):
-        """Ein Uebergangsjahr hat keine Quartalsslots, aber eine Jahresbilanz (Multi-Fineline 2015-12-31)."""
+        """Ein Uebergangsjahr hat keine Quartalsslots, aber eine Jahresbilanz (Multi-Fineline: Uebergangszeitraum
+        bis 2014-12-31 laut 10-KT; das folgende Kalenderjahr 2015 behaelt seine Jahresbilanz)."""
         calendar, resolver = build("MFLX")
-        fact = resolver.annual("total_assets", calendar.fiscal_year_for("2015-12-31"), "2016-06-01")
-        self.assertTrue(fact.available, fact.reason)
-        self.assertEqual(str(fact.period_end)[:10], "2015-12-31")
+        for end, as_of in (("2014-12-31", "2015-06-01"), ("2015-12-31", "2016-06-01")):
+            fact = resolver.annual("total_assets", calendar.fiscal_year_for(end), as_of)
+            self.assertTrue(fact.available, (end, fact.reason))
+            self.assertEqual(str(fact.period_end)[:10], end)
 
 
 class SameDayConflictTests(unittest.TestCase):
