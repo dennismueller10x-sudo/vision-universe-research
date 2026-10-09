@@ -1,3 +1,4 @@
+import {productionObservation} from './production-observation.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
@@ -144,10 +145,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   else if(args[0]==='health'){
    const good=await goodState(driver),raw=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
    const observed=raw?JSON.parse(raw):{};
+   const production=await productionObservation(good,observed);
    const status={schema:1,checkedAt:new Date().toISOString(),generation:good?.generation||null,
     lastSuccessfulPrivateRefresh:good?.health.lastSuccessfulRefresh||null,
     lastSuccessfulConsumerBuild:good?.health.lastSuccessfulConsumerBuild||null,
-    lastSuccessfulProductionPublication:observed.lastSuccessfulProductionPublication||null};
+    lastSuccessfulProductionPublication:production.state==='VERIFIED'?(observed.lastSuccessfulProductionPublication||null):null,
+    productionState:production.state,servedGeneration:production.servedGeneration};
    status.refreshSLO=freshness(status.lastSuccessfulPrivateRefresh);status.buildSLO=freshness(status.lastSuccessfulConsumerBuild);status.publicationSLO=freshness(status.lastSuccessfulProductionPublication);
    status.status=[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('CRITICAL')?'CRITICAL':[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('WARNING')?'WARNING':'HEALTHY';
    if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));

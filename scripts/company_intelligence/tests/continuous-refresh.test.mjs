@@ -106,3 +106,14 @@ test('OFF canary enables only the approved cohort in intercepted bytes; served g
  const served={URLSearchParams};runInNewContext(off,served);assert.equal(served.VUCompanyIntelligenceRollout.enabled('AAPL'),false);
  assert.throws(()=>candidateRollout(off.replace('"AAPL"','"ZZZZZ"'),'a'.repeat(24)),/CANDIDATE_COHORT_MISMATCH/);
 });
+
+test('historical publication clocks cannot conceal an OFF or mismatched actual generation',async()=>{
+ const {productionObservation}=await import('../production-observation.mjs');
+ const good={generation:'a'.repeat(24)},observed={generation:good.generation};
+ const response=d=>async()=>({ok:true,json:async()=>d});
+ assert.equal((await productionObservation(good,observed,response({generation:good.generation,cohortStocks:46,issuers:45}))).state,'VERIFIED');
+ assert.equal((await productionObservation(good,observed,async()=>({ok:false,status:404}))).state,'UNAVAILABLE');
+ assert.equal((await productionObservation(good,{generation:'b'.repeat(24)},response({generation:good.generation,cohortStocks:46,issuers:45}))).state,'MISMATCH');
+ assert.equal((await productionObservation(good,observed,response({generation:'b'.repeat(24),cohortStocks:46,issuers:45}))).state,'MISMATCH');
+ assert.equal((await productionObservation(good,observed,response({generation:good.generation,cohortStocks:5120,issuers:5120}))).state,'MISMATCH');
+});

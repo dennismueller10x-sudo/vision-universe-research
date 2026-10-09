@@ -411,3 +411,9 @@ not capture enough diagnostics to identify the missing-heading cause conclusivel
 At this incident checkpoint production is OFF. Recovery and subsequent actual
 production verification are still pending; the earlier autonomy YES statement is
 superseded until those pass. No authoritative private state has been replaced.
+
+The independent health lane also checks the actual public delivery generation
+against both GOOD and its accepted observation. OFF/404, changed scope or a
+mismatch is CRITICAL even when an old publication timestamp is recent. The
+historical receipt remains in R2 for diagnosis; it is not counted as a currently
+verified publication. This read-only probe never repairs/enables production.
