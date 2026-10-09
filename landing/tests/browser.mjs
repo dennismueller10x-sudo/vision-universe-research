@@ -62,9 +62,13 @@ try{
   await page.locator('#email').fill('qa@example.com');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
   await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/nicht gesendet/);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');
   await page.locator('#email-address-check').fill('');
-  // Stop navigation temporarily so the loading state can be inspected.
-  await page.route('https://test.sibforms.com/**',async route=>{await new Promise(r=>setTimeout(r,600));const req=route.request();posts.push({method:req.method(),data:req.postData()});await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><title>Nur Test</title><p>Bitte bestätige deine E-Mail-Adresse. TEST, kein Live-Versand.</p></html>'});});
+  // Hold the simulated response until both loading assertions finish. A fixed
+  // delay can expire between assertions on a busy CI runner and navigate away.
+  let releaseSubmission;
+  const submissionReleased=new Promise(resolve=>{releaseSubmission=resolve});
+  await page.route('https://test.sibforms.com/**',async route=>{await submissionReleased;const req=route.request();posts.push({method:req.method(),data:req.postData()});await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><title>Nur Test</title><p>Bitte bestätige deine E-Mail-Adresse. TEST, kein Live-Versand.</p></html>'});});
   await page.locator('button[type=submit]').click({noWaitAfter:true});assert.equal(await page.locator('#newsletter-form').getAttribute('aria-busy'),'true');assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
+  releaseSubmission();
   await page.waitForURL('https://test.sibforms.com/**');assert.equal(posts.length,1);assert.equal(posts[0].method,'POST');const payload=new URLSearchParams(posts[0].data);assert.equal(payload.get('EMAIL'),'qa@example.com');assert.equal(payload.get('OPT_IN'),'1');assert.equal(payload.get('SOURCE'),'Coming-soon-Landingpage');assert.equal(payload.get('email_address_check'),'');
   await page.goBack();assert.equal(await page.locator('button[type=submit]').isDisabled(),false);assert.equal(await page.locator('#newsletter-form').getAttribute('aria-busy'),null);
   await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.match(await page.locator('#signup-status').innerText(),/offline/);assert.equal(posts.length,1);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');await page.context().setOffline(false);

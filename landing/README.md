@@ -4,7 +4,7 @@ Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 üb
 
 ## Vorschau und Abnahme
 
-- [Private Review-Vorschau](https://vision-universe-coming-soon-review.dennis91-mueller.chatgpt.site)
+- [Private Review-Vorschau](https://vision-universe-coming-soon-review.dennis91-mueller.chatgpt.site): Aktualisierung auf die Modulansicht derzeit durch Hosting-Authentifizierungsfehler blockiert; [Status und neue Screenshots](review/README.md).
 - [Desktop-Gegenüberstellung](review/comparison-desktop.png), [iPhone-Gegenüberstellung](review/comparison-iphone.png): links der originale Header/Hero aus dem Repository, rechts Coming soon, jeweils gleicher Viewport.
 - Ganze Landingpage: [Desktop](review/desktop.png), [iPhone](review/iphone.png).
 - [Gemessene Designwerte und Herkunft](review/design-comparison.json), [Layout-/Zugänglichkeitswerte](review/metrics.json), [knappe Abweichungen](review/README.md).

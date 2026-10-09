@@ -22,3 +22,7 @@ Die automatisierte [Computed-Style-Gegenüberstellung](design-comparison.json) p
 ## Ergebnisse
 
 Siehe [metrics.json](metrics.json): 1440 × 900 **1.191 px**, 390 × 844 **1.684 px**; kein horizontaler Überlauf. Zusätzlich 320 px und tatsächliche 200-%-Textvergrößerung geprüft; dann darf die Seite länger werden. Axe: 0 Verstöße pro Viewport. Chromium mit iPhone-Viewport, kein physisches Safari/iPhone-Gerät. Formularvalidierung und POST-Zustände gegen abgefangenen Testanbieter; Brevo-Live-DOI bleibt separat in PR #544.
+
+## Status der privaten Vorschau
+
+Der aktualisierte Build mit Modul-Icons wurde als Version 3 der bestehenden privaten Review-Site gespeichert. Die Veröffentlichung am 09.10.2026 scheitert nach einem 504-Fehler wiederholt mit `Unable to authenticate request`. Eine erfolgreiche Aktualisierung der Online-Vorschau wird deshalb nicht behauptet; die hier verlinkten Screenshots zeigen den getesteten neuen Stand. Nach Behebung des Hosting-Fehlers dieselbe gespeicherte Version erneut veröffentlichen, ohne eine neue Site oder einen weiteren Anbieter anzulegen. IDs und Build-Provenienz sind in PR #543 dokumentiert. GitHub-Pages-Vorbereitung, Research und Brevo bleiben unverändert.
