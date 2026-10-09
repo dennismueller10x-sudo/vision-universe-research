@@ -375,8 +375,7 @@ jobs:
           FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
         run: |
           if [ "$FULL_ACCEPTANCE" != true ]; then
-            mkdir -p "$RUNNER_TEMP/live-fast"
-            node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/live-fast/report.json"
+            node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
             exit 0
           fi
           node scripts/company_intelligence/protected-hydration-qa.mjs
@@ -394,7 +393,7 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           if curl -fsS https://research.visionuniverse.de/company-intelligence-refresh.json >/dev/null; then
-            node scripts/company_intelligence/refresh-run.mjs observe
+            node scripts/company_intelligence/refresh-run.mjs observe --same-generation-only
           fi
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
         if: failure() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true
