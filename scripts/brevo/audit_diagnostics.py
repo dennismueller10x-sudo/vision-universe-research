@@ -1,0 +1,91 @@
+"""One read-only /account audit. Never emit secrets, response bodies or account data."""
+import json
+import os
+import urllib.error
+import urllib.request
+
+ENDPOINT = "https://api.brevo.com/v3/account"
+BRANCH = "refs/heads/fix/brevo-audit-diagnostics"
+SAFE_CODES = frozenset(("permission_denied", "unauthorized", "access_denied", "forbidden",
+                       "invalid_parameter", "missing_parameter", "document_not_found",
+                       "method_not_allowed", "account_under_validation", "ip_not_authorized"))
+# Exact known generic messages only. Unknown text may contain names, addresses or credentials.
+SAFE_MESSAGES = (
+    "Key not found", "API key not found", "API key does not exist", "Invalid API key",
+    "API key is invalid", "Your API key is not valid", "Unauthorized", "Permission denied",
+    "Access denied", "Forbidden", "IP is not authorized", "Your account is not activated",
+    "Your account is not validated", "Account under validation", "Invalid authentication",
+    "Authentication failed", "Not found", "Invalid api-key", "Unauthorized: key not found",
+)
+
+
+def secret_status(key):
+    trimmed = key.strip()
+    return {"secret_present": bool(key),
+            "key_format": "api_v3" if trimmed.startswith("xkeysib-") else (
+                "smtp" if trimmed.startswith("xsmtpsib-") else "unrecognized"),
+            "surrounding_whitespace": key != trimmed,
+            "surrounding_quotes": len(trimmed) > 1 and trimmed[0] == trimmed[-1] and trimmed[0] in "\"'"}
+
+
+def safe_error(raw, key):
+    try:
+        data = json.loads(raw)
+    except (ValueError, UnicodeError):
+        return {"error_code": None, "error_message": None, "response_kind": "non_json"}
+    if not isinstance(data, dict):
+        return {"error_code": None, "error_message": None, "response_kind": "non_object_json"}
+    code, message = data.get("code"), data.get("message")
+    allowed_code = code if isinstance(code, str) and code in SAFE_CODES and code != key else None
+    allowed_message = None
+    if isinstance(message, str) and len(message) <= 256:
+        # Preserve the actual generic Brevo message when it exactly matches the allowlist.
+        normalized = message.strip().casefold()
+        if any(normalized == s.casefold() for s in SAFE_MESSAGES) and (not key or key not in message):
+            allowed_message = message.strip()
+    return {"error_code": allowed_code, "error_message": allowed_message, "response_kind": "json",
+            "message_withheld": allowed_message is None}
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
+def diagnose(key, opener=None):
+    result = {"operation": "audit", "scope": "GET /v3/account", "auth_header": "api-key",
+              **secret_status(key)}
+    if not key:
+        return {**result, "request_attempted": False, "http_status": None}
+    request = urllib.request.Request(ENDPOINT, method="GET",
+        headers={"api-key": key, "Accept": "application/json", "Content-Type": "application/json"})
+    try:
+        transport = opener or urllib.request.build_opener(NoRedirect())
+        with transport.open(request, timeout=30) as response:
+            # Success body contains account PII: never read it or return it.
+            return {**result, "request_attempted": True, "http_status": response.status}
+    except urllib.error.HTTPError as exc:
+        raw = exc.read(16385)
+        error = safe_error(raw, key) if len(raw) <= 16384 else {
+            "error_code": None, "error_message": None, "response_kind": "too_large"}
+        return {**result, "request_attempted": True, "http_status": exc.code, **error}
+    except Exception:
+        return {**result, "request_attempted": True, "http_status": None,
+                "error_code": "local_request_error", "error_message": None}
+
+
+def main():
+    # This temporary job is authorized only for the current targeted audit, not general admin work.
+    if not (os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+            and os.environ.get("GITHUB_REF") == BRANCH
+            and os.environ.get("BREVO_OPERATION") == "audit"):
+        print("Audit-Diagnose gesperrt: falscher Branch, Trigger oder Modus.")
+        return 1
+    result = diagnose(os.environ.get("BREVO_API_KEY", ""))
+    print(json.dumps(result, ensure_ascii=True))
+    return 0 if result.get("http_status") == 200 else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
