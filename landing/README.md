@@ -2,6 +2,10 @@
 
 Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 übernimmt jetzt das tatsächliche Design der Research-Startseite: Original-Header/Logo, Inter, dunkler Hero mit grünem Raster und Glow, identische Schriftgrößen, Buttons, Gerätebühne, Original-Icons und responsive Regeln. Die Geräte zeigen eine zeitlose Modulübersicht mit Überschrift, ohne NVIDIA, Kurse, Charts oder Kennzahlen. Keine Änderung an Research, dessen `CNAME`, Pages-Workflow, API, DNS oder Shopify; kein Merge.
 
+## Aktuelle Hosting-Vorgabe: Cloudflare Pages
+
+Der Owner hat die separate Cloudflare-Pages-Veröffentlichung aus diesem Repository autorisiert, einschließlich der späteren ausschließlichen Shopify-Web-DNS-Umstellung. Research bleibt auf GitHub Pages. [Konfiguration, Audit, genaue Kontoschritte und noch offene Datenschutzfreigabe](deployment/README.md). Die nachfolgenden älteren GitHub-Pages-Zielschritte sind historisch; das zweite Repository wird nicht angelegt.
+
 ## Vorschau und Abnahme
 
 - [Private Review-Vorschau](https://vision-universe-coming-soon-review.dennis91-mueller.chatgpt.site): Aktualisierung auf die Modulansicht derzeit durch Hosting-Authentifizierungsfehler blockiert; [Status und neue Screenshots](review/README.md).

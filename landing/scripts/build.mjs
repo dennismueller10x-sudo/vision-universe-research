@@ -72,6 +72,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const configArg = args.find(a=>a.startsWith('--config='))?.slice(9);
   const outputArg = args.find(a=>a.startsWith('--out='))?.slice(6);
   try {
+    const publicationMode=process.env.LANDING_PUBLICATION_MODE||'preview';
+    if(!['preview','production'].includes(publicationMode))throw new Error('Ungültiger Veröffentlichungsmodus.');
     const hasEnv = ['BREVO_FORM_ACTION','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
     const config = configArg ? JSON.parse(await readFile(resolve(configArg),'utf8')) : hasEnv ? {
       actionUrl: process.env.BREVO_FORM_ACTION || '',
@@ -80,6 +82,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       sourceAttribute: process.env.BREVO_SOURCE_ATTRIBUTE || 'VU_SOURCE',
       privacyHtmlPath: process.env.LANDING_PRIVACY_HTML_PATH || ''
     } : {};
-    console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')})));
+    console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')||publicationMode==='production'})));
   } catch (error) { console.error(error instanceof SyntaxError ? 'Konfiguration ist kein gültiges JSON/keine gültige URL.' : error.message); process.exitCode=1; }
 }
