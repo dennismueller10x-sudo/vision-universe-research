@@ -1,0 +1,52 @@
+name: Marketstack Europe21 private ingestion
+run-name: Marketstack Europe21 ${{ github.event.head_commit.message }}
+on:
+  push:
+    branches: [marketstack-europe21-ingestion]
+    paths: [scripts/marketstack/europe21-live-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-europe21-private-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  ingest:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline reviewed transport and allocation tests
+        run: node --test providers/marketstack/tests/audit.test.mjs providers/marketstack/tests/europe-credits.test.mjs providers/marketstack/tests/europe-ingestion.test.mjs providers/marketstack/tests/europe21-ingestion.test.mjs
+      - name: Verify signed source and complete one-use phase history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/actions-europe21.mjs guard
+      - name: Collect into private ephemeral storage
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/actions-europe21.mjs live
+      - name: Encrypt evidence and failed-run accounting
+        if: always()
+        run: node scripts/marketstack/actions-europe21.mjs seal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-europe21-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-marketstack-europe21-encrypted/evidence.enc.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Verify no tracked writes
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Remove plaintext
+        if: always()
+        run: node scripts/marketstack/actions-europe21.mjs clean
