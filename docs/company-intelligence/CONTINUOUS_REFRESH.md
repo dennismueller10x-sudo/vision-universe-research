@@ -321,8 +321,12 @@ Six refreshes/day, 180/30 days. Run 1's source job took 20m07s; run 2 took 14m33
 The measured mean is **17m20s** including setup, deployment wait and live QA.
 Dispatched Pages jobs consume another **8.075 active runner minutes per run** on
 average; queued job time is excluded, source-job polling wait is included.
-The read-only health job took nine seconds. This gives approximately **4,601
-active runner minutes/month**, or **5,220 minutes if each job is rounded up**.
+The read-only health job took nine seconds. This extrapolates to approximately **4,601
+active runner minutes/month**, or **5,220 minutes if each job is rounded up**,
+for the measured no-feed-due runs. Due first-party polling and queue variance
+can increase or change this projection; the 747-second initial full-source
+producer run is recorded separately. This is a measured baseline scenario,
+not a proven monthly runtime for every combination of due sources.
 `measured-cost.json` records the exact start/end times and arithmetic. Standard
 Linux Actions on this public repository has no incremental compute-minute
 charge. Account-wide artifact/storage billing has not been authenticated.
