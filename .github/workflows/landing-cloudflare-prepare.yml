@@ -1,0 +1,39 @@
+name: Coming-soon | separates Cloudflare-Pages-Projekt vorbereiten
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landing-cloudflare-prepare-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: landing
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Eigenes Git-Pages-Projekt, keine DNS- oder Domainänderung
+        env:
+          LANDING_CLOUDFLARE_API_TOKEN: ${{ secrets.LANDING_CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          LANDING_AUDIT_OUTPUT: ${{ runner.temp }}/landing-cloudflare-project
+        run: node landing/scripts/cloudflare-prepare.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-cloudflare-project
+          path: ${{ runner.temp }}/landing-cloudflare-project/
+          retention-days: 3

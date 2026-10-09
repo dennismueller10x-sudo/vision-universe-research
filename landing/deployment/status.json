@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-09",
+  "targetHosting": "Cloudflare Pages, separate Git integration from same repository",
+  "projectCreated": false,
+  "pagesDevUrl": null,
+  "domainsAttached": [],
+  "dnsChanges": [],
+  "accessAudit": {
+    "run": 37958646123,
+    "pagesRead": "PASS",
+    "zoneRead": "PASS",
+    "activeZoneInSameAccount": true,
+    "dnsRead": {
+      "status": 403,
+      "code": 10000
+    },
+    "completeDnsBaseline": false
+  },
+  "projectAttempt": {
+    "run": 37959370219,
+    "status": 401,
+    "code": 8000011,
+    "githubAuthorization": "NOT_CONFIRMED",
+    "pagesWrite": "NOT_CONFIRMED"
+  },
+  "research": {
+    "githubPagesCname": "research.visionuniverse.de",
+    "workflow": "pages-release.yml unchanged",
+    "httpsStatus": 200
+  },
+  "newsletter": "BLOCKED, no forms/lists/submission or Brevo mutation",
+  "publicationGate": "Production blocked until the concrete Cloudflare privacy text is verified and approved",
+  "coreBaseline": {
+    "mainCommit": "5d6aa260558fdd0422d07b26038cc383142c86ee",
+    "newsTest": "REPRODUCED_ON_MAIN",
+    "errors": [
+      "SPCX / TMUS / VZ / T: NOT_IN_COMPANY_MASTER",
+      "DVN / CRGY: NOT_IN_COMPANY_MASTER",
+      "SLYG: NOT_IN_COMPANY_MASTER"
+    ],
+    "gatesChanged": false
+  }
+}
