@@ -37,18 +37,27 @@ export const FORMULAS = {
   roic: 'Operatives Ergebnis x (1 - Steuerquote) / (Eigenkapital + Finanzschulden - Kasse)',
   cashConversion: 'Operativer Cashflow / Jahresueberschuss (nur bei Gewinn)',
   debtToEquity: 'Finanzschulden / Eigenkapital',
-  netDebtEbitda: '(Finanzschulden - Kasse) / EBITDA',
+  netDebtEbitda: '(Finanzschulden - Kasse) / EBITDA (TTM, sonst letztes Geschaeftsjahr)',
   pb: 'Marktkapitalisierung / Eigenkapital',
   ev: 'Marktkapitalisierung + Finanzschulden - Kasse',
   evSales: 'Unternehmenswert / Umsatz (TTM)',
-  evEbitda: 'Unternehmenswert / EBITDA (TTM, sonst Geschaeftsjahr)',
+  evEbitda: 'Unternehmenswert / EBITDA (TTM)',
   pFcf: 'Marktkapitalisierung / Free Cashflow (TTM)',
-  peg: 'KGV / (EPS-Wachstum p. a. ueber 3 Jahre in %) - historisch, keine Schaetzung',
+  peg: 'KGV (Geschaeftsjahr) / (EPS-Wachstum p. a. ueber 3 Geschaeftsjahre in %) - historisch, keine Schaetzung',
+  eps: 'Verwaesserter Gewinn je Aktie, Summe der vier gemeldeten Quartale (vom Kern als VERIFIED ausgewiesen); sonst leer - nie das Geschaeftsjahr',
+  epsFy: 'Verwaesserter Gewinn je Aktie des letzten Geschaeftsjahres (Gesamt-EPS)',
+  pe: 'Kurs / verwaesserter Gewinn je Aktie TTM (nur VERIFIED)',
+  peFy: 'Kurs / verwaesserter Gewinn je Aktie des letzten Geschaeftsjahres',
   epsGrowth: 'Verwaesserter Gewinn je Aktie, letztes Geschaeftsjahr ggü. Vorjahr (nur bei positivem Vorjahr)',
   epsCagr3: 'CAGR des verwaesserten EPS ueber 3 Geschaeftsjahre (nur bei positiven Endpunkten)',
   fcfGrowth: 'Free Cashflow, letztes Geschaeftsjahr ggü. Vorjahr (nur bei positivem Vorjahr)',
-  niGrowthTtm: 'Jahresueberschuss TTM ggü. Vorjahreszeitraum'
+  niGrowthTtm: 'Jahresueberschuss TTM ggü. Vorjahreszeitraum (nur bei TTM-Basis; sonst leer)'
 };
+
+// TTM-SEMANTIK (Migrationsblocker M-B1)
+// Eine Spalte, deren Name oder Feldlabel "TTM" traegt, enthaelt nur einen
+// echten TTM-Wert. Fehlt er, bleibt sie leer - der Wert des Geschaeftsjahres
+// steht, wo er gebraucht wird, in einer eigenen Spalte (epsFy, peFy).
 
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 function round(v, digits = 5) {
@@ -60,6 +69,13 @@ const growth = (now, then) => (num(now) !== null && num(then) !== null && then >
 
 function annual(fund, key) { return num(fund?.latest?.annual?.[key]?.v); }
 function ttm(fund, key) { return num(fund?.latest?.ttm?.[key]?.v); }
+/** Verwaessertes EPS: TTM nur mit Pruefsiegel des Kerns, FY als eigener Wert. */
+export function epsColumns(fund) {
+  const e = fund?.latest?.eps;
+  const ttmEps = e?.ttmDiluted?.status === 'VERIFIED' ? num(e.ttmDiluted.v) : null;
+  const fy = e?.fyDiluted && e.fyDiluted.class !== 'CONTINUING' ? num(e.fyDiluted.v) : null;
+  return { eps: ttmEps, epsFy: fy };
+}
 function track(fund, key) { const t = fund?.journey?.tracks?.[key]; return Array.isArray(t) ? t.filter((p) => num(p.v) !== null) : []; }
 
 // ---- Indikatoren aus der Tagesreihe -------------------------------------
@@ -112,8 +128,8 @@ export const COLUMNS = [
   'price', 'chg1d', 'mcap', 'ev', 'avgVol', 'dollarVol', 'beta', 'relVol',
   'revGrowth', 'revCagr3', 'revCagr10', 'epsGrowth', 'epsCagr3', 'niGrowthTtm', 'fcfGrowth', 'marginExp3y',
   'grossMargin', 'opMargin', 'netMargin', 'fcfMargin', 'roe', 'roa', 'roic', 'cashConversion',
-  'debtToEquity', 'netDebtEbitda', 'cash', 'totalDebt', 'netCash', 'revenue', 'fcf', 'eps',
-  'pe', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield',
+  'debtToEquity', 'netDebtEbitda', 'cash', 'totalDebt', 'netCash', 'revenue', 'fcf', 'eps', 'epsFy',
+  'pe', 'peFy', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield',
   'perf1w', 'perf1m', 'perf3m', 'perf6m', 'perfYtd', 'perf1y', 'rs6m', 'rs12m', 'rsPct', 'momPct',
   'distSma20', 'distSma50', 'distSma100', 'distSma200', 'sma50vs200', 'distEma21', 'dist52wH', 'dist52wL', 'newHigh',
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
@@ -169,8 +185,8 @@ export const MIN_TURNOVER = 2e-5;
 export const FOREIGN_MIN_TURNOVER = 1e-3;
 export const MAX_MARKET_CAP = 7e12;
 export const MAX_TURNOVER = 1;
-export const SHARE_BASIS_COLUMNS = ['mcap', 'ev', 'pe', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield', 'eps'];
-export const CURRENCY_COLUMNS = ['revenue', 'fcf', 'cash', 'totalDebt', 'netCash', 'eps'];
+export const SHARE_BASIS_COLUMNS = ['mcap', 'ev', 'pe', 'peFy', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield', 'eps', 'epsFy'];
+export const CURRENCY_COLUMNS = ['revenue', 'fcf', 'cash', 'totalDebt', 'netCash', 'eps', 'epsFy'];
 
 async function loadJson(path) { return JSON.parse(await readFile(path, 'utf8')); }
 
@@ -257,8 +273,9 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const totalDebt = annual(f, 'total_debt');
     const equity = annual(f, 'stockholders_equity');
     const ev = mcap !== null && totalDebt !== null && cash !== null ? mcap + totalDebt - cash : null;
-    const revTtm = ttm(f, 'revenue') ?? annual(f, 'revenue');
-    const ebitda = ttm(f, 'ebitda') ?? annual(f, 'ebitda');
+    const revTtm = ttm(f, 'revenue');
+    const ebitdaTtm = ttm(f, 'ebitda');
+    const ebitda = ebitdaTtm ?? annual(f, 'ebitda');
     const fcfTtm = ttm(f, 'free_cash_flow');
     const opInc = annual(f, 'operating_income'), pretax = annual(f, 'pretax_income'), tax = annual(f, 'income_tax_expense');
     const taxRate = pretax && pretax > 0 && tax !== null ? Math.min(Math.max(tax / pretax, 0), 0.5) : 0.21;
@@ -268,7 +285,9 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const epsGrowth = eps.length >= 2 ? growth(eps.at(-1).v, eps.at(-2).v) : null;
     let epsCagr3 = null;
     if (eps.length >= 4) { const a = eps.at(-4).v, b = eps.at(-1).v; if (a > 0 && b > 0) epsCagr3 = Math.pow(b / a, 1 / 3) - 1; }
-    const pe = num(m.f_pe);
+    const pe = num(m.f_pe), peFy = num(m.f_peFy);
+    const epsCols = epsColumns(f);
+    const gz = d.geschaeftszahlen;
     const row = {
       s: d.symbol, n: d.companyName || d.symbol, ex: d.exchange || inst.exchange || null, co: inst.country || null,
       cls: inst.securityClass || null, sec: sic4 ? sectorFromSic(sic4) : null, sic2: sic4 ? sic4.slice(0, 2) : null, div: sic?.div || null,
@@ -278,7 +297,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       price, chg1d: num(d.changePercent?.value) !== null ? d.changePercent.value / 100 : null,
       mcap, ev, avgVol: num(rv.avgVolume20d), dollarVol: num(d.qualification?.avgDollarVolume20d), beta: num(rv.beta252d), relVol: num(rv.volumeRatio20over60),
       revGrowth: num(m.f_revenueGrowthTTM), revCagr3: num(m.f_revenueGrowth3y), revCagr10: num(m.f_revenueGrowth10y),
-      epsGrowth, epsCagr3, niGrowthTtm: num(d.geschaeftszahlen?.gewinnWachstum),
+      epsGrowth, epsCagr3, niGrowthTtm: gz && gz.basis === 'TTM' ? num(gz.gewinnWachstum) : null,
       fcfGrowth: fcf.length >= 2 ? growth(fcf.at(-1).v, fcf.at(-2).v) : null,
       marginExp3y: num(m.f_marginExpansion3y),
       grossMargin: plausibleGross(num(f?.latest?.derived?.grossMargin)), opMargin: num(f?.latest?.derived?.operatingMargin), netMargin: num(f?.latest?.derived?.netMargin),
@@ -289,11 +308,11 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       debtToEquity: equity && equity > 0 ? ratio(totalDebt, equity) : null,
       netDebtEbitda: ebitda && ebitda > 0 && totalDebt !== null && cash !== null ? (totalDebt - cash) / ebitda : null,
       cash, totalDebt, netCash: cash !== null && totalDebt !== null ? cash - totalDebt : null, revenue: revTtm,
-      fcf: fcfTtm ?? annual(f, 'free_cash_flow'), eps: ttm(f, 'eps_diluted') ?? annual(f, 'eps_diluted'),
-      pe, peg: pe && pe > 0 && epsCagr3 && epsCagr3 > 0 ? pe / (epsCagr3 * 100) : null,
+      fcf: fcfTtm, eps: epsCols.eps, epsFy: epsCols.epsFy,
+      pe, peFy, peg: peFy && peFy > 0 && epsCagr3 && epsCagr3 > 0 ? peFy / (epsCagr3 * 100) : null,
       ps: num(m.f_ps), pb: mcap && equity && equity > 0 ? mcap / equity : null,
       evSales: ev !== null && revTtm && revTtm > 0 ? ev / revTtm : null,
-      evEbitda: ev !== null && ebitda && ebitda > 0 ? ev / ebitda : null,
+      evEbitda: ev !== null && ebitdaTtm && ebitdaTtm > 0 ? ev / ebitdaTtm : null,
       pFcf: mcap && fcfTtm && fcfTtm > 0 ? mcap / fcfTtm : null, fcfYield: num(m.f_fcfYield),
       perf1w: ind.perf1w, perf1m: num(m.return1M), perf3m: num(m.return3M), perf6m: num(m.return6M), perfYtd: ind.perfYtd, perf1y: num(m.return12M),
       rs6m: num(m.relativeStrength6M), rs12m: num(m.relativeStrength12M), rsPct: num(m.relativeStrengthPercentile), momPct: num(m.momentumPercentile),

@@ -585,7 +585,7 @@
     rememberRun(r);
   }
   var SORTS = [['match', 'Übereinstimmung'], ['marketCap', 'Marktkapitalisierung'], ['price', 'Kurs'], ['revenueGrowth', 'Umsatzwachstum'], ['epsGrowth', 'EPS-Wachstum'], ['roic', 'ROIC'],
-    ['distance52wHigh', 'Abstand zum 52W-Hoch'], ['perf1d', 'Performance 1 Tag'], ['perf6m', 'Performance 6 Monate'], ['perf1y', 'Performance 1 Jahr'], ['pe', 'KGV'], ['relativeStrengthPct', 'Relative Stärke (Perzentil)'], ['name', 'Name']];
+    ['distance52wHigh', 'Abstand zum 52W-Hoch'], ['perf1d', 'Performance 1 Tag'], ['perf6m', 'Performance 6 Monate'], ['perf1y', 'Performance 1 Jahr'], ['pe', 'KGV (TTM)'], ['relativeStrengthPct', 'Relative Stärke (Perzentil)'], ['name', 'Name']];
   function sortLabel() { var s = SORTS.filter(function (x) { return x[0] === state.query.sort.field; })[0]; return (s ? s[1] : fieldName(state.query.sort.field)) + (state.query.sort.dir === 'asc' ? ' ↑' : ' ↓'); }
   function resultsBody(main, r) {
     var q = state.query, d = ds();
@@ -922,7 +922,7 @@
         var unit = F.inputUnit(f, draft[key]);
         var inp = h('input', { type: 'text', inputmode: 'decimal', value: F.toInput(f, draft[key]).replace('.', ','), 'aria-label': key === 'value' ? (draft.op === 'between' ? 'Von' : 'Wert') : 'Bis' });
         var unitEl;
-        if (f.unit === 'usd' && f.id !== 'price' && f.id !== 'eps') {
+        if (f.unit === 'usd' && f.id !== 'price' && f.id !== 'eps' && f.id !== 'epsFy') {
           unitEl = h('select', { 'aria-label': 'Einheit' }, ['Mio. $', 'Mrd. $'].map(function (u) { return h('option', { value: u, selected: u === unit ? true : null }, u); }));
           unitEl.addEventListener('change', function () { var v = F.fromInput(f, inp.value, unitEl.value); if (v !== null) { draft[key] = v; syncSliders(); updateLive(); } });
         } else unitEl = unit ? h('em', { text: unit }) : null;
@@ -1295,8 +1295,8 @@
   }
 
   // ------------------------------------------------------------ COMPARE
-  var CMP_ROWS = [['marketCap', 'Market Cap'], ['price', 'Kurs'], ['perf1d', '1 Tag'], ['pe', 'KGV'], ['revenueGrowth', 'Umsatzwachstum'], ['grossMargin', 'Bruttomarge'], ['freeCashFlow', 'Free Cashflow'], ['fcfMargin', 'FCF-Marge'],
-    ['eps', 'EPS (verw.)'], ['roic', 'ROIC'], ['distance52wHigh', '52W-Hoch Abstand'], ['perf6m', 'Performance 6M'], ['qualityFactor', 'Faktor Qualität'], ['momentumFactor', 'Faktor Momentum'], ['quantScore', 'Quant Score']];
+  var CMP_ROWS = [['marketCap', 'Market Cap'], ['price', 'Kurs'], ['perf1d', '1 Tag'], ['pe', 'KGV (TTM)'], ['peFy', 'KGV (GJ)'], ['revenueGrowth', 'Umsatzwachstum'], ['grossMargin', 'Bruttomarge'], ['freeCashFlow', 'Free Cashflow'], ['fcfMargin', 'FCF-Marge'],
+    ['eps', 'EPS TTM (verw.)'], ['epsFy', 'EPS GJ (verw.)'], ['roic', 'ROIC'], ['distance52wHigh', '52W-Hoch Abstand'], ['perf6m', 'Performance 6M'], ['qualityFactor', 'Faktor Qualität'], ['momentumFactor', 'Faktor Momentum'], ['quantScore', 'Quant Score']];
   function viewCompare(main) {
     var d = ds();
     main.append(bar('Vergleich', { back: function () { history.length > 1 ? history.back() : go({ view: 'results' }); } }));

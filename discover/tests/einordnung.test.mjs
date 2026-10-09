@@ -198,7 +198,10 @@ test("die ausgelieferten Detailseiten erfinden keine Geschäftszahlen", () => {
          die Consumer-Bundles derselben SEC-Pipeline (Bulk companyfacts). */
       assert.ok(g.quelle === "SEC_CANONICAL" || g.quelle === "SEC_CONSUMER", datei + ": Zahlen ohne benannte Quelle");
       if (g.quelle === "SEC_CONSUMER") assert.ok(g.basis === "TTM" || g.basis === "FY", datei + ": Consumer-Zahlen ohne Basis");
-      assert.ok(typeof g.umsatzTTM === "number", datei + ": Status ohne Umsatz");
+      assert.ok(typeof g.umsatz === "number", datei + ": Status ohne Umsatz");
+      /* M-B1: ein Wert unter dem TTM-Namen ist ein TTM-Wert - bei Basis FY bleibt umsatzTTM leer. */
+      if (g.basis === "FY") assert.equal(g.umsatzTTM, null, datei + ": Geschaeftsjahr unter dem TTM-Namen");
+      else assert.ok(typeof g.umsatzTTM === "number", datei + ": TTM-Basis ohne TTM-Umsatz");
     } else {
       ohneZahlen++;
       assert.equal(g.umsatzTTM, null, datei + ": Wert trotz fehlender Quelle");

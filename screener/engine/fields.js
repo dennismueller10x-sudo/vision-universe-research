@@ -129,16 +129,20 @@
     n('freeCashFlow', { col: 'fcf', group: 'quality', unit: 'usd', label: 'Free Cashflow (TTM)', short: 'Free Cashflow', en: 'Free Cash Flow', source: 'fundamentals', timeframe: 'TTM', scale: 'signedlog', pro: true, better: 1,
       desc: 'Operativer Cashflow minus Investitionen der letzten zwölf Monate.', keywords: ['fcf', 'free cash flow', 'cashflow'], presets: [['Positiv', 'gt', 0]] }),
     n('eps', { col: 'eps', group: 'quality', unit: 'usd', label: 'Gewinn je Aktie (TTM, verwässert)', short: 'EPS (verw.)', en: 'EPS', source: 'fundamentals', timeframe: 'TTM', domain: [-5, 20, 0.05], pro: true, better: 1,
-      desc: 'Verwässerter Gewinn je Aktie der letzten zwölf Monate.', keywords: ['eps', 'gewinn je aktie', 'earnings'], presets: [['Positiv', 'gt', 0]] }),
+      desc: 'Verwässerter Gewinn je Aktie der letzten zwölf Monate: Summe der vier gemeldeten Quartale, von der SEC-Pipeline geprüft. Fehlt ein gemeldetes Quartal (häufig Q4), bleibt das Feld leer – es wird nie durch das Geschäftsjahr ersetzt.', keywords: ['eps', 'gewinn je aktie', 'earnings', 'ttm'], presets: [['Positiv', 'gt', 0]] }),
+    n('epsFy', { col: 'epsFy', group: 'quality', unit: 'usd', label: 'Gewinn je Aktie (Geschäftsjahr, verwässert)', short: 'EPS GJ (verw.)', en: 'EPS (FY)', source: 'fundamentals', timeframe: 'FY', domain: [-5, 20, 0.05], pro: true, better: 1,
+      desc: 'Verwässerter Gewinn je Aktie im letzten Geschäftsjahr (Gesamt-EPS). Eigenes Feld, kein Ersatz für den Zwölfmonatswert.', keywords: ['eps', 'gewinn je aktie', 'geschäftsjahr', 'fy'], presets: [['Positiv', 'gt', 0]] }),
     n('totalDebt', { col: 'totalDebt', group: 'balance', unit: 'usd', label: 'Finanzschulden', en: 'Total Debt', source: 'fundamentals', scale: 'log', better: -1,
       desc: 'Kurz- und langfristige Finanzschulden laut letzter Bilanz.', keywords: ['debt', 'schulden'] }),
 
     // ---------------- BEWERTUNG ----------------
     n('pe', { col: 'pe', group: 'valuation', unit: 'x', label: 'KGV (TTM)', short: 'KGV', en: 'P/E', source: 'fundamentals', timeframe: 'TTM', domain: [0, 100, 0.5], better: -1,
-      desc: 'Kurs geteilt durch den Gewinn je Aktie der letzten zwölf Monate. Nur bei Gewinn.', keywords: ['pe', 'p/e', 'kgv', 'price earnings'], presets: [['< 15', 'lt', 15], ['< 25', 'lt', 25], ['15–30', 'between', 15, 30]] }),
+      desc: 'Kurs geteilt durch den verwässerten Gewinn je Aktie der letzten zwölf Monate (vier gemeldete Quartale). Nur bei Gewinn; ohne geprüftes Zwölfmonats-EPS leer.', keywords: ['pe', 'p/e', 'kgv', 'price earnings', 'ttm'], presets: [['< 15', 'lt', 15], ['< 25', 'lt', 25], ['15–30', 'between', 15, 30]] }),
+    n('peFy', { col: 'peFy', group: 'valuation', unit: 'x', label: 'KGV (Geschäftsjahr)', short: 'KGV GJ', en: 'P/E (FY)', source: 'fundamentals', timeframe: 'FY', domain: [0, 100, 0.5], better: -1,
+      desc: 'Kurs geteilt durch den verwässerten Gewinn je Aktie des letzten Geschäftsjahres. Nur bei Gewinn.', keywords: ['pe', 'p/e', 'kgv', 'geschäftsjahr', 'fy'], presets: [['< 15', 'lt', 15], ['< 25', 'lt', 25], ['15–30', 'between', 15, 30]] }),
     n('forwardPe', { group: 'valuation', unit: 'x', label: 'Erwartetes KGV', en: 'Forward P/E', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['forward pe', 'forward p/e', 'kgv'] }),
-    n('peg', { col: 'peg', group: 'valuation', unit: 'x', label: 'PEG (historisch)', short: 'PEG', en: 'PEG', source: 'fundamentals', domain: [0, 5, 0.05], pro: true, better: -1, formula: 'peg',
-      desc: 'KGV geteilt durch das EPS-Wachstum der letzten drei Jahre. Historisch, keine Schätzung.', keywords: ['peg'], presets: [['< 1', 'lt', 1], ['< 2', 'lt', 2]] }),
+    n('peg', { col: 'peg', group: 'valuation', unit: 'x', label: 'PEG (Geschäftsjahr, historisch)', short: 'PEG', en: 'PEG', source: 'fundamentals', timeframe: 'FY', domain: [0, 5, 0.05], pro: true, better: -1, formula: 'peg',
+      desc: 'KGV des letzten Geschäftsjahres geteilt durch das EPS-Wachstum der letzten drei Geschäftsjahre. Beide auf Geschäftsjahresbasis, historisch, keine Schätzung.', keywords: ['peg'], presets: [['< 1', 'lt', 1], ['< 2', 'lt', 2]] }),
     n('ps', { col: 'ps', group: 'valuation', unit: 'x', label: 'Kurs-Umsatz-Verhältnis (KUV)', short: 'KUV', en: 'Price / Sales', source: 'fundamentals', timeframe: 'TTM', domain: [0, 30, 0.1], better: -1,
       desc: 'Marktkapitalisierung im Verhältnis zum Umsatz der letzten zwölf Monate.', keywords: ['ps', 'p/s', 'kuv', 'price sales'], presets: [['< 2', 'lt', 2], ['< 5', 'lt', 5], ['< 10', 'lt', 10]] }),
     n('pb', { col: 'pb', group: 'valuation', unit: 'x', label: 'Kurs-Buchwert-Verhältnis (KBV)', short: 'KBV', en: 'Price / Book', source: 'fundamentals', domain: [0, 15, 0.1], better: -1,
@@ -388,7 +392,7 @@
   function toInput(field, v) {
     if (v === null || v === undefined || !isFinite(v)) return '';
     if (field.unit === 'pct') return String(Number((v * 100).toPrecision(6)));
-    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps') {
+    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps' && field.id !== 'epsFy') {
       var a = Math.abs(v);
       if (a >= 1e9) return String(Number((v / 1e9).toPrecision(6)));
       if (a >= 1e6) return String(Number((v / 1e6).toPrecision(6)));
@@ -398,7 +402,7 @@
   function inputUnit(field, v) {
     if (field.unit === 'pct') return '%';
     if (field.unit === 'pp') return 'Pp.';
-    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps') { var a = Math.abs(v || 0); return a >= 1e9 ? 'Mrd. $' : a >= 1e6 ? 'Mio. $' : '$'; }
+    if (field.unit === 'usd' && field.id !== 'price' && field.id !== 'eps' && field.id !== 'epsFy') { var a = Math.abs(v || 0); return a >= 1e9 ? 'Mrd. $' : a >= 1e6 ? 'Mio. $' : '$'; }
     if (field.unit === 'usd') return '$';
     return '';
   }

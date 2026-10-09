@@ -592,7 +592,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     h5: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_5Y).length,
     h10: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_10Y).length,
     ttm: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_TTM).length,
-    withValuation: stocks.filter((s) => isNum(s.metrics.f_pe)).length,
+    withValuation: stocks.filter((s) => isNum(s.metrics.f_pe) || isNum(s.metrics.f_peFy)).length,
     source: FUNDAMENTALS.size ? "quant/data/sec/consumer" : null
   };
 
@@ -666,15 +666,21 @@ function attachFundamentals(stock, model) {
   const latest = Fundamentals.latest(model, fopts);
   m.f_roe = latest.derived && isNum(latest.derived.roe) ? latest.derived.roe : null;
   const g = Unternehmen.ausConsumerBundle(model, { preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price) });
-  m.f_revenueGrowthTTM = isNum(g.umsatzWachstum) ? g.umsatzWachstum : null;
+  /* TTM-Kennzahlen nur aus TTM-Werten (M-B1): bei Basis FY ist das Wachstum
+     Geschaeftsjahr gegen Vorjahr und steht nicht unter dem TTM-Namen. */
+  m.f_revenueGrowthTTM = g.basis === "TTM" && isNum(g.umsatzWachstum) ? g.umsatzWachstum : null;
   /* Bewertung: Kurs x Aktien gegen Umsatz/FCF, Kurs gegen Gewinn je Aktie.
      Basis (TTM oder FY) steht dran; nichts wird gemischt. */
   const preis = Contract.valueOf(stock.price);
   const vol = stock.rawValues && isNum(stock.rawValues.avgVolume20d) ? stock.rawValues.avgVolume20d : null;
   const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null);
-  m.f_pe = bewertung.pe ? bewertung.pe.value : null;
-  m.f_ps = bewertung.ps ? bewertung.ps.value : null;
-  m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
+  /* f_pe = KGV (TTM) nur aus verifiziertem TTM-EPS; f_peFy = KGV auf Basis des
+     letzten Geschaeftsjahres. f_ps / f_fcfYield nur auf TTM-Basis; die
+     Bewertungsobjekte (stock.fundamentalValuation) tragen jede Basis benannt. */
+  m.f_pe = bewertung.pe && bewertung.pe.basis === "TTM" ? bewertung.pe.value : null;
+  m.f_peFy = bewertung.peFy ? bewertung.peFy.value : null;
+  m.f_ps = bewertung.ps && bewertung.ps.basis === "TTM" ? bewertung.ps.value : null;
+  m.f_fcfYield = bewertung.fcfYield && bewertung.fcfYield.basis === "TTM" ? bewertung.fcfYield.value : null;
   stock.fundamentalValuation = bewertung;
   stock.geschaeftszahlenKompakt = g;
   stock.signals.fundamentals = true;
@@ -740,6 +746,19 @@ function shareBasis(model, preis, avgDollarVolume) {
   return { ok: true, aktien, currency: currency || "USD" };
 }
 
+/* KGV-Objekte (M-B1): pe traegt die Basis seines EPS (TTM nur bei
+   verifiziertem TTM-EPS, sonst FY) - nicht die Basis der Umsatzkarte. peFy ist
+   immer das Geschaeftsjahres-KGV und die Vergleichsgroesse ueber das Universum. */
+function peObjects(g) {
+  const out = {};
+  out.pe = { value: g.kgv, basis: g.kgvBasis, eps: g.gewinnJeAktie, epsBasis: g.gewinnJeAktieBasis,
+             period: g.kgvBasis === "FY" ? { fy: g.epsFyGeschaeftsjahr } : g.zeitraum,
+             calculation: "Kurs / verwaesserter Gewinn je Aktie (" + (g.kgvBasis === "TTM" ? "TTM, vier gemeldete Quartale" : "Geschaeftsjahr " + g.epsFyGeschaeftsjahr) + ")" };
+  if (isNum(g.kgvFy)) out.peFy = { value: g.kgvFy, basis: "FY", eps: g.epsFy, period: { fy: g.epsFyGeschaeftsjahr },
+                                   calculation: "Kurs / verwaesserter Gewinn je Aktie (Geschaeftsjahr " + g.epsFyGeschaeftsjahr + ")" };
+  return out;
+}
+
 function valuationOf(model, g, preis, avgDollarVolume) {
   const out = { available: false, basis: g.basis || null };
   if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
@@ -748,18 +767,18 @@ function valuationOf(model, g, preis, avgDollarVolume) {
   if (!basis.ok) {
     out.marketCapReason = basis.reason;
     out.peReason = basis.reason === "NO_CURRENT_SHARE_COUNT" ? g.kgvStatus : basis.reason;
-    if (basis.reason === "NO_CURRENT_SHARE_COUNT" && g.kgvStatus === "CALCULATED" && isNum(g.kgv)) { delete out.peReason; out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" }; }
+    if (basis.reason === "NO_CURRENT_SHARE_COUNT" && g.kgvStatus === "CALCULATED" && isNum(g.kgv)) { delete out.peReason; Object.assign(out, peObjects(g)); }
     out.available = !!out.pe;
     out.price = preis;
     return out;
   }
   const aktien = basis.aktien;
   out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
-  if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
+  if (isNum(g.umsatz) && g.umsatz > 0) out.ps = { value: (preis * aktien.v) / (g.umsatz * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
   const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
             : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
   if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
-  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
+  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) Object.assign(out, peObjects(g));
   else out.peReason = g.kgvStatus;
   out.available = !!(out.pe || out.ps || out.fcfYield);
   out.price = preis;
@@ -788,21 +807,23 @@ function fundamentalHook(model, sig) {
    Aussage wie "deutlich hoeher bewertet als der breite Markt" braucht
    genau diesen Vergleich, sonst ist sie eine Behauptung. */
 function applyValuationContext(universe) {
-  const pes = universe.stocks.map((s) => s.metrics.f_pe).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
+  /* Vergleichsmassstab auf EINER Basis: KGV des letzten Geschaeftsjahres. */
+  const pes = universe.stocks.map((s) => s.metrics.f_peFy).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
   const pss = universe.stocks.map((s) => s.metrics.f_ps).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
   const median = (arr) => arr.length ? arr[Math.floor(arr.length / 2)] : null;
-  universe.valuationContext = { peMedian: median(pes), psMedian: median(pss), peCount: pes.length, psCount: pss.length,
+  universe.valuationContext = { peMedian: median(pes), peBasis: "FY", psMedian: median(pss), psBasis: "TTM", peCount: pes.length, psCount: pss.length,
                                 rule: "deutlich höher: KGV > 1,5 × Median; günstiger: KGV < 0,67 × Median; sonst im Bereich des Markts" };
   for (const s of universe.stocks) {
     if (!s.fundamentalValuation || !s.fundamentalValuation.available) continue;
     const b = s.fundamentalValuation;
     const pm = universe.valuationContext.peMedian;
-    if (b.pe && isNum(pm) && pm > 0) {
-      const x = b.pe.value / pm;
-      b.relative = { peVsMedian: x, peMedian: pm, universeCount: pes.length,
-                     label: b.pe.value <= 0 ? "Kein Gewinn" : x > 1.5 ? "Deutlich höher bewertet als der breite Markt"
+    /* Verglichen wird KGV (Geschaeftsjahr) mit dem Median desselben Masses. */
+    if (b.peFy && isNum(pm) && pm > 0) {
+      const x = b.peFy.value / pm;
+      b.relative = { peVsMedian: x, peMedian: pm, basis: "FY", universeCount: pes.length,
+                     label: b.peFy.value <= 0 ? "Kein Gewinn" : x > 1.5 ? "Deutlich höher bewertet als der breite Markt"
                           : x < 0.67 ? "Günstiger bewertet als der breite Markt" : "Im Bereich des breiten Markts",
-                     stufe: b.pe.value <= 0 ? "negativ" : x > 1.5 ? "hoch" : x < 0.67 ? "niedrig" : "mittel" };
+                     stufe: b.peFy.value <= 0 ? "negativ" : x > 1.5 ? "hoch" : x < 0.67 ? "niedrig" : "mittel" };
     } else if (b.peReason) {
       b.relative = { label: null, stufe: null, reason: b.peReason };
     }
@@ -1211,7 +1232,7 @@ const ROW_FILTERS = {
     isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.05 && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin > 0,
   fundTurnaround: (s) => fundBasis(s) && s.signals.turnaround === true,
   fundQualitaetPreis: (s) => fundBasis(s) && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10 &&
-    isNum(s.metrics.f_pe) && s.metrics.f_pe > 0 && s.metrics.f_pe <= 20,
+    isNum(s.metrics.f_peFy) && s.metrics.f_peFy > 0 && s.metrics.f_peFy <= 20,
   fundBilanzWachstum: (s) => fundBasis(s) && s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
 };
 
@@ -1417,7 +1438,7 @@ function similarityDistance(a, b) {
     if (!isNum(x) || !isNum(y)) continue;
     sum += Math.pow((x - y) / scale, 2); n++;
   }
-  const pa = a.metrics.f_pe, pb = b.metrics.f_pe;
+  const pa = a.metrics.f_peFy, pb = b.metrics.f_peFy;
   if (isNum(pa) && isNum(pb) && pa > 0 && pb > 0) { sum += Math.pow((Math.log(pa) - Math.log(pb)) / 1.0, 2); n++; }
   if (!n) return null;
   return Math.sqrt(sum / n);
@@ -1452,7 +1473,7 @@ function buildNextDiscovery(universe, stock, anzahl) {
   }
 
   /* Aehnliches Wachstum / aehnliche Qualitaet: nur mit Fundamentals. */
-  const g = stock.metrics.f_revenueGrowth3y, m = stock.metrics.f_netMargin, pe = stock.metrics.f_pe;
+  const g = stock.metrics.f_revenueGrowth3y, m = stock.metrics.f_netMargin, pe = stock.metrics.f_peFy;
   if (isNum(g)) {
     const nah = pool.filter((o) => isNum(o.metrics.f_revenueGrowth3y) && Math.abs(o.metrics.f_revenueGrowth3y - g) <= 0.05)
       .sort((a, b) => Math.abs(a.metrics.f_revenueGrowth3y - g) - Math.abs(b.metrics.f_revenueGrowth3y - g) || (a.symbol < b.symbol ? -1 : 1));
@@ -1464,10 +1485,10 @@ function buildNextDiscovery(universe, stock, anzahl) {
     if (nah.length >= 3) out.similarQuality = { title: "Ähnliche Profitabilität", rule: "Nettomarge innerhalb von ±3 Prozentpunkten" + (sektor ? ", gleicher Sektor" : ""), cards: nah.slice(0, n).map(mini) };
   }
   if (isNum(pe) && pe > 0) {
-    const guenstiger = pool.filter((o) => isNum(o.metrics.f_pe) && o.metrics.f_pe > 0 && o.metrics.f_pe < pe * 0.8 &&
+    const guenstiger = pool.filter((o) => isNum(o.metrics.f_peFy) && o.metrics.f_peFy > 0 && o.metrics.f_peFy < pe * 0.8 &&
                                           isNum(o.metrics.f_netMargin) && o.metrics.f_netMargin >= 0.05 && (!sektor || o.sector === sektor))
-      .sort((a, b) => a.metrics.f_pe - b.metrics.f_pe || (a.symbol < b.symbol ? -1 : 1));
-    if (guenstiger.length >= 3) out.cheaperAlternatives = { title: "Günstiger bewertete Alternativen", rule: "KGV unter 80 % des eigenen, Nettomarge ≥ 5 %" + (sektor ? ", gleicher Sektor" : ""), cards: guenstiger.slice(0, n).map(mini) };
+      .sort((a, b) => a.metrics.f_peFy - b.metrics.f_peFy || (a.symbol < b.symbol ? -1 : 1));
+    if (guenstiger.length >= 3) out.cheaperAlternatives = { title: "Günstiger bewertete Alternativen", rule: "KGV (Geschäftsjahr) unter 80 % des eigenen, Nettomarge ≥ 5 %" + (sektor ? ", gleicher Sektor" : ""), cards: guenstiger.slice(0, n).map(mini) };
   }
   out.basis = Object.keys(out).filter((k) => k !== "basis");
   return out;

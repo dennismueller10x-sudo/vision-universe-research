@@ -21,7 +21,8 @@ const has = p => existsSync(new URL(p, root));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Zahlen im deutschen Format
-const de = (n, d = 1) => Number(n).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+// Kein Wert ist "–", nie 0,0 (Number(null) waere 0).
+const de = (n, d = 1) => (typeof n === 'number' && Number.isFinite(n) ? n.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }) : '–');
 const pct = (r, d = 1) => de(r * 100, d) + ' %';
 const signed = (r, d = 1) => (r >= 0 ? '+' : '−') + pct(Math.abs(r), d);
 const usd = n => de(n, 2) + ' $';
@@ -138,7 +139,7 @@ const firstSignal = signalRows.find(r => r.t === MAIN);
 const nvdaSignal = (sig.bySymbol?.[MAIN] || []).find(e => STATE[e.state] && STRATEGY[e.strategyId]);
 
 // ---------- Screener: Wachstum mit Marge ----------
-const screen = CAND.map(t => { const st = stock(t); return { t, name: st.companyName.replace(/ Class [A-Z]$/, ''), g: metric(st, 'f_revenueGrowthTTM'), m: metric(st, 'f_netMargin'), pe: metric(st, 'f_pe') }; })
+const screen = CAND.map(t => { const st = stock(t); return { t, name: st.companyName.replace(/ Class [A-Z]$/, ''), g: metric(st, 'f_revenueGrowthTTM'), m: metric(st, 'f_netMargin'), pe: metric(st, 'f_peFy') }; })
   .filter(r => r.g > 0.10 && r.m > 0.10 && r.pe > 0 && r.pe < 50).sort((a, c) => c.g - a.g).slice(0, 6);
 const gMax = Math.max(...screen.map(r => r.g));
 const screenerRows = screen.map(r => `<tr><td><span class="t"><i>${r.t}</i>${esc(r.name)}</span></td><td><span class="bar"><i style="width:${Math.max(6, Math.round(r.g / gMax * 100))}%"></i></span> ${pct(r.g)}</td><td class="hide-s">${pct(r.m)}</td><td>${de(r.pe)}</td></tr>`).join('\n              ');
@@ -224,7 +225,7 @@ const values = {
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: signed(s.changePercent.value / 100, 2), NVDA_CHG_CLASS: s.changePercent.value >= 0 ? 'up' : 'down',
   NVDA_WHAT: esc(s.was || 'Chips für KI und Grafik'), NVDA_BADGES: badges,
   NVDA_REV: de(gzNvda.umsatzTTM / 1000) + ' Mrd. $', NVDA_REV_G: signed(gzNvda.umsatzWachstum, 1),
-  NVDA_MARGIN: pct(metric(s, 'f_netMargin')), NVDA_PE: de(metric(s, 'f_pe')),
+  NVDA_MARGIN: pct(metric(s, 'f_netMargin')), NVDA_PE: de(metric(s, 'f_peFy')),
   NVDA_WAVE_SHORT: nvdaEll.short === 'offen' ? 'offen' : nvdaEll.short, NVDA_WAVE_LONG: nvdaEll.long,
   NVDA_TREND: nvdaTrend.score != null ? de(nvdaTrend.score) : '–', NVDA_TREND_DIR: TREND[nvdaTrend.dir] || 'neutral',
   NVDA_TREND_DIR_CAP: (t => t[0].toUpperCase() + t.slice(1))(TREND[nvdaTrend.dir] || 'neutral'),

@@ -146,6 +146,11 @@
       asOf: bundle.asOf, generatedAt: bundle.generatedAtUtc,
       units: bundle.units || {},
       annual: annual, quarterly: quarterly, ttm: ttm,
+      /* Explizite EPS-Felder des Kerns (ab normalization_logic 1.16.0):
+         eps.ttmDiluted ist VERIFIED (vier gemeldete Quartale) oder
+         NOT_AVAILABLE mit Grund. Aeltere Bundles tragen den Block nicht. */
+      eps: bundle.eps || null,
+      views: bundle.views || null,
       years: revenue.map(function (r) { return r.fy; }),
       coverage: bundle.coverage || {},
       source: SOURCE
@@ -531,6 +536,37 @@
 
   /* ------------------------------------------------------------ LATEST */
 
+  /* EPS-SEMANTIK (Migrationsblocker M-B1)
+
+     EPS_TTM  vier gemeldete Quartale, vom Kern geprueft (eps.ttmDiluted
+              VERIFIED). Sonst nicht verfuegbar - nie das Geschaeftsjahr.
+     EPS_FY   verwaessertes EPS des letzten Geschaeftsjahres, mit Klasse
+              (TOTAL; CONTINUING = nur fortgefuehrte Bereiche).
+     Beide stehen unter eigenem Namen; keine Eigenschaft traegt je nach Lage
+     mal das eine, mal das andere. */
+  var EPS_TTM_METRICS = { eps_diluted: "ttmDiluted", eps_basic: "ttmBasic" };
+  var EPS_TTM_UNVERIFIED = "EPS_TTM_NOT_VERIFIED_BY_CORE";
+
+  function epsTtm(model, metric) {
+    var key = EPS_TTM_METRICS[metric];
+    var e = model && model.eps && model.eps[key];
+    if (!e) return { status: "NOT_AVAILABLE", reason: EPS_TTM_UNVERIFIED };
+    if (e.status === "VERIFIED" && typeof e.v === "number" && isFinite(e.v)) return { status: "VERIFIED", v: e.v, end: e.end, through: e.through || null };
+    return { status: "NOT_AVAILABLE", reason: e.reason || EPS_TTM_UNVERIFIED };
+  }
+
+  function epsSemantics(model, fy) {
+    var ttm = epsTtm(model, "eps_diluted");
+    var fyRow = fy !== null ? byYear(model.annual.eps_diluted || [])[fy] : null;
+    var core = model.eps && model.eps.fyDiluted;
+    var fyOut = null;
+    if (fyRow) {
+      fyOut = { v: fyRow.v, fy: fyRow.fy, end: fyRow.end,
+                class: core && core.fy === fyRow.fy && core.class ? core.class : null };
+    }
+    return { ttmDiluted: ttm, fyDiluted: fyOut, rule: "EPS_TTM nur VERIFIED; EPS_FY separat; nie Ersatz" };
+  }
+
   function latest(model, opts) {
     opts = opts || {};
     if (!model) return { available: false };
@@ -545,8 +581,13 @@
     }
     Object.keys(model.ttm || {}).forEach(function (m) {
       var t = model.ttm[m];
+      /* Ein EPS-TTM gibt es nur, wenn der Kern es als VERIFIED ausweist.
+         Aeltere Bundles (ohne eps-Block) summierten ein aus FY minus 9M
+         abgeleitetes Q4 - das ist kein TTM und wird nicht gezeigt. */
+      if (EPS_TTM_METRICS[m] && epsTtm(model, m).status !== "VERIFIED") return;
       if (t && typeof t.v === "number") out.ttm[m] = { v: t.v, end: t.end, through: t.through || null, kind: t.kind, unit: t.unit || model.units[m] || null, derived: !!t.derived };
     });
+    out.eps = epsSemantics(model, fy);
     var rev = out.annual.revenue, ni = out.annual.net_income, eq = out.annual.stockholders_equity;
     out.derived = {};
     out.omitted = {};
@@ -661,7 +702,8 @@
   var api = { PLAUSIBILITY: PLAUSIBILITY, marginCheck: marginCheck, staleness: staleness, VERSION: VERSION, SOURCE: SOURCE, THRESHOLDS: THRESHOLDS, COMPARE_ROWS: COMPARE_ROWS,
               fromBundle: fromBundle, horizon: horizon, compare: compare, journey: journey, story: story,
               health: health, latest: latest, signals: signals, priceVsFundamentals: priceVsFundamentals,
-              capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr, periodenIndex: periodenIndex };
+              capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr, periodenIndex: periodenIndex,
+              epsTtm: epsTtm, epsSemantics: epsSemantics, EPS_TTM_UNVERIFIED: EPS_TTM_UNVERIFIED };
   if (isNode) module.exports = api;
   else {
     global.VUDiscover = global.VUDiscover || {};
