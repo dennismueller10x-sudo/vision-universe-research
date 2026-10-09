@@ -251,7 +251,10 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Uebergangs, letztes Jahr des alten Zyklus); ein Ende ohne Anker, das
 #          einen Zeitraum unter 350 Tagen schliesst, bleibt ohne Kennung; gegen
 #          Jahre anderer Berichte zaehlen nur FRUEHER eingereichte (Leafbuyer,
-#          Mosaic ImmunoEngineering).
+#          Mosaic ImmunoEngineering). Ein TTM geht ueber die Folge vorhandener
+#          Kennungen zurueck statt "Kennung minus eins" (Best Buy: Luecke 2014
+#          nach dem Uebergangsjahr ohne Kennung); die tatsaechlichen Perioden
+#          prueft _ttm_window wie bisher.
 NORMALIZATION_LOGIC_VERSION = "1.21.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -284,7 +287,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "13531f41750284d467a27b9767098a9a56ff775e7f52c5d8591ee843ee13c21c"
+    "ff9ad8dd1870553388d140cb7dd1c8ade23be161d7c3091866d5f7aee5626f6e"
 )
 
 

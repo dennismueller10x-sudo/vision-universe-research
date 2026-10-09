@@ -303,3 +303,14 @@ class RedTeam121Tests(unittest.TestCase):
         self.assertTrue(near(calendar.fy_ends, "2016-01-03"), [str(e) for e in calendar.fy_ends])
         previous, fy_end = calendar._boundaries_covering("2015-09-27")
         self.assertTrue(calendar.is_transition_year(previous, fy_end), (previous, fy_end))
+
+    def test_windows_after_an_unlabelled_transition_year_step_over_the_label_gap(self):
+        # Best Buy: 11-monatiges Uebergangsjahr 2012-03-04..2013-02-02 (10-KT 2013-03-27) ohne eigene Kennung; das
+        # folgende Jahr traegt laut eigenem 10-K fy=2013, das danach fy=2015. "Kennung minus eins" fiel in die Luecke
+        # 2014 und die Fenster bis 2014-05-03/08-02/11-01 gingen verloren (Vollarchiv-Vergleich vor dem Freeze).
+        calendar, _ = build("BBY")
+        self.assertIn(date(2013, 2, 2), calendar.unlabeled)
+        for end, start in (("2014-05-03", "2013-05-05"), ("2014-08-02", "2013-08-04"), ("2014-11-01", "2013-11-03")):
+            fact = ttm_for_end("BBY", end, "2026-10-07")
+            self.assertTrue(fact is not None and fact.available, (end, fact and fact.reason))
+            self.assertEqual(str(fact.period_start)[:10], start)

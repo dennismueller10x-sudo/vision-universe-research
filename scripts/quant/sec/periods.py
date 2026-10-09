@@ -584,9 +584,31 @@ class PeriodResolver:
         return None
 
     def step_back(self, fiscal_year, quarter_index, steps):
-        """Move `steps` quarters back from (fiscal_year, quarter_index)."""
-        absolute = fiscal_year * 4 + (quarter_index - 1) - steps
-        return absolute // 4, (absolute % 4) + 1
+        """Move `steps` quarters back from (fiscal_year, quarter_index).
+
+        1.21.0: along the calendar's own sequence of fiscal-year labels. A
+        transition period without a label of its own can leave a gap (Best Buy:
+        FY2012, the 11-month transition year to 2013-02-02, then the year its own
+        10-K tags 2013, then 2015); "label minus one" fell into the gap and the
+        windows after the transition were lost. Stepping over a gap cannot join
+        periods that do not adjoin: _ttm_window checks the actual dates."""
+        labels = self._label_sequence()
+        if fiscal_year not in labels:
+            absolute = fiscal_year * 4 + (quarter_index - 1) - steps
+            return absolute // 4, (absolute % 4) + 1
+        position, index = labels.index(fiscal_year), quarter_index - 1 - steps
+        while index < 0:
+            position -= 1
+            index += 4
+        year = labels[position] if position >= 0 else labels[0] + position
+        return year, index + 1
+
+    def _label_sequence(self):
+        calendar = getattr(self.factbook, "calendar", None)
+        labels = getattr(calendar, "labels", None) if calendar is not None else None
+        if not labels:
+            return []
+        return sorted({label for label in labels.values() if label is not None})
 
     def latest_reported_quarter(self, metric, as_of, policy=POLICY_AS_OF_LATEST, lag_days=0):
         """(fiscal_year, quarter_index) of the newest standalone quarter at as_of."""
