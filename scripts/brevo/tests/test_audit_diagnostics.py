@@ -68,6 +68,8 @@ class AuditDiagnostics(unittest.TestCase):
         result = safe_error(b'{"error_code":1010,"detail":"error code: 1010"}', "synthetic-only")
         self.assertEqual(result["error_code"], 1010)
         self.assertEqual(result["error_message"], "error code: 1010")
+        result = safe_error(b'{"error_code":1010,"detail":"Bad user-agent"}', "synthetic-only")
+        self.assertEqual(result["error_message"], "Bad user-agent")
 
     def test_explicit_identity_changes_only_user_agent_on_get(self):
         class Response(io.BytesIO):

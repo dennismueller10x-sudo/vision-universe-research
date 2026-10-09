@@ -1,4 +1,4 @@
-"""One read-only /account audit. Never emit secrets, response bodies or account data."""
+"""Read-only audit diagnosis. Never emit secrets, response bodies or account data."""
 import json
 import os
 import re
@@ -52,7 +52,9 @@ SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES)
     "been being fully sending send sent mail messages message reason reasons time until complete completed "
     "process processing request requests review reviewing reviewed rejected reject approved approve "
     "link button page dashboard settings security new generate verification confirm confirmed confirming "
-    "code codes owner website banned based browser browser's signature cloudflare browser-signature".split())
+    "code codes owner website banned based browser browser's signature cloudflare browser-signature "
+    "agent user-agent bad missing empty disallowed unsupported supported integrity fingerprint "
+    "provide provided passing specify header client server web update valid denied refused denied".split())
 
 
 def secret_status(key):
