@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {refreshConfig,frozenInventory,frozenTickers,refreshApproved,freshness,safePublicRefresh} from '../refresh-approval.mjs';
 import {prepareCandidate,commitGood,goodState,downloadGood,rollbackGood,goodKey} from '../refresh-storage.mjs';
 import {validateChanges} from '../refresh-run.mjs';
-import {stageProduction} from '../production-release.mjs';
+import {stageProduction,setProductionGate} from '../production-release.mjs';
 import {approval,reviewed} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,v)=>objects.set(k,Buffer.from(v))};}
@@ -76,6 +76,8 @@ test('day-30 Pages staging uses fresh rolling GOOD without reading the expired f
   mkdirSync(join(release,'company-intelligence/config'),{recursive:true});
   writeFileSync(join(release,'company-intelligence/config/rollout.js'),'const config = {stage:1,expectedGeneration:"'+approval.consumerGeneration+'"};');
   const get=d.get;d.get=async k=>{if(k.startsWith(legacy)&&k!==legacy+'gate.json')throw Error('EXPIRED_BOOTSTRAP_MUST_NOT_BE_READ');return get(k);};
+  await setProductionGate(d,'DISABLED');
+  const enabled=await setProductionGate(d,'AVAILABLE');assert.equal(enabled.status,'AVAILABLE');
   const r=await stageProduction(d,release,{enabled:true});assert.equal(r.generation,f.m.generation);
   assert.equal(JSON.parse(readFileSync(join(release,'company-intelligence-delivery.json'))).generation,f.m.generation);
   assert(readFileSync(join(release,'company-intelligence/config/rollout.js'),'utf8').includes(f.m.generation));

@@ -7,7 +7,7 @@ import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {versionConsumerAssets} from './version-consumer-assets.mjs';
-import {downloadGood} from './refresh-storage.mjs';
+import {downloadGood,goodState,goodView} from './refresh-storage.mjs';
 import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
@@ -20,9 +20,15 @@ export async function publishProduction(driver,directory){
 export async function setProductionGate(driver,state){
  if(!['AVAILABLE','DISABLED','STAGED'].includes(state))throw Error('INVALID_PRODUCTION_GATE');
  if(state==='AVAILABLE'){
-  const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
-  if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
-  for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+  const good=await goodState(driver);
+  if(good){
+   const view=goodView(driver,good.payloadNamespace,good);
+   for(const asset of Object.keys(good.manifest.assets))await readAsset(view,{namespace:good.payloadNamespace,asset});
+  }else{
+   const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
+   if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
+   for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+  }
  }
  const key=prefixFor(approval.namespace)+'gate.json',bytes=Buffer.from(JSON.stringify({schema:1,state,generation:approval.consumerGeneration,approvalId:approval.approvalId,changedAt:new Date().toISOString()}));
  await driver.put(key,bytes);const back=await driver.get(key);
