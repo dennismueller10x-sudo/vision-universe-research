@@ -104,16 +104,40 @@ test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eig
   const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
-  assert.equal(run.payload.code.registry, "elliott-registry-1.3.0"); assert.equal(run.payload.code.projection, "elliott-projection-1.1.0");
+  assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION); assert.equal(run.payload.code.projection, PJV);
   const mv = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE");
   assert.ok(mv.length >= 1, "mindestens eine angezeigte Motiv-Alternative registriert");
   assert.ok(!mv.some((e) => e.payload.symbol === "ref_SE"), "SE: Kandidat verletzt die Grad-Konsistenz (G2) → nicht angezeigt, nicht registriert");
   for (const e of mv) {
     const th = e.payload.projectionThesis.thesis;
     assert.equal(e.payload.interpretation, "ALTERNATIVE"); assert.equal(th.source, "MOTIVE_ALTERNATIVE"); assert.equal(th.type, "WAVE_3");
-    assert.ok(th.zones.length >= 1 && th.invalidation && th.confirmation); assert.equal(e.payload.projectionEngine, "elliott-projection-1.1.0");
+    assert.ok(th.zones.length >= 1 && th.invalidation && th.confirmation); assert.equal(e.payload.projectionEngine, PJV);
     assert.ok(e.payload.persistenceKey !== (e.payload.primaryShownAs || ""), "nie die Primärzählung");
   }
   for (const e of L.filter((x) => x.type === "EVENT" && x.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3")) assert.equal(typeof e.payload.productVisible, "boolean");
+  assert.equal(Ver.verifyRegistry(reg).ok, true);
+});
+
+test("M11-P6 Registry 1.4.0: angezeigte Explore-Lesarten als eigene Kohorte eingefroren (Rolle, Rang, verfehlte Leitplanken, Zonen, Versionen); Kette bleibt gültig", async () => {
+  const w = weeklyDir(["ref_VTEX", "ref_PLTR", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
+  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
+  const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
+  assert.equal(Reg.REGISTRY_VERSION, "elliott-registry-1.4.0"); assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION);
+  const ex = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT");
+  assert.ok(ex.length >= 1, "mindestens eine angezeigte Explore-Lesart registriert");
+  const perSymbol = {};
+  for (const e of ex) {
+    const p = e.payload, th = p.projectionThesis.thesis;
+    perSymbol[p.symbol] = (perSymbol[p.symbol] || 0) + 1;
+    assert.equal(p.role, "EXPLORE"); assert.equal(th.source, "EXPLORE"); assert.equal(p.hardRules, "PASSED");
+    assert.ok(Array.isArray(p.failedGates) && p.failedGates.length >= 1 && p.failedGates.every((g) => /^G[2-5]$/.test(g)));
+    assert.ok(Number.isInteger(p.rank) && p.poolSize > p.rank && (p.rank + 1) / p.poolSize <= 0.5);
+    assert.ok(th.zones.length >= 1 && th.invalidation && th.invalidation.price > 0);
+    assert.equal(p.versions.projection, PJV); assert.equal(p.versions.visibility, "EXPLORE_ELLIOTT_1.0.0"); assert.ok(p.versions.engine && p.versions.ruleSet);
+    assert.ok(/^CLEAN/.test(p.dataQuality.status)); assert.ok(p.waveType && p.degree);
+    assert.equal(p.initialStock, true, "erster Lauf mit Explore = Bestand");
+  }
+  assert.ok(Object.values(perSymbol).every((n) => n <= 3), "höchstens drei je Titel");
   assert.equal(Ver.verifyRegistry(reg).ok, true);
 });

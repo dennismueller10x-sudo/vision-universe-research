@@ -22,7 +22,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
-import { projectionElliott, projectionInput, motiveCandidateFor } from "../lib/ti-projection.mjs";
+import { projectionElliott, projectionInput, motiveCandidateFor, candidatePool, exploreCandidatesFor, splitResolutionFor, dataIntegrity, withProductInputs } from "../lib/ti-projection.mjs";
 import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 const Identity = createRequire(import.meta.url)("../../../core/identity.js"); // eine Identitaetsregel (ADR-001)
 
@@ -74,7 +74,7 @@ export function productTimeframe(sym, ctx, pub) {
 }
 
 /** Produktanalyse auf der gekuerzten Reihe. weeklyUsed = Wochenpunkte bis W* (schon gekuerzt); F = Freitag von W*; ticker = Produktschluessel. */
-export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub) {
+export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub, corporateActions = null) {
   /* Das Produkt fuehrt Titel unter dem Ticker (Index, Shards, Tagesdateien), nicht unter der Datei-ID ref_<T> */
   const T = ticker || String(sym).replace(/^ref_/, "");
   const tf = productTimeframe(T, ctx, pub);
@@ -85,16 +85,20 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub) {
     series = dailySeriesFromPayload(j, j.ticker); kind = "daily";
     if (series.length < MIN_DAILY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   } else {
-    series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly";
+    series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly"; series.corporateActions = corporateActions;
     if (series.length < MIN_WEEKLY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   }
   const res = Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
   /* Motiv-Alternative wie im Produkt: Wochen zuerst. Tagestitel zeigen sie aus der Wochenanalyse (projectionWeekly). */
-  if (kind === "weekly") res.motiveIn = res.projIn && res.projIn.E && res.projIn.E.hiddenMotive ? res.projIn : null;
+  /* Explore Elliott (Registry 1.4.0) ebenso aus der Wochenanalyse */
+  let weeklyIn = null;
+  if (kind === "weekly") weeklyIn = res.projIn;
   else {
-    const ws = weeklySeriesFromPoints(weeklyUsed, ticker);
-    res.motiveIn = ws.length >= MIN_WEEKLY ? (() => { const w = analyzeAndSummarize(ws, "weekly", T, ctx); return w.projIn && w.projIn.E && w.projIn.E.hiddenMotive ? w.projIn : null; })() : null;
+    const ws = weeklySeriesFromPoints(weeklyUsed, ticker); ws.corporateActions = corporateActions;
+    weeklyIn = ws.length >= MIN_WEEKLY ? analyzeAndSummarize(ws, "weekly", T, ctx).projIn : null;
   }
+  res.motiveIn = weeklyIn && weeklyIn.E && weeklyIn.E.hiddenMotive ? weeklyIn : null;
+  res.exploreIn = weeklyIn && weeklyIn.E && weeklyIn.E.explore ? weeklyIn : null;
   return res;
 }
 
@@ -105,8 +109,9 @@ function analyzeAndSummarize(series, kind, ticker, ctx) {
   /* Elliott Projection Engine (Registry 1.2.0): dieselbe Eingabe wie das Produkt (veroeffentlichte Form, 260 Chart-Bars wie chartOf);
      die Relative Staerke setzt der Hauptthread aus dem Querschnitt der Woche. */
   const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : v), from = Math.max(0, series.length - 260);
-  const projE = projectionElliott(pub), mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
-  if (projE && mc.count) projE.hiddenMotive = mc;
+  const splitRes = splitResolutionFor(series, out), pool = candidatePool(series, out, PRODUCT_METHODOLOGY), mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY, pool);
+  const xc = exploreCandidatesFor(series, out, PRODUCT_METHODOLOGY, pool, mc, dataIntegrity(series, out, splitRes));
+  const projE = withProductInputs(projectionElliott(pub), { motiveCandidate: mc, exploreCandidates: xc, dataQuality: splitRes.items.length ? { splitResolution: splitRes } : null });
   const projIn = { E: projE, ctx: projectionInput(Object.assign({}, S, { chart: { timestamps: series.timestamps.slice(from), close: series.close.slice(from).map(r4) } }), null) };
   return { tf: series.timeframe, d: series.timestamps[t], E, px: series.close[t], atr: Number.isFinite(atr) ? atr : null, projIn,
            view: { tf: series.timeframe, d: series.timestamps[series.length - 1], p: p ? p.pattern : null, w: p ? (p.complete ? "done" : p.currentWave && p.currentWave.label) : null,
@@ -130,7 +135,7 @@ export function identityOne(sym, ctx, pub, productInputDir) {
     const j = readJson(f); series = dailySeriesFromPayload(j, j.ticker); kind = "daily";
   } else {
     const f = join(productInputDir, Identity.securityIdForTicker(sym) + ".json"); if (!existsSync(f)) return { s: sym, status: "NO_INPUT" };
-    const j = readJson(f); series = weeklySeriesFromPoints(j.points || [], j.ticker); kind = "weekly";
+    const j = readJson(f); series = weeklySeriesFromPoints(j.points || [], j.ticker); kind = "weekly"; series.corporateActions = j.corporateActions || null;
   }
   if (series.timestamps[series.length - 1] !== P.asOf) return { s: sym, status: "INPUT_NEWER_OR_OLDER", inputAsOf: series.timestamps[series.length - 1], publishedAsOf: P.asOf };
   const shard = JSON.parse(gunzipSync(readFileSync(join(pub.dir, "shards", shardKey(sym) + ".json.gz"))).toString()).instruments[sym];
