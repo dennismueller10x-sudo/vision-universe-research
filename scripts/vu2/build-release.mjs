@@ -26,6 +26,7 @@ export function projectQuarterly(source){
 }
 export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
 export function permitted(path){
+ if(/^reports\/marketstack\/de-eu\//.test(path)||path==='core/config/de-eu-reference-sources.json'||path==='core/data/de-eu/screener.json'||/^core\/data\/de-eu\/series\//.test(path))return false;
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
@@ -35,6 +36,12 @@ export async function buildRelease({root,output}){
  root=resolve(root);output=resolve(output);
  if(output===root||root.startsWith(output+sep)||output.startsWith(root+sep))throw Error('OUTPUT_MUST_BE_OUTSIDE_SOURCE');
  const paths=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}).split('\0').filter(Boolean);
+ // Private local output must never be picked up by the public packager,
+ // including an accidentally modified tracked directory descriptor.
+ if(paths.includes('core/data/de-eu/listings.json')){
+  const local=JSON.parse(await readFile(resolve(root,'core/data/de-eu/listings.json'),'utf8'));
+  if(local.state!=='DISABLED'||!Array.isArray(local.listings)||local.listings.length||local.publicDisplay!==false)throw Error('DE_EU_PRIVATE_DATA_PUBLICATION_BLOCKED');
+ }
  const emitted=[];await mkdir(output,{recursive:true});
  // Refuse reuse: stale files must not survive a release projection.
  const {readdir}=await import('node:fs/promises');if((await readdir(output)).length)throw Error('OUTPUT_NOT_EMPTY');

@@ -79,6 +79,45 @@
   function isInstrumentId(id) { return typeof id === "string" && /^vu_[a-f0-9]{6,}$/.test(id); }
   function isIssuerId(id) { return typeof id === "string" && /^iss_cik_\d{10}$/.test(id); }
 
+  /* Additive local contracts. A security is the share class (ISIN); its
+     price series and watchlist selection are the ISIN at one MIC. Legacy
+     ticker IDs and URLs deliberately keep their exact existing bytes. */
+  function normalizeISIN(value) {
+    if (typeof value !== "string") return null;
+    var isin = value.trim().toUpperCase();
+    if (!/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(isin)) return null;
+    var digits = isin.replace(/[A-Z]/g, function (c) { return String(c.charCodeAt(0) - 55); });
+    var sum = 0, twice = false;
+    for (var n = digits.length - 1; n >= 0; n--) {
+      var d = Number(digits[n]); if (twice) { d *= 2; if (d > 9) d -= 9; }
+      sum += d; twice = !twice;
+    }
+    return sum % 10 === 0 ? isin : null;
+  }
+  function securityIdForISIN(value) {
+    var isin = normalizeISIN(value); if (!isin) throw Error("INVALID_ISIN");
+    return "sec_isin_" + isin;
+  }
+  function listingIdFor(value) {
+    var isin = normalizeISIN(value && value.isin);
+    var mic = typeof (value && value.mic) === "string" ? value.mic.trim().toUpperCase() : "";
+    if (!isin || !/^[A-Z0-9]{4}$/.test(mic)) throw Error("INVALID_LOCAL_LISTING");
+    return "lst_" + mic + "_" + isin;
+  }
+  function isListingId(value) {
+    if (typeof value !== "string" || !/^lst_[A-Z0-9]{4}_[A-Z0-9]{12}$/.test(value)) return false;
+    return !!normalizeISIN(value.slice(9));
+  }
+  function companyIdForLEI(value) {
+    var lei = typeof value === "string" ? value.trim().toUpperCase() : "";
+    if (!/^[A-Z0-9]{18}[0-9]{2}$/.test(lei)) throw Error("INVALID_LEI");
+    var digits = lei.replace(/[A-Z]/g, function (c) { return String(c.charCodeAt(0) - 55); });
+    var remainder = 0;
+    for (var n = 0; n < digits.length; n++) remainder = (remainder * 10 + Number(digits[n])) % 97;
+    if (remainder !== 1) throw Error("INVALID_LEI");
+    return "iss_lei_" + lei;
+  }
+
   /** Passt eine behauptete securityId zum Ticker? Fuer Konfigurations- und
    *  Artefaktpruefungen (data-quality.js). */
   function consistent(ticker, securityId) {
@@ -94,6 +133,11 @@
     isSecurityId: isSecurityId,
     isInstrumentId: isInstrumentId,
     isIssuerId: isIssuerId,
+    normalizeISIN: normalizeISIN,
+    securityIdForISIN: securityIdForISIN,
+    listingIdFor: listingIdFor,
+    isListingId: isListingId,
+    companyIdForLEI: companyIdForLEI,
     consistent: consistent
   };
 });

@@ -41,7 +41,7 @@ const TARGETS = ALL
 /* Erweitert (Security-Review M4, 05.10.2026): auch die Schluessel, mit
    denen Worker, Ask und die Historienablage arbeiten. */
 const SECRET_ENV = ["TWELVE_DATA_API_KEY", "EODHD_API_KEY", "FMP_API_KEY",
-                    "FINNHUB_API_KEY", "TIINGO_API_KEY", "POLYGON_API_KEY",
+                    "FINNHUB_API_KEY", "TIINGO_API_KEY", "MARKETSTACK_API_KEY", "POLYGON_API_KEY",
                     "ANTHROPIC_API_KEY", "CLOUDFLARE_API_TOKEN",
                     "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
 
@@ -64,7 +64,7 @@ const DATA_PATTERNS = [
   { name: "apikey-Parameter", re: /\bapi[_-]?key\s*[:=]\s*["']?[A-Za-z0-9_-]{8,}/i },
   { name: "token-Feld", re: /\b(access_token|auth_token|bearer)\s*[:=]\s*["']?[A-Za-z0-9._-]{12,}/i },
   { name: "Authorization-Header", re: /"authorization"\s*:/i },
-  { name: "Anbieter-URL mit Parametern", re: /https?:\/\/[^\s"']*[?&]apikey=/i },
+  { name: "Anbieter-URL mit Parametern", re: /https?:\/\/[^\s"']*[?&](?:apikey|access_key)=/i },
   { name: "OpenAI-artiger Schluessel", re: /\bsk-[A-Za-z0-9]{16,}/ },
   { name: "AWS-Zugriffsschluessel", re: /\bAKIA[0-9A-Z]{16}\b/ },
   { name: "GitHub-Token", re: /\bgh[pousr]_[A-Za-z0-9]{16,}/ },

@@ -1,0 +1,274 @@
+name: Marketstack selected EU private bootstrap and live import
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-private-eu-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  private-selected-import:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == github.repository_owner &&
+      (github.event.action != 'labeled' || github.event.label.name == 'vu-marketstack-bootstrap' || github.event.label.name == 'vu-marketstack-live') &&
+      (contains(github.event.pull_request.labels.*.name, 'vu-marketstack-bootstrap') || contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      VU_MARKETSTACK_PHASE: ${{ contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live') && 'live' || 'bootstrap' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # The encrypted request approves its immediate parent code commit.
+          # Two commits prove that binding without downloading data history.
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Configure private ephemeral output paths
+        run: |
+          echo "VU_MARKETSTACK_PRIVATE_DIR=$RUNNER_TEMP/vu-marketstack-private/marketstack" >> "$GITHUB_ENV"
+          echo "VU_MARKETSTACK_PREVIEW_DIR=$RUNNER_TEMP/vu-marketstack-private/preview" >> "$GITHUB_ENV"
+          echo "VU_ENCRYPTED_PARTS_DIR=$RUNNER_TEMP/marketstack-encrypted-parts" >> "$GITHUB_ENV"
+      - name: Verify bounded transport and authenticated private storage
+        run: node --test --test-reporter=dot quant/tests/marketstack-budget.test.mjs quant/tests/marketstack-cache.test.mjs scripts/marketstack/tests/actions-handoff.test.mjs scripts/marketstack/tests/actions-import-guard.test.mjs scripts/marketstack/tests/chunk-encrypted-result.test.mjs
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-
+      - name: Open only authenticated PR-scoped ciphertext
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          node scripts/market/marketstack-cache.mjs open --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF" --require-readable true
+      - name: Server-side credential availability (not API authentication)
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node -e 'if (!process.env.MARKETSTACK_API_KEY) { console.error("Marketstack credential unavailable"); process.exit(1); }'
+      - name: Bootstrap public recipient (zero provider calls)
+        if: env.VU_MARKETSTACK_PHASE == 'bootstrap'
+        run: node scripts/marketstack/actions-handoff.mjs bootstrap
+      - uses: actions/upload-artifact@v4
+        if: env.VU_MARKETSTACK_PHASE == 'bootstrap'
+        with:
+          name: marketstack-handoff-public-${{ github.event.pull_request.number }}
+          path: .verification/marketstack-handoff-public.json
+          retention-days: 7
+      - name: Reserve a crash-safe execution lease before paid requests
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          node scripts/marketstack/actions-private-live.mjs prepare
+          node scripts/market/marketstack-cache.mjs seal --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF"
+      - uses: actions/cache/save@v4
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+      - name: Verify exact encrypted lease exists before any paid request
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VU_PRIVATE_CACHE_TAG: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+        run: |
+          node --input-type=module <<'JS'
+          import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_TAG});}
+          catch {console.error('ACTIONS_PRIVATE_LEASE_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
+          JS
+      - name: Execute explicitly authorized frozen listing requests privately
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/actions-private-live.mjs
+      - id: encrypted-result-parts
+        name: Split only authenticated ciphertext for bounded private downloads
+        if: env.VU_MARKETSTACK_PHASE == 'live' && always()
+        run: |
+          if [ ! -f .verification/marketstack-private-result.enc.json ]; then
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node scripts/marketstack/chunk-encrypted-result.mjs split --input=.verification/marketstack-private-result.enc.json --out="$RUNNER_TEMP/marketstack-encrypted-parts" > "$RUNNER_TEMP/marketstack-encrypted-parts-status.json"
+          node --input-type=module <<'JS'
+          import {readFileSync,appendFileSync} from 'node:fs';
+          const result=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/marketstack-encrypted-parts-status.json'));
+          appendFileSync(process.env.GITHUB_OUTPUT,'present=true\nchunked='+result.chunked+'\n');
+          console.log(JSON.stringify({ciphertextOnly:true,chunked:result.chunked,partCount:result.partCount,totalBytes:result.totalBytes}));
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.present == 'true' && steps.encrypted-result-parts.outputs.chunked == 'false'
+        with:
+          name: marketstack-private-result-${{ github.event.pull_request.number }}-${{ github.run_id }}
+          path: .verification/marketstack-private-result.enc.json
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-manifest-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/manifest.json
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-00-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-00.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-01-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-01.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-02-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-02.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-03-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-03.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-04-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-04.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-05-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-05.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-06-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-06.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-07-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-07.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-08-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-08.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-09-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-09.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-10-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-10.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-11-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-11.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-12-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-12.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-13-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-13.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-14-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-14.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.encrypted-result-parts.outputs.chunked == 'true'
+        with:
+          name: marketstack-private-result-part-15-${{ github.run_id }}
+          path: ${{ env.VU_ENCRYPTED_PARTS_DIR }}/part-15.enc.part
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - id: seal-private
+        name: Seal provider data and deterministic ledger even after a bounded import failure
+        if: always()
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/marketstack-cache.mjs seal --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF"
+      - uses: actions/cache/save@v4
+        if: always() && steps.seal-private.outcome == 'success'
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify final private counter cache is discoverable
+        if: always() && steps.seal-private.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VU_PRIVATE_CACHE_TAG: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          node --input-type=module <<'JS'
+          import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_TAG});}
+          catch {console.error('ACTIONS_PRIVATE_COUNTER_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
+          JS
+      - name: Protected published artifacts and production workflows
+        if: always()
+        run: git diff --exit-code -- quant/data discover/data supertrader/data vorsorge core/data .github/workflows/market-data-refresh.yml .github/workflows/tiingo2-universe-refresh.yml
+      - name: Remove ephemeral plaintext
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/vu-marketstack-private" "$RUNNER_TEMP/marketstack-encrypted-parts" "$RUNNER_TEMP/marketstack-encrypted-parts-status.json"

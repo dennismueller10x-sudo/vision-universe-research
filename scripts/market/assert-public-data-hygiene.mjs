@@ -19,6 +19,14 @@ const rootArg = process.argv.find((a) => a.startsWith("--root="));
 const root = rootArg ? rootArg.slice("--root=".length)
   : join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const findings = [];
+const localDirectoryFile=join(root,'core','data','de-eu','listings.json');
+if(existsSync(localDirectoryFile)){
+ const local=JSON.parse(readFileSync(localDirectoryFile,'utf8'));
+ if(local.state!=='DISABLED'||!Array.isArray(local.listings)||local.listings.length||local.publicDisplay!==false)findings.push('core/data/de-eu/listings.json: private local listings in public tree');
+}
+const localSeriesDir=join(root,'core','data','de-eu','series');
+if(existsSync(localSeriesDir)&&readdirSync(localSeriesDir).length)findings.push('core/data/de-eu/series: licensed local series in public tree');
+if(existsSync(join(root,'core','data','de-eu','screener.json')))findings.push('core/data/de-eu/screener.json: private consumer prices in public tree');
 
 function json(relativePath) {
   const file = join(root, relativePath);
