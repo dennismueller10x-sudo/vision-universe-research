@@ -17,7 +17,7 @@ from . import quality as quality_module
 from .fiscal import FiscalCalendar
 from .http_client import SECHTTPError
 from .normalize import build_availability_map, normalize_company
-from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
+from .provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import MetricRegistry
 from .restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN
 from .store import CheckpointStore, JsonFactStore, JsonRawStore
@@ -117,11 +117,12 @@ class IngestionPipeline:
             company_facts["_retrieved_at"] = snapshot["first_seen"]
 
         availability = build_availability_map(filing_metadata)
-        raw_facts = list(self.provider.iter_raw_facts(
-            company_facts, availability=availability, forms=PERIODIC_FORMS))
+        calendar_facts = list(self.provider.iter_raw_facts(
+            company_facts, availability=availability, forms=CALENDAR_FORMS))
+        raw_facts = [fact for fact in calendar_facts if fact.form in PERIODIC_FORMS]
 
         calendar = FiscalCalendar.from_raw_facts(
-            cik, raw_facts, fiscal_year_end_hint=profile.fiscal_year_end)
+            cik, calendar_facts, fiscal_year_end_hint=profile.fiscal_year_end)
         result = normalize_company(cik, raw_facts, self.registry, profile=profile,
                                    filing_metadata=filing_metadata, calendar=calendar)
         findings, summary = quality_module.run_all(

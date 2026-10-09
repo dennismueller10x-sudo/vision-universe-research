@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from quant.sec.fiscal import FiscalCalendar  # noqa: E402
 from quant.sec.normalize import normalize_company  # noqa: E402
 from quant.sec.periods import PeriodResolver  # noqa: E402
-from quant.sec.provider import PERIODIC_FORMS, SECProvider  # noqa: E402
+from quant.sec.provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider  # noqa: E402
 from quant.sec.registry import MetricRegistry  # noqa: E402
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "sec-real"
@@ -25,8 +25,9 @@ def build(name):
     if name not in _CACHE:
         payload = json.loads((FIXTURES / f"{name}.json").read_text())
         cik = str(payload["cik"]).zfill(10)
-        raw = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=PERIODIC_FORMS))
-        calendar = FiscalCalendar.from_raw_facts(cik, raw)
+        everything = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=CALENDAR_FORMS))
+        raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
+        calendar = FiscalCalendar.from_raw_facts(cik, everything)
         _CACHE[name] = (calendar, PeriodResolver(normalize_company(cik, raw, REGISTRY, calendar=calendar).factbook, REGISTRY))
     return _CACHE[name]
 
@@ -102,13 +103,18 @@ class FiscalYearChangeTests(unittest.TestCase):
 
 class TransitionYearBalanceSheetTests(unittest.TestCase):
     def test_year_end_balance_sheet_of_a_transition_year_stays_fy(self):
-        """Ein Uebergangsjahr hat keine Quartalsslots, aber eine Jahresbilanz (Multi-Fineline: Uebergangszeitraum
-        bis 2014-12-31 laut 10-KT; das folgende Kalenderjahr 2015 behaelt seine Jahresbilanz)."""
+        """Ein Uebergangsjahr hat keine Quartalsslots, aber eine Jahresbilanz (Multi-Fineline: das Kalenderjahr 2015
+        nach dem Uebergangszeitraum behaelt seine Jahresbilanz). Der dreimonatige Uebergangszeitraum bis 2014-12-31
+        (10-KT) hat ab 1.21.0 keine eigene Jahreskennung: seine Bilanz liegt in keiner Zelle - weder unter FY2014
+        noch unter FY2015 (keine Vermischung zweier Stichtage in einer Zelle)."""
         calendar, resolver = build("MFLX")
-        for end, as_of in (("2014-12-31", "2015-06-01"), ("2015-12-31", "2016-06-01")):
-            fact = resolver.annual("total_assets", calendar.fiscal_year_for(end), as_of)
-            self.assertTrue(fact.available, (end, fact.reason))
-            self.assertEqual(str(fact.period_end)[:10], end)
+        fact = resolver.annual("total_assets", calendar.fiscal_year_for("2015-12-31"), "2016-06-01")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertEqual(str(fact.period_end)[:10], "2015-12-31")
+        self.assertIsNone(calendar.fiscal_year_for("2014-12-31"))
+        for year, end in ((2014, "2014-09-30"), (2015, "2015-12-31")):
+            fact = resolver.annual("total_assets", year, "2026-10-07")
+            self.assertEqual(str(fact.period_end)[:10], end, year)
 
 
 class SameDayConflictTests(unittest.TestCase):
@@ -190,8 +196,9 @@ class CustomTagTests(unittest.TestCase):
         payload["facts"]["us-gaap"] = {k: v for k, v in payload["facts"]["us-gaap"].items()
                                        if not k.startswith("EarningsPerShare") and "PerShare" not in k}
         cik = str(payload["cik"]).zfill(10)
-        raw = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=PERIODIC_FORMS))
-        calendar = FiscalCalendar.from_raw_facts(cik, raw)
+        everything = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=CALENDAR_FORMS))
+        raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
+        calendar = FiscalCalendar.from_raw_facts(cik, everything)
         resolver = PeriodResolver(normalize_company(cik, raw, REGISTRY, calendar=calendar).factbook, REGISTRY)
         for metric in ("eps_diluted", "eps_basic"):
             self.assertFalse(resolver.ttm(metric, "2026-10-05").available, metric)

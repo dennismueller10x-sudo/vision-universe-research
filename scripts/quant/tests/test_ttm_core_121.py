@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from quant.sec.fiscal import FiscalCalendar  # noqa: E402
 from quant.sec.normalize import normalize_company  # noqa: E402
 from quant.sec.periods import PeriodResolver  # noqa: E402
-from quant.sec.provider import PERIODIC_FORMS, SECProvider  # noqa: E402
+from quant.sec.provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider  # noqa: E402
 from quant.sec.registry import MetricRegistry  # noqa: E402
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "sec-real"
@@ -47,8 +47,9 @@ def build(name):
     if name not in _CACHE:
         data = payload(name)
         cik = str(data["cik"]).zfill(10)
-        raw = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), data, forms=PERIODIC_FORMS))
-        calendar = FiscalCalendar.from_raw_facts(cik, raw)
+        everything = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), data, forms=CALENDAR_FORMS))
+        raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
+        calendar = FiscalCalendar.from_raw_facts(cik, everything)
         _CACHE[name] = (calendar, PeriodResolver(normalize_company(cik, raw, REGISTRY, calendar=calendar).factbook, REGISTRY))
     return _CACHE[name]
 
@@ -217,3 +218,88 @@ class VisibilityChainTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RedTeam121Tests(unittest.TestCase):
+    """Red Team vor dem Freeze (1.21.0, erste Fassung): der rueckwaerts gelaufene Kalender fuegte das Ende kurzer
+    Uebergangszeitraeume als bezeichnetes Geschaeftsjahr ein. Folgen auf echten SEC-Daten:
+    D1 Jahreskennung +1 ab dem Uebergang (Oshkosh FY2025 = Kalender 2024), D2 falscher Uebergang ein Jahr frueher
+    aus dem Vergleichszeitraum (ADM), D3 Uebergaenge <= 60 Tage vom Clustering verschluckt (VMware, Discover),
+    D4 Jahresenden anderer Berichte ohne Abgleich (Dawson), D5 Verzugsregel traf Spaetmelder (RocketFuel).
+    Vorbestehend und mitbehoben: P1 Uebergang hinter einem umgerechneten Kalenderjahr unsichtbar (Rentech Nitrogen),
+    P2 10-KT ohne Spur im Kalender (Precision Castparts)."""
+
+    def test_d1_labels_stay_with_the_filers_own_reports_after_a_transition(self):
+        # Oshkosh: September -> Dezember, Uebergangszeitraum 2021-10-01..2021-12-31 (10-K 0000950170-23-003473)
+        calendar, resolver = build("OSKCAL")
+        self.assertEqual(calendar.rejected_anchors, [])
+        for year, end in ((2021, "2021-09-30"), (2022, "2022-12-31"), (2025, "2025-12-31")):
+            fact = resolver.annual("eps_diluted", year, "2026-03-01")
+            self.assertTrue(fact.available, (year, fact.reason))
+            self.assertEqual(str(fact.period_end)[:10], end, year)
+        self.assertIsNone(calendar.quarter_index("2021-12-31"))
+        self.assertEqual([calendar.quarter_index(e) for e in ("2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31")],
+                         [1, 2, 3, 4])
+        # Multi-Fineline: das Kalenderjahr 2015 nach dem Uebergangszeitraum heisst FY2015 (eigener 10-K, fy=2015)
+        self.assertEqual(build("MFLX")[0].fiscal_year_for("2015-12-31"), 2015)
+
+    def test_d2_the_comparable_prior_period_is_no_transition(self):
+        # ADM: Juli-Dezember 2011 ist der Vergleichszeitraum des Uebergangs Juli-Dezember 2012 (10-KT)
+        quarters = [("2011-07-01", "2011-09-30"), ("2011-10-01", "2011-12-31"), ("2012-01-01", "2012-03-31"),
+                    ("2012-04-01", "2012-06-30")]
+        fact = ttm_for_end("ADM", "2012-06-30", "2012-09-01")
+        self.assertTrue(fact is not None and fact.available, fact and fact.reason)
+        self.assertAlmostEqual(fact.value, sum(sec_quarter_eps("ADM", s, e, "2012-09-01") for s, e in quarters), places=6)
+        fact = ttm_for_end("ADM", "2012-12-31", "2014-03-01")
+        self.assertTrue(fact is None or not fact.available, "TTM durch den Uebergangszeitraum Juli-Dezember 2012")
+        quarters = [("2013-01-01", "2013-03-31"), ("2013-04-01", "2013-06-30"), ("2013-07-01", "2013-09-30"),
+                    ("2013-10-01", "2013-12-31")]
+        fact = ttm_for_end("ADM", "2013-12-31", "2014-03-01")
+        self.assertAlmostEqual(fact.value, sum(sec_quarter_eps("ADM", s, e, "2014-03-01") for s, e in quarters), places=6)
+
+    def test_d3_a_short_transition_does_not_swallow_the_last_old_year(self):
+        quarters = [("2016-01-01", "2016-03-31"), ("2016-04-01", "2016-06-30"), ("2016-07-01", "2016-09-30"),
+                    ("2016-10-01", "2016-12-31")]
+        fact = ttm_for_end("VMW", "2016-12-31", "2017-04-01")
+        self.assertTrue(fact is not None and fact.available, fact and fact.reason)
+        self.assertAlmostEqual(fact.value, sum(sec_quarter_eps("VMW", s, e, "2017-04-01") for s, e in quarters), places=6)
+        quarters = [("2011-11-30", "2012-02-29"), ("2012-03-01", "2012-05-31"), ("2012-06-01", "2012-08-31"),
+                    ("2012-08-31", "2012-11-30")]
+        fact = ttm_for_end("DFS", "2012-11-30", "2013-02-01")
+        self.assertTrue(fact is not None and fact.available, fact and fact.reason)
+        self.assertAlmostEqual(fact.value, sum(sec_quarter_eps("DFS", s, e, "2013-02-01") for s, e in quarters), places=6)
+        calendar, resolver = build("DFS")
+        annual = resolver.annual("eps_diluted", calendar.fiscal_year_for("2012-11-30"), "2013-02-01")
+        self.assertTrue(annual.available, annual.reason)
+        self.assertEqual(str(annual.period_end)[:10], "2012-11-30")
+
+    def test_d4_year_ends_of_another_report_never_split_a_declared_year(self):
+        # Dawson Geophysical: die September-Jahre des Rechnungslegungs-Uebernehmers (10-K 0001047469-16-011203)
+        # liegen in den Kalenderjahren, die der Registrant selbst berichtet
+        calendar, _ = build("DWSN")
+        self.assertFalse([str(e) for e in calendar.fy_ends if e.month == 9], [str(e) for e in calendar.fy_ends])
+        self.assertEqual(calendar.fiscal_year_for("2025-12-31"), 2025)
+
+    def test_d5_a_late_filers_own_year_keeps_its_label(self):
+        self.assertEqual(build("RKFL")[0].fiscal_year_for("2019-03-31"), 2019)
+
+    def test_p1_transition_report_declares_its_period_despite_a_recast_year(self):
+        # Rentech Nitrogen: 10-KT 0001193125-12-117385 fuer 2011-10-01..2011-12-31; spaetere 10-K rechnen 2011 um
+        calendar, _ = build("RNF")
+        self.assertTrue(near(calendar.fy_ends, "2011-09-30") and near(calendar.fy_ends, "2011-12-31"),
+                        [str(e) for e in calendar.fy_ends])
+        self.assertIsNone(calendar.quarter_index("2011-12-31"))
+        fact = ttm_for_end("RNF", "2012-09-30", "2013-04-01")
+        self.assertTrue(fact is None or not fact.available, "TTM durch den Uebergangszeitraum Okt-Dez 2011")
+        quarters = [("2012-01-01", "2012-03-31"), ("2012-04-01", "2012-06-30"), ("2012-07-01", "2012-09-30"),
+                    ("2012-10-01", "2012-12-31")]
+        fact = ttm_for_end("RNF", "2012-12-31", "2013-04-01")
+        self.assertTrue(fact is not None and fact.available, fact and fact.reason)
+        self.assertAlmostEqual(fact.value, sum(sec_quarter_eps("RNF", s, e, "2013-04-01") for s, e in quarters), places=6)
+
+    def test_p2_transition_report_without_a_later_annual_report(self):
+        # Precision Castparts: 10-KT fuer 2015-03-30..2016-01-03, danach keine Jahresberichte mehr
+        calendar, _ = build("PCP")
+        self.assertTrue(near(calendar.fy_ends, "2016-01-03"), [str(e) for e in calendar.fy_ends])
+        previous, fy_end = calendar._boundaries_covering("2015-09-27")
+        self.assertTrue(calendar.is_transition_year(previous, fy_end), (previous, fy_end))

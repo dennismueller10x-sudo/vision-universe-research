@@ -42,7 +42,7 @@ sys.path.insert(0, str(root / "scripts"))
 from quant.sec.fiscal import FiscalCalendar  # noqa: E402
 from quant.sec.normalize import normalize_company  # noqa: E402
 from quant.sec.periods import CONTINUING_PER_SHARE, PeriodResolver  # noqa: E402
-from quant.sec.provider import PERIODIC_FORMS, SECProvider  # noqa: E402
+from quant.sec.provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider  # noqa: E402
 from quant.sec.registry import MetricRegistry  # noqa: E402
 
 SALT = "vu-ttm-holdout-4"
@@ -369,10 +369,11 @@ def case_strata(traits, four_ends, four, share_clusters, final_truth, gaps, spli
 # ----------------------------------------------------------------- core
 
 def core_for(cik, cf, registry, provider):
-    raw = list(provider.iter_raw_facts(cf, availability={}, forms=PERIODIC_FORMS))
+    everything = list(provider.iter_raw_facts(cf, availability={}, forms=CALENDAR_FORMS))
+    raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
     if not raw:
         return None, None
-    calendar = FiscalCalendar.from_raw_facts(cik, raw)
+    calendar = FiscalCalendar.from_raw_facts(cik, everything)
     return calendar, PeriodResolver(normalize_company(cik, raw, registry, calendar=calendar).factbook, registry)
 
 

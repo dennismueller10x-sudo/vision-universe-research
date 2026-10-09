@@ -34,6 +34,11 @@ BULK_COMPANY_FACTS_URL = "https://www.sec.gov/Archives/edgar/daily-index/xbrl/co
 # and S-1s also contain XBRL, but their period semantics are not comparable, so
 # they are excluded from the fundamental model rather than silently mixed in.
 PERIODIC_FORMS = frozenset({"10-K", "10-K/A", "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A"})
+# 1.21.0 (F-TTM-4): the fiscal calendar also reads transition reports. A 10-KT
+# declares the transition period after a change of year end; without it a later
+# 10-K that recasts the calendar year hides the transition (Rentech Nitrogen,
+# Precision Castparts). Values still come from PERIODIC_FORMS only.
+CALENDAR_FORMS = PERIODIC_FORMS | frozenset({"10-KT", "10-KT/A"})
 AMENDMENT_FORMS = frozenset({"10-K/A", "10-Q/A", "20-F/A", "40-F/A"})
 
 

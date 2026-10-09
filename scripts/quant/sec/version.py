@@ -222,19 +222,30 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          alten Zyklus (8point3 2013-12-30..2014-12-28 vor dem Uebergangs-
 #          zeitraum 2014-12-29..2015-11-30). Die Zyklusregel (Deere, Hovnanian)
 #          verwarf es, der Kalender schrieb das neue Jahresende rueckwaerts fort
-#          und das Uebergangsjahr bekam Quartalsslots. Jetzt folgt der Kalender
-#          der Periodenkette des Berichts rueckwaerts: ein 12-Monats-Zeitraum
-#          direkt (-3..+8 Tage) vor einem anerkannten Geschaeftsjahr ist dessen
-#          Vorjahr, ein kuerzerer Zeitraum auf dem Zyklus des Berichts direkt
-#          davor, dem selbst ein 12-Monats-Zeitraum vorausgeht, ist ein
-#          Uebergangszeitraum (Diamond S 2018-04-01..12-31; Multi-Fineline
-#          10-KT 2014-10-01..12-31). Ein Zeitraum, der ein anerkanntes
-#          Geschaeftsjahr ueberlappt, zaehlt nie. (2) F-TTM-5: ein Jahresbericht
-#          ist nach seinem eigenen Jahresende eingereicht; ein 12-Monats-
-#          Zeitraum, der mehr als ein Jahr vor der Einreichung endete, ist ein
-#          Vergleichsjahr und kein Anker der Jahreskennung (FairPoint FY2011,
+#          und das Uebergangsjahr bekam Quartalsslots. Jetzt geht der Kalender
+#          EINEN Schritt der Periodenkette des Berichts zurueck: ein 12-Monats-
+#          Zeitraum direkt (-3..+8 Tage) vor einem anerkannten Geschaeftsjahr ist
+#          dessen Vorjahr; ein kuerzerer Zeitraum (61-329 Tage) auf dem Zyklus des
+#          Berichts direkt davor, dem ein 12-Monats-Zeitraum vorausgeht, ist ein
+#          Uebergangszeitraum (Diamond S 2018-04-01..12-31, Oshkosh 2021-10-01..
+#          12-31) - nicht aber der Vergleichszeitraum eines spaeteren Uebergangs
+#          (ADM Juli-Dezember 2011) und nichts, was ein anerkanntes Jahr
+#          ueberlappt (ausser dem umgerechneten Zwilling mit gleichem Ende). Ein
+#          Transition Report (10-KT) erklaert seinen Zeitraum selbst; der Kalender
+#          liest 10-KT/10-KT/A (provider.CALENDAR_FORMS), Werte weiter nur aus
+#          PERIODIC_FORMS (Rentech Nitrogen, Multi-Fineline, Precision Castparts).
+#          Ein gelerntes Ende teilt nie ein Jahr, das ein anderer Bericht
+#          erklaert (Dawson), und liegt nie im Clustering-Fenster eines bekannten
+#          Endes (VMware, Discover). Das Ende eines Uebergangszeitraums ohne
+#          eigene Kennung bleibt Grenze, bekommt aber keine Kennung (sonst +1 fuer
+#          jedes spaetere Jahr: Oshkosh, Deckers, ServiceNow); seine Perioden
+#          haben keine Zelle. (2) F-TTM-5: ein Anker, dessen 12-Monats-Zeitraum
+#          mehr als 366 Tage vor der Einreichung endete UND der Kennungskonvention
+#          des Einreichers widerspricht, ist ein Vergleichsjahr (FairPoint FY2011,
 #          geteilt in Predecessor/Successor: 2010-12-31 wurde "FY2011", jede
-#          spaetere Kennung +1).
+#          spaetere Kennung +1); der eigene Jahresanker eines Spaetmelders bleibt
+#          (RocketFuel). Red Team vor dem Freeze: D1-D5, P1, P2 mit Realdaten-
+#          Regressionen (test_ttm_core_121.RedTeam121Tests).
 NORMALIZATION_LOGIC_VERSION = "1.21.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -267,7 +278,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "19700277c0fa8dc5d49c37a225429df2586f1d3f60b9fcde01908e768a045a0e"
+    "c0109da48f72ebf0cdaf6a527e04c1fc163fdacb4322df7a8cca76c977d85b55"
 )
 
 
