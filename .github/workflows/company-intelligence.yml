@@ -83,6 +83,9 @@ jobs:
   continuous:
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh != 'none' && inputs.continuous_refresh != ''
     needs: validate
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/company-intelligence-refresh.yml
     with:
       verification: ${{ inputs.continuous_refresh == 'verify' }}
