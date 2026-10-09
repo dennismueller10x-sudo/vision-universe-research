@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # Reviewed immutable diagnostic source; never arbitrary branch code.
-          ref: 252cd0896befb7da072eda119c21514313373620
+          ref: dd457182c0bbde443a7800f8f06491cda9efd0ae
           persist-credentials: false
           sparse-checkout: scripts/brevo
       - name: audit - read-only endpoint diagnostics
