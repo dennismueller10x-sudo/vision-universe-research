@@ -146,7 +146,7 @@ QA candidates preserve current and previous GOOD slots across repeated attempts.
 The authenticated first candidate rejection independently demonstrated that a
 fresh private-state update cannot publish an unaccepted consumer to production.
 
-Relevant refresh tests: six Node storage/publication/SLO contracts and seven
+Relevant refresh tests: seven Node storage/publication/SLO/longevity contracts and seven
 Python parser/isolation/financial-cursor contracts. Existing Company Intelligence,
 SEC/Quant, release and product regression suites remain required. No assertions
 were weakened. Core CI's pre-existing invalid-news-symbol assertion was reproduced
@@ -224,3 +224,10 @@ restore reproduced all table proofs and all 86 consumer assets. This preserves
 the 83 newly accumulated raw news records and durable cursors from earlier
 verification runners. The original accepted state and fixed production baseline
 remain untouched. All 46 contracts and 16 candidate browser cases passed.
+
+Longevity review found and corrected an unconditional fixed-bootstrap consumer
+download in Pages staging. Rolling GOOD is now preferred; only a genuinely
+missing GOOD falls back to the fixed consumer. A day-30 contract forbids reads
+of the expired fixed consumer while a fresh rolling GOOD is available, and
+checks the staged generation and rollout binding. The legacy gate remains
+required, preserving the existing emergency OFF path.

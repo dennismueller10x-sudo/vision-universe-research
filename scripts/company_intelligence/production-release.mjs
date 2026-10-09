@@ -62,7 +62,9 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   versionConsumerAssets(release);
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
- let result=await verifyProductionConsumer(driver,release);
+ // A healthy rolling GOOD must not depend on the fixed bootstrap remaining
+ // younger than the consumer TTL. Legacy is used only until the first GOOD.
+ let result;
  const refreshed=await downloadGood(driver,{output:resolve(release,'company-intelligence/data')});
  if(refreshed){
   const {good,...publicResult}=refreshed;
@@ -77,7 +79,7 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   writeFileSync(resolve(release,'company-intelligence-refresh.json'),JSON.stringify(safePublicRefresh(good.manifest,{...good.health,...observed},good.inventory))+'\n');
   result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:46,issuers:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
   writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify(result)+'\n');
- }
+ }else result=await verifyProductionConsumer(driver,release);
  versionConsumerAssets(release);return result;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){

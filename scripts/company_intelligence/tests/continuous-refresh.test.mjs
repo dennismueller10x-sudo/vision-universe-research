@@ -7,9 +7,12 @@ import {createHash} from 'node:crypto';
 import {refreshConfig,frozenInventory,frozenTickers,refreshApproved,freshness,safePublicRefresh} from '../refresh-approval.mjs';
 import {prepareCandidate,commitGood,goodState,downloadGood,rollbackGood,goodKey} from '../refresh-storage.mjs';
 import {validateChanges} from '../refresh-run.mjs';
+import {stageProduction} from '../production-release.mjs';
+import {approval,reviewed} from '../production-approval.mjs';
+import {prefixFor} from '../public-delivery.mjs';
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,v)=>objects.set(k,Buffer.from(v))};}
-function fixture(n){
- const root=mkdtempSync(join(tmpdir(),'refresh-contract-')),generation=n.toString(16).padStart(24,'0'),generatedAt='2026-10-09T12:00:00Z',schema='vu-company-intelligence-1.0.0';
+function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
+ const root=mkdtempSync(join(tmpdir(),'refresh-contract-')),generation=n.toString(16).padStart(24,'0'),schema='vu-company-intelligence-1.0.0';
  const values={},index={schema,state:'AVAILABLE',generation,generatedAt,companies:{},tickers:{}};
  for(const [companyId,v] of Object.entries(frozenInventory)){
   const path=`snapshots/${generation}/${companyId}.json`,listings=v.tickers.map(symbol=>({symbol,instrumentId:'vu_12345678901234'}));
@@ -23,7 +26,7 @@ function fixture(n){
 }
 async function advance(d,namespace,f){const good=await goodState(d,namespace),r=await prepareCandidate(d,{namespace,directory:f.root,good});return commitGood(d,{namespace,payloadNamespace:r.payloadNamespace,manifest:r.manifest,health:{},inventory:frozenInventory,expectedGood:good});}
 test('three generations and repeated failed candidates preserve current AND previous good assets',async()=>{
- const d=driver(),ns='contract',fs=[1,2,3,4].map(fixture),out=mkdtempSync(join(tmpdir(),'refresh-download-'));
+ const d=driver(),ns='contract',fs=[1,2,3,4].map(n=>fixture(n)),out=mkdtempSync(join(tmpdir(),'refresh-download-'));
  try{
   await advance(d,ns,fs[0]);await advance(d,ns,fs[1]);await advance(d,ns,fs[2]);
   const before=await d.get(goodKey(ns)),good=await goodState(d,ns);
@@ -61,3 +64,20 @@ test('issuer financial regression and unexplained news loss are rejected before 
  }finally{rmSync(a.root,{recursive:true});rmSync(b.root,{recursive:true});}
 });
 test('health SLO uses successful operation timestamps, never attempt time',()=>{const now=Date.parse('2026-10-09T12:00:00Z');assert.equal(freshness('2026-10-09T08:00:00Z',now),'HEALTHY');assert.equal(freshness('2026-10-09T03:00:00Z',now),'WARNING');assert.equal(freshness('2026-10-08T23:00:00Z',now),'CRITICAL');assert.equal(freshness(null,now),'CRITICAL');});
+test('day-30 Pages staging uses fresh rolling GOOD without reading the expired fixed bootstrap',async()=>{
+ const d=driver(),f=fixture(30,new Date().toISOString()),release=mkdtempSync(join(tmpdir(),'refresh-day30-'));
+ try{
+  await advance(d,refreshConfig.consumerNamespace,f);
+  const legacy=prefixFor(approval.namespace);
+  await d.put(legacy+'gate.json',Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',generation:approval.consumerGeneration,approvalId:approval.approvalId})));
+  const expired={...reviewed,generatedAt:new Date(Date.now()-30*86400000).toISOString(),productionApproval:approval.approvalId,releaseState:'APPROVED_CONTROLLED_PRODUCTION'};
+  assert(Date.now()-Date.parse(expired.generatedAt)>7*86400000);
+  await d.put(legacy+'manifest.json',Buffer.from(JSON.stringify(expired)));
+  mkdirSync(join(release,'company-intelligence/config'),{recursive:true});
+  writeFileSync(join(release,'company-intelligence/config/rollout.js'),'const config = {stage:1,expectedGeneration:"'+approval.consumerGeneration+'"};');
+  const get=d.get;d.get=async k=>{if(k.startsWith(legacy)&&k!==legacy+'gate.json')throw Error('EXPIRED_BOOTSTRAP_MUST_NOT_BE_READ');return get(k);};
+  const r=await stageProduction(d,release,{enabled:true});assert.equal(r.generation,f.m.generation);
+  assert.equal(JSON.parse(readFileSync(join(release,'company-intelligence-delivery.json'))).generation,f.m.generation);
+  assert(readFileSync(join(release,'company-intelligence/config/rollout.js'),'utf8').includes(f.m.generation));
+ }finally{rmSync(f.root,{recursive:true});rmSync(release,{recursive:true});}
+});
