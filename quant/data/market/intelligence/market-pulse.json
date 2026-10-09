@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-09T10:46:24.499Z",
+ "generatedAt": "2026-10-09T18:28:25.310Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-09T10:46:24.499Z",
+  "generatedAt": "2026-10-09T18:28:25.310Z",
   "dataAsOf": "2026-10-08",
   "previousDataAsOf": "2026-10-07",
   "schedule": {
@@ -749,13 +749,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-10-08",
-   "last": 69042.11,
-   "observations": 19215,
+   "asOf": "2026-10-09",
+   "last": 69030.92,
+   "observations": 19216,
    "changes": {
-    "1M": 5.78,
-    "3M": 1.92,
-    "1Y": 44.64
+    "1M": 5.97,
+    "3M": 0.69,
+    "1Y": 42.1
    },
    "high52w": {
     "date": "2026-06-25",
@@ -765,18 +765,18 @@
     "date": "2025-10-14",
     "value": 46847.32
    },
-   "rangePosition": 87,
-   "dist50": 4.76,
-   "dist200": 13.75,
+   "rangePosition": 86.9,
+   "dist50": 4.61,
+   "dist200": 13.55,
    "trend": "POSITIVE",
-   "drawdown52w": -4.59,
-   "vol20": 22.17,
+   "drawdown52w": -4.61,
+   "vol20": 21.02,
    "volContext": {
     "median": 18.5,
     "p25": 15.6,
-    "p75": 23.6,
-    "samples": 1221,
-    "from": "2021-10-09",
+    "p75": 23.5,
+    "samples": 1222,
+    "from": "2021-10-10",
     "state": "USUAL"
    },
    "roles": []
@@ -1387,13 +1387,13 @@
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-10-07",
+   "asOf": "2026-10-08",
    "last": 3.88,
-   "observations": 6601,
+   "observations": 6602,
    "changes": {
     "1M": 25,
     "3M": 26,
-    "1Y": -21
+    "1Y": -22
    },
    "high52w": {
     "date": "2025-10-29",
@@ -1404,8 +1404,8 @@
     "value": 3.62
    },
    "rangePosition": 52,
-   "vs200": 22.8,
-   "vs50": 17.5,
+   "vs200": 22.7,
+   "vs50": 17,
    "roles": []
   },
   "QQQ": {
