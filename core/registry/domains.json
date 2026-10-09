@@ -10,6 +10,24 @@
   },
   "domains": [
     {
+      "id": "deEuListings",
+      "label": "DE/EU Index Listings (private Entwicklung)",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/core/data/de-eu/listings.json",
+      "timestamp": [],
+      "records": "listings",
+      "role": "ISIN/MIC-getrennter Pflichtbestand DAX/MDAX/SDAX/TecDAX/EURO STOXX 50; lokale Close-Reihen unter core/data/de-eu/series/<listingId>.json. Öffentlicher Stand bleibt DISABLED. Produkte lesen ausschließlich core/client.js Listing-Verträge.",
+      "producer": "scripts/marketstack/materialize-de-eu.mjs",
+      "workflow": null,
+      "schedule": "nur expliziter privater Entwicklungslauf; kein aktivierter Zeitplan",
+      "freshness": { "kind": "none" },
+      "disabledWhen": { "path": "state", "equals": "DISABLED" },
+      "consumers": ["Discover lokale Suche, Listingseite und Watchlist (gestapelte Produkt-PR)"],
+      "knownGaps": ["Account-Restkontingent nicht nachgewiesen; kostenpflichtiger Massenimport gesperrt.", "Öffentliche Rohkurs- und Displayrechte sind nicht allgemein bestätigt; reale DE/EU-Daten werden ausschließlich außerhalb des Repositorys materialisiert."]
+    },
+    {
       "id": "securityMaster",
       "label": "Security Master",
       "layer": "CORE",
