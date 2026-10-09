@@ -65,6 +65,28 @@ class AuditDiagnostics(unittest.TestCase):
         result = safe_error(b'{"error_code":1,"detail":"Your SMTP account has not been activated."}', "synthetic-only")
         self.assertEqual(result["error_code"], 1)
         self.assertEqual(result["error_message"], "Your SMTP account has not been activated.")
+        result = safe_error(b'{"error_code":1010,"detail":"error code: 1010"}', "synthetic-only")
+        self.assertEqual(result["error_code"], 1010)
+        self.assertEqual(result["error_message"], "error code: 1010")
+
+    def test_explicit_identity_changes_only_user_agent_on_get(self):
+        class Response(io.BytesIO):
+            status = 200
+            def __enter__(self):return self
+            def __exit__(self, *args):self.close()
+        class Fake:
+            requests = []
+            def open(self, request, timeout):
+                self.requests.append(request)
+                return Response(b'{}')
+        fake = Fake()
+        client = ReadOnlyAudit("synthetic-only", fake, "VisionUniverse-Brevo/1.0")
+        client.call("GET", "/senders")
+        request = fake.requests[0]
+        self.assertEqual(request.get_header("User-agent"), "VisionUniverse-Brevo/1.0")
+        self.assertEqual(request.get_header("Api-key"), "synthetic-only")
+        self.assertEqual(request.method, "GET")
+        self.assertEqual(request.full_url, "https://api.brevo.com/v3/senders")
 
     def test_no_secret_or_wrong_operation_cannot_call_api(self):
         class FailIfCalled:

@@ -8,6 +8,7 @@ from client import Client, audit
 from prepare import Blocked
 
 ENDPOINT = "https://api.brevo.com/v3/account"
+INTEGRATION_AGENT = "VisionUniverse-Brevo/1.0"
 BRANCH = "refs/heads/fix/brevo-audit-diagnostics"
 SAFE_CODES = frozenset(("permission_denied", "unauthorized", "access_denied", "forbidden",
                        "invalid_parameter", "missing_parameter", "document_not_found",
@@ -50,7 +51,8 @@ SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES)
     "still before after or required email emails activated activation blocked not_activation "
     "been being fully sending send sent mail messages message reason reasons time until complete completed "
     "process processing request requests review reviewing reviewed rejected reject approved approve "
-    "link button page dashboard settings security new generate verification confirm confirmed confirming".split())
+    "link button page dashboard settings security new generate verification confirm confirmed confirming "
+    "code codes owner website banned based browser browser's signature cloudflare browser-signature".split())
 
 
 def secret_status(key):
@@ -85,8 +87,12 @@ def safe_error(raw, key):
     allowed_message = None
     if isinstance(message, str) and len(message) <= 4096:
         # Preserve the actual generic Brevo message when it exactly matches the allowlist.
-        normalized = message.strip().casefold()
-        generic = re.fullmatch(r"[A-Za-z ',.!?:;-]+", message.strip()) is not None
+        # A repeated numeric error code is a control value, not an identifier to redact.
+        validation_message = message
+        if type(allowed_code) is int:
+            validation_message = re.sub(r"\b" + str(allowed_code) + r"\b", "code", validation_message)
+        normalized = validation_message.strip().casefold()
+        generic = re.fullmatch(r"[A-Za-z ',.!?:;-]+", validation_message.strip()) is not None
         words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
         allowed = any(normalized == s.casefold() for s in SAFE_MESSAGES) or (
             generic and len(words) >= 2 and all(w in SAFE_WORDS for w in words))
@@ -127,19 +133,22 @@ def audit_stage(path):
 
 
 class ReadOnlyAudit(Client):
-    def __init__(self, key, opener=None):
+    def __init__(self, key, opener=None, user_agent=None):
         self._key = key
         self.mode = "audit"
         self.transport = opener or urllib.request.build_opener(NoRedirect())
         self.stages = []
         self.error = None
+        self.user_agent = user_agent
 
     def call(self, method, path, body=None, missing=False):
         stage = audit_stage(path)
         if method != "GET" or body is not None:
             raise Blocked("Nur lesende Audit-Aufrufe sind erlaubt.")
-        request = urllib.request.Request("https://api.brevo.com/v3" + path, method="GET",
-            headers={"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json"})
+        headers = {"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json"}
+        if self.user_agent:
+            headers["User-Agent"] = self.user_agent
+        request = urllib.request.Request("https://api.brevo.com/v3" + path, method="GET", headers=headers)
         try:
             with self.transport.open(request, timeout=30) as response:
                 self.stages.append({"endpoint": stage, "http_status": response.status})
@@ -155,12 +164,12 @@ class ReadOnlyAudit(Client):
             raise Blocked("Audit-Abruf abgelehnt.") from None
 
 
-def diagnose_audit(key, opener=None):
+def diagnose_audit(key, opener=None, user_agent=None):
     result = {"operation": "audit", "scope": "existing read-only audit", "auth_header": "api-key",
-              **secret_status(key)}
+              "client_identity": "explicit_integration" if user_agent else "urllib_default", **secret_status(key)}
     if not key:
         return {**result, "stages": [], "audit_complete": False}
-    client = ReadOnlyAudit(key, opener)
+    client = ReadOnlyAudit(key, opener, user_agent)
     try:
         summary = audit(client)
     except Exception:
@@ -198,8 +207,13 @@ def main():
             and os.environ.get("BREVO_OPERATION") == "audit"):
         print("Audit-Diagnose gesperrt: falscher Branch, Trigger oder Modus.")
         return 1
-    result = diagnose_audit(os.environ.get("BREVO_API_KEY", ""))
+    key = os.environ.get("BREVO_API_KEY", "")
+    result = diagnose_audit(key)
     print(json.dumps(result, ensure_ascii=True))
+    if result.get("error", {}).get("error_code") == 1010:
+        # Single controlled comparison of client identity, never a mutation or general retry loop.
+        result = diagnose_audit(key, user_agent=INTEGRATION_AGENT)
+        print(json.dumps(result, ensure_ascii=True))
     return 0 if result.get("audit_complete") else 1
 
 
