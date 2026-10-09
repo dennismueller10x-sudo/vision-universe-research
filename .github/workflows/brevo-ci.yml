@@ -1,0 +1,19 @@
+name: Brevo | Synthetische Schutzprüfungen
+on:
+  pull_request:
+    paths: ['scripts/brevo/**', 'docs/brevo/**', '.github/workflows/brevo-*.yml']
+  push:
+    branches: ['feat/brevo-newsletter-isolated']
+    paths: ['scripts/brevo/**', 'docs/brevo/**', '.github/workflows/brevo-*.yml']
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - run: python3 -m unittest discover -s scripts/brevo/tests -v
