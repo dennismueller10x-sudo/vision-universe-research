@@ -7,50 +7,15 @@
    "statement": "Wellen wechseln die Richtung",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1 (Grundform)"
   },
-  "TRIANGLE_BOUNDARIES": {
+  "FLAT_B_AT_LEAST_90PCT": {
    "class": "DEFINITION",
-   "statement": "expandierend: Extreme laufen auseinander",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
+   "statement": "Flat: B retraced mindestens 90 % von A",
+   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat: B >= 90 % von A"
   },
-  "TRIANGLE_E_INSIDE": {
-   "class": "HARD",
-   "statement": "kontrahierend: E kürzer als C",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
-  },
-  "W2_NOT_BEYOND_W1_ORIGIN": {
-   "class": "HARD",
-   "statement": "Welle 2 retraced nie mehr als 100 % von Welle 1",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
-  },
-  "W3_BEYOND_W1_END": {
-   "class": "HARD",
-   "statement": "Welle 3 läuft über das Ende von Welle 1 hinaus",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
-  },
-  "W4_NOT_BEYOND_W3_ORIGIN": {
-   "class": "HARD",
-   "statement": "Welle 4 retraced Welle 3 nicht vollständig",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
-  },
-  "DIAGONAL_W4_OVERLAPS_W1": {
-   "class": "DEFINITION",
-   "statement": "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles (\"almost always\"); als Klassengrenze zum Impuls verwendet"
-  },
-  "DIAGONAL_W4_VS_W2": {
-   "class": "DEFINITION",
-   "statement": "expandierend: W4 länger als W2",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles (Keilform)"
-  },
-  "DIAGONAL_W5_VS_W3": {
-   "class": "DEFINITION",
-   "statement": "expandierend: W5 länger als W3",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
-  },
-  "W3_NOT_SHORTEST": {
-   "class": "HARD",
-   "statement": "Welle 3 ist nie die kürzeste",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
+  "FLAT_B_NOT_EXCESSIVE": {
+   "class": "VU_OPERATIONAL",
+   "statement": "B überschreitet A hoechstens um 100 %",
+   "source": "VU-Klassengrenze (EWP Kap. 1, Flats: expandierte B typ. 123,6–138,2 %)"
   },
   "X_NOT_BEYOND_W_ORIGIN": {
    "class": "DEFINITION",
@@ -77,15 +42,55 @@
    "statement": "Zigzag: B retraced weniger als 90 % von A",
    "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat-Definition B >= 90 %"
   },
-  "FLAT_B_AT_LEAST_90PCT": {
+  "TRIANGLE_BOUNDARIES": {
    "class": "DEFINITION",
-   "statement": "Flat: B retraced mindestens 90 % von A",
-   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat: B >= 90 % von A"
+   "statement": "expandierend: Extreme laufen auseinander",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
   },
-  "FLAT_B_NOT_EXCESSIVE": {
-   "class": "VU_OPERATIONAL",
-   "statement": "B überschreitet A hoechstens um 100 %",
-   "source": "VU-Klassengrenze (EWP Kap. 1, Flats: expandierte B typ. 123,6–138,2 %)"
+  "TRIANGLE_E_INSIDE": {
+   "class": "HARD",
+   "statement": "kontrahierend: E kürzer als C",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
+  },
+  "W2_NOT_BEYOND_W1_ORIGIN": {
+   "class": "HARD",
+   "statement": "Welle 2 retraced nie mehr als 100 % von Welle 1",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
+  },
+  "W3_BEYOND_W1_END": {
+   "class": "HARD",
+   "statement": "Welle 3 läuft über das Ende von Welle 1 hinaus",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
+  },
+  "W4_NO_OVERLAP_W1": {
+   "class": "HARD",
+   "statement": "Welle 4 betritt nie das Preisgebiet von Welle 1",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Impulse — Regel 3"
+  },
+  "W3_NOT_SHORTEST": {
+   "class": "HARD",
+   "statement": "Welle 3 ist nie die kürzeste",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
+  },
+  "W4_NOT_BEYOND_W3_ORIGIN": {
+   "class": "HARD",
+   "statement": "Welle 4 retraced Welle 3 nicht vollständig",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
+  },
+  "DIAGONAL_W4_OVERLAPS_W1": {
+   "class": "DEFINITION",
+   "statement": "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles (\"almost always\"); als Klassengrenze zum Impuls verwendet"
+  },
+  "DIAGONAL_W4_VS_W2": {
+   "class": "DEFINITION",
+   "statement": "expandierend: W4 länger als W2",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles (Keilform)"
+  },
+  "DIAGONAL_W5_VS_W3": {
+   "class": "DEFINITION",
+   "statement": "expandierend: W5 länger als W3",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
   },
   "Y_BEYOND_W_END": {
    "class": "DEFINITION",
@@ -116,11 +121,6 @@
    "class": "DEFINITION",
    "statement": "Z unterteilt sich sichtbar als Zigzag",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Double and Triple Zigzags"
-  },
-  "W4_NO_OVERLAP_W1": {
-   "class": "HARD",
-   "statement": "Welle 4 betritt nie das Preisgebiet von Welle 1",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Impulse — Regel 3"
   },
   "W_ALTERNATING_DIRECTION": {
    "class": "HARD",
