@@ -93,8 +93,9 @@ def safe_error(raw, key):
         validation_message = message
         if type(allowed_code) is int:
             validation_message = re.sub(r"\b" + str(allowed_code) + r"\b", "code", validation_message)
+        validation_message = re.sub(r"\bPython-urllib/3\.\d{1,2}\b", "client", validation_message)
         normalized = validation_message.strip().casefold()
-        generic = re.fullmatch(r"[A-Za-z ',.!?:;-]+", validation_message.strip()) is not None
+        generic = re.fullmatch(r"[A-Za-z ',.!?:;()\-]+", validation_message.strip()) is not None
         words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
         allowed = any(normalized == s.casefold() for s in SAFE_MESSAGES) or (
             generic and len(words) >= 2 and all(w in SAFE_WORDS for w in words))
@@ -104,8 +105,12 @@ def safe_error(raw, key):
             # Generic independent sentences may be retained; any unknown sentence is withheld whole.
             kept = []
             for sentence in re.split(r"(?<=[.!?])\s+", message.strip()):
-                words = re.findall(r"[a-z]+(?:'[a-z]+)?", sentence.casefold())
-                if (re.fullmatch(r"[A-Za-z ',.!?:;-]+", sentence) is not None
+                validation = sentence
+                if type(allowed_code) is int:
+                    validation = re.sub(r"\b" + str(allowed_code) + r"\b", "code", validation)
+                validation = re.sub(r"\bPython-urllib/3\.\d{1,2}\b", "client", validation)
+                words = re.findall(r"[a-z]+(?:'[a-z]+)?", validation.casefold())
+                if (re.fullmatch(r"[A-Za-z ',.!?:;()\-]+", validation) is not None
                         and len(words) >= 2 and all(w in SAFE_WORDS for w in words)):
                     kept.append(sentence)
             if kept:
