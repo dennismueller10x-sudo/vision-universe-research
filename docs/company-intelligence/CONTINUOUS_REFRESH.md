@@ -417,3 +417,25 @@ against both GOOD and its accepted observation. OFF/404, changed scope or a
 mismatch is CRITICAL even when an old publication timestamp is recent. The
 historical receipt remains in R2 for diagnosis; it is not counted as a currently
 verified publication. This read-only probe never repairs/enables production.
+
+Recovery checkpoint: isolated run **37982253660** passed a fresh restore of
+5,120 companies and all 86 consumer assets plus all 16 routed actual-UI candidate
+cases, while production was still OFF. Gate-enable run **37983274560** verified
+the durable consumer and left private state untouched. Actual Pages recovery
+**37983580926** then passed AAPL/XPEV routine protected-browser QA at 20:04 UTC
+on `e93511584cd79c3ab38386496143b91294fef521`, serving the previous verified GOOD
+`40afe02bad7b0a64facdde95`. Its five routine hashes and response proof are preserved
+as `recovery-production-routine-report.json`.
+
+PR #558 merged as `997b503d2e36371f802fceb1e00ef085a4bf5351` after exact-head
+Company Intelligence validation **37983431942**, Pages package, currency and
+config checks passed. Core retained exactly the three independently classified
+baseline invalid-news-symbol failures; Vercel's preview quota is unrelated to
+Research Pages. Incoming main changes were ordinary intraday/capability/watchdog
+JSON updates, retained by the normal merge. No UI, factor, score, access-control
+or cohort expansion was included.
+
+Routine recovery did not replace the prior publication observation: its generation
+was from the previous GOOD, while the old observation referred to the rolled-back
+newer consumer. A subsequent full refresh must pass all 16 actual live cases before
+its new accepted publication clock is written. The 20:17 UTC cron is being observed.
