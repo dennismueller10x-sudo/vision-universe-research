@@ -69,6 +69,38 @@ def secret_status(key):
             "surrounding_quotes": len(trimmed) > 1 and trimmed[0] == trimmed[-1] and trimmed[0] in "\"'"}
 
 
+def redacted_generic_message(message, key, code):
+    """Retain generic error words only; mask unknown identifiers, names and all contact syntax."""
+    if key and key in message:
+        return None
+    clean = re.sub(r"https?://\S+|[^\s<>]+@[^\s<>]+|\b(?:\d{1,3}\.){3}\d{1,3}\b", " [redacted] ", message)
+    parts, words, word_index = [], [], 0
+    starts = {"your", "you", "we", "the", "this", "please", "error", "access", "permission",
+              "request", "invalid", "bad", "missing", "account", "not", "no"}
+    labels = {"User-Agent", "SMTP", "API", "HTTP", "IP", "WAF", "Cloudflare"}
+    for token in re.findall(r"\[redacted\]|[A-Za-z][A-Za-z0-9_'\-]*|\d+|[^\s]", clean):
+        generic = re.fullmatch(r"[A-Za-z]+(?:['\-][A-Za-z]+)*", token) is not None
+        token_words = re.findall(r"[a-z]+(?:'[a-z]+)?", token.casefold())
+        casing = token.islower() or token in labels or (word_index == 0 and token.casefold() in starts)
+        if generic and casing and all(w in SAFE_WORDS for w in token_words):
+            parts.append(token)
+            words.extend(token_words)
+            word_index += 1
+        elif token == str(code) and type(code) is int:
+            parts.append(token)
+        elif token in (".", ",", ":", ";", "!", "?", "(", ")", "-", "'", '"'):
+            parts.append(token)
+        else:
+            if not parts or parts[-1] != "[redacted]":
+                parts.append("[redacted]")
+            word_index += 1
+    contexts = {"user", "agent", "api", "http", "browser", "request", "requests", "account",
+                "access", "signature", "integrity", "cloudflare", "error", "code", "key", "ip"}
+    if len(words) < 2 or not contexts.intersection(words):
+        return None
+    return " ".join(parts)[:2048]
+
+
 def safe_error(raw, key):
     try:
         data = json.loads(raw)
@@ -118,6 +150,8 @@ def safe_error(raw, key):
                     kept.append(sentence)
             if kept:
                 allowed_message = " ".join(kept) + " [additional text withheld]"
+            else:
+                allowed_message = redacted_generic_message(message, key, allowed_code)
     return {"error_code": allowed_code, "error_message": allowed_message, "response_kind": "json",
             "message_withheld": allowed_message is None,
             "error_field_types": {k: ("string" if isinstance(fields[k], str) else "number" if type(fields[k]) is int

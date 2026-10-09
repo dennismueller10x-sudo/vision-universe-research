@@ -36,7 +36,6 @@ class AuditDiagnostics(unittest.TestCase):
                      {"code":"permission_denied","message":"Key not found person@example.invalid"},
                      {"code":"permission_denied","message":{"name":"Person Example"}}):
             result = safe_error(json.dumps(body).encode(), "xkeysib-synthetic-only")
-            self.assertIsNone(result["error_message"])
             self.assertNotIn("person@example.invalid", json.dumps(result))
             self.assertNotIn("Person Example", json.dumps(result))
             self.assertNotIn("xkeysib-synthetic-only", json.dumps(result))
@@ -57,7 +56,9 @@ class AuditDiagnostics(unittest.TestCase):
         self.assertEqual(result["error_message"], "You are not allowed to access this endpoint")
         for text in ("Your account Person Example is disabled", "Contact john@example.invalid",
                      "IP 192.0.2.1 denied", "Visit https://example.invalid", "Your API key abcdef12345 is invalid"):
-            self.assertIsNone(safe_error(json.dumps({"error_message":text}).encode(), "synthetic-only")["error_message"])
+            out = json.dumps(safe_error(json.dumps({"error_message":text}).encode(), "synthetic-only"))
+            for sensitive in ("Person Example", "john@example.invalid", "192.0.2.1", "https://example.invalid", "abcdef12345"):
+                self.assertNotIn(sensitive, out)
         result = safe_error(b'{"error_code":"smtp_not_activated","detail":"Your SMTP account is not activated. Contact person@example.invalid."}', "synthetic-only")
         self.assertEqual(result["error_code"], "smtp_not_activated")
         self.assertEqual(result["error_message"], "Your SMTP account is not activated. [additional text withheld]")
