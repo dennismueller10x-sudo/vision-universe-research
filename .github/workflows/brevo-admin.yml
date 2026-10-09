@@ -23,10 +23,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # Reviewed immutable diagnostic source; never arbitrary branch code.
-          ref: 18991449b9e08792559d86a4adac7a7bb16bc934
+          ref: 9bfbef9db0b9fdffa10f620d757d10dec249c6c0
           persist-credentials: false
           sparse-checkout: scripts/brevo
-      - name: audit - GET account only
+      - name: audit - read-only endpoint diagnostics
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_OPERATION: audit
