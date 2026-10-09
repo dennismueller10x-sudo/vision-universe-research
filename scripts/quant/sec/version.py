@@ -254,7 +254,13 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Mosaic ImmunoEngineering). Ein TTM geht ueber die Folge vorhandener
 #          Kennungen zurueck statt "Kennung minus eins" (Best Buy: Luecke 2014
 #          nach dem Uebergangsjahr ohne Kennung); die tatsaechlichen Perioden
-#          prueft _ttm_window wie bisher.
+#          prueft _ttm_window wie bisher. Red Team Runde 2: der eigene Zeitraum
+#          eines 10-KT ist der juengste Zeitraum direkt nach einem 12-Monats-Jahr
+#          des Berichts (kein Ereigniszeitraum: International Safety Group); das
+#          alte Jahr vor einem Uebergang darf den umgerechneten Zwilling
+#          ueberlappen (Columbia Financial); ein verkuerztes Geschaeftsjahr direkt
+#          nach dem Vorjahresende behaelt seine Kennung (Best Buy); bei mehreren
+#          Berichten mit demselben Jahresende spricht der zuegigste (Aytu).
 NORMALIZATION_LOGIC_VERSION = "1.21.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -287,7 +293,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "ff9ad8dd1870553388d140cb7dd1c8ade23be161d7c3091866d5f7aee5626f6e"
+    "dc12692992a43e7cf5a5156bce5b47db10d4e8a9f36cdbe9de0ae5e562095753"
 )
 
 

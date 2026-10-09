@@ -315,14 +315,20 @@ class FiscalCalendar:
                 anchor_source = ANCHOR_SOURCE_YEAR_END_PROJECTED
 
         # An annual filing's own reporting period is its latest annual period end.
-        anchors, late = {}, set()
+        anchors, late, lag_of = {}, set(), {}
         for bucket in anchors_by_accession.values():
             if bucket["fy"] is None or not bucket["ends"]:
                 continue
             own = max(bucket["ends"])
+            lag = (bucket["filed"] - own).days if bucket.get("filed") else 0
+            # several reports with the same own year end: the promptest one speaks
+            # for it (Aytu: a late 10-K filed 2014-11-26 removed the anchor of the
+            # prompt FY2013 10-K; red team, round 2)
+            if own in lag_of and lag_of[own] <= lag:
+                continue
+            lag_of[own] = lag
             anchors[own] = bucket["fy"]
-            if bucket.get("filed") and (bucket["filed"] - own).days > OWN_YEAR_MAX_FILING_LAG_DAYS:
-                late.add(own)
+        late = {own for own, lag in lag_of.items() if lag > OWN_YEAR_MAX_FILING_LAG_DAYS}
         # 1.21.0 (F-TTM-5): a report is filed after its own year end; a twelve-
         # month period that ended more than a year before the filing is a
         # comparative - when its label also breaks the filer's own convention.
@@ -358,7 +364,17 @@ class FiscalCalendar:
         label_mid_offset = mid_offsets.most_common(1)[0][0] if mid_offsets else None
 
         fy_ends = cls._cluster(annual_ends)
-        labels, rejected, unlabeled = cls._label_years_with_transitions(fy_ends, anchors, label_offset, label_mid_offset)
+        # starts of the fiscal-year-length periods (>= 330 days) every annual report
+        # carries, by end: a shortened fiscal year that begins right after the
+        # previous year end is a fiscal year, not a transition period (Best Buy's
+        # 11 months to 2013-02-02, 8point3's 336 days to 2015-11-30)
+        year_starts = defaultdict(set)
+        for periods in periods_by_accession.values():
+            for start, end in periods:
+                if classify_duration(start.isoformat(), end.isoformat()) == "FY":
+                    year_starts[end].add(start)
+        labels, rejected, unlabeled = cls._label_years_with_transitions(
+            fy_ends, anchors, label_offset, label_mid_offset, year_starts=year_starts)
         calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint,
                        label_mid_offset=label_mid_offset, unlabeled=unlabeled)
         calendar.rejected_anchors = rejected
@@ -427,7 +443,11 @@ class FiscalCalendar:
                 if not TRANSITION_PERIOD_DAYS[0] <= length < TRANSITION_PERIOD_DAYS[1] \
                         or not _same_annual_cycle(period[1], own_end) or overlaps_a_year(period, twin_end=period[1]):
                     continue
-                before = [p for p in periods if is_year(p) and adjacent(p, period) and not overlaps_a_year(p)]
+                # the old-cycle year before it may overlap the recast twelve months
+                # that end with the transition period (Columbia Financial: October
+                # 2016 - September 2017 next to calendar 2017; red team, round 2, D-R1)
+                before = [p for p in periods if is_year(p) and adjacent(p, period)
+                          and not overlaps_a_year(p, twin_end=period[1])]
                 if before:
                     candidates.append((period, max(before, key=lambda p: p[1])))
         for period, previous_year in candidates:
@@ -444,21 +464,30 @@ class FiscalCalendar:
     def _transition_report_ends(periods):
         """The year ends a transition report (10-KT) declares by its own chain.
 
-        Its own period is the best supported period ending on its latest period
-        end; that end closes the transition period. The twelve-month period right
-        before it (-3..+8 days) is the last fiscal year of the old cycle."""
-        candidates = [p for p in periods if (p[1] - p[0]).days + 1 >= TRANSITION_PERIOD_DAYS[0]]
-        if not candidates:
+        Its own period is the latest period (at least TRANSITION_PERIOD_DAYS[0])
+        that begins right after (-3..+8 days) a twelve-month period of the same
+        report: the transition period after the last fiscal year of the old
+        cycle. Its end and that year's end are fiscal year ends. A later period
+        that follows no fiscal year is no fiscal period - a subsequent-event
+        disclosure (International Safety Group's 10-KT: shares issued
+        2013-01-30..2013-04-03 after the transition period to 2012-12-31) made
+        2013-04-03 a year end and put the Q1 2013 balance sheet under FY2012
+        (red team, round 2, D-R2). Without such a chain nothing is learned."""
+        def is_year(p):
+            return classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY"
+
+        def follows(year, period):
+            gap = (period[0] - year[1]).days - 1
+            return -FISCAL_CHAIN_OVERLAP_DAYS <= gap <= FISCAL_CHAIN_GAP_DAYS
+
+        years = [p for p in periods if is_year(p)]
+        chains = [(period, year) for period in periods
+                  if (period[1] - period[0]).days + 1 >= TRANSITION_PERIOD_DAYS[0]
+                  for year in years if year != period and follows(year, period)]
+        if not chains:
             return set()
-        last = max(p[1] for p in candidates)
-        own = max((p for p in candidates if p[1] == last), key=lambda p: (periods[p], p[0]))
-        found = {last}
-        for p in periods:
-            gap = (own[0] - p[1]).days - 1
-            if classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY" \
-                    and -FISCAL_CHAIN_OVERLAP_DAYS <= gap <= FISCAL_CHAIN_GAP_DAYS:
-                found.add(p[1])
-        return found
+        own, year = max(chains, key=lambda c: (c[0][1], periods[c[0]], c[1][1]))
+        return {own[1], year[1]}
 
     @staticmethod
     def _year_ends_from_annual_filings(raw_facts):
@@ -567,7 +596,7 @@ class FiscalCalendar:
         return labels, rejected
 
     @staticmethod
-    def _label_years_with_transitions(fy_ends, anchors, label_offset, label_mid_offset=None):
+    def _label_years_with_transitions(fy_ends, anchors, label_offset, label_mid_offset=None, year_starts=None):
         """Fiscal-year labels, refusing anchors that cannot be true.
 
         The label comes from the annual filing's own `fy` field where one
@@ -593,7 +622,10 @@ class FiscalCalendar:
         for end in fy_ends:
             fallback = _fallback_label(end, label_offset, label_mid_offset)
             label = anchors.get(end, fallback)
-            if previous_end is not None and end not in anchors \
+            starts = (year_starts or {}).get(end, ())
+            shortened_year = previous_end is not None and any(
+                -FISCAL_CHAIN_OVERLAP_DAYS <= (start - previous_end).days - 1 <= FISCAL_CHAIN_GAP_DAYS for start in starts)
+            if previous_end is not None and end not in anchors and not shortened_year \
                     and (end - previous_end).days < TRANSITION_YEAR_DAYS[0]:
                 # 1.21.0: the end of a period shorter than a fiscal year that no
                 # annual report claims as its own year closes a transition period.

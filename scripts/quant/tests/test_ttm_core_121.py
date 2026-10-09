@@ -304,13 +304,49 @@ class RedTeam121Tests(unittest.TestCase):
         previous, fy_end = calendar._boundaries_covering("2015-09-27")
         self.assertTrue(calendar.is_transition_year(previous, fy_end), (previous, fy_end))
 
-    def test_windows_after_an_unlabelled_transition_year_step_over_the_label_gap(self):
-        # Best Buy: 11-monatiges Uebergangsjahr 2012-03-04..2013-02-02 (10-KT 2013-03-27) ohne eigene Kennung; das
-        # folgende Jahr traegt laut eigenem 10-K fy=2013, das danach fy=2015. "Kennung minus eins" fiel in die Luecke
-        # 2014 und die Fenster bis 2014-05-03/08-02/11-01 gingen verloren (Vollarchiv-Vergleich vor dem Freeze).
+    def test_windows_after_a_shortened_fiscal_year_step_along_the_labels(self):
+        # Best Buy: verkuerztes Geschaeftsjahr 2012-03-04..2013-02-02 (11 Monate, 10-KT 2013-03-27). Es beginnt direkt
+        # nach dem Vorjahresende und behaelt eine Kennung; die Jahre davor und danach folgen den fy-Tags der eigenen
+        # 10-K (keine abgelehnten Anker). Der Einreicher wechselt danach die Zaehlweise (fy 2013 -> 2015): "Kennung
+        # minus eins" fiel in die Luecke 2014 und verlor die Fenster bis 2014-05-03/08-02/11-01.
         calendar, _ = build("BBY")
-        self.assertIn(date(2013, 2, 2), calendar.unlabeled)
+        self.assertIsNotNone(calendar.fiscal_year_for("2013-02-02"))
+        self.assertEqual(calendar.rejected_anchors, [])
+        self.assertLess(calendar.fiscal_year_for("2013-02-02"), calendar.fiscal_year_for("2014-02-01"))
         for end, start in (("2014-05-03", "2013-05-05"), ("2014-08-02", "2013-08-04"), ("2014-11-01", "2013-11-03")):
             fact = ttm_for_end("BBY", end, "2026-10-07")
             self.assertTrue(fact is not None and fact.available, (end, fact and fact.reason))
             self.assertEqual(str(fact.period_start)[:10], start)
+
+
+class RedTeam121Round2Tests(unittest.TestCase):
+    """Red Team Runde 2 (21c452b): D-R2 ein Ereigniszeitraum nach dem Uebergang im 10-KT wurde Jahresende und legte
+    die Q1-Bilanz in FY2012 (einziger falscher Wert der Runde); D-R1 falscher Uebergang ein Jahr frueher, wenn das
+    alte Geschaeftsjahr das umgerechnete Kalenderjahr ueberlappt."""
+
+    def test_d_r2_a_subsequent_event_period_in_a_transition_report_is_no_year_end(self):
+        # International Safety Group: 10-KT 0001493152-13-000650 fuer 2012-03-01..2012-12-31, Aktienausgabe
+        # 2013-01-30..2013-04-03 als Ereigniszeitraum
+        calendar, resolver = build("ISG")
+        self.assertFalse(near(calendar.fy_ends, "2013-04-03"), [str(e) for e in calendar.fy_ends])
+        self.assertTrue(near(calendar.fy_ends, "2012-12-31"), [str(e) for e in calendar.fy_ends])
+        for year in resolver.factbook.fiscal_years("total_assets"):
+            fact = resolver.annual("total_assets", year, "2026-10-07")
+            if fact.available:
+                self.assertTrue(calendar.period_end_is_fy_end(str(fact.period_end)[:10]),
+                                f"FY{year} traegt eine Bilanz, die auf keinem Jahresende liegt: {fact.period_end}")
+
+    def test_d_r1_the_old_year_may_overlap_the_recast_twin_of_the_transition(self):
+        # Columbia Financial: September -> Dezember, Uebergang 2017-10-01..2017-12-31 (10-K 0001723596-19-000011 mit
+        # umgerechnetem Kalenderjahr 2017); der Vergleichszeitraum Okt-Dez 2016 ist kein Uebergang
+        calendar, resolver = build("CLBK")
+        self.assertTrue(near(calendar.fy_ends, "2017-09-30") and near(calendar.fy_ends, "2017-12-31"))
+        self.assertFalse(near(calendar.fy_ends, "2016-12-31"), [str(e) for e in calendar.fy_ends])
+        year, index = calendar.fiscal_year_for("2017-09-30"), calendar.quarter_index("2017-09-30")
+        fact = resolver.ttm_ending("net_income", year, index, "2026-10-07")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, 9993000 + 10293000 + 9272000 + 1514000, places=0)
+        for end in ("2018-03-31", "2018-06-30"):
+            y, i = calendar.fiscal_year_for(end), calendar.quarter_index(end)
+            fact = resolver.ttm_ending("net_income", y, i, "2026-10-07") if y and i else None
+            self.assertTrue(fact is None or not fact.available, f"TTM bis {end} durch den Uebergang Okt-Dez 2017")
