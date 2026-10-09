@@ -1,6 +1,7 @@
 /** Private discovery foundation; no provider calls, production writes or publication. */
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import { GERMAN_REGIONAL_POLICY, validRegionalMicEvidence } from './europe-mic-policy.mjs';
 const require = createRequire(import.meta.url);
 const Identity = require('../../core/identity.js');
 const CompanyMaster = require('../../quant/engines/company-master.js');
@@ -118,6 +119,28 @@ function verifiedLocalCsFacts(e, listing) {
     str(e.provenance?.gleif?.url) && str(e.provenance?.xetra?.url) &&
     /^[a-f0-9]{64}$/.test(e.provenance?.gleif?.sha256 || '') && /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '');
 }
+/** Narrow product preference, with fresh domestic reference and recent scoped EOD. */
+export function verifiedGermanRegionalCashShare(e, listing) {
+  const h = e.regionalActivityEvidence, c = h?.calendar, sessions = c?.expectedSessions || [];
+  const expected = c?.expectedLastCompletedSession, previous = sessions[sessions.indexOf(expected) - 1];
+  const at = e.regionalMicEvidence?.evaluatedAt;
+  return e.productPrimaryPolicy === GERMAN_REGIONAL_POLICY && e.verified === true &&
+    validRegionalMicEvidence(e.regionalMicEvidence, e.primaryMarketMic, at) &&
+    e.issuerCountry === 'DE' && e.legalJurisdiction === 'DE' && e.issuerCountryBasis === 'GLEIF_ENTITY_JURISDICTION' &&
+    validIsin(e.isin) && e.isin === listing.isin && validLei(e.lei) && e.entityCategory === 'GENERAL' && e.entityStatus === 'ACTIVE' &&
+    e.officialInstrumentType === 'CS' && e.typeSource === 'XETRA_REFERENCE' && e.regulatoryLiquid === true && e.active === true &&
+    e.mic === 'XETR' && e.primaryMic === 'XETR' && listing.mic === 'XETR' && listing.currency === 'EUR' &&
+    e.provenance?.gleif?.httpStatus === 200 && e.provenance.gleif.queryIsin === e.isin &&
+    [e.provenance.gleif, e.provenance.xetra].every(p => p?.httpStatus === 200 && /^[a-f0-9]{64}$/.test(p.sha256 || '') &&
+      Number.isFinite(Date.parse(p.retrievedAt)) && Date.parse(p.retrievedAt) <= Date.parse(at) && p.retrievedAt.slice(0, 10) === at?.slice(0, 10)) &&
+    h?.verified === true && h.validPrice === true && h.mic === 'XETR' && h.isin === e.isin && h.providerSymbol === listing.providerSymbol &&
+    h.currency === 'EUR' && typeof h.volume === 'number' && Number.isFinite(h.volume) && h.volume > 0 &&
+    /^[a-f0-9]{64}$/.test(h.rawSha256 || '') && /^[a-f0-9]{64}$/.test(h.metadataRawSha256 || '') &&
+    c?.verified === true && c.mic === 'XETR' && str(c.source) && validDate(expected) && sessions.includes(expected) &&
+    new Set(sessions).size === sessions.length && sessions.every((value, index) => validDate(value) && (!index || sessions[index - 1] < value)) &&
+    ((h.observedDate === expected && ['CURRENT', 'LAST_VALID_SESSION'].includes(h.freshness)) ||
+      (h.observedDate === previous && h.freshness === 'DELAYED'));
+}
 export function verifiedGermanIndexLocalCashShare(e, listing) {
   const p = e.germanIndexMembershipEvidence;
   return e.productPrimaryPolicy === 'GERMANY_OFFICIAL_INDEX_EUROPEAN_LOCAL_XETRA' && verifiedLocalCsFacts(e, listing) &&
@@ -227,7 +250,7 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
       e.provenance?.gleif?.httpStatus === 200 && upper(e.provenance.gleif.queryIsin) === upper(e.isin) &&
       /^[a-f0-9]{64}$/.test(e.provenance?.gleif?.sha256 || '') &&
       /^[a-f0-9]{64}$/.test(e.provenance?.xetra?.sha256 || '') && n.mic === 'XETR') ||
-      matches.some(e => verifiedHomeCashShare(e, n) || verifiedGermanIndexLocalCashShare(e, n) || verifiedMeasuredGermanCashShare(e, n));
+      matches.some(e => verifiedHomeCashShare(e, n) || verifiedGermanIndexLocalCashShare(e, n) || verifiedMeasuredGermanCashShare(e, n) || verifiedGermanRegionalCashShare(e, n));
     if (!classified.kind && classified.status !== 'REJECTED' && officialCashShare) {
       classified = { status: 'ACCEPTED', kind: 'EQUITY_SHARE_CLASS', reasons: [] };
     }
@@ -262,7 +285,7 @@ export function buildEuropeEquityUniverse(observations = [], options = {}) {
     if (options.candidatePriceCurrencyConflict?.[listingKey] === true) reasons.push('PROVIDER_QUOTE_CURRENCY_CONFLICT');
     const primaryPolicies = distinct(matches.map(e => str(e.productPrimaryPolicy)));
     for (const e of matches.filter(e => e.productPrimaryPolicy)) {
-      if (!verifiedHomeCashShare(e, n) && !verifiedGermanIndexLocalCashShare(e, n) && !verifiedMeasuredGermanCashShare(e, n) &&
+      if (!verifiedHomeCashShare(e, n) && !verifiedGermanIndexLocalCashShare(e, n) && !verifiedMeasuredGermanCashShare(e, n) && !verifiedGermanRegionalCashShare(e, n) &&
         (e.productPrimaryPolicy !== 'GERMANY_LIQUID_LOCAL_XETRA' || upper(e.issuerCountry) !== 'DE' ||
         upper(e.primaryMic) !== 'XETR' || upper(e.mic) !== 'XETR' || e.active !== true || e.regulatoryLiquid !== true)) {
         reasons.push('PRODUCT_PRIMARY_POLICY_UNVERIFIED');

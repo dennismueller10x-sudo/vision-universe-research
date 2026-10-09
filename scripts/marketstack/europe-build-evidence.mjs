@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, lstatSync } from 'n
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, createDecipheriv } from 'node:crypto';
+import { GERMAN_REGIONAL_POLICY, germanRegionalMicEvidence } from './europe-mic-policy.mjs';
 import { privateRoot } from './europe-ingestion.mjs';
 import { buildEuropeEquityUniverse, validIsin, validLei, EUROPE_EXCHANGE_PLAN } from './europe-universe.mjs';
 import { evaluateEuropePriceSeries, evaluateFreshness, validateEodBars, projectEuropeRawResearch, classifyAdjustment } from './europe-quality.mjs';
@@ -395,6 +396,8 @@ function compactUniverse(universe) {
       liquidityEvidence: e.liquidityEvidence ? { ...e.liquidityEvidence, calendar: calendarProof(e.liquidityEvidence.calendar, 21) } : null,
       germanIndexMembershipEvidence: e.germanIndexMembershipEvidence,
       nativeMnemonicVerifiedUnique: e.nativeMnemonicVerifiedUnique, firstTradingDate: e.firstTradingDate,
+      regionalMicEvidence: e.regionalMicEvidence || null,
+      regionalActivityEvidence: e.regionalActivityEvidence ? { ...e.regionalActivityEvidence, calendar: calendarProof(e.regionalActivityEvidence.calendar, 2) } : null,
       homeActivityEvidence: e.homeActivityEvidence ? { ...e.homeActivityEvidence, calendar: calendarProof(e.homeActivityEvidence.calendar, 2) } : null,
       provenance: e.provenance, officialManifest: e.officialManifest })) });
   const candidates = universe.candidates.map(candidate), listings = candidates.filter(c => c.status === 'ACCEPTED');
@@ -447,7 +450,7 @@ export function buildEquityIndexCoverage(productRows, indexReferences, now) {
   });
 }
 
-export function compileEuropeEvidence({ evidence, officialIdentity, calendars = {}, now, protectedSecurityIds = [], indexReferences = [] } = {}) {
+export function compileEuropeEvidence({ evidence, officialIdentity, calendars = {}, now, protectedSecurityIds = [], indexReferences = [], micRelationships = null } = {}) {
   if (!now || !Number.isFinite(Date.parse(now))) throw Error('EXPLICIT_EVALUATION_TIME_REQUIRED');
   if (!Array.isArray(evidence) || evidence.some(e => e.verified !== true)) throw Error('HASH_VERIFIED_EVIDENCE_REQUIRED');
   const operations = evidence.flatMap(e => e.operations), official = officialIdentity?.rows || [];
@@ -521,13 +524,26 @@ export function compileEuropeEvidence({ evidence, officialIdentity, calendars = 
       const e = structuredClone(identity); e.officialReferenceMic = identity.mic;
       if (identity.mic !== mic) { e.officialReferenceCurrency = identity.listingCurrency ?? null; e.listingCurrency = null; }
       if (mic === 'XETR' && e.productPrimaryPolicy === 'GERMANY_LIQUID_LOCAL_XETRA') return e;
+      const iso = germanRegionalMicEvidence(micRelationships, e.primaryMarketMic, now);
+      const regionalSessions = calendar.expectedSessions || [], regionalPrevious = regionalSessions[regionalSessions.indexOf(calendar.expectedLastCompletedSession) - 1];
+      const regionalRecent = fresh(freshness.status) || freshness.status === 'DELAYED' && latestBar?.date === regionalPrevious;
+      if (mic === 'XETR' && e.mic === 'XETR' && e.issuerCountry === 'DE' && e.regulatoryLiquid === true && e.active === true && iso &&
+        latestBar && latestQuality.quarantine.length === 0 && !priceConflict && regionalRecent && latestBar.volume > 0 && currency === 'EUR' &&
+        raw.active !== false && raw.is_active !== false) {
+        e.primaryMic = 'XETR'; e.productPrimaryPolicy = GERMAN_REGIONAL_POLICY; e.regionalMicEvidence = iso;
+        e.regionalActivityEvidence = { verified: true, validPrice: true, mic, isin: e.isin, providerSymbol: preferredSymbol,
+          observedDate: latestBar.date, volume: latestBar.volume, currency, freshness: freshness.status,
+          rawSha256: latest.provenance.rawSha256, metadataRawSha256: representative.observation.provenance.rawSha256,
+          calendar: { ...calendar, expectedSessions: regionalSessions.slice(-3) }, provenance: latest.provenance };
+        return e;
+      }
       const germanIndex = indexReferences.find(r => referenceReady(r) && ['DAX', 'MDAX', 'SDAX', 'TecDAX'].includes(r.index) &&
         r.rows.some(row => row.isin === e.isin));
       if (mic === 'XETR' && ['XFRA', 'XETR'].includes(e.primaryMarketMic) && e.mic === 'XETR' && e.active === true) {
         if (e.issuerCountry === 'DE' && measuredLiquidity) {
           e.primaryMic = 'XETR'; e.productPrimaryPolicy = 'GERMANY_MEASURED_LIQUID_LOCAL_XETRA'; e.liquidityEvidence = measuredLiquidity; return e;
         }
-        if (e.issuerCountry !== 'DE' && germanIndex) {
+        if (germanIndex && (e.issuerCountry !== 'DE' || latestBar && latestBar.volume > 0 && regionalRecent && latestQuality.quarantine.length === 0)) {
           e.primaryMic = 'XETR'; e.productPrimaryPolicy = 'GERMANY_OFFICIAL_INDEX_EUROPEAN_LOCAL_XETRA';
           e.germanIndexMembershipEvidence = { verified: true, rosterExtractionVerified: true, index: germanIndex.index, isin: e.isin,
             asOf: germanIndex.asOf, evaluatedAt: now, source: germanIndex.source, documentSha256: germanIndex.documentSha256 }; return e;
