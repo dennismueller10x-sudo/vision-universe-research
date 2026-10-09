@@ -24,11 +24,13 @@ for(const [path,meta] of assetEntries){
  const r=await get('/company-intelligence/data/'+path);assert(r.ok,path+' '+r.status);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(bytes.length,meta.bytes,path);assert.equal(createHash('sha256').update(bytes).digest('hex'),meta.sha256,path);
 }
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined}),cases=[];
+let activePage=null,active=null;
 try{
  const closed=await browser.newPage();await closed.goto(origin+'/discover/#/s/US_REAL/AAPL');await closed.waitForSelector('#research-access-gate');assert.equal(await closed.locator('.ci-company-intelligence').count(),0);await closed.close();
  const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);
  for(const ticker of (routine?['AAPL','XPEV']:['AAPL','NVDA','TSLA','MSFT','PLTR','GOOG','GOOGL','XPEV','BOH','SBSI','AMPY'])){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[],responses=[];
+  activePage=page;active={ticker,errors,responses};
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence h2');
@@ -39,4 +41,11 @@ try{
  }
  writeFileSync(out+'/report.json',JSON.stringify({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,deliveryRetries,routine,protectedExistingAccessGate:true,noQueryOptIn:true,cases},null,2)+'\n');
  console.log(JSON.stringify({status:'PASS',sourceCommit:release.sourceCommit,generation:delivery.generation,assets:assetEntries.length,stocks:cases.length,routine}));
+}catch(error){
+ const markers=activePage?await activePage.locator('.ci-company-intelligence').evaluateAll(es=>es.map(e=>({state:e.dataset.state,companyId:e.dataset.companyId,generatedAt:e.dataset.generatedAt,text:e.innerText.slice(0,1200)}))).catch(()=>[]):[];
+ const accessGate=activePage?await activePage.locator('#research-access-gate').count().catch(()=>null):null;
+ if(activePage)await activePage.screenshot({path:out+'/failure.png'}).catch(()=>{});
+ const message=String(error.message).replaceAll(process.env.RESEARCH_ACCESS_PASSWORD||'__NO_SECRET__','[REDACTED]').slice(0,2000);
+ writeFileSync(out+'/report.json',JSON.stringify({status:'FAIL',sourceCommit:release.sourceCommit,generation:delivery.generation,active,markers,accessGate,error:{name:error.name,message},completedCases:cases.length},null,2)+'\n');
+ throw error;
 }finally{await browser.close();}

@@ -389,3 +389,31 @@ Final independent read-only R2 health run 37973142531 passed on main: all three
 SLOs were HEALTHY for consumer `bc4b5f6f0392692125bccb74`. Its aggregate receipt
 is committed as `final-slo-refresh-slo.json` alongside both successful production
 runs and the full actual-production browser reports.
+
+### Subsequent fail-closed production incident (9 October)
+
+The acceptance above records the earlier successful state, not a guarantee that
+later deployments remained enabled. Automatic Pages run **37975022327** deployed
+main `07416a561354904cd3b87b0006cb343c8be49115` and failed its routine actual-browser
+check at 18:50 UTC: the Company Intelligence heading did not become visible within
+30 seconds. The existing rollback restored the previous GOOD consumer and closed
+the durable production gate. Pages run **37978178979** subsequently passed the
+OFF checks; that green result is **not** evidence of live Company Intelligence.
+
+Isolated verification **37980945815** reproduced a second issue: its routed
+candidate inherited the OFF gate, requested no consumer data and could not test
+recovery. PR #558 allows only a browser-local approved-cohort canary overlay,
+rejects a changed cohort and leaves actual gates/access controls unchanged.
+Routine actual QA now preserves failure markers, requests/errors and a screenshot
+without increasing timeouts or weakening assertions. The original 18:50 run did
+not capture enough diagnostics to identify the missing-heading cause conclusively.
+
+At this incident checkpoint production is OFF. Recovery and subsequent actual
+production verification are still pending; the earlier autonomy YES statement is
+superseded until those pass. No authoritative private state has been replaced.
+
+The independent health lane also checks the actual public delivery generation
+against both GOOD and its accepted observation. OFF/404, changed scope or a
+mismatch is CRITICAL even when an old publication timestamp is recent. The
+historical receipt remains in R2 for diagnosis; it is not counted as a currently
+verified publication. This read-only probe never repairs/enables production.
