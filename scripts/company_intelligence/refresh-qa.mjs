@@ -1,4 +1,4 @@
-/* Read-only real Discover UI. Candidate mode intercepts consumer bytes only;
+/* Read-only real Discover UI. Candidate mode overlays the approved gate and consumer bytes locally;
    live mode verifies the actually served bytes without interception. */
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -9,6 +9,7 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {frozenInventory,refreshConfig} from './refresh-approval.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
+import {candidateRollout} from './candidate-rollout.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live');
 const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg('--consumer');mkdirSync(dirname(out),{recursive:true});
@@ -35,7 +36,7 @@ try{
   active={ticker,cid,width,errors,requests};activePage=page;
   if(!live){
    await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];if(!payloads.has(p)){active.unknownAssets=[...(active.unknownAssets||[]),p];return route.fulfill({status:404,body:'UNKNOWN_CANDIDATE_ASSET'});}return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
-   await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();assert(/expectedGeneration:\s*['"][a-f0-9]{24}['"]/.test(text),'CANDIDATE_UI_BASELINE_MISMATCH');await route.fulfill({response,body:text.replace(/(expectedGeneration:\s*['"])[a-f0-9]{24}(['"])/,'$1'+manifest.generation+'$2')});});
+   await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();await route.fulfill({response,body:candidateRollout(text,manifest.generation)});});
   }
   await page.addInitScript(({key,state})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1','dark');},{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({url:new URL(r.url()).pathname,status:r.status()});});

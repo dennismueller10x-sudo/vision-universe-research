@@ -94,3 +94,15 @@ test('full live QA binds exact hydration time to the current manifest and reject
   proof.manifest.generatedAt=f.m.generatedAt;proof.manifest.generation='f'.repeat(24);await assert.rejects(runtimeCandidate(),{name:'AssertionError'});
  }finally{globalThis.fetch=original;rmSync(f.root,{recursive:true});}
 });
+
+test('OFF canary enables only the approved cohort in intercepted bytes; served gate is untouched',async()=>{
+ const {candidateRollout}=await import('../candidate-rollout.mjs');
+ const {runInNewContext}=await import('node:vm');
+ const original=readFileSync(new URL('../../../company-intelligence/config/rollout.js',import.meta.url),'utf8');
+ const off=original.replace('const config = {stage:1,','const config = {stage:0,productionOff:true,');
+ const sandbox={URLSearchParams};runInNewContext(candidateRollout(off,'a'.repeat(24)),sandbox);
+ const config=sandbox.VUCompanyIntelligenceRollout;
+ assert.equal(config.enabled('AAPL'),true);assert.equal(config.enabled('ZZZZZ'),false);assert.equal(config.expectedGeneration,'a'.repeat(24));
+ const served={URLSearchParams};runInNewContext(off,served);assert.equal(served.VUCompanyIntelligenceRollout.enabled('AAPL'),false);
+ assert.throws(()=>candidateRollout(off.replace('"AAPL"','"ZZZZZ"'),'a'.repeat(24)),/CANDIDATE_COHORT_MISMATCH/);
+});
