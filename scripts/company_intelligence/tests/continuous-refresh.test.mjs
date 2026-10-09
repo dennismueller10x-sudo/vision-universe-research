@@ -10,6 +10,7 @@ import {validateChanges} from '../refresh-run.mjs';
 import {stageProduction,setProductionGate} from '../production-release.mjs';
 import {approval,reviewed} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
+import {runtimeCandidate} from '../runtime-candidate.mjs';
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,v)=>objects.set(k,Buffer.from(v))};}
 function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
  const root=mkdtempSync(join(tmpdir(),'refresh-contract-')),generation=n.toString(16).padStart(24,'0'),schema='vu-company-intelligence-1.0.0';
@@ -82,4 +83,14 @@ test('day-30 Pages staging uses fresh rolling GOOD without reading the expired f
   assert.equal(JSON.parse(readFileSync(join(release,'company-intelligence-delivery.json'))).generation,f.m.generation);
   assert(readFileSync(join(release,'company-intelligence/config/rollout.js'),'utf8').includes(f.m.generation));
  }finally{rmSync(f.root,{recursive:true});rmSync(release,{recursive:true});}
+});
+test('full live QA binds exact hydration time to the current manifest and rejects contradictory generation/time',async()=>{
+ const f=fixture(31,new Date().toISOString()),original=globalThis.fetch;
+ try{
+  const proof=safePublicRefresh(f.m,{},frozenInventory);
+  globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('delivery.json')?{generation:f.m.generation,cohortStocks:46,issuers:45}:proof});
+  const current=await runtimeCandidate();assert.equal(current.candidate.dataTime,f.m.generatedAt);assert.equal(current.candidate.generation,f.m.generation);
+  proof.manifest.generatedAt='2026-01-01T00:00:00Z';await assert.rejects(runtimeCandidate(),{name:'AssertionError'});
+  proof.manifest.generatedAt=f.m.generatedAt;proof.manifest.generation='f'.repeat(24);await assert.rejects(runtimeCandidate(),{name:'AssertionError'});
+ }finally{globalThis.fetch=original;rmSync(f.root,{recursive:true});}
 });
