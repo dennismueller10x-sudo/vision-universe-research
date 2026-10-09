@@ -6,7 +6,7 @@ Diese Integration verwaltet ausschließlich Newsletter und Kontakte in Brevo. Si
 
 **Import vorbereitet, noch nicht durchgeführt.** Kein Brevo-API-Aufruf und kein E-Mail-Versand wurden ausgeführt. Die Umgebung besitzt keinen Brevo-Schlüssel. Der Owner hat das vorhandene Actions-Secret `BREVO_API_KEY` benannt; dessen Existenz konnte wegen fehlender Berechtigung zur Secret-Metadatenabfrage nicht unabhängig bestätigt werden. Der Schlüssel wird niemals ausgelesen, zurückgeliefert, persistiert oder protokolliert.
 
-Ein neuer `workflow_dispatch`-Workflow wird erst verfügbar, wenn seine Definition auf dem Standardbranch liegt. Der Auftrag erlaubt keinen Merge. Es gibt auf `main` keinen vorhandenen Brevo-Workflow. Bestehende Research-Workflows werden nicht als Ersatz für beliebige API-Aufrufe verändert oder zweckentfremdet. Es ist kein geschützter CSV-Transfer zu Actions eingerichtet; Kontaktdaten werden weder als Workflow-Input noch als Secret, Git-Datei, Cache oder Actions-Artefakt übertragen.
+Ein neuer `workflow_dispatch`-Workflow wird erst verfügbar, wenn seine Definition auf dem Standardbranch liegt. Der Auftrag erlaubt keinen Merge. Es gibt auf `main` keinen vorhandenen Brevo-Workflow. Der tatsächliche API-Versuch, `brevo-admin.yml` mit `audit` auf dem eigenen Feature-Branch auszulösen, wurde von GitHub mit HTTP 404 abgewiesen; kein Brevo-Aufruf entstand. Bestehende Research-Workflows werden nicht als Ersatz für beliebige API-Aufrufe verändert oder zweckentfremdet. Es ist kein geschützter CSV-Transfer zu Actions eingerichtet; Kontaktdaten werden weder als Workflow-Input noch als Secret, Git-Datei, Cache oder Actions-Artefakt übertragen.
 
 | Prüfung des beigefügten Shopify-Exports | Ergebnis |
 |---|---:|

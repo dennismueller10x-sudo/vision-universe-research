@@ -85,6 +85,11 @@ class Fake:
 
 class Safety(unittest.TestCase):
     def setUp(self):
+        # Simulate a private runtime for Fake-only tests, including on the CI runner.
+        # The dedicated Actions guard test below explicitly restores GITHUB_ACTIONS=true.
+        runtime = patch.dict(os.environ, {"GITHUB_ACTIONS": ""})
+        runtime.start()
+        self.addCleanup(runtime.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.directory = Path(self.temp.name)
         self.fake = Fake()
