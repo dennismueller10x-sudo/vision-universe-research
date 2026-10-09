@@ -274,3 +274,14 @@ test('Germany cohort counts reconcile only verified issuer-country rows and keep
   assert.equal(result.germany, undefined); assert.equal(source.summary.accepted, 2);
   assert.equal(result.listings[0], de); assert.equal(result.generatedAt, source.generatedAt);
 });
+
+
+test('CAC40 publisher label retains canonical CAC 40 exact roster target and separates mapped from accepted', async () => {
+  const { projectEurope21IndexCoverage } = await import('../../../scripts/marketstack/europe-review-resolution.mjs');
+  const c = candidate({ observations: [{ source: 'authenticated-metadata' }] });
+  const rows = projectEurope21IndexCoverage({ universe: universe([c]), productRows: [{ isin, identityStatus: 'REVIEW', readiness: {} }], now: '2026-10-09T16:08:00Z',
+    indexReferences: [{ index: 'CAC40', referenceVerified: true, sourceContentVerified: true, rosterExtractionVerified: true, asOf: '2026-10-08', source: { sha256: sha }, rows: [{ isin }] }] });
+  const cac = rows.find(r => r.index === 'CAC 40'); assert.equal(cac.target, 1); assert.equal(cac.mapped, 1); assert.equal(cac.accepted, 0);
+  assert.equal(cac.missing, 0); assert.equal(cac.missingAccepted, 1); assert.equal(cac.asOf, '2026-10-08');
+  assert.equal(rows.find(r => r.index === 'EURO STOXX 50').target, null); assert.equal(rows.find(r => r.index === 'Nordics').target, null);
+});

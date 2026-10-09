@@ -517,18 +517,7 @@ export function compileEurope21ResolutionFromPaths({ baselineDirectory, baseline
   Object.assign(summary, { candidates: universe.summary, germany: stats(r => r.issuerCountry === 'DE'), europe: stats(() => true),
     germanyLocal: stats(r => r.mic === 'XETR' && universe.listings.some(c => c.listingKey === r.listingKey && c.productPrimaryPolicy?.startsWith('GERMANY_'))),
     technicalMetricCoverage: output.europe_history_overlay_receipts.technicalMetricCoverage, priorIdentityPreserved: graph.securities.filter(s => priorClasses.has(s.isin)).length });
-  output.marketstack_europe_index_coverage.rows = buildEquityIndexCoverage(productRows, indexReferences, now);
-  for (const row of output.marketstack_europe_index_coverage.rows) {
-    const reference = indexReferences.find(r => r.index === row.index && r.rosterExtractionVerified === true && r.referenceVerified === true && r.sourceContentVerified === true);
-    if (!reference) { row.nominalTarget = row.target; row.target = null; row.mapped = null; row.accepted = null; continue; }
-    const exactMembers = new Set(reference.rows.map(member => member.isin).filter(validIsin));
-    const mapped = new Set(universe.candidates.filter(c => validIsin(c.isin) && exactMembers.has(c.isin) && validLei(leiFor(c)) && (c.observations || []).length > 0 &&
-      c.identityEvidence?.some(e => e.verified === true && e.isin === c.isin && e.lei === leiFor(c))).map(c => c.isin));
-    row.accepted = row.mapped; row.mapped = mapped.size; row.missingAccepted = row.target - row.accepted;
-    row.missing = row.target - row.mapped; row.missingMappedIsins = [...exactMembers].filter(isin => !mapped.has(isin));
-    row.mappingBasis = 'SOURCE_VERIFIED_EXACT_CLASS_AND_ISSUER_CANDIDATE_JOIN_DISTINCT_FROM_CURRENT_ACCEPTANCE';
-  }
-  if (!output.marketstack_europe_index_coverage.rows.some(r => r.index === 'Nordics')) output.marketstack_europe_index_coverage.rows.push({ index: 'Nordics', target: null, status: 'UNKNOWN', missing: null, reason: 'NO_AUTHORITATIVE_NORDIC_REFERENCE_ROSTER' });
+  output.marketstack_europe_index_coverage.rows = projectEurope21IndexCoverage({ universe, productRows, indexReferences, now });
   output.europe_identity_readiness = { ...graph, generatedAt: now, sourceBinding: baseline.sourceBinding, admissions };
   const clusters = buildReviewClusters({ baselineUniverse: universe, priceQuality: output.marketstack_europe_price_quality,
     freshness: output.marketstack_europe_freshness, adjustments: output.marketstack_europe_adjustment_status,
@@ -551,6 +540,23 @@ export function compileEurope21ResolutionFromPaths({ baselineDirectory, baseline
   return { ...compiled, outputs: output, baseline, admissions, graph,
     currentMetadataScopes: currentScopes.size,
     currentSources: current.map(e => e.provenance), historicalSources: cached.map(e => e.provenance) };
+}
+
+/** Canonical index label aliases do not change exact ISIN/publisher proof. */
+export function projectEurope21IndexCoverage({ universe, productRows, indexReferences, now }) {
+  const rows = buildEquityIndexCoverage(productRows, indexReferences, now);
+  for (const row of rows) {
+    const reference = indexReferences.find(r => String(r.index).replace(/\s/g, '').toUpperCase() === String(row.index).replace(/\s/g, '').toUpperCase() && r.rosterExtractionVerified === true && r.referenceVerified === true && r.sourceContentVerified === true);
+    if (!reference) { row.nominalTarget = row.target; row.target = null; row.mapped = null; row.accepted = null; continue; }
+    const exactMembers = new Set(reference.rows.map(member => member.isin).filter(validIsin));
+    const mapped = new Set(universe.candidates.filter(c => validIsin(c.isin) && exactMembers.has(c.isin) && validLei(leiFor(c)) && (c.observations || []).length > 0 &&
+      c.identityEvidence?.some(e => e.verified === true && e.isin === c.isin && e.lei === leiFor(c))).map(c => c.isin));
+    row.accepted = row.mapped; row.mapped = mapped.size; row.missingAccepted = row.target - row.accepted;
+    row.missing = row.target - row.mapped; row.missingMappedIsins = [...exactMembers].filter(isin => !mapped.has(isin));
+    row.mappingBasis = 'SOURCE_VERIFIED_EXACT_CLASS_AND_ISSUER_CANDIDATE_JOIN_DISTINCT_FROM_CURRENT_ACCEPTANCE';
+  }
+  if (!rows.some(r => r.index === 'Nordics')) rows.push({ index: 'Nordics', target: null, status: 'UNKNOWN', missing: null, reason: 'NO_AUTHORITATIVE_NORDIC_REFERENCE_ROSTER' });
+  return rows;
 }
 
 /** Country counts describe only this issuer-country cohort, never the EU total. */
