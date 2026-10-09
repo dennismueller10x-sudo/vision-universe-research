@@ -248,6 +248,31 @@ Die Fachansicht trennt ausdrücklich „ELLIOTT-REGELN: ERFÜLLT“ (mit Regelke
   - den Fahrplan eingeklappt.
 - Neutrale, zurückhaltende Gestaltung; keine Hochpotenzial-Hervorhebung.
 
+### Universum (Produktgesundheit, keine Vorhersage; Lauf 09.10.2026, 5.130 Titel)
+
+Haupt- und Alternativebene, vor und nach Explore unverändert:
+
+| Kennzahl | vorher | nachher |
+|---|---|---|
+| Hauptprojektionen (sichtbar) | 45 | 45 |
+| reguläre Alternativen | 44 | 44 |
+| Motiv-Alternativen | 47 (5 auf, 42 ab, 1 Hochpotenzial) | 47 (5 auf, 42 ab, 1 Hochpotenzial) |
+| Status ABSTAIN / DATA_INVALID / NO_PROJECTION / AVAILABLE | 4.366 / 655 / 69 / 45 | 4.366 / 655 / 69 / 45 |
+
+Explore Elliott:
+
+| Kennzahl | Wert |
+|---|---|
+| Titel mit Explore | 3.638 (1 Lesart: 967 · 2: 2.458 · 3: 213) |
+| Lesarten gesamt | 6.522 (aufwärts 3.140, abwärts 3.382) |
+| Typ | Welle 3: 2.334 · Welle C: 3.902 · Welle 5: 286 |
+| Muster | Impuls 2.334 · Flat 2.296 · Zigzag 1.543 · Ending Diagonal 219 · Leading Diagonal 67 · Doppel-Zigzag 63 |
+| verfehlte Leitplanken (Mehrfachnennung) | G3 5.252 · G2 4.417 · G4 4.616 · G5 2.358 |
+| Rang im Pool | oberste 10 %: 1.770 · 10–25 %: 2.366 · 25–50 %: 2.386 · untere Hälfte: 0 |
+| aufwärts mit Mitte der erweiterten Stufe ≥ +100 % | 873 (nicht hervorgehoben) |
+
+Explore erscheint bei 71 % der Titel, weil sich die Engine bei 85 % der Wochentitel enthält und der Pool fast immer regelkonforme Lesarten enthält. Die Ebene ist deshalb eingeklappt, nachrangig und je Titel auf höchstens 3 Lesarten begrenzt.
+
 ### Lebenszyklus und Register
 
 - **Lebenszyklus:** Explore-Thesen werden verfolgt wie die Motiv-Alternative und nur bei Datenproblemen zurückgehalten. Wechselt eine These ihre Rolle, entsteht das Ereignis `ROLE_CHANGED`; Kennung, frühere Revisionen und Ereignisse bleiben.
