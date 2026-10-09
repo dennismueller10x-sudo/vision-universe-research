@@ -85,7 +85,7 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   assert.equal(runs[0].payload.productView.timeframes["1D"], 1);           // XOM: Tagesanalyse wie im Produkt
   assert.ok(runs[1].payload.registrationLagDays > 7);
   const pe = L.filter((e) => e.type === "EVENT" && e.payload.view === "CUSTOMER_PRODUCT");
-  for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED)$/); assert.equal(e.payload.productElliottSha.length, 32); }
+  for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED|MOTIVE_ALTERNATIVE|EXPLORE_ELLIOTT)$/); assert.equal(e.payload.productElliottSha.length, 32); }
   /* Registry 1.2.0: neue Kundenprodukt-Ereignisse tragen die eingefrorene Projektionsthese (elliott-projection-1.0.0) */
   assert.ok(pe.length > 0, "mindestens ein Produkt-Ereignis");
   for (const e of pe) { assert.equal(e.payload.projectionEngine, PJV); assert.equal(e.payload.projectionThesis.version, PJV); assert.ok("thesis" in e.payload.projectionThesis); }
