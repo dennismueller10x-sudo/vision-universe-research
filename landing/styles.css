@@ -13,6 +13,16 @@ button,input{font:inherit}
 .hero-copy{min-width:0;overflow-wrap:anywhere}
 .btn{white-space:normal;text-align:center}
 .preview-caption{font-size:12.5px;color:#8b919a;margin-top:16px}
+/* Only the contents of the original device shells change: timeless modules. */
+.module-home{padding:20px 16px 0}
+.module-heading{font-size:30px;line-height:1.04;font-weight:800;letter-spacing:-.035em;max-width:7.5ch}
+.module-heading em{font-style:normal;color:var(--lime)}
+.module-launch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 8px;margin-top:30px}
+.module-tile{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--screen-ink);font-size:10px;font-weight:600;line-height:1.3}
+.module-tile>span:last-child{min-height:26px}
+.module-home-desktop{padding:6px 0 0}
+.module-home-desktop .module-heading{max-width:none;font-size:24px}
+.module-home-desktop .module-launch-grid{margin-top:24px;gap:24px 8px}
 .newsletter{padding:16px 0 24px;scroll-margin-top:76px}
 .nl-box{gap:28px}
 .nl-form{display:block;min-width:0}

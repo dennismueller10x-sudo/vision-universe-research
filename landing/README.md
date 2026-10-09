@@ -1,6 +1,6 @@
 # Vision Universe · Coming soon
 
-Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 übernimmt jetzt das tatsächliche Design der Research-Startseite: Original-Header/Logo, Inter, dunkler Hero mit grünem Raster und Glow, identische Schriftgrößen, Buttons, Gerätebühne, Chart-Markup und responsive Regeln. Keine Änderung an Research, dessen `CNAME`, Pages-Workflow, API, DNS oder Shopify; kein Merge.
+Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 übernimmt jetzt das tatsächliche Design der Research-Startseite: Original-Header/Logo, Inter, dunkler Hero mit grünem Raster und Glow, identische Schriftgrößen, Buttons, Gerätebühne, Original-Icons und responsive Regeln. Die Geräte zeigen eine zeitlose Modulübersicht mit Überschrift, ohne NVIDIA, Kurse, Charts oder Kennzahlen. Keine Änderung an Research, dessen `CNAME`, Pages-Workflow, API, DNS oder Shopify; kein Merge.
 
 ## Vorschau und Abnahme
 
@@ -24,13 +24,13 @@ python3 -m http.server 8787 --directory dist
 
 Node 22+, keine Laufzeitabhängigkeiten, kein Tracking. Playwright/axe nur für Entwicklung. Browserprüfungen: Chromium mit 1440 × 900, iPhone-Viewport 390 × 844 und 320 px; keine Prüfung auf einem physischen iPhone. Echte 200-%-Textvergrößerung verdoppelt die berechneten Textgrößen, nicht nur eine wirkungslose Root-Schriftgröße. Anbieterantworten werden abgefangen; kein Live-Brevo-Versand behauptet.
 
-Die ursprünglichen Designregeln liegen in `assets/home/home.css`. Nur deren Font-URL wurde relativ gemacht, damit auch ein Pages-Projektpfad funktioniert. `styles.css` ergänzt Formularzustände, Reflow/Fokus und die kompakte Newsletter-/Footer-Komposition. `hero-intro.js` ist die unveränderte Original-Animation; `presentation.js` übernimmt nur Bewegungspräferenz und Scroll-Header. Neue Research-Snapshots erfolgen ausschließlich mit explizitem Commit:
+Die ursprünglichen Designregeln liegen in `assets/home/home.css`. Nur deren Font-URL wurde relativ gemacht, damit auch ein Pages-Projektpfad funktioniert. `styles.css` ergänzt die Modulübersicht innerhalb der unveränderten Gerätehüllen, Formularzustände, Reflow/Fokus und die kompakte Newsletter-/Footer-Komposition. `hero-intro.js` ist die unveränderte Original-Animation; `presentation.js` übernimmt nur Bewegungspräferenz und Scroll-Header. Neue Research-Snapshots erfolgen ausschließlich mit explizitem Commit:
 
 ```sh
 node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 ```
 
-Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. Es erzeugt keine Finanzwerte und verändert keine Research-Datei. Datenstand und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
+Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
 ## Brevo: Schnittstelle erhalten, Einrichtung ausschließlich in PR #544
 
@@ -87,7 +87,7 @@ Für öffentliche Repositories ist Pages mit [GitHub Free verfügbar](https://do
 5. Quell-Repository-Variablen **`LANDING_PAGES_TARGET_READY=true`** erst nach Ziel/Key-Prüfung und **`LANDING_PAGES_USAGE_CONFIRMED=true`** erst nach geklärter Nutzungszulässigkeit. Geprüfte Privacy-Datei und oben genannte öffentliche Build-Variablen bereitstellen. Der Live-Newsletter kann weiterhin gesperrt bleiben, sofern die öffentliche Datenschutzerklärung dies korrekt beschreibt.
 6. PR #543 separat prüfen/übernehmen, anschließend den neuen Workflow **„Coming-soon | separates Pages-Ziel (manuell)“** auf `main` starten. Build-/Alias-/Formulartests bestehen vor Zielzugriff. Der noch nicht abgerufene tatsächliche `github.io`-Projektlink wird erst aus den Ziel-Pages-Einstellungen übernommen; keine erfolgreiche Veröffentlichung behaupten.
 
-`_headers` ist auf GitHub Pages wirkungslos. Der Build liefert deshalb seine unterstützte CSP als HTML-Meta sowie `no-referrer`; keine Behauptung eigener HTTP-Header-Konfiguration. Originale Inline-Styles der Geräte/Charts dürfen über `style-src-attr` wirken, Skripte bleiben ausschließlich lokal. `.nojekyll` ist enthalten. Alte Research-Rechtslinks `/policies/legal-notice` und `/policies/privacy-policy` funktionieren durch statische Inhalts-Aliase; kein vorgetäuschter serverseitiger 301.
+`_headers` ist auf GitHub Pages wirkungslos. Der Build liefert deshalb seine unterstützte CSP als HTML-Meta sowie `no-referrer`; keine Behauptung eigener HTTP-Header-Konfiguration. Originale Inline-Styles der Geräte dürfen über `style-src-attr` wirken, Skripte bleiben ausschließlich lokal. `.nojekyll` ist enthalten. Alte Research-Rechtslinks `/policies/legal-notice` und `/policies/privacy-policy` funktionieren durch statische Inhalts-Aliase; kein vorgetäuschter serverseitiger 301.
 
 ## Spätere Domainumstellung – separat, bei united-domains
 

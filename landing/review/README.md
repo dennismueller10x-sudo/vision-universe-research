@@ -13,7 +13,7 @@ Die automatisierte [Computed-Style-Gegenüberstellung](design-comparison.json) p
 ## Notwendige Abweichungen
 
 - Kürzere Ankündigungstexte, „App bald verfügbar“, Newsletter-Sprungmarken; Produktnavigation, zweiter Hero-Button, Kennzahlen-/Feature-/Social-/FAQ-Sektionen entfallen. Dadurch steht das Smartphone mobil früher im Seitenverlauf.
-- Bestehende Geräteansicht ausdrücklich als statische Research-Vorschau gekennzeichnet. Originalwerte/Charts bleiben unverändert, ohne Produktzugriff.
+- Auf Wunsch enthalten Smartphone und Desktop-Browser jetzt ausschließlich vorhandene Modul-Icons und Namen unter „Alles in einer App.“. NVIDIA, Kurse, Charts, Kennzahlen und die feste Geschäftsjahreszahl entfallen. Die Original-Gerätehüllen, HUD-Icons, Orbit-Animation und äußeren Abstände bleiben erhalten; die Modulübersicht ersetzt nur deren Inhalt. Kennzeichnung: „Modulvorschau · App bald verfügbar.“. Die unveröffentlichte Research-Referenz zeigt weiterhin ehrlich den Originalzustand. Auch bei erneutem Research-Sync bleibt diese Ersetzung erhalten.
 - Newsletter verwendet die originale dunkle Karte, Verlauf, HUD-Icon, Typografie, pillenförmiges Feld und Buttons. Abstände der Newsletter-Karte und des Footers sind kompakter, der Footer enthält nur Copyright/Rechtliches/Kontakt. Das hält die gesamte Seite unter den Größenrichtwerten.
 - Einwilligung, ehrlicher gesperrter Zustand, Honeypot und zugängliche Meldungen ergänzen das vorhandene Newsletter-Design. Kein Live-Brevo-Formular/keine Speicherung behauptet.
 - Skip-Link, größerer transparenter Logo-Touchbereich, Formularfokus und umbrechbare CTA-Texte/Überschriften ermöglichen Tastaturbedienung und Textvergrößerung. Keine globale Scroll-Sperre oder durch Overflow verdeckte Seitenbreite.
