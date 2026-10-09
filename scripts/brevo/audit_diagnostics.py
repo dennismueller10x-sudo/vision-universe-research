@@ -54,7 +54,10 @@ SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES)
     "link button page dashboard settings security new generate verification confirm confirmed confirming "
     "code codes owner website banned based browser browser's signature cloudflare browser-signature "
     "agent user-agent bad missing empty disallowed unsupported supported integrity fingerprint "
-    "provide provided passing specify header client server web update valid denied refused denied".split())
+    "provide provided passing specify header client server web update valid denied refused denied "
+    "was were be permitted permitted headers http policy policies triggered protection firewall filter "
+    "filters traffic bot bots suspicious default script scripts cli unusual detected rejected identify "
+    "identified unexpected supplied signature integrity check checking check missing missing required".split())
 
 
 def secret_status(key):
@@ -93,7 +96,7 @@ def safe_error(raw, key):
         validation_message = message
         if type(allowed_code) is int:
             validation_message = re.sub(r"\b" + str(allowed_code) + r"\b", "code", validation_message)
-        validation_message = re.sub(r"\bPython-urllib/3\.\d{1,2}\b", "client", validation_message)
+        validation_message = re.sub(r"\bPython-urllib(?:/3\.\d{1,2})?\b", "client", validation_message, flags=re.I)
         normalized = validation_message.strip().casefold()
         generic = re.fullmatch(r"[A-Za-z ',.!?:;()\-]+", validation_message.strip()) is not None
         words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
@@ -108,7 +111,7 @@ def safe_error(raw, key):
                 validation = sentence
                 if type(allowed_code) is int:
                     validation = re.sub(r"\b" + str(allowed_code) + r"\b", "code", validation)
-                validation = re.sub(r"\bPython-urllib/3\.\d{1,2}\b", "client", validation)
+                validation = re.sub(r"\bPython-urllib(?:/3\.\d{1,2})?\b", "client", validation, flags=re.I)
                 words = re.findall(r"[a-z]+(?:'[a-z]+)?", validation.casefold())
                 if (re.fullmatch(r"[A-Za-z ',.!?:;()\-]+", validation) is not None
                         and len(words) >= 2 and all(w in SAFE_WORDS for w in words)):
