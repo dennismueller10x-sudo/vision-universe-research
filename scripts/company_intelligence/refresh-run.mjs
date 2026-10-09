@@ -5,6 +5,7 @@ import {join,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {createRequire} from 'node:module';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
 import {approval} from './production-approval.mjs';
@@ -14,6 +15,20 @@ import {refreshConfig,frozenInventory,refreshApproved,freshness} from './refresh
 import {goodState,goodView,downloadGood,prepareCandidate,commitGood,rollbackGood,goodKey} from './refresh-storage.mjs';
 const json=p=>JSON.parse(readFileSync(p));const save=(p,v)=>writeFileSync(p,JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
+const {load}=createRequire(import.meta.url)('../../company-intelligence/api/contract.js');
+export async function consumerContracts(directory){
+ const m=json(join(directory,'manifest.json'));let listings=0;
+ for(const ticker of m.tickers){
+  const payload=await load(ticker,{enabled:true,expectedGeneration:m.generation,base:'/',fetch:async path=>{
+   if(!m.assets[path.slice(1)])return {ok:false,status:404};
+   return {ok:true,status:200,json:async()=>json(join(directory,path.slice(1)))};
+  }});
+  const cid=Object.keys(frozenInventory).find(c=>frozenInventory[c].tickers.includes(ticker));
+  if(payload.state!=='AVAILABLE'||payload.companyId!==cid)throw Error('REFRESH_CONSUMER_CONTRACT_FAILED:'+ticker+':'+(payload.reason||'IDENTITY'));
+  listings++;
+ }
+ if(listings!==46)throw Error('REFRESH_CONSUMER_SCOPE_FAILED');return {status:'PASS',listings,issuers:45};
+}
 function py(script,args){return execFileSync('python3',['scripts/company_intelligence/'+script,...args],{encoding:'utf8',maxBuffer:4*1024*1024,timeout:1200000});}
 export function validateChanges(directory,previous){
  const m=json(join(directory,'manifest.json')),old=json(join(previous,'index.json'));
@@ -66,6 +81,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(!network)args.push('--offline');if(financial)args.push('--financial');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
   if(engine.status!=='SUCCESS')throw Error('NO_HEALTHY_REFRESH_LANE');
+  report.consumerContracts=await consumerContracts(consumer);
   const checks=validateChanges(consumer,old);report.consumerChecks=checks;
   stage='PRIVATE_CHECKPOINT';
   const packed=join(root,'candidate.tar.gz');py('checkpoint.py',['pack','--state',state,'--snapshot',packed]);

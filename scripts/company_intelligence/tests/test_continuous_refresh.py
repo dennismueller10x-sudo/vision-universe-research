@@ -37,8 +37,13 @@ class ContinuousRefreshTests(unittest.TestCase):
     def test_html_error_page_must_not_be_successful_empty_rss(self):
         with tempfile.TemporaryDirectory() as tmp:
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/feed','type':'IR_FEED','format':'RSS'}
-            with patch.object(PublicHTTP,'get',return_value={'body':b'not xml'}):
-                with self.assertRaisesRegex(SourceError,'PARSE_INVALID_XML'):http.get(http.current_source['url'])
+            with patch.object(PublicHTTP,'get',return_value={'body':b'<html><body>Unavailable</body></html>'}):
+                with self.assertRaisesRegex(SourceError,'PARSE_INVALID_FEED'):http.get(http.current_source['url'])
+    def test_existing_json_feed_support_is_not_rejected_as_non_xml(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/feed','type':'IR_FEED'}
+            body=b'{"version":"https://jsonfeed.org/version/1.1","items":[]}'
+            with patch.object(PublicHTTP,'get',return_value={'body':body}):self.assertEqual(http.get(http.current_source['url'])['body'],body)
     def test_invalid_api_response_cannot_replace_materials_with_empty_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/reports','type':'IR_MATERIALS','format':'Q4_REPORTS'}

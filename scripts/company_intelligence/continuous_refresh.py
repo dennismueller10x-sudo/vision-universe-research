@@ -24,6 +24,7 @@ from company_intelligence.top46_content import identities
 from company_intelligence.consumer_usage import first_party, publisher
 from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.checkpoint import check_db
+from company_intelligence.feeds import parse_feed
 
 def settings():
     return json.loads((ROOT/'company-intelligence/config/continuous-refresh.json').read_text())
@@ -51,7 +52,7 @@ def source_result(source,now,unchanged=False):
     if '429' in error or 'RATE_LIMIT' in error: return 'RATE_LIMITED'
     if any(c in error for c in ['ROBOTS_DISALLOWED','HTTP_401','HTTP_403']): return 'POLICY_REJECTED'
     if 'HTTP_404' in error or 'HTTP_410' in error: return 'SOURCE_REMOVED'
-    if 'PARSE_' in error or 'ParseError' in error or 'JSONDecodeError' in error: return 'PARSE_FAILURE'
+    if any(code in error for code in ('PARSE_','ParseError','JSONDecodeError','MALFORMED','NOT_FEED','NOT_JSON_FEED','INVALID_Q4','Q4_SCHEMA')): return 'PARSE_FAILURE'
     return 'TEMPORARY_FAILURE'
 
 class CheckedHTTP(PublicHTTP):
@@ -64,8 +65,8 @@ class CheckedHTTP(PublicHTTP):
             body=response['body']; self.last_body_sha=hashlib.sha256(body).hexdigest()
             fmt=s.get('format')
             if fmt in ('RSS','RSS_EVENTS','RSS_MATERIALS') or (s['type']=='IR_FEED' and not fmt):
-                try: ET.fromstring(body)
-                except ET.ParseError as e: raise SourceError('PARSE_INVALID_XML') from e
+                try: parse_feed(body,url)
+                except (SourceError,ValueError,ET.ParseError) as e: raise SourceError('PARSE_INVALID_FEED') from e
             if fmt in ('Q4_NEWS','Q4_EVENTS','Q4_REPORTS','Q4_PRESENTATIONS'):
                 try: json.loads(body)
                 except ValueError as e: raise SourceError('PARSE_INVALID_JSON') from e
