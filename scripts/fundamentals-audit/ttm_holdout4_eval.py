@@ -8,6 +8,7 @@ Gegenueber v3 (ttm_holdout3_eval.py, unveraendert) geaendert, vor Oeffnung festg
                sind k normale Jahre (geteiltes Predecessor/Successor-Jahr oder fehlender Bericht: Kalender unveraendert;
                v3 wertete das faelschlich als Geschaeftsjahreswechsel, F-TTM-5); auf VERSCHIEDENEN Zyklen ist der Zeitraum
                dazwischen ein Uebergangszeitraum (NOT_QUARTER_ELIGIBLE). 10-KT zaehlt als Jahresbericht (Vergleichsjahre).
+  Formulare    zusaetzlich 10-KT und 10-KT/A (Korrekturen im Transition Report zaehlen zur Wahrheit).
   Gesperrt     Fensterquartale der gewerteten Faelle aus Holdout v2 UND v3.
   Formulare    10-K, 10-K/A, 10-Q, 10-Q/A, 20-F(/A), 40-F(/A) (periodische Berichte; 10-KT nicht)
   Quartal      gemeldeter Dreimonats-EPS (77-105 Tage), Konzeptfamilie EarningsPerShareDiluted /
@@ -49,6 +50,9 @@ SALT = "vu-ttm-holdout-4"
 FAMILY = ("EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted")
 SHARES = ("WeightedAverageNumberOfDilutedSharesOutstanding",)
 ANNUAL_FORMS = {"10-K", "10-K/A", "10-KT", "10-KT/A", "20-F", "20-F/A", "40-F", "40-F/A"}
+# Wahrheit "bekannt zu t einschliesslich veroeffentlichter Korrekturen": auch Transition Reports (eine Korrektur, die nur
+# in einem 10-KT/A steht, ist eine veroeffentlichte Korrektur; der Kern liest Werte nur aus PERIODIC_FORMS - F-TTM-6)
+TRUTH_FORMS = set(PERIODIC_FORMS) | {"10-KT", "10-KT/A"}
 CYCLE_DAYS = 14
 TRUTH_SINCE = "2009-06-01"
 QUARTER_DAYS = (77, 105)
@@ -85,7 +89,7 @@ def cluster_quarters(cf, concepts, unit_suffix):
             if not unit.endswith(unit_suffix):
                 continue
             for r in items:
-                if not r.get("start") or r["end"] < TRUTH_SINCE or r.get("form") not in PERIODIC_FORMS:
+                if not r.get("start") or r["end"] < TRUTH_SINCE or r.get("form") not in TRUTH_FORMS:
                     continue
                 if not QUARTER_DAYS[0] <= days(r["start"], r["end"]) <= QUARTER_DAYS[1]:
                     continue
