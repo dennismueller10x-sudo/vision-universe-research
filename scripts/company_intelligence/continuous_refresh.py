@@ -25,6 +25,46 @@ from company_intelligence.consumer_usage import first_party, publisher
 from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.checkpoint import check_db
 from company_intelligence.feeds import parse_feed
+from company_intelligence.earnings import summary,valid_date
+from company_intelligence.model import ACCESSION
+
+def advance_financial_filing(store,company,pipeline,now,budget,provider=None,builder=None):
+    """One companyfacts request only for a genuinely unseen periodic filing.
+    Reuse the existing SEC consumer normalizer; never modify Quant artifacts.
+    A lagging/failed facts response cannot advance the accession cursor.
+    """
+    cid=company['companyId'];key='financialRefresh:'+cid;prior=store.state(key,{})
+    if (prior.get('nextCheck') or '')>now:return 'NOT_DUE'
+    filings=store.state('sec-submissions:'+cid,{}).get('filings',{}).get('recent',{})
+    rows=[(filings.get('filingDate',[])[i],filings.get('accessionNumber',[])[i]) for i,f in enumerate(filings.get('form',[])) if f in ('10-Q','10-Q/A','10-K','10-K/A','20-F','20-F/A','40-F','40-F/A') and i<len(filings.get('filingDate',[])) and i<len(filings.get('accessionNumber',[])) and valid_date(filings['filingDate'][i]) and ACCESSION.fullmatch(str(filings['accessionNumber'][i]))]
+    if not rows:return 'NO_NEW_FILING'
+    _,accession=max(rows);current=store.state('financials:'+cid,{})
+    known={(v.get('current') or {}).get('filingId') for v in current.get('metrics',{}).values()}
+    if accession==prior.get('lastSuccessfulAccession') or accession in known:return 'NO_CHANGE'
+    try:
+        from quant.sec.provider import SECProvider
+        from quant.sec.consumer import build_consumer_bundle
+        from quant.sec.registry import MetricRegistry
+        facts=(provider or SECProvider(pipeline.sec_client(budget))).get_company_facts(company['cik'],fresh=True)
+        if str(facts.get('cik','')).zfill(10)!=company['cik']:raise ValueError('FINANCIAL_FACTS_ISSUER_MISMATCH')
+        bundle=(builder or build_consumer_bundle)(company['cik'],facts,MetricRegistry.load(),as_of=now[:10],tickers=[l['symbol'] for l in company['listings']],name=company['names'][0])
+        value=summary(bundle,company['cik'],now)
+        latest=[(v.get('current') or {}) for v in value.get('metrics',{}).values()]
+        ends=[v['periodEnd'] for v in latest if v.get('periodEnd')]
+        period=max(ends) if ends else ''
+        if value.get('state')!='AVAILABLE' or not any(v.get('filingId')==accession for v in latest) or period<(current.get('reportingPeriod') or ''):
+            store.set_state(key,{**prior,'lastAttempt':now,'status':'FACTS_NOT_YET_AVAILABLE','nextCheck':advance(now,4)})
+            return 'FACTS_NOT_YET_AVAILABLE'
+        value.update(reportingPeriod=period,stale=period<advance(now,-180*24)[:10])
+        store.set_state('financials:'+cid,value)
+        from company_intelligence.reporting_calendar import fact_history
+        store.set_state('reportingHistory:'+cid,fact_history(bundle,company['cik'],now));pipeline.refresh_estimates(company)
+        store.set_state(key,{'lastAttempt':now,'lastSuccess':now,'lastSuccessfulAccession':accession,'status':'SUCCESS','nextCheck':None})
+        return 'SUCCESS'
+    except BudgetExhausted:return 'BUDGET_DEFERRED'
+    except Exception:
+        store.set_state(key,{**prior,'lastAttempt':now,'status':'TEMPORARY_FAILURE','nextCheck':advance(now,4)})
+        return 'TEMPORARY_FAILURE'
 
 def settings():
     return json.loads((ROOT/'company-intelligence/config/continuous-refresh.json').read_text())
@@ -117,9 +157,10 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         # SEC is an independent budget/deadline. Preserve successful first-party work
         # even during a regulator outage. No history fetch or universe stream.
         sec_http=PublicHTTP(state/'http',budget=1,max_seconds=config['secMaxSeconds'])
-        sec=Pipeline(ROOT,companies,store,sec_http,now); sec_checked=0; sec_success=0; consecutive=0; financial_updates=0
+        sec=Pipeline(ROOT,companies,store,sec_http,now); sec_checked=0; sec_success=0; consecutive=0; financial_updates=0; fact_outcomes=Counter();fact_attempts=0
         sec_exhausted=False
-        for cid,c in selected.items():
+        ordered=sorted(selected.items(),key=lambda pair:store.state('financialRefresh:'+pair[0],{}).get('lastAttempt') or '')
+        for cid,c in ordered:
             if not network and not financial: break
             old_fin=deepcopy(store.state('financials:'+cid)); old_profile=deepcopy(store.state('companyProfile:'+cid))
             old_sec=store.state('sec:'+cid,{})
@@ -142,6 +183,12 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             new_profile=store.state('companyProfile:'+cid,{})
             if old_profile and old_profile.get('language')=='de' and new_profile!=old_profile:
                 store.set_state('profileRefreshPending:'+cid,new_profile); store.set_state('companyProfile:'+cid,old_profile)
+            if network and not sec_exhausted and fact_attempts<20:
+                outcome=advance_financial_filing(store,c,sec,now,config['secRequestBudget'])
+                fact_outcomes[outcome]+=1
+                fact_attempts+=outcome in ('SUCCESS','TEMPORARY_FAILURE','FACTS_NOT_YET_AVAILABLE','BUDGET_DEFERRED')
+                if outcome=='SUCCESS':financial_updates+=1;updated.add(cid)
+                if outcome=='BUDGET_DEFERRED':sec_exhausted=True
         successes=outcomes['SUCCESS']+outcomes['NO_CHANGE']+sec_success
         health={**prior,'lastAttempt':now,'lastSuccessfulRefresh':now if successes else prior.get('lastSuccessfulRefresh'),
                 'lastSuccessfulNewsRefresh':now if lane_success['IR_FEED'] else prior.get('lastSuccessfulNewsRefresh'),
@@ -171,6 +218,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
+                'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,
                 'publicRequests':http.requests,'secRequests':getattr(sec,'_sec_client',None).stats['requests'] if getattr(sec,'_sec_client',None) else 0,
                 'httpStats':http.stats,'run':pipeline.run,'privateIntegrity':proof,'inventory':inventory,'health':health,'runtimeSeconds':round(time.monotonic()-started,3),'privateOperationalRowsIncluded':False}
         atomic_json(state/'latest-run.json',report); atomic_json(evidence,report)

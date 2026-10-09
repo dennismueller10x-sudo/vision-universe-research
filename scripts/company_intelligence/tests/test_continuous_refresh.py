@@ -4,12 +4,40 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from company_intelligence.continuous_refresh import CheckedHTTP,source_result
+from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance_financial_filing
 from company_intelligence.transport import PublicHTTP,SourceError
 from company_intelligence.pipeline import Pipeline
 from company_intelligence.store import Store
-from test_engine import company,source,NOW
+from test_engine import company,source,NOW,consumer
 class ContinuousRefreshTests(unittest.TestCase):
+    def test_new_periodic_filing_uses_existing_financial_engine_once_and_persists_cursor(self):
+        c=company();accession='0000320193-26-000001'
+        class Provider:
+            calls=0
+            def get_company_facts(self,cik,fresh=False):self.calls+=1;return {'cik':int(cik)}
+        class Engine:
+            def refresh_estimates(self,c):pass
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite');provider=Provider()
+            try:
+                store.set_state('sec-submissions:'+c['companyId'],{'filings':{'recent':{'form':['10-Q'],'filingDate':['2026-10-09'],'accessionNumber':[accession]}}})
+                out=advance_financial_filing(store,c,Engine(),'2026-10-09T12:00:00Z',110,provider,lambda *a,**kw:consumer())
+                self.assertEqual(out,'SUCCESS');self.assertEqual(store.state('financials:'+c['companyId'])['reportingPeriod'],'2026-06-30')
+                self.assertEqual(advance_financial_filing(store,c,Engine(),'2026-10-09T16:00:00Z',110,provider,lambda *a,**kw:consumer()),'NO_CHANGE');self.assertEqual(provider.calls,1)
+                self.assertEqual(store.state('financialRefresh:'+c['companyId'])['lastSuccessfulAccession'],accession)
+            finally:store.close()
+    def test_lagging_sec_facts_do_not_advance_filing_cursor_or_replace_existing_financials(self):
+        c=company();old={'state':'AVAILABLE','reportingPeriod':'2026-06-30','metrics':{}}
+        class Provider:
+            def get_company_facts(self,cik,fresh=False):return {'cik':int(cik)}
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                store.set_state('financials:'+c['companyId'],old)
+                store.set_state('sec-submissions:'+c['companyId'],{'filings':{'recent':{'form':['10-Q'],'filingDate':['2026-10-09'],'accessionNumber':['0000320193-26-999999']}}})
+                self.assertEqual(advance_financial_filing(store,c,None,'2026-10-09T12:00:00Z',110,Provider(),lambda *a,**kw:consumer()),'FACTS_NOT_YET_AVAILABLE')
+                self.assertEqual(store.state('financials:'+c['companyId']),old);self.assertNotIn('lastSuccessfulAccession',store.state('financialRefresh:'+c['companyId']))
+            finally:store.close()
     def test_one_unavailable_source_retains_news_and_does_not_stop_next_source(self):
         body=b'<rss><channel><item><title>Apple announces quarterly earnings results</title><link>https://apple.com/results</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>'
         class HTTP:
