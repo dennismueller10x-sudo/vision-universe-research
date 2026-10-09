@@ -1,0 +1,122 @@
+{
+ "schema": "vu-fundamental-ttm-neighbor-search-1.0.0",
+ "core": "1.21.0 (Commit f5225ad, Kalender liest CALENDAR_FORMS)",
+ "baseline": "1.20.0 (Freeze v5)",
+ "source": "SEC companyfacts.zip Stand 2026-10-07, ALLE 20.438 Dateien (17.138 mit Kalender; 70 vorbestehende Fehler 'CIK must not be None' in beiden Versionen)",
+ "method": {
+  "pass1": "Kalender je Emittent (Jahresenden, Kennungen, Uebergangsjahre) in beiden Versionen; Kennungen gegen das eigene fy zuegig (<=200 Tage) eingereichter 10-K/20-F/40-F",
+  "pass2": "fuer jeden Emittenten mit geaendertem Kalender: alle TTM-Fenster und Jahreswerte (eps_diluted, revenue, net_income) zu as_of 2099-12-31, Vergleich je Periodenende",
+  "verification": "gewonnene EPS-Fenster gegen unabhaengige SEC-Vierquartalssummen; verlorene Fenster/Jahreswerte nach Uebergangsbezug klassifiziert"
+ },
+ "structuralCandidates": {
+  "F-TTM-4 (Geschaeftsjahreswechsel, altes Jahresende nur als Vergleichsjahr oder per 10-KT)": "Emittenten mit neuem Uebergangsjahr in 1.21.0 (Klassen added/trans+): siehe summary.calendarClasses",
+  "F-TTM-5 (geteiltes Predecessor/Successor-Jahr, Jahreskennung)": "Emittenten mit korrigierter Kennung: 383 besser, 0 schlechter (2 Messartefakte, siehe labelArtifacts)"
+ },
+ "summary": {
+  "issuersCompared": 17138,
+  "calendarsChanged": 686,
+  "labelsAgainstOwnFy": {
+   "checked": 102088,
+   "disagree120": 3765,
+   "disagree121": 2052,
+   "issuersBetter": 383,
+   "issuersWorse": 2,
+   "labelArtifacts": "0000916530 W2007 Grace, 0001560672 Ellington Credit: zwei 10-K desselben Jahresendes mit verschiedenem fy; 1.21.0 folgt dem zuegigeren Bericht (Kalenderjahr), die Messung dem spaeteren"
+  },
+  "outputsOfChangedIssuers": {
+   "valueChangedSamePeriod": 0,
+   "ttmGained": {
+    "eps_diluted": 128,
+    "net_income": 593,
+    "revenue": 422
+   },
+   "ttmLost": {
+    "eps_diluted": 63,
+    "net_income": 155,
+    "revenue": 100
+   },
+   "annualGained": {
+    "eps_diluted": 50,
+    "net_income": 177,
+    "revenue": 51
+   },
+   "annualLost": {
+    "eps_diluted": 343,
+    "net_income": 465,
+    "revenue": 333
+   }
+  },
+  "lostClassification": {
+   "ttmLostEps": "alle 63 ueberlappen einen Uebergangszeitraum (strenge Policy)",
+   "annualLost": "eps 343/343, revenue 330/333, net_income 457/465 an einem Uebergangsende ohne Kennung (Uebergangs- oder umgerechnete Kalenderzahlen; Rest beruehrt einen Uebergang)"
+  },
+  "gainedVerification": {
+   "epsWindows": 128,
+   "matchIndependentSecSum": 125,
+   "mismatch": 3,
+   "mismatchCause": "Orbital ATK (0000866121): Korrektur nur im 10-KT/A 2017-02-24; Werte kommen aus PERIODIC_FORMS -> neuer Defekt F-TTM-6, nicht F-TTM-4/5"
+  }
+ },
+ "newDefect": {
+  "F-TTM-6": {
+   "title": "Korrekturen, die nur in einem 10-KT/10-KT/A veroeffentlicht werden, fliessen nicht in die Werte",
+   "scope": "41 Quartals-EPS bei 16 von 268 10-KT-Filern weichen vom letzten periodischen Wert ab",
+   "rootCause": "Wertquellen = provider.PERIODIC_FORMS (ohne 10-KT); 1.21.0 liest 10-KT nur fuer den Kalender",
+   "status": "dokumentiert, nicht behoben (andere Ursache als F-TTM-4/5, eigene Aenderung der Wertquellen)",
+   "ciks": [
+    "0000318833",
+    "0000798359",
+    "0000810332",
+    "0000812149",
+    "0000818677",
+    "0000866121",
+    "0001124524",
+    "0001157817",
+    "0001336920",
+    "0001414628",
+    "0001419806",
+    "0001494448",
+    "0001497253",
+    "0001506385",
+    "0001641631"
+   ]
+  }
+ },
+ "redTeam": {
+  "rounds": 2,
+  "model": "Opus, unabhaengig",
+  "round1": {
+   "commit": "0d7802a",
+   "findings": [
+    "D1 CRITICAL Kennung +1 nach gelerntem Uebergang (~100 Emittenten: Oshkosh, Deckers, ServiceNow)",
+    "D2 HIGH falscher Uebergang aus Vergleichszeitraum (ADM, L3Harris)",
+    "D3 HIGH Uebergaenge <= 60 Tage vom Clustering verschluckt (VMware, Discover)",
+    "D4 MEDIUM Jahresenden anderer Berichte ohne Abgleich (Dawson)",
+    "D5 MEDIUM Verzugsregel traf Spaetmelder (RocketFuel)",
+    "P1 HIGH vorbestehend: Uebergang hinter umgerechnetem Kalenderjahr unsichtbar (Rentech Nitrogen)",
+    "P2 LOW vorbestehend: 10-KT ohne Spur (Precision Castparts)"
+   ],
+   "status": "alle behoben, Regressionen RedTeam121Tests"
+  },
+  "round2": {
+   "commit": "21c452b",
+   "verdict": "kein Blocker, kein CRITICAL/HIGH",
+   "findings": [
+    "D-R2 MEDIUM Ereigniszeitraum im 10-KT als Jahresende (International Safety Group) - einziger falscher Wert -> behoben",
+    "D-R1 MEDIUM falscher Uebergang ein Jahr frueher (Columbia Financial) -> behoben",
+    "C2 MEDIUM echte Jahre ohne Kennung (Best Buy, Aytu) -> behoben",
+    "C1 MEDIUM Designentscheidung: Bilanzen am Ende eines Uebergangszeitraums ohne Kennung haben keine Jahreszelle (560 Bilanzen, 476 Emittenten) - bewusst: ein Uebergangszeitraum ist kein Geschaeftsjahr; keine falschen Werte",
+    "C3 LOW Messung vertraut dem fy-Feld (Best Buy, HomeTrust)"
+   ],
+   "status": "D-R2/D-R1/C2 behoben (f5225ad, RedTeam121Round2Tests); C1 akzeptiert und dokumentiert"
+  },
+  "open": [
+   "C1 Uebergangs-Bilanzen ohne Jahreszelle (Designentscheidung)",
+   "Genie Energy: Uebergang nur per 10-QT (nicht in CALENDAR_FORMS), 12 Fenster wie in 1.20.0",
+   "Nexscient: Folgeperioden nach dem 10-KT (wie 1.20.0)",
+   "9 weitere Emittenten mit Fenstern ueber 10-KT/10-QT-Uebergaenge, nicht verfolgt (wie 1.20.0)",
+   "F-TTM-6 Korrekturen nur in 10-KT/A",
+   "vorbestehend: West Bancorporation fy-Tippfehler 2107; iCoreConnect negativer Q4-Umsatz aus FY minus 9M"
+  ]
+ }
+}
