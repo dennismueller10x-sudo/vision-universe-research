@@ -1,6 +1,6 @@
 # Continuous production refresh — existing 46-stock cohort
 
-Status: implementation under authenticated acceptance on 9 October 2026.
+Status: two independent autonomous main production runs and full live acceptance passed on 9 October 2026; the first new cron trigger has not yet been observed.
 This document distinguishes implemented safeguards from observed production evidence.
 The approved 46 stocks / 45 issuers remain unchanged. No discovery, publisher bodies,
 AI inference, paid provider, or public operational ledger is part of the runner.
@@ -280,3 +280,108 @@ preview. All 216 real Discover/Quant cases and eight dark checks had passed befo
 that exact timestamp assertion rejected ACU. The adapter now binds both fields
 to the current manifest; a new contract rejects contradictory generation/time.
 No assertion, browser timeout, product data or source policy was relaxed.
+
+
+The corrected independent full production run
+[37969086009](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37969086009)
+passed on code `417afcc0b0b988a76129489c4421676cbbf76150`, serving consumer
+`40afe02bad7b0a64facdde95` from production SHA
+`2f10ea21e8fa933edc8d2d3437b64ce38c6b6e6b`. All 46 stocks passed 390/430/768/1440px,
+dark and light (368 V2 cases); the separate Discover/Quant matrix had 216
+responsive cases plus two scope/access guards, and dark checks had eight cases
+plus an out-of-cohort guard. All 86 consumer asset hashes and protected hydration
+passed. The full QA job ran 18m24s; this is one-off structural acceptance and is
+not repeated by the four-hour data schedule.
+
+
+Production run 2, [37971341333](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37971341333),
+passed from a genuinely new main runner. It restored run 1 generation
+`46f7fdd7d385681b90d7b885` and advanced the full private state to
+`07cf7fbab640023fff9d2739`; checkpoint SHA-256
+`bfa9ac1c1569f8b494c779d0855806eeba2cbc469e9fb1ad4c29f4de038bd3ae`,
+31,140,726 bytes. Full 5,120-company preservation, table proofs, independent R2
+readback/restore and all 86 reproduced consumer bytes passed again. Forty-five
+SEC checks succeeded; feeds were not yet due, no new filings were found and no
+facts download was needed. No news, events or financial updates were invented.
+The stateful no-change path retained 45 German profiles and 314 news records
+across 42 issuers. All 46 contracts and 16 candidate browser cases passed.
+
+Consumer `bc4b5f6f0392692125bccb74` was deployed by existing Pages run
+37972161686, which also finished green. All 16 actual live cases and 86 asset
+hashes passed, source SHA `2f10ea21e8fa933edc8d2d3437b64ce38c6b6e6b`.
+Private successful refresh: 18:12:06Z. Actual production acceptance:
+18:24:14.441Z. R2 and consumer payloads, not a workspace fixture, supplied
+production. The second run proves restoration of the first run's resulting
+state, durable cursors, no-change handling and publication across independent
+runners. Current and previous GOOD remain protected.
+
+### Measured running cost for this cohort
+
+Six refreshes/day, 180/30 days. Run 1's source job took 20m07s; run 2 took 14m33s.
+The measured mean is **17m20s** including setup, deployment wait and live QA.
+Dispatched Pages jobs consume another **8.075 active runner minutes per run** on
+average; queued job time is excluded, source-job polling wait is included.
+The read-only health job took nine seconds. This gives approximately **4,601
+active runner minutes/month**, or **5,220 minutes if each job is rounded up**.
+`measured-cost.json` records the exact start/end times and arithmetic. Standard
+Linux Actions on this public repository has no incremental compute-minute
+charge. Account-wide artifact/storage billing has not been authenticated.
+Existing market-data Pages jobs and initial engineering/verification jobs are
+separate; this is not a claim about total repository consumption. The one-off
+full browser job used 18m24s plus its parallel regression-validation job. Initial
+source catch-up used 747 producer seconds and is not the recurring baseline.
+
+`health.json.durationSeconds` and its `finishedAt` describe the private-state /
+consumer / candidate phase (242s and 304s for the two production runs). Actual
+publication has its separate accepted clock; full job costs above include that
+later phase. GitHub's native per-job start/end evidence is preserved separately.
+
+Current compressed private checkpoint: **31.14 MB**. Two private slots plus the
+certified bootstrap and four bounded approximately-2.07-MB consumer slots retain
+roughly **0.102 GB** for this production lane, excluding original sealed state,
+isolated acceptance namespaces and other account workloads. Routine full-change
+publication is approximately **12.4 MB/day**. Plan for approximately **560 R2
+writes/day** (86 payloads, manifest/pointer/checkpoint writes and successful
+observations), and a conservative **5,000 reads/day** for this lane including
+readback/restore/staging. Existing market-data redeployment reads/observations
+are separate; account operation totals have not been metered.
+
+Pricing assumptions remain the R2 Standard reference checked on 5 October:
+10 GB-month / one million Class A / ten million Class B free per account;
+$0.015 per GB-month, $4.50/million Class A, $0.36/million Class B with billable-unit
+rounding and free Internet egress. This lane fits the free allowances if available
+(**$0 incremental R2**); a conservative standalone no-free-allowance rounded
+scenario is approximately **$4.88/month**. Shared allowance availability and an
+actual bill are unverified. Paid data and AI inference cost remains **$0**.
+No 100/500/5,000-issuer runtime or cost guarantee is inferred from these 45 issuers.
+
+### Final autonomy / safety / scope review
+
+**YES:** if Dennis does not open Codex or ChatGPT for 30 days, the enabled main
+schedule will fetch eligible registered sources, process, validate, preserve and
+publish content without those tools. This is supported by two full actual main
+runs, not only YAML or isolated publication. Existing Actions/R2/Pages credentials
+are the only operational prerequisites; no interactive source-review step or
+AI call is required by the routine path. Critical failures remain visible in
+GitHub and preserve/restore the verified consumer.
+
+The source workflow and health workflow are both registered **active**. The next
+source cron after acceptance is 9 October **20:17 UTC**; actual cron observation
+is **NOT-YET-OBSERVED** at this report's acceptance. GitHub cron is best effort,
+and the native warning/critical ages are 8/12 hours. No repository variable change
+is required for the committed approved config; the actual production runs prove
+the optional stop variable is not blocking execution.
+
+Remaining product limits are unchanged: nine inactive article-only entries are
+not new-page discovery feeds, TK/VEON/XPEV/ARBE retain stale labels where existing
+normalization is insufficient, and changed untranslated profile fragments wait
+privately for optional editorial work. Source adapter fixes, infrastructure
+failures and scope expansion can require later maintenance; daily eligible
+refresh does not. The approved 46/45 cohort, source policy and access controls
+remain unchanged. No operational activation blocker remains after these runs.
+
+
+Final independent read-only R2 health run 37973142531 passed on main: all three
+SLOs were HEALTHY for consumer `bc4b5f6f0392692125bccb74`. Its aggregate receipt
+is committed as `final-slo-refresh-slo.json` alongside both successful production
+runs and the full actual-production browser reports.
