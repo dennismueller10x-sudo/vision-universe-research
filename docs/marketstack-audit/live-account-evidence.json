@@ -1,0 +1,1672 @@
+{
+  "schemaVersion": "marketstack-authenticated-evidence-1",
+  "scope": "READ_ONLY_PROVIDER_OBSERVATIONS_NOT_PRODUCT_ADMISSION",
+  "productionWrites": 0,
+  "requests": 547,
+  "reservedCredits": 1573,
+  "billingSemantics": "CONSERVATIVE_RESERVED_NOT_OBSERVED_BILLING",
+  "rawResponses": 542,
+  "runs": [
+    {
+      "id": 37636729908,
+      "requests": 326,
+      "reservedCredits": 782,
+      "maxCredits": 1800,
+      "responses": 325,
+      "terminalReason": null,
+      "retries": 0,
+      "cacheHits": 0,
+      "productionWrites": 0
+    },
+    {
+      "id": 37638353777,
+      "requests": 145,
+      "reservedCredits": 411,
+      "maxCredits": 1200,
+      "responses": 143,
+      "terminalReason": null,
+      "retries": 0,
+      "cacheHits": 0,
+      "productionWrites": 0
+    },
+    {
+      "id": 37642262870,
+      "requests": 55,
+      "reservedCredits": 302,
+      "maxCredits": 400,
+      "responses": 53,
+      "terminalReason": null,
+      "retries": 0,
+      "cacheHits": 0,
+      "productionWrites": 0
+    },
+    {
+      "id": 37645399592,
+      "requests": 21,
+      "reservedCredits": 78,
+      "maxCredits": 100,
+      "responses": 21,
+      "terminalReason": null,
+      "retries": 0,
+      "cacheHits": 0,
+      "productionWrites": 0
+    }
+  ],
+  "holdings": [
+    {
+      "ticker": "SPY",
+      "company": "SPDR S&P 500 ETF Trust",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0207"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": []
+    },
+    {
+      "ticker": "QQQ",
+      "company": "Invesco QQQ Trust Series 1",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0214"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": []
+    },
+    {
+      "ticker": "VOO",
+      "company": "VANGUARD 500 INDEX FUND ETF SHARES",
+      "reportedTotal": null,
+      "downloadedCount": 516,
+      "paginationCount": 1,
+      "weightSumPercent": "99.916916230713",
+      "negativeWeightCount": 9,
+      "withISIN": 503,
+      "withTicker": 0,
+      "withCountry": 516,
+      "withSector": 0,
+      "attributes": {
+        "series_name": "VANGUARD 500 INDEX FUND",
+        "series_id": "S000002839",
+        "series_lei": "12WZ1W76P8QD4VJ6OB47",
+        "ticker": "VOO",
+        "isin": "US9229083632",
+        "date_report_period": "2024-12-31",
+        "end_report_period": "2024-12-31",
+        "final_filing": false
+      },
+      "signedDate": "2025-02-27",
+      "status": "STALE",
+      "downloadCompleteness": "ALL_ROWS_IN_PROVIDER_REPORT_PRESERVED",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": true,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0221"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": {
+        "runId": 37638353777,
+        "responseIds": [
+          "0086"
+        ],
+        "label": "holdings_offset_differential"
+      },
+      "variantEvidence": []
+    },
+    {
+      "ticker": "VTI",
+      "company": "Vanguard Morningstar Total Stock Market ETF",
+      "reportedTotal": null,
+      "downloadedCount": 3626,
+      "paginationCount": 1,
+      "weightSumPercent": "100.168847147443",
+      "negativeWeightCount": 19,
+      "withISIN": 3569,
+      "withTicker": 0,
+      "withCountry": 3626,
+      "withSector": 0,
+      "attributes": {
+        "series_name": "VANGUARD TOTAL STOCK MARKET INDEX FUND",
+        "series_id": "S000002848",
+        "series_lei": "HJ2RZRUQEVF2A5SPRB21",
+        "ticker": "VTI",
+        "isin": "US9229087690",
+        "date_report_period": "2025-03-31",
+        "end_report_period": "2025-12-31",
+        "final_filing": false
+      },
+      "signedDate": "2025-05-28",
+      "status": "STALE",
+      "downloadCompleteness": "ALL_ROWS_IN_PROVIDER_REPORT_PRESERVED",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": true,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0228"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": {
+        "runId": 37638353777,
+        "responseIds": [
+          "0088"
+        ],
+        "label": "holdings_offset_differential"
+      },
+      "variantEvidence": []
+    },
+    {
+      "ticker": "SCHD",
+      "company": "SCHWAB U.S. DIVIDEND EQUITY ETF ",
+      "reportedTotal": null,
+      "downloadedCount": 101,
+      "paginationCount": 1,
+      "weightSumPercent": "99.693498783176",
+      "negativeWeightCount": 2,
+      "withISIN": 99,
+      "withTicker": 0,
+      "withCountry": 101,
+      "withSector": 0,
+      "attributes": {
+        "series_name": "Schwab U.S. Dividend Equity ETF",
+        "series_id": "S000034163",
+        "series_lei": "549300MUIMRQQDWJ5226",
+        "ticker": "SCHD",
+        "isin": "US8085247976",
+        "date_report_period": "2025-02-28",
+        "end_report_period": "2025-08-31",
+        "final_filing": false
+      },
+      "signedDate": "2025-03-24",
+      "status": "STALE",
+      "downloadCompleteness": "ALL_ROWS_IN_PROVIDER_REPORT_PRESERVED",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": true,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0235"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": {
+        "runId": 37638353777,
+        "responseIds": [
+          "0090"
+        ],
+        "label": "holdings_offset_differential"
+      },
+      "variantEvidence": []
+    },
+    {
+      "ticker": "SXR8.DE",
+      "company": "iShares Core S&P 500 UCITS ETF USD",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "timeout",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "final_slow_UCITS_holdings",
+          "ok": false,
+          "reason": "invalidResponse",
+          "source": {
+            "runId": 37645399592,
+            "responseIds": [
+              "0001"
+            ],
+            "label": "final_slow_UCITS_holdings"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "EUNL.DE",
+      "company": "iShares Core MSCI World UCITS ETF USD",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0248"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "timeout",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_IWDA.L",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0007"
+            ],
+            "label": "UCITS_observed_alternative_IWDA.L"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "XDWD.DE",
+      "company": "Xtrackers MSCI World UCITS ETF 1C",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0255"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0001"
+            ],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_XDWD.L",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0009"
+            ],
+            "label": "UCITS_observed_alternative_XDWD.L"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "XESC.DE",
+      "company": "Xtrackers Euro Stoxx 50 UCITS ETF 1C",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0262"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0002"
+            ],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_XESC.L",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0011"
+            ],
+            "label": "UCITS_observed_alternative_XESC.L"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "VWCE.DE",
+      "company": "Vanguard FTSE All-World UCITS ETF USD Accumulation",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0269"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0003"
+            ],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_VWRP.L",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0013"
+            ],
+            "label": "UCITS_observed_alternative_VWRP.L"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "SPY5.DE",
+      "company": "SPDR S&P 500 UCITS ETF",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0276"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0004"
+            ],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_SSSPF",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0015"
+            ],
+            "label": "UCITS_observed_alternative_SSSPF"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "LCUW.DE",
+      "company": "Amundi MSCI World V UCITS ETF",
+      "reportedTotal": null,
+      "downloadedCount": 0,
+      "paginationCount": 0,
+      "weightSumPercent": null,
+      "negativeWeightCount": 0,
+      "withISIN": 0,
+      "withTicker": 0,
+      "withCountry": 0,
+      "withSector": 0,
+      "attributes": {},
+      "signedDate": null,
+      "status": "UNAVAILABLE",
+      "downloadCompleteness": "NO_HOLDINGS_RESPONSE",
+      "economicCompleteness": "NOT_CERTIFIED_NO_TOTAL",
+      "offsetLimitIgnored": false,
+      "initialEvidence": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0283"
+        ],
+        "label": "ETF_holdings"
+      },
+      "offsetEvidence": null,
+      "variantEvidence": [
+        {
+          "label": "UCITS_bare_parameter_hypothesis",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0005"
+            ],
+            "label": "UCITS_bare_parameter_hypothesis"
+          }
+        },
+        {
+          "label": "UCITS_observed_alternative_LCWD.L",
+          "ok": false,
+          "reason": "dataUnavailable",
+          "source": {
+            "runId": 37642262870,
+            "responseIds": [
+              "0017"
+            ],
+            "label": "UCITS_observed_alternative_LCWD.L"
+          }
+        }
+      ]
+    }
+  ],
+  "europeSnapshots": [
+    {
+      "company": "SAP",
+      "providerTicker": "SAP.DE",
+      "snapshotTicker": "SAP",
+      "expectedMIC": "XETR",
+      "raw": [
+        {
+          "exchange_code": "BCBA",
+          "exchange_name": "Buenos Aires Stock Exchange",
+          "country": "Argentina",
+          "ticker": "SAP",
+          "price": "42880",
+          "currency": "ARS",
+          "trade_last": "2026-05-08 17:00:00"
+        },
+        {
+          "exchange_code": "ETR",
+          "exchange_name": "Deutsche Börse Xetra",
+          "country": "Germany",
+          "ticker": "SAP",
+          "price": "186.92",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:17:24"
+        },
+        {
+          "exchange_code": "FRA",
+          "exchange_name": "Frankfurt Stock Exchange",
+          "country": "Germany",
+          "ticker": "SAP",
+          "price": "187.02",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:00:03"
+        },
+        {
+          "exchange_code": "JSE",
+          "exchange_name": "Johannesburg Stock Exchange",
+          "country": "South Africa",
+          "ticker": "SAP",
+          "price": "1547",
+          "currency": "ZAR",
+          "trade_last": "2026-08-20 13:41:33"
+        },
+        {
+          "exchange_code": "NYSE",
+          "exchange_name": "New York Stock Exchange",
+          "country": "United States",
+          "ticker": "SAP",
+          "price": "209.7",
+          "currency": "USD",
+          "trade_last": "2026-10-07 11:26:45"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "SAP",
+          "price": "181.88",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:33"
+        },
+        {
+          "exchange_code": "WSE",
+          "exchange_name": "Warsaw Stock Exchange",
+          "country": "Poland",
+          "ticker": "SAP",
+          "price": "820",
+          "currency": "PLN",
+          "trade_last": "2026-10-07 17:00:00"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "ETR",
+            "exchange_name": "Deutsche Börse Xetra",
+            "country": "Germany",
+            "ticker": "SAP",
+            "price": "186.92",
+            "currency": "EUR",
+            "trade_last": "2026-10-07 17:17:24"
+          },
+          "normalized": {
+            "providerTicker": "SAP",
+            "providerExchange": "XETR",
+            "providerExchangeCode": "ETR",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "Germany",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 186.92,
+            "marketTimestamp": "2026-10-07 17:17:24",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-10-07",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:41:20.703Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_ETR_EXACT_METADATA_XETR",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0047",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "SAP"
+                },
+                "sha256": "4bb1df670dc990dfcdff6221a6ee2886172cfc31e1edc003fb3ef9526ed11774"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0016",
+                "endpoint": "/tickers/SAP.DE",
+                "params": {},
+                "sha256": "989db173d88d37673b6d484750dd6f95f77882d346a3731611aa40601b245d3a"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0007"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "Siemens",
+      "providerTicker": "SIE.DE",
+      "snapshotTicker": "SIE",
+      "expectedMIC": "XETR",
+      "raw": [
+        {
+          "exchange_code": "ETR",
+          "exchange_name": "Deutsche Börse Xetra",
+          "country": "Germany",
+          "ticker": "SIE",
+          "price": "270.6",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:08:25"
+        },
+        {
+          "exchange_code": "FRA",
+          "exchange_name": "Frankfurt Stock Exchange",
+          "country": "Germany",
+          "ticker": "SIE",
+          "price": "270.1",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 16:53:10"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "SIE",
+          "price": "278.75",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:11:53"
+        },
+        {
+          "exchange_code": "WSE",
+          "exchange_name": "Warsaw Stock Exchange",
+          "country": "Poland",
+          "ticker": "SIE",
+          "price": "1191.8",
+          "currency": "PLN",
+          "trade_last": "2026-10-02 14:18:51"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "ETR",
+            "exchange_name": "Deutsche Börse Xetra",
+            "country": "Germany",
+            "ticker": "SIE",
+            "price": "270.6",
+            "currency": "EUR",
+            "trade_last": "2026-10-07 17:08:25"
+          },
+          "normalized": {
+            "providerTicker": "SIE",
+            "providerExchange": "XETR",
+            "providerExchangeCode": "ETR",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "Germany",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 270.6,
+            "marketTimestamp": "2026-10-07 17:08:25",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-10-07",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:42:21.733Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_ETR_EXACT_METADATA_XETR",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0047",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "SAP"
+                },
+                "sha256": "4bb1df670dc990dfcdff6221a6ee2886172cfc31e1edc003fb3ef9526ed11774"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0016",
+                "endpoint": "/tickers/SAP.DE",
+                "params": {},
+                "sha256": "989db173d88d37673b6d484750dd6f95f77882d346a3731611aa40601b245d3a"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0009"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "Allianz",
+      "providerTicker": "ALV.DE",
+      "snapshotTicker": "ALV",
+      "expectedMIC": "XETR",
+      "raw": [
+        {
+          "exchange_code": "ASX",
+          "exchange_name": "Australian Securities Exchange",
+          "country": "Australia",
+          "ticker": "ALV",
+          "price": "0.03",
+          "currency": "AUD",
+          "trade_last": "2026-06-17 16:00:00"
+        },
+        {
+          "exchange_code": "ETR",
+          "exchange_name": "Deutsche Börse Xetra",
+          "country": "Germany",
+          "ticker": "ALV",
+          "price": "416.1",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:17:59"
+        },
+        {
+          "exchange_code": "FRA",
+          "exchange_name": "Frankfurt Stock Exchange",
+          "country": "Germany",
+          "ticker": "ALV",
+          "price": "416.2",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 16:41:36"
+        },
+        {
+          "exchange_code": "JSE",
+          "exchange_name": "Johannesburg Stock Exchange",
+          "country": "South Africa",
+          "ticker": "ALV",
+          "price": "1050",
+          "currency": "ZAR",
+          "trade_last": "2025-09-22 17:00:00"
+        },
+        {
+          "exchange_code": "NYSE",
+          "exchange_name": "New York Stock Exchange",
+          "country": "United States",
+          "ticker": "ALV",
+          "price": "110.64",
+          "currency": "USD",
+          "trade_last": "2026-10-07 11:25:00"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "ALV",
+          "price": "441.1",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:33"
+        },
+        {
+          "exchange_code": "WSE",
+          "exchange_name": "Warsaw Stock Exchange",
+          "country": "Poland",
+          "ticker": "ALV",
+          "price": "1839.5",
+          "currency": "PLN",
+          "trade_last": "2026-10-07 17:00:00"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "ETR",
+            "exchange_name": "Deutsche Börse Xetra",
+            "country": "Germany",
+            "ticker": "ALV",
+            "price": "416.1",
+            "currency": "EUR",
+            "trade_last": "2026-10-07 17:17:59"
+          },
+          "normalized": {
+            "providerTicker": "ALV",
+            "providerExchange": "XETR",
+            "providerExchangeCode": "ETR",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "Germany",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 416.1,
+            "marketTimestamp": "2026-10-07 17:17:59",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-10-07",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:43:22.822Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_ETR_EXACT_METADATA_XETR",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0047",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "SAP"
+                },
+                "sha256": "4bb1df670dc990dfcdff6221a6ee2886172cfc31e1edc003fb3ef9526ed11774"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0016",
+                "endpoint": "/tickers/SAP.DE",
+                "params": {},
+                "sha256": "989db173d88d37673b6d484750dd6f95f77882d346a3731611aa40601b245d3a"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0011"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "Deutsche Telekom",
+      "providerTicker": "DTE.DE",
+      "snapshotTicker": "DTE",
+      "expectedMIC": "XETR",
+      "raw": [
+        {
+          "exchange_code": "ETR",
+          "exchange_name": "Deutsche Börse Xetra",
+          "country": "Germany",
+          "ticker": "DTE",
+          "price": "27.04",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:14:10"
+        },
+        {
+          "exchange_code": "FRA",
+          "exchange_name": "Frankfurt Stock Exchange",
+          "country": "Germany",
+          "ticker": "DTE",
+          "price": "27.03",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 16:46:29"
+        },
+        {
+          "exchange_code": "NYSE",
+          "exchange_name": "New York Stock Exchange",
+          "country": "United States",
+          "ticker": "DTE",
+          "price": "128.08",
+          "currency": "USD",
+          "trade_last": "2026-10-07 11:28:07"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "DTE",
+          "price": "28.84",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:33"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "ETR",
+            "exchange_name": "Deutsche Börse Xetra",
+            "country": "Germany",
+            "ticker": "DTE",
+            "price": "27.04",
+            "currency": "EUR",
+            "trade_last": "2026-10-07 17:14:10"
+          },
+          "normalized": {
+            "providerTicker": "DTE",
+            "providerExchange": "XETR",
+            "providerExchangeCode": "ETR",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "Germany",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 27.04,
+            "marketTimestamp": "2026-10-07 17:14:10",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-10-07",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:44:23.865Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_ETR_EXACT_METADATA_XETR",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0047",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "SAP"
+                },
+                "sha256": "4bb1df670dc990dfcdff6221a6ee2886172cfc31e1edc003fb3ef9526ed11774"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0016",
+                "endpoint": "/tickers/SAP.DE",
+                "params": {},
+                "sha256": "989db173d88d37673b6d484750dd6f95f77882d346a3731611aa40601b245d3a"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0013"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "ASML",
+      "providerTicker": "ASML.AS",
+      "snapshotTicker": "ASML",
+      "expectedMIC": "XAMS",
+      "raw": [
+        {
+          "exchange_code": "AMS",
+          "exchange_name": "Euronext Amsterdam",
+          "country": "Netherlands",
+          "ticker": "ASML",
+          "price": "1550",
+          "currency": "EUR",
+          "trade_last": "2026-08-19 13:32:51"
+        },
+        {
+          "exchange_code": "BCBA",
+          "exchange_name": "Buenos Aires Stock Exchange",
+          "country": "Argentina",
+          "ticker": "ASML",
+          "price": "16240",
+          "currency": "ARS",
+          "trade_last": "2026-05-08 17:00:00"
+        },
+        {
+          "exchange_code": "NASDAQ",
+          "exchange_name": "Nasdaq Stock Market",
+          "country": "United States",
+          "ticker": "ASML",
+          "price": "1801.14",
+          "currency": "USD",
+          "trade_last": "2026-10-07 11:38:34"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "ASML",
+          "price": "1570.4",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:24"
+        },
+        {
+          "exchange_code": "WSE",
+          "exchange_name": "Warsaw Stock Exchange",
+          "country": "Poland",
+          "ticker": "ASML",
+          "price": "7120",
+          "currency": "PLN",
+          "trade_last": "2026-10-07 17:00:00"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "AMS",
+            "exchange_name": "Euronext Amsterdam",
+            "country": "Netherlands",
+            "ticker": "ASML",
+            "price": "1550",
+            "currency": "EUR",
+            "trade_last": "2026-08-19 13:32:51"
+          },
+          "normalized": {
+            "providerTicker": "ASML",
+            "providerExchange": "XAMS",
+            "providerExchangeCode": "AMS",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "Netherlands",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 1550,
+            "marketTimestamp": "2026-08-19 13:32:51",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-08-19",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:45:24.848Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_AMS_EXACT_METADATA_XAMS",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0051",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "ASML"
+                },
+                "sha256": "a390d2166267a09a9af6c755646fc5dd4a1b3611f42bb31eea5b0497c06f7241"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0125",
+                "endpoint": "/tickers/ASML.AS",
+                "params": {},
+                "sha256": "bac0ddee41ba461bf1bbff794db4426c1781fe780a21ff2ecd993cac25b2e20c"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0015"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "LVMH",
+      "providerTicker": "MC.PA",
+      "snapshotTicker": "MC",
+      "expectedMIC": "XPAR",
+      "raw": [
+        {
+          "exchange_code": "EPA",
+          "exchange_name": "Euronext Paris",
+          "country": "France",
+          "ticker": "MC",
+          "price": "388",
+          "currency": "EUR",
+          "trade_last": "2026-10-07 17:20:00"
+        },
+        {
+          "exchange_code": "NYSE",
+          "exchange_name": "New York Stock Exchange",
+          "country": "United States",
+          "ticker": "MC",
+          "price": "54.96",
+          "currency": "USD",
+          "trade_last": "2026-10-07 11:28:28"
+        },
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "MC",
+          "price": "448.3",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:24"
+        }
+      ],
+      "normalized": [
+        {
+          "raw": {
+            "exchange_code": "EPA",
+            "exchange_name": "Euronext Paris",
+            "country": "France",
+            "ticker": "MC",
+            "price": "388",
+            "currency": "EUR",
+            "trade_last": "2026-10-07 17:20:00"
+          },
+          "normalized": {
+            "providerTicker": "MC",
+            "providerExchange": "XPAR",
+            "providerExchangeCode": "EPA",
+            "name": null,
+            "description": null,
+            "isin": null,
+            "currency": "EUR",
+            "sector": null,
+            "industry": null,
+            "cik": null,
+            "cusip": null,
+            "lei": null,
+            "countryCode": null,
+            "country": null,
+            "exchangeCountry": "France",
+            "exchangeCountryCode": null,
+            "assetType": null,
+            "open": null,
+            "high": null,
+            "low": null,
+            "close": null,
+            "volume": null,
+            "adjustedOpen": null,
+            "adjustedHigh": null,
+            "adjustedLow": null,
+            "adjustedClose": null,
+            "adjustedVolume": null,
+            "splitFactor": null,
+            "dividend": null,
+            "price": 388,
+            "marketTimestamp": "2026-10-07 17:20:00",
+            "providerUpdateTimestamp": null,
+            "tradingDate": "2026-10-07",
+            "timestampTimezone": "NOT_REPORTED",
+            "retrievedAt": "2026-10-07T15:46:25.965Z",
+            "frequency": "SNAPSHOT",
+            "delayState": "UNKNOWN",
+            "adjustmentVerification": "UNVERIFIED",
+            "exchangeProvenance": "AUDITED_PROVIDER_CODE_TO_MIC",
+            "exchangeMappingSource": "MARKETSTACK_20261007_STOCKPRICE_EPA_EXACT_METADATA_XPAR",
+            "exchangeMappingEvidence": [
+              {
+                "runId": "37642262870",
+                "responseId": "0052",
+                "endpoint": "/stockprice",
+                "params": {
+                  "ticker": "MC"
+                },
+                "sha256": "b75ecfcde5f16c16e606639ef068c0fbb9c1f6d1ebc57de9ff477da0a60f4949"
+              },
+              {
+                "runId": "37636729908",
+                "responseId": "0140",
+                "endpoint": "/tickers/MC.PA",
+                "params": {},
+                "sha256": "b1ff5453daefc0d95af1aafefb72a1af30a718c8f95bfa5ad1501af9b69e4b01"
+              }
+            ]
+          }
+        }
+      ],
+      "ok": true,
+      "reason": null,
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0017"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    },
+    {
+      "company": "ABB",
+      "providerTicker": "ABBN.SW",
+      "snapshotTicker": "ABBN",
+      "expectedMIC": "XSWX",
+      "raw": [
+        {
+          "exchange_code": "VIE",
+          "exchange_name": "Vienna Stock Exchange",
+          "country": "Austria",
+          "ticker": "ABBN",
+          "price": "86.62",
+          "currency": "EUR",
+          "trade_last": "2026-08-18 13:00:24"
+        }
+      ],
+      "normalized": [],
+      "ok": false,
+      "reason": "snapshotVenueUnverified",
+      "source": {
+        "runId": 37645399592,
+        "responseIds": [
+          "0019"
+        ],
+        "label": "final_verified_native_snapshot"
+      }
+    }
+  ],
+  "historyBoundarySamples": [
+    {
+      "company": "SAP",
+      "window": "history_1Y_boundary_sample",
+      "firstDate": "2025-10-07T00:00:00+0000",
+      "reportedTotal": 247,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0023"
+        ],
+        "label": "history_1Y_boundary_sample"
+      }
+    },
+    {
+      "company": "SAP",
+      "window": "history_5Y_boundary_sample",
+      "firstDate": "2021-10-07T00:00:00+0000",
+      "reportedTotal": 1250,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0024"
+        ],
+        "label": "history_5Y_boundary_sample"
+      }
+    },
+    {
+      "company": "SAP",
+      "window": "history_10Y_boundary_sample",
+      "firstDate": "2016-10-07T00:00:00+0000",
+      "reportedTotal": 2517,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0025"
+        ],
+        "label": "history_10Y_boundary_sample"
+      }
+    },
+    {
+      "company": "SAP",
+      "window": "history_15Y_boundary_sample",
+      "firstDate": "2011-10-07T00:00:00+0000",
+      "reportedTotal": 3783,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0026"
+        ],
+        "label": "history_15Y_boundary_sample"
+      }
+    },
+    {
+      "company": "SAP",
+      "window": "history_full_boundary_sample",
+      "firstDate": "2010-01-04T00:00:00+0000",
+      "reportedTotal": 4235,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0027"
+        ],
+        "label": "history_full_boundary_sample"
+      }
+    },
+    {
+      "company": "ASML",
+      "window": "history_1Y_boundary_sample",
+      "firstDate": "2025-10-07T00:00:00+0000",
+      "reportedTotal": 252,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0132"
+        ],
+        "label": "history_1Y_boundary_sample"
+      }
+    },
+    {
+      "company": "ASML",
+      "window": "history_5Y_boundary_sample",
+      "firstDate": "2021-10-07T00:00:00+0000",
+      "reportedTotal": 1269,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0133"
+        ],
+        "label": "history_5Y_boundary_sample"
+      }
+    },
+    {
+      "company": "ASML",
+      "window": "history_10Y_boundary_sample",
+      "firstDate": "2016-10-07T00:00:00+0000",
+      "reportedTotal": 2547,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0134"
+        ],
+        "label": "history_10Y_boundary_sample"
+      }
+    },
+    {
+      "company": "ASML",
+      "window": "history_15Y_boundary_sample",
+      "firstDate": "2011-10-07T00:00:00+0000",
+      "reportedTotal": 3825,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0135"
+        ],
+        "label": "history_15Y_boundary_sample"
+      }
+    },
+    {
+      "company": "ASML",
+      "window": "history_full_boundary_sample",
+      "firstDate": "2010-01-04T00:00:00+0000",
+      "reportedTotal": 4279,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0136"
+        ],
+        "label": "history_full_boundary_sample"
+      }
+    },
+    {
+      "company": "AAPL",
+      "window": "history_1Y_boundary_sample",
+      "firstDate": "2025-10-07T00:00:00+0000",
+      "reportedTotal": 251,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0290"
+        ],
+        "label": "history_1Y_boundary_sample"
+      }
+    },
+    {
+      "company": "AAPL",
+      "window": "history_5Y_boundary_sample",
+      "firstDate": "2021-10-07T00:00:00+0000",
+      "reportedTotal": 1254,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0291"
+        ],
+        "label": "history_5Y_boundary_sample"
+      }
+    },
+    {
+      "company": "AAPL",
+      "window": "history_10Y_boundary_sample",
+      "firstDate": "2016-10-07T00:00:00+0000",
+      "reportedTotal": 2512,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0292"
+        ],
+        "label": "history_10Y_boundary_sample"
+      }
+    },
+    {
+      "company": "AAPL",
+      "window": "history_15Y_boundary_sample",
+      "firstDate": "2011-10-07T00:00:00+0000",
+      "reportedTotal": 3770,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0293"
+        ],
+        "label": "history_15Y_boundary_sample"
+      }
+    },
+    {
+      "company": "AAPL",
+      "window": "history_full_boundary_sample",
+      "firstDate": "1996-10-07T00:00:00+0000",
+      "reportedTotal": 7547,
+      "continuityVerified": false,
+      "source": {
+        "runId": 37636729908,
+        "responseIds": [
+          "0294"
+        ],
+        "label": "history_full_boundary_sample"
+      }
+    }
+  ],
+  "currentListingCandidate": {
+    "ticker": "KTN.DE",
+    "mic": "XETR",
+    "latestDate": "2026-10-06",
+    "issuerLinkVerified": false,
+    "metadataExactLookupEmpty": true,
+    "source": {
+      "runId": 37638353777,
+      "responseIds": [
+        "0059"
+      ],
+      "label": "explicit_EOD_candidate"
+    }
+  }
+}

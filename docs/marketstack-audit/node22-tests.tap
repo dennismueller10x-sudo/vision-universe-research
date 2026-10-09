@@ -1,0 +1,628 @@
+TAP version 13
+# Subtest: Regel · Bindestrich, Punkt und Schraegstrich ergeben dieselbe kanonische ID
+ok 1 - Regel · Bindestrich, Punkt und Schraegstrich ergeben dieselbe kanonische ID
+  ---
+  duration_ms: 1.367729
+  type: 'test'
+  ...
+# Subtest: Regel · byte-gleich zur Bildung des Company Master (legacySecurityId)
+ok 2 - Regel · byte-gleich zur Bildung des Company Master (legacySecurityId)
+  ---
+  duration_ms: 39.006184
+  type: 'test'
+  ...
+# Subtest: Bestand · jede securityId in Konfiguration und Universen folgt der Regel
+ok 3 - Bestand · jede securityId in Konfiguration und Universen folgt der Regel
+  ---
+  duration_ms: 91.456546
+  type: 'test'
+  ...
+# Subtest: Bestand · keine doppelte securityId und kein doppelter Ticker im Produktuniversum
+ok 4 - Bestand · keine doppelte securityId und kein doppelter Ticker im Produktuniversum
+  ---
+  duration_ms: 22.449041
+  type: 'test'
+  ...
+# Subtest: Kein Produktskript bildet die securityId mehr roh aus dem Ticker
+ok 5 - Kein Produktskript bildet die securityId mehr roh aus dem Ticker
+  ---
+  duration_ms: 0.971594
+  type: 'test'
+  ...
+# Subtest: all one-shot caps count cumulatively, independent of previous run completion
+ok 6 - all one-shot caps count cumulatively, independent of previous run completion
+  ---
+  duration_ms: 1.9915
+  type: 'test'
+  ...
+# Subtest: prior failed or successful dispatch blocks credit lease replay
+ok 7 - prior failed or successful dispatch blocks credit lease replay
+  ---
+  duration_ms: 0.437906
+  type: 'test'
+  ...
+# Subtest: encrypted bundle authenticates recipient, source, budget-context and exact raw bytes
+ok 8 - encrypted bundle authenticates recipient, source, budget-context and exact raw bytes
+  ---
+  duration_ms: 92.549129
+  type: 'test'
+  ...
+# Subtest: signed final push binds reviewed parent, sole marker diff and frozen lease
+ok 9 - signed final push binds reviewed parent, sole marker diff and frozen lease
+  ---
+  duration_ms: 37.498839
+  type: 'test'
+  ...
+# Subtest: search paginates by actual count, short intermediate page, dedup scoped identity
+ok 10 - search paginates by actual count, short intermediate page, dedup scoped identity
+  ---
+  duration_ms: 34.75609
+  type: 'test'
+  ...
+# Subtest: exchange nested pagination preserves exchange object and scope each page
+ok 11 - exchange nested pagination preserves exchange object and scope each page
+  ---
+  duration_ms: 1.915438
+  type: 'test'
+  ...
+# Subtest: invalid total never certifies completion
+ok 12 - invalid total never certifies completion
+  ---
+  duration_ms: 4.518501
+  type: 'test'
+  ...
+# Subtest: zero limit is rejected before fetch
+ok 13 - zero limit is rejected before fetch
+  ---
+  duration_ms: 0.437256
+  type: 'test'
+  ...
+# Subtest: repeated page, moving totals, wrong counts and empty before total fail visibly
+ok 14 - repeated page, moving totals, wrong counts and empty before total fail visibly
+  ---
+  duration_ms: 3.356736
+  type: 'test'
+  ...
+# Subtest: page budget and missing metadata do not silently truncate
+ok 15 - page budget and missing metadata do not silently truncate
+  ---
+  duration_ms: 2.441855
+  type: 'test'
+  ...
+# Subtest: verified aliases resolve exact/qualified symbol without suffix invention
+ok 16 - verified aliases resolve exact/qualified symbol without suffix invention
+  ---
+  duration_ms: 2.036937
+  type: 'test'
+  ...
+# Subtest: same ticker wrong venue and ambiguous identity are not accepted
+ok 17 - same ticker wrong venue and ambiguous identity are not accepted
+  ---
+  duration_ms: 0.686243
+  type: 'test'
+  ...
+# Subtest: latest EOD uses latest endpoint, bypasses cache and retains raw timestamp
+ok 18 - latest EOD uses latest endpoint, bypasses cache and retains raw timestamp
+  ---
+  duration_ms: 2.335839
+  type: 'test'
+  ...
+# Subtest: Europe snapshot routes separately from IEX and does not assert realtime delay
+ok 19 - Europe snapshot routes separately from IEX and does not assert realtime delay
+  ---
+  duration_ms: 1.178249
+  type: 'test'
+  ...
+# Subtest: intraday forwards interval and after hours; no implicit ticker rewrite
+ok 20 - intraday forwards interval and after hours; no implicit ticker rewrite
+  ---
+  duration_ms: 0.891225
+  type: 'test'
+  ...
+# Subtest: all adjusted fields, zero volume and future provider fields preserved without certification
+ok 21 - all adjusted fields, zero volume and future provider fields preserved without certification
+  ---
+  duration_ms: 0.375615
+  type: 'test'
+  ...
+# Subtest: nested ETF multi-page holdings and signed original weights preserved
+ok 22 - nested ETF multi-page holdings and signed original weights preserved
+  ---
+  duration_ms: 1.975016
+  type: 'test'
+  ...
+# Subtest: ETF no pagination stays unverified; ignored offset never certifies FULL
+ok 23 - ETF no pagination stays unverified; ignored offset never certifies FULL
+  ---
+  duration_ms: 1.612941
+  type: 'test'
+  ...
+# Subtest: ETF changing filing cannot merge into complete holdings
+ok 24 - ETF changing filing cannot merge into complete holdings
+  ---
+  duration_ms: 1.054277
+  type: 'test'
+  ...
+# Subtest: capabilities require per-flag evidence, never default marketing to SUPPORTED
+ok 25 - capabilities require per-flag evidence, never default marketing to SUPPORTED
+  ---
+  duration_ms: 0.399259
+  type: 'test'
+  ...
+# Subtest: raw text saved before normalization, documented errors mapped, key redacted
+ok 26 - raw text saved before normalization, documented errors mapped, key redacted
+  ---
+  duration_ms: 0.886038
+  type: 'test'
+  ...
+# Subtest: budget limits count ETF multiplier and refuse without shared coordination
+ok 27 - budget limits count ETF multiplier and refuse without shared coordination
+  ---
+  duration_ms: 1.7674
+  type: 'test'
+  ...
+# Subtest: requiring audit adapter does not alter provider registry, Tiingo instance, fetch or identities
+ok 28 - requiring audit adapter does not alter provider registry, Tiingo instance, fetch or identities
+  ---
+  duration_ms: 4.153292
+  type: 'test'
+  ...
+# Subtest: dedicated actions retain exact symbol without inventing unreported venue
+ok 29 - dedicated actions retain exact symbol without inventing unreported venue
+  ---
+  duration_ms: 1.939503
+  type: 'test'
+  ...
+# Subtest: suffix-only pages cannot certify global completion and batch incompleteness propagates
+ok 30 - suffix-only pages cannot certify global completion and batch incompleteness propagates
+  ---
+  duration_ms: 1.04982
+  type: 'test'
+  ...
+# Subtest: holdings cannot certify wrong fund, missing report, empty or overlapping report pages
+ok 31 - holdings cannot certify wrong fund, missing report, empty or overlapping report pages
+  ---
+  duration_ms: 2.54013
+  type: 'test'
+  ...
+# Subtest: zero TTL forces raw refresh even if generic client already has a warm quote cache
+ok 32 - zero TTL forces raw refresh even if generic client already has a warm quote cache
+  ---
+  duration_ms: 0.946398
+  type: 'test'
+  ...
+# Subtest: authenticated US EOD venue labels preserve the actual MIC and descriptive code
+ok 33 - authenticated US EOD venue labels preserve the actual MIC and descriptive code
+  ---
+  duration_ms: 1.418905
+  type: 'test'
+  ...
+# Subtest: stockprice throttling spaces actual attempts independently without retry inflation
+ok 34 - stockprice throttling spaces actual attempts independently without retry inflation
+  ---
+  duration_ms: 0.842874
+  type: 'test'
+  ...
+# Subtest: exact metadata projects real identifiers without treating venue country as issuer domicile
+ok 35 - exact metadata projects real identifiers without treating venue country as issuer domicile
+  ---
+  duration_ms: 0.949672
+  type: 'test'
+  ...
+# Subtest: live multi-venue snapshots omit unsupported MIC filter and select observed provider code
+ok 36 - live multi-venue snapshots omit unsupported MIC filter and select observed provider code
+  ---
+  duration_ms: 2.428465
+  type: 'test'
+  ...
+# Subtest: audited native Europe snapshot routing preserves venue, raw fields and timestamp limits
+ok 37 - audited native Europe snapshot routing preserves venue, raw fields and timestamp limits
+  ---
+  duration_ms: 3.952606
+  type: 'test'
+  ...
+# Subtest: snapshot mappings reject foreign same-ticker issuers, missing home venue and conflicts
+ok 38 - snapshot mappings reject foreign same-ticker issuers, missing home venue and conflicts
+  ---
+  duration_ms: 3.629789
+  type: 'test'
+  ...
+# Subtest: snapshot mapping evidence is exported immutably and metadata descriptions are retained
+ok 39 - snapshot mapping evidence is exported immutably and metadata descriptions are retained
+  ---
+  duration_ms: 0.382194
+  type: 'test'
+  ...
+# Subtest: explicit snapshot symbol and observed exchange name preserve alias and venue provenance
+ok 40 - explicit snapshot symbol and observed exchange name preserve alias and venue provenance
+  ---
+  duration_ms: 0.925726
+  type: 'test'
+  ...
+# Subtest: private output rejects repo paths including dot-dot names and symlink ancestors
+ok 41 - private output rejects repo paths including dot-dot names and symlink ancestors
+  ---
+  duration_ms: 1.875018
+  type: 'test'
+  ...
+# Subtest: durable reservation precedes paid request and enforces ETF costs / hard cap
+ok 42 - durable reservation precedes paid request and enforces ETF costs / hard cap
+  ---
+  duration_ms: 2.170424
+  type: 'test'
+  ...
+# Subtest: absent key makes zero calls and writes nothing; plan has no unverified sibling aliases
+ok 43 - absent key makes zero calls and writes nothing; plan has no unverified sibling aliases
+  ---
+  duration_ms: 1.345266
+  type: 'test'
+  ...
+# Subtest: auth error circuits immediately and original raw response is stored outside product tree
+ok 44 - auth error circuits immediately and original raw response is stored outside product tree
+  ---
+  duration_ms: 23.291856
+  type: 'test'
+  ...
+# Subtest: 42-case dry transport honors run budget and never registers product capabilities
+ok 45 - 42-case dry transport honors run budget and never registers product capabilities
+  ---
+  duration_ms: 37.199537
+  type: 'test'
+  ...
+# Subtest: focused follow-up executes only explicit probes against the same shared ledger
+ok 46 - focused follow-up executes only explicit probes against the same shared ledger
+  ---
+  duration_ms: 2.097176
+  type: 'test'
+  ...
+# Subtest: MockProvider erfuellt alle sieben Provider-Interfaces
+ok 47 - MockProvider erfuellt alle sieben Provider-Interfaces
+  ---
+  duration_ms: 1.581295
+  type: 'test'
+  ...
+# Subtest: Registry lehnt einen unvollstaendigen Adapter ab
+ok 48 - Registry lehnt einen unvollstaendigen Adapter ab
+  ---
+  duration_ms: 0.541008
+  type: 'test'
+  ...
+# Subtest: Datensatz ist deterministisch: gleicher Seed, gleicher Snapshot
+ok 49 - Datensatz ist deterministisch: gleicher Seed, gleicher Snapshot
+  ---
+  duration_ms: 449.364322
+  type: 'test'
+  ...
+# Subtest: Anderer Seed erzeugt einen anderen Datensatz
+ok 50 - Anderer Seed erzeugt einen anderen Datensatz
+  ---
+  duration_ms: 219.804225
+  type: 'test'
+  ...
+# Subtest: 500 synthetische Securities plus 11 Edge-Case-Fixtures
+ok 51 - 500 synthetische Securities plus 11 Edge-Case-Fixtures
+  ---
+  duration_ms: 0.407972
+  type: 'test'
+  ...
+# Subtest: Jede Security ist schema-valide und als Mock gekennzeichnet
+ok 52 - Jede Security ist schema-valide und als Mock gekennzeichnet
+  ---
+  duration_ms: 1.237668
+  type: 'test'
+  ...
+# Subtest: Keine realen Unternehmensnamen: alle Namen tragen die Mock-Kennzeichnung
+ok 53 - Keine realen Unternehmensnamen: alle Namen tragen die Mock-Kennzeichnung
+  ---
+  duration_ms: 0.414612
+  type: 'test'
+  ...
+# Subtest: Expandierte FundamentalFacts sind schema-valide
+ok 54 - Expandierte FundamentalFacts sind schema-valide
+  ---
+  duration_ms: 0.919608
+  type: 'test'
+  ...
+# Subtest: Kanonische Daten enthalten keine Vendor-Felder
+ok 55 - Kanonische Daten enthalten keine Vendor-Felder
+  ---
+  duration_ms: 0.810327
+  type: 'test'
+  ...
+# Subtest: Jeder Datenpunkt traegt Provenance mit asOf und Mock-Kennzeichen
+ok 56 - Jeder Datenpunkt traegt Provenance mit asOf und Mock-Kennzeichen
+  ---
+  duration_ms: 0.41974
+  type: 'test'
+  ...
+# Subtest: Fehlende Provider-Daten werden gemeldet, nicht erfunden
+ok 57 - Fehlende Provider-Daten werden gemeldet, nicht erfunden
+  ---
+  duration_ms: 0.296698
+  type: 'test'
+  ...
+# Subtest: Point-in-Time: Fundamentaldaten sind vor availableAt unsichtbar
+ok 58 - Point-in-Time: Fundamentaldaten sind vor availableAt unsichtbar
+  ---
+  duration_ms: 0.276047
+  type: 'test'
+  ...
+# Subtest: MOCK_FUTURE_DATA_LEAK taucht heute nirgends auf
+ok 59 - MOCK_FUTURE_DATA_LEAK taucht heute nirgends auf
+  ---
+  duration_ms: 0.314865
+  type: 'test'
+  ...
+# Subtest: MOCK_RESTATEMENT: die Korrektur wirkt nicht rueckwaerts
+ok 60 - MOCK_RESTATEMENT: die Korrektur wirkt nicht rueckwaerts
+  ---
+  duration_ms: 0.23705
+  type: 'test'
+  ...
+# Subtest: MOCK_DELISTED bleibt im historischen Universum und verschwindet heute
+ok 61 - MOCK_DELISTED bleibt im historischen Universum und verschwindet heute
+  ---
+  duration_ms: 0.478386
+  type: 'test'
+  ...
+# Subtest: Corporate Actions sind vor ihrer Ankuendigung unsichtbar
+ok 62 - Corporate Actions sind vor ihrer Ankuendigung unsichtbar
+  ---
+  duration_ms: 2.000493
+  type: 'test'
+  ...
+# Subtest: MOCK_CORPORATE_ACTION: Split senkt den Kurs, nicht die Total Return Reihe
+ok 63 - MOCK_CORPORATE_ACTION: Split senkt den Kurs, nicht die Total Return Reihe
+  ---
+  duration_ms: 0.648848
+  type: 'test'
+  ...
+# Subtest: MOCK_MISSING_DATA hat tatsaechlich fehlende Kennzahlen
+ok 64 - MOCK_MISSING_DATA hat tatsaechlich fehlende Kennzahlen
+  ---
+  duration_ms: 0.278971
+  type: 'test'
+  ...
+# Subtest: Preisreihen sind oekonomisch plausibel (keine Nullkurse bei aktiven Titeln)
+ok 65 - Preisreihen sind oekonomisch plausibel (keine Nullkurse bei aktiven Titeln)
+  ---
+  duration_ms: 0.761394
+  type: 'test'
+  ...
+# Subtest: Der Benchmark enthaelt spaeter delistete Titel (kein Survivorship Bias)
+ok 66 - Der Benchmark enthaelt spaeter delistete Titel (kein Survivorship Bias)
+  ---
+  duration_ms: 5.952898
+  type: 'test'
+  ...
+# Subtest: Der Datensatz enthaelt echte Marktzyklen (Drawdown > 30 %)
+ok 67 - Der Datensatz enthaelt echte Marktzyklen (Drawdown > 30 %)
+  ---
+  duration_ms: 0.652543
+  type: 'test'
+  ...
+# Subtest: T1 · Ohne Schluessel wird nichts abgerufen und nichts erfunden
+ok 68 - T1 · Ohne Schluessel wird nichts abgerufen und nichts erfunden
+  ---
+  duration_ms: 3.511754
+  type: 'test'
+  ...
+# Subtest: T2 · Der Schluessel steht im Header, nicht in der URL
+ok 69 - T2 · Der Schluessel steht im Header, nicht in der URL
+  ---
+  duration_ms: 3.127988
+  type: 'test'
+  ...
+# Subtest: T3 · Sonderzeichen im Ticker ueberleben die URL
+ok 70 - T3 · Sonderzeichen im Ticker ueberleben die URL
+  ---
+  duration_ms: 0.971925
+  type: 'test'
+  ...
+# Subtest: T4 · Eine Tiingo-Zeile wird zu einer gueltigen kanonischen PriceBar
+ok 71 - T4 · Eine Tiingo-Zeile wird zu einer gueltigen kanonischen PriceBar
+  ---
+  duration_ms: 2.949124
+  type: 'test'
+  ...
+# Subtest: T5 · Raw und adjusted bleiben getrennt erhalten
+ok 72 - T5 · Raw und adjusted bleiben getrennt erhalten
+  ---
+  duration_ms: 1.224899
+  type: 'test'
+  ...
+# Subtest: T6 · Kapitalmassnahmen faehrt jede Bar mit
+ok 73 - T6 · Kapitalmassnahmen faehrt jede Bar mit
+  ---
+  duration_ms: 0.854641
+  type: 'test'
+  ...
+# Subtest: T7 · Ungepruefte Bereinigung wird nicht behauptet
+ok 74 - T7 · Ungepruefte Bereinigung wird nicht behauptet
+  ---
+  duration_ms: 0.641647
+  type: 'test'
+  ...
+# Subtest: T8 · Nach dem Nachweis traegt adjustedClose einen Wert
+ok 75 - T8 · Nach dem Nachweis traegt adjustedClose einen Wert
+  ---
+  duration_ms: 1.162226
+  type: 'test'
+  ...
+# Subtest: T9 · Die Bereinigungsstufe faellt im Zweifel auf die strengere
+ok 76 - T9 · Die Bereinigungsstufe faellt im Zweifel auf die strengere
+  ---
+  duration_ms: 1.303645
+  type: 'test'
+  ...
+# Subtest: T10 · Splits und Dividenden werden zu kanonischen Corporate Actions
+ok 77 - T10 · Splits und Dividenden werden zu kanonischen Corporate Actions
+  ---
+  duration_ms: 2.151777
+  type: 'test'
+  ...
+# Subtest: T11 · Kein erfundenes Ankuendigungsdatum
+ok 78 - T11 · Kein erfundenes Ankuendigungsdatum
+  ---
+  duration_ms: 0.851517
+  type: 'test'
+  ...
+# Subtest: T12 · Ein abgelehnter Schluessel wird nicht wiederholt
+ok 79 - T12 · Ein abgelehnter Schluessel wird nicht wiederholt
+  ---
+  duration_ms: 0.723558
+  type: 'test'
+  ...
+# Subtest: T13 · Der Schluessel erscheint in keiner Antwort und keiner Diagnose
+ok 80 - T13 · Der Schluessel erscheint in keiner Antwort und keiner Diagnose
+  ---
+  duration_ms: 0.748314
+  type: 'test'
+  ...
+# Subtest: T14 · Eine Antwort, die keine Kursreihe ist, gilt als Fehler
+ok 81 - T14 · Eine Antwort, die keine Kursreihe ist, gilt als Fehler
+  ---
+  duration_ms: 0.543422
+  type: 'test'
+  ...
+# Subtest: T15 · Ein unbekanntes Symbol fuehrt zu keiner Anfrage
+ok 82 - T15 · Ein unbekanntes Symbol fuehrt zu keiner Anfrage
+  ---
+  duration_ms: 0.407512
+  type: 'test'
+  ...
+# Subtest: T16 · Das Stundenkontingent bindet, nicht das Tageskontingent
+ok 83 - T16 · Das Stundenkontingent bindet, nicht das Tageskontingent
+  ---
+  duration_ms: 1.097179
+  type: 'test'
+  ...
+# Subtest: T17 · Die Free-Limits entsprechen der Kontoseite
+ok 84 - T17 · Die Free-Limits entsprechen der Kontoseite
+  ---
+  duration_ms: 0.558505
+  type: 'test'
+  ...
+# Subtest: T18 · Der Cache spart Anfragen
+ok 85 - T18 · Der Cache spart Anfragen
+  ---
+  duration_ms: 0.638092
+  type: 'test'
+  ...
+# Subtest: T19 · Stammdaten werden kanonisch uebersetzt
+ok 86 - T19 · Stammdaten werden kanonisch uebersetzt
+  ---
+  duration_ms: 0.710539
+  type: 'test'
+  ...
+# Subtest: T20 · Intraday laeuft ueber IEX und wird erst nach dem Nachweis zugesagt
+ok 87 - T20 · Intraday laeuft ueber IEX und wird erst nach dem Nachweis zugesagt
+  ---
+  duration_ms: 0.987608
+  type: 'test'
+  ...
+# Subtest: T21 · Eine ausdruecklich fehlende Faehigkeit fuehrt zu keiner Anfrage
+ok 88 - T21 · Eine ausdruecklich fehlende Faehigkeit fuehrt zu keiner Anfrage
+  ---
+  duration_ms: 0.550413
+  type: 'test'
+  ...
+# Subtest: T22 · Der Adapter erfuellt den MarketDataProvider-Vertrag sinngemaess
+ok 89 - T22 · Der Adapter erfuellt den MarketDataProvider-Vertrag sinngemaess
+  ---
+  duration_ms: 0.391458
+  type: 'test'
+  ...
+# Subtest: T23 · Ohne Nachweis sagt der Adapter nichts zu
+ok 90 - T23 · Ohne Nachweis sagt der Adapter nichts zu
+  ---
+  duration_ms: 0.193705
+  type: 'test'
+  ...
+# Subtest: T24 · Ein Befund hebt genau eine Faehigkeit an und hinterlaesst den Beleg
+ok 91 - T24 · Ein Befund hebt genau eine Faehigkeit an und hinterlaesst den Beleg
+  ---
+  duration_ms: 0.356021
+  type: 'test'
+  ...
+# Subtest: T25 · Ein gescheiterter Befund setzt auf false, kein Befund laesst null
+ok 92 - T25 · Ein gescheiterter Befund setzt auf false, kein Befund laesst null
+  ---
+  duration_ms: 0.172685
+  type: 'test'
+  ...
+# Subtest: T26 · Ein Befund ohne Zuordnung hebt nichts an
+ok 93 - T26 · Ein Befund ohne Zuordnung hebt nichts an
+  ---
+  duration_ms: 0.12167
+  type: 'test'
+  ...
+# Subtest: T27 · Ein unbrauchbarer Bericht haelt den Adapter nicht an
+ok 94 - T27 · Ein unbrauchbarer Bericht haelt den Adapter nicht an
+  ---
+  duration_ms: 0.217001
+  type: 'test'
+  ...
+# Subtest: T28 · Der echte Nachweis im Baum belegt, was er behauptet
+ok 95 - T28 · Der echte Nachweis im Baum belegt, was er behauptet
+  ---
+  duration_ms: 0.40625
+  type: 'test'
+  ...
+# Subtest: T29 · Die Grenzen des kostenpflichtigen Tarifs sind als Annahme gekennzeichnet
+ok 96 - T29 · Die Grenzen des kostenpflichtigen Tarifs sind als Annahme gekennzeichnet
+  ---
+  duration_ms: 0.174147
+  type: 'test'
+  ...
+# Subtest: T30 · Ein Kontingentproblem widerlegt keine Faehigkeit
+ok 97 - T30 · Ein Kontingentproblem widerlegt keine Faehigkeit
+  ---
+  duration_ms: 0.139056
+  type: 'test'
+  ...
+# Subtest: T31 · Anfragegrenze und Kontingent sind zwei verschiedene Zustaende
+ok 98 - T31 · Anfragegrenze und Kontingent sind zwei verschiedene Zustaende
+  ---
+  duration_ms: 0.770647
+  type: 'test'
+  ...
+# Subtest: T32 · Jede Bar des Adapters erfuellt das kanonische Schema
+ok 99 - T32 · Jede Bar des Adapters erfuellt das kanonische Schema
+  ---
+  duration_ms: 1.420938
+  type: 'test'
+  ...
+# Subtest: T33 · Der Handelstag steht bei jeder Bar unter date
+ok 100 - T33 · Der Handelstag steht bei jeder Bar unter date
+  ---
+  duration_ms: 0.513608
+  type: 'test'
+  ...
+# Subtest: T34 · Die Zeitraumwahl arbeitet auf echten Adapterbars
+ok 101 - T34 · Die Zeitraumwahl arbeitet auf echten Adapterbars
+  ---
+  duration_ms: 1.466835
+  type: 'test'
+  ...
+# Subtest: verify-tiingo-realtime.mjs verdrahtet fetchImpl in createTiingoProvider
+ok 102 - verify-tiingo-realtime.mjs verdrahtet fetchImpl in createTiingoProvider
+  ---
+  duration_ms: 1.155907
+  type: 'test'
+  ...
+# Subtest: verify-tiingo-realtime.mjs verdrahtet fetchImpl wie seine Geschwisterskripte
+ok 103 - verify-tiingo-realtime.mjs verdrahtet fetchImpl wie seine Geschwisterskripte
+  ---
+  duration_ms: 1.731416
+  type: 'test'
+  ...
+1..103
+# tests 103
+# suites 0
+# pass 103
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2043.815124

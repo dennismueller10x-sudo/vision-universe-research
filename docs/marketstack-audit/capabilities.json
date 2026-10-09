@@ -1,0 +1,155 @@
+{
+  "provider": "marketstack",
+  "apiVersion": "v2",
+  "accountPlan": "USER_STATED_PROFESSIONAL_AUTHENTICATED_KEY_PLAN_NAME_NOT_IN_API",
+  "evidenceLevel": "AUTHENTICATED_ACTIONS_RAW_SCOPED_OBSERVATIONS",
+  "asOf": "2026-10-07",
+  "runIds": [
+    37636729908,
+    37638353777,
+    37642262870,
+    37645399592
+  ],
+  "flags": {
+    "stockDirectory": "SUPPORTED",
+    "globalEOD": "PARTIAL",
+    "history": "SUPPORTED",
+    "adjustedOHLC": "PARTIAL",
+    "adjustedVolume": "PARTIAL",
+    "splits": "SUPPORTED",
+    "dividends": "SUPPORTED",
+    "realtimeUS": "PARTIAL",
+    "realtimeEurope": "PARTIAL",
+    "intradayUS": "SUPPORTED",
+    "intradayEurope": "UNSUPPORTED",
+    "ETFHoldingsUS": "PARTIAL",
+    "ETFHoldingsUCITS": "UNSUPPORTED",
+    "ETFHoldingsPagination": "UNSUPPORTED",
+    "ETFMetadata": "PARTIAL"
+  },
+  "evidence": {
+    "stockDirectory": {
+      "status": "SUPPORTED",
+      "scope": "26European home equities+12ETFs+Schaeffler alternative; valid multi-page directory and exactmetadata; identity completeness not guaranteed",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "globalEOD": {
+      "status": "PARTIAL",
+      "scope": "38primary listings accepted;22/26EUequities lastcompletedOct6,4stale;7UCITSvaryingstaleness",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "history": {
+      "status": "SUPPORTED",
+      "scope": "SAPASMLAAPL1/5/10/15Y positiveboundarysamples; notgapfreealllistingscertification",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "adjustedOHLC": {
+      "status": "PARTIAL",
+      "scope": "AdjustedfieldsreturnedbutTSLAnulls andAAPLadj_close>adj_high; basisunverified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "adjustedVolume": {
+      "status": "PARTIAL",
+      "scope": "Fieldsreturnedvariouslynull; splitbasisnotuniversallyverified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "splits": {
+      "status": "SUPPORTED",
+      "scope": "AAPL4 TSLA3 NVDA10dedicatedeventsagreeEODdates; EUscopeunverified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "dividends": {
+      "status": "SUPPORTED",
+      "scope": "AAPL/NVDA28eachsince2020; TSLA0; Europeancompletenessnotcertified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "realtimeUS": {
+      "status": "PARTIAL",
+      "scope": "AAPLNASDAQ lastknownsnapshotsandIEXderivedprice; notlatencycertifiedtickfeed",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "realtimeEurope": {
+      "status": "PARTIAL",
+      "scope": "5/7home same-day stockprice snapshots; ASMLstaleABBhomeabsent; delay/timezoneunspecified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "intradayUS": {
+      "status": "SUPPORTED",
+      "scope": "AAPL IEXG15min and1min bars; rawlast/bidasknull",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "intradayEurope": {
+      "status": "UNSUPPORTED",
+      "scope": "Tested7Europeanhome listings:15min/1min empty orinvalidsymbols, noentitlementdenial",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "ETFHoldingsUS": {
+      "status": "PARTIAL",
+      "scope": "VOO/VTI/SCHDfull-deliveredstalefilings516/3626/101;SPYQQQ404; issuerfullnotcertified",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "ETFHoldingsUCITS": {
+      "status": "UNSUPPORTED",
+      "scope": "Six representative UCITS primary routes return no holdings; no UCITS delivery verified. SXR8.DE and final alternate CSPX.AS/SPY5.L return HTTP504: underlying provider coverage UNCLEAR, no unsupported-coverage or plan-denial inference.",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "ETFHoldingsPagination": {
+      "status": "UNSUPPORTED",
+      "scope": "VOO/VTI/SCHD offsetlimitdifferent requestsbyteidentical; noadvertisedtotal; notconnectortruncation",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    },
+    "ETFMetadata": {
+      "status": "PARTIAL",
+      "scope": "All12tickerinfo endpoints return metadata; about prose nonempty for5US ETFs and empty for7primaryUCITS. No requested structuredfundanalyticsfields in checkedresponses.",
+      "source": "live-account-evidence.json;authenticated-raw-manifest.json;ROOT_CAUSE_REPORT.md"
+    }
+  },
+  "entitlementDenialsObserved": 0,
+  "providerCoverageUCITS": "UNCLEAR_FOR_GATEWAY_FAILURE_CASES",
+  "operationalSemantics": "UNSUPPORTED means no verified delivery in the stated bounded scope; it never certifies globalproviderabsence aftertimeouts",
+  "uncertainties": [
+    "Provider does not expose verified account plan name or billed request counter",
+    "Snapshot trade timestamps have no timezone, update timestamp or guaranteed latency",
+    "Exact internal EOD publication/cache reason is not exposed; no retrospective proof of earlier run",
+    "SXR8.DE: upstream gateway failed or transport timed out; provider coverage cannot be inferred",
+    "CSPX.AS: upstream gateway failed or transport timed out; provider coverage cannot be inferred",
+    "SPY5.L: upstream gateway failed or transport timed out; provider coverage cannot be inferred"
+  ],
+  "productionAdmission": false,
+  "finalUCITSProbes": [
+    {
+      "ticker": "SXR8.DE",
+      "runId": 37645399592,
+      "ok": false,
+      "reason": "invalidResponse",
+      "httpStatus": 504,
+      "providerCoverage": "UNCLEAR_UPSTREAM_GATEWAY_FAILURE",
+      "responseIds": [
+        "0001"
+      ]
+    },
+    {
+      "ticker": "CSPX.AS",
+      "runId": 37645399592,
+      "ok": false,
+      "reason": "invalidResponse",
+      "httpStatus": 504,
+      "providerCoverage": "UNCLEAR_UPSTREAM_GATEWAY_FAILURE",
+      "responseIds": [
+        "0002"
+      ]
+    },
+    {
+      "ticker": "SPY5.L",
+      "runId": 37645399592,
+      "ok": false,
+      "reason": "invalidResponse",
+      "httpStatus": 504,
+      "providerCoverage": "UNCLEAR_UPSTREAM_GATEWAY_FAILURE",
+      "responseIds": [
+        "0003"
+      ]
+    }
+  ],
+  "assessmentType": "OBSERVED_OPERATIONAL_DELIVERY_SCOPED"
+}

@@ -1,0 +1,3077 @@
+{
+  "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json",
+  "sha256": "cf88fea6da0237b5f64fb9a15d0931c5122bbd213e24ea39788f72f55102bdf4",
+  "retrievedDate": "2026-10-07",
+  "endpoints": [
+    {
+      "path": "/v2/exchanges",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangesResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangesResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/eod",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangesMicEod"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/eod/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangesMicEod"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/eod/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangesMicEod"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/intraday",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/intraday/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/intraday/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/exchanges/{mic}/tickers",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mic",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ExchangeMicTickersResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/eod",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerEodResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/eod/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/EODBar"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/eod/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/EODBar"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/intraday",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerIntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/intraday/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerIntradayLatestResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/intraday/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/splits",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerSplitsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickers/{symbol}/dividends",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbol",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerDividendsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/eod",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/EODResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/eod/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/EODResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/eod/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/EODResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/intraday",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/intraday/latest",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/intraday/{date}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "1hour",
+            "enum": [
+              "1min",
+              "5min",
+              "10min",
+              "15min",
+              "30min",
+              "1hour",
+              "3hour",
+              "6hour",
+              "12hour",
+              "24hour"
+            ]
+          }
+        },
+        {
+          "name": "after_hours",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IntradayResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/timezones",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TimezonesResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/currencies",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CurrenciesResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/splits",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/SplitsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/dividends",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "symbols",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "DESC",
+            "enum": [
+              "DESC",
+              "ASC",
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/DividendsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickerslist",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickersListResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/tickerinfo",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "ticker",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/TickerInfoResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/companyratings",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "ticker",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "rated",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell",
+              "hold"
+            ]
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CompanyRatingsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/indexlist",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IndexListResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/indexinfo",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "index",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/IndexInfoResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/bondlist",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "country",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/BondListResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/bond",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "country",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/BondInfoResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/etflist",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "ticker",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ETFListResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/etfholdings",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "ticker",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/ETFHoldingsResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/stockprice",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "ticker",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "exchange",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/StockPriceResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/commodities",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "commodity_name",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CommodityResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/commoditieshistory",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "date_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "date_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "commodity_name",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "frequency",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CommodityHistoricalResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/company_name",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "cik_code",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CompanyNameByCIKResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/cik_code",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "company_name",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CIKSearchResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/company_facts",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "cik_code",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/CompanyFactsByCIKResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/concept/accounts_payable",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "cik_code",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/AccountsPayableResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/submissions",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "cik_code",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "accession_number",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "cik_code_name",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "filing_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "filing_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "report_from",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "report_to",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/SubmissionsByCIKResponse"
+        }
+      ]
+    },
+    {
+      "path": "/v2/frames/accounts_payable/{unit}",
+      "version": "v2",
+      "parameters": [
+        {
+          "name": "access_key",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "unit",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100,
+            "maximum": 1000,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        {
+          "name": "frame",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responseSchemas": [
+        {
+          "$ref": "#/components/schemas/FrameResponse"
+        }
+      ]
+    }
+  ]
+}

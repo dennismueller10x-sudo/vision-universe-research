@@ -1,0 +1,69 @@
+name: Marketstack authenticated capability audit
+run-name: Marketstack audit 479 ${{ github.event_name == 'push' && 'final-20261007' || inputs.lease }}
+on:
+  push:
+    branches: [marketstack-connector-capability-audit]
+    paths: [scripts/marketstack/final-live-trigger.json]
+  workflow_dispatch:
+    inputs:
+      lease:
+        type: string
+        required: true
+        description: 'Frozen one-shot allocation in audit-authorization.json'
+      expected_sha:
+        type: string
+        required: true
+        description: 'Exact reviewed PR head SHA; no provider calls on mismatch'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-audit-479-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    if: >-
+      github.ref == 'refs/heads/marketstack-connector-capability-audit' &&
+      (github.event_name == 'push' || github.actor == github.repository_owner) && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VU_AUDIT_LEASE: ${{ github.event_name == 'push' && 'final-20261007' || inputs.lease }}
+      VU_AUDIT_EXPECTED_SHA: ${{ inputs.expected_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Provider-only regression tests before paid calls
+        run: node --test providers/marketstack/tests/*.test.mjs
+      - name: Verify frozen credit lease, exact source and no prior dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/actions-audit.mjs guard
+      - name: Authenticated bounded probe into ephemeral private output
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/actions-audit.mjs live
+      - name: Encrypt raw responses and durable accounting, including failure state
+        if: always()
+        run: node scripts/marketstack/actions-audit.mjs seal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-audit-${{ env.VU_AUDIT_LEASE }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-marketstack-encrypted/evidence.enc.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: No tracked writes including production artifacts
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Delete ephemeral plaintext
+        if: always()
+        run: |
+          node --input-type=module -e 'import {rmSync} from "node:fs";import {join} from "node:path";rmSync(join(process.env.RUNNER_TEMP,"vu-marketstack-capability-audit"),{recursive:true,force:true});'
