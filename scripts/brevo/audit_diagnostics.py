@@ -47,7 +47,10 @@ SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES)
     "set activated activate activation validated validate invalid credentials authorization forbidden "
     "authorization authorisation enable enabling enabled disabled disabling get read read-only "
     "retrieve fetching unable failed granted allowed grant valid validate value wrong unavailable "
-    "still before after or required email emails activated activation blocked not_activation".split())
+    "still before after or required email emails activated activation blocked not_activation "
+    "been being fully sending send sent mail messages message reason reasons time until complete completed "
+    "process processing request requests review reviewing reviewed rejected reject approved approve "
+    "link button page dashboard settings security new generate verification confirm confirmed confirming".split())
 
 
 def secret_status(key):
@@ -73,12 +76,12 @@ def safe_error(raw, key):
                  if fields.get(k) is not None), None)
     message = next((fields.get(k) for k in ("message", "error_message", "errormessage", "error_description", "detail", "error")
                     if isinstance(fields.get(k), str)), None)
-    allowed_code = (code if type(code) is int and 100 <= code <= 599 else
+    allowed_code = (code if type(code) is int and 0 <= code <= 65535 else
                     code if isinstance(code, str) and code != key and (
                         code.casefold() in SAFE_CODES
                         or (re.fullmatch(r"[a-z_]{1,64}", code) is not None
                             and all(w in SAFE_WORDS for w in code.split("_")))
-                        or (code.isdecimal() and len(code) == 3 and 100 <= int(code) <= 599)) else None)
+                        or (code.isdecimal() and len(code) <= 5 and 0 <= int(code) <= 65535)) else None)
     allowed_message = None
     if isinstance(message, str) and len(message) <= 4096:
         # Preserve the actual generic Brevo message when it exactly matches the allowlist.

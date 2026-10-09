@@ -62,6 +62,9 @@ class AuditDiagnostics(unittest.TestCase):
         self.assertEqual(result["error_code"], "smtp_not_activated")
         self.assertEqual(result["error_message"], "Your SMTP account is not activated. [additional text withheld]")
         self.assertNotIn("person@example.invalid", json.dumps(result))
+        result = safe_error(b'{"error_code":1,"detail":"Your SMTP account has not been activated."}', "synthetic-only")
+        self.assertEqual(result["error_code"], 1)
+        self.assertEqual(result["error_message"], "Your SMTP account has not been activated.")
 
     def test_no_secret_or_wrong_operation_cannot_call_api(self):
         class FailIfCalled:
