@@ -123,5 +123,6 @@ jobs:
           path: |
             ${{ runner.temp }}/ci-refresh/health.json
             ${{ runner.temp }}/ci-refresh/candidate-qa.json
+            ${{ runner.temp }}/ci-refresh/candidate-qa.json-failure.png
             ${{ runner.temp }}/ci-refresh/live-qa.json
           retention-days: 14

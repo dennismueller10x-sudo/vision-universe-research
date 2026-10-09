@@ -23,6 +23,7 @@ for(const [path,meta] of Object.entries(manifest.assets)){
  payloads.set(path,bytes);
 }
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined}),cases=[];
+let active=null,activePage=null;
 try{
  const locked=await browser.newPage();let blockedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))blockedRequests++;});
  await locked.goto(origin+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(await locked.locator('.ci-company-intelligence').count(),0);assert.equal(blockedRequests,0);await locked.close();
@@ -31,6 +32,7 @@ try{
   const cid=Object.keys(frozenInventory).find(c=>frozenInventory[c].tickers.includes(ticker));
   const expected=JSON.parse(payloads.get(`snapshots/${manifest.generation}/${cid}.json`));
   const page=await browser.newPage({viewport:{width,height:860},colorScheme:'dark'}),errors=[],requests=[];
+  active={ticker,cid,width,errors,requests};activePage=page;
   if(!live){
    await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];assert(payloads.has(p),'UNKNOWN_CANDIDATE_ASSET');return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
    await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();assert(/expectedGeneration:\s*['"][a-f0-9]{24}['"]/.test(text),'CANDIDATE_UI_BASELINE_MISMATCH');await route.fulfill({response,body:text.replace(/(expectedGeneration:\s*['"])[a-f0-9]{24}(['"])/,'$1'+manifest.generation+'$2')});});
@@ -54,4 +56,10 @@ try{
  const outside=await browser.newPage();let requests=0;outside.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});await outside.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
  await outside.goto(origin+'/discover/#/s/US_REAL/ZZZZZ');await outside.waitForTimeout(2000);assert.equal(requests,0);await outside.close();
  const report={status:'PASS',mode:live?'ACTUAL_PRODUCTION':'REAL_UI_ROUTED_CANDIDATE',sourceCommit:release.sourceCommit,generation:manifest.generation,verifiedAssets:payloads.size,protectedAccess:true,cohortStocks:46,cohortIssuers:45,cases};writeFileSync(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({status:report.status,mode:report.mode,generation:report.generation,cases:cases.length}));
+}catch(error){
+ const message=String(error.message).replaceAll(process.env.RESEARCH_ACCESS_PASSWORD||'__NO_SECRET__','[REDACTED]').slice(0,2000);
+ const markers=activePage?await activePage.locator('.ci-company-intelligence').evaluateAll(es=>es.map(e=>({state:e.dataset.state,companyId:e.dataset.companyId,generatedAt:e.dataset.generatedAt,text:e.innerText.slice(0,1200)}))).catch(()=>[]):[];
+ if(activePage)await activePage.screenshot({path:out+'-failure.png'}).catch(()=>{});
+ writeFileSync(out,JSON.stringify({status:'FAIL',mode:live?'ACTUAL_PRODUCTION':'REAL_UI_ROUTED_CANDIDATE',generation:manifest.generation,active,markers,error:{name:error.name,message},completedCases:cases.length},null,2)+'\n');
+ throw error;
 }finally{await browser.close();}
