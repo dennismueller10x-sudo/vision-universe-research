@@ -168,16 +168,17 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 
 **Status:**
 - **#481:** BLOCKED.
-  - Holdout v2 ist FAIL (Kern 1.19.0, `artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json`, unverändert). Dort wurden F-TTM-2 und F-TTM-3 entdeckt; spätere Kernversionen validiert v2 nicht.
-  - Kern 1.20.0 behebt F-TTM-2 und F-TTM-3 (Realdaten-Regressionen in `scripts/quant/tests/test_ttm_core_120.py`).
-  - Holdout v3 (frisch, ungesehen, 15.251 Emittenten, 3.825 Fälle) ist FAIL (`artifacts/FUNDAMENTAL-TTM-HOLDOUT3-RESULT.json`): 9 FALSE_AVAILABLE, alle über Geschäftsjahreswechsel.
-    - F-TTM-4: das alte Jahresende ist dem Kalender unbekannt.
-    - F-TTM-5: Predecessor-/Successor-Jahre (Fresh Start, Fusion).
-  - WRONG_VALUE, WRONG_CONCEPT und WRONG_PERIOD sind 0.
-- **Freeze v5:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v5.json`, Development Freeze. Er bleibt als gescheiterte Validierung bestehen und wird nicht final.
-- **Voraussetzung für Schritt 4 ff.:**
-  - F-TTM-4/F-TTM-5 in einem eigenen Kern-PR (1.21.0) beheben;
-  - danach ein neuer, wieder ungesehener Holdout v4 (ohne die v3-Fehleremittenten), alle Gates PASS.
+  - Holdout v2 FAIL (Kern 1.19.0) und Holdout v3 FAIL (Kern 1.20.0) bleiben unverändert; v3-Post-mortem: `artifacts/FUNDAMENTAL-TTM-HOLDOUT3-POSTMORTEM.json`.
+  - Kern 1.21.0 behebt F-TTM-4 (Geschäftsjahreswechsel, altes Jahresende nur als Vergleichsjahr oder per 10-KT) und F-TTM-5 (Jahreskennung nach geteiltem Predecessor/Successor-Jahr).
+    - Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_121.py`.
+    - Zwei Red-Team-Runden: Runde 1 fand D1–D5, P1, P2; Runde 2 ergab keinen Blocker, D-R1/D-R2/C2 sind behoben.
+    - Vollarchiv-Nachbarsuche: 17.138 Emittenten, 0 Wertänderungen gleicher Periode (`artifacts/FUNDAMENTAL-TTM-121-NEIGHBOR-SEARCH.json`).
+  - Holdout v4 (ein offizieller Lauf, `artifacts/FUNDAMENTAL-TTM-HOLDOUT4-RESULT.json`) ist **FAIL**.
+    - Alle Korrektheits-Gates sind 0 bei 5.246 Auswertungen.
+    - Die präregistrierten Schicht-Gates FISCAL_CHANGE, SAME_DAY, STUB_PERIOD und SPLIT_YEAR sind nicht prüfbar (3/4/7/2 Fälle unter den Mindestzahlen).
+- **Freeze v6:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v6.json` (Development Freeze, Parent v5) bleibt als gescheiterte Validierung bestehen. Freeze v5 ebenso.
+- **Neuer Defekt F-TTM-6:** Korrekturen, die nur in einem 10-KT/A stehen, fließen nicht in die Werte (16 Emittenten). Dokumentiert, nicht behoben.
+- **Voraussetzung für Schritt 4 ff.:** ein Holdout, dessen Schichten Geschäftsjahreswechsel, Same-Day, Rumpfperioden und geteilte Jahre tatsächlich besetzen. Zum Beispiel ein frischer companyfacts-Stand mit neuen Perioden. Danach alle Gates PASS.
 - **M4** (Screener-Rangfolge `pe` → `peFy`) ist eine eigene Produktentscheidung, nicht Teil dieser Migration.
 - **#504/#505/#510** bleiben getrennt.
 
@@ -185,7 +186,7 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 |---|---|---|---|
 | 1 | #504 (M-B1) nach main | keine; alte Bundles gelten als unverifiziert | Discover-CI (verify + Reproduzierbarkeit), Screener, Frontend-Budget, Startseite (KGV (GJ)) |
 | 2 | Ein Datenlauf auf main mit #504 | 1 | 0 FY-Werte unter TTM-Namen; EPS GJ ≈ 3.900; Startseite gefüllt |
-| 3 | F-TTM-2/F-TTM-3 behoben (1.20.0, Holdout v3 FAIL); F-TTM-4/F-TTM-5 beheben, neuer ungesehener Holdout v4 | – | präregistriert, alle Gates PASS |
+| 3 | F-TTM-2/F-TTM-3 (1.20.0, v3 FAIL), F-TTM-4/F-TTM-5 (1.21.0, v4 FAIL: Schichten nicht prüfbar); neuer Holdout mit besetzbaren Schichten | – | präregistriert, alle Gates PASS |
 | 4 | Finaler Freeze (v6) schreiben | 3 | `freeze.mjs --check` grün |
 | 5 | #510 (M-B6) in #505 mergen | 4 | Evidence-Tests, Python-Suite |
 | 6 | #505 (M-B5) in #481 mergen | 5 | PIT-Tests, Budget-Test PIT-Speicher |
