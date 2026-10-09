@@ -18,7 +18,8 @@ bound to generation `6c3fb74e36086a0b86dfdf3b`.
 Those legacy lanes remain available by dispatch; their cron triggers are removed.
 The sole new production schedule is `company-intelligence-refresh.yml`, at 00:17,
 04:17, 08:17, 12:17, 16:17, 20:17 UTC. In Berlin these are 02:17/06:17/10:17/
-14:17/18:17/22:17 in summer and one hour earlier in winter. GitHub can delay cron.
+14:17/18:17/22:17 in summer and one hour earlier in winter. GitHub can delay cron. A separate read-only R2 health check runs at
+`57 */4 * * *`; it neither polls sources nor changes publication pointers.
 
 ## State and publication lifecycle
 
@@ -35,7 +36,8 @@ The sole new production schedule is `company-intelligence-refresh.yml`, at 00:17
    items: polling eligibility is distinct from permission to display an item.
 4. Use the existing SQLite backup/checkpoint implementation. Upload, read back,
    independently restore in another empty directory, compare every table proof,
-   source generation and all consumer bytes. No cache/artifact supplies state.
+   source generation and all consumer bytes. No cache/artifact supplies authoritative state. The HTTP cache is itself part of
+   the verified private checkpoint.
 5. Validate contracts, scope, IDs, German profiles, units/periods, source safety
    and unexplained content loss. Run 16 real-Discover browser cases with routed
    candidate consumer assets; this is explicitly not proof of live publication.
@@ -64,6 +66,11 @@ SEC time limits, source cooldowns and per-host pacing remain in use. A run has a
 deferred by budgets remain due for a subsequent run. Empty/failed sources retain
 existing intelligence. Outcomes distinguish SUCCESS, NO_CHANGE, RATE_LIMITED,
 POLICY_REJECTED, TEMPORARY_FAILURE, SOURCE_REMOVED and PARSE_FAILURE.
+The accepted registry has 105 eligible active sources: 36 news feeds for 35
+issuers, 28 event sources for 23 issuers and 41 material sources for 21 issuers
+(36 distinct issuers overall). Nine reviewed article-only entries are inactive.
+At configured cadences the theoretical maximum is 341 endpoint checks/day plus
+270 SEC issuer checks/day, before cooldowns, conditional reuse and budgets.
 Some approved article-only registry entries (including Tesla's existing item) are
 not pollable feeds. The schedule does not claim to discover new pages from them.
 
@@ -121,5 +128,12 @@ Autonomy: restore, source update, validation, durable state, Pages dispatch and
 live verification are executable by Actions without Codex or AI.
 Failure safety: exact full bootstrap, source isolation, fresh restore, scope/policy
 contracts, bounded protected slots, pointer-last and emergency OFF are retained.
+Regression review: SG1 independently reproduced on current production SHA
+`5d6aa260558fdd0422d07b26038cc383142c86ee` at the same assertion (0 versus 1
+screener-eligible stocks). Its September-8 fixture crossed the 30-day active
+boundary. No test or protected runtime input was changed. Full-suite independent
+parity remains mandatory, including the five previously classified price-data
+failures.
+
 Cost/scalability: only the existing cohort is polled; incremental HTTP and separate
 cadences avoid discovery, 5,120-company crawls and full mobile matrices every run.

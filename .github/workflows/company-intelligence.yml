@@ -81,14 +81,25 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   continuous:
-    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh != 'none' && inputs.continuous_refresh != ''
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'publish'
     needs: validate
     permissions:
       contents: read
       actions: write
     uses: ./.github/workflows/company-intelligence-refresh.yml
     with:
-      verification: ${{ inputs.continuous_refresh == 'verify' }}
+      verification: false
+    secrets: inherit
+  continuous-verify:
+    # Isolated namespace acceptance has no production side effects. Full product
+    # regression validation runs independently and still gates publication/merge.
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify'
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/company-intelligence-refresh.yml
+    with:
+      verification: true
     secrets: inherit
   production-numeric:
     if: github.event_name == 'workflow_dispatch' && inputs.production_release == 'numeric' && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
