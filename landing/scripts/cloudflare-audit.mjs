@@ -60,7 +60,7 @@ if(token){
         report.zone.protected.push({name:record.name,type:record.type,fingerprint:fingerprint(record)});
       }
       report.zone.protected.sort((a,b)=>(a.name+a.type+a.fingerprint).localeCompare(b.name+b.type+b.fingerprint));
-      report.zone.protectedSha256=createHash('sha256').update(JSON.stringify(report.zone.protected)).digest('hex');
+      report.zone.protectedSha256=report.zone.recordsComplete?createHash('sha256').update(JSON.stringify(report.zone.protected)).digest('hex'):null;
     }
   }
 }

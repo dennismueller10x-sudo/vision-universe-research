@@ -34,7 +34,13 @@ Nach konkreter Freigabe die überprüfte Datei ohne Draft-Markierung als `deploy
 
 Cloudflare dokumentiert für Pages Free 500 Builds/Monat; die statische Seite benötigt keine Pages Functions, keine Datenbank und keinen kostenpflichtigen Tarif. Die bestehende Account-Auslastung bleibt zu prüfen; bei ausgeschöpftem Kontingent kein Upgrade buchen. [Aktuelle Limits](https://developers.cloudflare.com/pages/platform/limits/) · [Git-Integration](https://developers.cloudflare.com/pages/get-started/git-integration/).
 
-## Genau einmal erforderliche Kontoschritte – nur falls der Audit sie verlangt
+## Gemessene Kontoblockaden
+
+Der reale isolierte Audit [37958646123](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37958646123) bestätigt ein gültiges vorhandenes Token, Pages- und Zonen-Leserechte und die aktive Zone im selben Konto. **DNS-Lesen scheitert mit HTTP 403 / Fehler 10000.** Es wurde kein vollständiger DNS-Bestand gespeichert; Shopify-Origin-Ziele und Mail-Fingerprints sind daher noch nicht nachgewiesen.
+
+Der reale Projektversuch [37958967398](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37958967398) wurde nach den erfolgreichen Leseprüfungen beim Anlegen mit **HTTP 401 / Fehler 8000011** abgewiesen. **Kein Projekt angelegt, keine Domain angebunden, kein DNS geändert.** GitHub-Git-Integration und Pages-Schreibberechtigung sind noch nicht bestätigt.
+
+## Genau einmal erforderliche Kontoschritte
 
 1. Cloudflare Dashboard → zuständiges Konto → **Workers & Pages → Create application → Pages → Connect to Git**. Falls GitHub noch nicht verbunden ist: GitHub-Konto `dennismueller10x-sudo` wählen, Cloudflare Pages autorisieren, **Only select repositories → vision-universe-research → Install/Authorize**. Alternativ vorhandene Installation über GitHub **Settings → Applications → Installed GitHub Apps → Cloudflare Pages → Configure** um genau dieses Repository ergänzen.
 2. Für Automation keine bestehenden Workers-/R2-Tokens erweitern oder ersetzen. Falls deren Rechte fehlen, Cloudflare **My Profile → API Tokens → Create Token → Create Custom Token**: **Account / Cloudflare Pages / Edit**, **Zone / Zone / Read**, **Zone / DNS / Edit**, für den Apex-Redirect zusätzlich **Zone / Dynamic URL Redirect / Edit**. Ressourcen ausschließlich dieses Konto und Zone `visionuniverse.de`. Das neue Token privat unter einem separaten GitHub-Actions-Secret `LANDING_CLOUDFLARE_API_TOKEN` hinterlegen: Repository **Settings → Secrets and variables → Actions → New repository secret**. Nie im Chat, Workflow-Input, Code oder Log einfügen. Der Audit bevorzugt dieses separate Token, falls vorhanden; bestehende Tokens bleiben erhalten.

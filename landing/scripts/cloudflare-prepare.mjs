@@ -16,7 +16,17 @@ async function api(path,method='GET',body){
   try{
     const response=await fetch('https://api.cloudflare.com/client/v4'+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
     let data;try{data=await response.json()}catch{data={}}
-    report.checks.push({method,status:response.status,ok:response.ok&&data.success===true,errorCodes:(data.errors||[]).map(e=>e.code).filter(Number.isInteger)});
+    // Classify errors without exposing provider text, account identifiers or headers.
+    const categories=[...new Set((data.errors||[]).map(e=>{
+      const message=String(e.message||'');
+      if(/github|git provider/i.test(message))return 'GitHub authorization';
+      if(/repository|repositories/i.test(message))return 'Repository authorization';
+      if(/permission|scope/i.test(message))return 'API permission';
+      if(/auth|credential/i.test(message))return 'Authentication';
+      if(/invalid|validation|configuration/i.test(message))return 'Configuration';
+      return 'Provider rejection';
+    }))];
+    report.checks.push({method,status:response.status,ok:response.ok&&data.success===true,errorCodes:(data.errors||[]).map(e=>e.code).filter(Number.isInteger),errorCategories:categories});
     if(!response.ok||data.success!==true)throw Error('Cloudflare-Anfrage nicht freigegeben: HTTP '+response.status);
     return data.result;
   }catch(error){if(error.message.startsWith('Cloudflare-Anfrage'))throw error;throw Error('Cloudflare-Anfrage fehlgeschlagen; keine Rohantwort ausgegeben.');}
