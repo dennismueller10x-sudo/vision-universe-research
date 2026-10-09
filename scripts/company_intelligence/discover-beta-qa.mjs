@@ -2,12 +2,14 @@
 import {createRequire} from 'node:module';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import {runtimeCandidate} from './runtime-candidate.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
-const candidate=JSON.parse(await readFile(arg('candidate','/tmp/release-candidate.json'),'utf8'));
+let candidate=JSON.parse(await readFile(arg('candidate','/tmp/release-candidate.json'),'utf8'));
 const phase=arg('phase','all');assert(['all','actual','adversarial','dark'].includes(phase));
 const production=process.argv.includes('--production');
+if(production&&base==='https://research.visionuniverse.de')candidate=(await runtimeCandidate(base)).candidate;
 const cohort=Object.values(candidate.inventory).flatMap(v=>v.tickers);
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});

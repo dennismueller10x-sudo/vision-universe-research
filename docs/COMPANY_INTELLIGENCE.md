@@ -2297,3 +2297,8 @@ Consumer replay revealed that additive import could retain older descriptions pr
 A zero-request census identified **180 verified unpolled event sources for 171 issuers**: 100 Q4 event endpoints, 30 RSS event feeds and 50 existing HTML/other event sources. The explicit `events-backfill` command and `source_backfill_runner --lane events` now freeze those proven source/company/URL identities and use the existing event adapters, source health, due times, request/time budgets, robots policy and shared IR circuit. Restored runs cannot widen issuer scope or follow a changed identity. Successfully polled sources are skipped on continuation. This one-time recovery does not change twelve-hour production event cadence, poll global news, rebuild financials, or export the universe.
 
 Six behavioral tests passed, including real Q4 ingestion of dated calls/webcasts/presentations and official upcoming confirmation, exact checkpoint/restore continuation, untouched unsent budget deferrals, source cooldowns, identity changes, shared infrastructure failure, CLI isolation and durable runner accounting. The full Python suite passed **526 tests**. Live event-backfill gain remains **unmeasured** at this implementation checkpoint; the preceding operational report retains its stated 14:25:39 UTC snapshot. The bounded live cohort will run after remote preservation, and subsequent coverage counts require fresh export, provenance/consumer audits and restore proof. PR #356 remains draft, open and unmerged; production gates remain off.
+
+## Continuous production refresh
+
+The bounded 46-stock automation and its acceptance evidence are documented in
+[CONTINUOUS_REFRESH.md](company-intelligence/CONTINUOUS_REFRESH.md).

@@ -375,13 +375,26 @@ jobs:
           FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
         run: |
           if [ "$FULL_ACCEPTANCE" != true ]; then
-            node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
+            mkdir -p "$RUNNER_TEMP/live-fast"
+            node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/live-fast/report.json"
             exit 0
           fi
           node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"
           node scripts/company_intelligence/consumer-experience-qa.mjs --version after --out "$RUNNER_TEMP/live-v2"
+      - name: Record actual verified publication separately from private refresh
+        if: steps.live.outcome == 'success'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          if curl -fsS https://research.visionuniverse.de/company-intelligence-refresh.json >/dev/null; then
+            node scripts/company_intelligence/refresh-run.mjs observe
+          fi
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
         if: failure() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true
         env:
@@ -393,6 +406,7 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           gate_failure=0
+          node scripts/company_intelligence/refresh-run.mjs rollback || gate_failure=$?
           node scripts/company_intelligence/production-release.mjs disable || gate_failure=$?
           # Emergency delivery must still close both products if R2 is unreachable.
           gh workflow run pages-release.yml --ref main -f company_intelligence_off=true

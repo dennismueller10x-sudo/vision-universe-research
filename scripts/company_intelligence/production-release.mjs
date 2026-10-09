@@ -7,6 +7,8 @@ import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {versionConsumerAssets} from './version-consumer-assets.mjs';
+import {downloadGood} from './refresh-storage.mjs';
+import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
  const result=await publish(driver,{namespace:approval.namespace,directory});
@@ -60,7 +62,23 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   versionConsumerAssets(release);
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
- const result=await verifyProductionConsumer(driver,release);versionConsumerAssets(release);return result;
+ let result=await verifyProductionConsumer(driver,release);
+ const refreshed=await downloadGood(driver,{output:resolve(release,'company-intelligence/data')});
+ if(refreshed){
+  const {good,...publicResult}=refreshed;
+  for(const path of ['company-intelligence/config/rollout.js','quant/release-bundle.js']){
+   const file=resolve(release,path);if(!existsSync(file))continue;
+   const text=readFileSync(file,'utf8');
+   if(!text.includes(approval.consumerGeneration))throw Error('REFRESH_ROLLOUT_BASELINE_MISMATCH');
+   writeFileSync(file,text.replaceAll(approval.consumerGeneration,good.generation));
+  }
+  const observedBytes=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
+  const observed=observedBytes?JSON.parse(observedBytes):{};
+  writeFileSync(resolve(release,'company-intelligence-refresh.json'),JSON.stringify(safePublicRefresh(good.manifest,{...good.health,...observed},good.inventory))+'\n');
+  result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:46,issuers:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
+  writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify(result)+'\n');
+ }
+ versionConsumerAssets(release);return result;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
