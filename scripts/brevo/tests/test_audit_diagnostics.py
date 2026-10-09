@@ -50,6 +50,15 @@ class AuditDiagnostics(unittest.TestCase):
         self.assertTrue(secret_status('"synthetic-only"')["surrounding_quotes"])
         self.assertNotIn("synthetic-only", json.dumps(status))
 
+    def test_alternate_generic_error_fields_and_nested_errors(self):
+        result = safe_error(json.dumps({"error":{"error_code":403,
+                            "error_message":"You are not allowed to access this endpoint"}}).encode(), "synthetic-only")
+        self.assertEqual(result["error_code"], 403)
+        self.assertEqual(result["error_message"], "You are not allowed to access this endpoint")
+        for text in ("Your account Person Example is disabled", "Contact john@example.invalid",
+                     "IP 192.0.2.1 denied", "Visit https://example.invalid", "Your API key abcdef12345 is invalid"):
+            self.assertIsNone(safe_error(json.dumps({"error_message":text}).encode(), "synthetic-only")["error_message"])
+
     def test_no_secret_or_wrong_operation_cannot_call_api(self):
         class FailIfCalled:
             def open(self, *args, **kwargs):

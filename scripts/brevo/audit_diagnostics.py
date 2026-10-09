@@ -1,6 +1,7 @@
 """One read-only /account audit. Never emit secrets, response bodies or account data."""
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from client import Client, audit
@@ -25,7 +26,23 @@ SAFE_MESSAGES = (
     "This endpoint is only accessible to master accounts", "This API is only accessible to master accounts",
     "This endpoint is only available to enterprise accounts", "This feature is not enabled for your account",
     "You do not have access to this functionality", "Access to this endpoint is forbidden",
+    "Your SMTP account is not yet activated", "Your SMTP account is not activated",
+    "SMTP account is not activated", "Your SMTP account is not available",
+    "Your transactional account is not activated", "Your account is disabled",
+    "This endpoint is only accessible to SMTP users", "Please contact support",
 )
+# Generic error vocabulary only: no names, addresses, URLs, IPs, numbers or opaque identifiers.
+SAFE_WORDS = frozenset(re.findall(r"[a-z]+(?:'[a-z]+)?", " ".join(SAFE_MESSAGES).lower())) | frozenset(
+    "we have has the it are you you're yours do does don't doesn't cannot can't can could currently "
+    "user users role rights restricted required denied unauthorized unauthorised authorized authorised "
+    "service services transactional email smtp marketing campaigns segment segments domain domains "
+    "attribute attributes resource resources pending activation verification activated disabled inactive "
+    "suspended rejected blocked key keys authenticating authentication free starter business enterprise "
+    "subscription insufficient enough access please our support team more information only endpoint "
+    "endpoints account accounts in on from to by with without an a if and or but version feature features "
+    "operation action request invalid error forbidden this enabled enable status under validation "
+    "available include includes include included plan plans no api api's api-key permission permissions "
+    "not is at for yet needs need use using contact limited login denied functionality accepted".split())
 
 
 def secret_status(key):
@@ -44,16 +61,29 @@ def safe_error(raw, key):
         return {"error_code": None, "error_message": None, "response_kind": "non_json"}
     if not isinstance(data, dict):
         return {"error_code": None, "error_message": None, "response_kind": "non_object_json"}
-    code, message = data.get("code"), data.get("message")
-    allowed_code = code if isinstance(code, str) and code in SAFE_CODES and code != key else None
+    fields = {k.casefold(): v for k, v in data.items() if isinstance(k, str)}
+    if isinstance(fields.get("error"), dict):
+        fields = {k.casefold(): v for k, v in fields["error"].items() if isinstance(k, str)}
+    code = next((fields.get(k) for k in ("code", "error_code", "errorcode", "error")
+                 if fields.get(k) is not None), None)
+    message = next((fields.get(k) for k in ("message", "error_message", "errormessage", "error_description", "detail", "error")
+                    if isinstance(fields.get(k), str)), None)
+    allowed_code = (code if type(code) is int and 100 <= code <= 599 else
+                    code if isinstance(code, str) and code.casefold() in SAFE_CODES and code != key else None)
     allowed_message = None
     if isinstance(message, str) and len(message) <= 256:
         # Preserve the actual generic Brevo message when it exactly matches the allowlist.
         normalized = message.strip().casefold()
-        if any(normalized == s.casefold() for s in SAFE_MESSAGES) and (not key or key not in message):
+        generic = re.fullmatch(r"[A-Za-z ',.!?:;-]+", message.strip()) is not None
+        words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
+        allowed = any(normalized == s.casefold() for s in SAFE_MESSAGES) or (
+            generic and len(words) >= 2 and all(w in SAFE_WORDS for w in words))
+        if allowed and (not key or key not in message):
             allowed_message = message.strip()
     return {"error_code": allowed_code, "error_message": allowed_message, "response_kind": "json",
-            "message_withheld": allowed_message is None}
+            "message_withheld": allowed_message is None,
+            "error_fields_present": [k for k in ("code", "error_code", "errorcode", "message", "error_message",
+                "errormessage", "error_description", "detail", "error") if k in fields]}
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
