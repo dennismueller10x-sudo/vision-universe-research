@@ -1,8 +1,6 @@
 name: Company Intelligence (isolated preview)
 on:
-  schedule:
-    - cron: '17 */4 * * *'
-    - cron: '43 */4 * * *'
+  # Legacy isolated lanes are dispatch-only; production has one scoped scheduler.
   pull_request:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   push:
@@ -10,6 +8,11 @@ on:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   workflow_dispatch:
     inputs:
+      continuous_refresh:
+        description: 'Scoped autonomous refresh: verify isolated state or publish on main only'
+        type: choice
+        options: [none, verify, publish]
+        default: none
       production_release:
         description: 'Approved exact cohort: validate or publish consumer only; fresh accepted R2 restore, no crawl or polling'
         type: choice
@@ -74,9 +77,30 @@ permissions:
 concurrency:
   # Consumer-only release jobs read the frozen accepted checkpoint and serialize
   # their own namespace. They neither evict nor write the private polling state.
-  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  continuous:
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'publish'
+    needs: validate
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/company-intelligence-refresh.yml
+    with:
+      verification: false
+    secrets: inherit
+  continuous-verify:
+    # Isolated namespace acceptance has no production side effects. Full product
+    # regression validation runs independently and still gates publication/merge.
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify'
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/company-intelligence-refresh.yml
+    with:
+      verification: true
+    secrets: inherit
   production-numeric:
     if: github.event_name == 'workflow_dispatch' && inputs.production_release == 'numeric' && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     runs-on: ubuntu-latest
@@ -315,7 +339,7 @@ jobs:
           unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^quant\/data\/market\/fx\/currency-debt-register.json$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
           if [ -n "$unexpected" ]; then echo "$unexpected"; exit 1; fi
   preview:
-    if: always() && !inputs.current_restore_only && (inputs.production_release == '' || inputs.production_release == 'none') && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none') && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */4 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED != 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    if: always() && (inputs.continuous_refresh == '' || inputs.continuous_refresh == 'none') && !inputs.current_restore_only && (inputs.production_release == '' || inputs.production_release == 'none') && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none') && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */4 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED != 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 25

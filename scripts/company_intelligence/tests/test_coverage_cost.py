@@ -66,7 +66,11 @@ class CoverageCostTests(unittest.TestCase):
         workflow = (root / '.github/workflows/company-intelligence.yml').read_text()
         self.assertIn("vars.COMPANY_INTELLIGENCE_PILOT_ENABLED != 'true'", workflow)
         self.assertNotIn("cron: '43 * * * *'", workflow)
-        self.assertIn("cron: '43 */4 * * *'", workflow)
+        self.assertNotIn('cron:', workflow)
+        production=(root / '.github/workflows/company-intelligence-refresh.yml').read_text()
+        self.assertEqual(production.count("cron: '17 */4 * * *'"),1)
+        self.assertEqual(production.count('cron:'),1)
+        self.assertIn('company-intelligence-continuous-',production)
         self.assertIn('% 4', (root / 'scripts/company_intelligence/pilot.sh').read_text())
 
     def test_full_demand_cost_accounts_for_shared_routes_and_serial_network_pacing(self):

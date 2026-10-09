@@ -3,11 +3,13 @@
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {refreshApproved} from './refresh-approval.mjs';
 export const approval=JSON.parse(readFileSync(new URL('../../company-intelligence/config/production-approval.json',import.meta.url)));
 const originalBytes=readFileSync(new URL('../../docs/company-intelligence/full-data-consumer-manifest.json',import.meta.url));
 export const reviewed=JSON.parse(originalBytes);
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export function approvedForPublication(m){
+ if(refreshApproved(m))return true;
  return approval.schema===1 && ['dennis-controlled-production-20261007','dennis-top46-content-20261008'].includes(approval.approvalId) &&
   createHash('sha256').update(originalBytes).digest('hex')===approval.reviewedManifestSha256 &&
   m?.productionApproval===approval.approvalId && m.releaseState==='APPROVED_CONTROLLED_PRODUCTION' &&

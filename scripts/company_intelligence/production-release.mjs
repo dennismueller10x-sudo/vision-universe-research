@@ -7,6 +7,8 @@ import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {versionConsumerAssets} from './version-consumer-assets.mjs';
+import {downloadGood,goodState,goodView} from './refresh-storage.mjs';
+import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
  const result=await publish(driver,{namespace:approval.namespace,directory});
@@ -18,9 +20,15 @@ export async function publishProduction(driver,directory){
 export async function setProductionGate(driver,state){
  if(!['AVAILABLE','DISABLED','STAGED'].includes(state))throw Error('INVALID_PRODUCTION_GATE');
  if(state==='AVAILABLE'){
-  const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
-  if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
-  for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+  const good=await goodState(driver);
+  if(good){
+   const view=goodView(driver,good.payloadNamespace,good);
+   for(const asset of Object.keys(good.manifest.assets))await readAsset(view,{namespace:good.payloadNamespace,asset});
+  }else{
+   const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
+   if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
+   for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+  }
  }
  const key=prefixFor(approval.namespace)+'gate.json',bytes=Buffer.from(JSON.stringify({schema:1,state,generation:approval.consumerGeneration,approvalId:approval.approvalId,changedAt:new Date().toISOString()}));
  await driver.put(key,bytes);const back=await driver.get(key);
@@ -60,7 +68,25 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   versionConsumerAssets(release);
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
- const result=await verifyProductionConsumer(driver,release);versionConsumerAssets(release);return result;
+ // A healthy rolling GOOD must not depend on the fixed bootstrap remaining
+ // younger than the consumer TTL. Legacy is used only until the first GOOD.
+ let result;
+ const refreshed=await downloadGood(driver,{output:resolve(release,'company-intelligence/data')});
+ if(refreshed){
+  const {good,...publicResult}=refreshed;
+  for(const path of ['company-intelligence/config/rollout.js','quant/release-bundle.js']){
+   const file=resolve(release,path);if(!existsSync(file))continue;
+   const text=readFileSync(file,'utf8');
+   if(!text.includes(approval.consumerGeneration))throw Error('REFRESH_ROLLOUT_BASELINE_MISMATCH');
+   writeFileSync(file,text.replaceAll(approval.consumerGeneration,good.generation));
+  }
+  const observedBytes=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
+  const observed=observedBytes?JSON.parse(observedBytes):{};
+  writeFileSync(resolve(release,'company-intelligence-refresh.json'),JSON.stringify(safePublicRefresh(good.manifest,{...good.health,...observed},good.inventory))+'\n');
+  result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:46,issuers:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
+  writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify(result)+'\n');
+ }else result=await verifyProductionConsumer(driver,release);
+ versionConsumerAssets(release);return result;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
