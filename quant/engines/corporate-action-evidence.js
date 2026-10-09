@@ -25,11 +25,13 @@
 
    DIE AUFLOESUNG (deterministisch)
    Ein Verdacht der Engine zum Wochendatum t ist
-     RESOLVED_GENUINE_MOVE   wenn die Reihe einen Beleg traegt, der Anbieter
+     RESOLVED_GENUINE_MOVE   wenn die Reihe einen vollstaendigen Beleg traegt
+                             (splitFactor an jedem Tagesbalken), der Anbieter
                              in dieser Woche KEINEN Split fuehrt und der
-                             Sprung NICHT an einem einzigen Tag in Split-
-                             Groesse geschah (eine verpasste Bereinigung
-                             wirkt immer ueber Nacht in voller Groesse)
+                             Sprung NICHT an einem einzigen Tag geschah: kein
+                             Tagessprung in Split-Groesse und kein Tag mit
+                             >= 75 % der Wochenbewegung (log) — eine verpasste
+                             Bereinigung wirkt immer ueber Nacht in voller Groesse
      UNRESOLVED              sonst: kein Beleg (alte Reihe), Split
                              verzeichnet (Bereinigung fraglich) oder
                              Tagessprung in Split-Groesse.
@@ -43,6 +45,7 @@
   /* Spiegel der Engine-Regel (elliott-v3.js#dataQuality): Verhaeltnisse und Toleranz */
   var SPLIT_RATIOS = [2, 3, 4, 5, 10];
   var TOLERANCE = 0.03;
+  var DOMINANT_DAY = 0.75;   // Anteil eines Tages an der Wochenbewegung (log), ab dem der Sprung als Ein-Tages-Ereignis gilt
   function isNum(v) { return typeof v === "number" && isFinite(v); }
 
   /** Liegt ein Kursverhaeltnis in Split-Groesse? → { k, kind:"UP"|"DOWN" } oder null */
@@ -65,7 +68,9 @@
    */
   function evidence(daily, weekly, bars) {
     var splits = [];
-    (bars || []).forEach(function (b) { if (b && isNum(b.splitFactor) && b.splitFactor > 0 && b.splitFactor !== 1) splits.push([String(b.date).slice(0, 10), r6(b.splitFactor)]); });
+    /* Fehlt die splitFactor-Spalte (auch nur teilweise), ist das KEIN Beleg fuer "kein Split" → kein Beleg */
+    if (!bars || !bars.length || !bars.every(function (b) { return b && isNum(b.splitFactor) && b.splitFactor > 0; })) return null;
+    bars.forEach(function (b) { if (b.splitFactor !== 1) splits.push([String(b.date).slice(0, 10), r6(b.splitFactor)]); });
     var moves = [], di = 0;
     for (var w = 1; w < weekly.length; w++) {
       var r = weekly[w][1] / weekly[w - 1][1];
@@ -101,12 +106,15 @@
       if (m.splitInWeek) return { time: t, status: "UNRESOLVED", reason: "PROVIDER_SPLIT_IN_WEEK" };
       if (!isNum(m.maxDailyRatio)) return { time: t, status: "UNRESOLVED", reason: "NO_DAILY_BARS" };
       if (splitSized(m.maxDailyRatio)) return { time: t, status: "UNRESOLVED", reason: "SINGLE_DAY_SPLIT_SIZED_JUMP" };
+      /* eine verpasste Bereinigung mit zusaetzlicher Tagesbewegung (z. B. 2:1 an einem Tag mit −6 %): Ein Tag traegt
+         dann fast die ganze Wochenbewegung. Aufgeloest nur, wenn der groesste Tag < 75 % der Wochenbewegung (log) ausmacht. */
+      if (Math.abs(Math.log(m.maxDailyRatio)) >= DOMINANT_DAY * Math.abs(Math.log(m.weeklyRatio))) return { time: t, status: "UNRESOLVED", reason: "SINGLE_DAY_DOMINATES_WEEK" };
       return { time: t, status: "RESOLVED_GENUINE_MOVE", reason: "NO_PROVIDER_SPLIT_AND_MULTI_DAY_MOVE", weeklyRatio: m.weeklyRatio, maxDailyRatio: m.maxDailyRatio, maxDailyDate: m.maxDailyDate };
     });
     return { status: items.every(function (x) { return x.status === "RESOLVED_GENUINE_MOVE"; }) ? "RESOLVED" : "UNRESOLVED", items: items };
   }
 
-  var api = { VERSION: VERSION, SPLIT_RATIOS: SPLIT_RATIOS, TOLERANCE: TOLERANCE, splitSized: splitSized, evidence: evidence, resolve: resolve };
+  var api = { VERSION: VERSION, SPLIT_RATIOS: SPLIT_RATIOS, TOLERANCE: TOLERANCE, DOMINANT_DAY: DOMINANT_DAY, splitSized: splitSized, evidence: evidence, resolve: resolve };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else { global.VUCorporateActionEvidence = api; }
 })(typeof window !== "undefined" ? window : globalThis);

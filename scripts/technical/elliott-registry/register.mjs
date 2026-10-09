@@ -313,8 +313,8 @@ async function registerWeek(o, F) {
         timeframe: exProj.timeframe, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, role: "EXPLORE", interpretation: "EXPLORE",
         primaryShownAs: r.pv.p, primaryAbstained: r.pv.ab, dir: th.direction === "UP" ? 1 : -1, pattern: th.pattern, waveType: th.type, wave: th.target, degree: th.degree, persistenceKey: th.key,
         rank: th.pool.rank, poolSize: th.pool.size, slot: th.slot, failedGates: th.qualityGates.failed, gateResults: th.qualityGates.results, hardRules: th.hardRules.status,
-        dataQuality: { status: exProj.guardrails.flags.some((f) => f.code === "SPLIT_SUSPICION_RESOLVED") ? "CLEAN_AFTER_SPLIT_RESOLUTION" : "CLEAN", flags: exProj.guardrails.flags.map((f) => f.code) },
-        projectionThesis: registryProjection(Object.assign({}, exProj, { primary: th, alternative: null, consumerVisible: true })), projectionEngine: PROJECTION_VERSION,
+        dataQuality: { status: exProj.guardrails.flags.some((f) => f.code === "SPLIT_SUSPICION_RESOLVED") ? "CLEAN_AFTER_SPLIT_RESOLUTION" : "CLEAN", flags: exProj.guardrails.flags.map((f) => f.code).filter((c) => c === "SPLIT_SUSPICION_RESOLVED" || c === "PENNY_STOCK") },
+        projectionThesis: registryProjection(Object.assign({}, exProj, { primary: th, alternative: null, highUpside: null, consumerVisible: true })), projectionEngine: PROJECTION_VERSION,
         versions: { engine: exProj.engine.elliott, ruleSet: exProj.engine.ruleSet, projection: PROJECTION_VERSION, visibility: th.visibility }, setupStatus: "OPEN" };
       entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload });
     }

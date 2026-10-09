@@ -35,6 +35,17 @@ test("CA2 · verpasste Bereinigung (ueber Nacht halbiert, kein Split beim Anbiet
   assert.equal(r.items[0].reason, "SINGLE_DAY_SPLIT_SIZED_JUMP");
 });
 
+test("CA2b · verpasste 2:1-Bereinigung an einem Tag mit zusaetzlich −6 % (Tagesverhaeltnis 0,47, nicht in Split-Groesse) bleibt gesperrt", () => {
+  const rows = OSCR.map(([d]) => [d, d < "2023-03-28" ? 10 : d === "2023-03-28" ? 4.7 : d <= "2023-03-31" ? 4.89 : 4.9]);
+  const ev = CA.evidence(daily(rows), weekly(rows), rows.map(([date]) => ({ date, splitFactor: 1 })));
+  const m = ev.moves.find((x) => x.week === "2023-03-31");
+  assert.ok(m && !CA.splitSized(m.maxDailyRatio), "Tagesverhaeltnis selbst nicht in Split-Groesse");
+  const r = CA.resolve([{ time: "2023-03-31" }], ev);
+  assert.equal(r.status, "UNRESOLVED"); assert.equal(r.items[0].reason, "SINGLE_DAY_DOMINATES_WEEK");
+  /* OSCR: groesster Tag 1,56 bei Woche 1,95 → 67 % der Wochenbewegung (log), unter 75 % → echte mehrtaegige Bewegung */
+  assert.ok(Math.log(5.61 / 3.59) / Math.log(6.54 / 3.36) < CA.DOMINANT_DAY);
+});
+
 test("CA3 · Split beim Anbieter in der Woche, Reihe springt trotzdem: Bereinigung fraglich, gesperrt", () => {
   const ev = CA.evidence(daily(OSCR), weekly(OSCR), OSCR.map(([date]) => ({ date, splitFactor: date === "2023-03-29" ? 2 : 1 })));
   assert.deepEqual(ev.splits, [["2023-03-29", 2]]);
@@ -46,7 +57,9 @@ test("CA3 · Split beim Anbieter in der Woche, Reihe springt trotzdem: Bereinigu
 test("CA4 · ohne Beleg (alte Reihe) bleibt jede Sperre; ohne Verdacht ist die Reihe sauber", () => {
   assert.equal(CA.resolve([{ time: "2023-03-31" }], null).items[0].reason, "NO_EVIDENCE");
   assert.equal(CA.resolve([{ time: "2023-03-31" }], { version: "x", moves: [] }).items[0].reason, "NO_EVIDENCE");
-  const ev = CA.evidence(daily(OSCR), weekly(OSCR), []);
+  assert.equal(CA.evidence(daily(OSCR), weekly(OSCR), []), null, "ohne Tagesbalken kein Beleg");
+  assert.equal(CA.evidence(daily(OSCR), weekly(OSCR), OSCR.map(([date], k) => ({ date, splitFactor: k === 3 ? null : 1 }))), null, "fehlende splitFactor-Spalte ist kein Beleg fuer 'kein Split'");
+  const ev = CA.evidence(daily(OSCR), weekly(OSCR), OSCR.map(([date]) => ({ date, splitFactor: 1 })));
   assert.equal(CA.resolve([{ time: "2023-02-17" }], ev).items[0].reason, "NO_EVIDENCE_FOR_WEEK");
   assert.equal(CA.resolve([], ev).status, "CLEAN");
   assert.equal(CA.resolve([{ time: "2023-03-31" }, { time: "2023-02-17" }], ev).status, "UNRESOLVED", "ein offener Verdacht sperrt");

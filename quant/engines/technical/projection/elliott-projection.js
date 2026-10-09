@@ -414,7 +414,7 @@
   function build(E, ctx) {
     var out = { schemaVersion: SCHEMA, version: VERSION, timeframe: ctx.timeframe || null, asOf: ctx.asOf || null, close: r4(ctx.close),
                 engine: { elliott: E ? E.engineVersion || null : null, ruleSet: E ? E.ruleSetVersion || null : null },
-                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, explore: [],
+                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, explore: [], exploreDiagnostics: [], exploreWithheld: false,
                 context: null, guardrails: { flags: [] },
                 evidence: { status: "INSUFFICIENT", label: "Experimentell – noch keine ausreichende Evidenz", text: "Für Projektionszonen gibt es noch keine belastbare historische Prüfung. Das prospektive Register zeichnet jede angezeigte These ab jetzt ohne Rückblick auf." },
                 disclaimer: "Projektion ≠ Wahrscheinlichkeit: Die Zonen zeigen, wohin die Welle rechnerisch laufen könnte, wenn die Zählung stimmt. Prozentwerte sind Arithmetik vom aktuellen Kurs, keine Trefferquote." };
@@ -423,14 +423,16 @@
     if (gr.block) { out.status = "DATA_INVALID"; out.reason = gr.block.text; out.guardrails.block = gr.block; return out; }
     var ctxOut = context(ctx); out.context = ctxOut;
     var abstain = !!(E.applicability && E.applicability.abstain);
-    function mk(geo, count, source) {
+    function mk(geo, count, source, sink) {
+      /* sink: Explore-Lesarten melden Verworfenes in out.exploreDiagnostics, nie in die Hinweise der Hauptprojektion */
+      var flags = sink || out.guardrails.flags;
       if (!geo) return null;
       var j = jumpInside(geo.waves ? geo : Object.assign({ waves: count.waves }, geo), ctx);
-      if (j) { out.guardrails.flags.push(j); return null; }
+      if (j) { flags.push(j); return null; }
       var th = thesis(geo, count, source, ctx, ctxOut);
-      if (!th.zones.length) th.omittedTiers.forEach(function (x) { if ((x.reason === "IMPLAUSIBLE_MAGNITUDE" || x.reason === "NOT_FINITE") && !out.guardrails.flags.some(function (f) { return f.code === x.reason; })) out.guardrails.flags.push({ code: x.reason, text: x.text }); });
+      if (!th.zones.length) th.omittedTiers.forEach(function (x) { if ((x.reason === "IMPLAUSIBLE_MAGNITUDE" || x.reason === "NOT_FINITE") && !flags.some(function (f) { return f.code === x.reason; })) flags.push({ code: x.reason, text: x.text }); });
       /* Eine These, deren Grenze per Schluss schon verletzt ist, ist keine These mehr (nicht zeigen, nicht verfolgen). */
-      if (th.status === "INVALID") { out.guardrails.flags.push({ code: "INVALID_THESIS", text: th.label + " (" + source.toLowerCase() + "): Grenze bereits verletzt – nicht gezeigt." }); return null; }
+      if (th.status === "INVALID") { flags.push({ code: "INVALID_THESIS", text: th.label + " (" + source.toLowerCase() + "): Grenze bereits verletzt – nicht gezeigt." }); return null; }
       return th.zones.length ? th : null;
     }
     /* Primaere Interpretation: hoeherer Grad (Motivwelle 3/5), sonst die eigene These der Primaerzaehlung. */
@@ -476,19 +478,21 @@
        hoechstens 3, eingeklappt. Dieselben Formeln, Invalidation und Datenleitplanken wie jede These. Verworfen werden
        Lesarten mit derselben Thesenkennung wie eine angezeigte These und nahezu gleiche Leitern (Mitte der erweiterten
        Stufe innerhalb von 10 % einer angezeigten These derselben Richtung und desselben Typs). */
-    out.explore = [];
+    out.explore = []; out.exploreDiagnostics = [];
+    /* Explore-Kandidaten des Titels wegen Datenproblem gesperrt (Build): bestehende Explore-Thesen zurueckhalten, nicht umdeuten */
+    out.exploreWithheld = !!(E.explore && /^DATA_/.test(E.explore.reason || ""));
     var ex = E.explore && E.explore.items ? E.explore.items : [];
     ex.slice(0, EXPLORE_MAX).forEach(function (it) {
       var shownT = [out.primary, out.alternative, out.highUpside && out.highUpside.zones ? out.highUpside : null, out.motiveAlternative].concat(out.explore).filter(Boolean);
-      var th = mk(geometry(it.count), it.count, "EXPLORE");
+      var th = mk(geometry(it.count), it.count, "EXPLORE", out.exploreDiagnostics);
       if (!th) return;
-      if (th.status === "EXHAUSTED" || !th.invalidation || !(th.invalidation.price > 0)) { out.guardrails.flags.push({ code: "EXPLORE_DROPPED", text: th.label + " (Explore): " + (th.invalidation ? "alle Zonen erreicht" : "keine Invalidation") + " – nicht gezeigt." }); return; }
+      if (th.status === "EXHAUSTED" || !th.invalidation || !(th.invalidation.price > 0)) { out.exploreDiagnostics.push({ code: "EXPLORE_DROPPED", text: th.label + " (Explore): " + (th.invalidation ? "alle Zonen erreicht" : "keine Invalidation") + " – nicht gezeigt." }); return; }
       var dup = shownT.some(function (o) {
         if (o.key === th.key) return true;
         if (o.direction !== th.direction || o.type !== th.type) return false;
         var a = upside(o), b = upside(th); return isNum(a) && isNum(b) && Math.abs(a / b - 1) <= 0.1;
       });
-      if (dup) { out.guardrails.flags.push({ code: "EXPLORE_DUPLICATE", text: th.label + " (Explore): gleiche These oder nahezu gleiche Projektionsleiter wie eine angezeigte Lesart – nicht gezeigt." }); return; }
+      if (dup) { out.exploreDiagnostics.push({ code: "EXPLORE_DUPLICATE", text: th.label + " (Explore): gleiche These oder nahezu gleiche Projektionsleiter wie eine angezeigte Lesart – nicht gezeigt." }); return; }
       th.role = "EXPLORE";
       th.label = th.label.replace(/ \(höherer Grad\)$/, "") + " · Wochenchart";
       th.headline = "Weitere Elliott-Lesart";
@@ -559,7 +563,7 @@
     if (e.withheld) { ev("SHOWN_AGAIN", asOf); e.withheld = false; }
     if (!th) { ev("RELABELLED", asOf, { note: "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)." }); e.state = "RELABELLED"; ev("ARCHIVED", asOf); e.state = "ARCHIVED"; return e; }
     /* 1.2.0: Rollenwechsel (z. B. EXPLORE → MOTIVE_ALTERNATIVE → ALTERNATIVE → PRIMARY) als Ereignis — dieselbe These, Geschichte bleibt */
-    if (meta.role && e.role !== meta.role) { ev("ROLE_CHANGED", asOf, { from: e.role, to: meta.role }); e.role = meta.role; }
+    if (meta.role && e.role && e.role !== meta.role) { ev("ROLE_CHANGED", asOf, { from: e.role, to: meta.role }); e.role = meta.role; }
     if (th.signature !== R.signature) {
       freeze(e, th, asOf, meta); ev("REVISED", asOf, { note: "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten." });
       e.state = th.status === "CONFIRMED" ? "CONFIRMED" : "DEVELOPING";

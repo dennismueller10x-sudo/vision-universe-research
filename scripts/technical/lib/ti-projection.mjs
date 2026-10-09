@@ -284,7 +284,7 @@ export function projectionElliott(E) {
 export function withProductInputs(E, p) {
   if (!E) return E;
   if (p.motiveCandidate && p.motiveCandidate.count) E.hiddenMotive = p.motiveCandidate;
-  if (p.exploreCandidates && p.exploreCandidates.items && p.exploreCandidates.items.length) E.explore = p.exploreCandidates;
+  if (p.exploreCandidates && ((p.exploreCandidates.items && p.exploreCandidates.items.length) || /^DATA_/.test(p.exploreCandidates.reason || ""))) E.explore = p.exploreCandidates;
   if (E.dataQuality && p.dataQuality && p.dataQuality.splitResolution) E.dataQuality.splitResolution = p.dataQuality.splitResolution.status;
   return E;
 }
@@ -335,7 +335,7 @@ export function advanceStore(prev, items, versions) {
     const cur = displayedTheses(it.proj), matched = new Set();
     /* Vorübergehend nicht angezeigt (nicht umgedeutet): Hauptthesen bei Enthaltung/Datenproblem; Motiv-Alternativen nur bei Datenproblem */
     const blocked = !it.proj || it.proj.status === "DATA_INVALID" || it.proj.status === "UNAVAILABLE";
-    const withheldFor = (e) => blocked || (e.role !== "MOTIVE_ALTERNATIVE" && e.role !== "EXPLORE" && !it.proj.consumerVisible);
+    const withheldFor = (e) => blocked || (e.role === "EXPLORE" && !!it.proj.exploreWithheld) || (e.role !== "MOTIVE_ALTERNATIVE" && e.role !== "EXPLORE" && !it.proj.consumerVisible);
     const active = Object.keys(theses).filter((id) => theses[id].symbol === it.symbol && theses[id].timeframe === it.tf && theses[id].state !== "ARCHIVED");
     for (const id of active) {
       const e = theses[id], hit = cur.find(([, th]) => th.key === e.key);

@@ -583,7 +583,7 @@
     var pjSel = pickProjection(a, view === "pro"), lens = "scenario", pjWhich = "primary", pjLog = null;
     function pjThesis() { var p = pjSel && pjSel.p; if (!p) return null; if (pjWhich === "motive") return pjSel.motive || null;
       if (/^explore:/.test(pjWhich)) return pjSel.explore[+pjWhich.slice(8)] || null;
-      if (!p.consumerVisible && view !== "pro") return pjSel.motive || null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative || pjSel.motive; }
+      if (!p.consumerVisible && view !== "pro") return pjSel.motive || pjSel.explore[0] || null; return pjWhich === "alt" ? pjAlt(p) : p.primary || p.alternative || pjSel.motive || pjSel.explore[0] || null; }
     function pjAutoLog(t) { if (!t || !t.zones.length) return false; var hi = Math.max.apply(null, t.zones.map(function (z) { return z.high; }).concat(a.chart.close)), lo = Math.min.apply(null, t.zones.map(function (z) { return z.low; }).concat(a.chart.close.slice(-260))); return lo > 0 && hi / lo > 4; }
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
@@ -960,7 +960,7 @@
     var sel = pickProjection(a, true); if (!sel) return null;
     var p = sel.p, R = p.relations || {}, kids = [el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Projektion · Fachdetails" }), el("span", { class: "cb-badge cb-badge-experimental", text: p.version })])];
     var mot = sel.motive;
-    if (!p.primary && !p.alternative && !mot) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
+    if (!p.primary && !p.alternative && !mot && !(sel.explore || []).length) { kids.push(el("p", { class: "cb-small", text: p.reason || "Keine Projektion." })); return X.card(kids, "cb-ew-panel cb-ewp"); }
     if (!p.consumerVisible) kids.push(el("p", { class: "cb-unclear" }, [el("b", { text: "Nur Fachansicht. " }), el("span", { text: p.reason || "" })]));
     function block(t, title) {
       if (!t || !t.zones) return null;

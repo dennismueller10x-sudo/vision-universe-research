@@ -55,7 +55,9 @@ test("X-3 · Hauptlesart und reguläre Alternative bleiben byte-gleich; Explore 
   assert.equal(ex.status, base.status); assert.equal(ex.consumerVisible, base.consumerVisible); assert.equal(ex.explore.length, 1);
   /* gleiche Thesenkennung wie die angezeigte Alternative → keine weitere Lesart */
   const dup = PJ.build(withExplore(E(corr(), { alternatives: [alt] }), [item(Object.assign({}, alt), ["G2"])]), ctx(22));
-  assert.equal(dup.explore.length, 0); assert.ok(dup.guardrails.flags.some((f) => f.code === "EXPLORE_DUPLICATE"));
+  assert.equal(dup.explore.length, 0); assert.ok(dup.exploreDiagnostics.some((f) => f.code === "EXPLORE_DUPLICATE"));
+  assert.ok(!dup.guardrails.flags.some((f) => /^EXPLORE/.test(f.code)), "Explore-Diagnose nie in den Hinweisen der Hauptprojektion");
+  assert.deepEqual(dup.guardrails, PJ.build(E(corr(), { alternatives: [alt] }), ctx(22)).guardrails, "Hinweise der Hauptprojektion unverändert");
 });
 
 test("X-4 · Höchstens drei, keine nahezu gleichen Leitern", () => {
