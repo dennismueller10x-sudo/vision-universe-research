@@ -8,7 +8,9 @@ import {resolve,join} from 'node:path';
 // parent, never a caller-provided override or an unrelated checkout.
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
 const event=process.env.GITHUB_EVENT_NAME==='pull_request'&&process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):null;
-let baseline='68f1854c4f769aa21f6ec38d1a539080295f2c0a',baselineBasis='PINNED_PREPARATION_PRODUCTION_BASE';
+const fork=run('git',['merge-base','HEAD','origin/main']);
+if(fork.status||!/^[a-f0-9]{40}$/.test(fork.stdout.trim()))throw Error('VERIFIED_REMOTE_MAIN_MERGE_BASE_REQUIRED');
+let baseline=fork.stdout.trim(),baselineBasis='VERIFIED_GIT_MERGE_BASE_WITH_REMOTE_MAIN';
 if(event){
  const eventBase=event.pull_request?.base?.sha,eventHead=event.pull_request?.head?.sha;
  const ancestry=run('git',['show','-s','--format=%P','HEAD']);
