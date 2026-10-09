@@ -2,41 +2,48 @@
 
 Stand: 9. Oktober 2026. **Import vorbereitet, noch nicht durchgeführt.**
 
-PR [544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) wurde mit ausdrücklicher bedingter Owner-Freigabe gemergt, Commit `6bd5893858897c2bde3a7d58e3f955c9898b6828`. Alle ausgeführten PR-Prüfungen außer Core waren erfolgreich. Core hatte 93 erfolgreiche Tests und genau den separat auf der unveränderten Basis reproduzierten News-/Company-Master-Fehler; keine Gates oder Research-Dateien wurden geändert. Siehe historischen [Prüfnachweis](MERGE-REVIEW.md).
+PR [544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) wurde mit ausdrücklicher bedingter Owner-Freigabe gemergt, Commit `6bd5893858897c2bde3a7d58e3f955c9898b6828`. Der einzige rote Core-Check war der separat auf der unveränderten Basis reproduzierte News-/Company-Master-Fehler (93/94 erfolgreiche Tests). Keine Gates oder Research-Dateien wurden verändert. Siehe historischen [Prüfnachweis](MERGE-REVIEW.md).
 
-Der erste und einzige Brevo-Admin-Lauf war [audit 37934324872](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37934324872) auf dem Merge-Commit. Er wurde beim ersten Aufruf `GET /account` mit **HTTP 403** abgewiesen. Das vorhandene Actions-Secret war im Runner belegt und im Log maskiert. Der Schlüssel wurde nicht ausgelesen oder zurückgeliefert; keine Antwortinhalte, Kontaktadressen oder Kontaktexporte wurden protokolliert.
+## Diagnose des HTTP 403
 
-## Was tatsächlich geprüft wurde
+Der erste [Audit 37934324872](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37934324872) meldete HTTP 403 ohne Endpoint-Angabe. Die frühere Zuordnung zu `GET /account` war deshalb nicht belegt. Der gezielte read-only [Vergleich 37950403422](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37950403422) zeigt:
 
-| Gegenstand | Ergebnis |
+| Abruf / Client | Tatsächliches Ergebnis |
 |---|---|
-| Secret-Übergabe an Actions und manueller Main-Guard | funktionsfähig |
-| Brevo-Kontoabruf | abgewiesen, HTTP 403; genaue Ursache nicht bestätigt |
-| Kostenloser Tarif, Kontakte, Abmeldungen und Sperren | ungeprüft |
-| Vorhandene Listen, Merkmale und Segmente | ungeprüft |
-| Aktive Automationen | ungeprüft; vollständiger Abgleich benötigt weiterhin Brevo-UI |
-| Absender und Domain, konkrete fehlende Bestätigungen/DNS-Werte | ungeprüft; keine Werte erfunden |
-| setup | nicht gestartet; keine Struktur in Brevo angelegt |
-| Kontaktimport und Newsletter-/Testversand | nicht ausgeführt |
+| `GET /account`, bisheriger urllib-Client | HTTP 200 |
+| `GET /senders`, bisheriger urllib-Client | HTTP 403, numerischer Fehlercode 1010 |
+| Derselbe Audit mit `User-Agent: VisionUniverse-Brevo/1.0` | sämtliche sieben Abrufarten HTTP 200; vollständiger Aggregate-Audit erfolgreich |
 
-## Zugang klären
+`BREVO_API_KEY` ist im Runner gesetzt, hat das API-v3-Format und enthält keine äußeren Leerzeichen oder Anführungszeichen. Schlüsselwert, Schlüsselfragmente und Fingerprints werden nicht ausgegeben oder gespeichert. Der Header `api-key` und `https://api.brevo.com/v3/account` stimmen mit der offiziellen Schnittstelle überein. Die Secret-Metadatenabfrage bleibt für diesen GitHub-Zugang mit HTTP 403 gesperrt; die Verfügbarkeit ist stattdessen durch den erfolgreichen authentifizierten Abruf belegt.
 
-1. In Brevo als Owner **Einstellungen → Sicherheit → Autorisierte IP-Adressen** öffnen. Die nicht autorisierten Zugriffe um **9. Oktober 2026, 13:05 UTC** mit dem Actions-Lauf abgleichen. Brevo dokumentiert, dass unbekannte API-IP-Adressen blockiert werden können. Das ist eine mögliche Ursache, kein durch diesen HTTP-Status bewiesenes Ergebnis. Keine globalen Sperren deaktivieren und keine pauschalen Runner-Netze freigeben. Eine Freigabe muss sich auf eine verifizierte, vertrauenswürdige Quelle beziehen; gehostete Actions-Runner haben keine zugesicherte feste Ausgangs-IP.
-2. Falls kein passender blockierter Zugriff vorliegt: Kontozugang, Status und Berechtigung des normalen API-Schlüssels unter **SMTP & API → API-Schlüssel** prüfen. Einen erforderlichen Ersatz ausschließlich direkt als GitHub-Actions-Secret `BREVO_API_KEY` hinterlegen, nie in Chat, Git oder Logs. Aus dem HTTP 403 allein ist ein ungültiger Schlüssel nicht ableitbar.
-3. Danach denselben Workflow auf `main` erneut ausschließlich mit `audit` ausführen. Erst nach erfolgreicher Prüfung `setup` starten. Kein Import und kein Versand zur Zugangsdiagnose.
+Cloudflare beschreibt [1010](https://github.com/cloudflare/cloudflare-docs/blob/production/src/content/docs/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010.mdx) als Sperre anhand der Client-/Browser-Signatur. Im kontrollierten Vergleich wurde nur der User-Agent geändert; Schlüssel, Authentifizierungsheader und Endpoints blieben gleich. Die konkrete Korrektur ist deshalb eine ausdrücklich benannte Integrationskennung im HTTP-Client. Keine Schlüsselrotation, Tarifbuchung oder Änderung der IP-/DNS-Konfiguration ist für diese Korrektur erforderlich. Sie ist im offenen Folge-PR vorbereitet, noch nicht auf `main` wirksam. Der Diagnose-Job lief ausschließlich manuell auf einem eigenen Branch mit unveränderlichem Code-Checkout und reinen GET-Aufrufen; der bestehende Admin-Job blieb dort übersprungen.
 
-Offizielle Quelle: [IP-Adressen für API-/SMTP-Sicherheit autorisieren und sperren](https://help.brevo.com/hc/en-us/articles/5740111683858-Authorize-and-block-IP-addresses-for-API-and-SMTP-security).
+## Tatsächlicher Kontostand
 
-## Manuelle Importgrenzen
+| Gegenstand | Ergebnis des erfolgreichen Audits |
+|---|---|
+| Tarif | free |
+| Kontaktinventar | 1 bestehender Kontakt; Einzelstatus und Shopify-Abgleich noch ungeprüft |
+| VU-Listen | keine |
+| VU-Merkmale | 0 von 10 vorhanden, keine Typkonflikte |
+| Segmente | 0 |
+| Absender | 1, aktiv/Bestätigung laut API vorhanden; Adresse bleibt privat |
+| Domains | 0 registriert; keine kontospezifischen DNS-Werte verfügbar |
+| Aktive Automationen | vollständiger Abgleich weiterhin über Brevo-UI erforderlich |
+| setup, Kontaktimport und Newsletter-/Testversand | nicht ausgeführt |
 
-Der vorhandene Navigations-Sync fügte nach dem Merge in Commit `f268fe0` automatisch Website-CSS und JavaScript in `scripts/brevo/newsletter.html` ein. Die E-Mail-Vorlage wird deshalb als `newsletter.html.tmpl` isoliert und von `render` unter diesem Namen gelesen. Der Sync verarbeitet ausschließlich Dateien mit Endung `.html` und überspringt sie damit. Kein fremder Workflow oder Navigationscode wird verändert; die Vorlage enthält wieder ausschließlich E-Mail-Inhalt.
+Der aktuelle Auftrag erlaubt ausschließlich Audits. Nach Freigabe der Client-Korrektur kann der normale Audit auf `main` erneut ausgeführt werden. `setup`, Import und Versand werden dadurch nicht automatisch gestartet.
 
-Der Owner wählt manuelle private CSVs; zusätzliche Import-Secrets werden nicht angelegt. CSV-Boolean-Werte müssen nach [offiziellem Format](https://help.brevo.com/hc/en-us/articles/208729849-Create-a-file-to-import-your-contacts) `Yes`/`No` sein. Die private API-JSON bleibt unverändert.
+## E-Mail-Vorlage und manuelle Importgrenzen
 
-Vorbereitet: 135 reguläre Kontakte, zwei eindeutige interne Testkontakte, 13 nicht angemeldete Kontakte; sechs Käufer insgesamt, davon einer nicht angemeldet. Der tatsächliche Brevo-Bestand ist unbekannt. Daher sind **alle 150 Kontakte zurückgestellt**. Absender-/Domainwerte und Listen-IDs dürfen erst nach erfolgreichem Kontoabruf als tatsächlich eingerichtet gemeldet werden.
+Der vorhandene Navigations-Sync fügte nach dem Merge in Commit `f268fe0` automatisch Website-CSS und JavaScript in `scripts/brevo/newsletter.html` ein. Die E-Mail-Vorlage wird deshalb als `newsletter.html.tmpl` isoliert und von `render` unter diesem Namen gelesen. Der Sync verarbeitet ausschließlich Dateien mit Endung `.html`. Kein fremder Workflow oder Navigationscode wird verändert; die Vorlage enthält wieder ausschließlich E-Mail-Inhalt.
 
-Die manuelle Klickfolge und Attribute stehen in der [README](README.md#verbleibende-schritte-in-brevo--in-dieser-reihenfolge). Vorhandene Kontakte privat abgleichen und aus den Dateien für neue Kontakte ausschließen. Attribut-Updates ausschalten schützt keine Listenmitgliedschaft automatisch. Kein Import, solange Kontaktanlage, Änderungen oder Listenzugang aktive Automationen auslösen könnten. Keine fremden Automationen pauschal deaktivieren.
+Der Owner wählt private manuelle CSVs; zusätzliche Import-Secrets werden nicht angelegt. CSV-Boolean-Werte müssen nach [offiziellem Format](https://help.brevo.com/hc/en-us/articles/208729849-Create-a-file-to-import-your-contacts) `Yes`/`No` sein. Die private API-JSON und der Originalexport bleiben unverändert.
 
-Für die 13 nicht angemeldeten Kontakte ist ein listenloser manueller Import nicht durch die offizielle Anleitung bestätigt. Sie bleiben zusätzlich zurückgestellt, falls die Oberfläche keine sichere listenlose Aufnahme mit aktivierter E-Mail-Blocklist erlaubt. Keine Aufnahme in die Haupt-, Test- oder App-Warteliste und keine neue Dauerliste zur Vereinfachung.
+Vorbereitet: 135 reguläre Kontakte, zwei eindeutige interne Testkontakte, 13 nicht angemeldete Kontakte; sechs Käufer insgesamt, davon einer nicht angemeldet. Da Bestands-/Sperrenabgleich und Automationsprüfung noch fehlen, sind **alle 150 Kontakte zurückgestellt**. Die drei VU-Listen sind noch nicht eingerichtet; beide internen Empfänger noch nicht als VU-Testkontakte angelegt.
 
-Korrigierte CSVs und eine aktuelle Klickanleitung werden ausschließlich in der bestehenden privaten ChatGPT-Dateiablage bereitgestellt. Der unveränderte Originalexport bleibt außerhalb des Repositories. Private Dateireferenzen, Adressen und personenbezogene Prüfberichte gehören nicht in dieses öffentliche Dokument. Ein bestätigter privater Upload ist keine Zusage unbegrenzter Aufbewahrung.
+Die manuelle Klickfolge und Attribute stehen in der [README](README.md#verbleibende-schritte-in-brevo--in-dieser-reihenfolge). Bestehende Kontakte privat abgleichen und aus den Dateien für neue Kontakte ausschließen. Attribut-Updates auszuschalten schützt keine Listenmitgliedschaft automatisch. Kein Import, solange Kontaktanlage, Änderungen oder Listenzugang aktive Automationen auslösen könnten. Keine fremden Automationen pauschal deaktivieren.
+
+Die 13 nicht angemeldeten Kontakte bleiben zusätzlich zurückgestellt, falls die Oberfläche keinen sicheren listenlosen Import mit E-Mail-Blocklist erlaubt. Keine Aufnahme in Haupt-, Test- oder App-Warteliste und keine zusätzliche Dauerliste zur Vereinfachung.
+
+Korrigierte CSVs und die Klickanleitung liegen ausschließlich in der bestehenden privaten ChatGPT-Dateiablage. Private Dateireferenzen, Adressen und personenbezogene Prüfberichte gehören nicht in dieses öffentliche Dokument. Ein bestätigter privater Upload ist keine Zusage unbegrenzter Aufbewahrung.

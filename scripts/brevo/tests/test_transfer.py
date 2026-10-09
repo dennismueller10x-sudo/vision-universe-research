@@ -12,7 +12,7 @@ from unittest.mock import patch
 import urllib.error
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from client import Client, audit, permitted_call
+from client import Client, audit, permitted_call, USER_AGENT
 from import_contacts import import_contacts, preflight
 from prepare import Blocked
 from transfer import MAX_RAW_BYTES, decode, encode, run, trusted_dispatch
@@ -24,6 +24,20 @@ class Transfer(unittest.TestCase):
     tearDown = safety.Safety.tearDown
     fixture = safety.Safety.fixture
     review = safety.Safety.review
+
+    def test_api_identifies_integration_without_changing_authentication(self):
+        class Response(io.BytesIO):
+            def __enter__(self): return self
+            def __exit__(self, *args): self.close()
+        with patch.dict(os.environ, {"BREVO_API_KEY":"synthetic-only"}), \
+                patch("client.urllib.request.build_opener") as builder:
+            builder.return_value.open.return_value = Response(b'{}')
+            Client(mode="admin").call("GET", "/senders")
+            request = builder.return_value.open.call_args.args[0]
+        self.assertEqual(request.method, "GET")
+        self.assertEqual(request.full_url, "https://api.brevo.com/v3/senders")
+        self.assertEqual(request.get_header("User-agent"), USER_AGENT)
+        self.assertEqual(request.get_header("Api-key"), "synthetic-only")
 
     def environment(self, data, review=None):
         return {"GITHUB_ACTIONS": "true", "GITHUB_REF": "refs/heads/main", "BREVO_DEFAULT_BRANCH": "main",
