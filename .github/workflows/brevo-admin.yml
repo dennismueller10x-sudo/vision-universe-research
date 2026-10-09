@@ -1,0 +1,33 @@
+name: Brevo | Prüfung und Struktur (kein Versand)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Nur Prüfung oder Einrichtung ohne Kontakte und Versand
+        type: choice
+        options: [audit, setup]
+        default: audit
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: brevo-admin
+  cancel-in-progress: false
+jobs:
+  admin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - name: Brevo-Prüfung oder Struktureinrichtung
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_OPERATION: ${{ inputs.operation }}
+        run: |
+          set -euo pipefail
+          case "$BREVO_OPERATION" in audit|setup) ;; *) exit 1 ;; esac
+          python3 scripts/brevo/cli.py "$BREVO_OPERATION"
