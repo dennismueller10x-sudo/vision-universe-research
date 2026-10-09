@@ -231,3 +231,10 @@ missing GOOD falls back to the fixed consumer. A day-30 contract forbids reads
 of the expired fixed consumer while a fresh rolling GOOD is available, and
 checks the staged generation and rollout binding. The legacy gate remains
 required, preserving the existing emergency OFF path.
+
+Full structural acceptance has an independent read-only dispatch lane:
+`gh workflow run company-intelligence.yml --ref main -f continuous_refresh=full-qa`.
+It reuses protected hydration, real-Discover/Quant and 368-case V2 browser tests.
+It has no cron, R2 credentials, source polling, publication or gate mutation.
+This closes the observed pending-Pages eviction by market-data workflow runs
+(37966408643 was cancelled before any job started).

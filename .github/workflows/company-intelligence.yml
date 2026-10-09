@@ -11,7 +11,7 @@ on:
       continuous_refresh:
         description: 'Scoped autonomous refresh: verify isolated state or publish on main only'
         type: choice
-        options: [none, verify, publish]
+        options: [none, verify, publish, full-qa]
         default: none
       production_release:
         description: 'Approved exact cohort: validate or publish consumer only; fresh accepted R2 restore, no crawl or polling'
@@ -77,9 +77,42 @@ permissions:
 concurrency:
   # Consumer-only release jobs read the frozen accepted checkpoint and serialize
   # their own namespace. They neither evict nor write the private polling state.
-  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.continuous_refresh == 'full-qa' && format('company-intelligence-full-qa-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  continuous-full-qa:
+    # Read only actual production. Market-data Pages runs must not evict this
+    # full structural acceptance; no source/R2 writer or deployment is involved.
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'full-qa'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing full browser runtime
+        run: |
+          npm install --prefix /tmp/ci-full-qa --no-audit --no-fund playwright@1.55.0
+          node scripts/company_intelligence/install-browser-deps.mjs /tmp/ci-full-qa/node_modules/.bin/playwright
+      - name: All real production stocks, viewports and themes
+        env:
+          NODE_PATH: /tmp/ci-full-qa/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: |
+          node scripts/company_intelligence/protected-hydration-qa.mjs
+          node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/full-qa/fast"
+          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/full-qa/cohort"
+          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/full-qa/dark"
+          node scripts/company_intelligence/consumer-experience-qa.mjs --version after --out "$RUNNER_TEMP/full-qa/v2"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: continuous-full-production-qa-${{ github.run_id }}
+          path: ${{ runner.temp }}/full-qa/
+          retention-days: 14
   continuous:
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'publish'
     needs: validate
