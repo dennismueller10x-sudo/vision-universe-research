@@ -1,8 +1,8 @@
 {
   "schema": "vu-fundamental-data-freeze-1.0.0",
   "status": "DEVELOPMENT_FREEZE",
-  "frozenAt": "2026-10-09T19:27:38.169Z",
-  "commit": "42a092b9cc29f6248143375f4960a5a786892003",
+  "frozenAt": "2026-10-09T19:32:38.324Z",
+  "commit": "3922ff6093d11606dcfc0c5185160c9362bdc88d",
   "dataVersion": {
     "normalizationLogic": "1.21.0",
     "registryMapping": "1.9.0",
@@ -54,13 +54,13 @@
       "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-PREREG.json": "80d7fac921cc3d18143fe6443c26ebbd75ff747b80105a0a4209016eb2c8483f",
       "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-RESULT.json": "c85957218b70b9e520ecbac9562394abba78d1a397bc519dce144a6e5bee794d",
       "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-POSTMORTEM.json": "36a9d376ba06ad98cf287cdabbd24425c26af5d0b37c087645c87c3e0f793a65",
-      "scripts/fundamentals-audit/ttm_holdout4_eval.py": "338e1a27f91300fc4781c3b7bc4663495794318e744b458de3750b0ad8532aca",
+      "scripts/fundamentals-audit/ttm_holdout4_eval.py": "cf24c595f35da08acb1cf9601dfc6c7b88968017820bb37891c5d66b3a3141e2",
       "scripts/fundamentals-audit/ttm_holdout4_gates.py": "0b5df9cf9d0da1636a1f0abbdf755b1422a7ca96178d95296e7805e91f182161",
       "scripts/fundamentals-audit/ttm_period_chain.py": "66c1c115ba1c7720f2a23a8a73b92ffdb093a7e2f94d215282774d930ccf83c4",
       "scripts/fundamentals-audit/make_fixture.py": "a38b5184c0232f4b0b9cb5d53179029e788733c5d8f264faf5a6e8fd59902deb",
       "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-121-NEIGHBOR-SEARCH.json": "8432b8d75088629df549a08a17e4bcc2ba3a9bcd2a6e0cd1f7a88dcd92a7d26a"
     },
-    "hash": "8ef6e58437ade5c5e35e3b69ac08a7bfd2d032dd53ce7b37196638728b3a52ff"
+    "hash": "71c65cb52ddb5c037dcdecd101d51d914b0f749871f939c8b69eac75156dbce7"
   },
   "tests": {
     "files": {
@@ -81,7 +81,7 @@
     "hash": "7f924cd7793c78c0a41b2192cc635ac2bf6e4e8dc7bbe2ee0f9940e23b91bd7e",
     "note": "fruehere Freezes bleiben unveraendert; der Data-Holdout ist gegen v1 gelaufen"
   },
-  "reason": "Development Freeze vor Holdout v4: Kern 1.21.0 behebt F-TTM-4 (Geschaeftsjahreswechsel mit altem Jahresende nur als Vergleichsjahr/10-KT) und F-TTM-5 (Jahreskennung nach geteiltem Predecessor/Successor-Jahr), entdeckt in Holdout v3 (FAIL, unveraendert); zwei Red-Team-Runden, Vollarchiv-Nachbarsuche",
+  "reason": "Development Freeze vor Holdout v4: Kern 1.21.0 behebt F-TTM-4 (Geschaeftsjahreswechsel mit altem Jahresende nur als Vergleichsjahr/10-KT) und F-TTM-5 (Jahreskennung nach geteiltem Predecessor/Successor-Jahr), entdeckt in Holdout v3 (FAIL, unveraendert); zwei Red-Team-Runden, Vollarchiv-Nachbarsuche. Neu geschrieben nach der Praeregistrierung von Holdout v4 (nur Audit-Hash: Wahrheit inkl. 10-KT/10-KT/A), Kern-Code-Hash unveraendert, Holdout ungeoeffnet",
   "parent": "v5 (FUNDAMENTAL-DATA-FREEZE-v5.json, Kern 1.20.0, DEVELOPMENT_FREEZE, durch Holdout v3 FAILED_VALIDATION)",
   "revenueEvidence": {
     "version": "1.1.0",
