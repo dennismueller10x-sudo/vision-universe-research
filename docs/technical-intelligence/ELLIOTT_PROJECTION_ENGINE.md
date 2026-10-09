@@ -222,8 +222,8 @@ Stand 09.10.2026. Nur Sichtbarkeit und Datenqualität. Unverändert bleiben:
 
 1. **Rangqualität:** nur Lesarten in der besseren Hälfte des Pools (Rang ≤ 50 %), für jeden Platz. Lesarten vom Ende des Pools sind Rauschen der Suche. Der Rang wird angezeigt: „Rang 44 von 171 gültigen Interpretationen“ (nie als Wahrscheinlichkeit).
 2. **Platz 1:** die bestplatzierte Motiv-Lesart (These Welle 3); gibt es keine, der bestplatzierte Kandidat.
-3. **Platz 2 und 3:** in Rangfolge, nur mit einer anderen Kombination aus Thesentyp und Richtung als alle gewählten und ohne gleichen Ursprung bei gleicher Richtung.
-4. **Höchstens 3.** Ist nichts strukturell verschieden, bleibt es bei einer.
+3. **Platz 2:** die bestplatzierte Lesart mit der **Gegenrichtung** zu Platz 1 (materiell anderes Szenario).
+4. **Platz 3:** die bestplatzierte Lesart mit einem **anderen Thesentyp** als beide, nur im oberen Viertel des Pools. Höchstens 3; lieber eine als drei ähnliche. Nach dem ersten Universumslauf vor der Freigabe verschärft (Produktgesundheit, nicht Ergebnis): Die erste Fassung ließ für Platz 2 und 3 jede andere Kombination aus Typ und Richtung zu und füllte so auf 1.184 Titeln alle drei Plätze, überwiegend mit Flat-C-Lesarten (7.445 Lesarten auf 3.639 Titeln).
 5. **Anzeige (Projection Engine):** verworfen werden nahezu gleiche Leitern, also die Mitte der erweiterten Stufe innerhalb von 10 % einer angezeigten These derselben Richtung und desselben Typs.
 
 ### Leitplanken in Kundensprache

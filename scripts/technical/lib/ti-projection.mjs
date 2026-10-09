@@ -187,12 +187,14 @@ export function dataIntegrity(series, out, splitRes) {
      Rang:      nur Lesarten in der besseren Haelfte des Pools (Rang <= 50 %, fuer jeden Platz) — Lesarten vom Ende des
                 Pools sind Rauschen der Kandidatensuche, keine Lesart fuer Kunden (Anti-Spam; Rang wird angezeigt).
      Auswahl:   Platz 1 = bestplatzierte Motiv-Lesart (These Welle 3), gibt es keine, der bestplatzierte Kandidat.
-                Platz 2 und 3 in Rangfolge, mit einer anderen Kombination aus Thesentyp und Richtung als alle gewaehlten
-                und ohne gleichen Ursprung bei gleicher Richtung. Hoechstens 3; gibt es nichts strukturell Verschiedenes,
-                bleibt es bei einer.
+                Platz 2 = bestplatzierte Lesart mit der GEGENRICHTUNG zu Platz 1 (materiell anderes Szenario).
+                Platz 3 = bestplatzierte Lesart mit einem anderen Thesentyp als beide, nur im oberen Viertel des Pools.
+                Hoechstens 3; lieber eine als drei aehnliche. (Vor der Freigabe verschaerft: Die erste Fassung — Platz
+                2/3 bei jeder anderen Kombination aus Typ und Richtung — fuellte auf 1.184 Titeln alle drei Plaetze,
+                ueberwiegend mit Flat-C-Lesarten; Produktgesundheit, nicht Ergebnis.)
      Leiter:    nahezu gleiche Projektionsleitern werden in der Projection Engine (Anzeige) zusaetzlich verworfen.
    ========================================================================= */
-export const EXPLORE = Object.freeze({ version: "explore-elliott-1.0.0", max: 3, rankHalf: 0.5, gates: ["G2", "G3", "G4", "G5"] });
+export const EXPLORE = Object.freeze({ version: "explore-elliott-1.0.0", max: 3, rankHalf: 0.5, rankThird: 0.25, gates: ["G2", "G3", "G4", "G5"] });
 const EXPLORE_TYPES = { IMPULSE: [2, 3, 4, 5], LEADING_DIAGONAL: [2, 3, 4, 5], ENDING_DIAGONAL: [2, 3, 4, 5], ZIGZAG: [2, 3], FLAT: [2, 3], WXY: [2, 3], DOUBLE_ZIGZAG: [2, 3, 6, 7], TRIPLE_ZIGZAG: [2, 3, 4, 5] };
 export function exploreCandidatesFor(series, out, meth, pool, motive, integrity) {
   const res = { version: EXPLORE.version, reason: null, pool: 0, eligible: 0, items: [] };
@@ -229,13 +231,10 @@ export function exploreCandidatesFor(series, out, meth, pool, motive, integrity)
   if (!cands.length) return Object.assign(res, { reason: "NONE_IN_POOL" });
   /* 2) Platz 1, dann strukturell verschiedene in Rangfolge */
   const first = cands.find((c) => c.type === "WAVE_3") || cands[0], picked = [first];
-  for (const c of cands) {
-    if (picked.length >= EXPLORE.max) break;
-    if (picked.includes(c)) continue;
-    if (picked.some((p) => p.kind === c.kind)) continue;
-    if (picked.some((p) => p.item.count.direction === c.item.count.direction && p.item.count.waves[0].fromTime === c.item.count.waves[0].fromTime)) continue;
-    picked.push(c);
-  }
+  const second = cands.find((c) => c !== first && c.item.count.direction !== first.item.count.direction);
+  if (second) picked.push(second);
+  const third = cands.find((c) => !picked.includes(c) && picked.every((p) => p.type !== c.type) && (c.item.rank + 1) / Q.all.length <= EXPLORE.rankThird);
+  if (third && picked.length < EXPLORE.max) picked.push(third);
   res.items = picked.map((p, k) => Object.assign(p.item, { slot: k + 1 }));
   return res;
 }

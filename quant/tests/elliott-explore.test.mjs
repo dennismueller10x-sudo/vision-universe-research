@@ -161,6 +161,10 @@ test("X-10 · Echte Reihen: jede ausgewählte Lesart erfüllt alle Regeln, kein 
       assert.ok((it.rank + 1) / it.pool <= L.EXPLORE.rankHalf, t + " Rang in der besseren Hälfte");
     }
     assert.equal(new Set(X.items.map((it) => it.count.pattern + "|" + it.count.waves[0].fromTime + "|" + it.count.direction)).size, X.items.length, t + " keine gleichen Anker");
+    /* Platz 2 = Gegenrichtung zu Platz 1; Platz 3 = anderer Thesentyp als beide, oberes Viertel des Pools */
+    const ty = (it) => PJ.geometry(it.count).type;
+    if (X.items[1]) assert.notEqual(X.items[1].count.direction, X.items[0].count.direction, t + " Platz 2 Gegenrichtung");
+    if (X.items[2]) { assert.ok(ty(X.items[2]) !== ty(X.items[0]) && ty(X.items[2]) !== ty(X.items[1]), t + " Platz 3 anderer Typ"); assert.ok((X.items[2].rank + 1) / X.items[2].pool <= L.EXPLORE.rankThird, t + " Platz 3 oberes Viertel"); }
   }
   assert.ok(seen >= 1, "mindestens eine Explore-Lesart in der Stichprobe");
 });
