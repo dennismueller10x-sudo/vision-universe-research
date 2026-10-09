@@ -417,3 +417,89 @@ against both GOOD and its accepted observation. OFF/404, changed scope or a
 mismatch is CRITICAL even when an old publication timestamp is recent. The
 historical receipt remains in R2 for diagnosis; it is not counted as a currently
 verified publication. This read-only probe never repairs/enables production.
+
+Recovery checkpoint: isolated run **37982253660** passed a fresh restore of
+5,120 companies and all 86 consumer assets plus all 16 routed actual-UI candidate
+cases, while production was still OFF. Gate-enable run **37983274560** verified
+the durable consumer and left private state untouched. Actual Pages recovery
+**37983580926** then passed AAPL/XPEV routine protected-browser QA at 20:04 UTC
+on `e93511584cd79c3ab38386496143b91294fef521`, serving the previous verified GOOD
+`40afe02bad7b0a64facdde95`. Its five routine hashes and response proof are preserved
+as `recovery-production-routine-report.json`.
+
+PR #558 merged as `997b503d2e36371f802fceb1e00ef085a4bf5351` after exact-head
+Company Intelligence validation **37983431942**, Pages package, currency and
+config checks passed. Core retained exactly the three independently classified
+baseline invalid-news-symbol failures; Vercel's preview quota is unrelated to
+Research Pages. Incoming main changes were ordinary intraday/capability/watchdog
+JSON updates, retained by the normal merge. No UI, factor, score, access-control
+or cohort expansion was included.
+
+Routine recovery did not replace the prior publication observation: its generation
+was from the previous GOOD, while the old observation referred to the rolled-back
+newer consumer. A subsequent full refresh must pass all 16 actual live cases before
+its new accepted publication clock is written. The 20:17 UTC cron is being observed.
+
+### Recovery completed: full actual-production acceptance
+
+Main run **37987633999** passed independently on 9 October, 20:32–20:47 UTC
+(event **workflow_dispatch**, not a cron). It restored the actual current full
+private `07cf7fbab640023fff9d2739`, then preserved and freshly restored
+**`f93b34d8640b84b195590c51`**, still **5,120 companies**.
+Checkpoint SHA-256: `ced43907fcfb605fbc3cc0b665116b6a25f200cf2878736c89c45968d2bd2274`;
+compressed size **31,144,806 bytes**. Original sealed accepted state remains intact.
+All table/identity fingerprints and the 86 consumer bytes/generation were verified
+by the existing empty-directory restore proof.
+
+**30 due IR feeds + 45 SEC issuers** were checked: IR outcomes 16 NO_CHANGE,
+12 SUCCESS, two TEMPORARY_FAILURE; all 45 SEC checks succeeded. HTTP reused 28
+cached responses, including 14 not-modified results; downloaded bytes 1,410,787.
+There were zero new news/events/financial updates. Zero new news is successful
+operation, not an empty consumer: **314 news / 42 issuers / 45 German profiles**
+were retained. The two source failures were isolated; detailed health remains in
+the preserved private ledger and cooldowns remain effective. No rejected source
+was enabled and no third-party article body was published.
+
+Consumer **`b294efcf1cb0ff275a3d5481`** passed all 46 contracts and 16 candidate
+cases, then actual Pages **37988544426** on code
+`9b180aa5b35ad68ee8e7d492b2796a66b453902f`. The same 16 actual-production cases
+and all 86 served hashes passed, including access/out-of-cohort guards, correct
+issuer/generation/time, stale labels, collapsed sources, navigation and no JS
+errors or overflow at 390/1440 dark. The protected production URL remains
+https://research.visionuniverse.de/discover/#/s/US_REAL/TSLA.
+
+Independent read-only health **37989381035** passed at 20:48:11 UTC:
+private refresh **20:34:20**, consumer build **20:39:56.534**, actual accepted
+publication **20:47:49.936**. All three SLOs HEALTHY, actual served generation
+VERIFIED. This healthy receipt supersedes the incident's CRITICAL mismatch
+receipt; both remain preserved. Recovery is complete and the ordinary routine
+has no Codex/ChatGPT runtime dependency.
+
+The 20:17 source cron was observed until 20:32 and remained absent from GitHub's
+schedule-event registry through this acceptance. Workflow metadata is active,
+main cron remains `17 */4 * * *`, and the successful manual run uses exactly the
+same main job/production concurrency. **REAL-SCHEDULED-RUN-PASSED:
+NOT-YET-OBSERVED**; do not label the manual trigger a scheduled run. The first
+actual cron execution is the remaining observation, not a source or R2 permission
+failure. No extra writer, discovery campaign or paid dependency was introduced.
+
+Three substantive recovery reviews: (1) data/incrementality: full private restore,
+identity/table/hash equality, durable cache reuse and retained news despite two
+source failures; (2) production delivery: OFF canary recovery, actual 86 hashes +
+16 mobile/desktop cases, with UI/access byte-equivalent to the previous full 368
+V2 / 216 Discover-Quant / dark-light structural review; (3) safety/observability:
+real fail-closed GOOD/gate rollback and OFF acceptance, historical-clock mismatch
+correctly CRITICAL, then actual-generation HEALTHY without hidden gate changes.
+The original 18:50 heading timeout was not reproduced; its old run lacked root-
+cause diagnostics. New failure evidence is retained automatically if it recurs.
+
+`recovery-measured-cost.json` adds this third production run (15m36s) and its
+separately billed Pages jobs (7m19s) to the earlier two. Mean source job **16m45s**;
+180 monthly refreshes project approximately **4,454 active / 5,040 rounded job
+minutes** for these mixed samples. This includes parent wait plus dispatched
+Pages plus read-only health; it excludes unrelated market workflows, initial
+engineering, incident recovery and full structural QA. It is not a measurement
+of all 105 sources being due together or a complete queue/latency distribution.
+Public standard-Linux compute has no incremental minute charge; account-wide
+artifact/billing remains unverified. R2/paid-data cost assumptions above remain
+unchanged. There is no new cadence increase or per-visitor processing.
