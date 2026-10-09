@@ -1,6 +1,6 @@
 # PR 544: Merge-Prüfung und Betrieb nach Freigabe
 
-**Kein Merge, kein Brevo-Import und kein E-Mail-Versand ausgeführt.** Der PR ist technisch vorbereitet; der rote allgemeine Core-Check bleibt ein offener, belegter Baselineblocker. Der Check wurde weder umgangen noch abgeschwächt. Persönliche Namen, Kontaktadressen und private Datei-/Downloadreferenzen gehören nicht in diesen öffentlichen Bericht.
+**Historischer Prüfstand vor der Owner-Freigabe.** Der tatsächliche Stand nach dem Merge steht in [LIVE-STATUS.md](LIVE-STATUS.md). Zum Zeitpunkt dieser Prüfung war kein Merge, Brevo-Import oder E-Mail-Versand ausgeführt. Der PR ist technisch vorbereitet; der rote allgemeine Core-Check bleibt ein offener, belegter Baselineblocker. Der Check wurde weder umgangen noch abgeschwächt. Persönliche Namen, Kontaktadressen und private Datei-/Downloadreferenzen gehören nicht in diesen öffentlichen Bericht.
 
 ## Nachweis des Core-Baselinefehlers
 

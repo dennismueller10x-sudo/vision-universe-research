@@ -153,6 +153,25 @@ class Safety(unittest.TestCase):
         manual_csvs(self.fixture(), self.directory)
         self.assertEqual((self.directory / "newsletter-new-only.csv").stat().st_mode & 0o777, 0o600)
 
+    def test_manual_csv_boolean_format_preserves_groups_and_api_types(self):
+        data = self.fixture()
+        before = copy.deepcopy(data)
+        manual_csvs(data, self.directory)
+        groups = {}
+        for name in ("newsletter-new-only.csv", "tests-new-only.csv", "non-subscribers-new-only.csv"):
+            with (self.directory / name).open(encoding="utf-8", newline="") as source:
+                groups[name] = list(csv.DictReader(source))
+            for row in groups[name]:
+                self.assertIn(row["VU_BUYER"], ("Yes", "No"))
+                self.assertIn(row["VU_INTERNAL_TEST"], ("Yes", "No"))
+        self.assertEqual(len(groups["newsletter-new-only.csv"]), 1)
+        self.assertEqual(groups["newsletter-new-only.csv"][0]["VU_INTERNAL_TEST"], "No")
+        self.assertEqual([r["VU_INTERNAL_TEST"] for r in groups["tests-new-only.csv"]], ["Yes", "Yes"])
+        self.assertEqual({r["VU_BUYER"] for r in groups["tests-new-only.csv"]}, {"Yes", "No"})
+        self.assertEqual(groups["non-subscribers-new-only.csv"][0]["VU_EMAIL_CONSENT"], "unclear")
+        self.assertEqual(data, before)
+        self.assertTrue(all(type(r["attributes"]["VU_BUYER"]) is bool for r in data["records"]))
+
     def test_upsert_preserves_blocks_and_is_idempotent(self):
         data = self.fixture()
         self.fake.contacts["yes@example.invalid"] = {"attributes": {}, "emailBlacklisted": True, "listIds": [1, 77]}
