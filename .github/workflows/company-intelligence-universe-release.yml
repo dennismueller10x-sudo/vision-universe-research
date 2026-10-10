@@ -20,7 +20,10 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Measured full R2 readback plus two broad browser matrices and Pages wait
+    # need separate rollback reserve. This changes only release headroom;
+    # continuous source budgets and cadence remain unchanged.
+    timeout-minutes: 120
     env:
       NODE_PATH: /tmp/universe-qa/node_modules
       PYTHONPATH: scripts
@@ -109,7 +112,7 @@ jobs:
         if: inputs.mode == 'rollback'
         run: node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/universe-release/evidence/rollback-live.json"
       - name: Fail closed to immutable 46 scope on material production failure
-        if: failure() && steps.activation.outcome == 'success'
+        if: (failure() || cancelled()) && steps.activation.outcome == 'success'
         run: |
           node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery"
           gh workflow run pages-release.yml --ref main
