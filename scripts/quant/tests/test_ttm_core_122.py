@@ -196,6 +196,20 @@ class RedTeam122Tests(unittest.TestCase):
         self.assertEqual(before.form, "10-Q")
 
 
+class RedTeam122Round2Tests(unittest.TestCase):
+    """Red Team Runde 2: nur VORWAERTS fortgeschriebene Jahre sind gesperrt (R2-1)."""
+
+    def test_r2_1_backward_comparative_year_of_a_10kt_stays_visible(self):
+        # 8point3: der 10-KT 0001564590-16-012046 (2016-01-28) traegt das Vorjahr 2013-12-30..2014-12-28 als Vergleich;
+        # das erste beobachtete Jahr gilt wegen der Rueckprojektion der Eroeffnungsbilanz nicht als fortgeschrieben.
+        truth = sec_value("EIGHTPOINT3", "EarningsPerShareDiluted", "2013-12-30", "2014-12-28", "2016-02-01", ALL_REPORTS)
+        annual = row(bundle("EIGHTPOINT3", "2016-02-01")["annual"].get("eps_diluted", []), "2014-12-28")
+        if truth is None:
+            self.skipTest("kein FY2014-EPS im Fixture")
+        self.assertIsNotNone(annual)
+        self.assertEqual(annual[3], truth["val"])
+
+
 class GeneralAmendmentPolicyTests(unittest.TestCase):
     """Eine Amendment-Regel fuer alle periodischen und Uebergangsformulare."""
 

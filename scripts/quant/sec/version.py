@@ -278,8 +278,10 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          in den Quell-Digest ein. Ein Wert aus einem Uebergangsbericht kommt
 #          nur in eine Zelle mit deren Zeitraum (vom Kalender erwartet oder von
 #          allen Regelberichten der Zelle einstimmig gemeldet, +-7 Tage) und nur
-#          in ein Geschaeftsjahr mit beobachteten Enden (Red Team: Mastermind
-#          10-QT im fortgeschriebenen Jahr, SpartanNash 16/12/12/12 Wochen).
+#          nie in ein vorwaerts fortgeschriebenes Geschaeftsjahr (Red Team:
+#          Mastermind 10-QT im fortgeschriebenen Jahr, SpartanNash 16/12/12/12
+#          Wochen; Runde 2: Rueckwaerts-Vergleichsjahre bleiben, Regelbelege nur
+#          bis zur eigenen Verfuegbarkeit, Deckblatt nach abgeschlossener Periode).
 NORMALIZATION_LOGIC_VERSION = "1.22.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -312,7 +314,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "25ae29c47dd83c37c213b1e2dedfcca1d5947798b9dce587f252353f9a539a84"
+    "bf97c38f1576d24a4a6fde6dd555b3e560275bce1ad80d7088793d21e9292c5c"
 )
 
 

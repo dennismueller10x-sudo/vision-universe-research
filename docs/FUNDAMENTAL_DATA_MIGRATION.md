@@ -180,7 +180,7 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 - **Holdout v4 bleibt FAIL (dauerhaft).** Die Accuracy-Gates waren sauber (FALSE_AVAILABLE, WRONG_VALUE, WRONG_CONCEPT, WRONG_PERIOD je 0; FALSE_MISSING 11,4 %). Die Spezialschichten hatten zu wenige Fälle, deshalb ist der Lauf formal FAIL. F-TTM-6 wurde außerhalb dieses Holdouts gefunden (Nachbarsuche zu 1.21.0). Keine Neuinterpretation, kein zweiter Lauf.
 - **F-TTM-6 behoben in Kern 1.22.0.**
   - Ursache: Werte kamen nur aus `PERIODIC_FORMS`; Übergangsberichte (10-KT, 10-KT/A, 10-QT, 10-QT/A) speisten nur den Kalender, und die Änderungserkennung sah sie nicht.
-  - Fix: `provider.VALUE_FORMS`, eine Auswahlstelle (`provider.fundamental_facts`), eine Amendment-Regel für alle Formulare (Endung `/A`). Übergangswerte kommen nur mit dem Zeitraum ihrer Zelle und nur in Geschäftsjahre mit beobachteten Enden.
+  - Fix: `provider.VALUE_FORMS`, eine Auswahlstelle (`provider.fundamental_facts`), eine Amendment-Regel für alle Formulare (Endung `/A`). Übergangswerte kommen nur mit dem Zeitraum ihrer Zelle und nie in ein vorwärts fortgeschriebenes Geschäftsjahr.
   - Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_122.py` (Orbital ATK, 8point3, Dthera, Stanley Black & Decker, Mastermind, SpartanNash).
   - Nachbarsuche über 375 Emittenten mit Übergangsberichten: `artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json`. Red Team: `artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json`.
 - **Neue, vorbestehende Defekte (dokumentiert, nicht behoben, je eigener PR):**

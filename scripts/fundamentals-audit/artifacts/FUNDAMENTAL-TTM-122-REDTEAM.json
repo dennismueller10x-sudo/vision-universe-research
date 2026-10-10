@@ -79,35 +79,85 @@
     "keine Duplikate (fact_id mit Accession; eine aufgeloeste Beobachtung je Zelle)",
     "Dauern >= 13 Monate als UNEXPECTED_DURATION verworfen"
    ]
+  },
+  {
+   "round": 2,
+   "commit": "a4ebd5d",
+   "verdict": "READY_FOR_FREEZE (kein neues HIGH/CRITICAL; H-1 geschlossen)",
+   "findings": [
+    {
+     "id": "R2-1",
+     "severity": "MEDIUM",
+     "new": "durch den H-1-Fix",
+     "title": "erstes beobachtetes Jahr und Rueckwaerts-Vergleichsjahre galten als fortgeschrieben (Rueckprojektion der Eroeffnungsbilanz)",
+     "example": "8point3 FY2014 aus dem 10-KT 2016-01-28 erst mit dem 10-K 2017 sichtbar; East Stone 0001760683 10-KT/A-Korrektur verworfen",
+     "status": "FIXED",
+     "fix": "nur VORWAERTS fortgeschriebene Jahre (Ende nach dem letzten beobachteten Jahresende) gesperrt; Test RedTeam122Round2Tests (vor dem Fix rot)"
+    },
+    {
+     "id": "R2-2",
+     "severity": "LOW",
+     "new": "durch M-1",
+     "title": "Einstimmigkeit stuetzte sich auf einen spaeter eingereichten Regelbericht",
+     "example": "MAG MILE 0001879293 FY2022 Q4 (10-QT 2024-01-02, 10-Q 2024-02-12)",
+     "status": "FIXED",
+     "fix": "nur bis zur Verfuegbarkeit des Uebergangsberichts verfuegbare Regelberichte zaehlen (point in time)"
+    },
+    {
+     "id": "R2-3",
+     "severity": "LOW",
+     "new": true,
+     "title": "Deckblattregel pruefte das Jahr des Deckblattdatums statt der Zelle der letzten abgeschlossenen Periode",
+     "example": "Regenerex 0001357878 10-KT 2026: aktuelle Aktienzahl verworfen",
+     "status": "FIXED",
+     "fix": "Pruefung an der letzten abgeschlossenen Periode"
+    }
+   ],
+   "confirmed": [
+    "H-1 geschlossen (kein Uebergangswert in fortgeschriebenem Jahr; Mastermind TTM 2024-03/06/12 nicht verfuegbar)",
+    "verkuerzte gelabelte Jahre zugelassen (8point3, Best Buy, Greif, Esterline, Jefferies, Leidos, Pandora, Infor, Forest City)",
+    "Orbital ATK Q1 FY2015 2,50; M-1-Faelle SpartanNash, Bristow, T3, Republic, Oakridge u. a.",
+    "48 nur ueber Einstimmigkeit zugelassene Gruppen tragen genau den Regelzeitraum",
+    "M-2 Dawson unveraendert (offen)"
+   ]
   }
  ],
  "manuallyExaminedCiks": [
-  "0001088638",
-  "0001173281",
-  "0000799165",
-  "0001080056",
-  "0001571398",
-  "0001439288",
-  "0000883943",
-  "0000866121",
-  "0000877422",
+  "0000003146",
+  "0000033619",
+  "0000083402",
   "0000093859",
-  "0001525221",
-  "0001787518",
-  "0001304464",
+  "0000104819",
+  "0000799165",
   "0000810332",
   "0000830483",
+  "0000866121",
+  "0000868725",
+  "0000877422",
+  "0000883943",
+  "0001011290",
+  "0001080056",
+  "0001088638",
+  "0001173281",
+  "0001304464",
+  "0001309082",
   "0001343465",
+  "0001357878",
+  "0001397795",
+  "0001439288",
+  "0001525221",
+  "0001551906",
+  "0001571398",
   "0001584754",
   "0001590496",
   "0001603345",
-  "0001011290",
-  "0001551906",
   "0001628468",
-  "0001309082",
-  "0000033619",
   "0001635581",
-  "0001397795",
-  "0000083402"
- ]
+  "0001639691",
+  "0001641631",
+  "0001760683",
+  "0001787518",
+  "0001879293"
+ ],
+ "finalVerdict": "kein CRITICAL/HIGH offen; offen dokumentiert: M-2 (MEDIUM, vorbestehende Klasse), F-TTM-7, F-TTM-8"
 }

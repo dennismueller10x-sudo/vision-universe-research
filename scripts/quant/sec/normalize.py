@@ -20,7 +20,7 @@ from datetime import timedelta
 
 from pathlib import Path
 
-from .fiscal import FiscalCalendar
+from .fiscal import FY_BOUNDARY_TOLERANCE_DAYS, FiscalCalendar
 from .provider import TRANSITION_FORMS
 from .model import (
     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM,
@@ -57,15 +57,17 @@ AMBIGUOUS_PERIOD_DAYS = 7
 # fiscal-year basis (Dthera 10-QT 2016: nine months Jan-Sep 2015 next to the new
 # year's Jul-Mar); under 10-K semantics they landed in the new year's cells and,
 # as the newest filing, replaced the right period there. Red Team 1.22.0:
-#  - the calendar's expectation is evidence only in a fiscal year whose two ends
-#    are observed. A 10-QT-only transition quarter (Mastermind Oct-Dec 2023)
-#    otherwise matched the old-basis year the calendar extrapolated and filled
-#    its Q1 slot, so a TTM ran over the transition period (H-1). Cover-date
-#    facts of a transition report follow the same rule.
+#  - nothing in a fiscal year the calendar projected FORWARD past its last
+#    observed year end. A 10-QT-only transition quarter (Mastermind Oct-Dec
+#    2023) otherwise matched the old-basis year the calendar extrapolated and
+#    filled its Q1 slot, so a TTM ran over the transition period (H-1).
+#    Backward comparatives stay (8point3 FY2014). A cover-date fact is judged
+#    by the cell it describes, the last closed period (Red Team R2-3).
 #  - the period the regular reports of the cell unanimously give is evidence
 #    too: an equal split of the year misses 16/12/12/12-week quarters
-#    (SpartanNash), and the correction was dropped (M-1). A cell whose regular
-#    reports disagree on the period (F-TTM-7, Sun Pacific 10-Q 2016) is none.
+#    (SpartanNash), and the correction was dropped (M-1). Only regular reports
+#    available by the transition report count (point in time, R2-2); a cell
+#    whose regular reports disagree on the period (F-TTM-7) is none.
 TRANSITION_PERIOD_TOLERANCE_DAYS = 7
 
 # Which concept is a filing's revenue line when us-gaap:Revenues is smaller
@@ -350,22 +352,39 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     for (_, fiscal_year, fiscal_period, _), entries in candidates.items():
         for _, fact in entries:
             if not (fact.taxonomy == "dei" and fact.start is None):
-                regular_periods[(fiscal_year, fiscal_period, fact.start is None)].add((fact.start, fact.end))
+                regular_periods[(fiscal_year, fiscal_period, fact.start is None)].add(
+                    (fact.start, fact.end, str(fact.available_from or fact.filed)))
 
     def unanimous(periods):
         periods = list(periods)
         return bool(periods) and all(_same_period(s, e, periods[0][0], periods[0][1]) for s, e in periods)
 
+    last_observed_end = max(calendar.fy_ends) if calendar.fy_ends else None
+
+    def projected_forward(day):
+        _, fy_end = calendar._boundaries_covering(day)
+        return fy_end is None or last_observed_end is None or (
+            (fy_end - last_observed_end).days > FY_BOUNDARY_TOLERANCE_DAYS)
+
+    def closed_period_end(cover_date):
+        previous, fy_end = calendar._boundaries_covering(cover_date)
+        if previous is None or fy_end is None:
+            return None
+        day = _parse(cover_date)
+        closed = [end for end in calendar.quarter_ends(previous, fy_end) if end <= day]
+        return closed[-1] if closed else previous
+
     for metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date in deferred:
-        previous, fy_end = calendar._boundaries_covering(fact.end)
-        observed_year = (previous is not None and fy_end is not None
-                         and not calendar._is_extrapolated_fy_end(previous)
-                         and not calendar._is_extrapolated_fy_end(fy_end))
         if is_cover_date:
-            fits = observed_year
+            closed = closed_period_end(fact.end)
+            fits = closed is not None and not projected_forward(closed)
         else:
+            observed_year = not projected_forward(fact.end)
             expected = _expected_period(calendar, fact.end, fiscal_period)
-            regular = regular_periods.get((fiscal_year, fiscal_period, fact.start is None), ())
+            known = str(fact.available_from or fact.filed)
+            regular = [(s, e) for s, e, available in
+                       regular_periods.get((fiscal_year, fiscal_period, fact.start is None), ())
+                       if available[:10] <= known[:10]]
             fits = observed_year and (
                 (expected is not None and _same_period(fact.start, fact.end, expected[0] if fact.start else None,
                                                        expected[1]))
