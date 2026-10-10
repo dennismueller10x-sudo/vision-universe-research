@@ -1,0 +1,323 @@
+{
+ "schema": "vu-minervini-rule-fidelity-case-classes-1.0.0",
+ "dataBasis": "SEPA auf Kern 1.23.0 (Erstmeldung ueber alle Tags); Universum/Trend/VCP aus dem eingefrorenen Replay",
+ "main": 15,
+ "detected": 3,
+ "rejected": 12,
+ "classes": {
+  "PRE_PROFIT": 7,
+  "DATA_UNIVERSE": 3,
+  "PRACTICE_BEYOND_RULES": 2
+ },
+ "vcpShortBaseCases": [
+  "MTLS",
+  "TNDM",
+  "RVNC",
+  "RICK",
+  "DECK"
+ ],
+ "soleBlockerCases": [
+  {
+   "ticker": "ZGNX",
+   "layer": "SEPA",
+   "detail": "SEPA_BASE_NOT_POSITIVE"
+  },
+  {
+   "ticker": "ROKU",
+   "layer": "SEPA",
+   "detail": "SEPA_BASE_NOT_POSITIVE"
+  },
+  {
+   "ticker": "ACAD",
+   "layer": "SEPA",
+   "detail": "SEPA_BASE_NOT_POSITIVE"
+  },
+  {
+   "ticker": "AEM",
+   "layer": "SEPA",
+   "detail": "SEPA_DATA_MISSING"
+  },
+  {
+   "ticker": "REPL",
+   "layer": "SEPA",
+   "detail": "SEPA_BASE_NOT_POSITIVE"
+  },
+  {
+   "ticker": "SG",
+   "layer": "SEPA",
+   "detail": "SEPA_BASE_NOT_POSITIVE"
+  }
+ ],
+ "correctedByRF1": [],
+ "cases": [
+  {
+   "id": "GT-001",
+   "ticker": "ZGNX",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-10",
+    "detail": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-002",
+   "ticker": "MTLS",
+   "decision": "REJECTED",
+   "mainClass": "DATA_UNIVERSE",
+   "vcpShortBase": true,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "VCP",
+     "rule": "MR-VCP-01/08",
+     "detail": "BASE_TOO_SHORT (9)"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-00",
+     "detail": "SEPA_DATA_MISSING"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-003",
+   "ticker": "ROKU",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-10",
+    "detail": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-004",
+   "ticker": "ACAD",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-10",
+    "detail": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-005",
+   "ticker": "AMD",
+   "decision": "DETECTED",
+   "blockers": []
+  },
+  {
+   "id": "GT-007",
+   "ticker": "TNDM",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": true,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "VCP",
+     "rule": "MR-VCP-01/08",
+     "detail": "BASE_TOO_SHORT (7)"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-008",
+   "ticker": "AMD",
+   "decision": "DETECTED",
+   "blockers": []
+  },
+  {
+   "id": "GT-009",
+   "ticker": "AEM",
+   "decision": "REJECTED",
+   "mainClass": "DATA_UNIVERSE",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-00",
+    "detail": "SEPA_DATA_MISSING"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-00",
+     "detail": "SEPA_DATA_MISSING"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-010",
+   "ticker": "RVNC",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": true,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "VCP",
+     "rule": "MR-VCP-01/08",
+     "detail": "BASE_TOO_SHORT (9)"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-011",
+   "ticker": "AMZN",
+   "decision": "DETECTED",
+   "blockers": []
+  },
+  {
+   "id": "GT-012",
+   "ticker": "REPL",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-10",
+    "detail": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-014",
+   "ticker": "DKL",
+   "decision": "REJECTED",
+   "mainClass": "DATA_UNIVERSE",
+   "vcpShortBase": false,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "UNIVERSE",
+     "rule": "MR-UNI-01",
+     "detail": "Dollarumsatz"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-00",
+     "detail": "SEPA_DATA_MISSING"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-016",
+   "ticker": "RICK",
+   "decision": "REJECTED",
+   "mainClass": "PRACTICE_BEYOND_RULES",
+   "vcpShortBase": true,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "VCP",
+     "rule": "MR-VCP-01/08",
+     "detail": "BASE_TOO_SHORT (13)"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-04",
+     "detail": "SEPA_REVENUE_NOT_GROWING"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-018",
+   "ticker": "DECK",
+   "decision": "REJECTED",
+   "mainClass": "PRACTICE_BEYOND_RULES",
+   "vcpShortBase": true,
+   "soleBlocker": null,
+   "blockers": [
+    {
+     "layer": "TREND",
+     "rule": "MR-TT-08",
+     "detail": "RS 65"
+    },
+    {
+     "layer": "VCP",
+     "rule": "MR-VCP-01/08",
+     "detail": "BASE_TOO_SHORT (3)"
+    },
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-02",
+     "detail": "SEPA_NO_ACCELERATION"
+    }
+   ],
+   "correctedByRF1": false
+  },
+  {
+   "id": "GT-026",
+   "ticker": "SG",
+   "decision": "REJECTED",
+   "mainClass": "PRE_PROFIT",
+   "vcpShortBase": false,
+   "soleBlocker": {
+    "layer": "SEPA",
+    "rule": "MR-SEPA-10",
+    "detail": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "blockers": [
+    {
+     "layer": "SEPA",
+     "rule": "MR-SEPA-10",
+     "detail": "SEPA_BASE_NOT_POSITIVE"
+    }
+   ],
+   "correctedByRF1": false
+  }
+ ]
+}

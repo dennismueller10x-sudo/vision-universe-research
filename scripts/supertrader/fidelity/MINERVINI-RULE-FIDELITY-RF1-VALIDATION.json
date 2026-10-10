@@ -1,0 +1,3494 @@
+{
+ "schema": "vu-minervini-rule-fidelity-rf1-validation-1.0.0",
+ "version": "minervini-adaptation-1.2.0-rf1",
+ "preregistered": "scripts/supertrader/fidelity/MINERVINI-RULE-FIDELITY-PREREG.json",
+ "cases": 38,
+ "evaluated": 35,
+ "sepaFlippedV1": [
+  "GT-006",
+  "GT-020",
+  "GT-031"
+ ],
+ "sepaFlippedV2": [
+  "GT-006",
+  "GT-020",
+  "GT-031"
+ ],
+ "coreSepaFlippedV1": [
+  "GT-006",
+  "GT-020",
+  "GT-031"
+ ],
+ "coreSepaFlippedV2": [
+  "GT-006",
+  "GT-020",
+  "GT-031"
+ ],
+ "windowTolerance": 12,
+ "windowDifferingCasesP9": [
+  {
+   "id": "GT-006",
+   "ticker": "DXCM",
+   "days": 25
+  },
+  {
+   "id": "GT-020",
+   "ticker": "MU",
+   "days": 25
+  },
+  {
+   "id": "GT-031",
+   "ticker": "AVGO",
+   "days": 25
+  }
+ ],
+ "windowDifferingCasesCore": [
+  {
+   "id": "GT-006",
+   "ticker": "DXCM",
+   "days": 25
+  },
+  {
+   "id": "GT-020",
+   "ticker": "MU",
+   "days": 25
+  },
+  {
+   "id": "GT-031",
+   "ticker": "AVGO",
+   "days": 25
+  }
+ ],
+ "predictionChecks": {
+  "total": 33,
+  "passed": 33,
+  "failed": []
+ },
+ "checks": [
+  {
+   "name": "GT-001 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "GT-003 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "GT-004 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "GT-007 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-010 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-012 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-026 bleibt abgelehnt (Loss->Loss)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "GT-020 SEPA wechselt von Ablehnung auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2024-02-29"
+    },
+    "v2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2024-02-29"
+    }
+   }
+  },
+  {
+   "name": "GT-006 SEPA wechselt von Ablehnung auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2020-03-31"
+    },
+    "v2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2020-03-31"
+    }
+   }
+  },
+  {
+   "name": "GT-031 SEPA wechselt von Ablehnung auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2025-08-03"
+    },
+    "v2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2025-08-03"
+    }
+   }
+  },
+  {
+   "name": "GT-031 bleibt trotz SEPA-Wechsel wegen VCP abgelehnt",
+   "ok": true,
+   "detail": {
+    "vcp": "BASE_TOO_SHORT"
+   }
+  },
+  {
+   "name": "GT-009 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-019 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-024 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_STALE",
+    "v1": "SEPA_STALE"
+   }
+  },
+  {
+   "name": "GT-002 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_DATA_MISSING",
+    "v1": "SEPA_DATA_MISSING"
+   }
+  },
+  {
+   "name": "GT-014 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_DATA_MISSING",
+    "v1": "SEPA_DATA_MISSING"
+   }
+  },
+  {
+   "name": "GT-035 unveraendert",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "alle Faelle ohne MR-SEPA-10-Ergebnis haben ein bitgleiches Ergebnis",
+   "ok": true,
+   "detail": {
+    "n": 27
+   }
+  },
+  {
+   "name": "MAIN-Faelle mit setupProxy: 1.1.0 und RF1 gleich",
+   "ok": true,
+   "detail": {
+    "mainN": 15,
+    "withSetup11": 2,
+    "withSetupV1": 2
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-001 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-003 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-004 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-007 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-010 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-012 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-026 bleibt SEPA_BASE_NOT_POSITIVE (Loss->Loss, Erstmeldung ueber alle Tags)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "SEPA_BASE_NOT_POSITIVE",
+    "v2": "SEPA_BASE_NOT_POSITIVE"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-020 SEPA wechselt auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "T-A"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-006 SEPA wechselt auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "T-A"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] GT-031 SEPA wechselt auf Pass (V1 und V2)",
+   "ok": true,
+   "detail": {
+    "sepa11": "SEPA_BASE_NOT_POSITIVE",
+    "v1": "T-A"
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] kein Fall ausserhalb von MR-SEPA-10 aendert sich",
+   "ok": true,
+   "detail": {
+    "n": 24
+   }
+  },
+  {
+   "name": "[Kern 1.23.0] genau MU, DXCM, AVGO wechseln",
+   "ok": true,
+   "detail": [
+    "GT-006",
+    "GT-020",
+    "GT-031"
+   ]
+  },
+  {
+   "name": "MAIN: kein Tag im +-12-Tage-Fenster mit anderem SEPA-Ergebnis (P9-Daten)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "MAIN: kein Tag im +-12-Tage-Fenster mit anderem SEPA-Ergebnis (Kern 1.23.0)",
+   "ok": true,
+   "detail": []
+  }
+ ],
+ "note": "Entscheidung/Recall der MAIN-Faelle setzt private Kurse voraus (Signal im Zeitfenster); hier gilt: SEPA-Schicht neu, Universum/Trend/VCP an t* aus dem eingefrorenen Replay.",
+ "rows": [
+  {
+   "id": "GT-001",
+   "ticker": "ZGNX",
+   "group": "MAIN",
+   "exec": "2018-06-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 66,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2018-03-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2018-03-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2018-03-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2018-03-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2018-03-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2018-03-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-002",
+   "ticker": "MTLS",
+   "group": "MAIN",
+   "exec": "2019-01-08",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 9,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-003",
+   "ticker": "ROKU",
+   "group": "MAIN",
+   "exec": "2019-07-16",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 16,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-03-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-03-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-03-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-03-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-03-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-03-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-004",
+   "ticker": "ACAD",
+   "group": "MAIN",
+   "exec": "2019-10-21",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 24,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-005",
+   "ticker": "AMD",
+   "group": "MAIN",
+   "exec": "2020-06-09",
+   "frozenDecision": "DETECTED",
+   "frozenSetupAtTStar": true,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 76,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": true,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-006",
+   "ticker": "DXCM",
+   "group": "ENTRY_TYPE_NOT_MODELLED",
+   "exec": "2020-06-26",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 27,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2020-03-31"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2020-03-31"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2020-03-31"
+   },
+   "sepaFlippedV1": true,
+   "sepaFlippedV2": true,
+   "resultChangedV1": true,
+   "setupProxy11": false,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-03-31"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2020-03-31"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2020-03-31"
+    },
+    "flippedV1": true,
+    "flippedV2": true,
+    "changedV1": true
+   },
+   "windowDiffs": {
+    "p9": [
+     {
+      "day": "2020-06-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ],
+    "core": [
+     {
+      "day": "2020-06-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-06-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2020-07-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GT-007",
+   "ticker": "TNDM",
+   "group": "MAIN",
+   "exec": "2020-06-30",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 7,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-03-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-03-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-03-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-008",
+   "ticker": "AMD",
+   "group": "MAIN",
+   "exec": "2020-07-22",
+   "frozenDecision": "DETECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "STOP_TOO_WIDE",
+   "vcpBaseLength": 106,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-03-28"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-03-28"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-009",
+   "ticker": "AEM",
+   "group": "MAIN",
+   "exec": "2020-09-14",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 25,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2014-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2014-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2014-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-010",
+   "ticker": "RVNC",
+   "group": "MAIN",
+   "exec": "2020-09-15",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 9,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-12-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-011",
+   "ticker": "AMZN",
+   "group": "MAIN",
+   "exec": "2020-10-08",
+   "frozenDecision": "DETECTED",
+   "frozenSetupAtTStar": true,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 24,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-06-30"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-06-30"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2020-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": true,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-012",
+   "ticker": "REPL",
+   "group": "MAIN",
+   "exec": "2020-10-14",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 30,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2020-03-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2020-03-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2020-03-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2020-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-013",
+   "ticker": "PENN",
+   "group": "WATCHLIST",
+   "exec": "2020-12-08",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 55,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_REVENUE_NOT_GROWING",
+    "rule": "MR-SEPA-04",
+    "branch": null,
+    "quarterEnd": "2020-09-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_REVENUE_NOT_GROWING",
+    "rule": "MR-SEPA-04",
+    "branch": null,
+    "quarterEnd": "2020-09-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_REVENUE_NOT_GROWING",
+    "rule": "MR-SEPA-04",
+    "branch": null,
+    "quarterEnd": "2020-09-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-09-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-09-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-09-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-014",
+   "ticker": "DKL",
+   "group": "MAIN",
+   "exec": "2020-12-29",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": null,
+   "vcpBaseLength": 94,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-016",
+   "ticker": "RICK",
+   "group": "MAIN",
+   "exec": "2021-04-05",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 13,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-09-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-09-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2019-09-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_REVENUE_NOT_GROWING",
+     "rule": "MR-SEPA-04",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-018",
+   "ticker": "DECK",
+   "group": "MAIN",
+   "exec": "2021-04-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 3,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-12-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-12-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-12-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2020-12-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-019",
+   "ticker": "GDDY",
+   "group": "SENSITIVITY",
+   "exec": "2024-02-05",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 9,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2016-12-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2016-12-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2016-12-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2016-12-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2016-12-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2016-12-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-020",
+   "ticker": "MU",
+   "group": "SENSITIVITY",
+   "exec": "2024-04-26",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 15,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2024-02-29"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2024-02-29"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2024-02-29"
+   },
+   "sepaFlippedV1": true,
+   "sepaFlippedV2": true,
+   "resultChangedV1": true,
+   "setupProxy11": false,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2024-02-29"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2024-02-29"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2024-02-29"
+    },
+    "flippedV1": true,
+    "flippedV2": true,
+    "changedV1": true
+   },
+   "windowDiffs": {
+    "p9": [
+     {
+      "day": "2024-04-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ],
+    "core": [
+     {
+      "day": "2024-04-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-04-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2024-05-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GT-021",
+   "ticker": "AXON",
+   "group": "SENSITIVITY",
+   "exec": "2024-09-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 14,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-022",
+   "ticker": "APP",
+   "group": "SENSITIVITY",
+   "exec": "2024-09-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 0,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_ACCEL_NOT_DEMONSTRABLE",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-023",
+   "ticker": "LMB",
+   "group": "SENSITIVITY",
+   "exec": "2024-09-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 0,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-024",
+   "ticker": "NMM",
+   "group": "SENSITIVITY",
+   "exec": "2024-09-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "CONTRACTION_COUNT",
+   "vcpBaseLength": 15,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2021-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2021-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_STALE",
+    "rule": "MR-PIT-01",
+    "branch": null,
+    "quarterEnd": "2021-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-025",
+   "ticker": "DVA",
+   "group": "SENSITIVITY",
+   "exec": "2024-09-12",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 11,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-026",
+   "ticker": "SG",
+   "group": "MAIN",
+   "exec": "2024-10-08",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 30,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2024-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2024-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-027",
+   "ticker": "RNA",
+   "group": "MAIN",
+   "skipped": "SECURITY_MAPPING_NO_COVERING_SEGMENT"
+  },
+  {
+   "id": "GT-028",
+   "ticker": "GTHX",
+   "group": "SENSITIVITY",
+   "skipped": "HISTORY_TOO_SHORT"
+  },
+  {
+   "id": "GT-029",
+   "ticker": "NLOK",
+   "group": "SENSITIVITY",
+   "exec": "2020-08-01",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": null,
+   "vcpBaseLength": 132,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-04-03"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-04-03"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2020-04-03"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2020-01-03"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2020-01-03"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_STALE",
+     "rule": "MR-PIT-01",
+     "branch": null,
+     "quarterEnd": "2020-01-03"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-030",
+   "ticker": "TSM",
+   "group": "SENSITIVITY",
+   "exec": "2025-11-29",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 30,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING",
+    "rule": "MR-SEPA-00",
+    "branch": null,
+    "quarterEnd": null
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_DATA_MISSING",
+     "rule": "MR-SEPA-00",
+     "branch": null,
+     "quarterEnd": null
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-031",
+   "ticker": "AVGO",
+   "group": "SENSITIVITY",
+   "exec": "2025-11-26",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 0,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2025-08-03"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2025-08-03"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": "T-A",
+    "quarterEnd": "2025-08-03"
+   },
+   "sepaFlippedV1": true,
+   "sepaFlippedV2": true,
+   "resultChangedV1": true,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2025-08-03"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2025-08-03"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": "T-A",
+     "quarterEnd": "2025-08-03"
+    },
+    "flippedV1": true,
+    "flippedV2": true,
+    "changedV1": true
+   },
+   "windowDiffs": {
+    "p9": [
+     {
+      "day": "2025-11-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ],
+    "core": [
+     {
+      "day": "2025-11-14",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-15",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-16",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-17",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-18",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-19",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-20",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-21",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-22",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-23",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-24",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-25",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-26",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-27",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-28",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-29",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-11-30",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-01",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-02",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-03",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-04",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-05",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-06",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-07",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     },
+     {
+      "day": "2025-12-08",
+      "sepa11": "SEPA_BASE_NOT_POSITIVE",
+      "rf1": "OK"
+     }
+    ]
+   }
+  },
+  {
+   "id": "GT-032",
+   "ticker": "NEM",
+   "group": "SENSITIVITY",
+   "exec": "2025-12-03",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 32,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-033",
+   "ticker": "ATI",
+   "group": "SENSITIVITY",
+   "exec": "2025-12-02",
+   "frozenDecision": "DETECTED",
+   "frozenSetupAtTStar": true,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 23,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-28"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-28"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-28"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": true,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-28"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-28"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-28"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-034",
+   "ticker": "F",
+   "group": "SENSITIVITY",
+   "exec": "2025-12-03",
+   "frozenDecision": "DETECTED",
+   "frozenSetupAtTStar": true,
+   "upstreamLayersPass": true,
+   "vcpReason": null,
+   "vcpBaseLength": 26,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": true,
+   "setupProxyV1": true,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-035",
+   "ticker": "ROIV",
+   "group": "SENSITIVITY",
+   "exec": "2025-11-26",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 11,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE",
+    "rule": "MR-SEPA-10",
+    "branch": null,
+    "quarterEnd": "2025-09-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_BASE_NOT_POSITIVE",
+     "rule": "MR-SEPA-10",
+     "branch": null,
+     "quarterEnd": "2025-09-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-036",
+   "ticker": "INMD",
+   "group": "WATCHLIST",
+   "skipped": "HISTORY_TOO_SHORT"
+  },
+  {
+   "id": "GT-037",
+   "ticker": "NMIH",
+   "group": "WATCHLIST",
+   "exec": "2019-10-22",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "CONTRACTION_COUNT",
+   "vcpBaseLength": 93,
+   "sepa11": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V1": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V2": {
+    "ok": true,
+    "reason": null,
+    "rule": null,
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V1": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V2": {
+     "ok": true,
+     "reason": null,
+     "rule": null,
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-038",
+   "ticker": "VEC",
+   "group": "WATCHLIST",
+   "exec": "2019-10-22",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": null,
+   "vcpBaseLength": 74,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-28"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-28"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-28"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-28"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-28"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-28"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-039",
+   "ticker": "CPRT",
+   "group": "WATCHLIST",
+   "exec": "2019-10-22",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 0,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2019-07-31"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2019-07-31"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION",
+    "rule": "MR-SEPA-02",
+    "branch": null,
+    "quarterEnd": "2019-07-31"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2019-07-31"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2019-07-31"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_NO_ACCELERATION",
+     "rule": "MR-SEPA-02",
+     "branch": null,
+     "quarterEnd": "2019-07-31"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  },
+  {
+   "id": "GT-040",
+   "ticker": "RBA",
+   "group": "WATCHLIST",
+   "exec": "2019-10-22",
+   "frozenDecision": "REJECTED",
+   "frozenSetupAtTStar": false,
+   "upstreamLayersPass": false,
+   "vcpReason": "BASE_TOO_SHORT",
+   "vcpBaseLength": 0,
+   "sepa11": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V1": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "rf1V2": {
+    "ok": false,
+    "reason": "SEPA_EPS_GROWTH_LOW",
+    "rule": "MR-SEPA-01",
+    "branch": null,
+    "quarterEnd": "2019-06-30"
+   },
+   "sepaFlippedV1": false,
+   "sepaFlippedV2": false,
+   "resultChangedV1": false,
+   "setupProxy11": false,
+   "setupProxyV1": false,
+   "core": {
+    "sepa11": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V1": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "rf1V2": {
+     "ok": false,
+     "reason": "SEPA_EPS_GROWTH_LOW",
+     "rule": "MR-SEPA-01",
+     "branch": null,
+     "quarterEnd": "2019-06-30"
+    },
+    "flippedV1": false,
+    "flippedV2": false,
+    "changedV1": false
+   },
+   "windowDiffs": {
+    "p9": [],
+    "core": []
+   }
+  }
+ ]
+}
