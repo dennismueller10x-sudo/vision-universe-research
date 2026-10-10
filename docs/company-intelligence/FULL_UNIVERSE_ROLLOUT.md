@@ -56,12 +56,15 @@ Management content: 481 issuers. Raw ledger: 20,555 news records / 2,628 issuers
 raw counts are not approved consumer coverage. Source-policy projection excludes
 2,981 news, 275 calls, 25 events and 4,642 materials.
 
-Identity-inventory profile states: 45 approved German; 3,630 without approved
-German copy; 2,397 without safe profile source; 7 stale/weak. English/raw profiles
+Private-payload profile states: 45 approved German; 3,630 without approved
+German copy; 1,438 without safe profile source; 7 stale/weak. The wider identity
+inventory adds 959 source-less profile identities. English/raw profiles
 are hidden; no bulk AI translation. Financial states: 3,697 current, 1,014 stale,
 141 with no supported display KPI, 15 too stale, 1,189 no data, 23 not evaluated.
-Inventory states include identity-only issuers; module counts above are eligible
-only. Unsupported share-count-only rows never become a financial card.
+Financial state totals above include identity-only issuers. Restricted to private
+payloads: 3,697 current, 1,014 stale, 141 without supported display KPI, 15 too
+stale, 251 without supported data and 2 unresolved/not evaluated. Module counts
+above are eligible only. Unsupported share-count-only rows never become a financial card.
 
 Registered sources: 5,384. Active approved: 5,355 (2,138 feeds, 1,342 event
 sources, 1,875 material sources). Source health: 5,158 healthy, 174 temporary
