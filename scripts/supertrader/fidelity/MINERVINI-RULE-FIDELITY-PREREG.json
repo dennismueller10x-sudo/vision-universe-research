@@ -1,0 +1,180 @@
+{
+ "schema": "vu-minervini-rule-fidelity-prereg-1.0.0",
+ "createdAt": "2026-10-10T14:27Z",
+ "status": "PREREGISTERED_BEFORE_ANY_RULE_CHANGE_EVALUATION",
+ "branch": "claude/minervini-rule-fidelity",
+ "baseBranch": "claude/minervini-ground-truth (393e275e057)",
+ "purpose": "Klaeren, ob der MAIN-Recall von 3/15 an falsch formalisierten Minervini-Regeln liegt oder an diskretionaeren/nicht reproduzierbaren Teilen seiner Methode. Nur quellenbelegte Korrekturen; keine Schwellenaenderung wegen des Recalls.",
+ "constraints": [
+  "Keine Live-Aenderung (Live bleibt MINERVINI_VCP 2.0.0), kein Merge, keine Performanceoptimierung",
+  "Eingefrorene Ground-Truth-Faelle ausschliesslich als Validierung, nie zur Parameterwahl",
+  "Jede Korrektur: Quelle zuerst, schriftliche Hypothese, erwartete Fallwirkung VOR dem Test, separate Version, Regression, adversarialer Opus-Review",
+  "Der Recall ist KEIN Erfolgskriterium einer Korrektur; er wird nur berichtet"
+ ],
+ "validationSet": {
+  "cases": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json",
+  "casesSha256": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+  "frozenResults": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-RESULTS.json",
+  "frozenResultsSha256": "fe55c86ff5f5df2ab5d5655982e05d95f42d1cfe6ca026baa081b4e508577557",
+  "engineFrozen": "minervini-adaptation-1.1.0 (MINERVINI-FIDELITY-FREEZE-1.1.0.json)",
+  "use": "VALIDATION_ONLY",
+  "mainEvaluable": 15
+ },
+ "baseline": {
+  "mainRecall": "3/15",
+  "wilson95": [
+   0.07,
+   0.452
+  ],
+  "mainAOwnEntry": "2/13",
+  "wilson95MainA": [
+   0.043,
+   0.422
+  ],
+  "note": "n=15: jede Aussage ueber Recall hat ein Vertrauensintervall von rund +-20 Prozentpunkten"
+ },
+ "sources": "scripts/supertrader/fidelity/MINERVINI-RULE-FIDELITY-SOURCES.json",
+ "sourceTierRule": "Eine Regel gilt nur als quellenbelegt, wenn ein woertliches Zitat in der Quellenliste steht. BOOK_HIGHLIGHT und INTERVIEW_FIRST_PERSON zaehlen als MEDIUM-HIGH, NOTES_VERBATIM_STYLE ohne unabhaengige Bestaetigung als MEDIUM. Keine Zahl ohne Zitat.",
+ "versions": {
+  "research": "minervini-adaptation-1.2.0-rf1",
+  "neverLive": true,
+  "unchangedFrom": "1.1.0 (alle Regeln ausser den unten genannten)",
+  "frozenFilesTouched": []
+ },
+ "hypotheses": [
+  {
+   "id": "H1",
+   "rule": "MR-SEPA-10",
+   "claim": "Der pauschale Ausschluss bei Vorjahres-EPS <= 0 ist ein Formalisierungsfehler: Das Buch erlaubt Turnarounds ausdruecklich (Q-TURN-A, Q-TURN-B), und das Regelbuch beschreibt die Klausel selbst als zulaessig.",
+   "correction": {
+    "trigger": "Vorjahresquartals-EPS <= 0 und q0-EPS vorhanden",
+    "passIf": "T-A (Wende) ODER T-B (Altgipfel)",
+    "T-A": "Vorjahres-EPS < 0 und q0-EPS > 0. Begruendung: Verbesserung relativ zu |Basis| ist dann (q0-Basis)/|Basis| > 100 % (Q-TURN-B: +100 % oder besser). q0 > 0 ist die Lesart von „very strong“ (Mindestbedingung: profitabel).",
+    "T-B": "q0-TTM-EPS >= hoechster frueherer TTM-EPS der PIT-Historie, und dieser Gipfel ist > 0 (Q-TURN-A: „near or above its old peak“; „near“ wird NICHT formalisiert, nur „at or above“). Ohne positive Vorgeschichte nicht erfuellbar.",
+    "acceleration": {
+     "V1_primary": "MR-SEPA-02 gilt im Turnaround-Zweig nicht, weil g0 auf nichtpositiver Basis nicht definiert ist und die Turnaround-Kriterien des Buchs in sich geschlossen sind (Q-TURN-A/B nennen keine Beschleunigung). Das ist eine VU-Entscheidung ohne neue Zahl.",
+     "V2_sensitivity": "g = (e - Basis)/|Basis| auch fuer nichtpositive Basen, g0 > g1 bleibt Pflicht, nicht auswertbares g1 -> kein Einstieg."
+    },
+    "unchanged": [
+     "MR-SEPA-04 Umsatz > Vorjahresquartal",
+     "MR-SEPA-00 Daten fehlen -> kein Einstieg",
+     "MR-PIT-01 Sichtbarkeit",
+     "Basis > 0: bisheriger Pfad unveraendert",
+     "Loss->Loss (q0 <= 0): weiterhin SEPA_BASE_NOT_POSITIVE"
+    ]
+   },
+   "expectedEffects": {
+    "MAIN_loss_to_loss_no_change": [
+     "GT-001 ZGNX (-0.87 vs -0.86)",
+     "GT-003 ROKU (-0.09 vs -0.07)",
+     "GT-004 ACAD (-0.38 vs -0.51)",
+     "GT-007 TNDM (-0.25 vs -0.40)",
+     "GT-010 RVNC (-1.12 vs -0.86)",
+     "GT-012 REPL (-0.44 vs -0.30)",
+     "GT-026 SG (-0.13 vs -0.24)"
+    ],
+    "SEPA_layer_flips_reject_to_pass": [
+     "GT-020 MU (0.71 vs -2.12, Umsatz +57.7 %)",
+     "GT-006 DXCM (0.21 vs -0.30, Umsatz +44.4 %)",
+     "GT-031 AVGO (0.85 vs -0.40, Umsatz +22 %)"
+    ],
+    "decision_flips_possible_but_unmeasurable_without_private_prices": [
+     "GT-020 MU",
+     "GT-006 DXCM"
+    ],
+    "no_decision_change_despite_SEPA_flip": [
+     "GT-031 AVGO (VCP BASE_TOO_SHORT)"
+    ],
+    "unchanged_other_reasons": [
+     "GT-009 AEM (SEPA_STALE, Auslandsemittent)",
+     "GT-019 GDDY (STALE)",
+     "GT-024 NMM (DATA_MISSING)",
+     "GT-002 MTLS",
+     "GT-014 DKL",
+     "GT-035 ROIV (Loss->Loss)"
+    ],
+    "MAIN_recall": "unveraendert 3/15",
+    "V2_equals_V1_on_these_cases": true
+   },
+   "falsifiedIf": [
+    "eines der 7 MAIN-Loss->Loss-Faelle den SEPA-Schritt besteht",
+    "MU, DXCM oder AVGO den SEPA-Schritt nicht bestehen",
+    "irgendein Fall mit positiver Vorjahresbasis sein SEPA-Ergebnis aendert"
+   ]
+  },
+  {
+   "id": "H2",
+   "rule": "MR-VCP-01 (Mindestlaenge 15 Sitzungen)",
+   "claim": "Die Mindestdauer von 3 Wochen ist quellenbelegt (Q-BASE-TOO-SHORT: „Too Short a Time Period is Hazardous“, 3 bis 65 Wochen; Q-VCP-DURATION: 3 bis 60 Wochen; Q-IPO-BASE: mindestens 3 bis 5 Wochen). Eine Absenkung waere nicht quellenbelegt.",
+   "correction": "keine fuer die Untergrenze",
+   "sideFinding": "Die Obergrenze 225 Sitzungen (45 Wochen) stuetzt sich im Regelbuch (CF-02) auf „tradershall 3-45“; diese Zahl steht dort nicht. 45 Wochen gehoeren zum Cup des 3C-Cheat (Q-3C-DURATION), 60 Wochen zur VCP (Q-VCP-DURATION). Nicht implementiert; Wirkung nur mit privaten Kursen messbar.",
+   "expectedEffects": {
+    "BASE_TOO_SHORT_cases_remain_rejected": [
+     "GT-002 MTLS (9)",
+     "GT-007 TNDM (7)",
+     "GT-010 RVNC (9)",
+     "GT-016 RICK (13)",
+     "GT-018 DECK (3)"
+    ],
+    "recall_change": 0
+   },
+   "falsifiedIf": [
+    "die Quellenliste eine ausdrueckliche Minervini-Aussage enthaelt, dass Basen unter 3 Wochen zulaessig sind (ausser Power Play, 12 Tage)"
+   ]
+  },
+  {
+   "id": "H3",
+   "rule": "Loss->Loss-Wachstumstitel (7 MAIN-Faelle)",
+   "claim": "Fuer Aktien ohne Gewinn existiert in den abrufbaren Quellen keine Eintrittsregel ausser dem Power Play (Q-POWERPLAY-FUND: „the only situation I will enter with a dearth of fundamentals“). Seine dokumentierten Kaeufe dieser Titel (7 von 15 MAIN-Faellen) sind damit entweder Power-Play-Einstiege, Ermessen oder beruhen auf einer nicht abrufbaren Datenbasis.",
+   "diagnosticOnly": "Optional (private Kurse noetig): Erfuellen die 7 Faelle die woertlichen Power-Play-Zahlen (Q-POWERPLAY-DEF/Q-FLAG: +100 % in < 8 Wochen, Flagge 12 Tage bis 6 Wochen, Korrektur <= 25 % bzw. <= 20 %, <= 10 % oder VCP-Merkmale)? Reine Klassifikation, kein Einstieg, kein Parameter.",
+   "prediction": "Weniger als die Haelfte der 7 Faelle (also hoechstens 3) erfuellt die Power-Play-Vorbedingungen. Erfuellen 4 oder mehr, wird die Lesart „diskretionaer“ fuer diese Faelle deutlich geschwaecht.",
+   "expectedEffects": {
+    "SEPA_decisions_for_the_7": "alle bleiben abgelehnt (H1)",
+    "recall_change": 0
+   }
+  },
+  {
+   "id": "H4",
+   "rule": "EPS-Definition (GAAP gesamt / fortgefuehrt / bereinigt)",
+   "claim": "„Earnings from core operations“ (Q-CORE) ist keine Anweisung, bereinigte Non-GAAP-Zahlen zu verwenden. Oeffentlich und PIT verfuegbar ist nur GAAP gesamt und teils fortgefuehrt. Beides aendert keinen der 7 Loss->Loss-Faelle.",
+   "measuredBeforeThisRegistration": "Fortgefuehrt-Tag nur bei 7 von 32 Faellen vorhanden; bei den 7 MAIN-Loss->Loss-Faellen aendert es das Vorzeichen nie (ZGNX -0,87 gegen -0,87).",
+   "expectedEffects": {
+    "recall_change": 0
+   }
+  },
+  {
+   "id": "H5",
+   "rule": "weitere harte Regeln (MR-SEPA-02 Beschleunigung, MR-SEPA-04 Umsatz, MR-TT-08 RS, MR-RSK-02 Stopp 10 %, MR-VCP-04 Volumen)",
+   "claim": "Jede Regel ist quellenbelegt oder deutlich als VU-Proxy markiert; keine Korrektur ist quellenbelegt. Die betroffenen Faelle (DECK, RICK, AMD 22.07.) sind Ermessen bzw. Datenproxy.",
+   "expectedEffects": {
+    "recall_change": 0
+   }
+  }
+ ],
+ "decisionRules": {
+  "adoptCorrectionIfAll": [
+   "woertliches Zitat in der Quellenliste",
+   "Formalisierung fuehrt keine ungequellte Zahl ein",
+   "Regressionstests gruen",
+   "Review ohne offenen Befund der Schwere HIGH oder hoeher"
+  ],
+  "recallThresholds": "unveraendert aus MINERVINI-GROUND-TRUTH-PREREG.json: Fall A >= 70 %, Fall B < 40 %, Fall F ueberwiegend NOT_REPRODUCIBLE/Ermessen",
+  "verdict": {
+   "HIGH_FIDELITY_ADAPTATION_FEASIBLE": "MAIN-Recall nach ausschliesslich quellenbelegten Korrekturen >= 70 %",
+   "PARTIAL": "40 % bis < 70 %",
+   "NOT_FEASIBLE_FROM_PUBLIC_RULES": "< 40 % und die verbleibenden Sperren sind ueberwiegend Ermessen/nicht oeffentlich"
+  },
+  "reporting": [
+   "Recall vorher/nachher mit Wilson-Intervall",
+   "Fidelity je Regel vorher/nachher (Skala des Regelbuchs: NONE/LOW/MEDIUM/HIGH)",
+   "Welche Faelle durch welche Korrektur betroffen sind",
+   "Vorhersage gegen Ergebnis je Fall"
+  ]
+ },
+ "honestyLimits": [
+  "Die Ground Truth stammt aus Suchausschnitten von X-Beitraegen (Quellenstaerke MEDIUM); „ist positioniert“ nennt nicht den Kaufstag",
+  "Kein Fall nennt die Fundamentalbasis von Minervinis Kauf",
+  "Die Buecher wurden nicht im Volltext gelesen; Zitate stammen aus Leserhighlights und Blognotizen",
+  "Trend- und VCP-Schicht lassen sich nur mit den privaten Kursen neu rechnen (Tiingo-Nutzungsrechte); lokal ist nur die SEPA-Schicht ueberpruefbar"
+ ]
+}
