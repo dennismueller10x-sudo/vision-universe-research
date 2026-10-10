@@ -119,7 +119,9 @@ permissions:
 # Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
 # wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || 'pages-production' }}
+  # A skipped workflow_run must not evict a pending, valid consumer release.
+  # Successful production triggers still share the existing serialized queue.
+  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && format('pages-production-ignored-{0}', github.run_id) || 'pages-production' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
