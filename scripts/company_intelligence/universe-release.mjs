@@ -12,6 +12,7 @@ import {refreshConfig} from './refresh-approval.mjs';
 import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
 import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mjs';
+import {prepareFrozenRollback} from './frozen-rollback.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -28,7 +29,12 @@ async function restore46(){
   // authenticated certificate, reattached exclusively in this private runner.
   writeFileSync(join(directory,'manifest.json'),JSON.stringify(frozen.manifest)+'\n');
  const previous=await goodState(driver,refreshConfig.consumerNamespace);
- const candidate=await prepareCandidate(driver,{namespace:refreshConfig.consumerNamespace,directory,good:previous});
+ assert(previous&&previous.manifest.tickers.length===46,'SAFE_LEGACY_SCOPE_REQUIRED');
+ preflight(directory,frozen.manifest);
+ // Fail closed to the already verified legacy GOOD before copying rollback
+ // bytes; a storage failure must not leave the full-universe gate enabled.
+ await pointer('ROLLBACK_46',{generation:frozen.generation});
+ const candidate=await prepareFrozenRollback(driver,{namespace:refreshConfig.consumerNamespace,directory,good:previous,frozen});
  await commitGood(driver,{namespace:refreshConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health:frozen.health,inventory:frozen.inventory,expectedGood:previous});
  await pointer('ROLLBACK_46',{generation:frozen.generation});
  return {generation:frozen.generation,stockCount:46,issuerCount:45};
