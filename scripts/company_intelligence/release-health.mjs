@@ -2,6 +2,12 @@
    frozen rollback. Metadata repair preserves every generation and asset. */
 import assert from 'node:assert/strict';
 import {goodKey} from './refresh-storage.mjs';
+export function acceptedHealthServed(delivery,refresh,accepted){
+ return delivery?.status==='PASS'&&delivery.generation===accepted.generation
+  &&refresh?.generation===accepted.generation
+  &&refresh.health?.lastSuccessfulPrivateRefresh===accepted.lastSuccessfulPrivateRefresh
+  &&refresh.health?.lastSuccessfulConsumerBuild===accepted.lastSuccessfulConsumerBuild;
+}
 export function releaseHealth(source,{privateGeneration,checkpointSha256,expectedCheckpointSha256,generatedAt,builtAt,now=Date.now()}){
  assert.equal(source.sourceGeneration,privateGeneration,'HEALTH_PRIVATE_GENERATION_MISMATCH');
  assert.equal(checkpointSha256,expectedCheckpointSha256,'HEALTH_CHECKPOINT_MISMATCH');
