@@ -6,6 +6,8 @@ import {eligibilityValid,universeApproved,universeConfig} from '../universe-appr
 import {eligibilityRollout} from '../eligibility-rollout.mjs';
 import {objectPool} from '../bounded-objects.mjs';
 import {validateManifest} from '../public-delivery.mjs';
+import {universeActive,activeNamespace} from '../refresh-storage.mjs';
+import {refreshConfig} from '../refresh-approval.mjs';
 const cid='iss_cik_0001652044',generation='a'.repeat(24),modules={profile:true,aktuelles:false,financials:false,whatChanged:false,nextEvent:false,calls:false,documents:false};
 function fixture(){return {schema:1,generation,generatedAt:'2026-10-10T05:54:50Z',scope:'PER_ISSUER_ELIGIBILITY',eligibilityVersion:universeConfig.eligibilityVersion,
  sourceUsagePolicy:universeConfig.sourceUsagePolicy,tickers:['GOOG','GOOGL'],eligibility:{[cid]:{status:'ELIGIBLE_PARTIAL',modules:{...modules},tickers:['GOOG','GOOGL']}},
@@ -31,4 +33,14 @@ test('shared Quant bundle validates only the Company Intelligence gate',()=>{
  const original=readFileSync(new URL('../../../company-intelligence/config/rollout.js',import.meta.url),'utf8');
  const bundle='throw Error("UNRELATED_CHART_CODE_MUST_NOT_RUN");\n'+original+'\nthrow Error("UNRELATED_NAVIGATION_MUST_NOT_RUN");';
  const result=eligibilityRollout(bundle,fixture(),{canary:true});assert(result.includes('UNRELATED_CHART_CODE_MUST_NOT_RUN'));assert(result.includes('UNRELATED_NAVIGATION_MUST_NOT_RUN'));assert(result.includes(generation));
+});
+
+test('armed configuration never activates without validated durable authorization; rollback returns legacy scope',async()=>{
+ assert.equal(universeConfig.enabled,true);
+ assert.equal(await universeActive({get:async()=>null}),false);
+ assert.equal(await activeNamespace({get:async()=>null}),refreshConfig.consumerNamespace);
+ const driver=state=>({get:async()=>Buffer.from(JSON.stringify({schema:1,state,approvalId:universeConfig.approvalId}))});
+ assert.equal(await activeNamespace(driver('AVAILABLE')),universeConfig.consumerNamespace);
+ assert.equal(await activeNamespace(driver('ROLLBACK_46')),refreshConfig.consumerNamespace);
+ await assert.rejects(universeActive(driver('ALL_ON')),/INVALID_UNIVERSE_ACTIVATION_POINTER/);
 });

@@ -2,8 +2,8 @@
 
 ## Release state
 
-Implementation is isolated in PR #561. `universe-rollout.json.enabled` remains
-false. No full-universe production activation has occurred. The live 46-stock,
+Implementation is isolated in PR #561. Configuration is armed; a missing durable activation receipt still selects
+only the legacy scope. No full-universe production activation has occurred. The live 46-stock,
 45-issuer scope remains the rollback baseline. The full structural and representative candidate acceptance below has passed.
 It is not yet published coverage; authenticated scaling and production readback
 remain required.

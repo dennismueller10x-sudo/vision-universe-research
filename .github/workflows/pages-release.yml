@@ -291,6 +291,23 @@ jobs:
           rc=$?
           rm -f "$RESEARCH_ACCESS_LOGIN_FILE"
           exit $rc
+      - name: Measure final public package without listing private paths
+        env:
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          node --input-type=module <<'NODE'
+          import {readdir,lstat,writeFile} from 'node:fs/promises';
+          import {join} from 'node:path';
+          let files=0,bytes=0,largestFileBytes=0;
+          async function walk(path){for(const e of await readdir(path,{withFileTypes:true})){
+            const p=join(path,e.name);if(e.isDirectory())await walk(p);
+            else {const s=await lstat(p);if(!s.isFile())throw Error('UNSAFE_PACKAGE_ENTRY');files++;bytes+=s.size;largestFileBytes=Math.max(largestFileBytes,s.size);}
+          }}
+          await walk(process.env.SITE_ROOT);
+          const report={schema:1,scope:'FINAL_PUBLIC_PACKAGE_EXCLUDING_THIS_REPORT',files,bytes,largestFileBytes,sourceCommit:process.env.GITHUB_SHA};
+          await writeFile(join(process.env.SITE_ROOT,'release-package.json'),JSON.stringify(report)+'\n');
+          console.log(JSON.stringify(report));
+          NODE
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
