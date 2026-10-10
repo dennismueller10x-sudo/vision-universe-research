@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from quant.sec.canonical import METRIC_MAP
 from quant.sec.pipeline import _rehydrate
-from quant.sec.provider import PERIODIC_FORMS, SECProvider, normalize_cik
+from quant.sec.provider import VALUE_FORMS, SECProvider, normalize_cik
 from quant.sec.registry import MetricRegistry
 from quant.sec.store import JsonFactStore
 from quant.sec.version import version_stamp
@@ -56,7 +56,7 @@ def _raw_index(provider, cik, company_facts, availability):
     """(taxonomy, concept, start, end, accession) -> raw SEC value."""
     index = {}
     for fact in provider.iter_raw_facts(company_facts, availability=availability,
-                                        forms=PERIODIC_FORMS):
+                                        forms=VALUE_FORMS):   # wie fundamental_facts (1.22.0)
         index[(fact.taxonomy, fact.concept, fact.start, fact.end,
                fact.accession)] = fact
     return index

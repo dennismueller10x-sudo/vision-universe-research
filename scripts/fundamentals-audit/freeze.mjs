@@ -4,8 +4,9 @@
 //   v3 FUNDAMENTAL-DATA-FREEZE-v3.json  Stand 1.15.0 + Registry 1.8.0 (Red-Team-Korrektur; unveraendert)
 //   v4 FUNDAMENTAL-DATA-FREEZE-v4.json  Stand 1.19.0 + Registry 1.9.0 + Umsatzbelege 1.1.0 (TTM-Integritaet, Belege, Sichten; unveraendert)
 //   v5 FUNDAMENTAL-DATA-FREEZE-v5.json  Stand 1.20.0 (F-TTM-2/F-TTM-3, Stub-/Fiscal-Year-/Same-Day-Policy) - DEVELOPMENT_FREEZE vor Holdout v3 (FAILED_VALIDATION)
-//   v6 FUNDAMENTAL-DATA-FREEZE-v6.json  Stand 1.21.0 (F-TTM-4/F-TTM-5, Kalender liest 10-KT) - DEVELOPMENT_FREEZE vor Holdout v4
-// node scripts/fundamentals-audit/freeze.mjs --write --commit <sha> [--reason <text>] | --check [--freeze v1|v2|v3|v4|v5|v6]
+//   v6 FUNDAMENTAL-DATA-FREEZE-v6.json  Stand 1.21.0 (F-TTM-4/F-TTM-5, Kalender liest 10-KT) - DEVELOPMENT_FREEZE vor Holdout v4 (FAILED_VALIDATION)
+//   v7 FUNDAMENTAL-DATA-FREEZE-v7.json  Stand 1.22.0 (F-TTM-6, Uebergangsberichte als Wertquelle) - DEVELOPMENT_FREEZE vor der Holdout-v5-Entscheidung
+// node scripts/fundamentals-audit/freeze.mjs --write --commit <sha> [--reason <text>] | --check [--freeze v1|v2|v3|v4|v5|v6|v7]
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -15,10 +16,10 @@ import { execFileSync } from 'node:child_process';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');
 export const FREEZE_V1_PATH = path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE.json');
-export const FREEZE_PATHS = { v1: FREEZE_V1_PATH, v2: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v2.json'), v3: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v3.json'), v4: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v4.json'), v5: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v5.json'), v6: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v6.json') };
-export const FREEZE_PATH = FREEZE_PATHS.v6;
-const PREVIOUS_FREEZE = FREEZE_PATHS.v5;
-export const CODE = ['scripts/quant/sec/provider.py', 'scripts/quant/sec/pipeline.py', 'scripts/quant/sec/normalize.py', 'scripts/quant/sec/fiscal.py', 'scripts/quant/sec/periods.py', 'scripts/quant/sec/restatements.py', 'scripts/quant/sec/model.py', 'scripts/quant/sec/derived.py', 'scripts/quant/sec/registry.py', 'scripts/quant/sec/consumer.py', 'scripts/quant/sec/canonical.py', 'scripts/quant/sec/version.py'];
+export const FREEZE_PATHS = { v1: FREEZE_V1_PATH, v2: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v2.json'), v3: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v3.json'), v4: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v4.json'), v5: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v5.json'), v6: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v6.json'), v7: path.join(here, 'artifacts', 'FUNDAMENTAL-DATA-FREEZE-v7.json') };
+export const FREEZE_PATH = FREEZE_PATHS.v7;
+const PREVIOUS_FREEZE = FREEZE_PATHS.v6;
+export const CODE = ['scripts/quant/sec/provider.py', 'scripts/quant/sec/pipeline.py', 'scripts/quant/sec/normalize.py', 'scripts/quant/sec/fiscal.py', 'scripts/quant/sec/periods.py', 'scripts/quant/sec/restatements.py', 'scripts/quant/sec/model.py', 'scripts/quant/sec/derived.py', 'scripts/quant/sec/registry.py', 'scripts/quant/sec/consumer.py', 'scripts/quant/sec/canonical.py', 'scripts/quant/sec/version.py', 'scripts/quant/sec/daily.py'];
 export const MAPPING = ['quant/config/sec-metric-registry.json', 'quant/config/sec-revenue-statement-evidence.json'];
 export const AUDIT = ['scripts/fundamentals-audit/sec-ground-truth.mjs', 'scripts/fundamentals-audit/compare.mjs', 'scripts/fundamentals-audit/error-rates.mjs', 'scripts/fundamentals-audit/quant_core_dump.py', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-HOLDOUT-PREREG.json',
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT-PREREG.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT-RESULT.json', 'scripts/fundamentals-audit/ttm_holdout_eval.py', 'scripts/fundamentals-audit/ttm_holdout_failures.py',
@@ -26,10 +27,13 @@ export const AUDIT = ['scripts/fundamentals-audit/sec-ground-truth.mjs', 'script
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT2-PREREG.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json', 'scripts/fundamentals-audit/ttm_holdout3_eval.py', 'scripts/fundamentals-audit/ttm_holdout3_gates.py',
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-PREREG.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-RESULT.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-POSTMORTEM.json',
   'scripts/fundamentals-audit/ttm_holdout4_eval.py', 'scripts/fundamentals-audit/ttm_holdout4_gates.py', 'scripts/fundamentals-audit/ttm_period_chain.py', 'scripts/fundamentals-audit/make_fixture.py',
-  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-121-NEIGHBOR-SEARCH.json'];
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-121-NEIGHBOR-SEARCH.json',
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-PREREG.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-RESULT.json',
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json',
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT5-ELIGIBILITY-SPEC.json', 'scripts/fundamentals-audit/ttm_holdout5_eligibility.py'];
 export const TESTS = ['scripts/quant/tests/test_sec_ground_truth_regressions.py', 'scripts/quant/tests/test_sec_ttm_integrity.py', 'scripts/quant/tests/test_normalize_periods.py', 'core/tests/fundamental-cross-consumer.test.mjs',
   'scripts/quant/tests/test_ttm_core_120.py', 'scripts/quant/tests/test_restatements.py', 'scripts/quant/tests/test_fiscal.py',
-  'scripts/quant/tests/test_ttm_core_121.py', 'scripts/quant/tests/test_version_discipline.py'];
+  'scripts/quant/tests/test_ttm_core_121.py', 'scripts/quant/tests/test_version_discipline.py', 'scripts/quant/tests/test_ttm_core_122.py'];
 const sha = (p) => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, p))).digest('hex');
 const group = (list) => { const files = Object.fromEntries(list.map((p) => [p, sha(p)])); return { files, hash: crypto.createHash('sha256').update(JSON.stringify(files)).digest('hex') }; };
 
@@ -54,7 +58,16 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     code: group(CODE), mapping: group(MAPPING), audit: group(AUDIT), tests: group(TESTS),
     supersedes: { file: path.relative(root, PREVIOUS_FREEZE), hash: crypto.createHash('sha256').update(fs.readFileSync(PREVIOUS_FREEZE)).digest('hex'), note: 'fruehere Freezes bleiben unveraendert; der Data-Holdout ist gegen v1 gelaufen' },
     reason: argv.includes('--reason') ? argv[argv.indexOf('--reason') + 1] : null,
-    parent: 'v5 (FUNDAMENTAL-DATA-FREEZE-v5.json, Kern 1.20.0, DEVELOPMENT_FREEZE, durch Holdout v3 FAILED_VALIDATION)',
+    parent: 'v6 (FUNDAMENTAL-DATA-FREEZE-v6.json, Kern 1.21.0, DEVELOPMENT_FREEZE, durch Holdout v4 FAILED_VALIDATION: Accuracy-Gates sauber, Spezialschichten zu klein)',
+    policies1220: {
+      amendmentPolicy: 'eine Regel fuer alle Wertformulare: Amendment = Formular mit /A (10-K/A, 10-Q/A, 20-F/A, 40-F/A, 10-KT/A, 10-QT/A); jede Fassung gilt ab ihrer Verfuegbarkeit (Annahmezeit, sonst Einreichungstag); AS_OF_LATEST = juengste bis as_of sichtbare Fassung, LATEST_KNOWN = juengste ueberhaupt; Same-Day-Konflikt = AMBIGUOUS (unveraendert 1.20.0); kein rueckwirkender Ersatz',
+      valueForms: 'provider.VALUE_FORMS = PERIODIC_FORMS + 10-KT, 10-KT/A, 10-QT, 10-QT/A; Auswahl nur in provider.fundamental_facts; Kalender liest unveraendert CALENDAR_FORMS',
+      transitionPeriodPolicy: 'Zelle nach Zeitraum und Kalender, nie nach Formular; Uebergangszeitraeume ohne Kennung bleiben ohne Jahres-/Quartalszelle (TTM darueber nicht verfuegbar); verkuerztes Geschaeftsjahr (>= 330 Tage, direkt nach dem Vorjahresende) behaelt seine Kennung; ein Wert aus einem Uebergangsbericht nur mit dem vom Kalender erwarteten Zeitraum seiner Zelle (Beginn und Ende +-7 Tage), sonst UNPLACEABLE_PERIOD (fehlt, nie falsch)',
+      changeDetection: 'latest_filing_signature, filing_index/filing_years und daily.WATCHED_FORMS sehen VALUE_FORMS' },
+    redTeam1220: (() => { const r = JSON.parse(fs.readFileSync(path.join(here, 'artifacts', 'FUNDAMENTAL-TTM-122-REDTEAM.json'), 'utf8')); return r; })(),
+    neighborSearch1220: (() => { const n = JSON.parse(fs.readFileSync(path.join(here, 'artifacts', 'FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json'), 'utf8')); return { file: 'artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json', transitionReports: n.transitionReports, coreComparison: { issuers: n.coreComparison.issuers, counts: n.coreComparison.counts }, newDefect: n.newDefect }; })(),
+    regressionFixtures1220: ['OA', 'EIGHTPOINT3', 'DTHERA', 'SWK'],
+    holdout4: 'FAIL (Kern 1.21.0, ein offizieller Lauf): FALSE_AVAILABLE/WRONG_VALUE/WRONG_CONCEPT/WRONG_PERIOD 0, FALSE_MISSING 11,4 %; Spezialschichten fy_change 3/30, same_day 4/20, stub 7/20, split_year 2/20 nicht pruefbar = formaler FAIL; F-TTM-6 ausserhalb des Holdouts gefunden; v4 validiert 1.22.0 nicht',
     revenueEvidence: (() => { const e = JSON.parse(fs.readFileSync(path.join(root, MAPPING[1]), 'utf8')); return { version: e.version, summary: e.summary, filings: Object.keys(e.decisions).length }; })(),
     ttmDefinition: {
       EPS_TTM: 'Summe von vier GEMELDETEN Dreimonats-EPS (keine Q4-Ableitung), Enden verschieden und 12-17 Wochen auseinander, keine Zelle mit zwei Perioden, Fenster nicht vor dem juengsten veroeffentlichten Geschaeftsjahr, eine Einheit, eine Konzeptklasse (gesamt; fortgefuehrt allein = kein EPS-TTM), eine Aktienbasis (kein Sprung >= 1,5 oder um ein Splitverhaeltnis), EPS konsistent mit Ergebnis/Aktien',

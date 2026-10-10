@@ -275,7 +275,11 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Formulare steht an genau einer Stelle (provider.fundamental_facts),
 #          und Aenderungserkennung/Tagesindex sehen Uebergangsberichte. Der
 #          Kalender liest unveraendert CALENDAR_FORMS. Die Formularmengen gehen
-#          in den Quell-Digest ein.
+#          in den Quell-Digest ein. Ein Wert aus einem Uebergangsbericht kommt
+#          nur in eine Zelle mit deren Zeitraum (vom Kalender erwartet oder von
+#          allen Regelberichten der Zelle einstimmig gemeldet, +-7 Tage) und nur
+#          in ein Geschaeftsjahr mit beobachteten Enden (Red Team: Mastermind
+#          10-QT im fortgeschriebenen Jahr, SpartanNash 16/12/12/12 Wochen).
 NORMALIZATION_LOGIC_VERSION = "1.22.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
@@ -308,7 +312,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "acfc5d43046dadf64f7ed28644317a99c3f530af95065f848a6be2e7c97b8444"
+    "25ae29c47dd83c37c213b1e2dedfcca1d5947798b9dce587f252353f9a539a84"
 )
 
 

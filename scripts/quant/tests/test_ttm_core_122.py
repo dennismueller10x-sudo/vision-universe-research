@@ -28,6 +28,7 @@ from quant.sec import daily, provider as provider_module  # noqa: E402
 from quant.sec.consumer import build_consumer_bundle  # noqa: E402
 from quant.sec.fiscal import FiscalCalendar  # noqa: E402
 from quant.sec.normalize import normalize_company  # noqa: E402
+from quant.sec.periods import PeriodResolver  # noqa: E402
 from quant.sec.pipeline import IngestionPipeline  # noqa: E402
 from quant.sec.registry import MetricRegistry  # noqa: E402
 from quant.sec.provider import SECProvider, fundamental_facts  # noqa: E402
@@ -154,6 +155,45 @@ class TransitionReportPeriodIdentityTests(unittest.TestCase):
         after = self.factbook.resolve("eps_diluted", year, cell, as_of="2099-12-31")
         self.assertEqual((before.value, before.form), (0.0, "10-Q"))
         self.assertEqual((after.value, after.form), (-0.01, "10-QT/A"))
+
+
+def factbook_of(name):
+    data = payload(name)
+    cik = str(data["cik"]).zfill(10)
+    calendar_facts, values = fundamental_facts(SECProvider.__new__(SECProvider), data)
+    calendar = FiscalCalendar.from_raw_facts(cik, calendar_facts)
+    return calendar, normalize_company(cik, values, REGISTRY, calendar=calendar).factbook
+
+
+class RedTeam122Tests(unittest.TestCase):
+    """Red Team vor dem Freeze v7 (artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json)."""
+
+    def test_h1_10qt_only_transition_quarter_does_not_fill_an_extrapolated_year(self):
+        # Mastermind (CIK 1088638): Jahresende 30.09. -> 31.12.; Uebergangsquartal 2023-10-01..12-31 nur im 10-QT
+        # 0001477932-24-000794 (2024-02-16). Der Kalender kennt das neue Jahr noch nicht und schreibt das alte fort;
+        # mit 10-K-Semantik fuellte das Uebergangsquartal Q1 des fortgeschriebenen Jahres, ein TTM lief darueber
+        # (2024-12-01: Umsatz 2.276.730 ueber 2023-10-01..2024-09-30).
+        calendar, factbook = factbook_of("MSTMIND")
+        resolver = PeriodResolver(factbook, REGISTRY)
+        for as_of in ("2024-03-01", "2024-12-01"):
+            for metric in ("revenue", "eps_diluted"):
+                self.assertFalse(resolver.ttm(metric, as_of).available, (metric, as_of))
+        # Vergleichswerte des 10-QT aus beobachteten Jahren (Okt-Dez 2022, Bilanz 2023-09-30) bleiben; nichts danach.
+        late = [(key, str(o.period_end)[:10]) for key, tl in factbook.timelines.items() for o in tl.observations
+                if o.form == "10-QT" and str(o.period_end)[:10] > "2023-09-30"]
+        self.assertEqual(late, [])
+
+    def test_m1_transition_value_with_the_unanimous_regular_period_is_admitted(self):
+        # SpartanNash (CIK 877422): 16/12/12/12-Wochen-Quartale; Q2 2012-06-24..09-15 liegt mehr als 7 Tage neben der
+        # gleichmaessigen Teilung des Jahres. Alle Regelberichte melden denselben Zeitraum; der 10-KT
+        # 0001193125-14-095665 (2014-03-12) mit demselben Zeitraum ist eine Fassung dieser Zelle.
+        calendar, factbook = factbook_of("SPTN")
+        year, index = calendar.fiscal_year_for("2012-09-15"), calendar.quarter_index("2012-09-15")
+        latest = factbook.resolve("eps_basic", year, f"Q{index}", policy=POLICY_LATEST_KNOWN)
+        self.assertEqual((latest.form, latest.accession, str(latest.period_start)[:10]),
+                         ("10-KT", "0001193125-14-095665", "2012-06-24"))
+        before = factbook.resolve("eps_basic", year, f"Q{index}", as_of="2014-03-11")
+        self.assertEqual(before.form, "10-Q")
 
 
 class GeneralAmendmentPolicyTests(unittest.TestCase):

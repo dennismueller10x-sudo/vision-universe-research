@@ -56,9 +56,16 @@ AMBIGUOUS_PERIOD_DAYS = 7
 # period the fiscal calendar expects. A 10-QT also reports periods on the old
 # fiscal-year basis (Dthera 10-QT 2016: nine months Jan-Sep 2015 next to the new
 # year's Jul-Mar); under 10-K semantics they landed in the new year's cells and,
-# as the newest filing, replaced the right period there. A period some regular
-# report put into the same cell is no evidence: regular cells can hold another
-# period too (Sun Pacific 10-Q 2016) - that older defect is not widened.
+# as the newest filing, replaced the right period there. Red Team 1.22.0:
+#  - the calendar's expectation is evidence only in a fiscal year whose two ends
+#    are observed. A 10-QT-only transition quarter (Mastermind Oct-Dec 2023)
+#    otherwise matched the old-basis year the calendar extrapolated and filled
+#    its Q1 slot, so a TTM ran over the transition period (H-1). Cover-date
+#    facts of a transition report follow the same rule.
+#  - the period the regular reports of the cell unanimously give is evidence
+#    too: an equal split of the year misses 16/12/12/12-week quarters
+#    (SpartanNash), and the correction was dropped (M-1). A cell whose regular
+#    reports disagree on the period (F-TTM-7, Sun Pacific 10-Q 2016) is none.
 TRANSITION_PERIOD_TOLERANCE_DAYS = 7
 
 # Which concept is a filing's revenue line when us-gaap:Revenues is smaller
@@ -330,24 +337,46 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                 unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
                 continue
 
-            if fact.form in TRANSITION_FORMS and not is_cover_date:
-                deferred.append((metric_name, priority, fact, fiscal_year, fiscal_period, definition))
+            if fact.form in TRANSITION_FORMS:
+                deferred.append((metric_name, priority, fact, fiscal_year, fiscal_period, definition,
+                                 is_cover_date))
                 continue
             admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date)
 
     # 1.22.0 (F-TTM-6): a transition report's value enters a cell only with the
     # period the fiscal calendar expects for that cell. Never 10-K semantics on
     # an old-basis period; a value that does not fit stays out (missing, not wrong).
-    for metric_name, priority, fact, fiscal_year, fiscal_period, definition in deferred:
-        expected = _expected_period(calendar, fact.end, fiscal_period)
-        if expected is None or not _same_period(fact.start, fact.end, expected[0] if fact.start else None,
-                                                expected[1]):
+    regular_periods = defaultdict(set)
+    for (_, fiscal_year, fiscal_period, _), entries in candidates.items():
+        for _, fact in entries:
+            if not (fact.taxonomy == "dei" and fact.start is None):
+                regular_periods[(fiscal_year, fiscal_period, fact.start is None)].add((fact.start, fact.end))
+
+    def unanimous(periods):
+        periods = list(periods)
+        return bool(periods) and all(_same_period(s, e, periods[0][0], periods[0][1]) for s, e in periods)
+
+    for metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date in deferred:
+        previous, fy_end = calendar._boundaries_covering(fact.end)
+        observed_year = (previous is not None and fy_end is not None
+                         and not calendar._is_extrapolated_fy_end(previous)
+                         and not calendar._is_extrapolated_fy_end(fy_end))
+        if is_cover_date:
+            fits = observed_year
+        else:
+            expected = _expected_period(calendar, fact.end, fiscal_period)
+            regular = regular_periods.get((fiscal_year, fiscal_period, fact.start is None), ())
+            fits = observed_year and (
+                (expected is not None and _same_period(fact.start, fact.end, expected[0] if fact.start else None,
+                                                       expected[1]))
+                or (unanimous(regular) and _same_period(fact.start, fact.end, *next(iter(regular)))))
+        if not fits:
             issues.append(_issue(ISSUE_UNPLACEABLE_PERIOD, fact,
                                  "transition-report period is not the period of its fiscal cell",
                                  metric=metric_name))
             unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
             continue
-        admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, False)
+        admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date)
 
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
     for metric_name, period_end, available in unplaced:
