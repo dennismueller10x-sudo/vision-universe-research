@@ -34,6 +34,7 @@
      live ist. Quant verkauft keine Note, sondern eine nachvollziehbare Situation. */
   var CLAIM = "Quant zeigt dir jeden Tag, bei welchen Aktien sich etwas verändert – und wie oft das früher besser lief als der Markt.";
   var CLAIM_LEAD = "Quant beobachtet über 6.000 US-Aktien nach festen Regeln, erklärt jede Veränderung mit Auslöser und nächster Bedingung – und sagt offen, wie belastbar der historische Vergleich ist.";
+  var HERO_TITLE = "Jeden Tag sehen, was sich verändert.";
   var PROMISES = [
     { id: "neu", title: "Sehen, was heute neu ist", text: "Neue Setups, neue Jahreshochs, Strategie-Wechsel und steigende Risiken – täglich, mit Datum.", route: function () { return X.routes.radar(); } },
     { id: "warum", title: "Verstehen, warum es zählt", text: "Auslöser, Ungültig-Marke und die nächste Bedingung – erst die Bedeutung, dann die Zahlen.", route: function () { return X.routes.stocks(); } },
@@ -231,13 +232,19 @@
   async function home(main, ctx) {
     var page = el("div", { class: "q-home" });
     main.append(page);
-    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero" }, [
-      X.globe(),
-      el("p", { class: "q-kicker", text: "Vision Universe Quant" }),
-      el("h1", { class: "q-claim", text: CLAIM }),
-      el("p", { class: "q-hero-lead qx-lead", text: CLAIM_LEAD }),
+    var productIcon = el("span", { class: "vu-product-icon vu-product-icon--hero", "aria-hidden": "true" });
+    var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), use = document.createElementNS(ns, "use");
+    svg.setAttribute("viewBox", "0 0 24 24"); use.setAttribute("href", "/assets/product-icons.svg#quant"); svg.appendChild(use); productIcon.appendChild(svg);
+    var scene = X.globe(); scene.setAttribute("class", "q-globe vu-hero-scene");
+    page.append(el("header", { class: "q-hero v2-intro qx-intro qx-hero vu-product-hero vu-hero-fidelity", "data-product": "quant" }, [
+      scene,
+      productIcon,
+      el("p", { class: "q-product-name vu-hero-name", text: "Quant" }),
+      el("h1", { class: "q-claim vu-product-title vu-hero-headline", text: HERO_TITLE }),
+      el("p", { class: "q-hero-lead qx-lead vu-product-lead vu-hero-description", text: CLAIM }),
       el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
         X.icon("search"), el("span", { text: "Aktie suchen, z. B. Apple oder NVDA …" }), el("i", { "aria-hidden": "true", text: "→" })]),
+      el("p", { class: "q-intro-note", text: CLAIM_LEAD }),
       promiseList()
     ]));
 
@@ -246,8 +253,8 @@
     var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
     var radarHost = el("div", { class: "q-radar-grid q-radar-top" }, [X.loading("Radar wird geladen …")]);
     page.append(X.world("Heute bei Quant", "Was sich seit dem letzten veröffentlichten Stand verändert hat – gezählt und mit Datum. Jede Karte sagt, was passiert ist, was als Nächstes fehlt und wie es früher lief. Keine Kaufempfehlung.", [kpis, radarHost], { href: X.routes.radar(), label: "Zum Radar" }, "v2-market-today"));
-    var watchHost = el("div");
-    page.append(watchHost);
+    var watchHost = el("div"), tiAlertHost = el("div");
+    page.append(watchHost, tiAlertHost);
 
     var rails = el("div", { class: "qx-rails" });
     var proofHost = el("div");
@@ -271,6 +278,20 @@
     ])], { href: X.routes.backtest(), label: "Backtesting" }));
     page.append(X.actions([X.btn("Warum kann ich dem vertrauen?", X.routes.method(), "secondary")]),
       el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
+
+    /* Chartbild-Ereignisse der beobachteten Aktien - nur in der App. Ohne
+       sauberen Vergleichslauf (Ausgangszustand, Methodikwechsel) bleibt der
+       Bereich leer statt Migrationsartefakte zu melden. */
+    var TI = global.VUTechnicalIntelligence;
+    if (watched.length && TI && TI.getWatchlistAlerts) TI.getWatchlistAlerts(watched).then(function (a) {
+      if (a.state !== "AVAILABLE") return;
+      tiAlertHost.replaceChildren(X.world("Chartbild bei deinen beobachteten Aktien", "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose und keine Empfehlung.",
+        [el("div", { class: "q-rows" }, a.events.slice(0, 12).map(function (e) {
+          var nm = nameOf(ctx, e.symbol);
+          return el("a", { class: "q-rowlink", href: X.routes.chartbild(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
+            el("span", {}, [el("strong", { text: e.symbol + (nm ? " · " + nm : "") }), el("small", { text: e.text + (e.asOf ? " · Stand " + X.dateDe(e.asOf) : "") })])]);
+        }))]));
+    });
 
     var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
       /* Die Startseite liest nur die Radar-Projektion (Kennzahlen und

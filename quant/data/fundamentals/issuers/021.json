@@ -795,10 +795,10 @@
       "cik": "0001930021",
       "name": "New Horizon Aircraft Ltd.",
       "sic": "3721",
-      "rawFacts": 2627,
-      "mappedFacts": 1004,
-      "unmappedFacts": 1690,
-      "calendarYears": 7,
+      "rawFacts": 2764,
+      "mappedFacts": 1061,
+      "unmappedFacts": 1768,
+      "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0531",
@@ -807,29 +807,29 @@
         "HOVRW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 19,
+      "annualPeriods": 5,
+      "quarterlyPeriods": 21,
       "firstPeriodEnd": "2022-03-31",
-      "lastPeriodEnd": "2026-05-31",
-      "historyYears": 4.0,
+      "lastPeriodEnd": "2026-08-31",
+      "historyYears": 3.42,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2023-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 2.0,
@@ -849,14 +849,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2023-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 3.0
@@ -877,14 +877,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
-          "firstAvailablePeriod": "2022-05-31",
+          "quarterlyPeriods": 18,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2026-05-31",
-          "historyYears": 4.0
+          "historyYears": 3.42
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 3.42
@@ -907,46 +907,47 @@
         }
       },
       "quality": {
-        "HIGH": 110
+        "HIGH": 116
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 110,
-        "resolvedValues": 110
+        "datableValues": 116,
+        "resolvedValues": 116
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1788,
+        "total": 1862,
         "by_severity": {
-          "INFO": 1690,
-          "WARNING": 98
+          "INFO": 1768,
+          "WARNING": 94
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 17,
+          "CONCEPT_DISAGREEMENT": 16,
           "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 54,
+          "RESTATEMENT_CONFLICT": 51,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 1690
+          "UNKNOWN_CONCEPT": 1768
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-078490",
-        "filing_date": "2026-07-16",
-        "form": "10-K",
-        "periodic_filings": 16
+        "accession": "0001213900-26-108211",
+        "filing_date": "2026-10-09",
+        "form": "10-Q",
+        "periodic_filings": 17,
+        "acceptance_datetime": "2026-10-09T15:05:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "5218c33b985d8feb1936e3940524e51eefb268b0de0f20c1591ef000d6992a2c",
+      "sourceDigest": "3e82d0814b88d3494c11fa37614b5cfc70f1e25fda8af1a914ce383f2aca2008",
       "issuerId": "iss_cik_0001930021"
     },
     {

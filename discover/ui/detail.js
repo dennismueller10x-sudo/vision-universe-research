@@ -91,7 +91,7 @@
   /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
      sobald die naechste Seite gezeichnet wird. */
   var detailAbo = null;
-  var detailResize = null;
+  var detailResize = null; var intelligenceDispose = null;
 
   /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
      der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
@@ -115,7 +115,7 @@
   }
 
   function loadSeries(detail) {
-    var series = detail.series || {};
+var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, priceSeriesType: data.basis }; }); }
     if (series.source === "technical-instrument" && series.path) {
       return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
         var payload = teile[0], lang = teile[1];
@@ -165,7 +165,7 @@
   /* =================================================================== */
   function render(root, detail, options) {
     options = options || {};
-    var state = createState(detail);
+    var state = createState(detail); if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
     S.clear(root);
     if (detailAbo) { detailAbo(); detailAbo = null; }
     if (detailResize) { global.removeEventListener("resize", detailResize); detailResize = null; }
@@ -225,7 +225,7 @@
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); };
+    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock && detail.region !== "EUROPE") intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
@@ -242,7 +242,7 @@
     var analyse = el("details", { class: "dx-analyse dx-fade" }, [kapitelTrenner()]);
     var telefon = !!(global.matchMedia && global.matchMedia("(max-width: 860px)").matches);
     if (!telefon) analyse.open = true;
-    [belege(detail), panels(detail), technicalIntelligence(detail)].forEach(function (node) {
+    (detail.region === "EUROPE" ? [] : [belege(detail), panels(detail), technicalIntelligence(detail)]).forEach(function (node) {
       if (node) analyse.appendChild(node);
     });
     kapitel(analyse);
@@ -255,7 +255,7 @@
        Standard-Zeitraum 1T ist, wenn es einen gibt, und 1J, wenn nicht. */
     var Hub = D.LiveHub;
     var liveErst = new Promise(function (resolve) {
-      if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
+      if (!Hub || !Hub.enabled() || detail.region === "EUROPE" || detail.dataMode !== "real") { resolve(null); return; }
       var erledigt = false;
       /* Die Aktienseite ist der EINZIGE Ort, der den Strom benutzt
          (Zero-Cost Realtime V1 §6). live() beginnt mit demselben
@@ -284,7 +284,7 @@
         state.bars = loaded.bars;
         state.weeklyBars = loaded.weeklyBars || null;
         state.bundle = loaded.bundle;
-        state.dailyPoints = loaded.dailyPoints || null;
+        state.dailyPoints = loaded.dailyPoints || null; state.europeSegments = loaded.segments || null;
         state.weeklyPoints = loaded.weeklyPoints || null;
         state.seriesAsOf = loaded.asOf || null;
         state.closeOnly = !!loaded.closeOnly;
@@ -373,7 +373,7 @@
     var preisKnoten = null;
     var rechts = isNum(preis)
       ? (preisKnoten = el("div", { class: "dx-price" }, [
-          el("b", { class: "num", text: C().money(preis) }),
+          el("b", { class: "num", text: detail.region === "EUROPE" ? nativePrice(preis, detail.currency) : C().money(preis) }),
           el("span", { class: C().toneClass(change),
                        /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute".
                           Mit laufendem Kurs ist es das sehr wohl, und dann steht es auch da. */
@@ -420,7 +420,7 @@
           /* Logo und Name: am Desktop uebereinander, am Handy in einer Zeile,
              damit der Kurs weit oben bleibt. */
           el("div", { class: "dx-dhero-title" }, [
-            D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
+            D.Logos ? D.Logos.mark(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
             el("h1", { text: detail.companyName || detail.symbol })
           ]),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
@@ -988,6 +988,11 @@
     var daily = state.dailyPoints || [], weekly = state.weeklyPoints || null;
     return VERBRAUCHER_ZEITRAEUME.map(function (z) {
       var out = { id: z.id, label: z.label, available: false, message: null };
+      if (state.detail.region === "EUROPE") {
+        out.available = z.id === "1Y" && daily.length >= 20;
+        if (!out.available) out.message = "Für diesen Zeitraum liegt noch keine separat geprüfte Kursreihe vor.";
+        return out;
+      }
       if (!SS) { out.message = "Zeitraum-Engine nicht geladen"; return out; }
       var punkte = z.quelle === "weekly" ? (weekly || null) : daily;
       if (z.id === "MAX") {
@@ -1023,7 +1028,13 @@
      Chartreihe ist oben bereits umgerechnet worden, und sie danach durch
      money() zu schicken hiesse, sie ein zweites Mal mit dem Kurs zu
      multiplizieren. */
-  function alsAngezeigt(v) {
+  function nativePrice(v, currency) {
+    if (!isNum(v)) return "–";
+    var result = vuFormat("formatPrice", v, currency, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
+    return result || v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + " " + currency;
+  }
+  function alsAngezeigt(v, currency) {
+    if (currency) return nativePrice(v, currency);
     if (!isNum(v)) return "–";
     var FX = (typeof VUFx !== "undefined") ? VUFx : null;
     var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
@@ -1056,7 +1067,10 @@
     return kopie;
   }
 
-  function inAnzeigewaehrung(punkte) {
+  function inAnzeigewaehrung(punkte, currency) {
+    // Europe retains its explicit native listing currency until an audited
+    // FX contract covers it; never treat European prices as US dollars.
+    if (currency) return { punkte: punkte || [], gekuerzt: false };
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false };
     var r = L.series(punkte, "USD");
@@ -1089,7 +1103,8 @@
        Deshalb ist die EUR-Rendite auch eine andere als die USD-Rendite -
        und sie wird unten aus DIESER Reihe gerechnet, nicht uebernommen
        (§41). */
-    var anzeige = inAnzeigewaehrung(sel.points);
+    var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
+    var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
                                             complete: sel.complete && !anzeige.gekuerzt };
@@ -1100,13 +1115,14 @@
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: alsAngezeigt(letzter) }),
+        el("b", { class: "num", text: alsAngezeigt(letzter, nativeCurrency) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt" }),
+          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") }),
         frischeTages(state)
       ])
     ]);
@@ -1117,7 +1133,8 @@
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
-                                                 range: z.id, label: z.wort, grain: z.quelle });
+                                                 range: z.id, label: z.wort, grain: z.quelle,
+                                                 segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
     }
@@ -1126,7 +1143,7 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return alsAngezeigt(pt.close); },
+      preis: function (pt) { return alsAngezeigt(pt.close, nativeCurrency); },
       delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
@@ -1140,6 +1157,13 @@
   /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
      der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
   function frischeTages(state) {
+    if (state.detail.region === "EUROPE") {
+      var status = state.detail.freshness || "MISSING";
+      return el("span", { class: "dx-live-label", "data-freshness": status }, [
+        document.createTextNode("Schluss " + C().dateShort(state.seriesAsOf) + " · " +
+          (["CURRENT", "LAST_VALID_SESSION"].indexOf(status) >= 0 ? "letzte gültige Sitzung" : "nicht aktuell"))
+      ]);
+    }
     var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
     var asOf = state.seriesAsOf;
     if (!asOf || !FR || !Hub || !Hub.resolution) return null;
@@ -1421,6 +1445,9 @@
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
   function controlBar(state, redraw) {
     var host = el("div", {});
+    if (state.detail.region === "EUROPE") {
+      return host;
+    }
     /* V4 §15: der Analyse-Chart ist ein Werkzeug, kein Standard. */
     var pro = el("label", { class: "dx-pro-toggle" }, [
       el("input", { type: "checkbox", checked: state.pro ? "checked" : null }),
@@ -1766,41 +1793,22 @@
   /* -------------------------------------------- Technical Intelligence */
   function technicalIntelligence(detail) {
     var ti = detail.technicalIntelligence || { layers: {} };
-    var wave = ti.layers.elliottWave || { status: "unavailable" };
-    var labels = { available: "Verfügbar", lowConfidence: "Geringe Konfidenz",
-                   calculating: "Wird berechnet", unavailable: "Nicht verfügbar" };
 
+    /* Mission IV: Discover zeigte hier die Wellenzaehlung der alten V1-Engine samt "Method Fit" – eine zweite, abweichende
+       Elliott-Aussage neben dem Chartbild (Elliott 3.2.2, die sich meist enthaelt). Es gibt nur noch eine Quelle: das Chartbild.
+       Discover nennt keine eigene Zaehlung und keinen Konfidenzwert mehr. */
     var body = [
       el("div", { class: "dx-ti-head" }, [
         el("h3", { style: "margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim)",
-                   text: "Technical Intelligence — Elliott Wave" }),
-        el("span", { class: "dx-ti-state dx-ti-state--" + wave.status,
-                     text: labels[wave.status] || wave.status })
-      ])
-    ];
-    if (wave.status === "available" || wave.status === "lowConfidence") {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:17px;font-weight:600;letter-spacing:-.01em",
-        text: [wave.currentWave ? "Welle " + wave.currentWave : null, wave.patternType,
-               wave.degreeScale ? "Skala " + wave.degreeScale : null].filter(Boolean).join(" · ") }));
-      body.push(el("div", { class: "dx-kv" }, [
-        kvText("Method Fit", isNum(wave.confidence) ? wave.confidence + " / 100" : "–"),
-        kvText("Engine", wave.sourceEngine || "–"),
-        kvText("Repainting", wave.repaintingPolicy || "–"),
-        kvText("Stand", wave.asOf || "–")
-      ]));
-    } else {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
-        text: wave.message || "Für diesen Titel liegt keine Wellenzählung vor." }));
-    }
-    /* Der Hinweis zur Herkunft steht nur, wo es ein Ergebnis gibt; ohne
-       Ergebnis genuegt der Satz darueber (V4.1 §25: keine leeren Kapitel
-       mit Fusstext). */
-    if (wave.status === "available" || wave.status === "lowConfidence") {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6",
-        text: wave.disclaimer ||
-          "Elliott Wave wird ausschließlich aus der bestehenden Vision-Universe-Engine gelesen. " +
-          "Discover erzeugt keine eigene Wellenzählung." }));
-    }
+                   text: "Chartbild — Kursstruktur" })
+      ]),
+      el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
+        text: "Ausblick, Zonen, Szenarien und die experimentelle Elliott-Strukturdeutung stehen im Chartbild. " +
+              "Für die meisten Titel gibt es dort bewusst keine verlässliche Wellenzählung." }),
+      detail.symbol ? el("p", { style: "margin:10px 0 0;font-size:13px" }, [
+        el("a", { href: "/quant/#/aktie/" + encodeURIComponent(detail.symbol) + "/chartbild", text: "Chartbild öffnen" })
+      ]) : null
+    ].filter(Boolean);
 
     var weitere = [];
     ["marketStructure", "supportResistance"].forEach(function (key) {
@@ -1879,7 +1887,7 @@
         document.createTextNode(" · " + (detail.disclaimer || "Keine Anlageempfehlung."))
       ]),
       /* Herkunft des Logos (Urheber und Lizenz bzw. Website/SEC). */
-      D.Logos ? D.Logos.creditLine(detail.symbol) : null
+      D.Logos ? D.Logos.creditLine(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol) : null
     ]);
   }
 
@@ -1900,6 +1908,7 @@
     options = options || {};
     var inst = result.instrument;
     var caps = result.capabilities || {};
+    if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
     S.clear(root);
     root.removeAttribute("data-world");
 
@@ -1924,6 +1933,10 @@
           "führt keine Namen; angezeigt wird deshalb das Kürzel." })
     ]);
     root.appendChild(kopf);
+    // The same approved issuer experience also belongs on the existing Master
+    // detail path. Price-series availability is independent of SEC/IR content.
+    if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, inst.symbol);
+    var intelligenceModules = global.VUCompanyIntelligenceRollout?.eligibility?.[inst.symbol]?.modules || {};
 
     /* Stammdaten. Jede Zeile ist eine Angabe aus dem Master, keine
        abgeleitete Aussage. */
@@ -1958,7 +1971,7 @@
        "die Reihen selbst bleiben bis zur Lizenzklärung in der Arbeitsablage."],
       ["Kursstand", caps.HAS_PRICE_SNAPSHOT,
        "Absolute Kursniveaus realer Titel werden nach der Redistributionsregel nicht ausgeliefert."],
-      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS,
+      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS || intelligenceModules.financials,
        inst.cik
          ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
          : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
@@ -1997,9 +2010,8 @@
           (result.masterVersion || "company-master") + " · Stand " + (result.asOf || "unbekannt"))
       ]),
       el("div", { style: "margin-top:6px" }, [document.createTextNode(
-        "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
-        "Verlaufsbild und Einordnung braucht es Daten, die für diesen Titel nicht ausgeliefert " +
-        "werden — sie werden hier nicht ersetzt.")])
+        "Angezeigt werden nur vorhandene, freigegebene Informationen. Fehlende Kennzahlen " +
+        "oder Kursreihen werden nicht ersetzt.")])
     ]));
   }
 

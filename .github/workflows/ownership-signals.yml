@@ -1,0 +1,150 @@
+name: Eigentuemer-Signale (SEC EDGAR - Insider, 13D/13G, 13F)
+
+# Kostenlose, rechtlich saubere Alternative zu bezahlten Analystendaten:
+# was Insider und grosse Adressen TUN, aus SEC EDGAR (public domain).
+#
+#   Insider-Kaeufe/-Verkaeufe (Form 4/5)  Insider Transactions Data Sets (Quartal)
+#                                         + einzelne Form-4-Einreichungen fuer die Luecke bis heute
+#   Schedule 13D / 13G                    EDGAR full-index (master.gz je Quartal)
+#   Form 13F                              Form 13F Data Sets; CUSIP -> Ticker aus Fails-to-Deliver
+#
+# Erzeuger: scripts/market/build-ownership-signals.mjs (Engine:
+# quant/engines/ownership-signals.js). Ausgabe:
+# quant/data/product/ownership-signals-v1/ (manifest, highlights, current/,
+# history/ - Monatsreihe ab 2016 nach Einreichungsdatum).
+#
+# SEC FAIR ACCESS: User-Agent aus dem Secret SEC_USER_AGENT (Rueckfall wie
+# sec-fundamentals-daily.yml), hoechstens 9 Anfragen/s, Standard 6/s. Die
+# Quartalsdatensaetze sind wenige grosse Dateien; Auszuege abgeschlossener
+# Quartale, die Indizes und die einzeln geholten Form-4-Einreichungen liegen
+# im Actions-Cache (.ownership-cache), damit der Wochenlauf sie nicht neu holt.
+#
+# AUSLOESER: woechentlich (Dienstag frueh, nur Default-Branch), Dispatch, oder
+# ein Push auf claude/** mit der Marke `[ownership-signals]` im Commit.
+# Ein Push-Lauf ist der Nachweis: er baut vollstaendig, prueft und laedt das
+# Ergebnis als Actions-Artefakt hoch - er committet NICHT. Sonst landen
+# Produktionsdaten im Feature-Zweig, und ein Merge bringt erzeugte Artefakte
+# mit (CLAUDE.md, Audit 05.10.2026). Committet wird nur auf dem eigenen
+# Zweig eines Dispatch- oder Zeitplanlaufs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      form4_max:
+        description: 'Hoechstzahl einzeln zu holender Form-4-Einreichungen (leer = 25000)'
+        type: string
+        default: ''
+  schedule:
+    - cron: '23 5 * * 2'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ownership-signals-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Eigentuemer-Signale bauen
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[ownership-signals]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Offline-Tests (Engine, Erzeuger, Fixtures, SEC-Attrappe)
+        run: node --test quant/tests/ownership-signals.test.mjs
+
+      - name: Zwischenspeicher laden
+        uses: actions/cache/restore@v4
+        with:
+          path: .ownership-cache
+          key: ownership-signals-${{ github.run_id }}
+          restore-keys: |
+            ownership-signals-
+
+      - name: Signale aus SEC EDGAR bauen
+        id: build
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert.
+          IN_FORM4_MAX: ${{ inputs.form4_max }}
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          set -euo pipefail
+          max="${IN_FORM4_MAX:-}"
+          if [ -z "$max" ]; then
+            # Der Nachweislauf auf claude/** holt weniger Einzeleinreichungen.
+            if [ "$GITHUB_EVENT_NAME" = "push" ]; then max=6000; else max=25000; fi
+          fi
+          [[ "$max" =~ ^[0-9]+$ ]] || { echo "::error::form4_max muss eine Zahl sein"; exit 1; }
+          node scripts/market/build-ownership-signals.mjs --form4-max "$max" --work "$RUNNER_TEMP/ownership-work"
+
+      # Auch nach einem gescheiterten Abdeckungs-Gate: was teuer geholt ist
+      # (Form-4-Einreichungen), geht nicht verloren.
+      - name: Zwischenspeicher sichern
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .ownership-cache
+          key: ownership-signals-${{ github.run_id }}
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Abdeckung
+        if: always()
+        run: |
+          test -f quant/data/product/ownership-signals-v1/manifest.json || { echo "Kein Manifest."; exit 0; }
+          du -sh quant/data/product/ownership-signals-v1 quant/data/product/ownership-signals-v1/* || true
+          node -e '
+            const m = require("./quant/data/product/ownership-signals-v1/manifest.json"), c = m.coverage;
+            const line = [
+              "asOf " + m.asOf,
+              "Titel mit Signal " + c.tickersWithAnySignal + "/" + c.universeTickers,
+              "Insider: " + c.insider.datasets + " Datensaetze bis " + c.insider.coverageEnd + ", " + c.insider.transactionsInUniverse + " Transaktionen, " + c.insider.issuersWithTransactions + " Emittenten",
+              "Form-4-Luecke: noetig " + c.insider.form4GapFill.needed + ", geholt " + c.insider.form4GapFill.fetched + ", gecacht " + c.insider.form4GapFill.cached + ", vollstaendig " + c.insider.form4GapFill.complete,
+              "13D/13G: " + c.schedules.resolved + " zugeordnet von " + c.schedules.filings + " (mehrdeutig " + c.schedules.ambiguous + ")",
+              "13F: " + c.thirteenF.datasets + " Datensaetze, " + c.thirteenF.filings + " Meldungen, " + c.tickersWith13F + " Ticker, Perioden " + (c.thirteenF.periods[0] || "-") + ".." + (c.thirteenF.periods.slice(-1)[0] || "-"),
+              "CUSIP-Karte: " + c.cusipMap.cusips + " CUSIPs / " + c.cusipMap.tickers + " Ticker",
+              "Historie " + m.history.firstMonth + ".." + m.history.lastMonth + " (" + m.history.months + " Monate), Laufzeit " + m.runtimeSeconds + " s, SEC-Anfragen " + m.access.requests
+            ];
+            console.log(line.join("\n"));
+            console.log("::notice title=Eigentuemer-Signale::" + line.join(" | "));
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, "### Eigentuemer-Signale\n\n" + line.map((l) => "- " + l).join("\n") + "\n");
+          '
+
+      - name: Ergebnis als Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ownership-signals-v1
+          path: quant/data/product/ownership-signals-v1
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit und Push (nur Dispatch / Zeitplan)
+        if: github.event_name != 'push'
+        run: |
+          set -euo pipefail
+          bash scripts/ci/pruefe-json.sh
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A quant/data/product/ownership-signals-v1
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          msg=$(node -e 'const m=require("./quant/data/product/ownership-signals-v1/manifest.json"),c=m.coverage;console.log("Eigentuemer-Signale (SEC EDGAR) "+m.asOf+": "+c.tickersWithAnySignal+" Titel, Insider bis "+c.insider.coverageEnd+", 13F "+(c.thirteenF.periods.slice(-1)[0]||"-"))')
+          git commit -m "$msg"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

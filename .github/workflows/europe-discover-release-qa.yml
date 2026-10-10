@@ -1,0 +1,42 @@
+# Tests only: a reviewed manual display-data publication triggers live checks.
+# No periodic trigger, provider request, data write or production gate change.
+name: Europe Discover published release QA
+on:
+  push:
+    branches: [main]
+    paths: ['discover/data/europe/manifest.json']
+permissions:
+  contents: read
+concurrency:
+  group: europe-discover-live-qa
+  cancel-in-progress: false
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser tools
+        run: |
+          npm install --prefix /tmp/europe-qa --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          /tmp/europe-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Verify exact published release on desktop and iPhone WebKit
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+          QA_OUT: ${{ runner.temp }}/europe-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/europe-public-live-qa.mjs
+      - name: Upload public screenshots and validation receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: europe-discover-live-${{ github.sha }}
+          path: ${{ runner.temp }}/europe-live-qa/
+          if-no-files-found: error

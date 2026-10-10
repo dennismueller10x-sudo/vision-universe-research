@@ -385,4 +385,11 @@
   };
 
   global.QuantShell = api;
+
+  /* Die Bereichsleiste ist die gemeinsame Produkt-Leiste der Vision-Universe-
+     Shell (assets/site-navigation.js): Quant | Screener | Strategien | Aktien
+     | ☰. Alle Seiten unter /quant/ fordern sie hier an; der aktive Eintrag
+     folgt dem Pfad. Die uebrigen Bereiche dieser Seiten (Ranking, Backtests,
+     Watchlist ...) stehen als ruhige Liste am Seitenende (renderNav). */
+  if (global.VUNavigation) global.VUNavigation.dock({});
 })(window);

@@ -79,24 +79,16 @@ a{color:inherit}
 button{font-family:inherit}
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
 
-/* ---------------------------------------------------------------- Header */
-.q-header{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  height:52px;padding:0 20px;border-bottom:1px solid var(--line);
-  position:sticky;top:0;z-index:100;background:var(--header-bg);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-}
-.q-header strong{font-size:13px;font-weight:800;letter-spacing:.02em}
-.q-header-right{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted-2)}
-.q-home-link{font-size:12px;font-weight:700;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
-.q-home-link:hover{border-color:var(--ink);color:var(--ink)}
-
-.q-tabs-wrap{position:sticky;top:52px;z-index:90;background:var(--tabs-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.q-tabs{display:flex;gap:4px;overflow-x:auto;padding:9px 16px;scrollbar-width:none;max-width:var(--shell);margin:auto}
-.q-tabs::-webkit-scrollbar{display:none}
+/* ---------------------------------------------------- Weitere Bereiche
+   Kopf und Bereichsleiste kommen aus der gemeinsamen Vision-Universe-Shell
+   (Kopf: Marke, AI Atlas, Farbschema; unten die Produkt-Leiste). Die
+   uebrigen Quant-Bereiche dieser Seiten stehen als ruhige Liste am Ende. */
+.q-more{max-width:var(--shell);margin:0 auto;padding:0 20px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.q-more #q-datastamp{font-size:11px;color:var(--muted-2)}
+.q-tabs{display:flex;flex-wrap:wrap;gap:4px}
 .q-tab{
   flex:0 0 auto;border:0;background:transparent;color:var(--muted);
-  font-size:12.5px;font-weight:700;letter-spacing:.02em;padding:9px 13px;
+  font-size:12.5px;font-weight:700;letter-spacing:.02em;padding:9px 13px;min-height:40px;
   border-radius:20px;cursor:pointer;white-space:nowrap;text-decoration:none;
   transition:background .12s,color .12s;
 }
@@ -104,7 +96,7 @@ button{font-family:inherit}
 .q-tab[aria-current="page"],.q-tab.on{background:var(--ink);color:var(--on-ink)}
 
 /* ----------------------------------------------------------------- Shell */
-.q-shell{max-width:var(--shell);margin:auto;padding:26px 20px 90px}
+.q-shell{max-width:var(--shell);margin:auto;padding:26px 20px 32px}
 .q-shell--narrow{max-width:900px}
 
 /* -------------------------------------------------------- Mock-Banner §94 */
@@ -482,8 +474,6 @@ table.q-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px
   body{font-size:14.5px}
   .q-shell{padding:18px 15px 80px}
   .q-grid--2,.q-grid--3,.q-grid--4{grid-template-columns:1fr}
-  .q-header{padding:0 15px}
-  .q-header-right span.q-hide-sm{display:none}
   /* Touch-Ziele: die Factor-DNA-Zeile ist die zentrale Interaktion der
      Detailseite und lag mit 27 px deutlich unter der Empfehlung von 44 px. */
   .q-dna-row{grid-template-columns:84px 1fr 42px;gap:9px;min-height:44px;padding:9px 4px}

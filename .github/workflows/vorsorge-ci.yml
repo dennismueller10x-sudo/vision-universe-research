@@ -10,7 +10,7 @@ on:
     branches: [main]
     paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml']
   pull_request:
-    paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml', '.github/workflows/vorsorge-etf-universe.yml', 'assets/site-navigation.js']
+    paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml', '.github/workflows/vorsorge-etf-universe.yml', 'assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg']
   workflow_dispatch:
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).

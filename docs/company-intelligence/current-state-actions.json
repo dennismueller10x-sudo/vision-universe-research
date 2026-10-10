@@ -1,0 +1,202 @@
+{
+  "runs": [
+    {
+      "run": 37468491117,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37468491117",
+      "codeSha": "4a25bb7f312ccba22f39485e525d5e47fdd5c832",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "name": "current-state-restore",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Verify private bucket and read existing authoritative namespace only",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Fresh exact restore and unchanged-state export with original producer",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Hashes and counts only; no checkpoint, ledger or source-health artifact",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "name": "validate",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "preview",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-a",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "pilot",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-b",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-c",
+          "conclusion": "skipped",
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run": 37469171087,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37469171087",
+      "codeSha": "3ffd3d1a3451d689cff2c6248d4518cefe27ae2c",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "name": "current-state-restore",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Verify private bucket and read existing authoritative namespace only",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Fresh exact restore and unchanged-state export with original producer",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Hashes and counts only; no checkpoint, ledger or source-health artifact",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "name": "validate",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "pilot",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-a",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "preview",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-b",
+          "conclusion": "skipped",
+          "steps": []
+        },
+        {
+          "name": "acceptance-c",
+          "conclusion": "skipped",
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "privacy": "VERIFIED_NON_PUBLIC / MANAGED_DISABLED_NO_CUSTOM_DOMAINS",
+  "finalFailure": "REMOTE_STATE_MISSING_INITIALIZATION_REQUIRED",
+  "namespace": "branch-b153bd74ab50fdc2a7346c75",
+  "remoteWrites": 0,
+  "initializeUsed": false,
+  "restorePerformed": false
+}

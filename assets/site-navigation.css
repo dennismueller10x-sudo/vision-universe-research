@@ -1,4 +1,4 @@
-:root{--vu-navigation-height:88px}
+:root{--vu-navigation-height:72px}
 html{scroll-padding-top:calc(var(--vu-navigation-height) + 16px)}
 body{padding-top:var(--vu-navigation-height)!important}
 vu-navigation{display:block!important}
@@ -11,5 +11,91 @@ body.vu-magazine-one .mag{height:calc(100dvh - var(--nav) - var(--vu-navigation-
 body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
-@media(max-width:760px){:root{--vu-navigation-height:70px}}
+@media(max-width:760px){:root{--vu-navigation-height:64px}}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
+/* Produkt-Leiste (Dock) der gemeinsamen Shell: Abstand fuer den Inhalt als
+   ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
+   sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
+:root{--vu-dock-height:66px;--vu-dock-gap:10px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
+html[data-vu-dock]{scroll-padding-bottom:var(--vu-dock-space)}
+html[data-vu-dock] body{padding-bottom:var(--vu-dock-space)!important}
+html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
+@media(min-width:761px){:root{--vu-dock-height:56px;--vu-dock-gap:16px}}
+
+/* Premium design 2.0. Namespaced tokens and opt-in components; existing
+   product calculations, data colours and shell geometry keep their owners. */
+:root{
+  --vu-bg:#fff;--vu-surface:#f5f6f2;--vu-elevated:#fff;
+  --vu-text:#0d0f12;--vu-text-secondary:#3d424a;--vu-muted:#626872;
+  --vu-line:#e4e6e0;--vu-line-strong:#d5d8d0;
+  --vu-accent:#c8f531;--vu-on-accent:#101318;--vu-accent-text:#4f6b00;
+  --vu-accent-soft:#eef9cc;--vu-focus:#4f6b00;
+  --vu-radius:22px;--vu-radius-control:999px;
+  --vu-space-1:8px;--vu-space-2:12px;--vu-space-3:20px;
+  --vu-space-4:32px;--vu-space-5:48px;--vu-space-6:72px;
+  --vu-icon-hero:72px;--vu-icon-card:52px;--vu-icon-menu:36px;--vu-icon-dock:24px;
+  --vu-hero-title:clamp(34px,8.8vw,48px);
+  --vu-hero-leading:1.04;--vu-hero-tracking:-.045em;
+  --vu-premium-background:var(--vu-bg);--vu-premium-bg:var(--vu-bg);
+  --vu-premium-ink:var(--vu-text);--vu-premium-muted:var(--vu-muted);
+  --vu-premium-accent-text:var(--vu-accent-text);--vu-premium-accent:var(--vu-accent);
+}
+:root[data-theme=dark]{
+  --vu-bg:#08080a;--vu-surface:#0e1013;--vu-elevated:#121519;
+  --vu-text:#f4f5f1;--vu-text-secondary:#c3c7cc;--vu-muted:#a1a7af;
+  --vu-line:rgba(255,255,255,.09);--vu-line-strong:rgba(255,255,255,.16);
+  --vu-accent-text:#c8f531;--vu-accent-soft:rgba(200,245,49,.12);--vu-focus:#c8f531;
+}
+/* Same original HUD material as the landing page, without continuous animation. */
+.vu-product-icon{
+  --vu-icon-size:var(--vu-icon-card);position:relative;display:inline-grid;
+  place-items:center;flex:none;width:var(--vu-icon-size);height:var(--vu-icon-size);
+  border-radius:26%;isolation:isolate;vertical-align:middle;color:var(--vu-accent);
+  background:radial-gradient(120% 120% at 0% 0%,rgba(200,245,49,.28),transparent 55%),
+    repeating-linear-gradient(0deg,rgba(200,245,49,.06) 0 1px,transparent 1px 8px),
+    repeating-linear-gradient(90deg,rgba(200,245,49,.06) 0 1px,transparent 1px 8px),#07090b;
+  box-shadow:0 0 0 1px rgba(200,245,49,.28),0 10px 30px -10px rgba(200,245,49,.35),inset 0 0 18px rgba(200,245,49,.1);
+}
+.vu-product-icon:after{
+  content:"";position:absolute;inset:10%;border-radius:14%;pointer-events:none;opacity:.8;
+  background:linear-gradient(currentColor,currentColor) left top/16% 1px,
+    linear-gradient(currentColor,currentColor) left top/1px 16%,
+    linear-gradient(currentColor,currentColor) right top/16% 1px,
+    linear-gradient(currentColor,currentColor) right top/1px 16%,
+    linear-gradient(currentColor,currentColor) left bottom/16% 1px,
+    linear-gradient(currentColor,currentColor) left bottom/1px 16%,
+    linear-gradient(currentColor,currentColor) right bottom/16% 1px,
+    linear-gradient(currentColor,currentColor) right bottom/1px 16%;background-repeat:no-repeat;
+}
+.vu-product-icon>svg{display:block;width:56%;height:56%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(200,245,49,.6))}
+.vu-product-icon--hero{--vu-icon-size:var(--vu-icon-hero)}
+.vu-product-icon--card{--vu-icon-size:var(--vu-icon-card)}
+.vu-product-icon--menu{--vu-icon-size:var(--vu-icon-menu)}
+.vu-product-icon--dock{--vu-icon-size:var(--vu-icon-dock);background:none;box-shadow:none;border-radius:0;color:inherit}
+.vu-product-icon--dock:after{display:none}
+.vu-product-icon--dock>svg{width:100%;height:100%;filter:none}
+.vu-product-hero{position:relative;isolation:isolate;min-width:0;padding:28px 0 32px;color:var(--vu-text)}
+.vu-product-hero__copy{position:relative;min-width:0;z-index:1}
+.vu-product-hero .vu-product-hero__eyebrow,.vu-product-hero .vu-product-eyebrow{display:flex;align-items:center;gap:10px;margin:18px 0 12px;font-size:11px;line-height:1.5;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-accent-text)}
+.vu-product-hero .vu-product-hero__eyebrow:before,.vu-product-hero .vu-product-eyebrow:before{content:"";display:block;width:22px;height:2px;flex:none;background:var(--vu-accent);border-radius:2px}
+.vu-product-hero .vu-product-hero__title,.vu-product-hero .vu-product-title{margin:0;max-width:17ch;font-size:var(--vu-hero-title);line-height:var(--vu-hero-leading);letter-spacing:var(--vu-hero-tracking);font-weight:850;color:var(--vu-text);text-wrap:balance}
+.vu-product-hero .vu-product-hero__lead,.vu-product-hero .vu-product-lead{margin:16px 0 0;max-width:54ch;font-size:15px;line-height:1.6;color:var(--vu-text-secondary)}
+.vu-product-hero__actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+.vu-product-hero__visual{position:relative;min-width:0;max-width:100%;pointer-events:none}
+.vu-product-hero__visual img,.vu-product-hero__visual svg{display:block;max-width:100%;height:auto}
+.vu-product-action{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 22px;border:1px solid transparent;border-radius:var(--vu-radius-control);background:var(--vu-accent);color:var(--vu-on-accent);font:800 14px/1.25 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-decoration:none;cursor:pointer;transition:background-color .15s,box-shadow .15s}
+.vu-product-action:hover{box-shadow:0 8px 24px -12px rgba(200,245,49,.65)}
+.vu-product-action--secondary{background:transparent;border-color:var(--vu-line-strong);color:var(--vu-text)}
+.vu-product-action--secondary:hover{background:var(--vu-surface);box-shadow:none}
+.vu-product-chip{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border:1px solid var(--vu-line-strong);border-radius:var(--vu-radius-control);background:transparent;color:var(--vu-text-secondary);font:700 13px/1.3 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-decoration:none;cursor:pointer}
+.vu-product-chip:hover{background:var(--vu-surface);color:var(--vu-text)}
+.vu-product-chip[aria-pressed=true],.vu-product-chip[aria-current=page]{background:var(--vu-accent-soft);border-color:var(--vu-accent-text);color:var(--vu-accent-text)}
+.vu-product-action:focus-visible,.vu-product-chip:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
+@media(min-width:768px){
+  :root{--vu-icon-hero:96px;--vu-icon-card:58px;--vu-hero-title:clamp(44px,4.8vw,64px)}
+  .vu-product-hero{padding:44px 0 48px}
+  .vu-product-hero .vu-product-hero__eyebrow,.vu-product-hero .vu-product-eyebrow{margin-top:22px}
+  .vu-product-hero .vu-product-hero__lead,.vu-product-hero .vu-product-lead{font-size:17px}
+  .vu-product-hero__actions{margin-top:28px}
+}
+@media(prefers-reduced-motion:reduce){.vu-product-action{transition:none}}

@@ -1,0 +1,20 @@
+{
+  "schema": "vu-marketstack-display-rights-1",
+  "provider": "MARKETSTACK",
+  "status": "CONFIRMED_BY_OWNER",
+  "source": "OWNER_ATTESTATION",
+  "evidenceRef": "vu-rights-marketstack-owner-2026-10-10",
+  "recordedAt": "2026-10-10T08:56:26Z",
+  "display": true,
+  "commercial": true,
+  "dataPaths": ["IDENTITY", "RAW_EOD"],
+  "permittedUse": "NORMALIZED_PRODUCT_DISPLAY",
+  "rawRedistribution": false,
+  "products": ["Discover", "Search", "Watchlist", "Close charts"],
+  "scope": "Normalized European equity identity and historical unadjusted Close values through the VU canonical contract. RAW_EOD names the internal price basis, not provider response redistribution.",
+  "ownerStatement": "vorhandene Marketstack Commercial-/Display-Berechtigung als Rights Evidence registrieren und den Status aktualisieren.",
+  "publicationInstruction": "449 Discover-Titel sicher durch die PR-Kette bringen, Rights-Status korrigieren, Baseline-Testfehler isolieren, mergen, veröffentlichen und anschließend live auf iPhone/Desktop prüfen.",
+  "evidenceLimit": "Account-owner attestation recorded from the explicit instruction. This registry does not claim an independently inspected provider contract.",
+  "excluded": ["Provider RAW response envelopes", "API credentials", "bulk RAW redistribution", "realtime claims", "automatic analytical certification"],
+  "schedulesEnabled": false
+}

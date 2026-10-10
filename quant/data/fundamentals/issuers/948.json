@@ -329,26 +329,26 @@
       "cik": "0000355948",
       "name": "RICHARDSON ELECTRONICS, LTD.",
       "sic": "5065",
-      "rawFacts": 19368,
-      "mappedFacts": 6048,
-      "unmappedFacts": 13973,
+      "rawFacts": 19574,
+      "mappedFacts": 6117,
+      "unmappedFacts": 14117,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
-      "fiscalYearEnd": "0530",
+      "fiscalYearEnd": "0529",
       "tickers": [
         "RELL"
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2009-05-30",
-      "lastPeriodEnd": "2026-05-30",
+      "lastPeriodEnd": "2026-08-29",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-05-29",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 16.0
@@ -362,7 +362,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-05-29",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 16.0,
@@ -382,21 +382,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-05-29",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-05-29",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-05-29",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 16.0
@@ -410,14 +410,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-05-30",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-05-28",
           "lastAvailablePeriod": "2026-05-30",
           "historyYears": 15.0
@@ -440,18 +440,18 @@
         }
       },
       "quality": {
-        "HIGH": 482
+        "HIGH": 488
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 482,
-        "resolvedValues": 482
+        "datableValues": 488,
+        "resolvedValues": 488
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14054,
+        "total": 14198,
         "by_severity": {
-          "INFO": 13973,
+          "INFO": 14117,
           "WARNING": 81
         },
         "by_code": {
@@ -459,27 +459,28 @@
           "FISCAL_PERIOD_CONFLICT": 22,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 13973
+          "UNKNOWN_CONCEPT": 14117
         }
       },
       "latestFiling": {
-        "accession": "0000355948-26-000002",
-        "filing_date": "2026-08-03",
-        "form": "10-K",
-        "periodic_filings": 152
+        "accession": "0000355948-26-000019",
+        "filing_date": "2026-10-08",
+        "form": "10-Q",
+        "periodic_filings": 153,
+        "acceptance_datetime": "2026-10-08T19:44:19.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "b9eb87b58bb0da8765ef3ea412578d1e382a37d37d3689f99102f371f6959845",
+      "sourceDigest": "0dc855d843331655b01b7e31707b9ed02b6495d023effe7383526fb4c0d6f90e",
       "issuerId": "iss_cik_0000355948"
     },
     {

@@ -13,13 +13,13 @@
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/vorsorge/app.css">
 </head>
-<body class="vs"><vu-navigation theme="light" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="vs"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="vs-skip" href="#vs-root">Zum Inhalt</a>
 <!-- VISION UNIVERSE® VORSORGE: Analyse-, Planungs- und Vergleichsschicht.
      Kein Broker, kein Depotanbieter, keine Vermittlung. -->
-<nav class="vs-subnav" id="vs-subnav" aria-label="Vorsorge-Navigation"></nav>
 <main class="vs-main vs-wrap" id="vs-root" tabindex="-1"><div class="vs-loading">Vorsorge wird geladen …</div></main>
-<button class="vs-theme" id="vs-theme" type="button" aria-label="Farbschema wechseln">☾ Dunkel</button>
+<!-- Weitere Vorsorge-Bereiche: die Produkt-Leiste der Shell traegt Vorsorge, Plan, ETFs und Portfolio; alles Weitere steht hier am Ende jeder Ansicht und im globalen Menue. -->
+<nav class="vs-more vs-wrap" id="vs-more" aria-label="Weitere Vorsorge-Bereiche"></nav>
 <script src="/vorsorge/engines/vorsorge-math.js"></script>
 <script src="/vorsorge/engines/series-codec.js"></script>
 <script src="/vorsorge/engines/etf-taxonomy.js"></script>

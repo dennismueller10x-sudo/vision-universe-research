@@ -1,0 +1,163 @@
+name: Elliott Prospective Registry (Mission X, nur anhaengen)
+
+# WOZU: Jede abgeschlossene Woche friert das Register jedes neu qualifizierte Elliott-Setup der Library V1 und einen
+# Snapshot aller Titel (Kontrollkohorte: Trend, RS26, Marktstruktur) ein — ohne Zukunftswissen. Spaetere
+# Entwicklungen werden als REVISION angehaengt, nie als Aenderung. Auswertung nur abgelaufener Horizonte.
+#
+# ZWEI SICHTEN (ab Registry 1.1.0):
+#   CUSTOMER_PRODUCT  dieselbe Elliott-Ausgabe wie das Kundenprodukt (Chartbild, technical-intelligence/v3):
+#                     analyzeProduct mit Persistenzkette, Produkt-Zeitebene und Produkt-Optionen. Vor dem Lauf wird
+#                     eine Stichprobe veroeffentlichter Titel nachgerechnet und Byte fuer Byte mit dem Shard verglichen.
+#                     Ohne Gleichheit wird nichts registriert.
+#   STATELESS_ENGINE  die zustandslose Sicht der historischen Evidenz (Kohorten von 1.0.0), unveraendert.
+#
+# Daten: Wochenschluesse im Format von quant/data/market/discover-series-long, im Runner frisch aus der
+# Historienablage gebaut (publish-long-series.mjs). Die veroeffentlichten Langreihen gehoeren long-series.yml und
+# werden hier NICHT committet. Die committete Fassung (= Eingang des veroeffentlichten Produkts) wird vorher nach
+# $RUNNER_TEMP kopiert: fuer die Identitaetspruefung und den Datenabgleich.
+#
+# ZUVERLAESSIGKEIT
+#   * Vier Zeitplaene (Sa, So, Mo, Mi). Der erste registriert die Woche; die anderen holen nach, wenn ein Lauf
+#     gescheitert ist, und sind sonst ein billiger No-Op (Stufe "Faellig?").
+#   * Nachholen: fehlende Wochen nach dem letzten Lauf der Reihe nach (hoechstens max_weeks je Lauf). Die Reihen
+#     werden fuer jede Woche vor der Analyse gekuerzt; die Verspaetung steht im RUN-Eintrag (registrationLagDays).
+#   * Abdeckungs-Sperre: deutlich weniger Titel als im vorigen Lauf (veraltete Daten) → nichts registriert, rot.
+#   * Push mit Wiederholung; scheitert er, ist nichts veroeffentlicht und der naechste Zeitplan holt die Woche nach.
+#   * Jeder rote Lauf oeffnet bzw. kommentiert ein Issue "Elliott-Registry: Wochenlauf fehlgeschlagen".
+#
+# AUF MAIN (seit der Produktmigration Technical Intelligence v3): Register und Kundenprodukt liegen auf demselben
+# Branch; die Kundenprodukt-Sicht misst das Chartbild von main. Die vier Zeitplaene (Sa, So, Mo, Mi) liegen
+# wieder hier; der Uebergangs-Dispatcher (elliott-registry-dispatcher.yml) ist entfallen, nachdem ein direkter Lauf
+# auf main verifiziert war. Der Forschungsbranch registriert nicht mehr (ein Schreiber).
+
+on:
+  schedule:
+    - cron: '23 9 * * 6'
+    - cron: '47 7 * * 0'
+    - cron: '17 6 * * 1'
+    - cron: '41 5 * * 3'
+  workflow_dispatch:
+    inputs:
+      max_weeks:
+        description: 'Hoechstens so viele fehlende Wochen nachholen (1-4)'
+        default: '2'
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: elliott-prospective-registry
+  cancel-in-progress: false
+
+jobs:
+  register:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      REG: quant/data/technical-intelligence/elliott-registry
+      LONG: quant/data/market/discover-series-long
+    steps:
+      # Spitze des Branches, nicht der ausloesende Commit: ein Lauf, der hinter einem anderen ansteht, sieht so
+      # das Register, das der vorige gerade geschrieben hat.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Register vor dem Lauf pruefen
+        run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG"
+
+      - name: Faellig?
+        id: due
+        run: |
+          node scripts/technical/elliott-registry/register.mjs --registry "$REG" --pending | tee -a "$GITHUB_OUTPUT"
+
+      - name: Produkt-Eingang sichern (committete Langreihen = Eingang des veroeffentlichten Produkts)
+        if: steps.due.outputs.pending != ''
+        run: cp -r "$LONG" "$RUNNER_TEMP/product-input"
+
+      - name: Wochenschluesse runner-seitig aus der Historienablage
+        if: steps.due.outputs.pending != ''
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/publish-long-series.mjs
+
+      # Exit 0 = alles registriert, 3 = fruehere Wochen registriert, eine spaetere nicht (wird committet, Lauf
+      # danach rot), sonst = nichts registriert (rot, nichts zu committen).
+      - name: Registrieren (Identitaet pruefen, fehlende Wochen nachholen)
+        id: reg
+        if: steps.due.outputs.pending != ''
+        env:
+          MAX_WEEKS_INPUT: ${{ inputs.max_weeks }}
+        run: |
+          set +e
+          MW="${MAX_WEEKS_INPUT:-2}"
+          case "$MW" in 1|2|3|4) ;; *) echo "::error::max_weeks muss 1-4 sein"; exit 1;; esac
+          node --max-old-space-size=6144 scripts/technical/elliott-registry/register.mjs --weekly-dir "$LONG" \
+            --registry "$REG" --workers "$(nproc)" --max-weeks "$MW" \
+            --product-input-dir "$RUNNER_TEMP/product-input" --identity-sample 120 \
+            --data-source "publish-long-series.mjs (runner, Historienablage)" 2>&1 | tee "$RUNNER_TEMP/register.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" != "0" ] && [ "$rc" != "3" ]; then exit "$rc"; fi
+
+      - name: Pruefen (Kette, Snapshots, Identitaet, nur anhaengen gegen den Stand vor dem Lauf)
+        if: steps.due.outputs.pending != ''
+        run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG" --against-git HEAD
+
+      - name: Auswerten (nur abgelaufene Horizonte)
+        if: steps.due.outputs.pending != ''
+        run: node scripts/technical/elliott-registry/evaluate-registry.mjs --weekly-dir "$LONG" --registry "$REG" --out "$REG/reports/latest.json"
+
+      - name: Langreihen nicht committen (gehoeren long-series.yml)
+        if: always() && steps.due.outputs.pending != ''
+        run: |
+          git checkout -- "$LONG"
+          git clean -fdq "$LONG"
+
+      - name: Commit (nur Register)
+        if: steps.due.outputs.pending != ''
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$REG"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Elliott Prospective Registry: $(node -e 'const h=require("./'"$REG"'/HEAD.json");console.log("seq "+h.seq)')"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Teilweise nachgeholt → rot
+        if: steps.reg.outputs.rc == '3'
+        run: |
+          echo "::error::Nicht alle faelligen Wochen registriert (siehe Log der Stufe Registrieren). Der naechste Zeitplan holt nach."
+          exit 1
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "### Elliott Prospective Registry"
+            echo "* Faellig: ${{ steps.due.outputs.pending || 'nichts' }} (${{ steps.due.outputs.count || '0' }} Woche/n)"
+            echo "* Exit Registrierung: ${{ steps.reg.outputs.rc || '-' }}"
+            node -e 'const h=require("./'"$REG"'/HEAD.json");console.log("* Ledger: seq "+h.seq)' || true
+            # if statt "[ -f ] &&": unter bash -e beendete das fehlende Log (No-Op-Lauf) die Stufe mit Code 1
+            if [ -f "$RUNNER_TEMP/register.log" ]; then echo '```'; tail -n 5 "$RUNNER_TEMP/register.log" | cut -c1-900; echo '```'; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Alarm (Issue oeffnen oder kommentieren)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Elliott-Registry: Wochenlauf fehlgeschlagen"
+          BODY="Lauf ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} (${{ github.event_name }}, ${GITHUB_REF_NAME}) ist rot. Faellig war: ${{ steps.due.outputs.pending || 'unbekannt' }}. Der naechste Zeitplan holt fehlende Wochen nach; ohne Behebung bleibt die Woche offen."
+          N=$(gh issue list --repo "${{ github.repository }}" --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number' || true)
+          if [ -n "$N" ]; then gh issue comment "$N" --repo "${{ github.repository }}" --body "$BODY"; else gh issue create --repo "${{ github.repository }}" --title "$TITLE" --body "$BODY"; fi
