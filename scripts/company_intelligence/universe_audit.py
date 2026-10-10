@@ -12,7 +12,7 @@ from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.universe_eligibility import generate
 
 def audit(state, identity_root, output):
-    state, output = Path(state), Path(output)
+    state, identity_root, output = Path(state), Path(identity_root), Path(output)
     if not (state / 'state.sqlite').is_file():
         raise ValueError('CURRENT_FULL_RESTORED_STATE_REQUIRED')
     start = time.monotonic()
@@ -20,6 +20,8 @@ def audit(state, identity_root, output):
     if prior.get('privateCompanies', 0) < 5120:
         raise ValueError('CURRENT_FULL_PRIVATE_UNIVERSE_REQUIRED')
     before = {n: database_proof(state / n) for n in ('state.sqlite', 'archive.sqlite') if (state / n).is_file()}
+    if prior.get('privateIntegrity') != before:
+        raise ValueError('CURRENT_AUTHORITATIVE_TABLE_PROOF_MISMATCH')
     store = Store(state / 'state.sqlite')
     try:
         report, eligibility = generate(store, identities(identity_root, store), output / 'consumer', prior['asOf'])
