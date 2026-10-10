@@ -1,7 +1,13 @@
 {
   "note": "Reale HeyGen-Ergebnisse. Von build-registry.mjs in die Registries gemerged. Nur eintragen, was tatsaechlich angelegt wurde.",
   "billing": {
-    "apiWalletUsd": { "before": 3.67, "afterAvatarCreate": 2.35, "afterTestVideo": 2.27, "checkedAt": "2026-10-10" },
+    "apiWalletUsd": {
+      "before": 3.67,
+      "afterAvatarCreate": 2.35,
+      "afterTestVideo": 2.27,
+      "checkedAt": "2026-10-10",
+      "afterClip15": 1.8
+    },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
   "uploads": {
@@ -11,9 +17,39 @@
     "sofia": "7e16fcb8dd6b43b499f794f36250ea58"
   },
   "avatars": {
-    "lea": { "groupId": "5962a9dd56595ecc894cd10ceac004eb", "lookIds": ["5962a9dd56595ecc894cd10ceac004eb"], "status": "CREATED_COMPLETED", "createdCostUsd": 1.32, "defaultVoiceId": null, "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5" }
+    "lea": {
+      "groupId": "5962a9dd56595ecc894cd10ceac004eb",
+      "lookIds": [
+        "5962a9dd56595ecc894cd10ceac004eb"
+      ],
+      "status": "CREATED_COMPLETED",
+      "createdCostUsd": 1.32,
+      "defaultVoiceId": null,
+      "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5"
+    }
   },
   "videos": [
-    { "assetId": "video-lea-idtest-01", "path": "video/tests/lea_idtest_01.mp4", "heygenVideoId": "bcd7a38e1dfea9dab0ea643016cd0ae9", "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb", "engine": "avatar_iv", "format": "MP4 H.264 1080x1920 25fps, 2.48 s, AAC", "costUsd": 0.08, "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED", "releaseStatus": "REVIEW" }
+    {
+      "assetId": "video-lea-idtest-01",
+      "path": "video/tests/lea_idtest_01.mp4",
+      "heygenVideoId": "bcd7a38e1dfea9dab0ea643016cd0ae9",
+      "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb",
+      "engine": "avatar_iv",
+      "format": "MP4 H.264 1080x1920 25fps, 2.48 s, AAC",
+      "costUsd": 0.08,
+      "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
+      "releaseStatus": "REVIEW"
+    },
+    {
+      "assetId": "video-lea-clip15-hook-01",
+      "path": "video/clips/lea_clip15_hook_01.mp4",
+      "heygenVideoId": "dee88a60cab981015424533e9cd11e3f",
+      "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb",
+      "engine": "avatar_iv",
+      "format": "MP4 H.264 1080x1920 25fps, 15.0 s, AAC (HeyGen-Rohclip 12.15 s + Hyperframes-Overlays/Endcard)",
+      "costUsd": 0.47,
+      "qaStatus": "VISUAL_REVIEW_DONE",
+      "releaseStatus": "REVIEW"
+    }
   ]
 }

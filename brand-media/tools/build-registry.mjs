@@ -61,7 +61,7 @@ for (const [key, desc] of STUDIO) {
 
 const state = JSON.parse(readFileSync(join(root, 'registry/heygen-state.json'), 'utf8'));
 for (const v of state.videos) {
-  assets.push({ assetId: v.assetId, kind: 'video-test', character: 'lea', description: 'Identitaetstest LEA: Blick zur Seite, Kopfdrehung, Satz "Andere raten. Du verstehst."', camera: 'CAM-D-aehnlich (Totale sitzend, Masterkomposition)', clothing: CHARACTERS[0].outfit, originalReference: 'originals/lea_master_original.png', path: v.path, format: v.format, sha256: createHash('sha256').update(readFileSync(join(root, v.path))).digest('hex'), model: `HeyGen ${v.engine} (Photo Avatar, REST)`, heygenId: v.heygenVideoId, heygenAvatarId: v.heygenAvatarId, costUsd: v.costUsd, qaStatus: v.qaStatus, releaseStatus: v.releaseStatus, generationStatus: 'GENERATED' });
+  assets.push({ assetId: v.assetId, kind: 'video-test', character: 'lea', description: v.assetId.includes('clip15') ? '15-s-Clip LEA mit Hook, Produktschnitten (lokale Plattform-Screenshots) und Endcard' : 'Identitaetstest LEA: Blick zur Seite, Kopfdrehung, Satz "Andere raten. Du verstehst."', camera: 'CAM-D-aehnlich (Totale sitzend, Masterkomposition)', clothing: CHARACTERS[0].outfit, originalReference: 'originals/lea_master_original.png', path: v.path, format: v.format, sha256: createHash('sha256').update(readFileSync(join(root, v.path))).digest('hex'), model: `HeyGen ${v.engine} (Photo Avatar, REST)`, heygenId: v.heygenVideoId, heygenAvatarId: v.heygenAvatarId, costUsd: v.costUsd, qaStatus: v.qaStatus, releaseStatus: v.releaseStatus, generationStatus: 'GENERATED' });
 }
 const registry = {
   schemaVersion: 'brand-media-asset-registry-1.0.0',
