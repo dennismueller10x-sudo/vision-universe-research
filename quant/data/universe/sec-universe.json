@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-06T13:23:10.925Z",
+  "generated_at_utc": "2026-10-09T13:25:01.967Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5354,
+    "withDeliveredStockPage": 5351,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -1009,6 +1009,17 @@
       "name": "Adobe Inc.",
       "cik": "0000796343",
       "instrumentId": "vu_7a5981ff9b7bd6",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "ADBT",
+      "name": "Advasa Holdings, Inc.",
+      "cik": "0002084227",
+      "instrumentId": "vu_b5b47a60396166",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -2173,17 +2184,6 @@
       "cik": "0000922864",
       "instrumentId": "vu_b7155b92662118",
       "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "AIXC",
-      "name": "AIxCrypto Holdings, Inc.",
-      "cik": "0001460702",
-      "instrumentId": "vu_961dfbc03bed9f",
-      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -20538,20 +20538,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "FGNX",
-      "name": "FG Nexus Inc.",
-      "cik": "0001591890",
-      "instrumentId": "vu_3b0c620a88693e",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "FGNXP"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "FHB",
       "name": "First Hawaiian, Inc.",
       "cik": "0000036377",
@@ -22480,17 +22466,6 @@
       "cik": "0000105744",
       "instrumentId": "vu_0823db8d7d30b6",
       "exchange": "AMEX",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "GBTG",
-      "name": "Global Business Travel Group, Inc.",
-      "cik": "0001820872",
-      "instrumentId": "vu_c4a32e60f1d292",
-      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -48234,17 +48209,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "SBXD",
-      "name": "SilverBox Corp IV",
-      "cik": "0002015947",
-      "instrumentId": "vu_9a79d6ad4909f7",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "SBXE",
       "name": "SilverBox Corp V",
       "cik": "0002081909",
@@ -61059,17 +61023,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "ADBT",
-      "name": "Advasa Holdings, Inc.",
-      "cik": "0002084227",
-      "instrumentId": "vu_b5b47a60396166",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "ADTN",
       "name": "ADTRAN Holdings, Inc.",
       "cik": "0000926282",
@@ -61130,6 +61083,17 @@
         "TAWN",
         "TPEI"
       ],
+      "role": "universe"
+    },
+    {
+      "ticker": "AIXC",
+      "name": "AIxCrypto Holdings, Inc.",
+      "cik": "0001460702",
+      "instrumentId": "vu_961dfbc03bed9f",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -61606,6 +61570,20 @@
       "role": "universe"
     },
     {
+      "ticker": "FGNX",
+      "name": "FG Nexus Inc.",
+      "cik": "0001591890",
+      "instrumentId": "vu_3b0c620a88693e",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "FGNXP"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "FJDIU",
       "name": "ARC Group Securities Acquisition I",
       "cik": "0002094712",
@@ -61650,6 +61628,17 @@
       "alsoTickers": [
         "FTHAW"
       ],
+      "role": "universe"
+    },
+    {
+      "ticker": "GBTG",
+      "name": "Global Business Travel Group, Inc.",
+      "cik": "0001820872",
+      "instrumentId": "vu_c4a32e60f1d292",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -62148,6 +62137,17 @@
       "name": "Samos Energy Acquisition Corp",
       "cik": "0002125567",
       "instrumentId": "vu_c0be3b74e058e2",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "SBXD",
+      "name": "SilverBox Corp IV",
+      "cik": "0002015947",
+      "instrumentId": "vu_9a79d6ad4909f7",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",

@@ -14,16 +14,12 @@
   "use strict";
   var S = global.QuantShell, el = S.el;
 
-  /* DIE FUENF BEREICHE VON QUANT - Owner-Entscheid 29.09.2026.
-     "Quant Screener", nicht "Screener": so heisst das eigenstaendige
-     Produkt unter /screener/, das NICHT zu Quant gehoert. */
-  var NAV = [
-    { id: "home", label: "Home", href: "#/" },
-    { id: "screener", label: "Quant Screener", href: "#/screener" },
-    { id: "strategien", label: "Strategien", href: "#/strategien" },
-    { id: "aktien", label: "Aktien", href: "#/aktien" },
-    { id: "methodik", label: "Methodik", href: "#/methodik" }
-  ];
+  /* Die Bereiche von Quant stehen seit der UI-Vereinheitlichung (10/2026)
+     in der gemeinsamen Produkt-Leiste (assets/site-navigation.js, PRODUCTS):
+     Quant | Screener | Strategien | Aktien | ☰. Der Eintrag "Screener" steht
+     dort unter dem Produktnamen Quant und traegt die Bezeichnung
+     "Quant Screener" fuer Screenreader: das eigenstaendige Produkt unter
+     /screener/ gehoert nicht zu Quant. Methodik ist sekundaer (Hero, Fuss). */
   /* Linien-Icons in der Strichstaerke der Discover-Leiste (1,7 px auf 19 px). */
   var ICON = {
     home: "M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5",
@@ -67,6 +63,8 @@
     stocks: function () { return "#/aktien"; },
     method: function (topic) { return "#/methodik" + (topic ? "/" + topic : ""); },
     technical: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/technik"; },
+    chartbild: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/chartbild"; },
+    chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }
   };
@@ -243,7 +241,7 @@
   };
 
   global.QX = {
-    NAV: NAV, icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
+    icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,
     tile: tile, scoreBox: scoreBox, globe: globe,

@@ -5,10 +5,10 @@ from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 import re
-from .model import SCHEMA, normalize, stable_id
+from .model import SCHEMA, normalize, stable_id, canonical_url
 
 def item_time(item):
-    return item.get('publishedAt') or item.get('observedAt')
+    return item.get('publishedAt') or (item['publishedDate'] + 'T00:00:00Z' if item.get('publishedDate') else item.get('observedAt'))
 
 
 def export_revision():
@@ -35,13 +35,13 @@ def material_documents(events, cid):
     documents = {}
     for e in events:
         for doc in e.get('sourceDocuments', []) + [{'url': e.get(k), 'type': kind} for k, kind in
-                [('presentationUrl', 'PRESENTATION'), ('transcriptUrl', 'COMPANY_TRANSCRIPT'), ('quarterlyReportUrl', 'FINANCIAL_REPORT'), ('earningsReleaseUrl', 'EARNINGS_RELEASE')]]:
+                [('presentationUrl', 'PRESENTATION'), ('transcriptUrl', 'COMPANY_TRANSCRIPT'), ('quarterlyReportUrl', 'FINANCIAL_REPORT'), ('earningsReleaseUrl', 'EARNINGS_RELEASE'), ('webcastUrl', 'WEBCAST'), ('replayUrl', 'CALL_RECORDING')]]:
             url = doc.get('url')
             if not url:
                 continue
             key = (url, doc.get('type') or 'SOURCE_DOCUMENT')
             documents[key] = {**doc, 'type': key[1], 'documentId': stable_id(cid, *key), 'companyId': cid, 'eventId': e['eventId'],
-                              'reportingPeriod': e.get('reportingPeriod'), 'fiscalYear': e.get('fiscalYear'), 'fiscalQuarter': e.get('fiscalQuarter'), 'date': e.get('date')}
+                              'reportingPeriod': e.get('reportingPeriod'), 'fiscalYear': e.get('fiscalYear'), 'fiscalQuarter': e.get('fiscalQuarter'), 'date': e.get('date'), 'label': doc.get('label') or e.get('headline')}
     return list(documents.values())
 
 
@@ -167,7 +167,17 @@ class Store:
                         refs[key] = p
                 merged['provenanceTruncated'] = old.get('provenanceTruncated', False) or len(refs) > 32
                 merged['provenance'] = sorted(refs.values(), key=lambda p: (PRIORITY.get(p['discoverySource'], 9), p['sourceId'], p['originalUrl']))[:32]
-                merged['deduplicationEvidence'] = sorted(set(old.get('deduplicationEvidence', []) + [reason]))
+                evidence = old.get('deduplicationEvidence', []) + [reason]
+                # A fresh, exact owned-source sighting may repair an old insecure
+                # primary URL. Never infer another host/path or rewrite identity.
+                old_url, new_url = old.get('canonicalUrl',''), item.get('canonicalUrl','')
+                explicit_owned = any('VERIFIED_FIRST_PARTY_SOURCE' in p.get('match',{}).get('evidence',[]) and p.get('originalUrl') == new_url for p in item['provenance'])
+                if (old_url.startswith('http://') and new_url == 'https://' + old_url[7:]
+                        and normalize(old['headline']) == normalize(item['headline'])
+                        and item_time(old) == item_time(item) and explicit_owned):
+                    merged['canonicalUrl'] = new_url
+                    evidence.append('EXACT_OWNED_HTTPS_SOURCE_LINK_RECONFIRMED')
+                merged['deduplicationEvidence'] = sorted(set(evidence))
                 from .model import classify
                 merged.update(classify(merged['headline']))
                 self.db.execute('INSERT OR REPLACE INTO items VALUES(?,?,?,?)',
@@ -177,6 +187,8 @@ class Store:
             return 'NEW'
 
     def event(self, event, now):
+        from .q4_events import correct_event
+        event = correct_event(event)
         event = dict(event)
         incoming_id = event['eventId']
         alias = self.db.execute('SELECT target FROM event_alias WHERE alias=?', (incoming_id,)).fetchone()
@@ -197,11 +209,13 @@ class Store:
         correction = bool(re.search(r'correct(?:ion|ed)|restated|revised', event.get('headline', '') + ' ' + (event.get('documentEvidence', {}).get('evidence') or ''), re.I))
         earnings_group = (not correction and event['eventType'] == 'EARNINGS_PUBLISHED' and event.get('reportingPeriod') and event.get('fiscalQuarter') and event.get('fiscalYear') and not event.get('isAmendment'))
         call_group = event['eventType'] == 'EARNINGS_CALL' and event.get('startsAt') and event.get('confirmationStatus') == 'CONFIRMED'
+        peers = []
         if earnings_group or call_group:
             peers = [json.loads(r[0]) for r in self.db.execute(
                 "SELECT payload FROM events WHERE company=? AND kind='EARNINGS_PUBLISHED' AND date=? AND json_extract(payload,'$.reportingPeriod')=? AND json_extract(payload,'$.fiscalQuarter')=? AND json_extract(payload,'$.fiscalYear')=?",
                 (event['companyId'], event['date'], event.get('reportingPeriod'), event.get('fiscalQuarter'), event.get('fiscalYear')))] if earnings_group else [json.loads(r[0]) for r in self.db.execute("SELECT payload FROM events WHERE company=? AND kind='EARNINGS_CALL' AND json_extract(payload,'$.startsAt')=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (event['companyId'], event['startsAt']))]
             peers = [p for p in peers if not p.get('isAmendment') and not re.search(r'correct(?:ion|ed)|restated|revised', p.get('headline', ''), re.I)]
+            peers = [correct_event(p) for p in peers]
             if call_group:
                 peers = [p for p in peers if all(not event.get(k) or not p.get(k) or event[k] == p[k] for k in ('fiscalQuarter', 'fiscalYear'))]
             if peers:
@@ -237,7 +251,7 @@ class Store:
                 event = combined
         old = self.db.execute('SELECT payload FROM events WHERE id=?', (event['eventId'],)).fetchone()
         if old:
-            prior = json.loads(old[0])
+            prior = correct_event(json.loads(old[0]))
             event['discoveredAt'] = prior.get('discoveredAt', now)
             event.setdefault('confirmationHistory', prior.get('confirmationHistory', []))
             for key in ('webcastUrl', 'replayUrl', 'presentationUrl', 'transcriptUrl', 'materialEvidence'):
@@ -249,12 +263,50 @@ class Store:
                 self.audit(now, event.get('sourceId'), 'CALENDAR_CHANGED', eventId=event['eventId'], previous=prior_date, current=new_date)
             else:
                 event['dateHistory'] = prior.get('dateHistory', [])
+        # Explicit PDF-document metadata cannot survive as a webcast/replay
+        # merely because an earlier source used ambiguous attachment wording.
+        pdf_urls = {canonical_url(d.get('url')) for d in event.get('sourceDocuments', [])
+                    if d.get('mimeType') == 'application/pdf' and
+                    d.get('type') in ('PRESENTATION','COMPANY_TRANSCRIPT')}
+        for field in ('webcastUrl','replayUrl'):
+            if event.get(field) and canonical_url(event[field]) in pdf_urls:
+                event[field] = next((record[field] for record in peers + [prior_event]
+                                     if record.get(field) and canonical_url(record[field]) not in pdf_urls), None)
         with self.db:
             encoded = dumps(event)
             if old and old[0] == encoded:
                 return
             self.db.execute('INSERT OR REPLACE INTO events VALUES(?,?,?,?,?)',
                             (event['eventId'], event['companyId'], event['eventType'], event.get('date') or event.get('publishedAt'), encoded))
+
+    def retire_composite_call(self, replacement, now):
+        """Retire only a proven release-date/call-date mix-up on the same source."""
+        proof = replacement.get('evidence') or {}
+        if (replacement.get('eventType') != 'EARNINGS_SCHEDULED' or
+                proof.get('method') != 'EXPLICIT_FIRST_PARTY_RELEASE_CLAUSE_IN_COMPOSITE_HEADLINE' or
+                proof.get('retireLegacyCallOnReleaseDate') is not True or not replacement.get('sourceId') or not proof.get('originalHeadline')):
+            return 0
+        target = self.db.execute('SELECT payload FROM events WHERE id=?', (replacement['eventId'],)).fetchone()
+        if not target or json.loads(target[0]).get('eventType') != 'EARNINGS_SCHEDULED':
+            return 0  # Commit the verified replacement before retiring any prior row.
+        old_rows = self.db.execute("SELECT id,payload FROM events WHERE company=? AND kind='EARNINGS_CALL' AND date=? AND json_extract(payload,'$.sourceId')=? AND json_extract(payload,'$.sourceUrl')=?",
+                                   (replacement['companyId'], replacement['date'], replacement['sourceId'], replacement['sourceUrl'])).fetchall()
+        retired = 0
+        with self.db:
+            for row in old_rows:
+                old = json.loads(row['payload'])
+                if (old.get('headline') != proof['originalHeadline'] or
+                        (old.get('evidence') or {}).get('method') != 'EXPLICIT_OFFICIAL_ANNOUNCEMENT'):
+                    continue
+                audit = {'code':'COMPOSITE_CALL_RECLASSIFIED_AS_RELEASE','previousEvent':old,
+                         'replacementEventId':replacement['eventId'],'reason':'The explicit full date proves the release; the headline names a different call day.'}
+                self.db.execute('INSERT OR REPLACE INTO audit VALUES(?,?,?,?)',
+                                (stable_id(now,replacement['sourceId'],audit),now,replacement['sourceId'],dumps(audit)))
+                self.db.execute('UPDATE event_alias SET target=? WHERE target=?',(replacement['eventId'],row['id']))
+                self.db.execute('INSERT OR REPLACE INTO event_alias VALUES(?,?)',(row['id'],replacement['eventId']))
+                self.db.execute('DELETE FROM events WHERE id=?',(row['id'],))
+                retired += 1
+        return retired
 
     def prune(self, now):
         cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=365)).isoformat().replace('+00:00', 'Z')
@@ -329,6 +381,8 @@ class Store:
                     entry['relatedEventIds'] = [e['eventId'] for e in events if e.get('filingId') == original['filingId'] and e['eventId'] != original['eventId']]
         configuration_documents = [d for cfg in self.state('ir:' + cid, {}).get('configurations', []) for d in cfg.get('documents', [])]
         financials = self.state('financials:' + cid, {'state': 'UNAVAILABLE', 'reason': 'NOT_PROJECTED'})
+        from .profiles import public_profile
+        profile = public_profile(self.state('companyProfile:' + cid), cid, now)
         references = {}
         if company.get('cik'):
             from .earnings import filing_url
@@ -341,9 +395,16 @@ class Store:
                             references[url] = {'documentId': stable_id(cid, url, 'fact-reference'), 'companyId': cid, 'type': 'SEC_FACT_FILING_REFERENCE',
                                                'url': url, 'filingId': fact['filingId'], 'filedAt': fact.get('filedAt'), 'date': None, 'eventId': None,
                                                'evidence': 'EXISTING_VALIDATED_CONSUMER_FACT_ACCESSION', 'label': 'Fact source filing; form and publication time unavailable'}
-        materials = list({(d['url'], d['type']): d for d in configuration_documents + material_documents(events, cid) + list(references.values())}.values())
+        event_documents = material_documents(events, cid)
+        # A large financial archive must not hide a recent conference webcast
+        # merely because its event has passed out of the upcoming section.
+        recordings = [d for d in event_documents if d['type'] in ('WEBCAST','CALL_RECORDING')]
+        materials = list({(d['url'], d['type']): d for d in recordings + configuration_documents + event_documents + list(references.values())}.values())
+        from .materials import placeholder_document_link
+        materials = [d for d in materials if not placeholder_document_link(d['url'])]
         return {'schema': SCHEMA, 'companyId': cid, 'listings': company['listings'], 'companyName': company['names'][0] if company['names'] else None,
-                'generatedAt': now, 'state': 'AVAILABLE' if items or events else 'NO_DATA',
+                'generatedAt': now, 'state': 'AVAILABLE' if profile or items or events or materials or financials.get('state')=='AVAILABLE' else 'NO_DATA',
+                **({'companyProfile': profile} if profile else {}),
                 'news': [i for i in items if i['eventType'] == 'NEWS'],
                 'filings': [e for e in events if e['eventType'] == 'SEC_FILING'][:30],
                 'earnings': [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'EARNINGS_CANDIDATE', 'PERIODIC_REPORT_PUBLISHED')][:12],
@@ -367,16 +428,16 @@ class Store:
         for table in ('items', 'events', 'sources'):
             for row in self.db.execute('SELECT payload FROM ' + table + ' ORDER BY id'):
                 digest.update(row[0].encode())
-        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' OR key LIKE 'financials:%' ORDER BY key"):
+        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' OR key LIKE 'financials:%' OR key LIKE 'companyProfile:%' ORDER BY key"):
             digest.update(row[0].encode())
             digest.update(row[1].encode())
         generation = digest.hexdigest()[:24]
         paths, tickers = {}, {}
         for cid, company in sorted(companies.items()):
             payload = self.company_payload(company, now)
-            if payload['state'] == 'NO_DATA' and payload['latestFinancials'].get('state') != 'AVAILABLE':
+            if payload['state'] == 'NO_DATA' and not payload['materials'] and payload['latestFinancials'].get('state') != 'AVAILABLE':
                 continue
-            if payload['latestFinancials'].get('state') == 'AVAILABLE':
+            if payload['materials'] or payload['latestFinancials'].get('state') == 'AVAILABLE':
                 payload['state'] = 'AVAILABLE'
             path = 'snapshots/' + generation + '/' + cid + '.json'
             # A noisy issuer cannot prevent publishing all other companies.

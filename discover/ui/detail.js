@@ -91,7 +91,7 @@
   /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
      sobald die naechste Seite gezeichnet wird. */
   var detailAbo = null;
-  var detailResize = null;
+  var detailResize = null; var intelligenceDispose = null;
 
   /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
      der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
@@ -165,7 +165,7 @@
   /* =================================================================== */
   function render(root, detail, options) {
     options = options || {};
-    var state = createState(detail);
+    var state = createState(detail); if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
     S.clear(root);
     if (detailAbo) { detailAbo(); detailAbo = null; }
     if (detailResize) { global.removeEventListener("resize", detailResize); detailResize = null; }
@@ -225,7 +225,7 @@
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); };
+    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
@@ -1766,41 +1766,22 @@
   /* -------------------------------------------- Technical Intelligence */
   function technicalIntelligence(detail) {
     var ti = detail.technicalIntelligence || { layers: {} };
-    var wave = ti.layers.elliottWave || { status: "unavailable" };
-    var labels = { available: "Verfügbar", lowConfidence: "Geringe Konfidenz",
-                   calculating: "Wird berechnet", unavailable: "Nicht verfügbar" };
 
+    /* Mission IV: Discover zeigte hier die Wellenzaehlung der alten V1-Engine samt "Method Fit" – eine zweite, abweichende
+       Elliott-Aussage neben dem Chartbild (Elliott 3.2.2, die sich meist enthaelt). Es gibt nur noch eine Quelle: das Chartbild.
+       Discover nennt keine eigene Zaehlung und keinen Konfidenzwert mehr. */
     var body = [
       el("div", { class: "dx-ti-head" }, [
         el("h3", { style: "margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim)",
-                   text: "Technical Intelligence — Elliott Wave" }),
-        el("span", { class: "dx-ti-state dx-ti-state--" + wave.status,
-                     text: labels[wave.status] || wave.status })
-      ])
-    ];
-    if (wave.status === "available" || wave.status === "lowConfidence") {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:17px;font-weight:600;letter-spacing:-.01em",
-        text: [wave.currentWave ? "Welle " + wave.currentWave : null, wave.patternType,
-               wave.degreeScale ? "Skala " + wave.degreeScale : null].filter(Boolean).join(" · ") }));
-      body.push(el("div", { class: "dx-kv" }, [
-        kvText("Method Fit", isNum(wave.confidence) ? wave.confidence + " / 100" : "–"),
-        kvText("Engine", wave.sourceEngine || "–"),
-        kvText("Repainting", wave.repaintingPolicy || "–"),
-        kvText("Stand", wave.asOf || "–")
-      ]));
-    } else {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
-        text: wave.message || "Für diesen Titel liegt keine Wellenzählung vor." }));
-    }
-    /* Der Hinweis zur Herkunft steht nur, wo es ein Ergebnis gibt; ohne
-       Ergebnis genuegt der Satz darueber (V4.1 §25: keine leeren Kapitel
-       mit Fusstext). */
-    if (wave.status === "available" || wave.status === "lowConfidence") {
-      body.push(el("p", { style: "margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6",
-        text: wave.disclaimer ||
-          "Elliott Wave wird ausschließlich aus der bestehenden Vision-Universe-Engine gelesen. " +
-          "Discover erzeugt keine eigene Wellenzählung." }));
-    }
+                   text: "Chartbild — Kursstruktur" })
+      ]),
+      el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
+        text: "Ausblick, Zonen, Szenarien und die experimentelle Elliott-Strukturdeutung stehen im Chartbild. " +
+              "Für die meisten Titel gibt es dort bewusst keine verlässliche Wellenzählung." }),
+      detail.symbol ? el("p", { style: "margin:10px 0 0;font-size:13px" }, [
+        el("a", { href: "/quant/#/aktie/" + encodeURIComponent(detail.symbol) + "/chartbild", text: "Chartbild öffnen" })
+      ]) : null
+    ].filter(Boolean);
 
     var weitere = [];
     ["marketStructure", "supportResistance"].forEach(function (key) {

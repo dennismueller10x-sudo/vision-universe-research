@@ -49,17 +49,19 @@ async function premiumMobileAudit(page,key){
  const material=await page.evaluate(()=>{
   const css=n=>getComputedStyle(n),rgb=value=>(value.match(/[\d.]+/g)||[]).slice(0,4).map(Number);
   const luminance=value=>{const c=rgb(value);return c.length<3?null:(c[0]+c[1]+c[2])/3;};
-  const body=css(document.body),main=css(document.querySelector('.v2-main')),bar=css(document.querySelector('.v2-bar'));
-  const dock=document.querySelector('.v2-dock'),ds=css(dock),db=dock.getBoundingClientRect();
+  /* UI-Vereinheitlichung 10/2026: Kopf und Produkt-Leiste sind die gemeinsame
+     Vision-Universe-Shell (vu-navigation, #vu-dock - beide im Shadow DOM). */
+  const body=css(document.body),main=css(document.querySelector('.v2-main')),bar=css(document.querySelector('vu-navigation').shadowRoot.querySelector('header'));
+  const host=document.getElementById('vu-dock'),dock=host.shadowRoot.querySelector('nav'),ds=css(dock),db=dock.getBoundingClientRect();
   const active=dock.querySelector('[aria-current=page]'),as=active&&css(active);
   return {bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
-   pureWhite:[body.backgroundColor,bar.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;}),
-   dock:{box:db.toJSON(),position:ds.position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),background:ds.backgroundColor,backdropFilter:ds.backdropFilter||ds.webkitBackdropFilter,boxShadow:ds.boxShadow,borderWidth:parseFloat(ds.borderTopWidth)},
+   pureWhite:[body.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;})&&luminance(bar.backgroundColor)>=250,
+   dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow},
    active:{background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.backgroundColor)}};
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=2&&material.dock.bottom<=6,'Browser dock must sit at the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
  const surfaces=page.locator('.v2-journey > [data-surface]');
  const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
@@ -99,6 +101,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  page.on('pageerror',e=>errors.push({key,message:e.message}));
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ // Measure the cold Home entry before unrelated settings, theme and reload checks.
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  await check(key+' fresh visit starts light regardless of device scheme',async()=>{
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
   assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
@@ -120,7 +124,6 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  });
  await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
  await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
- await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  await check(key+' no horizontal page overflow',async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)));
  await check(key+' stock discovery links',async()=>assert(await page.locator('main a[href*="/s/"]').count()>=4));
  await check(key+' visible controls named',async()=>{const missing=await page.locator('main button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length&&!((n.getAttribute('aria-label')||n.textContent||'').trim())).map(n=>n.outerHTML));assert.deepEqual(missing,[]);});
@@ -133,30 +136,37 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
  await check(key+' shared menu separates Discover from platform products',async()=>{
   const nav=page.locator('vu-navigation');
-  const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
-  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
-  assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
+  const destinations=await nav.locator('[data-group="discover"] .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
+  assert.equal(await nav.locator('[data-group="discover"] .group-link').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
-  if(width<500){
-   const header=await nav.evaluate(n=>{const root=n.shadowRoot,row=root.querySelector('.row').getBoundingClientRect(),brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,row:row.toJSON(),brand:brand.toJSON(),button:button.toJSON(),section:getComputedStyle(root.querySelector('.section')).display};});
-   assert(header.brand.left>=0&&header.button.right<=header.viewport&&header.button.left>=header.brand.right,'Mobile header overflows: '+JSON.stringify(header));
-   assert.equal(header.section,'none');
-   await nav.locator('.toggle').click();
-   try{
-    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
-    const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
-    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
-    await nav.locator('.close').click();
-   }finally{await nav.evaluate(n=>{if(n.hasAttribute('open'))n.shadowRoot.querySelector('.close').click();});}
-  }
+  /* Gemeinsame Shell: der Kopf traegt Marke, AI Atlas und Farbschema; das
+     globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */
+  const header=await nav.evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display,section:getComputedStyle(root.querySelector('.section')).display};});
+  assert(header.brand.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.brand.right,'Header overflows: '+JSON.stringify(header));
+  assert.equal(header.section,'none');assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
+  const menu=page.locator('#vu-dock button.menu');
+  await menu.click();
+  try{
+   await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
+   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,locked:document.documentElement.classList.contains('vu-menu-open'),dockInert:document.getElementById('vu-dock').inert};});
+   assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
+   assert(panel.locked&&panel.dockInert,'Menu must lock page scroll and take the dock out of focus order: '+JSON.stringify(panel));
+   await page.keyboard.press('Escape');
+   await page.waitForFunction(()=>!document.querySelector('vu-navigation').hasAttribute('open'),null,{timeout:3000});
+   assert(await menu.evaluate(n=>n.getRootNode().activeElement===n),'Focus must return to the dock menu button');
+  }finally{await nav.evaluate(n=>{if(n.hasAttribute('open'))n.shadowRoot.querySelector('.close').click();});}
  });
  if(engine==='chromium'&&width===390&&colorScheme==='light')await check('platform home mobile menu stays in viewport',async()=>{
   const home=await ctx.newPage();
   try{
    await home.goto(base+'/',{waitUntil:'domcontentloaded'});
-   const bounds=await home.locator('vu-navigation').evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),button:button.toJSON(),tagline:getComputedStyle(root.querySelector('.section')).display};});
-   assert(bounds.brand.left>=0&&bounds.button.right<=bounds.viewport&&bounds.button.left>=bounds.brand.right,'Platform header overflows: '+JSON.stringify(bounds));
-   assert.equal(bounds.tagline,'none');
+   /* Seit 06.10.2026 traegt die Startseite ihren eigenen Landingpage-Kopf
+      (<meta name="vu-navigation" content="none">) statt der Plattform-Navigation. */
+   assert.equal(await home.locator('vu-navigation').count(),0,'Landing page must not stack the platform header on its own');
+   const bounds=await home.locator('#lp-head').evaluate(n=>{const logo=n.querySelector('.lp-logo').getBoundingClientRect();return {viewport:innerWidth,logo:logo.toJSON(),overflow:document.documentElement.scrollWidth-innerWidth};});
+   assert(bounds.logo.left>=0&&bounds.logo.right<=bounds.viewport&&bounds.overflow<=1,'Landing header overflows: '+JSON.stringify(bounds));
   }finally{await home.close();}
  });
  await screenshot(page,key+'-home');
@@ -180,10 +190,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  });
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
-  const nav=page.locator('.v2-dock');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert.deepEqual(state.labels.map(i=>i.label),['Start','Welten','Strategien','Entdecken','Suchen']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
-  if(width<500){assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=2&&gap<=6,'Mobile browser navigation must sit at the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Mobile targets smaller than 44px');assert(state.paddingBottom>=0);}
-  else assert.notEqual(state.position,'fixed','Desktop must use its distinct header navigation');interactionEvidence.push({key,type:'responsive-navigation',...state});
+  const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
+  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Entdecken','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=6&&gap<=24,'Product dock must float just above the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Dock targets smaller than 44px');assert(state.paddingBottom>=0);
+  if(width>=500)assert(state.box.width<=760,'Desktop dock must not stretch across the viewport: '+state.box.width);interactionEvidence.push({key,type:'responsive-navigation',...state});
  });
  if(engine==='chromium'&&width===390&&colorScheme==='light'){
   await check(key+' premium mobile material and diversity',()=>premiumMobileAudit(page,key));
@@ -203,7 +213,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
       const response=await page.request.get(base+src);assert(response.ok()&&/^image\/jpeg/.test(response.headers()['content-type']||''),'Strategy artwork cannot load: '+src);
     }
     assert.equal(await page.locator('.v2-theme-grid').count(),0,'Themes must not appear in Strategien');
-    assert.equal(await page.locator('.v2-dock a[aria-current=page]').innerText(),'Strategien');
+    assert.equal(await page.locator('#vu-dock a[aria-current=page]').innerText(),'Strategien');
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy card overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
@@ -216,7 +226,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   });
   await check(key+' home freshness contract is visible',async()=>{await page.locator('.v2-hero-track .dx-lazy-media').first().scrollIntoViewIfNeeded();await page.waitForTimeout(250);const live=page.locator('.v2-stock .dx-lazy-media[data-live]');assert(await live.count()>0,'Home does not consume canonical snapshot/intraday artwork');const invalid=await live.evaluateAll(nodes=>nodes.filter(n=>!['LIVE','LAST_SESSION','STALE','UNAVAILABLE'].includes(n.dataset.freshness||'')).map(n=>({symbol:n.dataset.symbol,freshness:n.dataset.freshness})));assert.deepEqual(invalid,[]);const caption=await page.locator('.v2-hero-track .v2-stock-caption').first().innerText();assert(/Tagesverlauf|Kursverlauf|nicht verfügbar|Keine Kursreihe/i.test(caption),'Structured period/source caption is missing: '+caption);});
  }
- await check(key+' search opens traps focus and restores it',async()=>{const opener=page.locator('.v2-dock-search:visible').first();await opener.click();const input=page.locator('input[type=search]').first();await input.waitFor({state:'visible'});await input.fill('AAPL');await page.waitForFunction(()=>Array.from(document.querySelectorAll('.dx-search .dx-result')).some(n=>/Apple|AAPL/.test(n.textContent)));for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');assert(await page.locator('.dx-search').evaluate(n=>n.contains(document.activeElement)),'Focus escaped search');}await screenshot(page,key+'-search');if(width===390)await check(key+' search accessibility',()=>a11y(page,key+'-search'));await page.keyboard.press('Escape');await input.waitFor({state:'hidden'});assert(await opener.evaluate(n=>n===document.activeElement),'Search opener focus not restored');});
+ await check(key+' search opens traps focus and restores it',async()=>{const opener=page.locator('.v2-search-prompt:visible').first();await opener.click();const input=page.locator('input[type=search]').first();await input.waitFor({state:'visible'});await input.fill('AAPL');await page.waitForFunction(()=>Array.from(document.querySelectorAll('.dx-search .dx-result')).some(n=>/Apple|AAPL/.test(n.textContent)));for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');assert(await page.locator('.dx-search').evaluate(n=>n.contains(document.activeElement)),'Focus escaped search');}await screenshot(page,key+'-search');if(width===390)await check(key+' search accessibility',()=>a11y(page,key+'-search'));await page.keyboard.press('Escape');await input.waitFor({state:'hidden'});assert(await opener.evaluate(n=>n===document.activeElement),'Search opener focus not restored');});
  await page.goto(base+'/discover/#/s/US_REAL/AAPL',{waitUntil:'networkidle'});await page.waitForTimeout(1000);
  await check(key+' stock identity and chart',async()=>{assert(/Apple|AAPL/.test(await page.locator('main').innerText()));assert(await page.locator('main svg').count()>0,'No visual chart');});
  await check(key+' stock overflow',async()=>{const overflow=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth,culprits:Array.from(document.querySelectorAll('main *')).map(n=>({node:n.className||n.tagName,right:n.getBoundingClientRect().right,left:n.getBoundingClientRect().left})).filter(x=>x.right>innerWidth+1||x.left<-1).slice(0,20)}));assert(overflow.page<=overflow.viewport+1,'Stock page overflows: '+JSON.stringify(overflow));});
@@ -247,7 +257,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  if(width<500)await check(key+' feed stock link remains reachable above the dock',async()=>{
   const card=page.locator('.dx-feed-screen[data-symbol]').first(),button=card.locator('.dx-cta .dx-btn');
   await button.evaluate(n=>n.scrollIntoView({block:'end',behavior:'instant'}));
-  const bounds=await page.evaluate(()=>{const button=document.querySelector('.dx-feed-screen[data-symbol] .dx-cta .dx-btn'),dock=document.querySelector('.v2-dock'),track=document.querySelector('.dx-feed-spur');const b=button.getBoundingClientRect(),d=dock.getBoundingClientRect(),t=track.getBoundingClientRect();return {button:b.toJSON(),dock:d.toJSON(),track:t.toJSON(),hit:document.elementFromPoint(b.left+b.width/2,b.top+b.height/2)?.closest('.dx-btn')===button,scrollTop:track.scrollTop};});
+  const bounds=await page.evaluate(()=>{const button=document.querySelector('.dx-feed-screen[data-symbol] .dx-cta .dx-btn'),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav'),track=document.querySelector('.dx-feed-spur');const b=button.getBoundingClientRect(),d=dock.getBoundingClientRect(),t=track.getBoundingClientRect();return {button:b.toJSON(),dock:d.toJSON(),track:t.toJSON(),hit:document.elementFromPoint(b.left+b.width/2,b.top+b.height/2)?.closest('.dx-btn')===button,scrollTop:track.scrollTop};});
   assert(bounds.button.top>=bounds.track.top&&bounds.button.bottom<=Math.min(bounds.dock.top-8,bounds.track.bottom),'Stock action is covered by the dock: '+JSON.stringify(bounds));
   assert(bounds.hit,'Stock action is not tappable');
   await card.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));
@@ -290,7 +300,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  const savedCounter=await page.locator('.dx-feed-zaehler').innerText(),savedStock=await visibleFeedStock(page);
  await check(key+' feed exit cleanup',async()=>{await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});assert(!await page.locator('body').evaluate(n=>n.classList.contains('dx-feed-aktiv')||n.classList.contains('v2-feed-active')));assert.equal(await page.locator('.dx-feed').count(),0);});
  await check(key+' feed session resumes exploration',async()=>{
-  await page.locator('.v2-nav-explore').click();await waitCounter(page,1);await page.locator('.v2-feed-resume').waitFor();
+  await page.locator('#vu-dock a[data-id=entdecken]').click();await waitCounter(page,1);await page.locator('.v2-feed-resume').waitFor();
   const resumed=await visibleFeedStock(page);assert.equal(resumed.symbol,savedStock.symbol,'Session must resume at the same canonical company');assert.equal(resumed.index,0,'Resumed suffix must start at its first screen');assert(await page.locator('.dx-feed-screen[data-symbol]').count()<=24,'Resume eagerly mounted predecessor stocks');interactionEvidence.push({key,type:'feed-resume',savedCounter,savedStock,resumed});await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});
  });
  if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' deep session resume loads a bounded canonical suffix',async()=>{

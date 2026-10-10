@@ -1,12 +1,15 @@
 """One-company failure isolation, bounded source scheduling, resumable operations."""
 import json
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
+from .model import domain, Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
+from .structured_sources import news_index, gcs_events
+from .stockpr_events import parse as stockpr_events
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
 from .earnings import project_sec, estimate_calendar, summary
 from .store import atomic_json
@@ -37,9 +40,29 @@ class Pipeline:
         import time
         self.clock = getattr(http, 'clock', time.time)
         self.deadline = getattr(http, 'deadline', self.clock() + 600)
-        self.resolver = Resolver(companies)
+        # Read legal-name aliases only for candidate issuers, never the whole universe.
+        # Exact-CIK SEC consumers enrich this resolver without changing the master.
+        self.companies = {cid: {**c, 'names': list(c['names'])} for cid, c in companies.items()}
+        self.resolver = Resolver(self.companies)
+        self._alias_loaded = set()
         self._processed_sources = set()
-        self.run = {'new': 0, 'duplicate': 0, 'unmatched': 0, 'invalid': 0, 'sourceFailures': 0, 'secFailures': 0, 'documentFailures': 0, 'processedCompanies': 0, 'discoveryFailures': 0}
+        self.run = {'new': 0, 'promotionalRejected': 0, 'duplicate': 0, 'unmatched': 0, 'invalid': 0, 'sourceFailures': 0, 'secFailures': 0, 'documentFailures': 0, 'processedCompanies': 0, 'discoveryFailures': 0}
+
+    def ensure_aliases(self, company_ids):
+        for cid in company_ids:
+            if cid in self._alias_loaded or cid not in self.companies:
+                continue
+            self._alias_loaded.add(cid)
+            company = self.companies[cid]
+            if not company.get('cik'):
+                continue
+            try:
+                data = read_optional(self.root / 'quant/data/sec/consumer' / ('CIK' + str(company['cik']) + '.json')) or {}
+                legal = data.get('name')
+                if data.get('cik') == company['cik'] and data.get('dataSource', {}).get('provider') == 'sec_edgar' and data.get('dataSource', {}).get('isMock') is False and isinstance(legal, str) and 3 <= len(legal) <= 200:
+                    self.resolver.add_alias(cid, legal)
+            except (OSError, ValueError, TypeError, AttributeError):
+                pass
 
     def seed_sources(self, config):
         for configured in config:
@@ -50,40 +73,102 @@ class Pipeline:
             s.setdefault('active', True)
             self.store.source(s)
 
-    def ingest_due_sources(self, selected_ids, all_sources=False, force=False):
-        for source in self.store.sources(None if force else self.now):
+    def ingest_due_sources(self, selected_ids, all_sources=False, force=False, include_global=True):
+        from .cadence import due
+        near = {r[0] for r in self.store.db.execute("SELECT DISTINCT company FROM events WHERE kind IN ('EARNINGS_SCHEDULED','EARNINGS_CALL') AND date>=? AND date<=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (self.now[:10], advance(self.now, 48)[:10]))}
+        for source in self.store.sources():
+            if not force and not due(source, self.now, source.get('companyId') in near):
+                continue
             if source.get('companyId') and source['companyId'] not in self.companies:
                 self.store.source({**source, 'active': False, 'disabledReason': 'ISSUER_NOT_IN_CURRENT_SUPPORTED_MASTER'})
                 self.store.audit(self.now, source['sourceId'], 'SOURCE_RETIRED_OUTSIDE_UNIVERSE', companyId=source['companyId'])
                 continue
-            if source['type'] != 'GDELT' and (all_sources or source.get('companyId') is None or source['companyId'] in selected_ids):
+            if source['type'] != 'GDELT' and (all_sources or (include_global and source.get('companyId') is None) or source.get('companyId') in selected_ids):
                 self.ingest_source(source)
 
     def ingest_source(self, source):
         from .feeds import is_event_feed, is_material_feed
+        self.ensure_aliases([source.get('companyId')])
         if source.get('verified') and source['type'] == 'IR_FEED':
             if is_material_feed(source['url']):
-                source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 24}
+                source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 12}
             elif is_event_feed(source['url']):
-                source = {**source, 'type': 'IR_EVENTS', 'format': 'RSS_EVENTS', 'intervalHours': 24}
+                source = {**source, 'type': 'IR_EVENTS', 'format': 'RSS_EVENTS', 'intervalHours': 12}
             self.store.source(source)
         sid = source['sourceId']
         signature = (sid, source['type'], source.get('format'))
         if signature in self._processed_sources:
             return
         self._processed_sources.add(signature)
+        calendar_issuers = set()
         try:
             accepted = 0
             rejected = 0
             accepted_dates = []
-            response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
+            from .feeds import is_sec_filing_feed
+            if source['type'] in ('IR_FEED', 'RSS') and is_sec_filing_feed(source['url']):
+                raise SourceError('NON_NEWS_SEC_FILING_FEED')
+            if source.get('format') == 'GNN_ARCHIVE':
+                from .distributor_archive import pinned_archive
+                if not pinned_archive(source['url']):raise SourceError('UNSAFE_DISTRIBUTOR_ARCHIVE')
+                original_limit=self.http.MAX_BYTES
+                try:
+                    self.http.MAX_BYTES=8*1024*1024
+                    response=self.http.get(source['url'])
+                finally:self.http.MAX_BYTES=original_limit
+            elif source.get('format') == 'WORDPRESS_REST_NEWS':
+                from .wordpress_news import fetch as fetch_wordpress_news
+                response, wordpress_entries = fetch_wordpress_news(self.http, source)
+            else:
+                response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
             if source.get('provider') == 'GLOBENEWSWIRE_RSS':
-                from .model import domain
                 if domain(response['finalUrl']) != 'www.globenewswire.com':
                     raise SourceError('DISTRIBUTOR_REDIRECT_REQUIRES_REVALIDATION')
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
+            if source.get('format') in ('HTML_MATERIALS','Q4_PRESENTATIONS'):
+                cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
+                if source['format']=='HTML_MATERIALS':
+                    from .materials import parse_hub
+                    documents=parse_hub(response['body'],source,self.companies[cid],response['finalUrl'],self.now)
+                else:
+                    from .q4_presentations import parse as parse_presentations
+                    documents=parse_presentations(response['body'],source,self.now)
+                previous=[d for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')==sid for d in cfg.get('documents',[])]
+                if source['format']=='Q4_PRESENTATIONS':
+                    from .q4_presentations import correct_documents
+                    previous=correct_documents(previous)
+                else:
+                    from .materials import correct_documents
+                    previous=correct_documents(previous)
+                current_urls={d['url'] for d in documents}
+                # A corrected type has a new stable ID. Retire the preceding
+                # classification of that URL rather than keeping both types.
+                documents=(documents+[d for d in previous if d['url'] not in current_urls])[:100]
+                configs=[cfg for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')!=sid]
+                configs.append({'companyId':cid,'irHomepage':source['metadata']['originatingIRHomepage'],'pageRole':'IR',
+                                'providerType':source.get('provider','GENERIC'),'documents':documents,'materialsSourceId':sid,
+                                'materialsPage':response['finalUrl'],'lastVerified':self.now,'confidence':.95,
+                                'evidence':'VALIDATED_ISSUER_Q4_PRESENTATION_INDEX' if source['format']=='Q4_PRESENTATIONS' else 'VALIDATED_ISSUER_ADVERTISED_MATERIALS_HUB'})
+                self.store.set_state('ir:'+cid,{**ir,'configurations':configs})
+                self.store.source({**source,'lastChecked':self.now,'lastSuccess':self.now,'failureCount':0,'lastError':None,
+                                   'lastItemCount':len(documents),'contentDateStatus':'PUBLICATION_DATE_NOT_PROVIDED',
+                                   'nextCheck':advance(self.now,source.get('intervalHours',24))})
+                return
+            if source.get('format') == 'Q4_REPORTS':
+                from .q4_reports import parse as parse_reports
+                documents = parse_reports(response['body'], source, self.now)
+                cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
+                configs=[c for c in ir.get('configurations',[]) if c.get('materialsSourceId')!=sid]
+                configs.append({'companyId':cid,'irHomepage':source['allowedSites'][-1], 'pageRole':'IR', 'providerType':'Q4',
+                                'documents':documents,'materialsSourceId':sid,'lastVerified':self.now,'confidence':.95,
+                                'evidence':'VALIDATED_ISSUER_FINANCIAL_DOCUMENT_INDEX'})
+                self.store.set_state('ir:'+cid,{**ir,'configurations':configs})
+                self.store.source({**source,'lastChecked':self.now,'lastSuccess':self.now,'failureCount':0,'lastError':None,
+                                   'lastItemCount':len(documents),'contentDateStatus':'PUBLICATION_DATE_NOT_PROVIDED',
+                                   'nextCheck':advance(self.now,source.get('intervalHours',24))})
+                return
             if source['type'] == 'IR_EVENTS':
                 if source.get('format') == 'RSS_EVENTS':
                     events = []
@@ -94,15 +179,48 @@ class Pipeline:
                             if entry.get('eventUid'):
                                 value['eventId'] = stable_id(source['companyId'], source['sourceId'], entry['eventUid'])
                             events.append(value)
+                elif source.get('format') == 'Q4_EVENTS':
+                    from .q4_events import parse as parse_q4
+                    events = parse_q4(response['body'], source, self.now)
                 else:
-                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now)
+                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now) + gcs_events(response['body'], source, self.now) + stockpr_events(response['body'], source, self.now)
                 for e in events:
+                    if e['eventType'] in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') and not issuer_earnings_announcement(e['headline'], self.companies[source['companyId']]):
+                        rejected += 1
+                        self.store.audit(self.now, sid, 'EVENT_REJECTED_WRONG_EARNINGS_ACTOR', headline=e['headline'], url=e.get('sourceUrl'))
+                        continue
                     self.store.event(e, self.now)
+                    if e['eventType'] in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') and e.get('confirmationStatus') == 'CONFIRMED':
+                        calendar_issuers.add(e['companyId'])
+                    accepted += 1
                 entries = []
             else:
-                entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else parse_feed(response['body'], response['finalUrl'])
+                if source.get('format') == 'GNN_ARCHIVE':
+                    from .distributor_archive import collect
+                    entries = collect(source,response,self.http,self.store,self.resolver,self.now)
+                elif source.get('format') == 'GNN_NEWS_SITEMAP':
+                    from .news_sitemap import parse as parse_news_sitemap
+                    entries = parse_news_sitemap(response['body'], response['finalUrl'])
+                elif source.get('format') == 'WORDPRESS_REST_NEWS':
+                    entries = wordpress_entries
+                elif source.get('format') == 'Q4_NEWS':
+                    from .q4_news import parse as parse_q4_news
+                    entries = parse_q4_news(response['body'], source)
+                else:
+                    entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
+            from .news_quality import wordpress_feed,eligible,promotional_solicitation,shadowed_actor
+            wordpress=(wordpress_feed(response['body']) or source.get('provider')=='WORDPRESS' or source.get('cmsNewsPolicy')=='WORDPRESS_EXPLICIT_ISSUER_ACTOR') if source['type']=='IR_FEED' else False
+            if wordpress:source['cmsNewsPolicy']='WORDPRESS_EXPLICIT_ISSUER_ACTOR'
             for entry in entries:
-                entry_time = entry.get('publishedAt') or entry.get('updatedAt')
+                if wordpress and shadowed_actor(entry.get('headline'), self.companies[source['companyId']], self.resolver):
+                    rejected += 1
+                    self.store.audit(self.now, sid, 'CMS_MORE_SPECIFIC_ISSUER_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
+                    continue
+                if source['type']=='IR_FEED' and not eligible(entry,self.companies[source['companyId']],wordpress):
+                    rejected+=1
+                    self.store.audit(self.now,sid,'CMS_NON_ANNOUNCEMENT_REJECTED',headline=entry.get('headline'),url=entry.get('url'))
+                    continue
+                entry_time = entry.get('publishedAt') or (entry['publishedDate'] + 'T00:00:00Z' if entry.get('publishedDate') else entry.get('updatedAt'))
                 if not entry.get('headline') or not entry.get('url') or not entry_time or entry_time > self.now:
                     self.run['invalid'] += 1
                     rejected += 1
@@ -116,6 +234,17 @@ class Pipeline:
                 effective = {**source, 'verified': False} if shared_publisher(entry['url']) else source
                 if source.get('verified') and not any(within_domain(entry['url'], s) for s in source.get('allowedSites', [])):
                     effective = {**source, 'verified': False}
+                if entry.get('promotionalSolicitation') or (not effective.get('verified') and promotional_solicitation(entry.get('headline'))):
+                    rejected += 1
+                    self.run['promotionalRejected'] += 1
+                    self.store.audit(self.now, sid, 'PROMOTIONAL_SOLICITATION_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
+                    continue
+                candidates = set()
+                for stock in (entry.get('distributionMetadata') or {}).get('stocks', [])[:20]:
+                    ticker = re.fullmatch(r'(?:Nasdaq|NYSE|NYSE American|AMEX):\s*([A-Z][A-Z0-9.-]{0,14})', stock, re.I)
+                    if ticker:
+                        candidates.update(self.resolver.tickers.get(ticker.group(1).upper(), set()))
+                self.ensure_aliases(candidates)
                 matches = self.resolver.resolve(entry, effective)
                 if source.get('companyId') and source['type'] in ('IR_FEED', 'IR_MATERIALS'):
                     matches = [m for m in matches if m['companyId'] == source['companyId']]
@@ -158,15 +287,39 @@ class Pipeline:
                         item['provenance'][0]['timestampPrecision'] = 'DISCOVERY_TIME'
                         item['provenance'][0]['observedAt'] = entry['publishedAt']
                         item['provenance'][0]['publishedAt'] = None
-                    distributed_author = source.get('provider') == 'GLOBENEWSWIRE_RSS' and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
+                    distributed_author = source.get('provider') in ('GLOBENEWSWIRE_RSS','GLOBENEWSWIRE_ARTICLE') and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
                     if (effective.get('verified') and match['companyId'] == effective.get('companyId')) or distributed_author:
                         announcer = {**effective, 'verified': True, 'type': 'IR_FEED', 'companyId': match['companyId']} if distributed_author else effective
                         announcements = from_announcement(entry, announcer, self.now) if issuer_earnings_announcement(entry['headline'], self.companies[match['companyId']]) else []
+                        from .distributor_archive import publisher_call_actor
+                        if distributed_author and entry.get('callEvidence') and publisher_call_actor(entry['headline'], self.companies[match['companyId']]):
+                            from .distributor_archive import earnings_call_context
+                            earnings_call = earnings_call_context(entry['headline'], entry['callEvidence'])
+                            # A dated clinical/strategy webcast is useful IR content,
+                            # but cannot confirm earnings or retire an estimate.
+                            call_label = ' Earnings Conference Call' if earnings_call else ' Investor Conference Call'
+                            call_entry={**entry,'headline':entry['distributionMetadata']['contributor']+call_label,'evidenceText':entry['callEvidence']}
+                            from .sec_documents import release_period
+                            call_events=from_announcement(call_entry,announcer,self.now)
+                            call_period=(release_period(entry['headline']) or {}) if earnings_call else {}
+                            for call in call_events:
+                                call.update(call_period)
+                                call['evidence']={'method':'EXPLICIT_ISSUER_AUTHORED_CALL_SCHEDULE' if earnings_call else 'EXPLICIT_ISSUER_AUTHORED_INVESTOR_CALL_SCHEDULE','excerpt':entry['callEvidence'][:1200]}
+                            announcements += call_events
+                        if distributed_author and entry.get('authorSiteCandidate'):
+                            candidate=entry['authorSiteCandidate']
+                            key='siteCandidates:'+match['companyId'];prior=self.store.state(key,{})
+                            if self.store.state('officialSite:'+match['companyId'],{}).get('status')!='VALIDATED':
+                                candidates=prior.get('candidates',[])
+                                if not any(c.get('url')==candidate for c in candidates):candidates.append({'url':candidate,'evidence':'EXACT_MASTER_DISTRIBUTOR_AUTHOR_AND_EXCHANGE_TICKER','evidenceUrl':entry['url']})
+                                self.store.set_state(key,{**prior,'status':'CANDIDATE' if len({domain(c['url']) for c in candidates})==1 else 'AMBIGUOUS','candidates':candidates[:5]})
                         for e in announcements:
                             if distributed_author:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
-                        import re
+                            self.store.retire_composite_call(e, self.now)
+                            if e.get('confirmationStatus') == 'CONFIRMED':
+                                calendar_issuers.add(e['companyId'])
                         financial_proof = financial_release_evidence(entry['headline'], entry.get('evidenceText', ''))
                         if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and financial_proof and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
@@ -187,29 +340,44 @@ class Pipeline:
                             if reported:
                                 earnings['reportingPeriod'] = reported.get('periodEnd')
                             self.store.event(earnings, self.now)
+                            calendar_issuers.add(match['companyId'])
                         guidance = guidance_evidence(entry, announcer)
                         if guidance:
                             item['guidanceEvidence'] = guidance
                     outcome = self.store.ingest(item)
                     self.run['duplicate' if outcome == 'DUPLICATE' else 'new'] += 1
+            if source.get('format')=='GNN_ARCHIVE':
+                for entry in entries:
+                    if not entry.get('url'):continue
+                    key='distributorArchive:'+entry['url'];prior=self.store.state(key,{})
+                    self.store.set_state(key,{k:v for k,v in {**prior,'status':'INGESTED'}.items() if k!='entry'})
             content_dates = [i.get('publishedAt') or i.get('updatedAt') for i in entries if (i.get('publishedAt') or i.get('updatedAt')) and (i.get('publishedAt') or i.get('updatedAt')) <= self.now]
             if source['type'] == 'IR_EVENTS':
                 content_dates += [e.get('date') for e in events if e.get('date')]
             elif source.get('companyId') and source['type'] == 'IR_FEED':
                 content_dates = accepted_dates
             source.update(latestContentAt=max(content_dates) if content_dates else None, lastItemCount=len(entries) if source['type'] != 'IR_EVENTS' else len(events), lastAcceptedMatches=accepted, lastRejectedItems=rejected, lastSuccess=self.now, lastChecked=self.now, failureCount=0, lastError=None, nextCheck=advance(self.now, source.get('intervalHours', 6)))
+            if wordpress and not accepted:source['nextCheck']=advance(self.now,max(24,source.get('intervalHours',6)))
             self.store.source(source)
             log('SOURCE_SUCCESS', sourceId=sid, items=source['lastItemCount'])
         except BudgetExhausted:
             raise
         except Exception as exc:
             failure = source.get('failureCount', 0) + 1
-            delay = 7 * 24 if any(code in str(exc) for code in ('403', '404', 'ROBOTS')) else min(72, 2 ** min(failure, 6))
+            # Failure to retrieve robots (DNS/proxy/503) is temporary. Only an
+            # actual access denial/disallowance receives the slow blocked retry.
+            delay = 7 * 24 if any(code in str(exc) for code in ('403', '401', '404', 'ROBOTS_DISALLOWED')) else min(72, 2 ** min(failure, 6))
             source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure, lastError=(type(exc).__name__ + ':' + str(exc))[:250], nextCheck=advance(self.now, delay))
             self.store.source(source)
             self.store.audit(self.now, sid, 'SOURCE_FAILURE', errorType=type(exc).__name__, reason=str(exc)[:250])
             self.run['sourceFailures'] += 1
             log('SOURCE_FAILURE', sourceId=sid, reason=str(exc)[:250])
+        finally:
+            # Source polling also runs without SEC/company refresh. Reconcile
+            # only issuers with accepted earnings evidence, including partial
+            # batches, using the existing estimator and retirement audit.
+            for cid in sorted(calendar_issuers):
+                self.refresh_estimates(self.companies[cid])
 
     def sec_client(self, sec_budget=60):
         from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
@@ -263,6 +431,15 @@ class Pipeline:
                         self.store.audit(self.now, cid, 'SEC_DOCUMENT_FAILURE', filingId=accession, reason=evidence.get('reason') or evidence.get('exhibitFailure'), retryAfter=evidence.get('retryAfter'))
             if submissions:
                 from .sec_documents import PARSER_VERSION, CLASSIFICATION_COMPATIBLE
+                from .profile_backfill import refresh_changed_sec
+                # Cached interpretation; an already authorized SEC refresh may
+                # fetch one genuinely new annual document for a stored profile.
+                try:
+                    refresh_changed_sec(self.root, self.store, company, submissions, self.now, client if fetch_sec else None)
+                except Exception as exc:
+                    # Optional profile interpretation must never suppress SEC
+                    # financial/news/event projection or impose a SEC cooldown.
+                    self.store.audit(self.now, cid, 'CACHED_PROFILE_UNAVAILABLE', reason=str(exc)[:200])
                 evidence = {acc: self.store.state('sec-document:' + cid + ':' + acc) for acc in submissions.get('filings', {}).get('recent', {}).get('accessionNumber', [])}
                 from .sec_documents import inspect_html
                 validated = {}
@@ -311,6 +488,8 @@ class Pipeline:
                         if result_id not in result_ids:
                             self.store.db.execute('DELETE FROM events WHERE id=? AND id NOT IN (SELECT target FROM event_alias)', (result_id,))
                 self.store.event(e, self.now)
+            from .reporting_calendar import fact_history
+            self.store.set_state('reportingHistory:' + cid, fact_history(consumer, cik, self.now))
             self.refresh_estimates(company)
             sec_state = {**self.store.state('sec:' + cid, {}), 'projectedAt': self.now, 'events': len(events),
                          'hasCanonical': bool(canonical), 'hasConsumer': bool(consumer)}
@@ -334,7 +513,14 @@ class Pipeline:
     def refresh_estimates(self, company):
         cid = company['companyId']
         all_events = [json.loads(r[0]) for r in self.store.db.execute('SELECT payload FROM events WHERE company=?', (cid,))]
-        estimates = estimate_calendar(company, all_events, self.now)
+        from .reporting_calendar import forecast
+        diagnostic = {}
+        estimates = forecast(company, all_events, self.store.state('reportingHistory:' + cid, []), self.now, diagnostic)
+        self.store.set_state('calendarModel:' + cid, {**diagnostic, 'checkedAt': self.now})
+        # Legacy seasonal observations without period ends remain useful; do not
+        # mix their windows with a stronger fiscal-end forecast.
+        if not estimates:
+            estimates = estimate_calendar(company, all_events, self.now)
         # Preserve estimate -> confirmation evidence before retiring an estimate.
         for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED']:
             confirmations = [e for e in all_events if e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_CALL') and e.get('confirmationStatus') == 'CONFIRMED'
@@ -348,9 +534,30 @@ class Pipeline:
                     official['confirmationHistory'] = history + [transition]
                     self.store.event(official, self.now)
                     self.store.audit(self.now, company['companyId'], 'ESTIMATE_CONFIRMED', **transition)
+        retained = {e['eventId'] for e in estimates}
         with self.store.db:
-            self.store.db.execute("DELETE FROM events WHERE company=? AND kind='EARNINGS_ESTIMATED'", (cid,))
+            for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED' and e['eventId'] not in retained]:
+                reported = [e for e in all_events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED')
+                            and not e.get('isAmendment') and e.get('fiscalQuarter') == prior.get('fiscalQuarter')
+                            and prior['dateStart'] <= e.get('date', '') <= min(prior['dateEnd'], self.now[:10])]
+                self.store.audit(self.now, cid, 'ESTIMATE_RETIRED', eventId=prior['eventId'],
+                                 previousDateStart=prior['dateStart'], previousDateEnd=prior['dateEnd'],
+                                 reason='ALREADY_REPORTED' if reported else 'WINDOW_NO_LONGER_SUPPORTED',
+                                 reportingEvidence=[{'eventId': e['eventId'], 'date': e['date'], 'sourceUrl': e.get('sourceUrl')} for e in reported])
+                self.store.db.execute('DELETE FROM events WHERE id=?', (prior['eventId'],))
+        previous = {e['eventId']: e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED'}
+        volatile = {'discoveredAt', 'updatedAt', 'dateHistory', 'confirmationHistory', 'estimationHistory'}
         for e in estimates:
+            prior = previous.get(e['eventId'])
+            if prior:
+                if {k: v for k, v in prior.items() if k not in volatile} == {k: v for k, v in e.items() if k not in volatile}:
+                    e['updatedAt'] = prior.get('updatedAt', prior.get('discoveredAt', self.now))
+                if (prior.get('dateStart'), prior.get('dateEnd')) != (e.get('dateStart'), e.get('dateEnd')):
+                    change = {'previousDateStart': prior.get('dateStart'), 'previousDateEnd': prior.get('dateEnd'), 'dateStart': e.get('dateStart'), 'dateEnd': e.get('dateEnd'), 'changedAt': self.now}
+                    e['estimationHistory'] = prior.get('estimationHistory', []) + [change]
+                    self.store.audit(self.now, cid, 'ESTIMATE_WINDOW_CHANGED', eventId=e['eventId'], **change)
+                elif prior.get('estimationHistory'):
+                    e['estimationHistory'] = prior['estimationHistory']
             self.store.event(e, self.now)
 
     def discover_company(self, company, official_site):
@@ -359,6 +566,8 @@ class Pipeline:
             sources, configurations = discover_ir(company, official_site, self.http, self.now)
             for source in sources:
                 self.store.source(source)
+            from .materials import retain_source_configurations
+            configurations=retain_source_configurations(self.store,cid,configurations)
             warnings = [warning for config in configurations for warning in config.get('discoveryWarnings', [])]
             if warnings:
                 self.run['discoveryFailures'] += 1
@@ -379,6 +588,6 @@ class Pipeline:
         names = sorted({c['names'][0] for c in companies if c['names']})[:10]
         query = '(' + ' OR '.join('"' + n.replace('"', '') + '"' for n in names) + ') sourcelang:english'
         url = 'https://api.gdeltproject.org/api/v2/doc/doc?' + urlencode({'query': query, 'mode': 'artlist', 'format': 'json', 'maxrecords': 250, 'timespan': timespan, 'sort': 'datedesc'})
-        source = {'sourceId': stable_id('gdelt', names), 'type': 'GDELT', 'url': url, 'verified': False, 'active': False, 'intervalHours': 24}
+        source = {'sourceId': stable_id('gdelt', names), 'type': 'GDELT', 'url': url, 'verified': False, 'active': False, 'intervalHours': 12}
         self.store.source(source)
         self.ingest_source(source)

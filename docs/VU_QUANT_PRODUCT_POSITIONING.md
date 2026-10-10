@@ -25,9 +25,11 @@ lang für den ersten Bildschirm; es wird zum Untertitel. (3) ist griffig, „Vor
 ohne Bezugsgröße. (4) nennt Takt (jeden Tag), Gegenstand (Veränderung) und Maßstab
 (der Markt) – und „wie oft“ ist neutral: Quant zeigt auch, wenn ein Signal schwächer war.
 
-**Hauptclaim (H1 der Startseite):** Quant zeigt dir jeden Tag, bei welchen Aktien sich etwas verändert – und wie oft das früher besser lief als der Markt.
+**Hero-Überschrift (H1 der Startseite):** Jeden Tag sehen, was sich verändert.
 
-**Untertitel:** Quant beobachtet über 6.000 US-Aktien nach festen Regeln, erklärt jede
+**Produktclaim (Hero-Beschreibung):** Quant zeigt dir jeden Tag, bei welchen Aktien sich etwas verändert – und wie oft das früher besser lief als der Markt.
+
+**Methodikhinweis unter der Suche:** Quant beobachtet über 6.000 US-Aktien nach festen Regeln, erklärt jede
 Veränderung mit Auslöser und nächster Bedingung – und sagt offen, wie belastbar der
 historische Vergleich ist.
 

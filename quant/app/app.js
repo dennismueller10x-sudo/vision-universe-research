@@ -12,6 +12,8 @@
      #/aktien                Aktien (Suche, zuletzt, gemerkt)
      #/aktie/<TICKER>        Aktienanalyse
      #/aktie/<T>/technik     Kursstruktur, Technik & Elliott
+     #/aktie/<T>/chartbild   Chartbild: Ausblick, Zonen, Szenarien, Evidenz
+     #/chartlagen            Technische Lagen im Ueberblick
      #/aktie/<T>/zahlen      Unternehmenszahlen ueber die Jahre
      #/vergleich/<A,B,...>   Vergleich
      #/methodik[/<thema>]    Methodik
@@ -59,10 +61,11 @@
       case "strategien": r.view = "strategien"; r.id = parts[1] || null; break;
       case "aktien": r.view = "aktien"; break;
       case "radar": r.view = "radar"; break;
+      case "chartlagen": r.view = "chartlagen"; break;
       case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
-        r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "zahlen" ? "zahlen" : "aktie";
+        r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "chartbild" ? "chartbild" : parts[2] === "zahlen" ? "zahlen" : "aktie";
         break;
       case "vergleich": r.view = "vergleich"; r.list = (parts[1] || "").split(",").map(function (x) { return x.trim().toUpperCase(); }).filter(Boolean); break;
       case "methodik": r.view = "methodik"; r.topic = parts[1] || null; break;
@@ -70,10 +73,31 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
+  /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
+     Seite, Chart und Stile (rund 130 KB) gehoeren nicht ins Buendel jeder Quant-Ansicht (Ressourcen-Budget der
+     Startseite und des Screeners). Im Buendel bleiben nur die Lese-API und die Texte (Teaser, Beobachtungsliste).
+     Stile und ti-chart.js vor page-chartbild.js. */
+  var CB_CSS = "/quant/app/chartbild.css", cbCss = null;
+  function chartbildCss() {
+    if (!cbCss) cbCss = new Promise(function (ok) {
+      var l = document.createElement("link"); l.rel = "stylesheet"; l.href = CB_CSS;
+      l.onload = function () { ok(true); }; l.onerror = function () { cbCss = null; ok(false); };
+      document.head.appendChild(l);
+    });
+    return cbCss;
+  }
+  /* Ueber loadScript (wie Backtesting): gleiche Versionsmarke wie das Buendel, Fehler wird beim naechsten Aufruf erneut versucht. */
+  function loadChartbild() {
+    return Promise.all([chartbildCss(), global.QXChartbild ? true : loadScript("/quant/ui/ti-chart.js").then(function () { return loadScript("/quant/app/page-chartbild.js"); })])
+      .then(function () { if (!global.QXChartbild) throw new Error("CHARTBILD_LOAD_FAILED"); return global.QXChartbild; });
+  }
+  global.QXLoadChartbild = loadChartbild;
+  global.QXChartbildCss = chartbildCss;
+
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
@@ -155,34 +179,30 @@
   };
 
   /* ------------------------------------------------------------ Shell
-     Wie auf den Konzepttafeln: Kopfzeile mit Marke und Suche, EINE Leiste
-     mit den fuenf Bereichen - am Handy unten am Rand, am Desktop in der
-     Kopfzeile -, darunter die Seite und der Fuss. */
-  var main, navLinks = [];
-  function dockItem(n) {
-    var a = el("a", { class: "qx-nav-" + n.id, href: n.href, dataset: { nav: n.id } }, [el("span", { class: "qx-nav-icon", "aria-hidden": "true" }, [X.icon(n.id)]), el("span", { text: n.label })]);
-    navLinks.push(a); return a;
-  }
+     Gemeinsame Vision-Universe-Shell (assets/site-navigation.js): Kopf mit
+     Marke, AI Atlas und Farbschema, unten die Produkt-Leiste
+     Quant | Screener | Strategien | Aktien | ☰. Quant baut keine eigene
+     Kopf- oder Bereichsleiste mehr; Quant meldet der Leiste nur, welcher
+     Bereich aktiv ist (Router als Quelle der Wahrheit). Die Suche bleibt
+     Quant-Suche: im Hero, auf "Aktien", mit / und Strg+K. */
+  var main;
   function buildShell() {
     var root = document.getElementById("qx-app");
-    var dock = el("nav", { class: "q-dock v2-dock qx-nav qx-tabbar", "aria-label": "Quant" }, X.NAV.map(dockItem));
-    var bar = el("header", { class: "q-top qx-bar" }, [
-      el("a", { class: "q-brand qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("span", { text: "Vision Universe Quant" }), el("span", { class: "q-beta qx-beta", text: "Beta" })]),
-      dock,
-      el("button", { type: "button", class: "q-search-btn qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" })])
-    ]);
     main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
     var foot = el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       el("p", { text: "Daten heute. Bessere Entscheidungen für morgen." }),
       el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
-      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
+      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
-    root.replaceChildren(bar, main, foot);
+    root.replaceChildren(main, foot);
     document.querySelector(".qx-skip").addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
+  /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
+     sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
+  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: null };
   function markNav(section) {
-    navLinks.forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    if (global.VUNavigation) global.VUNavigation.dock({ active: Object.prototype.hasOwnProperty.call(DOCK, section) ? DOCK[section] : null });
   }
 
   /* ------------------------------------------------------------ Suche */
@@ -279,7 +299,11 @@
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
-        case "technik": await global.QXTools.technical(main, ctx, r.ticker, r.params.get("elliott") === "1"); break;
+        /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
+           der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
+        case "technik": { var tp = new URLSearchParams(r.params.toString()); if (tp.get("elliott") === "1") tp.set("ansicht", "profi"); await (await loadChartbild()).chartbild(main, ctx, r.ticker, tp); break; }
+        case "chartbild": await (await loadChartbild()).chartbild(main, ctx, r.ticker, r.params); break;
+        case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;

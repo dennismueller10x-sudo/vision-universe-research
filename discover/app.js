@@ -55,28 +55,10 @@
       el('p',{},[el('a',{href:'#/maerkte',text:'Märkte'}),document.createTextNode(' · '),el('a',{href:'#/daten',text:'Daten & Quellen'})])
     ]);
   }
-  function navigation() {
-    const routeKey=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
-    const current=routeKey==='c'?(V.Themes.byRow(location.hash.split('/')[3])?'welten':'strategien'):routeKey==='thema'?'welten':routeKey;
-    const nav=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'});
-    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['strategien','Strategien','#/strategien','strategies'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
-      const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button','aria-haspopup':'dialog','aria-expanded':'false'}),...(current===key?{'aria-current':'page'}:{})},[
-        el('span',{class:'v2-nav-icon v2-icon-'+icon,'aria-hidden':'true'}),el('span',{text:label})
-      ]);
-      if(!href)item.onclick=()=>search.open();
-      nav.appendChild(item);
-    });
-    return nav;
-  }
   function shell() {
     const host=document.getElementById('v2-shell'); S.clear(host);
-    const bar=el('div',{class:'v2-bar'},[
-      el('a',{href:'#/maerkte',class:'v2-markets-link',text:'Märkte',...(location.hash.startsWith('#/maerkte')?{'aria-current':'page'}:{})}),
-      el('span',{class:'v2-bar-caption',text:'Entdecken. Verstehen. Investieren.'})
-    ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
-    const dock=navigation();
-    host.append(bar,main,footer(),dock); return main;
+    host.append(main,footer()); return main;
   }
   function setupSearch() {
     search=D.Search.create({universeId:()=>ctx.universeId});document.body.append(search.node);
@@ -87,9 +69,8 @@
     new MutationObserver(()=>{
       const isOpen=search.node.classList.contains('on');
       document.getElementById('v2-shell').inert=isOpen;
+      const dock=document.getElementById('vu-dock');if(dock)dock.inert=isOpen;
       const nav=document.querySelector('vu-navigation');if(nav)nav.inert=isOpen;
-      const searchButton=document.querySelector('.v2-dock-search');
-      if(searchButton){searchButton.setAttribute('aria-expanded',String(isOpen));searchButton.classList.toggle('is-active',isOpen);}
       if(isOpen&&!wasOpen&&!previousFocus)previousFocus=document.activeElement;
       if(!isOpen&&wasOpen&&previousFocus&&previousFocus.isConnected)previousFocus.focus();
       wasOpen=isOpen;
@@ -264,7 +245,7 @@
     } catch(err) {
       if(active())message(root,'Gerade nicht erreichbar','Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal.',true);
       console.error('Discover route',err);
-    } finally {if(active())root.setAttribute('aria-busy','false');}
+    } finally {if(active()){root.setAttribute('aria-busy','false');if(global.VUNavigation)global.VUNavigation.dock({});}}
   }
   async function boot(){
     try {

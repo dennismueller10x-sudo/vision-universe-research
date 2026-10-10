@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "origin": "https://research.visionuniverse.de",
+  "sourceCommit": "e93511584cd79c3ab38386496143b91294fef521",
+  "generation": "40afe02bad7b0a64facdde95",
+  "verifiedAssetHashes": 5,
+  "deliveryRetries": [],
+  "routine": true,
+  "protectedExistingAccessGate": true,
+  "noQueryOptIn": true,
+  "cases": [
+    {
+      "ticker": "AAPL",
+      "width": 390,
+      "status": "PASS",
+      "consumerRequests": [
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/snapshots/40afe02bad7b0a64facdde95/lookup/AA.json",
+          "status": 200
+        },
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/snapshots/40afe02bad7b0a64facdde95/iss_cik_0000320193.json",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "ticker": "XPEV",
+      "width": 390,
+      "status": "PASS",
+      "consumerRequests": [
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/index.json",
+          "status": 200
+        },
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/snapshots/40afe02bad7b0a64facdde95/lookup/XP.json",
+          "status": 200
+        },
+        {
+          "url": "https://research.visionuniverse.de/company-intelligence/data/snapshots/40afe02bad7b0a64facdde95/iss_cik_0001810997.json",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

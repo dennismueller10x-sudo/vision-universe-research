@@ -59,13 +59,21 @@ const BEGRIFF = {
   "backtest-evidence-v1.json": "backtestTrustScore",
   "trust-score-v1.json": "backtestTrustScore",
   "technical-v1.json": "technicalIntelligence",
-  "elliott-v1.json": "technicalIntelligence"
+  "elliott-v1.json": "technicalIntelligence",
+  "technical-intelligence-v2.json": "technicalIntelligence"
+};
+
+/* Feste Nutzerueberschriften fuer Vertraege ohne Woerterbuchbegriff. Vorher von Hand in index.html nachgetragen und beim
+   naechsten Erzeugen verloren (Mission IV); jetzt hier, damit die erzeugte Seite sie behaelt. */
+const UEBERSCHRIFT = {
+  "technical-method-evidence.json": "Wie belastbar jede Chart-Methode ist"
 };
 
 const escape = (value) => String(value == null ? "" : value)
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 function nutzerbegriff(datei, contract) {
+  if (UEBERSCHRIFT[datei]) return UEBERSCHRIFT[datei];
   const id = BEGRIFF[datei];
   if (id && Language.has(id)) return Language.label(id);
   /* DER `label` DES VERTRAGS TAUGT NICHT ALS UEBERSCHRIFT.

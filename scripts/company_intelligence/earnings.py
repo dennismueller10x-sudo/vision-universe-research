@@ -318,7 +318,8 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
 def estimate_calendar(company, events, now):
     """Conservative seasonal ranges; periodic-report proxies are explicitly lower confidence."""
     today = date.fromisoformat(now[:10])
-    known = [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and e.get('fiscalQuarter') and not e.get('isAmendment')]
+    known = [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and e.get('fiscalQuarter') and not e.get('isAmendment')
+             and type(e.get('fiscalYear')) is int and valid_date(e.get('date')) and e['date'] <= now[:10]]
     by_quarter = {}
     for e in known:
         by_quarter.setdefault(e['fiscalQuarter'], {})[e.get('fiscalYear')] = e
@@ -340,6 +341,14 @@ def estimate_calendar(company, events, now):
             center = date(year, 1, 1) + timedelta(days=median)
             start, end = center - timedelta(days=spread), center + timedelta(days=spread)
             if end < today or start > today + timedelta(days=120):
+                continue
+            # A window can overlap today after the actual quarter has already
+            # been reported. Fiscal years may differ from publication years:
+            # compare the known season/date, not FY == calendar year.
+            if any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and not e.get('isAmendment')
+                   and e.get('fiscalQuarter') == quarter and valid_date(e.get('date')) and e['date'] <= now[:10]
+                   and date.fromisoformat(e['date']).year == year
+                   and abs((date.fromisoformat(e['date']) - center).days) <= 30 for e in events):
                 continue
             if any(e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_CALL') and e.get('confirmationStatus') == 'CONFIRMED'
                    and e.get('date') and abs((date.fromisoformat(e['date']) - center).days) <= 30 for e in events):

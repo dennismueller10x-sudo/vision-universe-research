@@ -7,25 +7,21 @@
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die Plattform-Navigation, Quant startet dunkel -->
 <script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <title>Technical Intelligence — Vision Universe®</title>
+<script>/* Mission IV §55: abgeloeste V1-Seite → Chartbild (gleiche Daten, eine Darstellung). */
+(function(){var q=new URLSearchParams(location.search),t=(q.get("symbol")||"").toUpperCase();location.replace("/quant/#/"+(/^[A-Z0-9.-]{1,12}$/.test(t)?"aktie/"+encodeURIComponent(t)+"/chartbild":"chartlagen"));})();</script>
 <meta name="description" content="Autonome Marktstruktur-, Trend-, Momentum-, Support/Resistance-, Fibonacci- und Elliott-Wave-Analyse mit Szenarien, Invalidation und Zielzonen — regelbasiert, reproduzierbar, ohne menschliches Einzeichnen.">
 <link rel="stylesheet" href="/quant/ui/quant.css">
 <link rel="stylesheet" href="/quant/ui/technical-chart.css">
 <link rel="stylesheet" href="/assets/site-navigation.css"></head>
 <body><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 
-<header class="q-header vu-tools">
-  <strong>Vision Universe® Quant</strong>
-  <div class="q-header-right">
-    <span id="q-datastamp" class="q-hide-sm"></span>
-    <a class="q-home-link" href="/">Vision Universe</a>
-  </div>
-</header>
 
-<div class="q-tabs-wrap">
-  <nav class="q-tabs" id="q-tabs" aria-label="Quant-Navigation"></nav>
-</div>
 
 <main class="q-shell" id="q-main"></main>
+<footer class="q-more">
+  <nav class="q-tabs" id="q-tabs" aria-label="Weitere Quant-Bereiche"></nav>
+  <span id="q-datastamp" class="q-hide-sm"></span>
+</footer>
 
 <script src="/quant/engines/hash.js"></script>
 <script src="/quant/engines/schema.js"></script>

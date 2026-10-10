@@ -44,17 +44,27 @@ const stock = t => json(`discover/data/stocks/US_REAL/${t}.json`);
 const metric = (s, k) => s.metrics?.[k] ?? null;
 
 // Begriffe
-const WAVE = { IMPULSE: 'Impuls', ZIGZAG: 'Zickzack', FLAT: 'Flat', TRIANGLE: 'Dreieck', DIAGONAL: 'Diagonale' };
 const TREND = { BULLISH: 'bullisch', BEARISH: 'bärisch', NEUTRAL: 'neutral' };
 const STRATEGY = { DARVAS_BOX: 'Darvas Boxes', DONCHIAN_TURTLE: 'Donchian / Turtle', MOMENTUM_BREAKOUT: 'Momentum Breakout',
   WEINSTEIN_STAGE: 'Weinstein Stages', MINERVINI_VCP: 'Minervini VCP', CANSLIM: 'CAN SLIM' };
 const STATE = { ACTIVE: ['Aktiv', 'on'], ENTRY_READY: ['Einstieg bereit', 'ready'], SETUP: ['Setup', 'ready'], WATCH: ['Watch', ''], DISCOVERED: ['Entdeckt', ''] };
 const FACTOR = { profitability: 'Profitabilität', growth: 'Wachstum', risk: 'Risiko-Score', momentum: 'Momentum', value: 'Bewertung', quality: 'Qualität', revisions: 'Revisionen' };
 
-const elliottOf = b => {
-  const d = b?.elliott?.degrees?.['scale-2'] || b?.elliott?.degrees?.['scale-3'];
-  if (!d || !d.currentWave || d.status !== 'PROJECTABLE') return { short: 'offen', long: 'Zählung offen' };
-  return { short: 'Welle ' + d.currentWave, long: 'Welle ' + d.currentWave + (WAVE[d.patternType] ? ' · ' + WAVE[d.patternType] : '') };
+// Elliott kommt aus dem Chartbild (Technical Intelligence v3, Elliott 3.2.2) - dieselbe Aussage wie auf der
+// Chartbild-Seite, nicht mehr aus der V1-Engine in technical-signals-v1. Enthaelt sich die Engine (bei den
+// meisten Titeln), gibt es keine Wellenangabe und keine Wellenpunkte im Chart.
+const tiCache = {};
+const tiKey = t => (String(t).toUpperCase() + '_').slice(0, 2).replace(/[^A-Z0-9._-]/g, '_');
+const ti = t => {
+  const k = tiKey(t), p = `quant/data/technical-intelligence/v3/shards/${k}.json.gz`;
+  tiCache[k] ??= has(p) ? gz(p) : { instruments: {} };
+  return tiCache[k].instruments[t] || null;
+};
+const elliottOf = t => {
+  const E = ti(t)?.pro?.elliott, p = E?.primary;
+  if (!p || !E.applicability || E.applicability.abstain) return { short: 'offen', long: 'keine belastbare Zählung', waves: [] };
+  const lab = p.complete ? 'abgeschlossen' : 'Welle ' + (p.currentWave?.label ?? '?');
+  return { short: lab, long: lab + (p.patternName ? ' · ' + p.patternName.replace(/ \(.*\)$/, '') : ''), waves: p.waves || [] };
 };
 const trendOf = b => ({ dir: b?.trend?.direction || 'NEUTRAL', score: b?.trend?.trendScore ?? null });
 
@@ -74,7 +84,7 @@ const path = a => a.map((v, k) => v == null ? null : `${f1(x(k))} ${f1(y(v))}`).
 const grid = [], gridLabels = [];
 for (let v = BOT; v <= TOP; v += 20) { grid.push(`M0 ${f1(y(v))}H600`); gridLabels.push(`<text x="608" y="${f1(y(v) + 4)}">${v}</text>`); }
 
-const waves = (b.elliott?.primaryCount?.waves || []).filter(w => ts.includes(w.fromTime) && ts.includes(w.toTime));
+const waves = elliottOf(MAIN).waves.filter(w => ts.includes(w.fromTime) && ts.includes(w.toTime));
 const pts = waves.length ? [[waves[0].fromTime, waves[0].fromPrice, '0'], ...waves.map(w => [w.toTime, w.toPrice, w.label])] : [];
 const waveNodes = pts.map(([d, p, l], i) => {
   const px = x(ts.indexOf(d)), py = y(p);
@@ -104,7 +114,7 @@ const chartBody = [
 
 // ---------- NVIDIA: Aktienseite ----------
 const s = stock(MAIN), gzNvda = s.geschaeftszahlen || {};
-const nvdaEll = elliottOf(b), nvdaTrend = trendOf(b);
+const nvdaEll = elliottOf(MAIN), nvdaTrend = trendOf(b);
 const f = b.featuresAtCutoff || {};
 const aboveBoth = f.sma50 && f.sma200 && close.at(-1) > f.sma50 && close.at(-1) > f.sma200;
 const badges = (s.badges || []).slice(0, 2).map(x => `<span>${esc(x.label)}${x.id === 'marketLeader' && x.detail ? ' · ' + esc(x.detail) : ''}</span>`).join('');
@@ -151,7 +161,7 @@ const kiRows = ki.cards.slice(0, 4).map((c, i) => {
 
 // ---------- Watchlist im Smartphone ----------
 const watch = ['NVDA', 'MSFT', 'AAPL', 'AMZN', 'META'].map(t => {
-  const st = stock(t), bt = tech(t)?.bundle, sp = spark(t), e = elliottOf(bt), tr = trendOf(bt);
+  const st = stock(t), bt = tech(t)?.bundle, sp = spark(t), e = elliottOf(t), tr = trendOf(bt);
   const note = e.short !== 'offen' && t === MAIN ? e.long.split(' · ')[0] : 'Trend ' + (TREND[tr.dir] || 'neutral');
   return `<div class="app-row"><span class="app-logo">${t}</span><div><b>${esc(st.companyName.replace(/ Class [A-Z]$/, ''))}</b><small>${usd(st.price.value)} · ${note}</small></div>${sp ? `<svg viewBox="0 0 60 24"><path d="${sp.d}" fill="none" stroke="#c8f531" stroke-width="2"/></svg>` : ''}</div>`;
 }).join('\n            ');
