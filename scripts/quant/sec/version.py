@@ -282,7 +282,23 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Mastermind 10-QT im fortgeschriebenen Jahr, SpartanNash 16/12/12/12
 #          Wochen; Runde 2: Rueckwaerts-Vergleichsjahre bleiben, Regelbelege nur
 #          bis zur eigenen Verfuegbarkeit, Deckblatt nach abgeschlossener Periode).
-NORMALIZATION_LOGIC_VERSION = "1.22.0"
+# 1.23.0 — drei in 1.22.0 dokumentierte Defekte:
+#          F-TTM-8: ein Vergleichs-Jahresende auf dem Zyklus eines Jahresberichts
+#          ist kein Geschaeftsjahresende, wenn es im EIGENEN Geschaeftsjahr eines
+#          frueher eingereichten Jahresberichts liegt (Zurn: umgerechnetes
+#          Kalenderjahr 2019 im 10-K 2022 teilte April 2019 - Maerz 2020).
+#          F-TTM-7: eine Zelle, ein Zeitraum, ein wirtschaftliches Konzept.
+#          Kumulwerte beginnen am Geschaeftsjahresbeginn (+-7 Tage); Zeitraum und
+#          Konzeptklasse legt die Erstveroeffentlichung fest - eine spaetere
+#          Einreichung mit anderem Zeitraum (Novus) oder anderem Konzept (Forestar
+#          ProfitLoss nach NetIncomeLoss) ersetzt nicht mehr nach Juengstem; zwei
+#          Zeitraeume zum selben Zeitpunkt = AMBIGUOUS.
+#          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
+#          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
+#          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
+#          (Dawson 2015: Quartal des bilanziellen Erwerbers neben drei Quartalen
+#          des Registranten).
+NORMALIZATION_LOGIC_VERSION = "1.23.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -314,7 +330,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "bf97c38f1576d24a4a6fde6dd555b3e560275bce1ad80d7088793d21e9292c5c"
+    "038ab06bd888ab0dfeedbcf4bb44c9f6d1d8dffff5bba70447096f3eedd14590"
 )
 
 

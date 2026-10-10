@@ -22,7 +22,7 @@ from .model import (
     PERIOD_QUARTER, PERIOD_ANNUAL, PERIOD_INSTANT, PERIOD_TTM,
     MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY, NOT_APPLICABLE_FOR_SECTOR,
     NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_STUB_PERIOD, TTM_WINDOW_NOT_CURRENT, TTM_CONCEPT_MISMATCH,
-    TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, missing,
+    TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, TTM_BASIS_MIXED, missing,
 )
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST, Observation, to_instant
@@ -66,6 +66,11 @@ CONTINUING_PER_SHARE = frozenset((
     "IncomeLossFromContinuingOperationsPerBasicShare",
     "IncomeLossFromContinuingOperationsPerBasicAndDilutedShare",
 ))
+# 1.23.0 (M-2): a contradiction between two filings of a TTM window is a change of
+# reporting basis when it is material: more than 10 % of the value and more than
+# 1 % of the largest value both filings share (near zero, relative noise is no basis).
+BASIS_CHANGE_RELATIVE = 0.10
+BASIS_CHANGE_FLOOR = 0.01
 TTM_SHARE_METRICS = {"eps_diluted": "diluted_weighted_average_shares",
                      "eps_basic": "basic_weighted_average_shares"}
 # Ein Splitverhaeltnis unter 1,5 (5:4, 4:3) zwischen zwei aufeinanderfolgenden
@@ -163,6 +168,7 @@ class PeriodResolver:
         self.factbook = factbook
         self.registry = registry
         self.profile = factbook.profile
+        self._periods_by_filing = {}
         self._blocked = registry.not_applicable_metrics(
             getattr(factbook.profile, "sic", None)
         ) if factbook.profile else {}
@@ -497,6 +503,14 @@ class PeriodResolver:
                 return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
         if not TTM_SPAN_DAYS[0] <= (dates[0] - begins[-1]).days + 1 <= TTM_SPAN_DAYS[1]:
             return observations, TTM_STUB_PERIOD, []
+        # 1.23.0 (M-2): one reporting basis. If a newer filing of the window states
+        # another value for a period an older filing of the window also states,
+        # the older filing's quarters belong to another basis (Dawson Geophysical
+        # 2015: the 10-QT of the accounting acquirer next to three quarters of the
+        # registrant TGC). Predecessor/successor identity is what the filings say
+        # about each other - no threshold, no name.
+        if self._basis_mixed(metric, observations):
+            return observations, TTM_BASIS_MIXED, []
 
         definition = self._definition(metric)
         if definition.is_per_share:
@@ -535,6 +549,46 @@ class PeriodResolver:
             if len(aligned) == len(observations):
                 return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
         return observations, TTM_CONCEPT_MISMATCH, []
+
+    def _filing_periods(self, metric):
+        """accession -> {(concept, start, end): value} of every observation of `metric`."""
+        if metric not in self._periods_by_filing:
+            index = {}
+            for (name, _, _), timeline in self.factbook.timelines.items():
+                if name != metric:
+                    continue
+                for obs in timeline.observations:
+                    if obs.accession and obs.period_end:
+                        key = (obs.provenance.concept, str(obs.period_start or "")[:10], str(obs.period_end)[:10])
+                        index.setdefault(obs.accession, {})[key] = obs.value
+            self._periods_by_filing[metric] = index
+        return self._periods_by_filing[metric]
+
+    def _basis_mixed(self, metric, observations):
+        # Same concept, same period: a different concept is no contradiction (Murphy
+        # Oil: Revenues next to contract revenue). A per-share value is compared
+        # through the filings' net income - a split restates EPS, not the business
+        # (ClearSign, Piper Sandler; the share-basis guard handles splits).
+        # Material only: rounding to a tenth of a million (Murphy 73.036 vs 73.0) or a
+        # small correction (Neogen 9.881 vs 9.934) is the same basis; a predecessor's
+        # quarter is another business (Dawson 25.7 vs 50.8 million).
+        index = self._filing_periods("net_income" if self._definition(metric).is_per_share else metric)
+        filings = sorted({(obs.available_instant, obs.accession) for obs in observations if obs.accession},
+                         key=lambda item: (item[0] is None, item[0], item[1]))
+        for k, (newer_when, newer) in enumerate(filings):
+            for older_when, older in filings[:k]:
+                if older_when is None or newer_when is None or not older_when < newer_when:
+                    continue
+                older_periods = index.get(older, {})
+                shared = [(value, older_periods[period]) for period, value in index.get(newer, {}).items()
+                          if period in older_periods and value is not None and older_periods[period] is not None]
+                if not shared:
+                    continue
+                scale = max(max(abs(a), abs(b)) for a, b in shared) or 1.0
+                if any(abs(a - b) > BASIS_CHANGE_RELATIVE * max(abs(a), abs(b))
+                       and abs(a - b) > BASIS_CHANGE_FLOOR * scale for a, b in shared):
+                    return True
+        return False
 
     def _share_basis_jumps(self, metric, quarters, as_of, policy, lag_days):
         """None, TTM_SHARE_BASIS_INCONSISTENT or TTM_EPS_INCONSISTENT for a per-share window."""

@@ -48,6 +48,9 @@ FY_CLUSTER_TOLERANCE_DAYS = 60
 
 # A period end may sit slightly past a fiscal year end and still belong to it.
 FY_BOUNDARY_TOLERANCE_DAYS = 5
+# 1.23.0 (F-TTM-8): a comparative twelve-month period counts as a presented fiscal
+# year when the report carries at least this share of the facts of its own year.
+COMPARATIVE_YEAR_MIN_SUPPORT = 0.5
 
 QUARTER_LENGTH_DAYS = 91.31
 # Length of a fiscal year with four quarter slots (1.20.0): 52/53-week years
@@ -237,20 +240,47 @@ class FiscalCalendar:
         # FY2028 (red team, HIGH-3). Ties go to the later date, as before.
         learned = []                     # (end, accession) - 1.21.0, see below
         declared_years = []              # (start, end, accession): twelve-month years on a report's own cycle
+        margin = timedelta(days=YEAR_INTERIOR_MARGIN_DAYS)
+        reports = []                     # (accession, own_end, accepted, periods)
+        own_years = []                   # (start, end, accession): each annual report's OWN twelve-month year
         for accession, ends in ends_by_accession.items():
             own_end = max(ends, key=lambda end: (ends[end], end))
             accepted = {end for end in ends if _same_annual_cycle(end, own_end)}
             periods = periods_by_accession[accession]
+            reports.append((accession, own_end, accepted, periods))
+            if form_by_accession.get(accession) != "10-KT":
+                own_years.extend((p[0], p[1], accession) for p in periods
+                                 if p[1] == own_end and classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY")
+        for accession, own_end, accepted, periods in reports:
             if form_by_accession.get(accession) == "10-KT":
                 # A transition report bounds the calendar but does not declare its
                 # comparative years (Leafbuyer: the accounting acquirer's December
                 # years in the 10-KT against the registrant's own June years); its
                 # own chain is read below.
                 continue
-            else:
-                annual_ends.update(accepted)
-                declared_years.extend((p[0], p[1], accession) for p in periods
-                                      if p[1] in accepted and classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY")
+            # 1.23.0 (F-TTM-8): a comparative year end on the report's cycle is not
+            # a fiscal year end when it falls inside the own fiscal year an EARLIER
+            # annual report declared. After Zurn's change of year end the 10-K of
+            # 2022-02-09 carries a recast calendar 2019 (one fact); accepted, it
+            # split the fiscal year 2019-04-01..2020-03-31 of the 10-K of 2020-05-12
+            # into a phantom year end 2019-12-31 and a 92-day "fiscal 2020", and no
+            # quarter from April 2019 to December 2020 had a slot. The report's own
+            # year always stands; only comparatives are checked, and only a year end
+            # the report itself presents as a disclosure, not as a statement column:
+            # fewer than half the facts of its own year (Zurn: 1 fact against 127).
+            # A fully presented comparative year (Vintage Wine Estates' June 2020
+            # next to the earlier 10-K of its SPAC predecessor; Mama's Creations'
+            # recast calendar 2011) is the report's own statement and stays.
+            filed = filed_by_accession.get(accession, "")
+            support = ends_by_accession[accession]
+            accepted = {end for end in accepted if end == own_end
+                        or support[end] >= COMPARATIVE_YEAR_MIN_SUPPORT * support[own_end]
+                        or not any(start + margin < end < stop - margin
+                                   for start, stop, source in own_years
+                                   if source != accession and filed_by_accession.get(source, "") < filed)}
+            annual_ends.update(accepted)
+            declared_years.extend((p[0], p[1], accession) for p in periods
+                                  if p[1] in accepted and classify_duration(p[0].isoformat(), p[1].isoformat()) == "FY")
             # 1.21.0 (F-TTM-4): the cycle rule cannot tell a disclosure on another
             # cycle from the fiscal year BEFORE a change of year end, which the
             # report also carries on the old cycle. 8point3's 10-K for the year to
@@ -272,7 +302,6 @@ class FiscalCalendar:
         # (a later report may recast history - Rentech Nitrogen's calendar 2011 -
         # but the filer's own earlier fiscal years stand: Dawson, Leafbuyer), never
         # within the clustering window of a known year end.
-        margin = timedelta(days=YEAR_INTERIOR_MARGIN_DAYS)
         for end, accession in learned:
             filed = filed_by_accession.get(accession, "")
             if any(start + margin < end < stop - margin

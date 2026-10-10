@@ -53,6 +53,10 @@ TTM_STUB_PERIOD = "TTM_STUB_PERIOD"
 # der Kalender nicht einordnen kann) - das Fenster ist nicht "trailing".
 TTM_WINDOW_NOT_CURRENT = "TTM_WINDOW_NOT_CURRENT"
 TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
+# 1.23.0 (M-2): a newer filing of the window contradicts an older filing of the
+# window on a period both report - the quarters stand on two reporting bases
+# (predecessor and successor after a reverse merger, Dawson Geophysical 2015).
+TTM_BASIS_MIXED = "TTM_BASIS_MIXED"
 TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
 # Ein Quartals-EPS, das zu Ergebnis und Aktienzahl desselben Quartals um eine
 # Groessenordnung nicht passt (Tagging-Fehler, Churchill Downs Q1 2020: -590000).
