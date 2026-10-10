@@ -7,9 +7,13 @@ const classify=row=>Master.classifySecurity({assetType:'Stock',exchange:'NASDAQ'
 test('current main debt exclusions all survive accepted classification guards',()=>{
  const decisions=JSON.parse(readFileSync(new URL('../data/market/security-master/eligibility.json',import.meta.url))).decisions;
  const names=JSON.parse(readFileSync(new URL('../data/market/security-master/company-names.json',import.meta.url))).rows;
- const fixtures=decisions.filter(row=>row.instrument_type==='DEBT'&&row.product_eligibility==='EXCLUDED').map(row=>({...row,name:names.find(n=>n.securityId===row.securityId)?.companyName}));
+ /* Namensbeleg je Ausschluss: die Wertpapierbezeichnung der Boerse (apply-exchange-directory.mjs, steht im Abgleich), sonst der Firmenname (#366, 22 Titel). */
+ const recon=JSON.parse(readFileSync(new URL('../data/market/security-master/eligibility-reconciliation.json',import.meta.url)));
+ const directory=new Map((recon.changes||[]).filter(c=>c.source==='NASDAQ_TRADER_SYMBOL_DIRECTORY'&&c.securityName).map(c=>[c.securityId,c.securityName]));
+ const fixtures=decisions.filter(row=>row.instrument_type==='DEBT'&&row.product_eligibility==='EXCLUDED').map(row=>({...row,name:directory.get(row.securityId)||names.find(n=>n.securityId===row.securityId)?.companyName}));
  assert.ok(fixtures.every(row=>!!row.name));
- assert.equal(fixtures.length,22);
+ assert.equal(fixtures.filter(row=>!directory.has(row.securityId)).length,22);
+ assert.equal(fixtures.length,22+[...directory.keys()].filter(id=>decisions.some(d=>d.securityId===id&&d.instrument_type==='DEBT')).length);
  for(const row of fixtures){const c=classify(row);assert.equal(c.instrumentType,'DEBT',row.ticker);assert.equal(c.policyBucket,'EXCLUDE');assert.equal(Master.decideProductEligibility({instrumentType:c.instrumentType,classificationStatus:c.classificationStatus,policyBucket:c.policyBucket,eligible:c.eligibleUsEquity,reason:c.eligibilityReason}).inProductUniverse,false,row.ticker);}
 });
 test('explicit note security form survives issuer closed-end description',()=>{

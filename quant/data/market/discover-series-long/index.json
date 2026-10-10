@@ -4,7 +4,7 @@
  "note": "Lange Discover-Kursreihen (Wochenschluss, split-bereinigt) aus der Historienablage. Erzeugt von scripts/market/publish-long-series.mjs; geprueft von assert-public-data-hygiene.mjs.",
  "grain": "weekly",
  "range": "MAX",
- "count": 6308,
+ "count": 6160,
  "pathPattern": "/quant/data/market/discover-series-long/<securityId>.json",
  "summary": {
   "requested": 6853,
@@ -13,5 +13,10 @@
   "missing": 1,
   "tooShort": 544,
   "failed": 0
+ },
+ "pruned": {
+  "at": "2026-10-10T06:31:42.588Z",
+  "removed": 148,
+  "reason": "nicht mehr im Umfang (--prune-only)"
  }
 }
