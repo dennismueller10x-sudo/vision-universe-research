@@ -262,7 +262,7 @@ def generate(store, companies, output, now):
               'confirmedEventIssuers': sum(r.get('confirmedEvents',0)>0 for r in rows.values()), 'estimatedEventIssuers': sum(r.get('estimatedEvents',0)>0 for r in rows.values()),
               'managementContentIssuers': sum(r.get('managementContent',0)>0 for r in rows.values()),
               'policyExclusions': {k: sum(r.get('policyExcluded',{}).get(k,0) for r in rows.values()) for k in ('news','events','calls','materials')},
-              'activeSourceCount': sum(s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url')) for s in sources),
+              'activeSourceCount': sum(bool(s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url'))) for s in sources),
               'activeSourcesByType': dict(Counter(s.get('type') for s in sources if s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url')))),
               'sourceHealth': dict(Counter('BROKEN' if s.get('lastError') and any(x in s['lastError'] for x in ('404','410')) else 'TEMPORARY_FAILURE' if s.get('failureCount') else 'STALE' if (s.get('lastSuccess') or '') < (datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(days=7)).isoformat().replace('+00:00','Z') else 'HEALTHY' for s in sources)),
               'consumerBytes': sum(v['bytes'] for v in assets.values()), 'consumerAssets': len(assets), 'privateOperationalRowsIncluded': False}

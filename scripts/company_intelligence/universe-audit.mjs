@@ -36,4 +36,4 @@ try{
  writeFileSync(join(evidence,'audit.json'),JSON.stringify(report,null,2)+'\n');
  writeFileSync(join(evidence,'eligibility.json'),readFileSync(join(temporary,'first/eligibility.json')));
  console.log(JSON.stringify({status:'PASS',generation:m.generation,privatePayloads:first.privatePayloadCount,eligibleIssuers:first.eligibleIssuerCount,freshRestoreVerified:true,remoteWrites:0}));
-}catch(e){console.error('UNIVERSE_AUDIT_FAILED');if(e.stderr){const c=String(e.stderr).match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)/)?.[1];if(c)console.error(c);}else if(/^[A-Z0-9_:-]+$/.test(e.message))console.error(e.message);process.exitCode=1;}
+}catch(e){console.error('UNIVERSE_AUDIT_FAILED');if(e.stderr){const stderr=String(e.stderr),c=stderr.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)/)?.[1],line=[...stderr.matchAll(/File "[^\n]*\/(universe_eligibility\.py|universe_audit\.py|checkpoint\.py)", line (\d+)/g)].at(-1);console.error(c||'PYTHON_'+(stderr.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));}else if(/^[A-Z0-9_:-]+$/.test(e.message))console.error(e.message);process.exitCode=1;}

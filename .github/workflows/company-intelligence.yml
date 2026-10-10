@@ -352,7 +352,7 @@ jobs:
             ${{ runner.temp }}/production-dark-qa/
           retention-days: 14
   validate:
-    if: github.event_name != 'schedule' && !inputs.current_restore_only && inputs.production_release != 'disable' && inputs.production_release != 'enable' && inputs.production_release != 'numeric' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
+    if: github.event_name != 'schedule' && inputs.continuous_refresh != 'universe-audit' && !inputs.current_restore_only && inputs.production_release != 'disable' && inputs.production_release != 'enable' && inputs.production_release != 'numeric' && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
