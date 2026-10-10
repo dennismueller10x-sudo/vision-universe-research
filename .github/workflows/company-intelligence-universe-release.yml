@@ -96,14 +96,27 @@ jobs:
           gh workflow run pages-release.yml --ref main
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
-          const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json')).generation;
+          import {acceptedHealthServed} from './scripts/company_intelligence/release-health.mjs';
+          const accepted=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json')),expected=accepted.generation;
           const deadline=Date.now()+20*60000;let ok=false;
           while(Date.now()<deadline){
-            try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?release='+Date.now());const d=await r.json();if(d.generation===expected){ok=true;break;}}catch{}
+            try{
+              const query='?release='+Date.now(),root='https://research.visionuniverse.de/';
+              const r=await fetch(root+'company-intelligence-delivery.json'+query),d=await r.json();
+              if(d.status==='PASS'&&d.generation===expected){
+                if(process.env.RELEASE_MODE==='health'){
+                  const refresh=await(await fetch(root+'company-intelligence-refresh.json'+query)).json();
+                  if(!acceptedHealthServed(d,refresh,accepted))throw Error('RECONCILED_HEALTH_NOT_YET_SERVED');
+                }
+                ok=true;break;
+              }
+            }catch{}
             await new Promise(r=>setTimeout(r,10000));
           }
           if(!ok)throw Error('EXACT_PRODUCTION_GENERATION_NOT_SERVED');
           NODE
+        env:
+          RELEASE_MODE: ${{ inputs.mode }}
       - name: Actual production broad sample and source-to-browser readback
         id: live
         if: inputs.mode == 'activate'
