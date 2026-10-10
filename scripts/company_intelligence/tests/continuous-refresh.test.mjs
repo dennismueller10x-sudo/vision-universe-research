@@ -117,3 +117,20 @@ test('historical publication clocks cannot conceal an OFF or mismatched actual g
  assert.equal((await productionObservation(good,observed,response({generation:'b'.repeat(24),cohortStocks:46,issuers:45}))).state,'MISMATCH');
  assert.equal((await productionObservation(good,observed,response({generation:good.generation,cohortStocks:5120,issuers:5120}))).state,'MISMATCH');
 });
+
+test('universe comparison uses the verified GOOD manifest kept outside public delivery',async()=>{
+ const {universeConfig}=await import('../universe-approval.mjs');
+ const d=driver(),a=fixture(1),b=fixture(2),out=mkdtempSync(join(tmpdir(),'universe-previous-'));
+ try{
+  const good=await advance(d,'old-cohort',a);await downloadGood(d,{namespace:'old-cohort',output:out});
+  assert.equal((await import('node:fs')).existsSync(join(out,'manifest.json')),false);
+  b.m.scope='PER_ISSUER_ELIGIBILITY';b.m.eligibilityVersion=universeConfig.eligibilityVersion;
+  b.m.eligibility=Object.fromEntries(Object.entries(frozenInventory).map(([cid,r])=>[cid,{status:'ELIGIBLE_PARTIAL',tickers:r.tickers,modules:{profile:true,aktuelles:false,financials:false,whatChanged:false,nextEvent:false,calls:false,documents:false}}]));
+  writeFileSync(join(b.root,'manifest.json'),JSON.stringify(b.m));
+  assert.throws(()=>validateChanges(b.root,out),/PREVIOUS_VERIFIED_MANIFEST_REQUIRED/);
+  writeFileSync(join(out,'manifest.json'),JSON.stringify(good.manifest));
+  assert.equal(validateChanges(b.root,out).status,'PASS');
+  const first=Object.keys(frozenInventory)[0];delete b.m.eligibility[first];writeFileSync(join(b.root,'manifest.json'),JSON.stringify(b.m));
+  const changes=validateChanges(b.root,out);assert.deepEqual(changes.removedIssuers,[first]);assert.equal(changes.identityRemappings,0);
+ }finally{rmSync(a.root,{recursive:true});rmSync(b.root,{recursive:true});rmSync(out,{recursive:true});}
+});

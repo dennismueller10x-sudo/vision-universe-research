@@ -1,0 +1,86 @@
+{
+  "schema": "confirmed-total-return-report-test-evidence-1",
+  "baselineMain": "440a1645048d6b559988488f9a0f3148f21d3cdd",
+  "sourcePath": "quant/data/providers/total-return-verification.json",
+  "sourceSha256": "c94e4b66b038b1b3fd33213044e6606c5f49974ca38e4e14d1b4534c1c0f8a61",
+  "scope": "Historical test-only measurement; not current provider capability certification.",
+  "report": {
+    "schemaVersion": "total-return-verification-1.0.0",
+    "generatedAt": "2026-09-30T05:12:30.000Z",
+    "versions": {
+      "verification_logic": "1.0.0"
+    },
+    "method": "Auf einem Ex-Dividenden-Tag springt das Verhaeltnis adjClose/close um genau (1 - Dividende / Vortagsschluss), wenn die Reihe total-return-bereinigt ist. Bei reiner Splitbereinigung bleibt es unveraendert. Tage mit Split werden uebersprungen, weil zwei gleichzeitige Anpassungen sich nicht sauber trennen lassen.",
+    "tolerance": 0.002,
+    "minimumEvents": 30,
+    "source": "quant/data/market/golden-preview/daily",
+    "seriesChecked": 5,
+    "dividendEventsChecked": 234,
+    "dividendEventsMatching": 234,
+    "worstRelativeError": 0.0005115601584839274,
+    "verdict": "TOTAL_RETURN_CONFIRMED",
+    "note": "Nur eine Messung. Sie aendert keinen veroeffentlichten Wert und keine Kapabilitaet; was daraus folgt, ist eine eigene Entscheidung mit eigener Version.",
+    "series": [
+      {
+        "securityId": "ref_AAPL",
+        "ticker": "AAPL",
+        "adjustmentStatusClaimed": "adjusted",
+        "barCount": 2952,
+        "from": "2015-01-02",
+        "to": "2026-09-29",
+        "dividendEvents": 47,
+        "matching": 47,
+        "worstError": 0.00012867385951262578,
+        "mismatches": []
+      },
+      {
+        "securityId": "ref_JPM",
+        "ticker": "JPM",
+        "adjustmentStatusClaimed": "adjusted",
+        "barCount": 2952,
+        "from": "2015-01-02",
+        "to": "2026-09-29",
+        "dividendEvents": 46,
+        "matching": 46,
+        "worstError": 0.0004949623825331686,
+        "mismatches": []
+      },
+      {
+        "securityId": "ref_MSFT",
+        "ticker": "MSFT",
+        "adjustmentStatusClaimed": "adjusted",
+        "barCount": 2952,
+        "from": "2015-01-02",
+        "to": "2026-09-29",
+        "dividendEvents": 47,
+        "matching": 47,
+        "worstError": 0.0001325734008076032,
+        "mismatches": []
+      },
+      {
+        "securityId": "ref_NVDA",
+        "ticker": "NVDA",
+        "adjustmentStatusClaimed": "adjusted",
+        "barCount": 2952,
+        "from": "2015-01-02",
+        "to": "2026-09-29",
+        "dividendEvents": 47,
+        "matching": 47,
+        "worstError": 9.083189881171398e-05,
+        "mismatches": []
+      },
+      {
+        "securityId": "ref_XOM",
+        "ticker": "XOM",
+        "adjustmentStatusClaimed": "adjusted",
+        "barCount": 2952,
+        "from": "2015-01-02",
+        "to": "2026-09-29",
+        "dividendEvents": 47,
+        "matching": 47,
+        "worstError": 0.0005115601584839274,
+        "mismatches": []
+      }
+    ]
+  }
+}

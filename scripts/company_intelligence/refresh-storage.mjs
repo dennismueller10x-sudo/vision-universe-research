@@ -4,6 +4,18 @@ import {publish,preflight,prefixFor,validateManifest} from './public-delivery.mj
 import {download} from './download-public.mjs';
 import {refreshApproved,refreshConfig} from './refresh-approval.mjs';
 import {createHash} from 'node:crypto';
+import {objectPool} from './bounded-objects.mjs';
+import {universeConfig} from './universe-approval.mjs';
+export const activationKey=()=>prefixFor(universeConfig.consumerNamespace)+'activation.json';
+export async function universeActive(driver){
+ if(!universeConfig.enabled)return false;
+ const b=await driver.get(activationKey());if(!b)return false;
+ const p=JSON.parse(b);
+ if(p.schema!==1||p.approvalId!==universeConfig.approvalId||!['AVAILABLE','ROLLBACK_46'].includes(p.state))throw Error('INVALID_UNIVERSE_ACTIVATION_POINTER');
+ return p.state==='AVAILABLE';
+}
+export async function activeNamespace(driver){return await universeActive(driver)?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;}
+export async function activeGood(driver){return goodState(driver,await activeNamespace(driver));}
 export const goodKey=namespace=>prefixFor(namespace)+'good.json';
 export async function goodState(driver,namespace=refreshConfig.consumerNamespace){
  const raw=await driver.get(goodKey(namespace));if(!raw)return null;
@@ -43,10 +55,10 @@ export async function commitGood(driver,{namespace,payloadNamespace,manifest,hea
  if(JSON.stringify(actual?.state==='LEGACY_FALLBACK'?null:actual)!==JSON.stringify(expectedGood))throw Error('CONCURRENT_GOOD_POINTER_ADVANCE');
  // Every candidate asset is hash-read before this sole production pointer write.
  const prefix=prefixFor(payloadNamespace);
- for(const [path,meta] of Object.entries(manifest.assets)){
+ await objectPool(Object.entries(manifest.assets),async ([path,meta])=>{
   const bytes=await driver.get(prefix+`slot-${manifest.slot||0}/`+(path==='index.json'?path:path.split('/').slice(2).join('/')));
   if(!bytes||bytes.length!==meta.bytes||createHash('sha256').update(bytes).digest('hex')!==meta.sha256)throw Error('CANDIDATE_READBACK_FAILED');
- }
+ });
  const next={schema:1,state:'GOOD',generation:manifest.generation,payloadNamespace,manifest,health,inventory,
   previous:expectedGood?{manifest:expectedGood.manifest,payloadNamespace:expectedGood.payloadNamespace,generation:expectedGood.generation,health:expectedGood.health,inventory:expectedGood.inventory}:null};
  const bytes=Buffer.from(JSON.stringify(next));

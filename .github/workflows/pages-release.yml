@@ -178,9 +178,26 @@ jobs:
         run: |
           # A failed consumer projection leaves the tracked disabled index intact.
           node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
+      - name: Identify immutable consumer cache from authoritative R2 GOOD
+        id: ci_cache
+        env:
+          COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/consumer-cache-key.mjs
+      - uses: actions/cache/restore@v4
+        id: ci_cache_restore
+        if: steps.ci_cache.outputs.key != ''
+        with:
+          path: ${{ runner.temp }}/ci-public-cache
+          key: ${{ steps.ci_cache.outputs.key }}
       - name: Pin approved Company Intelligence production generation (fail closed)
         id: ci_stage
         env:
+          CI_PUBLIC_CACHE_DIR: ${{ runner.temp }}/ci-public-cache
           COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -197,6 +214,11 @@ jobs:
           appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${result.status==='PASS'}\n`);
           console.log(JSON.stringify(result));
           NODE
+      - uses: actions/cache/save@v4
+        if: steps.ci_stage.outputs.enabled == 'true' && steps.ci_cache.outputs.key != '' && steps.ci_cache_restore.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/ci-public-cache
+          key: ${{ steps.ci_cache.outputs.key }}
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
@@ -291,6 +313,23 @@ jobs:
           rc=$?
           rm -f "$RESEARCH_ACCESS_LOGIN_FILE"
           exit $rc
+      - name: Measure final public package without listing private paths
+        env:
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          node --input-type=module <<'NODE'
+          import {readdir,lstat,writeFile,readFile} from 'node:fs/promises';
+          import {join} from 'node:path';
+          let files=0,bytes=0,largestFileBytes=0;
+          async function walk(path){for(const e of await readdir(path,{withFileTypes:true})){
+            const p=join(path,e.name);if(e.isDirectory())await walk(p);
+            else {const s=await lstat(p);if(!s.isFile())throw Error('UNSAFE_PACKAGE_ENTRY');files++;bytes+=s.size;largestFileBytes=Math.max(largestFileBytes,s.size);}
+          }}
+          await walk(process.env.SITE_ROOT);
+          const report={schema:1,scope:'FINAL_PUBLIC_PACKAGE_EXCLUDING_THIS_REPORT',files,bytes,largestFileBytes,sourceCommit:JSON.parse(await readFile(join(process.env.SITE_ROOT,'release-delivery.json'),'utf8')).sourceCommit};
+          await writeFile(join(process.env.SITE_ROOT,'release-package.json'),JSON.stringify(report)+'\n');
+          console.log(JSON.stringify(report));
+          NODE
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -380,6 +419,11 @@ jobs:
           fi
           node scripts/company_intelligence/protected-hydration-qa.mjs
           node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
+          universe=$(node --input-type=module -e 'import {runtimeCandidate} from "./scripts/company_intelligence/runtime-candidate.mjs";console.log((await runtimeCandidate()).manifest.scope==="PER_ISSUER_ELIGIBILITY")')
+          if [ "$universe" = true ]; then
+            node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/live-universe.json"
+            exit 0
+          fi
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"
           node scripts/company_intelligence/consumer-experience-qa.mjs --version after --out "$RUNNER_TEMP/live-v2"
