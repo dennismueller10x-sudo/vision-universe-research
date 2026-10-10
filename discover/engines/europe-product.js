@@ -14,7 +14,7 @@
   const unavailable=reason=>({state:'UNAVAILABLE',reason,source:'VU_CANONICAL_EUROPE',asOf:null,data:null,publicationAllowed:false});
   const href=id=>'#/s/EUROPE/'+encodeURIComponent(id);
   const discoverBasis=r=>r.discoverPriceBasis||r.priceBasis;
-  const basisLabel=basis=>basis==='CANONICAL_SPLIT_ADJUSTED'?'split-bereinigt · kanonisch geprüft':'unbereinigt · Anpassungsbasis nicht bestätigt';
+  const basisLabel=basis=>basis==='CANONICAL_SPLIT_ADJUSTED'?'split-bereinigt · kanonisch geprüft':'unbereinigt';
   function create(options){
     const opts=options||{},client=opts.client,watch=opts.watchlist;
     const audience=opts.audience||'public',privatePreview=audience==='research'&&opts.privateResearch===true;

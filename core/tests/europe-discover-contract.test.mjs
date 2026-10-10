@@ -26,3 +26,10 @@ test('canonical watchlist add/save/reload/remove does not touch legacy US storag
 test('US client and canonical IDs preserved; protected collision fails closed',async()=>{
  const f=fixture(),ref={region:'US',securityId:'ref_AAPL'},answer={value:'existing Tiingo response'},calls=[];const c=client(f,{usClient:{getPriceSeries:function(...a){calls.push(a);return answer;}}});assert.strictEqual(await c.getPriceSeries(ref,{range:'MAX'}),answer);assert.deepEqual(calls,[[ref,{range:'MAX'}]]);assert.throws(()=>client(f,{protectedIds:[f.s.securityId]}),/INVALID_EUROPE_CATALOG_IDENTITY/);
 });
+test('lazy MAX segments are hash-bound without copying long point arrays into the catalog',async()=>{
+ const f=fixture(),segments=f.l.discoverChart.segments,hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
+ f.l.discoverChart.ranges={MAX:{...f.l.discoverChart,segments:undefined,segmentsSha256:hash(segments)}};
+ const c=client(f,{loadSeries:async r=>({securityId:f.s.securityId,listingId:f.l.listingId,basis:r.basis,currency:'EUR',points:f.points,segments,provenance:{evidenceRef:H}})});
+ const result=await c.getPriceSeries(f.ref,{range:'MAX'});assert.equal(result.state,'AVAILABLE');assert.deepEqual(result.data.segments,segments);assert.equal((await c.getReadiness(f.ref)).data.QUANT_READY,false);
+ const forged=[f.points];const altered=client(f,{loadSeries:async r=>({securityId:f.s.securityId,listingId:f.l.listingId,basis:r.basis,currency:'EUR',points:f.points,segments:forged,provenance:{evidenceRef:H}})});assert.equal((await altered.getPriceSeries(f.ref,{range:'MAX'})).reason,'CLOSE_CHART_SEGMENT_INTEGRITY_MISMATCH');
+});

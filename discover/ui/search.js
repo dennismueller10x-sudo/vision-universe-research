@@ -8,9 +8,8 @@
    ist kein Zusatz: Pfeiltasten waehlen, Enter oeffnet - wer einen Ticker
    tippt, will ihn nicht anschliessend mit der Maus suchen.
 
-   Gesucht wird im Suchindex des gerade gewaehlten Universums
-   (discover/data/search/<UNIVERSE>.json) - eine Datei, ein Abruf, danach
-   im Speicher.
+   Die Suche liest den gemeinsamen kanonischen Aktienindex; regionale
+   Ansichten verändern weder die Suche noch die Identität der Treffer.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -25,7 +24,6 @@
 
   function create(options) {
     options = options || {};
-    var indexCache = Object.create(null);
     var aktiv = -1;
     var treffer = [];
 
@@ -48,60 +46,19 @@
       ])
     ]);
 
-    function universum() { return options.universeId ? options.universeId() : "US_REAL"; }
-
-    function ladeIndex() {
-      var id = universum();
-      if (indexCache[id]) return Promise.resolve(indexCache[id]);
-      return S.loadJSON("/discover/data/search/" + id + ".json").then(function (index) {
-        indexCache[id] = index;
-        return index;
-      });
-    }
-
+    var sequence = 0;
     function suchen() {
-      var q = input.value.trim().toUpperCase();
+      var q = input.value.trim(), token = ++sequence;
       aktiv = -1;
-      if (!q) {
-        S.clear(results);
-        treffer = [];
-        hint.textContent = "Tippen zum Suchen · ↑ ↓ zum Auswählen · Enter zum Öffnen · Esc schließt";
-        return;
-      }
-      if (universum() === "EUROPE") {
-        var product = D.europeProduct;
-        if (!product) { S.clear(results); hint.textContent = "Dieses Universum ist noch nicht freigegeben."; return; }
-        product.search(q).then(function (result) {
-          if (universum() !== "EUROPE" || input.value.trim().toUpperCase() !== q) return;
-          if (result.state !== "AVAILABLE") { S.clear(results); treffer = []; hint.textContent = "Dieses Universum ist noch nicht freigegeben."; return; }
-          treffer = result.data.entries;
-          zeichnen(result.data);
-        }).catch(function () { S.clear(results); treffer = []; hint.textContent = "Die Suche ist derzeit nicht verfügbar."; });
-        return;
-      }
-      ladeIndex().then(function (index) {
-        /* Reihenfolge mit Absicht: ein exakter Ticker zuerst, dann Ticker,
-           die so beginnen, dann Namenstreffer. Wer "NVDA" tippt, meint
-           nicht "NVR". */
-        var exakt = [], beginnt = [], nameBeginnt = [], enthaelt = [], sektor = [];
-        index.entries.forEach(function (e) {
-          var name = (e.n || "").toUpperCase();
-          var sec = (e.sec || "").toUpperCase();
-          if (e.s === q) exakt.push(e);
-          else if (e.s.indexOf(q) === 0) beginnt.push(e);
-          else if (name.indexOf(q) === 0) nameBeginnt.push(e);
-          else if (name.indexOf(q) !== -1 || e.s.indexOf(q) !== -1) enthaelt.push(e);
-          else if (q.length >= 3 && sec.indexOf(q) !== -1) sektor.push(e);
-        });
-        /* Firma, Ticker, dann Sektor - und nie mehr als 14 Knoten im DOM. */
-        treffer = exakt.concat(beginnt, nameBeginnt, enthaelt, sektor).slice(0, 14);
+      if (!q) { S.clear(results); treffer = []; hint.textContent = "Tippen zum Suchen · ↑ ↓ zum Auswählen · Enter zum Öffnen · Esc schließt"; return; }
+      D.GlobalUniverse.search(q).then(function (index) {
+        if (token !== sequence || input.value.trim() !== q) return;
+        treffer = index.entries;
         zeichnen(index);
       }).catch(function () {
-        S.clear(results);
-        results.appendChild(el("div", { class: "dx-empty" }, [
-          el("b", { text: "Suchindex nicht ladbar" }),
-          document.createTextNode("Der Suchindex dieses Universums konnte nicht geladen werden.")
-        ]));
+        if (token !== sequence) return;
+        S.clear(results); treffer = [];
+        hint.textContent = "Die Suche ist derzeit nicht verfügbar.";
       });
     }
 
@@ -177,7 +134,7 @@
       var hit = treffer[i === undefined || i < 0 ? 0 : i];
       if (!hit) return;
       schliessen();
-      location.hash = hit.href || "#/s/" + universum() + "/" + hit.s;
+      location.hash = hit.href;
     }
 
     function oeffnenOverlay() {
@@ -191,6 +148,7 @@
     }
 
     function schliessen() {
+      sequence++;
       overlay.classList.remove("on");
       document.body.classList.remove("dx-suche-offen");
       document.body.style.overflow = "";

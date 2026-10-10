@@ -1383,7 +1383,9 @@ function buildSimilar(universe, stock, anzahl) {
     isNum(other.metrics.leadershipScore));
   const gleicherSektor = stock.sectorStatus === "CURATED" && stock.sector
     ? kandidaten.filter((o) => o.sector === stock.sector) : [];
-  const rest = kandidaten.filter((o) => gleicherSektor.indexOf(o) === -1);
+  // Same object membership and stable order; avoid an O(sector size) scan per candidate.
+  const gleicherSektorSet = new Set(gleicherSektor);
+  const rest = kandidaten.filter((o) => !gleicherSektorSet.has(o));
   const nachNaehe = (a, b) =>
     Math.abs(a.metrics.leadershipScore - score) - Math.abs(b.metrics.leadershipScore - score);
   return gleicherSektor.sort(nachNaehe).concat(rest.sort(nachNaehe))
@@ -2351,3 +2353,6 @@ write("meta.json", meta);
 
 console.log(`\nFertig in ${((Date.now() - started) / 1000).toFixed(1)} s — ` +
             `${filesWritten} Dateien, ${(bytesWritten / 1024 / 1024).toFixed(2)} MB`);
+
+// Canonical visibility is separate from all ranking populations.
+await (await import('./global-search-index.mjs')).produceGlobal(root);

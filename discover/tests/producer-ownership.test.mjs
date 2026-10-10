@@ -37,10 +37,11 @@ test("actual Discover rebuild preserves only foreign Europe directory bytes and 
   const temporary = mkdtempSync(join(tmpdir(), "vu-discover-ownership-"));
   try {
     // Only inputs are linked. The real producer writes exclusively to private data.
-    for (const entry of ["quant", "dashboard"]) symlinkSync(join(root, entry), join(temporary, entry), "dir");
+    for (const entry of ["quant", "dashboard", "core"]) symlinkSync(join(root, entry), join(temporary, entry), "dir");
     mkdirSync(join(temporary, "scripts/discover"), { recursive: true });
     symlinkSync(join(root, "scripts/market"), join(temporary, "scripts/market"), "dir");
     writeFileSync(join(temporary, "scripts/discover/build-discover-data.mjs"), readFileSync(builder));
+    writeFileSync(join(temporary, "scripts/discover/global-search-index.mjs"), readFileSync(join(root,"scripts/discover/global-search-index.mjs")));
     mkdirSync(join(temporary, "discover"));
     for (const entry of ["engines", "config", "methodology"]) symlinkSync(join(root, "discover", entry), join(temporary, "discover", entry), "dir");
     const data = join(temporary, "discover/data");
