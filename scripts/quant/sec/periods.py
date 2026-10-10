@@ -119,9 +119,13 @@ def _in_class(observation, wanted):
 
 def _as_concept(observation, taxonomy, concept, value):
     """The same filing's cell, read under another concept it also reported."""
+    # the audit trail names the concept actually read (red team R4 LOW-2)
+    old = f"{observation.provenance.taxonomy}:{observation.provenance.concept}|"
+    inputs = [f"{taxonomy}:{concept}|" + item[len(old):] if item.startswith(old) else item
+              for item in (observation.provenance.inputs or [])]
     return Observation(
         value=value, unit=observation.unit,
-        provenance=dataclasses.replace(observation.provenance, taxonomy=taxonomy, concept=concept),
+        provenance=dataclasses.replace(observation.provenance, taxonomy=taxonomy, concept=concept, inputs=inputs),
         available_from=observation.available_from, filed=observation.filed,
         quality=observation.quality,
         flags=[flag for flag in observation.flags if not flag.startswith(ALTERNATE_PREFIX)],
@@ -564,9 +568,11 @@ class PeriodResolver:
                                                 for label in {f"Q{index}", CUMULATIVE_LABELS.get(index, "Q1"),
                                                               CUMULATIVE_LABELS.get(index - 1, "Q1")}],
                                        {economic_class(concept) for concept in concepts}, as_of, policy, lag_days):
-            same_class = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
+            same_class, mixed = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
             if same_class is not None:
                 return same_class, None, ["TTM_CLASS_ALIGNED"]
+            if mixed is not None:
+                return mixed, TTM_BASIS_MIXED, []
             for rule in definition.concepts:
                 aligned = []
                 for obs in observations:
@@ -578,6 +584,8 @@ class PeriodResolver:
                         break
                     aligned.append(_as_concept(obs, alternate[0], rule.concept, alternate[1]))
                 if len(aligned) == len(observations):
+                    if self._basis_mixed(metric, aligned):
+                        return aligned, TTM_BASIS_MIXED, []
                     return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
             return observations, TTM_CONCEPT_MISMATCH, []
         differ = False
@@ -598,6 +606,8 @@ class PeriodResolver:
                     break
                 aligned.append(_as_concept(obs, alternate[0], rule.concept, alternate[1]))
             if len(aligned) == len(observations):
+                if self._basis_mixed(metric, aligned):
+                    return aligned, TTM_BASIS_MIXED, []
                 return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
         return observations, TTM_CONCEPT_MISMATCH, []
 
@@ -614,7 +624,8 @@ class PeriodResolver:
         return False
 
     def _window_in_one_class(self, metric, quarters, as_of, policy, lag_days, observations):
-        """The window's reported quarters re-read within one economic class every quarter has at as_of, or None."""
+        """(window re-read within one economic class every quarter has at as_of, or None; a basis-mixed reading)."""
+        mixed = None
         # Owners' net income first, as for a single cell (Markel TTM Q1 2020), then
         # income available to common, then consolidated profit (JBG Smith 2018).
         for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations},
@@ -653,8 +664,13 @@ class PeriodResolver:
                     break
                 chosen.append(found)
             if len(chosen) == len(observations):
-                return chosen
-        return None
+                # A re-read takes other filings' versions: their basis is checked
+                # again (AgileThought 2020: the SPAC's Q1/Q2 next to the successor's);
+                # a mixed reading gives way to the next class (1569187 2016).
+                if not self._basis_mixed(metric, chosen):
+                    return chosen, None
+                mixed = mixed or chosen
+        return None, mixed
 
     def _filing_periods(self, metric):
         """accession -> {(concept, start, end): value} of every observation of `metric`."""

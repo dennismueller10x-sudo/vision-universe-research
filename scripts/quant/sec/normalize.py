@@ -47,6 +47,8 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
+# 1.23.0: two classes of opposite sign within 2 % of each other's amount.
+SIGN_SLIP_TOLERANCE = 0.02
 ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
 ISSUE_AMBIGUOUS_PERIOD = "AMBIGUOUS_PERIOD"
 # Two period ends in one cell further apart than this are two periods.
@@ -457,7 +459,11 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         shown = entries[0][1].available_from or availability.get(accession) or entries[0][1].filed
         for first, a in by_class.items():
             for second, b in by_class.items():
-                if first < second and abs(a - b) > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(a), abs(b), 1.0):
+                # The same amount with the other sign is a sign slip, not a second
+                # class (SOBR Safe 10-Q/A 2025: NetIncomeLoss +2,505,921 next to
+                # ProfitLoss -2,505,921; Apartment Income REIT Q3 2020).
+                if first < second and abs(a - b) > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(a), abs(b), 1.0) \
+                        and not (a * b < 0 and abs(a + b) <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))):
                     pairs = distinct_classes.setdefault((metric_name, fiscal_year, fiscal_period), {})
                     known = pairs.get((first, second))
                     if known is None or to_instant(shown) < to_instant(known):

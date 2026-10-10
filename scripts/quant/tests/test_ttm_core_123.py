@@ -365,3 +365,27 @@ class FTTM7StoredFactbookTests(unittest.TestCase):
             a, b = resolver.ttm("net_income", as_of), stored.ttm("net_income", as_of)
             self.assertEqual((a.available, a.value, a.reason), (b.available, b.value, b.reason), as_of)
         self.assertAlmostEqual(stored.ttm("net_income", "2021-08-20").value, -84858000.0, delta=1)
+
+
+class M2ReReadBasisTests(unittest.TestCase):
+    def test_one_class_reading_is_checked_for_a_mixed_basis(self):
+        # AgileThought (CIK 1790625), SPAC LIV Capital -> AgileThought 2021. Q1/Q2 2020 NetIncomeLoss nur aus den
+        # 10-Q der SPAC (0001213900-21-028705: +4.741.806), der Nachfolger meldet Q1/Q2 2020 nur als ProfitLoss
+        # (10-Q 0001790625-21-000042). Die Eigentuemer-Lesung mischte zwei Einheiten (-12.756.340); klassenrein
+        # konsolidiert = GJ 2020 des Nachfolgers -26.332.000 (10-K 0001790625-22-000028).
+        _, calendar, _, resolver = build("AGIL20")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2020-12-31"),
+                                   calendar.quarter_index("2020-12-31"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, -26332000.0, delta=1)
+
+
+class FTTM7SignSlipTests(unittest.TestCase):
+    def test_same_amount_with_the_other_sign_is_no_class_evidence(self):
+        # SOBR Safe (CIK 1425627): 10-Q/A 0001477932-25-003898 meldet Q1 2024 NetIncomeLoss +2.505.921 neben
+        # ProfitLoss -2.505.921. Kein Klassenpaar - TTM GJ2024 = SEC-Geschaeftsjahr -8.609.139 (+- Rundung).
+        _, calendar, _, resolver = build("SOBR24")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2024-12-31"),
+                                   calendar.quarter_index("2024-12-31"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, -8609139.0, delta=20)

@@ -303,6 +303,9 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          klassenintern neu abgeleitet - Goodyear). Klassenbelege sind Point in
 #          Time: ein Paar zaehlt erst ab der Verfuegbarkeit der Einreichung, die
 #          es zeigt (Red Team R3 CRITICAL-1: Apartment Income REIT, Bausch Health).
+#          Gleicher Betrag mit anderem Vorzeichen ist kein Klassenbeleg (SOBR
+#          Safe); eine klassenreine Neulesung wird erneut auf M-2 geprueft und
+#          weicht bei gemischter Basis der naechsten Klasse (AgileThought).
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -340,7 +343,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2bd09f25d5c00aac5e9e5446ab0e4e1ddba44619b27d67ad4e06f6c1dd764962"
+    "e10c54b2f136d46208644a86f9913069c5579a1d6c38755e1ff98c81616d2d55"
 )
 
 
