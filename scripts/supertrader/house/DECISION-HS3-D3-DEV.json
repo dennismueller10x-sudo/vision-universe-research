@@ -1,0 +1,13 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS3_D3",
+  "decidedAt": "2026-10-03",
+  "stage": "development",
+  "runs": { "dev": 37144385411 },
+  "gate": { "G0": "PASS" },
+  "selected": "M03",
+  "criteria": { "H3_development": "PASS", "H5_PBO": "PASS" },
+  "decision": "FROZEN_FOR_HOLDOUT",
+  "caveat": "Der Vorsprung im Entwicklungszeitraum ist klein und statistisch nicht belastbar (Deflated Sharpe Ratio weit unter 0,95 bei 43 gezählten Versuchen). Bekannte Datenlücke: Mehrgattungs-Emittenten ohne Aktienzahl in companyfacts (u. a. Alphabet, Berkshire, Visa, Mastercard) fehlen im Universum.",
+  "next": "Holdout 2022–2026 genau einmal mit FROZEN-HS3-D3.json."
+}
