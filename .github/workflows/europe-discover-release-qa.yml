@@ -4,7 +4,11 @@ name: Europe Discover published release QA
 on:
   push:
     branches: [main]
-    paths: ['discover/data/europe/manifest.json']
+    paths:
+      - 'discover/data/europe/manifest.json'
+      - 'scripts/discover/europe-public-live-qa.mjs'
+      - 'scripts/discover/global-live-qa.mjs'
+      - '.github/workflows/europe-discover-release-qa.yml'
 permissions:
   contents: read
 concurrency:
@@ -42,6 +46,7 @@ jobs:
           path: ${{ runner.temp }}/europe-live-qa/
           if-no-files-found: error
       - name: Verify global search, full chart ranges and saved watchlists
+        if: ${{ !cancelled() }}
         env:
           NODE_PATH: /tmp/europe-qa/node_modules
           SITE_URL: https://research.visionuniverse.de
