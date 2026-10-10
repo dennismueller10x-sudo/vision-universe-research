@@ -51,8 +51,10 @@ test('real Git history retains the exception while rejecting later engine or sto
 
 test('Master-page exception permits only the exact issuer mount and availability copy',async()=>{
  const {masterDetailIntegrationOnly}=await import('../master-detail-integration.mjs');
- const {readFileSync}=await import('node:fs');
- const after=readFileSync(new URL('../../../discover/ui/detail.js',import.meta.url),'utf8');
+ // Immutable accepted hook example. Unrelated later renderer changes on main
+ // do not broaden the protected-path exception; negative assertions stay exact.
+ const accepted=spawnSync('git',['show','f667d82649986d681d76cb5da1176d3b6bea265d:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(accepted.status,0);
+ const after=accepted.stdout;
  const prior=spawnSync('git',['show','440a1645048d6b559988488f9a0f3148f21d3cdd:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(prior.status,0);
  assert(masterDetailIntegrationOnly(prior.stdout,after));
  assert(!masterDetailIntegrationOnly(prior.stdout,after+'\nrecalculateQuant();\n'));
