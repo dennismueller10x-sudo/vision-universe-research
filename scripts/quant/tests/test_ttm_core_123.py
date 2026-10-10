@@ -207,6 +207,28 @@ class FTTM7CellIdentityTests(unittest.TestCase):
         self.assertTrue(fact.available, fact.reason)
         self.assertAlmostEqual(fact.value, 17307000.0 - 9448000.0 + 13100000.0 + 13100000.0, delta=1)
 
+    def test_misplaced_first_period_does_not_lock_the_cell(self):
+        # Eco-Tek (CIK 1473637), red team 1.23.0 HIGH-2: neun Monate der Mantelgesellschaft 2011-07-01..2012-03-31
+        # (10-Q 0001432093-12-000374) lagen zuerst in YTD3 2012. Der Slot ist 2012-01-01..2012-09-30 = -203.723
+        # (10-Q 0001214782-12-000107); damit TTM FY2012 = -868.195 (Jahresbericht) und TTM Q3 2013 = -1.111.953.
+        obs = resolved("ECOTEK", "net_income", "2012-09-30", "YTD3")
+        self.assertEqual((span(obs), obs.value), (("2012-01-01", "2012-09-30"), -203723.0))
+        _, calendar, _, resolver = build("ECOTEK")
+        for end, expected in (("2012-12-31", -868195.0), ("2013-09-30", -1111953.0)):
+            fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for(end), calendar.quarter_index(end),
+                                       "2099-12-31")
+            self.assertAlmostEqual(fact.value, expected, delta=1, msg=end)
+
+    def test_one_class_reading_ignores_the_cells_own_class_preference(self):
+        # RPT Realty (CIK 842183), TTM Q2 2016 klassenrein ProfitLoss: die juengste ProfitLoss-Fassung je Quartal
+        # (10-K 0000842183-17-000013 bzw. -18-000013: 33.666.000, 14.686.000, 11.845.000, 27.363.000), nicht die
+        # Nebenmeldung der Eigentuemer-Zelle aus dem 10-Q (34.606.000, 12.142.000, 28.020.000).
+        _, calendar, _, resolver = build("RPT16")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2016-06-30"),
+                                   calendar.quarter_index("2016-06-30"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, 87560000.0, delta=1)
+
     def test_same_period_restatement_still_replaces(self):
         # Gleicher Zeitraum, gleiches Konzept: Entest 10-Q 2016-04-13 restated YTD2 2015 0,00 -> -0,01.
         obs = resolved("ENTEST", "eps_diluted", "2015-02-28", "YTD2")

@@ -297,7 +297,9 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          IBKR, Mobiquity). Kein Quartal aus zwei Klassen abgeleitet, kein
 #          TTM ueber zwei getrennte Klassen (klassenrein neu gelesen oder
 #          TTM_CONCEPT_MISMATCH; Eigentuemerklasse zuerst, Klassen-Fassung
-#          auch aus der Nebenmeldung derselben Einreichung - Markel, AMCOL).
+#          dann Stammaktionaere, dann inkl. Minderheiten; Klassen-Fassung auch
+#          aus der Nebenmeldung derselben Einreichung, ohne die Klassenvorliebe
+#          der Zelle - Markel, AMCOL, RPT Realty, JBG Smith).
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -335,7 +337,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "db6f320ce9dca33ce3b7e880ed343e7b4ac7f80489d4a5edab178eb85b80fcfc"
+    "0d0e99823a1074715b8ec98b42887361f9e0d2dd88db6a81ec05c6a15e54f61a"
 )
 
 

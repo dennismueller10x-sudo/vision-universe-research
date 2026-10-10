@@ -31,6 +31,7 @@ LOGGER = logging.getLogger("vu.sec.periods")
 
 QUARTERS = ("Q1", "Q2", "Q3", "Q4")
 CUMULATIVE_LABELS = {2: "YTD2", 3: "YTD3", 4: "FY"}
+CLASS_READING_ORDER = ("primary", "available_to_common", "consolidated_including_nci")
 FLAG_PERIOD_TRANSFORM = "VU_PERIOD_TRANSFORM"
 MAX_FIXPOINT_PASSES = 8
 
@@ -610,9 +611,11 @@ class PeriodResolver:
 
     def _window_in_one_class(self, metric, quarters, as_of, policy, lag_days, observations):
         """The window's reported quarters re-read within one economic class every quarter has at as_of, or None."""
-        # Owners' net income first, as for a single cell (Markel TTM Q1 2020).
+        # Owners' net income first, as for a single cell (Markel TTM Q1 2020), then
+        # income available to common, then consolidated profit (JBG Smith 2018).
         for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations},
-                             key=lambda name: (name != "primary", name)):
+                             key=lambda name: (CLASS_READING_ORDER.index(name) if name in CLASS_READING_ORDER
+                                               else len(CLASS_READING_ORDER), name)):
             chosen = []
             for (fiscal_year, index, obs) in quarters:
                 timeline = self.factbook.get(metric, fiscal_year, f"Q{index}")
@@ -622,7 +625,7 @@ class PeriodResolver:
                 # still is a version of it (AMCOL 2011: restated ProfitLoss beside
                 # NetIncomeLoss in the 10-K 2013, not the 10-K 2012's older one).
                 found = timeline.resolve(as_of=as_of, policy=policy, lag_days=lag_days,
-                                         accept=lambda o, c=wanted: _in_class(o, c) is not None)
+                                         accept=lambda o, c=wanted: _in_class(o, c) is not None, by_class=False)
                 if found is None or not _same_quarter(found, obs):
                     break
                 chosen.append(_in_class(found, wanted))

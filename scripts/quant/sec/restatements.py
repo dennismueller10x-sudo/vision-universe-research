@@ -236,8 +236,11 @@ class FactTimeline:
         return [obs for obs in self.observations
                 if obs.available_instant is not None and obs.available_instant <= cutoff]
 
-    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0, accept=None):
-        """Return the observation a consumer is allowed to see at as_of (optionally only those `accept` admits)."""
+    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0, accept=None, by_class=True):
+        """Return the observation a consumer is allowed to see at as_of (optionally only those `accept` admits).
+
+        by_class=False skips the class preference: a caller reading the cell in one
+        class it chooses itself (periods._window_in_one_class)."""
         if policy not in POLICIES:
             raise ValueError(f"unknown restatement policy: {policy}")
         if policy == POLICY_LATEST_KNOWN:
@@ -250,7 +253,7 @@ class FactTimeline:
             candidates = [obs for obs in candidates if accept(obs)]
         if not candidates:
             return None
-        candidates = preferred(candidates, self.distinguish_classes)
+        candidates = preferred(candidates, self.distinguish_classes if by_class else ())
 
         if policy == POLICY_ORIGINAL:
             chosen = candidates[0]
