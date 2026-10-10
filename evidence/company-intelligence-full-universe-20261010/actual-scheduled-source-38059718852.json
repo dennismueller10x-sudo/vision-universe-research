@@ -1,0 +1,380 @@
+{
+  "schema": 1,
+  "runId": "38059718852",
+  "startedAt": "2026-10-10T14:36:50.222Z",
+  "status": "SUCCESS",
+  "published": true,
+  "retainedLastGood": false,
+  "verification": false,
+  "sourcePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "cohortStocks": 46,
+  "cohortIssuers": 45,
+  "privateOperationalRowsIncluded": false,
+  "restoredGeneration": "dd958f61bebd9e538f5df279",
+  "asOf": "2026-10-10T14:36:59Z",
+  "consumerGeneration": "307566e1f1fa23f778222806",
+  "eventsAdded": 0,
+  "financialFactAttempts": 0,
+  "financialFactOutcomes": {
+    "NO_NEW_FILING": 45
+  },
+  "financialUpdates": 0,
+  "health": {
+    "lastAttempt": "2026-10-10T14:36:59Z",
+    "lastFinancialAttempt": "2026-10-10T00:04:40Z",
+    "lastSuccessfulEventRefresh": "2026-10-10T14:36:59Z",
+    "lastSuccessfulFinancialProjection": "2026-10-10T00:04:40Z",
+    "lastSuccessfulMaterialRefresh": "2026-10-09T15:47:18Z",
+    "lastSuccessfulNewsRefresh": "2026-10-10T14:36:59Z",
+    "lastSuccessfulRefresh": "2026-10-10T14:36:59Z",
+    "lastSuccessfulSecRefresh": "2026-10-10T14:36:59Z"
+  },
+  "httpStats": {
+    "bytesDownloaded": 1617567,
+    "cacheHits": 30,
+    "memoHits": 0,
+    "notModified": 30,
+    "retries": 0
+  },
+  "newsAdded": 0,
+  "privateCompanies": 5120,
+  "publicRequests": 47,
+  "runtimeSeconds": 153.725,
+  "scheduler": {},
+  "scope": "CONTROLLED_COHORT",
+  "secFailures": 0,
+  "secIssuersChecked": 45,
+  "secRequests": 45,
+  "secScheduler": {},
+  "secSharedFeed": {},
+  "secSuccess": 45,
+  "sourceGeneration": "85ebdc8c1ff855929a828f38",
+  "sourceLaneSuccess": {
+    "IR_EVENTS": 19,
+    "IR_FEED": 28
+  },
+  "sourceOutcomes": {
+    "NO_CHANGE": 39,
+    "SUCCESS": 8
+  },
+  "sourcesChecked": 47,
+  "sourcesDeferredByBudget": 0,
+  "sourcesEligible": 105,
+  "unsupportedInactiveSources": 9,
+  "updatedIssuers": 0,
+  "consumerContracts": {
+    "status": "PASS",
+    "listings": 46,
+    "issuers": 45
+  },
+  "consumerChecks": {
+    "status": "PASS",
+    "profiles": 45,
+    "news": 314,
+    "newsIssuers": 42,
+    "expiredNews": 0
+  },
+  "privatePreservation": {
+    "status": "PRESERVED",
+    "sha256": "14aecddecadb4cd47d04f1cac58d4de87536a74dfb86e79ab3af608d5e6159b8",
+    "bytes": 31149178,
+    "operations": 7
+  },
+  "freshRestoreVerified": true,
+  "newPrivateGeneration": "85ebdc8c1ff855929a828f38",
+  "candidateQA": {
+    "status": "PASS",
+    "mode": "REAL_UI_ROUTED_CANDIDATE",
+    "sourceCommit": "24cd6e5efad3ecbd162c2bb38dff5bbb4317b58d",
+    "generation": "307566e1f1fa23f778222806",
+    "verifiedAssets": 86,
+    "protectedAccess": true,
+    "cohortStocks": 46,
+    "cohortIssuers": 45,
+    "cases": [
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 390,
+        "status": "PASS",
+        "news": 11,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 1440,
+        "status": "PASS",
+        "news": 11,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 390,
+        "status": "PASS",
+        "news": 5,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 1440,
+        "status": "PASS",
+        "news": 5,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 390,
+        "status": "PASS",
+        "news": 0,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 1440,
+        "status": "PASS",
+        "news": 0,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 390,
+        "status": "PASS",
+        "news": 2,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 1440,
+        "status": "PASS",
+        "news": 2,
+        "generation": "307566e1f1fa23f778222806"
+      }
+    ]
+  },
+  "publication": {
+    "generation": "307566e1f1fa23f778222806",
+    "status": "PUBLISHED",
+    "uploadedObjects": 86,
+    "uploadedBytes": 2074680,
+    "unchangedObjects": 0
+  },
+  "failureStage": null,
+  "lastSuccessfulProductionPublication": "2026-10-10T14:50:01.045Z",
+  "refreshSLO": "HEALTHY",
+  "publicationSLO": "HEALTHY",
+  "finishedAt": "2026-10-10T14:40:47.653Z",
+  "durationSeconds": 237,
+  "productionVerified": true,
+  "githubEvent": "schedule",
+  "actualLiveQA": {
+    "status": "PASS",
+    "mode": "ACTUAL_PRODUCTION",
+    "sourceCommit": "c7f07bf92e857bb4a7f92c62eaf633018d10f8cb",
+    "generation": "307566e1f1fa23f778222806",
+    "verifiedAssets": 86,
+    "protectedAccess": true,
+    "cohortStocks": 46,
+    "cohortIssuers": 45,
+    "cases": [
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "TSLA",
+        "cid": "iss_cik_0001318605",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "AAPL",
+        "cid": "iss_cik_0000320193",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 390,
+        "status": "PASS",
+        "news": 11,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "NVDA",
+        "cid": "iss_cik_0001045810",
+        "width": 1440,
+        "status": "PASS",
+        "news": 11,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 390,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "PLTR",
+        "cid": "iss_cik_0001321655",
+        "width": 1440,
+        "status": "PASS",
+        "news": 20,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 390,
+        "status": "PASS",
+        "news": 5,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "XPEV",
+        "cid": "iss_cik_0001810997",
+        "width": 1440,
+        "status": "PASS",
+        "news": 5,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 390,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "MSFT",
+        "cid": "iss_cik_0000789019",
+        "width": 1440,
+        "status": "PASS",
+        "news": 1,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 390,
+        "status": "PASS",
+        "news": 0,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "ACU",
+        "cid": "iss_cik_0000002098",
+        "width": 1440,
+        "status": "PASS",
+        "news": 0,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 390,
+        "status": "PASS",
+        "news": 2,
+        "generation": "307566e1f1fa23f778222806"
+      },
+      {
+        "ticker": "VEON",
+        "cid": "iss_cik_0001468091",
+        "width": 1440,
+        "status": "PASS",
+        "news": 2,
+        "generation": "307566e1f1fa23f778222806"
+      }
+    ]
+  }
+}
