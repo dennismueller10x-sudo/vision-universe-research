@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-10T17:25:38.177Z",
+ "generatedAt": "2026-10-10T21:54:36.461Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -45,7 +45,7 @@
    }
   ],
   "statement": "Positive Dynamik – aber der Trend ist noch nicht breit bestätigt.",
-  "explanation": "Die Dynamik ist positiv und die Schwankungen sind normal, aber der Trend ist noch nicht breit bestätigt. Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen.",
+  "explanation": "Die Dynamik ist positiv und die Schwankungen sind normal, aber der Trend ist noch nicht breit bestätigt und nur wenige Aktien tragen die Bewegung.",
   "investor": "Chancen sind vorhanden, das Umfeld unterstützt derzeit aber eher selektive Einstiege als breite Risikobereitschaft.",
   "why": {
    "support": [
@@ -62,7 +62,14 @@
      "text": "Die Kursschwankungen liegen im üblichen Rahmen."
     }
    ],
-   "headwind": [],
+   "headwind": [
+    {
+     "dimension": "BREADTH",
+     "state": "NARROW",
+     "label": "Schmal",
+     "text": "Nur eine Minderheit der Aktien liegt über ihrem Trend – die Bewegung hängt an wenigen Titeln."
+    }
+   ],
    "neutral": [
     {
      "dimension": "TREND",
@@ -71,14 +78,7 @@
      "text": "Der Trend ist noch nicht breit bestätigt – die großen US-Markt-Tracker liegen teils darüber, teils darunter."
     }
    ],
-   "open": [
-    {
-     "dimension": "BREADTH",
-     "state": "NOT_CURRENT",
-     "label": "Nicht aktuell",
-     "text": "Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen."
-    }
-   ],
+   "open": [],
    "context": [
     {
      "dimension": "CROSS_ASSET",
@@ -91,21 +91,21 @@
   "counts": {
    "support": 2,
    "neutral": 1,
-   "headwind": 0,
-   "open": 1
+   "headwind": 1,
+   "open": 0
   },
   "states": {
    "TREND": "MIXED",
    "MOMENTUM": "RISING",
    "RISK": "NORMAL",
-   "BREADTH": "NOT_CURRENT",
+   "BREADTH": "NARROW",
    "CROSS_ASSET": "OBSERVED"
   },
   "methodology": "Feste Entscheidungstabelle (market-environment-1.0.0): Trend und Momentum bilden gemeinsam die Basisstufe (sie überschneiden sich und zählen deshalb nicht doppelt). Das Risiko begrenzt nach oben (erhöht: höchstens „Selektiv“, hoch: höchstens „Vorsichtig“). Die Marktbreite bestätigt: „Breit konstruktiv“ nur mit aktueller breiter Beteiligung; schmale Breite begrenzt auf „Selektiv“. Fehlt die Marktbreite, zählt sie weder dafür noch dagegen. Der Cross-Asset-Kontext beschreibt Beziehungen und stimmt nicht mit ab. Kein Score, keine Gewichte, keine Prognose.",
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-10T17:25:38.177Z",
+  "generatedAt": "2026-10-10T21:54:36.462Z",
   "dataAsOf": "2026-10-09",
   "previousDataAsOf": "2026-10-08",
   "schedule": {
@@ -142,11 +142,11 @@
     "key": "BREADTH",
     "label": "Marktbreite",
     "from": "–",
-    "to": "Nicht aktuell",
+    "to": "Schmale Beteiligung",
     "change": "UNKNOWN",
-    "fromValue": null,
-    "toValue": null,
-    "delta": null
+    "fromValue": "30 % über 50 Tage",
+    "toValue": "29 % über 50 Tage",
+    "delta": -1.18
    },
    {
     "key": "MOMENTUM",
@@ -231,21 +231,7 @@
   }
  ],
  "changes": {
-  "better": [
-   {
-    "dimension": "TREND",
-    "from": "MIXED",
-    "to": "POSITIVE",
-    "toLabel": "Aufwärtstrend",
-    "level": 3,
-    "levelLabel": "Konstruktiv",
-    "text": "wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 2). Am nächsten dran: DIA (1,9 % bis über beide Linien)",
-    "symbols": [
-     "DIA"
-    ],
-    "distance": 1.87
-   }
-  ],
+  "better": [],
   "worse": [
    {
     "dimension": "TREND",
@@ -291,24 +277,6 @@
  },
  "whatMatters": [
   {
-   "dimension": "TREND",
-   "title": "Trend der großen US-Märkte",
-   "state": "MIXED",
-   "stateLabel": "Kein klarer Trend",
-   "why": "Der Trend ist die Basis der Einordnung. Eine Bestätigung würde das Marktbild verbessern, ein Bruch es verschlechtern.",
-   "watch": [
-    "Besser: wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 2). Am nächsten dran: DIA (1,9 % bis über beide Linien).",
-    "Schlechter: wenn mindestens 3 der 4 großen US-Markt-Tracker unter ihre 50- und 200-Tage-Linie fallen (derzeit 0). Am knappsten: IWM (0,7 % darüber), DIA (2,5 % darüber), SPY (7,7 % darüber)."
-   ],
-   "symbols": [
-    "DIA",
-    "IWM",
-    "SPY"
-   ],
-   "near": true,
-   "anchor": "puls-trend"
-  },
-  {
    "dimension": "MOMENTUM",
    "title": "Dynamik über 3 und 6 Monate",
    "state": "RISING",
@@ -322,19 +290,6 @@
    "anchor": "puls-momentum"
   },
   {
-   "dimension": "BREADTH",
-   "title": "Marktbreite",
-   "state": "NOT_CURRENT",
-   "stateLabel": "Nicht aktuell",
-   "why": "Aktuelle Breitendaten fehlen. Sie würden zeigen, ob viele Aktien die Bewegung mittragen – erst dann ist „Breit konstruktiv“ möglich.",
-   "watch": [
-    "Die Breitendaten stammen vom 2026-10-06 und sind älter als der letzte Handelstag (2026-10-09). Keine Einordnung."
-   ],
-   "symbols": [],
-   "near": false,
-   "anchor": "maerkte-breite"
-  },
-  {
    "dimension": "CROSS_ASSET",
    "title": "Kontext: Die langfristigen US-Renditen sind deutlich gestiegen",
    "state": "OBSERVED",
@@ -346,6 +301,38 @@
    ],
    "near": false,
    "anchor": "maerkte-crossasset"
+  },
+  {
+   "dimension": "TREND",
+   "title": "Trend der großen US-Märkte",
+   "state": "MIXED",
+   "stateLabel": "Kein klarer Trend",
+   "why": "Der Trend ist die Basis der Einordnung. Eine Bestätigung würde das Marktbild verbessern, ein Bruch es verschlechtern.",
+   "watch": [
+    "Schlechter: wenn mindestens 3 der 4 großen US-Markt-Tracker unter ihre 50- und 200-Tage-Linie fallen (derzeit 0). Am knappsten: IWM (0,7 % darüber), DIA (2,5 % darüber), SPY (7,7 % darüber)."
+   ],
+   "symbols": [
+    "IWM",
+    "DIA",
+    "SPY"
+   ],
+   "near": false,
+   "anchor": "puls-trend"
+  },
+  {
+   "dimension": "RISK",
+   "title": "Schwankungen und Abstand zum Hoch",
+   "state": "NORMAL",
+   "stateLabel": "Normal",
+   "why": "Steigende Schwankungen oder ein tieferer Rückgang begrenzen die Einordnung nach oben.",
+   "watch": [
+    "Schlechter: wenn die Schwankung von SPY auf 26,9 % steigt oder SPY 20 % unter sein 52-Wochen-Hoch fällt (derzeit 10,0 % bzw. −0,1 %)."
+   ],
+   "symbols": [
+    "SPY"
+   ],
+   "near": false,
+   "anchor": "puls-risk"
   }
  ],
  "gauges": {
@@ -377,18 +364,18 @@
    "previousDate": "2026-10-08"
   },
   "BREADTH": {
-   "value": 29.85,
+   "value": 28.67,
    "min": 0,
    "max": 100,
    "unit": "PERCENT",
-   "current": false,
+   "current": true,
    "marks": [
     {
      "at": 50,
      "label": "Mehrheit"
     }
    ],
-   "valueText": "30 % über der 50-Tage-Linie (Stand 2026-10-06, nicht aktuell)",
+   "valueText": "29 % über der 50-Tage-Linie",
    "zones": [
     {
      "from": 0,
@@ -400,7 +387,9 @@
      "to": 100,
      "tone": "support"
     }
-   ]
+   ],
+   "previous": 29.85,
+   "previousDate": "2026-10-08"
   },
   "MOMENTUM": {
    "value": 1.17,
@@ -552,57 +541,71 @@
   },
   "BREADTH": {
    "id": "BREADTH",
-   "state": "NOT_CURRENT",
-   "label": "Nicht aktuell",
-   "summary": "Die Breitendaten stammen vom 2026-10-06 und sind älter als der letzte Handelstag (2026-10-09). Keine Einordnung.",
+   "state": "NARROW",
+   "label": "Schmal",
+   "summary": "29 % der beobachteten Aktien liegen über ihrem 50-Tage-Trend, 39 % über dem 200-Tage-Trend.",
    "evidence": [
     {
      "key": "above50",
      "label": "Über 50-Tage-Linie",
-     "text": "29,8 % (1763 von 5907)",
-     "value": 29.85,
-     "matched": 1763,
-     "evaluated": 5907,
-     "asOf": "2026-10-06",
-     "current": false
+     "text": "28,7 % (1695 von 5912)",
+     "value": 28.67,
+     "matched": 1695,
+     "evaluated": 5912,
+     "asOf": "2026-10-09",
+     "current": true
     },
     {
      "key": "above200",
      "label": "Über 200-Tage-Linie",
-     "text": "39,7 % (2097 von 5286)",
-     "value": 39.67,
-     "matched": 2097,
-     "evaluated": 5286,
-     "asOf": "2026-10-06",
-     "current": false
+     "text": "38,5 % (2035 von 5283)",
+     "value": 38.52,
+     "matched": 2035,
+     "evaluated": 5283,
+     "asOf": "2026-10-09",
+     "current": true
     },
     {
      "key": "newHighs",
      "label": "Schluss auf 52-Wochen-Hoch",
-     "text": "49 von 5188",
-     "value": 49,
-     "evaluated": 5188,
-     "asOf": "2026-10-06",
-     "current": false
+     "text": "47 von 5192",
+     "value": 47,
+     "evaluated": 5192,
+     "asOf": "2026-10-09",
+     "current": true
     },
     {
      "key": "newLows",
      "label": "Schluss auf 52-Wochen-Tief",
-     "text": "48 von 5188",
-     "value": 48,
-     "evaluated": 5188,
-     "asOf": "2026-10-06",
-     "current": false
+     "text": "60 von 5192",
+     "value": 60,
+     "evaluated": 5192,
+     "asOf": "2026-10-09",
+     "current": true
+    },
+    {
+     "key": "advDecl",
+     "label": "Gestiegen / gefallen",
+     "text": "2916 / 2526 von 5950 (49 % gestiegen)",
+     "advancers": 2916,
+     "decliners": 2526,
+     "unchanged": 508,
+     "evaluated": 5950,
+     "session": "2026-10-09",
+     "previousSession": "2026-10-08",
+     "complete": true,
+     "asOf": "2026-10-09",
+     "current": true
     }
    ],
    "explanation": "Eine Bewegung ist breiter getragen, wenn viele Aktien gleichzeitig mitziehen. Steigen die großen Indizes, während nur wenige Aktien zulegen, hängt der Anstieg an wenigen Titeln.",
    "methodology": "Grundlage: US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile). Anteil der Titel mit Schlusskurs über dem 50- bzw. 200-Tage-Durchschnitt (Nenner: Titel mit ausreichender Historie). Breit, wenn jeweils mehr als die Hälfte darüber liegt; schmal, wenn jeweils weniger als die Hälfte; sonst gemischt. Die 50-%-Schwelle ist die Mehrheit, keine optimierte Zahl. Neue 52-Wochen-Hochs/-Tiefs und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein; neue Hochs und Tiefs zählen beide den Schlusskurs am höchsten Tageshoch bzw. tiefsten Tagestief der letzten 252 Handelstage. Veraltete Daten ergeben keinen Zustand.",
    "raw": {
-    "above50Pct": 29.85,
-    "above200Pct": 39.67,
+    "above50Pct": 28.67,
+    "above200Pct": 38.52,
     "state": "NARROW"
    },
-   "asOf": "2026-10-06",
+   "asOf": "2026-10-09",
    "expectedAsOf": "2026-10-09"
   },
   "MOMENTUM": {
@@ -765,14 +768,79 @@
  },
  "dimensionStates": {
   "TREND": "MIXED",
-  "BREADTH": "NOT_CURRENT",
+  "BREADTH": "NARROW",
   "MOMENTUM": "RISING",
   "RISK": "NORMAL",
   "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
-  "state": "UNAVAILABLE",
-  "reason": "Keine Tagesreihe der Benchmark fuer die letzte Sitzung - ohne Sitzung und Vorsitzung keine Tagesaenderung."
+  "session": "2026-10-09",
+  "previousSession": "2026-10-08",
+  "complete": true,
+  "asOf": "2026-10-09",
+  "methodVersion": "movers-eod-1.0.0",
+  "basis": "EOD_PUBLISHED_SERIES",
+  "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
+  "filter": {
+   "minAvgDollarVolume20d": 20000000,
+   "minPrice": 5
+  },
+  "eligible": 2026,
+  "gainers": [
+   {
+    "symbol": "WFF",
+    "name": "WF Holding",
+    "changePercent": 499.51
+   },
+   {
+    "symbol": "VEEA",
+    "name": "Veea Inc",
+    "changePercent": 47.29
+   },
+   {
+    "symbol": "FSLY",
+    "name": "Fastly Class A",
+    "changePercent": 15.86
+   },
+   {
+    "symbol": "NVAX",
+    "name": "Novavax",
+    "changePercent": 15.8
+   },
+   {
+    "symbol": "CCI",
+    "name": "Crown Castle",
+    "changePercent": 15.6
+   }
+  ],
+  "losers": [
+   {
+    "symbol": "ALHC",
+    "name": "Alignment Healthcare",
+    "changePercent": -13.32
+   },
+   {
+    "symbol": "TMUS",
+    "name": "T-Mobile US",
+    "changePercent": -13.27
+   },
+   {
+    "symbol": "GRML",
+    "name": "Greenland Mines",
+    "changePercent": -12.07
+   },
+   {
+    "symbol": "T",
+    "name": "AT&T",
+    "changePercent": -10.82
+   },
+   {
+    "symbol": "ASTS",
+    "name": "AST SpaceMobile Class A",
+    "changePercent": -10.47
+   }
+  ],
+  "method": "Tagesaenderung = Schluss der letzten Sitzung gegen Schluss der Vorsitzung aus der veroeffentlichten Tagesreihe (split-bereinigt, dieselbe Definition wie Discover-Karte und Aktienseite). Titel mit Luecke zaehlen nicht. Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Vor movers-eod-1.0.0: letzter IEX-5-Minuten-Kurs zweier Sitzungen."
  },
  "sectors": {
   "state": "NOT_IMPLEMENTED",
@@ -1781,11 +1849,17 @@
    }
   },
   "breadth": {
-   "asOf": "2026-10-06",
+   "asOf": "2026-10-09",
    "expectedAsOf": "2026-10-09",
    "universeSize": 5957,
    "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
   },
-  "eodMoves": null
+  "eodMoves": {
+   "session": "2026-10-09",
+   "previousSession": "2026-10-08",
+   "asOf": "2026-10-09",
+   "methodVersion": "movers-eod-1.0.0",
+   "source": "quant/data/market/discover-series"
+  }
  }
 }
