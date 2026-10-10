@@ -4,7 +4,8 @@
 
 Implementation was merged in PR #561 (22979028978710e32f85e6ea4f79cf99503206ba),
 with release fixes in #569 (1ed3e6ba403f241d073a11b696c5773afd37d185) and
-#570 (307899a8f3fa62f9113eabf9f94af867d9f0542b). Configuration is armed; a missing durable activation receipt still selects
+#570 (307899a8f3fa62f9113eabf9f94af867d9f0542b), plus batch/rollback correction
+#572 (0e4f52a465f11a1cfcccb8b2eda57662957e98ae). Configuration is armed; a missing durable activation receipt still selects
 only the legacy scope. No full-universe production activation has occurred. The live 46-stock,
 45-issuer scope remains the rollback baseline. The full structural and representative candidate acceptance below has passed.
 It is not yet published coverage; authenticated scaling passed; main release and production readback remain
@@ -141,7 +142,12 @@ namespace `eligible-rollback-top46-v1`, generation `71dc0485476cfa74e59f7fc3`.
 The same run stopped before activation because the fresh public downloader
 correctly omitted the private validation manifest. PR #570 restores that
 authenticated certificate into the private runner only. Full release rerun
-38045412547 is pending; no successful production readback is asserted here.
+38045412547 passed the two CURRENT restores and 239 candidate cases, then was
+stopped before wide deployment after revealing quadratic manifest parsing in
+the full batch download. Actual rollback probe 38047258333 caught the same
+private-manifest omission in the rollback path. PR #572 fixes both; the repeated
+actual rollback run 38048270238 is pending. No successful wide production
+readback is asserted here.
 
 ## QA and sampling
 
@@ -317,3 +323,30 @@ The exact Master-hook protected-path test uses the immutable accepted f667d826
 example against 440a1645. Later independent Europe renderer changes do not
 broaden that exception; every negative price/identity/extra-code assertion stays
 intact. Actual branch protection still compares current candidate/base files.
+
+## Final scaling review: linear batch validation
+
+The first full retained-generation cache round trip exposed a remaining CPU
+problem: the pinned manifest bytes were parsed and the complete issuer/asset
+inventory validated for every individual object. That was quadratic work even
+when all file bytes were cached. Release 38045412547 was cancelled before wide
+Pages deployment. Its sanitized audit again reproduced CURRENT
+`dd958f61bebd9e538f5df279`, 5,120 payloads, generation
+`0b6d943ef120d39a93e2b96f`, and all 239 candidate cases passed. These are not live
+coverage claims. The private state was not modified.
+
+PR #572 parses/validates each pinned manifest once. Every asset still receives
+the same expiry, generation-bound allowed-path, byte-limit and SHA-256 checks;
+the pointer is reread before any output write. The single-object API is
+unchanged. All 105 Node contracts passed, including a synthetic 5,120-issuer
+batch: all 5,121 objects hash-read, one manifest parse, zero private reads.
+The latest local full-suite batch took under eight seconds; isolated runs varied
+with filesystem load. This is a test of copying complexity, not an R2/network
+or real dataset benchmark. Corruption, future/expired timestamps, retained
+previous generations and concurrent-pointer changes remain rejection cases.
+
+The actual rollback probe additionally found the private certificate missing in
+restore46(). The same authenticated-manifest reattachment is now applied there,
+inside the private runner only. Run 38048270238 must prove the real rollback and
+production legacy cohort before another activation. Scheduler, source policy,
+entity/financial gates and authoritative private state were not changed.
