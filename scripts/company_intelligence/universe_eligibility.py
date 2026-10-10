@@ -198,7 +198,7 @@ def evaluate(raw, sources, mapping_ok=True):
     if not strong:
         excluded = sum(usage['excluded'].values())
         row.update(status='INELIGIBLE_SOURCE_POLICY' if excluded else 'INELIGIBLE_NO_SAFE_CONTENT', reasons=['NO_MEANINGFUL_APPROVED_MODULE'])
-        if financial_state not in ('NO_SUPPORTED_DATA', 'CURRENT', 'STALE'):
+        if financial_state not in ('NO_SUPPORTED_DATA', 'NO_SUPPORTED_DISPLAY_METRICS', 'CURRENT', 'STALE'):
             row.update(status='INELIGIBLE_DATA_INVALID', reasons=[financial_state])
         if financial_state == 'TOO_STALE':
             row.update(status='INELIGIBLE_TOO_STALE', reasons=['ONLY_FINANCIALS_OVER_TWO_YEARS_OLD'])
@@ -254,6 +254,7 @@ def generate(store, companies, output, now, current_companies=None):
         row['tickers'] = [l['symbol'] for l in c['listings']]
         if cid in current_companies:row['tickers'] = [l['symbol'] for l in current_companies[cid]['listings']]
         row['hasPrivatePayload'] = has_private_payload
+        row['foreignIssuerEvidence'] = any(s.get('form') in ('20-F','40-F') for s in (raw.get('companyProfile') or {}).get('sources', []))
         row['profileState'] = 'GERMAN_APPROVED' if row['modules']['profile'] else row['moduleReasons'].get('profile', 'NO_SAFE_PROFILE_SOURCE')
         row['sourceState'] = 'POLLABLE_APPROVED' if any(s.get('active') and first_party(s,cid) and not publisher(s.get('url')) for s in issuer_sources) else 'REGISTERED_NOT_POLLABLE' if issuer_sources else 'NO_APPROVED_SOURCE'
         rows[cid] = row

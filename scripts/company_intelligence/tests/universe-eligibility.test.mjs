@@ -27,3 +27,8 @@ test('bounded object work never exceeds configured concurrency; failure rejects'
  let active=0,max=0;const results=await objectPool(Array.from({length:100},(_,i)=>i),async i=>{active++;max=Math.max(max,active);await new Promise(r=>setTimeout(r,1));active--;return i*i;},4);
  assert.equal(max,4);assert.equal(results[99],9801);await assert.rejects(objectPool([1,2,3],async i=>{if(i===2)throw Error('READBACK_FAILED');return i;}),/READBACK_FAILED/);
 });
+test('shared Quant bundle validates only the Company Intelligence gate',()=>{
+ const original=readFileSync(new URL('../../../company-intelligence/config/rollout.js',import.meta.url),'utf8');
+ const bundle='throw Error("UNRELATED_CHART_CODE_MUST_NOT_RUN");\n'+original+'\nthrow Error("UNRELATED_NAVIGATION_MUST_NOT_RUN");';
+ const result=eligibilityRollout(bundle,fixture(),{canary:true});assert(result.includes('UNRELATED_CHART_CODE_MUST_NOT_RUN'));assert(result.includes('UNRELATED_NAVIGATION_MUST_NOT_RUN'));assert(result.includes(generation));
+});

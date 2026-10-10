@@ -38,10 +38,10 @@ try{
  await objectPool(work,async ({ticker,width,theme})=>{
   const cid=Object.keys(m.eligibility).find(c=>m.eligibility[c].tickers.includes(ticker));assert(cid,ticker);
   const expected=JSON.parse(payloads.get(`snapshots/${m.generation}/${cid}.json`)),flags=m.eligibility[cid].modules;
-  const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[];
+  const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],scriptFailures=[];
   try{
    await routes(page);await page.addInitScript(({key,state,theme})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1',theme);},{key:STORAGE_KEY,state,theme});
-   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});});
+   page.on('pageerror',e=>errors.push(String(e.stack||e.message).slice(0,500)));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});if(r.request().resourceType()==='script'&&r.status()>=400)scriptFailures.push({path:new URL(r.url()).pathname,status:r.status()});});page.on('requestfailed',r=>{if(r.resourceType()==='script')scriptFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});});
    await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});
    await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:expected.generatedAt},{timeout:30000});
    const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
@@ -59,7 +59,7 @@ try{
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(l=>l.height>0).every(l=>l.height>=44&&l.url.startsWith('https:')));
    if(width===390&&theme==='dark'||matrices.includes(ticker)&&[430,1440].includes(width)&&theme==='dark')await chapter.screenshot({path:out+'-'+ticker+'-'+width+'-'+theme+'.png'});
    cases.push({ticker,cid,width,theme,status:'PASS',modules:flags});
-  }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();}
+  }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();}
  },3);
  for(const ticker of sample.ineligible){
   const page=await browser.newPage({viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];

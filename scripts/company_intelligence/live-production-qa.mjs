@@ -18,7 +18,7 @@ const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal
 const fetchJSON=async path=>{const r=await get(path);assert(r.ok,path+' '+r.status);return r.json();};
 const release=await fetchJSON('/release-delivery.json');
 if(process.env.EXPECTED_PRODUCTION_SHA)assert.equal(release.sourceCommit,process.env.EXPECTED_PRODUCTION_SHA,'WRONG_PRODUCTION_COMMIT');
-const delivery=await fetchJSON('/company-intelligence-delivery.json');assert.equal(delivery.generation,reviewed.generation);assert.equal(delivery.issuers,45);assert.equal(delivery.cohortStocks,46);
+const delivery=await fetchJSON('/company-intelligence-delivery.json');assert.equal(delivery.generation,reviewed.generation);assert.equal(delivery.issuers,reviewed.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(reviewed.eligibility).length:45);assert.equal(delivery.cohortStocks,reviewed.tickers.length);
 const assetEntries=Object.entries(reviewed.assets).filter(([path])=>!routine||path==='index.json'||path.endsWith('/lookup/AA.json')||path.endsWith('/lookup/XP.json')||path.endsWith('/iss_cik_0000320193.json')||path.endsWith('/iss_cik_0001810997.json'));
 for(const [path,meta] of assetEntries){
  const r=await get('/company-intelligence/data/'+path);assert(r.ok,path+' '+r.status);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(bytes.length,meta.bytes,path);assert.equal(createHash('sha256').update(bytes).digest('hex'),meta.sha256,path);
