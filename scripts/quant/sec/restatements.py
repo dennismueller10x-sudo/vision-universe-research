@@ -85,6 +85,17 @@ def _same_period(a, b):
     return abs((day(a.period_start) - day(b.period_start)).days) <= SAME_PERIOD_DAYS
 
 
+SIGN_SLIP_TOLERANCE = 0.02
+
+
+def sign_slip(a, b):
+    """The same amount with the other sign (within 2 %): a tagging slip, not a second figure.
+
+    1.23.0: SOBR Safe 10-Q/A 2025 (NetIncomeLoss +2,505,921 next to ProfitLoss
+    -2,505,921), Lexaria 10-Q 2022 (ProfitLoss +2,011,792 for a -2,003,482 quarter)."""
+    return a * b < 0 and abs(a + b) <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))
+
+
 def told_apart(distinguish_classes, first, second):
     """Whether the filer's filings show two economic classes of a cell with different values.
 

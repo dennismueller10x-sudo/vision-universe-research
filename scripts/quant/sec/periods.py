@@ -25,7 +25,7 @@ from .model import (
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, TTM_BASIS_MIXED, missing,
 )
 from .registry import KIND_INSTANT
-from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, Observation, economic_class, to_instant, told_apart
+from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, Observation, economic_class, sign_slip, to_instant, told_apart
 
 LOGGER = logging.getLogger("vu.sec.periods")
 
@@ -570,7 +570,10 @@ class PeriodResolver:
                                        {economic_class(concept) for concept in concepts}, as_of, policy, lag_days):
             same_class, mixed = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
             if same_class is not None:
-                return same_class, None, ["TTM_CLASS_ALIGNED"]
+                # the flag names the class read (red team R5 MEDIUM-2): a consolidated
+                # TTM is not the owners' annual net income
+                read_class = economic_class(same_class[0].provenance.concept)
+                return same_class, None, ["TTM_CLASS_ALIGNED", f"TTM_CLASS_{read_class.upper()}"]
             if mixed is not None:
                 return mixed, TTM_BASIS_MIXED, []
             for rule in definition.concepts:
@@ -716,8 +719,9 @@ class PeriodResolver:
                 if not shared:
                     continue
                 scale = max(max(abs(a), abs(b)) for a, b in shared) or 1.0
+                # a sign slip is a tagging error, not another basis (Lexaria 2022)
                 if any(abs(a - b) > BASIS_CHANGE_RELATIVE * max(abs(a), abs(b))
-                       and abs(a - b) > BASIS_CHANGE_FLOOR * scale for a, b in shared):
+                       and abs(a - b) > BASIS_CHANGE_FLOOR * scale and not sign_slip(a, b) for a, b in shared):
                     return True
         return False
 

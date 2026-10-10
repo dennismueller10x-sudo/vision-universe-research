@@ -27,7 +27,7 @@ from .model import (
     UNIT_MISMATCH, PERIOD_MISMATCH,
 )
 from .registry import KIND_DURATION, KIND_INSTANT
-from .restatements import CompanyFactBook, Observation, economic_class, to_instant
+from .restatements import SIGN_SLIP_TOLERANCE, CompanyFactBook, Observation, economic_class, sign_slip, to_instant
 from .version import NORMALIZATION_SCHEMA_VERSION, NORMALIZATION_LOGIC_VERSION
 
 LOGGER = logging.getLogger("vu.sec.normalize")
@@ -47,8 +47,12 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
-# 1.23.0: two classes of opposite sign within 2 % of each other's amount.
-SIGN_SLIP_TOLERANCE = 0.02
+MINORITY_INTEREST_CONCEPTS = frozenset((
+    "NetIncomeLossAttributableToNoncontrollingInterest",
+    "NetIncomeLossAttributableToNonredeemableNoncontrollingInterest",
+    "NetIncomeLossAttributableToRedeemableNoncontrollingInterest",
+    "MinorityInterestInNetIncomeLossOfConsolidatedEntities",
+))
 ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
 ISSUE_AMBIGUOUS_PERIOD = "AMBIGUOUS_PERIOD"
 # Two period ends in one cell further apart than this are two periods.
@@ -276,6 +280,10 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
 
     # (metric, fy, fp, accession) -> list of (priority, RawFact)
     candidates = defaultdict(list)
+    # Non-controlling interests a filing reports per period: they tell a sign slip
+    # from a real class difference (red team 1.23.0 R5 MEDIUM-1).
+    minority = {(fact.accession, fact.start, fact.end): fact.value for fact in raw_facts
+                if fact.concept in MINORITY_INTEREST_CONCEPTS and fact.start and isinstance(fact.value, (int, float))}
     # (fy, fp) -> Counter of the period end dates the company itself reported
     # for that period. A cover-date instant is dated AFTER the period it
     # describes, so it cannot supply its own period end; it borrows the one
@@ -457,13 +465,17 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         for _, other in entries:
             by_class.setdefault(economic_class(other.concept), other.value)
         shown = entries[0][1].available_from or availability.get(accession) or entries[0][1].filed
+        nci = abs(minority.get((accession, entries[0][1].start, entries[0][1].end), 0.0) or 0.0)
         for first, a in by_class.items():
             for second, b in by_class.items():
                 # The same amount with the other sign is a sign slip, not a second
                 # class (SOBR Safe 10-Q/A 2025: NetIncomeLoss +2,505,921 next to
-                # ProfitLoss -2,505,921; Apartment Income REIT Q3 2020).
+                # ProfitLoss -2,505,921; Apartment Income REIT Q3 2020) - unless the
+                # same filing reports non-controlling interests of that size for the
+                # period (Santa Fe Financial Q1 FY2018: -84,000 owners, +85,000
+                # consolidated, NCI +169,000).
                 if first < second and abs(a - b) > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(a), abs(b), 1.0) \
-                        and not (a * b < 0 and abs(a + b) <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))):
+                        and not (sign_slip(a, b) and nci <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))):
                     pairs = distinct_classes.setdefault((metric_name, fiscal_year, fiscal_period), {})
                     known = pairs.get((first, second))
                     if known is None or to_instant(shown) < to_instant(known):

@@ -389,3 +389,30 @@ class FTTM7SignSlipTests(unittest.TestCase):
                                    calendar.quarter_index("2024-12-31"), "2099-12-31")
         self.assertTrue(fact.available, fact.reason)
         self.assertAlmostEqual(fact.value, -8609139.0, delta=20)
+
+
+class FTTM7SignSlipWithMinorityTests(unittest.TestCase):
+    def test_opposite_sign_with_reported_minority_interest_is_a_class_difference(self):
+        # Santa Fe Financial (CIK 86759), Q1 GJ2018 (2017-07-01..2017-09-30), red team R5 MEDIUM-1: 10-Q
+        # 0001144204-17-057833 meldet NetIncomeLoss -84.000, ProfitLoss +85.000 und Minderheiten +169.000. Spaetere 10-Q
+        # (0001144204-19-004418) nur ProfitLoss +85.000 - die Eigentuemerzelle bleibt -84.000.
+        for as_of in ("2018-01-01", "2019-03-01", None):
+            obs = resolved("SFF18", "net_income", "2017-09-30", "Q1", as_of=as_of)
+            self.assertEqual((obs.value, obs.provenance.concept), (-84000.0, "NetIncomeLoss"), as_of)
+
+    def test_sign_slip_is_no_basis_change(self):
+        # Lexaria (CIK 1348362), TTM bis 2021-11-30: 10-Q 0001640334-22-000103 meldet ProfitLoss +2.011.792 fuer das
+        # Quartal mit NetIncomeLoss -2.003.482 - ein Vorzeichenfehler, keine zweite Basis. Eigentuemer-TTM = Summe
+        # NetIncomeLoss 393.190 - 2.566.552 - 1.178.092 - 1.993.157.
+        _, calendar, _, resolver = build("LXRP22")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2021-11-30"),
+                                   calendar.quarter_index("2021-11-30"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, 393190.0 - 2566552.0 - 1178092.0 - 1993157.0, delta=1)
+
+    def test_class_aligned_ttm_names_its_class(self):
+        # Red team R5 MEDIUM-2: AgileThought FY2020 klassenrein konsolidiert - die Kennzeichnung nennt die Klasse.
+        _, calendar, _, resolver = build("AGIL20")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2020-12-31"),
+                                   calendar.quarter_index("2020-12-31"), "2099-12-31")
+        self.assertIn("TTM_CLASS_CONSOLIDATED_INCLUDING_NCI", fact.flags)

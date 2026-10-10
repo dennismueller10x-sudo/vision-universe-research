@@ -306,6 +306,9 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Gleicher Betrag mit anderem Vorzeichen ist kein Klassenbeleg (SOBR
 #          Safe); eine klassenreine Neulesung wird erneut auf M-2 geprueft und
 #          weicht bei gemischter Basis der naechsten Klasse (AgileThought).
+#          Vorzeichenfehler nur ohne gemeldete Minderheiten dieser Groesse (Santa
+#          Fe Financial) und auch in M-2 kein Basiswechsel (Lexaria);
+#          TTM_CLASS_<Klasse> nennt die gelesene Klasse.
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -343,7 +346,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "e10c54b2f136d46208644a86f9913069c5579a1d6c38755e1ff98c81616d2d55"
+    "d80f28fba93627365251fc1d24c1ccf0b07d8ca1c4f97d802b580546e6e8d8d7"
 )
 
 
