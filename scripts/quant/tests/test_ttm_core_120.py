@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from quant.sec.fiscal import FiscalCalendar  # noqa: E402
 from quant.sec.normalize import normalize_company  # noqa: E402
 from quant.sec.periods import PeriodResolver  # noqa: E402
-from quant.sec.provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider  # noqa: E402
+from quant.sec.provider import SECProvider, fundamental_facts  # noqa: E402
 from quant.sec.registry import MetricRegistry  # noqa: E402
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "sec-real"
@@ -25,8 +25,7 @@ def build(name):
     if name not in _CACHE:
         payload = json.loads((FIXTURES / f"{name}.json").read_text())
         cik = str(payload["cik"]).zfill(10)
-        everything = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=CALENDAR_FORMS))
-        raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
+        everything, raw = fundamental_facts(SECProvider.__new__(SECProvider), payload)   # wie pipeline.py/consumer.py
         calendar = FiscalCalendar.from_raw_facts(cik, everything)
         _CACHE[name] = (calendar, PeriodResolver(normalize_company(cik, raw, REGISTRY, calendar=calendar).factbook, REGISTRY))
     return _CACHE[name]
@@ -196,8 +195,7 @@ class CustomTagTests(unittest.TestCase):
         payload["facts"]["us-gaap"] = {k: v for k, v in payload["facts"]["us-gaap"].items()
                                        if not k.startswith("EarningsPerShare") and "PerShare" not in k}
         cik = str(payload["cik"]).zfill(10)
-        everything = list(SECProvider.iter_raw_facts(SECProvider.__new__(SECProvider), payload, forms=CALENDAR_FORMS))
-        raw = [fact for fact in everything if fact.form in PERIODIC_FORMS]   # wie pipeline.py/consumer.py
+        everything, raw = fundamental_facts(SECProvider.__new__(SECProvider), payload)   # wie pipeline.py/consumer.py
         calendar = FiscalCalendar.from_raw_facts(cik, everything)
         resolver = PeriodResolver(normalize_company(cik, raw, REGISTRY, calendar=calendar).factbook, REGISTRY)
         for metric in ("eps_diluted", "eps_basic"):

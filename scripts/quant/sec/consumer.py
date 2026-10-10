@@ -26,7 +26,7 @@ from .derived import reconstruct
 from .fiscal import FiscalCalendar
 from .normalize import normalize_company
 from .periods import CONTINUING_PER_SHARE, FLAG_PERIOD_TRANSFORM, PeriodResolver
-from .provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider, normalize_cik
+from .provider import SECProvider, fundamental_facts, normalize_cik
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST
 from .version import version_stamp
@@ -280,9 +280,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
     cik = normalize_cik(cik)
     provider = provider or SECProvider.__new__(SECProvider)   # iter_raw_facts needs no client
     as_of_text = str(as_of or date.today())
-    calendar_facts = list(SECProvider.iter_raw_facts(provider, company_facts, availability={},
-                                                     forms=CALENDAR_FORMS))
-    raw_facts = [fact for fact in calendar_facts if fact.form in PERIODIC_FORMS]
+    calendar_facts, raw_facts = fundamental_facts(provider, company_facts, availability={})
     if not raw_facts:
         return None
     calendar = FiscalCalendar.from_raw_facts(cik, calendar_facts, fiscal_year_end_hint=fiscal_year_end_hint)

@@ -33,7 +33,6 @@ POLICIES = (POLICY_AS_OF_LATEST, POLICY_ORIGINAL, POLICY_LATEST_KNOWN)
 # decides between values that agree within SAME_DAY_CONFLICT_TOLERANCE; values
 # that disagree at the same instant are AMBIGUOUS_SAME_DAY (1.20.0). Otherwise
 # the later publication wins on its own.
-_AMENDMENT_FORMS = frozenset({"10-K/A", "10-Q/A", "20-F/A", "40-F/A"})
 
 FLAG_RESTATED = "RESTATED"
 FLAG_CONFLICTING_FACTS = "CONFLICTING_FACTS"
@@ -106,7 +105,7 @@ class Observation:
         # Ordering within the same availability instant.
         return (
             self.available_instant,
-            1 if (self.form or "") in _AMENDMENT_FORMS else 0,
+            1 if (self.form or "").endswith("/A") else 0,   # every amendment form (1.22.0)
             self.accession or "",
         )
 

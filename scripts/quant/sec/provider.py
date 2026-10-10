@@ -34,12 +34,38 @@ BULK_COMPANY_FACTS_URL = "https://www.sec.gov/Archives/edgar/daily-index/xbrl/co
 # and S-1s also contain XBRL, but their period semantics are not comparable, so
 # they are excluded from the fundamental model rather than silently mixed in.
 PERIODIC_FORMS = frozenset({"10-K", "10-K/A", "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A"})
+# 1.22.0 (F-TTM-6): transition reports are periodic reports. A 10-KT/10-QT is
+# the 10-K/10-Q a company files for the period between an old and a new fiscal
+# year end, with the same audited statements; its amendment corrects them like a
+# 10-K/A. Orbital ATK published the restatement of its fiscal year to March 2015
+# only in a 10-KT/A, 8point3 its shortened 2015 fiscal year first in a 10-KT -
+# reading values from PERIODIC_FORMS alone kept the wrong number (or none) for
+# months. Which cell a value lands in is decided by its period and the fiscal
+# calendar, never by its form: a transition period itself stays without a fiscal
+# year or quarter slots (1.20.0/1.21.0), exactly as when a later 10-K repeats it.
+TRANSITION_FORMS = frozenset({"10-KT", "10-KT/A", "10-QT", "10-QT/A"})
+VALUE_FORMS = PERIODIC_FORMS | TRANSITION_FORMS
 # 1.21.0 (F-TTM-4): the fiscal calendar also reads transition reports. A 10-KT
 # declares the transition period after a change of year end; without it a later
 # 10-K that recasts the calendar year hides the transition (Rentech Nitrogen,
-# Precision Castparts). Values still come from PERIODIC_FORMS only.
+# Precision Castparts). The calendar inputs are unchanged by 1.22.0.
 CALENDAR_FORMS = PERIODIC_FORMS | frozenset({"10-KT", "10-KT/A"})
-AMENDMENT_FORMS = frozenset({"10-K/A", "10-Q/A", "20-F/A", "40-F/A"})
+# One amendment rule for every value form: an amendment is the same form with /A.
+AMENDMENT_FORMS = frozenset(form for form in VALUE_FORMS if form.endswith("/A"))
+
+
+def fundamental_facts(provider, company_facts, availability=None):
+    """(calendar_facts, value_facts) of a companyfacts payload.
+
+    The one place that decides which filings feed the fundamental model: values
+    come from VALUE_FORMS, the fiscal calendar from CALENDAR_FORMS (a subset, in
+    the same order). Pipeline, consumer bundle and audits all go through here,
+    so a form cannot be admitted in one path and missing in another (F-TTM-6).
+    """
+    value_facts = list(SECProvider.iter_raw_facts(provider, company_facts, availability=availability,
+                                                  forms=VALUE_FORMS))
+    calendar_facts = [fact for fact in value_facts if fact.form in CALENDAR_FORMS]
+    return calendar_facts, value_facts
 
 
 def normalize_cik(value):

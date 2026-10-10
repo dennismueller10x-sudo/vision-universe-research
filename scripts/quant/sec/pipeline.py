@@ -17,7 +17,7 @@ from . import quality as quality_module
 from .fiscal import FiscalCalendar
 from .http_client import SECHTTPError
 from .normalize import build_availability_map, normalize_company
-from .provider import CALENDAR_FORMS, PERIODIC_FORMS, SECProvider, normalize_cik
+from .provider import VALUE_FORMS, SECProvider, fundamental_facts, normalize_cik
 from .registry import MetricRegistry
 from .restatements import POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN
 from .store import CheckpointStore, JsonFactStore, JsonRawStore
@@ -46,8 +46,12 @@ class IngestionPipeline:
     # ------------------------------------------------------------ single company
 
     def latest_filing_signature(self, filing_metadata):
-        """Cheap change detector: newest periodic filing this company has made."""
-        periodic = [row for row in filing_metadata if row["form"] in PERIODIC_FORMS]
+        """Cheap change detector: newest periodic filing this company has made.
+
+        Transition reports count (1.22.0, F-TTM-6): a 10-KT/A that restates a
+        year is the newest information about it, and a detector blind to it
+        skipped the company as unchanged."""
+        periodic = [row for row in filing_metadata if row["form"] in VALUE_FORMS]
         if not periodic:
             return None
         newest = max(periodic, key=lambda row: (row["filing_date"] or "", row["accession"] or ""))
@@ -117,9 +121,7 @@ class IngestionPipeline:
             company_facts["_retrieved_at"] = snapshot["first_seen"]
 
         availability = build_availability_map(filing_metadata)
-        calendar_facts = list(self.provider.iter_raw_facts(
-            company_facts, availability=availability, forms=CALENDAR_FORMS))
-        raw_facts = [fact for fact in calendar_facts if fact.form in PERIODIC_FORMS]
+        calendar_facts, raw_facts = fundamental_facts(self.provider, company_facts, availability=availability)
 
         calendar = FiscalCalendar.from_raw_facts(
             cik, calendar_facts, fiscal_year_end_hint=profile.fiscal_year_end)
@@ -348,7 +350,7 @@ def _filing_years(filing_metadata):
     """
     years = {}
     for row in filing_metadata or []:
-        if row["form"] not in PERIODIC_FORMS:
+        if row["form"] not in VALUE_FORMS:
             continue
         stamp = row.get("report_date") or row.get("filing_date")
         if not stamp:
@@ -374,7 +376,7 @@ def _filing_index(filing_metadata):
             "is_amendment": row["is_amendment"],
         }
         for row in filing_metadata or []
-        if row["form"] in PERIODIC_FORMS and row.get("report_date")
+        if row["form"] in VALUE_FORMS and row.get("report_date")
     ]
 
 

@@ -261,7 +261,22 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          ueberlappen (Columbia Financial); ein verkuerztes Geschaeftsjahr direkt
 #          nach dem Vorjahresende behaelt seine Kennung (Best Buy); bei mehreren
 #          Berichten mit demselben Jahresende spricht der zuegigste (Aytu).
-NORMALIZATION_LOGIC_VERSION = "1.21.0"
+# 1.22.0 — F-TTM-6 (Nachbarsuche zu 1.21.0, ausserhalb des Holdouts v4):
+#          Uebergangsberichte sind periodische Berichte. Werte kommen jetzt aus
+#          provider.VALUE_FORMS = PERIODIC_FORMS + 10-KT, 10-KT/A, 10-QT, 10-QT/A;
+#          vorher las 1.21.0 den 10-KT nur fuer den Kalender. Orbital ATK
+#          veroeffentlichte das Restatement des Geschaeftsjahres bis Maerz 2015
+#          nur im 10-KT/A (2017-02-24; Q1 2,59 -> 2,50, kein spaeterer Bericht
+#          wiederholt es), 8point3 das verkuerzte Geschaeftsjahr 2015 zuerst im
+#          10-KT (2016-01-28, der naechste Bericht ein Jahr spaeter). Welche
+#          Zelle ein Wert bekommt, entscheiden Zeitraum und Kalender, nie das
+#          Formular; Uebergangszeitraeume bleiben ohne Kennung und Quartalsslots.
+#          Eine Amendment-Regel fuer alle Formulare (Endung /A); die Auswahl der
+#          Formulare steht an genau einer Stelle (provider.fundamental_facts),
+#          und Aenderungserkennung/Tagesindex sehen Uebergangsberichte. Der
+#          Kalender liest unveraendert CALENDAR_FORMS. Die Formularmengen gehen
+#          in den Quell-Digest ein.
+NORMALIZATION_LOGIC_VERSION = "1.22.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -293,7 +308,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "dc12692992a43e7cf5a5156bce5b47db10d4e8a9f36cdbe9de0ae5e562095753"
+    "acfc5d43046dadf64f7ed28644317a99c3f530af95065f848a6be2e7c97b8444"
 )
 
 
@@ -312,6 +327,10 @@ def normalization_source_digest():
     for name in NORMALIZATION_SOURCES:
         digest.update(name.encode("utf-8"))
         digest.update((here / name).read_bytes().replace(b"\r\n", b"\n"))
+    # Which filings feed values and the calendar changes stored facts as much as
+    # any module above (1.22.0, F-TTM-6), so the form sets are part of the digest.
+    from .provider import CALENDAR_FORMS, VALUE_FORMS
+    digest.update(("forms:" + ",".join(sorted(VALUE_FORMS)) + "|" + ",".join(sorted(CALENDAR_FORMS))).encode("utf-8"))
     return digest.hexdigest()
 
 

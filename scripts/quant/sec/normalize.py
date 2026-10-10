@@ -16,10 +16,12 @@ Rules this layer obeys without exception:
 import json
 import logging
 from collections import Counter, defaultdict
+from datetime import timedelta
 
 from pathlib import Path
 
 from .fiscal import FiscalCalendar
+from .provider import TRANSITION_FORMS
 from .model import (
     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM,
     UNIT_MISMATCH, PERIOD_MISMATCH,
@@ -49,6 +51,15 @@ ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
 ISSUE_AMBIGUOUS_PERIOD = "AMBIGUOUS_PERIOD"
 # Two period ends in one cell further apart than this are two periods.
 AMBIGUOUS_PERIOD_DAYS = 7
+# 1.22.0 (F-TTM-6): a transition report (10-KT, 10-QT and amendments) enters a
+# cell only with that cell's period: start and end within this many days of the
+# period the fiscal calendar expects. A 10-QT also reports periods on the old
+# fiscal-year basis (Dthera 10-QT 2016: nine months Jan-Sep 2015 next to the new
+# year's Jul-Mar); under 10-K semantics they landed in the new year's cells and,
+# as the newest filing, replaced the right period there. A period some regular
+# report put into the same cell is no evidence: regular cells can hold another
+# period too (Sun Pacific 10-Q 2016) - that older defect is not widened.
+TRANSITION_PERIOD_TOLERANCE_DAYS = 7
 
 # Which concept is a filing's revenue line when us-gaap:Revenues is smaller
 # than another revenue concept of the same cell? Decided from the filing
@@ -197,6 +208,28 @@ def _filing_currencies(raw_facts):
     return {accession: counter.most_common(1)[0][0] for accession, counter in counts.items()}
 
 
+def _expected_period(calendar, end, fiscal_period):
+    """(start, end) the fiscal calendar expects for the cell (fiscal_period) holding `end`, or None."""
+    previous, fy_end = calendar._boundaries_covering(end)
+    if previous is None or fy_end is None or not fiscal_period:
+        return None
+    if fiscal_period == "FY":
+        return previous + timedelta(days=1), fy_end
+    index = int(fiscal_period[-1])
+    ends = calendar.quarter_ends(previous, fy_end)
+    if fiscal_period.startswith("YTD"):
+        return previous + timedelta(days=1), ends[index - 1]
+    return (previous if index == 1 else ends[index - 2]) + timedelta(days=1), ends[index - 1]
+
+
+def _same_period(start, end, other_start, other_end, tolerance=TRANSITION_PERIOD_TOLERANCE_DAYS):
+    if abs((_parse(end) - _parse(other_end)).days) > tolerance:
+        return False
+    if start is None or other_start is None:
+        return start is None and other_start is None
+    return abs((_parse(start) - _parse(other_start)).days) <= tolerance
+
+
 def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
                       calendar=None, revenue_evidence=None):
     """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
@@ -221,6 +254,27 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     seen_fact_ids = set()
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
     filing_currency = _filing_currencies(raw_facts)
+    deferred = []   # transition-report facts, placed once every regular period is known (1.22.0)
+
+    def admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date):
+        targets = [(fiscal_year, fiscal_period)]
+        # A balance sheet dated on the fiscal year end is also the Q4 balance
+        # sheet; emit both so the quarterly series has no artificial hole.
+        if definition.kind == KIND_INSTANT and fiscal_period == "FY":
+            targets.append((fiscal_year, "Q4"))
+
+        for target_year, target_period in targets:
+            candidates[(metric_name, target_year, target_period, fact.accession)].append(
+                (priority, fact)
+            )
+
+        if not is_cover_date and fact.end:
+            # The fiscal year end IS the Q4 end, so an annual fact fixes
+            # both -- otherwise a cover-date share count mirrored onto Q4
+            # would find no measured end date there and keep the cover date.
+            for period in ({fiscal_period, "Q4"} if fiscal_period == "FY"
+                           else {fiscal_period}):
+                observed_period_ends[(fiscal_year, period)][fact.end] += 1
 
     for fact in raw_facts:
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
@@ -276,24 +330,24 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                 unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
                 continue
 
-            targets = [(fiscal_year, fiscal_period)]
-            # A balance sheet dated on the fiscal year end is also the Q4 balance
-            # sheet; emit both so the quarterly series has no artificial hole.
-            if definition.kind == KIND_INSTANT and fiscal_period == "FY":
-                targets.append((fiscal_year, "Q4"))
+            if fact.form in TRANSITION_FORMS and not is_cover_date:
+                deferred.append((metric_name, priority, fact, fiscal_year, fiscal_period, definition))
+                continue
+            admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date)
 
-            for target_year, target_period in targets:
-                candidates[(metric_name, target_year, target_period, fact.accession)].append(
-                    (priority, fact)
-                )
-
-            if not is_cover_date and fact.end:
-                # The fiscal year end IS the Q4 end, so an annual fact fixes
-                # both -- otherwise a cover-date share count mirrored onto Q4
-                # would find no measured end date there and keep the cover date.
-                for period in ({fiscal_period, "Q4"} if fiscal_period == "FY"
-                               else {fiscal_period}):
-                    observed_period_ends[(fiscal_year, period)][fact.end] += 1
+    # 1.22.0 (F-TTM-6): a transition report's value enters a cell only with the
+    # period the fiscal calendar expects for that cell. Never 10-K semantics on
+    # an old-basis period; a value that does not fit stays out (missing, not wrong).
+    for metric_name, priority, fact, fiscal_year, fiscal_period, definition in deferred:
+        expected = _expected_period(calendar, fact.end, fiscal_period)
+        if expected is None or not _same_period(fact.start, fact.end, expected[0] if fact.start else None,
+                                                expected[1]):
+            issues.append(_issue(ISSUE_UNPLACEABLE_PERIOD, fact,
+                                 "transition-report period is not the period of its fiscal cell",
+                                 metric=metric_name))
+            unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
+            continue
+        admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, False)
 
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
     for metric_name, period_end, available in unplaced:
