@@ -157,7 +157,7 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .hf-pill .hf-i{width:16px;height:16px}
 
 /* Entdecken-Kacheln (wie Discover-Welten) */
-.hf-doors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.hf-doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 /* Helle, leicht getönte Karten – dieselbe Farbfamilie wie die Icon-Kacheln */
 .hf .hf-door{--dt:#7c4dff;--dg:var(--t-violet);position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:6px;min-height:200px;padding:20px;border-radius:24px;color:var(--ink);text-decoration:none;
   background:radial-gradient(260px 200px at 100% 0%,color-mix(in srgb,var(--dt) 16%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--dt) 4%,var(--card)),color-mix(in srgb,var(--dt) 9%,var(--card)));
@@ -165,6 +165,8 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .hf .hf-door[data-tone="1"]{--dt:#2f7cf0;--dg:var(--t-blue)}
 .hf .hf-door[data-tone="2"]{--dt:#14a86a;--dg:var(--t-green)}
 .hf .hf-door[data-tone="3"]{--dt:#f29a0c;--dg:var(--t-amber)}
+.hf .hf-door[data-tone="4"]{--dt:#e0375a;--dg:var(--t-rose)}
+.hf .hf-door[data-tone="5"]{--dt:#5b3fd6;--dg:var(--t-violet)}
 .hf .hf-door:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--dt) 45%,var(--line))}
 .hf-door .hf-tile-ico{background:var(--dg);width:48px;height:48px;border-radius:15px;margin-bottom:auto}
 .hf-door .hf-tile-ico .hf-i{width:24px;height:24px}
@@ -571,3 +573,17 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
   html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
 }
 /* END GENERATED HERO FIDELITY */
+
+/* Smart Money: Insider-Käufe und Fonds-Einstiege (Eigentümer-Signale) */
+.hf-seg a{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:36px;white-space:nowrap;text-decoration:none}
+.hf-seg a[aria-current=page]{background:var(--ink);color:var(--bg)}
+.hf-smtabs{margin:4px 0 18px}
+.hf-sm-ks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 12px}
+.hf-sm-k{padding:10px 12px;border:1px solid var(--line-soft);border-radius:14px;background:var(--bg)}
+.hf-sm-k small{display:block;font-size:11.5px;color:var(--muted);font-weight:650}
+.hf-sm-k b{display:block;font-size:18px;letter-spacing:-.01em;margin-top:2px}
+.hf-sub{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+.hf-smlist .val small a{color:inherit}
+.hf-smblock{margin-top:8px}
+@media (max-width:760px){.hf-sm-ks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.hf-sm-k{padding:8px}.hf-sm-k b{font-size:15px}}
+.hf-panel .hf-empty{padding:16px 0;margin:0}

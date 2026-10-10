@@ -27,7 +27,7 @@
       const saved=product.savedIds().includes(id);
       button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';
       button.setAttribute('aria-pressed',String(saved));
-      button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));
+      button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));
     };
     button.onclick=async()=>{if((await product.toggle(id)).state==='AVAILABLE')paint();};
     paint();root.prepend(button);

@@ -1,0 +1,80 @@
+name: Supertrader Hausstrategie live (Beobachtungsdepot HS4-V03)
+
+# Vorwaertslauf mit eingefrorenen Regeln (scripts/supertrader/house/LIVE-HS4-V03.json).
+# Taeglich nach dem Marktdatenlauf: nur am letzten Handelstag eines Monats wird die
+# Monatsentscheidung gerechnet und VOR der Ausfuehrung zur naechsten Eroeffnung committet
+# (supertrader/data/ledger/VU_HOUSE_HS4_V03.json; nur Titel und Zielgewichte).
+# Monatlich am 25. wird die SEC-Datenstufe r13 (Aktienzahl, EPS, Umsatz zum Einreichungsdatum)
+# aufgefrischt, damit die Entscheidung am Monatsende aktuelle Meldungen kennt.
+# Auf claude/** per Marke: [house-live:dry] (Ladeprobe, schreibt nichts), [house-live:sec] (SEC-Auffrischung),
+# [house-live:start] (einmalige Startentscheidung bei leerem Ledger).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [decide, dry, sec, start]
+        default: dry
+  schedule:
+    - cron: '30 1 * * 2-6'
+    - cron: '15 3 25 * *'
+  push:
+    branches:
+      - 'claude/**'
+permissions:
+  contents: write
+concurrency:
+  group: supertrader-house-live-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[house-live:')) && github.run_id || 'main' }}
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[house-live:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Modus bestimmen
+        id: mode
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          INPUT: ${{ inputs.mode }}
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          m="$INPUT"
+          if [ "$EVENT" = "schedule" ]; then if [ "$CRON" = "15 3 25 * *" ]; then m=sec; else m=decide; fi; fi
+          case "$MSG" in *"[house-live:start]"*) m=start;; *"[house-live:dry]"*) m=dry;; *"[house-live:sec]"*) m=sec;; esac
+          echo "mode=${m:-dry}" >> "$GITHUB_OUTPUT"
+      - name: Tests der Hausstrategie
+        run: node --test scripts/supertrader/tests/house-hs1.test.mjs
+      - name: SEC-Datenstufe r13 auffrischen
+        if: steps.mode.outputs.mode == 'sec'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val"
+      - name: Monatsentscheidung (nur am Monatsende) bzw. Ladeprobe
+        if: steps.mode.outputs.mode == 'decide' || steps.mode.outputs.mode == 'dry' || steps.mode.outputs.mode == 'start'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: node scripts/supertrader/house/live.mjs ${{ steps.mode.outputs.mode == 'dry' && '--force --dry-run' || (steps.mode.outputs.mode == 'start' && '--start' || '') }}
+      - name: Entscheidung committen
+        if: steps.mode.outputs.mode == 'decide' || steps.mode.outputs.mode == 'start'
+        run: |
+          f=supertrader/data/ledger/VU_HOUSE_HS4_V03.json
+          if [ ! -f "$f" ]; then echo "Noch kein Ledger (keine Entscheidung) - nichts zu committen."; exit 0; fi
+          bash scripts/ci/commit-and-push.sh "Hausstrategie live: Monatsentscheidung VU_HOUSE_HS4_V03" "$f"

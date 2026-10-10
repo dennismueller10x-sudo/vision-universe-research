@@ -162,7 +162,6 @@
     foot.appendChild(node('span', 'v2-theme-count', count ? count + ' Aktien' : 'In Vorbereitung'));
     foot.appendChild(node('span', 'v2-theme-go', '→'));
     copy.appendChild(foot); a.appendChild(copy);
-    a.setAttribute('aria-label', theme.title + ' – ' + theme.short + (count ? ', ' + count + ' Aktien' : ', in Vorbereitung'));
     return a;
   }
   function themeBanner(theme, options) {
@@ -340,7 +339,7 @@
     introCopy.appendChild(node('h1', 'vu-product-title vu-hero-headline', 'Sieh den Markt mit anderen Augen.'));
     introCopy.appendChild(node('p', 'v2-intro-lead vu-product-lead vu-hero-description', 'Entdecke Unternehmen, Trends und Themenwelten weltweit.'));
     var actions = node('div', 'v2-intro-actions');
-    actions.appendChild(link('Jetzt entdecken →', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-dark v2-intro-cta'));
+    actions.appendChild(link('Jetzt entdecken →', '#/aktien', 'v2-pill v2-pill-dark v2-intro-cta'));
     actions.appendChild(link('Themenwelten', '#/welten', 'v2-pill v2-pill-ghost'));
     actions.appendChild(link('Märkte', '#/maerkte', 'v2-pill v2-pill-ghost'));
     function searchGlyph(d) {

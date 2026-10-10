@@ -24,7 +24,7 @@
   }
   function watchButton(root,symbol){
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
+    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
     button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
   }
   D.EuropeView.attachApp({ctx,route,isReady:()=>meta});
