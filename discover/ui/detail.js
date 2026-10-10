@@ -1140,7 +1140,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       var status = state.detail.freshness || "MISSING";
       return el("span", { class: "dx-live-label", "data-freshness": status }, [
         document.createTextNode("Schluss " + C().dateShort(state.seriesAsOf) + " · " +
-          (["CURRENT", "LAST_VALID_SESSION"].indexOf(status) >= 0 ? "letzte gültige Sitzung" : "nicht aktuell"))
+          (["CURRENT", "LAST_VALID_SESSION", "CURRENT_LAST_SESSION"].indexOf(status) >= 0 ? "letzter abgeschlossener Handelstag" : status === "DELAYED" ? "verzögert" : status === "STALE" ? "älterer Stand" : "Stand nicht bestätigt"))
       ]);
     }
     var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
