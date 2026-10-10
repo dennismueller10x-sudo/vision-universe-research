@@ -1,0 +1,14 @@
+{
+  "schema": "supertrader-house-prereg-amendment-1.0.0",
+  "id": "VU_HOUSE_HS3_D1",
+  "amends": "PREREGISTRATION-HS3.json",
+  "registeredAt": "2026-10-03",
+  "trigger": "Datenprüfung G0 im ersten HS3-Lauf (Run 37137161220) verfehlt: Kontrolle C00 mit Tracking Error über 3 %. Größte Kontrollpositionen waren ADRs (Aktienanzahl in Stammaktien × Kurs des Hinterlegungsscheins) und Mehrgattungs-Fälle.",
+  "change": [
+    "ADR-Listings (Gattung ADR der Wertpapierstammdaten) und Emittenten mit IFRS-Taxonomie sind im 500er-Universum nicht zugelassen (nicht im S&P 500; Stückzahl nicht dem Schein zuordenbar).",
+    "Hat eine CIK an D mehrere zulässige Listings mit Rohschlusskursen, die mehr als Faktor 2 auseinanderliegen, wird die CIK ausgelassen (Aktienanzahl nicht einer Gattung zuordenbar)."
+  ],
+  "unchanged": "Versuche C00 und M01–M05, Faktoren, Neigung, Band, Auswahlregel, Gate G0, Kriterien H1–H6, Holdout-Sperre.",
+  "knowledge": "Die Ergebnisse der M-Versuche aus dem ersten Lauf waren vor diesem Nachtrag sichtbar. Der Nachtrag ändert nur die Datenregel des Universums, nicht die Versuche; die Versuche zählen für die DSR erneut (insgesamt 31).",
+  "frozen": "FROZEN-HS3-D1.json für einen Holdout-Lauf."
+}

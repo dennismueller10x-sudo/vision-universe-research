@@ -34,7 +34,7 @@ html[data-theme=dark]{
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
 html,body{background:var(--bg)}
-body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:88px;overflow-x:hidden;line-height:1.45}
+body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:var(--vu-navigation-height,72px);overflow-x:hidden;line-height:1.45}
 body.hf-noscroll{overflow:hidden}
 :where(.hf) a{color:inherit}
 :where(.hf) button{font-family:inherit;color:inherit}
@@ -45,20 +45,12 @@ body.hf-noscroll{overflow:hidden}
 .hf-i{width:18px;height:18px;flex:none}
 .hf-i.big{width:28px;height:28px}
 .hf-wrap{padding:0 var(--gutter)}
-.hf-main{padding-bottom:90px}
+.hf-main{padding-bottom:24px}
 .pos{color:var(--up)} .neg{color:var(--down)}
 .hf-center{text-align:center;margin-top:14px}
 
 /* ---------------------------------------------------- Menüleiste (Dock) */
-.hf-dock{position:sticky;top:96px;z-index:60;display:flex;gap:4px;width:max-content;max-width:calc(100% - 32px);margin:14px auto 0;padding:4px;border:1px solid color-mix(in srgb,var(--line) 72%,transparent);border-radius:999px;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 8px 28px rgba(0,0,0,.06)}
-body.hf>.hf-dock{position:fixed;left:50%;transform:translateX(-50%);top:96px;margin:0}
-.hf-dock-item{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:9px 15px;border:0;border-radius:99px;background:none;color:var(--muted);font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background-color .18s ease,color .18s ease}
-.hf-dock-item:hover{color:var(--ink);background:color-mix(in srgb,var(--panel) 80%,transparent)}
-.hf-dock-item[aria-current=page]{background:#111214;color:#fff;box-shadow:0 5px 14px rgba(0,0,0,.14)}
-html[data-theme=dark] .hf-dock-item[aria-current=page]{background:#f4f2e9;color:#0b0d10}
-.hf-dock-search{background:var(--accent);color:var(--accent-ink)}
-.hf-dock-search:hover{background:var(--accent);color:var(--accent-ink);filter:brightness(.97)}
-.hf-main{padding-top:64px}
+.hf-main{padding-top:8px}
 
 /* --------------------------------------------------------- Such-Overlay */
 .hf-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(10,12,16,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px}
@@ -165,7 +157,7 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .hf-pill .hf-i{width:16px;height:16px}
 
 /* Entdecken-Kacheln (wie Discover-Welten) */
-.hf-doors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.hf-doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 /* Helle, leicht getönte Karten – dieselbe Farbfamilie wie die Icon-Kacheln */
 .hf .hf-door{--dt:#7c4dff;--dg:var(--t-violet);position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:6px;min-height:200px;padding:20px;border-radius:24px;color:var(--ink);text-decoration:none;
   background:radial-gradient(260px 200px at 100% 0%,color-mix(in srgb,var(--dt) 16%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--dt) 4%,var(--card)),color-mix(in srgb,var(--dt) 9%,var(--card)));
@@ -173,6 +165,8 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .hf .hf-door[data-tone="1"]{--dt:#2f7cf0;--dg:var(--t-blue)}
 .hf .hf-door[data-tone="2"]{--dt:#14a86a;--dg:var(--t-green)}
 .hf .hf-door[data-tone="3"]{--dt:#f29a0c;--dg:var(--t-amber)}
+.hf .hf-door[data-tone="4"]{--dt:#e0375a;--dg:var(--t-rose)}
+.hf .hf-door[data-tone="5"]{--dt:#5b3fd6;--dg:var(--t-violet)}
 .hf .hf-door:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--dt) 45%,var(--line))}
 .hf-door .hf-tile-ico{background:var(--dg);width:48px;height:48px;border-radius:15px;margin-bottom:auto}
 .hf-door .hf-tile-ico .hf-i{width:24px;height:24px}
@@ -390,14 +384,8 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
 @media (max-width:760px){
   body.hf{padding-top:72px}
   .hf-wrap{padding:0 16px}
-  .hf-main{padding-bottom:110px}
+  .hf-main{padding-bottom:24px}
   /* Menüleiste unten, fünf Ziele wie bei Discover */
-  body.hf>.hf-dock{top:auto;bottom:0;left:0;right:0;transform:none;width:auto;max-width:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));border-radius:0;border:0;border-top:1px solid var(--line);background:color-mix(in srgb,var(--bg) 94%,transparent);box-shadow:0 -8px 30px rgba(0,0,0,.06)}
-  .hf-dock-item{flex-direction:column;gap:3px;min-height:52px;padding:6px 2px;font-size:10.5px;border-radius:14px}
-  .hf-dock-item .hf-i{width:21px;height:21px}
-  .hf-dock-item[aria-current=page]{box-shadow:none}
-  .hf-dock-search{background:none;color:var(--muted)}
-  .hf-dock-search .hf-i{color:var(--accent-text)}
   .hf-main{padding-top:8px}
   .hf-overlay{padding:0;align-items:stretch}
   .hf-ov-box{max-height:none;height:100%;border-radius:0;border:0}
@@ -441,3 +429,161 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
   .hf-seg button{flex:1}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ------------------------------------------------ Vision-Universe-Shell
+   UI-Vereinheitlichung 10/2026: Kopf und Produkt-Leiste kommen aus der
+   gemeinsamen Shell. Heros als offene Flaeche statt gerahmter Kasten;
+   die Investoren-Abbildung bleibt die Produktidentitaet. */
+.hf-hero{background:none;border-radius:0;padding:clamp(20px,4vw,48px) 0 clamp(8px,2vw,24px);box-shadow:none}
+.hf-hero h1{font-size:clamp(36px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em}
+.hf-phead,.hf-dhero{background:none;border-radius:0;padding:clamp(20px,3.5vw,40px) 0 clamp(8px,2vw,16px);margin-top:0}
+@media(max-width:760px){.hf-hero,.hf-phead,.hf-dhero{padding:20px 0 8px;border-radius:0}}
+
+/* Premium 2.0: institutional research on the common platform palette.
+   Returns, holdings, chart categories and warnings retain their own colours. */
+:root, html[data-theme=dark], html[data-theme=light]{
+  --bg:var(--vu-bg);--bg-soft:var(--vu-surface);--panel:var(--vu-surface);--card:var(--vu-elevated);
+  --ink:var(--vu-text);--ink-2:var(--vu-text-secondary);--muted:var(--vu-muted);
+  --line:var(--vu-line-strong);--line-soft:var(--vu-line);
+  --accent:var(--vu-accent);--accent-ink:var(--vu-on-accent);--accent-text:var(--vu-accent-text);--accent-soft:var(--vu-accent-soft);
+}
+.hf-hero.vu-product-hero{margin-top:0;padding:28px 0 32px;gap:40px}
+.hf-hero .vu-product-title{max-width:16ch}
+.hf-hero .hf-live{margin-top:18px;padding:0;border:0;background:none;box-shadow:none;font-size:11px;line-height:1.5;flex-wrap:wrap}
+.hf-hero .hf-live i{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);flex:none}
+.hf-search:focus-within{border-color:var(--vu-focus);box-shadow:0 0 0 3px var(--accent-soft)}
+.hf-hero .hf-search{min-height:56px;border-color:var(--line-soft);box-shadow:var(--shadow)}
+.hf-hero .hf-pop{gap:8px;padding-top:12px}
+.hf-hero .hf-chip{background:none}
+.hf-chip,.hf-tab,.hf-seg button{min-height:44px}
+.hf-kpi .hf-tile-ico,.hf-phead .hf-tile-ico,.hf-door .hf-tile-ico,.hf-float .hf-tile-ico{background:var(--accent-soft);color:var(--accent-text);box-shadow:none}
+.hf :focus-visible{outline-color:var(--vu-focus)}
+.hf-section{margin-top:40px}
+.hf-dhero .bio,.hf-phead .lead{line-height:1.65}
+@media(min-width:768px){.hf-hero.vu-product-hero{padding:44px 0 48px}}
+@media(min-width:1024px){.hf-hero-art{min-height:440px}}
+
+/* Functional investor portraits and quarter links belong to the research
+   overview, leaving the compact hero to the product introduction and search. */
+.hf-research-overview{margin:20px 0 28px}
+.hf-research-description{max-width:72ch;margin-bottom:20px;font-size:14px;line-height:1.65;color:var(--ink-2)}
+.hf-research-overview .hf-hero-art{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-height:0;max-width:none;margin:0}
+.hf-research-overview .hf-orbit{position:static;grid-column:1/-1;display:flex;flex-wrap:wrap;gap:14px 20px}
+.hf-research-overview .hf-face{position:static;flex:none;min-width:58px}
+.hf-research-overview .hf-face .hf-avatar{width:56px;height:56px;border-width:2px;box-shadow:var(--shadow)}
+.hf-research-overview .hf-float{position:static;max-width:none;min-width:0}
+@media(min-width:1024px){.hf-research-overview .hf-hero-art{grid-template-columns:repeat(2,minmax(0,320px));gap:16px 24px}}
+
+/* BEGIN GENERATED HERO FIDELITY — edit assets/product-hero.css */
+/* Hero-only composition. Source for scripts/design/sync-product-hero.mjs.
+   Compiled into existing product styles: no delayed CSS or extra requests. */
+html body .vu-product-hero.vu-hero-fidelity[data-product]{
+  --vu-hero-icon-size:104px;
+  position:relative;isolation:isolate;display:block;box-sizing:border-box;
+  padding:24px 0 28px;margin:0 0 24px;min-height:0;gap:0;
+  background:none;border:0;border-radius:0;color:var(--vu-text,#f4f5f2);
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product]::before,
+html body .vu-product-hero.vu-hero-fidelity[data-product]::after{display:none}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-icon--hero{
+  position:relative;z-index:1;display:grid;place-items:center;flex:none;
+  width:var(--vu-hero-icon-size);height:var(--vu-hero-icon-size);
+  margin:0 0 16px;border-radius:23px;
+  box-shadow:0 0 0 1px #c8f53155,0 10px 30px -10px #c8f53159,inset 0 0 18px #c8f5311a;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-icon--hero svg{width:64%;height:64%;filter:drop-shadow(0 0 6px #c8f53166)}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name{
+  position:relative;z-index:1;display:block;margin:0 0 5px;padding:0;
+  color:var(--vu-text,#f4f5f2);font-size:32px;line-height:1.08;
+  font-weight:800;letter-spacing:-.045em;text-transform:none;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name::before{display:none}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-headline{
+  position:relative;z-index:1;margin:0 0 14px;padding:0;max-width:24ch;
+  color:var(--vu-text,#f4f5f2);font-size:24px;line-height:1.16;
+  font-weight:680;letter-spacing:-.025em;text-wrap:balance;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-description{
+  position:relative;z-index:1;margin:0 0 20px;max-width:46ch;
+  color:var(--vu-text-secondary,#bbc0c2);font-size:14px;line-height:1.5;font-weight:400;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{
+  position:absolute;z-index:0;inset:0 0 auto auto;width:min(300px,77%);height:285px;
+  max-width:none;margin:0;padding:0;pointer-events:none;opacity:.95;
+  background:var(--vu-hero-art,none) center top/contain no-repeat;
+  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 82%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 45%,transparent 96%);
+  mask-composite:intersect;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 82%,transparent),linear-gradient(180deg,transparent,#000 12%,#000 45%,transparent 96%);
+  -webkit-mask-composite:source-in;
+}
+html body .vu-hero-fidelity[data-product=discover]{--vu-hero-art:url('/assets/hero-visuals/discover.webp')}
+html body .vu-hero-fidelity[data-product=screener]{--vu-hero-art:url('/assets/hero-visuals/screener.webp')}
+html body .vu-hero-fidelity[data-product=vorsorge]{--vu-hero-art:url('/assets/hero-visuals/vorsorge.webp')}
+html body .vu-hero-fidelity[data-product=supertrader]{--vu-hero-art:url('/assets/hero-visuals/supertrader.svg')}
+html body .vu-hero-fidelity[data-product=hedgefonds]{--vu-hero-art:url('/assets/hero-visuals/hedgefonds.webp')}
+html body .vu-product-hero.vu-hero-fidelity[data-product=quant] .q-globe{
+  width:min(285px,74%);height:285px;top:0;right:0;transform:none;
+  --q-globe-1:#142214;--q-globe-2:#0b140c;--q-globe-3:#080c09;
+  --q-globe-glow:#c8f53122;--q-globe-rim:#c8f53177;--q-globe-grid:#c8f53122;
+  --q-globe-link:#c8f531aa;--q-globe-dot:#d3fc65;
+}
+html[data-theme=light] body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{
+  opacity:.42;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-prompt,.q-searchbar,.vs-search,.hf-search,.sc-hero-cta){
+  position:relative;z-index:2;box-sizing:border-box;min-height:52px;max-width:560px;
+  margin:0 0 12px;border:1px solid var(--vu-line,#343a3d);border-radius:999px;
+  background:#fff;color:#111619;box-shadow:none;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-prompt,.q-searchbar){font-size:13px;padding:5px 5px 5px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-search-arrow,.q-searchbar>i){
+  display:grid;place-items:center;flex:none;width:40px;height:40px;min-height:40px;
+  border-radius:50%;background:var(--vu-accent,#c8f531);color:#101318;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search{padding:5px 5px 5px 16px;gap:10px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search input{color:#111619;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] input::placeholder{color:#606870;opacity:1;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-search button{min-height:44px;font-size:13px;padding:8px 16px;border-radius:999px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-search{padding:12px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-search input{color:#111619;font-size:13px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-hsearch{position:relative;z-index:2;max-width:560px;margin:0 0 12px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .hf-live{position:relative;z-index:1;font-size:11px;line-height:1.5;margin:0 0 14px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-intro-actions,.vs-hero-actions,.st-hero-actions,.hf-pop){
+  position:relative;z-index:1;max-width:640px;margin:0;gap:8px;
+}
+html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.v2-pill,.vs-hero-actions .vs-pill,.hf-chip){font-size:12px;min-height:44px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{position:relative;z-index:1;max-width:68ch;font-size:12px;line-height:1.5;margin:18px 0}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vs-hero-more{position:relative;z-index:1;font-size:12px;margin:12px 0 0;gap:4px 16px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .sc-hero-actions .sc-btn-primary{min-height:52px;background:#fff;color:#111619;border-color:var(--vu-line)}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-hero__actions{position:relative;z-index:1;max-width:560px;margin:0;gap:8px}
+html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min-height:48px;font-size:13px}
+@media(max-width:767px){
+  /* 16px inputs prevent Safari focus zoom; the placeholder stays compact. */
+  html body .vu-product-hero.vu-hero-fidelity[data-product] :is(.vs-search,.hf-search) input{font-size:16px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=discover]{margin-top:-6px;margin-inline:-4px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=quant]{margin-top:-4px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=hedgefonds]{margin-top:-8px}
+}
+@media(min-width:768px){
+  html body .vu-product-hero.vu-hero-fidelity[data-product]{--vu-hero-icon-size:120px;padding:40px 0 36px;margin-bottom:32px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-name{font-size:40px;margin-bottom:8px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-headline{font-size:clamp(28px,3vw,40px);max-width:23ch;margin-bottom:18px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-description{font-size:16px;max-width:58ch;margin-bottom:24px}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-hero-scene{width:52%;height:460px;top:0;right:0}
+  html body .vu-product-hero.vu-hero-fidelity[data-product=quant] .q-globe{width:440px;height:440px;max-width:52%}
+  html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
+}
+/* END GENERATED HERO FIDELITY */
+
+/* Smart Money: Insider-Käufe und Fonds-Einstiege (Eigentümer-Signale) */
+.hf-seg a{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:36px;white-space:nowrap;text-decoration:none}
+.hf-seg a[aria-current=page]{background:var(--ink);color:var(--bg)}
+.hf-smtabs{margin:4px 0 18px}
+.hf-sm-ks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 12px}
+.hf-sm-k{padding:10px 12px;border:1px solid var(--line-soft);border-radius:14px;background:var(--bg)}
+.hf-sm-k small{display:block;font-size:11.5px;color:var(--muted);font-weight:650}
+.hf-sm-k b{display:block;font-size:18px;letter-spacing:-.01em;margin-top:2px}
+.hf-sub{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+.hf-smlist .val small a{color:inherit}
+.hf-smblock{margin-top:8px}
+@media (max-width:760px){.hf-sm-ks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.hf-sm-k{padding:8px}.hf-sm-k b{font-size:15px}}
+.hf-panel .hf-empty{padding:16px 0;margin:0}

@@ -9,6 +9,12 @@
      #/aktien            Aktien: meistgehalten, Käufe, Verkäufe
      #/aktie/<cusip>     Aktie: welche Fonds halten sie, mit welchem Anteil
      #/fonds/<slug>      Fonds: Kuchendiagramm, Verlauf, Positionen, Trades
+     #/smart-money       Smart Money: Insider-Käufe (Form 4)
+     #/smart-money/einstiege   Smart Money: Fonds-Einstiege (alle 13F-Melder, 13D)
+   Insider- und Fondsströme je Aktie liest das Modul aus den Eigentümer-
+   Signalen (quant/data/product/ownership-signals-v1, Erzeuger
+   scripts/market/build-ownership-signals.mjs); fehlen sie, bleibt der
+   Bereich mit einem Hinweis leer.
    ========================================================================= */
 (function () {
   "use strict";
@@ -17,6 +23,7 @@
   var BASE = "/hedgefonds/data/";
   var SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"];
   var STOCK_SHARDS = 32;
+  var OWN_BASE = window.HF_OWN_URL || "/quant/data/product/ownership-signals-v1/";
   var FEATURED = ["pershing-square", "berkshire", "scion", "ark", "situational-awareness", "appaloosa", "duquesne",
     "bit-capital", "icahn", "third-point", "greenlight", "baupost", "tci", "himalaya", "dalal-street", "tiger-global", "coatue"];
   var HERO_FACES = ["berkshire", "pershing-square", "ark", "appaloosa", "bridgewater", "soros", "icahn", "citadel", "tci"];
@@ -31,7 +38,7 @@
   var PAGE = 50;
   var S = { data: null, universe: [], bySlug: {}, details: {}, shards: {}, stockIndex: null,
     style: "Alle", sort: "value", tab: "holdings", aggMode: "star", dbFilter: "all", dbSort: "value", dbShown: PAGE,
-    dbQ: "", invQ: "", stockMode: "all" };
+    dbQ: "", invQ: "", stockMode: "all", own: { shards: {}, highlights: null } };
   var root = document.getElementById("hf-root");
 
   /* -------------------------------------------------------------- Icons */
@@ -53,6 +60,8 @@
     back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
     brief: '<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5h6v2M3 12.5h18"/>',
     close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    pulse: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M16 6l2.5 2.5M14 8l2 2"/>',
     layers: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
     ext: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
   };
@@ -223,6 +232,48 @@
     }
     return S.stockIndexP;
   }
+  /* Eigentümer-Signale (Form 4, 13D/13G, alle 13F-Melder). Gzip-Scherben
+     werden nach dem Laden entpackt; liefert der Server sie bereits entpackt
+     aus, wird direkt gelesen. Fehlen die Daten, liefern die Lader null. */
+  function getGzJSON(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      var b = new Uint8Array(buf);
+      if (!(b[0] === 0x1f && b[1] === 0x8b)) return new TextDecoder().decode(b);
+      if (typeof DecompressionStream !== "function") throw new Error("GZIP_DECOMPRESSION_UNSUPPORTED");
+      return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+    }).then(JSON.parse);
+  }
+  function ownShard(ticker) {
+    var I = window.VUCore && window.VUCore.Identity;
+    return I ? I.shardKey(ticker) : null;
+  }
+  function loadOwnIssuer(ticker) {
+    var key = ticker && ownShard(ticker);
+    if (!key) return Promise.resolve(null);
+    var p = S.own.shards[key] || (S.own.shards[key] = getGzJSON(OWN_BASE + "current/" + encodeURIComponent(key) + ".json.gz")
+      .catch(function () { return null; }));
+    return p.then(function (shard) {
+      if (!shard || !shard.issuers) return null;
+      var x = shard.issuers[ticker] || shard.issuers[window.VUCore.Identity.normalizeTicker(ticker)];
+      return x ? { asOf: shard.asOf, data: x } : null;
+    });
+  }
+  function loadOwnHighlights() {
+    if (!S.own.highlightsP) {
+      S.own.highlightsP = getJSON(OWN_BASE + "highlights.json").then(function (h) { S.own.highlights = h; return h; })
+        .catch(function () { S.own.highlightsP = null; return null; });
+    }
+    return S.own.highlightsP;
+  }
+  function stockByTicker(ticker) {
+    return loadStockIndex().then(function (list) {
+      for (var i = 0; i < list.length; i++) if (list[i].ticker === ticker) return list[i];
+      return null;
+    });
+  }
   function investors() { return S.data.funds.filter(function (f) { return f.category === "Investoren"; }); }
   function institutions() { return S.data.funds.filter(function (f) { return f.category === "Institutionen"; }); }
   function dbAll() { return investors().concat(S.universe); }
@@ -382,25 +433,14 @@
     }
   }
 
-  /* -------------------------------------------- Menüleiste (wie Discover) */
-  var DOCK = [["start", "Start", "#/", "home"], ["investoren", "Investoren", "#/investoren", "users"],
-    ["datenbank", "Datenbank", "#/datenbank", "table"], ["aktien", "Aktien", "#/aktien", "chart"], ["suche", "Suchen", null, "search"]];
-  function buildDock() {
-    var nav = document.createElement("nav");
-    nav.className = "hf-dock";
-    nav.setAttribute("aria-label", "Hedgefonds");
-    nav.innerHTML = DOCK.map(function (d) {
-      var inner = icon(d[3]) + "<span>" + d[1] + "</span>";
-      return d[2] ? '<a class="hf-dock-item" data-key="' + d[0] + '" href="' + d[2] + '">' + inner + "</a>"
-        : '<button class="hf-dock-item hf-dock-search" type="button" data-key="' + d[0] + '" aria-haspopup="dialog">' + inner + "</button>";
-    }).join("");
-    document.body.appendChild(nav);
-    nav.querySelector(".hf-dock-search").addEventListener("click", openSearch);
-  }
+  /* ------------------------------------------------- Produkt-Leiste
+     Kopf und Leiste kommen aus der gemeinsamen Vision-Universe-Shell
+     (assets/site-navigation.js): Hedgefonds | Investoren | Datenbank |
+     Aktien | ☰. Hedgefonds meldet ihr nur den aktiven Bereich. Die Suche
+     bleibt die Hedgefonds-Suche: im Hero, mit / und als Overlay. */
+  var DOCK = { start: "hedgefonds", investoren: "investoren", datenbank: "datenbank", aktien: "aktien" };
   function setDock(key) {
-    [].forEach.call(document.querySelectorAll(".hf-dock-item"), function (a) {
-      if (a.getAttribute("data-key") === key) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
-    });
+    if (window.VUNavigation) window.VUNavigation.dock({ active: key && DOCK[key] ? DOCK[key] : null });
   }
 
   /* ------------------------------------------------------ Such-Overlay */
@@ -556,17 +596,22 @@
     document.title = "Hedgefonds — Vision Universe®";
 
     root.innerHTML =
-      '<section class="hf-hero">' +
-        '<div class="hf-hero-copy">' +
+      '<section class="hf-hero vu-product-hero vu-hero-fidelity" data-product="hedgefonds">' +
+          '<div class="vu-hero-scene" aria-hidden="true"></div>' +
+          '<span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#hedgefonds"></use></svg></span>' +
+          '<div class="vu-hero-name">Hedgefonds</div>' +
+          '<h1 class="vu-product-title vu-hero-headline">Große Investoren.<br>Klare Einblicke.</h1>' +
+          '<p class="lead vu-product-lead vu-hero-description">Was große Investoren kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>' +
           '<span class="hf-live"><i></i>13F-Meldungen · ' + esc(d.latestPeriodLabel || "") + " · geprüft " + dateDE(d.generatedAt) + "</span>" +
-          "<h1>Folge dem <em>Smart Money</em>.</h1>" +
-          '<p class="lead">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
-            " weitere Hedgefonds kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
           '<div class="hf-hsearch"><label class="hf-search">' + icon("search") +
             '<input id="hf-q" type="search" placeholder="Investor, Fonds oder Aktie suchen …" autocomplete="off" aria-label="Investor, Fonds oder Aktie suchen"></label>' +
             '<div class="hf-spanel" id="hf-qres" hidden></div></div>' +
           '<div class="hf-pop">' + POPULAR.map(function (p) { return '<a class="hf-chip" href="#/' + p[1] + "/" + p[2] + '">' + esc(p[0]) + "</a>"; }).join("") + "</div>" +
-        "</div>" +
+      "</section>" +
+
+      '<section class="hf-research-overview" aria-label="Investoren und Quartalsüberblick">' +
+        '<p class="hf-research-description">Was Warren Buffett, Bill Ackman, Michael Burry, Cathie Wood und ' + nf0.format(n - 4) +
+          " weitere Hedgefonds kaufen und verkaufen – Quartal für Quartal, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
         '<div class="hf-hero-art">' +
           '<div class="hf-orbit">' + faces.map(function (f, i) {
             return '<a class="hf-face f' + i + '" href="#/fonds/' + esc(f.slug) + '" title="' + esc(fundLabel(f)) + '">' + avatar(f, "face") + "<span>" + esc(String(f.manager).split(" ").slice(-1)[0]) + "</span></a>";
@@ -602,6 +647,8 @@
         door("#/datenbank", "table", "Hedgefonds-Datenbank", nf0.format(n) + " Fonds filtern, sortieren, vergleichen", 1) +
         door("#/aktien", "chart", "Aktien", "Wer hält welche Aktie – und wie viel davon?", 2) +
         door("#/datenbank?f=dach", "globe", "Deutschland &amp; DACH", (d.dachCount || 0) + " Melder aus Deutschland, Österreich, Schweiz", 3) +
+        door("#/smart-money", "key", "Insider-Käufe", "Wo Führungskräfte mit eigenem Geld Aktien ihres Unternehmens kaufen", 4) +
+        door("#/smart-money/einstiege", "layers", "Fonds-Einstiege", "Welche Aktien die meisten Fonds neu ins Depot nehmen", 5) +
       "</div></section>" + footer();
 
     renderAgg();
@@ -773,6 +820,7 @@
     document.title = "Aktien · Hedgefonds — Vision Universe®";
     var all = S.data.aggregatesAll || S.data.aggregates || {};
     root.innerHTML = pageHead("Aktien", "Wer hält welche Aktie?", "Für jede Aktie: welche Hedgefonds sie halten, mit welchem Anteil am Portfolio, und wer im letzten Quartal gekauft oder verkauft hat.", "green", "chart") +
+      '<div class="hf-chips"><a class="hf-chip" href="#/smart-money">' + icon("key") + ' Insider-Käufe</a><a class="hf-chip" href="#/smart-money/einstiege">' + icon("layers") + " Fonds-Einstiege</a></div>" +
       '<div class="hf-hsearch wide"><label class="hf-search">' + icon("search") +
         '<input id="hf-sq" type="search" placeholder="Aktie oder Ticker – z. B. „pal“, „SoFi“, „TDOC“" autocomplete="off" aria-label="Aktie suchen"></label>' +
         '<div class="hf-spanel" id="hf-sqres" hidden></div></div>' +
@@ -839,6 +887,7 @@
             return '<tr data-href="#/fonds/' + esc(f.slug) + '" tabindex="0"><td>' + fundCell(f) + '</td><td class="r num neg">' + usd(h.v) + '</td><td class="r num c-fs">' + usd(f.totalValueUSD) + "</td></tr>";
           }).join("") + "</tbody></table></div>" : "") +
         '<p class="hf-foot-note">Berücksichtigt sind je Fonds die größten gemeldeten Positionen (Star-Investoren: 150, weitere Hedgefonds: 50). Kleinere Beteiligungen können fehlen.</p>' +
+        (a.ticker ? '<div id="hf-sm" class="hf-smblock"></div>' : "") +
         footer() + "</div>";
       function draw(mode) {
         var list = mode === "star" ? stars : holders, body = document.getElementById("hf-hbody");
@@ -853,6 +902,7 @@
       }
       draw("all");
       bindRowLinks(root);
+      smartMoneyBlock(a.ticker, name);
       document.getElementById("hf-hmode").addEventListener("click", function (e) {
         var b = e.target.closest("[data-hm]");
         if (!b) return;
@@ -861,6 +911,179 @@
       });
     }).catch(function (err) {
       root.innerHTML = backLink("#/aktien", "Alle Aktien") + '<p class="hf-empty">Aktie konnte nicht geladen werden (' + esc(err.message) + ").</p>";
+    });
+  }
+
+  /* ---------------------------------------------------------- Smart Money
+     Eigener Bereich neben den 13F-Fondsportfolios: Insider-Käufe (Form 4)
+     und Fonds-Einstiege über alle 13F-Melder sowie 13D-Großbeteiligungen.
+     Quelle sind die Eigentümer-Signale, nicht die Fondsliste oben. */
+  var ROLE = { officer: "Führungskraft", director: "Board-Mitglied", tenPercentOwner: "Großaktionär (>10 %)", other: "Sonstige" };
+  function roleLabel(r) {
+    return String(r || "").split(",").filter(Boolean).map(function (x) { return ROLE[x] || x; }).join(" · ") || "–";
+  }
+  function personName(n) {
+    // Form-4-Namen stehen als "NACHNAME VORNAME" in Großbuchstaben
+    if (!n) return "Unbekannt";
+    if (n !== n.toUpperCase()) return n;
+    var w = n.toLowerCase().split(/\s+/).map(function (x) { return x.charAt(0).toUpperCase() + x.slice(1); });
+    return w.length > 1 ? w.slice(1).join(" ") + " " + w[0] : w[0];
+  }
+  function tickerItem(t, name) {
+    var hit = null, list = S.stockIndex || [];
+    for (var i = 0; i < list.length; i++) if (list[i].ticker === t) { hit = list[i]; break; }
+    return hit || { ticker: t, name: name || t };
+  }
+  function tickerName(it) { return it.name === it.ticker ? it.ticker : issuerName(it); }
+  function tickerHref(t) { return "#/aktie/" + encodeURIComponent(t); }
+  function smList(rows, val, metric) {
+    if (!rows || !rows.length) return '<p class="hf-empty">Aktuell keine Fälle.</p>';
+    var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(metric(r)) || 0; })) || 1;
+    return '<ol class="hf-list hf-smlist">' + rows.map(function (r, i) {
+      var it = tickerItem(r.ticker, r.name);
+      return '<li class="hf-li"><span class="rk">' + (i + 1) + "</span>" + logo(it, "lg") +
+        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(tickerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em></span>" +
+        '<div class="hf-meter" aria-hidden="true"><i style="width:' + (Math.abs(metric(r)) / max * 100).toFixed(1) + '%;background:var(--up)"></i></div></div>' +
+        '<div class="val">' + val(r) + "</div></li>";
+    }).join("") + "</ol>";
+  }
+  function smFooter(asOf) {
+    return '<footer class="hf-footer"><b>VISION UNIVERSE®</b><p>Quelle: Pflichtmeldungen an die US-Börsenaufsicht SEC (EDGAR): ' +
+      "Form 4 (Insider-Geschäfte von Führungskräften, Board-Mitgliedern und Aktionären mit mehr als 10 %), Schedule 13D/13G (Beteiligungen über 5 %) und Form 13F aller meldepflichtigen Verwalter. " +
+      "Gezählt werden nur Käufe und Verkäufe über die Börse (Codes P und S), keine Optionsausübungen, Schenkungen oder Vergütungsaktien. Werte nach Einreichungsdatum, nicht nach Handelstag. " +
+      "13F-Meldungen erscheinen bis zu 45 Tage nach Quartalsende. Keine Anlageberatung.</p>" +
+      (asOf ? "<p>Stand der Eigentümer-Daten: " + dateDE(asOf) + "</p>" : "") + "</footer>";
+  }
+  function smMissing() {
+    return '<p class="hf-empty">Die Insider- und Fondsdaten aus SEC EDGAR sind noch nicht veröffentlicht. Sie erscheinen nach dem nächsten wöchentlichen Datenlauf.</p>';
+  }
+  function renderSmartMoney(tab) {
+    document.title = "Smart Money · Hedgefonds — Vision Universe®";
+    var insider = tab !== "funds";
+    root.innerHTML = pageHead("Smart Money", insider ? "Insider-Käufe" : "Fonds-Einstiege",
+        insider ? "Wo Führungskräfte, Board-Mitglieder und Großaktionäre mit eigenem Geld Aktien ihres Unternehmens kaufen – aus den Form-4-Meldungen an die SEC."
+          : "Welche Aktien die meisten Fonds neu ins Depot genommen haben – über alle 13F-Melder, nicht nur unsere Fondsliste – und wo Investoren über 5 % eingestiegen sind.",
+        insider ? "amber" : "violet", insider ? "key" : "layers") +
+      '<div class="hf-seg hf-smtabs"><a href="#/smart-money"' + (insider ? ' aria-current="page"' : "") + '>Insider-Käufe</a><a href="#/smart-money/einstiege"' + (insider ? "" : ' aria-current="page"') + ">Fonds-Einstiege</a></div>" +
+      '<div id="hf-smbody"><div class="hf-skeleton" style="height:360px"></div></div>';
+    Promise.all([loadOwnHighlights(), loadStockIndex()]).then(function (res) {
+      var h = res[0], body = document.getElementById("hf-smbody");
+      if (!body || location.hash.indexOf("#/smart-money") !== 0) return;
+      if (!h) { body.innerHTML = smMissing() + smFooter(null); return; }
+      if (insider) {
+        var cb = h.clusterBuys || [], nb = h.largestNetInsiderBuys90 || [], top = nb[0];
+        body.innerHTML = '<div class="hf-dstats">' +
+            stat("users", "amber", "Cluster-Käufe", cb.length, "mind. 3 Insider in 30 Tagen") +
+            stat("up", "green", "Größter Netto-Kauf", top ? esc(top.ticker) : "–", top ? usd(top.netBuyUsd90) + " in 90 Tagen" : "") +
+            stat("calendar", "blue", "Stand", dateDE(h.asOf), "Form-4-Meldungen") +
+          "</div>" +
+          '<p class="hf-callout">' + icon("key") + "<span>Insider dürfen Aktien ihres Unternehmens kaufen, müssen es aber binnen zwei Geschäftstagen melden. " +
+            "Verkäufe haben viele Gründe (Steuern, Diversifikation); ein Kauf mit eigenem Geld hat meist nur einen. Kaufen mehrere Insider kurz nacheinander, spricht man von einem <b>Cluster-Kauf</b>.</span></p>" +
+          '<div class="hf-two"><div class="hf-panel"><h3>' + icon("users") + "Cluster-Käufe</h3>" +
+            smList(cb.slice(0, 15), function (r) { return "<b>" + r.buyers90 + " Insider</b><small>netto " + usd(r.netBuyUsd90) + "</small>"; }, function (r) { return r.buyers90; }) + "</div>" +
+          '<div class="hf-panel"><h3>' + icon("up", "pos") + "Größte Netto-Käufe (90 Tage)</h3>" +
+            smList(nb.slice(0, 15), function (r) { return '<b class="pos">' + usd(r.netBuyUsd90) + "</b><small>" + r.buyers90 + (r.buyers90 === 1 ? " Käufer" : " Käufer") + "</small>"; }, function (r) { return r.netBuyUsd90; }) + "</div></div>" +
+          '<p class="hf-foot-note">Netto = Käufe minus Verkäufe aller Insider der letzten 90 Tage. Insider über mehrere Aktiengattungen werden je Emittent gezählt.</p>' + smFooter(h.asOf);
+      } else {
+        var ni = h.mostNewInstitutions || [], nd = h.new13D90 || [], per = ni[0] && ni[0].period;
+        body.innerHTML = '<div class="hf-dstats">' +
+            stat("layers", "violet", "Meiste Neueinstiege", ni[0] ? esc(ni[0].ticker) : "–", ni[0] ? "+" + nf0.format(ni[0].newPositions) + " Fonds" : "") +
+            stat("brief", "rose", "Neue 13D-Beteiligungen", nd.length, "über 5 %, letzte 90 Tage") +
+            stat("calendar", "blue", "13F-Quartal", per ? quarter(per) : "–", "Stand " + dateDE(h.asOf)) +
+          "</div>" +
+          '<div class="hf-two"><div class="hf-panel"><h3>' + icon("up", "pos") + "Meiste neue Fonds-Positionen" + (per ? " · " + quarter(per) : "") + "</h3>" +
+            smList(ni.slice(0, 15), function (r) { return '<b class="pos">+' + nf0.format(r.newPositions) + " Fonds</b><small>" + nf0.format(r.exits) + " ausgestiegen · " + nf0.format(r.holders) + " halten</small>"; },
+              function (r) { return r.newPositions; }) + "</div>" +
+          '<div class="hf-panel"><h3>' + icon("brief") + "Neue Großbeteiligungen (13D)</h3>" + schedList(nd.slice(0, 15)) + "</div></div>" +
+          '<p class="hf-foot-note">Neue Fonds-Positionen = Verwalter, die die Aktie im Vorquartal nicht hielten und sie jetzt in ihrer 13F-Meldung führen. Schedule 13D melden Investoren, die mehr als 5 % halten und Einfluss nehmen wollen; reine Finanzinvestoren melden 13G.</p>' +
+          smFooter(h.asOf);
+      }
+    });
+  }
+  function secFilingUrl(acc) {
+    var a = String(acc || "");
+    return /^\d{10}-\d{2}-\d{6}$/.test(a) ? "https://www.sec.gov/Archives/edgar/data/" + (+a.slice(0, 10)) + "/" + a.replace(/-/g, "") + "/" : null;
+  }
+  function schedList(rows) {
+    if (!rows || !rows.length) return '<p class="hf-empty">Aktuell keine Fälle.</p>';
+    return '<ol class="hf-list hf-smlist">' + rows.map(function (r, i) {
+      var it = tickerItem(r.ticker, r.name), l = r.latest || {}, url = secFilingUrl(l.accession);
+      return '<li class="hf-li"><span class="rk">' + (i + 1) + "</span>" + logo(it, "lg") +
+        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(tickerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em>" +
+        esc((l.filers || []).slice(0, 2).map(prettyIssuer).join(", ")) + "</span></div>" +
+        '<div class="val"><b>' + dateDE(l.filed) + "</b><small>" + (url ? '<a href="' + url + '" target="_blank" rel="noopener">Meldung ' + icon("ext") + "</a>" : esc(l.form || "13D")) + "</small></div></li>";
+    }).join("") + "</ol>";
+  }
+  function miniStat(label, value, cls) {
+    return '<div class="hf-sm-k"><small>' + label + '</small><b class="num' + (cls ? " " + cls : "") + '">' + value + "</b></div>";
+  }
+  // Block auf der Aktienseite: Insider und alle 13F-Melder für einen Ticker
+  function smartMoneyBlock(ticker, name) {
+    var el = document.getElementById("hf-sm");
+    if (!el || !ticker) return;
+    loadOwnIssuer(ticker).then(function (r) {
+      if (!document.getElementById("hf-sm")) return;
+      var head = '<div class="hf-head hf-gap"><div><h2>Smart Money bei ' + esc(name) + "</h2><p>Insider-Geschäfte (Form 4), Großbeteiligungen (13D/13G) und alle 13F-Melder" +
+        (r ? " · Stand " + dateDE(r.asOf) : "") + '.</p></div><a class="hf-more" href="#/smart-money">Alle Insider-Käufe ' + icon("arrow") + "</a></div>";
+      if (!r) { el.innerHTML = head + '<p class="hf-empty">Zu ' + esc(ticker) + " liegen noch keine Insider- oder Fondsdaten vor.</p>"; return; }
+      var x = r.data, ins = x.insider, inst = x.institutions, sch = x.schedules;
+      var html = head + '<div class="hf-two">';
+      if (ins) {
+        var buyers = ins.topBuyers || [];
+        html += '<div class="hf-panel"><h3>' + icon("key") + "Insider · letzte 90 Tage" + (ins.cb ? ' <span class="hf-badge new">Cluster-Kauf</span>' : "") + "</h3>" +
+          '<div class="hf-sm-ks">' + miniStat("Käufer", ins.ib90) + miniStat("Verkäufer", ins.is90) +
+            miniStat("Netto", (ins.nbv90 > 0 ? "+" : "") + usd(ins.nbv90), ins.nbv90 > 0 ? "pos" : ins.nbv90 < 0 ? "neg" : "") + "</div>" +
+          (buyers.length ? '<div class="hf-table-wrap"><table class="hf-table hf-mini"><thead><tr><th>Käufer</th><th class="r">Volumen</th><th class="r c-fs">Gemeldet</th></tr></thead><tbody>' +
+            buyers.map(function (b) {
+              return "<tr><td><b>" + esc(personName(b.name)) + "</b><small class=\"hf-sub\">" + esc(roleLabel(b.relationship)) + (b.plan10b5One ? " · Plan 10b5-1" : "") +
+                '</small></td><td class="r num pos">' + usd(b.valueUsd) + '<small class="hf-sub">' + shares(b.shares) + ' Aktien</small></td><td class="r num c-fs">' + dateDE(b.lastFiled) + "</td></tr>";
+            }).join("") + "</tbody></table></div>" : '<p class="hf-empty">Keine Insider-Käufe in den letzten 90 Tagen.</p>') +
+          (ins.complete === false ? '<p class="hf-foot-note">Die jüngsten Wochen sind noch nicht vollständig erfasst.</p>' : "") + "</div>";
+      }
+      if (inst) {
+        html += '<div class="hf-panel"><h3>' + icon("layers") + "Alle 13F-Melder · " + quarter(inst.period) + "</h3>" +
+          '<div class="hf-sm-ks">' + miniStat("Halter", nf0.format(inst.fh)) + miniStat("Neu eingestiegen", "+" + nf0.format(inst.fnew), "pos") +
+            miniStat("Ausgestiegen", nf0.format(inst.fexit), inst.fexit ? "neg" : "") + "</div>" +
+          '<div class="hf-sm-ks">' + miniStat("Aufgestockt", nf0.format(inst.finc)) + miniStat("Reduziert", nf0.format(inst.fdec)) +
+            miniStat("Halter im Vorquartal", nf0.format(inst.fhp)) + "</div>" +
+          ((inst.topNew || []).length ? '<div class="hf-table-wrap"><table class="hf-table hf-mini"><thead><tr><th>Größte Neueinsteiger</th><th class="r">Wert</th></tr></thead><tbody>' +
+            inst.topNew.map(function (n) { return "<tr><td>" + esc(prettyIssuer(n.manager)) + '</td><td class="r num">' + usd(n.valueUsd) + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") +
+          (inst.previousHoldersLow ? '<p class="hf-foot-note">Im Vorquartal waren wenige Melder erfasst; Neueinstiege sind deshalb nur eingeschränkt vergleichbar.</p>' : "") + "</div>";
+      }
+      html += "</div>";
+      var rec = (sch && sch.recent) || [];
+      if (rec.length) {
+        html += '<div class="hf-table-wrap"><table class="hf-table hf-mini"><thead><tr><th>Beteiligung über 5 %</th><th>Art</th><th class="r">Gemeldet</th></tr></thead><tbody>' +
+          rec.slice(0, 6).map(function (m) {
+            var url = secFilingUrl(m.accession);
+            return "<tr><td>" + esc((m.filers || []).map(prettyIssuer).join(", ") || "–") + "</td><td>" + esc(m.form) + (/13D/.test(m.form) ? " (aktiv)" : " (passiv)") +
+              '</td><td class="r num">' + (url ? '<a href="' + url + '" target="_blank" rel="noopener">' + dateDE(m.filed) + "</a>" : dateDE(m.filed)) + "</td></tr>";
+          }).join("") + "</tbody></table></div>";
+      }
+      if (ins && ins.issuerLevel) html += '<p class="hf-foot-note">Insider-Werte gelten für das Unternehmen insgesamt (alle Aktiengattungen).</p>';
+      el.innerHTML = html;
+    });
+  }
+  // Aktie ohne Fondsdaten (z. B. aus der Insider-Liste): nur Smart Money
+  function renderTickerStock(ticker) {
+    var it = tickerItem(ticker), name = it.name === it.ticker ? ticker : issuerName(it);
+    document.title = name + " · Smart Money — Vision Universe®";
+    root.innerHTML = '<div class="hf-detail">' + backLink("#/smart-money", "Smart Money") +
+      '<section class="hf-dhero hf-shero">' + logo(it, "xl") + '<div><div class="hf-eyebrow">Aktie · ' + esc(ticker) + "</div><h1>" + esc(name) + "</h1>" +
+      '<p class="bio">Keiner der erfassten Hedgefonds führt ' + esc(name) + " unter seinen größten Positionen. Insider-Geschäfte und Meldungen aller 13F-Melder stehen unten.</p>" +
+      '<div class="tags"><a class="hf-pill dark" href="/discover/#/s/US_REAL/' + encodeURIComponent(ticker) + '">Kurs &amp; Kennzahlen in Discover ' + icon("arrow") + "</a></div></div></section>" +
+      '<div id="hf-sm"><div class="hf-skeleton" style="height:260px"></div></div>' + smFooter(null) + "</div>";
+    window.scrollTo(0, 0);
+    smartMoneyBlock(ticker, name);
+  }
+  function routeStockId(id) {
+    // CUSIP (9 Zeichen, letzte Ziffer Prüfziffer) oder Ticker
+    if (/^[0-9A-Z]{8}[0-9]$/.test(id)) { renderStock(id); return; }
+    var t = id.toUpperCase();
+    root.innerHTML = '<div class="hf-skeleton" style="margin-top:24px;height:320px"></div>';
+    stockByTicker(t).then(function (hit) {
+      if (location.hash !== "#/aktie/" + encodeURIComponent(id)) return;
+      if (hit) location.replace("#/aktie/" + encodeURIComponent(hit.cusip)); else renderTickerStock(t);
     });
   }
 
@@ -1039,7 +1262,8 @@
     var changed = lastPath !== path;
     lastPath = path;
     if (page === "fonds" && parts[1]) { setDock(null); if (changed) S.tab = "holdings"; renderFund(parts[1]); return; }
-    if (page === "aktie" && parts[1]) { setDock("aktien"); renderStock(decodeURIComponent(parts[1])); return; }
+    if (page === "aktie" && parts[1]) { setDock("aktien"); routeStockId(decodeURIComponent(parts[1])); return; }
+    if (page === "smart-money") { setDock("smart"); renderSmartMoney(parts[1] === "einstiege" ? "funds" : "insider"); window.scrollTo(0, scrollMemo[path] || 0); return; }
     var pages = { start: renderHome, investoren: renderInvestors, datenbank: renderDatabase, aktien: renderStocks };
     (pages[page] || renderHome)(params);
     setDock(pages[page] ? page : "start");
@@ -1050,7 +1274,6 @@
     if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName) && overlay && overlay.hidden) { e.preventDefault(); openSearch(); }
   });
 
-  buildDock();
   buildOverlay();
   root.innerHTML = '<div class="hf-skeleton" style="margin-top:24px;height:420px"></div>';
   load().then(route).catch(function (err) {

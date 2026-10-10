@@ -1,0 +1,14 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS4",
+  "decidedAt": "2026-10-04",
+  "prereg": "PREREGISTRATION-HS4.json",
+  "nature": "EXPLORATIV (Zeitraum bekannt, Holdout verbraucht)",
+  "runs": { "full": 37182469897 },
+  "technicalControls": "PASS (Abstimmung Endwert)",
+  "selected": "V03",
+  "criteria": { "E1_both_halves": "FAIL", "E2_cost2": "PASS", "E3_s2": "PASS", "E4_volume_contribution": "PASS", "E5_vs_random": "PASS" },
+  "decision": "EXPLORATORY_NO_EDGE",
+  "finding": "Das Volumenprofil (Plus/Minus-Umsatz, Akkumulation) verbessert die Auswahl gegenüber derselben Regel ohne Volumen in beiden Hälften, und alle Versuche liegen weit über zufälligen Auswahlen aus denselben gefilterten Titeln. Der gewählte Versuch liegt über den Gesamtzeitraum vor SPY, aber nur dank 2024–2026; 2016–2021 lag er darunter. Hoher Tracking Error, hoher Umschlag, Ergebnis getragen von wenigen starken Monaten; statistisch nicht belastbar.",
+  "consequence": "Kein Modelldepot nach Protokoll. Volumen-Akkumulation ist ein Kandidatenbaustein und gehört als vorab registrierte Hypothese in die marktweite Gewinnerstudie von Quant (unabhängige Prüfung)."
+}

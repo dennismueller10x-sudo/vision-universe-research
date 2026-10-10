@@ -1,0 +1,12 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS3",
+  "decidedAt": "2026-10-03",
+  "prereg": "PREREGISTRATION-HS3.json",
+  "runs": { "dev": 37137161220 },
+  "gate": { "G0": "FAIL" },
+  "decision": "DATA_GATE_FAILED",
+  "holdout": "NICHT GEÖFFNET.",
+  "finding": "Die Kontrolle C00 bildete SPY nicht genau genug ab. Ursache: ADRs (Aktienanzahl in Stammaktien × Kurs des Hinterlegungsscheins) und Mehrgattungs-Firmen mit stark abweichenden Kursen unter den größten Positionen.",
+  "consequence": "Datennachtrag PREREGISTRATION-HS3-D1.json (ADR/IFRS ausgeschlossen, Mehrgattung mit Kursabstand > 2× ausgelassen), gleiche Versuche, erneut gezählt."
+}

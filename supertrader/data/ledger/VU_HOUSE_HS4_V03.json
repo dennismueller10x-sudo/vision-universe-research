@@ -1,0 +1,258 @@
+{
+  "schema": "supertrader-house-ledger-1.0.0",
+  "strategyId": "VU_HOUSE_HS4_V03",
+  "label": "VU Volumen-Momentum 20 (Beobachtung)",
+  "status": "LIVE_MODEL_OBSERVATION",
+  "note": "Regelbasierte Modellbeobachtung. Keine Anlageempfehlung. Historisch kein belegter Vorteil gegenüber dem S&P 500.",
+  "rules": [
+    "Universum: die 500 größten US-Inlandsemittenten nach Marktkapitalisierung (SEC-Aktienzahl × Kurs)",
+    "Filter: Schluss über der 200-Tage-Linie und mindestens 80 % des 52-Wochen-Hochs",
+    "Rang: Plus/Minus-Umsatz (50 Tage), Akkumulation (63 Tage), Gewinnüberraschung, Umsatzwachstum, Momentum 12-1",
+    "Depot: 20 Titel gleich gewichtet; gehaltene Titel bleiben bis Rang 40",
+    "Entscheidung am letzten Handelstag des Monats nach Schluss, Umsetzung zur nächsten Eröffnung"
+  ],
+  "liveSince": "2026-10-05",
+  "current": {
+    "date": "2026-10-05",
+    "holdings": [
+      {
+        "id": "tiingo:NASDAQ:ADI:1984-07-19",
+        "ticker": "ADI",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:AMD:1983-03-21",
+        "ticker": "AMD",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:CRWD:2019-06-12",
+        "ticker": "CRWD",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:DELL:2018-12-21",
+        "ticker": "DELL",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:DINO:1992-03-17",
+        "ticker": "DINO",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:EXPD:1990-03-26",
+        "ticker": "EXPD",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:FTNT:2009-11-18",
+        "ticker": "FTNT",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:HPE:2015-10-19",
+        "ticker": "HPE",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:MPC:2011-06-23",
+        "ticker": "MPC",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:MU:1989-05-16",
+        "ticker": "MU",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:NTAP:1995-11-21",
+        "ticker": "NTAP",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:NTRA:2015-07-02",
+        "ticker": "NTRA",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:OKTA:2017-04-07",
+        "ticker": "OKTA",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:PLTR:2020-09-30",
+        "ticker": "PLTR",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:PSX:2012-04-12",
+        "ticker": "PSX",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:TEAM:2015-12-10",
+        "ticker": "TEAM",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NASDAQ:TER:1987-03-11",
+        "ticker": "TER",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:TWLO:2016-06-23",
+        "ticker": "TWLO",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:VLO:1982-01-04",
+        "ticker": "VLO",
+        "weight": 0.05
+      },
+      {
+        "id": "tiingo:NYSE:WAB:1995-06-16",
+        "ticker": "WAB",
+        "weight": 0.05
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "date": "2026-10-05",
+      "eligible": 1000,
+      "holdings": [
+        {
+          "id": "tiingo:NASDAQ:ADI:1984-07-19",
+          "ticker": "ADI",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:AMD:1983-03-21",
+          "ticker": "AMD",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:CRWD:2019-06-12",
+          "ticker": "CRWD",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:DELL:2018-12-21",
+          "ticker": "DELL",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:DINO:1992-03-17",
+          "ticker": "DINO",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:EXPD:1990-03-26",
+          "ticker": "EXPD",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:FTNT:2009-11-18",
+          "ticker": "FTNT",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:HPE:2015-10-19",
+          "ticker": "HPE",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:MPC:2011-06-23",
+          "ticker": "MPC",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:MU:1989-05-16",
+          "ticker": "MU",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:NTAP:1995-11-21",
+          "ticker": "NTAP",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:NTRA:2015-07-02",
+          "ticker": "NTRA",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:OKTA:2017-04-07",
+          "ticker": "OKTA",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:PLTR:2020-09-30",
+          "ticker": "PLTR",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:PSX:2012-04-12",
+          "ticker": "PSX",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:TEAM:2015-12-10",
+          "ticker": "TEAM",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NASDAQ:TER:1987-03-11",
+          "ticker": "TER",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:TWLO:2016-06-23",
+          "ticker": "TWLO",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:VLO:1982-01-04",
+          "ticker": "VLO",
+          "weight": 0.05
+        },
+        {
+          "id": "tiingo:NYSE:WAB:1995-06-16",
+          "ticker": "WAB",
+          "weight": 0.05
+        }
+      ],
+      "buys": [
+        "ADI",
+        "AMD",
+        "CRWD",
+        "DELL",
+        "DINO",
+        "EXPD",
+        "FTNT",
+        "HPE",
+        "MPC",
+        "MU",
+        "NTAP",
+        "NTRA",
+        "OKTA",
+        "PLTR",
+        "PSX",
+        "TEAM",
+        "TER",
+        "TWLO",
+        "VLO",
+        "WAB"
+      ],
+      "sells": [],
+      "kind": "START",
+      "executeOn": "2026-10-07",
+      "decidedAt": "2026-10-06T15:06:30.907Z",
+      "commit": "410e697d7386c5ebd7bb3434ad3b5fb8af739fa8",
+      "rulesHash": "55e5841efcb839e3ce9e8db5c49dc7dc8b6a4b6e4b43e9c631b06ebc65ad99eb",
+      "executeNote": "Start: Entscheidung (Schlusskurse 05.10.) erst nach Handelsbeginn am 06.10. festgeschrieben; umgesetzt wird deshalb zur Eröffnung am 07.10."
+    }
+  ],
+  "nextDecision": "2026-10-30"
+}

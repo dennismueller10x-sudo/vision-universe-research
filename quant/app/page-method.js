@@ -22,6 +22,7 @@
     { id: "branchen", title: "Branchenvorlagen", text: "Warum Banken, Versicherer und REITs eigene Kennzahlen bekommen." },
     { id: "setups", title: "Setups", text: "Wie ein Setup entsteht, bestätigt wird oder endet." },
     { id: "strategien", title: "Strategien", text: "Wie ein Anlagestil geprüft wird – ohne Trefferquote." },
+    { id: "chartbild", title: "Chartbild & Wellen", text: "Wie Szenarien, Zonen und Elliott-Zählungen entstehen – und was die Evidenz zeigt." },
     { id: "historie", title: "Historical Replay & Muster", text: "Was ähnliche Situationen früher zeigten – und was nicht." },
     { id: "grenzen", title: "Grenzen & fehlende Daten", text: "Was Quant bewusst nicht sagt, und warum." },
     { id: "versionen", title: "Versionen", text: "Welche Methodik gerade gilt." }
@@ -56,10 +57,10 @@
   async function render(main, ctx, topic, params) {
     var t = TOPICS.filter(function (x) { return x.id === topic; })[0];
     if (!t) return start(main, ctx);
-    return ({ daten: daten, faktoren: faktoren, gewichtung: gewichtung, branchen: branchen, setups: setups, strategien: strategien, historie: historie, grenzen: grenzen, versionen: versionen })[t.id](main, ctx, t, params);
+    return ({ daten: daten, faktoren: faktoren, gewichtung: gewichtung, branchen: branchen, setups: setups, strategien: strategien, chartbild: function (m, c, t, p) { return global.QXLoadChartbild().then(function (CB) { return CB.method(m, c, t, topicHead); }); }, historie: historie, grenzen: grenzen, versionen: versionen })[t.id](main, ctx, t, params);
   }
 
-  var TOPIC_ICON = { daten: "data", faktoren: "bars", gewichtung: "filter", branchen: "network", setups: "setups", strategien: "trend", historie: "clock", grenzen: "warn", versionen: "doc" };
+  var TOPIC_ICON = { daten: "data", faktoren: "bars", gewichtung: "filter", branchen: "network", setups: "setups", strategien: "trend", chartbild: "setups", historie: "clock", grenzen: "warn", versionen: "doc" };
   /* Die Tabs der Konzept-Tafel "Methodik, Vertrauen & Transparenz". */
   var TABS = [[null, "Überblick"], ["faktoren", "Faktoren"], ["daten", "Daten"], ["historie", "Backtesting"], ["grenzen", "Grenzen"]];
   function tabs(current) {

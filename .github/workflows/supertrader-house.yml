@@ -1,0 +1,102 @@
+name: Supertrader Hausstrategie (HS1, intern)
+
+# VU Hausstrategie HS1 (scripts/supertrader/house/PREREGISTRATION-HS1.json).
+# Nur manuell oder ueber eine Marke in der Commit-Nachricht auf claude/**:
+#   [house:dev-smoke]  Technischer Probelauf (600 Reihen), Entwicklungszeitraum
+#   [house:dev]        Entwicklungszeitraum 2016-2021 (Daten nach 2021-12-31 vor jeder Rechnung entfernt)
+#   [house:holdout]    Holdout 2022-2026, nur mit FROZEN-HS1.json (Hash-Pruefung), genau einmal
+#   [house:hs2-dev-smoke] / [house:hs2-dev] / [house:hs2-holdout]  dasselbe fuer HS2 (PREREGISTRATION-HS2.json)
+#   [house:hs3-dev] / [house:hs3-holdout]  HS3 (Marktkapitalisierung, PREREGISTRATION-HS3.json)
+#   [house:hs4oos]  HS4-V03 einmalig 2008-2015 (PREREGISTRATION-HS4-OOS2008.json)
+#   [house:hs4-full]  HS4 Volumenprofil, explorativ 2016-2026 (PREREGISTRATION-HS4.json)
+#   [house:sec-pit-r13]  SEC-Werte zum Einreichungsdatum inkl. Aktienanzahl (privater Eimer, Zusammenfassung verschluesselt)
+# Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen nur Zaehlwerte;
+# Ergebnisse verschluesselt (Eigentuemer- und Sitzungsschluessel) auf claude/vu-house-strategy-results.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout, sec-pit-r13, hs3-dev, hs3-holdout, hs3d1-dev, hs3d1-holdout, hs3d2-dev, hs3d2-holdout, hs3d3-dev, hs3d3-holdout, hs4-full, hs4oos]
+        default: dev-smoke
+  push:
+    branches:
+      - 'claude/**'
+permissions:
+  contents: write
+concurrency:
+  group: supertrader-house-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[house:')) && github.run_id || 'main' }}
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[house:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Modus bestimmen
+        id: mode
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          INPUT: ${{ inputs.mode }}
+        run: |
+          m="$INPUT"
+          case "$MSG" in *"[house:hs4oos]"*) m=hs4oos;; *"[house:hs4-full]"*) m=hs4-full;; *"[house:sec-pit-r13]"*) m=sec-pit-r13;; *"[house:hs3d3-dev]"*) m=hs3d3-dev;; *"[house:hs3d3-holdout]"*) m=hs3d3-holdout;; *"[house:hs3d2-dev]"*) m=hs3d2-dev;; *"[house:hs3d2-holdout]"*) m=hs3d2-holdout;; *"[house:hs3d1-dev]"*) m=hs3d1-dev;; *"[house:hs3d1-holdout]"*) m=hs3d1-holdout;; *"[house:hs3-dev]"*) m=hs3-dev;; *"[house:hs3-holdout]"*) m=hs3-holdout;; *"[house:hs2-dev-smoke]"*) m=hs2-dev-smoke;; *"[house:hs2-dev]"*) m=hs2-dev;; *"[house:hs2-holdout]"*) m=hs2-holdout;; *"[house:dev-smoke]"*) m=dev-smoke;; *"[house:dev]"*) m=dev;; *"[house:holdout]"*) m=holdout;; esac
+          echo "mode=${m:-dev-smoke}" >> "$GITHUB_OUTPUT"
+      - name: Tests der Hausstrategie
+        run: node --test scripts/supertrader/tests/house-hs1.test.mjs
+      - name: Auswertung (verschluesselt)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          case "$MODE" in
+            dev-smoke) node scripts/supertrader/house/analyze.mjs --mode dev --limit 600 --out "$RUNNER_TEMP/val" ;;
+            dev) node scripts/supertrader/house/analyze.mjs --mode dev --out "$RUNNER_TEMP/val" ;;
+            holdout) node scripts/supertrader/house/analyze.mjs --mode holdout --out "$RUNNER_TEMP/val" ;;
+            hs2-dev-smoke) node scripts/supertrader/house/analyze.mjs --set hs2 --mode dev --limit 600 --out "$RUNNER_TEMP/val" ;;
+            hs2-dev) node scripts/supertrader/house/analyze.mjs --set hs2 --mode dev --out "$RUNNER_TEMP/val" ;;
+            sec-pit-r13) node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val" ;;
+            hs3-dev) node scripts/supertrader/house/analyze.mjs --set hs3 --mode dev --out "$RUNNER_TEMP/val" ;;
+            hs4oos)
+              # Einmaliger Test 2008-2015 (PREREGISTRATION-HS4-OOS2008.json): erst SEC-Aktienzahl im HOLDOUT-Namensraum, dann die Auswertung.
+              ST_WINDOW=HOLDOUT node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/secpit"
+              ST_WINDOW=HOLDOUT node scripts/supertrader/house/analyze.mjs --set hs4oos --mode oos --out "$RUNNER_TEMP/val" ;;
+            hs4-full) node scripts/supertrader/house/analyze.mjs --set hs4 --mode full --out "$RUNNER_TEMP/val" ;;
+            hs3d3-dev) node scripts/supertrader/house/analyze.mjs --set hs3d3 --mode dev --out "$RUNNER_TEMP/val" ;;
+            hs3d3-holdout) node scripts/supertrader/house/analyze.mjs --set hs3d3 --mode holdout --out "$RUNNER_TEMP/val" ;;
+            hs3d2-dev) node scripts/supertrader/house/analyze.mjs --set hs3d2 --mode dev --out "$RUNNER_TEMP/val" ;;
+            hs3d2-holdout) node scripts/supertrader/house/analyze.mjs --set hs3d2 --mode holdout --out "$RUNNER_TEMP/val" ;;
+            hs3d1-dev) node scripts/supertrader/house/analyze.mjs --set hs3d1 --mode dev --out "$RUNNER_TEMP/val" ;;
+            hs3d1-holdout) node scripts/supertrader/house/analyze.mjs --set hs3d1 --mode holdout --out "$RUNNER_TEMP/val" ;;
+            hs3-holdout) node scripts/supertrader/house/analyze.mjs --set hs3 --mode holdout --out "$RUNNER_TEMP/val" ;;
+            hs2-holdout) node scripts/supertrader/house/analyze.mjs --set hs2 --mode holdout --out "$RUNNER_TEMP/val" ;;
+          esac
+      - name: Verschluesseltes Ergebnis ablegen
+        if: always()
+        env:
+          TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          set -e
+          ls "$RUNNER_TEMP/val"/*.sealed.json >/dev/null 2>&1 || { echo "kein Ergebnis"; exit 0; }
+          for f in "$RUNNER_TEMP/val"/*.sealed.json; do grep -q '"schema":"supertrader-sealed-1.0.0"' "$f" || { echo "nicht verschluesselt - Abbruch"; exit 1; }; done
+          mkdir -p "$RUNNER_TEMP/res" && cd "$RUNNER_TEMP/res"
+          git init -q && git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q --depth 1 origin claude/vu-house-strategy-results; then git checkout -q -b r FETCH_HEAD; else git checkout -q --orphan r; fi
+          stamp=$(date -u +%Y%m%dT%H%M%SZ)
+          for f in "$RUNNER_TEMP/val"/*.sealed.json; do cp "$f" "${stamp}-$(basename "$f")"; done
+          git add -A && git commit -q -m "Hausstrategie ${MODE} ${stamp} (verschluesselt, run ${GITHUB_RUN_ID})"
+          for i in 1 2 3 4; do git push -q origin r:claude/vu-house-strategy-results && break; sleep $((i*5)); git fetch -q --depth 1 origin claude/vu-house-strategy-results && git rebase -q FETCH_HEAD || true; done
+          echo "abgelegt: ${stamp}"

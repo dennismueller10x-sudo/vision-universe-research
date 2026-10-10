@@ -1,0 +1,43 @@
+{
+  "schema": "supertrader-house-prereg-1.0.0",
+  "id": "VU_HOUSE_HS3",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor Implementierung der Marktkapitalisierung und vor jedem Lauf von HS3. Entworfen nach den Entwicklungsläufen von HS1 und HS2 (2016–2021); der Holdout 2022–2026 ist unberührt. Vorkenntnis aus HS2 (Reihenfolge der Faktorkombinationen im Entwicklungszeitraum) ist dokumentiert und fließt nur über die gezählten Versuche in die DSR ein.",
+  "motivation": "HS2: Der Größenersatz (Handelsumsatz) erzeugte selbst die Abweichung gegen SPY. HS3 gewichtet nach Marktkapitalisierung zum Stichtag (SEC-Aktienanzahl × Rohschluss), damit die Kontrolle SPY nahe kommt und eine Faktorneigung sauber messbar ist.",
+  "inherits": "Wie HS2 (und damit HS1), soweit hier nicht anders festgelegt.",
+  "data": {
+    "shares": "sec-pit-r13: Aktienanzahl je Stichtag mit erster Einreichung (dei:EntityCommonStockSharesOutstanding, Gattungen derselben Einreichung addiert; Rückfall verwässerte Durchschnittsaktien des Quartals).",
+    "marketCap": "An D: jüngster Wert mit Einreichung < D und Stichtag höchstens 400 Tage vor D; Stückzahl mit allen Splits zwischen Stichtag und D umgerechnet; × Rohschluss an D.",
+    "multiClass": "Mehrere Listings derselben CIK (z. B. zwei Aktiengattungen) zählen einmal: es bleibt das Listing mit dem höchsten 63-Tage-Umsatz."
+  },
+  "rules": {
+    "universe": "Zulässig wie HS1 (Rohschluss ≥ 5 USD, ≥ 273 Handelstage, unter den 1 000 liquidesten), mit Marktkapitalisierung; davon die 500 größten nach Marktkapitalisierung.",
+    "baseWeight": "Proportional zur Marktkapitalisierung, je Titel höchstens 10 %, Überschuss iterativ verteilt.",
+    "tilt": "Wie HS2.",
+    "rebalance": "Wie HS2 (Band 25 % des Ziels bzw. 0,05 Prozentpunkte)."
+  },
+  "gate": {
+    "G0": "Datenprüfung vor jeder Auswahl: Die Kontrolle C00 muss SPY im Entwicklungszeitraum mit Tracking Error ≤ 3 % p. a. abbilden. Sonst ist die Datenstufe unzureichend; HS3 endet ohne Auswahl (DATA_GATE_FAILED)."
+  },
+  "trials": [
+    { "id": "C00", "factors": [], "tau": 0, "note": "Kontrolle: Marktkapitalisierung ohne Neigung" },
+    { "id": "M01", "factors": ["MOM"], "tau": 0.5 },
+    { "id": "M02", "factors": ["MOM", "SUE"], "tau": 0.5 },
+    { "id": "M03", "factors": ["MOM", "SUE", "REVG"], "tau": 0.5 },
+    { "id": "M04", "factors": ["MOM", "SUE"], "tau": 1.0 },
+    { "id": "M05", "factors": ["MOM", "SUE"], "cut": true }
+  ],
+  "trialBudget": "6 Versuche. Für die Deflated Sharpe Ratio zählen alle 25 Versuche aus HS1–HS3.",
+  "selection": "Nur wenn G0 erfüllt: im Entwicklungszeitraum (S1) der Versuch mit der höchsten Information Ratio GEGENÜBER C00 unter denen mit Überrendite gegenüber SPY > 0, Überrendite gegenüber C00 > 0 und Umschlag ≤ 100 % p. a.; C00 ist nicht wählbar. Erfüllt keiner das, ist HS3 TESTED_NO_EDGE und der Holdout bleibt versiegelt.",
+  "criteria": {
+    "H1": "Holdout, gewählter Versuch, S1: Überrendite p. a. gegenüber SPY > 0",
+    "H2": "Holdout mit doppelten Kosten: Überrendite > 0",
+    "H3": "Entwicklungszeitraum: Überrendite > 0 gegenüber SPY und gegenüber C00",
+    "H4": "Holdout S2: Überrendite > 0",
+    "H5": "PBO (CSCV über M01–M05 als Überrendite gegenüber C00, Entwicklungszeitraum) < 0,5",
+    "H6": "Holdout: gewählter Versuch schlägt C00",
+    "verdict": "G0 und alle H1–H6 erfüllt → CRITERIA_MET. Sonst TESTED_NO_EDGE.",
+    "significance": "Zusätzlich DSR mit 25 Versuchen; „statistisch belastbar“ erst ab DSR ≥ 0,95."
+  },
+  "publication": "Wie HS1/HS2."
+}

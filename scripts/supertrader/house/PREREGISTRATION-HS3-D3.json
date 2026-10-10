@@ -1,0 +1,14 @@
+{
+  "schema": "supertrader-house-prereg-amendment-1.0.0",
+  "id": "VU_HOUSE_HS3_D3",
+  "amends": "PREREGISTRATION-HS3-D2.json",
+  "registeredAt": "2026-10-03",
+  "trigger": "Run 37142173224 (D2): G0 mit Tracking Error knapp über 3 % verfehlt. Diagnose: einzelne Emittenten mit falsch skalierter Aktienzahl erreichten die 10-%-Grenze (z. B. YUM, GRMN, WW); Alphabet fehlte.",
+  "change": [
+    "Eine Aktienzahl zählt nur, wenn sie split-bereinigt höchstens Faktor 3 vom Median der eigenen, vor D eingereichten Meldungen der letzten 730 Tage abweicht (bei mindestens 3 Meldungen).",
+    "Diagnose: je Dezember die 20 liquidesten Titel außerhalb des Universums mit Grund (nur verschlüsselt)."
+  ],
+  "unchanged": "D1, D2, Versuche, Auswahlregel, Gate G0, Kriterien, Holdout-Sperre.",
+  "knowledge": "Ergebnisse der M-Versuche aus HS3, D1 und D2 waren sichtbar; die Versuche zählen erneut (insgesamt 43). Ein weiterer Datennachtrag nach diesem ist nur zulässig, wenn G0 erneut aus einem belegten Datenfehler scheitert.",
+  "frozen": "FROZEN-HS3-D3.json für einen Holdout-Lauf."
+}

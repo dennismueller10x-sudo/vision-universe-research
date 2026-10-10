@@ -70,6 +70,14 @@ class ResolverTests(unittest.TestCase):
             self.assertEqual(c['companyId'], r.resolve({'headline': title}, {'type': 'RSS'})[0]['companyId'])
         self.assertFalse(r.resolve({'headline': 'U is a letter'}, {'type': 'RSS'}))
 
+    def test_german_analyst_rating_context_keeps_generic_names_blocked(self):
+        c = company('Tesla Inc.', 'TSLA')
+        r = Resolver({c['companyId']: c})
+        self.assertEqual(c['companyId'], r.resolve({'headline': "RBC stuft Tesla auf 'Outperform'"}, {'type': 'RSS'})[0]['companyId'])
+        self.assertFalse(r.resolve({'headline': 'Tesla erforscht elektrische Schwingungen'}, {'type': 'RSS'}))
+        c = company('Root Inc.', 'ROOT'); r = Resolver({c['companyId']: c})
+        self.assertFalse(r.resolve({'headline': "RBC stuft Root auf 'Neutral'"}, {'type': 'RSS'}))
+
     def test_company_source_only_its_verified_domain(self):
         c = company()
         r = Resolver({c['companyId']: c})

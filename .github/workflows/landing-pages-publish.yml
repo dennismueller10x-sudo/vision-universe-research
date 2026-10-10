@@ -1,0 +1,73 @@
+name: Coming-soon | separates Pages-Ziel (manuell)
+# Prepared only. No repository, key, Pages setting or custom domain is created.
+# The existing Research deployment is never used by this workflow.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landing-pages-publish-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check prepared hosting prerequisites
+        env:
+          USAGE_CONFIRMED: ${{ vars.LANDING_PAGES_USAGE_CONFIRMED }}
+          TARGET_READY: ${{ vars.LANDING_PAGES_TARGET_READY }}
+        run: |
+          set -euo pipefail
+          test "$USAGE_CONFIRMED" = true || { echo 'GitHub-Pages-Nutzung für diese geschäftliche Seite ist noch nicht geklärt.'; exit 1; }
+          test "$TARGET_READY" = true || { echo 'Separates Ziel-Repository und Deploy-Key fehlen noch.'; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: source
+          persist-credentials: false
+          sparse-checkout: |
+            landing
+            scripts/ci/push-with-retry.sh
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build only the isolated landing page
+        working-directory: source/landing
+        env:
+          BREVO_FORM_ACTION: ${{ vars.BREVO_FORM_ACTION }}
+          BREVO_DOUBLE_OPT_IN_VERIFIED: ${{ vars.BREVO_DOUBLE_OPT_IN_VERIFIED }}
+          BREVO_SOURCE_ATTRIBUTE: ${{ vars.BREVO_SOURCE_ATTRIBUTE }}
+          LANDING_PRIVACY_REVIEWED: ${{ vars.LANDING_PRIVACY_REVIEWED }}
+          LANDING_PRIVACY_HTML_PATH: ${{ vars.LANDING_PRIVACY_HTML_PATH }}
+        run: |
+          set -euo pipefail
+          node --test 'tests/*.test.mjs'
+          node scripts/build.mjs --production
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coming-soon-pages-build
+          path: source/landing/dist/
+          include-hidden-files: true
+          retention-days: 14
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/vision-universe-landing-pages
+          ref: gh-pages
+          path: publish
+          ssh-key: ${{ secrets.LANDING_PAGES_DEPLOY_KEY }}
+      - name: Stage and push only the build into the separate repository
+        env:
+          LANDING_PAGES_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          node source/landing/scripts/stage-pages.mjs --target=publish
+          cd publish
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Publish reviewed Vision Universe coming-soon build'
+          bash ../source/scripts/ci/push-with-retry.sh gh-pages

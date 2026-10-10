@@ -1,0 +1,115 @@
+{
+ "schemaVersion": "elliott-setup-spec-1.0.0",
+ "library": "ELLIOTT_SETUP_LIBRARY_V1",
+ "setupVersion": "1.0.0",
+ "status": "DEFINED_BEFORE_OUTCOMES",
+ "engine": { "elliott": "elliott-3.2.2", "scenario": "ti-scenario-1.2.1", "note": "Engine eingefroren; Definitionen lesen nur die Engine-Ausgabe (primary, alternatives, higherDegree, applicability, projection.zones, waves)." },
+ "timeframes": { "structural": "1W", "dailyRole": "nur spaetere Bestaetigung/Timing; in V1 nicht Teil der Definition" },
+ "families": [
+  {
+   "id": "S1_EARLY_WAVE3",
+   "family": "A",
+   "name": "Fruehe Welle-3-Ausdehnung",
+   "patterns": ["IMPULSE", "LEADING_DIAGONAL"],
+   "waveState": "unvollstaendig; aktuelle Welle 2 (Welle 1 abgeschlossen, Korrektur laeuft/endet) oder Welle 3 laufend",
+   "completedOrDeveloping": "DEVELOPING",
+   "direction": "primary.nextMove nach Welle 2 bzw. Richtung von Welle 3 (= Richtung von Welle 1)",
+   "degrees": "Analysegrad der Engine (degrees.analysis); kein Mindestgrad",
+   "higherDegree": "Pure: keine Bedingung; Modifier HD: higherDegree.current.direction == Setup-Richtung",
+   "confirmation": "Schluss jenseits des Endes von Welle 1",
+   "invalidation": "Engine-Invalidation der Primaerzaehlung (Welle 2 unter Ursprung von Welle 1 bzw. Welle-3-Regel)",
+   "projection": { "phase": "3", "primary": "Zone hoechsten Gewichts der Phase 3 jenseits des Kurses", "extended": "fernste Zone der Phase 3 jenseits des Kurses", "basis": "patterns.js projections(): Welle 3 = 1,0 / 1,618 / 2,618 × Welle 1" },
+   "alternative": "alternatives[0] (Muster, Welle)",
+   "abstention": "applicability.abstain der Engine (Produkt zeigt Elliott nicht) → Setup gilt nicht als angezeigt; als ENGINE_PRIMARY nur Forschung",
+   "researchCohort": "RESEARCH_ONLY_INTERNAL_WAVE3: bester interner IMPULSE-Kandidat aufwaerts, unvollstaendig, 2–3 markierte Wellen, letzte Marke ≤ 4 Wochen (Mission IX earlyUp, Forensik-Haken); nie im Produkt"
+  },
+  {
+   "id": "S2_WAVE4_TO_5",
+   "family": "B",
+   "name": "Welle 4 → Welle 5 Fortsetzung",
+   "patterns": ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL"],
+   "waveState": "unvollstaendig; aktuelle Welle 4 (Wellen 1–3 abgeschlossen)",
+   "completedOrDeveloping": "DEVELOPING",
+   "direction": "Richtung von Welle 1/3 (primary.direction)",
+   "degrees": "Analysegrad",
+   "higherDegree": "Pure: keine; Modifier HD wie S1",
+   "confirmation": "Schluss jenseits des Endes von Welle 3",
+   "invalidation": "Engine-Invalidation (Ueberlappung mit dem Ende von Welle 1)",
+   "projection": { "phase": "5", "primary": "Zone hoechsten Gewichts der Phase 5", "extended": "fernste Zone der Phase 5", "basis": "patterns.js w5Targets(): 0,618/1,0 × Welle 1, 0,618 × Strecke 1–3; Deckel Welle 5 ≤ Welle 3 bei kurzer Welle 3" },
+   "alternative": "alternatives[0]",
+   "abstention": "wie S1"
+  },
+  {
+   "id": "S3_CORRECTION_COMPLETE",
+   "family": "C",
+   "name": "Abgeschlossene Korrektur → Trendfortsetzung",
+   "patterns": ["ZIGZAG", "FLAT", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "WXY"],
+   "waveState": "abgeschlossen (primary.complete)",
+   "completedOrDeveloping": "COMPLETED",
+   "direction": "primary.nextMove (Gegenrichtung der Korrektur = Wiederaufnahme)",
+   "degrees": "Analysegrad",
+   "higherDegree": "Pure: keine; Modifier HD wie S1",
+   "confirmation": "Schluss jenseits des Endes der vorletzten Welle (B bzw. X)",
+   "invalidation": "Schluss jenseits des Endes der letzten Korrekturwelle (C bzw. Y/Z)",
+   "projection": { "phase": "AFTER_CORRECTION", "primary": "Zone hoechsten Gewichts (Ursprung der Korrektur)", "extended": "fernste Zone (1,618 × Korrekturlaenge vom Korrekturende)", "basis": "patterns.js projections() complete corrective" },
+   "alternative": "alternatives[0]",
+   "abstention": "wie S1 (abgeschlossene WXY sind in 3.2.2 hoechstens NIEDRIG → praktisch immer enthalten)"
+  },
+  {
+   "id": "S4_TRIANGLE_THRUST",
+   "family": "D",
+   "name": "Dreieck → Schlussstoss",
+   "patterns": ["TRIANGLE"],
+   "waveState": "abgeschlossen (Welle E beendet)",
+   "completedOrDeveloping": "COMPLETED",
+   "direction": "primary.nextMove (Ausbruch gegen die Richtung von E)",
+   "degrees": "Analysegrad",
+   "higherDegree": "Pure: keine; Modifier HD wie S1",
+   "confirmation": "Schluss jenseits des Endes von Welle D",
+   "invalidation": "Schluss jenseits des Endes von Welle E",
+   "projection": { "phase": "THRUST", "primary": "Zone hoechsten Gewichts (Breite von Welle A)", "extended": "fernste Zone der Phase THRUST", "basis": "patterns.js projections() TRIANGLE complete (EWP Kap. 1)" },
+   "alternative": "alternatives[0]",
+   "abstention": "wie S1"
+  }
+ ],
+ "modifiers": [
+  { "id": "M_HD_ALIGNED", "family": "E", "name": "Hoeherer Grad gleichgerichtet", "rule": "higherDegree vorhanden UND higherDegree.current.direction == Setup-Richtung", "note": "kein eigenstaendiges Setup, sondern Bedingung auf S1–S4 (eine Lage, keine Situation)" }
+ ],
+ "rejected": [
+  { "family": "F", "name": "Motiv-Ausdehnung / Extension", "reason": "Die Engine gibt keine Extension aus; sie ist nur nachtraeglich (ext3 = Welle 3 > 1,618 × Welle 1 nach Abschluss von Welle 3) erkennbar und waere damit keine kausale Setup-Bedingung. Keine Regel- oder Projektionsbasis im eingefrorenen Code fuer eine laufende Extension." }
+ ],
+ "variants": {
+  "PURE": "nur Elliott: Setup-Zustand der Primaerzaehlung, nicht enthalten (angezeigt)",
+  "PURE_RS": "PURE UND RS26 in Setup-Richtung im obersten (lang) bzw. untersten (kurz) Quintil des Universums am selben Datum",
+  "CONFIRMED": "PURE UND Trend gleichgerichtet (einfacher Trend: Schluss vs. 40-Wochen-Durchschnitt mit Steigung) UND RS26 wie PURE_RS UND Marktstruktur gleichgerichtet (STRUCTURE-Stimme der Swing-Struktur, Vorzeichen) — Volumen: nicht verfuegbar (Wochenreihen ohne Volumen)",
+  "PURE_HD": "PURE UND M_HD_ALIGNED",
+  "ENGINE_PRIMARY": "Forschung: Setup-Zustand der Primaerzaehlung unabhaengig von der Enthaltung (vom Produkt nicht angezeigt)"
+ },
+ "confirmationLogic": "logische UND-Verknuepfung, keine Gewichte (Mission VIII: gewichtete Konfluenz ≈ Trend allein)",
+ "outcomes": {
+  "horizonWeeks": 26,
+  "rule": "structural-outcomes.cjs primaryOutcome: Ziel = nahe Kante der primaeren Projektionszone (Wochenschluss), Invalidation per Schluss, Zeitablauf = kein Erfolg, Bestaetigung = Schluss jenseits des Bestaetigungsniveaus vor dem Ausgang",
+  "metrics": ["confirmationBeforeInvalidation", "target1BeforeInvalidation", "invalidatedFirst", "relabelBeforeResolution", "forward13w", "forward26w", "mfeAtr", "maeAtr", "rMultiple(±5)", "coverage"],
+  "longHorizonWeeks": { "6M": 26, "12M": 52, "24M": 104, "36M": 156 },
+  "longMetrics": ["endReturn", "maxMultiple ≥ 2/3/5", "MFE", "MAE"],
+  "longOnlyForDirection": 1,
+  "excluded": ["ALREADY_INVALID", "TRIVIAL_TARGET (Ziel bei Anzeige erreicht)", "keine Projektionszone jenseits des Kurses", "CENSORED"]
+ },
+ "controls": {
+  "D": "gleiches Datum, andere Titel, gleiche ATR-Geometrie (Ziel/Invalidation/Bestaetigung), gleiche Richtung; 5 Ziehungen",
+  "C": "gleiche Aktie, Abstand 26–104 Wochen, gleiche Geometrie; 3 Ziehungen",
+  "T": "wie D, zusaetzlich gleicher einfacher Trend",
+  "TR": "wie D, zusaetzlich gleicher Trend UND gleicher RS26-Quintil-Status (= Basis-Setup ohne Elliott)",
+  "longCells": "Langfrist: nicht markierte Einheiten am selben Datum (alle / gleicher Trend / gleicher RS-Status / Trend × RS)"
+ },
+ "evidenceLevels": {
+  "LEVEL1_POSITIVE_UTILITY": "strukturelle Erwartung E[R] > 0 auf DEV und VAL, 95-%-Untergrenze > 0 auf VAL",
+  "LEVEL2_INCREMENTAL_UTILITY": "Lift (Ziel 1 vor Invalidation) gegen D ≥ +3 Pp. mit Untergrenze > 0 UND gegen TR > 0 mit Untergrenze > 0 auf VAL, gleiches Vorzeichen auf DEV",
+  "LEVEL3_ROBUST_EDGE": "LEVEL2 zusaetzlich auf unberuehrten Daten — historisch nicht verfuegbar (alle Wochendaten verbraucht); nur ueber das prospektive Register erreichbar",
+  "minEventsVal": 100,
+  "classification": ["ROBUST_EDGE", "INCREMENTAL_UTILITY", "POSITIVE_UTILITY", "STRUCTURAL_ONLY", "INSUFFICIENT_EVIDENCE", "REJECT"],
+  "rejectRule": "Lift gegen D mit Obergrenze < 0 auf DEV und VAL (systematisch schlechter als dieselbe Geometrie)",
+  "structuralOnlyRule": "Setup tritt angezeigt auf (n ≥ 100 VAL), hat definierte Invalidation/Projektion, erfuellt aber weder LEVEL1 noch LEVEL2"
+ },
+ "data": { "development": "W_DEV (Bucket 0/2, verbraucht): nur Implementierung/Fehlersuche", "validation": "W_VAL (Bucket 1/2, verbraucht, mit diesen Definitionen nie ausgewertet): VALIDATION_ON_CONSUMED_DATA", "confirmation": "nur prospektiv (ELLIOTT_PROSPECTIVE_REGISTRY)" }
+}

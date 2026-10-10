@@ -214,23 +214,24 @@
   });
 
   // ------------------------------------------------------------ Rahmen
-  function tabbar() {
+  /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
+     (Screener | Treffer | Gespeichert | Watchlist | ☰). Der Screener meldet
+     ihr den aktiven Bereich, die Trefferzahl und Ziele, die den Screen in
+     der URL behalten; Klicks auf die Leiste bleiben In-App-Navigation. */
+  var DOCK_VIEW = { screener: 'build', treffer: 'results', gespeichert: 'saved', watchlist: 'watchlist' };
+  function dockView(id) { var v = DOCK_VIEW[id]; return v === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : v; }
+  function syncDock() {
+    if (!window.VUNavigation) return;
     var r = ds() ? result() : null;
-    var cur = state.view === 'start' || state.view === 'build' ? 'build' : state.view === 'changes' ? 'saved' : state.view === 'compare' ? 'results' : state.view;
-    function tab(id, label, ic, badge) {
-      var a = h('a', { class: 'sc-tab', href: buildURL({ view: id === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : id }), 'aria-current': cur === id ? 'page' : null,
-        onclick: function (e) { e.preventDefault(); go({ view: id === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : id }); window.scrollTo(0, 0); } }, [icon(ic), label]);
-      if (badge !== undefined && badge !== null) a.append(h('span', { class: 'sc-badge', 'aria-label': badge + ' Treffer' }, badge > 999 ? '999+' : String(badge)));
-      return a;
-    }
-    return h('div', { class: 'sc-tabbar' }, h('nav', { 'aria-label': 'Screener' }, [
-      tab('build', 'Screen', 'filter'), tab('results', 'Treffer', 'hits', r && Q.count(state.query) ? r.total : null), tab('saved', 'Gespeichert', 'saved'), tab('watchlist', 'Watchlist', 'heart')]));
+    var cur = { start: 'screener', build: 'screener', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'watchlist' }[state.view] || null;
+    var hrefs = {};
+    Object.keys(DOCK_VIEW).forEach(function (id) { hrefs[id] = buildURL({ view: dockView(id) }); });
+    window.VUNavigation.dock({ active: cur, hrefs: hrefs, badges: { treffer: r && Q.count(state.query) ? r.total : null } });
   }
-  function deskNav() {
-    var cur = state.view === 'start' || state.view === 'build' || state.view === 'results' ? 'build' : state.view === 'changes' ? 'saved' : state.view;
-    function a(id, label) { return h('a', { href: buildURL({ view: id }), 'aria-current': cur === id ? 'page' : null, onclick: function (e) { e.preventDefault(); go({ view: id }); } }, label); }
-    return h('nav', { class: 'sc-deskNav', 'aria-label': 'Screener-Bereiche' }, [a(Q.count(state.query) ? 'build' : 'start', 'Screen'), a('saved', 'Gespeichert'), a('watchlist', 'Watchlist')]);
-  }
+  document.addEventListener('vu-dock-navigate', function (e) {
+    if (!e.detail || e.detail.product !== 'screener' || !DOCK_VIEW[e.detail.id]) return;
+    e.preventDefault(); go({ view: dockView(e.detail.id) }); window.scrollTo(0, 0);
+  });
   function modeSeg() {
     var q = state.query;
     function set(mode) {
@@ -252,7 +253,7 @@
     opts = opts || {};
     var row = h('div', { class: 'sc-bar-row' });
     if (opts.back) row.append(iconBtn('back', 'Zurück', opts.back));
-    if (mqDesk.matches) row.append(h('div', { class: 'sc-brand', style: { flex: '1' } }, [h('h1', { text: 'Screener', style: { flex: 'none' } }), h('small', { text: 'Vision Universe' })]), deskNav());
+    if (mqDesk.matches) row.append(h('div', { class: 'sc-brand', style: { flex: '1' } }, [h('h1', { text: 'Screener', style: { flex: 'none' } }), h('small', { text: 'Vision Universe' })]));
     else row.append(h('h1', { text: title }));
     (opts.right || []).forEach(function (n) { if (n) row.append(n); });
     var b = h('div', { class: 'sc-bar' }, row);
@@ -274,8 +275,8 @@
     main.append(footer());
     if (state.view === 'build' && !mqDesk.matches) frag.push(stickyCta());
     if (state.select && state.selected.length) frag.push(compareBar());
-    frag.push(tabbar());
     root.replaceChildren.apply(root, frag);
+    syncDock();
     var b = main.querySelector('.sc-bar');
     if (b) { var onS = function () { b.classList.toggle('is-stuck', window.scrollY > 4); }; onS(); window.onscroll = onS; }
     if (opts.keepScroll) window.scrollTo(0, y);
@@ -302,21 +303,24 @@
   // ------------------------------------------------------------ START
   function viewStart(main) {
     var i = info(), q = state.query;
-    main.append(bar('Screener', { right: [mqDesk.matches ? null : modeSeg(), iconBtn('gear', 'Einstellungen', openSettings)] }));
     if (state.invalidLink) main.append(invalidNotice());
     var left = h('div', {}), right = h('div', {});
-    left.append(h('section', { class: 'sc-hero' }, [
-      h('h2', { text: 'Baue dein Aktienuniversum.' }),
-      h('p', { class: 'sc-lead', text: 'Finde genau die Unternehmen, die zu deinen Kriterien passen. Mit deinen eigenen Filtern – schnell, präzise, unabhängig.' }),
-      globe(),
+    var productIcon = h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true' });
+    productIcon.innerHTML = '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#screener"></use></svg>';
+    left.append(h('section', { class: 'sc-hero sc-product-hero vu-product-hero vu-hero-fidelity', 'data-product': 'screener', 'aria-labelledby': 'sc-product-title' }, [
+      h('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }),
+      h('div', { class: 'sc-product-top' }, [productIcon, iconBtn('gear', 'Einstellungen', openSettings)]),
+      h('p', { class: 'vu-hero-name', text: 'Screener' }),
+      h('h1', { class: 'vu-hero-headline', id: 'sc-product-title', text: 'Finde genau die Aktien, die zu dir passen.' }),
+      h('p', { class: 'vu-hero-description', text: 'Filtere Aktien nach deinen eigenen Kriterien. Gewichte Kennzahlen und vergleiche Unternehmen – schnell, präzise, unabhängig.' }),
+      h('div', { class: 'sc-hero-actions' }, [
+        h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
+        h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“'])]),
+      h('div', { class: 'sc-hero-universe' }, [globe(),
       h('div', { class: 'sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }),
         h('span', {}, ['Aktien im Universum', h('button', { class: 'sc-info', type: 'button', 'aria-label': 'Was gehört zum Universum?', onclick: openUniverseInfo }, 'i')]),
-        h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })]),
-      h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
-      h('div', { style: { height: '10px' } }),
-      h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“']),
-      h('p', { class: 'sc-quote', text: '„Bessere Entscheidungen beginnen mit den richtigen Filtern.“' })]));
-    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), mqDesk.matches ? modeSeg() : null]),
+        h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })])]) ]));
+    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), modeSeg()]),
       h('div', { class: 'sc-quickgrid', style: { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } }, [
         modeCard('simple', 'Einfach', 'Schnell starten mit den wichtigsten Kriterien – Größe, Wachstum, Bewertung, Qualität, Momentum, Technik.'),
         modeCard('pro', 'Pro', 'Zusätzlich Bilanz, Perzentile, Quant-Faktoren, Gruppen mit UND/ODER und gewichtetes Ranking.')])]));
@@ -835,7 +839,7 @@
     var editing = opts.filter || null;
     var s = openSheet({ title: 'Filter-Detail', full: f.kind === 'enum', back: !!opts.fromLibrary, foot: true });
     var meta = h('div', { class: 'sc-meta' }, [h('span', { class: 'sc-pill', text: F.group(f.group).label }), f.timeframe ? h('span', { class: 'sc-pill', text: f.timeframe }) : null,
-      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen' }[f.source] || f.source }),
+      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)' }[f.source] || f.source }),
       f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
     s.body.append(h('div', { class: 'sc-dhead' }, [h('span', { class: 'sc-libicon is-lg', 'aria-hidden': 'true' }, icon(F.group(f.group).icon)), h('div', {}, [h('h3', { text: f.label }), f.question ? h('p', { text: f.question }) : null])]),
       h('div', { class: 'sc-dbox' }, f.desc || f.reason || ''), meta);

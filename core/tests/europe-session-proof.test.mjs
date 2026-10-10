@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),API=require('../europe-session-proof.js');
+const hash='a'.repeat(64);
+const dates=['2026-10-08','2026-10-09','2026-10-12','2026-10-13','2026-10-14','2026-10-15'];
+const calendar={schema:'europe-exact-mic-display-calendar-1',calendars:{XETR:{mic:'XETR',sourceSha256:hash,source:'verified MIC schedule',coverageFrom:'2026-10-08',coverageTo:'2026-10-15',sessions:dates.map(date=>({date,close:date+'T15:30:00Z'}))}}};
+const catalog={securities:[{listings:[{mic:'XETR',latest:{date:'2026-10-08'},discoverChart:{calendarSourceSha256:hash,lastDate:'2026-10-08',evaluatedAt:'2026-10-10T07:00:00Z',pointsSha256:'b'.repeat(64),immutableExclusionsSha256:'c'.repeat(64),evidenceRef:{sha256:'d'.repeat(64),verified:true}}}]}]};
+test('weekend reevaluation preserves immutable prices, source age and exclusions',()=>{const p=API.refreshCatalog(catalog,calendar,{now:'2026-10-11T12:00:00Z'}).securities[0].listings[0].discoverChart;assert.equal(p.sessionLag,1);assert.equal(p.sourceEvaluatedAt,'2026-10-10T07:00:00Z');assert.equal(p.pointsSha256,'b'.repeat(64));assert.equal(p.immutableExclusionsSha256,'c'.repeat(64));assert.equal(catalog.securities[0].listings[0].discoverChart.evaluatedAt,'2026-10-10T07:00:00Z');});
+test('three delayed sessions remain limited; four are stale',()=>{assert.equal(API.refreshCatalog(catalog,calendar,{now:'2026-10-13T17:00:00Z'}).securities[0].listings[0].discoverChart.sessionLag,3);assert.equal(API.refreshCatalog(catalog,calendar,{now:'2026-10-14T17:00:00Z'}).securities[0].listings[0].latest.status,'STALE');});
+test('wrong source hash, reordered schedule and exhausted coverage fail closed',()=>{const bad=structuredClone(calendar);bad.calendars.XETR.sourceSha256='e'.repeat(64);assert.throws(()=>API.refreshCatalog(catalog,bad,{now:'2026-10-10T12:00:00Z'}),/BINDING/);bad.calendars.XETR.sourceSha256=hash;bad.calendars.XETR.sessions.reverse();assert.throws(()=>API.refreshCatalog(catalog,bad,{now:'2026-10-10T12:00:00Z'}),/SCHEDULE/);assert.throws(()=>API.refreshCatalog(catalog,calendar,{now:'2026-10-16T12:00:00Z'}),/BINDING/);});

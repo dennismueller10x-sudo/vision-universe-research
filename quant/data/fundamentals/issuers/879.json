@@ -166,9 +166,9 @@
       "cik": "0001144879",
       "name": "Applied Digital Corp.",
       "sic": "7374",
-      "rawFacts": 5841,
-      "mappedFacts": 1568,
-      "unmappedFacts": 4132,
+      "rawFacts": 6189,
+      "mappedFacts": 1637,
+      "unmappedFacts": 4441,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -178,28 +178,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 24,
+      "quarterlyPeriods": 25,
       "firstPeriodEnd": "2020-05-31",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0,
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 5.0
@@ -277,45 +277,46 @@
         }
       },
       "quality": {
-        "HIGH": 163,
-        "MEDIUM": 32
+        "HIGH": 168,
+        "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 195,
-        "resolvedValues": 195
+        "datableValues": 202,
+        "resolvedValues": 202
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 4455,
+        "total": 4748,
         "by_severity": {
-          "INFO": 4132,
-          "WARNING": 323
+          "INFO": 4441,
+          "WARNING": 307
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 252,
-          "RESTATEMENT_CONFLICT": 71,
-          "UNKNOWN_CONCEPT": 4132
+          "CONCEPT_DISAGREEMENT": 231,
+          "RESTATEMENT_CONFLICT": 76,
+          "UNKNOWN_CONCEPT": 4441
         }
       },
       "latestFiling": {
-        "accession": "0001144879-26-000048",
-        "filing_date": "2026-07-29",
-        "form": "10-K",
-        "periodic_filings": 24
+        "accession": "0001144879-26-000059",
+        "filing_date": "2026-10-07",
+        "form": "10-Q",
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-10-08T01:19:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "7fb2b2a14c6fcaed1377a6c007f700b40fe3204a61b0ca503ca7a0e269bb3efc",
+      "sourceDigest": "6201a6e55a68ea78106d28963f87152084b4da2bc3b1c1a184553b2005dae7bb",
       "issuerId": "iss_cik_0001144879"
     },
     {

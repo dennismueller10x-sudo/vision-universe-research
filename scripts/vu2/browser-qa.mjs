@@ -48,7 +48,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
 const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[],findings=[];
 const Q=origin+'/quant/';
 /* Jede Route, die die App kennt - mit dem Budget-Schluessel, wo eines gilt.
-   Alle neun Methodik-Themen und alle Strategien stehen mit drin: eine
+   Alle zehn Methodik-Themen und alle Strategien stehen mit drin: eine
    Unterseite ohne axe-Lauf ist eine ungepruefte Unterseite. */
 const ROUTES=[
  ['home','#/','home'],
@@ -66,15 +66,21 @@ const ROUTES=[
  ['aktie-aaac','#/aktie/AAAC'],
  ['aktie-all-p-b','#/aktie/ALL-P-B'],
  ['aktie-unbekannt','#/aktie/ZZZZZ'],
+ /* Seit Technical Intelligence v3 zeigen die alten Technik-Routen das Chartbild (Lesezeichen bleiben gueltig). */
  ['technik','#/aktie/NVDA/technik'],
  ['elliott','#/aktie/NVDA/technik?elliott=1'],
+ ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
  ['methodik','#/methodik'],
- ...['daten','faktoren','gewichtung','branchen','setups','strategien','historie','grenzen','versionen'].map(t=>['methodik-'+t,'#/methodik/'+t]),
+ ...['daten','faktoren','gewichtung','branchen','setups','strategien','chartbild','historie','grenzen','versionen'].map(t=>['methodik-'+t,'#/methodik/'+t]),
  ['nicht-gefunden','#/gibtsnicht']
 ];
-const SOLL_BEREICHE=['Home','Quant Screener','Strategien','Aktien','Methodik'];
+/* UI-Vereinheitlichung 10/2026: die gemeinsame Produkt-Leiste der Shell.
+   Der erste Eintrag ist der Produktname; "Screener" heisst fuer
+   Screenreader "Quant Screener". Methodik ist sekundaer (Hero, Fuss). */
+const SOLL_BEREICHE=['Quant','Screener','Strategien','Aktien'];
 async function bereit(page,view){
  await page.waitForFunction(v=>{const m=document.querySelector('main#qx-main');return !!m&&m.dataset.ready==='true'&&m.getAttribute('aria-busy')==='false'&&(!v||m.dataset.view===v)&&!m.querySelector('.qx-loading');},view||null,{timeout:45000});
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
@@ -115,9 +121,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
- /* Discover-Angleichung (30.09.2026): Kopf- und Tab-Leiste sind EINE
-    Leiste wie Discovers v2-dock - am Desktop oben mittig, am Handy unten. */
- const leiste='nav.v2-dock.qx-nav';
+ /* Eine Leiste fuer alle Produkte: die schwebende Produkt-Leiste der
+    gemeinsamen Shell (#vu-dock, Shadow DOM; Playwright-Locator durchdringen
+    ihn), bei jeder Breite unten. */
+ const leiste='#vu-dock nav';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
@@ -142,7 +149,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,width,'page overflow');
   /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Leiste,
      die bei jeder Breite sichtbar ist und dort steht, wo man sie erwartet. */
-  if(await page.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,width,'zwei Navigationen');
+  if(await page.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0||await page.locator(leiste).count()!==1)befund(view,width,'zwei Navigationen');
   {
    const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
    if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
@@ -153,14 +160,16 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   {
    const box=await page.locator(leiste).boundingBox();
    const oben=await page.evaluate(()=>window.scrollY);
-   if(box&&width>=1000&&box.y+oben>220)befund(view,width,'die Leiste steht am Desktop nicht oben');
-   if(box&&width<1000&&box.y+box.height<page.viewportSize().height-4)befund(view,width,'die Leiste steht am Handy nicht unten');
+   void oben;
+   if(box&&box.y+box.height<page.viewportSize().height-40)befund(view,width,'die Leiste steht nicht unten');
+   if(box&&box.y+box.height>page.viewportSize().height)befund(view,width,'die Leiste ragt aus dem Bild');
   }
 
   if(view==='home'){
    /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE: ein Satz, was Quant ist,
       eine Suche, und die Wege dorthin mit ihrem Ziel. */
-   if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   if(!(await page.locator('.qx-hero .q-intro-note').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('wie oft das früher besser lief als der Markt'))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qx-searchbox').waitFor();
    const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('h2,strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
    for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Quant Screener','#/screener'],['Strategien','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
@@ -313,7 +322,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
    if(!/keine Prognose/i.test(await page.locator('#historie').innerText()))befund(view,width,'Historical Replay ohne Prognose-Absage');
-   await page.locator('#technik').getByRole('link',{name:'Technische Analyse & Elliott öffnen',exact:true}).waitFor();
+   await page.locator('#technik').getByRole('link',{name:'Chartbild öffnen',exact:true}).waitFor();
+   /* Elliott nur im Chartbild: keine V1-Zaehlung ("Validierte Zaehlung", "Method Fit") auf der Aktienseite. */
+   if(/Validierte Zählung|Method Fit|Elliott-Wellen\b/.test(await page.locator('#technik').innerText()))befund(view,width,'V1-Elliott auf der Aktienseite');
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
    if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
   }
@@ -354,18 +365,25 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if((await page.locator('main h1').innerText()).trim()!=='Aktie nicht gefunden')befund(view,width,'unbekanntes Kuerzel ohne Absage');
    danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
-  if(view==='technik'||view==='elliott'){
-   await page.locator('#qx-main .qx-card svg').first().waitFor();
-   await page.getByRole('combobox',{name:'Zeitraum',exact:true}).selectOption('MAX');
-   await page.getByRole('combobox',{name:'Chart-Ebene',exact:true}).selectOption('ELLIOTT');
-   await page.getByRole('checkbox',{name:'Alternativen'}).check();
-   await page.locator('#qx-main .qx-card svg').first().waitFor();
-   await page.getByRole('heading',{name:'Basiszählung',exact:true}).waitFor();
-   await page.locator('#elliott details.qx-more > summary').first().click();
-   await page.locator('#elliott table tbody tr').first().waitFor();
-   if(await page.locator('#elliott table tbody tr').count()<5)befund(view,width,'wave count truncated');
-   if(!/Hauptszenario/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'kein Hauptszenario');
-   await page.getByRole('combobox',{name:'Zeitraum',exact:true}).selectOption('1Y');
+  if(view==='technik'||view==='elliott'||view==='chartbild'){
+   /* CHARTBILD (Technical Intelligence v3): Ausblick, Szenario-Wechsel, Chart mit Zonen. Die alten Routen
+      zeigen dieselbe Seite; ?elliott=1 oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
+   await page.locator('#qx-main .cb-outlook').first().waitFor();
+   await page.locator('#qx-main .cb-chart svg').first().waitFor();
+   const knoepfe=page.locator('#qx-main .cb-switch-btn');
+   if(await knoepfe.count()<2)befund(view,width,'kein Szenario-Wechsel');
+   else{await knoepfe.nth(1).click();await page.locator('#qx-main .cb-chart svg').first().waitFor();await knoepfe.nth(0).click();}
+   const text=await page.locator('#qx-main').innerText();
+   if(!/Szenario/i.test(text))befund(view,width,'kein Szenario');
+   if(!/Ungültig|Invalid/i.test(text))befund(view,width,'keine Ungueltig-Linie');
+   if(/Validierte Zählung|Method Fit/.test(text))befund(view,width,'V1-Elliott-Wortlaut im Chartbild');
+   if(view==='elliott'){
+    await page.locator('#qx-main section.cb-pro').waitFor();
+    if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
+   }
+  }
+  if(view==='chartlagen'){
+   if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
   }
   if(view==='zahlen'){
    await page.locator('#qx-main svg').first().waitFor();
@@ -390,7 +408,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByText('Auswahl prüfen',{exact:true}).waitFor();
   }
   if(view==='methodik'){
-   if(await page.locator('#qx-main .qx-method-grid a').count()!==9)befund(view,width,'nicht neun Methodik-Themen');
+   if(await page.locator('#qx-main .qx-method-grid a').count()!==10)befund(view,width,'nicht zehn Methodik-Themen');
    await page.getByRole('link',{name:/Methodik im Detail/}).first().waitFor();
   }
   if(view==='nicht-gefunden'){
@@ -444,8 +462,10 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  /* Produktpositionierung: die Startseite traegt den Claim. */
-  await page.locator('#qx-main h1').filter({hasText:'Quant zeigt dir jeden Tag'}).waitFor();
+  /* Premium-Hero: kurze H1, vollständiger Nutzen und Methodik bleiben sichtbar. */
+  await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
+  await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();
+  await page.locator('#qx-main .q-intro-note').filter({hasText:'Quant beobachtet über 6.000 US-Aktien nach festen Regeln'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 
@@ -458,7 +478,10 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(await page.locator(leiste).getByRole('link',{name:'Aktien',exact:true}).getAttribute('aria-current')!=='page')befund('keyboard-navigation',width,'Bereich AKTIEN ist auf der Aktienseite nicht markiert');
   await page.keyboard.press('Tab');if(!await page.locator('a.qx-skip').evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'skip link not first');
   await page.keyboard.press('Enter');if(!await page.locator('main#qx-main').evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'skip target not focused');
-  const searchButton=page.locator('button.qx-search-btn');await searchButton.focus();await page.keyboard.press('Enter');
+  /* Die Quant-Suche steht prominent im Hero der Startseite (die Kopfzeile ist
+     seit 10/2026 die gemeinsame Shell); dazu / und Strg+K ueberall in Quant. */
+  await frisch(page,'#/','home');
+  const searchButton=page.locator('button.qx-searchbox');await searchButton.focus();await page.keyboard.press('Enter');
   const dialog=page.locator('dialog.qx-dialog');await dialog.waitFor();
   const searchInput=dialog.locator('input[type=search]');
   if(!await searchInput.evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'search input not focused on open');
@@ -494,9 +517,9 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
     und diese Pruefung bliebe still. */
  await versuch('platform-header',width,async()=>{
   await frisch(page,'#/','home');
-  const quantLinks=await page.locator('nav.v2-dock.qx-nav a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
-  if(quantLinks.length!==5)befund('platform-header',width,'die Quant-Leiste hat nicht fuenf Bereiche: '+quantLinks.length);
-  if(quantLinks.some(h=>!h||!h.startsWith('#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
+  const quantLinks=await page.locator(leiste+' a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+  if(quantLinks.length!==4)befund('platform-header',width,'die Quant-Leiste hat nicht vier Bereiche: '+quantLinks.length);
+  if(quantLinks.some(h=>!h||!h.startsWith('/quant/#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
    if(!kopf.some(h=>h&&h.startsWith(path)))befund('platform-header',width,'der Plattform-Kopf fuehrt nicht mehr zu '+path);
@@ -553,9 +576,9 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
  for(const [view,hash] of [['home','#/'],['vergleich','#/vergleich/NVDA,MSFT'],['methodik','#/methodik'],['aktie-nvda','#/aktie/NVDA']]){await versuch(view,768,async()=>{
   await frisch(tablet,hash);
   if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,768,'tablet overflow');
-  const nav=tablet.locator('nav.qx-tabbar');
-  if(!await nav.isVisible()||await nav.locator('a').count()!==5)befund(view,768,'tablet navigation incomplete');
-  if(await tablet.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,768,'zwei Navigationen auf 768 px');
+  const nav=tablet.locator('#vu-dock nav');
+  if(!await nav.isVisible()||await nav.locator('a').count()!==4||await nav.locator('button').count()!==1)befund(view,768,'tablet navigation incomplete');
+  if(await tablet.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0)befund(view,768,'zwei Navigationen auf 768 px');
   await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});
  });}
  await tablet.close();
