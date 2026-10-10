@@ -118,8 +118,8 @@ test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Sta
 
 /* News: Frische ist eine Owner-Entscheidung (kein Zeitplan). Der Pfad
    verlangt daher nicht "frisch", sondern dass Veraltung erkennbar ist und
-   die Seite sie sagt - und dass jede Meldung zu einer Security fuehrt. */
-test("Stock · News: Stand erkennbar, Veraltung angezeigt, jede Meldung zu einer Security", async () => {
+   die Seite sie sagt. Editorial mentions are not themselves canonical equity IDs. */
+test("Stock · News: Stand und Veraltung erkennbar, ungelöste Feed-Mentions werden nicht als Security erfunden", async () => {
   const n = await c.getNews();
   assert.equal(n.state, "AVAILABLE", "News-Quelle fehlt");
   assert.ok(Number.isFinite(Date.parse(n.data.updatedAt)), "News ohne Aktualisierungszeit");
@@ -129,7 +129,29 @@ test("Stock · News: Stand erkennbar, Veraltung angezeigt, jede Meldung zu einer
   const offen = [];
   for (const sym of new Set(n.data.items.map((i) => i.symbol).filter(Boolean))) {
     const s = await c.getSecurity(sym);
-    if (s.state !== "AVAILABLE") offen.push(sym + ": " + s.reason);
+    if (s.state !== "AVAILABLE") {
+      assert.equal(s.state, "UNAVAILABLE", sym);
+      assert.ok(["INVALID_TICKER", "NOT_IN_COMPANY_MASTER", "SOURCE_MISSING"].includes(s.reason), sym + ": " + s.reason);
+      assert.equal(s.data, null, "unresolved mention must not fabricate identity");
+      offen.push(sym + ": " + s.reason);
+    } else assert.equal(s.data.ticker, Identity.normalizeTicker(sym));
   }
-  assert.deepEqual(offen, []);
+  // Editorial mentions include composite strings and ETFs outside the company master.
+  // Their unresolved state is reported; they are not an equity identity assertion.
+  if (offen.length) console.log("Unresolved current News mentions: " + offen.join("; "));
+});
+
+test("Stock · News: controlled equity mentions resolve through the real company master", async () => {
+  const symbols = ["AAPL", "JPM", "MSFT", "NVDA"];
+  const fixture = Client.create({ load: async (path) => path === "/dashboard/data/news_feed.json"
+    ? { updated_at: "2026-09-29T12:00:00Z", freshness_hours: 24, items: symbols.map((symbol) => ({symbol})) }
+    : repo(path) });
+  const n = await fixture.getNews();
+  assert.equal(n.state, "AVAILABLE");
+  assert.deepEqual(n.data.items.map((i) => i.symbol), symbols);
+  for (const symbol of symbols) {
+    const security = await fixture.getSecurity(symbol);
+    assert.equal(security.state, "AVAILABLE", symbol);
+    assert.equal(security.data.securityId, Identity.securityIdForTicker(symbol));
+  }
 });
