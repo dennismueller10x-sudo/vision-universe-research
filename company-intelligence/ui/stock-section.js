@@ -21,8 +21,9 @@ function gap(host,title,text){const p=node('p',undefined,'ci-gap');p.append(node
 function details(host,title){const d=node('details',undefined,'ci-details');d.append(node('summary',title));host.append(d);return d;}
 function period(value){const annual=value.fiscalQuarter==='FY'||value.periodType==='FY';return (annual?'Geschäftsjahr'+(value.fiscalYear?' '+value.fiscalYear:''):value.fiscalQuarter||'Berichtszeitraum')+(!annual&&value.fiscalYear?' · Geschäftsjahr '+value.fiscalYear:'')+(value.reportingPeriod?' · Ende '+day(value.reportingPeriod):'');}
 function materialName(d){
- let name=d.type==='FINANCIAL_REPORT'&&['10-K','20-F','40-F'].includes(d.form)?'Jahresbericht':d.type==='FINANCIAL_REPORT'&&d.form==='10-Q'?'Quartalsbericht':materialNames[d.type]||'Originalmaterial';
- if(d.type==='FINANCIAL_REPORT'&&!d.form){const years=[...String(d.label||'').matchAll(/(20\d{2})\s*annual[\s_-]*report|annual[\s_-]*report\s*(20\d{2})/gi)].map(m=>m[1]||m[2]);const unique=[...new Set(years)];if(unique.length===1)name='Jahresbericht '+unique[0];}
+ const form=d.form||String(d.label||'').match(/\b(?:10-[KQ]|20-F|40-F)\b/i)?.[0]?.toUpperCase();
+ let name=d.type==='FINANCIAL_REPORT'&&['10-K','20-F','40-F'].includes(form)?'Jahresbericht':d.type==='FINANCIAL_REPORT'&&form==='10-Q'?'Quartalsbericht':materialNames[d.type]||'Originalmaterial';
+ if(d.type==='FINANCIAL_REPORT'&&!d.fiscalYear&&!d.reportingPeriod){const label=String(d.label||'');const years=['10-K','20-F','40-F'].includes(form)?[...label.matchAll(/\b20\d{2}\b/g)].map(m=>m[0]):[...label.matchAll(/(20\d{2})\s*annual[\s_-]*report|annual[\s_-]*report\s*(20\d{2})/gi)].map(m=>m[1]||m[2]);const unique=[...new Set(years)];if(unique.length===1)name='Jahresbericht '+unique[0];}
  if(d.fiscalQuarter&&d.fiscalYear)name+=' · '+period(d);
  else if(d.reportingPeriod)name+=' · Berichtsende '+day(d.reportingPeriod);
  if(d.filedAt)name+=' · eingereicht am '+day(d.filedAt);
@@ -145,7 +146,12 @@ function render(host,payload){
   if(!profile&&!vm.recent.length&&!vm.metrics.length&&!vm.confirmed.length&&!vm.estimates.length){
    const s=block(host,historicalCalls.length?'Calls / Webcasts':'Berichte & Präsentationen');
    for(const c of historicalCalls.slice(0,2)){const n=node('article',undefined,'ci-story');n.append(node('p','Ergebnisgespräch · '+day(c.startsAt||c.date),'ci-headline'));for(const [key,label] of [['webcastUrl','Webcast'],['replayUrl','Aufzeichnung'],['transcriptUrl','Unternehmenstranskript']])link(n,label,c[key]);s.append(n);}
-   if(!historicalCalls.length)for(const doc of groups.flatMap(g=>g.docs).filter(d=>d.type!=='SEC_FACT_FILING_REFERENCE').slice(0,3))link(s,materialName(doc),doc.url);
+   if(!historicalCalls.length)for(const doc of groups.flatMap(g=>g.docs).filter(d=>d.type!=='SEC_FACT_FILING_REFERENCE').slice(0,3)){
+    const n=node('article',undefined,'ci-story'),label=materialName(doc);n.append(node('p',label,'ci-headline'));
+    if(doc.label&&doc.label!==label&&!/\d{10}-\d{2}-\d{6}|\.pdf|\.txt|\bCIK\b/i.test(doc.label))n.append(node('p',doc.label,'ci-meta'));
+    if(doc.publicationDateStatus==='NOT_PROVIDED'||(!doc.filedAt&&!doc.date))n.append(node('p','Veröffentlichungsdatum nicht angegeben','ci-meta'));
+    const actions=node('div',undefined,'ci-actions');link(actions,'Originalquelle',doc.url);n.append(actions);s.append(n);
+   }
   }
   const d=details(host,'Dokumente & Quellen');d.classList.add('ci-documents');
   if(historicalCalls.length){const s=block(d,'Calls / Webcasts');for(const c of historicalCalls.slice(0,3)){const n=node('article',undefined,'ci-story');n.append(node('p','Ergebnisgespräch · '+day(c.startsAt||c.date,c.startsAt?'Europe/Berlin':'UTC'),'ci-headline'));for(const [field,label] of [['webcastUrl','Webcast'],['replayUrl','Aufzeichnung'],['transcriptUrl','Unternehmenstranskript']])if(c[field])link(n,label,c[field]);s.append(n);}}
@@ -174,5 +180,5 @@ function mount(parent,ticker,options={}){
  }).catch(()=>{if(!disposed&&host.isConnected){if(config.eligibility)host.remove();else render(host,{state:'UNAVAILABLE'});}}).finally(()=>{clearTimeout(timeout);host.setAttribute('aria-busy','false');});
  return ()=>{disposed=true;clearTimeout(timeout);controller.abort();host.remove();};
 }
-g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType,changeLabel};
+g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType,changeLabel,materialName};
 })(typeof globalThis!=='undefined'?globalThis:this);

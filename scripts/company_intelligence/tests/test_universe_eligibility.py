@@ -61,6 +61,15 @@ class EligibilityTests(unittest.TestCase):
         p=payload();p['materials']=[{'companyId':CID,'type':'SEC_FACT_FILING_REFERENCE','url':'https://www.sec.gov/Archives/edgar/data/1318605/000131860526000001/'}]
         r,v=evaluate(p,[]);self.assertEqual(r['status'],'INELIGIBLE_NO_SAFE_CONTENT');self.assertIsNone(v)
 
+    def test_generic_ir_library_is_not_a_standalone_document(self):
+        p=payload();p['materials']=[{'companyId':CID,'type':'FINANCIAL_REPORT','label':'Annual and quarterly reports and filings','url':'https://ir.tesla.com/annual-and-quarterly-reports-and-filings'}]
+        r,v=evaluate(p,[SOURCE]);self.assertFalse(r['modules']['documents']);self.assertEqual(r['status'],'INELIGIBLE_NO_SAFE_CONTENT');self.assertIsNone(v)
+        self.assertEqual(r['collectionLinksExcluded'],1);self.assertEqual(len(p['materials']),1)
+
+    def test_concrete_report_survives_beside_a_generic_library_and_other_modules_survive(self):
+        p=payload();p['news']=[news()];p['materials']=[{'companyId':CID,'type':'FINANCIAL_REPORT','url':'https://ir.tesla.com/annual-reports'}, {'companyId':CID,'type':'FINANCIAL_REPORT','label':'2025 SEC Form 10-K','url':'https://ir.tesla.com/annual-report-2025.pdf'}]
+        r,v=evaluate(p,[SOURCE]);self.assertTrue(r['modules']['documents']);self.assertTrue(r['modules']['aktuelles']);self.assertEqual(len(v['materials']),1);self.assertTrue(v['materials'][0]['url'].endswith('.pdf'))
+
     def test_public_projection_removes_article_bodies(self):
         p=payload();n=news();n.update(body='PRIVATE',excerpt='PRIVATE',summary='PRIVATE');p['news']=[n];r,v=evaluate(p,[SOURCE]);self.assertFalse(any(k in v['news'][0] for k in ('body','excerpt','summary')))
 
