@@ -1934,7 +1934,13 @@ function compactSeries(bars) {
 /* =================================================================== Lauf */
 console.log("Vision Universe DISCOVER — Präkomputation\n");
 const started = Date.now();
-if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+if (existsSync(OUT)) {
+  for (const entry of readdirSync(OUT, { withFileTypes: true })) {
+    // The registered Marketstack publication producer owns this directory.
+    if (entry.name === "europe" && entry.isDirectory()) continue;
+    rmSync(join(OUT, entry.name), { recursive: true, force: true });
+  }
+}
 mkdirSync(OUT, { recursive: true });
 
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");

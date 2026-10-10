@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import { confirmedPayload } from "./helpers/confirmed-golden-evidence.mjs";
 
 const require = createRequire(import.meta.url);
 const Series = require("../engines/return-series.js");
@@ -249,11 +250,11 @@ test("eine um einen Tag versetzte Bereinigung wird als solche erkannt", () => {
   assert.equal(r.classes.ADJUSTMENT_ON_NEIGHBOURING_DAY, 1);
 });
 
-test("die Golden Five bestehen den Nachweis ohne Ausnahme", (t) => {
+test("die Golden Five bestehen den Nachweis im tatsächlich bestätigten historischen Messintervall", (t) => {
   if (!existsSync(goldenPath("XOM"))) return t.skip("Golden Preview nicht im Baum");
   let events = 0, consistent = 0;
   for (const ticker of GOLDEN) {
-    const payload = JSON.parse(readFileSync(goldenPath(ticker), "utf8"));
+    const payload = confirmedPayload(ticker);
     const r = Series.verifyTotalReturn(payload.bars, 999);
     events += r.checked;
     consistent += r.consistent;
@@ -292,4 +293,13 @@ test("das Band ist eng und seine Kanten sind festgenagelt", () => {
   assert.equal(Series.verifyTotalReturn(mitAnteil(low - 0.02), 10).classes.ADJUSTMENT_INCONSISTENT, 1);
   assert.equal(Series.verifyTotalReturn(mitAnteil(high - 0.02), 10).classes.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT, 1);
   assert.equal(Series.verifyTotalReturn(mitAnteil(high + 0.02), 10).classes.ADJUSTMENT_INCONSISTENT, 1);
+});
+
+
+test("pinned actual JPM dividend without provider adjustment stays explicitly unexplained", () => {
+  const payload = JSON.parse(readFileSync(new URL("./fixtures/jpm-observed-provider-conflict.json", import.meta.url), "utf8"));
+  const result = Series.verifyTotalReturn(payload.bars, 999);
+  assert.deepEqual(result.classes, {NO_ADJUSTMENT_AT_ALL: 1});
+  assert.deepEqual(result.unexplainedDates, ["2026-10-06"]);
+  assert.equal(result.checked - result.consistent, 1);
 });

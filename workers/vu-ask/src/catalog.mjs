@@ -17,6 +17,7 @@
    ========================================================================= */
 import Fields from "../../../screener/engine/fields.js";
 import { SECTORS, MAJOR_GROUPS } from "../../../scripts/screener/sic.mjs";
+import TIAITools from "../../../quant/engines/technical/ti/ai-tools.js";
 
 export const STRATEGIES = ["MINERVINI_VCP", "MOMENTUM_BREAKOUT", "WEINSTEIN_STAGE", "DARVAS_BOX"];
 export const MISSING_TYPES = ["field", "withheld", "estimates", "history", "product", "other"];
@@ -52,7 +53,16 @@ const ENUM_VALUES = {
   index: ["SP500", "NDX", "DJIA"],
   country: ["US"],
   region: ["NA"],
+  tiOutlook: Object.keys(Fields.ENUM_LABELS.tiOutlook || {}),
+  tiStructure: Object.keys(Fields.ENUM_LABELS.tiStructure || {}),
+  tiElliottApplicable: Object.keys(Fields.ENUM_LABELS.tiElliottApplicable || {}),
 };
+
+/* Das einzige Werkzeug, das die Antwort im Browser aufruft: lesend, auf
+   dem veroeffentlichten Chartbild-Index. Das Modell schaltet es nur ein
+   (chartbild: true) und sieht seine Werte nie. */
+export const CHARTBILD_TOOL = TIAITools.definitions().find((d) => d.name === "getChartbildLage");
+const enumLine = (id) => `${id}: ` + ENUM_VALUES[id].map((k) => `${k} (${Fields.ENUM_LABELS[id][k]})`).join(", ");
 
 export const SYSTEM_PROMPT = [
   "Du bist die Fragefunktion von Vision Universe, einer Research-Plattform fuer US-Aktien (rund 5.400 Titel).",
@@ -83,6 +93,13 @@ export const SYSTEM_PROMPT = [
   "MINERVINI_VCP = Mark Minervini, Trend Template / VCP / \"Minervini-Raster\" / \"Super-Trader-Raster\" / SEPA.",
   "MOMENTUM_BREAKOUT = Kullamaegi-Momentum-Ausbruch. WEINSTEIN_STAGE = Stan Weinstein, Stage 2 / Phasenanalyse. DARVAS_BOX = Nicolas Darvas, Box-Ausbruch.",
   "supertrader.mode: \"require\" wenn nur Titel gewuenscht sind, die die Strategie erfuellen; \"show\" wenn der Status nur angezeigt werden soll; sonst \"none\" mit strategy \"NONE\".",
+  "",
+  "CHARTBILD: Fragt jemand nach der Chartlage, dem Chartbild, Trend, Szenario, Einstiegszone, Ungueltig-Linie",
+  "oder Elliott-Wellen einer bestimmten Aktie -> kind stock, Ticker in tickers, chartbild true. Dann zeigt Vision Universe das",
+  `Werkzeug ${CHARTBILD_TOOL.name} (${CHARTBILD_TOOL.description}) - Werte nennst du nicht.`,
+  "Sonst chartbild false. \"Wird die Aktie steigen\", \"soll ich kaufen\" bleibt forecast, auch mit Chartbezug.",
+  "Suche nach Titeln in einer Chartlage (\"Aktien im Ruecksetzer im Aufwaertstrend\") -> kind screen mit tiStructure/tiOutlook.",
+  "tiElliottApplicable ist experimentell und keine Prognose; nur verwenden, wenn ausdruecklich nach Elliott gefragt wird.",
   "",
   "SPALTEN (show): Kennzahlen, die der Nutzer zusaetzlich sehen will. Nach Moeglichkeit auch die gefilterten Felder.",
   "",
@@ -117,6 +134,7 @@ export const SYSTEM_PROMPT = [
   `sector: ${ENUM_VALUES.sector.map((k) => `${k} (${SECTORS[k]})`).join(", ")}`,
   `industry (SIC-Hauptgruppe): ${ENUM_VALUES.industry.map((k) => `${k} ${MAJOR_GROUPS[k]}`).join("; ")}`,
   `exchange: ${ENUM_VALUES.exchange.join(", ")}; companyType: ${ENUM_VALUES.companyType.join(", ")}; index: SP500 (S&P 500), NDX (Nasdaq-100), DJIA (Dow Jones)`,
+  enumLine("tiOutlook"), enumLine("tiStructure"), enumLine("tiElliottApplicable"),
   "",
   "IN VISION UNIVERSE NOCH NICHT VERFUEGBAR (bei Nachfrage -> missing):",
   ...UNAVAILABLE.map((f) => `${f.id} | ${f.label}`),
@@ -130,7 +148,7 @@ const nullable = (type) => ({ anyOf: [{ type }, { type: "null" }] });
 export const OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["kind", "understood", "filters", "tickers", "show", "supertrader", "sort", "limit", "missing", "notes"],
+  required: ["kind", "understood", "filters", "tickers", "show", "supertrader", "chartbild", "sort", "limit", "missing", "notes"],
   properties: {
     kind: { type: "string", enum: KINDS },
     understood: { type: "string" },
@@ -161,6 +179,7 @@ export const OUTPUT_SCHEMA = {
         mode: { type: "string", enum: ["none", "require", "show"] },
       },
     },
+    chartbild: { type: "boolean" },
     sort: {
       type: "object",
       additionalProperties: false,

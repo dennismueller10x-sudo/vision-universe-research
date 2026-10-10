@@ -150,6 +150,11 @@
 
   function create(opts) {
     opts = opts || {};
+    if (opts.scope === 'EUROPE') {
+      var Europe = global.VUScreenerEuropeReadiness || (typeof require === 'function' ? require('../europe-readiness.js') : null);
+      if (!Europe) throw Error('EUROPE_SCREENER_CONSUMER_NOT_LOADED');
+      return Europe.create(opts.europe || {});
+    }
     if (opts.endpoint) return RemoteScreenerAdapter(opts);
     return StaticUniverseAdapter(opts);
   }

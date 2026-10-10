@@ -1,0 +1,40 @@
+name: Company Intelligence Refresh Health
+on:
+  schedule:
+    - cron: '57 */4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: company-intelligence-refresh-health
+  cancel-in-progress: false
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/market/storage
+            scripts/company_intelligence
+            company-intelligence/config
+            company-intelligence/api
+            docs/company-intelligence
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only freshness SLO; no source polling or publication
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/refresh-run.mjs health --out "$RUNNER_TEMP/refresh-slo.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-intelligence-refresh-slo-${{ github.run_id }}
+          path: ${{ runner.temp }}/refresh-slo.json
+          retention-days: 14

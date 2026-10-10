@@ -98,11 +98,11 @@ const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant
  '/quant/#/aktie/GOOG','/quant/#/aktie/GOOGL','/quant/#/aktie/T','/quant/#/aktie/SO','/quant/#/aktie/AAAC',
  '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO',
  '/quant/#/aktie/ZZZZZ',
- '/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
+ '/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
  '/quant/#/vergleich/NVDA,MSFT','/quant/#/vergleich/AAPL,MSFT,GOOGL',
  '/quant/#/methodik',
  '/quant/#/methodik/daten','/quant/#/methodik/faktoren','/quant/#/methodik/gewichtung','/quant/#/methodik/branchen',
- '/quant/#/methodik/setups','/quant/#/methodik/strategien','/quant/#/methodik/historie','/quant/#/methodik/grenzen','/quant/#/methodik/versionen',
+ '/quant/#/methodik/setups','/quant/#/methodik/strategien','/quant/#/methodik/chartbild','/quant/#/methodik/historie','/quant/#/methodik/grenzen','/quant/#/methodik/versionen',
  '/quant/#/gibtsnicht',
  /* Die Seite hinter dem Knopf "Methodik im Detail" - die letzte Station der
     Reise. Sie war ein 404, und der Smoke hat nie eine Ansicht ausserhalb
@@ -151,7 +151,9 @@ for(const t of ZURUECKHALTUNG_KANDIDATEN){
  else console.log('     Zurueckhaltung '+t+': laut Daten nicht zurueckgehalten ('+grund+')');
 }
 const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D','AAAC'];
-const SECTION={home:'Home',screener:'Quant Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Methodik'};
+/* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
+   ist sekundaer und markiert keinen der vier Eintraege (leer). */
+const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:''};
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -256,31 +258,36 @@ for(const width of [1440,390]){
       (quant/app/ui.js NAV), ginge eine falsche Umbenennung unbemerkt
       durch. Dass eine Umbenennung diese Datei mitzieht, ist der Zweck,
       nicht der Preis. */
-   const sollBereiche=['Home','Quant Screener','Strategien','Aktien','Methodik'];
+   /* UI-VEREINHEITLICHUNG (10/2026): die gemeinsame Produkt-Leiste der
+      Vision-Universe-Shell. Erster Eintrag ist der Produktname (nie
+      "Home"); der sichtbare Eintrag "Screener" steht neben "Quant" und
+      heisst fuer Screenreader "Quant Screener" (Owner-Entscheid 29.09.2026
+      bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
+   const sollBereiche=['Quant','Screener','Strategien','Aktien'];
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
       vorher: genau die fuenf Bereiche, der richtige markiert, kein fremdes
       Produkt, und die Leiste steht dort, wo man sie bei dieser Breite
       erwartet. */
-   const leiste='nav.v2-dock.qx-nav.qx-tabbar';
-   if(await page.locator(leiste).count()!==1)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count());
+   const leiste='#vu-dock nav';
+   if(await page.locator(leiste).count()!==1||await page.locator('nav.v2-dock, nav.qx-tabbar').count()!==0)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count());
    {
     const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
     if(bereiche.join('|')!==sollBereiche.join('|'))bad.push('NAV:'+leiste+':'+bereiche.join('|'));
     /* Und der Name eines anderen Produkts darf hier ueberhaupt nicht stehen. */
-    for(const fremd of ['Discover','Research','Markets','Portfolio','Screener'])
+    for(const fremd of ['Discover','Research','Markets','Portfolio'])
      if(bereiche.some(t=>t===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
+    if(await page.locator(leiste).getByRole('link',{name:'Screener',exact:true}).count())bad.push('FREMDES_PRODUKT_IN_NAV:Screener ohne Quant');
     const markiert=await page.locator(leiste+' a[aria-current="page"]').allTextContents();
     const soll=SECTION[route];
-    if(soll&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
+    if(soll!==undefined&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
    }
    const box=await page.locator(leiste).boundingBox();
    const hoehe=page.viewportSize().height;
    const sichtbar=await page.locator(leiste).isVisible();
    if(!sichtbar||!box)bad.push('NAV_SICHTBAR:'+sichtbar);
-   else if(width>=1000&&box.y>220)bad.push('NAV_ORT:desktop_nicht_oben:y='+Math.round(box.y));
-   else if(width<1000&&box.y+box.height<hoehe-4)bad.push('NAV_ORT:handy_nicht_unten:y='+Math.round(box.y));
+   else if(box.y+box.height<hoehe-40||box.y+box.height>hoehe)bad.push('NAV_ORT:nicht_unten:y='+Math.round(box.y));
   }
 
   /* DER SCREENER ZEIGT, WAS ER FINDET (M29).
@@ -557,11 +564,11 @@ for(const width of [1440,390]){
     Ansicht mit dem richtigen markierten Bereich. */
  {
   const bad=[];
-  const leiste='nav.v2-dock.qx-nav';
+  const leiste='#vu-dock nav';
   const ansicht=async(v)=>page.waitForFunction(x=>{const m=document.querySelector('main#qx-main');return m&&m.dataset.view===x&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},v,{timeout:45000}).then(()=>true,()=>false);
   const marke=async()=>(await page.locator(leiste+' a[aria-current="page"]').allTextContents()).map(t=>t.trim()).join('|');
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));
-  await page.locator(leiste+' a',{hasText:'Quant Screener'}).click();
+  await page.locator(leiste).getByRole('link',{name:'Quant Screener',exact:true}).click();
   if(!await ansicht('screener'))bad.push('SCREENER_NICHT_ERREICHT');
   await page.locator('main#qx-main a.qx-row').first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
   const ziel=await page.locator('main#qx-main a.qx-row').first().getAttribute('href').catch(()=>null);
@@ -570,7 +577,7 @@ for(const width of [1440,390]){
   if(ziel&&!(await page.evaluate(()=>location.hash)).startsWith(ziel))bad.push('FALSCHE_AKTIE');
   await page.goBack();
   if(!await ansicht('screener'))bad.push('ZURUECK_NICHT_SCREENER:'+await page.evaluate(()=>location.hash));
-  if(await marke()!=='Quant Screener')bad.push('ZURUECK_MARKE:'+await marke());
+  if(await marke()!=='Screener')bad.push('ZURUECK_MARKE:'+await marke());
   await page.goBack();
   if(!await ansicht('home'))bad.push('ZURUECK_NICHT_HOME:'+await page.evaluate(()=>location.hash));
   await page.goForward();

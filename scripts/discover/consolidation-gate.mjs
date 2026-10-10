@@ -8,6 +8,7 @@
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
+import vm from 'node:vm';
 const git=(...args)=>execFileSync('git',args,{maxBuffer:32*1024*1024}).toString();
 const tracked=git('ls-files','discover-v2','discover').split('\n').filter(Boolean);
 
@@ -34,11 +35,14 @@ for(const f of visible){
 // 3. Die Consumer-Navigation verweist auf genau eine Discover-Implementierung.
 //    Die Kurzwege innerhalb dieser Gruppe sind Routen desselben Produkts.
 const nav=readFileSync('assets/site-navigation.js','utf8');
-const discoverGroup=nav.match(/\['Discover',\s*\[(.*?)\]\],\s*\n\s*\['Markets & Data'/s)?.[1];
+const sandbox={HTMLElement:class{},URL,URLSearchParams,customElements:{define(){}}};
+vm.runInNewContext(nav.replace(/\}\)\(\);\s*$/, 'globalThis.navigationGroups=groups;})();'),sandbox);
+const discoverGroup=sandbox.navigationGroups.find(g=>g.id==='discover');
 assert(discoverGroup,'Discover-Gruppe fehlt');
-const entries=[...discoverGroup.matchAll(/\['([^']+)',\s*'(\/discover\/[^']*)'/g)].map(m=>m[1]+' '+m[2]);
+assert.equal(discoverGroup.href,'/discover/#/','Discover bleibt ein eigenstaendiger direkter Produkteinstieg');
+const entries=Array.from(discoverGroup.entries,([label,href])=>label+' '+href);
 assert.deepEqual(entries,[
-  'Start /discover/#/','Welten /discover/#/welten','Strategien /discover/#/strategien','Entdecken /discover/#/einzeln/US_REAL',
+  'Übersicht /discover/#/','Welten /discover/#/welten','Strategien /discover/#/strategien','Entdecken /discover/#/einzeln/US_REAL',
   'Suchen /discover/#/suche','Märkte /discover/#/maerkte','Watchlist /discover/#/watchlist'
 ],'Navigation: '+JSON.stringify(entries));
 

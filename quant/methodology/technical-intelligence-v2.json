@@ -1,0 +1,199 @@
+{
+  "methodologyVersion": "technical-intelligence-v2.0.0",
+  "label": "VU Technical Intelligence V2",
+  "status": "BETA",
+  "frozenAt": "2026-10-02",
+  "frozenAtCommit": "ce9be420a",
+  "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*). Die Elliott-Strukturschicht des Produkts ist elliott-3.2.2 (quant/engines/technical/elliott/elliott-v3.js, Regelwerk elliott-rules-3.1.0) mit Konfluenzgewicht 0. Das vorab registrierte Qualitaets-Gate (HOLDOUT-3, gemessen an 3.2.0) wurde NICHT bestanden; 3.2.1 und 3.2.2 sind danach vorgenommene Aenderungen ohne eigene Holdout-Pruefung. Nicht von Experten validiert. Szenarien formt Elliott nur bei Anwendbarkeit mindestens MITTEL. Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
+  "protocol": {
+    "splits": {
+      "train": "< 2013-01-01",
+      "validation": "2013-01-01 .. 2018-12-31",
+      "test": ">= 2019-01-01"
+    },
+    "rule": "Methodik-Iterationen ausschliesslich mit --dev (TEST wird vor jeder Kennzahl verworfen). Nach dem Einfrieren genau EIN Lauf mit TEST. Aenderungen nach dem TEST-Lauf erfordern eine neue methodologyVersion und einen neuen, spaeteren Test-Zeitraum.",
+    "devChangesLogged": [
+      "Volatilitaets-Perzentil: Skala 0-100 → 0-1 (Bug, alle Bars waren EXTREME)",
+      "Outcome: Ausstieg an Ziel 1 statt Halten bis Ziel 2 (vorab definierte Standardregel; Ziel 2 nur als Zusatzzaehlung)",
+      "WYCKOFF-Familiengewicht 0: Literatur Grad D und Richtungstrefferquote < 50 % in TRAIN/VALIDATION",
+      "Wyckoff-Spannenerkennung verschaerft (flache Raender, keine Drift): vorher feuerte sie in Trends",
+      "Zonen auf Anzeigeschritte gerundet (nach aussen)"
+    ],
+    "postFreezeMeasurementFixes": {
+      "note": "Nach dem ersten TEST-Lauf fand ein adversarialer Review Messfehler. Korrigiert und TEST EINMAL erneut gerechnet; KEIN Parameter, Gewicht oder Schwellwert wurde veraendert. Beide Laeufe sind dokumentiert (TECHNICAL_EVIDENCE.md §0).",
+      "changes": [
+        "Outcome: Zonenberuehrung mit Schluss jenseits der Invalidation in derselben Bar zaehlte als 'kein Einstieg' statt als Verlust (Ergebnis zu guenstig)",
+        "Baseline: Hoch/Tief der Einstiegsbar zaehlten, obwohl der Einstieg zum Schluss erfolgt",
+        "Elliott-Studie: Faelle, deren Kurs bei Erkennung bereits jenseits des Bestaetigungsniveaus lag, ausgeschlossen (trivial bestaetigt)",
+        "Elliott-Invalidation (elliott-rules-2.0.1): Welle 1/A laufend → Ursprung; C laufend → Ursprung (Zigzag) bzw. 200 % von A (Flat), B-Ende nur Revision; kontrahierende Diagonale p3 - L2; Dreieck nur kontrahierend mit Barrier-Toleranz",
+        "pivotView: laufender Pivot spiegelt die Gleichstand-Regel der Pivot-Engine",
+        "Datenlage (Volumen/Schlusskurs-only) je Stand-Bar aus den letzten 252 Bars statt aus der Gesamtserie (Look-ahead)",
+        "Szenario-ID ohne Zeitstempel (Alerts konnten nie demselben Szenario zugeordnet werden); Tail-Zone muss jenseits der Invalidation liegen"
+      ]
+    },
+    "elliottDecision": {
+      "date": "2026-10-02",
+      "rule": "docs/technical-intelligence/PREREGISTRATION.md §4 (vorab festgelegt)",
+      "result": "Bestaetigungsstichprobe: H1–H5 und H7 nicht bestaetigt, H5 in Gegenrichtung signifikant, H6 bestaetigt (Einstieg in der laufenden Gegenbewegung schlaegt Einstieg nach Engine-Bestaetigung).",
+      "decision": "Elliott = KEEP – CONTEXT ONLY: Struktursprache und Szenario-Rahmen, Richtungsgewicht in der Konfluenz 0 (vorher 0,08). Fibonacci bleibt Konfluenz-Beschreibung.",
+      "report": "docs/technical-intelligence/ELLIOTT_VALIDATION_REPORT.md"
+    }
+  },
+  "familyWeights": {
+    "values": {
+      "TREND": 0.3,
+      "MOMENTUM": 0.2,
+      "STRUCTURE": 0.15,
+      "HIGHER_TIMEFRAME": 0.15,
+      "VOLUME": 0.1,
+      "PATTERN": 0.08,
+      "ELLIOTT": 0,
+      "WYCKOFF": 0
+    },
+    "basis": "Evidenzgrad-Prior: A (Trend/Momentum) hoch, B (Struktur/Volumen) mittel, C (Formationen) niedrig, D (Elliott) niedrig, Wyckoff 0 (Grad D und negative Richtungstrefferquote). Empirisch ersetzt nur, wenn eine Ablation auf TRAIN gelernte Gewichte auf VALIDATION und TEST bestaetigt.",
+    "thresholds": {
+      "bias": 0.15,
+      "mixedConflictShare": 0.35,
+      "agreementHigh": 0.5,
+      "agreementModerate": 0.25
+    }
+  },
+  "scenario": {
+    "zone": {
+      "minWidthAtr": 0.6,
+      "maxWidthAtr": 2.0,
+      "clusterTolAtr": 0.75
+    },
+    "entry": {
+      "maxDistanceAtr": 4.0,
+      "retracementBand": [
+        0.382,
+        0.618
+      ],
+      "maxShareOfClose": 0.3
+    },
+    "invalidation": {
+      "minGapAtr": 0.3,
+      "maxRiskAtr": 4.5,
+      "bufferAtr": 0.25,
+      "basis": "Schlusskurs",
+      "maxShareOfClose": 0.35
+    },
+    "targets": {
+      "minDistanceAtr": 1.5,
+      "separationAtr": 1.5,
+      "max": 3,
+      "maxFactor": 3,
+      "note": "Seit ti-scenario-1.2.0: Measured Move prozentual, Ziele und Zielzonen-Raender zwischen Kurs/3 und Kurs×3.",
+      "maxDistanceAtr": 12
+    },
+    "confirmation": {
+      "maxDistanceAtr": 8,
+      "note": "Bestaetigungsmarke nur, wenn hoechstens 8 ATR vom Kurs entfernt; sonst keine.",
+      "maxShareOfClose": 0.5
+    },
+    "plausibility": "ti-scenario-1.2.1: Einstieg hoechstens 30 % und Risiko hoechstens 35 % vom Kurs; Ziele zwischen Kurs/3 und Kurs×3 und hoechstens 12 ATR von der Einstiegszone; Bestaetigung hoechstens 8 ATR und 50 % vom Kurs; ATR fuer die Geometrie zwischen 1,5 % (Woche) bzw. 0,5 % (Tag) und 25 % des Kurses; liegen Einstiegszone oder Invalidation bei ≤ 0, kein Szenario; tote Reihe (≥ 4 gleiche Wochen- bzw. ≥ 10 gleiche Tagesschluesse) → kein Szenario; Elliott formt Szenarien nur bei Anwendbarkeit ≥ MITTEL.",
+    "empiricalMinSample": 30,
+    "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE.",
+    "atrMaxShareOfClose": 0.25,
+    "atrMinShareOfClose": {
+      "1W": 0.015,
+      "1D": 0.005
+    },
+    "staleFlatBars": {
+      "1W": 4,
+      "1D": 10
+    }
+  },
+  "elliottV2": {
+    "engine": {
+      "rankWeights": {
+        "guidelines": 0.22,
+        "subdivision": 0.22,
+        "coverage": 0.14,
+        "higherDegree": 0.16,
+        "trendContext": 0.12,
+        "grammar": 0.09,
+        "prior": 0.05
+      },
+      "typePrior": {
+        "IMPULSE": 1,
+        "ZIGZAG": 1,
+        "FLAT": 0.8,
+        "TRIANGLE": 0.6,
+        "LEADING_DIAGONAL": 0.5,
+        "ENDING_DIAGONAL": 0.55,
+        "WXY": 0.6,
+        "DOUBLE_ZIGZAG": 0.6
+      },
+      "clarity": {
+        "high": 0.12,
+        "moderate": 0.05
+      },
+      "structural": {
+        "high": 0.68,
+        "moderate": 0.55
+      }
+    },
+    "ruleSet": "elliott-rules-2.0.1 (quant/engines/technical/elliott/patterns.js)",
+    "confidenceType": "structural_fit — Rangwert, keine Wahrscheinlichkeit"
+  },
+  "outcomes": {
+    "weekly": {
+      "entryWindowBars": 8,
+      "horizonBars": 26,
+      "forwardBars": 13
+    },
+    "daily": {
+      "entryWindowBars": 20,
+      "horizonBars": 126,
+      "forwardBars": 63
+    },
+    "costBpsPerSide": 10,
+    "rules": "Limit an der nahen Zonenkante; Ziel 1 = Zonenkante; Invalidation per Schluss; gleiche Bar → Invalidation; nicht ueberlappende Signale je Titel; Baseline = gleiche Geometrie an 3 Zufallsbars."
+  },
+  "timeframes": {
+    "1D": {
+      "fastMa": "sma50",
+      "slowMa": "sma200",
+      "stageMa": "sma150",
+      "pivotScales": "pivot-engine.js DEFAULT_SCALES"
+    },
+    "1W": {
+      "fastMa": "sma10",
+      "slowMa": "sma40",
+      "stageMa": "sma30",
+      "pivotScales": [
+        [
+          1.0,
+          0.04
+        ],
+        [
+          2.0,
+          0.08
+        ],
+        [
+          3.5,
+          0.15
+        ],
+        [
+          6.0,
+          0.28
+        ]
+      ]
+    },
+    "intraday": "nicht verfuegbar (keine Intraday-Historie im Bestand)"
+  },
+  "sources": "docs/technical-intelligence/METHOD_RESEARCH.md",
+  "elliottProduction": {
+    "engine": "elliott-3.2.2",
+    "source": "quant/engines/technical/elliott/elliott-v3.js",
+    "ruleSet": "elliott-rules-3.1.0",
+    "status": "EXPERIMENTAL_STRUCTURE_MODEL",
+    "confluenceWeight": 0,
+    "qualityGate": "HOLDOUT-3 FAIL, gemessen an elliott-3.2.0 (docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md). 3.2.1 (Datenlage Tagesreihen) und 3.2.2 (abgeschlossene WXY hoechstens NIEDRIG) wurden nach dem Holdout geaendert und nur auf VALIDATION gemessen – Abweichung von ELLIOTT_HOLDOUT3_PREREG.md §5, offengelegt; kein Holdout-Urteil fuer 3.2.2.",
+    "expertValidated": false,
+    "note": "Der Abschnitt elliottV2 beschreibt die Vorgaenger-Engine 2.2 und bleibt als Nachweis erhalten; er bestimmt das Produkt nicht mehr.",
+    "scenarioShaping": "Nur bei Anwendbarkeit MITTEL/HOCH (ti-scenario-1.2.0); eine enthaltene Zaehlung formt weder Einstieg, Invalidation, Ziele noch die erwartete Struktur."
+  }
+}

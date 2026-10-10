@@ -954,10 +954,10 @@
       "cik": "0001829667",
       "name": "Regencell Bioscience Holdings Ltd",
       "sic": "2833",
-      "rawFacts": 1146,
-      "mappedFacts": 397,
-      "unmappedFacts": 768,
-      "calendarYears": 7,
+      "rawFacts": 1403,
+      "mappedFacts": 448,
+      "unmappedFacts": 958,
+      "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": null,
@@ -966,10 +966,10 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 9,
+      "quarterlyPeriods": 10,
       "firstPeriodEnd": "2018-06-30",
-      "lastPeriodEnd": "2025-06-30",
-      "historyYears": 7.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -982,8 +982,8 @@
           "annualPeriods": 6,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2020-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 5,
@@ -1009,15 +1009,15 @@
           "annualPeriods": 7,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2019-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 6.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 7.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2019-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 6.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 7.0
         },
         "revenue": {
           "annualPeriods": 0,
@@ -1034,18 +1034,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 8,
+          "annualPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2018-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 7.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 8.0
         },
         "total_assets": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 6,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2020-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 6.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -1065,45 +1065,47 @@
         }
       },
       "quality": {
-        "HIGH": 48,
+        "HIGH": 52,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 52,
-        "resolvedValues": 52
+        "datableValues": 56,
+        "resolvedValues": 56
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 794,
+        "total": 1021,
         "by_severity": {
-          "INFO": 768,
-          "WARNING": 26
+          "INFO": 958,
+          "WARNING": 63
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 13,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 768
+          "CONCEPT_DISAGREEMENT": 12,
+          "RESTATEMENT_CONFLICT": 12,
+          "UNKNOWN_CONCEPT": 958,
+          "UNPLACEABLE_PERIOD": 39
         }
       },
       "latestFiling": {
-        "accession": "0001213900-25-104686",
-        "filing_date": "2025-10-31",
+        "accession": "0001213900-26-107581",
+        "filing_date": "2026-10-07",
         "form": "20-F",
-        "periodic_filings": 5
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-10-08T00:15:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "2d1ec5c2654ebf5435560896d2df9a29adf41ab3a627f3462d1997803023c317",
+      "sourceDigest": "e78ed0981a9508d7e07fe2aae8380f8e0269339b1256a45cc8c36db11f535640",
       "issuerId": "iss_cik_0001829667"
     },
     {
