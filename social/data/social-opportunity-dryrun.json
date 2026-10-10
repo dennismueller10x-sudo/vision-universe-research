@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T21:14:23.232Z",
+  "generatedAt": "2026-10-10T13:02:14.054Z",
   "purpose": "NORTH_STAR_SHIFT_PROOF",
   "metaConnectionFromThisRun": "UNKNOWN_FROM_THIS_RUN",
   "ownPerformanceMeasurements": 25,
@@ -765,6 +765,216 @@
     },
     {
       "topic": {
+        "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
+        "family": "STOCK_STORY",
+        "entityType": "STOCK",
+        "entities": [
+          "Exxon Mobil Corporation"
+        ],
+        "sources": [
+          "VU_QUANT"
+        ],
+        "title": "Technische Lage: Exxon Mobil Corporation",
+        "question": null,
+        "evidenceRefs": [
+          "social/data/signals.json#snap_67138a4aeacd370e"
+        ],
+        "evidence": [
+          {
+            "id": "quant-TECHNICAL_SETUP",
+            "entity": "Exxon Mobil Corporation",
+            "metric": "Technical Opportunity Score",
+            "value": 76,
+            "statement": "Exxon Mobil Corporation: Technical Opportunity Score 76.",
+            "source": "vu.technical",
+            "observedAt": "2026-09-11T00:00:00Z",
+            "temporal": true
+          }
+        ],
+        "evidenceSufficient": false,
+        "evidenceRejected": 0,
+        "premise": "SECURITY_METRIC",
+        "cause": null,
+        "timeSensitivity": "EVERGREEN",
+        "asOf": "2026-09-11T00:00:00Z",
+        "signalStrength": 0.76,
+        "availability": "AVAILABLE",
+        "note": "Technical Opportunity Score 76, Quelle vu.technical.",
+        "observedHashtags": []
+      },
+      "kind": "CONTENT_OPPORTUNITY",
+      "derivedFrom": "MARKET_SIGNAL",
+      "score": 62,
+      "rawScore": 62,
+      "available": true,
+      "state": "VERIFIED",
+      "coverage": 0.537,
+      "notApplicable": [
+        "editorialBasis"
+      ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": true,
+          "value": 0.76,
+          "reason": "internes VU-Signal: 76 %"
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.5018181818181818,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 50 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 1.2782186446269283e-9,
+          "reason": "Der Anlass liegt 709 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
+      "missing": [
+        {
+          "dimension": "trend",
+          "label": "externer Trend",
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
+        },
+        {
+          "dimension": "audienceInterest",
+          "label": "Interesse des eigenen Publikums",
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
+        },
+        {
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
+        },
+        {
+          "dimension": "platformFit",
+          "label": "Passung zur Plattform",
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
+        }
+      ],
+      "drivers": [
+        {
+          "dimension": "vuSignal",
+          "label": "eigenes Vision-Universe-Signal",
+          "contribution": 0.16720000000000002,
+          "value": 0.76,
+          "reason": "internes VU-Signal: 76 %"
+        },
+        {
+          "dimension": "editorialBasis",
+          "label": "vorhandene redaktionelle Grundlage",
+          "contribution": 0.096,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        {
+          "dimension": "contentGap",
+          "label": "Luecke im eigenen Bestand",
+          "contribution": 0.08,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        }
+      ],
+      "saturation": {
+        "value": 0,
+        "measured": false,
+        "explanation": "Keiner der 26 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
+      },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
+      "saturationPenalty": 0,
+      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: externer Trend, Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "predictsPerformance": false,
+      "audienceFrame": {
+        "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
+        "basis": "BOOTSTRAP",
+        "targetAudience": "Breites deutschsprachiges Investment-Publikum, vom interessierten Einsteiger bis zum erfahrenen Anleger.",
+        "assumedKnowledge": "Grundbegriffe wie Aktie, Kurs, Gewinn und Dividende. NICHT vorausgesetzt: Vision-Universe-Kenntnis, Tickersymbole, interne Scores, Quant-Methodik.",
+        "whyNow": "Stand der Datenlage: 2026-09-11.",
+        "family": "STOCK_STORY",
+        "familyBasis": "TOPIC",
+        "whyCare": "Es beantwortet eine Frage, die sich jemand ohnehin stellt: Was ist bei diesem Unternehmen gerade los?",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Exxon Mobil Corporation"
+        ],
+        "internalTermsToExplain": [],
+        "internalTermsNotSuitableForHook": [
+          "Technical Opportunity Score",
+          "Setup-Rang",
+          "Perzentil",
+          "z-Score",
+          "TREND_STRUCTURE",
+          "VOLATILITY",
+          "MOMENTUM",
+          "ATR",
+          "SMA",
+          "methodischer Rang",
+          "Trendwert",
+          "Faktorprämie",
+          "VOLUME",
+          "SETUP",
+          "PROJECTION_AUXILIARY"
+        ],
+        "suggestedHookStrategy": "value_first",
+        "suggestedVisualStrategy": "SCORE",
+        "predictsPerformance": false,
+        "findings": []
+      },
+      "evidenceCoverage": {
+        "statements": 1,
+        "sufficient": false,
+        "rejectedValues": 0,
+        "storyPotential": "NUR_MIT_ERGAENZUNG"
+      }
+    },
+    {
+      "topic": {
         "topicId": "topic_ranking:stock:advanced-micro-devices:gap-inc:hp-inc:hasbro:mattel:microsoft:newmont:salesforce:valero-energy:vodafone-group:bekannte-namen",
         "family": "RANKING",
         "entityType": "STOCK",
@@ -933,8 +1143,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -980,8 +1190,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1052,7 +1262,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:advanced-micro-devices:gap-inc:hp-inc:hasbro:mattel:microsoft:newmont:salesforce:valero-energy:vodafone-group:bekannte-namen",
@@ -1271,8 +1481,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -1318,8 +1528,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1390,7 +1600,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:freshworks-inc-class-a:ptc-inc:rxo-inc:torm-class-a:xp-inc-class-a:breakout-watch",
@@ -1589,8 +1799,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -1636,8 +1846,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1708,7 +1918,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:affirm-holdings-class-a:digitalbridge-group-class-a:mgic-investment:natural-resource-partners:orix:permian-resources-class-a:sezzle:slide-insurance-holdings:vci-global:webull:cashflow-maschinen",
@@ -1932,8 +2142,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -1979,8 +2189,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2051,7 +2261,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:agenus:cea-industries:eurodry:grayscale-investments:iovance-biotherapeutics:kodiak-sciences:moderna:oceanpal:strive:twin-vee-powercats:comeback",
@@ -2275,8 +2485,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -2322,8 +2532,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2394,7 +2604,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:amgen:apple:caterpillar:chevron:cisco-systems:coca-cola:merck-co:microsoft:nvidia:visa-class-a:djia-staerkste",
@@ -2603,8 +2813,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -2650,8 +2860,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2722,7 +2932,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:appian-class-a:aurora-mobile:bowman-consulting-group:illumina:mesa-laboratories:okta-inc-class-a:pagerduty:ringcentral-class-a:utz-brands-class-a:viomi-technology-co:fundamentale-turnarounds",
@@ -2942,8 +3152,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -2989,8 +3199,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3061,7 +3271,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:agree-realty:arista-networks:brookfield-infrastructure-partners:enersys:kinsale-capital-group:meta-platforms-class-a:nvidia:super-micro-computer:timken:trade-desk-class-a:langfristige-compounder",
@@ -3265,8 +3475,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -3312,8 +3522,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3384,7 +3594,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:adaptive-biotechnologies:alnylam-pharmaceuticals:astera-labs:biocryst-pharmaceuticals:codere-online-luxembourg:grab-holdings-class-a:hutchmed-china-:mcewen-mining:rigel-pharmaceuticals:root-inc-class-a:margen-werden-staerker",
@@ -3608,8 +3818,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -3655,8 +3865,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3727,7 +3937,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:hewlett-packard-enterprise:international-seaways:karat-packaging:lindblad-expeditions-holdings:manitowoc-co-:marathon-petroleum:marinemax:okeanis-eco-tankers:phillips-66:valero-energy:market-leaders",
@@ -3951,8 +4161,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -3998,8 +4208,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4070,7 +4280,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:cohu-inc:crowdstrike-holdings-class-a:hewlett-packard-enterprise:illumina:kodiak-sciences:lindblad-expeditions-holdings:okta-inc-class-a:semtech:silicom:vince-holding:momentum-leaders",
@@ -4294,8 +4504,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -4341,8 +4551,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4413,7 +4623,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:astera-labs:atour-lifestyle-holdings:credo-technology-group-holding:four-seasons-education-cayman-:hims-hers-health-class-a:nvidia:sezzle:sun-life-financial:tss-inc:transmedics-group:profitables-wachstum",
@@ -4629,8 +4839,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -4676,8 +4886,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4748,7 +4958,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:astera-labs:atlanticus-holdings:credo-technology-group-holding:four-seasons-education-cayman-:nvidia:nebius-group-class-a:nu-holdings-ltd-class-a:sezzle:transmedics-group:zevra-therapeutics:qualitaet-wachstum",
@@ -4952,8 +5162,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -4999,8 +5209,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5071,7 +5281,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:air-t:athene-holding:brc-group-holdings:booking-holdings:harmony-gold-mining-co:sabre:sohu-com:trimas:vistance-networks:wise-group:qualitaet-zum-preis",
@@ -5295,8 +5505,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -5342,8 +5552,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5414,7 +5624,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:cohu-inc:crowdstrike-holdings-class-a:hewlett-packard-enterprise:illumina:kodiak-sciences:lindblad-expeditions-holdings:okta-inc-class-a:semtech:silicom:vince-holding:relative-strength",
@@ -5638,8 +5848,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -5685,8 +5895,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5757,7 +5967,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:advanced-micro-devices:crowdstrike-holdings-class-a:dell-technologies-class-c:fortinet:hewlett-packard-enterprise:lumentum-holdings:marathon-petroleum:netapp:phillips-66:valero-energy:sp500-staerkste",
@@ -5981,8 +6191,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -6028,8 +6238,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6100,7 +6310,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:axsome-therapeutics:four-seasons-education-cayman-:immersion:legend-biotech:nvidia:nu-holdings-ltd-class-a:perpetuals-com:sun-life-financial:tss-inc:terawulf:starke-bilanz-wachstum",
@@ -6318,8 +6528,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -6365,8 +6575,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6437,7 +6647,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:alphabet-class-a:aptiv:aurora-innovation-class-a:general-motors:lyft-inc-cls-a:mobileye-global-class-a:nvidia:qualcomm:tesla:uber-technologies:thema-autonomes-fahren",
@@ -6655,8 +6865,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -6702,8 +6912,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6774,7 +6984,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:bancolombia:bank-of-james-financial-group:bank-of-montreal:c-f-financial:chain-bridge-bancorp-class-a:community-bancorp-inc-vermont:mizuho-financial-group:national-bankshares:optimumbank-holdings:usio-inc:thema-banken-fintech",
@@ -6992,8 +7202,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -7039,8 +7249,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7111,7 +7321,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:beazer-homes-usa:comfort-systems-usa:concrete-pumping-holdings-class-a:emcor-group:everus-construction-group:geo-group:ies-holdings:magnitude-international:preformed-line-products:tutor-perini:thema-bau-baustoffe",
@@ -7329,8 +7539,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -7376,8 +7586,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7448,7 +7658,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:abcellera-biologics:amneal-pharmaceuticals-class-a:cryoport:halozyme-therapeutics:harvard-bioscience:iovance-biotherapeutics:kodiak-sciences:moderna:pulse-biosciences:teva-pharmaceutical-industries:thema-biotechnologie",
@@ -7666,8 +7876,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -7713,8 +7923,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7785,7 +7995,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:cementos-pacasmayo-s-a-a-:flotek-industries:innospec:karat-packaging:methanex:myers-industries:rocky-brands:rogers:sensient-technologies:vera-bradley:thema-chemie-werkstoffe",
@@ -8003,8 +8213,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -8050,8 +8260,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8122,7 +8332,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:cisco-systems:cloudflare-class-a:crowdstrike-holdings-class-a:dynatrace:fortinet:okta-inc-class-a:onespan:palo-alto-networks:qualys:sentinelone-class-a:thema-cybersecurity",
@@ -8340,8 +8550,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -8387,8 +8597,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8459,7 +8669,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:amazon-com:baozun:ebay-inc:gigacloud-technology-class-a:honest-company-inc-the-:insight-enterprises:lightinthebox-holding-co:luxexperience-b-v-:shopify-class-a:wayfair-class-a:thema-e-commerce",
@@ -8677,8 +8887,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -8724,8 +8934,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8796,7 +9006,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:aes-corp:brookfield-renewable-partners:clearway-energy-class-c:enphase-energy:first-solar:nextera-energy:nextpower:ormat-technologies:shoals-technologies-group-class-a:solaredge-technologies:thema-erneuerbare-energien",
@@ -9014,8 +9224,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -9061,8 +9271,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9133,7 +9343,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:acadian-asset-management:encore-capital-group:grayscale-investments:marygold-companies:oportun-financial:permian-basin-royalty-trust:victory-capital-holdings-class-a:vulcan-infrastructure-power:wisdomtree:xp-inc-class-a:thema-finanzdienstleistungen-vermoegen",
@@ -9351,8 +9561,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -9398,8 +9608,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9470,7 +9680,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:beam-therapeutics:crispr-therapeutics:editas-medicine:illumina:intellia-therapeutics:pacific-biosciences-of-california:qiagen:recursion-pharmaceuticals-class-a:sana-biotechnology:twist-bioscience:thema-genomik-gentherapie",
@@ -9688,8 +9898,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -9735,8 +9945,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9807,7 +10017,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:biodesix:caredx:concentra-group-holdings-parent:fortrea-holdings:grail:lifestance-health-group:national-healthcare:pennant-group:personalis:sbc-medical-group-holdings:thema-gesundheitsdienstleister",
@@ -10030,8 +10240,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -10077,8 +10287,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -10149,7 +10359,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:arrow-electronics:avnet:chefs-warehouse:dxp-enterprises:msc-industrial-direct-co-class-a:pc-connection:richardson-electronics:td-synnex:wesco-international:weyco-group:thema-grosshandel-distribution",
@@ -10367,8 +10577,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -10414,8 +10624,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -10486,7 +10696,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ase-technology-holding-co-ltd:advanced-micro-devices:chipmos-technologies:cohu-inc:formfactor:lumentum-holdings:marvell-technology:maxlinear:semtech:teradyne:thema-halbleiter-chips",
@@ -10704,8 +10914,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -10751,8 +10961,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -10823,7 +11033,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:abercrombie-fitch-class-a:able-view-global-class-b:guardian-pharmacy-services:haverty-furniture-cos-:rush-enterprises-class-b:target:torrid-holdings:victoria-s-secret-company:vince-holding:williams-sonoma:thema-handel-einzelhandel",
@@ -11041,8 +11251,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -11088,8 +11298,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -11160,7 +11370,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:analog-devices:honeywell-international:intuitive-surgical:nvidia:richtech-robotics-class-b:rockwell-automation:serve-robotics:symbotic-class-a:teradyne:tesla:thema-humanoide-robotik",
@@ -11378,8 +11588,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -11425,8 +11635,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -11497,7 +11707,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:allient:compx-international-class-a:flexsteel-industries:frequency-electronics:manitowoc-co-:proto-labs:quantum:sharkninja:silicom:twin-disc:thema-industrie-fertigung",
@@ -11715,8 +11925,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -11762,8 +11972,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -11834,7 +12044,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ametek:amtech-systems:azenta:cricut-class-a:eaton-corporation:emerson-electric:idex:parker-hannifin:rockwell-automation:sono-tek:thema-industrie-maschinenbau",
@@ -12052,8 +12262,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -12099,8 +12309,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -12171,7 +12381,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:caterpillar:d-r-horton:deere-company:fluor:granite-construction:jacobs-solutions:masco:pultegroup:quanta-services:united-rentals:thema-infrastruktur",
@@ -12389,8 +12599,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -12436,8 +12646,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -12508,7 +12718,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:bwx-technologies:cameco:centrus-energy-class-a:constellation-energy:denison-mines:ge-vernova:nexgen-energy:oklo-inc:uranium-energy:vistra:thema-kernenergie-uran",
@@ -12726,8 +12936,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -12773,8 +12983,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -12845,7 +13055,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:advanced-micro-devices:analog-devices:apple:cisco-systems:intel:marvell-technology:micron-technology:nvidia:teradyne:texas-instruments:thema-ki",
@@ -13063,8 +13273,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -13110,8 +13320,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -13182,7 +13392,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:bj-s-restaurant:brinker-international:cheesecake-factory:coca-cola:cracker-barrel-old-country-store:edgewell-personal-care:flanigan-s-enterprises:noodles-company-class-a:red-robin-gourmet-burgers:stepan:thema-konsum-marken",
@@ -13400,8 +13610,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -13447,8 +13657,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -13519,7 +13729,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:agco-corp:archer-daniels-midland:bunge-global:cf-industries-holdings:cnh-industrial:corteva:deere-company:lindsay:nutrien:titan-machinery:thema-landwirtschaft-agtech",
@@ -13737,8 +13947,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -13784,8 +13994,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -13856,7 +14066,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ambev:archer-daniels-midland:bbb-foods-class-a:coca-cola-consolidated:darling-ingredients:embotelladora-andina:forafric-global:seneca-foods-class-b:utz-brands-class-a:westrock-coffee:thema-lebensmittel-getraenke",
@@ -14070,8 +14280,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -14117,8 +14327,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -14189,7 +14399,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:csx-corp:canadian-pacific-kansas-city:fedex:j-b-hunt-transport-services:knight-swift-transportation-holdings-class-a:norfolk-southern:old-dominion-freight-line:ryder-system:union-pacific:xpo-inc:thema-logistik-automation",
@@ -14407,8 +14617,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -14454,8 +14664,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -14526,7 +14736,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:agilent-technologies:charles-river-laboratories-international:danaher:eli-lilly-company:guardant-health:iqvia-holdings:illumina:natera:royalty-pharma-class-a:thermo-fisher-scientific:thema-longevity-praezisionsmedizin",
@@ -14743,8 +14953,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -14790,8 +15000,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -14862,7 +15072,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:capri-holdings:estee-lauder-cos-class-a:fossil-group:levi-strauss-co-cls-a:pvh-corp:ralph-lauren-class-a:signet-jewelers:tapestry:v-f:thema-luxus-premium",
@@ -15079,8 +15289,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -15126,8 +15336,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -15198,7 +15408,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:acco-brands:alphabet-class-a:cpi-card-group:daily-journal:ennis:magnite:meta-platforms-class-a:pubmatic-class-a:quad-graphics-class-a:warner-bros-discovery-class-a:thema-medien-werbung",
@@ -15416,8 +15626,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -15463,8 +15673,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -15535,7 +15745,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ati-inc:friedman-industries:gerdau:metallus:nucor:optical-cable:steel-dynamics:suncoke-energy:ternium:worthington-enterprises:thema-metallverarbeitung-stahl",
@@ -15753,8 +15963,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -15800,8 +16010,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -15872,7 +16082,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:carparts-com:general-motors:honda-motor:hyliion-holdings-class-a:magna-international:marinemax:miller-industries:penske-automotive-group:senmiao-technology:xos-inc:thema-mobilitaet",
@@ -16090,8 +16300,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -16137,8 +16347,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -16209,7 +16419,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:avery-dennison:cl-workshop-group:cavco-industries:clearwater-paper:jeld-wen-holding:koppers-holdings:legacy-housing:mativ-holdings:packaging-corp-of-america:skyline-champion:thema-papier-verpackung-forst",
@@ -16427,8 +16637,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -16474,8 +16684,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -16546,7 +16756,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:abbvie:bristol-myers-squibb:eli-lilly-company:gsk-plc:johnson-johnson:merck-co:novartis:pfizer:teva-pharmaceutical-industries:viatris:thema-pharma-wirkstoffforschung",
@@ -16764,8 +16974,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -16811,8 +17021,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -16883,7 +17093,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:alphabet-class-a:d-wave-quantum:honeywell-international:international-business-machines:ionq-inc:microsoft:nvidia:quantum-computing:rigetti-computing:sealsq:thema-quantencomputing",
@@ -17101,8 +17311,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -17148,8 +17358,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -17220,7 +17430,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:general-dynamics:globalstar:honeywell-international:intuitive-machines-class-a:iridium-communications:planet-labs-pbc-class-a:rtx-corp:rocket-lab-usa:viasat:virgin-galactic-holdings-class-a:thema-raumfahrt",
@@ -17438,8 +17648,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -17485,8 +17695,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -17557,7 +17767,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:advanced-micro-devices:arista-networks:atlassian-class-a:cisco-systems:cloudflare-class-a:datadog-class-a:dell-technologies-class-c:f5-inc:hewlett-packard-enterprise:netapp:thema-rechenzentren-cloud",
@@ -17775,8 +17985,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -17822,8 +18032,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -17894,7 +18104,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:air-t:airbnb-class-a:civeo:corporacion-america-airports:delta-air-lines:intercontinental-hotels-group:marriott-international-class-a:park-hotels-resorts:sunstone-hotel-investors:target-hospitality-class-a:thema-reisen-tourismus",
@@ -18112,8 +18322,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -18159,8 +18369,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -18231,7 +18441,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ametek:cognex:deere-company:eaton-corporation:emerson-electric:idex:johnson-controls-international:nvidia:rockwell-automation:teradyne:thema-robotik",
@@ -18449,8 +18659,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -18496,8 +18706,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -18568,7 +18778,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:aura-minerals:centerra-gold:ero-copper:freeport-mcmoran:hudbay-minerals:new-pacific-metals-corp-new:smart-sand:southern-copper:taseko-mines:teck-resources-class-b-class-b-sub-voting-:thema-rohstoffe-bergbau",
@@ -18783,8 +18993,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -18830,8 +19040,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -18902,7 +19112,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ast-spacemobile-class-a:globalstar:intuitive-machines-class-a:iridium-communications:planet-labs-pbc-class-a:rocket-lab-usa:viasat:thema-satelliten-konnektivitaet",
@@ -19117,8 +19327,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -19164,8 +19374,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -19236,7 +19446,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:amn-healthcare-services:hinge-health-class-a:hirequest:paysign:rcm-technologies:ringcentral-class-a:riskified-class-a:twilio-inc-class-a:xometry-class-a:zeta-global-holdings-class-a:thema-software-it-dienstleistungen",
@@ -19454,8 +19664,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -19501,8 +19711,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -19573,7 +19783,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:angel-studios-class-a:cinemark-holdings:curiositystream-class-a:marcus:reading-international-class-a:reading-international-class-b:sony-group:unity-software:walt-disney:warner-bros-discovery-class-a:thema-streaming-gaming",
@@ -19791,8 +20001,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -19838,8 +20048,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -19910,7 +20120,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:algonquin-power-utilities:cia-energetica-de-minas-gerais-cemig:cia-energetica-de-minas-gerais-cemig:eaton-corporation:energy-co-of-parana:genie-energy-class-b:montauk-renewables:quanta-services:txnm-energy:ugi-corp:thema-stromnetze-elektrifizierung",
@@ -20128,8 +20338,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -20175,8 +20385,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -20247,7 +20457,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:atn-international:idt-corp-class-b:iridium-communications:liberty-latin-america-class-a:liberty-latin-america-class-c:roku-inc-class-a:sk-telecom-co:veon-ltd:vodafone-group:ziff-davis:thema-telekommunikation-netze",
@@ -20465,8 +20675,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -20512,8 +20722,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -20584,7 +20794,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:cintas:culp-inc:figs-inc-class-a:interface:j-jill:jerash-holdings-us-:maxsmaking-class-a:mohawk-industries:superior-group-of-companies:unifi:thema-textil-bekleidung",
@@ -20807,8 +21017,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -20854,8 +21064,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -20926,7 +21136,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:cmb-tech:danaos:dorian-lpg:frontline:international-seaways:lindblad-expeditions-holdings:nordic-american-tankers:okeanis-eco-tankers:pyxis-tankers:teekay-tankers-class-a:thema-transport-spedition",
@@ -21144,8 +21354,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -21191,8 +21401,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -21263,7 +21473,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:american-integrity-insurance-group:centene:heritage-insurance-holdings:humana:jackson-financial-class-a:oscar-health-class-a:safety-insurance-group:slide-insurance-holdings:united-fire-group:universal-insurance-holdings:thema-versicherungen",
@@ -21487,8 +21697,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -21534,8 +21744,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -21606,7 +21816,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:atlanta-braves-holdings-class-c:chunghwa-telecom:community-west-bancshares-:gqg-us-equity-etf:kinder-morgan-class-p:lxp-industrial-trust:nordson:procter-gamble:txnm-energy:visa-class-a:trend-quality",
@@ -21830,8 +22040,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -21877,8 +22087,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -21949,7 +22159,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:hf-sinclair:hewlett-packard-enterprise:international-seaways:karat-packaging:lindblad-expeditions-holdings:manitowoc-co-:marathon-petroleum:marinemax:okeanis-eco-tankers:pbf-energy-class-a:ueberraschungen",
@@ -22169,8 +22379,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 62,
-      "rawScore": 62,
+      "score": 61,
+      "rawScore": 61,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -22216,8 +22426,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -22288,7 +22498,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:anaptysbio:bakkt-holdings-class-a:century-therapeutics:community-healthcare-trust:homestolife:immersion:lotus-technology:nebius-group-class-a:sezzle:studio-city-international-holdings:umsatz-waechst-stark",
@@ -22340,216 +22550,6 @@
         "sufficient": true,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
-      }
-    },
-    {
-      "topic": {
-        "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
-        "family": "STOCK_STORY",
-        "entityType": "STOCK",
-        "entities": [
-          "Exxon Mobil Corporation"
-        ],
-        "sources": [
-          "VU_QUANT"
-        ],
-        "title": "Technische Lage: Exxon Mobil Corporation",
-        "question": null,
-        "evidenceRefs": [
-          "social/data/signals.json#snap_67138a4aeacd370e"
-        ],
-        "evidence": [
-          {
-            "id": "quant-TECHNICAL_SETUP",
-            "entity": "Exxon Mobil Corporation",
-            "metric": "Technical Opportunity Score",
-            "value": 76,
-            "statement": "Exxon Mobil Corporation: Technical Opportunity Score 76.",
-            "source": "vu.technical",
-            "observedAt": "2026-09-11T00:00:00Z",
-            "temporal": true
-          }
-        ],
-        "evidenceSufficient": false,
-        "evidenceRejected": 0,
-        "premise": "SECURITY_METRIC",
-        "cause": null,
-        "timeSensitivity": "EVERGREEN",
-        "asOf": "2026-09-11T00:00:00Z",
-        "signalStrength": 0.76,
-        "availability": "AVAILABLE",
-        "note": "Technical Opportunity Score 76, Quelle vu.technical.",
-        "observedHashtags": []
-      },
-      "kind": "CONTENT_OPPORTUNITY",
-      "derivedFrom": "MARKET_SIGNAL",
-      "score": 62,
-      "rawScore": 62,
-      "available": true,
-      "state": "VERIFIED",
-      "coverage": 0.537,
-      "notApplicable": [
-        "editorialBasis"
-      ],
-      "components": {
-        "trend": {
-          "available": false,
-          "value": null,
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
-        },
-        "vuSignal": {
-          "available": true,
-          "value": 0.76,
-          "reason": "internes VU-Signal: 76 %"
-        },
-        "editorialBasis": {
-          "available": true,
-          "value": 0.8,
-          "reason": "vorhandene redaktionelle Grundlage: 80 %"
-        },
-        "audienceInterest": {
-          "available": false,
-          "value": null,
-          "reason": "Keine Messung fuer Publikumsinteresse."
-        },
-        "externalInterest": {
-          "available": false,
-          "value": null,
-          "reason": "Keine Messung fuer externe Aufmerksamkeit."
-        },
-        "historicalPerformance": {
-          "available": true,
-          "value": 0.5018181818181818,
-          "reason": "Vergleichbare Beitraege (n=22) liegen bei 50 % der Zielleistung."
-        },
-        "platformFit": {
-          "available": false,
-          "value": null,
-          "reason": "Keine Messung fuer Plattformpassung."
-        },
-        "freshness": {
-          "available": true,
-          "value": 2.0172106439053793e-9,
-          "reason": "Der Anlass liegt 693 h zurueck."
-        },
-        "contentGap": {
-          "available": true,
-          "value": 1,
-          "reason": "Luecke im eigenen Bestand: 100 %"
-        },
-        "brandFit": {
-          "available": true,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
-        }
-      },
-      "missing": [
-        {
-          "dimension": "trend",
-          "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
-          "cause": "UNMEASURED"
-        },
-        {
-          "dimension": "audienceInterest",
-          "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse.",
-          "cause": "SYSTEMICALLY_UNAVAILABLE"
-        },
-        {
-          "dimension": "externalInterest",
-          "label": "externe Aufmerksamkeit fuer das Thema",
-          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
-          "cause": "NOT_ACTIVATED"
-        },
-        {
-          "dimension": "platformFit",
-          "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung.",
-          "cause": "UNMEASURED"
-        }
-      ],
-      "drivers": [
-        {
-          "dimension": "vuSignal",
-          "label": "eigenes Vision-Universe-Signal",
-          "contribution": 0.16720000000000002,
-          "value": 0.76,
-          "reason": "internes VU-Signal: 76 %"
-        },
-        {
-          "dimension": "editorialBasis",
-          "label": "vorhandene redaktionelle Grundlage",
-          "contribution": 0.096,
-          "value": 0.8,
-          "reason": "vorhandene redaktionelle Grundlage: 80 %"
-        },
-        {
-          "dimension": "contentGap",
-          "label": "Luecke im eigenen Bestand",
-          "contribution": 0.08,
-          "value": 1,
-          "reason": "Luecke im eigenen Bestand: 100 %"
-        }
-      ],
-      "saturation": {
-        "value": 0,
-        "measured": false,
-        "explanation": "Keiner der 26 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
-      },
-      "externalInterest": {
-        "available": false,
-        "value": null,
-        "state": "NOT_ACTIVE",
-        "activationRequired": true,
-        "carriesWeight": false,
-        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
-      },
-      "externalIntelligenceState": "NOT_ACTIVE",
-      "saturationPenalty": 0,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: externer Trend, Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
-      "predictsPerformance": false,
-      "audienceFrame": {
-        "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
-        "basis": "BOOTSTRAP",
-        "targetAudience": "Breites deutschsprachiges Investment-Publikum, vom interessierten Einsteiger bis zum erfahrenen Anleger.",
-        "assumedKnowledge": "Grundbegriffe wie Aktie, Kurs, Gewinn und Dividende. NICHT vorausgesetzt: Vision-Universe-Kenntnis, Tickersymbole, interne Scores, Quant-Methodik.",
-        "whyNow": "Stand der Datenlage: 2026-09-11.",
-        "family": "STOCK_STORY",
-        "familyBasis": "TOPIC",
-        "whyCare": "Es beantwortet eine Frage, die sich jemand ohnehin stellt: Was ist bei diesem Unternehmen gerade los?",
-        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
-        "publicEntityNames": [
-          "Exxon Mobil Corporation"
-        ],
-        "internalTermsToExplain": [],
-        "internalTermsNotSuitableForHook": [
-          "Technical Opportunity Score",
-          "Setup-Rang",
-          "Perzentil",
-          "z-Score",
-          "TREND_STRUCTURE",
-          "VOLATILITY",
-          "MOMENTUM",
-          "ATR",
-          "SMA",
-          "methodischer Rang",
-          "Trendwert",
-          "Faktorprämie",
-          "VOLUME",
-          "SETUP",
-          "PROJECTION_AUXILIARY"
-        ],
-        "suggestedHookStrategy": "value_first",
-        "suggestedVisualStrategy": "SCORE",
-        "predictsPerformance": false,
-        "findings": []
-      },
-      "evidenceCoverage": {
-        "statements": 1,
-        "sufficient": false,
-        "rejectedValues": 0,
-        "storyPotential": "NUR_MIT_ERGAENZUNG"
       }
     },
     {
@@ -22639,8 +22639,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 2.0172106439053793e-9,
-          "reason": "Der Anlass liegt 693 h zurueck."
+          "value": 1.2782186446269283e-9,
+          "reason": "Der Anlass liegt 709 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -22849,8 +22849,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 2.0172106439053793e-9,
-          "reason": "Der Anlass liegt 693 h zurueck."
+          "value": 1.2782186446269283e-9,
+          "reason": "Der Anlass liegt 709 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -23059,8 +23059,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 2.0172106439053793e-9,
-          "reason": "Der Anlass liegt 693 h zurueck."
+          "value": 1.2782186446269283e-9,
+          "reason": "Der Anlass liegt 709 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -23340,8 +23340,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -23387,8 +23387,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -23459,7 +23459,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:aar-corp:bxp-inc-:compania-de-minas-buenaventura:ftai-aviation-class-a:four-seasons-education-cayman-:gilead-sciences:incyte:kite-realty-group-trust:organogenesis-holdings-class-a:vicor:gewinne-beschleunigen",
@@ -23683,8 +23683,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -23730,8 +23730,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -23802,7 +23802,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:asml-holding:advanced-micro-devices:crowdstrike-holdings-class-a:fortinet:lumentum-holdings:marvell-technology:nebius-group-class-a:palo-alto-networks:teradyne:warner-bros-discovery-class-a:ndx-staerkste",
@@ -24026,8 +24026,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -24073,8 +24073,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -24145,7 +24145,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:arcosa:arista-networks:c-f-financial:digitalbridge-group-class-a:distribution-solutions-group:f5-inc:itau-unibanco-holding:keysight-technologies:lumentum-holdings:xp-inc-class-a:new-52-week-highs",
@@ -24363,8 +24363,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -24410,8 +24410,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -24482,7 +24482,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:albemarle:amprius-technologies:enersys:fluence-energy-class-a:rivian-automotive-class-a:ses-ai-class-a:sociedad-quimica-y-minera-de-chile:solid-power-class-a:stem-inc-class-a:tesla:thema-batterien-energiespeicher",
@@ -24700,8 +24700,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -24747,8 +24747,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -24819,7 +24819,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:astronics:cpi-aerostructures:ducommun:embraer:fact-ii-acquisition-class-a:moog-class-a:palantir-technologies-class-a:park-aerospace:sifco-industries:science-applications-international:thema-defense-aerospace",
@@ -25037,8 +25037,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -25084,8 +25084,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -25156,7 +25156,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:aeries-technology-class-a:bowman-consulting-group:forrester-research:huron-consulting-group:information-services-group:laureate-education:mistras-group:tal-education-group:team:youdao:thema-dienstleistungen-bildung-personal",
@@ -25374,8 +25374,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -25421,8 +25421,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -25493,7 +25493,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:aerovironment:archer-aviation-class-a:draganfly:general-dynamics:kratos-defense-security-solutions:l3harris-technologies:ondas-holdings:palantir-technologies-class-a:rtx-corp:unusual-machines:thema-drohnen-autonome-systeme",
@@ -25711,8 +25711,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -25758,8 +25758,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -25830,7 +25830,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:all-infuturetech-alliance:atlanta-braves-holdings-class-a:atlanta-braves-holdings-class-c:buuu-group-class-a:caesars-entertainment:codere-online-luxembourg:life-time-group-holdings:madison-square-garden-entertainment-class-a:madison-square-garden-sports-class-a:pursuit-attractions-and-hospitality:thema-freizeit-entertainment",
@@ -26048,8 +26048,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -26095,8 +26095,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -26167,7 +26167,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:apple-hospitality-reit:chatham-lodging-trust:comstock-holding-co-class-a:corecivic:diamondrock-hospitality:lxp-industrial-trust:marriott-vacations-worldwide:pebblebrook-hotel-trust:rlj-lodging-trust:st-joe:thema-immobilien-reits",
@@ -26385,8 +26385,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -26432,8 +26432,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -26504,7 +26504,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:avita-medical:alpha-tau-medical:biolife-solutions:butterfly-network-class-a:ceribell:haemonetics:myomo:orchestra-biomed-holdings:revvity:sight-sciences:thema-medizintechnik",
@@ -26722,8 +26722,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -26769,8 +26769,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -26841,7 +26841,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:delek-us-holdings:hf-sinclair:marathon-petroleum:pbf-energy-class-a:par-pacific-holdings:petroleo-brasileiro-s-a-petrobras:phillips-66:sasol:ultrapar-participacoes:valero-energy:thema-oel-gas-versorger",
@@ -27055,8 +27055,8 @@
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 51,
-      "rawScore": 51,
+      "score": 50,
+      "rawScore": 50,
       "available": true,
       "state": "VERIFIED",
       "coverage": 0.6,
@@ -27102,8 +27102,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.06768635738059918,
-          "reason": "Der Anlass liegt 93 h zurueck."
+          "value": 0.04288990059226643,
+          "reason": "Der Anlass liegt 109 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -27174,7 +27174,7 @@
       },
       "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 51 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
+      "explanation": "Opportunity Score 50 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema, Passung zur Plattform.",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ballard-power-systems:bloom-energy-class-a:fuelcell-energy:hyzon-motors-class-a:linde:plug-power:thema-wasserstoff",
@@ -27229,9 +27229,9 @@
   "families": {
     "MAGAZINE_STORY": 2,
     "REPORT_STORY": 1,
+    "STOCK_STORY": 4,
     "RANKING": 22,
-    "MEGATREND": 54,
-    "STOCK_STORY": 4
+    "MEGATREND": 54
   },
   "familyCount": 5,
   "unavailableDimensions": [
