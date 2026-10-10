@@ -350,3 +350,18 @@ class FTTM7DerivedQuarterInOneClassTests(unittest.TestCase):
         fact = resolver.ttm("net_income", "2011-11-20")
         self.assertTrue(fact.available, fact.reason)
         self.assertAlmostEqual(fact.value, (132210000 - 90701000) + 46942000 + 57022000 + 55358000, delta=1)
+
+
+class FTTM7StoredFactbookTests(unittest.TestCase):
+    def test_class_evidence_survives_the_stored_factbook(self):
+        # pipeline._rehydrate liest distinguish_classes als [Klasse, Klasse, verfuegbar seit]; ohne das Datum waere der
+        # gespeicherte Stand wieder vorausschauend (Apartment Income REIT 2021-08-20, Red Team R3 CRITICAL-1).
+        from quant.sec import pipeline
+        _, calendar, factbook, resolver = build("AIRC21")
+        document = json.loads(json.dumps({"cik": factbook.cik, "profile": None, "calendar": calendar.to_dict(),
+                                          "factbook": factbook.to_dict()}))
+        stored = PeriodResolver(pipeline._rehydrate(document), REGISTRY)
+        for as_of in ("2021-08-20", "2021-11-20", "2022-05-20"):
+            a, b = resolver.ttm("net_income", as_of), stored.ttm("net_income", as_of)
+            self.assertEqual((a.available, a.value, a.reason), (b.available, b.value, b.reason), as_of)
+        self.assertAlmostEqual(stored.ttm("net_income", "2021-08-20").value, -84858000.0, delta=1)
