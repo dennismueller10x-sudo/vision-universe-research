@@ -7,7 +7,8 @@ import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {versionConsumerAssets} from './version-consumer-assets.mjs';
-import {downloadGood,goodState,goodView} from './refresh-storage.mjs';
+import {downloadGood,goodState,goodView,activeNamespace} from './refresh-storage.mjs';
+import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
@@ -71,19 +72,20 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
  // A healthy rolling GOOD must not depend on the fixed bootstrap remaining
  // younger than the consumer TTL. Legacy is used only until the first GOOD.
  let result;
- const refreshed=await downloadGood(driver,{output:resolve(release,'company-intelligence/data')});
+ const namespace=await activeNamespace(driver);
+ const refreshed=await downloadGood(driver,{namespace,output:resolve(release,'company-intelligence/data')});
  if(refreshed){
   const {good,...publicResult}=refreshed;
   for(const path of ['company-intelligence/config/rollout.js','quant/release-bundle.js']){
    const file=resolve(release,path);if(!existsSync(file))continue;
    const text=readFileSync(file,'utf8');
    if(!text.includes(approval.consumerGeneration))throw Error('REFRESH_ROLLOUT_BASELINE_MISMATCH');
-   writeFileSync(file,text.replaceAll(approval.consumerGeneration,good.generation));
+   writeFileSync(file,good.manifest.scope==='PER_ISSUER_ELIGIBILITY'?eligibilityRollout(text,good.manifest):text.replaceAll(approval.consumerGeneration,good.generation));
   }
-  const observedBytes=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
+  const observedBytes=await driver.get(prefixFor(namespace)+'observed.json');
   const observed=observedBytes?JSON.parse(observedBytes):{};
   writeFileSync(resolve(release,'company-intelligence-refresh.json'),JSON.stringify(safePublicRefresh(good.manifest,{...good.health,...observed},good.inventory))+'\n');
-  result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:46,issuers:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
+  result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:good.manifest.tickers.length,issuers:good.manifest.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(good.manifest.eligibility).length:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
   writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify(result)+'\n');
  }else result=await verifyProductionConsumer(driver,release);
  versionConsumerAssets(release);return result;

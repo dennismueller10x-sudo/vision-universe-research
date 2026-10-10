@@ -6,7 +6,10 @@ import {pathToFileURL} from 'node:url';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {createFsDriver} from '../market/storage/fs-driver.mjs';
 import {approvedForPublication} from './production-approval.mjs';
+import {eligibilityValid} from './universe-approval.mjs';
+import {objectPool} from './bounded-objects.mjs';
 export const MAX = 512 * 1024;
+export const MAX_MANIFEST = 4 * 1024 * 1024;
 const sha = b => createHash('sha256').update(b).digest('hex');
 const ID = '(?:iss_cik_\\d{10}|vu_[a-f0-9]{14})';
 export function allowedAsset(path) {
@@ -17,15 +20,16 @@ export function prefixFor(namespace) {
   return `v1/company-intelligence/consumer/${namespace}/`;
 }
 export function validateManifest(m) {
-  if (!m || (m.slot !== undefined && ![0, 1].includes(m.slot)) || m.schema !== 1 || !/^[a-f0-9]{24}$/.test(m.generation || '') || !Array.isArray(m.tickers) || !m.tickers.length || m.tickers.length > 100 ||
-      m.tickers.some(t => !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(t)) || !m.assets || !m.assets['index.json'] || Object.keys(m.assets).length > 250 ||
+  const eligible=m?.scope==='PER_ISSUER_ELIGIBILITY'&&eligibilityValid(m);
+  if (!m || (m.slot !== undefined && ![0, 1].includes(m.slot)) || m.schema !== 1 || !/^[a-f0-9]{24}$/.test(m.generation || '') || !Array.isArray(m.tickers) || !m.tickers.length || m.tickers.length > (eligible?20000:100) ||
+      m.tickers.some(t => !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(t)) || !m.assets || !m.assets['index.json'] || Object.keys(m.assets).length > (eligible?14000:250) || Buffer.byteLength(JSON.stringify(m))>MAX_MANIFEST ||
       !Number.isFinite(Date.parse(m.generatedAt)) || Object.entries(m.assets).some(([p, v]) => !allowedAsset(p) || (p !== 'index.json' && !p.startsWith('snapshots/' + m.generation + '/')) || !/^[a-f0-9]{64}$/.test(v?.sha256 || '') || !Number.isSafeInteger(v.bytes) || v.bytes <= 0 || v.bytes > MAX)) throw new Error('INVALID_CONSUMER_MANIFEST');
   return m;
 }
 async function manifest(driver, key) {
   const bytes = await driver.get(key);
   if (!bytes) return null;
-  if (bytes.length > MAX) throw new Error('INVALID_CONSUMER_MANIFEST');
+  if (bytes.length > MAX_MANIFEST) throw new Error('INVALID_CONSUMER_MANIFEST');
   return validateManifest(JSON.parse(bytes));
 }
 // Validate every local object before the first remote write. A correct hash alone
@@ -52,7 +56,10 @@ export function preflight(root, m, prior = null, {localReview = false} = {}) {
     const missingTickers = prior.tickers.filter(t => !m.tickers.includes(t));
     const ids = new Set(issuerPaths.map(p => p.split('/').at(-1)));
     const missingIssuers = Object.keys(prior.assets).filter(p => p !== 'index.json' && !p.includes('/lookup/') && !ids.has(p.split('/').at(-1)));
-    if (missingTickers.length || missingIssuers.length) throw new Error('SHRUNK_PUBLICATION_REFUSED');
+    if(m.scope==='PER_ISSUER_ELIGIBILITY'){
+      const lost=missingIssuers.length;
+      if(lost>Math.max(10,Math.floor(Object.keys(prior.eligibility||{}).length*0.02)))throw new Error('ELIGIBLE_ISSUER_COLLAPSE_REFUSED');
+    }else if (missingTickers.length || missingIssuers.length) throw new Error('SHRUNK_PUBLICATION_REFUSED');
   }
   const lookups = Array.isArray(index.lookupShards) ? index.lookupShards.map(prefix => {
     const lookup = assets.get(`snapshots/${m.generation}/lookup/${prefix}.json`)?.data;
@@ -74,6 +81,7 @@ export function preflight(root, m, prior = null, {localReview = false} = {}) {
     const p = assets.get(path).data;
     if (!localReview && !approved && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || ['CATALOGUE_AND_EXISTING_FACTS','OWNED_IR_SEC_REVIEW','RESTORED_OWNED_IR_SEC_REVIEW'].includes(p.previewBasis))) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
     if (p.companyId + '.json' !== path.split('/').at(-1) || p.schema !== index.schema || p.state !== 'AVAILABLE' || p.generatedAt !== m.generatedAt) throw new Error('INVALID_PUBLIC_COMPANY');
+    if(m.scope==='PER_ISSUER_ELIGIBILITY'&&JSON.stringify(p.eligibility?.modules)!==JSON.stringify(m.eligibility[p.companyId]?.modules))throw new Error('MODULE_ELIGIBILITY_MISMATCH');
     for (const key of ['news','events','earnings','filings','calls','timeline']) {
       if (!Array.isArray(p[key]) || p[key].length > 200 || p[key].some(row => row?.companyId !== p.companyId)) throw new Error('INVALID_PUBLIC_SECTIONS');
     }
@@ -94,12 +102,14 @@ function contentCounts(assets) {
 }
 async function intactGeneration(driver, prefix, meta) {
   const objects = new Map();
-  for (const [path, expected] of Object.entries(meta.assets)) {
+  let valid=true;
+  await objectPool(Object.entries(meta.assets),async ([path, expected])=>{
     const key = prefix + `slot-${meta.slot || 0}/` + (path === 'index.json' ? path : path.split('/').slice(2).join('/'));
     const bytes = await driver.get(key);
-    if (!bytes || bytes.length !== expected.bytes || sha(bytes) !== expected.sha256) return null;
-    try { objects.set(path, {bytes, data:JSON.parse(bytes)}); } catch { return null; }
-  }
+    if (!bytes || bytes.length !== expected.bytes || sha(bytes) !== expected.sha256) {valid=false;return;}
+    try { objects.set(path, {bytes, data:JSON.parse(bytes)}); } catch { valid=false; }
+  });
+  if(!valid)return null;
   return {...meta, contentCounts:contentCounts(objects)};
 }
 export async function readAsset(driver, {namespace, asset, now = Date.now()}) {
@@ -142,7 +152,7 @@ export async function publish(driver, {namespace, directory}) {
   m.contentCounts = contentCounts(checked);
   m.slot = prior?.generation === m.generation ? prior.slot : prior ? 1 - (prior.slot || 0) : 0;
   let put = 0, unchanged = 0, bytes = 0;
-  for (const [path, meta] of Object.entries(m.assets)) {
+  await objectPool(Object.entries(m.assets),async ([path, meta])=>{
     const data = checked.get(path).bytes;
     const key = prefix + `slot-${m.slot}/` + (path === 'index.json' ? path : path.split('/').slice(2).join('/'));
     const existing = await driver.get(key);
@@ -153,7 +163,7 @@ export async function publish(driver, {namespace, directory}) {
       const verified = await driver.get(key);
       if (!verified || sha(verified) !== meta.sha256) throw new Error('CONSUMER_UPLOAD_FAILED');
     }
-  }
+  });
   if (prior?.generation !== m.generation) {
     if (prior) await driver.put(prefix + 'previous.json', Buffer.from(JSON.stringify(prior)));
     await driver.put(prefix + 'manifest.json', Buffer.from(JSON.stringify(m)));
