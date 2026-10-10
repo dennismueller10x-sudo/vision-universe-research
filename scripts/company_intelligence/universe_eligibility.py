@@ -24,6 +24,7 @@ from .store import atomic_json, dumps
 VERSION = 'issuer-eligibility-1.0.0'
 POLICY = 'OWNED_IR_SEC_METADATA_PREVIEW_V1'
 MODULES = ('profile', 'aktuelles', 'financials', 'whatChanged', 'nextEvent', 'calls', 'documents')
+DISPLAY_METRICS = {'revenue','eps_diluted','free_cash_flow','gross_margin','operating_margin','net_income','cash_and_equivalents','total_debt'}
 DOCUMENT_TYPES = {'FINANCIAL_REPORT', 'ANNUAL_REPORT', 'QUARTERLY_REPORT', 'PRESENTATION',
                   'COMPANY_TRANSCRIPT', 'PREPARED_REMARKS', 'SHAREHOLDER_LETTER',
                   'MANAGEMENT_COMMENTARY', 'CALL_RECORDING', 'WEBCAST', 'EARNINGS_WEBCAST'}
@@ -95,7 +96,7 @@ def financial_summary(value, cid, now):
                 m['yoy' if comparison != 'previousQuarter' else 'qoq'] = None
         metrics[key] = m
     ends = [m['current']['periodEnd'] for m in metrics.values() if m['current'].get('periodEnd')]
-    if not metrics or not ends:
+    if not metrics or not ends or not DISPLAY_METRICS.intersection(metrics):
         return {'state': 'UNAVAILABLE', 'reason': 'NO_VALID_NORMALIZED_METRICS'}, 'NORMALIZATION_OR_UNIT_INVALID'
     end = max(ends)
     if f.get('reportingPeriod') and f['reportingPeriod'] != end:
@@ -266,7 +267,8 @@ def generate(store, companies, output, now):
               'activeSourcesByType': dict(Counter(s.get('type') for s in sources if s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url')))),
               'sourceHealth': dict(Counter('BROKEN' if s.get('lastError') and any(x in s['lastError'] for x in ('404','410')) else 'TEMPORARY_FAILURE' if s.get('failureCount') else 'STALE' if (s.get('lastSuccess') or '') < (datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(days=7)).isoformat().replace('+00:00','Z') else 'HEALTHY' for s in sources)),
               'consumerBytes': sum(v['bytes'] for v in assets.values()), 'consumerAssets': len(assets), 'privateOperationalRowsIncluded': False}
+    public_eligibility = {cid: {k: rows[cid][k] for k in ('status','modules','tickers')} for cid in sorted(values)}
     manifest = {'schema': 1, 'generation': digest, 'generatedAt': now, 'assets': assets, 'tickers': sorted(members), 'sourceUsagePolicy': POLICY,
-                'scope': 'PER_ISSUER_ELIGIBILITY', 'eligibilityVersion': VERSION, 'eligibleIssuers': sorted(values), 'releaseState': 'REVIEW_ONLY'}
+                'scope': 'PER_ISSUER_ELIGIBILITY', 'eligibilityVersion': VERSION, 'eligibility': public_eligibility, 'releaseState': 'REVIEW_ONLY'}
     atomic_json(output / 'manifest.json', manifest)
     return report, {'schema': 1, 'version': VERSION, 'generation': digest, 'sourceUsagePolicy': POLICY, 'issuers': rows}

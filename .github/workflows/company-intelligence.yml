@@ -77,7 +77,7 @@ permissions:
 concurrency:
   # Consumer-only release jobs read the frozen accepted checkpoint and serialize
   # their own namespace. They neither evict nor write the private polling state.
-  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.continuous_refresh == 'full-qa' && format('company-intelligence-full-qa-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.continuous_refresh == 'full-qa' && format('company-intelligence-full-qa-{0}', github.run_id) || inputs.continuous_refresh == 'universe-audit' && format('company-intelligence-universe-audit-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   universe-audit:

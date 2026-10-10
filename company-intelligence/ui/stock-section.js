@@ -29,7 +29,7 @@ function materialName(d){
  else if(d.date&&d.publicationDateStatus!=='NOT_PROVIDED')name+=' · Datum '+day(d.date);
  return name;
 }
-function knownDate(item){return item.publishedAt||item.date||null;}
+function knownDate(item){return item.publishedAt||item.publishedDate||item.date||null;}
 const newsTypes={Earnings:'Geschäftszahlen',Guidance:'Ausblick',Operations:'Operatives Update',Product:'Produkt',Management:'Management','M&A':'M&A',Buyback:'Aktienrückkauf',Dividend:'Dividende',Financing:'Finanzierung',Regulation:'Regulatorisch',Contract:'Auftrag',Partnership:'Partnerschaft',Cybersecurity:'Cybersicherheit',Litigation:'Rechtsverfahren',Bankruptcy:'Insolvenz','Investor Day':'Investorentag',Conference:'Investorenveranstaltung'};
 const bases={PREVIOUS_QUARTER_YOY_GROWTH:'Wachstumsrate des Vorquartals',PREVIOUS_YEAR:'Vorjahr',YEAR_AGO_QUARTER:'Vorjahresquartal'};
 function pill(text){return node('span',text,'ci-pill');}
@@ -112,7 +112,7 @@ function render(host,payload){
   if(sentences.length>2&&profile.description.length>260){const count=sentences.slice(0,2).join('').length<=220?2:1;p.textContent=sentences.slice(0,count).join('').trim();const d=details(s,'Mehr zum Unternehmen');d.append(node('p',sentences.slice(count).join('').trim(),'ci-profile-more'));}
   const actions=node('div',undefined,'ci-actions');link(actions,'Website',profile.officialWebsite);if(actions.childElementCount)s.append(actions);
   if(profile.stale)s.append(node('p','Ältere Unternehmensbeschreibung','ci-warning'));
- }else host.append(node('p','Eine ausreichend belegte deutsche Beschreibung ist noch nicht verfügbar.','ci-missing-profile ci-meta'));
+ }
  if(vm.recent.length){
   const s=block(host,'Aktuelles');s.append(pill('Letzte 90 Tage'));
   for(const e of vm.recent.slice(0,3))s.append(story(e,now));
@@ -140,6 +140,13 @@ function render(host,payload){
  const remaining=documents([...(payload.materials||[]),...(payload.filings||[]).filter(f=>/^(?:10-[KQ]|20-F|40-F)$/.test(f.form||'')).map(f=>({url:f.sourceUrl,type:'FINANCIAL_REPORT',form:f.form,filedAt:f.date}))]);
  if(remaining.length)groups.push({title:'Weitere Unterlagen',docs:remaining.slice(0,8)});
  if(groups.length||historicalCalls.length||vm.archive.length){
+  // Documents/calls can be the only useful approved module. Show a compact
+  // entry point then retain the archive and provenance in the secondary layer.
+  if(!profile&&!vm.recent.length&&!vm.metrics.length&&!vm.confirmed.length&&!vm.estimates.length){
+   const s=block(host,historicalCalls.length?'Calls / Webcasts':'Berichte & Präsentationen');
+   for(const c of historicalCalls.slice(0,2)){const n=node('article',undefined,'ci-story');n.append(node('p','Ergebnisgespräch · '+day(c.startsAt||c.date),'ci-headline'));for(const [key,label] of [['webcastUrl','Webcast'],['replayUrl','Aufzeichnung'],['transcriptUrl','Unternehmenstranskript']])link(n,label,c[key]);s.append(n);}
+   if(!historicalCalls.length)for(const doc of groups.flatMap(g=>g.docs).filter(d=>d.type!=='SEC_FACT_FILING_REFERENCE').slice(0,3))link(s,materialName(doc),doc.url);
+  }
   const d=details(host,'Dokumente & Quellen');d.classList.add('ci-documents');
   if(historicalCalls.length){const s=block(d,'Calls / Webcasts');for(const c of historicalCalls.slice(0,3)){const n=node('article',undefined,'ci-story');n.append(node('p','Ergebnisgespräch · '+day(c.startsAt||c.date,c.startsAt?'Europe/Berlin':'UTC'),'ci-headline'));for(const [field,label] of [['webcastUrl','Webcast'],['replayUrl','Aufzeichnung'],['transcriptUrl','Unternehmenstranskript']])if(c[field])link(n,label,c[field]);s.append(n);}}
   for(const group of groups.slice(0,5)){d.append(node('p',group.title,'ci-headline'));for(const doc of group.docs)link(d,(doc.type==='SEC_FACT_FILING_REFERENCE'&&f?.fiscalQuarter&&f?.fiscalYear&&Object.values(f.metrics||{}).some(m=>m.current?.filingId===doc.filingId)?f.fiscalQuarter+' '+f.fiscalYear+' · Beleg der Finanzzahlen':materialName(doc))+'',doc.url);if(group.docs.some(doc=>doc.publicationDateStatus==='NOT_PROVIDED'||(!doc.filedAt&&!doc.date)))d.append(node('p','Veröffentlichungsdatum nicht angegeben','ci-meta'));}
