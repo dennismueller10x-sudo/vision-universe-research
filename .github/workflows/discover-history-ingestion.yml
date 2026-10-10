@@ -1,0 +1,50 @@
+name: Discover Europe full-history private collection
+on:
+  push:
+    branches: [ops/discover-global-history-20261010]
+    paths: [scripts/marketstack/discover-history-live-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: discover-global-history-private
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reviewed connector and credit guards
+        run: node --test providers/marketstack/tests/audit.test.mjs providers/marketstack/tests/europe-credits.test.mjs
+      - name: Verify fixed 449 primary listings and one-use execution
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/collect-discover-history.mjs guard
+      - name: Bounded history, split and latest EOD collection
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/collect-discover-history.mjs live
+      - name: Encrypt private evidence and failed-run accounting
+        if: always()
+        run: node scripts/marketstack/collect-discover-history.mjs seal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: discover-europe-history-private-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-discover-history-encrypted/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Verify no tracked product/data writes
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Remove plaintext
+        if: always()
+        run: node scripts/marketstack/collect-discover-history.mjs clean
