@@ -1,9 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {releaseHealth,updateAcceptedHealth} from '../release-health.mjs';
+import {releaseHealth,updateAcceptedHealth,acceptedHealthServed} from '../release-health.mjs';
 import {goodKey} from '../refresh-storage.mjs';
 const source={sourceGeneration:'private-current',privateCompanies:5120,health:{lastSuccessfulRefresh:'2026-10-10T14:36:59Z',lastSuccessfulMaterialRefresh:'2026-10-09T15:47:18Z'}};
 const options={privateGeneration:'private-current',checkpointSha256:'a'.repeat(64),expectedCheckpointSha256:'a'.repeat(64),generatedAt:'2026-10-10T16:50:17Z',builtAt:'2026-10-10T17:12:00Z',now:Date.parse('2026-10-10T18:00:00Z')};
+test('unchanged consumer generation cannot certify stale production health metadata',()=>{
+ const accepted={generation:'accepted',lastSuccessfulPrivateRefresh:'2026-10-10T14:36:59Z',lastSuccessfulConsumerBuild:'2026-10-10T17:12:00.000Z'};
+ const delivery={status:'PASS',generation:'accepted'};
+ const refresh={generation:'accepted',health:{lastSuccessfulPrivateRefresh:accepted.lastSuccessfulPrivateRefresh,lastSuccessfulConsumerBuild:accepted.lastSuccessfulConsumerBuild}};
+ assert.equal(acceptedHealthServed(delivery,refresh,accepted),true);
+ assert.equal(acceptedHealthServed(delivery,{...refresh,health:{...refresh.health,lastSuccessfulPrivateRefresh:'2026-10-10T05:54:50Z'}},accepted),false);
+ assert.equal(acceptedHealthServed(delivery,{...refresh,health:{...refresh.health,lastSuccessfulConsumerBuild:'2026-10-10T06:00:52.579Z'}},accepted),false);
+ assert.equal(acceptedHealthServed({...delivery,generation:'previous'},refresh,accepted),false);
+ assert.equal(acceptedHealthServed({...delivery,status:'FAILED'},refresh,accepted),false);
+});
 test('full release uses actual private refresh and historical accepted build, not rollback or repair time',()=>{
  const h=releaseHealth(source,options);assert.equal(h.lastSuccessfulRefresh,source.health.lastSuccessfulRefresh);assert.equal(h.lastSuccessfulConsumerBuild,'2026-10-10T17:12:00.000Z');assert.equal(h.lastSuccessfulMaterialRefresh,source.health.lastSuccessfulMaterialRefresh);
  for(const bad of [{privateGeneration:'wrong'},{expectedCheckpointSha256:'b'.repeat(64)},{builtAt:'2026-10-11T00:00:00Z'},{builtAt:'2026-10-10T15:00:00Z'}])assert.throws(()=>releaseHealth(source,{...options,...bad}));
