@@ -1,0 +1,340 @@
+{
+ "schema": "vu-minervini-rule-fidelity-verdict-1.0.0",
+ "createdAt": "2026-10-10T14:38Z",
+ "version": "minervini-adaptation-1.2.0-rf1 (Forschung, nie live)",
+ "question": "Liegt der MAIN-Recall von 3/15 an falsch formalisierten Regeln oder an diskretionaeren/nicht reproduzierbaren Teilen der Methode?",
+ "answer": {
+  "misses": 12,
+  "byMainClass": {
+   "PRE_PROFIT": 7,
+   "DATA_UNIVERSE": 3,
+   "PRACTICE_BEYOND_RULES": 2
+  },
+  "correctedBySourceBackedRule": 0,
+  "meaning": "Keiner der 12 verpassten Faelle wird durch eine quellenbelegte Regelkorrektur zum Treffer. 7 sind Aktien ohne Gewinn, fuer die keine abrufbare Regel existiert; 3 sind Daten-/Universumsgrenzen; 2 sind Ermessen/Einstiegsart. Ein echter Formalisierungsfehler (MR-SEPA-10) wurde gefunden und korrigiert; er betrifft Verlust->Gewinn-Wenden, die in den MAIN-Faellen nicht vorkommen."
+ },
+ "recall": {
+  "before": {
+   "k": 3,
+   "n": 15,
+   "value": 0.2,
+   "wilson95": [
+    0.07,
+    0.452
+   ]
+  },
+  "afterSourceBackedCorrections": {
+   "k": 3,
+   "n": 15,
+   "value": 0.2,
+   "wilson95": [
+    0.07,
+    0.452
+   ]
+  },
+  "evidence": "SEPA-Ergebnis in allen 15 MAIN-Faellen an jedem Tag des +-12-Tage-Fensters identisch zu 1.1.0 (Kern-Daten und P9-Daten); Universum/Trend/VCP unveraendert"
+ },
+ "fidelity": {
+  "ruleLevel": {
+   "MR-SEPA-10": {
+    "before": "LOW",
+    "after": "MEDIUM"
+   }
+  },
+  "areaLevel": {
+   "fundamental": {
+    "before": "LOW",
+    "after": "LOW",
+    "why": "Kernregeln des Bereichs (Ueberraschungen, Revisionen, institutionelle Nachfrage, Branchenfuehrerschaft) sind nicht oeffentlich oder nur Protokoll; sie senken den Bereich um eine Stufe"
+   },
+   "entry": {
+    "before": "LOW",
+    "after": "LOW",
+    "why": "Kernregeln VCP-05 (tight and light), ENT-02, ENT-03 (Cheat), ENT-04 (Power Play) nicht umgesetzt"
+   }
+  },
+  "replicationClaimAllowed": false,
+  "rule": "Mechanik des Repos (fidelityByArea/classify) mit einer Kopie des Regelbuchs 1.1.0, nur MR-SEPA-10 geaendert"
+ },
+ "verdicts": [
+  {
+   "rule": "MR-SEPA-10",
+   "topic": "Pauschaler Ausschluss bei Vorjahres-EPS <= 0",
+   "verdict": "FORMALIZATION_ERROR",
+   "evidence": [
+    "Q-TURN-A",
+    "Q-TURN-B",
+    "Q-SMALLCAP-TURNAROUND"
+   ],
+   "finding": "Das Buch erlaubt Turnarounds ausdruecklich und nennt zwei Bedingungen (+100 % in 1-2 Quartalen bzw. TTM-EPS auf/ueber dem Altgipfel). Das Regelbuch beschreibt die Klausel selbst als zulaessig, die Umsetzung schliesst sie pauschal aus (bewusst, um keine Lesart zu erfinden, Fidelity LOW).",
+   "correction": "RF1: T-A (Wende) und T-B (Altgipfel); kein neuer Parameter",
+   "affected": {
+    "MAIN": [],
+    "SENSITIVITY_ENTRY_sepa_flips": [
+     "GT-020 MU",
+     "GT-006 DXCM (Entry-Typ Pullback, nicht modelliert)",
+     "GT-031 AVGO (VCP BASE_TOO_SHORT)"
+    ]
+   },
+   "fidelityRule": {
+    "before": "LOW",
+    "after": "MEDIUM",
+    "why": "Zweig mit Buchzitat umgesetzt; nicht formalisiert: „near“ (Altgipfel), „very strong“ (nur q0 > 0), Beschleunigung im Zweig (V1 entfaellt), Lookback des Altgipfels = gesamte PIT-Historie"
+   },
+   "knownWeakness": "T-A ist grosszuegig: 25 % der Zulassungen haben q0-EPS < 0,05 USD, 18 % Nettomarge < 2 % (Populationstest). Nicht korrigiert, weil jede Verschaerfung eine ungequellte Zahl braeuchte."
+  },
+  {
+   "rule": "MR-SEPA-00/MR-SEPA-10 (Loss->Loss)",
+   "topic": "Wachstumstitel ohne Gewinn (Vorjahr UND aktuelles Quartal negativ)",
+   "verdict": "NO_WRITTEN_RULE",
+   "evidence": [
+    "Q-POWERPLAY-FUND",
+    "Q-TRACKRECORD",
+    "Q-AMAZON-1997"
+   ],
+   "finding": "In den abrufbaren Quellen gibt es keine Eintrittsregel fuer Aktien ohne Gewinn ausser dem Power Play („the only situation I will enter with a dearth of fundamentals“). Minervinis eigene Kaeufe zeigen es dennoch (7 von 15 MAIN-Faellen; Amazon 1997). Die Turnaround-Klausel deckt sie nicht ab: Sie verlangt „very strong“ aktuelle Gewinne, die Faelle sind Loss->Loss.",
+   "correction": "keine (keine Quelle fuer eine Regel)",
+   "affected": {
+    "MAIN": [
+     "GT-001 ZGNX",
+     "GT-003 ROKU",
+     "GT-004 ACAD",
+     "GT-007 TNDM",
+     "GT-010 RVNC",
+     "GT-012 REPL",
+     "GT-026 SG"
+    ]
+   },
+   "gaapEps": {
+    "ZGNX": [
+     -0.87,
+     -0.86
+    ],
+    "ROKU": [
+     -0.09,
+     -0.07
+    ],
+    "ACAD": [
+     -0.38,
+     -0.51
+    ],
+    "TNDM": [
+     -0.25,
+     -0.4
+    ],
+    "RVNC": [
+     -1.12,
+     -0.86
+    ],
+    "REPL": [
+     -0.44,
+     -0.3
+    ],
+    "SG": [
+     -0.13,
+     -0.24
+    ],
+    "lossNarrowed": [
+     "ACAD",
+     "TNDM",
+     "SG"
+    ],
+    "lossWidenedOrFlat": [
+     "ZGNX",
+     "ROKU",
+     "RVNC",
+     "REPL"
+    ]
+   },
+   "note": "Deskriptiv (SEC, Quartal vor dem Kauf): Umsatzwachstum ROKU +51 %, ACAD +46 %, TNDM +48 %, SG +21 %. ZGNX (Quartalsumsatz 0 gegen 2,7 Mio. im Vorjahr), RVNC (0,3 Mio. gegen 0) und REPL (kein Umsatz) hatten keinen nennenswerten Umsatz. Eine umsatzgetriebene Ausnahme (H-NEW) koennte damit hoechstens 4 von 7 Faellen erklaeren und ist eine Post-hoc-Beobachtung an 4 Datenpunkten, kein Befund; ohne Quelle nicht als Regel umgesetzt. Fuer die uebrigen 3 bleiben Katalysator (MR-SEPA-13, nicht oeffentlich) bzw. Ermessen.",
+   "revenueGrowthPct": {
+    "ROKU": 51.3,
+    "ACAD": 45.8,
+    "TNDM": 48.4,
+    "SG": 21.1,
+    "ZGNX": "kein Umsatz (0 gegen 2,696 Mio.)",
+    "RVNC": "0,3 Mio. gegen 0",
+    "REPL": "kein Umsatz"
+   }
+  },
+  {
+   "rule": "EPS-Definition",
+   "topic": "GAAP gesamt / GAAP fortgefuehrt / bereinigt (Non-GAAP)",
+   "verdict": "UNRESOLVED_NO_PRIMARY_STATEMENT",
+   "evidence": [
+    "Q-CORE"
+   ],
+   "finding": "Minervini verlangt Gewinne „from core operations“ ohne Einmalposten (Q-CORE). Eine Aussage, ob bereinigte Unternehmenszahlen oder GAAP gemeint sind, wurde nicht gefunden. Oeffentlich und PIT verfuegbar sind GAAP gesamt und teils GAAP fortgefuehrt (Tag bei 7 von 32 Faellen); bereinigte Zahlen stehen nicht in XBRL (nur in 8-K-Anlagen). Bei den 7 Loss->Loss-Faellen aendert die fortgefuehrte Zahl nichts (ZGNX -0,87 gegen -0,87).",
+   "correction": "keine",
+   "affected": {
+    "MAIN": []
+   }
+  },
+  {
+   "rule": "MR-VCP-01 (Mindestlaenge 15 Sitzungen)",
+   "topic": "BASE_TOO_SHORT",
+   "verdict": "SOURCE_CONFIRMED",
+   "evidence": [
+    "Q-BASE-TOO-SHORT",
+    "Q-VCP-DURATION",
+    "Q-IPO-BASE"
+   ],
+   "finding": "Die Untergrenze von 3 Wochen ist quellenbelegt („Too Short a Time Period is Hazardous … anywhere from 3 weeks“; IPO-Basis „at least 3 to 5 weeks“). Eine Absenkung waere nicht quellenbelegt. Die 5 abgelehnten Faelle haben 3, 7, 9, 9, 13 Sitzungen.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-002 MTLS (9)",
+     "GT-007 TNDM (7)",
+     "GT-010 RVNC (9)",
+     "GT-016 RICK (13)",
+     "GT-018 DECK (3)"
+    ]
+   },
+   "caveat": "Die Pruefung bricht VOR der Kontraktionsanalyse ab; ob in diesen Faellen gueltige Kontraktionen vorliegen, ist aus den Ergebnissen nicht erkennbar. Das Buch nennt kuerzere Strukturen fuer andere Einstiege (Power Play: „some can emerge after only 12 days“; 3C-Cheat-Bereich)."
+  },
+  {
+   "rule": "MR-VCP-01 (Obergrenze 225 Sitzungen)",
+   "topic": "Maximale Basisdauer 45 Wochen",
+   "verdict": "SOURCE_MISATTRIBUTED",
+   "evidence": [
+    "Q-VCP-DURATION",
+    "Q-3C-DURATION",
+    "Q-BASE-TOO-SHORT"
+   ],
+   "finding": "Das Regelbuch (CF-02) stuetzt „3-45 Wochen“ auf tradershall 2019; diese Zahl steht in der heute abrufbaren Fassung dort nicht. 45 Wochen stehen in den Notizen von 2014 beim Cup des 3C-Cheat; fuer die VCP steht dort 60 Wochen, fuer Basen allgemein 65. Die Entscheidung „45 schlaegt 65, weil nicht abgerufen“ beruht auf einer falschen Zuordnung.",
+   "correction": "nur dokumentiert (Obergrenze 300 Sitzungen waere quellenbelegt); nicht implementiert, weil die Wirkung nur mit den privaten Kursen messbar ist",
+   "affected": {
+    "MAIN": []
+   }
+  },
+  {
+   "rule": "MR-SEPA-02 (Beschleunigung)",
+   "topic": "SEPA_NO_ACCELERATION",
+   "verdict": "SOURCE_CONFIRMED_AS_SCREEN",
+   "evidence": [
+    "Q-ACCEL",
+    "Q-ACCEL-SCREEN"
+   ],
+   "finding": "„Mehr als 90 % der groessten Gewinner zeigten Beschleunigung“ ist eine Aussage ueber Gewinner, kein Eintrittsgebot; in der SEPA-Filterliste steht Beschleunigung ueber mindestens drei Quartale. Die Ein-Schritt-Fassung ist schwaecher als die Filterliste. Keine Korrektur noetig.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-018 DECK (GAAP-EPS-Wachstum 26 % gegen 32 % im Vorquartal)"
+    ]
+   }
+  },
+  {
+   "rule": "MR-SEPA-04 (Umsatz > Vorjahr)",
+   "topic": "SEPA_REVENUE_NOT_GROWING",
+   "verdict": "DIRECTION_SOURCED_THRESHOLD_VU",
+   "evidence": [
+    "Q-SALES-BACKED"
+   ],
+   "finding": "Die Richtung ist belegt („earnings growth backed by brisk sales“). Die Schwelle 0 ist eine VU-Formalisierung. RICK kaufte er bei -20,7 % Umsatz (Pandemie-Vergleich) mit EPS +78 %: Ermessen, keine Korrektur belegbar.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-016 RICK"
+    ]
+   }
+  },
+  {
+   "rule": "MR-TT-08 (RS >= 70)",
+   "topic": "VU-Proxy fuer IBD-RS",
+   "verdict": "VU_PROXY",
+   "evidence": [],
+   "finding": "IBD-RS ist proprietaer; der VU-Perzentilrang ist ein Proxy. DECK 65 gegen 70. Ohne IBD-Daten nicht entscheidbar.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-018 DECK"
+    ]
+   }
+  },
+  {
+   "rule": "MR-RSK-01/02 (Stopp <= 10 %)",
+   "topic": "STOP_TOO_WIDE",
+   "verdict": "SOURCE_CONFIRMED",
+   "evidence": [],
+   "finding": "Absolute 10-%-Grenze ist belegt (Regelbuch, hohe Quellenstaerke). AMD 22.07.2020 wird dennoch drei Tage frueher erkannt.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": []
+   }
+  },
+  {
+   "rule": "MR-ENT-04 (Power Play)",
+   "topic": "fehlendes Setup, einzige belegte Ausnahme von den Fundamentaldaten",
+   "verdict": "MISSING_SETUP",
+   "evidence": [
+    "Q-POWERPLAY-DEF",
+    "Q-FLAG",
+    "Q-POWERPLAY-FUND"
+   ],
+   "finding": "Alle Zahlen stehen in der Quelle (+100 % in < 8 Wochen; Flagge 12 Tage bis 6 Wochen, Korrektur <= 20-25 %, <= 10 % oder VCP-Merkmale). Das Setup ist nicht implementiert. Es koennte gleichzeitig kurze Basen und fehlende Gewinne erklaeren. Ob es das tut, ist nicht gemessen (private Kurse noetig).",
+   "correction": "nicht umgesetzt; als vorab spezifizierte Diagnose beschrieben",
+   "affected": {
+    "MAIN": "unbekannt"
+   }
+  },
+  {
+   "rule": "MR-ENT-03 (Cheat / Low Cheat / 3C)",
+   "topic": "fehlende Einstiegsart",
+   "verdict": "MISSING_SETUP",
+   "evidence": [
+    "Q-3C-DURATION"
+   ],
+   "finding": "Teilweise belegt (Cup 3-45 Wochen, Cheat-Bereich 5-10 %), aber die Lage der „Pause“ im Cup ist diskretionaer. RICK nennt er selbst „Low Cheat“.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-016 RICK"
+    ]
+   }
+  },
+  {
+   "rule": "MR-UNI-01 / MR-SEPA-00 (Daten)",
+   "topic": "Auslandsemittenten, Personengesellschaft",
+   "verdict": "DATA_OR_UNIVERSE",
+   "evidence": [],
+   "finding": "MTLS (20-F), AEM (40-F) und DKL (Personengesellschaft ohne CIK, Dollarumsatz) sind Daten- bzw. Universumsgrenzen, keine Minervini-Regeln.",
+   "correction": "keine",
+   "affected": {
+    "MAIN": [
+     "GT-002 MTLS",
+     "GT-009 AEM",
+     "GT-014 DKL"
+    ]
+   }
+  }
+ ],
+ "validationChecks": {
+  "preregisteredPredictions": {
+   "total": 33,
+   "passed": 33,
+   "failed": []
+  },
+  "populationProperty": {
+   "issuers": 504,
+   "evaluations": 12790,
+   "violations": 0,
+   "errors": 0,
+   "sepa10Rejections": 6691,
+   "lossToLossShare": 0.838,
+   "admitShare": 0.09,
+   "revenueBlockedShare": 0.071
+  }
+ },
+ "notMeasured": [
+  "Wirkung auf die Entscheidung (Signal im Zeitfenster) bei MU und DXCM: private Kurse noetig",
+  "Power-Play-Vorbedingungen der 7 Loss->Loss-Faelle (H3): private Kurse noetig",
+  "Wirkung einer Obergrenze von 300 Sitzungen",
+  "Ob bereinigte Non-GAAP-Zahlen die Loss->Loss-Faelle positiv machen wuerden: nicht in XBRL, keine Quelle"
+ ],
+ "limits": [
+  "n = 15; Wilson-Intervall 7-45 %",
+  "Ground Truth aus Suchausschnitten, Quellenstaerke MEDIUM; „ist positioniert“ nennt den Kaufstag nicht",
+  "Keine Aussage Minervinis zur Fundamentalbasis dieser Kaeufe",
+  "Buecher nicht im Volltext gelesen; Zitate aus Leserhighlights/Blognotizen"
+ ]
+}
