@@ -309,6 +309,11 @@
                     range: opts.range || (card.priceSeries && card.priceSeries.range) || null };
     var host = el("div", { class: opts.klasse || "dx-lazy-media" });
     var ps = card.priceSeries;
+    if (card.region === 'EUROPE' && ps && ps.points && D().MicroChart) {
+      var chart = D().MicroChart.renderRange(ps.points, { width: w, height: h, segments: ps.segments, symbol: card.symbol, label: 'Tagesschlusskurse · unbereinigt · ' + card.currency });
+      if (chart) host.appendChild(chart);
+      return host;
+    }
     var Loader = D() && D().SeriesLoader;
     var Hub = D() && D().LiveHub;
     var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
@@ -468,7 +473,7 @@
     /* Ein Kurs, der nicht vom letzten Handelstag des Universums stammt,
        wird als solcher gekennzeichnet; seine "Tagesaenderung" waere die
        eines alten Tages und entfaellt (AIXC zeigte -39 % vom 29.09.). */
-    var altStand = staleAsOf(card);
+    var altStand = card.region === "EUROPE" ? dateShort(card.asOf) : staleAsOf(card);
     if (altStand) change = null;
 
     var gesehen = D() && D().memory && D().memory.opened(card.symbol);
