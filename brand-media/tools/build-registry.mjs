@@ -1,0 +1,77 @@
+// Erzeugt brand-media/registry/*.json aus den Charakter- und Studiodefinitionen.
+// Nur Planung: kein Asset hier ist "generiert". Status wird ausschliesslich ueber die Registry gepflegt.
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const out = process.argv[2] || join(root, 'registry');
+
+const CHARACTERS = [
+  { id: 'lea', name: 'LEA', age: 32, outfit: 'schwarze Lederjacke (Blazer-Schnitt), schwarzes Top, schwarze weite Hose, schwarze Stiefeletten', hair: 'blond, wellig, schulterlang', file: 'lea_master_original.png', gender: 'female' },
+  { id: 'david', name: 'DAVID', age: 34, outfit: 'schwarzer Strickpullover, schwarze Hose, weisse Sneaker, Armbanduhr', hair: 'dunkelbraun, leicht gewellt, kurzer Bart', file: 'david_master_original.png', gender: 'male' },
+  { id: 'marc', name: 'MARC', age: 52, outfit: 'beiges Overshirt, dunkles Shirt, dunkle Hose, weisse Sneaker, Armbanduhr', hair: 'silbergrau, zurueckgekaemmt, grauer Bart', file: 'marc_master_original.png', gender: 'male' },
+  { id: 'sofia', name: 'SOFIA', age: 29, outfit: 'heller beiger Grobstrickpullover, schwarze weite Hose, schwarze Stiefel', hair: 'dunkelbraun, lang, wellig', file: 'sofia_master_original.png', gender: 'female' },
+];
+
+const SHOTS = [
+  ['master', 'Masterbild frontal/3-4, sitzend am Tisch (Original)', 'Halbtotale, Augenhoehe'],
+  ['side-left', 'Seitenprofil von links', 'Profil 90 Grad, Augenhoehe'],
+  ['side-right', 'Seitenprofil von rechts', 'Profil 90 Grad, Augenhoehe'],
+  ['fullbody', 'Ganzkoerper stehend im Studio', 'Totale, leicht untersichtig 35 mm'],
+  ['seated-3q-left', 'Sitzend, Dreiviertel von links', '3/4 links, Brusthoehe'],
+  ['seated-front', 'Sitzend frontal, Haende auf dem Tisch', 'Frontal, Brusthoehe'],
+  ['expr-warm', 'Natuerlicher Ausdruck: leichtes Laecheln', 'Close-up 85 mm'],
+  ['expr-focused', 'Natuerlicher Ausdruck: nachdenklich/konzentriert', 'Close-up 85 mm'],
+  ['dialogue-a', 'Gespraechsszene: spricht zur Kamera links am Tisch', 'Over-the-shoulder, 50 mm'],
+  ['dialogue-b', 'Gespraechsszene: hoert zu, Blick zum Gegenueber', 'Over-the-shoulder, 50 mm'],
+];
+
+const STUDIO = [
+  ['empty-room', 'Leerer Raum'], ['two-persons', 'Raum mit zwei Personen (Lea, David)'],
+  ['four-persons', 'Raum mit vier Personen'], ['front', 'Frontalansicht CAM-A'],
+  ['side', 'Seitenansicht CAM-B'], ['three-quarter', 'Dreiviertelperspektive CAM-C'],
+  ['wide', 'Totale CAM-D'], ['detail-mug', 'Detail: Tasse/Laptop auf Tisch'],
+  ['detail-table', 'Detail: Tischoberflaeche'], ['detail-chair', 'Detail: Stuhl'],
+];
+
+const base = { qaStatus: 'NOT_GENERATED', releaseStatus: 'DRAFT', model: null, heygenId: null, format: null, path: null, sha256: null };
+const assets = [];
+const sha = (f) => createHash('sha256').update(readFileSync(join(root, 'originals', f))).digest('hex');
+
+for (const c of CHARACTERS) {
+  SHOTS.forEach(([key, desc, camera], i) => {
+    const isMaster = key === 'master';
+    assets.push({
+      assetId: `${c.id}-${key}`, kind: 'character', character: c.id, description: desc, camera, clothing: c.outfit,
+      originalReference: `originals/${c.file}`,
+      ...base,
+      ...(isMaster ? {
+        path: `originals/${c.file}`, format: 'PNG 1024x1536 (2:3), RGB', sha256: sha(c.file),
+        model: 'extern (vom Auftraggeber geliefert, Erzeuger unbekannt)', qaStatus: 'SOURCE_SUPPLIED',
+        releaseStatus: 'APPROVED', approvalNote: 'Im Auftrag Mission 01 ausdruecklich als verbindliche Masterreferenz benannt. Identitaetsvergleich gegen sich selbst entfaellt.',
+      } : { generationStatus: 'PLANNED', dependsOn: `${c.id}-master`, order: i }),
+    });
+  });
+}
+for (const [key, desc] of STUDIO) {
+  assets.push({ assetId: `studio-${key}`, kind: 'studio', character: null, description: desc, camera: key, clothing: null, originalReference: null, generationStatus: 'PLANNED', ...base });
+}
+
+const registry = {
+  schemaVersion: 'brand-media-asset-registry-1.0.0',
+  note: 'Nur Eintraege mit generationStatus != PLANNED und gesetztem path/sha256 sind echte Dateien. Alle anderen sind Planung, keine Platzhalter-Bilder.',
+  releaseStates: ['DRAFT', 'REVIEW', 'APPROVED', 'REJECTED'],
+  counts: { characterSlots: assets.filter(a => a.kind === 'character').length, studioSlots: STUDIO.length, existingFiles: assets.filter(a => a.path).length },
+  assets,
+};
+const avatars = {
+  schemaVersion: 'brand-media-avatar-registry-1.0.0',
+  note: 'heygen* bleibt null, bis ein Avatar nach Freigabe tatsaechlich angelegt wurde. Keine erfundenen IDs.',
+  legacy: { system: 'ATLAS', status: 'ZU_ERSETZEN', heygenGroupIds: { 'Atlas TR Style': 'b172e187701247a7945eef9aa6039a10', 'Avatar V7': 'ff561757ec45434ba20bdf73897cd540', 'Atlas V6': '4ad28a44564e4d9ebf795c7d01ab9a72', 'Atlas V5': '725c89e9c1ea498abc826d2f7218c566', 'Atlas V4': '2ac1b16d30e34ff490d1fba11c49a171', 'Atlas V3': '2b2362ead4f3463794dd393b77db2db3', 'Atlas Frau 2': '2bd172aa90d745be8da3c781a95a3de0', 'Atlas Frau': '9c532e636bc3476c9fd52103271b4b52', 'Atlas Neu': '42c11220157a4899a1cd208e9ee26bea' }, note: 'Nicht loeschen, solange ATLAS im Betrieb ist.' },
+  characters: CHARACTERS.map(c => ({ id: c.id, name: c.name, masterAssetId: `${c.id}-master`, masterPath: `originals/${c.file}`, masterSha256: sha(c.file), heygenAssetId: null, heygenAvatarGroupId: null, heygenLookIds: [], heygenDefaultVoiceId: null, consentStatus: 'NOT_STARTED', status: 'PLANNED_PENDING_APPROVAL' })),
+};
+writeFileSync(join(out, 'asset-registry.json'), JSON.stringify(registry, null, 2) + '\n');
+writeFileSync(join(out, 'avatar-registry.json'), JSON.stringify(avatars, null, 2) + '\n');
+console.log(JSON.stringify(registry.counts));
