@@ -459,6 +459,24 @@ class AcceptanceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'MISMATCH'):
                 verify(base / 'c', expected)
 
+    def test_fresh_restore_reprojects_runtime_verified_site_before_config_promotion(self):
+        import copy
+        for status in ('VALIDATED', 'DEFERRED'):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as tmp:
+                base = Path(tmp)
+                c = company(cik='0009999999'); c['officialSites'] = []
+                projected = copy.deepcopy(c)
+                if status == 'VALIDATED': projected['officialSites'] = ['https://apple.com/']
+                store = Store(base / 'a/state.sqlite')
+                news = item(); news['companyId'] = c['companyId']; store.ingest(news)
+                store.set_state('officialSite:' + c['companyId'], {'status': status, 'url': 'https://apple.com/'})
+                exported = store.export({c['companyId']: projected}, base / 'exports', NOW)
+                store.set_state('latestRun', {'generatedAt': NOW, 'export': exported}); store.close()
+                expected = fingerprint(base / 'a'); pack(base / 'a', base / 'snapshot')
+                restore(base / 'snapshot', base / 'b')
+                with patch('company_intelligence.acceptance.load_universe', return_value={c['companyId']: copy.deepcopy(c)}):
+                    self.assertEqual(verify(base / 'b', expected), expected)
+
     def test_real_distributor_fixture_resolves_contributor_not_incidental_exchange(self):
         universe = load_universe(ROOT)
         resolver = Resolver(universe)

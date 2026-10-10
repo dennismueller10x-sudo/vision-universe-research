@@ -76,6 +76,9 @@ jobs:
       - name: Praekomputierte Technical-Intelligence-Daten stimmen mit den Engines ueberein
         run: node scripts/technical/verify-technical-data.mjs
 
+      - name: Chartbild-Daten (Technical Intelligence V2) stimmen mit den Engines ueberein
+        run: node scripts/technical/verify-technical-intelligence.mjs
+
       - name: Kein Produkt rechnet selbst um (Currency Layer Regression Guard)
         # Ein zentraler Currency Layer haelt so lange, wie niemand daneben
         # eine eigene Zeile schreibt. Bricht bei FX-Arithmetik ausserhalb

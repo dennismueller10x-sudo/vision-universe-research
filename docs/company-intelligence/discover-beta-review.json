@@ -1,0 +1,1978 @@
+{
+  "schema": "vu-discover-beta-review-1",
+  "reviewedProductCodeSha": "1468ca523762e61f70e9bce4ae16a432df8f4984",
+  "rolloutBaseSha": "a64582e346aa305db037e0e1b1c02a2dffb7765a",
+  "externalReferenceSha": "e80b8b0bedb41dee6cbbbc9c6ab25f8ed4dec90c",
+  "isolatedBranch": "feature/company-intelligence-discover-beta",
+  "releaseState": "REVIEW_ONLY",
+  "generation": "7b08f1b9ec577887228c0d0e",
+  "generatedAt": "2026-10-06T10:46:01Z",
+  "scope": "TRACKED_CATALOGUE_AND_EXISTING_SEC_FACTS",
+  "sourceInputSetSha256": "c8d811e42c4fc7eaf1950f111613cf0c50d6aefd350e80c15b94121203131aa5",
+  "sourceInputFiles": 668,
+  "manifestSha256": "43c6dfaeb9717b9d7b4e4ad9023f1fe5b65caf063e00cbd0a02376afacb65dc7",
+  "manifest": {
+    "assets": {
+      "index.json": {
+        "bytes": 330,
+        "sha256": "01e0bec098d5cb730d2a0ced8ff77728d0d1f6e7126d767d4c615e0ae0b83913"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000002098.json": {
+        "bytes": 2437,
+        "sha256": "5a6b0fdb368df8b2c391c439a504f1fe0e01cb4387d5c34b35a5672e14bcac72"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000019584.json": {
+        "bytes": 12134,
+        "sha256": "eadb44c39ab8d943f81fdd80f9997339c828a931870a9c0921a5e696e2e45147"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000027419.json": {
+        "bytes": 13495,
+        "sha256": "e2f51596233a01eac13b9ce5d3e2a2d35ce0ab61f678fd044cac0c08f881c9f8"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000091142.json": {
+        "bytes": 13941,
+        "sha256": "f83c46cee6123673f89ae19473c0681c994c30ea188ad7f28926aa6aef412e1f"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000320193.json": {
+        "bytes": 14614,
+        "sha256": "39ef0a83b239a167b1112d289ecccb44e5208d6893c2750eef9a639820a71b33"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0000789019.json": {
+        "bytes": 14851,
+        "sha256": "3c74e985e276a8f917e4f41c87cbeaeb582e7a29a16f06ebf8a6a7294a9989a9"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001045810.json": {
+        "bytes": 14192,
+        "sha256": "f97a29698d1ca4cefb77e5d8130a7c9fd46a0d85503b566152aef0e7abc5e7da"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001318605.json": {
+        "bytes": 14686,
+        "sha256": "501db39abfe3f39f3e435a7eda51cb592b363b5abcd89441ddc910e919b2fa3c"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001321655.json": {
+        "bytes": 13873,
+        "sha256": "190603c2d458e6870bb6414646986317d34af0266958b2854f8de22393aeda7e"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001326801.json": {
+        "bytes": 13083,
+        "sha256": "9a7398cd1ecc63620807862c040c8c341a2c31b7b1f7a534a7f24a912fb5ebe7"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001468091.json": {
+        "bytes": 7720,
+        "sha256": "b1e29529d2df48735e82b5c4eb3ed5afeae8ffdee4970f1e4fc97926a3264e09"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001512673.json": {
+        "bytes": 13033,
+        "sha256": "5ab293a9c40d20a25b99d3102ae8be4aab61707a143ab36a77fc4f9dca060e8d"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001515673.json": {
+        "bytes": 12741,
+        "sha256": "42eebc4ccb1b94936c0bc98426aeadb2f00501b3e85a1f27c736efd2e9d43d8a"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001650164.json": {
+        "bytes": 13084,
+        "sha256": "c04d75eb54fd35d9c48a534077d4ce8ed00acd8373cd5758972f2fe48f91b33a"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001652044.json": {
+        "bytes": 13243,
+        "sha256": "a1a9a4314ff5aa99214b8afaac4178236922a8b69759cc8087fe034cf7e626dd"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001782223.json": {
+        "bytes": 9853,
+        "sha256": "644b1d6997a8a389fb9618cae17fafb9fd0f7aec9e659327a3fa9db7c4778d5d"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001788882.json": {
+        "bytes": 10716,
+        "sha256": "3119216a6474620ee7edc3c5de2ff2cedefc0bb2f48f3394aa5f1c1d49a71ce1"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001810806.json": {
+        "bytes": 13969,
+        "sha256": "7e59d83f1b61311352c811f4898d69b9ea1d22df7d2f218f51a06bd316948468"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001810997.json": {
+        "bytes": 7296,
+        "sha256": "652900a4a01c8635433702c946a636a9702f7639be89f55960055652286be077"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001818874.json": {
+        "bytes": 13670,
+        "sha256": "c8b5b127f7fd2db1739c72d668d78f06e9f9bba60eba7b769b09dd0b03f51f6d"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/iss_cik_0001820953.json": {
+        "bytes": 11950,
+        "sha256": "023529214bdb71237f15bdaa739bb6763ef40855a0fc052254ff94c49e2343de"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/AA.json": {
+        "bytes": 410,
+        "sha256": "a16f8131e3063b301b6cd75edd98cee6e448186faee6b1df7b8c2fb2c608a9ba"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/AC.json": {
+        "bytes": 405,
+        "sha256": "b4c13147916fdd4570b06307a6cd50f88673d0c7c4778bfa0454dbd624f570e1"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/AF.json": {
+        "bytes": 410,
+        "sha256": "86d7f1703fffbb175f87846effae4211e82a029e8c8934cae4e603f43296e4a4"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/AO.json": {
+        "bytes": 405,
+        "sha256": "8f0e38014fa4ce35e9cd594e1c64506715eea4a6f83501c66e62609ffadf3f76"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/CH.json": {
+        "bytes": 405,
+        "sha256": "ac085c324744a8c19385da48140d3dda7ad0506962378e95e31d088620cb8f11"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/GO.json": {
+        "bytes": 632,
+        "sha256": "bc9f4482e048518f9bf6271fc3a4b05d87319ae95e84c8df78f513aa2d8b85de"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/ME.json": {
+        "bytes": 410,
+        "sha256": "b74ff6aea56637696246e9ec85df1a7a92c0bdbf125be92989c1ceaa3df20780"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/MS.json": {
+        "bytes": 410,
+        "sha256": "96865e17e54fa427c00b01f8efc8f8174798b975e62111baa264e811f991a876"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/NV.json": {
+        "bytes": 410,
+        "sha256": "f0b16a69db8a69fdd0564f7c1fc934be7141bb7a9ad6c1b187fe9a4417b93a47"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/PL.json": {
+        "bytes": 410,
+        "sha256": "c1fca2ff84db0af047686961431af90cccc380ecab2a6a7c5f324887b01631f5"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/PY.json": {
+        "bytes": 410,
+        "sha256": "c21a5c486d03d65d7fa8f1f2dcc391289b585f181599d25d7339489956037b4e"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/RA.json": {
+        "bytes": 410,
+        "sha256": "ddc0011b231da55bb2cdf373afeb8f62045b4bed96ce8fd8ccbb46677cc02766"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/RO.json": {
+        "bytes": 410,
+        "sha256": "bb49976098f6312c714402fc7fbd8d0503289b6e56d3c6c32b6f937d8c7c7e49"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/SO.json": {
+        "bytes": 410,
+        "sha256": "48024118f487ce1e44e29399b00e70e632a12a845513bb7bc83d575ad67ef2f6"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/TG.json": {
+        "bytes": 405,
+        "sha256": "6ce090d0aaccc4aaaf0e7f0996e78caa4a3b20724de60e57740f367f6dd7335a"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/TO.json": {
+        "bytes": 408,
+        "sha256": "512b462c2dc27b2e5053539ac408c6c62f63b9be5a8daf773ad807f490331478"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/TS.json": {
+        "bytes": 410,
+        "sha256": "1bec451b320bad16161d926ccc0e54d16774584ad75b8f341a7cd0e243e44e0c"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/U.json": {
+        "bytes": 399,
+        "sha256": "82d85b008f4fa4ea8b614f0e8499408ae4a7ac74e6548bc9f976752207c28044"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/VE.json": {
+        "bytes": 410,
+        "sha256": "01fe61358d05b743c9a204c630cc7bc2c1b449dc3ff4979bae52004e49fba579"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/XP.json": {
+        "bytes": 408,
+        "sha256": "b8211c8cc9e01e5505b6798423572dda86905ba0fc1631ec71924d4d5bf0c48b"
+      },
+      "snapshots/7b08f1b9ec577887228c0d0e/lookup/XY.json": {
+        "bytes": 405,
+        "sha256": "f5814b8f76a3184104f7a9b16c027b4cbc4799795d8bea2ac0dd441c86d035f7"
+      }
+    },
+    "basis": "TRACKED_CATALOGUE_AND_EXISTING_FACTS",
+    "generatedAt": "2026-10-06T10:46:01Z",
+    "generation": "7b08f1b9ec577887228c0d0e",
+    "operationalLedgerRestored": false,
+    "releaseState": "REVIEW_ONLY",
+    "schema": 1,
+    "tickers": [
+      "AAPL",
+      "ACU",
+      "AFRM",
+      "AOS",
+      "CHE",
+      "GOOG",
+      "GOOGL",
+      "META",
+      "MSFT",
+      "NVDA",
+      "PLTR",
+      "PYXS",
+      "RARE",
+      "ROOT",
+      "SOFI",
+      "TGT",
+      "TOST",
+      "TSLA",
+      "U",
+      "VEON",
+      "XPEV",
+      "XYZ"
+    ]
+  },
+  "inventory": {
+    "iss_cik_0000002098": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": null,
+      "financials": "UNAVAILABLE",
+      "germanProfile": true,
+      "materials": 1,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0000002098",
+          "contentHash": "d42f55db2505906e1774dd22f86b360ebf7de52f2ba7f44cabfba1b7102ad8d7",
+          "filedAt": "2026-03-11",
+          "filingId": "0001193125-26-102079",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/2098/000119312526102079/acu-20251231.htm",
+          "verifiedAt": "2026-10-05T09:27:41Z"
+        }
+      ],
+      "reportingPeriod": null,
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": true,
+      "tickers": [
+        "ACU"
+      ]
+    },
+    "iss_cik_0000019584": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": false,
+      "materials": 1,
+      "news": 0,
+      "profileSources": [],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "CHE"
+      ]
+    },
+    "iss_cik_0000027419": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0000027419",
+          "contentHash": "69ffd96072521cb95c5a5cb4dee974cc79aef8c7e862a37d3bfc91e6c0d606d8",
+          "filedAt": "2026-03-11",
+          "filingId": "0000027419-26-000016",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000016/tgt-20260131.htm",
+          "verifiedAt": "2026-10-05T09:28:15Z"
+        }
+      ],
+      "reportingPeriod": "2026-08-01",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "TGT"
+      ]
+    },
+    "iss_cik_0000091142": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0000091142",
+          "contentHash": "61e55e39f376d7bf26ea20dcf6937a9602840e3b77850d529f9acdc11b62d88f",
+          "filedAt": "2026-02-10",
+          "filingId": "0000091142-26-000008",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000008/aos-20251231.htm",
+          "verifiedAt": "2026-10-05T09:29:19Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "AOS"
+      ]
+    },
+    "iss_cik_0000320193": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0000320193",
+          "contentHash": "7419632143afc29ce705a1d7d19db48034462abaa17f2b0bbbbd3e88326487fc",
+          "filedAt": "2025-10-31",
+          "filingId": "0000320193-25-000079",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "verifiedAt": "2026-10-05T09:29:51Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-27",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "AAPL"
+      ]
+    },
+    "iss_cik_0000789019": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0000789019",
+          "contentHash": "6d241c09ee528abca8955f2a08c43f0d54673293a80345cd0ff0134eacc22d1f",
+          "filedAt": "2026-07-29",
+          "filingId": "0001193125-26-323660",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "MSFT"
+      ]
+    },
+    "iss_cik_0001045810": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001045810",
+          "contentHash": "59efa41a63393efa51c9932825923ff9805177b0fc7cd5bb7d0f6762abac09e2",
+          "filedAt": "2026-02-25",
+          "filingId": "0001045810-26-000021",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-07-26",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "NVDA"
+      ]
+    },
+    "iss_cik_0001318605": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001318605",
+          "contentHash": "1eaa4ce92457797090d5c9e3d35baec7f3d63ed17c2fa29498e5121cec5fda2e",
+          "filedAt": "2026-01-29",
+          "filingId": "0001628280-26-003952",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "TSLA"
+      ]
+    },
+    "iss_cik_0001321655": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001321655",
+          "contentHash": "ae04bcb851b7fbdddf36b4572ad117a3228d4262a08c80065f2ae82cbf70387e",
+          "filedAt": "2026-02-17",
+          "filingId": "0001321655-26-000011",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000011/pltr-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "PLTR"
+      ]
+    },
+    "iss_cik_0001326801": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001326801",
+          "contentHash": "d1e9bd40520cb6db0a5eaa73deb8f69a8420e10f48885309b66321c563df553a",
+          "filedAt": "2026-01-29",
+          "filingId": "0001628280-26-003942",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm",
+          "verifiedAt": "2026-10-05T09:58:12Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "META"
+      ]
+    },
+    "iss_cik_0001468091": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001468091",
+          "contentHash": "5e1695bc56d48a96b477a41fddcf7429509e6f37503f0251eb52451d39476cc1",
+          "filedAt": "2026-03-16",
+          "filingId": "0001468091-26-000010",
+          "form": "20-F",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1468091/000146809126000010/vip-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2025-12-31",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": true,
+      "tickers": [
+        "VEON"
+      ]
+    },
+    "iss_cik_0001512673": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001512673",
+          "contentHash": "43c6201be2c8c022458a6c2ead8899c9aeb9e133374d496bdd4e014533a81927",
+          "filedAt": "2026-02-26",
+          "filingId": "0001628280-26-012254",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026012254/xyz-20251231.htm",
+          "verifiedAt": "2026-10-05T10:18:40Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "XYZ"
+      ]
+    },
+    "iss_cik_0001515673": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001515673",
+          "contentHash": "4fbf2e0ce25576e0897c711e507cbb07bbf390031e75a03900d9a54db3ce1bc8",
+          "filedAt": "2026-02-18",
+          "filingId": "0001193125-26-057329",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1515673/000119312526057329/rare-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "RARE"
+      ]
+    },
+    "iss_cik_0001650164": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001650164",
+          "contentHash": "b5a9425ac1bc23fe6f80b72e408a6494fecc487e6cbee80a758823dadf0ed14f",
+          "filedAt": "2026-02-18",
+          "filingId": "0001650164-26-000057",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000057/tost-20251231.htm",
+          "verifiedAt": "2026-10-05T10:25:47Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "TOST"
+      ]
+    },
+    "iss_cik_0001652044": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": false,
+      "materials": 1,
+      "news": 0,
+      "profileSources": [],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "GOOG",
+        "GOOGL"
+      ]
+    },
+    "iss_cik_0001782223": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001782223",
+          "contentHash": "d25ac6c9d4bf3a5b0f82f2d9ee64e3ec6e125cb54d65f58fcc1a3d3fd95af22a",
+          "filedAt": "2026-03-23",
+          "filingId": "0001193125-26-118532",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1782223/000119312526118532/pyxs-20251231.htm",
+          "verifiedAt": "2026-10-05T10:34:13Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "PYXS"
+      ]
+    },
+    "iss_cik_0001788882": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001788882",
+          "contentHash": "4e77fef91ffb5773552b4358ee49943d168b16a5d11cad7bbcecd8ec5d9ccf37",
+          "filedAt": "2026-02-25",
+          "filingId": "0001788882-26-000014",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1788882/000178888226000014/root-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "ROOT"
+      ]
+    },
+    "iss_cik_0001810806": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001810806",
+          "contentHash": "8b3c420ca0ec38524d269811d83d2bf0d83af68e8e12d826f9f346e181f4927b",
+          "filedAt": "2026-02-11",
+          "filingId": "0001810806-26-000011",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1810806/000181080626000011/unity-20251231.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "U"
+      ]
+    },
+    "iss_cik_0001810997": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001810997",
+          "contentHash": "17778fafb3edcab68cbc04fcb471d63008310381b24db3e23b52e60bf34650dd",
+          "filedAt": "2026-04-16",
+          "filingId": "0001193125-26-157849",
+          "form": "20-F",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1810997/000119312526157849/d36361d20f.htm",
+          "verifiedAt": "2026-10-05T07:52:53Z"
+        }
+      ],
+      "reportingPeriod": "2025-12-31",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": true,
+      "tickers": [
+        "XPEV"
+      ]
+    },
+    "iss_cik_0001818874": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001818874",
+          "contentHash": "65917a63f878f80b355ee5574821752e82438c917ff7becc711f73253bf86088",
+          "filedAt": "2026-02-17",
+          "filingId": "0001818874-26-000013",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1818874/000181887426000013/sofi-20251231.htm",
+          "verifiedAt": "2026-10-05T10:53:19Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "SOFI"
+      ]
+    },
+    "iss_cik_0001820953": {
+      "confirmedUpcoming": 0,
+      "financialSourceAsOf": "2026-09-23",
+      "financials": "AVAILABLE",
+      "germanProfile": true,
+      "materials": 2,
+      "news": 0,
+      "profileSources": [
+        {
+          "companyId": "iss_cik_0001820953",
+          "contentHash": "f4e2b6180b74afc4d13f69c5384245e9c1b3860d5b1673bf7fc76ae3b3710340",
+          "filedAt": "2026-08-27",
+          "filingId": "0001628280-26-059279",
+          "form": "10-K",
+          "type": "SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/1820953/000162828026059279/afrm-20260630.htm",
+          "verifiedAt": "2026-10-05T10:54:43Z"
+        }
+      ],
+      "reportingPeriod": "2026-06-30",
+      "scope": "TRACKED_CATALOGUE_AND_FACTS_ONLY",
+      "staleFinancials": false,
+      "tickers": [
+        "AFRM"
+      ]
+    }
+  },
+  "availableGermanProfiles": 19,
+  "financialIssuers": 20,
+  "earningsMetricIssuers": 18,
+  "balanceOnlyIssuers": [
+    "XPEV",
+    "VEON"
+  ],
+  "actualNews": 0,
+  "actualUpcomingEvents": 0,
+  "actualCalls": 0,
+  "actualWebcasts": 0,
+  "actualTranscripts": 0,
+  "profileCatalogueQuality": {
+    "technicalContractAvailable": 3678,
+    "english": 3678,
+    "shorterThan160Characters": 606,
+    "heuristicReviewFlags": 182,
+    "heuristicIsFinalQualityJudgement": false
+  },
+  "browser": {
+    "status": "PASS",
+    "actualCases": [
+      {
+        "product": "discover",
+        "ticker": "ACU",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ACU",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ACU",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ACU",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "CHE",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "CHE",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "CHE",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "CHE",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TGT",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TGT",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TGT",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TGT",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AOS",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AOS",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AOS",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AOS",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AAPL",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AAPL",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AAPL",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AAPL",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "MSFT",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "MSFT",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "MSFT",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "MSFT",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "NVDA",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "NVDA",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "NVDA",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "NVDA",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TSLA",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TSLA",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TSLA",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TSLA",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PLTR",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PLTR",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PLTR",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PLTR",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "META",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "META",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "META",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "META",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "VEON",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "VEON",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "VEON",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "VEON",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XYZ",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XYZ",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XYZ",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XYZ",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "RARE",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "RARE",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "RARE",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "RARE",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TOST",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TOST",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TOST",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "TOST",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOG",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOG",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOG",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOG",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOGL",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOGL",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOGL",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "GOOGL",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PYXS",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PYXS",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PYXS",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "PYXS",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ROOT",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ROOT",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ROOT",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "ROOT",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "U",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "U",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "U",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "U",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XPEV",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XPEV",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XPEV",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "XPEV",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "SOFI",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "SOFI",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "SOFI",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "SOFI",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AFRM",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AFRM",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AFRM",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "ticker": "AFRM",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "AAPL",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "AAPL",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "AAPL",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "AAPL",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ACU",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ACU",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ACU",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ACU",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "CHE",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "CHE",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "CHE",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "CHE",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOG",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOG",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOG",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOG",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOGL",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOGL",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOGL",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "GOOGL",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ROOT",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ROOT",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ROOT",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "ROOT",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "XPEV",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "XPEV",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "XPEV",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "XPEV",
+        "width": 1440,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "VEON",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "VEON",
+        "width": 430,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "VEON",
+        "width": 768,
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "ticker": "VEON",
+        "width": 1440,
+        "status": "PASS"
+      }
+    ],
+    "disabledZeroRequestCases": 2,
+    "adversarialCases": [
+      {
+        "product": "discover",
+        "kind": "INDEX_MISSING",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "LOOKUP_MISMATCH",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "COMPANY_TIMESTAMP_MISMATCH",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "NO_PROFILE",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "STALE_FINANCIALS",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "DUPLICATES_AND_OLD_NEWS",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "CANCELLED_AND_PAST_EVENTS",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "DATE_ONLY_AND_SEPARATE_CALL",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "ESTIMATE_ONLY",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "BERLIN_DST",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "WEBCAST_AND_LETTER",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "UNSAFE_LINK",
+        "status": "PASS"
+      },
+      {
+        "product": "discover",
+        "kind": "AMBIGUOUS_IDENTITY",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "INDEX_MISSING",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "LOOKUP_MISMATCH",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "COMPANY_TIMESTAMP_MISMATCH",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "NO_PROFILE",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "STALE_FINANCIALS",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "DUPLICATES_AND_OLD_NEWS",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "CANCELLED_AND_PAST_EVENTS",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "DATE_ONLY_AND_SEPARATE_CALL",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "ESTIMATE_ONLY",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "BERLIN_DST",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "WEBCAST_AND_LETTER",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "UNSAFE_LINK",
+        "status": "PASS"
+      },
+      {
+        "product": "quant",
+        "kind": "AMBIGUOUS_IDENTITY",
+        "status": "PASS"
+      }
+    ],
+    "additionalReviews": [
+      {
+        "kind": "DARK_430_CNY_SPARSE_BALANCES",
+        "status": "PASS"
+      },
+      {
+        "kind": "SIMULATED_SOURCE_404_AND_NAVIGATION_DISPOSAL",
+        "status": "PASS"
+      }
+    ],
+    "totalCases": 150,
+    "assertionCorrection": "Case-insensitive estimate warning comparison corrected in QA only; actual cases completed before initial QA assertion failure. Adversarial phase rerun separately."
+  },
+  "tests": {
+    "pythonFeaturePassed": 612,
+    "nodeFeaturePassed": 44,
+    "productRegressionPassed": 2578,
+    "productRegressionSkipped": 5,
+    "productRegressionFailures": 0
+  },
+  "sourceLinkChecks": [
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000011/pltr-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000011/pltr-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1468091/000146809126000010/vip-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1468091/000146809126000010/vip-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026012254/xyz-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026012254/xyz-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1515673/000119312526057329/rare-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1515673/000119312526057329/rare-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000057/tost-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000057/tost-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1782223/000119312526118532/pyxs-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1782223/000119312526118532/pyxs-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1788882/000178888226000014/root-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1788882/000178888226000014/root-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1810806/000181080626000011/unity-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1810806/000181080626000011/unity-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1810997/000119312526157849/d36361d20f.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1810997/000119312526157849/d36361d20f.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1818874/000181887426000013/sofi-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1818874/000181887426000013/sofi-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1820953/000162828026059279/afrm-20260630.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1820953/000162828026059279/afrm-20260630.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/2098/000119312526102079/acu-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/2098/000119312526102079/acu-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000016/tgt-20260131.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000016/tgt-20260131.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000008/aos-20251231.htm",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000008/aos-20251231.htm"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/0001045810-26-000075-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/0001045810-26-000075-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/0001628280-26-049270-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/0001628280-26-049270-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000041/0001321655-26-000041-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000041/0001321655-26-000041-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/0001628280-26-050705-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/0001628280-26-050705-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1468091/000146809126000010/0001468091-26-000010-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1468091/000146809126000010/0001468091-26-000010-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026053368/0001628280-26-053368-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026053368/0001628280-26-053368-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1515673/000119312526333233/0001193125-26-333233-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1515673/000119312526333233/0001193125-26-333233-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000164/0001650164-26-000164-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000164/0001650164-26-000164-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1782223/000119312526347913/0001193125-26-347913-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1782223/000119312526347913/0001193125-26-347913-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1788882/000178888226000061/0001788882-26-000061-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1788882/000178888226000061/0001788882-26-000061-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1810806/000181080626000043/0001810806-26-000043-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1810806/000181080626000043/0001810806-26-000043-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1810997/000119312526157849/0001193125-26-157849-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1810997/000119312526157849/0001193125-26-157849-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1818874/000181887426000054/0001818874-26-000054-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1818874/000181887426000054/0001818874-26-000054-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1820953/000162828026059279/0001628280-26-059279-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1820953/000162828026059279/0001628280-26-059279-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/19584/000001958426000020/0000019584-26-000020-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/19584/000001958426000020/0000019584-26-000020-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000042/0000027419-26-000042-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000042/0000027419-26-000042-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000098/0000091142-26-000098-index.html",
+      "status": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000098/0000091142-26-000098-index.html"
+    }
+  ],
+  "previewPrivacy": {
+    "probes": [
+      {
+        "path": "/.company-intelligence/state.sqlite",
+        "status": 404
+      },
+      {
+        "path": "/state.sqlite",
+        "status": 404
+      },
+      {
+        "path": "/company-intelligence/state/index.json",
+        "status": 404
+      },
+      {
+        "path": "/company-intelligence/config/company-profiles.json",
+        "status": 404
+      },
+      {
+        "path": "/company-intelligence/config/sources.json",
+        "status": 404
+      },
+      {
+        "path": "/scripts/company_intelligence/cli.py",
+        "status": 404
+      },
+      {
+        "path": "/docs/COMPANY_INTELLIGENCE.md",
+        "status": 404
+      }
+    ],
+    "privateObjectsPresent": false,
+    "maxConsumerBytesPerView": 15591,
+    "averageConsumerBytesPerView": 12932
+  },
+  "loadingAndLayout": [
+    {
+      "preview": false,
+      "readyMs": 1789,
+      "cls": 0.06795859854945847
+    },
+    {
+      "preview": true,
+      "readyMs": 2680,
+      "cls": 0.06795859854945847
+    }
+  ],
+  "costModel": {
+    "beta_source_demand": {
+      "assumptions": {
+        "daysPerMonth": 30,
+        "runsPerDay": 6,
+        "runtimeMinutesPerRun": 8,
+        "payloadsPerGeneration": 21,
+        "consumerAssetsPerGeneration": 43,
+        "consumerBytesPerGeneration": 263703,
+        "compressedCheckpointBytes": 30419075,
+        "serialNetworkIntervalSeconds": 2,
+        "networkScenario": "One network request per due unique URL; source health, memo reuse and actual due times can reduce demand.",
+        "retainedPublicSlots": 2,
+        "retainedPrivateSlots": 2,
+        "checkpointSizeBasis": "Reported previous expanded ledger size; not present or remeasured here. Beta must preserve the whole state, not replace it with a smaller cohort ledger."
+      },
+      "dataProviderDollars": 0,
+      "actionsMinutesPerMonth": 1440,
+      "plannedSourceRequestsPerDay": 120,
+      "plannedSourceRequestsPerMonth": 3600,
+      "plannedUniqueRouteRequestsPerDay": 120,
+      "plannedUniqueRouteRequestsPerMonth": 3600,
+      "serialPacingMinutesPerMonthFloor": 114.0,
+      "fullDemand160RequestCapacityLanes": 1,
+      "fullDemandActionsMinutesAtAssumedRuntime": 1440,
+      "excludedRequestCosts": "SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.",
+      "publicPutUpperBoundPerMonth": 8460,
+      "privatePutUpperBoundPerMonth": 540,
+      "publicVerificationGetUpperBoundPerMonth": 16200,
+      "privateRestoreGetUpperBoundPerMonth": 900,
+      "retainedSnapshotGB": 0.061366,
+      "generationRetention": "Two public and two private slots; generation count does not multiply retained snapshot storage.",
+      "limits": "Estimates omit user-delivery GET traffic and long-term ledger event growth. Conditional GET saves bytes, not request count. Do not treat reference free-tier limits as guaranteed billing.",
+      "activation": "NOT_PERFORMED; source-usage review pending",
+      "publicVerificationGetUpperBoundPerMonthWithPriorValidation": 23940,
+      "publicVerificationGetUpperBoundPerMonthWithTwoSlotRecovery": 31680
+    },
+    "total_configured_source_demand": {
+      "assumptions": {
+        "daysPerMonth": 30,
+        "runsPerDay": 6,
+        "runtimeMinutesPerRun": 8,
+        "payloadsPerGeneration": 5116,
+        "consumerAssetsPerGeneration": 5755,
+        "consumerBytesPerGeneration": 139630180,
+        "compressedCheckpointBytes": 30419075,
+        "serialNetworkIntervalSeconds": 2,
+        "networkScenario": "One network request per due unique URL; source health, memo reuse and actual due times can reduce demand.",
+        "retainedPublicSlots": 2,
+        "retainedPrivateSlots": 2
+      },
+      "dataProviderDollars": 0,
+      "actionsMinutesPerMonth": 1440,
+      "plannedSourceRequestsPerDay": 16075,
+      "plannedSourceRequestsPerMonth": 482250,
+      "plannedUniqueRouteRequestsPerDay": 16075,
+      "plannedUniqueRouteRequestsPerMonth": 482250,
+      "serialPacingMinutesPerMonthFloor": 16069.0,
+      "fullDemand160RequestCapacityLanes": 17,
+      "fullDemandActionsMinutesAtAssumedRuntime": 24480,
+      "excludedRequestCosts": "SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.",
+      "publicPutUpperBoundPerMonth": 1036620,
+      "privatePutUpperBoundPerMonth": 540,
+      "publicVerificationGetUpperBoundPerMonth": 2072520,
+      "privateRestoreGetUpperBoundPerMonth": 900,
+      "retainedSnapshotGB": 0.340099,
+      "generationRetention": "Two public and two private slots; generation count does not multiply retained snapshot storage.",
+      "limits": "Estimates omit user-delivery GET traffic and long-term ledger event growth. Conditional GET saves bytes, not request count. Do not treat reference free-tier limits as guaranteed billing.",
+      "publicVerificationGetUpperBoundPerMonthWithPriorValidation": 3108420,
+      "publicVerificationGetUpperBoundPerMonthWithTwoSlotRecovery": 4144320
+    }
+  },
+  "operationalState": {
+    "presentInWorkspace": false,
+    "currentRemotePreservationVerified": false,
+    "freshRemoteRestoreVerified": false,
+    "remoteUploadPerformed": false,
+    "replacementLedgerInitialized": false,
+    "lastReportedGenerationNotRestored": "76a78c65419e9d0ac00b2e0b",
+    "lastReportedCheckpointSha256NotRestored": "845286c361be3d793e91da4d2ec5e7f8389f115d5917be71d5035ec26077f7e9"
+  },
+  "publication": {
+    "publicActivationPerformed": false,
+    "mergePerformed": false,
+    "rolloutBranchModified": false,
+    "schedulerActivated": false,
+    "sourceUsageApproval": "PENDING_COMMERCIAL_REVIEW",
+    "externallyReachableCustomerPreview": false,
+    "loopbackUrl": "http://127.0.0.1:8784/discover/?company-intelligence=preview#/s/US_REAL/AAPL"
+  },
+  "testedStorageBlobSha": "f0ff7b21e6fe7feb9004c967b5d8232c8c3dceb0"
+}

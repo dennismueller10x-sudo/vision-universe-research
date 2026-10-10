@@ -1,0 +1,58 @@
+name: Shell Quality Gates
+# Gemeinsame Vision-Universe-Shell (assets/site-navigation.js): Kopf, Produkt-
+# Leiste und globales Menue auf allen sechs Produkten. Prueft im gebauten
+# Pages-Auslieferungsartefakt Deep Links, aktiven Zustand nach Reload,
+# Zurueck/Vor, Menue (Scroll-Sperre, Escape, Fokus), Theme-Wechsel, Ueberlauf
+# und Seitenende - in Chromium (390 bis 1440 px) und in WebKit (iPhone-Profil).
+on:
+  pull_request:
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
+  push:
+    branches: [main]
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', '.github/workflows/shell-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: shell-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Shell tests
+        run: node --test "core/tests/shell-navigation.test.mjs" discover/tests/navigation-theme.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Build screener universe from committed product data
+        run: node scripts/screener/build-universe.mjs
+      - name: Browser dependencies (Chromium and WebKit)
+        run: |
+          npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
+          node /tmp/shell-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
+      - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/shell-release" > /tmp/shell-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/chromium || chromium_status=$?
+          node scripts/quality/shell-browser-qa.mjs --engine=webkit --viewports=390x844,430x932,1024x768 --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shell-browser-evidence
+          path: /tmp/shell-evidence
+          if-no-files-found: warn

@@ -320,9 +320,9 @@
       "cik": "0001173420",
       "name": "NOVAGOLD RESOURCES INC",
       "sic": "1040",
-      "rawFacts": 14094,
-      "mappedFacts": 3866,
-      "unmappedFacts": 10369,
+      "rawFacts": 14371,
+      "mappedFacts": 3909,
+      "unmappedFacts": 10595,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -332,9 +332,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 61,
+      "quarterlyPeriods": 62,
       "firstPeriodEnd": "1984-12-04",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 40.92,
       "metrics": {
         "capital_expenditures": {
@@ -373,20 +373,20 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 12,
+          "annualPeriods": 11,
           "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2014-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 11.0
         },
         "revenue": {
-          "annualPeriods": 10,
+          "annualPeriods": 9,
           "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2014-11-30",
           "lastAvailablePeriod": "2025-11-30",
@@ -401,14 +401,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "1984-12-04",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 40.92
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 13.0
@@ -431,48 +431,50 @@
         }
       },
       "quality": {
-        "HIGH": 355,
+        "HIGH": 356,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 369,
-        "resolvedValues": 369
+        "datableValues": 370,
+        "resolvedValues": 370
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10502,
+        "total": 10768,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 10369,
-          "WARNING": 132
+          "INFO": 10595,
+          "WARNING": 172
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 58,
+          "CONCEPT_DISAGREEMENT": 55,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 35,
+          "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 39,
-          "UNKNOWN_CONCEPT": 10369
+          "UNKNOWN_CONCEPT": 10595,
+          "UNPLACEABLE_PERIOD": 42
         }
       },
       "latestFiling": {
-        "accession": "0001171843-26-004279",
-        "filing_date": "2026-06-24",
+        "accession": "0001171843-26-006530",
+        "filing_date": "2026-10-08",
         "form": "10-Q",
-        "periodic_filings": 69
+        "periodic_filings": 70,
+        "acceptance_datetime": "2026-10-08T16:00:56.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "1ceca026d244f0e32412e95c570102b467a84a555c69a0ddc3ffa28612dc4063",
+      "sourceDigest": "7abb241939cd9886aff823907517bf18c53b1cb8b153604ed381faf4641fd910",
       "issuerId": "iss_cik_0001173420"
     },
     {

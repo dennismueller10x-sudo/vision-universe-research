@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-07T11:49:54.283Z",
+  "thresholdsUSD": {
+    "MID_CAP": [
+      2000000000,
+      10000000000
+    ],
+    "SMALL_CAP": [
+      300000000,
+      2000000000
+    ],
+    "MICRO_CAP": [
+      50000000,
+      300000000
+    ]
+  },
+  "rows": [
+    {
+      "ticker": "BOH",
+      "companyId": "iss_cik_0000046195",
+      "companyName": "Bank of Hawaii",
+      "band": "MID_CAP",
+      "marketCapUSD": 2655011650.7999997,
+      "priceUSD": 67.3,
+      "priceAsOf": "2026-10-06",
+      "priceSource": "EXISTING_TIINGO_DAILY_ADAPTER",
+      "shares": 39450396,
+      "sharesAsOf": "2026-07-21",
+      "sharesFiled": "2026-07-28",
+      "shareForm": "10-Q",
+      "shareAccession": "0000046195-26-000056",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000046195.json",
+      "sourceSha256": "9da9c2e404659c4c4daf97a9289a15c319dfe91bb4a607edcb489d3aaac160d6",
+      "basis": "CURRENT_UNADJUSTED_USD_CLOSE_TIMES_LATEST_UNAMBIGUOUS_REPORTED_COMMON_SHARES",
+      "limitation": "Reported shares have their own date; this is a dated size-band QA calculation, not an intraday market-cap promise."
+    },
+    {
+      "ticker": "SBSI",
+      "companyId": "iss_cik_0000705432",
+      "companyName": "Southside Bancshares",
+      "band": "SMALL_CAP",
+      "marketCapUSD": 899902916.2,
+      "priceUSD": 30.19,
+      "priceAsOf": "2026-10-06",
+      "priceSource": "EXISTING_TIINGO_DAILY_ADAPTER",
+      "shares": 29807980,
+      "sharesAsOf": "2026-07-21",
+      "sharesFiled": "2026-07-24",
+      "shareForm": "10-Q",
+      "shareAccession": "0000705432-26-000105",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000705432.json",
+      "sourceSha256": "94ddcea0a3deb2a628fe6fcc133048a2a02748c08bdb7786491aca03f6b14a1b",
+      "basis": "CURRENT_UNADJUSTED_USD_CLOSE_TIMES_LATEST_UNAMBIGUOUS_REPORTED_COMMON_SHARES",
+      "limitation": "Reported shares have their own date; this is a dated size-band QA calculation, not an intraday market-cap promise."
+    },
+    {
+      "ticker": "AMPY",
+      "companyId": "iss_cik_0001533924",
+      "companyName": "Amplify Energy",
+      "band": "MICRO_CAP",
+      "marketCapUSD": 185724896.00000003,
+      "priceUSD": 4.48,
+      "priceAsOf": "2026-10-06",
+      "priceSource": "EXISTING_TIINGO_DAILY_ADAPTER",
+      "shares": 41456450,
+      "sharesAsOf": "2026-08-06",
+      "sharesFiled": "2026-08-10",
+      "shareForm": "10-Q",
+      "shareAccession": "0001104659-26-093408",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001533924.json",
+      "sourceSha256": "83151411c323c4107a7a9d7c2bae063b150f3a0817e629d0869786d3cd45ebc7",
+      "basis": "CURRENT_UNADJUSTED_USD_CLOSE_TIMES_LATEST_UNAMBIGUOUS_REPORTED_COMMON_SHARES",
+      "limitation": "Reported shares have their own date; this is a dated size-band QA calculation, not an intraday market-cap promise."
+    }
+  ],
+  "newDataProvider": false,
+  "productionMarketDataWrites": 0,
+  "broadDiscovery": false,
+  "actionsRun": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37616643491"
+}

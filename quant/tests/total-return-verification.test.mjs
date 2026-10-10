@@ -3,12 +3,13 @@ import assert from "node:assert/strict";
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { confirmedSandbox, confirmedReport } from "./helpers/confirmed-golden-evidence.mjs";
 
 const ROOT = new URL("../../", import.meta.url);
-const report = JSON.parse(readFileSync(new URL("quant/data/providers/total-return-verification.json", ROOT), "utf8"));
+const report = confirmedReport;
 
-test("the total-return question was actually asked, and answered from evidence", () => {
+test("the historical total-return question was answered from measured evidence", () => {
   /* It had stood at "Nicht geprueft." in the provider qualification, so the
      capability was UNKNOWN, so the adapter nulled adjustedClose, so the
      pipeline only ever published SPLIT_ADJUSTED - and the backtest gate
@@ -27,16 +28,17 @@ test("the check is reproducible and reads only committed files", () => {
   /* Gegen eine Kopie: die Suite darf das committete Artefakt nie
      veraendern. Vorher schrieb dieser Fall die Produktionsdatei neu, sobald
      die Kursreihen einen Handelstag weiter waren als der Bericht. */
-  const dir = mkdtempSync(join(tmpdir(), "vu-trv-"));
+  const sandbox = confirmedSandbox();
+  const dir = sandbox.directory;
   try {
     const out = join(dir, "report.json");
     execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs", "--out=" + out],
-      { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
+      { cwd: dir, stdio: "pipe" });
     const again = JSON.parse(readFileSync(out, "utf8"));
     assert.equal(again.verdict, report.verdict);
     assert.equal(again.dividendEventsChecked, report.dividendEventsChecked);
-    assert.equal(again.worstRelativeError, report.worstRelativeError);
-  } finally { rmSync(dir, { recursive: true, force: true }); }
+    assert.ok(Math.abs(again.worstRelativeError - report.worstRelativeError) < 1e-12, "historical observed ratios changed");
+  } finally { sandbox.cleanup(); }
 });
 
 test("a run that changes nothing leaves the artifact untouched", () => {
@@ -57,10 +59,11 @@ test("a run that changes nothing leaves the artifact untouched", () => {
      er stehen, wurde nicht geschrieben, und daran ist nichts zufaellig. */
   /* Ausgangslage ist ein frisch berechneter Bericht in einer Kopie - nicht
      die committete Datei, die hinter den Kursreihen zuruecksein darf. */
-  const dir = mkdtempSync(join(tmpdir(), "vu-trv-"));
+  const sandbox = confirmedSandbox();
+  const dir = sandbox.directory;
   const pfad = join(dir, "report.json");
   const run = () => execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs", "--out=" + pfad],
-    { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
+    { cwd: dir, stdio: "pipe" });
   try {
     run();
     const alt = JSON.parse(readFileSync(pfad, "utf8"));
@@ -74,7 +77,7 @@ test("a run that changes nothing leaves the artifact untouched", () => {
     assert.equal(danach.verdict, "TOTAL_RETURN_CONFIRMED");
     assert.equal(danach.dividendEventsChecked, report.dividendEventsChecked);
   } finally {
-    rmSync(dir, { recursive: true, force: true });
+    sandbox.cleanup();
   }
 });
 
@@ -107,4 +110,53 @@ test("the measurement changes no published value", () => {
   const writes = [...source.matchAll(/writeFileSync\(([^,]+),/g)].map((m) => m[1].trim());
   assert.deepEqual(writes, ["OUT"], "the verification writes somewhere other than its own report");
   assert.match(source, /const DEFAULT_OUT = join\(ROOT, "quant\/data\/providers\/total-return-verification\.json"\)/);
+});
+
+
+test("untouched pinned conflict rows produce nonzero INCONSISTENT in an isolated actual historical sample", () => {
+  const sandbox = confirmedSandbox();
+  const dir = sandbox.directory;
+  try {
+    const fixture = JSON.parse(readFileSync(new URL("./fixtures/jpm-observed-provider-conflict.json", import.meta.url), "utf8"));
+    const path = join(dir, "quant/data/market/golden-preview/daily/ref_JPM.json");
+    const payload = JSON.parse(readFileSync(path, "utf8"));
+    assert.ok(payload.bars.at(-1).date.slice(0,10) < fixture.bars[0].date.slice(0,10));
+    payload.bars.push(...fixture.bars);
+    writeFileSync(path, JSON.stringify(payload));
+    const output = join(dir, "current-diagnostic.json");
+    const run = spawnSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs", "--out=" + output],
+      {cwd: dir, encoding: "utf8"});
+    assert.equal(run.status, 1, run.stderr);
+    const measured = JSON.parse(readFileSync(output, "utf8"));
+    assert.equal(measured.verdict, "INCONSISTENT");
+    assert.equal(measured.dividendEventsChecked - measured.dividendEventsMatching, 1);
+    const failures = measured.series.flatMap((s) => s.mismatches.map((event) => ({ticker:s.ticker, ...event})));
+    assert.equal(failures.length, 1);
+    assert.equal(failures[0].ticker, "JPM");
+    assert.equal(failures[0].date, "2026-10-06");
+    assert.equal(failures[0].dividend, 1.65);
+    assert.ok(failures[0].error > measured.tolerance);
+    assert.ok(failures[0].error > 0.0049 && failures[0].error < 0.0051);
+  } finally {sandbox.cleanup();}
+});
+
+
+test("current committed measurement carries a verdict consistent with its actual recorded evidence", () => {
+  const current = JSON.parse(readFileSync(new URL("quant/data/providers/total-return-verification.json", ROOT), "utf8"));
+  assert.equal(current.schemaVersion, "total-return-verification-1.0.0");
+  assert.equal(current.tolerance, 0.002);
+  assert.ok(Number.isInteger(current.minimumEvents) && current.minimumEvents > 0);
+  assert.equal(current.seriesChecked, current.series.length);
+  assert.equal(current.dividendEventsChecked, current.series.reduce((n,s) => n + s.dividendEvents, 0));
+  assert.equal(current.dividendEventsMatching, current.series.reduce((n,s) => n + s.matching, 0));
+  assert.ok(current.dividendEventsMatching >= 0 && current.dividendEventsMatching <= current.dividendEventsChecked);
+  for (const row of current.series) {
+    assert.equal(row.mismatches.length, row.dividendEvents - row.matching);
+    for (const event of row.mismatches) assert.ok(event.error >= current.tolerance);
+  }
+  const expected = current.dividendEventsChecked < current.minimumEvents ? "INSUFFICIENT_EVIDENCE"
+    : current.dividendEventsMatching === current.dividendEventsChecked ? "TOTAL_RETURN_CONFIRMED"
+    : current.dividendEventsMatching === 0 ? "SPLIT_ADJUSTED_ONLY" : "INCONSISTENT";
+  assert.equal(current.verdict, expected);
+  if (current.verdict === "TOTAL_RETURN_CONFIRMED") assert.ok(current.worstRelativeError < current.tolerance);
 });

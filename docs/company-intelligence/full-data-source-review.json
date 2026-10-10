@@ -1,0 +1,38 @@
+{
+  "status": "RESTORED_DATA_REVIEW_METADATA_ONLY_ACCEPTED",
+  "policy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "acceptedGeneration": "21cc611a43b06f488418b58a",
+  "sourceGeneration": "2b1a4bcdffb54e9b40a23a98",
+  "consumerGeneration": "d700d480d9b2858eb8fa34f4",
+  "cohortTickers": 46,
+  "cohortIssuers": 45,
+  "restoredRegistrySources": 5366,
+  "combinedCohortRegistrySources": 96,
+  "types": {
+    "IR_FEED": 27,
+    "IR_EVENTS": 28,
+    "IR_MATERIALS": 41
+  },
+  "providers": {
+    "FIRST_PARTY": 1,
+    "GCS": 21,
+    "Q4": 61,
+    "STOCKPR": 7,
+    "GENERIC": 1,
+    "WORDPRESS": 5
+  },
+  "enabledSourceClasses": [
+    "EXACT_VERIFIED_ISSUER_OWNED_IR_METADATA",
+    "SEC_REGULATORY_FACTS_AND_ORIGINAL_LINKS",
+    "EXPLICITLY_ATTACHED_COMPANY_DOCUMENT_AND_WEBCAST_REFERENCES"
+  ],
+  "excludedSourceClasses": [
+    "GLOBENEWSWIRE_METADATA_AND_ARTICLES_NO_REUSE_GRANT",
+    "BUSINESSWIRE_EXTERNAL_METADATA_NO_REUSE_GRANT",
+    "OTHER_EXTERNAL_FEEDS_WITHOUT_CUSTOMER_USAGE_BASIS"
+  ],
+  "thirdPartyBodiesRepublished": false,
+  "commercialFeedLicenseInvented": false,
+  "consumerEventReviewCorrections": 2,
+  "broadCommercialReleaseApproved": false
+}

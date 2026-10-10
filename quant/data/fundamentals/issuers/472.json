@@ -475,9 +475,9 @@
       "cik": "0001519472",
       "name": "SolarMax Technology, Inc.",
       "sic": "1700",
-      "rawFacts": 3952,
-      "mappedFacts": 1049,
-      "unmappedFacts": 2980,
+      "rawFacts": 4379,
+      "mappedFacts": 1159,
+      "unmappedFacts": 3321,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -487,9 +487,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -501,7 +501,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -528,42 +528,42 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "short_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -586,47 +586,48 @@
         }
       },
       "quality": {
-        "HIGH": 121,
+        "HIGH": 128,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 122,
-        "resolvedValues": 122
+        "datableValues": 129,
+        "resolvedValues": 129
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3130,
+        "total": 3463,
         "by_severity": {
           "ERROR": 9,
-          "INFO": 2980,
-          "WARNING": 141
+          "INFO": 3321,
+          "WARNING": 133
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 138,
+          "CONCEPT_DISAGREEMENT": 122,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 2980
+          "RESTATEMENT_CONFLICT": 11,
+          "UNKNOWN_CONCEPT": 3321
         }
       },
       "latestFiling": {
-        "accession": "0001640334-26-000909",
-        "filing_date": "2026-05-15",
+        "accession": "0001640334-26-001640",
+        "filing_date": "2026-10-08",
         "form": "10-Q",
-        "periodic_filings": 11
+        "periodic_filings": 12,
+        "acceptance_datetime": "2026-10-08T02:50:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "2d82b52ece837f26d0761152451cd4a8dc604d739e1d5ceff89dcdf4f5b165f7",
+      "sourceDigest": "68930f1aebb75f7552606beae3346780bca035ed62569bd9b5b914bf2c7e1513",
       "issuerId": "iss_cik_0001519472"
     },
     {

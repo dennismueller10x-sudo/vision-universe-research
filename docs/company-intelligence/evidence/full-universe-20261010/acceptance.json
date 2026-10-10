@@ -1,0 +1,229 @@
+{
+  "stage": "PRE_ACTIVATION",
+  "auditRun": 38037890325,
+  "audit": {
+    "activeSourceCount": 5355,
+    "activeSourcesByType": {
+      "IR_EVENTS": 1342,
+      "IR_FEED": 2138,
+      "IR_MATERIALS": 1875
+    },
+    "asOf": "2026-10-10T08:27:36Z",
+    "authoritativeStateGeneration": "dd958f61bebd9e538f5df279",
+    "confirmedEventIssuers": 190,
+    "consumerAssets": 5414,
+    "consumerBytes": 97013703,
+    "currentMasterIssuerCount": 6073,
+    "databases": {
+      "archive.sqlite": {
+        "logicalHash": "ea1d17f20e9101313d22c9c5dc479134e4594e464614bc2e50cbfb4564f7dc93",
+        "schemaSha256": "563384fdd8afbae30329547d8604b3037776d6132d6607b5a2fa53739e32dc68",
+        "tables": {
+          "history": {
+            "count": 1107,
+            "identitySha256": "6206c721259d504d1bcc6a721fec512337b439e48739414b11c8ae350717097f",
+            "sha256": "18d98f84272f6d049b0a3627da784ae206561270fb2d0afeb1ac878d4f08f5e4"
+          }
+        }
+      },
+      "state.sqlite": {
+        "logicalHash": "a87c04441012ef1606dd5bc1a7b8f46f2675ad0e52391667259872525b410261",
+        "schemaSha256": "edc6e3eb3165948dd0d21c1c219027b1ec0b9395d3563070344ecbe32bd6dc33",
+        "tables": {
+          "audit": {
+            "count": 24959,
+            "identitySha256": "60a5c5349e68c44eb449888cd489ab3e17fc49aef81d5e5561c4b89b717400d3",
+            "sha256": "72d708554b477985f27554c512e7a00043e3d50d60663a34d9860e79eeb19148"
+          },
+          "event_alias": {
+            "count": 1012,
+            "identitySha256": "3f220f348f1b4d6ec7efbdd87d74c41bc03a90c71137fa50c24cb3d95099634b",
+            "sha256": "61e0733a015da2faf7f37a73fab92fb37f19b890bfd703c5a16381c92f8bde65"
+          },
+          "events": {
+            "count": 13618,
+            "identitySha256": "11e39bb0accc3400d33fe480f32ff8a487ddcfbdeed8a7a9db9b41a949f83e57",
+            "sha256": "a464af2cb2adf3e41cbb5798c3ee0ca5b8b892698d72b76c0243b659240aa08c"
+          },
+          "items": {
+            "count": 20555,
+            "identitySha256": "e334d123ae57a46e106a5ca460c3fd2d44aed12075de94e69616094d4e809213",
+            "sha256": "8c23ef52649f9da816f55b9938e51e3ca0eded1a108e5e242e679b8eefd8e0fc"
+          },
+          "sources": {
+            "count": 5384,
+            "identitySha256": "cff3526336719d724a185895166dbb667ef6f76f24dba59bb33b06949939dbb7",
+            "sha256": "5ac38ada2d48f3a13b6b10b5d2ebe8f076f913195a6767ec5bbda1c31e01cc5c"
+          },
+          "state": {
+            "count": 69285,
+            "identitySha256": "214ad302b6879a5068625c70548dedce5d51aa9a6f3463c04fd128d06483b9f4",
+            "sha256": "da373fa0a324965e06b1f2bd46095a43c11a976d0ccb68c7f7299381b2c6a3a8"
+          }
+        }
+      }
+    },
+    "eligibilityVersion": "issuer-eligibility-1.0.0",
+    "eligibleIssuerCount": 4789,
+    "eligibleStockCount": 5088,
+    "estimatedEventIssuers": 3123,
+    "financialStates": {
+      "CURRENT": 3697,
+      "NOT_EVALUATED": 23,
+      "NO_SUPPORTED_DATA": 1189,
+      "NO_SUPPORTED_DISPLAY_METRICS": 141,
+      "STALE": 1014,
+      "TOO_STALE": 15
+    },
+    "generation": "757f54550d85e2ba880936f3",
+    "identityInventoryIssuerCount": 6079,
+    "identityOnlyIssuerCount": 959,
+    "ledgerInventory": {
+      "auditRecords": 24959,
+      "eventAliasRecords": 1012,
+      "eventsByType": {
+        "EARNINGS_CALL": 2669,
+        "EARNINGS_CANDIDATE": 1,
+        "EARNINGS_ESTIMATED": 3132,
+        "EARNINGS_PUBLISHED": 1615,
+        "EARNINGS_SCHEDULED": 745,
+        "IR_EVENT": 4168,
+        "MATERIAL_SEC_EVENT": 2,
+        "PERIODIC_REPORT_PUBLISHED": 538,
+        "PRESENTATION_PUBLISHED": 205,
+        "SEC_FILING": 543
+      },
+      "newsIssuers": 2628,
+      "newsRecords": 20555,
+      "operationalStateRecords": 69285,
+      "sourceRecords": 5384
+    },
+    "managementContentIssuers": 481,
+    "moduleCounts": {
+      "aktuelles": 1717,
+      "calls": 562,
+      "documents": 1800,
+      "financials": 4711,
+      "nextEvent": 3274,
+      "profile": 45,
+      "whatChanged": 3626
+    },
+    "moduleFailureClasses": {
+      "INVALID_ROWS_REMOVED": 145,
+      "NO_APPROVED_GERMAN_COPY": 3630,
+      "NO_SAFE_PROFILE_SOURCE": 2374,
+      "NO_VALID_MEANINGFUL_CONTENT": 13044,
+      "STALE_OR_WEAK_PROFILE": 7
+    },
+    "newsCoverage": {
+      "currentIntelligence90": 1717,
+      "days30": 1106,
+      "days90": 1716,
+      "retained180": 1750
+    },
+    "policyExclusions": {
+      "calls": 275,
+      "events": 25,
+      "materials": 4642,
+      "news": 2981
+    },
+    "privateIssuerCount": 5120,
+    "privateListingCount": 6416,
+    "privateOperationalRowsIncluded": false,
+    "privatePayloadCount": 5120,
+    "privateStateAsOf": "2026-10-10T05:54:50Z",
+    "privateStateUnchanged": true,
+    "privateStatusCounts": {
+      "ELIGIBLE_FULL": 1358,
+      "ELIGIBLE_PARTIAL": 3431,
+      "INELIGIBLE_MAPPING": 2,
+      "INELIGIBLE_NO_SAFE_CONTENT": 223,
+      "INELIGIBLE_SOURCE_POLICY": 97,
+      "INELIGIBLE_TOO_STALE": 9
+    },
+    "profileStates": {
+      "GERMAN_APPROVED": 45,
+      "NO_APPROVED_GERMAN_COPY": 3630,
+      "NO_SAFE_PROFILE_SOURCE": 2397,
+      "STALE_OR_WEAK_PROFILE": 7
+    },
+    "rawCoverage": {
+      "callsIssuers": 948,
+      "materialsIssuers": 4944,
+      "newsIssuers": 2628,
+      "payloads": 5120,
+      "profiles": 3684
+    },
+    "runtimeSeconds": 34.884,
+    "schema": 1,
+    "sourceHealth": {
+      "BROKEN": 2,
+      "HEALTHY": 5158,
+      "STALE": 50,
+      "TEMPORARY_FAILURE": 174
+    },
+    "sourceStates": {
+      "NO_APPROVED_SOURCE": 4057,
+      "POLLABLE_APPROVED": 2015,
+      "REGISTERED_NOT_POLLABLE": 7
+    },
+    "sourceUsagePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+    "status": "PASS",
+    "statusCounts": {
+      "ELIGIBLE_FULL": 1358,
+      "ELIGIBLE_PARTIAL": 3431,
+      "INELIGIBLE_MAPPING": 23,
+      "INELIGIBLE_NO_SAFE_CONTENT": 1161,
+      "INELIGIBLE_SOURCE_POLICY": 97,
+      "INELIGIBLE_TOO_STALE": 9
+    },
+    "r2CheckpointSha256": "de51416e662afbf1aa2e3d281b1a79062c83ed1494b5760728dcdd999cfcda87",
+    "r2CheckpointBytes": 31145475,
+    "freshRestoreVerified": true,
+    "allConsumerBytesReproduced": true,
+    "consumerContracts": {
+      "status": "PASS",
+      "generation": "757f54550d85e2ba880936f3",
+      "issuers": 4789,
+      "listings": 5088,
+      "verifiedAssets": 5414,
+      "modules": {
+        "profile": 45,
+        "aktuelles": 1717,
+        "financials": 4711,
+        "whatChanged": 3626,
+        "nextEvent": 3274,
+        "calls": 562,
+        "documents": 1800
+      }
+    },
+    "remoteWrites": 0,
+    "sourceRequests": 0,
+    "codeSha": "f667d82649986d681d76cb5da1176d3b6bea265d",
+    "event": "workflow_dispatch"
+  },
+  "browser": {
+    "status": "PASS",
+    "mode": "REAL_DISCOVER_ROUTED_CANDIDATE",
+    "generation": "757f54550d85e2ba880936f3",
+    "caseCount": 239,
+    "eligibleStocks": 114,
+    "ineligibleStocks": 20,
+    "seed": "vision-universe-eligibility-20261010",
+    "groups": {
+      "HIGH_PROFILE": 9,
+      "INELIGIBLE": 20,
+      "INTERNATIONAL_ADR": 10,
+      "LARGE_CAP": 10,
+      "MASTER_DETAIL": 10,
+      "MICRO_CAP": 10,
+      "MID_CAP": 10,
+      "MODULE_COMBINATIONS": 42,
+      "NANO_CAP": 10,
+      "RANDOM_ELIGIBLE": 10,
+      "SMALL_CAP": 10,
+      "SPARSE": 10
+    }
+  },
+  "productionActivated": false
+}

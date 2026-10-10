@@ -61,6 +61,7 @@ const Store = require(join(root, "quant", "engines", "history-store.js"));
 const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const SC = require(join(root, "quant", "engines", "survivorship-control.js"));
+const CorporateActions = require(join(root, "quant", "engines", "corporate-action-evidence.js"));
 const GATE_CONFIG = JSON.parse(readFileSync(join(root, "quant", "config", "feature-gates.json"), "utf8"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -114,6 +115,7 @@ async function einer(s) {
   const closes = splitAdjustedCloses(aktuell).filter((b) => Number.isFinite(b.close) && b.close > 0);
   const weekly = Sampling.weeklyPoints(closes.map((b) => [b.date, b.close]));
   if (weekly.length < MIN_WEEKS) { bilanz.tooShort++; return; }
+  const points = weekly.map((p) => [p[0], PublishedClose.roundClose(p[1])]);
   const doc = {
     schemaVersion: LONG_SERIES_SCHEMA,
     status: "CALCULATED", source: reihe.provider || "tiingo",
@@ -122,7 +124,11 @@ async function einer(s) {
     priceSeriesType: "SPLIT_ADJUSTED", currency: "USD",
     range: "MAX", grain: "weekly",
     from: weekly[0][0], to: weekly[weekly.length - 1][0], asOf: weekly[weekly.length - 1][0],
-    points: weekly.map((p) => [p[0], PublishedClose.roundClose(p[1])]),
+    points,
+    /* Beleg der Kapitalmassnahmen (Splittage des Anbieters, Wochen mit Kurssprung in Split-Groesse samt groesstem
+       Tagessprung): damit unterscheidet die Datenqualitaet eine echte Kursbewegung von einer verpassten Bereinigung
+       (quant/engines/corporate-action-evidence.js). */
+    corporateActions: CorporateActions.evidence(closes, points, aktuell),
     barCount: weekly.length, sourceBarCount: aktuell.length,
     sourceFirst: aktuell[0].date, sourceLast: aktuell[aktuell.length - 1].date,
     publishBasis: permission.basis, publishCheckedAt: permission.checkedAt || null,
