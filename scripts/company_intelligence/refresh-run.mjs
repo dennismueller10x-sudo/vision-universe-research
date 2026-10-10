@@ -89,8 +89,8 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   }
   py('checkpoint.py',['restore','--state',state,'--snapshot',snapshot]);
   const prior=json(join(state,'latest-run.json'));report.restoredGeneration=prior.sourceGeneration||prior.export?.generation||refreshConfig.baselineGeneration;
-  if(good)await downloadGood(driver,{namespace:consumerNamespace,output:old});
-  else if(universe)await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
+  if(good){await downloadGood(driver,{namespace:consumerNamespace,output:old});if(universe)save(join(old,'manifest.json'),good.manifest);}
+  else if(universe){const baseline=await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});if(!baseline)throw Error('PREVIOUS_VERIFIED_GOOD_REQUIRED');save(join(old,'manifest.json'),baseline.good.manifest);}
   else await download(driver,{namespace:approval.namespace,output:old});
   stage='POLL_BUILD';
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];

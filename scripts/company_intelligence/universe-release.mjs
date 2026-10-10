@@ -46,6 +46,7 @@ try{
   const delivery=await(await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?freeze='+Date.now())).json();assert.equal(delivery.generation,known.generation);assert.equal(delivery.cohortStocks,46);assert.equal(delivery.issuers,45);
   const release=await(await fetch('https://research.visionuniverse.de/release-delivery.json?freeze='+Date.now())).json();
   const old=join(temporary,'known-good-46');await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
+  writeFileSync(join(old,'manifest.json'),JSON.stringify(known.manifest)+'\n');
   const existingFrozen=await goodState(driver,universeConfig.rollbackNamespace);
   if(existingFrozen)assert.equal(existingFrozen.generation,known.generation,'ROLLBACK_FREEZE_ALREADY_EXISTS_WITH_DIFFERENT_GENERATION');
   else{
