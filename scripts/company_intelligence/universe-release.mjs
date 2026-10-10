@@ -24,6 +24,9 @@ async function pointer(state,extra={}){
 async function restore46(){
  const frozen=await goodState(driver,universeConfig.rollbackNamespace);assert(frozen,'IMMUTABLE_46_ROLLBACK_REQUIRED');
  const directory=join(temporary,'rollback-consumer');await downloadGood(driver,{namespace:universeConfig.rollbackNamespace,output:directory});
+  // The downloader copies public assets only; publication needs the separately
+  // authenticated certificate, reattached exclusively in this private runner.
+  writeFileSync(join(directory,'manifest.json'),JSON.stringify(frozen.manifest)+'\n');
  const previous=await goodState(driver,refreshConfig.consumerNamespace);
  const candidate=await prepareCandidate(driver,{namespace:refreshConfig.consumerNamespace,directory,good:previous});
  await commitGood(driver,{namespace:refreshConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health:frozen.health,inventory:frozen.inventory,expectedGood:previous});
