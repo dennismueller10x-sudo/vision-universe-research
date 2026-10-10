@@ -4,7 +4,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [activate, rollback]
+        options: [activate, rollback, health]
         default: activate
       scaling_run:
         description: 'Successful isolated full-universe refresh run ID'
@@ -37,8 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ inputs.mode == 'health' && 1 || 0 }}
       - uses: actions/checkout@v4
+        if: inputs.mode != 'health'
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-identities
@@ -53,6 +54,7 @@ jobs:
         with:
           node-version: '22'
       - name: Browser and policy contracts
+        if: inputs.mode != 'health'
         run: |
           node --test scripts/company_intelligence/tests/*.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_universe_*.py'
@@ -112,8 +114,19 @@ jobs:
       - name: Actual 46-scope rollback acceptance
         if: inputs.mode == 'rollback'
         run: node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/universe-release/evidence/rollback-live.json"
+      - name: Actual unchanged generation and reconciled source health
+        if: inputs.mode == 'health'
+        run: |
+          node scripts/company_intelligence/refresh-run.mjs health --out "$RUNNER_TEMP/universe-release/evidence/health.json"
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          const root=process.env.RUNNER_TEMP+'/universe-release/evidence/';
+          const release=JSON.parse(readFileSync(root+'release.json')),health=JSON.parse(readFileSync(root+'health.json'));
+          assert.equal(health.generation,release.generation);assert.equal(health.productionState,'VERIFIED');assert.equal(health.status,'HEALTHY');
+          NODE
       - name: Fail closed to immutable 46 scope on material production failure
-        if: (failure() || cancelled()) && steps.activation.outcome == 'success'
+        if: (failure() || cancelled()) && inputs.mode != 'health' && steps.activation.outcome == 'success'
         run: |
           recovery_status=0
           node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery" || recovery_status=$?
