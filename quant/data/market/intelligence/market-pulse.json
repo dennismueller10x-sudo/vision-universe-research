@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-10T01:02:35.594Z",
+ "generatedAt": "2026-10-10T10:03:55.894Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-10T01:02:35.594Z",
+  "generatedAt": "2026-10-10T10:03:55.894Z",
   "dataAsOf": "2026-10-09",
   "previousDataAsOf": "2026-10-08",
   "schedule": {
@@ -712,9 +712,9 @@
     {
      "key": "GOLD",
      "label": "Gold",
-     "text": "−4,9 % · 0,9-fach typisch",
-     "change": -4.903,
-     "ratio": -0.93,
+     "text": "−4,5 % · 0,9-fach typisch",
+     "change": -4.521,
+     "ratio": -0.86,
      "notable": false,
      "asOf": "2026-10-09",
      "kind": "PERCENT"
@@ -733,7 +733,7 @@
      "key": "BTC",
      "label": "Bitcoin",
      "text": "+5,4 % · 0,2-fach typisch",
-     "change": 5.446,
+     "change": 5.448,
      "ratio": 0.22,
      "notable": false,
      "asOf": "2026-10-09",
@@ -816,12 +816,12 @@
   "XAUUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 4178.85,
+   "last": 4195.63,
    "observations": 1530,
    "changes": {
-    "1M": -4.9,
-    "3M": 1.63,
-    "1Y": 4.73
+    "1M": -4.52,
+    "3M": 2.03,
+    "1Y": 5.15
    },
    "high52w": {
     "date": "2026-01-28",
@@ -831,38 +831,38 @@
     "date": "2025-11-04",
     "value": 3934.81
    },
-   "rangePosition": 15.5,
-   "dist50": -4.02,
-   "dist200": -6.64,
+   "rangePosition": 16.5,
+   "dist50": -3.64,
+   "dist200": -6.27,
    "trend": "NEGATIVE",
-   "drawdown52w": -24.2,
-   "vol20": 18.3,
+   "drawdown52w": -23.89,
+   "vol20": 18.63,
    "volContext": {
     "median": 13.6,
     "p25": 10.4,
     "p75": 18.4,
     "samples": 1509,
     "from": "2021-10-10",
-    "state": "USUAL"
+    "state": "HIGHER"
    },
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −4,9 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −4,5 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "XAGUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 60.206,
+   "last": 60.833,
    "observations": 1530,
    "changes": {
-    "1M": -10.42,
-    "3M": 0.71,
-    "1Y": 22.33
+    "1M": -9.49,
+    "3M": 1.75,
+    "1Y": 23.6
    },
    "high52w": {
     "date": "2026-01-28",
@@ -872,12 +872,12 @@
     "date": "2025-10-27",
     "value": 46.958
    },
-   "rangePosition": 18.7,
-   "dist50": -7.01,
-   "dist200": -13.82,
+   "rangePosition": 19.6,
+   "dist50": -6.06,
+   "dist200": -12.93,
    "trend": "NEGATIVE",
-   "drawdown52w": -48.89,
-   "vol20": 32.09,
+   "drawdown52w": -48.35,
+   "vol20": 32.84,
    "volContext": {
     "median": 25.2,
     "p25": 20.1,
@@ -891,12 +891,12 @@
   "XPTUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 1678.53,
+   "last": 1692.25,
    "observations": 1480,
    "changes": {
-    "1M": -11.61,
-    "3M": 2.74,
-    "1Y": 2.97
+    "1M": -10.89,
+    "3M": 3.58,
+    "1Y": 3.82
    },
    "high52w": {
     "date": "2026-01-23",
@@ -906,31 +906,31 @@
     "date": "2025-11-20",
     "value": 1523.955
    },
-   "rangePosition": 12.3,
-   "dist50": -5.68,
-   "dist200": -9.92,
+   "rangePosition": 13.4,
+   "dist50": -4.92,
+   "dist200": -9.18,
    "trend": "NEGATIVE",
-   "drawdown52w": -39.7,
-   "vol20": 29.76,
+   "drawdown52w": -39.21,
+   "vol20": 30.5,
    "volContext": {
     "median": 24.3,
     "p25": 20.3,
     "p75": 30.1,
     "samples": 1459,
     "from": "2021-10-10",
-    "state": "USUAL"
+    "state": "HIGHER"
    },
    "roles": []
   },
   "XPDUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 1158.615,
+   "last": 1162.265,
    "observations": 1475,
    "changes": {
-    "1M": -14.45,
-    "3M": -9.53,
-    "1Y": -19.61
+    "1M": -14.18,
+    "3M": -9.25,
+    "1Y": -19.36
    },
    "high52w": {
     "date": "2026-01-28",
@@ -940,12 +940,12 @@
     "date": "2026-10-07",
     "value": 1121.65
    },
-   "rangePosition": 4,
-   "dist50": -10.63,
-   "dist200": -16.96,
+   "rangePosition": 4.4,
+   "dist50": -10.35,
+   "dist200": -16.7,
    "trend": "NEGATIVE",
-   "drawdown52w": -43.6,
-   "vol20": 27.76,
+   "drawdown52w": -43.42,
+   "vol20": 28.16,
    "volContext": {
     "median": 33.2,
     "p25": 27.6,
@@ -1068,7 +1068,7 @@
   "BTCUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 82555.031323,
+   "last": 82556.188699,
    "observations": 5497,
    "changes": {
     "1M": 5.45,
@@ -1084,7 +1084,7 @@
     "value": 58532.412697
    },
    "rangePosition": 42.3,
-   "dist50": 2.27,
+   "dist50": 2.28,
    "dist200": 14.88,
    "trend": "POSITIVE",
    "drawdown52w": -28.39,
@@ -1109,7 +1109,7 @@
   "ETHUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 2485.418246,
+   "last": 2485.433131,
    "observations": 4061,
    "changes": {
     "1M": 0.71,
@@ -1143,7 +1143,7 @@
   "SOLUSD": {
    "kind": "PRICE",
    "asOf": "2026-10-09",
-   "last": 109.061951,
+   "last": 109.061326,
    "observations": 2200,
    "changes": {
     "1M": 7.38,
