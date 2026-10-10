@@ -5,8 +5,8 @@
 Implementation is isolated in PR #561. Configuration is armed; a missing durable activation receipt still selects
 only the legacy scope. No full-universe production activation has occurred. The live 46-stock,
 45-issuer scope remains the rollback baseline. The full structural and representative candidate acceptance below has passed.
-It is not yet published coverage; authenticated scaling and production readback
-remain required.
+It is not yet published coverage; authenticated scaling passed; main release and production readback remain
+required.
 
 ## Authoritative state and observed operations
 
@@ -166,7 +166,7 @@ hours. Measured weighted source engine run 38036784710 checked 81 sources in 727
 136 first-party requests plus 83 SEC requests, 47 successful feeds, 11 event
 sources and 5 material sources. Its private backup/fresh restore passed, but
 browser acceptance correctly rejected the missing Master-detail CI integration;
-no consumer was published. The corrected full storage acceptance is pending.
+no consumer was published. The corrected run 38037972935 subsequently passed all stages.
 
 At that measured throughput, an initial 5,266-source backlog is substantial
 (5,185 deferred); a four-hour runner does not provide universal four-hour source
@@ -174,8 +174,21 @@ freshness. Oldest-first tier rotation avoids starvation, but effective source
 latency must be observed after several actual runs. No concurrency increase or
 polling-cadence expansion is hidden in this rollout.
 
-Final pipeline runtime, R2 object counts and package size require the corrected
-isolated scaling run. Do not reuse the small-cohort
+Corrected authenticated run [38037972935](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38037972935)
+passed: source engine 724.399s; complete restore/poll/backup/fresh restore/browser/
+consumer R2 commit 1,497s (25 rounded runner minutes before setup and production
+Pages wait). 116 canary/delta mobile/dark/light cases passed. It preserved a richer
+5,122-payload derivative in an isolated verification namespace, with SHA-256
+055b51495984b3be05a21101f8dc02a129f9950c9c56e73cff9f178035dab0bc, and freshly
+reproduced every consumer byte. Production CURRENT was not replaced. The
+published isolated consumer had 4,790 issuers / 5,089 securities, 5,415 uploaded
+objects / 97,157,434 bytes, generation 5e674257d43c97649380ef2a. These richer
+probe numbers are not the initial production coverage. Source requests: 219.
+
+The existing production refresh job now allows 60 minutes, because the measured
+25-minute complete engine/storage/browser pipeline must also wait for Pages and
+verify live data. This extends deadline headroom, not source budgets or cadence.
+Actual deployed package size remains a release readback requirement. Do not reuse the small-cohort
 5,040-minute projection as full-universe evidence. Scaling acceptance is pending.
 
 ## Reviews and remaining acceptance
@@ -192,8 +205,8 @@ isolated scaling run. Do not reuse the small-cohort
 3. Operations: previous-manifest validation proof now stays in a private runner
    directory, never in public consumer downloads. Fresh private restore and all
    bytes reproduce. Isolated source work is bounded and scheduler-driven. Full
-   consumer R2 publication/readback, immutable rollback freeze, actual production
-   activation and readback remain pending; do not claim launch before they pass.
+   isolated consumer R2 publication/readback passed. Immutable rollback freeze,
+   actual production activation and readback remain pending; do not claim launch before they pass.
 
 Operator per-issuer disable: add the exact existing issuer ID to
 `universe-rollout.json.disabledIssuers`, validate and release. Only that issuer
@@ -226,6 +239,12 @@ all those writes fall outside the account's shared free allowance. Existing
 account-wide storage/free allowance are unknown. Class B readback and Pages
 staging are counted separately in final operational evidence. These are bounded
 projections, not an account invoice or a claim that unrelated R2 usage is free.
+
+For the measured full pipeline, 25 minutes × 180 monthly cycles is **4,500
+runner minutes/month before setup, Pages wait, live QA and the separate Pages
+runner**. This is a single complete scaling observation, not a multi-run average.
+Do not report 4,500 as total operating cost. Final initial production timings will
+supply the separately measured deployment/readback components.
 
 Public-repository standard Linux Actions has no incremental runner charge under
 GitHub's public-repository policy; runner minutes still matter and must be

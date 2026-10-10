@@ -30,7 +30,9 @@ jobs:
   refresh:
     if: vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    # Measured full pipeline is 25 min before Pages wait and live QA.
+    # Source/request budgets remain fixed; publication and rollback need headroom.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
