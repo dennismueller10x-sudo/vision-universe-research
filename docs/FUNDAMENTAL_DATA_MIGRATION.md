@@ -183,6 +183,11 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
   - Fix: `provider.VALUE_FORMS`, eine Auswahlstelle (`provider.fundamental_facts`), eine Amendment-Regel für alle Formulare (Endung `/A`). Übergangswerte kommen nur mit dem Zeitraum ihrer Zelle und nie in ein vorwärts fortgeschriebenes Geschäftsjahr.
   - Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_122.py` (Orbital ATK, 8point3, Dthera, Stanley Black & Decker, Mastermind, SpartanNash).
   - Nachbarsuche über 375 Emittenten mit Übergangsberichten: `artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json`. Red Team: `artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json`.
+- **Freeze v7:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v7.json` (Development Freeze, Parent v6, Kern 1.22.0).
+- **Holdout v5: HOLDOUT_V5_NOT_ELIGIBLE** (`artifacts/FUNDAMENTAL-TTM-HOLDOUT5-ELIGIBILITY-RESULT.json`). Das ist kein Kern-Fail.
+  - Ungesehene unabhängige Emittenten je Schicht (Mindestzahl 20, vorab festgelegt): Geschäftsjahreswechsel 0, Same-Day 0, Rumpfperiode 5, geteiltes Jahr 1, Übergangsbericht 2, Amendment-Kette 35. Fälle insgesamt 2.134 (Minimum 1.000).
+  - Option A (frischer SEC-Stand) reicht nicht: 35 neue periodische Einreichungen, kein Übergangsbericht. Option B: kein unanalysierter Emittentenrahmen vorhanden.
+  - Holdout v5 nicht gestartet. Warten auf neue SEC-Daten mit Geschäftsjahreswechseln oder einen neu abgegrenzten Rahmen.
 - **Neue, vorbestehende Defekte (dokumentiert, nicht behoben, je eigener PR):**
   - **F-TTM-7:** Zeitraum-Kollisionen über Einreichungen in Regelformularen (14,4 % der Zufallsemittenten, Latest-/PIT-Zellen, kein TTM-Effekt nachgewiesen).
   - **F-TTM-8:** Vergleichsspalten eines 10-KT erzeugen Phantom-Geschäftsjahresenden (38 von 375 Übergangsemittenten; fehlende statt falscher Werte).
