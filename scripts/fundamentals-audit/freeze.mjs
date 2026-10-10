@@ -30,7 +30,8 @@ export const AUDIT = ['scripts/fundamentals-audit/sec-ground-truth.mjs', 'script
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-121-NEIGHBOR-SEARCH.json',
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-PREREG.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-RESULT.json',
   'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json', 'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json',
-  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT5-ELIGIBILITY-SPEC.json', 'scripts/fundamentals-audit/ttm_holdout5_eligibility.py'];
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT5-ELIGIBILITY-SPEC.json', 'scripts/fundamentals-audit/ttm_holdout5_eligibility.py',
+  'scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT5-EXCLUDE.json', 'scripts/fundamentals-audit/ttm_coverage_report.py', 'scripts/quant/audit_primary_source.py'];
 export const TESTS = ['scripts/quant/tests/test_sec_ground_truth_regressions.py', 'scripts/quant/tests/test_sec_ttm_integrity.py', 'scripts/quant/tests/test_normalize_periods.py', 'core/tests/fundamental-cross-consumer.test.mjs',
   'scripts/quant/tests/test_ttm_core_120.py', 'scripts/quant/tests/test_restatements.py', 'scripts/quant/tests/test_fiscal.py',
   'scripts/quant/tests/test_ttm_core_121.py', 'scripts/quant/tests/test_version_discipline.py', 'scripts/quant/tests/test_ttm_core_122.py'];
@@ -62,11 +63,11 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     policies1220: {
       amendmentPolicy: 'eine Regel fuer alle Wertformulare: Amendment = Formular mit /A (10-K/A, 10-Q/A, 20-F/A, 40-F/A, 10-KT/A, 10-QT/A); jede Fassung gilt ab ihrer Verfuegbarkeit (Annahmezeit, sonst Einreichungstag); AS_OF_LATEST = juengste bis as_of sichtbare Fassung, LATEST_KNOWN = juengste ueberhaupt; Same-Day-Konflikt = AMBIGUOUS (unveraendert 1.20.0); kein rueckwirkender Ersatz',
       valueForms: 'provider.VALUE_FORMS = PERIODIC_FORMS + 10-KT, 10-KT/A, 10-QT, 10-QT/A; Auswahl nur in provider.fundamental_facts; Kalender liest unveraendert CALENDAR_FORMS',
-      transitionPeriodPolicy: 'Zelle nach Zeitraum und Kalender, nie nach Formular; Uebergangszeitraeume ohne Kennung bleiben ohne Jahres-/Quartalszelle (TTM darueber nicht verfuegbar); verkuerztes Geschaeftsjahr (>= 330 Tage, direkt nach dem Vorjahresende) behaelt seine Kennung; ein Wert aus einem Uebergangsbericht nur mit dem vom Kalender erwarteten Zeitraum seiner Zelle (Beginn und Ende +-7 Tage), sonst UNPLACEABLE_PERIOD (fehlt, nie falsch)',
+      transitionPeriodPolicy: 'Zelle nach Zeitraum und Kalender, nie nach Formular; Uebergangszeitraeume ohne Kennung bleiben ohne Jahres-/Quartalszelle (TTM darueber nicht verfuegbar); verkuerztes Geschaeftsjahr (>= 330 Tage, direkt nach dem Vorjahresende) behaelt seine Kennung; ein Wert aus einem Uebergangsbericht nur mit dem Zeitraum seiner Zelle (vom Kalender erwartet oder von allen bis dahin verfuegbaren Regelberichten der Zelle einstimmig gemeldet, Beginn und Ende +-7 Tage) und nie in einem vorwaerts fortgeschriebenen Geschaeftsjahr; Deckblattangaben nach der letzten abgeschlossenen Periode; sonst UNPLACEABLE_PERIOD (fehlt, nie falsch)',
       changeDetection: 'latest_filing_signature, filing_index/filing_years und daily.WATCHED_FORMS sehen VALUE_FORMS' },
     redTeam1220: (() => { const r = JSON.parse(fs.readFileSync(path.join(here, 'artifacts', 'FUNDAMENTAL-TTM-122-REDTEAM.json'), 'utf8')); return r; })(),
     neighborSearch1220: (() => { const n = JSON.parse(fs.readFileSync(path.join(here, 'artifacts', 'FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json'), 'utf8')); return { file: 'artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json', transitionReports: n.transitionReports, coreComparison: { issuers: n.coreComparison.issuers, counts: n.coreComparison.counts }, newDefect: n.newDefect }; })(),
-    regressionFixtures1220: ['OA', 'EIGHTPOINT3', 'DTHERA', 'SWK'],
+    regressionFixtures1220: ['OA', 'EIGHTPOINT3', 'DTHERA', 'SWK', 'MSTMIND', 'SPTN'],
     holdout4: 'FAIL (Kern 1.21.0, ein offizieller Lauf): FALSE_AVAILABLE/WRONG_VALUE/WRONG_CONCEPT/WRONG_PERIOD 0, FALSE_MISSING 11,4 %; Spezialschichten fy_change 3/30, same_day 4/20, stub 7/20, split_year 2/20 nicht pruefbar = formaler FAIL; F-TTM-6 ausserhalb des Holdouts gefunden; v4 validiert 1.22.0 nicht',
     revenueEvidence: (() => { const e = JSON.parse(fs.readFileSync(path.join(root, MAPPING[1]), 'utf8')); return { version: e.version, summary: e.summary, filings: Object.keys(e.decisions).length }; })(),
     ttmDefinition: {
