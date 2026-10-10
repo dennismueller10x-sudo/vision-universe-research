@@ -44,7 +44,7 @@ function build(file,{ticker,now=new Date().toISOString().slice(0,10)}){
    stop:s.tradeStop&&Number.isFinite(s.tradeStop.price)?{price:s.tradeStop.price,note:s.tradeStop.note||null}:null})),
   tradeSetup:b.tradeSetup&&typeof b.tradeSetup.status==='string'?{status:b.tradeSetup.status,scenarioId:b.tradeSetup.scenarioId||null,riskReward:b.tradeSetup.riskReward||null,setupQuality:Number.isFinite(b.tradeSetup.setupQuality)?b.tradeSetup.setupQuality:null,missing:b.tradeSetup.missing||[]}:null,
   elliott:{status:elliott.status,label:elliottUnavailable?'Keine validierte Zählung verfügbar':elliott.status==='AMBIGUOUS'?'Mehrere Zählungen sind möglich':'Zählung im Detail prüfen',primary:elliott.primaryCount,alternative:elliott.alternativeCount,methodology:elliott.methodologyVersion,methodFit:elliott.confidence,isProbability:false,disclaimer:elliott.disclaimer||'Keine Wahrscheinlichkeit.'},
-  legacyHref:'/quant/technical/?symbol='+encodeURIComponent(ticker),priceHistoryHref:'/quant/#/aktie/'+encodeURIComponent(ticker)};
+  legacyHref:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik',priceHistoryHref:'/quant/#/aktie/'+encodeURIComponent(ticker)};
 }
 const api={build};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUTechnicalWorkspaceContract=api;
 })(typeof window!=='undefined'?window:globalThis);

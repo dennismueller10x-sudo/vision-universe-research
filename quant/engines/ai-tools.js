@@ -109,7 +109,8 @@
    * Erzeugt eine Tool-Registry ueber einer Datenzugriffsschicht.
    *
    * @param {object} access Funktionen, die die Product API bereitstellt.
-   *   In der Anwendung ist das quant/api/client.js, in Tests ein Stub —
+   *   Frueher quant/api/client.js (entfernt, lief auf dem synthetischen
+   *   Modelluniversum); in Tests ein Stub —
    *   die Registry selbst kennt weder Datenbank noch Dateisystem.
    */
   function createToolRegistry(access) {

@@ -281,6 +281,19 @@ jobs:
           test ! -d "$SITE_ROOT/quant/data/sec/canonical"
           test ! -d "$SITE_ROOT/quant/data/sec/consumer"
           test ! -d "$SITE_ROOT/quant/data/fundamentals"
+          # Kein synthetisches Modelluniversum in der Auslieferung
+          # (quant/tests/no-mock-in-product.test.mjs prueft dasselbe im Repo).
+          test ! -e "$SITE_ROOT/quant/data/securities.json"
+          test ! -e "$SITE_ROOT/quant/data/meta.json"
+          test ! -d "$SITE_ROOT/quant/data/dna"
+          test ! -e "$SITE_ROOT/quant/data/technical/scan-mock.json"
+          test ! -e "$SITE_ROOT/quant/ui/backtest-worker.js"
+          test ! -e "$SITE_ROOT/quant/api/client.js"
+          test ! -e "$SITE_ROOT/quant/engines/mock-generator.js"
+          test ! -e "$SITE_ROOT/quant/engines/mock-provider.js"
+          if grep -rlE '"isMock"[[:space:]]*:[[:space:]]*true' "$SITE_ROOT/quant/data"; then
+            echo "::error::synthetische Daten (isMock:true) unter quant/data im Release"; exit 1
+          fi
           # /quant/ ist das kanonische Produkt (gebuendelt), /vu2/ und /Quant/
           # sind genau EIN Sprung dorthin - keine Umleitungskette.
           grep -F '/quant/release-bundle.js?v=' "$SITE_ROOT/quant/index.html"
