@@ -52,11 +52,28 @@ STAND_0920_OHNE_DEBT = {
 # (scripts/diagnose/coverage-delta.mjs, laeuft vor jedem Commit):
 #   Charts  6871 -22 DEBT +1 BRTM (neues Listing vom 10.09., nachgeladen) = 6850
 #   Technik 5884  -8 DEBT -139 Listing-Kuerzung (#367) +43 junge Reihen   = 5780
-ABGENOMMEN = {
+ABGENOMMEN_0410 = {
     "PRODUCT_TITLES": 6853,
     "R2_SERIES_AVAILABLE": 7802,
     "HISTORICAL_CHART_AVAILABLE": 6850,
     "TECHNICAL_HISTORY_ELIGIBLE": 5780,
+}
+# Neuabnahme 10.10.2026 (coverage-metrics.yml gegen das Produktuniversum nach dem
+# Gattungsbeleg aus dem Boersenverzeichnis, Lauf 38040675307). Gegen den Stand vom
+# 04.10.2026 ist jede Abweichung je Titel erklaert (coverage-delta.mjs, "GEHT AUF"):
+#   Titel   6853 -167 (127 Schuldverschreibungen, 32 ETN, 8 Rights/Warrants)       = 6686
+#   Charts  6850 -167 (alle 167 waren darstellbar, keiner stand in den Ausnahmen)  = 6683
+#   Technik 5780 -137 (technisch bereit, jetzt nicht mehr im Produktuniversum)
+#                +  1 (TBHC: 299 Bars am Bezug, 301 heute - normales Altern ueber
+#                      die 300-Bar-Schwelle, unabhaengig von der Korrektur)        = 5644
+# Die uebrigen 30 der 167 waren am Bezug schon technisch zu kurz (kein Abgang aus
+# der Zahl). Die 85 neu zugelassenen Titel standen als REVIEW schon im
+# Produktuniversum: Nenner und Zaehler aendern sich durch sie nicht.
+ABGENOMMEN = {
+    "PRODUCT_TITLES": 6686,
+    "R2_SERIES_AVAILABLE": 7802,
+    "HISTORICAL_CHART_AVAILABLE": 6683,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5644,
 }
 # Stand der Mitgliedschaft nach dem Gattungsbeleg aus dem Boersenverzeichnis
 # (scripts/market/apply-exchange-directory.mjs, 09.10.2026): 167 Titel belegt
@@ -64,12 +81,14 @@ ABGENOMMEN = {
 # Rights/Warrants) - nur Mitgliedschaft, keine neue Messung, wie #366:
 #   Titel   6853 - 167 = 6686
 #   Charts  6850 - 167 = 6683   (keiner der 167 steht in den Chart-Ausnahmen)
-#   Technik 5780 - 137 = 5643   (137 der 167 waren technisch bereit, laut
-#                                tooShortSymbols der abgenommenen Messung)
+#   Technik 5780 - 137 + 1 = 5644   (137 der 167 waren technisch bereit, laut
+#                                tooShortSymbols der abgenommenen Messung; +1 TBHC
+#                                altert mit 301 Bars ueber die Schwelle - Messung
+#                                10.10.2026, kein Teil der Korrektur)
 AKTUELLER_POLICY_STAND = {
     "PRODUCT_TITLES": 6686,
     "HISTORICAL_CHART_AVAILABLE": 6683,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5643,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5644,
 }
 VERZEICHNIS_AUSGESCHLOSSEN = 167
 ENTFERNTE_DEBT_TITEL = {
@@ -178,8 +197,10 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
 
     def test_der_verzeichnisbeleg_erklaert_den_rest_je_titel(self):
         """apply-exchange-directory.mjs: jeder seit der Abnahme ausgeschlossene Titel steht mit
-        Wertpapierbezeichnung und Regel im Abgleich; die Kennzahlen folgen aus den Namenslisten
-        der abgenommenen Messung (keine neue Messung)."""
+        Wertpapierbezeichnung und Regel im Abgleich. Die Kennzahlen des Stands vom 04.10.
+        folgen daraus mit den Zaehlungen des Deltaberichts (coverage-delta.mjs, Lauf
+        38040675307): 137 der 167 waren technisch bereit, alle 167 darstellbar, TBHC altert
+        ueber die 300-Bar-Schwelle. Die neue Messung fuehrt keinen der 167 mehr."""
         abgleich = lade(ROOT / "quant/data/market/security-master/eligibility-reconciliation.json")
         raus = {c["ticker"] for c in abgleich["changes"]
                 if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY" and c["to"]["productEligibility"] == "EXCLUDED"
@@ -189,11 +210,17 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
             if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY":
                 self.assertTrue(c.get("securityName") and c.get("rule"), c["ticker"] + " ohne Beleg")
         m = lade(METRIKEN)
+        # Die Titel sind aus Nenner UND Ausnahmelisten verschwunden - nicht nur aus der Summe.
         self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
-        ready_raus = raus - set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
-        self.assertEqual(ABGENOMMEN["PRODUCT_TITLES"] - len(raus), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
-        self.assertEqual(ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"] - len(raus), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"] - len(ready_raus), AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertFalse(raus & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
+        self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
+        technisch_bereit_raus, gealtert = 137, 1
+        self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
+        self.assertEqual(ABGENOMMEN_0410["PRODUCT_TITLES"] - len(raus), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(ABGENOMMEN_0410["HISTORICAL_CHART_AVAILABLE"] - len(raus), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertEqual(ABGENOMMEN_0410["TECHNICAL_HISTORY_ELIGIBLE"] - technisch_bereit_raus + gealtert,
+                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(AKTUELLER_POLICY_STAND, {k: ABGENOMMEN[k] for k in AKTUELLER_POLICY_STAND})
 
     def test_der_bericht_erklaert_selbst_dass_er_nur_befunde_fuehrt(self):
         t = lade(TECHNIK)
