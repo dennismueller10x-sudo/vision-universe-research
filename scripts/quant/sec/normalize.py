@@ -27,7 +27,7 @@ from .model import (
     UNIT_MISMATCH, PERIOD_MISMATCH,
 )
 from .registry import KIND_DURATION, KIND_INSTANT
-from .restatements import CompanyFactBook, Observation, economic_class
+from .restatements import CompanyFactBook, Observation, economic_class, to_instant
 from .version import NORMALIZATION_SCHEMA_VERSION, NORMALIZATION_LOGIC_VERSION
 
 LOGGER = logging.getLogger("vu.sec.normalize")
@@ -449,13 +449,19 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         # dividends, discontinued operations)? Then the classes are told apart.
         # Recorded per pair of classes: preferred dividends tell owners' net income
         # from income available to common, not from consolidated profit (Mobiquity).
+        # Each pair keeps the availability of the first filing that showed it, so a
+        # point-in-time reading uses only the evidence visible then (red team R3).
         by_class = {}
         for _, other in entries:
             by_class.setdefault(economic_class(other.concept), other.value)
+        shown = entries[0][1].available_from or availability.get(accession) or entries[0][1].filed
         for first, a in by_class.items():
             for second, b in by_class.items():
                 if first < second and abs(a - b) > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(a), abs(b), 1.0):
-                    distinct_classes.setdefault((metric_name, fiscal_year, fiscal_period), set()).add((first, second))
+                    pairs = distinct_classes.setdefault((metric_name, fiscal_year, fiscal_period), {})
+                    known = pairs.get((first, second))
+                    if known is None or to_instant(shown) < to_instant(known):
+                        pairs[(first, second)] = shown
         decided = _drop_partial_aggregates(
             entries, registry.get(metric_name), accession,
             load_revenue_evidence() if revenue_evidence is None else revenue_evidence)
@@ -533,7 +539,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     # them different (a filer with NCI in 2012 may have none in 2021: Mobiquity's
     # ProfitLoss restatement of 2021 is a version of its net income)
     for key, timeline in factbook.timelines.items():
-        timeline.distinguish_classes = distinct_classes.get(key, set())
+        timeline.distinguish_classes = distinct_classes.get(key, {})
     stats["timelines"] = len(factbook.timelines)
     stats["issues"] = len(issues)
     LOGGER.info("normalized cik=%s %s", cik, stats)

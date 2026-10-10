@@ -516,5 +516,6 @@ def _rehydrate(document):
         rebuilt = factbook.get(timeline["metric"], timeline["fiscal_year"], timeline["fiscal_period"])
         if rebuilt is not None:
             distinguish = timeline.get("distinguish_classes", True)
-            rebuilt.distinguish_classes = {tuple(pair) for pair in distinguish} if isinstance(distinguish, list) else True
+            rebuilt.distinguish_classes = {(pair[0], pair[1]): (pair[2] if len(pair) > 2 else None)
+                                           for pair in distinguish} if isinstance(distinguish, list) else True
     return factbook

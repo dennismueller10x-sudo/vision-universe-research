@@ -284,3 +284,69 @@ class M2PredecessorSuccessorBasisTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def truncated_resolver(name, as_of):
+    """Kern nur aus den bis as_of eingereichten Fakten (Kalender aus dem vollen Fixture, damit nur Werte und
+    Klassenbelege verglichen werden)."""
+    data = payload(name)
+    cik = str(data["cik"]).zfill(10)
+    _, calendar, _, _ = build(name)
+    cut = json.loads(json.dumps(data))
+    for taxonomy in cut["facts"].values():
+        for concept in taxonomy.values():
+            for unit, rows in concept["units"].items():
+                concept["units"][unit] = [r for r in rows if r["filed"] <= as_of]
+    _, values = fundamental_facts(SECProvider.__new__(SECProvider), cut)
+    return PeriodResolver(normalize_company(cik, values, REGISTRY, calendar=calendar).factbook, REGISTRY)
+
+
+class FTTM7PointInTimeEvidenceTests(unittest.TestCase):
+    """Red team 1.23.0 R3 CRITICAL-1: die Klassenbelege einer Zelle kamen aus allen Einreichungen, auch aus solchen
+    nach as_of. Ein PIT-TTM darf sich nicht aendern, wenn spaetere Einreichungen hinzukommen."""
+
+    CASES = (
+        # Apartment Income REIT (CIK 1820877): das Klassenpaar fuer Q3 2020 zeigt erst 10-Q 0000950170-21-002654
+        # (2021-11-02, NetIncomeLoss +25.007.000 gegen ProfitLoss -24.815.000). Am 2021-08-20 nicht sichtbar.
+        ("AIRC21", "2021-08-20", -84858000.0),
+        # Bausch Health (CIK 885590): Q4 2010 = GJ minus neun Monate; das Klassenpaar kam erst mit dem 10-K vom
+        # 2012-02-29. Am 2011-11-20 verfuegbar.
+        ("BHC11", "2011-11-20", 72574000.0),
+        # Mobiquity (CIK 1084267): Klassenpaar fuer Q2 2019 erst im 10-Q 0001683168-20-002444 (2020-07-31); am
+        # 2019-11-20 ProfitLoss aus 10-Q 0001683168-19-003483.
+        ("MOBQ19", "2019-11-20", -70667163.0),
+    )
+
+    def test_pit_ttm_uses_only_class_evidence_filed_by_as_of(self):
+        for name, as_of, expected in self.CASES:
+            _, _, _, resolver = build(name)
+            fact = resolver.ttm("net_income", as_of)
+            self.assertTrue(fact.available, (name, fact.reason))
+            self.assertAlmostEqual(fact.value, expected, delta=1, msg=name)
+
+    def test_pit_ttm_equals_the_core_built_from_filings_up_to_as_of(self):
+        for name, as_of, _ in self.CASES:
+            _, _, _, resolver = build(name)
+            full, cut = resolver.ttm("net_income", as_of), truncated_resolver(name, as_of).ttm("net_income", as_of)
+            self.assertEqual((full.available, full.value, full.reason), (cut.available, cut.value, cut.reason), name)
+
+
+class FTTM7DerivedQuarterInOneClassTests(unittest.TestCase):
+    """Red team 1.23.0 R3 MEDIUM-2: die klassenreine Lesung brach bei einem abgeleiteten Quartal ab."""
+
+    def test_derived_quarter_is_derived_again_inside_the_class(self):
+        # Goodyear (CIK 42582), PIT 2022-11-20: Q3 2022 44 Mio. (0000950170-22-020726), Q2 166 Mio. (-22-014987),
+        # Q1 96 Mio. (-22-008036), Q4 2021 = GJ 764 Mio. (-22-001201) minus neun Monate 211 Mio. (-21-003186).
+        _, _, _, resolver = build("GT22")
+        fact = resolver.ttm("net_income", "2022-11-20")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, 44e6 + 166e6 + 96e6 + (764e6 - 211e6), delta=1)
+
+    def test_class_without_every_quarter_falls_to_the_complete_class(self):
+        # Lincoln Electric (CIK 59527), PIT 2011-11-20: Q3 2011 nur als ProfitLoss (10-Q 0001104659-11-058711);
+        # klassenrein konsolidiert: Q4 2010 132.210.000 - 90.701.000, Q1 46.942.000, Q2 57.022.000, Q3 55.358.000.
+        # Nicht ProfitLoss-neun-Monate minus NetIncomeLoss-Halbjahr.
+        _, _, _, resolver = build("LECO11")
+        fact = resolver.ttm("net_income", "2011-11-20")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, (132210000 - 90701000) + 46942000 + 57022000 + 55358000, delta=1)

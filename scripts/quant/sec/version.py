@@ -299,7 +299,10 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          TTM_CONCEPT_MISMATCH; Eigentuemerklasse zuerst, Klassen-Fassung
 #          dann Stammaktionaere, dann inkl. Minderheiten; Klassen-Fassung auch
 #          aus der Nebenmeldung derselben Einreichung, ohne die Klassenvorliebe
-#          der Zelle - Markel, AMCOL, RPT Realty, JBG Smith).
+#          der Zelle - Markel, AMCOL, RPT Realty, JBG Smith; abgeleitete Quartale
+#          klassenintern neu abgeleitet - Goodyear). Klassenbelege sind Point in
+#          Time: ein Paar zaehlt erst ab der Verfuegbarkeit der Einreichung, die
+#          es zeigt (Red Team R3 CRITICAL-1: Apartment Income REIT, Bausch Health).
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -337,7 +340,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "0d0e99823a1074715b8ec98b42887361f9e0d2dd88db6a81ec05c6a15e54f61a"
+    "2bd09f25d5c00aac5e9e5446ab0e4e1ddba44619b27d67ad4e06f6c1dd764962"
 )
 
 

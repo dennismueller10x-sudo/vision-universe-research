@@ -89,7 +89,8 @@ def told_apart(distinguish_classes, first, second):
     """Whether the filer's filings show two economic classes of a cell with different values.
 
     True (the default before evidence is known) tells every pair apart; otherwise a
-    collection of class pairs, each a sorted 2-tuple."""
+    collection of class pairs, each a sorted 2-tuple - for a point in time only the
+    pairs a filing visible then has shown (FactTimeline.class_evidence)."""
     if first == second:
         return False
     if distinguish_classes is True:
@@ -226,6 +227,22 @@ class FactTimeline:
 
     # ---------------------------------------------------------------- resolution
 
+    def class_evidence(self, as_of=None, lag_days=0):
+        """The class pairs shown different by filings available at as_of (all without as_of).
+
+        1.23.0, red team R3 CRITICAL-1: evidence is point in time like the values -
+        a later filing telling two classes apart must not change an earlier reading
+        (Apartment Income REIT 2021-08-20, Bausch Health 2011-11-20)."""
+        evidence = self.distinguish_classes
+        if evidence is True:
+            return True
+        cutoff = to_instant(as_of, end_of_day=True) if as_of is not None else None
+        if cutoff is None:
+            return set(evidence)
+        if lag_days:
+            cutoff = cutoff - timedelta(days=lag_days)
+        return {pair for pair, since in evidence.items() if since is None or to_instant(since) <= cutoff}
+
     def visible(self, as_of, lag_days=0):
         """Observations publicly available at as_of (inclusive), oldest first."""
         cutoff = to_instant(as_of, end_of_day=True)
@@ -253,7 +270,8 @@ class FactTimeline:
             candidates = [obs for obs in candidates if accept(obs)]
         if not candidates:
             return None
-        candidates = preferred(candidates, self.distinguish_classes if by_class else ())
+        evidence = self.class_evidence(None if policy == POLICY_LATEST_KNOWN else as_of, lag_days)
+        candidates = preferred(candidates, evidence if by_class else ())
 
         if policy == POLICY_ORIGINAL:
             chosen = candidates[0]
@@ -300,7 +318,7 @@ class FactTimeline:
             "fiscal_period": self.fiscal_period,
             "restated": self.is_restated(),
             "distinguish_classes": self.distinguish_classes if self.distinguish_classes is True
-            else [list(pair) for pair in sorted(self.distinguish_classes)],
+            else [[*pair, since] for pair, since in sorted(self.distinguish_classes.items())],
             "observations": [obs.to_dict() for obs in self.observations],
         }
 

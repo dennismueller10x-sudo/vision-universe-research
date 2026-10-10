@@ -25,7 +25,7 @@ from .model import (
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, TTM_BASIS_MIXED, missing,
 )
 from .registry import KIND_INSTANT
-from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, Observation, economic_class, to_instant, told_apart
+from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, POLICY_LATEST_KNOWN, Observation, economic_class, to_instant, told_apart
 
 LOGGER = logging.getLogger("vu.sec.periods")
 
@@ -331,7 +331,8 @@ class PeriodResolver:
                 # including non-controlling interests).
                 cumulative_cells = [(fiscal_year, CUMULATIVE_LABELS.get(step, f"Q{step}")) for step in (index, index - 1)]
                 if self._classes_distinct(metric, cumulative_cells,
-                                          {economic_class(c) for c in concepts_of(current) | concepts_of(previous)}) and \
+                                          {economic_class(c) for c in concepts_of(current) | concepts_of(previous)},
+                                          as_of, policy, lag_days) and \
                         {economic_class(c) for c in concepts_of(current)} != \
                         {economic_class(c) for c in concepts_of(previous)}:
                     continue
@@ -562,7 +563,7 @@ class PeriodResolver:
                 self._classes_distinct(metric, [(year, label) for year, index, _ in quarters
                                                 for label in {f"Q{index}", CUMULATIVE_LABELS.get(index, "Q1"),
                                                               CUMULATIVE_LABELS.get(index - 1, "Q1")}],
-                                       {economic_class(concept) for concept in concepts}):
+                                       {economic_class(concept) for concept in concepts}, as_of, policy, lag_days):
             same_class = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
             if same_class is not None:
                 return same_class, None, ["TTM_CLASS_ALIGNED"]
@@ -600,12 +601,15 @@ class PeriodResolver:
                 return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
         return observations, TTM_CONCEPT_MISMATCH, []
 
-    def _classes_distinct(self, metric, cells, classes):
-        """The filer's filings show two of these economic classes with different values for any of the cells."""
+    def _classes_distinct(self, metric, cells, classes, as_of, policy, lag_days):
+        """Filings available at as_of show two of these economic classes with different values for any of the cells."""
         pairs = [(a, b) for a in classes for b in classes if a < b]
         for fiscal_year, fiscal_period in cells:
             timeline = self.factbook.get(metric, fiscal_year, fiscal_period)
-            if timeline is not None and any(told_apart(timeline.distinguish_classes, a, b) for a, b in pairs):
+            if timeline is None:
+                continue
+            evidence = timeline.class_evidence(None if policy == POLICY_LATEST_KNOWN else as_of, lag_days)
+            if any(told_apart(evidence, a, b) for a, b in pairs):
                 return True
         return False
 
@@ -616,19 +620,38 @@ class PeriodResolver:
         for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations},
                              key=lambda name: (CLASS_READING_ORDER.index(name) if name in CLASS_READING_ORDER
                                                else len(CLASS_READING_ORDER), name)):
-            chosen = []
-            for (fiscal_year, index, obs) in quarters:
-                timeline = self.factbook.get(metric, fiscal_year, f"Q{index}")
-                if timeline is None or (obs.provenance.transformation or TRANSFORM_NONE) != TRANSFORM_NONE:
-                    break
+            def read(fiscal_year, label, c=wanted):
                 # A filing that reported the class only next to the stored concept
                 # still is a version of it (AMCOL 2011: restated ProfitLoss beside
                 # NetIncomeLoss in the 10-K 2013, not the 10-K 2012's older one).
+                timeline = self.factbook.get(metric, fiscal_year, label)
+                if timeline is None:
+                    return None
                 found = timeline.resolve(as_of=as_of, policy=policy, lag_days=lag_days,
-                                         accept=lambda o, c=wanted: _in_class(o, c) is not None, by_class=False)
+                                         accept=lambda o: _in_class(o, c) is not None, by_class=False)
+                return None if found is None else _in_class(found, c)
+
+            chosen = []
+            for (fiscal_year, index, obs) in quarters:
+                if (obs.provenance.transformation or TRANSFORM_NONE) == TRANSFORM_NONE:
+                    found = read(fiscal_year, f"Q{index}")
+                else:
+                    # A derived quarter is derived again inside the class, from the
+                    # same two cumulative cells (red team R3 MEDIUM-2: Goodyear Q4 2021
+                    # = FY 764 minus nine months 211 million). Only quarters the window
+                    # itself derived: a same-day-ambiguous reported cell stays empty.
+                    current = read(fiscal_year, CUMULATIVE_LABELS.get(index, f"Q{index}"))
+                    previous = read(fiscal_year, CUMULATIVE_LABELS.get(index - 1, "Q1"))
+                    found = None
+                    if current is not None and previous is not None and _same_start(current, previous) \
+                            and previous.period_end:
+                        found = _combine([current, previous], current.value - previous.value,
+                                         obs.provenance.transformation, current.unit)
+                        found.period_start = (date.fromisoformat(str(previous.period_end)[:10])
+                                              + timedelta(days=1)).isoformat()
                 if found is None or not _same_quarter(found, obs):
                     break
-                chosen.append(_in_class(found, wanted))
+                chosen.append(found)
             if len(chosen) == len(observations):
                 return chosen
         return None
