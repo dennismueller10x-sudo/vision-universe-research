@@ -3,6 +3,8 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {universeConfig} from './universe-approval.mjs';
 import {dirname,join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
@@ -15,6 +17,19 @@ const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includ
 const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg('--consumer');mkdirSync(dirname(out),{recursive:true});
 const runtime=live?await runtimeCandidate(origin):null;
 const manifest=live?runtime.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));
+if(manifest.scope==='PER_ISSUER_ELIGIBILITY'){
+ const permanent=['TSLA','AAPL','NVDA','PLTR','XPEV','MSFT','GOOG','GOOGL','APD'];
+ const delta=args.includes('--delta')?JSON.parse(readFileSync(arg('--delta'))).changedIssuers||[]:[];
+ const extra=delta.filter(cid=>manifest.eligibility[cid]).slice(0,universeConfig.browserDeltaBudget).map(cid=>manifest.eligibility[cid].tickers[0]);
+ const rows=Object.values(manifest.eligibility);
+ const sparse=rows.filter(r=>Object.values(r.modules).filter(Boolean).length<=2).slice(0,3).map(r=>r.tickers[0]);
+ const limited=rows.filter(r=>r.modules.profile&&!r.modules.financials||r.modules.financials&&!r.modules.profile).slice(0,2).map(r=>r.tickers[0]);
+ const stocks=[...new Set([...permanent,...extra,...sparse,...limited])].filter(t=>manifest.tickers.includes(t));
+ const sample={generation:manifest.generation,seed:'permanent-plus-generation-delta',stocks,ineligible:[],groups:{HIGH_PROFILE:permanent.filter(t=>manifest.tickers.includes(t)),SPARSE:sparse,INTERNATIONAL_ADR:['XPEV'].filter(t=>manifest.tickers.includes(t))}};
+ const path=out+'.sample.json';writeFileSync(path,JSON.stringify(sample));
+ execFileSync('node',['scripts/company_intelligence/universe-browser-qa.mjs','--consumer',directory||'.','--sample',path,'--out',out,...(live?['--live']:[])],{stdio:'inherit',timeout:900000});
+ process.exit(0);
+}
 const release=await(await fetch(origin+'/release-delivery.json?refresh='+Date.now())).json();
 if(live&&process.env.EXPECTED_PRODUCTION_SHA)assert.equal(release.sourceCommit,process.env.EXPECTED_PRODUCTION_SHA);
 const payloads=new Map();

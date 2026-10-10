@@ -1,0 +1,14 @@
+{
+  "status": "PRE_EXISTING_FAILURE_CLASSIFIED",
+  "baseSha": "440a1645048d6b559988488f9a0f3148f21d3cdd",
+  "branchSha": "f07db15dff8bf6891a6c7da5e3763d75383edd0f",
+  "test": "core/tests/golden-paths.test.mjs:122",
+  "failures": [
+    "SPCX / TMUS / VZ / T: NOT_IN_COMPANY_MASTER",
+    "DVN / CRGY: NOT_IN_COMPANY_MASTER",
+    "SLYG: NOT_IN_COMPANY_MASTER"
+  ],
+  "baselineReproduced": true,
+  "identicalInputFiles": 8,
+  "assertionsUnchanged": true
+}

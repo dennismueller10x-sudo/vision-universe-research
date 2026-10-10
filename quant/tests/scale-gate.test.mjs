@@ -158,9 +158,11 @@ async function run(script, args, env) {
 test("SG1 — der Universumsaufbau klassifiziert echte Stammdatenzeilen und liefert nur die Bilanz aus", async () => {
   const dir = sandbox();
   const csv = join(dir, "tickers.csv");
+  // This fixture tests active versus delisted, independently of the day CI runs.
+  const currentEnd = new Date().toISOString().slice(0, 10);
   writeFileSync(csv, [
     "ticker,exchange,assetType,priceCurrency,startDate,endDate",
-    "AAPL,NASDAQ,Stock,USD,1980-12-12,2026-09-08",
+    "AAPL,NASDAQ,Stock,USD,1980-12-12," + currentEnd,
     "SPY,NYSE ARCA,ETF,USD,1993-01-29,2026-09-08",
     "BAC-PB,NYSE,Stock,USD,2013-01-02,2026-09-08",
     "GONE,NASDAQ,Stock,USD,2001-01-02,2018-05-04",

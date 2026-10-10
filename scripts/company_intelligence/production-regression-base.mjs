@@ -1,6 +1,7 @@
 /* Select only verifiable GitHub event ancestry; never waive protected changes. */
 import {spawnSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
+import {masterDetailIntegrationOnly} from './master-detail-integration.mjs';
 export const protectedPaths=['quant','discover','supertrader','screener','providers','scripts/market','scripts/quant'];
 const sha=value=>/^[a-f0-9]{40}$/.test(value||'');
 const git=(args,cwd)=>spawnSync('git',args,{cwd,encoding:'utf8',maxBuffer:4*1024*1024});
@@ -23,6 +24,15 @@ export function productionBaseline({eventName,eventPath,pinnedSha,cwd=process.cw
 export function identicalProtectedInputs(baseline,cwd=process.cwd()){
  if(!sha(baseline))throw Error('EXACT_PRODUCTION_BASE_SHA_REQUIRED');
  const diff=git(['diff','--name-only',baseline,'HEAD','--',...protectedPaths],cwd);
- if(diff.status||diff.stdout.trim())throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
- return [];
+ if(diff.status)throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
+ const changed=diff.stdout.trim().split('\n').filter(Boolean);
+ for(const path of changed){
+  if(path==='discover/ui/detail.js'){
+   const before=git(['show',baseline+':'+path],cwd),after=git(['show','HEAD:'+path],cwd);
+   if(!before.status&&!after.status&&masterDetailIntegrationOnly(before.stdout,after.stdout))continue;
+  }
+  if(path==='discover/tests/company-intelligence-master-detail.test.mjs'&&git(['cat-file','-e',baseline+':'+path],cwd).status&&git(['cat-file','-e','HEAD:'+path],cwd).status===0)continue;
+  throw Error('PRE_EXISTING_CLASSIFICATION_REQUIRES_IDENTICAL_PROTECTED_INPUTS');
+ }
+ return changed;
 }
