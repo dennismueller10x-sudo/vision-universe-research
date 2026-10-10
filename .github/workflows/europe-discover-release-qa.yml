@@ -4,7 +4,11 @@ name: Europe Discover published release QA
 on:
   push:
     branches: [main]
-    paths: ['discover/data/europe/manifest.json']
+    paths:
+      - 'discover/data/europe/manifest.json'
+      - 'scripts/discover/europe-public-live-qa.mjs'
+      - 'scripts/discover/global-live-qa.mjs'
+      - '.github/workflows/europe-discover-release-qa.yml'
 permissions:
   contents: read
 concurrency:
@@ -34,9 +38,26 @@ jobs:
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/discover/europe-public-live-qa.mjs
       - name: Upload public screenshots and validation receipts
+        # Both browser suites retain evidence even when either reports a failure.
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: europe-discover-live-${{ github.sha }}
           path: ${{ runner.temp }}/europe-live-qa/
+          if-no-files-found: error
+      - name: Verify global search, full chart ranges and saved watchlists
+        if: ${{ !cancelled() }}
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+          QA_OUT: ${{ runner.temp }}/global-discover-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/global-live-qa.mjs
+      - name: Upload global browser validation receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-discover-live-${{ github.sha }}
+          path: ${{ runner.temp }}/global-discover-live-qa/
           if-no-files-found: error

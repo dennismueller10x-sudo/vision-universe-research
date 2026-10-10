@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import time
+from collections import Counter
 from datetime import datetime, timezone
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -13,6 +14,19 @@ from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.universe_eligibility import generate
 from company_intelligence.model import load_universe
 from company_intelligence.universe_samples import samples
+
+def private_inventory(report, eligibility, companies, current):
+    """Keep private payload coverage separate from master-only identities."""
+    rows = {cid: row for cid, row in eligibility['issuers'].items() if row['hasPrivatePayload']}
+    return {
+        'identityInventoryListingCount': report['privateListingCount'],
+        'privateListingCount': sum(len(companies[cid]['listings']) for cid in rows),
+        'currentPrivateListingCount': sum(len(current[cid]['listings']) for cid in rows if cid in current),
+        'privateProfileStates': dict(Counter(row['profileState'] for row in rows.values())),
+        'privateFinancialStates': dict(Counter(row.get('financialState', 'NOT_EVALUATED') for row in rows.values())),
+        'privateSourceStates': dict(Counter(row['sourceState'] for row in rows.values())),
+        'privateModuleFailureClasses': dict(Counter(reason for row in rows.values() for reason in row.get('moduleReasons', {}).values())),
+    }
 
 def audit(state, identity_root, output, as_of=None):
     state, identity_root, output = Path(state), Path(identity_root), Path(output)
@@ -33,6 +47,7 @@ def audit(state, identity_root, output, as_of=None):
         # authoritative master identities without per-stock manual approval.
         companies={**current,**identities(identity_root,store)}
         report, eligibility = generate(store, companies, output / 'consumer', stamp, current)
+        report.update(private_inventory(report, eligibility, companies, current))
     finally:
         store.close()
     after = {n: database_proof(state / n) for n in before}

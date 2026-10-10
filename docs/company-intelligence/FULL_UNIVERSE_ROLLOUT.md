@@ -1,6 +1,6 @@
 # Company Intelligence: full-universe eligibility rollout
 
-Evidence date: 2026-10-10 UTC. Production acceptance is pending recovery/retest; candidate coverage is not a claim of final production acceptance.
+Evidence date: 2026-10-10 UTC. Full eligible production acceptance passed: generation `fad43887526d89bbcaaba628`, 4,789 issuers / 5,088 stocks. The remaining observability correction in PR #586 preserves these consumer bytes and both GOOD generations.
 
 ## Scope and authoritative state
 
@@ -12,6 +12,8 @@ Authoritative private R2 CURRENT: `85ebdc8c1ff855929a828f38`, checkpoint SHA-256
 |---|---:|
 | Private issuers / payloads | 5,120 / 5,120 |
 | Historical/current listings across the identity inventory | 6,416 |
+| Historical/private listings | 5,446 |
+| Current listings with private payloads | 5,428 |
 | Current Company Master issuers | 6,073 |
 | Combined identity inventory | 6,079 |
 | Identities without private payload | 959 |
@@ -20,7 +22,7 @@ Authoritative private R2 CURRENT: `85ebdc8c1ff855929a828f38`, checkpoint SHA-256
 | ELIGIBLE_PARTIAL | 3,433 |
 | Private ineligible issuers | 331 |
 
-The legacy audit field `privateListingCount=6416` included master-only identities. PR #584 corrects this read-only reporting denominator and adds exact private/current-private listings and private profile/financial/source classifications. The next fresh release receipt supplies those counts; 6,416 is not claimed as private-only coverage.
+PR #584 corrected the legacy listing denominator. The fresh final receipt proves **5,446 private historical listings**, **5,428 current private listings**, and **6,416 listings in the wider identity inventory**. Master-only identities are excluded from private profile/financial/source classifications.
 
 Private exclusions: mapping **2**, source policy **97**, too stale **9**, no safe meaningful content **223**; data invalid, consumer invalid and other **0**. The wider identity audit has **23** mapping failures and **1,161** no-content failures; these include the 959 identity-only records and must not be added to private coverage. Conflict examples CTGG/CTHH (CIK 68622) and TPTS (CIK 1674356) remain quarantined.
 
@@ -48,11 +50,11 @@ Discover checks the staged eligible ticker map before any intelligence request. 
 | profile | 45 | 0.94% |
 | whatChanged | 3,626 | 75.72% |
 
-Raw private profiles: 3,684; German approved: **45**. The broader identity review classifies 3,630 as no approved German copy and 7 as stale/weak; the rest lack a safe profile source or are mapping failures. These counts must not be described as approved translated profiles. News: raw 20,555 records / 2,628 issuers; approved exported 14,301 records / 1,749 issuers. Coverage: 1,106 issuers with 30-day approved news, 1,716 with 90-day news, 1,717 with 90-day Aktuelles, 1,750 with retained 180-day records (one archive-only ineligible issuer is absent from the consumer). Policy excludes 2,981 news, 275 calls, 25 events and 4,642 materials. Generic collections exclude another 126 links across 117 issuers; seven document flags disappear and two FULL issuers become PARTIAL without losing overall eligibility.
+Raw private profiles: 3,684; German approved: **45**. Private profile classifications: 45 approved German; 3,630 acquisition/source profiles without approved German copy; 1,438 without a safe profile source (including the two mapping failures); 7 stale/weak. There is no separately approved non-German consumer profile catalogue. These counts must not be described as approved translated profiles. News: raw 20,555 records / 2,628 issuers; approved exported 14,301 records / 1,749 issuers. Coverage: 1,106 issuers with 30-day approved news, 1,716 with 90-day news, 1,717 with 90-day Aktuelles, 1,750 with retained 180-day records (one archive-only ineligible issuer is absent from the consumer). Policy excludes 2,981 news, 275 calls, 25 events and 4,642 materials. Generic collections exclude another 126 links across 117 issuers; seven document flags disappear and two FULL issuers become PARTIAL without losing overall eligibility.
 
-Financial classifications across 6,079 audited identities: current 3,697; stale 1,014; no supported display KPI 141; too stale 15; no supported data 1,189; mapping not evaluated 23. This denominator includes identities without private payload. Invalid metric rows removed: 145; currency/fiscal-period ambiguity cannot surface. Confirmed upcoming events: 190 issuers; estimated: 3,123; both: 39. Management-content evidence: 481 issuers. Raw call/material issuer counts 948/4,944 are not approved consumer coverage.
+Financial classifications across **5,120 private payloads**: current 3,697; stale 1,014; no supported display KPI 141; too stale 15; no supported data 251; mapping not evaluated 2. The wider identity inventory additionally has 938 no-data and 21 mapping-not-evaluated identities; those are not private coverage. Invalid metric rows removed: 145; currency/fiscal-period ambiguity cannot surface. Confirmed upcoming events: 190 issuers; estimated: 3,123; both: 39. Management-content evidence: 481 issuers. Raw call/material issuer counts 948/4,944 are not approved consumer coverage.
 
-Source registry: 5,384 rows; approved active 5,355 (2,138 feeds, 1,342 event sources, 1,875 materials). Audit health: 5,158 healthy, 174 temporary failure, 50 stale, 2 broken. Broader identity source classifications: 2,015 pollable approved, 7 registered not pollable, 4,057 no approved source. Registered does not mean pollable or recently checked.
+Source registry: 5,384 rows; approved active 5,355 (2,138 feeds, 1,342 event sources, 1,875 materials). Audit health: 5,158 healthy, 174 temporary failure, 50 stale, 2 broken. Private registered first-party source classifications: **2,014 pollable approved**, **7 registered not pollable**, **3,099 no approved registered source**. Independently supported SEC financials remain eligible even without a registered first-party feed. The broader identity inventory includes one additional pollable master-only source. Registered does not mean recently checked.
 
 ## Gaps retained honestly
 
@@ -92,14 +94,28 @@ Earlier real navigation regression was reproduced in the unchanged back/forward 
 
 ## Measured capacity and cost
 
-One full consumer generation: **96,952,850 bytes / 5,414 assets**, two retained ≈194 MB/10,828 objects. Existing public Pages package before widening: **74,552 files / 1,505,394,392 bytes**; final widened package is measured separately, not inferred from repository inventory. Browser initial cost 239 cases; routine delta 116 in the scale benchmark. Cold full R2 stage measured about 5m16s; warm authenticated cache avoids repeated 10,827 object reads. Shared GitHub cache quota/eviction and other products' costs remain account-wide concerns.
+One full consumer generation: **96,952,850 bytes / 5,414 assets**, two retained ≈194 MB/10,828 objects. Existing public Pages package before widening: **74,552 files / 1,505,394,392 bytes**. Actual widened package: **86,885 files / 1,770,189,709 bytes**, maximum individual asset 20,106,527 bytes. The package also includes independent Europe/market changes; the entire increase is not attributed to Company Intelligence. Browser initial cost 239 cases; routine delta 116 in the scale benchmark. Final cold full R2 stage measured **3m55s**, 0 cached / 10,828 remote assets. Actual unchanged-generation warm Pages run **38071557581** restores a **17,867,588-byte** cache and stages in **14 seconds**, with **10,827 cached / 1 remote asset**. Warm cache avoids repeated 10,827 R2 object reads; every changed generation is still cold by its immutable identity. Shared GitHub cache quota/eviction and other products' costs remain account-wide concerns.
 
 At six cycles/day × 30 days, measured source job **28 rounded minutes → 5,040 runner minutes/month BEFORE Pages wait/live acceptance**. Pages and source waits are reported separately; 5,040 is not a measured end-to-end monthly total or an average of many production full-scope cycles. Existing Pages five-minute weekday schedule implies 2,376 builds per 22-trading-day month plus other triggers; no polling cadence is increased. Repository is public: standard Linux Actions runner incremental billing is currently $0, while usage minutes are still measured.
 
-Worst case six changed consumer generations/day: **32,484 consumer object writes/day**, about **974,520/month**, plus approximately 42 private backup operations/day and small manifest/pointer operations. Four consumer slots plus two private archives ≈0.45 GB. Outside free allowances, storage ≈$0.007/month; consumer Class A ≈$4.39/month. Source+changed/cold Pages reads projected ≈7.8M/month, Class B ≈$2.81 outside free allowance. These are operation-count projections, not account invoices; shared free-tier usage and R2 analytics are unavailable. Without the safe cache, existing scheduled cold Pages alone could add ≈25.7M reads/month. Generation reuse/cache avoids that unnecessary cost.
+Worst case six changed consumer generations/day: **32,484 consumer object writes/day**, about **974,520/month**, plus approximately 42 metadata/private writes/day (two private backup PUTs plus about five publication/observation PUTs per cycle). The measured private preservation counter includes reads and must not be labelled as a write count. Four consumer slots plus two private archives ≈0.45 GB. Outside free allowances, storage ≈$0.007/month; consumer Class A ≈$4.39/month. Source+changed/cold Pages reads projected ≈7.8M/month, Class B ≈$2.81 outside free allowance. These are operation-count projections, not account invoices; shared free-tier usage and R2 analytics are unavailable. Without the safe cache, existing scheduled cold Pages alone could add ≈25.7M reads/month. Generation reuse/cache avoids that unnecessary cost.
 
 ## Evidence and completion
 
 Public-safe aggregate receipts: `evidence/company-intelligence-full-universe-20261010/`. Full screenshot/browser artifacts remain attached to their Actions runs; no private operational data is committed. Production URL: https://research.visionuniverse.de/discover/#/s/US_REAL/TSLA . Existing Research access control remains in force.
 
-Final actual production generation/code, post-recovery broad readback, full-scope cron (if observed), final package/warm-cache metrics and final remote HEAD are appended only after verified completion. Until then full-eligible production acceptance is **pending**, despite successful full candidate/R2 preservation.
+
+
+## Final actual acceptance and narrow observability correction
+
+[Release 38068493308](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38068493308) completed **SUCCESS**, code `5dad04b1dcc49bd7c2a791426bdff557fff33f73`. Two authoritative private restorations produced the same consumer bytes. R2 upload, fresh consumer readback, guarded eligibility and cached readback all passed. Actual Pages [38070739184](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38070739184) completed **SUCCESS**, served code `b6e9fefa53ac864eb297f005f997afc770795efe`. Actual wide readback verified **all 5,414 asset lengths/hashes and all 239 cases**, including all 20 ineligible routes with zero CI requests. All 390/430/768/1440 and dark/light cases passed. Consumer generation remains `fad43887526d89bbcaaba628`.
+
+Final private R2 state remains `85ebdc8c1ff855929a828f38`, archive/hash as above. Private state and source registry were not replaced by the 4,789-issuer public subset. The actual final immutable-46 recovery [38067988121](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38067988121) completed **SUCCESS** with all 86 hashes and 16 real production browser cases; frozen generation `71dc0485476cfa74e59f7fc3` was served by code `5dad04b1dcc49bd7c2a791426bdff557fff33f73`.
+
+A third review found a genuine observability defect: initial release copied frozen rollback health (05:54 source / 06:00 build), producing WARNING despite the authoritative 14:36 refresh and the newly verified build. PR #586 initializes health from the restored CURRENT record and provides serialized exact-checkpoint metadata reconciliation. It preserves consumer generation, manifest, assets, eligibility, inventory, previous GOOD and private state. Original acceptance receipt time certifies the historical build; repair time is never substituted for source refresh. Wrong source/hash, future/backwards dates, concurrent pointer changes and failed readback are rejected/compensated. Its actual reconciliation receipt is appended after the main-only run; no completed healthy observability is claimed before that proof.
+
+Actual production screenshots and the complete sample are in [artifact 11677385373](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38068493308/artifacts/11677385373). Human review checked Tesla/Apple/NVIDIA/Palantir/XPeng plus ACU profile-only, SCNX sparse financials and IMO report-only. The screenshots are chapter captures with fixed navigation/keyboard-focus overlays; they are not presented as unmodified full-device screenshots. Source type/date, readable KPI hierarchy, visible stale/estimated labels and useful sparse composition were checked.
+
+Automatic acceptance question: **YES**. Once an issuer is unambiguously in the authoritative identity inventory and has a meaningful approved module, the next successful deterministic generation can publish it without Dennis approving the individual stock. Unsupported/unsafe issuers remain off. Initial rollout expands availability, not commercial source permissions or polling cadence.
+
+Measured Pages jobs (rounded separately): cold full publish 38070739184 = package 10 + deploy 1 + live 2 = **13 minutes**; unchanged warm 38071557581 = 7 + 1 + 2 = **10 minutes**. Existing 2,376 scheduled warm builds therefore project **23,760 minutes/month**; 180 changed-generation cold refresh deployments add **2,340**. Source-only scale jobs add **5,040 before Pages wait/live**. Combined measured-component projection is **at least 31,140 minutes/month**, excluding source-job waiting/live delta QA, other code pushes and other repository products. This is not a measured full-scope production average. Most scheduled Pages volume predates this rollout; cadence was not increased. Public standard Linux runner incremental billing remains $0. A production full-source end-to-end duration will be reported once actually observed.

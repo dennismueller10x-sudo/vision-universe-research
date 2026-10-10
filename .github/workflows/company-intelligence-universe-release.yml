@@ -115,8 +115,10 @@ jobs:
       - name: Fail closed to immutable 46 scope on material production failure
         if: (failure() || cancelled()) && steps.activation.outcome == 'success'
         run: |
-          node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery"
+          recovery_status=0
+          node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery" || recovery_status=$?
           gh workflow run pages-release.yml --ref main
+          exit "$recovery_status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
