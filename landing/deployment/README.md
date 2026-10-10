@@ -1,58 +1,82 @@
-# Cloudflare Pages: eigene Landingpage, Research bleibt GitHub Pages
+# Cloudflare Pages: tatsächlich eingerichtetes Projekt
 
-Diese Konfiguration ersetzt die frühere Empfehlung eines zweiten GitHub-Pages-Repositories. Kein zweites Repository erforderlich, kein bestehender Research-Workflow oder Research-CNAME geändert. Der alte neue Pages-Ziel-Workflow bleibt ungenutzt und ausschließlich manuell.
+**Prüfstand: 10.10.2026.** Der Owner hat **`vision-universe`** manuell eingerichtet. Das Projekt ist live; `vision-universe-landing` und ein zweites GitHub-Pages-Repository sind überholt. Keine weiteren Projekte anlegen. Research bleibt auf GitHub Pages. Dieser Prüflauf änderte keine Provider-Konfiguration, DNS-Einträge, Brevo-Einstellungen oder das Shopify-Abo.
 
-## Geprüfter Stand vor der Umstellung
+## Öffentliche Auslieferung
 
-- Research: GitHub API bestätigt `build_type: workflow`, `main`, `research.visionuniverse.de`; HTTPS-Startseite antwortet 200 mit dem vorgesehenen Research-Zugangsschutz.
-- Öffentliche NS-Auflösung am 09.10.2026: `saanvi.ns.cloudflare.com` und `weston.ns.cloudflare.com`. united-domains bleibt Registrar; kein Nameserverwechsel nötig oder vorgesehen.
-- Öffentliche A/AAAA-Antworten für die Web-Domains zeigen Cloudflare-Proxy-Adressen. Daraus lässt sich das Shopify-Origin-Ziel nicht ablesen. Erst der authentifizierte DNS-Audit belegt die tatsächlichen Web-Ziele. Keine Ursprungswerte raten.
-- Der vorhandene Repository-Bericht vom 17.09.2026 bestätigt ein `CLOUDFLARE_API_TOKEN` für Workers/R2. Das beweist keine aktuellen Pages-/DNS-Rechte. Der neue ausschließlich manuelle, lesende Workflow `landing-cloudflare-audit.yml` prüft sie ohne Tokenwerte, Rohantworten, Kontaktlisten oder DNS-TXT-Inhalte in Logs.
-- Datenschutz bleibt eine konkrete inhaltliche Freigabe vor öffentlicher Domainumschaltung. Der vorbereitete [Cloudflare-Text](privacy-cloudflare.draft.html) bleibt als Entwurf markiert. Die Produktionsprüfung wird nicht umgangen. Brevo bleibt gesperrt und wird in diesem Auftrag nicht eingerichtet oder versendet.
-
-## Projektkonfiguration
-
-`cloudflare-pages.json` ist die vorbereitete REST-Konfiguration, **kein Nachweis eines angelegten Projekts**. Der vorgeschlagene Projektname `vision-universe-landing` muss im Konto verfügbar sein. Bestehende Projekte anderer Zwecke dürfen nicht überschrieben werden.
-
-| Einstellung | Wert |
+| Adresse | Beobachtung |
 |---|---|
-| Repository | `dennismueller10x-sudo/vision-universe-research` |
-| Produktionsbranch | `main` |
-| Root directory | `landing` |
-| Framework | None |
-| Build command | `node scripts/build.mjs` |
-| Build output | `dist` |
-| Environment variable | `NODE_VERSION=22` |
-| Production environment | `LANDING_PUBLICATION_MODE=production` |
-| Preview environment | `LANDING_PUBLICATION_MODE=preview` |
-| Preview branch | `feat/coming-soon-landing` – nach Merge behalten |
-| Build watch paths | nur `landing/*`, keine Daten-Commits |
+| https://vision-universe.pages.dev/ | HTTPS 200, Coming-soon-Landingpage |
+| https://www.visionuniverse.de/ | HTTPS 200, Coming-soon-Landingpage; Custom Domain laut Owner Active, im Pages-Inventar vorhanden |
+| https://visionuniverse.de/ | 301 auf https://www.visionuniverse.de/ |
+| https://research.visionuniverse.de/ | HTTPS 200, vorgesehener Research-Zugangsschutz, GitHub Pages |
 
-Der unveränderte Build-Befehl verwendet über den expliziten Veröffentlichungsmodus denselben bestehenden Datenschutz-Gate wie `--production`. Main-Builds bleiben bis zur tatsächlichen Privacy-Freigabe blockiert. Die Branch-Vorschau ist `noindex`, nimmt keine Adressen an und bezeichnet den Rechtstext ehrlich als Vorschau.
+HTTP leitet bei allen vier Hosts mit 301 auf HTTPS weiter. Beim Apex sind es zwei Schritte: HTTP → HTTPS-Apex → HTTPS-www. Query-Parameter bleiben erhalten; `/datenschutz/?vu_redirect_check=1` führt zu `https://www.visionuniverse.de/datenschutz?vu_redirect_check=1` (normalisierter abschließender Slash); www ergänzt ihn anschließend per 308, die finale Zielseite liefert 200. Canonical und `og:url` zeigen auf `https://www.visionuniverse.de/`. TLS-Prüfung blieb in HTTP-Client und Browser aktiv; keine Zertifikatswarnung umgangen. Prüfung über den vorgegebenen Umgebungsproxy; eine unabhängige Zertifikatslaufzeit wurde nicht erhoben.
 
-Nach konkreter Freigabe die überprüfte Datei ohne Draft-Markierung als `deployment/privacy-cloudflare.html` ablegen und **nur in Production** `LANDING_PRIVACY_REVIEWED=true` sowie `LANDING_PRIVACY_HTML_PATH=deployment/privacy-cloudflare.html` setzen. Das allein aktiviert Brevo nicht. Keine `BREVO_FORM_ACTION`, keine privaten Schlüssel im Browser.
+Das API-Inventar enthält www am Projekt, den Apex nicht. Der funktionierende Redirect beweist keine zweite Pages-Domainbindung und keinen bestimmten Regeltyp. Bestehende Einstellungen nicht neu anlegen oder ersetzen. [HTTP/Redirects](verification-2026-10-10/http.json) · [Assets/Rechtsseiten](verification-2026-10-10/assets.json) · [Status](status.json).
 
-Cloudflare dokumentiert für Pages Free 500 Builds/Monat; die statische Seite benötigt keine Pages Functions, keine Datenbank und keinen kostenpflichtigen Tarif. Die bestehende Account-Auslastung bleibt zu prüfen; bei ausgeschöpftem Kontingent kein Upgrade buchen. [Aktuelle Limits](https://developers.cloudflare.com/pages/platform/limits/) · [Git-Integration](https://developers.cloudflare.com/pages/get-started/git-integration/).
+## Bestätigte GitHub-Anbindung und Build
 
-## Gemessene Kontoblockaden
+Der ausschließlich lesende [API-Audit 38060753594](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38060753594) bestätigt:
 
-Der reale isolierte Audit [37958646123](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37958646123) bestätigt ein gültiges vorhandenes Token, Pages- und Zonen-Leserechte und die aktive Zone im selben Konto. **DNS-Lesen scheitert mit HTTP 403 / Fehler 10000.** Es wurde kein vollständiger DNS-Bestand gespeichert; Shopify-Origin-Ziele und Mail-Fingerprints sind daher noch nicht nachgewiesen.
+| Einstellung | Tatsächlicher Wert | Nachweis |
+|---|---|---|
+| Pages-Projekt | `vision-universe` | Cloudflare API |
+| Repository | `dennismueller10x-sudo/vision-universe-research` | API, Quelle github |
+| Produktionsbranch | `main` | API |
+| Root directory | `landing` | API |
+| Build command | `node scripts/build.mjs` | API |
+| Build output | `dist` | API |
+| Node | `NODE_VERSION=22` | Owner-Angabe; Provider-Umgebung nicht unabhängig ausgelesen |
 
-Der reale Projektversuch [37958967398](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37958967398) wurde nach den erfolgreichen Leseprüfungen beim Anlegen mit **HTTP 401 / Fehler 8000011** abgewiesen. **Kein Projekt angelegt, keine Domain angebunden, kein DNS geändert.** GitHub-Git-Integration und Pages-Schreibberechtigung sind noch nicht bestätigt.
+GitHub-App `cloudflare-workers-and-pages`: **Cloudflare Pages / success** für Commit [dc454c7d8982cc5a36545c1d9013bf7d0d827fd1](https://github.com/dennismueller10x-sudo/vision-universe-research/commit/dc454c7d8982cc5a36545c1d9013bf7d0d827fd1), abgeschlossen 10.10.2026, 14:34:46 UTC. Das belegt die aktive Git-Integration und den Build dieses Commits, keine dauerhafte Aktualität des jeweils neuesten ausgelieferten Commits. [API-Inventar](verification-2026-10-10/api.json) · [GitHub-Check](verification-2026-10-10/github.json).
 
-## Genau einmal erforderliche Kontoschritte
+`cloudflare-pages.json` hält bestätigte Basiswerte und die gemeldete Node-Version zum Vergleich fest: **kein vollständiger Account-Export, kein Create-/Patch-Auftrag**. Ungeprüfte Branch-, Analytics- oder Build-Watch-Einstellungen werden nicht als eingerichtet behauptet. Der frühere `landing-cloudflare-prepare.yml` prüft jetzt ausschließlich das **vorhandene** Projekt per GET; fehlt es oder gehört es einem anderen Repository, stoppt er ohne Ersatzprojekt. Auch der Audit-Workflow bleibt lesend. Beide sind manuell, nur auf main, mit `contents: read`.
 
-1. Cloudflare Dashboard → zuständiges Konto → **Workers & Pages → Create application → Pages → Connect to Git**. Falls GitHub noch nicht verbunden ist: GitHub-Konto `dennismueller10x-sudo` wählen, Cloudflare Pages autorisieren, **Only select repositories → vision-universe-research → Install/Authorize**. Alternativ vorhandene Installation über GitHub **Settings → Applications → Installed GitHub Apps → Cloudflare Pages → Configure** um genau dieses Repository ergänzen.
-2. Für Automation keine bestehenden Workers-/R2-Tokens erweitern oder ersetzen. Falls deren Rechte fehlen, Cloudflare **My Profile → API Tokens → Create Token → Create Custom Token**: **Account / Cloudflare Pages / Edit**, **Zone / Zone / Read**, **Zone / DNS / Edit**, für den Apex-Redirect zusätzlich **Zone / Dynamic URL Redirect / Edit**. Ressourcen ausschließlich dieses Konto und Zone `visionuniverse.de`. Das neue Token privat unter einem separaten GitHub-Actions-Secret `LANDING_CLOUDFLARE_API_TOKEN` hinterlegen: Repository **Settings → Secrets and variables → Actions → New repository secret**. Nie im Chat, Workflow-Input, Code oder Log einfügen. Der Audit bevorzugt dieses separate Token, falls vorhanden; bestehende Tokens bleiben erhalten.
-3. Projekt mit den obigen Werten speichern. Produktionsmodus und Vorschau ausdrücklich unterscheiden; eine erfolgreiche Branch-Vorschau ersetzt keine Privacy-Freigabe für die öffentliche Domain.
+Build-Watch- und Preview-Branch-Regeln bleiben ungeprüft. Im **bestehenden** Projekt unter **Settings → Builds & deployments → Build watch paths** prüfen: Include `landing/*`, Exclude leer. Ein erfolgreicher Check eines allgemeinen Main-Commits beweist keine Begrenzung auf Landing-Änderungen. Pages Free dokumentiert [500 Builds pro Monat](https://developers.cloudflare.com/pages/platform/limits/); Tarif/Kontingent im Konto prüfen, kein Upgrade buchen. Keine Einstellungen durch diesen Auftrag verändert.
 
-## DNS und Domainumschaltung – erst nach funktionierender Vorschau/Freigabe
+## Live-Abnahme: Layout bestanden, Ressourcenfehler offen
 
-1. Audit-Artefakt sichern. Es enthält Web-Ziele und SHA-256-Fingerprints **aller anderen DNS-Einträge**, einschließlich Research, MX und sämtlicher TXT-/DKIM-/DMARC-Einträge. Wenn der Zonenauszug unvollständig ist, keine Mutation.
-2. Im richtigen Pages-Projekt **Custom domains → Set up a domain → www.visionuniverse.de**; anschließend Apex `visionuniverse.de` hinzufügen. Die Ziel-CNAME wird ausschließlich aus dem tatsächlich erzeugten Pages-Projekt übernommen. Nur bisherige Shopify-Web-A/AAAA/CNAME an `@` und `www` ersetzen. Kein anderer Eintrag und keine fremde Weiterleitungsregel wird verändert. [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/).
-3. Apex dauerhaft auf www: Cloudflare-Zone **Rules → Redirect Rules → Create rule → Single Redirect**. Match nur `(http.host eq "visionuniverse.de")`; dynamisches Ziel `concat("https://www.visionuniverse.de", http.request.uri.path)`, **301**, **Preserve query string**. `apex-redirect.json` enthält genau diese Regel. Keine breite Wildcard für `*.visionuniverse.de`; kein Redirect von Research. Bestehende Redirect-Regeln bewahren. `_redirects` wird nicht für einen unbelegten Domainredirect verwendet. [Single Redirects](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/).
-4. Beide Custom domains erst als fertig melden, wenn Cloudflare deren Zertifikat/Aktivierung bestätigt. `https://www.visionuniverse.de/` muss 200 mit der Landingpage liefern; Apex muss per 301 zu www weiterleiten, auch mit Pfad/Query. Research weiterhin 200 und unveränderte GitHub-Pages-Konfiguration. DNS-Audit wiederholen und alle geschützten Fingerprints mit vorher vergleichen. Shopify nicht kündigen.
+Tatsächliche Seiten auf **pages.dev und www**, jeweils Chromium Desktop 1440×900 und iPhone 390×844:
 
-## Offene Inhaltsentscheidung
+- Desktop **1.191 px**, iPhone **1.684 px**, kein horizontaler Überlauf.
+- **17 originale Research-Stilgruppen** einschließlich Header, Inter, Hero, Hintergrund, Buttons, Raster und Gerätehüllen identisch; CSS-SHA-256 entspricht der Originalreferenz.
+- Axe **0 Verstöße**; Skip-Link per Tastatur und Newsletter-Sprungmarke funktionieren.
+- „App bald verfügbar“, Modul-Icons, keine NVIDIA-/Kursdaten, Store-Links oder Research-Passworteingabe.
+- Formular `data-ready=false`, E-Mail und Submit deaktiviert; ehrliche Meldung, dass noch keine Adresse entgegengenommen werden kann. Keine Adresse eingegeben/abgesendet, keine Brevo-Mutation.
+- Impressum/Datenschutz, lokale Inter-Datei, Favicon und Social-Bild: 200 mit passenden Dateitypen.
 
-Der Entwurf enthält Cloudflare-Hosting, notwendige technische Verbindungs-/Sicherheitsdaten, keine eigenen Analyse-/Marketing-Skripte, gesperrten Newsletter und bestätigte Unternehmensangaben. Vor Freigabe im tatsächlichen Cloudflare-Konto Vertragspartner/AVV, Sicherheits-Cookies, Log-/Speichereinstellungen und Übermittlungsbedingungen prüfen. Es werden keine individuelle Vertragserfüllung oder konkreten Speicherfristen erfunden. Freizugeben ist der **konkrete fertige Rechtstext für eine öffentliche statische Cloudflare-Landingpage bei weiterhin gesperrtem Newsletter**; die App-Ankündigung und das genehmigte Design werden nicht erneut zur Diskussion gestellt.
+[pages.dev-Messung](verification-2026-10-10/browser-pages.json) · [www-Messung](verification-2026-10-10/browser-www.json) · [Desktop](verification-2026-10-10/desktop.png) · [iPhone](verification-2026-10-10/iphone.png). iPhone-Viewport, kein physisches Safari-Gerät.
+
+**Keine pauschal fehlerfreie Browserabnahme:** Die auf main vorhandenen Referenzen `/assets/site-navigation.css` und `/assets/site-navigation.js` fehlen im isolierten Landing-Build. Pages liefert HTML-Fallback mit 200; Chromium verwirft CSS/JS wegen falschem MIME-Typ. Weitere CSP-Meldungen sind Folge davon. [Konsolen-/Ressourcenbefund](verification-2026-10-10/browser-network.json). In einer isolierten Landing-Korrektur ungeeignete globale Referenzen aus Landing-/Rechtsseiten entfernen, keine geschützte Research-Navigation kopieren. Layout korrekt, Ressourcenfehler ausdrücklich offen.
+
+www ergänzt Cloudflares E-Mail-Obfuskation (`/cdn-cgi/scripts/.../email-decode.min.js`), pages.dev nicht. Der geprüfte Unterschied erklärt abweichende HTML-Hashes, kein anderes Landing-Design. Diese Sicherheitseinstellung gehört in die Datenschutzprüfung.
+
+## Datenschutz und tatsächlicher Veröffentlichungsmodus
+
+**Öffentlich erreichbar, aber als Vorschau gebaut:** Meta-Robots und `X-Robots-Tag` sind `noindex, nofollow`; `robots.txt` enthält `Disallow: /`. `/sitemap.xml` liefert HTML-Fallback statt XML. HTTP 200 und erfolgreiche Builds sind keine finale Inhalts-/Datenschutzfreigabe.
+
+Live unter `/datenschutz/`: **„Datenschutzhinweise zur Vorschau – Vision Universe“**, `data-policy-status="draft"`. Der [Cloudflare-spezifische Entwurf](privacy-cloudflare.draft.html) ist vorbereitet, aber **nicht** die live ausgelieferte Erklärung und nicht freigegeben.
+
+Der Build nutzt standardmäßig `preview`. main/Custom Domain wählen **nicht** automatisch production. Ob die Provider-Variable fehlt oder explizit preview lautet, wurde nicht ausgelesen; beide passen zum Ergebnis. Der Privacy-Gate schützt einen expliziten Produktionsbuild, verhindert aber keine manuelle Domainbindung eines Preview-Builds. Keine Datenschutzfreigabe aus der Domainaktivierung ableiten.
+
+Noch konkret offen, Newsletter weiterhin gesperrt:
+
+1. Im tatsächlichen Cloudflare-Konto Vertragspartner/AVV, Verarbeitungs-/Übermittlungsbedingungen sowie Sicherheits-, Cookie-, E-Mail-Obfuskations- und Log-/Speichereinstellungen prüfen. Keine Speicherfrist/Vertragserfüllung erfinden. Den darauf abgestimmten vollständigen deutschen Text freigeben.
+2. Freigegebenen Text als `landing/deployment/privacy-cloudflare.html` bereitstellen, ohne Draft-Markierung und ungeeignete globale Navigation. Keine bloße Entfernung der Markierung ohne Inhaltsprüfung.
+3. Erst dann im **bestehenden** Projekt, Production, `LANDING_PUBLICATION_MODE=production`, `LANDING_PRIVACY_REVIEWED=true`, `LANDING_PRIVACY_HTML_PATH=deployment/privacy-cloudflare.html` setzen und neu bauen. Node 22 behalten. **Keine** Brevo-Formular-/DOI-Konfiguration aktivieren.
+4. Erklärung, Footer, `index, follow`, erlaubende robots.txt, echte XML-Sitemap, Ressourcen und Domains erneut prüfen. Preview-Umgebung getrennt preview/noindex halten. Brevo bleibt ein separater geprüfter Prozess.
+
+## API-Rechte separat von der manuellen Einrichtung
+
+Erneut bestätigt: **Pages-Lesen 200**, **Zonen-Lesen 200**, aktive Zone im selben Konto. **DNS-Lesen weiterhin 403 / Fehler 10000.** Vollständiger Zonenauszug, verdeckte Web-Origin-Ziele und sämtliche Mail-/DKIM-Fingerprints bleiben blockiert. Die manuelle Einrichtung bestätigt keine neuen Token-Rechte.
+
+**Pages-, DNS- und Redirect-Schreibrechte wurden am 10.10. nicht getestet.** Der abgewiesene Projekt-POST 401/8000011 vom 09.10. ist historisch, keine aktuelle Schreibrechteprüfung. Die GitHub-Verbindung ist jetzt positiv belegt.
+
+Nur für einen gewünschten vollständigen DNS-Audit: eigenes begrenztes **lesendes** Token (Account / Cloudflare Pages / Read, Zone / Zone / Read, Zone / DNS / Read; dieses Konto und visionuniverse.de) privat unter **GitHub Repository → Settings → Secrets and variables → Actions → `LANDING_CLOUDFLARE_API_TOKEN`** hinterlegen. Bestehende Workers-/R2-Tokens behalten; keine Tokens im Chat/Code/Log. Für diesen Prüflauf keine Schreibrechte erforderlich.
+
+## Research, Mail und unveränderte Dienste
+
+GitHub bestätigt Research mit `build_type: workflow`, main und `research.visionuniverse.de`. HTTPS 200, derselbe Startseiten-Hash wie am 09.10. (`7d734dbdfc8610be975a9e895641fdb3e0bb0d17c3cb26b2667e9b3d3842013f`). Bestehendes Research-Deployment, CNAME und Anwendung unverändert.
+
+**14 bekannte öffentliche NS-/Mail-/Research-DNS-Abfragen** identisch zur Stichprobe vom 09.10. [Vergleich ohne TXT-Rohwerte](verification-2026-10-10/public-dns.json). Kein Ersatz für einen vollständigen authentifizierten Zonenauszug oder eine lückenlose DKIM-Aufzählung. Keine DNS-/Nameserver-Änderung durch diesen Auftrag. united-domains bleibt Registrar; Brevo und Shopify-Abo unverändert. Die manuelle Web-Domainumstellung des Owners wird nicht als eigene DNS-Änderung ausgegeben.

@@ -1,4 +1,4 @@
-// Create only the isolated Git-integrated Pages project. No DNS/domain mutation.
+// Verify the manually created project only. Never create or change resources.
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {root} from './build.mjs';
@@ -10,11 +10,12 @@ if(!account){try{account=new URL(process.env.VU_HISTORY_S3_ENDPOINT||'').hostnam
 const output=process.env.LANDING_AUDIT_OUTPUT;
 if(!output)throw Error('Temporäres Ausgabeverzeichnis fehlt.');
 const config=JSON.parse(await readFile(resolve(root,'deployment/cloudflare-pages.json'),'utf8'));
-const owner='dennismueller10x-sudo',repo='vision-universe-research',name='vision-universe-landing';
-const report={checkedAt:new Date().toISOString(),operation:'prepare-project',dnsChanged:false,domainsAttached:false,projectCreated:false,checks:[]};
-async function api(path,method='GET',body){
+const owner='dennismueller10x-sudo',repo='vision-universe-research',name='vision-universe';
+const report={checkedAt:new Date().toISOString(),operation:'verify-existing-project',readOnly:true,dnsChanged:false,domainsAttached:false,projectCreated:false,checks:[]};
+async function api(path){
+  const method='GET';
   try{
-    const response=await fetch('https://api.cloudflare.com/client/v4'+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
+    const response=await fetch('https://api.cloudflare.com/client/v4'+path,{method,headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(30000)});
     let data;try{data=await response.json()}catch{data={}}
     // Classify errors without exposing provider text, account identifiers or headers.
     const categories=[...new Set((data.errors||[]).map(e=>{
@@ -37,18 +38,16 @@ try{
   const zones=await api('/zones?name=visionuniverse.de');
   if(zones.length!==1||zones[0].name!=='visionuniverse.de'||zones[0].status!=='active'||zones[0].account.id!==account)throw Error('Aktive Domain liegt nicht eindeutig im ausgewählten Konto.');
   const projects=await api(`/accounts/${account}/pages/projects`);
-  let project=projects.find(p=>p.name===name);
+  const project=projects.find(p=>p.name===name);
   if(project){
     if(project.source?.type!=='github'||project.source.config.owner!==owner||project.source.config.repo_name!==repo||project.build_config?.root_dir!=='landing')throw Error('Namenskollision: bestehendes Projekt wird nicht verändert.');
-    if(project.production_branch!=='main'||project.build_config.build_command!==config.build_config.build_command||project.build_config.destination_dir!=='dist'||project.deployment_configs?.production?.env_vars?.LANDING_PUBLICATION_MODE?.value!=='production')throw Error('Vorhandene Landing-Konfiguration benötigt gezielte Prüfung; keine blinde Ersetzung.');
-    report.existingProjectReused=true;
+    if(project.production_branch!=='main'||project.build_config.build_command!==config.build_config.build_command||project.build_config.destination_dir!=='dist')throw Error('Vorhandene Landing-Konfiguration benötigt gezielte Prüfung; keine blinde Ersetzung.');
+    report.existingProjectVerified=true;
   }else{
-    project=await api(`/accounts/${account}/pages/projects`,'POST',config);
-    report.projectCreated=true;
+    throw Error('Das eingerichtete Projekt vision-universe ist nicht sichtbar. Kein Ersatzprojekt wird angelegt.');
   }
   report.project={name:project.name,subdomain:project.subdomain,productionBranch:project.production_branch};
-  report.productionState='Durch bestehenden Privacy-Gate bis zur Inhaltsfreigabe blockiert';
-  report.previewBranch='feat/coming-soon-landing';
+  report.productionState='Öffentlicher Inhalt und Datenschutz müssen unabhängig vom erfolgreichen Build geprüft werden.';
 }catch(error){report.blocked=error.message;process.exitCode=1;}
 await mkdir(output,{recursive:true});await writeFile(resolve(output,'cloudflare-project.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report));
