@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-07T04:10:38.600Z",
+ "generatedAt": "2026-10-10T08:24:25.419Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -15,8 +15,8 @@
    "to": "2026-10-06",
    "spanDays": 26,
    "replay": {
-    "titles": 156,
-    "observations": 124849,
+    "titles": 157,
+    "observations": 125328,
     "from": "1991-03-08"
    }
   },
@@ -51,14 +51,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6308,
+    "titles": 6160,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6829
+    "titlesLastYear": 6663
    }
   },
   {
@@ -93,8 +93,8 @@
    "id": "patternObservations",
    "label": "Muster-Beobachtungen",
    "studyFindings": 114,
-   "robust": 69,
-   "matchSnapshots": 3
+   "robust": 68,
+   "matchSnapshots": 4
   },
   {
    "id": "technicalStates",
@@ -126,7 +126,7 @@
    "label": "Vergleichsindex",
    "series": "SPY",
    "from": "1995-01-03",
-   "to": "2026-10-05",
+   "to": "2026-10-09",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "totalReturn": false,
    "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
@@ -140,8 +140,8 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 5119,
-   "of": 6853
+   "ready": 4989,
+   "of": 6686
   },
   {
    "id": "survivorship",
@@ -162,7 +162,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6308 Titel seit 1990-01-05",
+     "value": "6160 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -194,7 +194,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "1362 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "1371 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -231,16 +231,16 @@
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7452,
-     "titles": 145,
+     "n": 7465,
+     "titles": 146,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8228,
-     "titles": 146,
+     "n": 8241,
+     "titles": 147,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     }
@@ -269,7 +269,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6308 Titel seit 1990-01-05",
+     "value": "6160 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -291,40 +291,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89187,
-     "titles": 5171,
+     "n": 88670,
+     "titles": 5060,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89473,
-     "titles": 5196,
+     "n": 88933,
+     "titles": 5082,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86484,
-     "titles": 5147,
+     "n": 85951,
+     "titles": 5037,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86521,
-     "titles": 5164,
+     "n": 85968,
+     "titles": 5051,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56493,
-     "titles": 4923,
+     "n": 56239,
+     "titles": 4829,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
@@ -411,7 +411,7 @@
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "5119 von 6853 Titeln",
+     "value": "4989 von 6686 Titeln",
      "reason": null
     },
     {
@@ -439,7 +439,7 @@
      "id": "study",
      "label": "Musterstudie mit Out-of-Sample",
      "state": "PASS",
-     "value": "114 Befunde, davon 69 robust",
+     "value": "114 Befunde, davon 68 robust",
      "reason": null
     },
     {

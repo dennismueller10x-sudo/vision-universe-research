@@ -114,3 +114,26 @@ test("begruendet ausgeschlossen ist erklaert, unbegruendet nicht", () => {
   assert.equal(r("CONFIRMED_NON_EQUITY:WARRANT").technical.find((x) => x.ticker === "X").cls, "POLICY_EXCLUDED");
   assert.equal(r(null).technical.find((x) => x.ticker === "X").cls, "UNEXPLAINED");
 });
+
+test("Bezug NAMED nach Neubeurteilung des Wertpapierstamms: spaetere Aenderungen werden zurueckgenommen", () => {
+  const before = { today: "2026-10-04", generatedAt: "2026-10-04T06:00:00Z", CHART_AVAILABILITY: { denominator: 5, notRenderableSymbols: [] },
+    TECHNICAL_HISTORY_ELIGIBILITY: { eligible: 5, tooShortSymbols: [] } };
+  const kopf = E([["A"], ["B"], ["N"], ["X", true, "DEBT", "CONFIRMED_NON_EQUITY:DEBT"], ["Y", true, "ETN", "CONFIRMED_NON_EQUITY:ETN"]]);
+  const spaeter = (ticker, from, to) => ({ ticker, at: "2026-10-10T06:00:00Z", from: { productEligibility: from }, to: { productEligibility: to } });
+  const reconciliation = { changes: [
+    spaeter("X", "ELIGIBLE", "EXCLUDED"), spaeter("Y", "ELIGIBLE", "EXCLUDED"), spaeter("N", "REVIEW", "ELIGIBLE"),
+    /* vor der Messung: schon im Nenner beruecksichtigt, wird nicht zurueckgenommen */
+    { ticker: "Z", at: "2026-10-02T06:00:00Z", from: { productEligibility: "ELIGIBLE" }, to: { productEligibility: "EXCLUDED" } }
+  ] };
+  const b = bezug({ before, eligNow: kopf, eligHead: kopf, scale: {}, reconciliation });
+  assert.equal(b.mode, "NAMED");
+  assert.equal(b.rejudged, 3);
+  assert.deepEqual([...b.productBefore].sort(), ["A", "B", "N", "X", "Y"]);
+  const r = classify({ ...b, cut: new Map(), techShortNow: new Set(), chartShortNow: new Set(), chartShortBefore: new Set(),
+    chartBaseDate: "2026-10-04", barsBefore: () => null });
+  assert.deepEqual(r.technical.map((x) => [x.ticker, x.cls]), [["X", "DEBT_EXCLUDED"], ["Y", "POLICY_EXCLUDED"]]);
+  assert.equal(balance(r.technical, 5, 3).closes, true);
+  /* Gegenprobe: trifft die Ruecknahme den Nenner nicht, bleibt der Bezug unbestimmbar */
+  assert.throws(() => bezug({ before: { ...before, CHART_AVAILABILITY: { denominator: 6 } }, eligNow: kopf, eligHead: kopf, scale: {}, reconciliation }), /passt nicht/);
+  assert.throws(() => bezug({ before, eligNow: kopf, eligHead: kopf, scale: {} }), /passt nicht/);
+});

@@ -58,11 +58,20 @@ ABGENOMMEN = {
     "HISTORICAL_CHART_AVAILABLE": 6850,
     "TECHNICAL_HISTORY_ELIGIBLE": 5780,
 }
+# Stand der Mitgliedschaft nach dem Gattungsbeleg aus dem Boersenverzeichnis
+# (scripts/market/apply-exchange-directory.mjs, 09.10.2026): 167 Titel belegt
+# keine Stammaktie (127 Schuldverschreibungen, 32 ETN, 8 bestaetigte
+# Rights/Warrants) - nur Mitgliedschaft, keine neue Messung, wie #366:
+#   Titel   6853 - 167 = 6686
+#   Charts  6850 - 167 = 6683   (keiner der 167 steht in den Chart-Ausnahmen)
+#   Technik 5780 - 137 = 5643   (137 der 167 waren technisch bereit, laut
+#                                tooShortSymbols der abgenommenen Messung)
 AKTUELLER_POLICY_STAND = {
-    "PRODUCT_TITLES": 6853,
-    "HISTORICAL_CHART_AVAILABLE": 6850,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5780,
+    "PRODUCT_TITLES": 6686,
+    "HISTORICAL_CHART_AVAILABLE": 6683,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5643,
 }
+VERZEICHNIS_AUSGESCHLOSSEN = 167
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
@@ -145,18 +154,18 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
 
     def test_der_aktuelle_nennerunterschied_ist_vollstaendig_durch_belegte_debt_erklaert(self):
         entscheidungen = lade(ROOT / "quant/data/market/security-master/eligibility.json")["decisions"]
-        debt = {r["ticker"]: r for r in entscheidungen if r.get("instrument_type") == "DEBT"}
-        self.assertEqual(set(debt), ENTFERNTE_DEBT_TITEL)
-        self.assertEqual(len(debt), 22)
+        nach_id = {r["securityId"]: r for r in entscheidungen}
+        # #366: die 22 Schuldverschreibungen aus dem Firmennamen bleiben ausgeschlossen
+        debt = {t: nach_id["ref_" + t] for t in ENTFERNTE_DEBT_TITEL}
         aktuell = {s["securityId"]: s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
         for ticker, row in debt.items():
+            self.assertEqual(row["instrument_type"], "DEBT")
             self.assertEqual(row["product_eligibility"], "EXCLUDED")
             self.assertEqual(row["product_eligibility_reason"], "CONFIRMED_NON_EQUITY:DEBT")
-            self.assertEqual(row["securityId"], "ref_" + ticker)
             self.assertNotIn(row["securityId"], aktuell)
         self.assertEqual(aktuell, {r["securityId"]: r["ticker"] for r in entscheidungen
                                    if r["product_eligibility"] != "EXCLUDED"})
-        self.assertEqual(len(aktuell) + len(debt), HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"])
+        self.assertEqual(STAND_0920_OHNE_DEBT["PRODUCT_TITLES"], HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"] - len(debt))
         self.assertFalse(ENTFERNTE_DEBT_TITEL & CHART_AUSNAHMEN_0920)
         befund = lade(TECHNIK)["perSymbol"]
         technisch_ready_entfernt = {ticker for ticker in debt
@@ -166,6 +175,25 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          STAND_0920_OHNE_DEBT["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(HISTORISCH_ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"] - len(debt),
                          STAND_0920_OHNE_DEBT["HISTORICAL_CHART_AVAILABLE"])
+
+    def test_der_verzeichnisbeleg_erklaert_den_rest_je_titel(self):
+        """apply-exchange-directory.mjs: jeder seit der Abnahme ausgeschlossene Titel steht mit
+        Wertpapierbezeichnung und Regel im Abgleich; die Kennzahlen folgen aus den Namenslisten
+        der abgenommenen Messung (keine neue Messung)."""
+        abgleich = lade(ROOT / "quant/data/market/security-master/eligibility-reconciliation.json")
+        raus = {c["ticker"] for c in abgleich["changes"]
+                if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY" and c["to"]["productEligibility"] == "EXCLUDED"
+                and c["from"]["productEligibility"] != "EXCLUDED"}
+        self.assertEqual(len(raus), VERZEICHNIS_AUSGESCHLOSSEN)
+        for c in abgleich["changes"]:
+            if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY":
+                self.assertTrue(c.get("securityName") and c.get("rule"), c["ticker"] + " ohne Beleg")
+        m = lade(METRIKEN)
+        self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
+        ready_raus = raus - set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
+        self.assertEqual(ABGENOMMEN["PRODUCT_TITLES"] - len(raus), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"] - len(raus), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertEqual(ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"] - len(ready_raus), AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
 
     def test_der_bericht_erklaert_selbst_dass_er_nur_befunde_fuehrt(self):
         t = lade(TECHNIK)

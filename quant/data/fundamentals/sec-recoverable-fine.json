@@ -1,15 +1,15 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 147
+    "SEC_RECOVERABLE": 140
   },
-  "accountedFor": 147,
+  "accountedFor": 140,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
       "count": 4,
-      "percent": 2.7211,
+      "percent": 2.8571,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -36,8 +36,8 @@
     },
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
-      "count": 55,
-      "percent": 37.415,
+      "count": 49,
+      "percent": 35.0,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -65,7 +65,7 @@
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.6803,
+      "percent": 0.7143,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -77,8 +77,8 @@
     },
     {
       "cause": "NO_XBRL_FACTS",
-      "count": 40,
-      "percent": 27.2109,
+      "count": 39,
+      "percent": 27.8571,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -106,7 +106,7 @@
     {
       "cause": "NO_XBRL_FINANCIALS",
       "count": 3,
-      "percent": 2.0408,
+      "percent": 2.1429,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -129,7 +129,7 @@
     {
       "cause": "VERY_YOUNG_LISTING",
       "count": 44,
-      "percent": 29.932,
+      "percent": 31.4286,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -157,8 +157,8 @@
   ],
   "byConsequence": {
     "RESOLVES_WITH_TIME": 44,
-    "NOT_APPLICABLE": 59,
-    "EXTERNAL_PROVIDER_CANDIDATE": 43,
+    "NOT_APPLICABLE": 53,
+    "EXTERNAL_PROVIDER_CANDIDATE": 42,
     "INDUSTRY_LAYER": 1
   },
   "stillRecoverableBySec": 0,
@@ -177,15 +177,9 @@
       "0001495222",
       "0001495222",
       "0001495222",
-      "0001495222",
-      "0001495222",
-      "0001495222",
-      "0001495222",
       "0001517767",
       "0001523289",
       "0001551047",
-      "0001604174",
-      "0001604174",
       "0001604174",
       "0001622148",
       "0001717457",
@@ -230,7 +224,6 @@
       "0001841644"
     ],
     "NO_XBRL_FACTS": [
-      "0000041091",
       "0000062362",
       "0000066901",
       "0000071508",
@@ -335,5 +328,5 @@
       "mapping_version": "1.6.0"
     }
   },
-  "generatedAtUtc": "2026-10-09T13:26:32+00:00"
+  "generatedAtUtc": "2026-10-10T06:45:38+00:00"
 }

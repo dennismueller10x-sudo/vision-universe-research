@@ -116,17 +116,37 @@ export function balance(rows, beforeOk, nowOk) {
      plus die seither als DEBT herausgenommenen Titel (#366). */
 const ausgeschlossen = (e) => new Map(e.decisions.filter((d) => d.product_eligibility === "EXCLUDED" && d.product_eligibility_reason)
   .map((d) => [d.ticker.toUpperCase(), d.product_eligibility_reason]));
-export function bezug({ before, eligNow, eligHead, scale }) {
+/* Wurde der Wertpapierstamm NACH der Messung neu beurteilt (z. B. Verzeichnisbeleg
+   exchange-directory-class-1.0.0), traegt HEAD schon das neue Universum. Das
+   Universum der Messung entsteht dann, indem jede protokollierte Aenderung
+   (eligibility-reconciliation.json#changes) mit Zeitpunkt nach der Messung
+   zurueckgenommen wird. Es gilt nur, wenn es den Nenner der Messung genau trifft. */
+export function universumZurMessung(productHead, changes, measuredAt) {
+  const u = new Set(productHead);
+  let undone = 0;
+  for (const c of changes || []) {
+    if (!(c && c.at && measuredAt && String(c.at) > String(measuredAt))) continue;
+    const t = String(c.ticker).toUpperCase();
+    if (c.from.productEligibility !== "EXCLUDED") u.add(t); else u.delete(t);
+    undone++;
+  }
+  return { universe: u, undone };
+}
+export function bezug({ before, eligNow, eligHead, scale, reconciliation = null }) {
   const product = (e) => new Set(e.decisions.filter((d) => d.product_eligibility !== "EXCLUDED").map((d) => d.ticker.toUpperCase()));
   const productNow = product(eligNow);
   const debt = new Set(eligNow.decisions.filter((d) => d.instrument_type === "DEBT" && d.product_eligibility === "EXCLUDED").map((d) => d.ticker.toUpperCase()));
   const T = before.TECHNICAL_HISTORY_ELIGIBILITY || {};
   if (Array.isArray(T.tooShortSymbols)) {
     if (!eligHead) throw new Error("eligibility.json des Bezugs-Commits nicht lesbar");
-    const productBefore = product(eligHead);
+    let productBefore = product(eligHead), rejudged = 0;
+    if (productBefore.size !== before.CHART_AVAILABILITY.denominator && reconciliation) {
+      const z = universumZurMessung(productBefore, reconciliation.changes, before.generatedAt);
+      if (z.undone > 0 && z.universe.size === before.CHART_AVAILABILITY.denominator) { productBefore = z.universe; rejudged = z.undone; }
+    }
     if (productBefore.size !== before.CHART_AVAILABILITY.denominator)
       throw new Error(`Produktuniversum des Bezugs (${productBefore.size}) passt nicht zum Nenner der Messung (${before.CHART_AVAILABILITY.denominator})`);
-    return { mode: "NAMED", productNow, productBefore, debt, excludedReason: ausgeschlossen(eligNow),
+    return { mode: "NAMED", rejudged, productNow, productBefore, debt, excludedReason: ausgeschlossen(eligNow),
       techShortBefore: new Set(T.tooShortSymbols.map((x) => x.toUpperCase())), techBaseDate: before.today, techBeforeOk: T.eligible };
   }
   const productBefore = new Set([...productNow, ...debt]);
@@ -156,12 +176,15 @@ async function main() {
   let eligHead = null;
   try { eligHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
   catch { eligHead = null; }
+  let reconHead = null;
+  try { reconHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility-reconciliation.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
+  catch { reconHead = null; }
   const tech = read("quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json");
   let b;
-  try { b = bezug({ before, eligNow: elig, eligHead, scale: tech }); }
+  try { b = bezug({ before, eligNow: elig, eligHead, scale: tech, reconciliation: reconHead }); }
   catch (e) { console.error("Bezug nicht bestimmbar: " + e.message); process.exit(1); }
   const { productNow, productBefore, debt, excludedReason, techShortBefore, techBaseDate } = b;
-  console.log(`  Bezug: ${b.mode}`);
+  console.log(`  Bezug: ${b.mode}` + (b.rejudged ? ` (Universum der Messung: ${b.rejudged} spaetere Neubeurteilungen zurueckgenommen)` : ""));
 
   const lc = read("quant/data/market/listing-continuity-v1.json");
   const cut = new Map((lc.productUniverse && lc.productUniverse.rows || []).map((r) => [String(r[1]).toUpperCase(), r]));

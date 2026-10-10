@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-10-07T03:24:53.000Z |
+| Stand der Messung | 2026-10-10T07:54:01.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -17,16 +17,16 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 
 | Größe | Titel |
 |---|---:|
-| `CANONICAL_PRODUCT_UNIVERSE` | 6.853 |
-| `CANONICAL_HISTORY_UNIVERSE` | 6.852 |
-| `RAW_CLOSE_AVAILABLE` | 6.852 |
-| `SPLIT_FACTOR_AVAILABLE` | 6.852 |
-| `DIVIDEND_COLUMN_AVAILABLE` | 6.852 |
-| `DIVIDEND_EVENTS_AVAILABLE` | 3.308 |
-| `ADJUSTED_CLOSE_AVAILABLE` | 6.852 |
-| `TRADING_DATES_AVAILABLE` | 6.852 |
-| `ADJUSTMENT_STATUS_PRESENT` | 6.852 |
-| `RETURN_BASIS_IDENTIFIABLE_UNIVERSE` | 6.852 |
+| `CANONICAL_PRODUCT_UNIVERSE` | 6.686 |
+| `CANONICAL_HISTORY_UNIVERSE` | 6.685 |
+| `RAW_CLOSE_AVAILABLE` | 6.685 |
+| `SPLIT_FACTOR_AVAILABLE` | 6.685 |
+| `DIVIDEND_COLUMN_AVAILABLE` | 6.685 |
+| `DIVIDEND_EVENTS_AVAILABLE` | 3.195 |
+| `ADJUSTED_CLOSE_AVAILABLE` | 6.685 |
+| `TRADING_DATES_AVAILABLE` | 6.685 |
+| `ADJUSTMENT_STATUS_PRESENT` | 6.685 |
+| `RETURN_BASIS_IDENTIFIABLE_UNIVERSE` | 6.685 |
 
 **Warum der Rest ausgeschlossen ist**
 
@@ -34,7 +34,7 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 |---|---:|
 | `NO_SERIES` | 1 |
 
-Quellen: `CANONICAL_STORE` 6.852. Bereinigungsstufe: `adjusted` 6.852.
+Quellen: `CANONICAL_STORE` 6.685. Bereinigungsstufe: `adjusted` 6.685.
 
 ## 2 · Die beiden Reihen
 
@@ -45,7 +45,7 @@ Aus **einem** Satz Bars entstehen zwei Reihen, und keine davon ist eine Umdeutun
 
 Bewusst **nicht** die adjClose-Spalte für A: sie ist gesamtrenditebereinigt und trüge damit genau das in die Kursanalyse, was dort nicht hineingehört.
 
-**Beide Basen baubar:** 6.852 Titel von 6.853 im Produktuniversum, 6.852 davon mit gefundener Reihe.
+**Beide Basen baubar:** 6.685 Titel von 6.686 im Produktuniversum, 6.685 davon mit gefundener Reihe.
 
 | Ausschlussgrund | Titel |
 |---|---:|
@@ -58,9 +58,9 @@ An einem Ex-Tag ohne Split muss gelten: `(adj_vor/close_vor) / (adj_jetzt/close_
 | | |
 |---|---:|
 | Urteil | **TOTAL_RETURN_NOT_UNIFORM** |
-| geprüfte Titel | 3.295 |
-| geprüfte Ereignisse | 62.573 |
-| davon konsistent | 61.773 |
+| geprüfte Titel | 3.182 |
+| geprüfte Ereignisse | 60.942 |
+| davon konsistent | 60.151 |
 | schlechtester Fehler | 760,6027 % |
 | Toleranz | 0,20 % |
 
@@ -68,7 +68,7 @@ An einem Ex-Tag ohne Split muss gelten: `(adj_vor/close_vor) / (adj_jetzt/close_
 
 | Einordnung | Ereignisse | |
 |---|---:|---|
-| `ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT` | 759 | bereinigt, aber nicht um den gemeldeten Barbetrag — die Signatur einer Abspaltung: der Anbieter rechnet den Wert der verteilten Anteile am Ex-Tag heraus, nicht die Zahl in der Dividendenspalte |
+| `ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT` | 750 | bereinigt, aber nicht um den gemeldeten Barbetrag — die Signatur einer Abspaltung: der Anbieter rechnet den Wert der verteilten Anteile am Ex-Tag heraus, nicht die Zahl in der Dividendenspalte |
 | `ADJUSTMENT_INCONSISTENT` | 26 | bereinigt, aber weit außerhalb des Bandes um die Ausschüttung — was dort herausgerechnet wurde, erklärt diese Prüfung nicht |
 | `NO_ADJUSTMENT_AT_ALL` | 13 | **gar nicht bereinigt** — an diesem Tag ist die Spalte keine Gesamtrendite |
 | `ADJUSTMENT_ON_NEIGHBOURING_DAY` | 2 | bereinigt am Nachbartag — ein Datumsversatz, keine fehlende Bereinigung |
@@ -77,14 +77,14 @@ Als *bereinigt* zählt ein Tag, dessen implizite Ausschüttung zwischen dem 0,60
 
 | Größe der Ausschüttung | `ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT` | `ADJUSTMENT_ON_NEIGHBOURING_DAY` | `NO_ADJUSTMENT_AT_ALL` | `ADJUSTMENT_INCONSISTENT` |
 |---|---:|---:|---:|---:|
-| `LARGE_DISTRIBUTION` | 512 | 2 | 4 | 16 |
-| `ORDINARY_DIVIDEND` | 247 | 0 | 9 | 10 |
+| `LARGE_DISTRIBUTION` | 508 | 2 | 4 | 16 |
+| `ORDINARY_DIVIDEND` | 242 | 0 | 9 | 10 |
 
 `ORDINARY_DIVIDEND` ist eine Ausschüttung unter fünf Prozent des Kurses, `LARGE_DISTRIBUTION` alles darüber — der Sache nach meist eine Abspaltung oder Sonderausschüttung.
 
-Betroffen sind 454 von 3.295 geprüften Titeln (13,78 %).
+Betroffen sind 450 von 3.182 geprüften Titeln (14,14 %).
 
-**Erklärt: 761 · unerklärt: 39** (0,062 % aller geprüften Ereignisse). Das Urteil steht auf den unerklärten: eine Reihe, die eine Dividende gar nicht oder nur zum Teil herausrechnet, ist an diesem Tag keine Gesamtrendite-Reihe, und keine Einordnung erklärt das weg.
+**Erklärt: 752 · unerklärt: 39** (0,064 % aller geprüften Ereignisse). Das Urteil steht auf den unerklärten: eine Reihe, die eine Dividende gar nicht oder nur zum Teil herausrechnet, ist an diesem Tag keine Gesamtrendite-Reihe, und keine Einordnung erklärt das weg.
 
 Titel mit Abweichungen (erste 10 von 50 aufgezeichneten): `ref_MMM` 23/24 · `ref_DD` 23/24 · `ref_UIS` 1/3 · `ref_AXR` 5/6 · `ref_PHI` 23/24 · `ref_SIEB` 22/24 · `ref_SSL` 23/24 · `ref_AIRT` 16/19 · `ref_ATRO` 4/10 · `ref_BSET` 23/24.
 
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.598 |
-| Preisbasis | `close` 6.598 |
+| Einträge | 6.594 |
+| Preisbasis | `close` 6.594 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -118,17 +118,17 @@ Die Golden Five stehen im Regressionsumfang (`quant/tests/return-series.test.mjs
 
 ## 4 & 5 · Der Rangvergleich über das Universum
 
-Stichtag **2026-10-06**, 5.900 Titel mit ausreichender Historie.
+Stichtag **2026-10-06**, 5.759 Titel mit ausreichender Historie.
 
 **Ausgeschlossen, weil die Gesamtrendite-Reihe in genau diesem Fenster nicht belegt ist:**
 
 | Stichtag | Titel im Fenster | ausgeschlossen | verglichen | betroffene Titel |
 |---|---:|---:|---:|---|
-| 2026-10-06 | 5.912 | 12 | 5.900 | THRM, CIB, KNDI, FFNW, TFII, ARI, VISN, FSV, SBT, GOCOQ, VOXR, DVXE |
-| 2025-10-03 | 5.442 | 2 | 5.440 | FFNW, SBT |
-| 2024-10-01 | 5.198 | 0 | 5.198 |  |
-| 2023-09-29 | 5.011 | 7 | 5.004 | CUZ, BNS, PKBK, BRX, NFE, CDZIP, SLVM |
-| 2022-09-28 | 4.693 | 0 | 4.693 |  |
+| 2026-10-06 | 5.771 | 12 | 5.759 | THRM, CIB, KNDI, FFNW, TFII, ARI, VISN, FSV, SBT, GOCOQ, VOXR, DVXE |
+| 2025-10-03 | 5.321 | 2 | 5.319 | FFNW, SBT |
+| 2024-10-01 | 5.101 | 0 | 5.101 |  |
+| 2023-09-29 | 4.929 | 7 | 4.922 | CUZ, BNS, PKBK, BRX, NFE, CDZIP, SLVM |
+| 2022-09-28 | 4.631 | 0 | 4.631 |  |
 
 Diese Titel tragen einen Bereinigungstag, den die Prüfung oben nicht erklären kann, **innerhalb** des Fensters, über das hier gerechnet wird. Ihre Gesamtrendite-Reihe ist dort nicht belegt — also hat sie in einem Vergleich beider Basen nichts verloren. Die Alternative wäre eine Toleranz gewesen; die Zahl steht hier, damit sichtbar bleibt, wie klein der Ausschluss ist. Wären es viele, taugte die Studie nichts.
 
@@ -136,11 +136,11 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 
 | Messgröße | `UNIVERSE_N` | ρ | Median Rang | P90 | P95 | Max | ≥1 Pz | ≥5 Pz | ≥10 Pz | Dezil ab/zu |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| `3M` | 5.900 | 0,9961 | 33 | 174 | 205,1 | 4.222 | 2.225 | 190 | 31 | 16 / 16 |
-| `6M` | 5.900 | 0,9950 | 45 | 216 | 284,5 | 3.465 | 2.635 | 280 | 50 | 12 / 12 |
-| `12M` | 5.900 | 0,9939 | 56 | 272,1 | 323,1 | 3.574 | 2.837 | 445 | 59 | 21 / 21 |
-| `12M-1M` | 5.900 | 0,9939 | 49 | 283 | 334 | 3.524 | 2.652 | 551 | 65 | 15 / 15 |
-| `RELATIVE_STRENGTH` | 5.900 | 0,9939 | 56 | 272,1 | 323,1 | 3.574 | 2.837 | 445 | 59 | 21 / 21 |
+| `3M` | 5.759 | 0,9964 | 31 | 138,5 | 182 | 4.095 | 2.075 | 158 | 29 | 15 / 15 |
+| `6M` | 5.759 | 0,9954 | 42 | 185 | 250 | 3.341 | 2.486 | 245 | 48 | 13 / 13 |
+| `12M` | 5.759 | 0,9943 | 53 | 237,2 | 293,2 | 3.447 | 2.702 | 299 | 58 | 20 / 20 |
+| `12M-1M` | 5.759 | 0,9944 | 47 | 257 | 290,1 | 3.395 | 2.549 | 304 | 62 | 15 / 15 |
+| `RELATIVE_STRENGTH` | 5.759 | 0,9943 | 53 | 237,2 | 293,2 | 3.447 | 2.702 | 299 | 58 | 20 / 20 |
 
 `ρ` ist die Spearman-Rangkorrelation zwischen beiden Basen, `Pz` Perzentilpunkte, `Dezil ab/zu` der Wechsel im obersten Zehntel. Aus einem Median allein folgt nichts: ein Median von null Rängen und ein P95 von mehreren hundert sind gleichzeitig wahr, und nur der zweite Wert entscheidet, ob ein Titel aus dem obersten Dezil fällt.
 
@@ -148,21 +148,21 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 
 | Titel | Sektor | Segment | Rendite Kurs | Rendite gesamt | Pz Kurs | Pz gesamt | Δ Pz | Δ Rang |
 |---|---|---|---:|---:|---:|---:|---:|---:|
-| DD | D · Manufacturing | `HIGH_YIELD` | -45,0 % | 33,0 % | 18,1 | 77,8 | 59,7 | -3.524 |
-| SACH | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -23,5 % | 27,0 % | 28,2 | 74,6 | 46,4 | -2.739 |
-| HERZ | (unclassified) | `HIGH_YIELD` | -33,6 % | 15,6 % | 22,6 | 66,5 | 43,9 | -2.592 |
-| NLOP | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -63,1 % | 4,7 % | 11,3 | 54,3 | 43,0 | -2.537 |
-| AD | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | -24,1 % | 17,5 % | 27,8 | 68,3 | 40,5 | -2.390 |
-| TLF | D · Manufacturing | `HIGH_YIELD` | -13,2 % | 14,4 % | 35,8 | 65,6 | 29,8 | -1.758 |
-| IEP | D · Manufacturing | `HIGH_YIELD` | -18,4 % | 5,4 % | 31,4 | 55,5 | 24,1 | -1.423 |
-| PDX | (unclassified) | `HIGH_YIELD` | -11,0 % | 10,7 % | 38,1 | 62,2 | 24,0 | -1.417 |
-| BRBS | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -6,4 % | 15,9 % | 43,2 | 66,9 | 23,7 | -1.398 |
-| STRS | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -11,1 % | 10,1 % | 38,0 | 61,6 | 23,6 | -1.394 |
-| AIV | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -67,1 % | -12,8 % | 10,2 | 33,8 | 23,6 | -1.390 |
-| TDS | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | -4,3 % | 18,3 % | 45,5 | 68,9 | 23,5 | -1.385 |
-| JCSE | D · Manufacturing | `HIGH_YIELD` | 1,0 % | 32,3 % | 54,2 | 77,4 | 23,2 | -1.369 |
-| IVR | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -7,2 % | 14,0 % | 42,3 | 65,3 | 23,0 | -1.356 |
-| ECAT | (unclassified) | `HIGH_YIELD` | -7,9 % | 12,1 % | 41,7 | 63,4 | 21,8 | -1.284 |
+| DD | D · Manufacturing | `HIGH_YIELD` | -45,0 % | 33,0 % | 18,4 | 77,4 | 59,0 | -3.395 |
+| SACH | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -23,5 % | 27,0 % | 28,7 | 74,1 | 45,5 | -2.617 |
+| HERZ | (unclassified) | `HIGH_YIELD` | -33,6 % | 15,6 % | 23,0 | 65,9 | 42,9 | -2.470 |
+| NLOP | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -63,1 % | 4,7 % | 11,6 | 54,4 | 42,9 | -2.468 |
+| AD | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | -24,1 % | 17,5 % | 28,2 | 67,7 | 39,4 | -2.270 |
+| TLF | D · Manufacturing | `HIGH_YIELD` | -13,2 % | 14,4 % | 36,0 | 65,0 | 28,9 | -1.666 |
+| AIV | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -67,1 % | -12,8 % | 10,4 | 34,3 | 23,8 | -1.372 |
+| IEP | D · Manufacturing | `HIGH_YIELD` | -18,4 % | 5,4 % | 31,9 | 55,5 | 23,7 | -1.363 |
+| JCSE | D · Manufacturing | `HIGH_YIELD` | 1,0 % | 32,3 % | 53,7 | 77,0 | 23,4 | -1.345 |
+| PDX | (unclassified) | `HIGH_YIELD` | -11,0 % | 10,7 % | 38,2 | 61,5 | 23,2 | -1.337 |
+| BRBS | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -6,4 % | 15,9 % | 43,2 | 66,3 | 23,1 | -1.328 |
+| TDS | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | -4,3 % | 18,3 % | 45,5 | 68,4 | 22,9 | -1.318 |
+| STRS | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -11,1 % | 10,1 % | 38,1 | 60,9 | 22,8 | -1.314 |
+| IVR | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -7,2 % | 14,0 % | 42,3 | 64,6 | 22,4 | -1.287 |
+| ECAT | (unclassified) | `HIGH_YIELD` | -7,9 % | 12,1 % | 41,7 | 62,8 | 21,1 | -1.215 |
 
 ## 6 · Dividendenschieflage
 
@@ -172,19 +172,19 @@ Segmentiert nach nachlaufender Zwölfmonatsrendite: jede Ausschüttung gegen den
 
 | Segment | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| `NO_DIVIDEND` | 3.270 | 0,00 % | 25 | -0,42 | 5,36 |
-| `LOW_YIELD` | 758 | 1,08 % | 46 | -0,78 | 3,57 |
-| `MEDIUM_YIELD` | 677 | 3,01 % | -17 | 0,29 | 1,65 |
-| `HIGH_YIELD` | 1.195 | 6,34 % | -168 | 2,85 | 10,41 |
+| `NO_DIVIDEND` | 3.231 | 0,00 % | 25 | -0,43 | 4,62 |
+| `LOW_YIELD` | 756 | 1,07 % | 45 | -0,78 | 3,17 |
+| `MEDIUM_YIELD` | 675 | 3,00 % | -18 | 0,31 | 1,48 |
+| `HIGH_YIELD` | 1.097 | 6,37 % | -163 | 2,83 | 10,35 |
 
 **`12M`**
 
 | Segment | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| `NO_DIVIDEND` | 3.270 | 0,00 % | 30 | -0,51 | 4,89 |
-| `LOW_YIELD` | 758 | 1,12 % | 46 | -0,78 | 3,70 |
-| `MEDIUM_YIELD` | 677 | 3,17 % | -13 | 0,22 | 1,59 |
-| `HIGH_YIELD` | 1.195 | 6,94 % | -168 | 2,85 | 9,90 |
+| `NO_DIVIDEND` | 3.231 | 0,00 % | 29 | -0,50 | 4,31 |
+| `LOW_YIELD` | 756 | 1,12 % | 46 | -0,80 | 3,39 |
+| `MEDIUM_YIELD` | 675 | 3,17 % | -14 | 0,24 | 1,41 |
+| `HIGH_YIELD` | 1.097 | 6,89 % | -162 | 2,81 | 10,13 |
 
 ## 7 · Sektorschieflage
 
@@ -194,20 +194,20 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| REITs | 206 | 5,01 % | -100 | 1,70 | 11,76 |
-| (unclassified) | 795 | 4,77 % | -100 | 1,70 | 9,26 |
-| Energy | 149 | 2,65 % | -2 | 0,03 | 6,48 |
-| Utilities | 156 | 3,03 % | 0 | 0,00 | 4,95 |
-| Consumer Staples | 117 | 0,95 % | 2 | -0,03 | 3,72 |
-| Financials | 926 | 1,73 % | 4 | -0,07 | 5,66 |
-| Real Estate | 69 | 0,00 % | 14 | -0,24 | 10,02 |
-| Communication | 134 | 0,00 % | 16 | -0,27 | 5,60 |
-| Industrials | 450 | 0,00 % | 17 | -0,29 | 4,65 |
-| Technology | 731 | 0,00 % | 19 | -0,32 | 3,98 |
-| (other) | 501 | 0,00 % | 19 | -0,32 | 4,41 |
-| Health Care | 933 | 0,00 % | 19 | -0,32 | 3,91 |
-| Materials | 300 | 0,00 % | 22 | -0,36 | 3,78 |
-| Consumer Discretionary | 433 | 0,00 % | 25 | -0,42 | 4,32 |
+| REITs | 191 | 4,81 % | -93 | 1,62 | 11,62 |
+| (unclassified) | 762 | 4,63 % | -92 | 1,59 | 9,12 |
+| Energy | 148 | 2,58 % | -2 | 0,03 | 6,57 |
+| Consumer Staples | 117 | 0,95 % | 1 | -0,02 | 3,68 |
+| Utilities | 142 | 2,89 % | 4 | -0,06 | 4,81 |
+| Financials | 864 | 1,59 % | 6 | -0,10 | 4,91 |
+| Real Estate | 67 | 0,00 % | 14 | -0,24 | 9,61 |
+| Communication | 130 | 0,00 % | 16 | -0,28 | 5,12 |
+| Industrials | 446 | 0,00 % | 17 | -0,30 | 4,31 |
+| (other) | 501 | 0,00 % | 19 | -0,33 | 3,87 |
+| Technology | 726 | 0,00 % | 19 | -0,33 | 3,66 |
+| Health Care | 932 | 0,00 % | 19 | -0,33 | 3,64 |
+| Materials | 300 | 0,00 % | 21 | -0,36 | 3,45 |
+| Consumer Discretionary | 433 | 0,00 % | 23 | -0,40 | 3,96 |
 
 > Einteilung `AUDIT_LOCAL_SIC_RANGES`. Gilt nur fuer diese Studie und ist keine Produkttaxonomie. Die Bereiche stehen hier, damit jede Zuordnung nachrechenbar ist. Die SIC-Bereiche: Energy 1200–1399/2900–2999/4600–4619 · Utilities 4900–4991 · REITs 6798 · Financials 6000–6499/6700–6797/6799 · Real Estate 6500–6599 · Health Care 2833–2836/3826/3841–3851/8000–8099 · Technology 3570–3579/3600–3699/7370–7379 · Communication 2700–2799/4800–4899/7800–7841 · Materials 1000–1099/1400–1499/2600–2699/2800–2824/2840–2899/3200–3399 · Consumer Staples 2000–2199/2825–2832/5400–5499/5912 · Consumer Discretionary 2200–2399/3700–3799/5200–5399/5500–5911/5913–5999/7000–7099/7900–7999 · Industrials 1500–1799/3400–3569/3580–3599/3710–3728/4000–4599/4620–4799/8700–8748.
 
@@ -215,16 +215,16 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| (unclassified) | 795 | 4,77 % | -100 | 1,70 | 9,26 |
-| H · Finance, Insurance, And Real Estate | 1.201 | 2,37 % | 0 | 0,00 | 6,37 |
-| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 415 | 1,67 % | 4 | -0,07 | 5,04 |
-| F · Wholesale Trade | 100 | 0,00 % | 17 | -0,29 | 3,94 |
-| B · Mining | 244 | 0,00 % | 18 | -0,31 | 4,93 |
-| D · Manufacturing | 1.940 | 0,00 % | 19 | -0,32 | 3,93 |
-| I · Services | 897 | 0,00 % | 20 | -0,34 | 4,54 |
-| A · Agriculture, Forestry, And Fishing | 20 | 0,00 % | 22 | -0,36 | 5,34 |
-| C · Construction | 64 | 0,00 % | 25 | -0,42 | 4,94 |
-| G · Retail Trade | 224 | 0,00 % | 26 | -0,43 | 4,22 |
+| (unclassified) | 762 | 4,63 % | -92 | 1,59 | 9,12 |
+| H · Finance, Insurance, And Real Estate | 1.122 | 2,22 % | 1 | -0,02 | 5,76 |
+| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 393 | 1,54 % | 7 | -0,12 | 4,86 |
+| B · Mining | 243 | 0,00 % | 17 | -0,30 | 4,52 |
+| F · Wholesale Trade | 100 | 0,00 % | 17 | -0,30 | 3,73 |
+| D · Manufacturing | 1.939 | 0,00 % | 18 | -0,31 | 3,65 |
+| I · Services | 892 | 0,00 % | 19 | -0,33 | 4,11 |
+| A · Agriculture, Forestry, And Fishing | 20 | 0,00 % | 22 | -0,37 | 4,56 |
+| C · Construction | 64 | 0,00 % | 24 | -0,41 | 4,31 |
+| G · Retail Trade | 224 | 0,00 % | 24 | -0,42 | 3,89 |
 
 Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.
 
@@ -235,20 +235,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-10-05 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-10-06 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9396 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9499 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.751 / 5.900 / 5.900 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9448 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9545 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.620 / 5.759 / 5.759 |
 
-**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9923 · Median 60 Ränge · P95 421,1 · Maximum 3.337 · 633 Titel bewegen sich um mindestens 5 Perzentilpunkte, 139 um mindestens 10.
+**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9930 · Median 56 Ränge · P95 372 · Maximum 3.201 · 542 Titel bewegen sich um mindestens 5 Perzentilpunkte, 120 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 355 | 346 | 17 | 8 | 7,0 % |
-| Quality Momentum (`quality-momentum`) | 40 | 41 | 0 | 1 | 2,4 % |
+| Momentum Leader (`momentum-leader`) | 347 | 341 | 13 | 7 | 5,8 % |
+| Quality Momentum (`quality-momentum`) | 40 | 39 | 2 | 1 | 7,5 % |
 | Future Leader (`future-leader`) | 28 | 27 | 1 | 0 | 3,6 % |
-| Value Momentum (`value-momentum`) | 191 | 182 | 14 | 5 | 10,0 % |
+| Value Momentum (`value-momentum`) | 190 | 180 | 15 | 5 | 10,5 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
@@ -258,11 +258,11 @@ Derselbe Vergleich an mehreren Stichtagen. Jeder Stichtag sieht ausschließlich 
 
 | Stichtag | Handelstage zurück | Titel | ρ `12M-1M` | Median Rang | P95 | ≥5 Pz | Dezil ab/zu |
 |---|---:|---:|---:|---:|---:|---:|---|
-| 2026-10-06 | 0 | 5.900 | 0,9939 | 49 | 334 | 551 | 15 / 15 |
-| 2025-10-03 | 252 | 5.440 | 0,9923 | 50 | 351 | 528 | 10 / 10 |
-| 2024-10-01 | 504 | 5.198 | 0,9933 | 54 | 294 | 525 | 21 / 21 |
-| 2023-09-29 | 756 | 5.004 | 0,9848 | 63 | 300,8 | 481 | 25 / 25 |
-| 2022-09-28 | 1.008 | 4.693 | 0,9952 | 36 | 220,4 | 199 | 21 / 21 |
+| 2026-10-06 | 0 | 5.759 | 0,9944 | 47 | 290,1 | 304 | 15 / 15 |
+| 2025-10-03 | 252 | 5.319 | 0,9928 | 49 | 315 | 446 | 10 / 10 |
+| 2024-10-01 | 504 | 5.101 | 0,9936 | 52 | 274 | 427 | 21 / 21 |
+| 2023-09-29 | 756 | 4.922 | 0,9848 | 61 | 288,9 | 416 | 23 / 23 |
+| 2022-09-28 | 1.008 | 4.631 | 0,9953 | 34 | 213,5 | 198 | 19 / 19 |
 
 An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-momentumbasierten Faktornoten liegen nur zu einem Stichtag vor, und sie auf ein früheres Datum zu legen wäre Future Leakage. Dort steht `PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME` statt einer Zahl.
 
@@ -271,8 +271,8 @@ An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-mom
 | Flag | Wert |
 |---|---|
 | `FULL_UNIVERSE_RETURN_AUDIT` | `PASS` |
-| `DUAL_RETURN_SERIES_CAPABLE_UNIVERSE` | `6852` |
-| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9961 · `6M` 0,9950 · `12M` 0,9939 · `12M-1M` 0,9939 · `RELATIVE_STRENGTH` 0,9939 |
+| `DUAL_RETURN_SERIES_CAPABLE_UNIVERSE` | `6685` |
+| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9964 · `6M` 0,9954 · `12M` 0,9943 · `12M-1M` 0,9944 · `RELATIVE_STRENGTH` 0,9943 |
 | `DIVIDEND_BIAS` | `MEASURED` |
 | `SECTOR_BIAS` | `MEASURED` |
 | `STRATEGY_IMPACT` | `MEASURED` |
