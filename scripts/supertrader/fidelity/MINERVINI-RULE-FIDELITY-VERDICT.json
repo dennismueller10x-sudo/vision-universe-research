@@ -11,7 +11,7 @@
    "PRACTICE_BEYOND_RULES": 2
   },
   "correctedBySourceBackedRule": 0,
-  "meaning": "Keiner der 12 verpassten Faelle wird durch eine quellenbelegte Regelkorrektur zum Treffer. 7 sind Aktien ohne Gewinn, fuer die keine abrufbare Regel existiert; 3 sind Daten-/Universumsgrenzen; 2 sind Ermessen/Einstiegsart. Ein echter Formalisierungsfehler (MR-SEPA-10) wurde gefunden und teilweise korrigiert; er betrifft Verlust->Gewinn-Wenden, die in den MAIN-Faellen nicht vorkommen."
+  "meaning": "Keiner der 12 verpassten Faelle wird durch eine quellenbelegte Regelkorrektur zum Treffer. 7 sind Aktien ohne Gewinn, fuer die in den abgerufenen Stellen keine ausdrueckliche Eintrittsregel gefunden wurde (die Buecher wurden nicht gelesen); 3 sind Daten-/Universumsgrenzen; 2 sind Ermessen/Einstiegsart. Ein echter Formalisierungsfehler (MR-SEPA-10) wurde gefunden und teilweise korrigiert; er betrifft Verlust->Gewinn-Wenden, die in den MAIN-Faellen nicht vorkommen."
  },
  "recall": {
   "before": {
@@ -353,7 +353,8 @@
   "findings": {
    "HIGH": 3,
    "MEDIUM": 4,
-   "LOW": 5
+   "LOW": 5,
+   "note": "F4 als MEDIUM gezaehlt; zweiter Review: keine neuen CRITICAL/HIGH, N1-N8 (3 MEDIUM, 5 LOW) eingearbeitet"
   },
   "dispositions": {
    "F1": "§7 auf das vorab registrierte Label NOT_FEASIBLE_FROM_PUBLIC_RULES umgestellt",
@@ -368,6 +369,23 @@
    "F10": "Reihenfolgeabhaengigkeit ausgewiesen",
    "F11": "Kommentar korrigiert",
    "F12": "Fussnote"
+  },
+  "round2": {
+   "N1": "V2 verwirft abgeleitetes Q4 nur noch ueber einen Split (wie eingefroren), Test RF1-T-V2-DERIVED-Q4",
+   "N2": "Entscheidungsfeld und Wortlaut korrigiert",
+   "N3": "Bericht: Teilmenge nur teilweise umgesetzt",
+   "N4": "Anteile aktualisiert (85/9/7 nach Entfall von T-B)",
+   "N5": "168/375 stammt aus dem Skript des Reviewers und ist nicht im Repo reproduzierbar; so ausgewiesen",
+   "N6": "F4 als MEDIUM",
+   "N7": "A2-Zeitpunkt nicht durch git belegbar; ausgewiesen",
+   "N8": "A1 enthaelt drei Praezisierungen"
   }
+ },
+ "decision": {
+  "label": "NOT_FEASIBLE_FROM_PUBLIC_RULES",
+  "preregistered": true,
+  "replicationClaimAllowed": false,
+  "publiclyReproducibleSubsetCoverage": "3/15 (2 verschiedene Titel von 14), Wilson 95 % 7-45 %",
+  "subsetImplementation": "teilweise: Power Play, Cheat, Obergrenze 60 Wochen und das zweite Turnaround-Quartal sind belegt bzw. teilbelegt, aber nicht umgesetzt"
  }
 }

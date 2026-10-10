@@ -64,7 +64,9 @@ export function evaluateSepaRf1(fund, execDate, splitRatio, P, opts = {}) {
     const q1 = previousQuarter(eps, q0, tol);
     const p1 = q1 && byEnd(eps, shift(q1[ROW.END], YEAR_DAYS), tol);
     let g1 = null;
-    if (q1 && p1 && p1 !== q1 && q1[ROW.DERIVED] !== 1 && p1[ROW.DERIVED] !== 1) {
+    // abgeleitetes Q4 wie in der eingefrorenen Pruefung: nur ueber einen Split hinweg unzulaessig (Review N1)
+    const derivedAcrossSplit = (r) => r[ROW.DERIVED] === 1 && !(Math.abs((safeRatio(splitRatio, r[ROW.COMPONENTS_FROM], r[ROW.FILED]) ?? NaN) - 1) <= 1e-9);
+    if (q1 && p1 && p1 !== q1 && !derivedAcrossSplit(q1) && !derivedAcrossSplit(p1)) {
       const sr1 = safeRatio(splitRatio, p1[ROW.FILED], q1[ROW.FILED]);
       if (sr1 !== null) g1 = swingGrowth(q1[ROW.VALUE], p1[ROW.VALUE] / sr1);
     }

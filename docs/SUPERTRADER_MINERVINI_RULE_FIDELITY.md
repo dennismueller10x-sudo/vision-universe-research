@@ -16,14 +16,14 @@ Leitfrage: Ist der Recall von 3/15 niedrig, weil Minervinis Regeln falsch formal
 | Ist die Basis-Mindestlänge falsch? | **Nein.** Die 3-Wochen-Untergrenze ist quellenbelegt. Falsch zugeordnet ist nur die Obergrenze (45 statt 60 Wochen) |
 | GAAP oder bereinigt? | **Nicht entscheidbar.** Keine Primäraussage gefunden; bereinigte Zahlen stehen nicht in den öffentlichen PIT-Daten; die fortgeführte GAAP-Zahl ändert bei den 7 Fällen nichts |
 | Fidelity vorher/nachher | Regel MR-SEPA-10: **LOW → LOW** (Teilkorrektur). Bereich Fundamental: **LOW → LOW** (strukturell festgelegt), Bereich Einstieg: **LOW → LOW**. Eine Replikation darf weiter nicht behauptet werden |
-| Entscheidung | **NOT_FEASIBLE_FROM_PUBLIC_RULES** (vorab registriertes Label): Replikation nicht möglich; die öffentlich reproduzierbare Teilmenge ist abgebildet, deckt aber nur etwa jeden fünften seiner dokumentierten Käufe ab (Abschnitt 7) |
+| Entscheidung | **NOT_FEASIBLE_FROM_PUBLIC_RULES** (vorab registriertes Label): Replikation nicht möglich; die öffentlich reproduzierbare Teilmenge ist **nur teilweise** abgebildet (Power Play, Cheat, Obergrenze 60 Wochen, zweites Turnaround-Quartal fehlen) und deckt aber nur etwa jeden fünften seiner dokumentierten Käufe ab (Abschnitt 7) |
 
 Der Befund beantwortet die Leitfrage mit **„überwiegend weder noch“**: Es ist nicht die Formalisierung der vorhandenen Regeln, die den Recall drückt (ein Fehler gefunden und teilweise korrigiert, ohne Wirkung auf die 15 Fälle). Es ist auch nicht allein Diskretion: Drei Fälle sind Datenlücken, und eine Klasse (Power Play, Cheat-Einstiege) ist in den Quellen belegt, aber **nicht umgesetzt**. Ob sie die Lücke schließen würde, ist **nicht gemessen** (Abschnitt 8).
 
 ## 1. Methode
 
 1. **Quelle zuerst.** Jede Regel wurde gegen wörtliche Zitate geprüft (`MINERVINI-RULE-FIDELITY-SOURCES.json`, Zitate zeichengenau gegen die abgerufenen Seiten verifiziert, Seiten per SHA-256 festgehalten).
-2. **Schriftliche Hypothese und erwartete Fallwirkung vor dem Test.** `MINERVINI-RULE-FIDELITY-PREREG.json` (H1–H5) wurde committet, bevor die neue Version ausgewertet wurde. Der Nachtrag A1 (zwei Präzisierungen der Klausel) entstand vor dem ersten Lauf und ändert keine Vorhersage. Der Nachtrag A2 entstand nach dem Review und vor dem Neulauf (T-B entfällt).
+2. **Schriftliche Hypothese und erwartete Fallwirkung vor dem Test.** `MINERVINI-RULE-FIDELITY-PREREG.json` (H1–H5) wurde committet, bevor die neue Version ausgewertet wurde. Der Nachtrag A1 (drei Präzisierungen der Klausel) entstand vor dem ersten Lauf und ändert keine Vorhersage. Der Nachtrag A2 entstand nach dem Review (T-B entfällt); dass er vor dem Neulauf entstand, ist durch git nicht belegbar (gleicher Commit), das Ergebnis auf den Fällen ändert sich dadurch nicht.
 3. **Eigene Version.** Die Forschungsversion umhüllt die eingefrorene `evaluateSepa` und greift nur bei MR-SEPA-10. Jeder andere Pfad ist bitgleich 1.1.0 (getestet). Es entsteht **kein neuer Parameter**.
 4. **Regression.** 13 Tests (`minervini-rule-fidelity.test.mjs`) inkl. Nachweis, dass die eingefrorenen Dateien unverändert sind.
 5. **Ground Truth nur als Validierung.** Die Fälle wurden nie zur Parameterwahl benutzt. Der Recall war kein Erfolgskriterium.
@@ -57,7 +57,7 @@ Der Befund beantwortet die Leitfrage mit **„überwiegend weder noch“**: Es i
 - **T-A (Wende):** Vorjahres-EPS ≤ 0 und aktuelles EPS > 0. Die Verbesserung gegenüber |Basis| liegt dann über 100 %.
 - Der zweite Zweig des Buchs („TTM-EPS auf/über dem Altgipfel“, **T-B**) war in der ersten Fassung enthalten und **entfällt nach dem Review**: Er wurde nur bei einem Verlustquartal geprüft und ließ damit ausschließlich Verlustquartale zu (25 von 25 Zulassungen im Populationstest), was dem „very strong“ des Buchs widerspricht. Mit der Bedingung „aktuelles Quartal im Gewinn“ wäre er neben T-A redundant.
 - Umsatzregel (MR-SEPA-04) bleibt. Die Beschleunigung entfällt im Turnaround-Zweig (V1), weil g₀ auf nichtpositiver Basis nicht definiert ist. Das ist eine VU-Entscheidung: Die Notizen nennen im Turnaround-Abschnitt durchaus „acceleration in the growth rate in the most recent couple of quarters“. Die Variante V2 verlangt sie nach Swing-Konvention (mit Split-Bereinigung). Beide liefern auf den Fällen dasselbe.
-- **Bekannte Lücke:** Im *zweiten* Turnaround-Quartal (Basis von q0 positiv, Basis des Vorquartals ≤ 0) lehnt MR-SEPA-02 weiter mit „Beschleunigung nicht nachweisbar“ ab, in der eingefrorenen Version bei 168 von 375 solchen Ablehnungen im Populationstest. RF1 ist daher eine **Teilkorrektur**; die Fidelity von MR-SEPA-10 bleibt LOW.
+- **Bekannte Lücke:** Im *zweiten* Turnaround-Quartal (Basis von q0 positiv, Basis des Vorquartals ≤ 0) lehnt MR-SEPA-02 weiter mit „Beschleunigung nicht nachweisbar“ ab, in der eingefrorenen Version bei 168 von 375 solchen Ablehnungen (Zählung des Reviewers, nicht im Repo reproduzierbar). RF1 ist daher eine **Teilkorrektur**; die Fidelity von MR-SEPA-10 bleibt LOW.
 
 **Befund 2: Die 7 MAIN-Fälle sind keine Wenden.** Alle sieben sind **Verlust→Verlust**. Ihr aktuelles Quartal ist nicht „very strong“, sondern negativ; unter der q0-Lesart lässt die Klausel keinen durch. Das ist **leseabhängig**: Q-TURN-B verlangt +100 % „in the most recent one or two quarters“. Unter „q0 oder Vorquartal“ erfüllt TNDM das Vorquartal (+0,04 gegen +0,02), bleibt aber an der zu kurzen Basis (7 Sitzungen) gesperrt. Die Turnaround-Passage denkt zudem Unternehmen mit, die noch Verluste schreiben („how long it can last while running in the red“); ob sie Verlust-Verengung einschließt (ACAD, TNDM, SG), sagt die Quelle nicht.
 
@@ -165,7 +165,7 @@ Der Bereich Fundamental bleibt LOW, weil seine Kernregeln (MR-SEPA-07 Überrasch
 Maßstab sind die Schwellen der ursprünglichen Präregistrierung (Recall ≥ 70 % = Fall A, < 40 % = Fall B, überwiegend Ermessen/nicht reproduzierbar = Fall F) und das in dieser Präregistrierung vorab festgelegte Label bei Recall < 40 % und überwiegend nicht öffentlichen Sperren: **NOT_FEASIBLE_FROM_PUBLIC_RULES**.
 
 - **Label: NOT_FEASIBLE_FROM_PUBLIC_RULES.** Eine Minervini-Replikation ist mit öffentlichen Regeln nicht möglich: Kernregeln des Bereichs Fundamental sind nicht öffentlich (Überraschungen, Revisionen, Katalysator), die Bücher sind nicht im Volltext verfügbar, die RS ist proprietär. Das Repo klassifiziert die Forschungsversion weiter als „VU Adaptation – Minervini Canonical (Research)“, Gesamt-Fidelity LOW. Eine „High-Fidelity“-Einstufung ist **nicht** erreicht.
-- **Was erreicht ist:** Die öffentlich reproduzierbare Teilmenge seiner geschriebenen Regeln ist abgebildet. Sie deckt etwa **jeden fünften** seiner dokumentierten Käufe ab (3/15, 2 verschiedene Titel von 14; Intervall 7–45 %): Fall B.
+- **Was erreicht ist:** Die öffentlich reproduzierbare Teilmenge seiner geschriebenen Regeln ist **teilweise** abgebildet; belegte, aber nicht umgesetzt sind Power Play, Cheat, die Obergrenze von 60 Wochen und das zweite Turnaround-Quartal. Die abgebildete Teilmenge deckt etwa **jeden fünften** seiner dokumentierten Käufe ab (3/15, 2 verschiedene Titel von 14; Intervall 7–45 %): Fall B.
 - **Der niedrige Recall ist kein Formalisierungsproblem, das sich quellenbelegt beheben lässt.** Gut die Hälfte der Differenz (7 von 12) sind Aktien ohne Gewinn, für die in den abgerufenen Stellen keine ausdrückliche Eintrittsregel steht.
 - **Offen** ist, ob das belegte, aber nicht umgesetzte Power Play (und teilweise der Cheat) einen Teil der Lücke schließt und ob die Basismessung (Abschnitt 3.2) Fälle fälschlich als „zu kurz“ ausschließt. Beides ist ohne private Kurse **nicht messbar** und die einzige quellenbelegte Ergänzung mit erkennbarem Potenzial.
 
@@ -181,21 +181,21 @@ Fall F trifft zu, soweit „nicht reproduzierbar“ heißt „durch keine abrufb
 
 ## 9. Adversarialer Review
 
-Ein Opus-Review versuchte, die Schlussfolgerungen zu widerlegen (Quellen, Code, Validierungslogik, Klassifikation, Zahlen). **Gehalten haben:** alle 16 Zitate wörtlich mit passenden Hashes; die Fehlzuordnung 45/60/65 Wochen; alle Fallzahlen (EPS, Umsatz, MU/DXCM/AVGO); beide Wilson-Intervalle; die Populationsanteile; die Fidelity-Rechnung; das ±12-Tage-Fenster deckt die ±5-Sitzungen-Toleranz.
+Ein Opus-Review versuchte, die Schlussfolgerungen zu widerlegen (Quellen, Code, Validierungslogik, Klassifikation, Zahlen). **Gehalten haben:** alle 16 Zitate wörtlich mit passenden Hashes; die Fehlzuordnung 45/60/65 Wochen; alle Fallzahlen (EPS, Umsatz, MU/DXCM/AVGO); beide Wilson-Intervalle; die Populationsanteile (vor dem Entfall von T-B: 84/9/7 %, danach 85/9/7 %); die Fidelity-Rechnung; das ±12-Tage-Fenster deckt die ±5-Sitzungen-Toleranz.
 
 | Befund | Schwere | Ergebnis |
 |---|---|---|
 | F1 Bericht behauptete „High-Fidelity … weitgehend erreicht“ gegen die eigene Präregistrierung | HIGH | behoben: Label NOT_FEASIBLE_FROM_PUBLIC_RULES |
 | F2 T-B ließ nur Verlustquartale zu, widersprach Spezifikation und Quelle | HIGH | behoben: T-B entfernt (Nachtrag A2), Regressionstest |
 | F3 Zweites Turnaround-Quartal scheitert an MR-SEPA-02 | HIGH | als Lücke dokumentiert, Test, Fidelity bleibt LOW |
-| F4 TNDM erfüllt „ein oder zwei Quartale“ über das Vorquartal | MEDIUM-HIGH | Lesartabhängigkeit ausgewiesen |
+| F4 TNDM erfüllt „ein oder zwei Quartale“ über das Vorquartal | MEDIUM | Lesartabhängigkeit ausgewiesen |
 | F5 Basislänge ab höchstem Hoch erzeugt „zu kurz“ per Konstruktion | MEDIUM | ausgewiesen (3.2, 10) |
 | F6 „Quellen nennen keine Beschleunigung“ falsch; Turnaround-Passage kennt Verlustunternehmen | MEDIUM | Aussagen abgeschwächt auf „keine ausdrückliche Regel gefunden“ |
 | F7 Vorhersagen waren Folgerungen, „bestätigt“ zu stark | MEDIUM | umbenannt in Konsistenzprüfungen |
 | F8 V2 ohne Split-Bereinigung | LOW | behoben, Test |
 | F9–F12 Bereichsergebnis strukturell; Klassenreihenfolge; Kommentar DKL; AMD doppelt | LOW | ausgewiesen bzw. korrigiert |
 
-Kein CRITICAL-Befund. Unter der Regel der Präregistrierung (kein offener Befund HIGH oder höher) war RF1 vor den Korrekturen **nicht übernahmefähig**. Nach den Korrekturen sind die HIGH-Befunde behoben bzw. als Teilkorrektur dokumentiert; **ein zweiter Review der korrigierten Fassung steht aus.**
+Kein CRITICAL-Befund. Unter der Regel der Präregistrierung (kein offener Befund HIGH oder höher) war RF1 vor den Korrekturen **nicht übernahmefähig**. Nach den Korrekturen sind die HIGH-Befunde behoben bzw. als Teilkorrektur dokumentiert; **ein zweiter Review der korrigierten Fassung fand keine neuen CRITICAL- oder HIGH-Befunde**; seine drei MEDIUM- und fünf LOW-Punkte (u. a. abgeleitetes Q4 in V2, Widersprüche im Wortlaut) sind eingearbeitet. Das Ergebnis ist keine Freigabe für Live, nur für den Status „Forschungsversion“.
 
 ## 10. Grenzen
 

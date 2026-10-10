@@ -144,3 +144,12 @@ test('RF1-T-V2-SPLIT (Review F8): Swing-Wachstum bereinigt die Basis um Splits',
     assert.equal(r.ok, false); assert.equal(r.reason, 'PIT_SPLIT_HISTORY_UNKNOWN');
   }
 });
+
+test('RF1-T-V2-DERIVED-Q4 (Review N1): ein abgeleitetes Vorquartal ohne Split blockiert V2 nicht, ueber einen Split schon', () => {
+  const f = turnaround();
+  const k = f.eps.findIndex((r) => r[0] === '2022-12-31');
+  f.eps[k] = row('2022-12-31', 1.2, 'EarningsPerShareDiluted', { derived: 1, from: filedOf('2022-09-30') });
+  assert.equal(evaluateSepaRf1(f, EXEC, noSplit, P, { acceleration: 'SWING' }).ok, true);
+  const crossing = (from, to) => (from <= filedOf('2022-09-30') && to > filedOf('2022-09-30') ? 2 : 1);
+  assert.equal(evaluateSepaRf1(f, EXEC, crossing, P, { acceleration: 'SWING' }).ok, false);
+});
