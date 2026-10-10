@@ -24,6 +24,15 @@ class SchedulerTests(unittest.TestCase):
     def test_one_bad_source_cooldown_does_not_starve_other_issuers(self):
         a=source(1);a.update(failureCount=5,nextCheck='2026-10-17T00:00:00Z');b=source(2)
         rows,r=source_queue([a,b],{a['companyId']:{}},NOW);self.assertEqual([x['sourceId'] for x in rows],['2'])
+
+    def test_archive_backlog_cannot_starve_current_news_or_events(self):
+        values=[source(i) for i in range(30)]
+        for i,s in enumerate(values):
+            if i>=20:s.update(type='IR_MATERIALS',lastSuccess='2026-01-01T00:00:00Z')
+            elif i>=15:s.update(type='IR_EVENTS',lastSuccess='2026-02-01T00:00:00Z')
+        rows,r=source_queue(values,{values[0]['companyId']:{}},NOW)
+        self.assertEqual([s['type'] for s in rows[:11]],['IR_FEED']*8+['IR_EVENTS']*2+['IR_MATERIALS'])
+        self.assertEqual(len(rows),len(values))
     def test_shared_endpoint_cannot_guess_issuer_ownership(self):
         a=source(1);b=source(1,'iss_cik_0000000002');b['sourceId']='other'
         rows,r=source_queue([a,b],{a['companyId']:{},b['companyId']:{}},NOW);self.assertEqual(rows,[]);self.assertEqual(r['excluded']['ENDPOINT_MULTI_OWNER_CONFLICT'],2)

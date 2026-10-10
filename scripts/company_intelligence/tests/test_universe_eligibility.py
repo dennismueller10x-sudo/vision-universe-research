@@ -35,6 +35,10 @@ class EligibilityTests(unittest.TestCase):
     def test_mapping_conflict_blocks_all_modules(self):
         p=payload();p['news']=[news()];r,v=evaluate(p,[SOURCE],False);self.assertEqual(r['status'],'INELIGIBLE_MAPPING');self.assertIsNone(v)
 
+    def test_operator_disable_never_deletes_private_content_or_disables_other_issuers(self):
+        p=payload();p['news']=[news()];r,v=evaluate(p,[SOURCE],disabled=True);self.assertEqual(r['status'],'INELIGIBLE_OTHER');self.assertIsNone(v);self.assertEqual(len(p['news']),1)
+        r,v=evaluate(p,[SOURCE]);self.assertTrue(r['modules']['aktuelles'])
+
     def test_undated_observed_item_not_current(self):
         p=payload();n=news();n.pop('publishedDate');n['observedAt']=NOW;p['news']=[n];r,v=evaluate(p,[SOURCE]);self.assertEqual(r['status'],'INELIGIBLE_NO_SAFE_CONTENT')
 

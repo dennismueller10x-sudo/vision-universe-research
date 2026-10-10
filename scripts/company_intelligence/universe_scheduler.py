@@ -89,10 +89,19 @@ def source_queue(sources, companies, now):
         if due_at>now:continue
         due[tier]+=1
         queued.append({**s,'intervalHours':hours,'refreshTier':tier,'dueAt':due_at})
-    # Interleave tiers within an oldest-due ordering. A hot news lane cannot
-    # permanently starve already overdue events/materials.
-    queued.sort(key=lambda s:(s['dueAt'],s.get('lastChecked') or '',s['sourceId']))
-    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded)}
+    # A historical material backlog must not consume the entire current-news
+    # deadline. Weighted fair scheduling still advances every nonempty tier.
+    buckets=defaultdict(list)
+    for s in queued:buckets[s['refreshTier']].append(s)
+    for values in buckets.values():
+        values.sort(key=lambda s:(s['companyId'] not in CANARIES,s['dueAt'],s.get('lastChecked') or '',s['sourceId']))
+    pattern=['NEWS_4H']*8+['EVENTS_8H']*2+['MATERIALS_24H','DORMANT_NEWS_24H']
+    queued=[];positions=defaultdict(int)
+    while any(positions[k]<len(v) for k,v in buckets.items()):
+        for k in pattern:
+            i=positions[k]
+            if i<len(buckets[k]):queued.append(buckets[k][i]);positions[k]+=1
+    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded),'fairQueuePattern':pattern}
 
 def sec_queue(store, companies, now, limit=80):
     """Bounded metadata repair queue with permanent canaries; cursor is private.

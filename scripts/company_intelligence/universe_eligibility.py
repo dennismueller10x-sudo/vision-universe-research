@@ -117,9 +117,12 @@ def financial_summary(value, cid, now):
     return f, 'STALE' if f['stale'] else 'CURRENT'
 
 
-def evaluate(raw, sources, mapping_ok=True):
+def evaluate(raw, sources, mapping_ok=True, disabled=False):
     cid = raw.get('companyId', '')
     row = {'issuer': cid, 'status': 'INELIGIBLE_OTHER', 'modules': {k: False for k in MODULES}, 'reasons': [], 'moduleReasons': {}}
+    if disabled:
+        row['reasons']=['OPERATOR_DISABLED_ISSUER']
+        return row, None
     if (not mapping_ok or not ID.fullmatch(cid) or not raw.get('listings') or not raw.get('companyName')):
         row.update(status='INELIGIBLE_MAPPING', reasons=['UNRESOLVED_OR_CONFLICTING_MASTER_MAPPING'])
         return row, None
@@ -215,6 +218,8 @@ def evaluate(raw, sources, mapping_ok=True):
 def generate(store, companies, output, now, current_companies=None):
     """Only public-safe eligible bytes; all failures classified in audit evidence."""
     output = Path(output)
+    disabled=set(json.loads((Path(__file__).resolve().parents[2]/'company-intelligence/config/universe-rollout.json').read_text()).get('disabledIssuers',[]))
+    if any(not isinstance(cid,str) or not ID.fullmatch(cid) for cid in disabled):raise ValueError('INVALID_ISSUER_DISABLE_CONFIGURATION')
     sources = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
     by_source = defaultdict(list)
     for s in sources:
@@ -247,7 +252,7 @@ def generate(store, companies, output, now, current_companies=None):
         if official.get('status') in ('CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS'):
             issuer_sources = []
         try:
-            row, value = evaluate(raw, issuer_sources, mapping_ok)
+            row, value = evaluate(raw, issuer_sources, mapping_ok, cid in disabled)
         except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
             row, value = {'issuer': cid, 'status': 'INELIGIBLE_CONSUMER_INVALID', 'modules': {k: False for k in MODULES},
                           'reasons': ['CONSUMER_PROJECTION_INVALID'], 'moduleReasons': {}}, None
