@@ -11,7 +11,7 @@ Authoritative private R2 CURRENT: `85ebdc8c1ff855929a828f38`, checkpoint SHA-256
 | Inventory | Count |
 |---|---:|
 | Private issuers / payloads | 5,120 / 5,120 |
-| Historical private securities/listings | 6,416 |
+| Historical/current listings across the identity inventory | 6,416 |
 | Current Company Master issuers | 6,073 |
 | Combined identity inventory | 6,079 |
 | Identities without private payload | 959 |
@@ -19,6 +19,8 @@ Authoritative private R2 CURRENT: `85ebdc8c1ff855929a828f38`, checkpoint SHA-256
 | ELIGIBLE_FULL | 1,356 |
 | ELIGIBLE_PARTIAL | 3,433 |
 | Private ineligible issuers | 331 |
+
+The legacy audit field `privateListingCount=6416` included master-only identities. PR #584 corrects this read-only reporting denominator and adds exact private/current-private listings and private profile/financial/source classifications. The next fresh release receipt supplies those counts; 6,416 is not claimed as private-only coverage.
 
 Private exclusions: mapping **2**, source policy **97**, too stale **9**, no safe meaningful content **223**; data invalid, consumer invalid and other **0**. The wider identity audit has **23** mapping failures and **1,161** no-content failures; these include the 959 identity-only records and must not be added to private coverage. Conflict examples CTGG/CTHH (CIK 68622) and TPTS (CIK 1674356) remain quarantined.
 
