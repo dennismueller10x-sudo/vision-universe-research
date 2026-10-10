@@ -22,7 +22,7 @@ export async function download(driver,{namespace,output,now=Date.now()}){
   if(i>0&&asset==='index.json')return;
   const result=await readAsset(view,{namespace,asset,now});
   if(result.generation!==m.generation)throw Error('GENERATION_CHANGED_DURING_DOWNLOAD');
-  files.set(asset,result.bytes);total+=result.bytes.length;if(total>128*1024*1024)throw Error('PUBLIC_EXPORT_BUDGET_EXCEEDED');
+  files.set(asset,result.bytes);total+=result.bytes.length;if(total>(current.scope==='PER_ISSUER_ELIGIBILITY'?256:128)*1024*1024)throw Error('PUBLIC_EXPORT_BUDGET_EXCEEDED');
  });
  const finalPointer=await driver.get(prefix+'manifest.json');
  if(!finalPointer||!Buffer.from(finalPointer).equals(Buffer.from(pinned.get(prefix+'manifest.json'))))throw Error('GENERATION_CHANGED_DURING_DOWNLOAD');

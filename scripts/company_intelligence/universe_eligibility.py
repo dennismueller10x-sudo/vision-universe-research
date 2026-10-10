@@ -96,15 +96,19 @@ def financial_summary(value, cid, now):
                 m['yoy' if comparison != 'previousQuarter' else 'qoq'] = None
         metrics[key] = m
     ends = [m['current']['periodEnd'] for m in metrics.values() if m['current'].get('periodEnd')]
-    if not metrics or not ends or not DISPLAY_METRICS.intersection(metrics):
+    if not metrics or not ends:
         return {'state': 'UNAVAILABLE', 'reason': 'NO_VALID_NORMALIZED_METRICS'}, 'NORMALIZATION_OR_UNIT_INVALID'
+    if not DISPLAY_METRICS.intersection(metrics):
+        return {'state': 'UNAVAILABLE', 'reason': 'NO_SUPPORTED_DISPLAY_METRICS'}, 'NO_SUPPORTED_DISPLAY_METRICS'
     end = max(ends)
     if f.get('reportingPeriod') and f['reportingPeriod'] != end:
         return {'state': 'UNAVAILABLE', 'reason': 'FINANCIAL_PERIOD_MISMATCH'}, 'FISCAL_PERIOD_INVALID'
     # No mixed reporting periods in one KPI card.
     metrics = {k: m for k, m in metrics.items() if not m['current'].get('periodEnd') or m['current']['periodEnd'] == end}
+    if end < (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=730)).date().isoformat():
+        return {'state': 'UNAVAILABLE', 'reason': 'FINANCIAL_PERIOD_OVER_TWO_YEARS_OLD'}, 'TOO_STALE'
     f.update(metrics=metrics, reportingPeriod=end, stale=bool(f.get('stale')) or end < (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=180)).date().isoformat())
-    f['whatChanged'] = [c for c in f.get('whatChanged', []) if (c.get('metric') in metrics or c.get('metric') == 'revenue_growth' and 'revenue' in metrics)
+    f['whatChanged'] = [c for c in f.get('whatChanged', []) if (c.get('metric') in DISPLAY_METRICS and c.get('metric') in metrics or c.get('metric') == 'revenue_growth' and 'revenue' in metrics)
                         and all(number(c.get(k)) for k in ('previous', 'current', 'absolute'))
                         and c.get('comparison') in ('YEAR_AGO_QUARTER', 'PREVIOUS_YEAR', 'PREVIOUS_QUARTER_YOY_GROWTH')
                         and c.get('filingIds') and all(ACCESSION.fullmatch(str(a)) for a in c['filingIds'])]
@@ -126,7 +130,7 @@ def evaluate(raw, sources, mapping_ok=True):
     p = project(safe)
     p['state'] = 'AVAILABLE'
     profile = p.get('companyProfile')
-    if profile and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
+    if profile and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b\d+[\d.,]*\s+(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
         row['modules']['profile'] = True
     else:
         p.pop('companyProfile', None)
@@ -185,6 +189,8 @@ def evaluate(raw, sources, mapping_ok=True):
         row.update(status='INELIGIBLE_SOURCE_POLICY' if excluded else 'INELIGIBLE_NO_SAFE_CONTENT', reasons=['NO_MEANINGFUL_APPROVED_MODULE'])
         if financial_state not in ('NO_SUPPORTED_DATA', 'CURRENT', 'STALE'):
             row.update(status='INELIGIBLE_DATA_INVALID', reasons=[financial_state])
+        if financial_state == 'TOO_STALE':
+            row.update(status='INELIGIBLE_TOO_STALE', reasons=['ONLY_FINANCIALS_OVER_TWO_YEARS_OLD'])
         if profile and profile.get('stale') and not excluded:
             row.update(status='INELIGIBLE_TOO_STALE', reasons=['ONLY_STALE_PROFILE'])
         return row, None
@@ -195,7 +201,7 @@ def evaluate(raw, sources, mapping_ok=True):
     return row, p
 
 
-def generate(store, companies, output, now):
+def generate(store, companies, output, now, current_companies=None):
     """Only public-safe eligible bytes; all failures classified in audit evidence."""
     output = Path(output)
     sources = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
@@ -203,6 +209,8 @@ def generate(store, companies, output, now):
     for s in sources:
         by_source[s.get('companyId')].append(s)
     ticker_owners, instrument_owners = defaultdict(set), defaultdict(set)
+    current_companies = companies if current_companies is None else current_companies
+    current_listings = {(cid,l['instrumentId'],l['symbol']) for cid,c in current_companies.items() for l in c['listings']}
     for cid, c in companies.items():
         for l in c['listings']:
             ticker_owners[l['symbol']].add(cid)
@@ -215,7 +223,8 @@ def generate(store, companies, output, now):
         raw_counts['newsIssuers'] += bool(raw['news'])
         raw_counts['callsIssuers'] += bool(raw['calls'])
         raw_counts['materialsIssuers'] += bool(raw['materials'])
-        mapping_ok = all(len(ticker_owners[l['symbol']]) == 1 and len(instrument_owners[l['instrumentId']]) == 1 for l in c['listings'])
+        mapping_ok = all(len(ticker_owners[l['symbol']]) == 1 and len(instrument_owners[l['instrumentId']]) == 1
+                         and (cid,l['instrumentId'],l['symbol']) in current_listings for l in c['listings'])
         # A conflicting official root cannot authorize first-party material;
         # independently proven SEC content can still be eligible.
         official = store.state('officialSite:' + cid, {})
@@ -267,6 +276,15 @@ def generate(store, companies, output, now):
               'activeSourcesByType': dict(Counter(s.get('type') for s in sources if s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url')))),
               'sourceHealth': dict(Counter('BROKEN' if s.get('lastError') and any(x in s['lastError'] for x in ('404','410')) else 'TEMPORARY_FAILURE' if s.get('failureCount') else 'STALE' if (s.get('lastSuccess') or '') < (datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(days=7)).isoformat().replace('+00:00','Z') else 'HEALTHY' for s in sources)),
               'consumerBytes': sum(v['bytes'] for v in assets.values()), 'consumerAssets': len(assets), 'privateOperationalRowsIncluded': False}
+    report['moduleFailureClasses'] = dict(Counter(reason for r in rows.values() for reason in r.get('moduleReasons',{}).values()))
+    report['ledgerInventory'] = {
+        'newsRecords': store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0],
+        'newsIssuers': store.db.execute("SELECT count(DISTINCT company) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0],
+        'eventsByType': {r[0]:r[1] for r in store.db.execute('SELECT kind,count(*) FROM events GROUP BY kind')},
+        'auditRecords': store.db.execute('SELECT count(*) FROM audit').fetchone()[0],
+        'eventAliasRecords': store.db.execute('SELECT count(*) FROM event_alias').fetchone()[0],
+        'sourceRecords': len(sources),
+        'operationalStateRecords': store.db.execute('SELECT count(*) FROM state').fetchone()[0]}
     public_eligibility = {cid: {k: rows[cid][k] for k in ('status','modules','tickers')} for cid in sorted(values)}
     manifest = {'schema': 1, 'generation': digest, 'generatedAt': now, 'assets': assets, 'tickers': sorted(members), 'sourceUsagePolicy': POLICY,
                 'scope': 'PER_ISSUER_ELIGIBILITY', 'eligibilityVersion': VERSION, 'eligibility': public_eligibility, 'releaseState': 'REVIEW_ONLY'}

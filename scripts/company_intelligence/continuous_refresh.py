@@ -26,7 +26,7 @@ from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.checkpoint import check_db
 from company_intelligence.feeds import parse_feed
 from company_intelligence.earnings import summary,valid_date
-from company_intelligence.model import ACCESSION
+from company_intelligence.model import ACCESSION, load_universe
 
 def advance_financial_filing(store,company,pipeline,now,budget,provider=None,builder=None):
     """One companyfacts request only for a genuinely unseen periodic filing.
@@ -112,15 +112,20 @@ class CheckedHTTP(PublicHTTP):
                 except ValueError as e: raise SourceError('PARSE_INVALID_JSON') from e
         return response
 
-def refresh(state,identity_root,consumer,evidence,now=None,network=True,financial=False,http=None):
+def refresh(state,identity_root,consumer,evidence,now=None,network=True,financial=False,http=None,universe=False):
     state,consumer=Path(state),Path(consumer); config=settings()
+    universe_config=json.loads((ROOT/'company-intelligence/config/universe-rollout.json').read_text())
+    if universe: config={**config,**{k:universe_config[k] for k in ('publicRequestBudget','publicMaxSeconds','secRequestBudget','secMaxSeconds')}}
     if not (state/'state.sqlite').is_file(): raise ValueError('FULL_RESTORED_LEDGER_REQUIRED')
     now=now or datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
     started=time.monotonic(); lock=(state/'run.lock').open('a')
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     store=Store(state/'state.sqlite')
     try:
-        companies=identities(identity_root,store); selected=cohort(companies); cids=sorted(selected)
+        companies=identities(identity_root,store)
+        current=load_universe(ROOT) if universe else companies
+        selected={cid:c for cid,c in companies.items() if cid in current and c['names'] and c['listings']==current[cid]['listings']} if universe else cohort(companies)
+        cids=sorted(selected)
         before=outside_proof(store.db,cids); prior=store.state('continuousRefresh',{})
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
         prior_events=store.db.execute('SELECT count(*) FROM events').fetchone()[0]
@@ -132,9 +137,13 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         # Oldest successes first prevents repeatedly spending the whole budget on
         # rich issuers. News precedes slower documents; no global publisher feeds.
         eligible.sort(key=lambda s:(s['type']=='IR_MATERIALS',s.get('lastSuccess') or '',s['sourceId']))
+        scheduler={}
+        if universe:
+            from company_intelligence.universe_scheduler import source_queue
+            eligible,scheduler=source_queue(sources,selected,now)
         for s in eligible:
             if not network: break
-            hours=config['newsHours'] if s['type']=='IR_FEED' else config['eventsHours'] if s['type']=='IR_EVENTS' else config['materialsHours']
+            hours=s.get('intervalHours') if universe else config['newsHours'] if s['type']=='IR_FEED' else config['eventsHours'] if s['type']=='IR_EVENTS' else config['materialsHours']
             old=store.state('refreshSource:'+s['sourceId'],{})
             # Preserve error cooldowns; successful old 6/12-hour cadence becomes 4/8.
             due_at=s.get('nextCheck') if s.get('failureCount') else advance(s['lastSuccess'],hours) if s.get('lastSuccess') else ''
@@ -160,6 +169,11 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         sec=Pipeline(ROOT,companies,store,sec_http,now); sec_checked=0; sec_success=0; consecutive=0; financial_updates=0; fact_outcomes=Counter();fact_attempts=0
         sec_exhausted=False
         ordered=sorted(selected.items(),key=lambda pair:store.state('financialRefresh:'+pair[0],{}).get('lastAttempt') or '')
+        sec_schedule={};sec_feed={}
+        if universe:
+            from company_intelligence.universe_scheduler import poll_sec_hints,sec_queue
+            if network:sec_feed=poll_sec_hints(store,selected,sec,now,config['secRequestBudget'])
+            ordered,sec_schedule=sec_queue(store,selected,now,universe_config['secIssuerBudget'])
         for cid,c in ordered:
             if not network and not financial: break
             old_fin=deepcopy(store.state('financials:'+cid)); old_profile=deepcopy(store.state('companyProfile:'+cid))
@@ -172,6 +186,10 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 except BudgetExhausted: sec_exhausted=True
                 else:
                     sec_checked+=1; failed=sec.run['secFailures']>failures
+                    if universe:
+                        store.set_state('universeSecCheck:'+cid,{'lastAttempt':now,'lastSuccess':now if not failed else store.state('universeSecCheck:'+cid,{}).get('lastSuccess')})
+                        if not failed:
+                            pending=store.state('universeSecPending',{});pending.pop(cid,None);store.set_state('universeSecPending',pending)
                     consecutive=consecutive+1 if failed else 0; sec_success+=not failed
             # Local SEC consumer financial projection remains independent of a
             # submission outage/cooldown; it never downloads companyfacts here.
@@ -202,20 +220,30 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         if outside_proof(store.db,cids)!=before: raise ValueError('NON_COHORT_PRIVATE_CONTENT_CHANGED')
         exported=store.export(companies,state/'public/company-intelligence/data',now)
         if exported['exportedCompanies']<config['minimumPrivateCompanies']: raise ValueError('FULL_PRIVATE_UNIVERSE_SHRINK')
-        spec=importlib.util.spec_from_file_location('refresh_consumer',ROOT/'scripts/company_intelligence/prepare-public.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-        golden=json.loads((ROOT/'docs/company-intelligence/full-data-consumer-manifest.json').read_text())
-        prepared=module.prepare(state/'public/company-intelligence/data',consumer,[*golden['tickers']],[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')])
-        manifest=json.loads((consumer/'manifest.json').read_text()); inventory={}; profiles=0
-        for cid in selected:
-            value=json.loads((consumer/f'snapshots/{manifest["generation"]}/{cid}.json').read_text())
-            german=value.get('companyProfile',{}).get('language')=='de'; profiles+=german
-            inventory[cid]={'tickers':json.loads((ROOT/'docs/company-intelligence/full-data-release-candidate.json').read_text())['inventory'][cid]['tickers'],
-                            'germanProfile':german,'financials':value['latestFinancials']['state'],'staleFinancials':value['latestFinancials'].get('stale',False),'news':len(value['news'])}
-        if profiles!=45: raise ValueError('GERMAN_PROFILE_REGRESSION')
+        if universe:
+            from company_intelligence.universe_eligibility import generate
+            eligibility_report,eligibility=generate(store,companies,consumer,now,current)
+            manifest=json.loads((consumer/'manifest.json').read_text())
+            prepared={'generation':manifest['generation']}
+            inventory={cid:{**r,'germanProfile':r['modules']['profile'],'financials':'AVAILABLE' if r['modules']['financials'] else 'UNAVAILABLE','news':r.get('news',{}).get('retained180',0)} for cid,r in eligibility['issuers'].items() if r['status'].startswith('ELIGIBLE_')}
+            atomic_json(consumer.parent/'eligibility-audit.json',eligibility_report)
+            atomic_json(consumer.parent/'eligibility-decisions.json',eligibility)
+            profiles=eligibility_report['moduleCounts']['profile']
+        else:
+            spec=importlib.util.spec_from_file_location('refresh_consumer',ROOT/'scripts/company_intelligence/prepare-public.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+            golden=json.loads((ROOT/'docs/company-intelligence/full-data-consumer-manifest.json').read_text())
+            prepared=module.prepare(state/'public/company-intelligence/data',consumer,[*golden['tickers']],[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')])
+            manifest=json.loads((consumer/'manifest.json').read_text()); inventory={}; profiles=0
+            for cid in selected:
+                value=json.loads((consumer/f'snapshots/{manifest["generation"]}/{cid}.json').read_text())
+                german=value.get('companyProfile',{}).get('language')=='de'; profiles+=german
+                inventory[cid]={'tickers':json.loads((ROOT/'docs/company-intelligence/full-data-release-candidate.json').read_text())['inventory'][cid]['tickers'],
+                                'germanProfile':german,'financials':value['latestFinancials']['state'],'staleFinancials':value['latestFinancials'].get('stale',False),'news':len(value['news'])}
+            if profiles!=45: raise ValueError('GERMAN_PROFILE_REGRESSION')
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
-        report={'schema':1,'status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
+        report={'schema':1,'scope':'PER_ISSUER_ELIGIBILITY' if universe else 'CONTROLLED_COHORT','status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
                 'consumerGeneration':prepared['generation'],'privateCompanies':exported['exportedCompanies'],'sourcesEligible':len(eligible),'sourcesChecked':checked,
-                'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
+                'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
                 'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,
@@ -234,9 +262,14 @@ def reproduce(state,identity_root,consumer,evidence):
         if proof!=expected['privateIntegrity']: raise ValueError('FRESH_PRIVATE_TABLE_HASH_MISMATCH')
         exported=store.export(identities(identity_root,store),state/'public/company-intelligence/data',expected['asOf'])
         if exported['generation']!=expected['sourceGeneration']: raise ValueError('FRESH_PRIVATE_GENERATION_MISMATCH')
-        spec=importlib.util.spec_from_file_location('refresh_reproduce',ROOT/'scripts/company_intelligence/prepare-public.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-        golden=json.loads((ROOT/'docs/company-intelligence/full-data-consumer-manifest.json').read_text())
-        result=module.prepare(state/'public/company-intelligence/data',consumer,golden['tickers'],[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')])
+        if expected.get('scope')=='PER_ISSUER_ELIGIBILITY':
+            from company_intelligence.universe_eligibility import generate
+            report,_=generate(store,identities(identity_root,store),consumer,expected['asOf'],load_universe(ROOT))
+            result={'generation':report['generation'],'companies':report['eligibleIssuerCount']}
+        else:
+            spec=importlib.util.spec_from_file_location('refresh_reproduce',ROOT/'scripts/company_intelligence/prepare-public.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+            golden=json.loads((ROOT/'docs/company-intelligence/full-data-consumer-manifest.json').read_text())
+            result=module.prepare(state/'public/company-intelligence/data',consumer,golden['tickers'],[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')])
         if result['generation']!=expected['consumerGeneration']: raise ValueError('FRESH_CONSUMER_GENERATION_MISMATCH')
         return {'status':'PASS','privateTableHashesReproduced':True,'privateCompanies':exported['exportedCompanies'],**result}
     finally: store.close()
@@ -245,6 +278,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('state','identity-root','consumer','evidence'): p.add_argument('--'+k,required=True,type=Path)
     p.add_argument('--offline',action='store_true'); p.add_argument('--financial',action='store_true')
-    p.add_argument('--reproduce',action='store_true')
-    a=p.parse_args(); r=reproduce(a.state,a.identity_root,a.consumer,a.evidence) if a.reproduce else refresh(a.state,a.identity_root,a.consumer,a.evidence,network=not a.offline,financial=a.financial)
+    p.add_argument('--reproduce',action='store_true'); p.add_argument('--universe',action='store_true')
+    a=p.parse_args(); r=reproduce(a.state,a.identity_root,a.consumer,a.evidence) if a.reproduce else refresh(a.state,a.identity_root,a.consumer,a.evidence,network=not a.offline,financial=a.financial,universe=a.universe)
     print(json.dumps({k:v for k,v in r.items() if k not in ('privateIntegrity','inventory','run')}))
