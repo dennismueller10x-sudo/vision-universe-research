@@ -296,7 +296,8 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          diese Zelle mit verschiedenen Werten zeigen (je Klassenpaar; Forestar,
 #          IBKR, Mobiquity). Kein Quartal aus zwei Klassen abgeleitet, kein
 #          TTM ueber zwei getrennte Klassen (klassenrein neu gelesen oder
-#          TTM_CONCEPT_MISMATCH).
+#          TTM_CONCEPT_MISMATCH; Eigentuemerklasse zuerst, Klassen-Fassung
+#          auch aus der Nebenmeldung derselben Einreichung - Markel, AMCOL).
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -334,7 +335,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "034d4c46101b7a468322fee9ad8e98f708d9cbe6e9991c912b50d3c27174fef8"
+    "db6f320ce9dca33ce3b7e880ed343e7b4ac7f80489d4a5edab178eb85b80fcfc"
 )
 
 

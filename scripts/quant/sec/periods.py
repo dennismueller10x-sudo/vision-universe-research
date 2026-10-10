@@ -106,6 +106,16 @@ def _same_quarter(a, b):
     return abs((date.fromisoformat(str(a.period_end)[:10]) - date.fromisoformat(str(b.period_end)[:10])).days) <= 7
 
 
+def _in_class(observation, wanted):
+    """The observation read in economic class `wanted` (itself or a same-filing alternate), or None."""
+    if economic_class(observation.provenance.concept) == wanted:
+        return observation
+    for concept, (taxonomy, value) in sorted(_alternates(observation).items()):
+        if economic_class(concept) == wanted:
+            return _as_concept(observation, taxonomy, concept, value)
+    return None
+
+
 def _as_concept(observation, taxonomy, concept, value):
     """The same filing's cell, read under another concept it also reported."""
     return Observation(
@@ -600,17 +610,22 @@ class PeriodResolver:
 
     def _window_in_one_class(self, metric, quarters, as_of, policy, lag_days, observations):
         """The window's reported quarters re-read within one economic class every quarter has at as_of, or None."""
-        for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations}):
+        # Owners' net income first, as for a single cell (Markel TTM Q1 2020).
+        for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations},
+                             key=lambda name: (name != "primary", name)):
             chosen = []
             for (fiscal_year, index, obs) in quarters:
                 timeline = self.factbook.get(metric, fiscal_year, f"Q{index}")
                 if timeline is None or (obs.provenance.transformation or TRANSFORM_NONE) != TRANSFORM_NONE:
                     break
+                # A filing that reported the class only next to the stored concept
+                # still is a version of it (AMCOL 2011: restated ProfitLoss beside
+                # NetIncomeLoss in the 10-K 2013, not the 10-K 2012's older one).
                 found = timeline.resolve(as_of=as_of, policy=policy, lag_days=lag_days,
-                                         accept=lambda o, c=wanted: economic_class(o.provenance.concept) == c)
+                                         accept=lambda o, c=wanted: _in_class(o, c) is not None)
                 if found is None or not _same_quarter(found, obs):
                     break
-                chosen.append(found)
+                chosen.append(_in_class(found, wanted))
             if len(chosen) == len(observations):
                 return chosen
         return None

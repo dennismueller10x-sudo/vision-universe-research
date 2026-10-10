@@ -188,6 +188,25 @@ class FTTM7CellIdentityTests(unittest.TestCase):
         fact = resolver.ttm("net_income", "2012-05-20")
         self.assertTrue(fact.available, fact.reason)
 
+    def test_one_class_reading_prefers_owners_net_income(self):
+        # Markel (CIK 1096343), TTM Q1 2020: Q4 2019 nur noch als ProfitLoss restated (10-K 0001096343-21-000032),
+        # Q2 2019 zeigt NetIncomeLoss 497.298.000 neben ProfitLoss 506.483.000. Klassenrein in der Eigentuemerklasse =
+        # SEC-Summe NetIncomeLoss -1.405.763.000 + 511.104.000 + 205.637.000 + 497.298.000.
+        _, calendar, _, resolver = build("MKL20")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2020-03-31"),
+                                   calendar.quarter_index("2020-03-31"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, -191724000.0, delta=1)
+
+    def test_one_class_reading_uses_the_newest_filing_that_reported_the_class(self):
+        # AMCOL (CIK 813621), TTM Q2 2011 klassenrein ProfitLoss: Q1/Q2 2011 = 13.100.000 aus dem 10-K
+        # 0001140361-13-016072 (dort neben NetIncomeLoss), nicht 12.237.000/13.757.000 aus dem 10-K 2012.
+        _, calendar, _, resolver = build("ACO11")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2011-06-30"),
+                                   calendar.quarter_index("2011-06-30"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, 17307000.0 - 9448000.0 + 13100000.0 + 13100000.0, delta=1)
+
     def test_same_period_restatement_still_replaces(self):
         # Gleicher Zeitraum, gleiches Konzept: Entest 10-Q 2016-04-13 restated YTD2 2015 0,00 -> -0,01.
         obs = resolved("ENTEST", "eps_diluted", "2015-02-28", "YTD2")
