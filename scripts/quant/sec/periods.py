@@ -25,7 +25,7 @@ from .model import (
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, TTM_BASIS_MIXED, missing,
 )
 from .registry import KIND_INSTANT
-from .restatements import POLICY_AS_OF_LATEST, Observation, to_instant
+from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, Observation, economic_class, to_instant
 
 LOGGER = logging.getLogger("vu.sec.periods")
 
@@ -61,11 +61,6 @@ TTM_CONCEPT_TOLERANCE = 0.005
 TTM_SHARE_BASIS_JUMP = 1.5
 # Je-Aktie-Konzepte der fortgefuehrten Bereiche. Gesamt-EPS (inkl. aufgegebener
 # Bereiche) und fortgefuehrtes EPS sind verschiedene Groessen (Capital Southwest).
-CONTINUING_PER_SHARE = frozenset((
-    "IncomeLossFromContinuingOperationsPerDilutedShare",
-    "IncomeLossFromContinuingOperationsPerBasicShare",
-    "IncomeLossFromContinuingOperationsPerBasicAndDilutedShare",
-))
 # 1.23.0 (M-2): a contradiction between two filings of a TTM window is a change of
 # reporting basis when it is material: more than 10 % of the value and more than
 # 1 % of the largest value both filings share (near zero, relative noise is no basis).
@@ -102,6 +97,13 @@ def _alternates(observation):
         except ValueError:
             continue
     return out
+
+
+def _same_quarter(a, b):
+    """Two observations of the same reported quarter (ends within a week)."""
+    if not a.period_end or not b.period_end:
+        return False
+    return abs((date.fromisoformat(str(a.period_end)[:10]) - date.fromisoformat(str(b.period_end)[:10])).days) <= 7
 
 
 def _as_concept(observation, taxonomy, concept, value):
@@ -312,6 +314,13 @@ class PeriodResolver:
                     if not shared:
                         # No shared concept and no evidence of a difference.
                         shared = concepts_of(current) | concepts_of(previous)
+                # 1.23.0 (F-TTM-7, red team HIGH-1): a difference of two economic
+                # classes is no quarter (Interactive Brokers Q4 2013: owners' FY net
+                # income 37.0 million minus nine months of consolidated profit
+                # including non-controlling interests).
+                if {economic_class(c) for c in concepts_of(current)} != \
+                        {economic_class(c) for c in concepts_of(previous)}:
+                    continue
                 transformation = TRANSFORM_FY_MINUS_YTD if index == 4 else TRANSFORM_YTD_DIFF
                 natives[index] = _combine(
                     [current, previous], current.value - previous.value,
@@ -529,6 +538,28 @@ class PeriodResolver:
         concepts = {obs.provenance.concept for obs in observations}
         if len(concepts) == 1:
             return observations, None, []
+        # 1.23.0 (F-TTM-7, red team HIGH-1): one economic class per window, as for
+        # EPS. Owners' net income next to consolidated profit including NCI is not
+        # one sum (Interactive Brokers 2014, Amplify 2014, Seaboard 2020): read the
+        # window in one concept every quarter's filing reported, otherwise no TTM.
+        if len({economic_class(concept) for concept in concepts}) > 1 and \
+                not self._classes_shown_equal(metric, observations, concepts):
+            same_class = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
+            if same_class is not None:
+                return same_class, None, ["TTM_CLASS_ALIGNED"]
+            for rule in definition.concepts:
+                aligned = []
+                for obs in observations:
+                    if obs.provenance.concept == rule.concept:
+                        aligned.append(obs)
+                        continue
+                    alternate = _alternates(obs).get(rule.concept)
+                    if alternate is None:
+                        break
+                    aligned.append(_as_concept(obs, alternate[0], rule.concept, alternate[1]))
+                if len(aligned) == len(observations):
+                    return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
+            return observations, TTM_CONCEPT_MISMATCH, []
         differ = False
         for obs in observations:
             for concept, (_, value) in _alternates(obs).items():
@@ -550,6 +581,54 @@ class PeriodResolver:
                 return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
         return observations, TTM_CONCEPT_MISMATCH, []
 
+    def _classes_shown_equal(self, metric, observations, concepts):
+        """True if, for this filer, a filing of the window reports every two classes' concepts
+        for one period with the same value (no preferred dividends, no NCI: Simpson's Q4 2018
+        income available to common equals its net income)."""
+        index = self._filing_periods(metric)
+        accessions = {obs.accession for obs in observations if obs.accession}
+        by_class = {}
+        for concept in concepts:
+            by_class.setdefault(economic_class(concept), set()).add(concept)
+        classes = sorted(by_class)
+        for k, first in enumerate(classes):
+            for second in classes[k + 1:]:
+                shown = False
+                for accession in accessions:
+                    values = index.get(accession, {})
+                    for (concept, start, end), value in values.items():
+                        if concept not in by_class[first]:
+                            continue
+                        for other in by_class[second]:
+                            twin = values.get((other, start, end))
+                            if twin is not None and abs(twin - value) <= TTM_CONCEPT_TOLERANCE * max(abs(value), 1.0):
+                                shown = True
+                                break
+                        if shown:
+                            break
+                    if shown:
+                        break
+                if not shown:
+                    return False
+        return True
+
+    def _window_in_one_class(self, metric, quarters, as_of, policy, lag_days, observations):
+        """The window's reported quarters re-read within one economic class every quarter has at as_of, or None."""
+        for wanted in sorted({economic_class(obs.provenance.concept) for obs in observations}):
+            chosen = []
+            for (fiscal_year, index, obs) in quarters:
+                timeline = self.factbook.get(metric, fiscal_year, f"Q{index}")
+                if timeline is None or (obs.provenance.transformation or TRANSFORM_NONE) != TRANSFORM_NONE:
+                    break
+                found = timeline.resolve(as_of=as_of, policy=policy, lag_days=lag_days,
+                                         accept=lambda o, c=wanted: economic_class(o.provenance.concept) == c)
+                if found is None or not _same_quarter(found, obs):
+                    break
+                chosen.append(found)
+            if len(chosen) == len(observations):
+                return chosen
+        return None
+
     def _filing_periods(self, metric):
         """accession -> {(concept, start, end): value} of every observation of `metric`."""
         if metric not in self._periods_by_filing:
@@ -559,8 +638,12 @@ class PeriodResolver:
                     continue
                 for obs in timeline.observations:
                     if obs.accession and obs.period_end:
-                        key = (obs.provenance.concept, str(obs.period_start or "")[:10], str(obs.period_end)[:10])
-                        index.setdefault(obs.accession, {})[key] = obs.value
+                        start, end = str(obs.period_start or "")[:10], str(obs.period_end)[:10]
+                        values = index.setdefault(obs.accession, {})
+                        values[(obs.provenance.concept, start, end)] = obs.value
+                        # the other concepts the same filing reported for the same cell
+                        for concept, (_, value) in _alternates(obs).items():
+                            values.setdefault((concept, start, end), value)
             self._periods_by_filing[metric] = index
         return self._periods_by_filing[metric]
 
@@ -568,11 +651,15 @@ class PeriodResolver:
         # Same concept, same period: a different concept is no contradiction (Murphy
         # Oil: Revenues next to contract revenue). A per-share value is compared
         # through the filings' net income - a split restates EPS, not the business
-        # (ClearSign, Piper Sandler; the share-basis guard handles splits).
+        # (ClearSign, Piper Sandler; the share-basis guard handles splits). Only the
+        # window's own quarters: a restatement of another quarter (Enventis 10-K 2013,
+        # Q3 2011) or a mistagged comparative year in a 10-Q (Simpson 2019: "2018"
+        # net income 101.2 vs 126.6 million) says nothing about this window's basis.
         # Material only: rounding to a tenth of a million (Murphy 73.036 vs 73.0) or a
         # small correction (Neogen 9.881 vs 9.934) is the same basis; a predecessor's
         # quarter is another business (Dawson 25.7 vs 50.8 million).
         index = self._filing_periods("net_income" if self._definition(metric).is_per_share else metric)
+        quarters = {(str(obs.period_start or "")[:10], str(obs.period_end or "")[:10]) for obs in observations}
         filings = sorted({(obs.available_instant, obs.accession) for obs in observations if obs.accession},
                          key=lambda item: (item[0] is None, item[0], item[1]))
         for k, (newer_when, newer) in enumerate(filings):
@@ -581,7 +668,8 @@ class PeriodResolver:
                     continue
                 older_periods = index.get(older, {})
                 shared = [(value, older_periods[period]) for period, value in index.get(newer, {}).items()
-                          if period in older_periods and value is not None and older_periods[period] is not None]
+                          if period in older_periods and value is not None and older_periods[period] is not None
+                          and (period[1], period[2]) in quarters]
                 if not shared:
                     continue
                 scale = max(max(abs(a), abs(b)) for a, b in shared) or 1.0

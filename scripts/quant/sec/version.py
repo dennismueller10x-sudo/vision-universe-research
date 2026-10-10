@@ -330,7 +330,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "038ab06bd888ab0dfeedbcf4bb44c9f6d1d8dffff5bba70447096f3eedd14590"
+    "594654a954234772922fcca3942b21012a5087230526c561315ff62037650251"
 )
 
 

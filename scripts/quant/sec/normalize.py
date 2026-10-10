@@ -27,8 +27,7 @@ from .model import (
     UNIT_MISMATCH, PERIOD_MISMATCH,
 )
 from .registry import KIND_DURATION, KIND_INSTANT
-from .periods import CONTINUING_PER_SHARE
-from .restatements import CompanyFactBook, Observation, to_instant
+from .restatements import CompanyFactBook, Observation
 from .version import NORMALIZATION_SCHEMA_VERSION, NORMALIZATION_LOGIC_VERSION
 
 LOGGER = logging.getLogger("vu.sec.normalize")
@@ -70,26 +69,14 @@ AMBIGUOUS_PERIOD_DAYS = 7
 #    available by the transition report count (point in time, R2-2); a cell
 #    whose regular reports disagree on the period (F-TTM-7) is none.
 TRANSITION_PERIOD_TOLERANCE_DAYS = 7
-# 1.23.0 (F-TTM-7): one cell, one period, one economic concept. A cumulative
-# value (YTD2, YTD3, FY) begins at the fiscal-year start (within this many
-# days); anything else is another period, not a version of the cell.
-CUMULATIVE_PERIODS = ("YTD2", "YTD3", "FY")
-CUMULATIVE_START_TOLERANCE_DAYS = 7
-ISSUE_PERIOD_CONFLICT = "PERIOD_CONFLICT"
-ISSUE_CONCEPT_CLASS_CONFLICT = "CONCEPT_CLASS_CONFLICT"
-# Economic concepts that are not versions of each other although one metric maps
-# them: total vs. continuing-operations EPS, owners' net income vs. consolidated
-# profit including non-controlling interests vs. income available to common.
-# (Forestar Q4 2017: NetIncomeLoss -17.6M, later filings only ProfitLoss -15.6M.)
-ECONOMIC_CLASS = {
-    **{concept: "continuing_operations" for concept in CONTINUING_PER_SHARE},
-    "ProfitLoss": "consolidated_including_nci",
-    "NetIncomeLossAvailableToCommonStockholdersBasic": "available_to_common",
-}
-
-
-def economic_class(concept):
-    return ECONOMIC_CLASS.get(concept, "primary")
+# 1.23.0 (F-TTM-7): every observation carries its fit to the fiscal-calendar slot
+# of its cell (days off the expected start and end); restatements.preferred()
+# chooses among visible versions by economic class, then fit, then recency.
+# Nothing is dropped here: a rule that fixed the cell by its first publication
+# locked misplaced first periods (Eco-Tek, HC2) and let accession order decide
+# same-instant conflicts (Moxian) - red team 1.23.0. A start rule for cumulative
+# cells was dropped too: calendar gaps and first fiscal years from inception are
+# real fiscal periods.
 
 # Which concept is a filing's revenue line when us-gaap:Revenues is smaller
 # than another revenue concept of the same cell? Decided from the filing
@@ -252,6 +239,17 @@ def _expected_period(calendar, end, fiscal_period):
     return (previous if index == 1 else ends[index - 2]) + timedelta(days=1), ends[index - 1]
 
 
+def _slot_fit(calendar, fact, fiscal_period):
+    """Days between the fact's period and the period the calendar expects for its cell (None if unknown)."""
+    expected = _expected_period(calendar, fact.end, fiscal_period)
+    if expected is None:
+        return None
+    off = abs((_parse(fact.end) - expected[1]).days)
+    if fact.start:
+        off += abs((_parse(fact.start) - expected[0]).days)
+    return off
+
+
 def _same_period(start, end, other_start, other_end, tolerance=TRANSITION_PERIOD_TOLERANCE_DAYS):
     if abs((_parse(end) - _parse(other_end)).days) > tolerance:
         return False
@@ -360,18 +358,6 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                 unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
                 continue
 
-            if not is_cover_date and fact.start and fiscal_period in CUMULATIVE_PERIODS:
-                previous, _ = calendar._boundaries_covering(fact.end)
-                if previous is None or abs((_parse(fact.start) - previous).days - 1) > CUMULATIVE_START_TOLERANCE_DAYS:
-                    # 1.23.0 (F-TTM-7): six months that do not begin at the fiscal-year
-                    # start are no YTD2 (Entest 10-Q 2015: December-May next to
-                    # September-February; Simpson 10-Q 2014: April-December as YTD3).
-                    issues.append(_issue(ISSUE_PERIOD_CONFLICT, fact,
-                                         "cumulative period does not begin at the fiscal-year start",
-                                         metric=metric_name))
-                    unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
-                    continue
-
             if fact.form in TRANSITION_FORMS:
                 deferred.append((metric_name, priority, fact, fiscal_year, fiscal_period, definition,
                                  is_cover_date))
@@ -432,7 +418,6 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
 
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
     registry_version = registry.version
-    pending = defaultdict(list)
 
     for (metric_name, fiscal_year, fiscal_period, accession), entries in candidates.items():
         # One filing placing two different periods into one cell (VF Corp 10-K
@@ -524,24 +509,10 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             flags=flags + _alternate_flags(fact, rivals),
             period_start=fact.start,
             period_end=period_end,
+            fit=0 if fact.taxonomy == "dei" and fact.start is None else _slot_fit(calendar, fact, fiscal_period),
         )
-        pending[(metric_name, fiscal_year, fiscal_period)].append(observation)
+        factbook.add_observation(metric_name, fiscal_year, fiscal_period, observation)
         stats["mapped"] += 1
-
-    # 1.23.0 (F-TTM-7): a cell's period and economic concept are fixed by its first
-    # publication. A later filing that reports another period (Novus Robotics Q3
-    # 2011: June-August, after the reverse merger July-September of another
-    # business) or another economic concept (Forestar: ProfitLoss after
-    # NetIncomeLoss) is not a version of the cell and no longer replaces it by
-    # recency. Point in time: the identity is known when the cell is first known.
-    for (metric_name, fiscal_year, fiscal_period), observations in pending.items():
-        kept, ambiguous_from = _consistent_cell(observations, issues, cik, metric_name, unplaced)
-        if ambiguous_from:
-            # two filings published at the same instant disagree on the cell's
-            # period: which one defines it is unknown (same-day policy, 1.20.0)
-            factbook.mark_ambiguous(metric_name, fiscal_year, fiscal_period, ambiguous_from)
-        for observation in kept:
-            factbook.add_observation(metric_name, fiscal_year, fiscal_period, observation)
 
     for metric_name, period_end, available in unplaced:
         factbook.note_unplaced(metric_name, period_end, available)
@@ -549,37 +520,6 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     stats["issues"] = len(issues)
     LOGGER.info("normalized cik=%s %s", cik, stats)
     return NormalizationResult(factbook, issues, stats)
-
-
-def _consistent_cell(observations, issues, cik, metric_name, unplaced):
-    """The observations of one cell that share its first publication's period and economic concept."""
-    ordered = sorted(observations, key=lambda obs: (obs.available_instant or to_instant("9999-12-31"),
-                                                    obs.accession or ""))
-    measured = [obs for obs in ordered if FLAG_COVER_DATE_INSTANT not in obs.flags]
-    first = measured[0] if measured else ordered[0]
-    identity_class = economic_class(first.provenance.concept)
-    ambiguous_from = None
-    if any(obs.available_instant == first.available_instant and not _same_period(
-            obs.period_start, obs.period_end, first.period_start, first.period_end) for obs in measured):
-        ambiguous_from = first.filed
-    kept = []
-    for obs in ordered:
-        if FLAG_COVER_DATE_INSTANT not in obs.flags and obs is not first and not _same_period(
-                obs.period_start, obs.period_end, first.period_start, first.period_end):
-            issues.append({"code": ISSUE_PERIOD_CONFLICT, "metric": metric_name, "cik": cik,
-                           "concept": obs.provenance.concept, "start": obs.period_start, "end": obs.period_end,
-                           "accession": obs.accession, "form": obs.form, "filed": obs.filed,
-                           "message": f"cell first published for {first.period_start}..{first.period_end}"})
-            unplaced.append((metric_name, obs.period_end, obs.available_from or obs.filed))
-            continue
-        if economic_class(obs.provenance.concept) != identity_class:
-            issues.append({"code": ISSUE_CONCEPT_CLASS_CONFLICT, "metric": metric_name, "cik": cik,
-                           "concept": obs.provenance.concept, "start": obs.period_start, "end": obs.period_end,
-                           "accession": obs.accession, "form": obs.form, "filed": obs.filed,
-                           "message": f"cell first published as {first.provenance.concept}"})
-            continue
-        kept.append(obs)
-    return kept, ambiguous_from
 
 
 def _issue(code, fact, message, metric=None):

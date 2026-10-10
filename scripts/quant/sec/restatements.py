@@ -45,6 +45,56 @@ RESTATEMENT_RELATIVE_TOLERANCE = 1e-9
 # ist dieselbe Angabe; ein EPS mit zwei Nachkommastellen muss gleich sein).
 SAME_DAY_CONFLICT_TOLERANCE = 1e-4
 
+# 1.23.0 (F-TTM-7): one cell, one period, one economic concept - chosen at
+# resolution time from what is visible at as_of, never by recency alone.
+#  1. Economic class: the metric's primary concept before another class (total
+#     vs. continuing-operations EPS; owners' net income vs. consolidated profit
+#     including non-controlling interests vs. income available to common).
+#     Forestar Q4 2017: NetIncomeLoss, later filings only ProfitLoss; BRT: the
+#     reverse order.
+#  2. Period: among visible versions reporting different periods for the cell,
+#     the one that fits the fiscal-calendar slot best (Observation.fit, days off
+#     the expected start and end). Novus Robotics Q3 2011, Entest YTD2 2015.
+#  3. Then the newest version of that period, same-day rule as before.
+CONTINUING_PER_SHARE = frozenset((
+    "IncomeLossFromContinuingOperationsPerDilutedShare",
+    "IncomeLossFromContinuingOperationsPerBasicShare",
+    "IncomeLossFromContinuingOperationsPerBasicAndDilutedShare",
+))
+ECONOMIC_CLASS = {
+    **{concept: "continuing_operations" for concept in CONTINUING_PER_SHARE},
+    "ProfitLoss": "consolidated_including_nci",
+    "NetIncomeLossAvailableToCommonStockholdersBasic": "available_to_common",
+}
+SAME_PERIOD_DAYS = 7
+
+
+def economic_class(concept):
+    return ECONOMIC_CLASS.get(concept, "primary")
+
+
+def _same_period(a, b):
+    def day(value):
+        return date.fromisoformat(str(value)[:10]) if value else None
+    if a.period_end is None or b.period_end is None:
+        return a.period_end == b.period_end
+    if abs((day(a.period_end) - day(b.period_end)).days) > SAME_PERIOD_DAYS:
+        return False
+    if a.period_start is None or b.period_start is None:
+        return a.period_start is None and b.period_start is None
+    return abs((day(a.period_start) - day(b.period_start)).days) <= SAME_PERIOD_DAYS
+
+
+def preferred(candidates):
+    """The candidates of the cell's economic class and best-fitting period, in their order."""
+    if not candidates:
+        return candidates
+    primary = [obs for obs in candidates if economic_class(obs.provenance.concept) == "primary"]
+    if primary:
+        candidates = primary
+    best = min(candidates, key=lambda obs: obs.fit if obs.fit is not None else 0)
+    return [obs for obs in candidates if _same_period(obs, best)]
+
 
 def to_instant(value, end_of_day=False):
     """Normalize a date/datetime/ISO string to an aware UTC datetime.
@@ -75,10 +125,10 @@ class Observation:
     """One reported value for one (metric, period) cell, with its provenance."""
 
     __slots__ = ("value", "unit", "provenance", "available_from", "filed",
-                 "quality", "flags", "period_start", "period_end")
+                 "quality", "flags", "period_start", "period_end", "fit")
 
     def __init__(self, value, unit, provenance, available_from, filed,
-                 quality=QUALITY_HIGH, flags=None, period_start=None, period_end=None):
+                 quality=QUALITY_HIGH, flags=None, period_start=None, period_end=None, fit=None):
         self.value = value
         self.unit = unit
         self.provenance = provenance
@@ -88,6 +138,8 @@ class Observation:
         self.flags = list(flags or [])
         self.period_start = period_start
         self.period_end = period_end
+        # days between this period and the fiscal-calendar slot of its cell (1.23.0)
+        self.fit = fit
 
     @property
     def available_instant(self):
@@ -119,6 +171,7 @@ class Observation:
             "flags": list(self.flags),
             "period_start": self.period_start,
             "period_end": self.period_end,
+            "fit": self.fit,
             "provenance": self.provenance.to_dict(),
         }
 
@@ -163,8 +216,8 @@ class FactTimeline:
         return [obs for obs in self.observations
                 if obs.available_instant is not None and obs.available_instant <= cutoff]
 
-    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0):
-        """Return the observation a consumer is allowed to see at as_of."""
+    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0, accept=None):
+        """Return the observation a consumer is allowed to see at as_of (optionally only those `accept` admits)."""
         if policy not in POLICIES:
             raise ValueError(f"unknown restatement policy: {policy}")
         if policy == POLICY_LATEST_KNOWN:
@@ -173,8 +226,11 @@ class FactTimeline:
             if as_of is None:
                 raise ValueError(f"policy {policy} requires an as_of date")
             candidates = self.visible(as_of, lag_days=lag_days)
+        if accept is not None:
+            candidates = [obs for obs in candidates if accept(obs)]
         if not candidates:
             return None
+        candidates = preferred(candidates)
 
         if policy == POLICY_ORIGINAL:
             chosen = candidates[0]
@@ -199,7 +255,7 @@ class FactTimeline:
             value=chosen.value, unit=chosen.unit, provenance=chosen.provenance,
             available_from=chosen.available_from, filed=chosen.filed,
             quality=quality, flags=flags,
-            period_start=chosen.period_start, period_end=chosen.period_end,
+            period_start=chosen.period_start, period_end=chosen.period_end, fit=chosen.fit,
         )
 
     @staticmethod

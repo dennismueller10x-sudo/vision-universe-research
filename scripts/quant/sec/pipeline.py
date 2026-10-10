@@ -510,7 +510,7 @@ def _rehydrate(document):
                     provenance=provenance, available_from=observation["available_from"],
                     filed=observation["filed"], quality=observation["quality"],
                     flags=observation["flags"], period_start=observation["period_start"],
-                    period_end=observation["period_end"],
+                    period_end=observation["period_end"], fit=observation.get("fit"),
                 ),
             )
     return factbook
