@@ -1,12 +1,45 @@
 {
-  "checkedAt": "2026-10-09",
-  "targetHosting": "Cloudflare Pages, separate Git integration from same repository",
-  "projectCreated": false,
-  "pagesDevUrl": null,
-  "domainsAttached": [],
-  "dnsChanges": [],
+  "checkedAt": "2026-10-10",
+  "projectName": "vision-universe",
+  "projectCreatedBy": "manual owner setup; verified with read-only API",
+  "pagesDevUrl": "https://vision-universe.pages.dev",
+  "canonicalUrl": "https://www.visionuniverse.de/",
+  "domains": {
+    "www.visionuniverse.de": {
+      "ownerReportedStatus": "Active",
+      "pagesInventoryIncludesDomain": true,
+      "httpsStatus": 200
+    },
+    "visionuniverse.de": {
+      "httpsStatus": 301,
+      "redirectTarget": "https://www.visionuniverse.de/",
+      "pathAndQueryVerified": true,
+      "pagesInventoryIncludesDomain": false
+    }
+  },
+  "git": {
+    "owner": "dennismueller10x-sudo",
+    "repository": "vision-universe-research",
+    "productionBranch": "main",
+    "rootDirectory": "landing",
+    "buildCommand": "node scripts/build.mjs",
+    "outputDirectory": "dist",
+    "nodeVersion": {
+      "value": "22",
+      "evidence": "owner configuration; not independently retrieved from provider environment"
+    },
+    "successfulPagesCheckCommit": "dc454c7d8982cc5a36545c1d9013bf7d0d827fd1",
+    "successfulPagesCheckId": 114236632634
+  },
+  "changesByAgent": {
+    "projectsCreated": 0,
+    "providerConfigurationChanges": 0,
+    "dnsChanges": [],
+    "brevoChanges": 0,
+    "shopifySubscriptionChanges": 0
+  },
   "accessAudit": {
-    "run": 37958646123,
+    "run": 38060753594,
     "pagesRead": "PASS",
     "zoneRead": "PASS",
     "activeZoneInSameAccount": true,
@@ -14,30 +47,52 @@
       "status": 403,
       "code": 10000
     },
-    "completeDnsBaseline": false
-  },
-  "projectAttempt": {
-    "run": 37959370219,
-    "status": 401,
-    "code": 8000011,
-    "githubAuthorization": "NOT_CONFIRMED",
-    "pagesWrite": "NOT_CONFIRMED"
+    "completeDnsBaseline": false,
+    "pagesDnsRedirectWritePermissions": "NOT_TESTED; manual setup does not prove API write permission"
   },
   "research": {
+    "hosting": "GitHub Pages",
     "githubPagesCname": "research.visionuniverse.de",
-    "workflow": "pages-release.yml unchanged",
-    "httpsStatus": 200
+    "httpsStatus": 200,
+    "accessGatePresent": true,
+    "homeResponseSha256": "7d734dbdfc8610be975a9e895641fdb3e0bb0d17c3cb26b2667e9b3d3842013f"
   },
-  "newsletter": "BLOCKED, no forms/lists/submission or Brevo mutation",
-  "publicationGate": "Production blocked until the concrete Cloudflare privacy text is verified and approved",
-  "coreBaseline": {
-    "mainCommit": "5d6aa260558fdd0422d07b26038cc383142c86ee",
-    "newsTest": "REPRODUCED_ON_MAIN",
-    "errors": [
-      "SPCX / TMUS / VZ / T: NOT_IN_COMPANY_MASTER",
-      "DVN / CRGY: NOT_IN_COMPANY_MASTER",
-      "SLYG: NOT_IN_COMPANY_MASTER"
+  "protectedPublicDnsSample": {
+    "queries": 14,
+    "unchangedSince20261009": 14,
+    "completeZoneExport": false
+  },
+  "newsletter": "BLOCKED; no action, disabled controls, no test submission or Brevo mutation",
+  "publication": {
+    "publiclyReachable": true,
+    "observedBuildOutputMode": "preview",
+    "metaRobots": "noindex, nofollow",
+    "headerRobots": "noindex, nofollow",
+    "robotsTxt": "Disallow: /",
+    "approvedPrivacyLive": false,
+    "privacyLiveTitle": "Datenschutzhinweise zur Vorschau – Vision Universe",
+    "providerPublicationModeVariable": "NOT_CONFIRMED; output is consistent with default or explicit preview mode",
+    "productionGate": "Still enforced only when production mode is selected; not a domain publication guard"
+  },
+  "browser": {
+    "desktopHeight": 1191,
+    "iphoneHeight": 1684,
+    "horizontalOverflow": false,
+    "axeViolations": 0,
+    "researchStyleGroupsMatching": 17,
+    "networkErrorsPresent": true,
+    "networkFindings": [
+      "/assets/site-navigation.css returns HTML",
+      "/assets/site-navigation.js returns HTML"
     ],
-    "gatesChanged": false
-  }
+    "device": "Chromium iPhone viewport, not physical Safari"
+  },
+  "openPoints": [
+    "Verify and publish account-specific Cloudflare privacy text",
+    "Switch explicitly to production only after privacy review; recheck robots and sitemap",
+    "Resolve landing-only invalid site-navigation references without copying protected Research functionality",
+    "DNS-read access needed for complete origin/mail audit",
+    "Build watch paths and preview branch policy remain unverified"
+  ],
+  "evidenceDirectory": "verification-2026-10-10"
 }

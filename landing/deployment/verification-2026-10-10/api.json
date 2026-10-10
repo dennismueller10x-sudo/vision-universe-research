@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-10T14:43:42.727Z",
+  "readOnly": true,
+  "run": 38060753594,
+  "checks": [
+    {
+      "label": "Pages-Projekte lesen",
+      "status": 200,
+      "ok": true,
+      "errorCodes": []
+    },
+    {
+      "label": "Zone lesen",
+      "status": 200,
+      "ok": true,
+      "errorCodes": []
+    },
+    {
+      "label": "DNS lesen, Seite 1",
+      "status": 403,
+      "ok": false,
+      "errorCodes": [
+        10000
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "vision-universe",
+      "subdomain": "vision-universe.pages.dev",
+      "productionBranch": "main",
+      "buildConfig": {
+        "root_dir": "landing",
+        "build_command": "node scripts/build.mjs",
+        "destination_dir": "dist"
+      },
+      "source": {
+        "type": "github",
+        "owner": "dennismueller10x-sudo",
+        "repo": "vision-universe-research"
+      },
+      "domains": [
+        "vision-universe.pages.dev",
+        "www.visionuniverse.de"
+      ]
+    }
+  ],
+  "zone": {
+    "name": "visionuniverse.de",
+    "status": "active",
+    "accountMatches": true,
+    "recordsComplete": false,
+    "protectedSha256": null
+  }
+}
