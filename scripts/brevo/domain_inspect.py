@@ -20,15 +20,19 @@ def inspect(client):
     if config is None:
         return {"operation":"audit", "domain_registered":False, "emails_sent":0, "dns_changes":0}
     records = config.get("dns_records") or {}
-    names = [name if name in RECORD_NAMES else "withheld" for name in records]
     safe = {}
     for name, record in records.items():
-        if name not in RECORD_NAMES or not isinstance(record, dict): continue
+        # New Brevo accounts return two CNAME records and a null legacy TXT DKIM.
+        # Preserve exact provider-supplied labels privately, never log raw field names.
+        if record is None: continue
+        if not isinstance(record, dict) or record.get("type") not in ("TXT", "CNAME") or not (
+                isinstance(record.get("host_name"), str) and isinstance(record.get("value"), str)):
+            raise Blocked("DNS-Eintrag hat kein bestätigtes TXT/CNAME-Format.")
         safe[name] = {k:record[k] for k in ("host_name","type","value","status") if k in record}
     private = {"domain":DOMAIN, "verified":config.get("verified") is True,
                "authenticated":config.get("authenticated") is True, "dns_records":safe}
     return {"operation":"audit", "domain_registered":True, "verified":private["verified"],
-            "authenticated":private["authenticated"], "dns_record_names":names,
+            "authenticated":private["authenticated"], "dns_records_received":len(safe),
             "sealed_dns_configuration":seal(private), "emails_sent":0, "dns_changes":0}
 
 

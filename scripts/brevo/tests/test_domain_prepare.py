@@ -9,10 +9,27 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from domain_prepare import DOMAIN, DomainPreparation, prepare_domain, seal
+from domain_inspect import ReadOnlyDomain, inspect
 from prepare import Blocked
 
 
 class DomainTests(unittest.TestCase):
+    def test_readonly_inspection_handles_cname_records_and_null_legacy_dkim(self):
+        config={"verified":False, "authenticated":False, "dns_records":{
+            "dkim_record":None, "modern_dkim_1":{"type":"CNAME","host_name":"one._domainkey", "value":"synthetic.example.invalid", "status":False},
+            "modern_dkim_2":{"type":"CNAME","host_name":"two._domainkey", "value":"synthetic.example.invalid", "status":False}}}
+        class Fake:
+            def call(self, method, path, missing=False):
+                self_test.assertEqual(method,"GET"); return config
+        self_test=self
+        with patch("domain_inspect.seal", return_value={"sealed":True}) as encrypt:
+            result=inspect(Fake())
+        self.assertEqual(result["dns_records_received"],2)
+        self.assertNotIn("synthetic.example.invalid",json.dumps(result))
+        self.assertEqual(len(encrypt.call_args.args[0]["dns_records"]),2)
+        with patch.dict("os.environ", {"BREVO_API_KEY":"synthetic-only"}):
+            with self.assertRaises(Blocked): ReadOnlyDomain().call("POST","/senders/domains",{"name":DOMAIN})
+
     def test_write_scope_excludes_sends_contacts_authentication_and_other_domains(self):
         with patch.dict("os.environ", {"BREVO_API_KEY": "synthetic-only"}):
             c = DomainPreparation()
