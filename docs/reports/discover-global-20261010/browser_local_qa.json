@@ -1,0 +1,4980 @@
+{
+  "schema": "vu-discover-global-local-qa-1",
+  "codeCommit": "94f5e5042ce2bc83ad2306626da98467bda486bc",
+  "dataCommit": "993f4eaf937530c601ef78fe892484724209aeb8",
+  "qaHelperSha256": "4deb2bc84b19509f0eef3bad4024a12d830fd96979fc6f9731b3e88c64e1343a",
+  "physicalIPhoneTested": false,
+  "realBrowserIPhoneEmulation": true,
+  "providerRequests": 0,
+  "reports": [
+    {
+      "schema": "vu-discover-global-browser-1",
+      "scenario": "chromium-desktop",
+      "browserVersion": "151.0.7922.173",
+      "iPhoneEmulation": false,
+      "sourceCommit": null,
+      "search": [
+        {
+          "query": "Allianz",
+          "region": "EUROPE",
+          "id": "ref_ALV_DE_XETR",
+          "firstResult": "ALV.DE\nA\nAllianz SE\nALV.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Rheinmetall",
+          "region": "EUROPE",
+          "id": "ref_RHM_DE_XETR",
+          "firstResult": "RHM.DE\nR\nRheinmetall Aktiengesellschaft\nRHM.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "adesso",
+          "region": "EUROPE",
+          "id": "ref_ADN1_DE_XETR",
+          "firstResult": "ADN1.DE\nA\nadesso SE\nADN1.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "HelloFresh",
+          "region": "EUROPE",
+          "id": "ref_HFG_DE_XETR",
+          "firstResult": "HFG.DE\nH\nHelloFresh SE\nHFG.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "2G Energy",
+          "region": "EUROPE",
+          "id": "ref_2GB_DE_XETR",
+          "firstResult": "2GB.DE\n2\n2G Energy AG\n2GB.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "SAP",
+          "region": "EUROPE",
+          "id": "ref_SAP_DE_XETR",
+          "firstResult": "SAP.DE\nSAP SE\nSAP.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Siemens",
+          "region": "EUROPE",
+          "id": "ref_SIE_DE_XETR",
+          "firstResult": "SIE.DE\nS\nSiemens Aktiengesellschaft\nSIE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Deutsche Telekom",
+          "region": "EUROPE",
+          "id": "ref_DTE_DE_XETR",
+          "firstResult": "DTE.DE\nD\nDEUTSCHE TELEKOM AG\nDTE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "ASML",
+          "region": "EUROPE",
+          "id": "ref_ASML_AS_XAMS",
+          "firstResult": "ASML.AS\nASML Holding N.V.\nASML.AS · XAMS",
+          "passed": true
+        },
+        {
+          "query": "LVMH",
+          "region": "EUROPE",
+          "id": "ref_MC_PA_XPAR",
+          "firstResult": "MC.PA\nL\nLVMH MOET HENNESSY LOUIS VUITTON\nMC.PA · XPAR",
+          "passed": true
+        },
+        {
+          "query": "NVIDIA",
+          "region": "US_REAL",
+          "id": "NVDA",
+          "firstResult": "NVDA\nNVIDIA\nNVDA · Chips für KI und Grafik · am Jahreshoch\n+28 %",
+          "passed": true
+        },
+        {
+          "query": "Palantir",
+          "region": "US_REAL",
+          "id": "PLTR",
+          "firstResult": "PLTR\nPalantir Technologies Class A\nPLTR\n+11,0 %",
+          "passed": true
+        },
+        {
+          "query": "Tesla",
+          "region": "US_REAL",
+          "id": "TSLA",
+          "firstResult": "TSLA\nTesla\nTSLA · Elektroautos und Batteriespeicher\n−11,4 %",
+          "passed": true
+        }
+      ],
+      "details": [
+        {
+          "id": "ref_ALV_DE_XETR",
+          "name": "Allianz SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_RHM_DE_XETR",
+          "name": "Rheinmetall Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ADN1_DE_XETR",
+          "name": "adesso SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_HFG_DE_XETR",
+          "name": "HelloFresh SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_2GB_DE_XETR",
+          "name": "2G Energy AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SAP_DE_XETR",
+          "name": "SAP SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SIE_DE_XETR",
+          "name": "Siemens Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_DTE_DE_XETR",
+          "name": "DEUTSCHE TELEKOM AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ASML_AS_XAMS",
+          "name": "ASML Holding N.V.",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_MC_PA_XPAR",
+          "name": "LVMH MOET HENNESSY LOUIS VUITTON",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "NVDA",
+          "name": "NVIDIA",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "PLTR",
+          "name": "Palantir Technologies Class A",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "TSLA",
+          "name": "Tesla",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        }
+      ],
+      "accessibility": [
+        {
+          "flow": "global-home",
+          "violations": []
+        },
+        {
+          "flow": "2g-max",
+          "violations": []
+        },
+        {
+          "flow": "global-watchlist",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-dark",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-light",
+          "violations": []
+        }
+      ],
+      "ranges": [
+        {
+          "label": "1M",
+          "dates": "08.09.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3M",
+          "dates": "09.07.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "6M",
+          "dates": "30.04.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "1J",
+          "dates": "08.10.2025 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3J",
+          "dates": "09.10.2023 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "5J",
+          "dates": "08.10.2021 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "MAX",
+          "dates": "04.01.2010 – 09.10.2026 · Tagesschlusskurse · unbereinigt · logarithmische Kursachse"
+        }
+      ],
+      "homeLongSeriesRequests": 0,
+      "homeResources": [
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 377,
+          "durationMs": 1146
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 34585,
+          "durationMs": 228
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 134527,
+          "durationMs": 332
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 8182,
+          "durationMs": 327
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 19474,
+          "durationMs": 364
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 41449,
+          "durationMs": 370
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 7612,
+          "durationMs": 387
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 33617,
+          "durationMs": 388
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 136097,
+          "durationMs": 407
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 6967,
+          "durationMs": 405
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 47114,
+          "durationMs": 449
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 3746,
+          "durationMs": 469
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 24636,
+          "durationMs": 470
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 15703,
+          "durationMs": 465
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 14973,
+          "durationMs": 470
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 8218,
+          "durationMs": 469
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 3724,
+          "durationMs": 466
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 25676,
+          "durationMs": 474
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 38996,
+          "durationMs": 487
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 16608,
+          "durationMs": 479
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 9128,
+          "durationMs": 475
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 14079,
+          "durationMs": 494
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 13855,
+          "durationMs": 492
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 16740,
+          "durationMs": 501
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 8162,
+          "durationMs": 500
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 6026,
+          "durationMs": 506
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 13969,
+          "durationMs": 508
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 40936,
+          "durationMs": 528
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 15751,
+          "durationMs": 529
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 10504,
+          "durationMs": 533
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 14557,
+          "durationMs": 534
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 30691,
+          "durationMs": 534
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 11878,
+          "durationMs": 551
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 6839,
+          "durationMs": 556
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 11574,
+          "durationMs": 562
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 5665,
+          "durationMs": 572
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 8824,
+          "durationMs": 642
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 13037,
+          "durationMs": 643
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 13154,
+          "durationMs": 647
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 11433,
+          "durationMs": 644
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 20564,
+          "durationMs": 619
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 67918,
+          "durationMs": 614
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 16462,
+          "durationMs": 679
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 12942,
+          "durationMs": 680
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 11798,
+          "durationMs": 681
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 8552,
+          "durationMs": 680
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 9686,
+          "durationMs": 681
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 34393,
+          "durationMs": 681
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 43414,
+          "durationMs": 705
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 12124,
+          "durationMs": 709
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 14417,
+          "durationMs": 710
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 8885,
+          "durationMs": 755
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 7669,
+          "durationMs": 754
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 10178,
+          "durationMs": 748
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 3233,
+          "durationMs": 740
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 4861,
+          "durationMs": 747
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 3197,
+          "durationMs": 749
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 5536,
+          "durationMs": 824
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 12280,
+          "durationMs": 838
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 3529,
+          "durationMs": 787
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 33252,
+          "durationMs": 835
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 28953,
+          "durationMs": 838
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 13523,
+          "durationMs": 838
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 6447,
+          "durationMs": 841
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 37930,
+          "durationMs": 846
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 14407,
+          "durationMs": 872
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 25110,
+          "durationMs": 873
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 4332,
+          "durationMs": 856
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 13187,
+          "durationMs": 873
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 1367,
+          "durationMs": 872
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 3713,
+          "durationMs": 880
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 1334,
+          "durationMs": 896
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 4310,
+          "durationMs": 898
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 8696,
+          "durationMs": 902
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 50083,
+          "durationMs": 919
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 10255,
+          "durationMs": 918
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 1629,
+          "durationMs": 917
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 23884,
+          "durationMs": 937
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 103561,
+          "durationMs": 976
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 9970,
+          "durationMs": 982
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 34040,
+          "durationMs": 984
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 45153,
+          "durationMs": 993
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 88961,
+          "durationMs": 987
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 8424,
+          "durationMs": 1012
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 35097,
+          "durationMs": 1002
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 32723,
+          "durationMs": 1029
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 7729,
+          "durationMs": 1037
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 22652,
+          "durationMs": 1035
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 5928,
+          "durationMs": 1039
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 21537,
+          "durationMs": 1048
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 7744,
+          "durationMs": 1056
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 14826,
+          "durationMs": 286
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 3414,
+          "durationMs": 18
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 45
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 15
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 23
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 23
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 32
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 88
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 80
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 57
+        },
+        {
+          "path": "/assets/product-icons.svg",
+          "decodedBytes": 5245,
+          "durationMs": 43
+        },
+        {
+          "path": "/quant/data/market/multi-asset/snapshot.json",
+          "decodedBytes": 316706,
+          "durationMs": 196
+        },
+        {
+          "path": "/quant/config/multi-asset.json",
+          "decodedBytes": 41624,
+          "durationMs": 121
+        },
+        {
+          "path": "/discover/data/home/US_REAL.json",
+          "decodedBytes": 311444,
+          "durationMs": 163
+        },
+        {
+          "path": "/assets/hero-visuals/discover.webp",
+          "decodedBytes": 38150,
+          "durationMs": 141
+        },
+        {
+          "path": "/assets/themen/01-kuenstliche-intelligenz.webp",
+          "decodedBytes": 107362,
+          "durationMs": 110
+        },
+        {
+          "path": "/assets/themen/02-halbleiter-chips.webp",
+          "decodedBytes": 88220,
+          "durationMs": 91
+        },
+        {
+          "path": "/assets/themen/12-erneuerbare-energien.webp",
+          "decodedBytes": 103448,
+          "durationMs": 115
+        },
+        {
+          "path": "/assets/themen/19-biotechnologie.webp",
+          "decodedBytes": 81524,
+          "durationMs": 115
+        },
+        {
+          "path": "/assets/themen/07-robotik-automation.webp",
+          "decodedBytes": 63316,
+          "durationMs": 115
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 43
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 51
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 30
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/QQQ.json",
+          "decodedBytes": 183157,
+          "durationMs": 68
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/SPY.json",
+          "decodedBytes": 216639,
+          "durationMs": 68
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/DIA.json",
+          "decodedBytes": 192939,
+          "durationMs": 63
+        },
+        {
+          "path": "/quant/data/market/intelligence/market-pulse.json",
+          "decodedBytes": 41790,
+          "durationMs": 29
+        },
+        {
+          "path": "/discover/logos/files/VLO.png",
+          "decodedBytes": 2734,
+          "durationMs": 113
+        },
+        {
+          "path": "/discover/logos/files/AMD.png",
+          "decodedBytes": 1007,
+          "durationMs": 116
+        },
+        {
+          "path": "/discover/logos/files/RVTY.png",
+          "decodedBytes": 1548,
+          "durationMs": 117
+        },
+        {
+          "path": "/discover/logos/files/NVDA.png",
+          "decodedBytes": 1224,
+          "durationMs": 121
+        },
+        {
+          "path": "/discover/logos/files/XP.png",
+          "decodedBytes": 1119,
+          "durationMs": 119
+        },
+        {
+          "path": "/discover/data/global/home.json",
+          "decodedBytes": 32381,
+          "durationMs": 103
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_MPC.json",
+          "decodedBytes": 6875,
+          "durationMs": 114
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_HZO.json",
+          "decodedBytes": 6595,
+          "durationMs": 112
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_LIND.json",
+          "decodedBytes": 6601,
+          "durationMs": 115
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_KRT.json",
+          "decodedBytes": 6597,
+          "durationMs": 79
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_MTW.json",
+          "decodedBytes": 6597,
+          "durationMs": 112
+        },
+        {
+          "path": "/assets/themen/01-kuenstliche-intelligenz.webp",
+          "decodedBytes": 107362,
+          "durationMs": 14
+        },
+        {
+          "path": "/assets/themen/02-halbleiter-chips.webp",
+          "decodedBytes": 88220,
+          "durationMs": 59
+        },
+        {
+          "path": "/assets/themen/12-erneuerbare-energien.webp",
+          "decodedBytes": 103448,
+          "durationMs": 55
+        },
+        {
+          "path": "/assets/themen/19-biotechnologie.webp",
+          "decodedBytes": 81524,
+          "durationMs": 55
+        },
+        {
+          "path": "/assets/themen/07-robotik-automation.webp",
+          "decodedBytes": 63316,
+          "durationMs": 54
+        },
+        {
+          "path": "/discover/logos/files/ASML.png",
+          "decodedBytes": 1298,
+          "durationMs": 62
+        },
+        {
+          "path": "/discover/logos/files/AAPL.png",
+          "decodedBytes": 1216,
+          "durationMs": 115
+        },
+        {
+          "path": "/discover/logos/files/TSLA.png",
+          "decodedBytes": 1719,
+          "durationMs": 103
+        },
+        {
+          "path": "/discover/logos/files/PLTR.png",
+          "decodedBytes": 1770,
+          "durationMs": 120
+        },
+        {
+          "path": "/discover/logos/files/SAP.png",
+          "decodedBytes": 1809,
+          "durationMs": 117
+        },
+        {
+          "path": "/discover/data/stocks/US_REAL/NVDA.json",
+          "decodedBytes": 86895,
+          "durationMs": 107
+        },
+        {
+          "path": "/discover/data/stocks/US_REAL/PLTR.json",
+          "decodedBytes": 78580,
+          "durationMs": 96
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_NVDA.json",
+          "decodedBytes": 6879,
+          "durationMs": 81
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_TSLA.json",
+          "decodedBytes": 6862,
+          "durationMs": 100
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_PLTR.json",
+          "decodedBytes": 6876,
+          "durationMs": 100
+        },
+        {
+          "path": "/discover/data/stocks/US_REAL/TSLA.json",
+          "decodedBytes": 87973,
+          "durationMs": 101
+        }
+      ],
+      "requests": 2641,
+      "homeHistoryLazy": true,
+      "watchlist": {
+        "add": 13,
+        "save": true,
+        "reload": true,
+        "remove": 13
+      },
+      "resources": [
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 377,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 34585,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 134527,
+          "durationMs": 0
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 8182,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 19474,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 41449,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 7612,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 33617,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 136097,
+          "durationMs": 0
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 6967,
+          "durationMs": 0
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 47114,
+          "durationMs": 0
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 3746,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 24636,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 15703,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 14973,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 8218,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 3724,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 25676,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 38996,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 16608,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 9128,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 14079,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 13855,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 16740,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 8162,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 6026,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 13969,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 40936,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 15751,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 10504,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 14557,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 30691,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 11878,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 6839,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 11574,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 5665,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 8824,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 13037,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 13154,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 11433,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 20564,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 67918,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 16462,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 12942,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 11798,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 8552,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 9686,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 34393,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 43414,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 12124,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 14417,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 8885,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 7669,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 10178,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 3233,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 4861,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 3197,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 5536,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 12280,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 3529,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 33252,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 28953,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 13523,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 6447,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 37930,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 14407,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 25110,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 4332,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 13187,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 1367,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 3713,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 1334,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 4310,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 8696,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 50083,
+          "durationMs": 0
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 10255,
+          "durationMs": 0
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 1629,
+          "durationMs": 0
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 23884,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 103561,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 9970,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 34040,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 88961,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 45153,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 35097,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 8424,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 32723,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 7729,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 22652,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 5928,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 21537,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 7744,
+          "durationMs": 0
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 14826,
+          "durationMs": 185
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 3414,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 4
+        },
+        {
+          "path": "/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+          "decodedBytes": 48256,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 16
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 25
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 25
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 19
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 17
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 24
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 3
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 20
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 18
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 5
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 10
+        },
+        {
+          "path": "/discover/data/europe/catalog.json",
+          "decodedBytes": 5674280,
+          "durationMs": 31
+        },
+        {
+          "path": "/core/europe-discover-eligibility.js",
+          "decodedBytes": 7118,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/europe-session-proof.js",
+          "decodedBytes": 2967,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/europe-market-data.js",
+          "decodedBytes": 35856,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 18
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ALV_DE_XETR.json",
+          "decodedBytes": 8909,
+          "durationMs": 7
+        },
+        {
+          "path": "/discover/data/europe/series/ref_RHM_DE_XETR.json",
+          "decodedBytes": 9183,
+          "durationMs": 11
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ADN1_DE_XETR.json",
+          "decodedBytes": 8567,
+          "durationMs": 27
+        },
+        {
+          "path": "/discover/data/europe/series/ref_HFG_DE_XETR.json",
+          "decodedBytes": 10611,
+          "durationMs": 25
+        },
+        {
+          "path": "/discover/data/europe/series/ref_2GB_DE_XETR.json",
+          "decodedBytes": 8943,
+          "durationMs": 22
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SAP_DE_XETR.json",
+          "decodedBytes": 9331,
+          "durationMs": 9
+        },
+        {
+          "path": "/discover/logos/files/SAP.png",
+          "decodedBytes": 1809,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SIE_DE_XETR.json",
+          "decodedBytes": 9125,
+          "durationMs": 17
+        },
+        {
+          "path": "/discover/data/europe/series/ref_DTE_DE_XETR.json",
+          "decodedBytes": 8939,
+          "durationMs": 25
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ASML_AS_XAMS.json",
+          "decodedBytes": 11079,
+          "durationMs": 39
+        },
+        {
+          "path": "/discover/logos/files/ASML.png",
+          "decodedBytes": 1298,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/data/europe/series/ref_MC_PA_XPAR.json",
+          "decodedBytes": 11127,
+          "durationMs": 25
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 14826,
+          "durationMs": 180
+        }
+      ],
+      "passed": true
+    },
+    {
+      "schema": "vu-discover-global-browser-1",
+      "scenario": "webkit-desktop",
+      "browserVersion": "26.5",
+      "iPhoneEmulation": false,
+      "sourceCommit": null,
+      "search": [
+        {
+          "query": "Allianz",
+          "region": "EUROPE",
+          "id": "ref_ALV_DE_XETR",
+          "firstResult": "ALV.DE\nA\nAllianz SE\nALV.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Rheinmetall",
+          "region": "EUROPE",
+          "id": "ref_RHM_DE_XETR",
+          "firstResult": "RHM.DE\nR\nRheinmetall Aktiengesellschaft\nRHM.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "adesso",
+          "region": "EUROPE",
+          "id": "ref_ADN1_DE_XETR",
+          "firstResult": "ADN1.DE\nA\nadesso SE\nADN1.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "HelloFresh",
+          "region": "EUROPE",
+          "id": "ref_HFG_DE_XETR",
+          "firstResult": "HFG.DE\nH\nHelloFresh SE\nHFG.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "2G Energy",
+          "region": "EUROPE",
+          "id": "ref_2GB_DE_XETR",
+          "firstResult": "2GB.DE\n2\n2G Energy AG\n2GB.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "SAP",
+          "region": "EUROPE",
+          "id": "ref_SAP_DE_XETR",
+          "firstResult": "SAP.DE\nSAP SE\nSAP.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Siemens",
+          "region": "EUROPE",
+          "id": "ref_SIE_DE_XETR",
+          "firstResult": "SIE.DE\nS\nSiemens Aktiengesellschaft\nSIE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Deutsche Telekom",
+          "region": "EUROPE",
+          "id": "ref_DTE_DE_XETR",
+          "firstResult": "DTE.DE\nD\nDEUTSCHE TELEKOM AG\nDTE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "ASML",
+          "region": "EUROPE",
+          "id": "ref_ASML_AS_XAMS",
+          "firstResult": "ASML.AS\nASML Holding N.V.\nASML.AS · XAMS",
+          "passed": true
+        },
+        {
+          "query": "LVMH",
+          "region": "EUROPE",
+          "id": "ref_MC_PA_XPAR",
+          "firstResult": "MC.PA\nL\nLVMH MOET HENNESSY LOUIS VUITTON\nMC.PA · XPAR",
+          "passed": true
+        },
+        {
+          "query": "NVIDIA",
+          "region": "US_REAL",
+          "id": "NVDA",
+          "firstResult": "NVDA\nNVIDIA\nNVDA · Chips für KI und Grafik · am Jahreshoch\n+28 %",
+          "passed": true
+        },
+        {
+          "query": "Palantir",
+          "region": "US_REAL",
+          "id": "PLTR",
+          "firstResult": "PLTR\nPalantir Technologies Class A\nPLTR\n+11,0 %",
+          "passed": true
+        },
+        {
+          "query": "Tesla",
+          "region": "US_REAL",
+          "id": "TSLA",
+          "firstResult": "TSLA\nTesla\nTSLA · Elektroautos und Batteriespeicher\n−11,4 %",
+          "passed": true
+        }
+      ],
+      "details": [
+        {
+          "id": "ref_ALV_DE_XETR",
+          "name": "Allianz SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_RHM_DE_XETR",
+          "name": "Rheinmetall Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ADN1_DE_XETR",
+          "name": "adesso SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_HFG_DE_XETR",
+          "name": "HelloFresh SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_2GB_DE_XETR",
+          "name": "2G Energy AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SAP_DE_XETR",
+          "name": "SAP SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SIE_DE_XETR",
+          "name": "Siemens Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_DTE_DE_XETR",
+          "name": "DEUTSCHE TELEKOM AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ASML_AS_XAMS",
+          "name": "ASML Holding N.V.",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_MC_PA_XPAR",
+          "name": "LVMH MOET HENNESSY LOUIS VUITTON",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "NVDA",
+          "name": "NVIDIA",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "PLTR",
+          "name": "Palantir Technologies Class A",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "TSLA",
+          "name": "Tesla",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        }
+      ],
+      "accessibility": [
+        {
+          "flow": "global-home",
+          "violations": []
+        },
+        {
+          "flow": "2g-max",
+          "violations": []
+        },
+        {
+          "flow": "global-watchlist",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-dark",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-light",
+          "violations": []
+        }
+      ],
+      "ranges": [
+        {
+          "label": "1M",
+          "dates": "08.09.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3M",
+          "dates": "09.07.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "6M",
+          "dates": "30.04.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "1J",
+          "dates": "08.10.2025 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3J",
+          "dates": "09.10.2023 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "5J",
+          "dates": "08.10.2021 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "MAX",
+          "dates": "04.01.2010 – 09.10.2026 · Tagesschlusskurse · unbereinigt · logarithmische Kursachse"
+        }
+      ],
+      "homeLongSeriesRequests": 0,
+      "homeResources": [
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 377,
+          "durationMs": 40
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "decodedBytes": 697,
+          "durationMs": 537
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 34585,
+          "durationMs": 48
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 134527,
+          "durationMs": 104
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 8182,
+          "durationMs": 36
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 19474,
+          "durationMs": 39
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 41449,
+          "durationMs": 69
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 7612,
+          "durationMs": 68
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 6967,
+          "durationMs": 77
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 33617,
+          "durationMs": 89
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 3746,
+          "durationMs": 92
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 47114,
+          "durationMs": 97
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 136097,
+          "durationMs": 111
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 15703,
+          "durationMs": 98
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 24636,
+          "durationMs": 98
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 14973,
+          "durationMs": 99
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 8218,
+          "durationMs": 109
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 3724,
+          "durationMs": 111
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 25676,
+          "durationMs": 113
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 38996,
+          "durationMs": 114
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 16608,
+          "durationMs": 110
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 9128,
+          "durationMs": 120
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 14079,
+          "durationMs": 121
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 13855,
+          "durationMs": 125
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 16740,
+          "durationMs": 130
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 8162,
+          "durationMs": 132
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 6026,
+          "durationMs": 199
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 15751,
+          "durationMs": 201
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 10504,
+          "durationMs": 201
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 13969,
+          "durationMs": 201
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 40936,
+          "durationMs": 201
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 14557,
+          "durationMs": 216
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 11878,
+          "durationMs": 215
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 30691,
+          "durationMs": 221
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 6839,
+          "durationMs": 212
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 11574,
+          "durationMs": 217
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 5665,
+          "durationMs": 221
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 8824,
+          "durationMs": 220
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 13037,
+          "durationMs": 239
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 13154,
+          "durationMs": 239
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 11433,
+          "durationMs": 243
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 67918,
+          "durationMs": 245
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 12942,
+          "durationMs": 263
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 11798,
+          "durationMs": 264
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 20564,
+          "durationMs": 264
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 16462,
+          "durationMs": 264
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 8552,
+          "durationMs": 271
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 9686,
+          "durationMs": 273
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 34393,
+          "durationMs": 276
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 12124,
+          "durationMs": 282
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 43414,
+          "durationMs": 284
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 8885,
+          "durationMs": 287
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 14417,
+          "durationMs": 292
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 7669,
+          "durationMs": 293
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 10178,
+          "durationMs": 301
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 3233,
+          "durationMs": 327
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 4861,
+          "durationMs": 327
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 3197,
+          "durationMs": 334
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 5536,
+          "durationMs": 333
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 12280,
+          "durationMs": 337
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 3529,
+          "durationMs": 368
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 33252,
+          "durationMs": 372
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 28953,
+          "durationMs": 383
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 13523,
+          "durationMs": 374
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 6447,
+          "durationMs": 387
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 14407,
+          "durationMs": 391
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 37930,
+          "durationMs": 397
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 4332,
+          "durationMs": 397
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 25110,
+          "durationMs": 398
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 13187,
+          "durationMs": 407
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 1367,
+          "durationMs": 407
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 3713,
+          "durationMs": 407
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 1334,
+          "durationMs": 412
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 8696,
+          "durationMs": 423
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 50083,
+          "durationMs": 434
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 10255,
+          "durationMs": 442
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 4310,
+          "durationMs": 463
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 1629,
+          "durationMs": 467
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 23884,
+          "durationMs": 446
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 9970,
+          "durationMs": 468
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 34040,
+          "durationMs": 472
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 103561,
+          "durationMs": 478
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 88961,
+          "durationMs": 472
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 8424,
+          "durationMs": 478
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 32723,
+          "durationMs": 486
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 7729,
+          "durationMs": 494
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 5928,
+          "durationMs": 494
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 22652,
+          "durationMs": 499
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 45153,
+          "durationMs": 500
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 35097,
+          "durationMs": 503
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 21537,
+          "durationMs": 498
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 7744,
+          "durationMs": 508
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 313
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 3414,
+          "durationMs": 10
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 13
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 9
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 16
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 14
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 14
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 17
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 16
+        },
+        {
+          "path": "/sw.js",
+          "decodedBytes": 1382,
+          "durationMs": 6
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 4
+        },
+        {
+          "path": "/assets/product-icons.svg",
+          "decodedBytes": 5245,
+          "durationMs": 21
+        },
+        {
+          "path": "/quant/config/multi-asset.json",
+          "decodedBytes": 41624,
+          "durationMs": 46
+        },
+        {
+          "path": "/quant/data/market/multi-asset/snapshot.json",
+          "decodedBytes": 316706,
+          "durationMs": 65
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 24
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 24
+        },
+        {
+          "path": "/assets/themen/01-kuenstliche-intelligenz.webp",
+          "decodedBytes": 107362,
+          "durationMs": 28
+        },
+        {
+          "path": "/assets/themen/02-halbleiter-chips.webp",
+          "decodedBytes": 88220,
+          "durationMs": 33
+        },
+        {
+          "path": "/assets/themen/12-erneuerbare-energien.webp",
+          "decodedBytes": 103448,
+          "durationMs": 33
+        },
+        {
+          "path": "/assets/themen/19-biotechnologie.webp",
+          "decodedBytes": 81524,
+          "durationMs": 24
+        },
+        {
+          "path": "/assets/themen/07-robotik-automation.webp",
+          "decodedBytes": 63316,
+          "durationMs": 33
+        },
+        {
+          "path": "/assets/themen/33-luxus-premium.webp",
+          "decodedBytes": 90614,
+          "durationMs": 37
+        },
+        {
+          "path": "/assets/themen/36-reisen-tourismus.webp",
+          "decodedBytes": 101672,
+          "durationMs": 40
+        },
+        {
+          "path": "/assets/themen/04-cybersecurity.webp",
+          "decodedBytes": 99014,
+          "durationMs": 40
+        },
+        {
+          "path": "/discover/data/home/US_REAL.json",
+          "decodedBytes": 311444,
+          "durationMs": 25
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 30
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/QQQ.json",
+          "decodedBytes": 183157,
+          "durationMs": 29
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/SPY.json",
+          "decodedBytes": 216639,
+          "durationMs": 29
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/DIA.json",
+          "decodedBytes": 192939,
+          "durationMs": 27
+        },
+        {
+          "path": "/assets/hero-visuals/discover.webp",
+          "decodedBytes": 38150,
+          "durationMs": 6
+        },
+        {
+          "path": "/quant/data/market/intelligence/market-pulse.json",
+          "decodedBytes": 41790,
+          "durationMs": 21
+        },
+        {
+          "path": "/discover/data/global/home.json",
+          "decodedBytes": 32381,
+          "durationMs": 21
+        },
+        {
+          "path": "/discover/logos/files/VLO.png",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_MPC.json",
+          "decodedBytes": 6875,
+          "durationMs": 10
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_HZO.json",
+          "decodedBytes": 6595,
+          "durationMs": 17
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_LIND.json",
+          "decodedBytes": 6601,
+          "durationMs": 16
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_KRT.json",
+          "decodedBytes": 6597,
+          "durationMs": 16
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_MTW.json",
+          "decodedBytes": 6597,
+          "durationMs": 16
+        },
+        {
+          "path": "/discover/logos/files/NVDA.png",
+          "decodedBytes": 1224,
+          "durationMs": 25
+        },
+        {
+          "path": "/discover/logos/files/TSLA.png",
+          "decodedBytes": 1719,
+          "durationMs": 19
+        },
+        {
+          "path": "/discover/logos/files/ASML.png",
+          "decodedBytes": 1298,
+          "durationMs": 21
+        },
+        {
+          "path": "/discover/logos/files/PLTR.png",
+          "decodedBytes": 1770,
+          "durationMs": 22
+        },
+        {
+          "path": "/discover/logos/files/SAP.png",
+          "decodedBytes": 1809,
+          "durationMs": 22
+        },
+        {
+          "path": "/discover/logos/files/AAPL.png",
+          "decodedBytes": 1216,
+          "durationMs": 23
+        }
+      ],
+      "requests": 2437,
+      "homeHistoryLazy": true,
+      "watchlist": {
+        "add": 13,
+        "save": true,
+        "reload": true,
+        "remove": 13
+      },
+      "resources": [
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "decodedBytes": 697,
+          "durationMs": 6
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 124
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 0,
+          "durationMs": 9
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 14
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 14
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 15
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 15
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 9
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 17
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 17
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 8
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 9
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 7
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 8
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/data/europe/catalog.json",
+          "decodedBytes": 5674280,
+          "durationMs": 48
+        },
+        {
+          "path": "/core/europe-discover-eligibility.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/core/europe-session-proof.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/core/europe-market-data.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ALV_DE_XETR.json",
+          "decodedBytes": 8909,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/data/europe/series/ref_RHM_DE_XETR.json",
+          "decodedBytes": 9183,
+          "durationMs": 8
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ADN1_DE_XETR.json",
+          "decodedBytes": 8567,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/data/europe/series/ref_HFG_DE_XETR.json",
+          "decodedBytes": 10611,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/data/europe/series/ref_2GB_DE_XETR.json",
+          "decodedBytes": 8943,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SAP_DE_XETR.json",
+          "decodedBytes": 9331,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/logos/files/SAP.png",
+          "decodedBytes": 1809,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SIE_DE_XETR.json",
+          "decodedBytes": 9125,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/data/europe/series/ref_DTE_DE_XETR.json",
+          "decodedBytes": 8939,
+          "durationMs": 9
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ASML_AS_XAMS.json",
+          "decodedBytes": 11079,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/logos/files/ASML.png",
+          "decodedBytes": 1298,
+          "durationMs": 8
+        },
+        {
+          "path": "/discover/data/europe/series/ref_MC_PA_XPAR.json",
+          "decodedBytes": 11127,
+          "durationMs": 3
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 63
+        }
+      ],
+      "passed": true
+    },
+    {
+      "schema": "vu-discover-global-browser-1",
+      "scenario": "webkit-iphone13",
+      "browserVersion": "26.5",
+      "iPhoneEmulation": true,
+      "sourceCommit": null,
+      "search": [
+        {
+          "query": "Allianz",
+          "region": "EUROPE",
+          "id": "ref_ALV_DE_XETR",
+          "firstResult": "ALV.DE\nA\nAllianz SE\nALV.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Rheinmetall",
+          "region": "EUROPE",
+          "id": "ref_RHM_DE_XETR",
+          "firstResult": "RHM.DE\nR\nRheinmetall Aktiengesellschaft\nRHM.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "adesso",
+          "region": "EUROPE",
+          "id": "ref_ADN1_DE_XETR",
+          "firstResult": "ADN1.DE\nA\nadesso SE\nADN1.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "HelloFresh",
+          "region": "EUROPE",
+          "id": "ref_HFG_DE_XETR",
+          "firstResult": "HFG.DE\nH\nHelloFresh SE\nHFG.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "2G Energy",
+          "region": "EUROPE",
+          "id": "ref_2GB_DE_XETR",
+          "firstResult": "2GB.DE\n2\n2G Energy AG\n2GB.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "SAP",
+          "region": "EUROPE",
+          "id": "ref_SAP_DE_XETR",
+          "firstResult": "SAP.DE\nS\nSAP SE\nSAP.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Siemens",
+          "region": "EUROPE",
+          "id": "ref_SIE_DE_XETR",
+          "firstResult": "SIE.DE\nS\nSiemens Aktiengesellschaft\nSIE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "Deutsche Telekom",
+          "region": "EUROPE",
+          "id": "ref_DTE_DE_XETR",
+          "firstResult": "DTE.DE\nD\nDEUTSCHE TELEKOM AG\nDTE.DE · XETR",
+          "passed": true
+        },
+        {
+          "query": "ASML",
+          "region": "EUROPE",
+          "id": "ref_ASML_AS_XAMS",
+          "firstResult": "ASML.AS\nASML Holding N.V.\nASML.AS · XAMS",
+          "passed": true
+        },
+        {
+          "query": "LVMH",
+          "region": "EUROPE",
+          "id": "ref_MC_PA_XPAR",
+          "firstResult": "MC.PA\nL\nLVMH MOET HENNESSY LOUIS VUITTON\nMC.PA · XPAR",
+          "passed": true
+        },
+        {
+          "query": "NVIDIA",
+          "region": "US_REAL",
+          "id": "NVDA",
+          "firstResult": "NVDA\nNVIDIA\nNVDA · Chips für KI und Grafik · am Jahreshoch\n+28 %",
+          "passed": true
+        },
+        {
+          "query": "Palantir",
+          "region": "US_REAL",
+          "id": "PLTR",
+          "firstResult": "PLTR\nPalantir Technologies Class A\nPLTR\n+11,0 %",
+          "passed": true
+        },
+        {
+          "query": "Tesla",
+          "region": "US_REAL",
+          "id": "TSLA",
+          "firstResult": "TSLA\nTesla\nTSLA · Elektroautos und Batteriespeicher\n−11,4 %",
+          "passed": true
+        }
+      ],
+      "details": [
+        {
+          "id": "ref_ALV_DE_XETR",
+          "name": "Allianz SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_RHM_DE_XETR",
+          "name": "Rheinmetall Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ADN1_DE_XETR",
+          "name": "adesso SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_HFG_DE_XETR",
+          "name": "HelloFresh SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_2GB_DE_XETR",
+          "name": "2G Energy AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SAP_DE_XETR",
+          "name": "SAP SE",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_SIE_DE_XETR",
+          "name": "Siemens Aktiengesellschaft",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_DTE_DE_XETR",
+          "name": "DEUTSCHE TELEKOM AG",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_ASML_AS_XAMS",
+          "name": "ASML Holding N.V.",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "ref_MC_PA_XPAR",
+          "name": "LVMH MOET HENNESSY LOUIS VUITTON",
+          "chart": true,
+          "ranges": [
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "NVDA",
+          "name": "NVIDIA",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "PLTR",
+          "name": "Palantir Technologies Class A",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        },
+        {
+          "id": "TSLA",
+          "name": "Tesla",
+          "chart": true,
+          "ranges": [
+            "1T",
+            "1M",
+            "3M",
+            "6M",
+            "1J",
+            "3J",
+            "5J",
+            "MAX"
+          ]
+        }
+      ],
+      "accessibility": [
+        {
+          "flow": "global-home",
+          "violations": []
+        },
+        {
+          "flow": "2g-max",
+          "violations": []
+        },
+        {
+          "flow": "global-watchlist",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-dark",
+          "violations": []
+        },
+        {
+          "flow": "watchlist-light",
+          "violations": []
+        }
+      ],
+      "ranges": [
+        {
+          "label": "1M",
+          "dates": "08.09.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3M",
+          "dates": "09.07.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "6M",
+          "dates": "30.04.2026 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "1J",
+          "dates": "08.10.2025 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "3J",
+          "dates": "09.10.2023 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "5J",
+          "dates": "08.10.2021 – 09.10.2026 · Tagesschlusskurse · unbereinigt"
+        },
+        {
+          "label": "MAX",
+          "dates": "04.01.2010 – 09.10.2026 · Tagesschlusskurse · unbereinigt · logarithmische Kursachse"
+        }
+      ],
+      "homeLongSeriesRequests": 0,
+      "homeResources": [
+        {
+          "path": "/manifest.webmanifest",
+          "decodedBytes": 697,
+          "durationMs": 56
+        },
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 377,
+          "durationMs": 62
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 34585,
+          "durationMs": 66
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 8182,
+          "durationMs": 76
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 134527,
+          "durationMs": 92
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 19474,
+          "durationMs": 78
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 41449,
+          "durationMs": 83
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 7612,
+          "durationMs": 68
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 33617,
+          "durationMs": 78
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 6967,
+          "durationMs": 84
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 136097,
+          "durationMs": 99
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 3746,
+          "durationMs": 88
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 47114,
+          "durationMs": 96
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 15703,
+          "durationMs": 88
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 24636,
+          "durationMs": 88
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 14973,
+          "durationMs": 89
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 8218,
+          "durationMs": 93
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 3724,
+          "durationMs": 96
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 25676,
+          "durationMs": 99
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 38996,
+          "durationMs": 101
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 16608,
+          "durationMs": 111
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 9128,
+          "durationMs": 216
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 14079,
+          "durationMs": 215
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 13855,
+          "durationMs": 214
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 8162,
+          "durationMs": 216
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 16740,
+          "durationMs": 257
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 6026,
+          "durationMs": 267
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 13969,
+          "durationMs": 277
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 40936,
+          "durationMs": 278
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 15751,
+          "durationMs": 283
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 10504,
+          "durationMs": 285
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 14557,
+          "durationMs": 308
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 11878,
+          "durationMs": 315
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 30691,
+          "durationMs": 325
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 6839,
+          "durationMs": 313
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 11574,
+          "durationMs": 314
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 5665,
+          "durationMs": 324
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 8824,
+          "durationMs": 336
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 13037,
+          "durationMs": 338
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 13154,
+          "durationMs": 339
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 11433,
+          "durationMs": 339
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 20564,
+          "durationMs": 340
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 67918,
+          "durationMs": 341
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 16462,
+          "durationMs": 339
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 12942,
+          "durationMs": 357
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 11798,
+          "durationMs": 360
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 8552,
+          "durationMs": 366
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 9686,
+          "durationMs": 366
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 12124,
+          "durationMs": 375
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 34393,
+          "durationMs": 378
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 43414,
+          "durationMs": 398
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 7669,
+          "durationMs": 376
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 14417,
+          "durationMs": 377
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 8885,
+          "durationMs": 380
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 3233,
+          "durationMs": 407
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 10178,
+          "durationMs": 411
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 4861,
+          "durationMs": 410
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 3197,
+          "durationMs": 425
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 5536,
+          "durationMs": 425
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 3529,
+          "durationMs": 433
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 12280,
+          "durationMs": 437
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 33252,
+          "durationMs": 442
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 28953,
+          "durationMs": 443
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 6447,
+          "durationMs": 440
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 13523,
+          "durationMs": 441
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 14407,
+          "durationMs": 443
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 37930,
+          "durationMs": 446
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 4332,
+          "durationMs": 454
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 13187,
+          "durationMs": 458
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 25110,
+          "durationMs": 462
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 1367,
+          "durationMs": 463
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 1334,
+          "durationMs": 464
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 4310,
+          "durationMs": 465
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 3713,
+          "durationMs": 468
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 8696,
+          "durationMs": 487
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 50083,
+          "durationMs": 524
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 1629,
+          "durationMs": 496
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 10255,
+          "durationMs": 499
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 23884,
+          "durationMs": 504
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 103561,
+          "durationMs": 533
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 9970,
+          "durationMs": 524
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 34040,
+          "durationMs": 527
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 45153,
+          "durationMs": 530
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 88961,
+          "durationMs": 544
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 8424,
+          "durationMs": 538
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 35097,
+          "durationMs": 538
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 32723,
+          "durationMs": 550
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 7729,
+          "durationMs": 548
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 22652,
+          "durationMs": 550
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 5928,
+          "durationMs": 548
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 21537,
+          "durationMs": 553
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 7744,
+          "durationMs": 555
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 313
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 3414,
+          "durationMs": 25
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 13
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 10
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 8
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 28
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 15
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 106
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 72
+        },
+        {
+          "path": "/sw.js",
+          "decodedBytes": 1382,
+          "durationMs": 14
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 27
+        },
+        {
+          "path": "/assets/product-icons.svg",
+          "decodedBytes": 5245,
+          "durationMs": 39
+        },
+        {
+          "path": "/quant/config/multi-asset.json",
+          "decodedBytes": 41624,
+          "durationMs": 39
+        },
+        {
+          "path": "/quant/data/market/multi-asset/snapshot.json",
+          "decodedBytes": 316706,
+          "durationMs": 41
+        },
+        {
+          "path": "/assets/themen/01-kuenstliche-intelligenz.webp",
+          "decodedBytes": 107362,
+          "durationMs": 44
+        },
+        {
+          "path": "/assets/themen/02-halbleiter-chips.webp",
+          "decodedBytes": 88220,
+          "durationMs": 35
+        },
+        {
+          "path": "/assets/themen/12-erneuerbare-energien.webp",
+          "decodedBytes": 103448,
+          "durationMs": 47
+        },
+        {
+          "path": "/assets/themen/07-robotik-automation.webp",
+          "decodedBytes": 63316,
+          "durationMs": 46
+        },
+        {
+          "path": "/assets/themen/19-biotechnologie.webp",
+          "decodedBytes": 81524,
+          "durationMs": 48
+        },
+        {
+          "path": "/assets/themen/04-cybersecurity.webp",
+          "decodedBytes": 99014,
+          "durationMs": 52
+        },
+        {
+          "path": "/assets/themen/36-reisen-tourismus.webp",
+          "decodedBytes": 101672,
+          "durationMs": 66
+        },
+        {
+          "path": "/assets/themen/33-luxus-premium.webp",
+          "decodedBytes": 90614,
+          "durationMs": 63
+        },
+        {
+          "path": "/discover/data/home/US_REAL.json",
+          "decodedBytes": 311444,
+          "durationMs": 42
+        },
+        {
+          "path": "/assets/hero-visuals/discover.webp",
+          "decodedBytes": 38150,
+          "durationMs": 6
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 30
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 27
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 26
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/QQQ.json",
+          "decodedBytes": 183157,
+          "durationMs": 17
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/SPY.json",
+          "decodedBytes": 216639,
+          "durationMs": 14
+        },
+        {
+          "path": "/quant/data/market/multi-asset/series/DIA.json",
+          "decodedBytes": 192939,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/data/market/intelligence/market-pulse.json",
+          "decodedBytes": 41790,
+          "durationMs": 12
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_MPC.json",
+          "decodedBytes": 6875,
+          "durationMs": 27
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_HZO.json",
+          "decodedBytes": 6595,
+          "durationMs": 27
+        },
+        {
+          "path": "/quant/data/market/discover-series/ref_LIND.json",
+          "decodedBytes": 6601,
+          "durationMs": 26
+        },
+        {
+          "path": "/discover/data/global/home.json",
+          "decodedBytes": 32381,
+          "durationMs": 24
+        },
+        {
+          "path": "/discover/logos/files/NVDA.png",
+          "decodedBytes": 1224,
+          "durationMs": 41
+        },
+        {
+          "path": "/discover/logos/files/TSLA.png",
+          "decodedBytes": 1719,
+          "durationMs": 38
+        }
+      ],
+      "requests": 2347,
+      "homeHistoryLazy": true,
+      "watchlist": {
+        "add": 13,
+        "save": true,
+        "reload": true,
+        "remove": 13
+      },
+      "resources": [
+        {
+          "path": "/assets/pwa.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "decodedBytes": 697,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/ui/quant.css",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 106
+        },
+        {
+          "path": "/discover/discover.css",
+          "decodedBytes": 0,
+          "durationMs": 6
+        },
+        {
+          "path": "/assets/site-navigation.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/app.css",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/home.css",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/ui/featured.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/detail.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/markets.css",
+          "decodedBytes": 0,
+          "durationMs": 6
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.css",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/assets/site-navigation.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/assets/scroll-memory.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/ui/shell.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/ui/charts.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/ui/technical-chart.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/chart-ranges.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/hash.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/engines/instrument-classification.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/company-master.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/engines/instrument-directory.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/realtime/market-hours.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/quant/engines/realtime/trading-session.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/realtime/intraday-snapshot.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/realtime/freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/realtime/source-state.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/series-sampling.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/quant/engines/fx/fx-provider-registry.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/fx/fx-rates.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/engines/fx/fx-freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/fx/currency-registry.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/engines/fx/currency-class.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/currency-engine.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/engines/fx/money-format.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/quant/engines/fx/currency-preference.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/fx/currency-contract.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/fx/currency-switch.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/fx/bootstrap.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/multi-asset/asset-taxonomy.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/engines/realtime/session-profiles.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/quant/engines/realtime/asset-freshness.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/quant/api/multi-asset-contract.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/quant/engines/multi-asset/market-pulse.js",
+          "decodedBytes": 0,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/engines/contract.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/europe-product.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/engines/high52w.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/scoring.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/engines/indicators.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/klartext.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/fundamentals.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/unternehmen.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/einordnung.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/narrative.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/technical-intelligence.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/realtime-source.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/analytics.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/engines/memory.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/engines/theme.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/recommendation.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/ui/swipe.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/series-loader.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/ui/live-hub.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/ui/microchart.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/artwork.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/ui/logos.js",
+          "decodedBytes": 0,
+          "durationMs": 7
+        },
+        {
+          "path": "/discover/ui/cards.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/ui/feed.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/surfaces.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/core/identity.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/core/client.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/core/chart-history.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/core/discover-universe.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/engines/global-universe.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/global.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/search.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/ui/detail-fundamentals.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/company-intelligence/api/contract.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/company-intelligence/config/rollout.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/company-intelligence/ui/stock-section.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/detail.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/daten.js",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/ui/markets.js",
+          "decodedBytes": 0,
+          "durationMs": 6
+        },
+        {
+          "path": "/discover/ui/market-intelligence.js",
+          "decodedBytes": 0,
+          "durationMs": 6
+        },
+        {
+          "path": "/discover/ui/market-barometer.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/discover/ui/market-detail.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/themes.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/home.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/featured.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/detail.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/ui/europe.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/app.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/engines/europe-bootstrap.js",
+          "decodedBytes": 0,
+          "durationMs": 1
+        },
+        {
+          "path": "/assets/vision-universe-logo-web.png",
+          "decodedBytes": 0,
+          "durationMs": 0
+        },
+        {
+          "path": "/discover/logos/index.json",
+          "decodedBytes": 123178,
+          "durationMs": 7
+        },
+        {
+          "path": "/discover/data/meta.json",
+          "decodedBytes": 54366,
+          "durationMs": 6
+        },
+        {
+          "path": "/quant/config/market-calendar.json",
+          "decodedBytes": 10200,
+          "durationMs": 7
+        },
+        {
+          "path": "/core/registry/domains.json",
+          "decodedBytes": 17615,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/config/fx-license.json",
+          "decodedBytes": 8538,
+          "durationMs": 25
+        },
+        {
+          "path": "/quant/data/market/intraday/index.json",
+          "decodedBytes": 482882,
+          "durationMs": 30
+        },
+        {
+          "path": "/discover/data/europe/manifest.json",
+          "decodedBytes": 355502,
+          "durationMs": 27
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/index.json",
+          "decodedBytes": 4183,
+          "durationMs": 5
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 6
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 5
+        },
+        {
+          "path": "/quant/data/market/fx/ecb/EURUSD.json",
+          "decodedBytes": 155946,
+          "durationMs": 5
+        },
+        {
+          "path": "/core/rights/marketstack-display.json",
+          "decodedBytes": 1380,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/data/europe/catalog.json",
+          "decodedBytes": 5674280,
+          "durationMs": 75
+        },
+        {
+          "path": "/core/europe-discover-eligibility.js",
+          "decodedBytes": 0,
+          "durationMs": 4
+        },
+        {
+          "path": "/core/europe-session-proof.js",
+          "decodedBytes": 0,
+          "durationMs": 3
+        },
+        {
+          "path": "/core/europe-market-data.js",
+          "decodedBytes": 0,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/data/europe/calendar.json",
+          "decodedBytes": 15022,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ALV_DE_XETR.json",
+          "decodedBytes": 8909,
+          "durationMs": 8
+        },
+        {
+          "path": "/discover/data/europe/series/ref_RHM_DE_XETR.json",
+          "decodedBytes": 9183,
+          "durationMs": 13
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ADN1_DE_XETR.json",
+          "decodedBytes": 8567,
+          "durationMs": 7
+        },
+        {
+          "path": "/discover/data/europe/series/ref_HFG_DE_XETR.json",
+          "decodedBytes": 10611,
+          "durationMs": 13
+        },
+        {
+          "path": "/discover/data/europe/series/ref_2GB_DE_XETR.json",
+          "decodedBytes": 8943,
+          "durationMs": 8
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SAP_DE_XETR.json",
+          "decodedBytes": 9331,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/logos/files/SAP.png",
+          "decodedBytes": 1809,
+          "durationMs": 2
+        },
+        {
+          "path": "/discover/data/europe/series/ref_SIE_DE_XETR.json",
+          "decodedBytes": 9125,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/data/europe/series/ref_DTE_DE_XETR.json",
+          "decodedBytes": 8939,
+          "durationMs": 4
+        },
+        {
+          "path": "/discover/data/europe/series/ref_ASML_AS_XAMS.json",
+          "decodedBytes": 11079,
+          "durationMs": 1
+        },
+        {
+          "path": "/discover/logos/files/ASML.png",
+          "decodedBytes": 1298,
+          "durationMs": 5
+        },
+        {
+          "path": "/discover/data/europe/series/ref_MC_PA_XPAR.json",
+          "decodedBytes": 11127,
+          "durationMs": 6
+        },
+        {
+          "path": "/css2",
+          "decodedBytes": 0,
+          "durationMs": 58
+        }
+      ],
+      "passed": true
+    }
+  ]
+}

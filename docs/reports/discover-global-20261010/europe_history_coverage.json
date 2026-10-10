@@ -10791,7 +10791,7 @@
       }
     }
   ],
-  "coveragePolicy": "Range buttons require >=95% of calendar span; calendarSpanCoverage below requires >=365.25 days per year.",
+  "coveragePolicy": "Range buttons require >=95% of calendar span; calendarSpanCoverage requires first observation on or before lastDate minus N calendar years.",
   "calendarSpanCoverage": {
     "1Y": 445,
     "3Y": 431,
