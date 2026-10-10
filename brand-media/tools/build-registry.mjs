@@ -59,18 +59,23 @@ for (const [key, desc] of STUDIO) {
   assets.push({ assetId: `studio-${key}`, kind: 'studio', character: null, description: desc, camera: key, clothing: null, originalReference: null, generationStatus: 'PLANNED', ...base });
 }
 
+const state = JSON.parse(readFileSync(join(root, 'registry/heygen-state.json'), 'utf8'));
+for (const v of state.videos) {
+  assets.push({ assetId: v.assetId, kind: 'video-test', character: 'lea', description: 'Identitaetstest LEA: Blick zur Seite, Kopfdrehung, Satz "Andere raten. Du verstehst."', camera: 'CAM-D-aehnlich (Totale sitzend, Masterkomposition)', clothing: CHARACTERS[0].outfit, originalReference: 'originals/lea_master_original.png', path: v.path, format: v.format, sha256: createHash('sha256').update(readFileSync(join(root, v.path))).digest('hex'), model: `HeyGen ${v.engine} (Photo Avatar, REST)`, heygenId: v.heygenVideoId, heygenAvatarId: v.heygenAvatarId, costUsd: v.costUsd, qaStatus: v.qaStatus, releaseStatus: v.releaseStatus, generationStatus: 'GENERATED' });
+}
 const registry = {
   schemaVersion: 'brand-media-asset-registry-1.0.0',
   note: 'Nur Eintraege mit generationStatus != PLANNED und gesetztem path/sha256 sind echte Dateien. Alle anderen sind Planung, keine Platzhalter-Bilder.',
   releaseStates: ['DRAFT', 'REVIEW', 'APPROVED', 'REJECTED'],
-  counts: { characterSlots: assets.filter(a => a.kind === 'character').length, studioSlots: STUDIO.length, existingFiles: assets.filter(a => a.path).length },
+  counts: { characterSlots: assets.filter(a => a.kind === 'character').length, studioSlots: STUDIO.length, existingFiles: assets.filter(a => a.path).length, generatedAssets: assets.filter(a => a.generationStatus === 'GENERATED').length },
   assets,
 };
 const avatars = {
   schemaVersion: 'brand-media-avatar-registry-1.0.0',
   note: 'heygen* bleibt null, bis ein Avatar nach Freigabe tatsaechlich angelegt wurde. Keine erfundenen IDs.',
   legacy: { system: 'ATLAS', status: 'ZU_ERSETZEN', heygenGroupIds: { 'Atlas TR Style': 'b172e187701247a7945eef9aa6039a10', 'Avatar V7': 'ff561757ec45434ba20bdf73897cd540', 'Atlas V6': '4ad28a44564e4d9ebf795c7d01ab9a72', 'Atlas V5': '725c89e9c1ea498abc826d2f7218c566', 'Atlas V4': '2ac1b16d30e34ff490d1fba11c49a171', 'Atlas V3': '2b2362ead4f3463794dd393b77db2db3', 'Atlas Frau 2': '2bd172aa90d745be8da3c781a95a3de0', 'Atlas Frau': '9c532e636bc3476c9fd52103271b4b52', 'Atlas Neu': '42c11220157a4899a1cd208e9ee26bea' }, note: 'Nicht loeschen, solange ATLAS im Betrieb ist.' },
-  characters: CHARACTERS.map(c => ({ id: c.id, name: c.name, masterAssetId: `${c.id}-master`, masterPath: `originals/${c.file}`, masterSha256: sha(c.file), heygenAssetId: null, heygenAvatarGroupId: null, heygenLookIds: [], heygenDefaultVoiceId: null, consentStatus: 'NOT_STARTED', status: 'PLANNED_PENDING_APPROVAL' })),
+  characters: CHARACTERS.map(c => { const a = state.avatars[c.id]; return { id: c.id, name: c.name, masterAssetId: `${c.id}-master`, masterPath: `originals/${c.file}`, masterSha256: sha(c.file), heygenAssetId: state.uploads[c.id] ?? null, heygenAvatarGroupId: a?.groupId ?? null, heygenLookIds: a?.lookIds ?? [], heygenDefaultVoiceId: a?.defaultVoiceId ?? null, heygenTestVoiceId: a?.testVoiceId ?? null, consentStatus: 'NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR', consentRecord: 'Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).', status: a?.status ?? 'NOT_CREATED_BUDGET_GATE' }; }),
+  wallet: state.billing,
 };
 writeFileSync(join(out, 'asset-registry.json'), JSON.stringify(registry, null, 2) + '\n');
 writeFileSync(join(out, 'avatar-registry.json'), JSON.stringify(avatars, null, 2) + '\n');

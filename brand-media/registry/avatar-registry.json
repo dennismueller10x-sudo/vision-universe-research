@@ -24,12 +24,16 @@
       "masterAssetId": "lea-master",
       "masterPath": "originals/lea_master_original.png",
       "masterSha256": "5d4f701baad579b5ede61808d509d7308074ea858438b4eda26953794188b5ea",
-      "heygenAssetId": null,
-      "heygenAvatarGroupId": null,
-      "heygenLookIds": [],
+      "heygenAssetId": "5e9787a3e500418a91f73d7d02937c9c",
+      "heygenAvatarGroupId": "5962a9dd56595ecc894cd10ceac004eb",
+      "heygenLookIds": [
+        "5962a9dd56595ecc894cd10ceac004eb"
+      ],
       "heygenDefaultVoiceId": null,
-      "consentStatus": "NOT_STARTED",
-      "status": "PLANNED_PENDING_APPROVAL"
+      "heygenTestVoiceId": "becf484d4ec3411b992206f95e6a3aa5",
+      "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
+      "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
+      "status": "CREATED_COMPLETED"
     },
     {
       "id": "david",
@@ -37,12 +41,14 @@
       "masterAssetId": "david-master",
       "masterPath": "originals/david_master_original.png",
       "masterSha256": "c9bc5187c9b578d471b34c9d2f47372448b48896f3b809ad4ecbb6b170a39235",
-      "heygenAssetId": null,
+      "heygenAssetId": "e746360d109047cab0777f9571e50610",
       "heygenAvatarGroupId": null,
       "heygenLookIds": [],
       "heygenDefaultVoiceId": null,
-      "consentStatus": "NOT_STARTED",
-      "status": "PLANNED_PENDING_APPROVAL"
+      "heygenTestVoiceId": null,
+      "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
+      "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
+      "status": "NOT_CREATED_BUDGET_GATE"
     },
     {
       "id": "marc",
@@ -50,12 +56,14 @@
       "masterAssetId": "marc-master",
       "masterPath": "originals/marc_master_original.png",
       "masterSha256": "0f26e726ad6ae7f9bdfcc14499710490b0204fadc3fc5b9f74d83db774ce86c1",
-      "heygenAssetId": null,
+      "heygenAssetId": "f877b6807387479eab76f50913bc9d5f",
       "heygenAvatarGroupId": null,
       "heygenLookIds": [],
       "heygenDefaultVoiceId": null,
-      "consentStatus": "NOT_STARTED",
-      "status": "PLANNED_PENDING_APPROVAL"
+      "heygenTestVoiceId": null,
+      "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
+      "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
+      "status": "NOT_CREATED_BUDGET_GATE"
     },
     {
       "id": "sofia",
@@ -63,12 +71,23 @@
       "masterAssetId": "sofia-master",
       "masterPath": "originals/sofia_master_original.png",
       "masterSha256": "608ed1ea33ef386dc5a724206a06a0a92d122b37527d06fea33ac0fb11a17efa",
-      "heygenAssetId": null,
+      "heygenAssetId": "7e16fcb8dd6b43b499f794f36250ea58",
       "heygenAvatarGroupId": null,
       "heygenLookIds": [],
       "heygenDefaultVoiceId": null,
-      "consentStatus": "NOT_STARTED",
-      "status": "PLANNED_PENDING_APPROVAL"
+      "heygenTestVoiceId": null,
+      "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
+      "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
+      "status": "NOT_CREATED_BUDGET_GATE"
     }
-  ]
+  ],
+  "wallet": {
+    "apiWalletUsd": {
+      "before": 3.67,
+      "afterAvatarCreate": 2.35,
+      "afterTestVideo": 2.27,
+      "checkedAt": "2026-10-10"
+    },
+    "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
+  }
 }

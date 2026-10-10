@@ -1,6 +1,12 @@
 # HeyGen-Integration – geprüfter Stand (2026-10-10)
 
-## Verbindung
+## Korrektur (2. Lauf): Web-Tarif ≠ API-Wallet
+Die MCP-Connector-Verbindung (OAuth) bucht auf den **Web-Tarif** (free, keine Credits). Der **API-Key** (REST, `api.heygen.com`) bucht auf das **USD-Wallet** (`GET /v3/users/me` → `wallet.remaining_balance`; Stand 2026-10-10: 3,67 → 2,27 USD nach Test). Kostenpflichtige Generierung läuft daher per REST. Die Annahme „Free-Tarif verhindert Produktion“ war für die API falsch; für den MCP-Weg bleibt sie richtig. Das Legacy-Quota-Feld `/v2/user/remaining_quota` zeigt zusätzlich 220 API-Credits – Umrechnung ungeklärt, nicht verwendet.
+
+Gemessene Kosten: Photo-Avatar-Anlage 1,32 USD je Identität; Avatar-IV-Video ≈ 0,03 USD/s (0,08 USD für 2,48 s). Bildgenerierung heygen-image-1: 0,28 USD/Bild (laut HeyGen-Doku).
+Consent: Für Photo Avatars gibt es keinen HeyGen-Consent-Flow (nur Digital Twins); Einwilligung/Nachweis liegt beim Kunden → siehe `consentRecord` in der Registry.
+
+## Verbindung (1. Lauf, Stand vor Korrektur)
 - Konto erreichbar (`get_current_user`): Tarif **free**, Credits nicht ausgewiesen (`remaining: null`).
 - 9 private Avatar-Gruppen vorhanden (ATLAS-Linie: Atlas TR Style, Avatar V7, Atlas V3–V6, Atlas Frau/Frau 2, Atlas Neu). IDs in `registry/avatar-registry.json#legacy`. Nichts wurde verändert.
 - Keine neuen Avatare, Uploads, Bilder oder Videos erzeugt.

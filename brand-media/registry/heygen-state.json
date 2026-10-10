@@ -1,0 +1,19 @@
+{
+  "note": "Reale HeyGen-Ergebnisse. Von build-registry.mjs in die Registries gemerged. Nur eintragen, was tatsaechlich angelegt wurde.",
+  "billing": {
+    "apiWalletUsd": { "before": 3.67, "afterAvatarCreate": 2.35, "afterTestVideo": 2.27, "checkedAt": "2026-10-10" },
+    "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
+  },
+  "uploads": {
+    "lea": "5e9787a3e500418a91f73d7d02937c9c",
+    "david": "e746360d109047cab0777f9571e50610",
+    "marc": "f877b6807387479eab76f50913bc9d5f",
+    "sofia": "7e16fcb8dd6b43b499f794f36250ea58"
+  },
+  "avatars": {
+    "lea": { "groupId": "5962a9dd56595ecc894cd10ceac004eb", "lookIds": ["5962a9dd56595ecc894cd10ceac004eb"], "status": "CREATED_COMPLETED", "createdCostUsd": 1.32, "defaultVoiceId": null, "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5" }
+  },
+  "videos": [
+    { "assetId": "video-lea-idtest-01", "path": "video/tests/lea_idtest_01.mp4", "heygenVideoId": "bcd7a38e1dfea9dab0ea643016cd0ae9", "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb", "engine": "avatar_iv", "format": "MP4 H.264 1080x1920 25fps, 2.48 s, AAC", "costUsd": 0.08, "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED", "releaseStatus": "REVIEW" }
+  ]
+}
