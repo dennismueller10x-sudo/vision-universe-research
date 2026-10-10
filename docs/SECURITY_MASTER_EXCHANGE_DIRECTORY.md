@@ -97,12 +97,21 @@ Offline mit dem jeweiligen Erzeuger neu gebaut (im PR enthalten):
 4. `publish-discover-series.mjs --prune-only` (Tagesreihen außerhalb des Umfangs)
 5. `publish-long-series.mjs --prune-only` (neu: 148 Wochenreihen außerhalb des Umfangs)
 
-Vor dem Merge noch mit den CI-Erzeugern auf diesem Zweig (Speicherzugang nötig):
-6. `product-intelligence-materialization.yml` (force): technical-signals-v1 (136 Zeilen) und factor-evidence-v1 (DEBT7) ohne die ausgeschlossenen Titel. Die Quant-Grundgesamtheit ändert sich um genau die 167 Titel; Modelle und Rankings bleiben unverändert (Vorher/Nachher-Zähler im Lauf).
-7. Intraday-Schnappschüsse der laufenden Tage (148 Dateien): beim nächsten `intraday-snapshots`-Lauf bzw. per Bereinigung des Erzeugers.
-8. `coverage-metrics.yml`: Neuabnahme der Deckungskennzahlen. Danach trifft `reconciliation.json` den neuen Stand. **Blocker:** Der Lauf committet nur bei grüner Regressionssuite. Auf `main` sind derzeit 6 Quant-Tests rot (CTR18 und Golden Five: JPM-Dividende im Golden Preview; zwei Total-Return-Verifikationen; SG1; AL-2), unabhängig von dieser Änderung.
+Ebenfalls offline (Stand 10.10.2026, Verzeichnis vom 09.10.2026, Ergebnis identisch zur ersten Fassung):
+6. `ingest-intraday.mjs --index-only`: 152 Intraday-Schnappschüsse ausgeschlossener Titel entfernt (der Erzeuger bereinigt so bei jedem Lauf).
+7. Fundamental-Berichte aus den Emittenten-Scherben (Erzeugerpfad von `daily-downstream`: `reports_from_records` + `_write_universe_reports`), danach `cli.py reconcile`.
+8. `build-capability-matrix.mjs` und `vu2/build-product-capabilities.mjs` (Produktuniversum 6.686).
 
-Bis Schritt 8 steht `test_der_abgleich_trifft_den_neu_abgenommenen_stand` absichtlich rot. Die eigene Rechnung (6.686 / 6.683 / 5.643) weicht vom abgenommenen Messstand (6.853 / 6.850 / 5.780) um genau die belegten 167 bzw. 137 Titel ab. Der Test `test_der_verzeichnisbeleg_erklaert_den_rest_je_titel` prüft diese Herleitung je Titel. Ein neuer Nenner entsteht erst mit der Messung (§4).
+Mit dem CI-Erzeuger auf diesem Zweig:
+9. `product-intelligence-materialization.yml` (force), Lauf 38035577319: technical-signals, factor-evidence (DEBT7), Radar, Muster, Suche ohne die ausgeschlossenen Titel. Vertrags- und Regressionstests des Laufs grün, Datenhygiene grün. Modelle und Rankings unverändert, nur die Grundgesamtheit.
+
+Nach dem Merge auf `main`, in dieser Reihenfolge:
+10. `long-series.yml`: Wochenreihen im neuen Umfang, danach `build-discover-data.mjs` (Discover-Daten; lokal belegt: danach 338/338 Discover-Tests grün). Discover-Daten gehören nicht in diesen PR (Discover-Gate).
+11. `technical-intelligence-build.yml` (startet nach 10 von selbst): Chartbild/Explore gegen das korrigierte Universum.
+12. Pages-Auslieferung.
+13. `coverage-metrics.yml`: Neuabnahme der Deckungskennzahlen. **Blocker:** Der Lauf committet nur bei grüner Regressionssuite. Auf `main` sind 6 Quant-Tests unabhängig hiervon rot (CTR18 und Golden Five: JPM-Dividende im Golden Preview; zwei Total-Return-Verifikationen; SG1; AL-2).
+
+Bis Schritt 13 steht `test_der_abgleich_trifft_den_neu_abgenommenen_stand` absichtlich rot. Die eigene Rechnung (6.686 / 6.683 / 5.643) weicht vom abgenommenen Messstand (6.853 / 6.850 / 5.780) um genau die belegten 167 bzw. 137 Titel ab. Der Test `test_der_verzeichnisbeleg_erklaert_den_rest_je_titel` prüft diese Herleitung je Titel. Ein neuer Nenner entsteht erst mit der Messung (§4).
 
 ## Folge für Elliott (G6)
 
