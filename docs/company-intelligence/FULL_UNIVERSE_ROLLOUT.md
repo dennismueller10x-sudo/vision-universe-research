@@ -2,7 +2,9 @@
 
 ## Release state
 
-Implementation is isolated in PR #561. Configuration is armed; a missing durable activation receipt still selects
+Implementation was merged in PR #561 (22979028978710e32f85e6ea4f79cf99503206ba),
+with release fixes in #569 (1ed3e6ba403f241d073a11b696c5773afd37d185) and
+#570 (307899a8f3fa62f9113eabf9f94af867d9f0542b). Configuration is armed; a missing durable activation receipt still selects
 only the legacy scope. No full-universe production activation has occurred. The live 46-stock,
 45-issuer scope remains the rollback baseline. The full structural and representative candidate acceptance below has passed.
 It is not yet published coverage; authenticated scaling passed; main release and production readback remain
@@ -134,7 +136,12 @@ absolute tolerance (5 profiles/financials, 100 news items).
 The new namespace is inactive until configuration AND a durable validated
 activation receipt agree. Existing global OFF and Pages rollback remain available.
 Before activation, an immutable copy of the latest known-good 46-stock consumer
-must be preserved and read back. That full-universe release step is pending.
+must be preserved and read back. Run 38041905817 completed this prerequisite:
+namespace `eligible-rollback-top46-v1`, generation `71dc0485476cfa74e59f7fc3`.
+The same run stopped before activation because the fresh public downloader
+correctly omitted the private validation manifest. PR #570 restores that
+authenticated certificate into the private runner only. Full release rerun
+38045412547 is pending; no successful production readback is asserted here.
 
 ## QA and sampling
 
@@ -188,8 +195,11 @@ probe numbers are not the initial production coverage. Source requests: 219.
 The existing production refresh job now allows 60 minutes, because the measured
 25-minute complete engine/storage/browser pipeline must also wait for Pages and
 verify live data. This extends deadline headroom, not source budgets or cadence.
-Actual deployed package size remains a release readback requirement. Do not reuse the small-cohort
-5,040-minute projection as full-universe evidence. Scaling acceptance is pending.
+Actual deployed full-eligible package size remains a release readback requirement.
+The legacy-scope production package measured 74,091 files / 1,495,070,009 bytes
+on code 0a51b74d2895b9db5f8fa59454ba42fe37213498. Do not reuse the small-cohort
+5,040-minute projection as full-universe evidence. Isolated scaling acceptance
+passed; actual wide-scope production acceptance is pending.
 
 ## Reviews and remaining acceptance
 
@@ -205,8 +215,9 @@ Actual deployed package size remains a release readback requirement. Do not reus
 3. Operations: previous-manifest validation proof now stays in a private runner
    directory, never in public consumer downloads. Fresh private restore and all
    bytes reproduce. Isolated source work is bounded and scheduler-driven. Full
-   isolated consumer R2 publication/readback passed. Immutable rollback freeze,
-   actual production activation and readback remain pending; do not claim launch before they pass.
+   isolated consumer R2 publication/readback passed. Immutable 46 rollback
+   freeze/readback passed in run 38041905817. Actual
+   production activation and readback remain pending; do not claim launch before they pass.
 
 Operator per-issuer disable: add the exact existing issuer ID to
 `universe-rollout.json.disabledIssuers`, validate and release. Only that issuer
@@ -216,9 +227,15 @@ Malformed IDs fail configuration validation. Global rollback: run main's
 immutable 46-scope consumer, restores its GOOD pointer and dispatches existing
 Pages. The existing Company Intelligence global OFF path remains available.
 
-Required product regressions retain their assertions. Existing Core news fixture
-failures (SPCX/TMUS/VZ/T, DVN/CRGY, SLYG) reproduce on baseline 440a1645 with eight
+Required product regressions retain their assertions. Historical Core news fixture
+failures (SPCX/TMUS/VZ/T, DVN/CRGY, SLYG) reproduced on baseline 440a1645 with eight
 byte-identical inputs; proof is in `evidence/full-universe-20261010/core-baseline.json`.
+Those fixtures were independently repaired in main's PR #564. The release
+operations PR #570 passed current Core, Company Intelligence, Currency, CI
+Config and Pages checks. Its final head was 7d93a80d0552870b1b2ded398528dce248158b4f,
+current with main cdfb24cb368b4707240bf397e4525de77ac13038. Vercel's separate
+build-rate-limit failure is infrastructure evidence, not a passing build;
+the production Pages package check passed.
 The only Discover protected-path exception verifies the exact mount/cleanup,
 approved-financial capability copy and footer changes byte-for-byte. Any other
 price/chart/identity change is rejected; new hook tests must independently pass.
@@ -251,6 +268,14 @@ GitHub's public-repository policy; runner minutes still matter and must be
 measured from successful complete refresh + Pages runs. Initial full browser
 acceptance is separate from the bounded canary/delta QA on routine refreshes.
 No paid provider, AI, Codex or ChatGPT runtime participates in unattended work.
+
+Of the eligible current-state issuers, 865 have exactly one safe module, including
+841 financial-only and one profile-only issuer (ACU). ACU and real financial-only
+issuers are included in the sampled browser acceptance. Manual review of the 20
+seeded ineligible decisions found 17 with no meaningful safe content and three
+with source-policy exclusions and no remaining supported KPI/module (APLM,
+SCTX, ARCL). Their actual browser cases require zero CI requests. No ineligible
+sample was promoted merely to improve a coverage number.
 
 ## Release operations corrections and cache acceptance
 
