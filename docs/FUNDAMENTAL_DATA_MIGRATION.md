@@ -167,7 +167,7 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
 ## Migrationsplan nach M-B1/M-B5/M-B6 (Stand 2026-10-08)
 
 **Status:**
-- **#481:** BLOCKED.
+- **#481:** BLOCKED (unverändert, nichts gemergt oder migriert).
   - Holdout v2 FAIL (Kern 1.19.0) und Holdout v3 FAIL (Kern 1.20.0) bleiben unverändert; v3-Post-mortem: `artifacts/FUNDAMENTAL-TTM-HOLDOUT3-POSTMORTEM.json`.
   - Kern 1.21.0 behebt F-TTM-4 (Geschäftsjahreswechsel, altes Jahresende nur als Vergleichsjahr oder per 10-KT) und F-TTM-5 (Jahreskennung nach geteiltem Predecessor/Successor-Jahr).
     - Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_121.py`.
@@ -188,10 +188,20 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
   - Ungesehene unabhängige Emittenten je Schicht (Mindestzahl 20, vorab festgelegt): Geschäftsjahreswechsel 0, Same-Day 0, Rumpfperiode 5, geteiltes Jahr 1, Übergangsbericht 2, Amendment-Kette 35. Fälle insgesamt 2.134 (Minimum 1.000).
   - Option A (frischer SEC-Stand) reicht nicht: 35 neue periodische Einreichungen, kein Übergangsbericht. Option B: kein unanalysierter Emittentenrahmen vorhanden.
   - Holdout v5 nicht gestartet. Warten auf neue SEC-Daten mit Geschäftsjahreswechseln oder einen neu abgegrenzten Rahmen.
-- **Neue, vorbestehende Defekte (dokumentiert, nicht behoben, je eigener PR):**
-  - **F-TTM-7:** Zeitraum-Kollisionen über Einreichungen in Regelformularen (14,4 % der Zufallsemittenten, Latest-/PIT-Zellen, kein TTM-Effekt nachgewiesen).
-  - **F-TTM-8:** Vergleichsspalten eines 10-KT erzeugen Phantom-Geschäftsjahresenden (38 von 375 Übergangsemittenten; fehlende statt falscher Werte).
-  - **M-2:** PIT-TTM über einen Reverse Merger mischt zwei Vorgängereinheiten (Dawson 2015).
+- **F-TTM-7, F-TTM-8 und M-2 behoben in Kern 1.23.0** (Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_123.py`, 33 Tests, je zuerst rot auf 1.22.0 bzw. dem Vorstand).
+  - **F-TTM-8** (Schicht: Kalender, `fiscal.py`). Ursache: ein Vergleichs-Jahresende auf dem Zyklus eines späteren Jahresberichts galt als Geschäftsjahresende, auch mitten im eigenen Jahr eines früher eingereichten Berichts (Zurn: umgerechnetes Kalenderjahr 2019 im 10-K 2022). PIT-Wirkung: fehlende Quartalsslots und Kurzjahre ab Einreichung des späteren Berichts, rückwirkend für alle Stichtage. Fix: so ein Ende zählt nicht, wenn es im Inneren eines früher erklärten Jahres liegt und weniger als die Hälfte der Fakten des eigenen Jahres trägt.
+  - **F-TTM-7** (Schichten: Normalisierung, Auflösung, TTM-Fenster). Ursache: eine Zelle wählte die jüngste Fassung unabhängig von Zeitraum und Konzeptklasse (Novus: anderer Zeitraum; Forestar: ProfitLoss nach NetIncomeLoss; IBKR: Q4 = Eigentümer-GJ minus konsolidierte neun Monate). PIT-Wirkung: Wert, Zeitraum oder Klasse wechselten mit jeder späteren Einreichung. Fix: Slot-Passung je Beobachtung; Auflösung unter den zum Stichtag sichtbaren Fassungen erst nach Klasse (nur wo eine Einreichung beide Klassen für die Zelle verschieden zeigt, je Klassenpaar, ab deren Verfügbarkeit), dann Passung, dann jüngste; keine Quartalsableitung und kein TTM über belegt verschiedene Klassen (klassenrein neu gelesen, Eigentümer → Stammaktionäre → inkl. Minderheiten, Flag `TTM_CLASS_<Klasse>`; sonst `TTM_CONCEPT_MISMATCH`). Vorzeichenfehler (gleicher Betrag, anderes Vorzeichen, ohne gemeldete Minderheiten dieser Größe) sind kein Klassenbeleg.
+  - **M-2** (Schicht: TTM-Fenster). Ursache: ein Fenster kombinierte Quartale zweier berichtender Einheiten (Dawson 2015: bilanzieller Erwerber neben Registrant; AgileThought 2020: SPAC neben Nachfolger). PIT-Wirkung: falsche TTM bis zur ersten vollständig restateten Reihe. Fix: `TTM_BASIS_MIXED`, wenn zwei Quellen des Fensters einen Quartalszeitraum des Fensters im selben Konzept wesentlich verschieden melden (> 10 % und > 1 % des größten Werts; je Aktie über net_income), auch nach einer klassenreinen Neulesung.
+  - Nachbarsuche: `artifacts/FUNDAMENTAL-TTM-123-NEIGHBOR-SEARCH.json` (Kalender Vollarchiv 20.438 CIKs; Kernvergleich 1.874 Emittenten mit SEC-Prüfung; PIT-Invariante: TTM aus allen Fakten = TTM aus Fakten bis zum Stichtag).
+  - Red Team (Opus, sechs Runden): `artifacts/FUNDAMENTAL-TTM-123-REDTEAM.json`. Alle CRITICAL/HIGH behoben (u. a. R3 CRITICAL-1: Klassenbelege mit Vorausschau).
+- **Freeze v8:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v8.json` (Development Freeze, Parent v7, Kern 1.23.0). Freeze v7 bleibt unverändert.
+- **Holdout v5 bleibt HOLDOUT_V5_NOT_ELIGIBLE** und wurde nicht gestartet. Die in 1.23.0 untersuchten Emittenten stehen zusätzlich auf der Ausschlussliste.
+- **Bekannte offene Kern-Defekte (nicht behoben):**
+  - Quartal mit dem 12-Monats-Wert getaggt (American Bitcoin 1755953, Q4 GJ2019): Kern summiert den Filer-Fehltag.
+  - M-2 ohne überlappenden Zeitraum: ein Vorgängerquartal ohne gemeinsame Periode mit dem Nachfolger wird nicht erkannt (AgileThought, TTM Q3 2020: SPAC-Gründungsquartal neben Nachfolgerquartalen).
+  - Klassen-Fallback: scheitert die Eigentümerlesung, erscheint das TTM in einer anderen Klasse (gekennzeichnet `TTM_CLASS_<Klasse>`) und kann vom Eigentümer-GJ abweichen (AH Realty 2016).
+  - LOW: Klassenabstände unter 0,5 % (Vorzugsdividenden) werden nicht getrennt; `fit` None zählt als 0; `_same_quarter` prüft nur Enden; Same-Day-Prüfung nach Nebenmeldungs-Lesung vergleicht gespeicherte Werte; `unplaced`-Vermerke gehen beim Rehydrieren verloren (vorbestehend); alte gespeicherte Factbooks ohne Belegdatum (durch den Versionssprung neu gebaut).
+  - Vorbestehend aus 1.20.0: canonical.py behält während AMBIGUOUS_SAME_DAY die vorige Revision; negative abgeleitete Umsatzquartale nach Restatement.
 - **Voraussetzung für Schritt 4 ff.:** ein Holdout, dessen Schichten Geschäftsjahreswechsel, Same-Day, Rumpfperioden und geteilte Jahre tatsächlich besetzen. Zum Beispiel ein frischer companyfacts-Stand mit neuen Perioden. Danach alle Gates PASS.
 - **M4** (Screener-Rangfolge `pe` → `peFy`) ist eine eigene Produktentscheidung, nicht Teil dieser Migration.
 - **#504/#505/#510** bleiben getrennt.

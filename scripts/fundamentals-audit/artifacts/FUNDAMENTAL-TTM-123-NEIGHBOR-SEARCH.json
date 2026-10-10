@@ -2,7 +2,7 @@
  "schema": "vu-fundamental-ttm-neighbor-search-1.0.0",
  "core": "1.23.0",
  "baseline": "1.22.0 (Freeze v7)",
- "head": "7a45075d1ee",
+ "head": "cf4f7c0085c",
  "fTtm8Calendar": {
   "scope": "Vollarchiv companyfacts, 20.438 CIKs, Kalender 1.22.0 vs 1.23.0",
   "issuersChanged": 33,
@@ -275,11 +275,11 @@
   ],
   "counts": {
    "latest_value_changed_other_end": 5413,
-   "latest_value_changed_same_end": 1031,
+   "latest_value_changed_same_end": 1019,
    "latest_end_changed": 475,
-   "ttm_gained": 1105,
-   "ttm_lost": 1408,
-   "ttm_value_changed": 372,
+   "ttm_lost": 1013,
+   "ttm_gained": 1353,
+   "ttm_value_changed": 516,
    "cell_new": 1529,
    "latest_value_changed_other_end_by_transition": 588,
    "latest_became_ambiguous": 1,
@@ -290,11 +290,11 @@
   },
   "issuersAffected": {
    "latest_value_changed_other_end": 400,
-   "latest_value_changed_same_end": 197,
+   "latest_value_changed_same_end": 191,
    "latest_end_changed": 177,
-   "ttm_gained": 192,
-   "ttm_lost": 303,
-   "ttm_value_changed": 106,
+   "ttm_lost": 231,
+   "ttm_gained": 230,
+   "ttm_value_changed": 137,
    "cell_new": 27,
    "latest_became_ambiguous": 1,
    "pit_history_changed": 37,
@@ -302,44 +302,26 @@
    "latest_resolved": 8
   },
   "cellLost": 0,
-  "pitDaily": {
-   "lost": {
-    "TTM_CONCEPT_MISMATCH": 366,
-    "INSUFFICIENT_HISTORY": 8,
-    "TTM_BASIS_MIXED": 133,
-    "TTM_SHARE_BASIS_INCONSISTENT": 5,
-    "TTM_EPS_INCONSISTENT": 7,
-    "TTM_PERIODS_NOT_CONTIGUOUS": 1
-   },
-   "lostIssuers": {
-    "TTM_CONCEPT_MISMATCH": 123,
-    "INSUFFICIENT_HISTORY": 7,
-    "TTM_BASIS_MIXED": 42,
-    "TTM_SHARE_BASIS_INCONSISTENT": 2,
-    "TTM_EPS_INCONSISTENT": 2,
-    "TTM_PERIODS_NOT_CONTIGUOUS": 1
-   },
-   "gained": {
-    "TTM_WINDOW_NOT_CURRENT": 68,
-    "TTM_PERIODS_NOT_CONTIGUOUS": 51,
-    "TTM_CONCEPT_MISMATCH": 558,
-    "INSUFFICIENT_HISTORY": 115,
-    "TTM_SHARE_BASIS_INCONSISTENT": 5
-   },
-   "changed": 293
-  },
   "verification": {
    "method": "SEC-Kette: vier gemeldete Quartale (77-105 Tage, juengste Fassung je Zeitraum), NetIncomeLoss bzw. ProfitLoss, Toleranz 0,5 %",
    "changedAndGained": {
-    "changed|net_income|match": 197,
-    "changed|unverifiable": 175,
+    "changed|net_income|match": 191,
+    "changed|unverifiable": 324,
+    "changed|net_income|MISMATCH": 1,
+    "gained|unverifiable": 1078,
     "gained|net_income|match": 114,
-    "gained|unverifiable": 830,
-    "gained|revenue|match": 71,
     "gained|eps_diluted|match": 89,
+    "gained|revenue|match": 71,
     "gained|net_income|MISMATCH": 1
    },
    "mismatch": [
+    [
+     "0001790625",
+     "net_income|2020-09-30",
+     -19750402.0,
+     -6669684,
+     "changed"
+    ],
     [
      "0000866121",
      "net_income|2015-03-31",
@@ -348,24 +330,78 @@
      "gained"
     ]
    ],
-   "mismatchNote": "Orbital ATK 866121 TTM Q1 2015: Kern 194,9 Mio. = Restatement im 10-KT/A 2017 (Stammaktionaere); die Pruefkette nimmt unrestated NetIncomeLoss - Kern korrekt",
+   "mismatchNote": "Orbital ATK 866121 TTM Q1 2015: Kern 194,9 Mio. = Restatement im 10-KT/A 2017; Pruefkette nimmt unrestated NetIncomeLoss - Kern korrekt. AgileThought 1790625 TTM Q3 2020: SPAC-Gruendungsquartal Q4 2019 neben Nachfolgerquartalen ohne gemeinsamen Zeitraum - offene M-2-Grenze (auch 1.22.0 gemischt, Pruefkette ebenso)",
    "lostOldValues": {
-    "lost|eps_diluted|match": 154,
-    "lost|net_income|match": 273,
     "lost|revenue|match": 279,
-    "lost|unverifiable": 668,
+    "lost|net_income|match": 269,
+    "lost|eps_diluted|match": 148,
+    "lost|unverifiable": 283,
     "lost|net_income|MISMATCH": 26,
     "lost|eps_diluted|MISMATCH": 3,
     "lost|revenue|MISMATCH": 5
    },
-   "lostNote": "Verlorene Fenster sind Verweigerungen (fehlt statt falsch). Stichproben TTM_BASIS_MIXED: UTX 2014 (Q1-Q3 2014 nach Sikorsky-Umgliederung restated, Q4 2013 alte Basis), 1433660 Q3 2023 und 916789 2016 (teilweise restated) - echte Basismischungen, die auch die naive Pruefkette mischt; TTM_CONCEPT_MISMATCH = Fenster ueber belegt verschiedene Klassen ohne klassenreine Lesung"
+   "lostNote": "Verlorene Fenster sind Verweigerungen (fehlt statt falsch). Stichproben TTM_BASIS_MIXED: UTX 2014 (Q1-Q3 2014 nach Sikorsky-Umgliederung restated, Q4 2013 alte Basis), 1433660 Q3 2023 und 916789 2016 (teilweise restated) - echte Basismischungen, die auch die naive Pruefkette mischt; TTM_CONCEPT_MISMATCH = Fenster ueber belegt verschiedene Klassen ohne klassenreine Lesung",
+   "fiscalYearCheck": {
+    "method": "TTM mit Ende am Geschaeftsjahresende gegen jeden gemeldeten 12-Monats-Wert (NetIncomeLoss/ProfitLoss/available-to-common), 0,5 %",
+    "new": {
+     "changed|no_fy": 422,
+     "changed|revenue|fy_match": 4,
+     "changed|net_income|FY_MISMATCH": 17,
+     "changed|net_income|fy_match": 71,
+     "changed|revenue|FY_MISMATCH": 2,
+     "gained|no_fy": 1004,
+     "gained|net_income|fy_match": 254,
+     "gained|net_income|FY_MISMATCH": 35,
+     "gained|revenue|fy_match": 38,
+     "gained|eps_diluted|fy_match": 12,
+     "gained|revenue|FY_MISMATCH": 5,
+     "gained|eps_diluted|FY_MISMATCH": 5
+    },
+    "oldValuesOfChanged": {
+     "changed_OLD|no_fy": 422,
+     "changed_OLD|revenue|fy_match": 5,
+     "changed_OLD|net_income|fy_match": 76,
+     "changed_OLD|net_income|FY_MISMATCH": 12,
+     "changed_OLD|revenue|FY_MISMATCH": 1,
+     "lost_OLD|no_fy": 896,
+     "lost_OLD|eps_diluted|fy_match": 5,
+     "lost_OLD|net_income|FY_MISMATCH": 54,
+     "lost_OLD|revenue|FY_MISMATCH": 23,
+     "lost_OLD|eps_diluted|FY_MISMATCH": 7,
+     "lost_OLD|net_income|fy_match": 28
+    },
+    "note": "verrauscht: einzeln restatete Quartale ergeben legitim nicht das alte GJ; bei geaenderten Fenstern 1.22.0 81/94, 1.23.0 75/94 GJ-Treffer - Abweichungen sind Eigentuemer- statt konsolidierte Lesung (Rice-artige OP-Einheiten) oder Klassen-Fallback (offen, TTM_CLASS_<Klasse>); verlorene Fenster trafen in 1.22.0 nur 41 von 126 GJ"
+   }
   },
   "fixesFromThisSearch": [
    "Markel 1096343: Eigentuemerklasse zuerst (-191.724.000)",
    "AMCOL 813621: Klassen-Fassung aus Nebenmeldungen (34.059.000)",
    "RPT Realty 842183: klassenreines Lesen ohne Klassenvorliebe der Zelle (87.560.000)",
-   "JBG Smith 1689796: feste Klassenreihenfolge"
+   "JBG Smith 1689796: feste Klassenreihenfolge",
+   "SOBR Safe 1425627: Vorzeichenfehler ist kein Klassenbeleg (-8.609.148)",
+   "AgileThought 1790625 FY2020: klassenreine Lesung auf M-2 geprueft (-26.332.000 = Nachfolger-GJ)",
+   "Lexaria 1348362: Vorzeichenfehler auch in M-2 kein Basiswechsel (-5.344.611)",
+   "1569187: gemischte Lesung weicht der naechsten Klasse (42.755.000 = GJ ProfitLoss)"
   ],
   "openFinding": "American Bitcoin 1755953: Q4 GJ2019 mit dem 12-Monats-Wert -12.403.215 getaggt (Filer-Fehltag); Kern und Pruefkette summieren ihn - kein F-TTM-7/8/M-2, als offener Defekt gefuehrt"
- }
+ },
+ "pitInvariant": {
+  "issuers": 392,
+  "errors": 1,
+  "checks": 29109,
+  "diffs": 0,
+  "asOf": "66 Quartalsstichtage 2010-2026 (Monat 02/05/08/11, Tag 20)",
+  "metrics": [
+   "net_income",
+   "eps_diluted",
+   "revenue"
+  ],
+  "rule": "TTM(as_of) aus allen Fakten == TTM(as_of) aus Fakten mit filed <= as_of (Kalender aus allen Fakten)",
+  "sample": "33 Vorausschau-Emittenten aus Red Team R3 + 360 aus dem Vergleichsset",
+  "head": "cf4f7c0085c"
+ },
+ "openFinding": [
+  "American Bitcoin 1755953: Q4 GJ2019 mit dem 12-Monats-Wert getaggt (Filer-Fehltag)",
+  "M-2 ohne ueberlappenden Zeitraum (AgileThought TTM Q3 2020)"
+ ]
 }
