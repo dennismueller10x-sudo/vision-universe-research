@@ -28,7 +28,11 @@ def audit(state, identity_root, output, as_of=None):
     store = Store(state / 'state.sqlite')
     try:
         stamp=as_of or datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
-        report, eligibility = generate(store, identities(identity_root, store), output / 'consumer', stamp, load_universe(ROOT))
+        current=identities(ROOT,store)
+        # Keep retired historical identities in the private inventory; admit new
+        # authoritative master identities without per-stock manual approval.
+        companies={**current,**identities(identity_root,store)}
+        report, eligibility = generate(store, companies, output / 'consumer', stamp, current)
     finally:
         store.close()
     after = {n: database_proof(state / n) for n in before}

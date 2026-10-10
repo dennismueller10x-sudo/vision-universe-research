@@ -16,6 +16,7 @@ export function refreshApproved(m){
 }
 export function safePublicRefresh(m,health,inventory){
  if(!refreshApproved(m))throw Error('REFRESH_APPROVAL_REQUIRED');
+ if(m.scope==='PER_ISSUER_ELIGIBILITY')inventory=Object.fromEntries(Object.entries(m.eligibility).map(([cid,r])=>[cid,{tickers:r.tickers,status:r.status,modules:r.modules}]));
  return {schema:1,status:'PASS',generation:m.generation,generatedAt:m.generatedAt,sourceUsagePolicy:m.sourceUsagePolicy,
   manifest:{schema:m.schema,generation:m.generation,generatedAt:m.generatedAt,assets:m.assets,tickers:m.tickers,
    ...(m.scope==='PER_ISSUER_ELIGIBILITY'?{scope:m.scope,eligibilityVersion:m.eligibilityVersion,eligibility:m.eligibility,sourceUsagePolicy:m.sourceUsagePolicy}:{})},inventory,

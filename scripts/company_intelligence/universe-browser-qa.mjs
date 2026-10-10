@@ -48,7 +48,7 @@ try{
    assert.equal(await chapter.locator('.ci-profile[lang=de]').count()>0,flags.profile,ticker+':profile');
    assert.equal(await chapter.locator('.ci-kpi').count()>0,flags.financials,ticker+':financials');
    assert.equal(await chapter.locator('.ci-change').count()>0,flags.whatChanged,ticker+':changes');
-   assert.equal(await chapter.locator('.ci-story[data-intelligence-type]').count()>0,flags.aktuelles,ticker+':aktuelles');
+   assert.equal(await chapter.locator('.ci-story[data-intelligence-type]:visible').count()>0,flags.aktuelles,ticker+':aktuelles');
    assert.equal(await chapter.locator('.ci-event').count()>0,flags.nextEvent,ticker+':events');
    assert.equal(await chapter.locator('.ci-missing-profile').count(),0);assert.equal(await page.locator('vu-navigation').count(),1);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+':overflow');assert.deepEqual(errors,[],ticker);
@@ -64,7 +64,7 @@ try{
  for(const ticker of sample.ineligible){
   const page=await browser.newPage({viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];
   page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker);await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',{timeout:30000});
+  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker);await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
   assert.equal(requests,0,ticker+':ineligible-request');assert.equal(await page.locator('.ci-company-intelligence').count(),0,ticker);assert.equal(await page.locator('vu-navigation').count(),1);assert.deepEqual(errors,[]);
   cases.push({ticker,status:'PASS',eligible:false,consumerRequests:0});await page.close();
  }

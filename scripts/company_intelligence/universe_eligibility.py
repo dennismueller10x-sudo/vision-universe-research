@@ -105,6 +105,8 @@ def financial_summary(value, cid, now):
         return {'state': 'UNAVAILABLE', 'reason': 'FINANCIAL_PERIOD_MISMATCH'}, 'FISCAL_PERIOD_INVALID'
     # No mixed reporting periods in one KPI card.
     metrics = {k: m for k, m in metrics.items() if not m['current'].get('periodEnd') or m['current']['periodEnd'] == end}
+    if not DISPLAY_METRICS.intersection(metrics):
+        return {'state': 'UNAVAILABLE', 'reason': 'NO_SUPPORTED_DISPLAY_METRICS'}, 'NO_SUPPORTED_DISPLAY_METRICS'
     if end < (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=730)).date().isoformat():
         return {'state': 'UNAVAILABLE', 'reason': 'FINANCIAL_PERIOD_OVER_TWO_YEARS_OLD'}, 'TOO_STALE'
     f.update(metrics=metrics, reportingPeriod=end, stale=bool(f.get('stale')) or end < (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=180)).date().isoformat())
@@ -181,6 +183,15 @@ def evaluate(raw, sources, mapping_ok=True):
     p['earningsBundles'] = bundles(p)
     p['presentations'] = [d for d in p['materials'] if d.get('type') == 'PRESENTATION']
     p['timeline'] = []  # V2 derives Aktuelles from the filtered concrete modules.
+    # Discovery endpoints are private acquisition provenance, never customer
+    # source links. Preserve the original ledger and the actual publication URL.
+    def public_provenance(value):
+        if isinstance(value, dict):
+            value.pop('discoveryUrl', None)
+            for item in value.values(): public_provenance(item)
+        elif isinstance(value, list):
+            for item in value: public_provenance(item)
+    public_provenance(p)
     p['eligibility'] = {'version': VERSION, 'modules': row['modules']}
     row['policyExcluded'] = usage['excluded']
     strong = sum(row['modules'][k] for k in ('profile', 'aktuelles', 'financials', 'nextEvent', 'calls', 'documents'))
@@ -211,7 +222,7 @@ def generate(store, companies, output, now, current_companies=None):
     ticker_owners, instrument_owners = defaultdict(set), defaultdict(set)
     current_companies = companies if current_companies is None else current_companies
     current_listings = {(cid,l['instrumentId'],l['symbol']) for cid,c in current_companies.items() for l in c['listings']}
-    for cid, c in companies.items():
+    for cid, c in current_companies.items():
         for l in c['listings']:
             ticker_owners[l['symbol']].add(cid)
             instrument_owners[l['instrumentId']].add(cid)
@@ -223,8 +234,12 @@ def generate(store, companies, output, now, current_companies=None):
         raw_counts['newsIssuers'] += bool(raw['news'])
         raw_counts['callsIssuers'] += bool(raw['calls'])
         raw_counts['materialsIssuers'] += bool(raw['materials'])
+        has_private_payload = raw['state'] != 'NO_DATA'
+        if cid in current_companies:
+            raw['listings'] = current_companies[cid]['listings']
+            raw['companyName'] = (current_companies[cid]['names'] or [None])[0]
         mapping_ok = all(len(ticker_owners[l['symbol']]) == 1 and len(instrument_owners[l['instrumentId']]) == 1
-                         and (cid,l['instrumentId'],l['symbol']) in current_listings for l in c['listings'])
+                         and (cid,l['instrumentId'],l['symbol']) in current_listings for l in raw['listings'])
         # A conflicting official root cannot authorize first-party material;
         # independently proven SEC content can still be eligible.
         official = store.state('officialSite:' + cid, {})
@@ -237,12 +252,14 @@ def generate(store, companies, output, now, current_companies=None):
             row, value = {'issuer': cid, 'status': 'INELIGIBLE_CONSUMER_INVALID', 'modules': {k: False for k in MODULES},
                           'reasons': ['CONSUMER_PROJECTION_INVALID'], 'moduleReasons': {}}, None
         row['tickers'] = [l['symbol'] for l in c['listings']]
+        if cid in current_companies:row['tickers'] = [l['symbol'] for l in current_companies[cid]['listings']]
+        row['hasPrivatePayload'] = has_private_payload
         row['profileState'] = 'GERMAN_APPROVED' if row['modules']['profile'] else row['moduleReasons'].get('profile', 'NO_SAFE_PROFILE_SOURCE')
         row['sourceState'] = 'POLLABLE_APPROVED' if any(s.get('active') and first_party(s,cid) and not publisher(s.get('url')) for s in issuer_sources) else 'REGISTERED_NOT_POLLABLE' if issuer_sources else 'NO_APPROVED_SOURCE'
         rows[cid] = row
         if value:
             values[cid] = value
-            for l in c['listings']:
+            for l in raw['listings']:
                 members.setdefault(l['symbol'], []).append({**l, 'companyId': cid})
     digest = hashlib.sha256(dumps({'version': VERSION, 'asOf': now, 'eligibility': rows, 'values': values, 'members': members}).encode()).hexdigest()[:24]
     assets = {}
@@ -264,7 +281,7 @@ def generate(store, companies, output, now, current_companies=None):
     counts = Counter(r['status'] for r in rows.values())
     module_counts = {k: sum(r['modules'][k] for r in rows.values() if r['status'].startswith('ELIGIBLE_')) for k in MODULES}
     report = {'schema': 1, 'eligibilityVersion': VERSION, 'sourceUsagePolicy': POLICY, 'generation': digest, 'asOf': now,
-              'privateIssuerCount': len(companies), 'privatePayloadCount': raw_counts['payloads'], 'privateListingCount': sum(len(c['listings']) for c in companies.values()),
+              'privateIssuerCount': raw_counts['payloads'], 'privatePayloadCount': raw_counts['payloads'], 'identityInventoryIssuerCount': len(companies), 'currentMasterIssuerCount': len(current_companies), 'privateListingCount': sum(len(c['listings']) for c in companies.values()),
               'eligibleIssuerCount': len(values), 'eligibleStockCount': len(members), 'statusCounts': dict(counts), 'moduleCounts': module_counts,
               'profileStates': dict(Counter(r['profileState'] for r in rows.values())), 'financialStates': dict(Counter(r.get('financialState', 'NOT_EVALUATED') for r in rows.values())),
               'sourceStates': dict(Counter(r['sourceState'] for r in rows.values())), 'rawCoverage': dict(raw_counts),
@@ -277,6 +294,8 @@ def generate(store, companies, output, now, current_companies=None):
               'sourceHealth': dict(Counter('BROKEN' if s.get('lastError') and any(x in s['lastError'] for x in ('404','410')) else 'TEMPORARY_FAILURE' if s.get('failureCount') else 'STALE' if (s.get('lastSuccess') or '') < (datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(days=7)).isoformat().replace('+00:00','Z') else 'HEALTHY' for s in sources)),
               'consumerBytes': sum(v['bytes'] for v in assets.values()), 'consumerAssets': len(assets), 'privateOperationalRowsIncluded': False}
     report['moduleFailureClasses'] = dict(Counter(reason for r in rows.values() for reason in r.get('moduleReasons',{}).values()))
+    report['privateStatusCounts'] = dict(Counter(r['status'] for r in rows.values() if r['hasPrivatePayload']))
+    report['identityOnlyIssuerCount'] = sum(not r['hasPrivatePayload'] for r in rows.values())
     report['ledgerInventory'] = {
         'newsRecords': store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0],
         'newsIssuers': store.db.execute("SELECT count(DISTINCT company) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0],

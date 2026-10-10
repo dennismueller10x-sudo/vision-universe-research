@@ -123,8 +123,9 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
     store=Store(state/'state.sqlite')
     try:
         companies=identities(identity_root,store)
-        current=load_universe(ROOT) if universe else companies
-        selected={cid:c for cid,c in companies.items() if cid in current and c['names'] and c['listings']==current[cid]['listings']} if universe else cohort(companies)
+        current=identities(ROOT,store) if universe else companies
+        if universe:companies={**current,**companies}
+        selected={cid:c for cid,c in current.items() if c['names']} if universe else cohort(companies)
         cids=sorted(selected)
         before=outside_proof(store.db,cids); prior=store.state('continuousRefresh',{})
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
@@ -152,10 +153,10 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             old_ir=deepcopy(store.state('ir:'+s['companyId'],{}))
             try: pipeline.ingest_source({**s,'intervalHours':hours})
             except BudgetExhausted: deferred+=1; break
-            current=next(x for x in store.sources() if x['sourceId']==s['sourceId'])
-            if s['type']=='IR_MATERIALS' and current.get('lastSuccess')==now and not current.get('lastItemCount'):
+            current_source=next(x for x in store.sources() if x['sourceId']==s['sourceId'])
+            if s['type']=='IR_MATERIALS' and current_source.get('lastSuccess')==now and not current_source.get('lastItemCount'):
                 store.set_state('ir:'+s['companyId'],old_ir)
-            outcome=source_result(current,now,unchanged=http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
+            outcome=source_result(current_source,now,unchanged=http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
             checked+=1; outcomes[outcome]+=1
             if outcome in ('SUCCESS','NO_CHANGE'):
                 lane_success[s['type']]+=1
@@ -260,11 +261,13 @@ def reproduce(state,identity_root,consumer,evidence):
     try:
         proof={name:database_proof(state/name) for name in expected['privateIntegrity']}
         if proof!=expected['privateIntegrity']: raise ValueError('FRESH_PRIVATE_TABLE_HASH_MISMATCH')
-        exported=store.export(identities(identity_root,store),state/'public/company-intelligence/data',expected['asOf'])
+        current=identities(ROOT,store) if expected.get('scope')=='PER_ISSUER_ELIGIBILITY' else identities(identity_root,store)
+        companies={**current,**identities(identity_root,store)}
+        exported=store.export(companies,state/'public/company-intelligence/data',expected['asOf'])
         if exported['generation']!=expected['sourceGeneration']: raise ValueError('FRESH_PRIVATE_GENERATION_MISMATCH')
         if expected.get('scope')=='PER_ISSUER_ELIGIBILITY':
             from company_intelligence.universe_eligibility import generate
-            report,_=generate(store,identities(identity_root,store),consumer,expected['asOf'],load_universe(ROOT))
+            report,_=generate(store,companies,consumer,expected['asOf'],current)
             result={'generation':report['generation'],'companies':report['eligibleIssuerCount']}
         else:
             spec=importlib.util.spec_from_file_location('refresh_reproduce',ROOT/'scripts/company_intelligence/prepare-public.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)

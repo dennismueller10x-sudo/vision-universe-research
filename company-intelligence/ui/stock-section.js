@@ -164,7 +164,14 @@ function mount(parent,ticker,options={}){
  const config=g.VUCompanyIntelligenceRollout;if(!config?.enabled(ticker,options))return function(){};
  const host=node('section',undefined,'dx-chapter ci-company-intelligence');host.setAttribute('aria-label','Company Intelligence');host.setAttribute('aria-busy','true');host.append(node('p','Unternehmensinformationen werden geladen …','ci-meta'));parent.append(host);
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);let disposed=false;
- g.VUCompanyIntelligence.load(ticker,{enabled:true,base:options.base||config.base,expectedGeneration:config.stage===1?config.expectedGeneration:undefined,signal:controller.signal}).then(p=>{if(!disposed&&host.isConnected)render(host,p);}).catch(()=>{if(!disposed&&host.isConnected)render(host,{state:'UNAVAILABLE'});}).finally(()=>{clearTimeout(timeout);host.setAttribute('aria-busy','false');});
+ g.VUCompanyIntelligence.load(ticker,{enabled:true,base:options.base||config.base,expectedGeneration:config.stage===1?config.expectedGeneration:undefined,signal:controller.signal}).then(p=>{
+  if(disposed||!host.isConnected)return;
+  if(config.eligibility){
+   const expected=config.eligibility[String(ticker).trim().toUpperCase()];
+   if(p.state!=='AVAILABLE'||p.companyId!==expected?.companyId||!expected?.modules||Object.keys(expected.modules).some(k=>p.eligibility?.modules?.[k]!==expected.modules[k])){host.remove();return;}
+  }
+  render(host,p);
+ }).catch(()=>{if(!disposed&&host.isConnected){if(config.eligibility)host.remove();else render(host,{state:'UNAVAILABLE'});}}).finally(()=>{clearTimeout(timeout);host.setAttribute('aria-busy','false');});
  return ()=>{disposed=true;clearTimeout(timeout);controller.abort();host.remove();};
 }
 g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType,changeLabel};

@@ -64,4 +64,16 @@ class EligibilityTests(unittest.TestCase):
         for url in ('https://localhost/x','https://10.0.0.1/x','https://site.example:bad/x','http://site.example/x','https://user:password@site.example/x'):
             self.assertFalse(safe_link(url))
 
+    def test_discovery_endpoint_is_private_but_publication_link_survives(self):
+        p=payload();n=news();n['provenance']=[{'discoveryUrl':'http://ir.tesla.com/rss','sourceUrl':URL}];p['news']=[n]
+        r,v=evaluate(p,[SOURCE]);self.assertTrue(r['modules']['aktuelles']);self.assertNotIn('discoveryUrl',v['news'][0]['provenance'][0]);self.assertEqual(v['news'][0]['canonicalUrl'],URL);self.assertIn('discoveryUrl',p['news'][0]['provenance'][0])
+
+    def test_display_metrics_must_survive_period_alignment(self):
+        f=finances();f.pop('reportingPeriod');f['metrics']['shares_outstanding']={'state':'AVAILABLE','current':{'value':100,'unit':'shares','periodEnd':'2026-09-30','filedAt':'2026-10-01','filingId':'0001318605-26-000001'}}
+        v,state=financial_summary(f,CID,NOW);self.assertEqual(v['state'],'UNAVAILABLE');self.assertEqual(state,'NO_SUPPORTED_DISPLAY_METRICS')
+
+    def test_financial_only_over_two_years_old_is_not_useful(self):
+        p=payload();f=finances();f['reportingPeriod']='2023-06-30';f['metrics']['revenue']['current']['periodEnd']='2023-06-30';p['latestFinancials']=f
+        r,v=evaluate(p,[]);self.assertEqual(r['status'],'INELIGIBLE_TOO_STALE');self.assertIsNone(v)
+
 if __name__ == '__main__': unittest.main()

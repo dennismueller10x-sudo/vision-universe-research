@@ -5,6 +5,17 @@ import {download} from './download-public.mjs';
 import {refreshApproved,refreshConfig} from './refresh-approval.mjs';
 import {createHash} from 'node:crypto';
 import {objectPool} from './bounded-objects.mjs';
+import {universeConfig} from './universe-approval.mjs';
+export const activationKey=()=>prefixFor(universeConfig.consumerNamespace)+'activation.json';
+export async function universeActive(driver){
+ if(!universeConfig.enabled)return false;
+ const b=await driver.get(activationKey());if(!b)return false;
+ const p=JSON.parse(b);
+ if(p.schema!==1||p.approvalId!==universeConfig.approvalId||!['AVAILABLE','ROLLBACK_46'].includes(p.state))throw Error('INVALID_UNIVERSE_ACTIVATION_POINTER');
+ return p.state==='AVAILABLE';
+}
+export async function activeNamespace(driver){return await universeActive(driver)?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;}
+export async function activeGood(driver){return goodState(driver,await activeNamespace(driver));}
 export const goodKey=namespace=>prefixFor(namespace)+'good.json';
 export async function goodState(driver,namespace=refreshConfig.consumerNamespace){
  const raw=await driver.get(goodKey(namespace));if(!raw)return null;

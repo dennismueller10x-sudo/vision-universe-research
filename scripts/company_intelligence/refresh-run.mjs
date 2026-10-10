@@ -14,11 +14,16 @@ import {preflight,prefixFor} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {refreshConfig,frozenInventory,refreshApproved,freshness} from './refresh-approval.mjs';
 import {goodState,goodView,downloadGood,prepareCandidate,commitGood,rollbackGood,goodKey} from './refresh-storage.mjs';
+import {activeGood,activeNamespace,universeActive,activationKey} from './refresh-storage.mjs';
+import {universeConfig} from './universe-approval.mjs';
+import {universeContracts} from './universe-contract.mjs';
+import {universeChanges} from './universe-regression.mjs';
 const json=p=>JSON.parse(readFileSync(p));const save=(p,v)=>writeFileSync(p,JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const {load}=createRequire(import.meta.url)('../../company-intelligence/api/contract.js');
 export async function consumerContracts(directory){
  const m=json(join(directory,'manifest.json'));let listings=0;
+ if(m.scope==='PER_ISSUER_ELIGIBILITY')return universeContracts(directory);
  for(const ticker of m.tickers){
   const payload=await load(ticker,{enabled:true,expectedGeneration:m.generation,base:'/',fetch:async path=>{
    if(!m.assets[path.slice(1)])return {ok:false,status:404};
@@ -36,6 +41,7 @@ function py(script,args){try{return execFileSync('python3',['scripts/company_int
  throw Error(code||'PYTHON_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
 }}
 export function validateChanges(directory,previous){
+ if(json(join(directory,'manifest.json')).scope==='PER_ISSUER_ELIGIBILITY')return universeChanges(directory,previous);
  const m=json(join(directory,'manifest.json')),old=json(join(previous,'index.json'));
  let profiles=0,news=0,issuers=0,expired=0;
  const cutoff=Date.parse(m.generatedAt)-180*86400000;
@@ -60,10 +66,12 @@ export function validateChanges(directory,previous){
  }
  return {status:'PASS',profiles,news,newsIssuers:issuers,expiredNews:expired};
 }
-export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local'}={}){
+export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false}={}){
  const start=Date.now(),root=resolve(temporary);mkdirSync(root,{recursive:true});
- const namespace=verification?'verify-continuous-top46':refreshConfig.stateNamespace;
- const consumerNamespace=verification?'verify-continuous-discover-top46':refreshConfig.consumerNamespace;
+ if(!verification)universe=await universeActive(driver);
+ const namespace=verification?(universe?'verify-universe-'+runId:'verify-continuous-top46'):refreshConfig.stateNamespace;
+ const consumerNamespace=verification?(universe?'verify-eligible-'+runId:'verify-continuous-discover-top46'):universe?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;
+ const restoreNamespace=universe?refreshConfig.stateNamespace:namespace;
  const report={schema:1,runId,startedAt:new Date(start).toISOString(),status:'PIPELINE_FAILURE',published:false,retainedLastGood:true,verification,
   sourcePolicy:refreshConfig.sourceUsagePolicy,cohortStocks:46,cohortIssuers:45,privateOperationalRowsIncluded:false};
  const state=join(root,'state'),consumer=join(root,'consumer'),old=join(root,'previous-consumer'),evidence=join(root,'engine-evidence.json');
@@ -71,23 +79,26 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  try{
   if(!refreshConfig.enabled)throw Error('REFRESH_DISABLED_BY_APPROVED_CONFIG');
   if(!verification&&(process.env.GITHUB_REF!=='refs/heads/main'||process.env.GITHUB_REPOSITORY!=='dennismueller10x-sudo/vision-universe-research'))throw Error('PRODUCTION_MAIN_ONLY');
-  const pointerKey=privatePrefix(namespace)+'index.json',initial=await driver.get(pointerKey); const good=await goodState(driver,consumerNamespace);
+  const pointerKey=privatePrefix(namespace)+'index.json',initial=await driver.get(pointerKey),restorePointer=await driver.get(privatePrefix(restoreNamespace)+'index.json'); const good=await goodState(driver,consumerNamespace);
   const snapshot=join(root,'restore.tar.gz');
-  if(initial){await sync(driver,{direction:'pull',namespace,file:snapshot});}
+  if(restorePointer){await sync(driver,{direction:'pull',namespace:restoreNamespace,file:snapshot});}
   else{
+   if(universe)throw Error('CURRENT_FULL_AUTHORITATIVE_STATE_REQUIRED');
    const result=await sync(driver,{direction:'pull',namespace:refreshConfig.bootstrapNamespace,file:snapshot});
    if(result.sha256!==refreshConfig.bootstrapSha256)throw Error('FULL_ACCEPTED_BOOTSTRAP_HASH_MISMATCH');
   }
   py('checkpoint.py',['restore','--state',state,'--snapshot',snapshot]);
   const prior=json(join(state,'latest-run.json'));report.restoredGeneration=prior.sourceGeneration||prior.export?.generation||refreshConfig.baselineGeneration;
   if(good)await downloadGood(driver,{namespace:consumerNamespace,output:old});
+  else if(universe)await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
   else await download(driver,{namespace:approval.namespace,output:old});
   stage='POLL_BUILD';
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
-  if(!network)args.push('--offline');if(financial)args.push('--financial');py('continuous_refresh.py',args);
+  if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
   report.consumerContracts=await consumerContracts(consumer);
   const checks=validateChanges(consumer,old);report.consumerChecks=checks;
+  save(join(root,'delta-qa.json'),checks);
   stage='PRIVATE_CHECKPOINT';
   const packed=join(root,'candidate.tar.gz');py('checkpoint.py',['pack','--state',state,'--snapshot',packed]);
   if(!Buffer.from(await driver.get(pointerKey)||'').equals(Buffer.from(initial||'')))throw Error('CONCURRENT_PRIVATE_GENERATION_ADVANCE');
@@ -100,17 +111,17 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const m=json(join(consumer,'manifest.json')),reproduced=json(join(freshConsumer,'manifest.json'));
   if(JSON.stringify(m)!==JSON.stringify(reproduced))throw Error('FRESH_CONSUMER_MANIFEST_MISMATCH');
   for(const path of Object.keys(m.assets))if(!readFileSync(join(consumer,path)).equals(readFileSync(join(freshConsumer,path))))throw Error('FRESH_CONSUMER_BYTES_MISMATCH');
-  m.productionApproval=refreshConfig.approvalId;m.releaseState='APPROVED_CONTROLLED_PRODUCTION';
-  m.refreshValidation={status:'PASS',profiles:checks.profiles,privateCompanies:engine.privateCompanies,checkpointSha256:hash(readFileSync(packed)),codeSha:process.env.GITHUB_SHA||'local'};
+  m.productionApproval=universe?universeConfig.approvalId:refreshConfig.approvalId;m.releaseState='APPROVED_CONTROLLED_PRODUCTION';
+  m.refreshValidation={status:'PASS',structural:'PASS',profiles:checks.profiles,privateCompanies:engine.privateCompanies,checkpointSha256:hash(readFileSync(packed)),codeSha:process.env.GITHUB_SHA||'local'};
   if(!refreshApproved(m))throw Error('REFRESH_APPROVAL_FAILED');save(join(consumer,'manifest.json'),m);preflight(consumer,m);
-  report.freshRestoreVerified=true;report.consumerGeneration=m.generation;report.newPrivateGeneration=engine.sourceGeneration;
+  report.freshRestoreVerified=true;report.consumerGeneration=m.generation;report.cohortStocks=m.tickers.length;report.cohortIssuers=Object.keys(inventory).length;report.newPrivateGeneration=engine.sourceGeneration;
   // Persist verified failure/cooldown state even during a complete upstream
   // outage. It is operational state, never authorization to advance live GOOD.
   stage='REFRESH_HEALTH';
   if(engine.status!=='SUCCESS')throw Error('NO_HEALTHY_REFRESH_LANE');
   stage='CANDIDATE_QA';
   const qa='scripts/company_intelligence/refresh-qa.mjs';
-  execFileSync('node',[qa,'--consumer',consumer,'--out',join(root,'candidate-qa.json')],{encoding:'utf8',timeout:300000,maxBuffer:1024*1024});
+  execFileSync('node',[qa,'--consumer',consumer,'--delta',join(root,'delta-qa.json'),'--out',join(root,'candidate-qa.json')],{encoding:'utf8',timeout:900000,maxBuffer:1024*1024});
   report.candidateQA=json(join(root,'candidate-qa.json'));
   if(verification){
    stage='CERTIFIED_FULL_BOOTSTRAP';
@@ -141,9 +152,13 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=createS3DriverFromEnv();
  try{
-  if(args[0]==='rollback')console.log(JSON.stringify(await rollbackGood(driver)));
+  if(args[0]==='rollback'){
+   const ns=await activeNamespace(driver);const r=await rollbackGood(driver,ns);
+   if(ns===universeConfig.consumerNamespace){const bytes=Buffer.from(JSON.stringify({schema:1,state:'ROLLBACK_46',approvalId:universeConfig.approvalId,changedAt:new Date().toISOString()}));await driver.put(activationKey(),bytes);if(!Buffer.from(await driver.get(activationKey())).equals(bytes))throw Error('UNIVERSE_ROLLBACK_READBACK_FAILED');}
+   console.log(JSON.stringify(r));
+  }
   else if(args[0]==='health'){
-   const good=await goodState(driver),raw=await driver.get(prefixFor(refreshConfig.consumerNamespace)+'observed.json');
+   const ns=await activeNamespace(driver),good=await goodState(driver,ns),raw=await driver.get(prefixFor(ns)+'observed.json');
    const observed=raw?JSON.parse(raw):{};
    const production=await productionObservation(good,observed);
    const status={schema:1,checkedAt:new Date().toISOString(),generation:good?.generation||null,
@@ -160,12 +175,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   }
   else if(args[0]==='observe'){
    const origin='https://research.visionuniverse.de',d=await(await fetch(origin+'/company-intelligence-delivery.json?observe='+Date.now())).json();
-   const good=await goodState(driver);
+   const ns=await activeNamespace(driver),good=await goodState(driver,ns);
    if(!good||d.generation!==good.generation){
     if(args.includes('--same-generation-only')){console.log('OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA');process.exit(0);}
     throw Error('OBSERVED_PRODUCTION_GENERATION_MISMATCH');
    }
-   const key=prefixFor(refreshConfig.consumerNamespace)+'observed.json';
+   const key=prefixFor(ns)+'observed.json';
    if(args.includes('--same-generation-only')){
     const prior=await driver.get(key);
     if(!prior||JSON.parse(prior).generation!==good.generation){console.log('OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA');process.exit(0);}
@@ -179,7 +194,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    }
    console.log(JSON.stringify({status:'PASS',generation:d.generation}));
   }else{
-   const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
+   const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
    console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
  }catch{console.error('CONTINUOUS_REFRESH_FAILED');process.exitCode=1;}
