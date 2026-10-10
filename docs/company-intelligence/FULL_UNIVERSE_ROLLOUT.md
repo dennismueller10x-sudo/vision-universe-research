@@ -145,8 +145,7 @@ authenticated certificate into the private runner only. Full release rerun
 38045412547 passed the two CURRENT restores and 239 candidate cases, then was
 stopped before wide deployment after revealing quadratic manifest parsing in
 the full batch download. Actual rollback probe 38047258333 caught the same
-private-manifest omission in the rollback path. PR #572 fixes both; the repeated
-actual rollback run 38048270238 is pending. No successful wide production
+private-manifest omission in the rollback path. PR #572 fixes both; actual rollback run 38048270238 passed. No successful wide production
 readback is asserted here.
 
 ## QA and sampling
@@ -361,7 +360,7 @@ Actual production rollback [38048270238](https://github.com/dennismueller10x-sud
 
 A release attempt exposed quadratic manifest validation during batch R2 download. PR #572 validates each manifest once, then preserves per-object size/hash/path/generation checks. A 5,120-issuer fixture proves one parse and exactly 5,124 reads; expiry/corruption and disabled-output assertions remain. This fixture is a reader complexity test, not private-data coverage evidence.
 
-The caller workflow verification 38049826974 covered only the legacy 46-stock scope and is not full-universe scaling acceptance. Direct full-universe isolated verification 38052669901 is pending; it does not advance production CURRENT. Full activation remains pending until its valid receipt and final production readback pass.
+The caller workflow verification 38049826974 covered only the legacy 46-stock scope and is not full-universe scaling acceptance. Direct full-universe isolated verification 38052669901 passed; it did not advance production CURRENT. Final production readback remains required before claiming full activation.
 
 ## Verified cache, release time budget and cancellation recovery
 
@@ -370,3 +369,13 @@ Run 38052669901 passed current full-source acceptance: 137 first-party plus 83 S
 Release 38054443902 passed two CURRENT restores, 239 candidate browser cases, full R2 consumer readback and the exact cached downloader: 10,827 cached assets and one remote previous-index asset. Consumer 5e377973471f23e3ddbcb535, private state dd958f61bebd9e538f5df279 unchanged. Its activation pointer was written before cancellation; it did not complete production QA. The associated Pages build 38056495026 was cancelled and actual production remained 46 / 45. Manual rollback 38056559970 succeeded and reverified actual legacy production. The candidate/certificate remains preserved for diagnosis.
 
 The measured R2 phase left insufficient reserve in the original 60-minute initial release job for Pages, the broad live matrix and rollback. PR #574 provides 120-minute initial release/rollback headroom and includes cancellation in the existing post-activation recovery condition. Continuous refresh retains its 60-minute ceiling, fixed source budgets and cadence. Fresh main release 38057137465 is pending; this is not a publication claim.
+
+## Production navigation regression and safe recovery
+
+Release 38057137465 passed two authoritative CURRENT restores, all 5,414 assets, 239 candidate browser cases, full R2 readback and 10,827 verified cached assets plus one remote previous-index asset. Its candidate was 8593d0e006012ebc19e99180. The Pages production smoke rejected the back/forward case before deployment: disposing the newly eligible PRI view aborted its same-origin prepared payload request. The old fixed cohort had not requested intelligence for that stock. No smoke assertion was weakened.
+
+The release's automatic post-activation failure handler succeeded, restoring immutable generation 71dc0485476cfa74e59f7fc3, 46 stocks /45 issuers. Private CURRENT was unchanged. Actual production HTTP readback verified the old generation after recovery.
+
+PR #576 detaches obsolete UI subscribers, preserving the existing ten-second deadline and preventing late issuer responses from changing the next view. A real browser component regression fails against the original renderer and passes against the fix: no navigation-induced abort, no late issuer mutation, deliberate timeout fails closed. All 106 Node and 25 universe Python tests pass. The production smoke is unchanged. This local component fixture is not coverage/ledger evidence.
+
+Local shell GitHub authentication expired during the release. The already-authorized GitHub app remains authenticated and preserves branches/commits/PRs without exposing or obtaining secrets. Vercel's preview build-rate-limit status is independently classified; the production deployment target remains GitHub Pages and its tests are required.
