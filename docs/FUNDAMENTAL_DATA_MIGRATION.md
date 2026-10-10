@@ -177,7 +177,16 @@ Ohne Voll-Rebuild bleiben Emittenten ohne neue Einreichung auf 1.10.0. Nach dem 
     - Alle Korrektheits-Gates sind 0 bei 5.246 Auswertungen.
     - Die präregistrierten Schicht-Gates FISCAL_CHANGE, SAME_DAY, STUB_PERIOD und SPLIT_YEAR sind nicht prüfbar (3/4/7/2 Fälle unter den Mindestzahlen).
 - **Freeze v6:** `artifacts/FUNDAMENTAL-DATA-FREEZE-v6.json` (Development Freeze, Parent v5) bleibt als gescheiterte Validierung bestehen. Freeze v5 ebenso.
-- **Neuer Defekt F-TTM-6:** Korrekturen, die nur in einem 10-KT/A stehen, fließen nicht in die Werte (16 Emittenten). Dokumentiert, nicht behoben.
+- **Holdout v4 bleibt FAIL (dauerhaft).** Die Accuracy-Gates waren sauber (FALSE_AVAILABLE, WRONG_VALUE, WRONG_CONCEPT, WRONG_PERIOD je 0; FALSE_MISSING 11,4 %). Die Spezialschichten hatten zu wenige Fälle, deshalb ist der Lauf formal FAIL. F-TTM-6 wurde außerhalb dieses Holdouts gefunden (Nachbarsuche zu 1.21.0). Keine Neuinterpretation, kein zweiter Lauf.
+- **F-TTM-6 behoben in Kern 1.22.0.**
+  - Ursache: Werte kamen nur aus `PERIODIC_FORMS`; Übergangsberichte (10-KT, 10-KT/A, 10-QT, 10-QT/A) speisten nur den Kalender, und die Änderungserkennung sah sie nicht.
+  - Fix: `provider.VALUE_FORMS`, eine Auswahlstelle (`provider.fundamental_facts`), eine Amendment-Regel für alle Formulare (Endung `/A`). Übergangswerte kommen nur mit dem Zeitraum ihrer Zelle und nur in Geschäftsjahre mit beobachteten Enden.
+  - Regressionen auf echten SEC-Daten: `scripts/quant/tests/test_ttm_core_122.py` (Orbital ATK, 8point3, Dthera, Stanley Black & Decker, Mastermind, SpartanNash).
+  - Nachbarsuche über 375 Emittenten mit Übergangsberichten: `artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json`. Red Team: `artifacts/FUNDAMENTAL-TTM-122-REDTEAM.json`.
+- **Neue, vorbestehende Defekte (dokumentiert, nicht behoben, je eigener PR):**
+  - **F-TTM-7:** Zeitraum-Kollisionen über Einreichungen in Regelformularen (14,4 % der Zufallsemittenten, Latest-/PIT-Zellen, kein TTM-Effekt nachgewiesen).
+  - **F-TTM-8:** Vergleichsspalten eines 10-KT erzeugen Phantom-Geschäftsjahresenden (38 von 375 Übergangsemittenten; fehlende statt falscher Werte).
+  - **M-2:** PIT-TTM über einen Reverse Merger mischt zwei Vorgängereinheiten (Dawson 2015).
 - **Voraussetzung für Schritt 4 ff.:** ein Holdout, dessen Schichten Geschäftsjahreswechsel, Same-Day, Rumpfperioden und geteilte Jahre tatsächlich besetzen. Zum Beispiel ein frischer companyfacts-Stand mit neuen Perioden. Danach alle Gates PASS.
 - **M4** (Screener-Rangfolge `pe` → `peFy`) ist eine eigene Produktentscheidung, nicht Teil dieser Migration.
 - **#504/#505/#510** bleiben getrennt.
