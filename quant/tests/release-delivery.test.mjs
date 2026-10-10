@@ -19,7 +19,7 @@ test('release projection preserves every existing history metric and period resu
  }
 });
 test('full SEC/fundamental stores and test fixtures cannot enter the static artifact',()=>{
- for(const path of ['quant/data/sec/consumer/a.json','quant/data/sec/canonical/a.json','quant/data/sec/inspector/a.json','quant/data/fundamentals/issuers/a.json','quant/tests/fixtures/a.json','.env','.git/config'])assert.equal(permitted(path),false,path);
+ for(const path of ['quant/data/sec/consumer/a.json','quant/data/sec/canonical/a.json','quant/data/sec/inspector/a.json','quant/data/fundamentals/issuers/a.json','quant/tests/fixtures/a.json','.env','.git/config','brand-media/originals/lea_master_original.png','brand-media/registry/asset-registry.json'])assert.equal(permitted(path),false,path);
  for(const path of ['vu2/index.html','Quant/index.html','quant/index.html','quant/app/app.js','quant/app/app.css','discover/data/stocks/NVDA.json','quant/api/product-services.js','CNAME','.nojekyll'])assert.equal(permitted(path),true,path);
  assert.equal(SEC_BUDGET,8388608);
 });
