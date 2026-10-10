@@ -240,7 +240,7 @@ function create(options){
    ['revisions','Revisions','Wie verändern sich Analystenerwartungen?',[metric('earningsRevisions','Earnings Revisions',null,'percent','LICENSED_ANALYST_PIT_NOT_AVAILABLE')]],
    ['risk','Risk','Welche Risiken zeigen die Kursdaten?',[metric('volatility','Volatilität',finite(stock.volatility?.value)?stock.volatility.value*100:null,'pct'),metric('maxDrawdown','Maximaler Drawdown',finite(stock.drawdown?.value)?Math.abs(stock.drawdown.value*100):null,'pct')]]
   ];
-  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:FactorEvidence.DERIVED_FROM,methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:FactorEvidence.DERIVED_FROM,methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/#/aktie/'+encodeURIComponent(stock.ticker)};
  }
  async function setupFor(stock){
   if(!SetupState||!stock)return null;
@@ -248,7 +248,7 @@ function create(options){
   try{return SetupState.fromCurrentSnapshot({identity:{instrumentId:stock.instrumentId,securityId:stock.masterMemberId,ticker:stock.ticker},observedAt,asOf,dataCutoff:asOf,provenance:{dataMode:'real',isMock:false,source:'vision-universe:materialized-product-data',dataVersion:'product-data-1.0.0',methodologyVersions:{setupState:'setup-state-1.0.0'},parametersHash:'0000000000000000'},evidenceRefs:[]});}catch{return null;}
  }
  function workspaces(t){const q=encodeURIComponent(t);return [
-  ['Full Chart','/quant/stock/?ticker='+q],['Technical','/quant/#/aktie/'+q+'/technik'],
+  ['Full Chart','/quant/#/aktie/'+q],['Technical','/quant/#/aktie/'+q+'/technik'],
   ['Elliott Wave','/quant/#/aktie/'+q+'/technik?elliott=1'],
   ['Historische Fundamentals','/quant/#/aktie/'+q+'/zahlen'],['Quant','/quant/#/aktie/'+q],
   ['Vergleichen','/quant/#/vergleich/'+q],['Strategie definieren','/quant/#/strategien']
