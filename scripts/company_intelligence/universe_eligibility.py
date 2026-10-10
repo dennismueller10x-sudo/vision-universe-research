@@ -12,7 +12,7 @@ import json
 import math
 from pathlib import Path
 import re
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 
 from .consumer_usage import filter_for_preview, first_party, publisher, host
 from .earnings import valid_date, valid_unit
@@ -30,6 +30,18 @@ DOCUMENT_TYPES = {'FINANCIAL_REPORT', 'ANNUAL_REPORT', 'QUARTERLY_REPORT', 'PRES
                   'MANAGEMENT_COMMENTARY', 'CALL_RECORDING', 'WEBCAST', 'EARNINGS_WEBCAST'}
 MANAGEMENT_TYPES = {'COMPANY_TRANSCRIPT', 'PREPARED_REMARKS', 'SHAREHOLDER_LETTER', 'MANAGEMENT_COMMENTARY'}
 ID = re.compile(r'(?:iss_cik_\d{10}|vu_[a-f0-9]{14})')
+
+
+def collection_link(document):
+    """An IR navigation/library URL is not an individual report or deck."""
+    if document.get('type') not in {'FINANCIAL_REPORT', 'PRESENTATION', 'ANNUAL_REPORT', 'QUARTERLY_REPORT'}:
+        return False
+    u = urlsplit(document.get('url') or '')
+    endpoint = u.path.rstrip('/').rsplit('/', 1)[-1].lower()
+    identifiers = {k.lower() for k in parse_qs(u.query)}
+    return endpoint in {'annual-reports', 'quarterly-reports', 'financial-reports', 'reports-and-filings',
+                        'annual-and-quarterly-reports-and-filings', 'sec-filings', 'financial-information',
+                        'quarterly-results', 'events-and-presentations', 'presentations', 'reports'} and not identifiers.intersection({'documentid', 'docid', 'fileid', 'eventid'})
 
 
 def safe_link(url):
@@ -167,7 +179,10 @@ def evaluate(raw, sources, mapping_ok=True, disabled=False):
     row['modules']['calls'] = bool(p['calls'])
     # Accessions alone and routine SEC links are evidence, not a meaningful
     # standalone Documents module. Preserve those only beside valid financials.
-    p['materials'] = [d for d in p['materials'] if safe_link(d.get('url')) and d.get('type') in DOCUMENT_TYPES | {'SEC_FACT_FILING_REFERENCE'}]
+    row['collectionLinksExcluded'] = sum(collection_link(d) for d in p['materials'])
+    if row['collectionLinksExcluded']:
+        row['moduleReasons']['documents'] = 'GENERIC_IR_COLLECTION_LINKS_EXCLUDED'
+    p['materials'] = [d for d in p['materials'] if safe_link(d.get('url')) and d.get('type') in DOCUMENT_TYPES | {'SEC_FACT_FILING_REFERENCE'} and not collection_link(d)]
     p['filings'] = [d for d in p['filings'] if d.get('form') in ('10-K', '10-Q', '20-F', '40-F') and safe_link(d.get('sourceUrl'))]
     meaningful_docs = [d for d in p['materials'] if d.get('type') in DOCUMENT_TYPES]
     meaningful_docs += p['filings']
@@ -295,6 +310,7 @@ def generate(store, companies, output, now, current_companies=None):
               'confirmedEventIssuers': sum(r.get('confirmedEvents',0)>0 for r in rows.values()), 'estimatedEventIssuers': sum(r.get('estimatedEvents',0)>0 for r in rows.values()),
               'managementContentIssuers': sum(r.get('managementContent',0)>0 for r in rows.values()),
               'policyExclusions': {k: sum(r.get('policyExcluded',{}).get(k,0) for r in rows.values()) for k in ('news','events','calls','materials')},
+              'collectionLinkExclusions': {'records': sum(r.get('collectionLinksExcluded',0) for r in rows.values()), 'issuers': sum(r.get('collectionLinksExcluded',0)>0 for r in rows.values())},
               'activeSourceCount': sum(bool(s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url'))) for s in sources),
               'activeSourcesByType': dict(Counter(s.get('type') for s in sources if s.get('active') and first_party(s,s.get('companyId')) and not publisher(s.get('url')))),
               'sourceHealth': dict(Counter('BROKEN' if s.get('lastError') and any(x in s['lastError'] for x in ('404','410')) else 'TEMPORARY_FAILURE' if s.get('failureCount') else 'STALE' if (s.get('lastSuccess') or '') < (datetime.fromisoformat(now.replace('Z','+00:00'))-timedelta(days=7)).isoformat().replace('+00:00','Z') else 'HEALTHY' for s in sources)),
