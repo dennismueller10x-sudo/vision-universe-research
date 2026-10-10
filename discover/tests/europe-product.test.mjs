@@ -65,6 +65,16 @@ test('actual Core accepts meaningful RAW close chart with strict inputs blocked'
   assert.equal((await s.product.series(result.data.europeRef)).data.segments.length,2);
   assert.equal(s.loads(),1);
 });
+test('public browse pagination preserves the chart and canonical detail contract',async()=>{
+  const s=fixtureSetup(),page=await s.product.browse({offset:0,limit:48});
+  assert.equal(page.state,'AVAILABLE');assert.equal(page.data.cards.length,1);assert.equal(page.data.nextOffset,null);
+  assert.deepEqual(page.data.cards[0].priceSeries.points,s.points);
+  assert.deepEqual(page.data.cards[0].priceSeries.segments,(await s.product.series(ref)).data.segments);
+  assert.equal(page.data.cards[0].priceSeries.source,'vu-core-europe');assert.equal(page.publicationAllowed,true);
+  assert.equal((await s.product.browse({offset:1,limit:48})).state,'UNAVAILABLE');
+  for(const page of [{offset:-1,limit:48},{offset:0,limit:-1},{offset:0,limit:0},{offset:0.5,limit:48}])await assert.rejects(s.product.browse(page),/INVALID_EUROPE_PAGE/);
+});
+
 test('actual Core identity-only single-point catalog never emits a visible product result',async()=>{
   const s=fixtureSetup({count:1,gap:false});
   assert.equal((await s.product.detail(id)).state,'UNAVAILABLE');

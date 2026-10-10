@@ -96,6 +96,7 @@
         fundamentals:{available:false,message:'Für dieses Wertpapier liegen noch keine vollständig geprüften und zugeordneten Fundamentaldaten vor.'},
         technicalIntelligence:{layers:{}},quantAvailable:false,technicalAvailable:false,quantMessage:QUANT_MISSING,technicalMessage:TECHNICAL_MISSING,
         why:[],indexMemberships:[],readiness:r,discoveryEligible:true,asOf:price.date,priceBasis:price.basis,basisLabel:basisLabel(price.basis),
+        priceSeries:{status:'CALCULATED',source:'vu-core-europe',priceSeriesType:price.basis,range:'1Y',asOf:price.date,points:copy(data.chart.data.points),segments:copy(data.chart.data.segments||[data.chart.data.points])},
         chartStatus:r.CHART,freshness:r.discoverFreshness||price.freshness,sessionLag:r.sessionLag??null,provenance:price.provenance,privatePreview,
         series:{source:'vu-core-europe',ref:refs.get(i.securityId),priceSeriesType:price.basis},
         disclaimer:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Informationen zur eigenen Recherche. Keine Anlageempfehlung.'});
@@ -126,12 +127,15 @@
       const current=await permission(ref.securityId);if(current.error)return current.error;
       return meaningful(result,found.data.identity,current.readiness)?available(copy(result.data),result.asOf):unavailable('MEANINGFUL_CANONICAL_CHART_REQUIRED');
     }
-    async function browse(){
-      const cards=[];
-      for(const id of refs.keys()){const found=await admitted(id);if(found.state==='AVAILABLE')cards.push(projection(found.data));}
+    async function browse(page){
+      const offset=page&&page.offset!==undefined?page.offset:0,limit=page&&page.limit!==undefined?page.limit:refs.size;
+      if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>5000)throw Error('INVALID_EUROPE_PAGE');
+      const ids=Array.from(refs.keys()).slice(offset,offset+limit),rows=new Array(ids.length);let next=0;
+      await Promise.all(Array.from({length:Math.min(6,ids.length)},async()=>{while(next<ids.length){const n=next++;const found=await admitted(ids[n]);if(found.state==='AVAILABLE')rows[n]=projection(found.data);}}));
+      const cards=rows.filter(Boolean);
       if(!cards.length)return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
-      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,title:'Europäische Aktien',
-        rule:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Geprüfte Heimatlistings mit nutzbarem Chart. Keine Vermischung mit US-Ranglisten.'});
+      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,nextOffset:offset+limit<refs.size?offset+limit:null,title:'Europäische Aktien',
+        rule:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Europäische Unternehmen und ihre Kursverläufe. Tagesschlusskurse · unbereinigt.'});
     }
     async function toggle(id){
       watch.reload();const existing=watch.values().includes(id);
