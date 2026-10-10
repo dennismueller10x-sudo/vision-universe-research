@@ -112,7 +112,7 @@ jobs:
         if: inputs.mode == 'rollback'
         run: node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/universe-release/evidence/rollback-live.json"
       - name: Fail closed to immutable 46 scope on material production failure
-        if: failure() && steps.activation.outcome == 'success'
+        if: (failure() || cancelled()) && steps.activation.outcome == 'success'
         run: |
           node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery"
           gh workflow run pages-release.yml --ref main
