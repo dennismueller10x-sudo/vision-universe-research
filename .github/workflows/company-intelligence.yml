@@ -11,7 +11,7 @@ on:
       continuous_refresh:
         description: 'Scoped autonomous refresh: verify isolated state or publish on main only'
         type: choice
-        options: [none, verify, publish, full-qa]
+        options: [none, verify, publish, full-qa, universe-audit]
         default: none
       production_release:
         description: 'Approved exact cohort: validate or publish consumer only; fresh accepted R2 restore, no crawl or polling'
@@ -80,6 +80,42 @@ concurrency:
   group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.continuous_refresh == 'verify' && format('company-intelligence-acceptance-{0}', github.run_id) || inputs.continuous_refresh == 'full-qa' && format('company-intelligence-full-qa-{0}', github.run_id) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  universe-audit:
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'universe-audit'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: abbea154a90ffece598e494530eea38661a20a95
+          path: .accepted-identities
+          sparse-checkout: |
+            company-master
+            company-intelligence
+            quant/data/universe
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Current full R2 restore twice; zero source requests or remote writes
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/universe-audit.mjs --temporary "$RUNNER_TEMP/universe-audit" --identity-root .accepted-identities
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-intelligence-universe-audit-${{ github.run_id }}
+          path: ${{ runner.temp }}/universe-audit/evidence/
+          retention-days: 14
   continuous-full-qa:
     # Read only actual production. Market-data Pages runs must not evict this
     # full structural acceptance; no source/R2 writer or deployment is involved.
