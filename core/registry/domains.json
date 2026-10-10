@@ -310,6 +310,36 @@
       "schedule": "alle 6 Stunden (isolierte Vorschau)",
       "freshness": { "kind": "none" },
       "consumers": ["/company-intelligence/ (Vorschau)"]
+    },
+    {
+      "id": "europeDiscoverDisplay",
+      "label": "Europe Discover display",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/discover/data/europe/manifest.json",
+      "timestamp": [
+        "generatedAt"
+      ],
+      "records": "securityCount",
+      "role": "Licensed normalized identity and unadjusted Close display projection; provider RAW remains private.",
+      "producer": "scripts/marketstack/europe-discover-publication.mjs",
+      "workflow": null,
+      "schedule": "manuell",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": [
+        "Discover Europe",
+        "Europe Search",
+        "Europe Watchlist",
+        "Close charts"
+      ],
+      "knownGaps": [
+        "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; bounded calendar expiry fails closed.",
+        "No Marketstack refresh schedule enabled. History/latest updates require a reviewed manual producer run.",
+        "Technical, Quant, SuperTrader and Backtesting remain separately gated."
+      ]
     }
   ]
 }

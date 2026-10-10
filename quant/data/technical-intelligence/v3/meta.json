@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-08T16:47:25.661Z",
+ "generatedAt": "2026-10-09T18:29:09.078Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,14 +43,14 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 2750,
+ "runtimeSec": 4066,
  "projection": {
-  "version": "elliott-projection-1.1.0",
+  "version": "elliott-projection-1.2.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4366,
-   "DATA_INVALID": 655,
-   "NO_PROJECTION": 69,
+   "ABSTAIN": 4538,
+   "DATA_INVALID": 450,
+   "NO_PROJECTION": 102,
    "AVAILABLE": 45
   },
   "consumerVisible": 45,
@@ -63,11 +63,52 @@
   },
   "highUpside": 0,
   "weeklyForDaily": 5,
-  "motiveAlternative": 47,
+  "explore": {
+   "securities": 3785,
+   "theses": 6778,
+   "perSecurity": {
+    "1": 1012,
+    "2": 2553,
+    "3": 220
+   },
+   "direction": {
+    "DOWN": 3472,
+    "UP": 3306
+   },
+   "type": {
+    "WAVE_3": 2430,
+    "WAVE_C": 4052,
+    "WAVE_5": 296
+   },
+   "pattern": {
+    "IMPULSE": 2430,
+    "FLAT": 2384,
+    "ZIGZAG": 1602,
+    "LEADING_DIAGONAL": 67,
+    "ENDING_DIAGONAL": 229,
+    "DOUBLE_ZIGZAG": 66
+   },
+   "failedGate": {
+    "G3": 5421,
+    "G4": 4824,
+    "G5": 2459,
+    "G2": 4581
+   },
+   "rankPct": {
+    "0-10": 1828,
+    "10-25": 2467,
+    "25-50": 2483,
+    "50-100": 0
+   },
+   "highUpside": 973
+  },
+  "splitResolved": 205,
+  "motiveAlternative": 48,
   "motiveDOWN": 42,
-  "motiveUP": 5,
+  "normalAlternative": 44,
+  "motiveUP": 6,
   "motiveHighUpside": 1,
-  "lifecycleEvents": 86,
-  "tracked": 132
+  "lifecycleEvents": 9047,
+  "tracked": 6911
  }
 }

@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "scope": "ONLY_EXISTING_46_STOCK_45_ISSUER_NEW_REFRESH_AND_ITS_DISPATCHED_PAGES_JOBS",
+  "runs": {
+    "production1": {
+      "runId": "37963602683",
+      "jobs": [
+        {
+          "name": "refresh",
+          "startedAt": "2026-10-09T17:06:21Z",
+          "completedAt": "2026-10-09T17:26:28Z",
+          "seconds": 1207.0,
+          "roundedMinutes": 21
+        }
+      ],
+      "activeSeconds": 1207.0,
+      "roundedMinutes": 21
+    },
+    "production2": {
+      "runId": "37971341333",
+      "jobs": [
+        {
+          "name": "refresh",
+          "startedAt": "2026-10-09T18:09:48Z",
+          "completedAt": "2026-10-09T18:24:21Z",
+          "seconds": 873.0,
+          "roundedMinutes": 15
+        }
+      ],
+      "activeSeconds": 873.0,
+      "roundedMinutes": 15
+    },
+    "pages1": {
+      "runId": "37964570749",
+      "jobs": [
+        {
+          "name": "package",
+          "startedAt": "2026-10-09T17:19:03Z",
+          "completedAt": "2026-10-09T17:25:09Z",
+          "seconds": 366.0,
+          "roundedMinutes": 7
+        },
+        {
+          "name": "deploy",
+          "startedAt": "2026-10-09T17:25:14Z",
+          "completedAt": "2026-10-09T17:25:59Z",
+          "seconds": 45.0,
+          "roundedMinutes": 1
+        },
+        {
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-09T17:26:02Z",
+          "completedAt": "2026-10-09T17:27:33Z",
+          "seconds": 91.0,
+          "roundedMinutes": 2
+        }
+      ],
+      "activeSeconds": 502.0,
+      "roundedMinutes": 10
+    },
+    "pages2": {
+      "runId": "37972161686",
+      "jobs": [
+        {
+          "name": "package",
+          "startedAt": "2026-10-09T18:16:52Z",
+          "completedAt": "2026-10-09T18:23:01Z",
+          "seconds": 369.0,
+          "roundedMinutes": 7
+        },
+        {
+          "name": "deploy",
+          "startedAt": "2026-10-09T18:23:06Z",
+          "completedAt": "2026-10-09T18:23:14Z",
+          "seconds": 8.0,
+          "roundedMinutes": 1
+        },
+        {
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-09T18:23:17Z",
+          "completedAt": "2026-10-09T18:24:47Z",
+          "seconds": 90.0,
+          "roundedMinutes": 2
+        }
+      ],
+      "activeSeconds": 467.0,
+      "roundedMinutes": 10
+    },
+    "health": {
+      "runId": "37966449250",
+      "jobs": [
+        {
+          "name": "health",
+          "startedAt": "2026-10-09T17:27:58Z",
+          "completedAt": "2026-10-09T17:28:07Z",
+          "seconds": 9.0,
+          "roundedMinutes": 1
+        }
+      ],
+      "activeSeconds": 9.0,
+      "roundedMinutes": 1
+    }
+  },
+  "sourceAverageMinutes": 17.333333333333332,
+  "pagesAverageActiveMinutes": 8.075,
+  "estimatedMonthlyActiveMinutes": 4600.499999999999,
+  "estimatedMonthlyRoundedJobMinutes": 5220.0,
+  "runsPerDay": 6,
+  "pricingModel": "STANDARD_LINUX_PUBLIC_REPOSITORY_NO_INCREMENTAL_COMPUTE_CHARGE",
+  "existingMarketDeploymentsIncluded": false,
+  "oneOffFullQAIncluded": false,
+  "accountBillingVerified": false,
+  "productionSampleFeedChecks": [
+    0,
+    0
+  ],
+  "productionSampleSecChecks": [
+    45,
+    45
+  ],
+  "projectionKind": "MEASURED_NO_FEED_DUE_BASELINE",
+  "dueFeedPollingAndQueueVarianceFullySampled": false,
+  "initialFullSourceProducerSeconds": 747,
+  "initialEligibleSourcesChecked": 105
+}

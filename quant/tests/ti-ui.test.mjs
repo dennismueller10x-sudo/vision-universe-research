@@ -204,7 +204,17 @@ test("AL-2 · Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobach
   assert.equal(TI.watchlistAlerts({ previousIndex: true, suppressed: null, events: ev }, ["ZZZ"]).state, "NONE");
   assert.equal(TI.watchlistAlerts(null, ["AAA"]).state, "UNAVAILABLE");
   Object.values(TI.ALERT_TEXT).forEach((t) => FORBIDDEN.forEach((re) => assert.ok(!re.test(t), t)));
-  /* Die ausgelieferte Datei (Migrationslauf Elliott 2.2 -> 3.2.1) meldet nichts Neues */
-  assert.equal(TI.watchlistAlerts(JSON.parse(read("quant/data/technical-intelligence/v3/alerts.json")), ["NVDA", "AAPL", "A"]).state, "SUPPRESSED");
+  /* The mutable published file may now be a regular run. It must obey the
+     same explicit suppression and watchlist scope contract as the fixtures. */
+  const published = JSON.parse(read("quant/data/technical-intelligence/v3/alerts.json"));
+  const watched = ["NVDA", "AAPL", "A"];
+  const actual = TI.watchlistAlerts(published, watched);
+  if (published.previousIndex !== true || published.suppressed !== null) {
+    assert.equal(actual.state, "SUPPRESSED"); assert.deepEqual(actual.events, []);
+  } else {
+    const relevant = published.events.filter((e) => watched.includes(e.symbol) && TI.ALERT_TEXT[e.type]);
+    assert.equal(actual.state, relevant.length ? "AVAILABLE" : "NONE");
+    assert.deepEqual(actual.events.map((e) => [e.symbol, e.type]), relevant.map((e) => [e.symbol, e.type]));
+  }
   assert.match(read("quant/app/pages.js"), /getWatchlistAlerts\(watched\)/);
 });

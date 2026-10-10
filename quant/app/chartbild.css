@@ -497,3 +497,21 @@
 .qd .cb-pj-motive{margin:14px 0;padding:14px;border-radius:14px;border:1px solid rgba(179,166,255,.35);background:rgba(179,166,255,.05);overflow-wrap:anywhere}
 .qd .cb-pj-motive.is-high{border-color:rgba(242,193,78,.45)} .qd .cb-pj-motive.is-high .cb-pj-alt-k{color:var(--cb-mixed)}
 .qd .cb-pj-motive .cb-pj-h{font-size:clamp(18px,4.8vw,22px)}
+/* Explore Elliott (Projection Engine 1.2.0): eingeklappt, nachrangig, neutral getönt — interessant, nicht empfehlend */
+.qd .cb-pj-explore{margin:16px 0 8px;border-top:1px dashed rgba(166,171,179,.35);padding-top:10px;overflow-wrap:anywhere;min-width:0}
+.qd .cb-pj-explore-sum{cursor:pointer;font-weight:700;font-size:14px;color:var(--cb-flat);padding:6px 0;list-style-position:inside;min-height:44px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.qd .cb-pj-explore-sum:focus-visible{outline:2px solid var(--cb-alt);outline-offset:2px;border-radius:6px}
+.qd .cb-pj-explore[open] .cb-pj-explore-sum{color:inherit}
+.qd .cb-pj-xcard{margin:10px 0;padding:12px;border-radius:12px;border:1px solid rgba(166,171,179,.28);background:rgba(166,171,179,.04);min-width:0}
+.qd .cb-pj-xcard .cb-pj-alt-k{color:var(--cb-flat)}
+.qd .cb-pj-xh{margin:0;font-size:clamp(15px,4.2vw,17px);font-weight:700;overflow-wrap:anywhere}
+.qd .cb-pj-st-explore{color:var(--cb-flat);background:rgba(166,171,179,.12)}
+.qd .cb-pj-rank{margin:2px 0 6px;font-size:13px;color:var(--cb-flat)}
+.qd .cb-pj-why{margin:6px 0 8px;padding:8px 10px;border-left:3px solid rgba(242,193,78,.55);background:rgba(242,193,78,.05);border-radius:0 8px 8px 0}
+.qd .cb-pj-why-h{margin:0 0 4px;font-size:13px;font-weight:700}
+.qd .cb-pj-why-l{margin:0;padding-left:18px;font-size:13px;line-height:1.45}
+.qd .cb-pj-xcard .cb-pj-ladder{opacity:.85}
+.qd .cb-pj-xcard .cb-pj-tier-v{font-size:15px}
+.qd .cb-pj-gates{margin:6px 0 14px}
+.qd .cb-pj-gate-ok b{color:var(--cb-up)} .qd .cb-pj-gate-bad b{color:var(--cb-mixed)}
+.qd .cb-pj-gates .cb-table{min-width:460px}.qd .cb-pj-gates .cb-table-wrap{overflow-x:auto}

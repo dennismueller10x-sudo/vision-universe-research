@@ -95,6 +95,24 @@ Alle historischen Wochendaten sind verbraucht. Ob ein Setup der Library V1 echte
 * Datenversion (Stand der Reihe, SHA-256 der verwendeten Kurse);
 * Codeversion: Git-Commit, Registry-, Ledger- und Library-Version (im RUN-Eintrag desselben Laufs).
 
+## Explore Elliott (ab Registry 1.4.0)
+
+* **Kohorte `CUSTOMER_PRODUCT_EXPLORE_ELLIOTT`:** Jede im Chartbild unter „Weitere Elliott-Lesarten“ **angezeigte** Lesart (Projection Engine 1.2.0) wird je Titel × Thesenkennung einmal eingefroren. Nicht angezeigte Kandidaten werden nicht registriert.
+* **Gespeichert werden:**
+  * Rolle: `role: "EXPLORE"`, `interpretation: "EXPLORE"`;
+  * Rang im Kandidatenpool: `rank`, `poolSize`, Platz `slot`;
+  * Leitplanken: `failedGates` (G2–G5) und `gateResults` (Wert und Schwelle je Leitplanke); `hardRules: "PASSED"`;
+  * Struktur: Wellentyp `waveType`, Muster, Welle, Grad;
+  * eingefrorene These `projectionThesis` mit Zonen, Invalidation und Bestätigung;
+  * Datenqualität: `CLEAN` oder `CLEAN_AFTER_SPLIT_RESOLUTION`, dazu die Hinweise;
+  * Versionen: Engine, Regelwerk, Projektion und Sichtbarkeit `EXPLORE_ELLIOTT_1.0.0`.
+* **Revisionen:** `PROJECTION_*` wie ab 1.2.0, an derselben Kursbasis.
+* **Bestand:** Der erste Lauf mit 1.4.0 markiert seine Explore-Ereignisse als Bestand (`initialStock`).
+* **Rollenwechsel** (EXPLORE → Motiv-Alternative → Alternative → Primär oder zurück):
+  * Im Register entsteht ein neues Ereignis in der Kohorte der neuen Rolle. Die frühere Kohorte behält ihr Ereignis unverändert.
+  * Im Lebenszyklus (`projection-theses.json`) bleibt es **dieselbe These**, mit dem angehängten Ereignis `ROLE_CHANGED` (von → nach).
+* **Unverändert:** Bestehende Ereignisse anderer Kohorten werden nicht verändert. Das Register wird nur angehängt, die Hash-Kette prüft das.
+
 ## Unveränderlichkeit
 
 * `ledger.jsonl` wird nur angehängt. Jede Zeile trägt `prevHash` und `hash` = SHA-256 über Vorgänger-Hash, Laufnummer, Typ, ID, Verweis, Woche und kanonisches JSON des Inhalts. `HEAD.json` hält den Kopf der Kette.

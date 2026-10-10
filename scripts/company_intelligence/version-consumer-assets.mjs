@@ -8,7 +8,7 @@ export function versionConsumerAssets(release) {
  for(const route of ['discover/index.html','quant/index.html']){
   const file=resolve(release,route);if(!existsSync(file))continue;
   const original=readFileSync(file,'utf8');
-  let html=original.replace(/((?:src|href)=["'])(\/company-intelligence\/(?:api\/contract\.js|ui\/stock-section\.(?:js|css)|config\/rollout\.js))(?:\?[^"']*)?(["'])/g,(_,before,path,after)=>{
+  let html=original.replace(/((?:src|href)=["'])(\/(?:company-intelligence\/(?:api\/contract\.js|ui\/stock-section\.(?:js|css)|config\/rollout\.js)|discover\/ui\/detail\.js))(?:\?[^"']*)?(["'])/g,(_,before,path,after)=>{
    const asset=resolve(release,'.'+path);if(!existsSync(asset))throw Error('LINKED_CONSUMER_ASSET_MISSING:'+path);
    return before+path+'?v='+digest(asset)+after;
   });
