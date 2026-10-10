@@ -25,7 +25,7 @@ from .model import (
     TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, TTM_BASIS_MIXED, missing,
 )
 from .registry import KIND_INSTANT
-from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, Observation, economic_class, to_instant
+from .restatements import CONTINUING_PER_SHARE, POLICY_AS_OF_LATEST, Observation, economic_class, to_instant, told_apart
 
 LOGGER = logging.getLogger("vu.sec.periods")
 
@@ -318,7 +318,10 @@ class PeriodResolver:
                 # classes is no quarter (Interactive Brokers Q4 2013: owners' FY net
                 # income 37.0 million minus nine months of consolidated profit
                 # including non-controlling interests).
-                if {economic_class(c) for c in concepts_of(current)} != \
+                cumulative_cells = [(fiscal_year, CUMULATIVE_LABELS.get(step, f"Q{step}")) for step in (index, index - 1)]
+                if self._classes_distinct(metric, cumulative_cells,
+                                          {economic_class(c) for c in concepts_of(current) | concepts_of(previous)}) and \
+                        {economic_class(c) for c in concepts_of(current)} != \
                         {economic_class(c) for c in concepts_of(previous)}:
                     continue
                 transformation = TRANSFORM_FY_MINUS_YTD if index == 4 else TRANSFORM_YTD_DIFF
@@ -542,8 +545,13 @@ class PeriodResolver:
         # EPS. Owners' net income next to consolidated profit including NCI is not
         # one sum (Interactive Brokers 2014, Amplify 2014, Seaboard 2020): read the
         # window in one concept every quarter's filing reported, otherwise no TTM.
+        # Evidence is per class pair and includes the cumulative cells a quarter is
+        # read from or derived out of (IBKR Q4 2013 from FY and nine months 2013).
         if len({economic_class(concept) for concept in concepts}) > 1 and \
-                not self._classes_shown_equal(metric, observations, concepts):
+                self._classes_distinct(metric, [(year, label) for year, index, _ in quarters
+                                                for label in {f"Q{index}", CUMULATIVE_LABELS.get(index, "Q1"),
+                                                              CUMULATIVE_LABELS.get(index - 1, "Q1")}],
+                                       {economic_class(concept) for concept in concepts}):
             same_class = self._window_in_one_class(metric, quarters, as_of, policy, lag_days, observations)
             if same_class is not None:
                 return same_class, None, ["TTM_CLASS_ALIGNED"]
@@ -581,36 +589,14 @@ class PeriodResolver:
                 return aligned, None, [f"TTM_CONCEPT_ALIGNED_{rule.concept}"]
         return observations, TTM_CONCEPT_MISMATCH, []
 
-    def _classes_shown_equal(self, metric, observations, concepts):
-        """True if, for this filer, a filing of the window reports every two classes' concepts
-        for one period with the same value (no preferred dividends, no NCI: Simpson's Q4 2018
-        income available to common equals its net income)."""
-        index = self._filing_periods(metric)
-        accessions = {obs.accession for obs in observations if obs.accession}
-        by_class = {}
-        for concept in concepts:
-            by_class.setdefault(economic_class(concept), set()).add(concept)
-        classes = sorted(by_class)
-        for k, first in enumerate(classes):
-            for second in classes[k + 1:]:
-                shown = False
-                for accession in accessions:
-                    values = index.get(accession, {})
-                    for (concept, start, end), value in values.items():
-                        if concept not in by_class[first]:
-                            continue
-                        for other in by_class[second]:
-                            twin = values.get((other, start, end))
-                            if twin is not None and abs(twin - value) <= TTM_CONCEPT_TOLERANCE * max(abs(value), 1.0):
-                                shown = True
-                                break
-                        if shown:
-                            break
-                    if shown:
-                        break
-                if not shown:
-                    return False
-        return True
+    def _classes_distinct(self, metric, cells, classes):
+        """The filer's filings show two of these economic classes with different values for any of the cells."""
+        pairs = [(a, b) for a in classes for b in classes if a < b]
+        for fiscal_year, fiscal_period in cells:
+            timeline = self.factbook.get(metric, fiscal_year, fiscal_period)
+            if timeline is not None and any(told_apart(timeline.distinguish_classes, a, b) for a, b in pairs):
+                return True
+        return False
 
     def _window_in_one_class(self, metric, quarters, as_of, policy, lag_days, observations):
         """The window's reported quarters re-read within one economic class every quarter has at as_of, or None."""

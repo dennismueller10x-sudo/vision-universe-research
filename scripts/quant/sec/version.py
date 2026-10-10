@@ -287,12 +287,16 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          ist kein Geschaeftsjahresende, wenn es im EIGENEN Geschaeftsjahr eines
 #          frueher eingereichten Jahresberichts liegt (Zurn: umgerechnetes
 #          Kalenderjahr 2019 im 10-K 2022 teilte April 2019 - Maerz 2020).
-#          F-TTM-7: eine Zelle, ein Zeitraum, ein wirtschaftliches Konzept.
-#          Kumulwerte beginnen am Geschaeftsjahresbeginn (+-7 Tage); Zeitraum und
-#          Konzeptklasse legt die Erstveroeffentlichung fest - eine spaetere
-#          Einreichung mit anderem Zeitraum (Novus) oder anderem Konzept (Forestar
-#          ProfitLoss nach NetIncomeLoss) ersetzt nicht mehr nach Juengstem; zwei
-#          Zeitraeume zum selben Zeitpunkt = AMBIGUOUS.
+#          F-TTM-7: eine Zelle gewinnt nicht mehr einfach nach Juengstem. Jede
+#          Beobachtung traegt ihre Passung zum Slot (Tage neben dem erwarteten
+#          Zeitraum); aufgeloest wird unter den zum Stichtag sichtbaren Fassungen
+#          des bestpassenden Zeitraums (Novus, Moxian), und Konzeptklassen
+#          (Eigentuemer, inkl. Minderheiten, Stammaktionaere, fortgefuehrt)
+#          werden getrennt, wo die eigenen Einreichungen des Filers sie fuer
+#          diese Zelle mit verschiedenen Werten zeigen (je Klassenpaar; Forestar,
+#          IBKR, Mobiquity). Kein Quartal aus zwei Klassen abgeleitet, kein
+#          TTM ueber zwei getrennte Klassen (klassenrein neu gelesen oder
+#          TTM_CONCEPT_MISMATCH).
 #          M-2: ein TTM-Fenster steht auf EINER berichtenden Basis: widerspricht
 #          eine neuere Einreichung des Fensters einer aelteren wesentlich (>10 %)
 #          bei einem gemeinsamen Zeitraum, ist das Fenster TTM_BASIS_MIXED
@@ -330,7 +334,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "594654a954234772922fcca3942b21012a5087230526c561315ff62037650251"
+    "034d4c46101b7a468322fee9ad8e98f708d9cbe6e9991c912b50d3c27174fef8"
 )
 
 

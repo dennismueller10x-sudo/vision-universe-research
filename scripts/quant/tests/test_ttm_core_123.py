@@ -171,6 +171,23 @@ class FTTM7CellIdentityTests(unittest.TestCase):
         self.assertTrue(fact.available, fact.reason)
         self.assertAlmostEqual(fact.value, expected, delta=1)
 
+    def test_restatement_tagged_in_another_class_is_a_version_when_the_filer_shows_no_difference(self):
+        # Mobiquity (CIK 1084267), red team 1.23.0 R2: YTD3 2021 zuerst NetIncomeLoss -8.735.146 (10-Q 2021-11-10),
+        # restated nur als ProfitLoss -7.704.023 (10-Q 0001683168-22-008319, 2022-12-09) - ohne Minderheiten. TTM durch
+        # FY2021 = SEC-Geschaeftsjahr -18.333.383 (10-K/A 0001683168-22-008139).
+        _, calendar, _, resolver = build("MOBQ")
+        fact = resolver.ttm_ending("net_income", calendar.fiscal_year_for("2021-12-31"),
+                                   calendar.quarter_index("2021-12-31"), "2099-12-31")
+        self.assertTrue(fact.available, fact.reason)
+        self.assertAlmostEqual(fact.value, -18333383.0, delta=1)
+
+    def test_tag_switch_without_class_difference_keeps_the_ttm(self):
+        # Johnson & Johnson (CIK 200406), PIT 2012-05-20: Q1 2012 ProfitLoss 3,910 Mrd. (10-Q 0000200406-12-000081),
+        # Q2-Q4 2011 NetIncomeLoss (10-K 0001193125-12-075565) - kein Klassenunterschied belegt, TTM bleibt.
+        _, _, _, resolver = build("JNJ12")
+        fact = resolver.ttm("net_income", "2012-05-20")
+        self.assertTrue(fact.available, fact.reason)
+
     def test_same_period_restatement_still_replaces(self):
         # Gleicher Zeitraum, gleiches Konzept: Entest 10-Q 2016-04-13 restated YTD2 2015 0,00 -> -0,01.
         obs = resolved("ENTEST", "eps_diluted", "2015-02-28", "YTD2")

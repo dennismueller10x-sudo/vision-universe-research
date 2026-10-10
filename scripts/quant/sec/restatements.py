@@ -85,13 +85,31 @@ def _same_period(a, b):
     return abs((day(a.period_start) - day(b.period_start)).days) <= SAME_PERIOD_DAYS
 
 
-def preferred(candidates):
-    """The candidates of the cell's economic class and best-fitting period, in their order."""
+def told_apart(distinguish_classes, first, second):
+    """Whether the filer's filings show two economic classes of a cell with different values.
+
+    True (the default before evidence is known) tells every pair apart; otherwise a
+    collection of class pairs, each a sorted 2-tuple."""
+    if first == second:
+        return False
+    if distinguish_classes is True:
+        return True
+    return tuple(sorted((first, second))) in distinguish_classes
+
+
+def preferred(candidates, distinguish_classes=True):
+    """The candidates of the cell's economic class and best-fitting period, in their order.
+
+    Classes are told apart only where the filer's own filings show them different
+    (a filing reporting owners' net income and consolidated profit for one period
+    with two values); otherwise they are one measure for this filer and the newest
+    version stands (US Premium Beef: a mis-scaled first NetIncomeLoss, then
+    ProfitLoss in every later filing)."""
     if not candidates:
         return candidates
-    primary = [obs for obs in candidates if economic_class(obs.provenance.concept) == "primary"]
-    if primary:
-        candidates = primary
+    if any(economic_class(obs.provenance.concept) == "primary" for obs in candidates):
+        candidates = [obs for obs in candidates
+                      if not told_apart(distinguish_classes, "primary", economic_class(obs.provenance.concept))]
     best = min(candidates, key=lambda obs: obs.fit if obs.fit is not None else 0)
     return [obs for obs in candidates if _same_period(obs, best)]
 
@@ -185,6 +203,8 @@ class FactTimeline:
         self.fiscal_period = fiscal_period
         self._observations = list(observations or [])
         self._sorted = False
+        # the filer's filings show this metric's economic classes with different values (1.23.0)
+        self.distinguish_classes = True
 
     @property
     def key(self):
@@ -230,7 +250,7 @@ class FactTimeline:
             candidates = [obs for obs in candidates if accept(obs)]
         if not candidates:
             return None
-        candidates = preferred(candidates)
+        candidates = preferred(candidates, self.distinguish_classes)
 
         if policy == POLICY_ORIGINAL:
             chosen = candidates[0]
@@ -276,6 +296,8 @@ class FactTimeline:
             "fiscal_year": self.fiscal_year,
             "fiscal_period": self.fiscal_period,
             "restated": self.is_restated(),
+            "distinguish_classes": self.distinguish_classes if self.distinguish_classes is True
+            else [list(pair) for pair in sorted(self.distinguish_classes)],
             "observations": [obs.to_dict() for obs in self.observations],
         }
 
