@@ -362,3 +362,11 @@ Actual production rollback [38048270238](https://github.com/dennismueller10x-sud
 A release attempt exposed quadratic manifest validation during batch R2 download. PR #572 validates each manifest once, then preserves per-object size/hash/path/generation checks. A 5,120-issuer fixture proves one parse and exactly 5,124 reads; expiry/corruption and disabled-output assertions remain. This fixture is a reader complexity test, not private-data coverage evidence.
 
 The caller workflow verification 38049826974 covered only the legacy 46-stock scope and is not full-universe scaling acceptance. Direct full-universe isolated verification 38052669901 is pending; it does not advance production CURRENT. Full activation remains pending until its valid receipt and final production readback pass.
+
+## Verified cache, release time budget and cancellation recovery
+
+Run 38052669901 passed current full-source acceptance: 137 first-party plus 83 SEC requests; 83 sources and 80 regulator issuers checked. Engine 723.595 seconds, entire isolated pipeline 1,564 seconds before production Pages/live QA. All 5,415 consumer objects and 116 browser cases passed; the 5,122-payload derivative and consumer 44d15587358ea8739ff83a76 remain isolated and are not production coverage.
+
+Release 38054443902 passed two CURRENT restores, 239 candidate browser cases, full R2 consumer readback and the exact cached downloader: 10,827 cached assets and one remote previous-index asset. Consumer 5e377973471f23e3ddbcb535, private state dd958f61bebd9e538f5df279 unchanged. Its activation pointer was written before cancellation; it did not complete production QA. The associated Pages build 38056495026 was cancelled and actual production remained 46 / 45. Manual rollback 38056559970 succeeded and reverified actual legacy production. The candidate/certificate remains preserved for diagnosis.
+
+The measured R2 phase left insufficient reserve in the original 60-minute initial release job for Pages, the broad live matrix and rollback. PR #574 provides 120-minute initial release/rollback headroom and includes cancellation in the existing post-activation recovery condition. Continuous refresh retains its 60-minute ceiling, fixed source budgets and cadence. Fresh main release 38057137465 is pending; this is not a publication claim.
