@@ -13,6 +13,8 @@ import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
 import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mjs';
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
+import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
+import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -42,7 +44,21 @@ async function restore46(){
 let activationWritten=false;
 try{
  assert.equal(process.env.GITHUB_REF,'refs/heads/main');assert.equal(process.env.GITHUB_REPOSITORY,'dennismueller10x-sudo/vision-universe-research');
- if(args[0]==='rollback'){
+ if(args[0]==='health'){
+  const good=await goodState(driver,universeConfig.consumerNamespace);assert(good,'ACCEPTED_FULL_GOOD_REQUIRED');
+  const receiptKey=prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json',receipt=JSON.parse(await driver.get(receiptKey));
+  assert.equal(receipt.status,'R2_CANDIDATE_ACCEPTED');assert.equal(receipt.generation,good.generation,'HEALTH_RECEIPT_GENERATION_MISMATCH');
+  const currentKey=privatePrefix(refreshConfig.stateNamespace)+'index.json',before=await driver.get(currentKey);
+  const snapshot=join(temporary,'health-current.tar.gz'),pulled=await sync(driver,{direction:'pull',namespace:refreshConfig.stateNamespace,file:snapshot});
+  assert.equal(pulled.status,'RESTORED');assert.equal(pulled.sha256,receipt.privateCheckpointSha256);
+  const state=join(temporary,'health-fresh-state');python('checkpoint.py',['restore','--snapshot',snapshot,'--state',state,'--sha256',pulled.sha256]);
+  const source=read(join(state,'latest-run.json'));
+  const builtAt=receipt.consumerBuiltAt||(await driver.head(receiptKey)).lastModified;
+  const health=releaseHealth(source,{privateGeneration:receipt.privateGeneration,checkpointSha256:pulled.sha256,expectedCheckpointSha256:good.manifest.refreshValidation.checkpointSha256,generatedAt:good.manifest.generatedAt,builtAt});
+  assert(Buffer.from(await driver.get(currentKey)).equals(before),'CURRENT_CHANGED_DURING_HEALTH_REPAIR');
+  const result=await updateAcceptedHealth(driver,{namespace:universeConfig.consumerNamespace,expectedGood:good,health});
+  save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
+ }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));
  }else{
   assert.equal(args[0],'activate');assert(universeConfig.enabled,'UNIVERSE_CONFIGURATION_DISABLED');
@@ -71,7 +87,9 @@ try{
   writeFileSync(join(directory,'manifest.json'),JSON.stringify(m)+'\n');preflight(directory,m);
   const previous=await goodState(driver,universeConfig.consumerNamespace);
   const candidate=await prepareCandidate(driver,{namespace:universeConfig.consumerNamespace,directory,good:previous});
-  const health=known.health;const inventory=Object.fromEntries(Object.entries(m.eligibility).map(([cid,r])=>[cid,{tickers:r.tickers,status:r.status,modules:r.modules}]));
+  const source=read(join(temporary,'first-state','latest-run.json'));
+  const health=releaseHealth(source,{privateGeneration:audit.authoritativeStateGeneration,checkpointSha256:audit.r2CheckpointSha256,expectedCheckpointSha256:m.refreshValidation.checkpointSha256,generatedAt:m.generatedAt,builtAt:new Date().toISOString()});
+  const inventory=Object.fromEntries(Object.entries(m.eligibility).map(([cid,r])=>[cid,{tickers:r.tickers,status:r.status,modules:r.modules}]));
   await commitGood(driver,{namespace:universeConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health,inventory,expectedGood:previous});
   const restored=await downloadGood(driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public')});assert.equal(restored.generation,m.generation);
   // Public downloads intentionally exclude the private validation certificate.
@@ -86,7 +104,7 @@ try{
   const cached=consumerCacheDriver(driver,restored.good,cacheRoot);
   const warm=await downloadGood(cached.driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public-cached')});
   assert.equal(warm.generation,m.generation);assert(cached.stats.cachedAssets>=Object.keys(m.assets).length);assert(cached.stats.remoteAssets<=1);
-  const certificate={schema:1,status:'R2_CANDIDATE_ACCEPTED',generation:m.generation,codeSha:process.env.GITHUB_SHA,privateGeneration:audit.authoritativeStateGeneration,privateCheckpointSha256:audit.r2CheckpointSha256,
+  const certificate={schema:1,status:'R2_CANDIDATE_ACCEPTED',generation:m.generation,codeSha:process.env.GITHUB_SHA,privateGeneration:audit.authoritativeStateGeneration,privateCheckpointSha256:audit.r2CheckpointSha256,consumerBuiltAt:health.lastSuccessfulConsumerBuild,
    rollback:{generation:known.generation,codeSha:release.sourceCommit,stocks:46,issuers:45,namespace:universeConfig.rollbackNamespace,freshReadback:true},structural,consumerCache:cached.stats,browserCases:browser.cases.length,scalingRunId:scaling.runId,changes,privateStateModified:false};
   await driver.put(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json',Buffer.from(JSON.stringify(certificate)));
   const receipt=JSON.parse(await driver.get(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json'));assert.equal(receipt.generation,m.generation);
