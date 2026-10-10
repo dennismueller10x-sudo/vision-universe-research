@@ -1,9 +1,10 @@
 // Minervini Rule Fidelity RF1 – Ursachenklassifikation der verpassten MAIN-Faelle (reproduzierbar, keine Handeintraege).
 // Eingabe: eingefrorene Replay-Ergebnisse (Universum/Trend/VCP an t*) + RF1-Validierung (SEPA auf Kern-Daten 1.23.0).
 // Regel der Zuordnung (vorab, in dieser Reihenfolge, je Fall genau eine Hauptklasse):
-//   DATA_UNIVERSE      SEPA-Daten fehlen (Auslandsemittent, Personengesellschaft ohne CIK) oder Messrahmen (MR-UNI-01) verletzt
+//   DATA_UNIVERSE      SEPA-Daten fehlen (Auslandsemittent ohne vierteljaehrliche US-GAAP-Reihe; Personengesellschaft: EPS-Tag nur in 10-K) oder Messrahmen (MR-UNI-01) verletzt
 //   PRE_PROFIT         SEPA scheitert mit SEPA_BASE_NOT_POSITIVE (Vorjahres- UND aktuelles Quartal ohne Gewinn)
 //   PRACTICE_BEYOND_RULES alle uebrigen Ablehnungen (Umsatz, Beschleunigung, RS, Basislaenge ...): Ermessen/Einstiegsart/Proxy
+// Die Klassenzahlen haengen von der Reihenfolge ab (Review F10): Wuerde BASE_TOO_SHORT vor SEPA gelten, waeren es 5/3/4 statt 7/3/2.
 // Zusatzmerkmal: vcpShortBase = VCP scheitert an BASE_TOO_SHORT (Einstiegsart Cheat/Power Play/Fortsetzung moeglich).
 // node rf1-classify.mjs <rf1-validation.json> <out.json>
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url';

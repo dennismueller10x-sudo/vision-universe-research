@@ -11,7 +11,7 @@
    "PRACTICE_BEYOND_RULES": 2
   },
   "correctedBySourceBackedRule": 0,
-  "meaning": "Keiner der 12 verpassten Faelle wird durch eine quellenbelegte Regelkorrektur zum Treffer. 7 sind Aktien ohne Gewinn, fuer die keine abrufbare Regel existiert; 3 sind Daten-/Universumsgrenzen; 2 sind Ermessen/Einstiegsart. Ein echter Formalisierungsfehler (MR-SEPA-10) wurde gefunden und korrigiert; er betrifft Verlust->Gewinn-Wenden, die in den MAIN-Faellen nicht vorkommen."
+  "meaning": "Keiner der 12 verpassten Faelle wird durch eine quellenbelegte Regelkorrektur zum Treffer. 7 sind Aktien ohne Gewinn, fuer die keine abrufbare Regel existiert; 3 sind Daten-/Universumsgrenzen; 2 sind Ermessen/Einstiegsart. Ein echter Formalisierungsfehler (MR-SEPA-10) wurde gefunden und teilweise korrigiert; er betrifft Verlust->Gewinn-Wenden, die in den MAIN-Faellen nicht vorkommen."
  },
  "recall": {
   "before": {
@@ -38,7 +38,8 @@
   "ruleLevel": {
    "MR-SEPA-10": {
     "before": "LOW",
-    "after": "MEDIUM"
+    "after": "LOW",
+    "why": "Teilkorrektur: T-A umgesetzt; das zweite Turnaround-Quartal scheitert weiter an MR-SEPA-02 (Review F3); „very strong“ nur als q0 > 0; Beschleunigung im Zweig entfaellt (VU-Entscheidung)"
    }
   },
   "areaLevel": {
@@ -51,7 +52,8 @@
     "before": "LOW",
     "after": "LOW",
     "why": "Kernregeln VCP-05 (tight and light), ENT-02, ENT-03 (Cheat), ENT-04 (Power Play) nicht umgesetzt"
-   }
+   },
+   "note": "Bereichsergebnis ist strukturell festgelegt: Auch mit MR-SEPA-10 = HIGH bliebe Fundamental LOW (Kernregeln SEPA-07/-08/-11/-12 fehlen)"
   },
   "replicationClaimAllowed": false,
   "rule": "Mechanik des Repos (fidelityByArea/classify) mit einer Kopie des Regelbuchs 1.1.0, nur MR-SEPA-10 geaendert"
@@ -67,7 +69,7 @@
     "Q-SMALLCAP-TURNAROUND"
    ],
    "finding": "Das Buch erlaubt Turnarounds ausdruecklich und nennt zwei Bedingungen (+100 % in 1-2 Quartalen bzw. TTM-EPS auf/ueber dem Altgipfel). Das Regelbuch beschreibt die Klausel selbst als zulaessig, die Umsetzung schliesst sie pauschal aus (bewusst, um keine Lesart zu erfinden, Fidelity LOW).",
-   "correction": "RF1: T-A (Wende) und T-B (Altgipfel); kein neuer Parameter",
+   "correction": "RF1: nur T-A (Wende); der Altgipfel-Zweig T-B entfiel nach dem Review (Nachtrag A2, er liess nur Verlustquartale zu). Teilkorrektur; kein neuer Parameter",
    "affected": {
     "MAIN": [],
     "SENSITIVITY_ENTRY_sepa_flips": [
@@ -78,21 +80,26 @@
    },
    "fidelityRule": {
     "before": "LOW",
-    "after": "MEDIUM",
-    "why": "Zweig mit Buchzitat umgesetzt; nicht formalisiert: „near“ (Altgipfel), „very strong“ (nur q0 > 0), Beschleunigung im Zweig (V1 entfaellt), Lookback des Altgipfels = gesamte PIT-Historie"
+    "after": "LOW",
+    "why": "Teilkorrektur: T-A umgesetzt; das zweite Turnaround-Quartal scheitert weiter an MR-SEPA-02 (Review F3); „very strong“ nur als q0 > 0; Beschleunigung im Zweig entfaellt (VU-Entscheidung)"
    },
-   "knownWeakness": "T-A ist grosszuegig: 25 % der Zulassungen haben q0-EPS < 0,05 USD, 18 % Nettomarge < 2 % (Populationstest). Nicht korrigiert, weil jede Verschaerfung eine ungequellte Zahl braeuchte."
+   "knownWeakness": "T-A ist grosszuegig: 25 % der Zulassungen haben q0-EPS < 0,05 USD, 18 % Nettomarge < 2 % (Populationstest). Nicht korrigiert, weil jede Verschaerfung eine ungequellte Zahl braeuchte.",
+   "knownGaps": [
+    "Zweites Turnaround-Quartal: MR-SEPA-02 lehnt weiter ab (SEPA_ACCEL_NOT_DEMONSTRABLE); im Populationstest betrifft das 168 von 375 solchen Ablehnungen der eingefrorenen Version (Review F3)",
+    "Das Buch nennt im Turnaround-Abschnitt auch Beschleunigung („acceleration in the growth rate in the most recent couple of quarters“); der Verzicht darauf in V1 ist eine VU-Entscheidung"
+   ],
+   "readingDependence": "Q-TURN-B verlangt +100 % „in the most recent one or two quarters“. Unter der q0-Lesart bleiben alle 7 abgelehnt; unter der Lesart „q0 oder Vorquartal“ erfuellt TNDM das Vorquartal (+0,04 gegen +0,02), bleibt aber an BASE_TOO_SHORT (7) gesperrt (Review F4)."
   },
   {
    "rule": "MR-SEPA-00/MR-SEPA-10 (Loss->Loss)",
    "topic": "Wachstumstitel ohne Gewinn (Vorjahr UND aktuelles Quartal negativ)",
-   "verdict": "NO_WRITTEN_RULE",
+   "verdict": "NO_EXPLICIT_ENTRY_RULE_FOUND",
    "evidence": [
     "Q-POWERPLAY-FUND",
     "Q-TRACKRECORD",
     "Q-AMAZON-1997"
    ],
-   "finding": "In den abrufbaren Quellen gibt es keine Eintrittsregel fuer Aktien ohne Gewinn ausser dem Power Play („the only situation I will enter with a dearth of fundamentals“). Minervinis eigene Kaeufe zeigen es dennoch (7 von 15 MAIN-Faellen; Amazon 1997). Die Turnaround-Klausel deckt sie nicht ab: Sie verlangt „very strong“ aktuelle Gewinne, die Faelle sind Loss->Loss.",
+   "finding": "In den abgerufenen Highlights und Notizen steht keine ausdrueckliche Eintrittsregel fuer Aktien ohne Gewinn ausser dem Power Play („dearth of fundamentals“, nicht „no earnings“). Die Turnaround-Passage denkt Unternehmen mit, die noch Verluste schreiben („how long it can last while running in the red“) und nennt Beschleunigung und zwei Quartale starker Gewinnsteigerung; ob sie Verlust-Verengung einschliesst, ist leseabhaengig. Die Notizen zaehlen Biotech zu den fuehrenden Gruppen. Minervinis Kaeufe zeigen es (7 von 15 MAIN-Faellen; Amazon 1997). Die Buecher wurden nicht gelesen: „keine Regel gefunden“ ist nicht „keine Regel“.",
    "correction": "keine (keine Quelle fuer eine Regel)",
    "affected": {
     "MAIN": [
@@ -190,7 +197,7 @@
      "GT-018 DECK (3)"
     ]
    },
-   "caveat": "Die Pruefung bricht VOR der Kontraktionsanalyse ab; ob in diesen Faellen gueltige Kontraktionen vorliegen, ist aus den Ergebnissen nicht erkennbar. Das Buch nennt kuerzere Strukturen fuer andere Einstiege (Power Play: „some can emerge after only 12 days“; 3C-Cheat-Bereich)."
+   "caveat": "Die Pruefung bricht VOR der Kontraktionsanalyse ab; ob in diesen Faellen gueltige Kontraktionen vorliegen, ist aus den Ergebnissen nicht erkennbar. Das Buch nennt kuerzere Strukturen fuer andere Einstiege (Power Play: „some can emerge after only 12 days“; 3C-Cheat-Bereich). Die Basislaenge wird ab dem hoechsten Hoch der letzten 225 Sitzungen gemessen (MR-VCP-08, Quellenstaerke NONE): Jede Bewertung innerhalb von 15 Sitzungen nach einem neuen Hoch ist per Konstruktion BASE_TOO_SHORT. Die Schwelle ist belegt, die Messung ist nie gegen Minervinis Basisbeginn getestet (Review F5); die Etiketten „Basis zu kurz“ bei DECK, RICK, TNDM, RVNC sind unbestaetigt."
   },
   {
    "rule": "MR-VCP-01 (Obergrenze 225 Sitzungen)",
@@ -312,7 +319,8 @@
   "preregisteredPredictions": {
    "total": 33,
    "passed": 33,
-   "failed": []
+   "failed": [],
+   "label": "Konsistenzpruefungen (aus Regeldefinition und bekannten Fallwerten abgeleitet), keine blinden Vorhersagen"
   },
   "populationProperty": {
    "issuers": 504,
@@ -320,9 +328,10 @@
    "violations": 0,
    "errors": 0,
    "sepa10Rejections": 6691,
-   "lossToLossShare": 0.838,
-   "admitShare": 0.09,
-   "revenueBlockedShare": 0.071
+   "lossToLossShare": 0.848,
+   "admitShare": 0.087,
+   "revenueBlockedShare": 0.065,
+   "note": "T-B entfaellt (Nachtrag A2); Eigenschaften (2) und (4) gelten per Konstruktion des Wrappers, (3) ist der inhaltliche Test"
   }
  },
  "notMeasured": [
@@ -336,5 +345,29 @@
   "Ground Truth aus Suchausschnitten, Quellenstaerke MEDIUM; „ist positioniert“ nennt den Kaufstag nicht",
   "Keine Aussage Minervinis zur Fundamentalbasis dieser Kaeufe",
   "Buecher nicht im Volltext gelesen; Zitate aus Leserhighlights/Blognotizen"
- ]
+ ],
+ "classificationNote": "Die Klassenzahlen 7/3/2 haengen von der Zuordnungsreihenfolge ab (Daten, kein Gewinn, uebrige). Mit BASE_TOO_SHORT vor SEPA waeren es 5/3/4 (Review F10).",
+ "detectionNote": "Die 3 Treffer sind 2 verschiedene Titel (AMD zweimal, AMZN) von 14 Titeln (Review F12); AMD 22.07. wird trotz VCP-Ablehnung an t* erkannt.",
+ "review": {
+  "reviewer": "adversarialer Opus-Review, 1 Runde",
+  "findings": {
+   "HIGH": 3,
+   "MEDIUM": 4,
+   "LOW": 5
+  },
+  "dispositions": {
+   "F1": "§7 auf das vorab registrierte Label NOT_FEASIBLE_FROM_PUBLIC_RULES umgestellt",
+   "F2": "T-B entfernt (Nachtrag A2), Regression RF1-T-NO-LOSS-ADMISSION",
+   "F3": "als bekannte Luecke dokumentiert, Test RF1-T-SECOND-QUARTER-GAP, MR-SEPA-10 bleibt LOW",
+   "F4": "Lesartabhaengigkeit ausgewiesen",
+   "F5": "Messartefakt der Basislaenge ausgewiesen",
+   "F6": "Verdikt auf „keine ausdrueckliche Regel gefunden“ abgeschwaecht, V1-Begruendung korrigiert",
+   "F7": "„bestaetigt“ durch „Konsistenzpruefungen“ ersetzt",
+   "F8": "Split-Bereinigung in V2, Test RF1-T-V2-SPLIT",
+   "F9": "Bereichsergebnis als strukturell festgelegt ausgewiesen",
+   "F10": "Reihenfolgeabhaengigkeit ausgewiesen",
+   "F11": "Kommentar korrigiert",
+   "F12": "Fussnote"
+  }
+ }
 }

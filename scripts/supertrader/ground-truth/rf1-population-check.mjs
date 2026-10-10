@@ -1,6 +1,7 @@
 // Eigenschaftstest fuer RF1 auf einer Population oeffentlicher SEC-Daten (keine Kurse, kein Ground-Truth-Fall).
 // Eigenschaften: (1) keine Ausnahme, (2) jeder Unterschied zu 1.1.0 liegt im Fall 1.1.0 == MR-SEPA-10, (3) RF1-Pass im Turnaround-Zweig
-// bedeutet q0 > 0 und Vorjahres-EPS <= 0 (T-A) bzw. q0 > Vorjahr und TTM >= positiver Altgipfel (T-B), (4) 1.1.0-Pass bleibt Pass.
+// bedeutet q0 > 0 und Vorjahres-EPS <= 0 (T-A; Nachtrag A2 ohne T-B), (4) 1.1.0-Pass bleibt Pass.
+// Hinweis (Review F7): (2) und (4) gelten per Konstruktion des Wrappers; (3) ist der inhaltliche Test.
 // node rf1-population-check.mjs <cf-dir> <out.json>
 import fs from 'node:fs'; import path from 'node:path'; import zlib from 'node:zlib';
 import { P } from '../replication/minervini-1.1/params.mjs';
@@ -28,7 +29,7 @@ for (const f of fs.readdirSync(DIR).filter((x) => x.endsWith('.json.gz'))) {
     if (b.ok) {
       const br = t?.branch; if (br === 'T-A') { stat.taEps.push(b.facts.epsCurrent); const m = b.facts.margins?.net?.margin; if (Number.isFinite(m)) stat.taMarginPct.push(m * 100); } stat.rf1Admits[br] = (stat.rf1Admits[br] || 0) + 1; const y = day.slice(0, 4); stat.byYear[y] = (stat.byYear[y] || 0) + 1;
       if (br === 'T-A' && !(b.facts.epsCurrent > 0 && b.facts.epsBase <= 0)) stat.violations.push({ f, day, why: 'T-A ohne Wende', facts: b.facts });
-      if (br === 'T-B' && !(t.ttm >= t.peak && t.peak > 0 && b.facts.epsCurrent > b.facts.epsBase)) stat.violations.push({ f, day, why: 'T-B verletzt Definition', t });
+      if (br !== 'T-A') stat.violations.push({ f, day, why: 'unbekannter Zweig', br });
     } else if (b.ruleId === 'MR-SEPA-04' || b.ruleId === 'MR-SEPA-00') { stat.rf1AdmitStillRejectedByRevenue++; }
     else stat.rf1Stay++;
   }

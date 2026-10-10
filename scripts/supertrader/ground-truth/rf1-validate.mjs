@@ -95,5 +95,5 @@ const summary = {
 };
 fs.writeFileSync(OUT, JSON.stringify(summary, null, 1));
 console.log(`evaluated ${summary.evaluated}/${summary.cases}; SEPA flipped V1: ${summary.sepaFlippedV1.join(',') || '-'} | V2: ${summary.sepaFlippedV2.join(',') || '-'}`);
-console.log(`predictions: ${summary.predictionChecks.passed}/${summary.predictionChecks.total} passed`);
+console.log(`consistency checks (derived from the rule definition and known case values, Review F7): ${summary.predictionChecks.passed}/${summary.predictionChecks.total} passed`);
 for (const c of checks) if (!c.ok) console.log('  FAIL:', c.name, JSON.stringify(c.detail));

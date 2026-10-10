@@ -6,16 +6,17 @@
 // unveraendert; diese Datei umhuellt evaluateSepa und greift nur, wenn die eingefrorene Pruefung
 // mit MR-SEPA-10 (Vorjahres-EPS nicht positiv) endet. Jeder andere Pfad ist bitgleich 1.1.0.
 //
-// Klausel (Vorjahresquartals-EPS <= 0, q0-EPS vorhanden):
+// Klausel (Vorjahresquartals-EPS <= 0, q0-EPS vorhanden), nach Nachtrag A2 nur noch T-A:
 //   T-A (Wende):    Vorjahres-EPS <= 0 und q0-EPS > 0. Die Verbesserung gegen |Basis| ist dann > 100 %
 //                   („+100 percent or better in the most recent one or two quarters“, Q-TURN-B).
-//   T-B (Altgipfel): q0-EPS > Vorjahres-EPS und TTM-EPS(q0) >= hoechster frueherer TTM-EPS, der > 0 ist
-//                   („one quarter that is up enough to move the trailing 12-month EPS to near or above its
-//                   old peak“, Q-TURN-A). „near“ wird nicht formalisiert, nur „at or above“.
+//   Der „Altgipfel“-Zweig (Q-TURN-A, TTM-EPS auf/ueber dem frueheren Gipfel) entfaellt: Mit q0 > 0 ist er neben T-A
+//   redundant; ohne q0 > 0 liesse er Verlustquartale zu und widerspraeche „very strong“ (Review F2).
 // Beschleunigung (MR-SEPA-02) im Turnaround-Zweig:
-//   'WAIVED' (primaer, V1): entfaellt, weil g0 auf nichtpositiver Basis nicht definiert ist und die
-//                   Turnaround-Kriterien des Buchs keine Beschleunigung nennen.
-//   'SWING'  (Sensitivitaet, V2): g = (e - Basis)/|Basis|, g0 > g1 bleibt Pflicht.
+//   'WAIVED' (primaer, V1): entfaellt, weil g0 auf nichtpositiver Basis nicht definiert ist. VU-Entscheidung: Die Notizen
+//                   nennen im Turnaround-Abschnitt durchaus Beschleunigung (Review F6).
+//   'SWING'  (Sensitivitaet, V2): g = (e - Basis)/|Basis|, g0 > g1 bleibt Pflicht (Basis des Vorquartals splitbereinigt).
+// Bekannte Luecke (Review F3): Im zweiten Turnaround-Quartal (Basis von q0 > 0, Basis des Vorquartals <= 0) scheitert
+// MR-SEPA-02 weiter mit SEPA_ACCEL_NOT_DEMONSTRABLE. RF1 ist eine Teilkorrektur.
 // Unveraendert danach: MR-SEPA-04 (Umsatz > Vorjahresquartal), nur Protokoll: Margen, Code 33.
 // Loss -> Loss (q0 <= 0) bleibt SEPA_BASE_NOT_POSITIVE. Es entsteht kein neuer Parameter.
 import { ROW } from '../minervini/sec-facts.mjs';
@@ -35,34 +36,8 @@ function byEnd(rows, target, tol) {
 }
 const previousQuarter = (rows, q, tol) => { const r = byEnd(rows, shift(q[ROW.END], QUARTER_DAYS), tol); return r && r !== q ? r : null; };
 
-// EPS-Wert eines Quartals auf die Aktienbasis von q0 gebracht (Split zwischen der Einreichung von row und q0).
-// null = nicht bestimmbar (Split-Historie unbekannt oder abgeleitetes Q4 ueber einen Split).
-function adjusted(row, q0, splitRatio) {
-  if (row[ROW.DERIVED] === 1) {
-    const s = splitRatio(row[ROW.COMPONENTS_FROM], row[ROW.FILED]);
-    if (s === null || Math.abs(s - 1) > 1e-9) return null;
-  }
-  if (row === q0) return row[ROW.VALUE];
-  const s = splitRatio(row[ROW.FILED], q0[ROW.FILED]);
-  return s === null ? null : row[ROW.VALUE] / s;
-}
-
-// TTM-EPS je Quartal mit vier lueckenlosen Quartalen, auf die Aktienbasis von q0 gebracht.
-export function ttmSeries(eps, q0, splitRatio, tol) {
-  const out = new Map();
-  for (const r of eps) {
-    if (r[ROW.END] > q0[ROW.END]) continue;
-    const chain = [r];
-    while (chain.length < 4) { const p = previousQuarter(eps, chain[chain.length - 1], tol); if (!p) break; chain.push(p); }
-    if (chain.length < 4) continue;
-    const vals = chain.map((c) => adjusted(c, q0, splitRatio));
-    if (vals.some((v) => v === null)) continue;
-    out.set(r[ROW.END], vals.reduce((s, v) => s + v, 0));
-  }
-  return out;
-}
-
 function swingGrowth(e, base) { return base === 0 ? null : (e - base) / Math.abs(base); }
+const safeRatio = (f, a, b) => { const r = f(a, b); return r === null || !Number.isFinite(r) ? null : r; };
 
 export function evaluateSepaRf1(fund, execDate, splitRatio, P, opts = {}) {
   const acceleration = opts.acceleration || 'WAIVED';
@@ -79,26 +54,22 @@ export function evaluateSepaRf1(fund, execDate, splitRatio, P, opts = {}) {
 
   const facts = { ...frozen.facts, epsBase: base, epsCurrent: cur };
   const tA = cur > 0;
-  let tB = false, peak = null, ttm = null;
-  if (!tA && cur > base) {
-    const series = ttmSeries(eps, q0, splitRatio, tol);
-    ttm = series.get(q0[ROW.END]) ?? null;
-    const earlier = [...series.entries()].filter(([end]) => end < q0[ROW.END]).map(([, v]) => v);
-    peak = earlier.length ? Math.max(...earlier) : null;
-    tB = ttm !== null && peak !== null && peak > 0 && ttm >= peak;
-  }
-  if (!tA && !tB) return { ok: false, ruleId: 'MR-SEPA-10', reason: 'SEPA_BASE_NOT_POSITIVE', facts: { ...facts, turnaround: { branch: null, ttm, peak } } };
-  const branch = tA ? 'T-A' : 'T-B';
-  facts.turnaround = { branch, ttm, peak };
+  if (!tA) return { ok: false, ruleId: 'MR-SEPA-10', reason: 'SEPA_BASE_NOT_POSITIVE', facts: { ...facts, turnaround: { branch: null } } };
+  facts.turnaround = { branch: 'T-A' };
 
   if (acceleration === 'SWING') {
-    const g0 = swingGrowth(cur, base);
+    // Basen werden auf die Aktienbasis des jeweiligen Quartals gebracht (Split zwischen den Einreichungen); unbestimmbar -> nicht nachweisbar.
+    const sr0 = safeRatio(splitRatio, prior[ROW.FILED], q0[ROW.FILED]);
+    const g0 = sr0 === null ? null : swingGrowth(cur, base / sr0);
     const q1 = previousQuarter(eps, q0, tol);
     const p1 = q1 && byEnd(eps, shift(q1[ROW.END], YEAR_DAYS), tol);
-    const b1 = p1 && p1 !== q1 ? p1[ROW.VALUE] : null;
-    const g1 = b1 === null ? null : (b1 > 0 ? q1[ROW.VALUE] / (b1 / (splitRatio(p1[ROW.FILED], q1[ROW.FILED]) ?? NaN)) - 1 : swingGrowth(q1[ROW.VALUE], b1));
-    facts.epsGrowth = g0; facts.epsGrowthPrev = g1 !== null && Number.isFinite(g1) ? g1 : null;
-    if (facts.epsGrowthPrev === null) return { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_ACCEL_NOT_DEMONSTRABLE', facts };
+    let g1 = null;
+    if (q1 && p1 && p1 !== q1 && q1[ROW.DERIVED] !== 1 && p1[ROW.DERIVED] !== 1) {
+      const sr1 = safeRatio(splitRatio, p1[ROW.FILED], q1[ROW.FILED]);
+      if (sr1 !== null) g1 = swingGrowth(q1[ROW.VALUE], p1[ROW.VALUE] / sr1);
+    }
+    facts.epsGrowth = g0; facts.epsGrowthPrev = g1;
+    if (g0 === null || g1 === null) return { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_ACCEL_NOT_DEMONSTRABLE', facts };
     if (!(g0 > g1)) return { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_NO_ACCELERATION', facts };
   }
 

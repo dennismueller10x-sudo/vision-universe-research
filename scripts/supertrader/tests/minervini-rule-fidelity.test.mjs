@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { P, PARAM_TABLE } from '../replication/minervini-1.1/params.mjs';
 import { ROW } from '../replication/minervini/sec-facts.mjs';
 import { evaluateSepa } from '../replication/minervini/sepa.mjs';
-import { evaluateSepaRf1, ttmSeries, VERSION } from '../replication/minervini-1.2-rf1/sepa-turnaround.mjs';
+import { evaluateSepaRf1, VERSION } from '../replication/minervini-1.2-rf1/sepa-turnaround.mjs';
 import { verifyFreeze } from '../replication/minervini-1.1/freeze.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -86,38 +86,6 @@ test('RF1-T-PIT: nicht sichtbare Werte zaehlen nicht (Einreichung am Ausfuehrung
   assert.equal(evaluateSepaRf1(f, next, noSplit, P).ok, true);
 });
 
-test('RF1-T-TB: Verlustquartal ohne Gewinn, aber besser als Vorjahr und TTM auf Altgipfel -> T-B', () => {
-  // frueherer Gipfel: TTM 4.0 (je Quartal 1.0). Vorjahr -0.2, jetzt -0.1 (besser), TTM aber nur dann >= Gipfel, wenn Rest hoch ist
-  const eps = [1, 1, 1, 1, 1, 1, 1, 1, -0.2, 2.0, 2.0, 2.0, -0.1];
-  const r = evaluateSepaRf1(fund(eps), EXEC, noSplit, P);
-  assert.equal(r.ok, true, r.reason);
-  assert.equal(r.facts.turnaround.branch, 'T-B');
-  assert.ok(r.facts.turnaround.ttm >= r.facts.turnaround.peak && r.facts.turnaround.peak > 0);
-});
-
-test('RF1-T-TB-NOPEAK: ohne positive Vorgeschichte (reiner Verlustverlauf) ist T-B nicht erfuellbar', () => {
-  const eps = [-1, -1, -1, -1, -1, -1, -1, -1, -0.5, -0.4, -0.3, -0.2, -0.1];
-  const r = evaluateSepaRf1(fund(eps), EXEC, noSplit, P);
-  assert.equal(r.ok, false); assert.equal(r.facts.turnaround.branch, null);
-});
-
-test('RF1-T-TB-NOTUP: q0 nicht besser als das Vorjahresquartal -> T-B scheitert trotz Rekord-TTM (Nachtrag A1)', () => {
-  const eps = [1, 1, 1, 1, 1, 1, 1, 1, -0.1, 3.0, 3.0, 3.0, -0.2];
-  const r = evaluateSepaRf1(fund(eps), EXEC, noSplit, P);
-  assert.equal(r.ok, false); assert.equal(r.ruleId, 'MR-SEPA-10');
-});
-
-test('RF1-T-TTM-SPLIT: aeltere EPS werden mit dem Split-Verhaeltnis auf die Aktienbasis von q0 gebracht', () => {
-  const f = fund([1, 1, 1, 1, 1, 1, 1, 1, -0.2, 2.0, 2.0, 2.0, -0.1]);
-  const half = (from, to) => (from < '2022-09-01' && to >= '2022-09-01' ? 2 : 1); // 2:1-Split am 2022-09-01
-  const q0 = f.eps.at(-1);
-  const a = ttmSeries(f.eps, q0, noSplit, 20).get('2023-03-31');
-  const b = ttmSeries(f.eps, q0, half, 20).get('2023-03-31');
-  assert.ok(b < a, 'nach dem Split ist die Summe auf der neuen Basis kleiner');
-  const unknown = () => null;
-  assert.equal(ttmSeries(f.eps, q0, unknown, 20).get('2023-03-31'), undefined, 'unbekannter Split -> kein TTM');
-});
-
 test('RF1-T-V2-SWING: Sensitivitaet verlangt Beschleunigung nach Swing-Konvention', () => {
   // g0 = (0.2+0.5)/0.5 = 1.4; Vorquartal: 1.2 gegen Basis 1 -> 0.2 -> beschleunigt
   assert.equal(evaluateSepaRf1(turnaround(), EXEC, noSplit, P, { acceleration: 'SWING' }).ok, true);
@@ -142,4 +110,37 @@ test('RF1-T-FROZEN: eingefrorene Engine-Dateien 1.1.0 und Fallliste sind unverae
   const sha = (p) => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, p))).digest('hex');
   assert.equal(sha(pre.validationSet.cases), pre.validationSet.casesSha256);
   assert.equal(sha(pre.validationSet.frozenResults), pre.validationSet.frozenResultsSha256);
+});
+
+test('RF1-T-NO-LOSS-ADMISSION (Review F2): ein Verlustquartal wird nie zugelassen, auch nicht bei Rekord-TTM', () => {
+  // Vorjahr -1.0, jetzt -0.05; die drei Quartale dazwischen so stark, dass das TTM ueber dem Altgipfel laege
+  const eps = [1, 1, 1, 1, 1, 1, 1, 1, -1.0, 2.0, 2.0, 2.0, -0.05];
+  for (const acceleration of ['WAIVED', 'SWING']) {
+    const r = evaluateSepaRf1(fund(eps), EXEC, noSplit, P, { acceleration });
+    assert.equal(r.ok, false, acceleration); assert.equal(r.ruleId, 'MR-SEPA-10');
+  }
+});
+
+test('RF1-T-SECOND-QUARTER-GAP (Review F3, bekannte Luecke): zweites Turnaround-Quartal scheitert weiter an MR-SEPA-02', () => {
+  // q0 = 2023-03-31 hat positive Vorjahresbasis (0.1), das Vorquartal 2022-12-31 hatte Basis -0.5 (Vorjahresquartal 2021-12-31)
+  const eps = [1, 1, 1, 1, 1, 1, 1, -0.5, 0.1, 0.1, 0.1, 0.3, 0.4];
+  const r = evaluateSepaRf1(fund(eps), EXEC, noSplit, P);
+  assert.equal(r.ok, false); assert.equal(r.reason, 'SEPA_ACCEL_NOT_DEMONSTRABLE');
+  assert.deepEqual(r, evaluateSepa(fund(eps), EXEC, noSplit, P), 'RF1 aendert diesen Pfad bewusst nicht (Teilkorrektur)');
+});
+
+test('RF1-T-V2-SPLIT (Review F8): Swing-Wachstum bereinigt die Basis um Splits', () => {
+  const f = turnaround();
+  // 2:1-Split zwischen Vorjahres- und aktueller Einreichung: Basis -0.5 entspricht -0.25 auf der neuen Aktienbasis
+  const two = (from, to) => (from < '2022-09-01' && to >= '2022-09-01' ? 2 : 1);
+  const a = evaluateSepaRf1(f, EXEC, noSplit, P, { acceleration: 'SWING' });
+  const b = evaluateSepaRf1(f, EXEC, two, P, { acceleration: 'SWING' });
+  assert.ok(Math.abs(a.facts.epsGrowth - 1.4) < 1e-9);
+  assert.ok(Math.abs(b.facts.epsGrowth - 1.8) < 1e-9, 'g0 = (0.2 - (-0.25)) / 0.25');
+  // unbestimmbarer Split: die eingefrorene Pruefung endet schon vorher (PIT), der Wrapper reicht das unveraendert durch
+  const unknown = () => null;
+  for (const acceleration of ['WAIVED', 'SWING']) {
+    const r = evaluateSepaRf1(f, EXEC, unknown, P, { acceleration });
+    assert.equal(r.ok, false); assert.equal(r.reason, 'PIT_SPLIT_HISTORY_UNKNOWN');
+  }
 });

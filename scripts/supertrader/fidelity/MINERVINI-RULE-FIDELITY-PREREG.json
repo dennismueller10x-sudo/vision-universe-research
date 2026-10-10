@@ -190,6 +190,20 @@
     "Keine neue Zahl: Es entsteht kein neuer Regelbuch-Parameter. Die 100 % des Buchs sind in T-A durch das Vorzeichen erfuellt."
    ],
    "predictionsUnchanged": true
+  },
+  {
+   "id": "A2",
+   "createdAt": "2026-10-10T14:52Z",
+   "beforeRerun": true,
+   "trigger": "Adversarialer Opus-Review (Befunde F2, F3, F6, F8)",
+   "changes": [
+    "T-B entfaellt. Begruendung (F2): T-B wurde nur bei q0 <= 0 geprueft und liess damit ausschliesslich Verlustquartale zu; das widerspricht der Spezifikation (Q-TURN-B „current earnings … very strong“) und dem Kopfkommentar. Mit der Bedingung q0 > 0 waere T-B neben T-A redundant. Die Klausel besteht nur noch aus T-A.",
+    "Die Fidelity von MR-SEPA-10 bleibt LOW (F3): Der zweite Turnaround-Quartal scheitert weiterhin an MR-SEPA-02 (Vorquartalsbasis <= 0 -> Beschleunigung nicht nachweisbar). RF1 ist eine Teilkorrektur. Eine Erweiterung auf MR-SEPA-02 braeuchte eine ungequellte Lesart und wird nicht vorgenommen.",
+    "Die Begruendung des Beschleunigungsverzichts (V1) „Q-TURN-A/B nennen keine Beschleunigung“ war falsch (F6): Die Notizen nennen im Turnaround-Abschnitt „acceleration in the growth rate in the most recent couple of quarters“. V1 bleibt als VU-Entscheidung, V2 (Swing) bleibt Sensitivitaet.",
+    "V2 (SWING) wird um die Split-Bereinigung der Basis erweitert (F8).",
+    "Der Wortlaut „Vorhersagen bestaetigt“ wird zu „Konsistenzpruefungen“ (F7): Die Vorhersagen sind Folgerungen aus der Regeldefinition und den bereits bekannten Fallwerten."
+   ],
+   "predictionsAffected": "keine: T-B hat in keinem Ground-Truth-Fall zugelassen (nur T-A: MU, DXCM, AVGO)"
   }
  ]
 }
