@@ -10,6 +10,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { confirmedPayload, confirmedReport } from "./helpers/confirmed-golden-evidence.mjs";
 
 const require = createRequire(import.meta.url);
 const CTR = require("../engines/canonical-total-return.js");
@@ -236,12 +237,13 @@ test("CTR17 Backtesting-Seite nennt die Renditebasis im Klartext, ohne interne C
   assert.doesNotMatch(src, /text: [^,]*"CANONICAL_TOTAL_RETURN"/, "der Code steht nie als Text auf der Seite");
 });
 
-test("CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch", async () => {
+test("CTR18 bestätigtes Tiingo-Messintervall: Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch", async () => {
   const { readFileSync, readdirSync } = await import("node:fs");
   const dir = new URL("../data/market/golden-preview/daily/", import.meta.url);
   let div = 0, split = 0;
   for (const f of readdirSync(dir)) {
-    const bars = JSON.parse(readFileSync(new URL(f, dir), "utf8")).bars;
+    const ticker = JSON.parse(readFileSync(new URL(f, dir), "utf8")).ticker;
+    const bars = confirmedPayload(ticker).bars;
     const r = CTR.reconstruct(bars, OK);
     assert.equal(r.state, "TOTAL_RETURN_RECONSTRUCTED", f);
     assert.equal(r.crossCheck.state, "MATCH", f);
@@ -251,4 +253,26 @@ test("CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jed
     div += r.crossCheck.dividendEvents; split += r.crossCheck.splitEvents;
   }
   assert.ok(div >= 200 && split >= 3, "die Probe traegt echte Ereignisse");
+});
+
+
+test("CTR19 pinned actual provider conflict remains explicit and canonical cash-return construction remains correct", async () => {
+  const {readFileSync} = await import("node:fs");
+  const payload = JSON.parse(readFileSync(new URL("./fixtures/jpm-observed-provider-conflict.json", import.meta.url), "utf8"));
+  const r = CTR.reconstruct(payload.bars, OK);
+  assert.equal(r.state, "TOTAL_RETURN_RECONSTRUCTED");
+  // This observed event is evidence of a conflict, never a MATCH exemption.
+  const i = payload.bars.findIndex((b) => b.date.slice(0,10) === "2026-10-06");
+  assert.ok(i > 0);
+  assert.equal(payload.bars[i].dividend, 1.65);
+  const bar = payload.bars[i], previous = payload.bars[i-1];
+  const canonicalGross = (bar.close + bar.dividend) * bar.splitFactor / previous.close;
+  const providerGross = bar.adjustedClose / previous.adjustedClose;
+  assert.ok(Math.abs(canonicalGross / providerGross - 1) > 0.004);
+  assert.ok(Math.abs(r.tr[i] / r.tr[i-1] - canonicalGross) < 1e-9);
+  assert.equal(r.crossCheck.state, "CONFLICT_CANONICAL_WINS");
+  assert.equal(r.crossCheck.providerMissed, 1);
+  assert.equal(r.crossCheck.dividendParity, r.crossCheck.dividendEvents - 1);
+  assert.equal(r.crossCheck.splitParity, r.crossCheck.splitEvents);
+  assert.ok(bar.date.slice(0,10) > confirmedReport.series.find((s) => s.ticker === "JPM").to);
 });

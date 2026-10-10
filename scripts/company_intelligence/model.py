@@ -9,7 +9,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 SCHEMA = 'vu-company-intelligence-1.0.0'
 AMBIGUOUS = set('apple meta unity toast root affirm block oracle target gap on all life square way car go sun march open shift match snap'.split())
 AMBIGUOUS_ALIASES = {'the gap', 'match group', 'life time', 'open door', 'on holding'}
-FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ|Aktie|Aktien|Umsatz|Gewinn|Dividende|Umsatzprognose|Quartalszahlen)\b', re.I)
+FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ|Aktie|Aktien|Umsatz|Gewinn|Dividende|Umsatzprognose|Quartalszahlen|Kursziel|Aktienkurs|Kaufempfehlung|Outperform|Underperform)\b|\bstuft\b.{0,100}\b(?:buy|hold|sell|neutral|kaufen|verkaufen|halten)\b', re.I)
 SUFFIX = re.compile(r'\b(incorporated|inc|corporation|corp|limited|ltd|plc|holdings)\b\.?', re.I)
 ACCESSION = re.compile(r'^\d{10}-\d{2}-\d{6}$')
 
@@ -105,11 +105,16 @@ class Resolver:
         self.names = {}
         self.tickers = {}
         self.by_token = {}
+        self.name_prefix_issuers = {}
+        self.legal_names = {}
         from .distribution import issuer_name
         self.distribution_index = {}
         for cid, c in companies.items():
             for name in c['names']:
                 n = normalize(name)
+                if n:
+                    self.name_prefix_issuers.setdefault(n.split()[0], set()).add(cid)
+                    self.legal_names.setdefault(n, set()).add(cid)
                 aliases = {n, normalize(SUFFIX.sub('', re.sub(r'\bclass\s+[a-z]\b.*', '', name, flags=re.I)))}
                 for alias in aliases:
                     if alias:
@@ -122,8 +127,30 @@ class Resolver:
         for name in self.names:
             self.by_token.setdefault(name.split()[0], set()).add(name)
 
+    def add_alias(self, cid, name):
+        """Add a provenance-validated alias without rebuilding the universe index."""
+        from .distribution import issuer_name
+        c = self.companies[cid]
+        if name in c['names']:
+            return
+        c['names'].append(name)
+        normalized = normalize(name)
+        if normalized:
+            self.name_prefix_issuers.setdefault(normalized.split()[0], set()).add(cid)
+            self.legal_names.setdefault(normalized, set()).add(cid)
+        aliases = {normalize(name), normalize(SUFFIX.sub('', re.sub(r'\bclass\s+[a-z]\b.*', '', name, flags=re.I)))}
+        for alias in aliases:
+            if alias:
+                self.names.setdefault(alias, set()).add(cid)
+                self.by_token.setdefault(alias.split()[0], set()).add(alias)
+        for listing in c['listings']:
+            self.distribution_index.setdefault((issuer_name(name), listing['symbol'], listing.get('exchange')), set()).add(cid)
+
     def resolve(self, item, source):
         """Query context alone never authorizes a match. Only verified first-party sources do."""
+        from .news_sitemap import resolve_metadata
+        corroborated=resolve_metadata(item,source,self.companies)
+        if corroborated is not None:return corroborated
         from .distribution import resolve as distribution_resolve
         distributed = distribution_resolve(item, source, self.distribution_index)
         if distributed is not None:
@@ -140,6 +167,9 @@ class Resolver:
         matches = {}
         for ticker in re.findall(r'(?:\$|\b(?:NASDAQ|NYSE|AMEX)\s*:\s*)([A-Z][A-Z0-9.-]{0,9})\b', item.get('headline', '')):
             ids = self.tickers.get(ticker, set())
+            # A cryptocurrency cashtag can collide with an equity symbol.
+            if '$' + ticker in item.get('headline', '') and re.search(r'\b(?:wallets?|tokens?|crypto|blockchain|utility)\b', item.get('headline',''), re.I):
+                continue
             if len(ids) == 1:
                 matches[next(iter(ids))] = {'confidence': .98, 'evidence': ['EXPLICIT_TICKER:' + ticker]}
         candidates = {name for token in title.split() for name in self.by_token.get(token, set())}
@@ -147,13 +177,26 @@ class Resolver:
             ids = self.names[name]
             if len(ids) != 1 or not re.search(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title):
                 continue
+            spans = list(re.finditer(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title))
+            # A shorter alias embedded in another issuer's more specific name
+            # is not a second company mention (Provident Financial Services).
+            other_spans = [m.span() for longer in candidates if len(longer) > len(name) and self.names[longer] != ids
+                           for m in re.finditer(r'(?<!\w)' + re.escape(longer) + r'(?!\w)', title)]
+            if all(any(a <= m.start() and b >= m.end() for a,b in other_spans) for m in spans):
+                continue
             words = name.split()
             if name in AMBIGUOUS_ALIASES:
                 continue
             if len(words) == 1 and (name in AMBIGUOUS or len(name) <= 3):
                 continue
-            if name == 'nasdaq' and re.search(r'\bnasdaq[ -](?:100|composite|index)\b', title):
-                continue
+            if name == 'nasdaq' and not re.match(r'^nasdaq\s+(?:inc|announces?|reports?|launches?|unveils?|acquires?|partners?|to hold|to report)\b', title):
+                continue  # Exchange/listing references do not concern NDAQ.
+            if len(words) == 1 and len(self.name_prefix_issuers.get(name, set())) > 1:
+                continue  # Rogers Corp and Rogers Communications share a brand.
+            if name not in self.legal_names:
+                tail = title.split(name, 1)[-1].lstrip()
+                if re.match(r'(?:properties|holdings|group|trust|bancorp|bank|international|technologies|software|services)\b', tail):
+                    continue  # National Healthcare Properties is not NHC.
             if len(words) == 1 and not FINANCIAL.search(item.get('headline', '')):
                 continue
             cid = next(iter(ids))
@@ -189,19 +232,36 @@ def financial_release_evidence(headline, snippet):
 
 def issuer_earnings_announcement(headline, company):
     """An issuer-owned page can announce another entity's reporting date."""
-    title = normalize(headline)
+    def legal_normalize(value):
+        value = normalize(value)
+        for word, short in [('corporation', 'corp'), ('incorporated', 'inc'), ('limited', 'ltd'), ('company', 'co')]:
+            value = re.sub(r'\b' + word + r'\b', short, value)
+        return re.sub(r'^the\s+', '', value)
+    title = legal_normalize(headline)
+    # Official platforms use '4th Quarter FY26' and '2026 Q2'. Normalize
+    # explicit period prefixes without removing a following issuer's name.
+    title = re.sub(r'\b(1st|2nd|3rd|4th)\s+quarter\b', lambda m: {'1st':'first','2nd':'second','3rd':'third','4th':'fourth'}[m[1]] + ' quarter', title)
+    title = re.sub(r'\bfy\s?(\d{2})\b', lambda m: 'fy20' + m[1], title)
+    title = re.sub(r'^(20\d{2})\s+(q[1-4])\b', lambda m: m[2] + ' ' + m[1], title)
     if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner|board meeting|board approval|to consider|to approve|to review)\b', title):
         return False
-    if re.match(r'^(?:q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|full year|earnings|financial results)\b', title):
-        return True  # Generic title on a validated issuer-authored announcement.
-    aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
+    lead = r'^(?:q[1-4]|[1-4]q(?:20\d{2}|\d{2})|first|second|third|fourth|quarterly|fiscal|annual|full year)(?:\s+(?:quarter|fiscal|year|fy|fy20\d{2}|20\d{2}|\d{2})){0,6}\s+'
+    titles = {title, re.sub(r'^the\s+', '', re.sub(lead, '', title))}
+    aliases = {legal_normalize(n) for n in company['names']} | {legal_normalize(SUFFIX.sub('', n)) for n in company['names']}
     action = r'(?:reports?|announces?|releases?|will|to|sets?|schedules?|holds?|hosts?|confirms?|q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|earnings|financial)\b'
-    for name in aliases:
-        if not name:
-            continue
-        match = re.match(re.escape(name) + r'\s+(?:s\s+)?' + action, title)
-        if match:
+    # Issuer platforms commonly advertise "Q3 2026 Results" without the
+    # word financial. Require a pure explicit-quarter title; a named company,
+    # operating/clinical qualifier or ambiguous generic results title fails.
+    if re.fullmatch(r'q[1-4](?:\s+(?:fy20\d{2}|20\d{2}))?\s+results(?:\s+(?:earnings|conference|call|webcast|release|announcement|presentation|date))*', title):
+        return True
+    for candidate in titles:
+        # Pure financial/event titles are safe on a validated issuer source.
+        # A fiscal prefix followed by another named company is not generic.
+        if re.fullmatch(r'(?:earnings|financial results)(?:\s+(?:conference|call|webcast|release|results|announcement|presentation|date|for|q[1-4]|fy|fy20\d{2}|20\d{2}|first|second|third|fourth|quarter|fiscal|year))*', candidate):
             return True
+        for name in aliases:
+            if name and re.match(re.escape(name) + r'\s+(?:s\s+)?' + action, candidate):
+                return True
     return False
 
 
@@ -214,7 +274,7 @@ RULES = [
     ('Management', 'HIGH', r'\b(CEO|chief executive|CFO|chief financial|resigns)\b'),
     ('Regulation', 'HIGH', r'\b(FDA|antitrust|regulatory|regulator|European Medicines Agency|marketing authori[sz]ation (?:application|approval)|new drug application|biologics licen[cs]e application)\b'),
     ('Litigation', 'HIGH', r'\b(lawsuit|litigation|settlement)\b'),
-    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering)\b'),
+    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering|registered direct offering)\b'),
     ('Buyback', 'MEDIUM', r'\b(buyback|repurchase)\b'),
     ('Dividend', 'MEDIUM', r'\b(dividend)\b'),
     ('Investor Day', 'MEDIUM', r'\b(investor day|capital markets day|analyst day)\b'),
@@ -222,19 +282,19 @@ RULES = [
     ('Partnership', 'MEDIUM', r'\b(partner(?:ship|s)?|collaborat(?:ion|es))\b'),
     ('Contract', 'MEDIUM', r'\b(contract|orders|bookings)\b'),
     ('Product', 'MEDIUM', r'\b(launch|introduces|unveils)\b'),
-    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|operating results|operational results|phase[ -]?[123]|restructuring)\b'),
+    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|vehicle delivery results|operating results|operational results|phase[ -]?[123]|restructuring)\b'),
     ('Analyst', 'LOW', r'\b(price target|upgrade|downgrade|analyst rating)\b'),
 ]
 
 
 def classify(headline):
     hits = [(cat, imp, pattern) for cat, imp, pattern in RULES if re.search(pattern, headline, re.I)]
-    if re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
+    if re.search(r'\b(production|deliveries|vehicle delivery results|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
         hits = [h for h in hits if h[0] != 'Earnings']
     rank = {'LOW': 0, 'MEDIUM': 1, 'HIGH': 2, 'CRITICAL': 3}
     importance = max((h[1] for h in hits), key=lambda x: rank[x], default='LOW')
     return {'categories': [h[0] for h in hits] or ['Other'], 'importance': importance,
-            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.3.0'}
+            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.3.1'}
 
 
 def make_item(raw, source, match, discovered):
@@ -242,7 +302,13 @@ def make_item(raw, source, match, discovered):
     url = canonical_url(raw.get('url'))
     published = timestamp(raw.get('publishedAt'))
     updated = timestamp(raw.get('updatedAt'))
-    effective_time = published or updated
+    publication_day = raw.get('publishedDate')
+    if publication_day is not None:
+        from .earnings import valid_date
+        if not valid_date(publication_day):
+            raise ValueError('INVALID_PUBLICATION_DATE')
+    # Internal ordering may use a day boundary; public output never gains a clock.
+    effective_time = published or (publication_day + 'T00:00:00Z' if publication_day else updated)
     if not headline or not url or not effective_time or effective_time > discovered:
         raise ValueError('INVALID_NEWS_EVIDENCE')
     evidence = {'discoverySource': source['type'], 'sourceId': source['sourceId'],
@@ -257,7 +323,10 @@ def make_item(raw, source, match, discovered):
             'publishedAt': published, 'discoveredAt': discovered, 'language': raw.get('language'),
             'summary': None, 'confidence': match['confidence'], 'sourceConfidence': 1.0 if source.get('verified') else .7, 'eventType': 'NEWS',
             'provenance': [evidence], **classify(headline)}
-    if not published:
+    if publication_day and not published:
+        item.update(publishedDate=publication_day, date=publication_day, timestampPrecision='DATE_ONLY')
+        item['provenance'][0].update(publishedDate=publication_day, timestampPrecision='DATE_ONLY')
+    elif not published:
         item.update(observedAt=updated, timestampPrecision='SOURCE_UPDATED_TIME')
         item['provenance'][0].update(observedAt=updated, timestampPrecision='SOURCE_UPDATED_TIME')
     return item

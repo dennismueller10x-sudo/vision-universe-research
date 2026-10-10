@@ -1,0 +1,114 @@
+{
+ "schemaVersion": "vu-ti-api-3.0.0",
+ "resultSchema": "vu-technical-analysis-2.0.0",
+ "bundle": "ti-bundle-2.0.0",
+ "generatedAt": "2026-10-09T18:29:09.078Z",
+ "methodology": "quant/methodology/technical-intelligence-v2.json",
+ "elliott": {
+  "engine": "v3",
+  "status": "EXPERIMENTAL_STRUCTURE_MODEL",
+  "confluenceWeight": 0,
+  "report": "docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md"
+ },
+ "counts": {
+  "daily": 5,
+  "weekly": 5125,
+  "skipped": 1178,
+  "shards": 621
+ },
+ "sources": {
+  "daily": "golden-preview (5 Titel)",
+  "weekly": "discover-series-long (Wochenschluss, ohne Volumen)"
+ },
+ "evidence": {
+  "weekly": {
+   "file": "evidence-1W.json",
+   "generatedAt": "2026-10-04T01:21:50.287Z",
+   "calibrationPassed": false
+  },
+  "daily": {
+   "file": "evidence-1D-golden.json",
+   "generatedAt": "2026-10-03T23:18:49.144Z",
+   "calibrationPassed": false
+  }
+ },
+ "paths": {
+  "evidenceSummary": "/quant/data/technical-intelligence/v3/evidence-summary.json",
+  "rulesCatalog": "/quant/data/technical-intelligence/v3/rules-catalog.json",
+  "index": "/quant/data/technical-intelligence/v3/index.json.gz",
+  "shard": "/quant/data/technical-intelligence/v3/shards/<XX>.json.gz",
+  "discoverRows": "/quant/data/technical-intelligence/v3/discover-rows.json",
+  "alerts": "/quant/data/technical-intelligence/v3/alerts.json",
+  "methodEvidence": "/quant/data/technical-intelligence/v3/method-evidence.json",
+  "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
+ },
+ "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
+ "runtimeSec": 4066,
+ "projection": {
+  "version": "elliott-projection-1.2.0",
+  "store": "vu-elliott-projection-theses-1.0.0",
+  "status": {
+   "ABSTAIN": 4538,
+   "DATA_INVALID": 450,
+   "NO_PROJECTION": 102,
+   "AVAILABLE": 45
+  },
+  "consumerVisible": 45,
+  "types": {
+   "NEXT_MOVE": 37,
+   "WAVE_C": 2,
+   "REVERSAL": 2,
+   "THRUST": 3,
+   "WAVE_5": 1
+  },
+  "highUpside": 0,
+  "weeklyForDaily": 5,
+  "explore": {
+   "securities": 3785,
+   "theses": 6778,
+   "perSecurity": {
+    "1": 1012,
+    "2": 2553,
+    "3": 220
+   },
+   "direction": {
+    "DOWN": 3472,
+    "UP": 3306
+   },
+   "type": {
+    "WAVE_3": 2430,
+    "WAVE_C": 4052,
+    "WAVE_5": 296
+   },
+   "pattern": {
+    "IMPULSE": 2430,
+    "FLAT": 2384,
+    "ZIGZAG": 1602,
+    "LEADING_DIAGONAL": 67,
+    "ENDING_DIAGONAL": 229,
+    "DOUBLE_ZIGZAG": 66
+   },
+   "failedGate": {
+    "G3": 5421,
+    "G4": 4824,
+    "G5": 2459,
+    "G2": 4581
+   },
+   "rankPct": {
+    "0-10": 1828,
+    "10-25": 2467,
+    "25-50": 2483,
+    "50-100": 0
+   },
+   "highUpside": 973
+  },
+  "splitResolved": 205,
+  "motiveAlternative": 48,
+  "motiveDOWN": 42,
+  "normalAlternative": 44,
+  "motiveUP": 6,
+  "motiveHighUpside": 1,
+  "lifecycleEvents": 9047,
+  "tracked": 6911
+ }
+}

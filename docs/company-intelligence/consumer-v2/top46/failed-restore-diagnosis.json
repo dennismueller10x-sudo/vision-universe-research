@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "runId": 37787686356,
+  "runUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37787686356",
+  "status": "FAIL_CLOSED_BEFORE_PUBLIC_CONSUMER_PUBLICATION",
+  "failure": "FRESH_CONTENT_GENERATION_MISMATCH",
+  "rootCause": "Resolution-only SEC name aliases mutated shared pinned export identity but were not persisted to SQLite. Restore table hashes matched but fresh export identity differed. Fixed with independent deep-copied resolver identities and close/reopen export regression test.",
+  "failedNamespacePreserved": "content-top46-948b4c32a59cff3eb2927714",
+  "acceptedBaselineWritten": false,
+  "publicConsumerPublished": false,
+  "proof": {
+    "content-backup": {
+      "sha256": "b5a275e281519bfb4ee0cfe2fd52170e1ac3eb4d492e867335490d34ea966e72",
+      "bytes": 30816020,
+      "expandedBytes": 279185330
+    },
+    "content-remote-preservation": {
+      "status": "PRESERVED",
+      "sha256": "b5a275e281519bfb4ee0cfe2fd52170e1ac3eb4d492e867335490d34ea966e72",
+      "bytes": 30816020,
+      "operations": 5
+    },
+    "content-remote-readback": {
+      "status": "RESTORED",
+      "sha256": "b5a275e281519bfb4ee0cfe2fd52170e1ac3eb4d492e867335490d34ea966e72",
+      "bytes": 30816020,
+      "operations": 3
+    }
+  },
+  "privateOperationalRowsIncluded": false
+}

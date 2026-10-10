@@ -187,8 +187,8 @@
       page.insertBefore(next, foot || null);
     }
     if (!next.querySelector('a[href^="#/einzeln/"]')) {
-      var onward = node("a", "dx-btn", "Weiter swipen →");
-      onward.href = "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
+      var onward = node("a", "dx-btn", detail.region === "EUROPE" ? "Weiter entdecken →" : "Weiter swipen →");
+      onward.href = detail.region === "EUROPE" ? "#/c/EUROPE/all" : "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
       next.appendChild(onward);
     }
 

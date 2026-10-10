@@ -5,9 +5,9 @@ from urllib.parse import urljoin
 from .model import clean, canonical_url
 from .earnings import filing_url
 
-PARSER_VERSION = 'sec-documents-1.3.1'
+PARSER_VERSION = 'sec-documents-1.4.0'
 # 1.3 adds enrichment/period grammar; 1.2 classification proof remains valid.
-CLASSIFICATION_COMPATIBLE = {PARSER_VERSION, 'sec-documents-1.3.0', 'sec-documents-1.2.0'}
+CLASSIFICATION_COMPATIBLE = {PARSER_VERSION, 'sec-documents-1.3.1', 'sec-documents-1.3.0', 'sec-documents-1.2.0'}
 
 class Document(HTMLParser):
     def __init__(self):
@@ -43,8 +43,12 @@ def release_period(text):
     # Explicit company fiscal labels only. Never derive quarters from calendar months.
     text = re.sub(r'(?<=\w)[-–](?=\w)', ' ', text)
     text = re.sub(r'\b([1-4])Q\b', lambda m: 'Q' + m[1], text, flags=re.I)
-    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:fiscal\s+)?(?:quarter\s+)?(?:(?:of|fiscal|FY)\s*){0,2}(20\d{2})\b', text, re.I)
-    before = re.search(r'\b(?:fiscal\s+)?(20\d{2})\s+(first|second|third|fourth|Q[1-4])(?:\s+quarter)?\b', text, re.I)
+    # Observed official event labels: '4th Quarter FY26'. Only an explicit
+    # FY marker permits expansion; a bare two-digit year is ambiguous.
+    text = re.sub(r'\bFY\s?(\d{2})\b', lambda m: 'FY 20' + m[1], text, flags=re.I)
+    text = re.sub(r'\b(1st|2nd|3rd|4th)\s+quarter\b', lambda m: {'1st':'first','2nd':'second','3rd':'third','4th':'fourth'}[m[1].lower()] + ' quarter', text, flags=re.I)
+    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:fiscal\s+)?(?:quarter\s+)?(?:(?:of|fiscal(?:\s+year)?|FY)\s*){0,2}(20\d{2})\b', text, re.I)
+    before = re.search(r'\b(?:fiscal(?:\s+year)?\s+)?(20\d{2})\s+(first|second|third|fourth|Q[1-4])(?:\s+quarter)?\b', text, re.I)
     match = after or before
     if not match:
         return None
@@ -70,10 +74,14 @@ def inspect_html(payload, url):
     if outcome == 'EARNINGS_RELEASE' and not period:
         # Prefer the beginning of a release, where the company identifies the period, over comparisons later.
         period = release_period(text[:1500])
-    exhibits = []
+    exhibits, materials = [], []
     base = url.rsplit('/', 1)[0] + '/'
     for link in doc.links:
         candidate = canonical_url(urljoin(url, link['href']))
+        if candidate and candidate.startswith(base):
+            kind = 'PRESENTATION' if re.search(r'presentation|earnings slides|earnings deck', link['label'], re.I) else 'COMPANY_TRANSCRIPT' if re.search(r'\btranscript\b', link['label'], re.I) else 'PREPARED_REMARKS' if re.search(r'prepared remarks|earnings script', link['label'], re.I) else 'SHAREHOLDER_LETTER' if re.search(r'shareholder letter|letter to shareholders', link['label'], re.I) else None
+            if kind and candidate.endswith(('.pdf', '.htm', '.html', '.txt')):
+                materials.append({'type': kind, 'url': candidate, 'label': clean(link['label'],200), 'sourceUrl':url, 'evidence':'EXPLICIT_SEC_DOCUMENT_LINK_LABEL'})
         if candidate and candidate.startswith(base) and re.search(r'(?:ex(?:hibit)?[-_]?99|99[-_.]?1|earnings|release)', candidate + ' ' + link['label'], re.I) and candidate.endswith(('.htm', '.html', '.txt')):
             if candidate not in exhibits:
                 exhibits.append(candidate)
@@ -88,6 +96,7 @@ def inspect_html(payload, url):
             pass
     from .enrichment import kpis, guidance
     return {'periodEnd': period_end, 'parserVersion': PARSER_VERSION, 'outcome': outcome, 'period': period, 'evidence': snippet[:500] if snippet else None, 'sourceUrl': url, 'exhibits': exhibits[:2],
+            'sourceDocuments': list({d['url']:d for d in materials}.values())[:20],
             'companyKPIs': kpis(text, url, period) if outcome in ('EARNINGS_RELEASE', 'OPERATING_RESULTS') else [],
             'guidance': guidance(text, url) if outcome == 'EARNINGS_RELEASE' else []}
 
@@ -120,13 +129,14 @@ def enrich_submissions(submissions, cik, client, now, budget=60, max_filings=2, 
         try:
             result = inspect_html(client.get_bytes(url), url)
             result.update(filingDate=filed, inspectedAt=now)
-            result['sourceDocuments'] = [{'type': 'SEC_PRIMARY_DOCUMENT', 'url': url, 'filingId': acc}]
+            result['sourceDocuments'] = [{'type': 'SEC_PRIMARY_DOCUMENT', 'url': url, 'filingId': acc}] + result.get('sourceDocuments', [])
             # Release exhibits provide stronger period/evidence, even when primary filing has a generic heading.
             if result['exhibits'] and client.stats['requests'] < budget:
                 exhibit = result['exhibits'][0]
                 try:
                     extra = inspect_html(client.get_bytes(exhibit), exhibit)
                     result['sourceDocuments'].append({'type': 'SEC_EARNINGS_EXHIBIT', 'url': exhibit, 'filingId': acc})
+                    result['sourceDocuments'].extend(extra.get('sourceDocuments', []))
                     if extra['outcome'] == 'EARNINGS_RELEASE' or (result['outcome'] != 'EARNINGS_RELEASE' and extra['outcome'] == 'OPERATING_RESULTS'):
                         result.update(outcome=extra['outcome'], period=extra['period'] or result['period'], periodEnd=extra.get('periodEnd') or result.get('periodEnd'), evidence=extra['evidence'], sourceUrl=exhibit, companyKPIs=extra.get('companyKPIs', []), guidance=extra.get('guidance', []))
                 except Exception as exc:

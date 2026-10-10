@@ -17,6 +17,7 @@
   var Fields = global.VUScreenerFields || (typeof require === 'function' ? require('../screener/engine/fields.js') : null);
   var Query = global.VUScreenerQuery || (typeof require === 'function' ? require('../screener/engine/query.js') : null);
   var Engine = global.VUScreenerEngine || (typeof require === 'function' ? require('../screener/engine/engine.js') : null);
+  var TITools = (global.VUTechnical && global.VUTechnical.TIAITools) || (typeof require === 'function' ? require('../quant/engines/technical/ti/ai-tools.js') : null);
 
   var STRATEGY_LABELS = {
     MINERVINI_VCP: 'Minervini Trend Template / VCP',
@@ -106,12 +107,44 @@
     };
   }
 
+  /**
+   * Chartbild-Werkzeug (getChartbildLage) je Ticker - lesend, auf dem
+   * veroeffentlichten Index (/quant/data/technical-intelligence/v3/).
+   * Das Sprachmodell hat es nur eingeschaltet; jede Zahl stammt von hier.
+   * @returns {{tool, stocks:[situation]}}
+   */
+  function runChartbild(index, meta, result) {
+    var rows = index && Array.isArray(index.rows) ? index.rows : [];
+    var by = Object.create(null);
+    rows.forEach(function (r) { if (r && r.t) by[r.t] = r; });
+    return {
+      tool: 'getChartbildLage',
+      stocks: (result.tickers || []).map(function (sym) {
+        return TITools.situation(by[sym] || null, { symbol: sym, index: index, meta: meta, latestAsOf: new Date().toISOString().slice(0, 10) });   // Bezug heute: ein veralteter Index gilt nicht als frisch
+      })
+    };
+  }
+
+  /** Ein neutraler Satz je Titel zum Vorlesen - Lage und Bedingung, keine Empfehlung. */
+  function chartbildSentence(x) {
+    if (!x || !x.found) return (x && x.symbol || '') + ': Für diesen Titel liegt kein Chartbild vor.';
+    var usd = function (v) { return Fields.format('price', v); };
+    var p = x.primaryScenario, parts = [];
+    parts.push(x.symbol + ': Ausblick ' + (x.outlook && x.outlook.label || '–') + (x.structure && x.structure.label ? ', ' + x.structure.label : '') + '.');
+    if (p && p.entryZone && p.invalidation !== null) {
+      parts.push('Hauptszenario mit Zone ' + usd(p.entryZone[0]) + ' bis ' + usd(p.entryZone[1]) + '; es gilt, solange ' + usd(p.invalidation) +
+        ' nicht per Schlusskurs ' + (p.direction === 'BEARISH' ? 'überschritten' : 'unterschritten') + ' wird.');
+    }
+    parts.push(x.elliott.abstained ? 'Elliott: keine belastbare Zählung.' : 'Elliott (experimentell): Strukturklarheit ' + x.elliott.applicability.label.toLowerCase() + '.');
+    return parts.join(' ');
+  }
+
   /** Link in den Screener mit genau dieser Abfrage. */
   function screenerUrl(result) {
     return '/screener/?' + Query.toParams(result.query).toString();
   }
 
-  var API = { runScreen: runScreen, runStock: runStock, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
+  var API = { runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
     columnsFor: columnsFor, STRATEGY_LABELS: STRATEGY_LABELS };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   global.VUAskEngine = API;

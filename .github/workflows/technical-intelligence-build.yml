@@ -1,0 +1,107 @@
+name: Chartbild-Produktdaten (Technical Intelligence v3)
+
+# WOZU: Das Chartbild (Kursstruktur, Elliott 3.2.2, Szenarien) liest
+# quant/data/technical-intelligence/v3. Diese Daten entstehen aus
+#   * den Wochenreihen quant/data/market/discover-series-long (long-series.yml, monatlich und manuell),
+#   * den Golden-Tagesreihen quant/data/market/golden-preview/daily (Marktlauf, jede Nacht),
+#   * dem eingefrorenen Code (Engines, Produktanalyse, Build) und den festen Evidenz-Eingaben.
+# Aendert sich eine Eingabe, baut dieser Workflow die Daten mit derselben Funktion neu wie bisher
+# von Hand (scripts/technical/build-technical-intelligence.mjs, ohne --work-dir: 5 Tagestitel,
+# sonst Wochenanalyse). Ohne ihn bliebe das Produkt auf main stehen, und die Drift-Pruefung sowie
+# die Identitaetspruefung des prospektiven Registers haetten keinen gleichen Datenstand.
+#
+# Kein Provider-Abruf, keine Historienablage, keine Methodik-Aenderung: nur committete Eingaben.
+# Idempotent: Der Fingerabdruck der Eingaben (Git-Baumhashes) steht in v3/build-inputs.json; ist er
+# unveraendert, endet der Lauf ohne Rechnung.
+
+on:
+  schedule:
+    - cron: '35 5 * * *'
+  workflow_run:
+    workflows:
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Trotz gleicher Eingaben neu bauen'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technical-intelligence-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      V3: quant/data/technical-intelligence/v3
+      FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}
+    steps:
+      # Spitze des Branches: ein Lauf nach long-series.yml sieht dessen Commit.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Eingaben unveraendert?
+        id: inputs
+        run: |
+          set -euo pipefail
+          FP=$(for p in quant/data/market/discover-series-long quant/data/market/golden-preview/daily \
+                        quant/data/market/index-membership \
+                        quant/engines/technical/ti quant/engines/technical/elliott quant/engines/technical/projection \
+                        quant/engines/technical/feature-store.js quant/engines/technical/pivot-engine.js \
+                        quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js quant/engines/corporate-action-evidence.js \
+                        scripts/technical/lib scripts/technical/build-technical-intelligence.mjs \
+                        quant/data/technical-intelligence/evidence quant/data/technical-intelligence/elliott-validation \
+                        quant/methodology/technical-method-evidence.json quant/data/market/security-master/eligibility.json; do echo "$p $(git rev-parse "HEAD:$p")"; done | sha256sum | cut -c1-32)
+          OLD=$(node -e 'try{console.log(require("./'"$V3"'/build-inputs.json").fingerprint||"")}catch(e){console.log("")}')
+          echo "fp=$FP" >> "$GITHUB_OUTPUT"
+          echo "Eingaben: $FP · zuletzt gebaut: ${OLD:-nie}"
+          if [ "$FP" = "$OLD" ] && [ "$FORCE" != "true" ]; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Eingaben unveraendert - Chartbild-Daten sind aktuell."
+          else
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Chartbild-Daten bauen
+        if: steps.inputs.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/technical/build-technical-intelligence.mjs --workers "$(nproc)"
+
+      - name: Drift-Pruefung (Engine = veroeffentlichte Daten)
+        if: steps.inputs.outputs.noop != 'true'
+        run: node scripts/technical/verify-technical-intelligence.mjs --every 50
+
+      - name: Oeffentliche Datenhygiene
+        if: steps.inputs.outputs.noop != 'true'
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit (nur Chartbild-Daten)
+        if: steps.inputs.outputs.noop != 'true'
+        env:
+          FP: ${{ steps.inputs.outputs.fp }}
+        run: |
+          set -euo pipefail
+          node -e '
+            const m = require("./'"$V3"'/meta.json");
+            require("fs").writeFileSync("'"$V3"'/build-inputs.json", JSON.stringify({ fingerprint: process.env.FP, commit: process.env.GITHUB_SHA,
+              generatedAt: m.generatedAt, counts: m.counts, sources: m.sources }, null, 1) + "\n");'
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$V3"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Chartbild-Produktdaten: $(node -e 'const m=require("./'"$V3"'/meta.json");console.log(JSON.stringify(m.counts))')"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME:-main}"

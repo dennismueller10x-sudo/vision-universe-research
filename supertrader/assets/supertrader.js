@@ -244,28 +244,20 @@
     ]);
   }
 
-  /* --------------------------------------------- Kopf & Navigation */
-  var NAV = [
-    ['home', 'Start', BASE, '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'],
-    ['strategies', 'Methoden', BASE + 'strategies/', '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'],
-    ['signals', 'Signale', BASE + 'signals/', '<path d="M3 17l5-6 4 3 6-8 3 3"/>'],
-    ['backtests', 'Backtests', BASE + 'backtests/', '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>'],
-    ['sources', 'Quellen', BASE + 'sources/', '<path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h6"/>'],
-  ];
+  /* --------------------------------------------- Kopf & Navigation
+     Kopf und Produkt-Leiste kommen aus der gemeinsamen Vision-Universe-Shell
+     (assets/site-navigation.js): Supertrader | Methoden | Signale |
+     Backtests | ☰. Supertrader traegt nur noch seine Produktzeile im
+     Inhalt: Name, Kursstand und der Weg zu den Quellen. */
   function chrome(asOf) {
-    var current = page === 'strategy' ? 'strategies' : (page === 'stock' ? 'signals' : page);
-    var tabs = h('nav', { class: 'st-tabs', 'aria-label': 'Supertrader' }, NAV.map(function (n) { return h('a', { href: n[2], 'aria-current': n[0] === current ? 'page' : null, text: n[1] }); }));
-    var bar = h('div', { class: 'st-bar' }, [h('div', { class: 'st-bar-inner' }, [
-      h('a', { class: 'st-logo', href: BASE, 'aria-label': 'Supertrader Start' }, [h('i'), 'SUPERTRADER']), tabs,
+    var line = h('div', { class: 'st-productline' }, [
+      h('a', { class: 'st-logo', href: BASE, 'aria-label': 'Supertrader Start' }, [h('i'), 'SUPERTRADER']),
       h('span', { class: 'st-stamp', text: asOf ? 'Kurse ' + dateShort(asOf) : '' }),
-    ])]);
-    var bottom = h('nav', { class: 'st-bottom', 'aria-label': 'Supertrader mobil' }, NAV.map(function (n) {
-      var a = h('a', { href: n[2], 'aria-current': n[0] === current ? 'page' : null });
-      a.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + n[3] + '</svg><span>' + n[1] + '</span>';
-      return a;
-    }));
-    main.parentNode.insertBefore(bar, main);
-    document.body.appendChild(bottom);
+      h('a', { class: 'st-productlink', href: BASE + 'sources/', 'aria-current': page === 'sources' ? 'page' : null, text: 'Quellen' }),
+    ]);
+    if (page !== 'home') main.insertBefore(line, main.firstChild);
+    // Produkt-Leiste der gemeinsamen Shell anfordern (aktiver Eintrag aus dem Pfad)
+    if (window.VUNavigation) window.VUNavigation.dock({});
   }
 
   /* ============================================== Datenaufbereitung */
@@ -291,9 +283,20 @@
     var closed = 0; Object.keys(sig.strategies).forEach(function (k) { if (!isResearchId(k)) closed += sig.strategies[k].closed.length; });
     var stale = staleness(D) >= 2;
 
-    main.appendChild(h('header', { class: 'st-hero' }, [
-      h('h1', { text: 'Methoden. Setups. Klare Regeln.' }),
-      h('p', { class: 'st-lead', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
+    main.appendChild(h('header', { class: 'st-hero st-home-hero vu-product-hero vu-hero-fidelity', 'data-product': 'supertrader' }, [
+      h('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }),
+      h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true', html: '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"></use></svg>' }),
+      h('div', { class: 'vu-hero-name', text: 'SuperTrader' }),
+      h('h1', { class: 'vu-product-title vu-hero-headline', text: 'Methoden. Setups. Klare Regeln.' }),
+      h('p', { class: 'st-lead vu-product-lead vu-hero-description', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
+      h('div', { class: 'vu-product-hero__actions' }, [
+        h('a', { class: 'vu-product-action', href: BASE + 'strategies/' }, ['Methoden entdecken', icon(IC.arrow)]),
+        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Signale ansehen' }),
+      ]),
+      h('nav', { class: 'st-hero-quick', 'aria-label': 'Supertrader Schnellzugriff' }, [
+        h('a', { class: 'vu-product-chip', href: BASE + 'backtests/', text: 'Backtests & Evidenz' }),
+        h('a', { class: 'vu-product-chip', href: BASE + 'sources/', text: 'Quellen' }),
+      ]),
     ]));
     main.appendChild(freshness(D, true));
 

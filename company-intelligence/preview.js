@@ -7,7 +7,7 @@
   let controller;
   function text(tag, value, className) { const e = document.createElement(tag); e.textContent = String(value ?? 'Unavailable'); if (className) e.className = className; return e; }
   function link(parent, label, url) { const safe = contract.safeLink(url); if (!safe) return; const a = text('a', label); a.href = safe; a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.append(a); }
-  function section(title, items, render) { const s = document.createElement('section'); s.append(text('h2', title)); if (!items.length) s.append(text('p', 'No verified data available.')); for (const item of items) s.append(render(item)); results.append(s); }
+  function section(title, items, render) { if (!items.length) return; const s = document.createElement('section'); s.append(text('h2', title)); for (const item of items) s.append(render(item)); results.append(s); }
   function card(item) { const a = document.createElement('article'); a.append(text('h3', item.headline)); const date = item.timestampPrecision === 'DISCOVERY_TIME' ? 'Observed ' + item.observedAt : item.timestampPrecision === 'SOURCE_UPDATED_TIME' ? 'Source updated ' + item.observedAt : item.publishedAt || item.publishedDate || item.date || 'Date unavailable'; a.append(text('p', date, 'meta')); if (item.importance) a.append(text('p', item.importance + ' · ' + item.categories.join(', '), 'meta')); link(a, 'Open original source', item.canonicalUrl || item.sourceUrl); if (item.provenance?.length) { const ref = item.provenance[0]; a.append(text('p', 'Source: ' + ref.originalSource + (ref.distributor ? ' · distributed by ' + ref.distributor : ''), 'meta')); } if (item.provenance) a.append(text('p', item.provenance.length + ' source reference(s) · match confidence ' + Math.round(item.confidence * 100) + '%', 'meta')); return a; }
   async function load() {
     controller?.abort(); controller = new AbortController();
@@ -17,6 +17,13 @@
     if (signal.aborted) return;
     if (payload.state !== 'AVAILABLE') { status.textContent = 'Intelligence unavailable: ' + payload.reason; return; }
     status.textContent = payload.companyName + ' · ' + payload.ticker + ' · ' + (payload.stale ? 'Snapshot is stale. ' : '') + 'Preview · Updated ' + payload.generatedAt;
+    if (payload.companyProfile?.state === 'AVAILABLE') section('Company', [payload.companyProfile], p => {
+      const a = document.createElement('article'), description = text('p', p.description); description.lang = p.language;
+      a.append(description); link(a, 'Company website', p.officialWebsite);
+      for (const source of p.sources) link(a, source.type === 'SEC' ? 'Source: annual report' : 'Source: company', source.url);
+      if (p.stale) { const filing = p.sources.find(source => source.type === 'SEC' && source.filedAt); a.append(text('p', 'Older company description · ' + (filing ? 'Annual report filed ' + filing.filedAt : 'Last verified ' + p.lastVerifiedAt), 'meta')); }
+      return a;
+    });
     const materialSince = new Date(Date.parse(payload.generatedAt) - 90 * 86400000).toISOString().slice(0, 10);
     section('Recent material SEC disclosures', (payload.materialEvents || []).filter(e => e.date >= materialSince && e.date <= payload.generatedAt.slice(0, 10)).slice(0, 5), e => { const a = card(e); a.append(text('p', 'Filing date · Verified filing categories · Open the filing for transaction terms and people involved.', 'meta')); return a; });
     section('News', payload.news, card);

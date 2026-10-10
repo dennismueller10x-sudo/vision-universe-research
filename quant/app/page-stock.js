@@ -374,11 +374,13 @@
       return [X.notice("Keine Kursstruktur-Auswertung", why || "Für diesen Titel ist keine technische Auswertung veröffentlicht.")];
     }
     var lag = VM.analysisLagText(t.lag);
-    return [X.stats([["Trend", t.trend], ["Kursdynamik", t.momentum], ["Schwankung", t.volatility]].concat(t.elliott ? [["Elliott-Wellen", t.elliott]] : []).map(function (p) {
+    /* Keine Elliott-Kachel mehr: t.elliott stammt aus der V1-Engine (technical-signals-v1, "Validierte Zaehlung",
+       "Method Fit") und widersprach dem Chartbild (Elliott 3.2.2, das sich meist enthaelt). Elliott steht nur im Chartbild. */
+    return [X.stats([["Trend", t.trend], ["Kursdynamik", t.momentum], ["Schwankung", t.volatility]].map(function (p) {
         return X.stat(p[0], (p[1] && p[1].label) || "–");
       })),
-      foot("Analyse bis " + X.dateDe(t.asOf) + ". " + (lag || "") + (t.elliott ? " Elliott-Szenarien sind Lesarten des Kursverlaufs, keine Wahrscheinlichkeiten." : "")),
-      t.fullWorkspace ? X.actions([X.btn("Technische Analyse & Elliott öffnen", X.routes.technical(ticker), "secondary")])
+      foot("Analyse bis " + X.dateDe(t.asOf) + ". " + (lag || "") + (t.fullWorkspace ? " Szenarien, Zonen und die experimentelle Elliott-Struktur stehen im Chartbild." : "")),
+      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chartbild(ticker), "secondary")])
         : el("p", { class: "qx-small", text: (VM.technicalReasonText(t.unavailability) || "Eine vollständige technische Auswertung ist für diesen Titel noch nicht veröffentlicht.") })];
   }
 
@@ -477,7 +479,7 @@
       : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
     var links = [];
     if (st.state !== "UNAVAILABLE") links.push(X.link("Setup im Detail", "#setup"));
-    if (technical && technical.fullWorkspace) links.push(X.link("Technische Analyse öffnen", X.routes.technical(ticker)));
+    if (technical && technical.fullWorkspace) links.push(X.link("Chartbild öffnen", X.routes.chartbild(ticker)));
     if (links.length) kids.push(el("p", { class: "q-setup-links" }, links));
     host.replaceChildren(el("div", { class: "q-setup" }, kids));
   }
@@ -690,6 +692,7 @@
     layout.append(chart.node);
     layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten und Grenzen“.", nowHost));
     bodyHost.append(layout);
+    if (global.VUCompanyIntelligenceStock) disposers.push(global.VUCompanyIntelligenceStock.mount(bodyHost, ticker));
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
     var cardPromise = api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : Promise.resolve(null);
     Promise.all([cardPromise,
@@ -716,6 +719,42 @@
       setupEvidence.replaceChildren(el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Evidenz zu Setups" }),
         el("span", { text: k && k.state !== "WITHHELD" ? " Setup-Ergebnisse siehe Backtesting." : " Zu wenige echte Setup-Fälle für eine Aussage. " + (k ? closedKindSentence(k) : "") + " Setup-Ergebnisse werden nicht mit den marktweiten Signal-Backtests vermischt." }));
     });
+    /* Chartbild-Teaser: Ausblick in einem Satz, Weg zur ganzen Seite. Laedt unabhaengig und erst in Sichtweite
+       (wie die Bilder oben): Shard und Stile kosten rund 180 KB, das Ressourcenbudget der Aktienseite gilt dem
+       ersten Bild. */
+    if (global.VUTechnicalIntelligence) {
+      var cbHost = el("div", { class: "cb-teaser-host", style: "min-height:1px" });
+      bodyHost.append(cbHost);
+      var cbLoad = function () { global.VUTechnicalIntelligence.getAnalysis(ticker).then(function (r) {
+        if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
+        if (global.QXChartbildCss) global.QXChartbildCss();   // Stile der Teaser-Karte (lazy, siehe app.js)
+        var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
+        /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
+        var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
+        var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;
+        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chartbild(ticker) }, [
+          el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
+          el("b", { class: "cb-teaser-o" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) })]),
+          el("span", { class: "cb-teaser-grid" }, [
+            p && p.entryZone ? el("span", {}, [el("small", { text: "Schlüsselzone" }), el("strong", { class: "num", text: Ex.fmt(p.entryZone.zoneLow) + "–" + Ex.fmt(p.entryZone.zoneHigh) })]) : null,
+            p && p.invalidation ? el("span", {}, [el("small", { text: p.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: Ex.fmt(p.invalidation.price) })]) : null,
+            cl ? el("span", {}, [el("small", { text: "Struktur" }), el("strong", { text: cl })]) : null
+          ]),
+          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })]));
+      }).catch(function () { return null; }); };
+      if (!global.IntersectionObserver) cbLoad();
+      else {
+        /* Erst laden, wenn das Teaser-Feld spuerbar im Bild steht (80 px), nicht
+           schon, wenn seine Oberkante den Rand beruehrt: Ohne die eigene
+           Kopf- und Bereichsleiste von Quant rueckt es nach oben und lag am
+           Desktop (1000 px Hoehe) zufaellig an der Kante - das hob den
+           Ressourcenbudget-Wert der Aktienseite um 185 KB. */
+        var cbSpy = new global.IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) { cbSpy.disconnect(); cbLoad(); }
+        }, { rootMargin: "0px 0px -80px 0px" });
+        cbSpy.observe(cbHost);
+      }
+    }
     bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo ein Einstieg im Szenario ansetzt, was ihn bestätigt und wo es ungültig wird – keine Empfehlung.",
       [setupCard, setupEvidence].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return setupSection(vm); })] : []), null, "01 / Setup & Trigger", "setup"));
 
@@ -776,7 +815,7 @@
     bodyHost.append(X.section("Welche Strategie passt?", "Geprüft wird, welche Bedingungen eines Anlagestils die Aktie heute erfüllt.", strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien →" }, "07 / Anlagestil", "strategie"));
     /* Absagen stehen EINMAL, gesammelt unter "Daten und Grenzen" - nicht als
        Stapel von Hinweisen quer ueber die Seite. */
-    if (technical && technical.state === "AVAILABLE") bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "08 / Technik und Elliott-Wellen", "technik"));
+    if (technical && technical.state === "AVAILABLE") bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "08 / Technik", "technik"));
     var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
     if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) bodyHost.append(X.section("Kennzahlen", null, figures, null, "09 / Unternehmenszahlen", "zahlen"));
 

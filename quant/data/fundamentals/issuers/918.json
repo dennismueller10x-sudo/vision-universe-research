@@ -6,9 +6,9 @@
       "cik": "0000016918",
       "name": "CONSTELLATION BRANDS, INC.",
       "sic": "2080",
-      "rawFacts": 24330,
-      "mappedFacts": 6465,
-      "unmappedFacts": 18009,
+      "rawFacts": 24629,
+      "mappedFacts": 6572,
+      "unmappedFacts": 18199,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,14 +18,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 70,
       "firstPeriodEnd": "2008-02-29",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 17.0
@@ -39,7 +39,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 17.0,
@@ -52,56 +52,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 17.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2008-02-29",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0
         },
         "total_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 16.0,
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 488,
-        "MEDIUM": 146
+        "HIGH": 493,
+        "MEDIUM": 149
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 634,
-        "resolvedValues": 634
+        "datableValues": 642,
+        "resolvedValues": 642
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19055,
+        "total": 19261,
         "by_severity": {
-          "INFO": 18009,
-          "WARNING": 1046
+          "INFO": 18199,
+          "WARNING": 1062
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 942,
+          "CONCEPT_DISAGREEMENT": 958,
           "RESTATEMENT_CONFLICT": 104,
-          "UNKNOWN_CONCEPT": 18009
+          "UNKNOWN_CONCEPT": 18199
         }
       },
       "latestFiling": {
-        "accession": "0000016918-26-000029",
-        "filing_date": "2026-07-01",
+        "accession": "0000016918-26-000040",
+        "filing_date": "2026-10-07",
         "form": "10-Q",
-        "periodic_filings": 140
+        "periodic_filings": 141,
+        "acceptance_datetime": "2026-10-07T22:00:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "8cfd3f3f6663ebdb5e2a8432d7f4a4e82084d975231e5f91a8edf9238b8d0a67",
+      "sourceDigest": "0a70ac815135155933076e6794372ad4e301faa62c6599d846240bc6687fd6ba",
       "issuerId": "iss_cik_0000016918"
     },
     {

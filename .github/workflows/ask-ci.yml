@@ -3,10 +3,10 @@ name: Frag Vision Universe — Tests
 # Fragefunktion. Keine Anfrage an Anthropic: die API ist in den Tests aus Pappe.
 on:
   pull_request:
-    paths: ['ask/**', 'workers/vu-ask/**', 'screener/engine/**', 'scripts/screener/sic.mjs', 'scripts/supertrader/build.mjs', '.github/workflows/ask-ci.yml']
+    paths: ['ask/**', 'workers/vu-ask/**', 'screener/engine/**', 'scripts/screener/sic.mjs', 'scripts/supertrader/build.mjs', 'quant/engines/technical/ti/ai-tools.js', '.github/workflows/ask-ci.yml']
   push:
     branches: [main]
-    paths: ['ask/**', 'workers/vu-ask/**', 'screener/engine/**', '.github/workflows/ask-ci.yml']
+    paths: ['ask/**', 'workers/vu-ask/**', 'screener/engine/**', 'quant/engines/technical/ti/ai-tools.js', '.github/workflows/ask-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
