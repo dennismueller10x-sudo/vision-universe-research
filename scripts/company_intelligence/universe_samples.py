@@ -20,17 +20,20 @@ def samples(consumer,decisions,output):
     groups=defaultdict(list);metadata={};eligible=[];ineligible=[]
     order=lambda cid:hashlib.sha256((SEED+':'+cid).encode()).hexdigest()
     for cid,r in sorted(rows.items(),key=lambda x:order(x[0])):
-        available=[t for t in r['tickers'] if (ROOT/f'discover/data/stocks/US_REAL/{t}.json').is_file()]
+        # The existing Master-detail route is a valid Discover experience too.
+        # It must receive the same issuer modules independently of price data.
+        available=r['tickers']
         if not available:continue
         ticker=available[0]
         if not r['status'].startswith('ELIGIBLE_'):
             ineligible.append(ticker);continue
         eligible.append(ticker)
+        if not (ROOT/f'discover/data/stocks/US_REAL/{ticker}.json').is_file():groups['MASTER_DETAIL'].append(ticker)
         p=json.loads((consumer/f'snapshots/{m["generation"]}/{cid}.json').read_text())
         if sum(r['modules'][k] for k in ('profile','aktuelles','financials','nextEvent','calls','documents'))<=2:groups['SPARSE'].append(ticker)
         foreign=r.get('foreignIssuerEvidence',False) or any(l.get('securityType')=='ADR' or l.get('country') not in ('US',None) for l in p['listings']) or any(d.get('form') in ('20-F','40-F') for d in p.get('filings',[])+p.get('materials',[]))
         if foreign:groups['INTERNATIONAL_ADR'].append(ticker)
-        if r['modules']['financials']:
+        if r['modules']['financials'] and (ROOT/f'discover/data/stocks/US_REAL/{ticker}.json').is_file():
             shares=p['latestFinancials'].get('metrics',{}).get('shares_outstanding',{}).get('current') or {}
             detail=json.loads((ROOT/f'discover/data/stocks/US_REAL/{ticker}.json').read_text())
             price=(detail.get('price') or {}).get('value');asof=detail.get('asOf')
@@ -40,7 +43,7 @@ def samples(consumer,decisions,output):
                 cap=price*shares['value'];band='LARGE_CAP' if cap>=10e9 else 'MID_CAP' if cap>=2e9 else 'SMALL_CAP' if cap>=300e6 else 'MICRO_CAP' if cap>=50e6 else 'NANO_CAP'
                 groups[band].append(ticker);metadata[ticker]={'companyId':cid,'sizeBand':band,'marketCapEstimateUSD':cap,'priceUSD':price,'priceAsOf':asof,'shares':shares['value'],'sharesAsOf':shares['periodEnd'],'shareAccession':shares.get('filingId'),'basis':'DATED_EXISTING_USD_CLOSE_TIMES_REPORTED_COMMON_SHARES','notIntradayMarketCap':True}
     groups['RANDOM_ELIGIBLE']=eligible[:10];groups['INELIGIBLE']=ineligible[:20];groups['HIGH_PROFILE']=[t for t in TOP if any(t in r['tickers'] for r in rows.values())]
-    for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','NANO_CAP','INTERNATIONAL_ADR','SPARSE'):groups[key]=groups[key][:10]
+    for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','NANO_CAP','INTERNATIONAL_ADR','SPARSE','MASTER_DETAIL'):groups[key]=groups[key][:10]
     for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','INTERNATIONAL_ADR','SPARSE','RANDOM_ELIGIBLE'):
         if len(groups[key])<10:raise ValueError('REQUIRED_SAMPLE_GROUP_INCOMPLETE:'+key)
     if len(groups['INELIGIBLE'])<20:raise ValueError('REQUIRED_INELIGIBLE_SAMPLE_INCOMPLETE')
@@ -50,7 +53,7 @@ def samples(consumer,decisions,output):
         if r['status'].startswith('ELIGIBLE_'):
             key=','.join(k for k in r['modules'] if r['modules'][k]);combinations[key].append(cid)
     for key,cids in combinations.items():
-        cid=sorted(cids,key=order)[0];t=next((t for t in rows[cid]['tickers'] if (ROOT/f'discover/data/stocks/US_REAL/{t}.json').is_file()),None)
+        cid=sorted(cids,key=order)[0];t=rows[cid]['tickers'][0]
         if t:groups['MODULE_COMBINATIONS'].append(t)
     result={'schema':1,'generation':m['generation'],'seed':SEED,'method':'SHA256_SEED_AND_ISSUER_ORDER','groups':dict(groups),
             'stocks':sorted({t for key,ts in groups.items() if key!='INELIGIBLE' for t in ts}), 'ineligible':groups['INELIGIBLE'],

@@ -22,15 +22,17 @@ await objectPool(Object.entries(m.assets),async ([path,meta])=>{
 },12);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']}),cases=[];
 const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD),ui=readFileSync('company-intelligence/ui/stock-section.js'),contract=readFileSync('company-intelligence/api/contract.js');
+const detail=readFileSync('discover/ui/detail.js');
 const rollout=live?null:eligibilityRollout(readFileSync('company-intelligence/config/rollout.js','utf8'),m,{canary:true});
 const release=await(await fetch(origin+'/release-delivery.json?qa='+Date.now())).json();
-const tickers=sample.stocks,matrices=[...new Set([...sample.groups.HIGH_PROFILE,...sample.groups.SPARSE.slice(0,3),...sample.groups.INTERNATIONAL_ADR.slice(0,2)])];
+const tickers=sample.stocks,matrices=[...new Set([...sample.groups.HIGH_PROFILE,...sample.groups.SPARSE.slice(0,3),...sample.groups.INTERNATIONAL_ADR.slice(0,2),...(sample.groups.MASTER_DETAIL||[]).slice(0,2)])];
 const work=[...tickers.map(ticker=>({ticker,width:390,theme:'dark'})),...matrices.flatMap(ticker=>[390,430,768,1440].flatMap(width=>['dark','light'].filter(theme=>width!==390||theme!=='dark').map(theme=>({ticker,width,theme}))))];
 let failure=null;
 async function routes(page){
  if(live)return;
  await page.route('**/company-intelligence/data/**',route=>{const path=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];return route.fulfill({status:payloads.has(path)?200:404,contentType:'application/json',body:payloads.get(path)||'{}'});});
  for(const [path,body] of [['config/rollout.js',rollout],['ui/stock-section.js',ui],['api/contract.js',contract]])await page.route('**/company-intelligence/'+path+'*',route=>route.fulfill({status:200,contentType:'application/javascript',body}));
+ await page.route('**/discover/ui/detail.js*',route=>route.fulfill({status:200,contentType:'application/javascript',body:detail}));
 }
 try{
  const locked=await browser.newPage();let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});

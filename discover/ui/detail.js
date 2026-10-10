@@ -1881,6 +1881,7 @@
     options = options || {};
     var inst = result.instrument;
     var caps = result.capabilities || {};
+    if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
     S.clear(root);
     root.removeAttribute("data-world");
 
@@ -1905,6 +1906,10 @@
           "führt keine Namen; angezeigt wird deshalb das Kürzel." })
     ]);
     root.appendChild(kopf);
+    // The same approved issuer experience also belongs on the existing Master
+    // detail path. Price-series availability is independent of SEC/IR content.
+    if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, inst.symbol);
+    var intelligenceModules = global.VUCompanyIntelligenceRollout?.eligibility?.[inst.symbol]?.modules || {};
 
     /* Stammdaten. Jede Zeile ist eine Angabe aus dem Master, keine
        abgeleitete Aussage. */
@@ -1939,7 +1944,7 @@
        "die Reihen selbst bleiben bis zur Lizenzklärung in der Arbeitsablage."],
       ["Kursstand", caps.HAS_PRICE_SNAPSHOT,
        "Absolute Kursniveaus realer Titel werden nach der Redistributionsregel nicht ausgeliefert."],
-      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS,
+      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS || intelligenceModules.financials,
        inst.cik
          ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
          : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
@@ -1978,9 +1983,8 @@
           (result.masterVersion || "company-master") + " · Stand " + (result.asOf || "unbekannt"))
       ]),
       el("div", { style: "margin-top:6px" }, [document.createTextNode(
-        "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
-        "Verlaufsbild und Einordnung braucht es Daten, die für diesen Titel nicht ausgeliefert " +
-        "werden — sie werden hier nicht ersetzt.")])
+        "Angezeigt werden nur vorhandene, freigegebene Informationen. Fehlende Kennzahlen " +
+        "oder Kursreihen werden nicht ersetzt.")])
     ]));
   }
 

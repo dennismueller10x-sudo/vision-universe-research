@@ -18,7 +18,7 @@ const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg
 const runtime=live?await runtimeCandidate(origin):null;
 const manifest=live?runtime.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));
 if(manifest.scope==='PER_ISSUER_ELIGIBILITY'){
- const permanent=['TSLA','AAPL','NVDA','PLTR','XPEV','MSFT','GOOG','GOOGL'];
+ const permanent=['TSLA','AAPL','NVDA','PLTR','XPEV','MSFT','GOOG','GOOGL','APD'];
  const delta=args.includes('--delta')?JSON.parse(readFileSync(arg('--delta'))).changedIssuers||[]:[];
  const extra=delta.filter(cid=>manifest.eligibility[cid]).slice(0,universeConfig.browserDeltaBudget).map(cid=>manifest.eligibility[cid].tickers[0]);
  const rows=Object.values(manifest.eligibility);
