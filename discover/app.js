@@ -7,7 +7,7 @@
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
   function syncThemeChrome(state) {
     const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
-    const tag=document.querySelector('meta[name="theme-color"]');if(tag)tag.setAttribute('content',color);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color);
   }
   function message(root, title, copy, retry) {
     S.clear(root);
@@ -128,6 +128,7 @@
         root.append(el('h1',{text:'Aktien suchen'}),el('p',{class:'v2-lead',text:'Finde Unternehmen über den Namen oder das Börsenkürzel.'}));
         const open=el('button',{class:'v2-button',type:'button',text:'Suche öffnen'});open.onclick=()=>search.open();root.append(open);
         setTimeout(()=>{if(active())search.open();},0);
+      } else if(parts[0]==='aktien'){await D.GlobalView.browse(root,active);
       } else if(parts[0]==='watchlist'){
         document.title='Watchlist — Discover — Vision Universe®';
         root.append(el('p',{class:'v2-eyebrow',text:'Deine Auswahl'}),el('h1',{text:'Watchlist'}));
@@ -137,6 +138,7 @@
           const list=el('div',{class:'v2-watch-list'});root.append(list);
           symbols.forEach(symbol=>{const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ctx.universeId+'/'+encodeURIComponent(symbol),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(symbol);row.remove();if(!list.children.length)route();};list.append(row);});
         }
+        await D.GlobalView.watchlist(root,{active,route});
       } else if(parts[0]==='welten'){
         root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead',text:'Entdecke Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.'}));
         root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));

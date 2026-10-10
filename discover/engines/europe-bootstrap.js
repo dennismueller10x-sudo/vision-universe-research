@@ -23,6 +23,7 @@
     return JSON.parse(new TextDecoder().decode(bytes));
   }
   function loadScript(path){
+    if(path==='/core/identity.js'&&root.VUCore&&root.VUCore.Identity||path==='/core/client.js'&&root.VUCore&&root.VUCore.Client)return Promise.resolve();
     if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const script=root.document.createElement('script');script.src=path;script.onload=resolve;script.onerror=()=>reject(Error('EUROPE_CORE_UNAVAILABLE'));root.document.head.append(script);}));
     return scripts.get(path);
   }
@@ -54,17 +55,18 @@
           const asset=manifest.logos&&manifest.logos[key];if(!asset||typeof asset.path!=='string'||!/^\/discover\/logos\/[A-Za-z0-9_./-]+$/.test(asset.path)||asset.path.includes('..')||!/^[a-f0-9]{64}$/.test(asset.sha256))return null;
           if(!logoCache.has(key))logoCache.set(key,(async()=>{const response=await root.fetch(asset.path);if(!response.ok)throw Error('EUROPE_LOGO_UNAVAILABLE');const bytes=await response.arrayBuffer();if(await sha(bytes)!==asset.sha256||bytes.byteLength!==asset.bytes)throw Error('EUROPE_LOGO_HASH_MISMATCH');return asset;})().catch(()=>null));return logoCache.get(key);
         },loadSeries:async request=>{
-          const binding=manifest.series[request.securityId];
-          if(!binding||request.range!=='1Y'||request.basis!=='RAW_UNADJUSTED')throw Error('EUROPE_SERIES_NOT_PUBLISHED');
-          if(!cache.has(request.securityId))cache.set(request.securityId,read(binding).catch(error=>{cache.delete(request.securityId);throw error;}));
-          return cache.get(request.securityId);
+          const binding=request.range==='1Y'?manifest.series[request.securityId]:manifest.history&&manifest.history[request.securityId]&&manifest.history[request.securityId][request.range];
+          if(!binding||request.basis!=='RAW_UNADJUSTED')throw Error('EUROPE_SERIES_NOT_PUBLISHED');
+          const key=binding.sha256;
+          if(!cache.has(key))cache.set(key,read(binding).catch(error=>{cache.delete(key);throw error;}));
+          return cache.get(key);
         }});
         const product=root.VUDiscover.App.configureEurope({client,watchlist:Core.createWatchlist({catalog,storage:root.localStorage}),securityRefs:catalog.securities.map(s=>s.securityId),audience:'public'});
         root.VUDiscover.publicEuropeManifest=manifest;return product;
       })().catch(error=>{ready=null;throw error;});
       return ready;
     }
-    return {connect};
+    return {connect,async authority(){const [registry,calendar]=await Promise.all([read(manifest.rightsEvidence),read(manifest.calendar)]);return {allowed:boundRights(registry,manifest.rights),catalogSha256:manifest.catalog.sha256,calendar};}};
   }
   async function start(){
     const registryResponse=await root.fetch('/core/registry/domains.json',{cache:'no-cache',credentials:'same-origin'});

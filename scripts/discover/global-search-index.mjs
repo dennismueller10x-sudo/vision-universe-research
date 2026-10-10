@@ -1,0 +1,24 @@
+/** Deterministic canonical search/home projections. Reads existing US outputs;
+ * never changes scores, prices, IDs or ranking populations. */
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),Admission=require('../../core/europe-discover-eligibility.js'),Identity=require('../../core/identity.js');
+const read=async p=>JSON.parse(await readFile(p,'utf8'));
+export async function produceGlobal(root){
+ const us=await read(join(root,'discover/data/search/US_REAL.json')),manifest=await read(join(root,'discover/data/europe/manifest.json')),eu=await read(join(root,'discover/data/europe/catalog.json'));
+ const entries=[],shards=new Map();
+ for(const e of us.entries){const key=Identity.shardKey(e.s);if(!shards.has(key)){try{shards.set(key,(await read(join(root,'quant/data/universe/instruments',key+'.json'))).instruments||[]);}catch(_){shards.set(key,[]);}}const candidates=shards.get(key).filter(m=>m.symbol===e.s),master=candidates.find(m=>m.instrumentId===e.i)||candidates.find(m=>m.active&&m.primaryListing)||candidates.find(m=>m.active)||candidates[0]||{};
+ entries.push({...e,securityId:Identity.securityIdForTicker(e.s),companyId:master.issuerId||e.i,listingId:master.instrumentId||e.i||'ref_'+e.s,ticker:e.s,region:'US',href:'#/s/US_REAL/'+encodeURIComponent(e.s),aliases:[...(master.aliases||[]),...(master.legacyIds||[])].filter(a=>typeof a==='string'),isin:master.isin||null,homePrimary:false});}
+ for(const s of eu.securities){const l=s.listings.find(x=>x.listingId===s.primaryListingId);if(!l||!manifest.series[s.securityId]||!Admission.identity(s,l).ready)throw Error('PUBLISHED_PRIMARY_IDENTITY_REQUIRED');entries.push({i:s.instrumentId,s:s.securityId,n:s.name,m:1,securityId:s.securityId,companyId:s.companyId,listingId:l.listingId,ticker:l.ticker,displaySymbol:l.ticker,region:'EUROPE',href:'#/s/EUROPE/'+encodeURIComponent(s.securityId),aliases:[...new Set([...(s.aliases||[]),...(l.aliases||[]),s.canonicalTicker,l.providerSymbol].filter(Boolean))],isin:s.isin,country:l.identityAdmission.issuerCountry,mic:l.mic,currency:l.currency,asOf:l.latest.date,logoKey:s.logo?.key||null,a:l.mic,homePrimary:true,catalogSha256:manifest.catalog.sha256});}
+ if(new Set(entries.map(e=>e.securityId)).size!==entries.length)throw Error('DUPLICATE_CANONICAL_SEARCH_SECURITY');
+ const index={schema:'vu-canonical-discover-search-1',universeId:'GLOBAL',universeLabel:'Alle Aktien',count:entries.length,counts:{US:us.entries.length,EUROPE:eu.securities.length},entries};
+ await writeFile(join(root,'discover/data/search/GLOBAL.json'),JSON.stringify(index)+'\n');
+ const picks=['NVDA','ref_ALV_DE_XETR','TSLA','ref_ASML_AS_XAMS','PLTR','ref_SAP_DE_XETR','AAPL','ref_MC_PA_XPAR','MSFT','ref_2GB_DE_XETR','ref_RHM_DE_XETR','ref_ADN1_DE_XETR','ref_HFG_DE_XETR'],cards=[];
+ for(const id of picks){const d=entries.find(e=>e.s===id);if(!d)continue;if(d.region==='US'){try{const detail=await read(join(root,'discover/data/stocks/US_REAL',id+'.json'));cards.push({...Object.fromEntries(['symbol','companyName','securityId','instrumentId','currency','dataMode','price','priceSeries','asOf','world','sector','was','plain','signals','metrics'].map(k=>[k,detail[k]])),href:d.href,region:'US',scores:{},ranks:{}});}catch(_){continue;}}
+ else{const s=eu.securities.find(s=>s.securityId===d.securityId),binding=manifest.series[d.securityId],series=await read(join(root,binding.url.slice(1))),points=series.points.filter((p,i,all)=>i%5===4||i===0||i===all.length-1),last=series.points.at(-1);cards.push({symbol:d.ticker,companyName:d.n,securityId:d.securityId,instrumentId:d.i,companyId:d.companyId,listingId:d.listingId,universeId:'EUROPE',region:'EUROPE',country:d.country,mic:d.mic,currency:d.currency,logoKey:d.logoKey,href:d.href,asOf:d.asOf,catalogSha256:d.catalogSha256,homePrimary:true,dataMode:'real',scores:{},ranks:{},metrics:{},signals:{},price:{value:last[1],status:'CALCULATED'},priceSeries:{status:'CALCULATED',source:'vu-canonical-display',priceSeriesType:'RAW_UNADJUSTED',points,segments:series.segments.map(seg=>seg.filter(p=>points.some(a=>a[0]===p[0]))).filter(seg=>seg.length),asOf:d.asOf,range:'1J'},chartStatus:'CHART_LIMITED',quantAvailable:false,technicalAvailable:false,basisLabel:'unbereinigt'});}}
+ await mkdir(join(root,'discover/data/global'),{recursive:true});await writeFile(join(root,'discover/data/global/home.json'),JSON.stringify({schema:'vu-canonical-discover-home-1',cards})+'\n');
+ return {total:entries.length,europe:eu.securities.length,homeCards:cards.length};
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)console.log(JSON.stringify(await produceGlobal(process.cwd())));
