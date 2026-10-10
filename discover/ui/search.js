@@ -68,6 +68,17 @@
         hint.textContent = "Tippen zum Suchen · ↑ ↓ zum Auswählen · Enter zum Öffnen · Esc schließt";
         return;
       }
+      if (universum() === "EUROPE") {
+        var product = D.europeProduct;
+        if (!product) { S.clear(results); hint.textContent = "Dieses Universum ist noch nicht freigegeben."; return; }
+        product.search(q).then(function (result) {
+          if (universum() !== "EUROPE" || input.value.trim().toUpperCase() !== q) return;
+          if (result.state !== "AVAILABLE") { S.clear(results); treffer = []; hint.textContent = "Dieses Universum ist noch nicht freigegeben."; return; }
+          treffer = result.data.entries;
+          zeichnen(result.data);
+        }).catch(function () { S.clear(results); treffer = []; hint.textContent = "Die Suche ist derzeit nicht verfügbar."; });
+        return;
+      }
       ladeIndex().then(function (index) {
         /* Reihenfolge mit Absicht: ein exakter Ticker zuerst, dann Ticker,
            die so beginnen, dann Namenstreffer. Wer "NVDA" tippt, meint
@@ -108,14 +119,14 @@
            derselbe Ort in schmal. */
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
-          el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
-          D.Logos ? D.Logos.mark(hit.s, { name: hit.n, size: "sm" }) : el("span"),
+          el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.displaySymbol || hit.s }),
+          D.Logos ? D.Logos.mark(hit.region === "EUROPE" ? (hit.logoKey || "") : hit.s, { name: hit.n, size: "sm" }) : el("span"),
           /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
              auf der Karte. Wer sucht, tippt "energ" und erwartet
              Firmennamen, keine Kuerzelliste. */
           el("span", { class: "nm" }, [
             document.createTextNode(hit.n || hit.s),
-            el("em", { text: [hit.s, hit.a || hit.sec, hit.m ? null : "Modelltitel",
+            el("em", { text: [hit.displaySymbol || hit.s, hit.a || hit.sec, hit.m ? null : "Modelltitel",
                               hit.h ? "am Jahreshoch" : null].filter(Boolean).join(" · ") })
           ]),
           miniPfad(hit),
@@ -166,7 +177,7 @@
       var hit = treffer[i === undefined || i < 0 ? 0 : i];
       if (!hit) return;
       schliessen();
-      location.hash = "#/s/" + universum() + "/" + hit.s;
+      location.hash = hit.href || "#/s/" + universum() + "/" + hit.s;
     }
 
     function oeffnenOverlay() {
