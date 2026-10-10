@@ -158,14 +158,19 @@ async function run(script, args, env) {
 test("SG1 — der Universumsaufbau klassifiziert echte Stammdatenzeilen und liefert nur die Bilanz aus", async () => {
   const dir = sandbox();
   const csv = join(dir, "tickers.csv");
+  /* "Aktiv" heisst: letzter Handelstag hoechstens 30 Tage vor dem Aufbautag
+     (instrument-classification staleDays). Ein fest eingetragenes Datum
+     machte AAPL am 09.10.2026 zum Delistet und den Test rot; deshalb
+     relativ zum heutigen Tag. */
+  const letzter = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   writeFileSync(csv, [
     "ticker,exchange,assetType,priceCurrency,startDate,endDate",
-    "AAPL,NASDAQ,Stock,USD,1980-12-12,2026-09-08",
-    "SPY,NYSE ARCA,ETF,USD,1993-01-29,2026-09-08",
-    "BAC-PB,NYSE,Stock,USD,2013-01-02,2026-09-08",
+    "AAPL,NASDAQ,Stock,USD,1980-12-12," + letzter,
+    "SPY,NYSE ARCA,ETF,USD,1993-01-29," + letzter,
+    "BAC-PB,NYSE,Stock,USD,2013-01-02," + letzter,
     "GONE,NASDAQ,Stock,USD,2001-01-02,2018-05-04",
-    "VFINX,NASDAQ,Mutual Fund,USD,1990-01-02,2026-09-08",
-    "MYST,PINK,,USD,2010-01-02,2026-09-08"
+    "VFINX,NASDAQ,Mutual Fund,USD,1990-01-02," + letzter,
+    "MYST,PINK,,USD,2010-01-02," + letzter
   ].join("\n"));
 
   const outDir = join(dir, "universe");

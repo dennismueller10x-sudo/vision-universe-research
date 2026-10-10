@@ -204,7 +204,13 @@ test("AL-2 · Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobach
   assert.equal(TI.watchlistAlerts({ previousIndex: true, suppressed: null, events: ev }, ["ZZZ"]).state, "NONE");
   assert.equal(TI.watchlistAlerts(null, ["AAA"]).state, "UNAVAILABLE");
   Object.values(TI.ALERT_TEXT).forEach((t) => FORBIDDEN.forEach((re) => assert.ok(!re.test(t), t)));
-  /* Die ausgelieferte Datei (Migrationslauf Elliott 2.2 -> 3.2.1) meldet nichts Neues */
-  assert.equal(TI.watchlistAlerts(JSON.parse(read("quant/data/technical-intelligence/v3/alerts.json")), ["NVDA", "AAPL", "A"]).state, "SUPPRESSED");
+  /* Die ausgelieferte Datei. Sie war beim Migrationslauf (Elliott 2.2 -> 3.2.1) SUPPRESSED; seit dem Tageslauf
+     meldet sie je nach Lage NONE oder AVAILABLE. Geprueft wird deshalb der Vertrag, nicht der Tageswert:
+     gueltiger Zustand, und Ereignisse nur fuer beobachtete Titel. */
+  const gelistet = ["NVDA", "AAPL", "A"];
+  const ausgeliefert = TI.watchlistAlerts(JSON.parse(read("quant/data/technical-intelligence/v3/alerts.json")), gelistet);
+  assert.ok(["SUPPRESSED", "NONE", "AVAILABLE"].includes(ausgeliefert.state), ausgeliefert.state);
+  ausgeliefert.events.forEach((e) => assert.ok(gelistet.includes(e.symbol), "nur beobachtete Titel: " + e.symbol));
+  if (ausgeliefert.state !== "AVAILABLE") assert.deepEqual(ausgeliefert.events, []);
   assert.match(read("quant/app/pages.js"), /getWatchlistAlerts\(watched\)/);
 });
