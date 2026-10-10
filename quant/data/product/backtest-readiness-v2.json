@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-07T04:10:38.600Z",
+ "generatedAt": "2026-10-10T19:51:44.320Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -10,10 +10,10 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-10",
-   "to": "2026-10-06",
-   "spanDays": 26,
+   "to": "2026-10-09",
+   "spanDays": 29,
    "replay": {
     "titles": 156,
     "observations": 124849,
@@ -23,27 +23,27 @@
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-23",
-   "to": "2026-10-06",
-   "spanDays": 13
+   "to": "2026-10-09",
+   "spanDays": 16
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 9,
-   "from": "2026-10-05",
-   "to": "2026-10-06",
-   "spanDays": 1
+   "count": 10,
+   "from": "2026-10-06",
+   "to": "2026-10-09",
+   "spanDays": 3
   },
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 3,
+   "count": 4,
    "byIndex": {
-    "SP500": 3,
-    "NDX": 3,
-    "DJIA": 3
+    "SP500": 4,
+    "NDX": 4,
+    "DJIA": 4
    },
    "from": "2026-09-15"
   },
@@ -58,7 +58,7 @@
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6829
+    "titlesLastYear": 6836
    }
   },
   {
@@ -82,7 +82,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -92,9 +92,9 @@
   {
    "id": "patternObservations",
    "label": "Muster-Beobachtungen",
-   "studyFindings": 114,
-   "robust": 69,
-   "matchSnapshots": 3
+   "studyFindings": 163,
+   "robust": 97,
+   "matchSnapshots": 4
   },
   {
    "id": "technicalStates",
@@ -108,7 +108,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 9,
+   "publishedSnapshots": 10,
    "reconstructible": {
     "titles": 5
    }
@@ -126,7 +126,7 @@
    "label": "Vergleichsindex",
    "series": "SPY",
    "from": "1995-01-03",
-   "to": "2026-10-05",
+   "to": "2026-10-09",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "totalReturn": false,
    "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
@@ -147,7 +147,7 @@
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 3,
+   "membershipSnapshots": 4,
    "state": "NOT_CONTROLLED"
   }
  ],
@@ -194,7 +194,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "1362 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "1512 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -346,7 +346,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "3 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "4 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {
@@ -360,7 +360,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "9 Faktor-Snapshots seit 2026-09-23",
+     "value": "10 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -404,7 +404,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "9 Snapshots über 13 Tage",
+     "value": "10 Snapshots über 16 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -439,7 +439,7 @@
      "id": "study",
      "label": "Musterstudie mit Out-of-Sample",
      "state": "PASS",
-     "value": "114 Befunde, davon 69 robust",
+     "value": "163 Befunde, davon 97 robust",
      "reason": null
     },
     {

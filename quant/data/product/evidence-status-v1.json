@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-07T04:11:04.829Z",
+ "generatedAt": "2026-10-10T19:52:12.824Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5747,
+    "universe": 5767,
     "covered": 5410,
-    "available": 4558,
+    "available": 4555,
     "sufficient": {
-     "m1": 2144,
-     "m3": 2066,
-     "m6": 1988,
-     "m12": 1876
+     "m1": 2164,
+     "m3": 2086,
+     "m6": 2004,
+     "m12": 1893
     },
     "broad": {
-     "m6": 645
+     "m6": 673
     },
     "reasons": {
-     "NOT_COVERED": 337,
-     "NO_PRICE_CONDITION_TODAY": 806,
-     "NO_COMPARABLE_CASE": 46
+     "NOT_COVERED": 357,
+     "NO_PRICE_CONDITION_TODAY": 796,
+     "NO_COMPARABLE_CASE": 59
     }
    }
   },
@@ -59,7 +59,7 @@
    "label": "Marktweite Muster",
    "question": "Was geschah im gesamten Markt in ähnlichen Situationen?",
    "state": "PUBLISHED",
-   "engine": "pattern-research-1.0.0",
+   "engine": "pattern-research-1.1.0",
    "publishes": [
     "Trefferzahl (Support)",
     "Lift gegenüber Basisrate",
@@ -71,17 +71,17 @@
     "rule": "Nur Befunde mit Urteil ROBUST (Out-of-Sample-Lift > 1, Benjamini-Hochberg, Mindest-Support) erreichen eine Aktie.",
     "verdicts": {
      "INSUFFICIENT_SUPPORT": 9,
-     "ROBUST": 69,
+     "ROBUST": 97,
      "PARAMETER_SENSITIVE": 1,
-     "NOT_SIGNIFICANT": 6,
-     "IN_SAMPLE_ONLY": 29
+     "NOT_SIGNIFICANT": 11,
+     "IN_SAMPLE_ONLY": 45
     }
    },
    "trust": {
     "sample": 955264,
     "period": [
      "1992-01-31",
-     "2026-10-05"
+     "2026-10-06"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -109,7 +109,7 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "3 Stichtage",
+     "measured": "4 Stichtage",
      "state": "FAIL"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "9 von 9 geprüft",
+     "measured": "10 von 10 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "9",
+     "measured": "10",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "26 Tage",
+     "measured": "29 Tage",
      "state": "FAIL"
     },
     {
@@ -329,30 +329,30 @@
   }
  ],
  "measures": {
-  "BACKTEST_ELIGIBLE_RULES": 69,
-  "BACKTEST_WITHHELD_RULES": 62,
+  "BACKTEST_ELIGIBLE_RULES": 97,
+  "BACKTEST_WITHHELD_RULES": 83,
   "BACKTEST_WITHHELD_DETAIL": {
-   "patternFindingsNotRobust": 45,
+   "patternFindingsNotRobust": 66,
    "strategyProfiles": 8,
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5747,
+   "universe": 5767,
    "covered": 5410,
-   "available": 4558,
+   "available": 4555,
    "sufficient": {
-    "m1": 2144,
-    "m3": 2066,
-    "m6": 1988,
-    "m12": 1876
+    "m1": 2164,
+    "m3": 2086,
+    "m6": 2004,
+    "m12": 1893
    },
    "broad": {
-    "m6": 645
+    "m6": 673
    },
    "reasons": {
-    "NOT_COVERED": 337,
-    "NO_PRICE_CONDITION_TODAY": 806,
-    "NO_COMPARABLE_CASE": 46
+    "NOT_COVERED": 357,
+    "NO_PRICE_CONDITION_TODAY": 796,
+    "NO_COMPARABLE_CASE": 59
    }
   }
  }

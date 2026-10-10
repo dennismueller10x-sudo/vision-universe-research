@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-07T04:11:06.366Z",
- "radarAsOf": "2026-10-06",
+ "generatedAt": "2026-10-10T19:52:14.381Z",
+ "radarAsOf": "2026-10-09",
  "signalAsOf": "2026-10-09",
- "setupAsOf": "2026-10-06",
+ "setupAsOf": "2026-10-09",
  "measures": {
   "SETUP_BACKTEST_READY": {
    "ready": true,
@@ -15,7 +15,7 @@
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
    "replayTitles": 156,
-   "parity": "1362/1362"
+   "parity": "1512/1512"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -57,9 +57,9 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 527,
-  "RADAR_EVENTS_TOTAL": 1367,
-  "WATCHLIST_EVENTS_TRACKABLE": 5686,
+  "RADAR_EVENTS_WITH_BACKTEST": 512,
+  "RADAR_EVENTS_TOTAL": 1410,
+  "WATCHLIST_EVENTS_TRACKABLE": 5705,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
   "LOOKAHEAD_PASS": "PASS",
@@ -122,22 +122,21 @@
  "sample": [
   {
    "ticker": "NVDA",
-   "state": "SETUP_FORMING",
-   "since": "2026-10-06",
+   "state": "WATCH",
+   "since": "2026-10-09",
    "durationDays": 0,
    "invalidation": 206,
-   "next": "Setup bestätigt (2/5)",
+   "next": "Setup entsteht (1/4)",
    "evidence": "BROAD",
    "events": [
-    "SETUP_NEW:WITHHELD SETUP_HISTORY_TOO_SHORT",
-    "NEW_52W_HIGH:LIMITED n=56493"
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
    ]
   },
   {
    "ticker": "AAPL",
    "state": "SETUP_FORMING",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": 297,
    "next": "Setup bestätigt (2/5)",
    "evidence": "BROAD",
@@ -147,7 +146,7 @@
    "ticker": "MSFT",
    "state": "WATCH",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": 343,
    "next": "Setup entsteht (1/4)",
    "evidence": "THIN",
@@ -157,7 +156,7 @@
    "ticker": "JPM",
    "state": "WATCH",
    "since": "2026-09-30",
-   "durationDays": 6,
+   "durationDays": 9,
    "invalidation": 291,
    "next": "Setup entsteht (2/4)",
    "evidence": "BROAD",
@@ -167,7 +166,7 @@
    "ticker": "GOOG",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": null,
    "next": "Beobachten (1/2)",
    "evidence": "BROAD",
@@ -177,41 +176,41 @@
    "ticker": "AMD",
    "state": "SETUP_FORMING",
    "since": "2026-09-24",
-   "durationDays": 12,
+   "durationDays": 15,
    "invalidation": 429,
    "next": "Setup bestätigt (2/5)",
    "evidence": "WITHHELD",
-   "events": [
-    "NEW_52W_HIGH:LIMITED n=56493"
-   ]
+   "events": []
   },
   {
    "ticker": "META",
    "state": "SETUP_FORMING",
    "since": "2026-09-24",
-   "durationDays": 12,
-   "invalidation": 525,
+   "durationDays": 15,
+   "invalidation": 526,
    "next": "Setup bestätigt (3/5)",
    "evidence": "BROAD",
    "events": []
   },
   {
    "ticker": "DXPE",
-   "state": "SETUP_FORMING",
-   "since": "2026-10-02",
-   "durationDays": 4,
+   "state": "WATCH",
+   "since": "2026-10-09",
+   "durationDays": 0,
    "invalidation": 174,
-   "next": "Setup bestätigt (1/5)",
+   "next": "Setup entsteht (1/4)",
    "evidence": "THIN",
-   "events": []
+   "events": [
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
+   ]
   },
   {
    "ticker": "ABCB",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": null,
-   "next": "Beobachten (1/2)",
+   "next": "Beobachten (1/1)",
    "evidence": "THIN",
    "events": []
   },
@@ -219,7 +218,7 @@
    "ticker": "O",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "UNAVAILABLE",
@@ -229,7 +228,7 @@
    "ticker": "CRWV",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 26,
+   "durationDays": 29,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "NONE",
