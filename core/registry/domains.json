@@ -340,6 +340,32 @@
         "No Marketstack refresh schedule enabled. History/latest updates require a reviewed manual producer run.",
         "Technical, Quant, SuperTrader and Backtesting remain separately gated."
       ]
+    },
+    {
+      "id": "globalDiscoverUniverse",
+      "label": "Global Discover Universe",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/discover/data/search/GLOBAL.json",
+      "timestamp": [],
+      "records": "count",
+      "role": "Canonical Company → Security → Primary Listing search documents; visibility never grants analytics or rank admission.",
+      "producer": "scripts/discover/global-search-index.mjs (called by build-discover-data.mjs)",
+      "workflow": null,
+      "schedule": "with existing Discover materialization; no new schedule",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": [
+        "Global Discover Search",
+        "Regional Discover filters",
+        "Global home projection"
+      ],
+      "knownGaps": [
+        "European documents require owner display rights, matching catalog SHA and current exact-MIC calendar.",
+        "Long histories are fetched only for an opened stock detail; provider RAW stays private."
+      ]
     }
   ]
 }
