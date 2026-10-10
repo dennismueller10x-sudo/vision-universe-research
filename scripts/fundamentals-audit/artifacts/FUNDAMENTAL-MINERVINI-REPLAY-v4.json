@@ -1,0 +1,461 @@
+{
+ "schema": "vu-fundamental-minervini-replay-1.0.0",
+ "rulesChanged": false,
+ "strategyParams": "unveraendert (MR-SEPA-10, 15-Sessions-Basis)",
+ "window": 12,
+ "core": "1.19.0 (Freeze v4)",
+ "mainCases": 16,
+ "evaluable": 15,
+ "recall": {
+  "beforeAudit": "3/15",
+  "v4": "3/15"
+ },
+ "changedCases": [],
+ "lossCases": {
+  "ZGNX": "STRATEGY_DEFINITION_MISMATCH",
+  "ROKU": "STRATEGY_DEFINITION_MISMATCH",
+  "ACAD": "STRATEGY_DEFINITION_MISMATCH",
+  "TNDM": "STRATEGY_DEFINITION_MISMATCH",
+  "RVNC": "STRATEGY_DEFINITION_MISMATCH",
+  "REPL": "STRATEGY_DEFINITION_MISMATCH",
+  "SG": "STRATEGY_DEFINITION_MISMATCH"
+ },
+ "dataMissing": [
+  "MTLS",
+  "AEM",
+  "DKL"
+ ],
+ "conclusion": "Der Kern v4 aendert keinen MAIN-Fall. Die niedrige Trefferquote ist nicht datenbedingt: 7 Faelle scheitern an MR-SEPA-10 (Basis <= 0), weil das SEC-GAAP-EPS des Vorjahresquartals tatsaechlich negativ ist (STRATEGY_DEFINITION_MISMATCH: GAAP vs. bereinigte Ergebnisse); 3 Faelle ohne US-GAAP-Quartals-EPS (DATA_MISSING). Keine Regelaenderung in diesem Auftrag.",
+ "cases": [
+  {
+   "case": "GT-001",
+   "ticker": "ZGNX",
+   "exec": "2018-06-12",
+   "frozenSepa": "SEPA_BASE_NOT_POSITIVE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_STALE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2018-03-31",
+    "eps": -0.87,
+    "knownFrom": "2018-05-09",
+    "priorYearEnd": "2017-03-31",
+    "priorYearEps": -0.86
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-002",
+   "ticker": "MTLS",
+   "exec": "2019-01-08",
+   "frozenSepa": "SEPA_DATA_MISSING",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {},
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-003",
+   "ticker": "ROKU",
+   "exec": "2019-07-16",
+   "frozenSepa": "SEPA_BASE_NOT_POSITIVE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_STALE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2019-03-31",
+    "eps": -0.09,
+    "knownFrom": "2019-05-10",
+    "priorYearEnd": "2018-03-31",
+    "priorYearEps": -0.07
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-004",
+   "ticker": "ACAD",
+   "exec": "2019-10-21",
+   "frozenSepa": "SEPA_BASE_NOT_POSITIVE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2019-06-30",
+    "eps": -0.38,
+    "knownFrom": "2019-08-01",
+    "priorYearEnd": "2018-06-30",
+    "priorYearEps": -0.51
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-005",
+   "ticker": "AMD",
+   "exec": "2020-06-09",
+   "frozenSepa": "ok",
+   "coreBeforeAudit": {
+    "ok": true,
+    "reason": null
+   },
+   "core115": {
+    "ok": true,
+    "reason": null
+   },
+   "coreV4": {
+    "ok": true,
+    "reason": null
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-03-28",
+    "eps": 0.14,
+    "knownFrom": "2020-04-29",
+    "priorYearEnd": "2019-03-30",
+    "priorYearEps": 0.01
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-007",
+   "ticker": "TNDM",
+   "exec": "2020-06-30",
+   "frozenSepa": "SEPA_STALE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_STALE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-03-31",
+    "eps": -0.25,
+    "knownFrom": "2020-04-30",
+    "priorYearEnd": "2019-03-31",
+    "priorYearEps": -0.4
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-008",
+   "ticker": "AMD",
+   "exec": "2020-07-22",
+   "frozenSepa": "ok",
+   "coreBeforeAudit": {
+    "ok": true,
+    "reason": null
+   },
+   "core115": {
+    "ok": true,
+    "reason": null
+   },
+   "coreV4": {
+    "ok": true,
+    "reason": null
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-03-28",
+    "eps": 0.14,
+    "knownFrom": "2020-04-29",
+    "priorYearEnd": "2019-03-30",
+    "priorYearEps": 0.01
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-009",
+   "ticker": "AEM",
+   "exec": "2020-09-14",
+   "frozenSepa": "SEPA_STALE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2014-06-30",
+    "eps": 0.2,
+    "knownFrom": "2014-08-11",
+    "priorYearEnd": "2013-06-30",
+    "priorYearEps": -0.14
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-010",
+   "ticker": "RVNC",
+   "exec": "2020-09-15",
+   "frozenSepa": "SEPA_STALE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_STALE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-06-30",
+    "eps": -1.12,
+    "knownFrom": "2020-08-06",
+    "priorYearEnd": "2019-06-30",
+    "priorYearEps": -0.86
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-011",
+   "ticker": "AMZN",
+   "exec": "2020-10-08",
+   "frozenSepa": "ok",
+   "coreBeforeAudit": {
+    "ok": true,
+    "reason": null
+   },
+   "core115": {
+    "ok": true,
+    "reason": null
+   },
+   "coreV4": {
+    "ok": true,
+    "reason": null
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-06-30",
+    "eps": 10.3,
+    "knownFrom": "2020-07-31",
+    "priorYearEnd": "2019-06-30",
+    "priorYearEps": 5.22
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-012",
+   "ticker": "REPL",
+   "exec": "2020-10-14",
+   "frozenSepa": "SEPA_STALE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-06-30",
+    "eps": -0.44,
+    "knownFrom": "2020-08-07",
+    "priorYearEnd": "2019-06-30",
+    "priorYearEps": -0.3
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-014",
+   "ticker": "DKL",
+   "exec": "2020-12-29",
+   "frozenSepa": "SEPA_DATA_MISSING",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_DATA_MISSING"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {},
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-016",
+   "ticker": "RICK",
+   "exec": "2021-04-05",
+   "frozenSepa": "SEPA_STALE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_STALE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_REVENUE_NOT_GROWING"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_REVENUE_NOT_GROWING"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-12-31",
+    "eps": 1.07,
+    "knownFrom": "2021-02-09",
+    "priorYearEnd": "2019-12-31",
+    "priorYearEps": 0.6
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-018",
+   "ticker": "DECK",
+   "exec": "2021-04-12",
+   "frozenSepa": "SEPA_NO_ACCELERATION",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_NO_ACCELERATION"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2020-12-31",
+    "eps": 8.99,
+    "knownFrom": "2021-02-08",
+    "priorYearEnd": "2019-12-31",
+    "priorYearEps": 7.14
+   },
+   "lossCaseClass": null
+  },
+  {
+   "case": "GT-026",
+   "ticker": "SG",
+   "exec": "2024-10-08",
+   "frozenSepa": "SEPA_BASE_NOT_POSITIVE",
+   "coreBeforeAudit": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "core115": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "coreV4": {
+    "ok": false,
+    "reason": "SEPA_BASE_NOT_POSITIVE"
+   },
+   "changedVs115": false,
+   "windowDiffDays": [],
+   "secGaap": {
+    "quarterEnd": "2024-06-30",
+    "eps": -0.13,
+    "knownFrom": "2024-08-09",
+    "priorYearEnd": "2023-06-25",
+    "priorYearEps": -0.24
+   },
+   "lossCaseClass": "STRATEGY_DEFINITION_MISMATCH"
+  },
+  {
+   "case": "GT-027",
+   "ticker": "RNA",
+   "exec": null,
+   "frozenSepa": null,
+   "coreBeforeAudit": {
+    "ok": null,
+    "reason": null
+   },
+   "core115": {
+    "ok": null,
+    "reason": null
+   },
+   "coreV4": {
+    "ok": null,
+    "reason": null
+   },
+   "changedVs115": false,
+   "windowDiffDays": null,
+   "secGaap": {},
+   "lossCaseClass": null
+  }
+ ]
+}

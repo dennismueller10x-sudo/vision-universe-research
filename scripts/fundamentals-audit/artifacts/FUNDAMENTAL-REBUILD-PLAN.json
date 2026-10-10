@@ -1,0 +1,36 @@
+{
+  "schema": "vu-fundamental-rebuild-plan-1.0.0",
+  "status": "PLAN_ONLY - nichts davon ist ausgefuehrt; Ausfuehrung nur nach ausdruecklicher Freigabe",
+  "dataVersion": {
+    "from": "normalization_logic 1.10.0 + registry mapping 1.6.0 (main 829b35bdce4)",
+    "to": "normalization_logic 1.15.0 + registry mapping 1.8.0 (Data-Freeze v3, Branch claude/fundamental-data-integrity-audit)",
+    "label": "vu-fundamentals-core-1.15.0+registry-1.8.0"
+  },
+  "buildIdentity": {
+    "rule": "Jedes neu gebaute Artefakt traegt versions.normalization_logic = 1.15.0 und versions.metric_registry.mapping_version = 1.8.0 (bereits heute im Bundle-Kopf). Ein Consumer-Build aus einem anderen Code-Stand ist STALE_BUILD.",
+    "staleBuildProtection": "pipeline._is_current vergleicht den Versionsstempel; gespeicherte Factbooks mit 1.10.0 gelten automatisch als veraltet und werden beim naechsten Lauf neu normalisiert (kein Teil-Mischbestand innerhalb eines Emittenten).",
+    "freezeCheck": "node scripts/fundamentals-audit/freeze.mjs --check (v3) muss vor dem Rebuild gruen sein"
+  },
+  "artifacts": [
+    {"id": "R1", "artifact": "SEC-Factbooks (R2-Store, persist-fundamentals.mjs)", "producer": "scripts/quant/cli.py daily (sec-fundamentals-daily.yml)", "trigger": "Versionswechsel -> _is_current false", "scope": "alle Emittenten, die der Lauf beruehrt; Voll-Rebuild per workflow_dispatch noetig, sonst Mischbestand 1.10/1.15 zwischen Emittenten bis zur jeweils naechsten Einreichung", "resumable": "ja (je CIK, Pipeline ueberspringt aktuelle Dokumente)", "secFairAccess": "Bulk companyfacts.zip statt 5.000 Einzelabrufe"},
+    {"id": "R2", "artifact": "quant/data/sec/consumer/CIK*.json + consumer_coverage.json", "producer": "scripts/quant/cli.py consumer (sec-consumer-fundamentals.yml)", "trigger": "Cron Montag 07:30 UTC oder workflow_dispatch", "scope": "ganzes Universum (ca. 5.070 Bundles)", "resumable": "Lauf ist deterministisch je CIK; Wiederholung ueberschreibt", "expectedChange": "siehe FUNDAMENTAL-IMPACT.json"},
+    {"id": "R3", "artifact": "discover/data (Aktienseiten, Startseite, Reihen)", "producer": "scripts/discover/build-discover-data.mjs (market-data-refresh.yml)", "trigger": "naechster Discover-Lauf nach R2", "scope": "alle Titel mit Bundle", "gate": "Discover-Reproduzierbarkeit, Frontend-Budget unveraendert"},
+    {"id": "R4", "artifact": "Screener-Universum", "producer": "scripts/screener/build-universe.mjs", "trigger": "nach R3", "scope": "eps, epsGrowth, epsCagr3, revGrowth, Margen"},
+    {"id": "R5", "artifact": "Quant Faktor-Evidenz / Pattern-Research-Fundamentaldaten", "producer": "scripts/quant/build-factor-evidence.mjs, build-pattern-research-fundamentals.mjs", "trigger": "nach R2", "scope": "Faktor-Rohwerte (Wachstum, Margen, Qualitaet)", "note": "Faktor-Logik unveraendert; nur Eingangsdaten"},
+    {"id": "R6", "artifact": "Company Intelligence (Earnings-Karten)", "producer": "scripts/company_intelligence/pipeline.py", "trigger": "nach R2", "scope": "Quartalsumsatz/-gewinn; EPS-TTM summiert CI bereits heute nicht"},
+    {"id": "R7", "artifact": "supertrader/data (CAN SLIM / Piotroski-Teilpruefungen)", "producer": "scripts/supertrader/build.mjs", "trigger": "naechster Supertrader-Lauf nach R2", "scope": "nur Jahreswerte + Quartals-Nettoergebnis; keine Regel-Aenderung"},
+    {"id": "R8", "artifact": "Canonical / Golden-Five-Panel (P3) und VU2-Release (P5)", "producer": "scripts/quant/cli.py canonical, scripts/vu2/build-release.mjs", "trigger": "nach R1", "scope": "Golden Five; P5 ohne Laufzeitnutzung"}
+  ],
+  "notRebuilt": [
+    {"artifact": "Minervini-Research-Artefakte (PR #471/#475, P9)", "reason": "eingefroren; keine rueckwirkende Aenderung"},
+    {"artifact": "Supertrader-Validierungsstore (P7, sec-pit.mjs)", "reason": "eigener Parser; Ersatz durch P1-Export in eigenem Supertrader-PR (Gate A)"},
+    {"artifact": "Historische Backtest-Ergebnisse", "reason": "werden nicht ueberschrieben; Neuberechnung nur als neue, versionierte Laeufe"}
+  ],
+  "order": ["R1", "R2", "R8", "R5", "R6", "R3", "R4", "R7"],
+  "abortConditions": [
+    "freeze.mjs --check rot",
+    "Consumer-Diff weicht von FUNDAMENTAL-IMPACT.json um mehr als 5 % der betroffenen Emittenten je Kennzahl ab",
+    "Ein Gate (Discover-Reproduzierbarkeit, Discover-Budget, Supertrader Gate A, Company-Intelligence validate) wird rot",
+    "Datenverlust: ein Emittent verliert alle Werte einer Kennzahl, die er vorher hatte, ohne belegte Ursache (E4-Q4-EPS ist belegt)"
+  ]
+}

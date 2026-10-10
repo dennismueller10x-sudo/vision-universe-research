@@ -1,0 +1,356 @@
+{
+ "schema": "vu-fundamental-ttm-122-neighbor-search-1.0.0",
+ "core": {
+  "before": "1.21.0 (ed8602f)",
+  "after": "1.22.0 (final, nach Red-Team-Runde 2)"
+ },
+ "source": {
+  "archive": "SEC companyfacts.zip, Stand 2026-10-07",
+  "sha256": "6d3b6e096457193db30cc72eecb9c2fee0ba6a854d7c048938a58f28449864a9"
+ },
+ "formsInArchive": {
+  "10-Q": 77024692,
+  "10-K": 38097335,
+  "20-F": 4024019,
+  "10-Q/A": 1925865,
+  "10-K/A": 1252266,
+  "40-F": 437632,
+  "20-F/A": 312560,
+  "10-KT": 111032,
+  "40-F/A": 26517,
+  "10-QT": 13426,
+  "10-KT/A": 8237,
+  "10-QT/A": 989,
+  "10-12G": 99
+ },
+ "issuersByForm": {
+  "10-Q/A": 5269,
+  "10-K/A": 4497,
+  "20-F/A": 635,
+  "10-KT": 299,
+  "40-F/A": 85,
+  "10-QT": 68,
+  "10-KT/A": 31,
+  "10-QT/A": 6
+ },
+ "transitionReports": {
+  "issuers": 375,
+  "accessions": {
+   "10-KT/A": 38,
+   "10-KT": 309,
+   "10-QT": 69,
+   "10-QT/A": 6
+  },
+  "issuersPerForm": {
+   "10-KT/A": 31,
+   "10-KT": 299,
+   "10-QT": 68,
+   "10-QT/A": 6
+  },
+  "facts": 133684,
+  "factCellsFirstKnownFromTransitionReport": 64989,
+  "factCellsOnlyInTransitionReport": 31113,
+  "correctionsOfPriorPeriodicValue": 6239,
+  "correctionsNeverRepeatedInPeriodicReport": 4251,
+  "issuersWithCorrections": 315,
+  "note": "alle Konzepte (auch nicht gemappte) und alle Zeitraeume, Zaehlung je (Taxonomie, Konzept, Einheit, Beginn, Ende); die Kernwirkung steht unter coreComparison"
+ },
+ "coreComparison": {
+  "issuers": 375,
+  "errors": 0,
+  "counts": {
+   "cell_new": 2007,
+   "ttm_gained": 102,
+   "latest_value_changed_same_end": 1432,
+   "latest_value_changed_same_end_by_transition": 1429,
+   "pit_history_changed": 4233,
+   "earlier_pit": 1889,
+   "latest_value_changed_other_end": 81,
+   "latest_value_changed_other_end_by_transition": 81,
+   "ttm_value_changed": 122,
+   "latest_end_changed": 23,
+   "latest_became_ambiguous": 23,
+   "ttm_lost": 12,
+   "latest_resolved": 10
+  },
+  "issuersAffected": {
+   "cell_new": 174,
+   "ttm_gained": 29,
+   "latest_value_changed_same_end": 194,
+   "pit_history_changed": 288,
+   "earlier_pit": 159,
+   "latest_value_changed_other_end": 17,
+   "ttm_value_changed": 30,
+   "latest_end_changed": 13,
+   "latest_became_ambiguous": 5,
+   "ttm_lost": 5,
+   "latest_resolved": 1
+  },
+  "method": "alle Zellen (Metrik x Geschaeftsjahr x Periode) und TTM (eps_diluted, revenue, net_income, as_of 2099-12-31) je Emittent in beiden Kernversionen; latest = LATEST_KNOWN; pitHistory = Folge (verfuegbar ab, Wert, Formular)"
+ },
+ "verification": {
+  "correctedLatestValues": {
+   "total": 1432,
+   "equalLatestFiledSecVersion": 1416,
+   "coverDateShareCounts": 5,
+   "equalValueTies": 4,
+   "note": "Pruefung der Quellfassung (juengste SEC-Fassung) am ersten Stand: 1.416 von 1.425 gleich, Rest Deckblatt-Aktien und Gleichstaende"
+  },
+  "ttmChangedOrGained": {
+   "counts": {
+    "changed|unverifiable": 66,
+    "changed|revenue|match": 20,
+    "changed|net_income|match": 22,
+    "changed|eps_diluted|match": 11,
+    "changed|revenue|MISMATCH": 3,
+    "gained|net_income|match": 27,
+    "gained|unverifiable": 36,
+    "gained|revenue|match": 22,
+    "gained|eps_diluted|match": 14,
+    "gained|revenue|MISMATCH": 1,
+    "gained|eps_diluted|MISMATCH": 1,
+    "gained|net_income|MISMATCH": 1
+   },
+   "mismatch": [
+    [
+     "0000866121",
+     "revenue|2015-03-31",
+     3112659000.0,
+     3680090000,
+     "changed"
+    ],
+    [
+     "0000033619",
+     "revenue|2014-01-31",
+     1934307000.0,
+     1969257000,
+     "changed"
+    ],
+    [
+     "0000033619",
+     "revenue|2014-05-02",
+     1964194000.0,
+     1984689000,
+     "changed"
+    ],
+    [
+     "0000866121",
+     "revenue|2014-12-31",
+     2932923000.0,
+     2955248000,
+     "gained"
+    ],
+    [
+     "0000866121",
+     "eps_diluted|2014-12-31",
+     9.6,
+     9.69,
+     "gained"
+    ],
+    [
+     "0001406587",
+     "net_income|2017-12-31",
+     52228000.0,
+     50228000,
+     "gained"
+    ]
+   ],
+   "mismatchCauses": {
+    "0000866121 eps_diluted 2014-12-31": "Pruefskript-Artefakt: der Kern nimmt fuer Q3 die juengste Fassung 1,34 (10-KT/A, 2014-09-29..12-31), das Skript die aeltere Periode bis 12-28 (1,43); 2,90+2,50+2,86+1,34 = 9,60 = Kern",
+    "0000866121 revenue 2014-12-31/2015-03-31": "Umsatzkonzept je Quartal (10-KT/A SalesRevenueNet restated, 10-Q 2015 Revenues): Kern nimmt die juengste Einreichung je Quartal; Skript nimmt das erste vollstaendige Konzept - bestehende Umsatzsemantik (M-B6), kein Uebergangsfehler",
+    "0000033619 revenue 2014-01-31/2014-05-02": "Esterline: 10-KT restated Q1/Q2 FY2014 (SalesRevenueNet), aeltere Quartale aus dem 10-K - bestehende 'juengste Fassung je Quartal'-Semantik",
+    "0001406587 net_income 2017-12-31": "Forestar: Q4 ProfitLoss (10-K 2019) neben NetIncomeLoss Q1-Q3 - bestehende Konzeptfolge von net_income (nicht EPS), unabhaengig vom 10-KT"
+   },
+   "epsResult": "EPS: 29 von 30 geaenderten/gewonnenen pruefbaren Fenstern gleich der SEC-Summe, das 30. ist ein Skript-Artefakt (Kern korrekt)"
+  },
+  "ttmLost": {
+   "total": 12,
+   "causes": {
+    "TTM_EPS_INCONSISTENT / TTM_SHARE_BASIS_INCONSISTENT": "Centerspace (4, 10-KT nach 1:10-Reverse-Split), TheStreet (1, 10-QT), Dawson (2, 10-QT) - Aktienbasis gemischt, strikter Vertrag zieht zurueck",
+    "TTM_CONCEPT_MISMATCH": "Orbital ATK net_income 2015-03-31 (10-KT/A taggt ProfitLoss/NetIncomeLossAvailableToCommonStockholdersBasic)",
+    "windowEndMoved": "Orbital ATK 2014-12-28 -> 2014-12-31 (eps_diluted, revenue, net_income): Q3 endet im 10-KT/A am 12-31; als 'gained' gezaehlt"
+   }
+  },
+  "newlyAmbiguous": {
+   "cells": 23,
+   "cause": "Same-Day-Konflikt (Policy 1.20.0): Uebergangsbericht und anderer Bericht am selben Tag mit verschiedenen Werten - Resource America 2013-11-22 (10-QT/A vs. 10-K/A), Bryn 2024-12-19 (10-KT -8,46 vs. 10-K/A -0,01), Republic Airways 2025-11-21"
+  },
+  "periodCollisions": {
+   "guard": "Uebergangsbericht nur mit dem Zeitraum seiner Zelle (vom Kalender erwartet oder von allen bis dahin verfuegbaren Regelberichten der Zelle einstimmig gemeldet, Beginn und Ende +-7 Tage) und nie in einem vorwaerts fortgeschriebenen Geschaeftsjahr; Deckblattangaben nach der Zelle der letzten abgeschlossenen Periode",
+   "transitionIssuers": {
+    "before": {
+     "cells": 6716,
+     "issuers": 291,
+     "latestOtherPeriod": 6353
+    },
+    "after": {
+     "cells": 6870,
+     "issuers": 296,
+     "latestOtherPeriod": 6412
+    }
+   },
+   "randomIssuers1500WithoutTransitionReports": {
+    "before": {
+     "cells": 1266,
+     "issuers": 216,
+     "latestOtherPeriod": 1071
+    },
+    "after": {
+     "cells": 1266,
+     "issuers": 216,
+     "latestOtherPeriod": 1071
+    }
+   },
+   "latestMovedToCalendarPeriod": {
+    "cells": 81,
+    "issuers": 17,
+    "note": "der Uebergangsbericht traegt den vom Kalender erwarteten Zeitraum, der bisherige Regelwert war eine Kollision (Best Buy FY2012: Quartale bis 2011-05-28/08-27/11-26 aus dem 10-KT statt der 10-Q-Neuberechnungen bis 04-30/07-30/10-29)"
+   },
+   "addedCollisions": "157 Zellen bei 24 Emittenten: der Uebergangswert passt zum Kalender, die Regelwerte derselben Zelle tragen einen anderen Zeitraum (vorbestehend, F-TTM-7); juengster Wert unveraendert"
+  },
+  "pitTtm": {
+   "method": "TTM (eps_diluted, revenue, net_income) in beiden Versionen zu jedem Einreichungstag eines Uebergangsberichts und 90 Tage danach (Red Team M-2); geaenderte verfuegbare Werte gegen die unabhaengige SEC-Summe der zu t juengsten Fassungen",
+   "counts": {
+    "net_income|now_unavailable|TTM_PERIODS_NOT_CONTIGUOUS": 31,
+    "eps_diluted|now_unavailable|TTM_WINDOW_NOT_CURRENT": 21,
+    "revenue|now_unavailable|TTM_WINDOW_NOT_CURRENT": 51,
+    "net_income|now_unavailable|TTM_WINDOW_NOT_CURRENT": 68,
+    "eps_diluted|now_unavailable|TTM_PERIODS_NOT_CONTIGUOUS": 9,
+    "revenue|now_unavailable|TTM_PERIODS_NOT_CONTIGUOUS": 20,
+    "revenue|changed|unverifiable": 10,
+    "net_income|changed|unverifiable": 7,
+    "eps_diluted|now_unavailable|TTM_SHARE_BASIS_INCONSISTENT": 3,
+    "net_income|changed|match": 2,
+    "eps_diluted|now_unavailable|INSUFFICIENT_HISTORY": 1,
+    "net_income|now_unavailable|INSUFFICIENT_HISTORY": 1
+   },
+   "mismatch": [],
+   "eps": "kein PIT-EPS-Wert geaendert; alle EPS-Aenderungen sind Rueckzuege (TTM_WINDOW_NOT_CURRENT 21, NOT_CONTIGUOUS 9, SHARE_BASIS 3, INSUFFICIENT_HISTORY 1)",
+   "openM2": "Dawson Geophysical 0000799165 (Reverse Merger): der 10-QT 2015-03-23 meldet das Oktober-Dezember-Quartal des bilanziellen Erwerbers, die anderen Quartale stehen bis zu den restatenden 10-Q 2015 noch auf TGC-Basis; Umsatz-/Ergebnis-TTM zu 2015-03-23/06-21 mischt zwei Vorgaengereinheiten (je Quartal die juengste Fassung = praeregistrierte Wahrheitsdefinition), EPS zieht der Aktienbasis-Guard zurueck"
+  }
+ },
+ "newDefect": {
+  "F-TTM-7": {
+   "title": "Zeitraum-Kollisionen ueber Einreichungen: eine Zelle haelt Beobachtungen verschiedener Zeitraeume, die juengste ersetzt die fruehere auch bei anderem Zeitraum",
+   "scope": "vorbestehend in 1.21.0 und unabhaengig von Uebergangsberichten: 216 von 1.500 Zufallsemittenten (14,4 %), 1.266 Zellen, davon 1.071 mit juengstem Wert eines anderen Zeitraums; ueberwiegend YTD-Zellen (assign() setzt YTD/FY nur nach Dauerklasse und Jahresende, ohne Beginnpruefung)",
+   "ttmImpact": "keiner nachgewiesen: periods._same_start verhindert YTD-Differenzen ueber verschiedene Beginne, _ttm_window prueft Beginn/Ende aller vier Quartale (Holdout v4: WRONG_PERIOD 0)",
+   "affectedViews": "LATEST_KNOWN und AS_OF_LATEST einzelner Zellen (YTD, Quartal, FY) in Konsumenten-Bundles und im Inspector",
+   "status": "dokumentiert, nicht behoben (eigene Aenderung der Periodenzuordnung fuer alle Emittenten; Fachmodell-Aenderung mit Vorher/Nachher-Vergleich in eigenem PR)",
+   "examples": [
+    "Entest 0001449447 YTD2 2015 (Sep-Feb vs. Dec-May)",
+    "Simpson 0000920371 Dividende YTD3 2013 (Jan-Sep vs. Apr-Dec)",
+    "SSTL 0001534298 YTD3 2011",
+    "Novus Robotics 0001388180 Q3 2011",
+    "Sun Pacific 0001343465 YTD3 2016"
+   ]
+  },
+  "F-TTM-8": {
+   "title": "Vergleichsspalten eines 10-KT erzeugen ein Phantom-Geschaeftsjahresende",
+   "scope": "vorbestehend seit dem Kalender 1.21.0, unveraendert in 1.22.0: 38 von 375 Uebergangsemittenten haben einen Zeitraum ohne Kennung direkt vor einem gelabelten 'Jahr' unter 300 Tagen (Zurn 0001439288: 2019-12-31 ohne Kennung, 2020-03-31 = FY2020, erwartet Jan-Mar 2020; Bristow, T3 Defense, Republic, Powerfleet, EyePoint, Raptor, Crestwood, Pharmacyclics, Delta Apparel, Textura)",
+   "effect": "Quartale der betroffenen Jahre ohne Slot (fehlend, nicht falsch); Uebergangswerte dieser Jahre fallen durch den Zeitraum-Guard",
+   "fix": "ein Ende ohne Kennung nur aus dem eigenen aktuellen Zeitraum eines Uebergangsberichts, nie aus seinen Vergleichsspalten - eigene Kalenderaenderung mit Vorher/Nachher-Vergleich",
+   "status": "dokumentiert, nicht behoben"
+  }
+ },
+ "sampleManuallyChecked": [
+  "0000866121 Orbital ATK (10-KT/A Restatement, XBRL-Instanz geprueft)",
+  "0001635581 8point3 (verkuerztes Jahr zuerst im 10-KT)",
+  "0001586372 Dthera (10-QT alte Basis)",
+  "0000033619 Esterline (11-Monats-Uebergang)",
+  "0000764478 Best Buy",
+  "0001406587 Forestar",
+  "0000798359 Centerspace",
+  "0001080056 TheStreet",
+  "0000799165 Dawson",
+  "0000083402 Resource America",
+  "0001397795 Bryn",
+  "0000810332 Republic Airways",
+  "0001976663 Nexscient",
+  "0001343465 Sun Pacific",
+  "0001370053 AnaptysBio",
+  "0000093556 Stanley Black & Decker (10-K/A)"
+ ],
+ "coverageDiagnostic": {
+  "universe": "Produktuniversum 5.072 CIKs, as_of 2026-10-07, CURRENT_TTM (resolver.ttm)",
+  "source": "scripts/fundamentals-audit/ttm_coverage_report.py",
+  "old": {
+   "available": {
+    "revenue": 3087,
+    "net_income": 3517,
+    "eps_diluted": 146,
+    "eps_basic": 148
+   },
+   "unavailable": {
+    "eps_diluted": {
+     "INSUFFICIENT_HISTORY": 4885,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 18,
+     "TTM_CONCEPT_MISMATCH": 9,
+     "TTM_WINDOW_NOT_CURRENT": 1,
+     "TTM_SHARE_BASIS_INCONSISTENT": 10,
+     "TTM_EPS_INCONSISTENT": 3
+    },
+    "eps_basic": {
+     "INSUFFICIENT_HISTORY": 4887,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 15,
+     "TTM_CONCEPT_MISMATCH": 9,
+     "TTM_WINDOW_NOT_CURRENT": 1,
+     "TTM_SHARE_BASIS_INCONSISTENT": 7,
+     "TTM_EPS_INCONSISTENT": 5
+    },
+    "revenue": {
+     "TTM_PERIODS_NOT_CONTIGUOUS": 44,
+     "INSUFFICIENT_HISTORY": 1929,
+     "TTM_WINDOW_NOT_CURRENT": 7,
+     "TTM_CONCEPT_MISMATCH": 5
+    },
+    "net_income": {
+     "TTM_CONCEPT_MISMATCH": 240,
+     "INSUFFICIENT_HISTORY": 1289,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 23,
+     "TTM_WINDOW_NOT_CURRENT": 2,
+     "TTM_UNIT_MISMATCH": 1
+    }
+   }
+  },
+  "new": {
+   "available": {
+    "revenue": 3125,
+    "net_income": 3517,
+    "eps_diluted": 146,
+    "eps_basic": 148
+   },
+   "unavailable": {
+    "eps_diluted": {
+     "INSUFFICIENT_HISTORY": 4885,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 18,
+     "TTM_CONCEPT_MISMATCH": 9,
+     "TTM_WINDOW_NOT_CURRENT": 1,
+     "TTM_SHARE_BASIS_INCONSISTENT": 10,
+     "TTM_EPS_INCONSISTENT": 3
+    },
+    "eps_basic": {
+     "INSUFFICIENT_HISTORY": 4887,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 15,
+     "TTM_CONCEPT_MISMATCH": 9,
+     "TTM_WINDOW_NOT_CURRENT": 1,
+     "TTM_SHARE_BASIS_INCONSISTENT": 7,
+     "TTM_EPS_INCONSISTENT": 5
+    },
+    "revenue": {
+     "TTM_PERIODS_NOT_CONTIGUOUS": 43,
+     "INSUFFICIENT_HISTORY": 1891,
+     "TTM_WINDOW_NOT_CURRENT": 7,
+     "TTM_CONCEPT_MISMATCH": 6
+    },
+    "net_income": {
+     "TTM_CONCEPT_MISMATCH": 240,
+     "INSUFFICIENT_HISTORY": 1289,
+     "TTM_PERIODS_NOT_CONTIGUOUS": 23,
+     "TTM_WINDOW_NOT_CURRENT": 2,
+     "TTM_UNIT_MISMATCH": 1
+    }
+   }
+  },
+  "note": "nur diagnostisch, kein Optimierungsziel"
+ }
+}

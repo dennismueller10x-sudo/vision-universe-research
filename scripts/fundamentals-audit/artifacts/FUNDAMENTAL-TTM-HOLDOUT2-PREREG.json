@@ -1,0 +1,154 @@
+{
+ "schema": "vu-fundamental-ttm-holdout2-prereg-1.0.0",
+ "registeredAt": "2026-10-08",
+ "status": "REGISTERED_NOT_OPENED",
+ "question": "Liefert der Fundamental-Kern 1.19.0 (+ PIT-Sicht #505, + Belegstufe #510) einen verwaesserten TTM-EPS, der dem zum Stichtag bekannten Stand der SEC-Meldungen einschliesslich bis dahin eingereichter Korrekturen entspricht - und keinen, wo es keinen gibt?",
+ "candidate": {
+  "normalizationLogic": "1.19.0",
+  "registry": "1.9.0",
+  "commit": "(Commit dieser Praeregistrierung auf claude/fundamental-data-integrity-audit)",
+  "api": "PeriodResolver.ttm_ending('eps_diluted', fy, q, as_of), Policy AS_OF_LATEST"
+ },
+ "source": {
+  "archive": "SEC companyfacts.zip, Stand 2026-10-07 (dieselbe Datei wie alle Laeufe dieser Runde)"
+ },
+ "sampling": {
+  "frame": "alle CIKs in companyfacts.zip ohne das Produktuniversum (5.072 CIKs, Gegenstand aller frueheren Analysen: T1-Taxonomie, T2-Ground-Truth, Integritaets-Scan, Holdout v1, Entwicklungsstichprobe dieser Praeregistrierung) und ohne die 3.519 CIKs aus Fixtures, Ground-Truth- und Audit-Artefakten (artifacts/FUNDAMENTAL-TTM-HOLDOUT2-EXCLUDE.json)",
+  "frameSize": 15353,
+  "order": "sha256('vu-ttm-holdout-2|' + cik)",
+  "population": "der GESAMTE Rahmen wird ausgewertet - keine Quote, keine Abbruchregel, die von Ergebnissen abhaengen koennte",
+  "casesPerIssuer": "bis zu 3 Faelle (Emittent x Fensterende), deterministisch: seltene Schicht zuerst, dann sha256(SALT|cik+end+kind); ein weiterer Fall nur, wenn er eine neue Schicht abdeckt",
+  "caseKinds": {
+   "WINDOW": "vier aufeinanderfolgende gemeldete Dreimonats-EPS (positiv, oder negativ bei Split zwischen den Quartalen)",
+   "MISSING_QUARTER": "vier aufeinanderfolgende Berichtsquartale, von denen mindestens einem ein Dreimonats-EPS fehlt (negativ)"
+  },
+  "strata": [
+   "normal",
+   "tag_switch",
+   "split",
+   "custom",
+   "fy_change",
+   "week52",
+   "loss",
+   "profit",
+   "small",
+   "large",
+   "foreign",
+   "restated",
+   "negative"
+  ],
+  "strataDefinitions": {
+   "normal": "kein anderes Merkmal ausser Gewinn/Verlust",
+   "tag_switch": "Fenster mischt EarningsPerShareDiluted und ...BasicAndDiluted (auch zwischen Fassungen)",
+   "split": "Split zwischen zwei Quartalen des Fensters (is_split_ratio auf Erstmeldungen) oder Wahrheit SHARE_BASIS_MIXED",
+   "custom": "Emittent meldet Dreimonats-EPS fuer < 60 % seiner Berichtsquartale (EPS vermutlich in Erweiterungs-Tags)",
+   "fy_change": "10-K-Jahresenden in verschiedenen Monaten (Abstand nicht 0, 1 oder 11)",
+   "week52": "Kern-Kalender week_based",
+   "loss": "Wahrheit < 0 oder ein Quartal < 0",
+   "profit": "sonst, bei verfuegbarer Wahrheit",
+   "small": "groesste gemeldete Bilanzsumme < 300 Mio. USD",
+   "large": "> 10 Mrd. USD",
+   "foreign": "20-F/40-F, ifrs-full oder EPS in anderer Waehrung als USD",
+   "restated": "ein Quartal des Fensters hat mehr als einen Wert ueber seine Fassungen",
+   "negative": "Wahrheit zum letzten Stand nicht verfuegbar"
+  }
+ },
+ "truth": {
+  "definition": "AS_KNOWN_AT(t) einschliesslich bis t eingereichter Korrekturen - dieselbe Semantik wie der Kern (PIT_TTM, AS_OF_LATEST). NICHT die Erstmeldung.",
+  "quarter": "Dreimonatswert (80-100 Tage) aus 10-K/10-Q/Aenderungen, Konzeptfamilie EarningsPerShareDiluted / EarningsPerShareBasicAndDiluted (gesamt, nicht fortgefuehrt), Einheit */shares, Periodenende ab 2009-06-01",
+  "versionAtT": "juengste Einreichung mit filed <= t; gleicher Tag: EarningsPerShareDiluted vor BasicAndDiluted, dann hoehere Accession",
+  "window": "vier Quartale, Abstand der Periodenenden 77-105 Tage, eine Einheit",
+  "available": "alle vier zu t bekannt, eine Einheit, kein Split zwischen benachbarten Quartalen (verwaesserte Aktien zu t)",
+  "independence": "direkt aus den Rohfakten von companyfacts, ohne Kern-Normalisierung",
+  "evaluationDates": {
+   "early": "knownFrom - 1 Tag (Wahrheit dort nicht verfuegbar)",
+   "knownFrom": "erster Tag, an dem alle vier bekannt waren",
+   "final": "Tag der juengsten Fassung eines der vier Quartale, wenn spaeter als knownFrom; Negativfaelle MISSING_QUARTER nur hier"
+  }
+ },
+ "policies": {
+  "split": "Ein Split zwischen zwei Quartalen ohne Neudarstellung zu t = keine gemeinsame Aktienbasis = Wahrheit nicht verfuegbar. Split-Erkennung is_split_ratio: Verhaeltnis der verwaesserten Aktien >= 1,9 innerhalb 5 % eines Split-Verhaeltnisses (2..100); darunter (5:4, 4:3, 3:2) nur mit vom Emittenten gemeldetem StockholdersEquityNoteStockSplitConversionRatio1; >= 500 = Skalierungsfehler. Ohne gemeldete Aktienzahlen keine Pruefung. Nach Neudarstellung (spaetere Fassungen auf neuer Basis) ist die Wahrheit verfuegbar mit den neuen Werten.",
+  "restatement": "die zu t juengste Fassung zaehlt (Korrekturen eingeschlossen); eine Korrektur nach t ist zu t unsichtbar",
+  "week52": "Periodenenden innerhalb von 7 Tagen sind dasselbe Quartal; Kern-Periodenende innerhalb 7 Tagen des Wahrheitsendes gilt als dasselbe Fenster",
+  "epsConcept": "nur Gesamt-EPS (Diluted / BasicAndDiluted); ein Kern-Fenster mit fortgefuehrtem EPS oder einem fremden Konzept ist WRONG_CONCEPT",
+  "fiscalYearChange": "Fenster nach Datum, nicht nach Fiskal-Label; der Kern wird ueber seinen eigenen Kalender (fiscal_year_for / quarter_index des Wahrheitsendes) gefragt; ohne Slot NOT_EVALUABLE (nicht bewertet, gezaehlt)",
+  "tolerance": "|Kern - Wahrheit| <= 0,01 oder <= 0,5 % relativ"
+ },
+ "classes": {
+  "CORRECT": "",
+  "FALSE_AVAILABLE": "Kern liefert, Wahrheit nicht verfuegbar (EARLY: vor knownFrom; STRUCTURAL: Negativfall)",
+  "FALSE_MISSING": "Wahrheit verfuegbar, Kern nicht",
+  "WRONG_PERIOD": "Kern-Fensterende > 7 Tage daneben",
+  "WRONG_CONCEPT": "Kern-Quartale mit fortgefuehrtem/fremdem Konzept",
+  "WRONG_VALUE": "ausserhalb der Toleranz",
+  "TRUE_UNAVAILABLE": "beide nicht verfuegbar",
+  "NOT_EVALUABLE": "kein Fiskalslot"
+ },
+ "gates": {
+  "overallMaxPercent": {
+   "FALSE_AVAILABLE": 0.1,
+   "WRONG_VALUE": 0.5,
+   "WRONG_CONCEPT": 0.1,
+   "WRONG_PERIOD": 0.1,
+   "FALSE_MISSING": 20.0
+  },
+  "denominators": {
+   "FALSE_AVAILABLE": "Auswertungen mit nicht verfuegbarer Wahrheit",
+   "WRONG_*": "Auswertungen mit verfuegbarer Wahrheit UND Kernwert",
+   "FALSE_MISSING": "Auswertungen mit verfuegbarer Wahrheit"
+  },
+  "minimumCases": 1000,
+  "maxEvaluatorErrorPercentOfIssuers": 0.5,
+  "stratumCorrectnessGates": [
+   "FALSE_AVAILABLE",
+   "WRONG_VALUE",
+   "WRONG_CONCEPT",
+   "WRONG_PERIOD"
+  ],
+  "stratumMinimumEvaluations": 100,
+  "stratumMaxPercent": 1.0,
+  "stratumMinimumCases": 30,
+  "rationale": "Korrektheit vor Abdeckung: die vier Korrektheits-Gates sind eng (ein falscher Wert ist schlimmer als keiner); FALSE_MISSING ist ein Abdeckungs-Gate gegen systematischen Verlust. Kalibriert nur an der Entwicklungsstichprobe aus dem bereits gesehenen Produktuniversum (600 CIKs, 596 Faelle: FALSE_AVAILABLE 0, WRONG_* 0, FALSE_MISSING 13,0 %) und an Holdout v1 (NOT_AVAILABLE 6,2 % unter anderer Wahrheit).",
+  "verdict": "PASS nur, wenn ALLE Gates bestehen. PASS -> Kern kann migrationsbereit werden (Freeze v5). FAIL -> Kern bleibt BLOCKED."
+ },
+ "rules": [
+  "Keine Aenderung an Gates, Wahrheit, Policies, Rahmen oder Auswertungsskripten nach Oeffnung.",
+  "Ein nach Oeffnung entdeckter Messfehler wird als Abweichung dokumentiert; das Ergebnis vor der Korrektur wird mitberichtet; Gates bleiben.",
+  "Kein Kern-Fix waehrend der Auswertung; ein Kernfehler fuehrt zu FAIL/BLOCKED und einem neuen, ungesehenen Holdout."
+ ],
+ "development": {
+  "frame": "600 CIKs aus dem Produktuniversum (sha256('dev|'+cik)), bereits gesehen",
+  "changesDuringDevelopment": [
+   "Split-Regel: Verhaeltnis max/min >= 1,25 verwechselte Emission mit Split (CIK 799292: +35 % Aktien) -> Split-Verhaeltnis-Regel",
+   "kleine Split-Verhaeltnisse nur mit gemeldetem Verhaeltnis (ClearSign 2024, WW 2012, Douglas Emmett 2011: Emission/Rueckkauf 20-30 %)"
+  ],
+  "result": {
+   "cases": 596,
+   "FALSE_AVAILABLE": 0,
+   "WRONG_VALUE": 0,
+   "WRONG_CONCEPT": 0,
+   "WRONG_PERIOD": 0,
+   "FALSE_MISSING_percent": 13.0
+  }
+ },
+ "files": {
+  "evaluator": {
+   "path": "scripts/fundamentals-audit/ttm_holdout2_eval.py",
+   "sha256": "6fec22173174ee90b2e23abef8dec9790c68787e5aebeb2e42b70bf8d18fbe94"
+  },
+  "gates": {
+   "path": "scripts/fundamentals-audit/ttm_holdout2_gates.py",
+   "sha256": "156721a2aa6e72738ac5dc35897ede2897c3bb6b8d25ad1655e2f4e32f879c2f"
+  },
+  "exclude": {
+   "path": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT2-EXCLUDE.json",
+   "sha256": "19fe8fff0ae9245acfc12f85e9e610590af464178bd30cea08fefce54b6a06bc"
+  },
+  "frameSha256": "0d34522b99dea236a50411080e6729a2449e922587b81bf307abbbfcfd768a3c"
+ },
+ "commands": [
+  "python3 ttm_holdout2_eval.py sample <companyfacts.zip> <universe-ciks.json> artifacts/FUNDAMENTAL-TTM-HOLDOUT2-EXCLUDE.json frame.json",
+  "python3 ttm_holdout2_eval.py <companyfacts.zip> frame.json rows.<i>.jsonl --shard <i>/4",
+  "python3 ttm_holdout2_gates.py artifacts/FUNDAMENTAL-TTM-HOLDOUT2-PREREG.json rows.*.jsonl"
+ ]
+}

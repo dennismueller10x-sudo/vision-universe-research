@@ -1,0 +1,116 @@
+{
+ "schema": "vu-fundamental-ttm-investigation-1.0.0",
+ "question": "Warum hat Kern 1.15.0 nur fuer 159 statt 3.394 Emittenten einen TTM-EPS (verwaessert)?",
+ "population": {
+  "oldTtmNewNone": 3236,
+  "oldAndNew": 158,
+  "newOnly": 1,
+  "source": "Consumer-Bundles main (829b35bdce4) vs. Kern 1.15.0, gleiches SEC-Archiv"
+ },
+ "taxonomyAll": {
+  "counts": {
+   "Q4_NOT_DERIVED": 3224,
+   "MULTIPLE:BASIC_ONLY+Q4_NOT_DERIVED": 3,
+   "MULTIPLE:Q4_NOT_DERIVED+YTD_ONLY": 3,
+   "NO_PERIOD": 2,
+   "REPORTED_3M_NOT_USED": 2,
+   "BASIC_ONLY": 1,
+   "MULTIPLE:NO_PERIOD": 1
+  },
+  "shares": {
+   "Q4_NOT_DERIVED": 0.9963,
+   "MULTIPLE:BASIC_ONLY+Q4_NOT_DERIVED": 0.0009,
+   "BASIC_ONLY": 0.0003,
+   "MULTIPLE:NO_PERIOD": 0.0003,
+   "MULTIPLE:Q4_NOT_DERIVED+YTD_ONLY": 0.0009,
+   "NO_PERIOD": 0.0006,
+   "REPORTED_3M_NOT_USED": 0.0006
+  },
+  "mapping": {
+   "Q4_NOT_DERIVED": "MISSING_Q4 + Q4_NOT_DERIVED (Q1-Q3 gemeldet, Q4 nur als FY und 9M)",
+   "REPORTED_3M_NOT_USED": "PIPELINE_TOO_STRICT (zu pruefen: FUBO, FERG)",
+   "BASIC_ONLY": "BASIC_DILUTED_MISMATCH",
+   "YTD_ONLY": "YTD_ONLY",
+   "NO_PERIOD": "FISCAL_YEAR_MAPPING"
+  },
+  "filerTypes": {
+   "DOMESTIC_10Q": 3202,
+   "FOREIGN_IFRS": 34
+  },
+  "missingQuarterPattern": {
+   "Q4": 3227,
+   "Q2+Q4": 4,
+   "Q4+Q3": 3,
+   "Q3": 1,
+   "Q2": 1
+  }
+ },
+ "primarySample": {
+  "n": 143,
+  "stratification": "Inland/Ausland x Aktienbasis FY-vs-9M x Gewinn/Verlust x Split-Hinweis, proportional, min. 2 je Stratum, Seed 11",
+  "summary": {
+   "Q4_NOT_IN_FILING": 130,
+   "Q4_ONLY_DIMENSIONAL": 3,
+   "reconstructableUnderStrictBasis": 83,
+   "Q4_OTHER_PER_SHARE_ONLY": 5,
+   "NO_FY_FACT": 4,
+   "Q4_ONLY_CUSTOM_TAG": 1
+  },
+  "reading": "In keiner der lesbaren 10-K-Einreichungen steht ein Q4-Dreimonats-EPS - weder nicht-dimensional, dimensional noch unter einem eigenen Tag; gefundene Q4-Werte je Aktie sind Dividenden. Seit Wegfall von Item 302 (2021) steht Q4-EPS nur in der Ergebnismitteilung (8-K, nicht XBRL-getaggt). DATA_ACTUALLY_NOT_AVAILABLE als Standalone-Quartal in SEC-XBRL."
+ },
+ "q4Reconstruction": {
+  "evidence": "ENTWICKLUNGS-Partition (TTM-Praeregistrierung): 16.947 (Emittent, Konzeptfamilie, Geschaeftsjahr) mit gemeldetem Q4-Dreimonats-EPS",
+  "formulas": {
+   "F1": "FY - 9M",
+   "F2": "FY - (Q1+Q2+Q3)",
+   "F3": "(FY*SH_FY - 9M*SH_9M)/(4*SH_FY - 3*SH_9M)"
+  },
+  "tolerance": "|abgeleitet - gemeldet| <= max(0,02; 1 %)",
+  "diluted": {
+   "all_F3": {
+    "n": 7397,
+    "wrong": 790,
+    "wrongRate": 0.1068
+   },
+   "eligible_F1F3agree_sb1_noSign": {
+    "n": 4125,
+    "wrong": 162,
+    "wrongRate": 0.0393
+   },
+   "strictest_F1F2F3agree_sb1_noSign": {
+    "n": 2786,
+    "wrong": 90,
+    "wrongRate": 0.0323
+   }
+  },
+  "basic": {
+   "eligible_F1F3agree_sb1_noSign": {
+    "n": 4027,
+    "wrong": 136,
+    "wrongRate": 0.0338
+   },
+   "strictest_F1F2F3agree_sb1_noSign": {
+    "n": 2715,
+    "wrong": 69,
+    "wrongRate": 0.0254
+   }
+  },
+  "disputeAdjudication": {
+   "pool": 4125,
+   "disputesInPool": 162,
+   "sample": {
+    "dispute|DERIVATION_WRONG": 12,
+    "dispute|QUARTERS_RESTATED": 25,
+    "dispute|FILER_TABLE_INCONSISTENT": 23,
+    "control|FILING_CONSISTENT_DERIVATION_RIGHT": 40
+   },
+   "reading": "Streitfaelle (abgeleitet != gemeldet, Primaerdaten der 10-K-Einreichung): 38 % gemeldete Quartalstabelle in sich inkonsistent (gemeldetes Q4 fehlerhaft getaggt, z. B. CPK FY2019: EarningsPerShareDiluted Q4 0,33 neben fortgefuehrten Bereichen 1,37 = Ableitung), 42 % Q1-Q3 im 10-K neu dargestellt (Ableitung mischt Original-9M mit neu dargestelltem FY), 20 % Ableitung echt falsch. 40 Kontrollfaelle: alle konsistent."
+  }
+ },
+ "decision": {
+  "EPS_TTM": "nur aus vier GEMELDETEN Standalone-Quartalen desselben Konzepts (verwaessert bzw. unverwaessert getrennt). Keine Q4-Rekonstruktion.",
+  "reason": "Selbst unter den strengsten Vertraeglichkeitsbedingungen liegen 3,2 % (verwaessert) bzw. 2,5 % (unverwaessert) der rekonstruierten Q4 ausserhalb der Toleranz; das praeregistrierte Gate WRONG_VALUE_B (<= 2 %) waere verfehlt. Die Abweichungen sind nicht vorab erkennbar (Neudarstellungen werden erst mit spaeteren Einreichungen sichtbar). UNKNOWN vor falschem Wert.",
+  "answerToMainQuestion": "Nein - die uebrigen ~3.235 Emittenten haben KEINE vier gemeldeten Quartals-EPS; Q4 existiert in SEC-XBRL nicht. Es gibt kein Core-/Mapping-Problem, nur die Frage, ob eine Naeherung erlaubt ist. Die Messung sagt: nicht als EPS_TTM.",
+  "optionForOwner": "Eine ausdruecklich getrennte, gekennzeichnete Naeherung EPS_TTM_RECONSTRUCTED (F3 unter Vertraeglichkeitsbedingungen, ~96-97 % innerhalb Toleranz gegen gemeldete Werte) waere moeglich - nicht Teil dieses Auftrags, nicht unter dem Label TTM."
+ }
+}

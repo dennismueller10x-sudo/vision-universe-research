@@ -1,0 +1,163 @@
+{
+ "schema": "vu-fundamental-ttm-holdout4-prereg-1.0.0",
+ "registeredAt": "2026-10-09",
+ "status": "REGISTERED_NOT_OPENED",
+ "question": "Liefert der eingefrorene Kern 1.21.0 (Freeze v6) auf ungesehenen Emittent/Perioden-Faellen ein korrektes PIT-TTM-EPS (verwaessert), insbesondere ueber Geschaeftsjahreswechsel (F-TTM-4), geteilte Predecessor/Successor-Jahre (F-TTM-5), Same-Day-Konflikte und Rumpfperioden?",
+ "candidate": {
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v6.json",
+  "status": "DEVELOPMENT_FREEZE",
+  "commit": "3922ff6093d11606dcfc0c5185160c9362bdc88d",
+  "codeHash": "1607fa0372ae2a8ca336d9987cb4c28c94ab7ca1de600865fa0256311a4efc3b",
+  "mappingHash": "81a4cdb356b09dada7e513c61a07265bc733daabc5ed5a40ae742ae7495d2a7b",
+  "normalizationLogic": "1.21.0",
+  "view": "PIT_TTM via PeriodResolver.ttm_ending (Policy AS_OF_LATEST), EPS diluted; Kalender aus CALENDAR_FORMS, Werte aus PERIODIC_FORMS (wie pipeline.py/consumer.py)",
+  "note": "Freeze v6 nach der Praeregistrierung neu geschrieben (nur Audit-Hash); Kern-Code-Hash identisch zu 42a092b"
+ },
+ "source": {
+  "archive": "SEC companyfacts.zip, Stand 2026-10-07 (dieselbe Datei wie alle Laeufe)",
+  "sha256": "6d3b6e096457193db30cc72eecb9c2fee0ba6a854d7c048938a58f28449864a9"
+ },
+ "sampling": {
+  "frame": "Rahmen von Holdout v3 (selbst v2-Rahmen ohne damals untersuchte CIKs) abzueglich Exclude-Liste v4: Exclude v3, alle Fixture-CIKs (inkl. 1.21.0: EIGHTPOINT3, DSSI, FRP, UNTC, COOP, OSKCAL, ADM, VMW, DFS, DWSN, RKFL, RNF, PCP, ISG, CLBK), alle Holdout-v3-Fehleremittenten (F-TTM-4/F-TTM-5), alle F-TTM-6-Emittenten und jeder CIK, der in einem Transkript dieser Arbeit (Haupt-, Red-Team-Runden 1 und 2) oder in den Red-Team-Spuren genannt wurde",
+  "frameSize": 15114,
+  "excludedTotal": 3905,
+  "unseenPeriods": "je Emittent gesperrt: jedes Quartal in [Fensterende - 380 Tage, Fensterende + 7 Tage] eines gewerteten Falls aus Holdout v2 ODER v3 (blockedQuarters)",
+  "blockedEarlierWindows": 9964,
+  "order": "sha256('vu-ttm-holdout-4|' + cik)",
+  "population": "der GESAMTE Rahmen wird ausgewertet - keine Quote, keine Abbruchregel",
+  "casesPerIssuer": "bis zu 3 Faelle (Emittent x Fensterende), deterministisch: seltene Schicht zuerst (fy_change, split_year, stub, same_day, negative, amendment, tag_switch, split, week52, custom, foreign, restated, large, small, loss, normal, profit, domestic), dann sha256(SALT|cik+end+kind); ein weiterer Fall nur mit neuer Schicht",
+  "caseKinds": {
+   "WINDOW": "vier als Kette aufeinanderfolgende gemeldete Dreimonats-EPS",
+   "MISSING_QUARTER": "vier Berichtsquartale, von denen mindestens einem ein Dreimonats-EPS fehlt (negativ)"
+  },
+  "strata": [
+   "normal",
+   "fy_change",
+   "split_year",
+   "week52",
+   "stub",
+   "tag_switch",
+   "split",
+   "custom",
+   "loss",
+   "profit",
+   "small",
+   "large",
+   "foreign",
+   "domestic",
+   "restated",
+   "amendment",
+   "same_day",
+   "negative"
+  ],
+  "evaluations": "je Fall t = knownFrom - 1 (frueh), knownFrom, final (wenn spaeter); Negativfaelle zu final",
+  "frozenBeforeOpening": true
+ },
+ "truth": {
+  "definition": "AS_KNOWN_AT(t): der Wert, der zu t nach allen bis dahin oeffentlich verfuegbaren und zulaessigen Korrekturen bekannt war; unabhaengig vom Kern direkt aus companyfacts gerechnet (ttm_holdout4_eval.py)",
+  "forms": "10-K, 10-K/A, 10-Q, 10-Q/A, 20-F(/A), 40-F(/A), 10-KT, 10-KT/A",
+  "conceptIdentity": "Dreimonats-EPS EarningsPerShareDiluted / EarningsPerShareBasicAndDiluted (Gesamt-EPS); in derselben Einreichung Diluted vor BasicAndDiluted; Fortgefuehrte-Geschaefte-EPS ist ein anderes Konzept (WRONG_CONCEPT)",
+  "periodIdentity": "Quartal = gemeldete Periode 77-105 Tage; Enden innerhalb 7 Tagen = dasselbe Quartal; Fenster = vier Quartale als Kette (Beginn -3..+8 Tage nach dem Ende des vorigen), Spanne 357-374 Tage, eine Einheit",
+  "tolerance": "abs 0,01 oder rel 0,5 %"
+ },
+ "policies": {
+  "amendment": "eine Fassung (auch 10-K/A, 10-Q/A, 10-KT/A) gilt ab ihrem Einreichungstag; ersetzt erst ab ihrer Veroeffentlichung (kein Lookahead)",
+  "sameDay": "melden am juengsten Tag zwei verschiedene Einreichungen verschiedene Werte: AMBIGUOUS_SAME_DAY (nicht verfuegbar) bis zur naechsten eindeutigen Fassung; nie per Formular/Accession/Dateireihenfolge",
+  "split": "kein Split zwischen benachbarten Quartalen (verwaesserte Aktien zu t; is_split_ratio); sonst SHARE_BASIS_MIXED",
+  "restatement": "die zu t juengste sichtbare Fassung gilt",
+  "stub": "NORMAL_QUARTER 77-105 Tage; kuerzere/laengere Perioden sind keine Quartale (SHORT_STUB/LONG_STUB = NOT_QUARTER_ELIGIBLE); Kette und Spanne wie periodIdentity",
+  "fiscalYearChange": "Geschaeftsjahre = 12-Monats-Perioden (350-380 Tage) in Jahresberichten inkl. Vergleichsjahren und 10-KT, gestuetzt von >= 5 Konzepten; aufeinanderfolgende Jahre auf DEMSELBEN Zyklus (Jahrestag +-14) mit Luecke von m Jahren = m normale Jahre (geteiltes Predecessor/Successor-Jahr oder fehlender Bericht); auf VERSCHIEDENEN Zyklen = Uebergangszeitraum dazwischen, dessen Quartale NOT_QUARTER_ELIGIBLE sind; Identitaet der Geschaeftsjahre aus der vollstaendigen Einreichungshistorie (wie der Kern), Werte PIT",
+  "epsPlausibility": "implizite Aktienzahl (Dreimonats-Ergebnis / EPS) < 1.000 = kein EPS"
+ },
+ "classes": {
+  "CORRECT": "beide verfuegbar, gleicher Wert, gleiches Fensterende",
+  "TRUE_UNAVAILABLE": "beide nicht verfuegbar",
+  "FALSE_AVAILABLE": "Wahrheit nicht verfuegbar, Kern liefert",
+  "FALSE_MISSING": "Wahrheit verfuegbar, Kern nicht",
+  "WRONG_PERIOD": "anderes Fensterende",
+  "WRONG_CONCEPT": "anderes Konzept",
+  "WRONG_VALUE": "gleiches Fenster, Wert ausserhalb Toleranz"
+ },
+ "gates": {
+  "overallMaxPercent": {
+   "FALSE_AVAILABLE": 0.1,
+   "WRONG_VALUE": 0.5,
+   "WRONG_CONCEPT": 0.1,
+   "WRONG_PERIOD": 0.1,
+   "FALSE_MISSING": 20.0
+  },
+  "fiscalChangeWrongPeriodMaxPercent": 0.5,
+  "fiscalChangeMinimumCases": 30,
+  "fiscalChangeDefinition": "(WRONG_PERIOD + FALSE_AVAILABLE) / alle Auswertungen der Schicht fy_change; < 30 Faelle = nicht pruefbar = FAIL",
+  "stratumGates": {
+   "SAME_DAY": {
+    "stratum": "same_day",
+    "maxPercent": 1.0,
+    "minimumCases": 20
+   },
+   "STUB_PERIOD": {
+    "stratum": "stub",
+    "maxPercent": 1.0,
+    "minimumCases": 20
+   },
+   "SPLIT_YEAR": {
+    "stratum": "split_year",
+    "maxPercent": 1.0,
+    "minimumCases": 20
+   }
+  },
+  "stratumGateDefinition": "(FALSE_AVAILABLE + WRONG_VALUE + WRONG_CONCEPT + WRONG_PERIOD) / alle Auswertungen der Schicht; zu wenige Faelle = nicht pruefbar = FAIL",
+  "denominators": {
+   "FALSE_AVAILABLE": "Auswertungen mit nicht verfuegbarer Wahrheit",
+   "WRONG_*": "Auswertungen mit verfuegbarer Wahrheit UND Kernwert",
+   "FALSE_MISSING": "Auswertungen mit verfuegbarer Wahrheit"
+  },
+  "minimumCases": 1000,
+  "maxEvaluatorErrorPercentOfIssuers": 0.5,
+  "stratumCorrectnessGates": [
+   "FALSE_AVAILABLE",
+   "WRONG_VALUE",
+   "WRONG_CONCEPT",
+   "WRONG_PERIOD"
+  ],
+  "stratumMinimumEvaluations": 100,
+  "stratumMaxPercent": 1.0,
+  "stratumMinimumCases": 30,
+  "rationale": "v3-Gates unveraendert plus SAME_DAY/STUB_PERIOD/SPLIT_YEAR; kalibriert nur an gesehenen Daten (Entwicklungslauf 600 Universums-CIKs: 587 Faelle, FALSE_AVAILABLE/WRONG_PERIOD/WRONG_CONCEPT 0, WRONG_VALUE 1 = F-TTM-6-Emittent 0000798359, FALSE_MISSING 15,0 %)",
+  "verdict": "PASS nur, wenn ALLE Gates bestehen. Keine Gate-Aenderung nach Oeffnung, kein Nachbessern im Holdout, kein 'formal fail but acceptable'."
+ },
+ "rules": [
+  "genau ein offizieller Lauf ueber den gesamten Rahmen (4 Shards)",
+  "keine Kern- oder Evaluator-Aenderung nach Oeffnung",
+  "Ergebnis wird unveraendert committet, PASS oder FAIL"
+ ],
+ "development": {
+  "v3": "FAIL (Kern 1.20.0, unveraendert; Post-mortem FUNDAMENTAL-TTM-HOLDOUT3-POSTMORTEM.json)",
+  "devSample": "600 CIKs aus dem gesehenen Produktuniversum, nicht im Rahmen",
+  "disclosure": "Die Entwicklung von 1.21.0 nutzte automatisierte Vollarchiv-Vergleiche (Kalender, Kennungen gegen das eigene fy, Ausgabewerte 1.20.0 vs. 1.21.0) ueber alle 17.138 Emittenten, auch ueber Emittenten dieses Rahmens; manuell untersuchte Emittenten sind ausgeschlossen, die bisher gewerteten Fenster gesperrt. Die Holdout-Wahrheit (TTM-Werte gegen SEC-Quartale) wurde dabei nicht ausgewertet.",
+  "knownOpen": "F-TTM-6 (Korrekturen nur im 10-KT/A, 16 Emittenten, ausgeschlossen); C1 Uebergangs-Bilanzen ohne Jahreszelle (nicht TTM)"
+ },
+ "files": {
+  "evaluator": {
+   "path": "scripts/fundamentals-audit/ttm_holdout4_eval.py",
+   "sha256": "cf24c595f35da08acb1cf9601dfc6c7b88968017820bb37891c5d66b3a3141e2"
+  },
+  "gates": {
+   "path": "scripts/fundamentals-audit/ttm_holdout4_gates.py",
+   "sha256": "0b5df9cf9d0da1636a1f0abbdf755b1422a7ca96178d95296e7805e91f182161"
+  },
+  "exclude": {
+   "path": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-EXCLUDE.json",
+   "sha256": "614b0b221fcf9a99826739ee9a1eaf9c1609ed46650d711d8a2d52ef1c73e450"
+  },
+  "frame": {
+   "path": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT4-FRAME.json",
+   "sha256": "c63e7072de0455749088f5d39884d2041f3ec49485002935b80c84c80c4fe982"
+  }
+ },
+ "commands": [
+  "python3 ttm_holdout4_eval.py sample <companyfacts.zip> artifacts/FUNDAMENTAL-TTM-HOLDOUT3-FRAME.json '<h2,h3 rows.*.jsonl>' artifacts/FUNDAMENTAL-TTM-HOLDOUT4-EXCLUDE.json frame.json",
+  "python3 ttm_holdout4_eval.py <companyfacts.zip> artifacts/FUNDAMENTAL-TTM-HOLDOUT4-FRAME.json rows.<i>.jsonl --shard <i>/4",
+  "python3 ttm_holdout4_gates.py artifacts/FUNDAMENTAL-TTM-HOLDOUT4-PREREG.json rows.*.jsonl"
+ ]
+}

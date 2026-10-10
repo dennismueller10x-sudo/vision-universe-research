@@ -1,0 +1,137 @@
+{
+ "schema": "vu-fundamental-triage-1.0.0",
+ "rows": [
+  {
+   "id": "F1",
+   "severity": "HIGH",
+   "finding": "E2-R verwarf Nettogesamtumsatz",
+   "state": "FIXED (1.15.0); Regel in 1.17.0 durch Belege der Einreichung ersetzt",
+   "followUp": "-",
+   "classification": "MUST_FIX_BEFORE_MIGRATION - erledigt"
+  },
+  {
+   "id": "F2",
+   "severity": "HIGH",
+   "finding": "E10 verwarf korrekte Ableitungen",
+   "state": "FIXED (1.15.0)",
+   "followUp": "-",
+   "classification": "MUST_FIX_BEFORE_MIGRATION - erledigt"
+  },
+  {
+   "id": "F3",
+   "severity": "HIGH",
+   "finding": "Holdout-Gates des ausgelieferten Codes nicht berichtet",
+   "state": "FIXED: Data-Holdout (v3) und TTM-Holdout (FAILED) berichtet, Abweichungen offengelegt",
+   "followUp": "-",
+   "classification": "MUST_FIX_BEFORE_MIGRATION - erledigt"
+  },
+  {
+   "id": "F4",
+   "severity": "MEDIUM",
+   "finding": "Fixtures veraltet",
+   "state": "FIXED: Cross-Consumer-Fixtures mit 1.18.0 neu gebaut, Versionsasserts",
+   "followUp": "-",
+   "classification": "erledigt"
+  },
+  {
+   "id": "F5",
+   "severity": "MEDIUM",
+   "finding": "Summen ueber gemischte Konzepte (TTM, Jahressumme)",
+   "state": "TTM: FIXED (1.16.0 Integritaet; additiv nur bei Belegfreiheit oder im gemeinsamen Konzept). Jahressumme aus Quartalen (annual()-Rueckfall) weiterhin ohne Konzeptpruefung",
+   "followUp": "Kern-Folge-PR (annual-Rueckfall mit derselben Fensterpruefung)",
+   "classification": "SAFE_FOLLOW_UP (Jahressumme nur, wenn kein FY gemeldet ist)"
+  },
+  {
+   "id": "F6",
+   "severity": "MEDIUM",
+   "finding": "Consumer-Matrix unvollstaendig",
+   "state": "FIXED: FUNDAMENTAL-CONSUMER-VIEW-CONTRACTS.json (18 Leser, Zeilenbelege)",
+   "followUp": "-",
+   "classification": "erledigt"
+  },
+  {
+   "id": "F7",
+   "severity": "MEDIUM",
+   "finding": "Screener beschriftet FY-EPS als TTM",
+   "state": "OFFEN: Produktlogik (Screener, Discover-Karte)",
+   "followUp": "M-B1 Screener-PR + Discover-PR",
+   "classification": "MUST_FIX_BEFORE_MIGRATION"
+  },
+  {
+   "id": "F8",
+   "severity": "LOW",
+   "finding": "CONCEPT_DISAGREEMENT im Bundle unsichtbar; cli consumer schreibt consumer_coverage.json trotz --out",
+   "state": "OFFEN (dokumentiert)",
+   "followUp": "Kern-Folge-PR (Flags je Zeile; --out-Disziplin)",
+   "classification": "SAFE_FOLLOW_UP"
+  },
+  {
+   "id": "F9",
+   "severity": "LOW",
+   "finding": "Gleichstand bei Waehrungsmehrheit; erfundene Folgelabels",
+   "state": "dokumentiert",
+   "followUp": "-",
+   "classification": "SAFE_FOLLOW_UP"
+  },
+  {
+   "id": "F10",
+   "severity": "LOW",
+   "finding": "veraltete Zahlen im Entwurf",
+   "state": "FIXED (Bericht auf Endstand)",
+   "followUp": "-",
+   "classification": "erledigt"
+  },
+  {
+   "id": "E11",
+   "severity": "MEDIUM",
+   "finding": "Geschaeftsjahreswechsel: ein Quartal in zwei Rasterplaetzen (FUBO TTM-Umsatz 6,09 Mrd.)",
+   "state": "TTM FIXED (1.16.0); Quartalsreihe dedupliziert; das Raster selbst (Fiskalkalender bei Wechsel) unveraendert",
+   "followUp": "Kern-Folge-PR Fiskalkalender bei Geschaeftsjahreswechsel",
+   "classification": "SAFE_FOLLOW_UP"
+  },
+  {
+   "id": "E12",
+   "severity": "MEDIUM",
+   "finding": "gewichtete Aktien als FY-9M abgeleitet",
+   "state": "FIXED (1.16.0, Registry 1.9.0)",
+   "followUp": "-",
+   "classification": "erledigt"
+  },
+  {
+   "id": "F-TTM-1",
+   "severity": "HIGH",
+   "finding": "Fenster nur aus fortgefuehrtem EPS als EPS-TTM",
+   "state": "FIXED (1.18.0) nach dem Holdout, nicht holdout-validiert",
+   "followUp": "neuer ungesehener Holdout fuer 1.18.0",
+   "classification": "MUST_FIX_BEFORE_MIGRATION - erledigt; Validierung offen"
+  },
+  {
+   "id": "E5",
+   "severity": "MEDIUM",
+   "finding": "net_income-Fallbacks (ProfitLoss) mischen Konzepte",
+   "state": "Reihe unveraendert; TTM verweigert bei belegtem Unterschied (241 Emittenten ohne TTM-Ergebnis)",
+   "followUp": "Kern-Folge-PR Provenienz je Zeile",
+   "classification": "SAFE_FOLLOW_UP"
+  },
+  {
+   "id": "E6",
+   "severity": "MEDIUM",
+   "finding": "Bundle ist LATEST_RESTATED; historische Leser",
+   "state": "Sicht im Bundle deklariert; 2 harte Verletzungen (Pattern-Research, Pattern-Match)",
+   "followUp": "M-B5 Quant-PR (Vorher/Nachher)",
+   "classification": "MUST_FIX_BEFORE_MIGRATION"
+  },
+  {
+   "id": "E7",
+   "severity": "HIGH",
+   "finding": "Supertrader-SEC-PIT-Store: Q4-EPS FY-Q1..Q3 (22-24 % ausserhalb Toleranz), Lookahead abgeleitetes Q4 (9,5 %)",
+   "state": "Fix auf Branch claude/supertrader-sec-pit-q4 (nur Supertrader-Pfade); betrifft Minervini-v3-Validierung (nicht live); eingefrorene Stores r11/r12 unveraendert",
+   "followUp": "Supertrader-PR (Gate A)",
+   "classification": "SAFE_FOLLOW_UP fuer die Fundamentals-Migration (eigener Datenpfad, kein Bundle-Leser); MUST_FIX vor jeder weiteren Minervini-v3-Validierungsrunde"
+  }
+ ],
+ "mustFixOpen": [
+  "F7",
+  "E6"
+ ]
+}

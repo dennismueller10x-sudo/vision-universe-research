@@ -25,8 +25,8 @@ from datetime import date, datetime, timezone
 from .derived import reconstruct
 from .fiscal import FiscalCalendar
 from .normalize import normalize_company
-from .periods import PeriodResolver
-from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
+from .periods import CONTINUING_PER_SHARE, FLAG_PERIOD_TRANSFORM, PeriodResolver
+from .provider import SECProvider, fundamental_facts, normalize_cik
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST
 from .version import version_stamp
@@ -37,7 +37,7 @@ SCHEMA = "vu-consumer-fundamentals-1.0.0"
 
 # Registry metrics the consumer layer publishes (what a company reports).
 REPORTED_METRICS = (
-    "revenue", "gross_profit", "operating_income", "net_income", "eps_diluted",
+    "revenue", "gross_profit", "operating_income", "net_income", "eps_diluted", "eps_basic",
     "operating_cash_flow", "capital_expenditures", "cash_and_equivalents",
     "total_debt", "long_term_debt", "total_assets", "stockholders_equity",
     "shares_outstanding", "diluted_weighted_average_shares",
@@ -56,7 +56,7 @@ CONSUMER_METRICS = REPORTED_METRICS + DERIVED_METRICS
 
 # Metrics that get a quarterly and a TTM series (the rest is annual only:
 # a balance-sheet instant has no TTM, and the product reads it annually).
-QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income", "eps_diluted",
+QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income", "eps_diluted", "eps_basic",
                      "operating_cash_flow", "capital_expenditures", "free_cash_flow",
                      "cash_and_equivalents", "total_debt", "shares_outstanding",
                      "depreciation_and_amortization", "pretax_income", "income_tax_expense",
@@ -68,6 +68,14 @@ DEFAULT_ANNUAL_YEARS = 13     # ten comparisons need eleven COMPLETE fiscal year
 DEFAULT_QUARTERS = 8
 # A trailing-twelve-month window older than this (against the as-of date) is history, not "trailing".
 TTM_MAX_AGE_DAYS = 400
+# Why a duration metric has no TTM row (published in ttmAbsent, never filled).
+TTM_WINDOW_STALE = "TTM_WINDOW_STALE"
+TTM_WINDOW_NOT_CURRENT = "TTM_WINDOW_NOT_CURRENT"
+# Views (ADR E6): the bundle is the latest restated state; its TTM is the
+# current trailing window. A point-in-time consumer needs PIT_TTM(as_of) from
+# the resolver, not this bundle.
+VIEW_LATEST_RESTATED = "LATEST_RESTATED"
+VIEW_CURRENT_TTM = "CURRENT_TTM"
 
 
 def _utcnow():
@@ -131,12 +139,15 @@ def _facts_for_period(resolver, registry, fiscal_year, fiscal_period, as_of, pol
 def _ttm(resolver, registry, as_of, policy):
     """TTM (duration metrics) / latest instant (balance-sheet metrics)."""
     out = {}
+    absent = {}
     through = None
     for metric in QUARTERLY_METRICS:
-        if metric in DERIVED_METRICS:
+        if metric in DERIVED_METRICS or registry.get(metric) is None:
             continue
         fact = resolver.ttm(metric, as_of, policy=policy)
         if not fact.available:
+            if fact.reason and registry.get(metric).kind != KIND_INSTANT:
+                absent[metric] = fact.reason
             continue
         row = rowdict(_row(fact))
         row.pop("fy", None); row.pop("derived", None)
@@ -167,6 +178,7 @@ def _ttm(resolver, registry, as_of, policy):
             if row.get("kind") != "TTM":
                 continue
             if stale or row.get("through") != newest_through:
+                absent[metric] = TTM_WINDOW_STALE if stale else TTM_WINDOW_NOT_CURRENT
                 del out[metric]
         through = None if stale else newest_through
     # Derived TTM only from complete TTM inputs - never a mix of periods.
@@ -186,7 +198,66 @@ def _ttm(resolver, registry, as_of, policy):
         debt, cash = out["total_debt"], out["cash_and_equivalents"]
         out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"], "unit": debt["unit"],
                            "kind": "INSTANT", "derived": True, "inputs": ["total_debt", "cash_and_equivalents"]}
-    return out, through
+    return out, through, absent
+
+
+def _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver=None, as_of=None, policy=POLICY_AS_OF_LATEST):
+    """Explicit EPS fields: a TTM EPS is four reported quarters, never the fiscal year.
+
+    EPS_TTM is NOT_AVAILABLE with its reason when the trailing window is not
+    four contiguous reported quarters of one concept class on one share basis;
+    EPS_FY and EPS_LATEST_QUARTER stand next to it under their own names, so
+    no reader has to guess which period a number covers."""
+    def ttm_field(metric):
+        row = ttm.get(metric)
+        if row is not None:
+            return {"status": "VERIFIED", "v": row["v"], "end": row["end"], "through": row.get("through")}
+        return {"status": "NOT_AVAILABLE", "reason": ttm_absent.get(metric, "INSUFFICIENT_HISTORY")}
+
+    def last(rows, metric):
+        if not rows:
+            return None
+        row = rowdict(rows[-1])
+        out = {"fy": row["fy"], "fp": row["fp"], "end": row["end"], "v": row["v"]}
+        # The registry accepts continuing-operations EPS as a fallback for
+        # total EPS; the field says which one it is (red team, MEDIUM-7:
+        # Oshkosh FY2025 10.02 is continuing-operations EPS).
+        if resolver is not None:
+            fact = (resolver.annual(metric, row["fy"], as_of, policy=policy) if row["fp"] == "FY"
+                    else resolver.quarter(metric, row["fy"], int(row["fp"][1]), as_of, policy=policy))
+            concept = getattr(getattr(fact, "provenance", None), "concept", None) if fact.available else None
+            if concept:
+                out["concept"] = concept
+                out["class"] = "CONTINUING" if concept in CONTINUING_PER_SHARE else "TOTAL"
+        return out
+    return {
+        "ttmDiluted": ttm_field("eps_diluted"),
+        "ttmBasic": ttm_field("eps_basic"),
+        "fyDiluted": last(annual.get("eps_diluted"), "eps_diluted"),
+        "fyBasic": last(annual.get("eps_basic"), "eps_basic"),
+        "latestQuarterDiluted": last(quarterly.get("eps_diluted"), "eps_diluted"),
+        "latestQuarterBasic": last(quarterly.get("eps_basic"), "eps_basic"),
+        "rule": "EPS_TTM = sum of four reported standalone quarters; never replaced by EPS_FY",
+    }
+
+
+def _dedupe_quarter_ends(rows, transformed):
+    """One cell per quarter end. A fiscal-year change can put one period into two
+    grid slots (FUBO 2026: Q2 reported, "Q3" a re-labelled nine-month figure, both
+    ending 2026-06-30). The reported cell wins; two of a kind are ambiguous and
+    both go."""
+    by_end = {}
+    for k, row in enumerate(rows):
+        by_end.setdefault(row[2], []).append(k)
+    keep = set()
+    for indexes in by_end.values():
+        if len(indexes) == 1:
+            keep.update(indexes)
+            continue
+        reported = [k for k in indexes if not transformed[k]]
+        if len(reported) == 1:
+            keep.add(reported[0])
+    return [row for k, row in enumerate(rows) if k in keep]
 
 
 def _horizons(annual_revenue_rows):
@@ -209,11 +280,10 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
     cik = normalize_cik(cik)
     provider = provider or SECProvider.__new__(SECProvider)   # iter_raw_facts needs no client
     as_of_text = str(as_of or date.today())
-    raw_facts = list(SECProvider.iter_raw_facts(provider, company_facts, availability={},
-                                                forms=PERIODIC_FORMS))
+    calendar_facts, raw_facts = fundamental_facts(provider, company_facts, availability={})
     if not raw_facts:
         return None
-    calendar = FiscalCalendar.from_raw_facts(cik, raw_facts, fiscal_year_end_hint=fiscal_year_end_hint)
+    calendar = FiscalCalendar.from_raw_facts(cik, calendar_facts, fiscal_year_end_hint=fiscal_year_end_hint)
     result = normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
                                calendar=calendar)
     factbook = result.factbook
@@ -233,6 +303,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
             units.setdefault(metric, fact.unit)
 
     quarterly = {}
+    transformed = {}
     # Newest first, then stop after `quarters` standalone quarters per metric.
     quarter_slots = []
     for fiscal_year in reversed(years):
@@ -248,13 +319,15 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
             rows = quarterly.setdefault(metric, [])
             if len(rows) < quarters:
                 rows.append(_row(fact, derived))
+                transformed.setdefault(metric, []).append(FLAG_PERIOD_TRANSFORM in (fact.flags or []))
                 if not derived and _concept(fact):
                     concepts_used.setdefault(metric, set()).add(_concept(fact))
                 units.setdefault(metric, fact.unit)
     for metric in list(quarterly):
-        quarterly[metric] = list(reversed(quarterly[metric]))     # oldest first, like annual
+        rows = _dedupe_quarter_ends(quarterly[metric], transformed[metric])
+        quarterly[metric] = list(reversed(rows))     # oldest first, like annual
 
-    ttm, ttm_through = _ttm(resolver, registry, as_of_text, policy)
+    ttm, ttm_through, ttm_absent = _ttm(resolver, registry, as_of_text, policy)
 
     revenue_annual = annual.get("revenue", [])
     latest_annual = max((rowdict(r) for rows in annual.values() for r in rows), key=lambda r: (r["fy"], r["end"]), default=None)
@@ -282,6 +355,9 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
                        "licenseStatus": "public_domain", "pitCapable": True},
         "cik": cik, "name": name, "tickers": list(tickers), "securityIds": list(security_ids),
         "asOf": as_of_text, "policy": policy,
+        "views": {"bundle": VIEW_LATEST_RESTATED, "ttm": VIEW_CURRENT_TTM,
+                  "note": "latest restated values; historical (point-in-time) consumers must not read this bundle "
+                          "as AS_REPORTED_AT_TIME or PIT_TTM"},
         "availability": "filing-date granularity (bulk companyfacts carries filed, not acceptance time); "
                         "a value is never visible before its filing date",
         "calendar": {"fiscalYearEnd": calendar.to_dict().get("fiscal_year_end_hint") or fiscal_year_end_hint,
@@ -292,11 +368,15 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         "conceptsUsed": {metric: sorted(values) for metric, values in sorted(concepts_used.items())},
         "semantics": {"annual": "fiscal-year figures (FY) - 10-K, or four standalone quarters summed",
                       "quarterly": "standalone quarters (YTD de-accumulated), newest last",
-                      "ttm": "sum of the four most recent standalone quarters; instants = latest balance sheet"},
+                      "ttm": "sum of the four most recent reported standalone quarters - contiguous, one concept "
+                             "class, one share basis; otherwise absent with its reason in ttmAbsent; "
+                             "instants = latest balance sheet"},
         "coverage": coverage,
         "annual": annual,
         "quarterly": quarterly,
         "ttm": ttm,
+        "ttmAbsent": ttm_absent,
+        "eps": _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver, as_of_text, policy),
     }
 
 

@@ -1,0 +1,237 @@
+{
+ "schema": "vu-fundamental-ttm-holdout-result-1.0.0",
+ "prereg": "artifacts/FUNDAMENTAL-TTM-HOLDOUT-PREREG.json",
+ "candidate": {
+  "commit": "48d2b4e976656f8445ad8e1b732634175b2a2484",
+  "normalizationLogic": "1.16.0 (EPS-TTM-Pfade; 1.17.0 aendert nur Umsatz)",
+  "registry": "1.9.0"
+ },
+ "verdict": "FAILED",
+ "gates": {
+  "A.FALSE_AVAILABLE (==0)": {
+   "value": 85,
+   "pass": false
+  },
+  "A.WRONG_CONCEPT (==0)": {
+   "value": 0,
+   "pass": true
+  },
+  "A.WRONG_PERIOD (<=0.5%)": {
+   "value": 0.01,
+   "pass": true
+  },
+  "A.WRONG_VALUE_A (<=1%)": {
+   "value": 3.567,
+   "pass": false
+  },
+  "B.FALSE_AVAILABLE (==0)": {
+   "value": 66,
+   "pass": false
+  },
+  "B.WRONG_CONCEPT (==0)": {
+   "value": 11,
+   "pass": false
+  },
+  "B.WRONG_PERIOD (<=0.5%)": {
+   "value": 0.01,
+   "pass": true
+  },
+  "B.WRONG_VALUE_B (<=2%)": {
+   "value": 0.037,
+   "pass": true
+  }
+ },
+ "deviations": [
+  "Regelentwicklung 1.16.0 nutzte vier HOLDOUT-Emittenten als Fixtures (FUBO, PEP, PIPR, CLIR); diese und CECO/BMI/FLS sind aus der Auswertung ausgeschlossen. Der Integritaets-Scan zur Kalibrierung (12-17-Wochen-Abstand) lief ueber alle Emittenten, ohne Wahrheitsvergleich.",
+  "Auswertungsskript dreimal korrigiert (Messfehler, Gates/Wahrheit/Partition unveraendert): v1 verglich das neueste TTM statt des Wahrheitsfensters; v2 fuehrte Quartale mit verschobenem Beginn als verschiedene Perioden und entfernte in B auch Q1-Q3-Vergleichswerte; v3 ist das berichtete Ergebnis. Alle drei Laeufe sind unten aufgefuehrt; danach keine Aenderung mehr am Auswertungsskript."
+ ],
+ "runs": {
+  "v1": {
+   "observations": 121018,
+   "issuers": 999,
+   "A": {
+    "CORRECT": {
+     "n": 47454,
+     "pct": 78.425
+    },
+    "WRONG_PERIOD": {
+     "n": 7524,
+     "pct": 12.435
+    },
+    "NOT_AVAILABLE": {
+     "n": 3900,
+     "pct": 6.445
+    },
+    "WRONG_VALUE": {
+     "n": 1308,
+     "pct": 2.162
+    },
+    "FALSE_AVAILABLE": {
+     "n": 323,
+     "pct": 0.534
+    },
+    "n": 60509
+   },
+   "B": {
+    "NOT_AVAILABLE": {
+     "n": 57525,
+     "pct": 95.069
+    },
+    "WRONG_CONCEPT": {
+     "n": 1478,
+     "pct": 2.443
+    },
+    "WRONG_PERIOD": {
+     "n": 1353,
+     "pct": 2.236
+    },
+    "CORRECT": {
+     "n": 70,
+     "pct": 0.116
+    },
+    "FALSE_AVAILABLE": {
+     "n": 56,
+     "pct": 0.093
+    },
+    "WRONG_VALUE": {
+     "n": 27,
+     "pct": 0.045
+    },
+    "n": 60509
+   }
+  },
+  "v2": {
+   "observations": 121018,
+   "issuers": 999,
+   "A": {
+    "CORRECT": {
+     "n": 54301,
+     "pct": 89.74
+    },
+    "NOT_AVAILABLE": {
+     "n": 3721,
+     "pct": 6.149
+    },
+    "WRONG_VALUE": {
+     "n": 2159,
+     "pct": 3.568
+    },
+    "FALSE_AVAILABLE": {
+     "n": 322,
+     "pct": 0.532
+    },
+    "WRONG_PERIOD": {
+     "n": 6,
+     "pct": 0.01
+    },
+    "n": 60509
+   },
+   "B": {
+    "NOT_AVAILABLE": {
+     "n": 57529,
+     "pct": 95.075
+    },
+    "WRONG_CONCEPT": {
+     "n": 2704,
+     "pct": 4.469
+    },
+    "CORRECT": {
+     "n": 171,
+     "pct": 0.283
+    },
+    "FALSE_AVAILABLE": {
+     "n": 63,
+     "pct": 0.104
+    },
+    "WRONG_VALUE": {
+     "n": 40,
+     "pct": 0.066
+    },
+    "WRONG_PERIOD": {
+     "n": 2,
+     "pct": 0.003
+    },
+    "n": 60509
+   }
+  },
+  "v3": {
+   "observations": 124088,
+   "issuers": 1000,
+   "A": {
+    "CORRECT": {
+     "n": 55878,
+     "pct": 90.062
+    },
+    "NOT_AVAILABLE": {
+     "n": 3862,
+     "pct": 6.225
+    },
+    "WRONG_VALUE": {
+     "n": 2213,
+     "pct": 3.567
+    },
+    "FALSE_AVAILABLE": {
+     "n": 85,
+     "pct": 0.137
+    },
+    "WRONG_PERIOD": {
+     "n": 6,
+     "pct": 0.01
+    },
+    "n": 62044
+   },
+   "B": {
+    "NOT_AVAILABLE": {
+     "n": 61611,
+     "pct": 99.302
+    },
+    "CORRECT": {
+     "n": 327,
+     "pct": 0.527
+    },
+    "FALSE_AVAILABLE": {
+     "n": 66,
+     "pct": 0.106
+    },
+    "WRONG_VALUE": {
+     "n": 23,
+     "pct": 0.037
+    },
+    "WRONG_CONCEPT": {
+     "n": 11,
+     "pct": 0.018
+    },
+    "WRONG_PERIOD": {
+     "n": 6,
+     "pct": 0.01
+    },
+    "n": 62044
+   }
+  }
+ },
+ "failureCauses": {
+  "evaluator": "ttm_holdout_failures.py (Primaerdaten companyfacts)",
+  "summary": {
+   "A|FALSE_AVAILABLE|CORE_EARLY": 43,
+   "A|FALSE_AVAILABLE|TRUTH_END_VARIANT": 42,
+   "A|WRONG_VALUE|VALUE_DIFFERS": 347,
+   "A|WRONG_VALUE|VIEW_RESTATED": 1866,
+   "B|FALSE_AVAILABLE|CORE_EARLY": 63,
+   "B|FALSE_AVAILABLE|TRUTH_END_VARIANT": 3,
+   "B|WRONG_CONCEPT|CONTINUING_CLASS_WINDOW": 11,
+   "B|WRONG_VALUE|VALUE_DIFFERS": 2,
+   "B|WRONG_VALUE|VIEW_RESTATED": 21
+  },
+  "interpretation": {
+   "CORE_EARLY + WRONG_CONCEPT/CONTINUING_CLASS_WINDOW": "ECHTER KERNFEHLER F-TTM-1: Fenster nur aus EPS fortgefuehrter Bereiche (Latest-Sicht stellte alle vier Quartale auf das 10-K-Vergleichs-EPS um, z. B. VF Corp 2009) lief als eps_diluted-TTM; 1.18.0 lehnt ab. Nach dem Holdout behoben - NICHT holdout-validiert.",
+   "TRUTH_END_VARIANT": "Messkonstrukt: dasselbe Quartal mit 52/53-Wochen-Ende neben Kalenderende (Church & Dwight Q1 2010: 2010-04-02 vs. 2010-03-31); Kernwert zum frueheren Stichtag konsistent split-bereinigt.",
+   "VIEW_RESTATED / VALUE_DIFFERS": "Sicht: der Kern nutzt zum Stichtag bekannte Restatements bzw. split-bereinigte Vergleichswerte, die Wahrheit summiert Erstmeldungen (bei Splits gemischte Basis). Policy ORIGINAL bestaetigt 1.887 Faelle; 349 nicht bestaetigbar (318 Restatement, 31 Split-Verhaeltnis). Gate WRONG_VALUE_A faellt nach Definition dennoch."
+  }
+ },
+ "coverageReportedNotGated": {
+  "B.NOT_AVAILABLE_pct": 99.302,
+  "A.NOT_AVAILABLE_pct": 6.225,
+  "note": "B: ohne gemeldetes Q4 kein EPS-TTM (keine Q4-Ableitung) - 99,3 % NOT_AVAILABLE, 0,53 % korrekt aus spaeter gemeldeten Vergleichswerten"
+ },
+ "rules": "Kein Nachbessern am Holdout: Gates, Wahrheit und Partition unveraendert; der Holdout ist verbraucht. F-TTM-1 braucht fuer eine Validierung einen neuen, ungesehenen Holdout."
+}

@@ -1,0 +1,174 @@
+{
+ "schema": "vu-fundamental-ttm-holdout-postmortem-1.0.0",
+ "holdout": "v3",
+ "verdict": "FAIL",
+ "verdictFinal": "FAIL bleibt FAIL. Dieses Dokument ist eine nachtraegliche Ursachenanalyse; es aendert weder Urteil, Gates, Rahmen noch Auswertungszeilen.",
+ "resultArtifact": {
+  "path": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT3-RESULT.json",
+  "sha256": "c85957218b70b9e520ecbac9562394abba78d1a397bc519dce144a6e5bee794d",
+  "unchanged": true
+ },
+ "testedCore": {
+  "normalizationLogic": "1.20.0",
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v5.json (DEVELOPMENT_FREEZE, FAILED_VALIDATION)",
+  "codeHash": "1fda3ed9d7c1199e0746c55036f9da8818701db1123c4a806032e150d966afaa",
+  "commit": "18d4d88e9bd873fdb83c4e840cd16a834464f32b"
+ },
+ "laterVersionsNotValidated": "Kern 1.21.0 und jede spaetere Version sind durch Holdout v3 NICHT validiert. Die v3-Faelle sind seit der Oeffnung gesehen und als Entwicklungs-/Regressionsfaelle verwendet; sie sind von jedem spaeteren Holdout ausgeschlossen.",
+ "failedGates": {
+  "FALSE_AVAILABLE": {
+   "value": 0.2345,
+   "limit": 0.1,
+   "pass": false
+  },
+  "STRATA": {
+   "failures": [
+    {
+     "stratum": "fy_change",
+     "gate": "FALSE_AVAILABLE",
+     "value": 9.0
+    },
+    {
+     "stratum": "negative",
+     "gate": "FALSE_AVAILABLE",
+     "value": 1.9313
+    }
+   ],
+   "limit": 1.0,
+   "pass": false
+  },
+  "FISCAL_CHANGE_WRONG_PERIOD": {
+   "value": 5.0279,
+   "limit": 0.5,
+   "evaluations": 179,
+   "cases": 100,
+   "bad": 9,
+   "minimumCases": 30,
+   "pass": false
+  }
+ },
+ "passedGates": [
+  "CASES",
+  "EVALUATOR_ERRORS",
+  "FALSE_MISSING",
+  "WRONG_CONCEPT",
+  "WRONG_PERIOD",
+  "WRONG_VALUE"
+ ],
+ "scale": {
+  "issuers": 2514,
+  "cases": 3825,
+  "evaluations": 10083
+ },
+ "failures": [
+  {
+   "cik": "0001095996",
+   "end": "2011-12-31",
+   "eval": "final",
+   "t": "2013-03-18",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -193330.0
+  },
+  {
+   "cik": "0001635581",
+   "end": "2016-05-31",
+   "eval": "final",
+   "t": "2018-02-05",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": 1.7
+  },
+  {
+   "cik": "0001322439",
+   "end": "2014-09-30",
+   "eval": "final",
+   "t": "2014-11-14",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -8.16
+  },
+  {
+   "cik": "0000018172",
+   "end": "2017-06-30",
+   "eval": "final",
+   "t": "2017-08-09",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -2.66
+  },
+  {
+   "cik": "0000798949",
+   "end": "2020-06-30",
+   "eval": "final",
+   "t": "2021-08-16",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -28.77
+  },
+  {
+   "cik": "0000716133",
+   "end": "2021-06-30",
+   "eval": "final",
+   "t": "2021-07-29",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -0.62
+  },
+  {
+   "cik": "0000933136",
+   "end": "2019-09-30",
+   "eval": "final",
+   "t": "2020-10-29",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -3.61
+  },
+  {
+   "cik": "0001062613",
+   "end": "2012-09-30",
+   "eval": "final",
+   "t": "2014-03-05",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -7.92
+  },
+  {
+   "cik": "0001761940",
+   "end": "2018-12-31",
+   "eval": "final",
+   "t": "2021-03-16",
+   "class": "FALSE_AVAILABLE",
+   "truthReason": "FISCAL_TRANSITION",
+   "core": -3.17
+  }
+ ],
+ "rootCauses": {
+  "F-TTM-4": {
+   "cases": [
+    "0001635581 8point3 Energy Partners, Fenster bis 2016-05-31, t=2018-02-05, Kern 1,70",
+    "0001761940 Diamond S Shipping, Fenster bis 2018-12-31, t=2021-03-16, Kern -3,17"
+   ],
+   "classification": "Kern-Defekt (falsche Geschaeftsjahreskennung)",
+   "evidence": "SEC: 8point3 10-KT 0001564590-16-012046 (Uebergangszeitraum 2014-12-29..2015-11-30, fiscalYearEnd 1130); Diamond S 10-K 0001104659-20-039594 mit Vorgaengerjahr 2017-04-01..2018-03-31 und Uebergangszeitraum 2018-04-01..2018-12-31",
+   "cause": "FiscalCalendar verwarf das Vergleichsjahr auf altem Zyklus (Zyklusregel) und schrieb das neue Jahresende rueckwaerts fort; das Uebergangsjahr bekam Quartalsslots",
+   "fixedIn": "1.21.0 (scripts/quant/sec/fiscal.py _prior_fiscal_year_ends), Regressionen scripts/quant/tests/test_ttm_core_121.py"
+  },
+  "F-TTM-5": {
+   "cases": [
+    "0001095996 William Lyon Homes",
+    "0001322439 Eagle Bulk",
+    "0000018172 A. M. Castle",
+    "0000798949 Unit Corp",
+    "0000933136 Mr. Cooper",
+    "0001062613 FairPoint",
+    "0000716133 Cincinnati Bell"
+   ],
+   "classification": "in allen 7 Faellen lieferte der Kern vier normale, lueckenlose, zu t bekannte Quartale eines unveraenderten Dezember-Kalenders; die v3-Wahrheit wertete das fehlende 12-Monats-Jahr (Predecessor/Successor-Teilung) faelschlich als Geschaeftsjahreswechsel (Evaluator-Defekt in eligible_windows/quarter_eligible). Kern-Defekt derselben Struktur: Jahreskennung nach geteiltem Jahr (FairPoint: jede Kennung ab 2011 um +1 verschoben, Jahres-EPS 2012 unter FY2013).",
+   "evidence": "SEC submissions: alle 7 mit fiscalYearEnd 1231 und regulaerem 10-K fuer das geteilte Jahr; Periodenkette scripts/fundamentals-audit/ttm_period_chain.py",
+   "note": "Diese Einordnung entlastet das v3-Urteil nicht: FAIL nach praeregistrierter Wahrheit bleibt FAIL (kein 'formal fail, aber eigentlich pass').",
+   "fixedIn": "Kern 1.21.0 (Jahreskennung, fiscal.py OWN_YEAR_MAX_FILING_LAG_DAYS); Wahrheit erst fuer Holdout v4 (ttm_holdout4_eval.py fiscal_structure), vor dessen Oeffnung praeregistriert"
+  }
+ },
+ "consequence": "Kern 1.20.0 BLOCKED. Neuer Kern 1.21.0 braucht einen neuen, ungesehenen Holdout (v4)."
+}

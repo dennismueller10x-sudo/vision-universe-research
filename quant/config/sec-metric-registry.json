@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.6.0",
-  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
+  "mapping_version": "1.9.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen. Version 1.7.0 (Fundamental-Data-Integrity-Audit 2026-10-07, gemessen an 98 Emittenten gegen SEC-Erstmeldungen): eps_diluted und eps_basic akzeptieren EarningsPerShareBasicAndDiluted (Standard-Element 'unverwaessert = verwaessert', vorher fehlten 8,4 % der EPS-Quartale bzw. wurden erst mit einem spaeteren 10-K sichtbar); revenue stellt Revenues (Gesamtumsatz laut Taxonomie) vor den ASC-606-Vertragsumsatz, der in derselben Einreichung ein Teilbetrag sein kann (AMT Q3 2019: 137 Mio. statt 1.954 Mio.). Version 1.8.0 (derselbe Audit, universumsweite Gegenprobe): Revenues ist als Gesamtbetrag markiert (aggregate) und gilt nur, wenn er in derselben Einreichung nicht kleiner ist als ein anderes Umsatzkonzept; einige Einreicher taggen einen Teilbetrag als Revenues (FLS: 0 in jedem 10-Q, PESI: 642.000 im 10-K neben 61,7 Mio.), dann entscheidet die bisherige Reihenfolge.",
   "sector_rules": [
     {
       "id": "FINANCIALS",
@@ -654,6 +654,12 @@
       "concepts": [
         {
           "taxonomy": "us-gaap",
+          "concept": "Revenues",
+          "priority": 5,
+          "aggregate": true
+        },
+        {
+          "taxonomy": "us-gaap",
           "concept": "RevenueFromContractWithCustomerExcludingAssessedTax",
           "priority": 10
         },
@@ -661,11 +667,6 @@
           "taxonomy": "us-gaap",
           "concept": "RevenueFromContractWithCustomerIncludingAssessedTax",
           "priority": 20
-        },
-        {
-          "taxonomy": "us-gaap",
-          "concept": "Revenues",
-          "priority": 30
         },
         {
           "taxonomy": "us-gaap",
@@ -854,6 +855,11 @@
         },
         {
           "taxonomy": "us-gaap",
+          "concept": "EarningsPerShareBasicAndDiluted",
+          "priority": 15
+        },
+        {
+          "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsPerBasicShare",
           "priority": 20
         },
@@ -876,6 +882,11 @@
           "taxonomy": "us-gaap",
           "concept": "EarningsPerShareDiluted",
           "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "EarningsPerShareBasicAndDiluted",
+          "priority": 15
         },
         {
           "taxonomy": "us-gaap",
@@ -1185,6 +1196,7 @@
     },
     "diluted_weighted_average_shares": {
       "label": "Diluted Weighted Average Shares",
+      "additive": false,
       "kind": "duration",
       "statement": "income_statement",
       "units": [
@@ -1205,6 +1217,7 @@
     },
     "basic_weighted_average_shares": {
       "label": "Basic Weighted Average Shares",
+      "additive": false,
       "kind": "duration",
       "statement": "income_statement",
       "units": [

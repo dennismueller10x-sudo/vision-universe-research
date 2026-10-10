@@ -1,0 +1,533 @@
+{
+ "schema": "vu-fundamental-ttm-holdout4-result-1.0.0",
+ "verdict": "FAIL",
+ "gates": {
+  "FALSE_AVAILABLE": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "WRONG_VALUE": {
+   "value": 0.0,
+   "limit": 0.5,
+   "pass": true
+  },
+  "WRONG_CONCEPT": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "WRONG_PERIOD": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "FALSE_MISSING": {
+   "value": 11.3985,
+   "limit": 20.0,
+   "pass": true
+  },
+  "CASES": {
+   "value": 1920,
+   "limit": 1000,
+   "pass": true
+  },
+  "EVALUATOR_ERRORS": {
+   "value": 0.0,
+   "limit": 0.5,
+   "pass": true
+  },
+  "STRATA": {
+   "failures": [],
+   "limit": 1.0,
+   "pass": true
+  },
+  "FISCAL_CHANGE_WRONG_PERIOD": {
+   "value": 0.0,
+   "limit": 0.5,
+   "evaluations": 5,
+   "cases": 3,
+   "bad": 0,
+   "minimumCases": 30,
+   "pass": false
+  },
+  "SAME_DAY": {
+   "stratum": "same_day",
+   "value": 0.0,
+   "limit": 1.0,
+   "evaluations": 12,
+   "cases": 4,
+   "bad": 0,
+   "minimumCases": 20,
+   "pass": false
+  },
+  "STUB_PERIOD": {
+   "stratum": "stub",
+   "value": 0.0,
+   "limit": 1.0,
+   "evaluations": 7,
+   "cases": 7,
+   "bad": 0,
+   "minimumCases": 20,
+   "pass": false
+  },
+  "SPLIT_YEAR": {
+   "stratum": "split_year",
+   "value": 0.0,
+   "limit": 1.0,
+   "evaluations": 2,
+   "cases": 2,
+   "bad": 0,
+   "minimumCases": 20,
+   "pass": false
+  }
+ },
+ "issuers": 1511,
+ "cases": 1920,
+ "evaluations": 5246,
+ "evaluatorErrors": [],
+ "overall": {
+  "counts": {
+   "TRUE_UNAVAILABLE": 1921,
+   "CORRECT": 2946,
+   "FALSE_MISSING": 379
+  },
+  "truthUnavailable": 1921,
+  "truthAvailable": 3325,
+  "coreAndTruthAvailable": 2946,
+  "FALSE_AVAILABLE": 0.0,
+  "WRONG_VALUE": 0.0,
+  "WRONG_CONCEPT": 0.0,
+  "WRONG_PERIOD": 0.0,
+  "FALSE_MISSING": 11.3985
+ },
+ "byStratum": {
+  "normal": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 724,
+    "CORRECT": 1234,
+    "FALSE_MISSING": 112
+   },
+   "truthUnavailable": 724,
+   "truthAvailable": 1346,
+   "coreAndTruthAvailable": 1234,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 8.321,
+   "cases": 724,
+   "underpopulated": false
+  },
+  "fy_change": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 3,
+    "CORRECT": 2
+   },
+   "truthUnavailable": 3,
+   "truthAvailable": 2,
+   "coreAndTruthAvailable": 2,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 0.0,
+   "cases": 3,
+   "underpopulated": true
+  },
+  "split_year": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 2
+   },
+   "truthUnavailable": 2,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null,
+   "cases": 2,
+   "underpopulated": true
+  },
+  "week52": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 160,
+    "CORRECT": 263,
+    "FALSE_MISSING": 14
+   },
+   "truthUnavailable": 160,
+   "truthAvailable": 277,
+   "coreAndTruthAvailable": 263,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 5.0542,
+   "cases": 160,
+   "underpopulated": false
+  },
+  "stub": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 7
+   },
+   "truthUnavailable": 7,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null,
+   "cases": 7,
+   "underpopulated": true
+  },
+  "tag_switch": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 250,
+    "CORRECT": 401,
+    "FALSE_MISSING": 69
+   },
+   "truthUnavailable": 250,
+   "truthAvailable": 470,
+   "coreAndTruthAvailable": 401,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 14.6809,
+   "cases": 250,
+   "underpopulated": false
+  },
+  "split": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1
+   },
+   "truthUnavailable": 1,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null,
+   "cases": 1,
+   "underpopulated": true
+  },
+  "custom": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 21,
+    "CORRECT": 7,
+    "FALSE_MISSING": 2
+   },
+   "truthUnavailable": 21,
+   "truthAvailable": 9,
+   "coreAndTruthAvailable": 7,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 22.2222,
+   "cases": 21,
+   "underpopulated": true
+  },
+  "loss": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 753,
+    "CORRECT": 1138,
+    "FALSE_MISSING": 261
+   },
+   "truthUnavailable": 753,
+   "truthAvailable": 1399,
+   "coreAndTruthAvailable": 1138,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 18.6562,
+   "cases": 753,
+   "underpopulated": false
+  },
+  "profit": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1029,
+    "FALSE_MISSING": 118,
+    "CORRECT": 1807
+   },
+   "truthUnavailable": 1029,
+   "truthAvailable": 1925,
+   "coreAndTruthAvailable": 1807,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 6.1299,
+   "cases": 1029,
+   "underpopulated": false
+  },
+  "small": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 504,
+    "CORRECT": 653,
+    "FALSE_MISSING": 144
+   },
+   "truthUnavailable": 504,
+   "truthAvailable": 797,
+   "coreAndTruthAvailable": 653,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 18.0678,
+   "cases": 503,
+   "underpopulated": false
+  },
+  "large": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 213,
+    "CORRECT": 355,
+    "FALSE_MISSING": 33
+   },
+   "truthUnavailable": 213,
+   "truthAvailable": 388,
+   "coreAndTruthAvailable": 355,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 8.5052,
+   "cases": 213,
+   "underpopulated": false
+  },
+  "foreign": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 55,
+    "CORRECT": 76,
+    "FALSE_MISSING": 18
+   },
+   "truthUnavailable": 55,
+   "truthAvailable": 94,
+   "coreAndTruthAvailable": 76,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 19.1489,
+   "cases": 55,
+   "underpopulated": false
+  },
+  "domestic": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1866,
+    "CORRECT": 2870,
+    "FALSE_MISSING": 361
+   },
+   "truthUnavailable": 1866,
+   "truthAvailable": 3231,
+   "coreAndTruthAvailable": 2870,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 11.173,
+   "cases": 1865,
+   "underpopulated": false
+  },
+  "restated": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 177,
+    "CORRECT": 256,
+    "FALSE_MISSING": 84
+   },
+   "truthUnavailable": 177,
+   "truthAvailable": 340,
+   "coreAndTruthAvailable": 256,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 24.7059,
+   "cases": 176,
+   "underpopulated": false
+  },
+  "amendment": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 243,
+    "CORRECT": 384,
+    "FALSE_MISSING": 64
+   },
+   "truthUnavailable": 243,
+   "truthAvailable": 448,
+   "coreAndTruthAvailable": 384,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 14.2857,
+   "cases": 243,
+   "underpopulated": false
+  },
+  "same_day": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 4,
+    "FALSE_MISSING": 2,
+    "CORRECT": 6
+   },
+   "truthUnavailable": 4,
+   "truthAvailable": 8,
+   "coreAndTruthAvailable": 6,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 25.0,
+   "cases": 4,
+   "underpopulated": true
+  },
+  "negative": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 139,
+    "CORRECT": 1
+   },
+   "truthUnavailable": 139,
+   "truthAvailable": 1,
+   "coreAndTruthAvailable": 1,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 0.0,
+   "cases": 138,
+   "underpopulated": false
+  }
+ },
+ "byEval": {
+  "early": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1783
+   },
+   "truthUnavailable": 1783,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null
+  },
+  "knownFrom": {
+   "counts": {
+    "CORRECT": 1590,
+    "FALSE_MISSING": 193
+   },
+   "truthUnavailable": 0,
+   "truthAvailable": 1783,
+   "coreAndTruthAvailable": 1590,
+   "FALSE_AVAILABLE": null,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 10.8245
+  },
+  "final": {
+   "counts": {
+    "CORRECT": 1356,
+    "FALSE_MISSING": 186,
+    "TRUE_UNAVAILABLE": 138
+   },
+   "truthUnavailable": 138,
+   "truthAvailable": 1542,
+   "coreAndTruthAvailable": 1356,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 12.0623
+  }
+ },
+ "falseMissingReasons": {
+  "TTM_SHARE_BASIS_INCONSISTENT": 259,
+  "TTM_EPS_INCONSISTENT": 109,
+  "TTM_PERIODS_NOT_CONTIGUOUS": 6,
+  "TTM_CONCEPT_MISMATCH": 3,
+  "INSUFFICIENT_HISTORY": 1,
+  "NO_QUARTER_SLOT": 1
+ },
+ "failures": [],
+ "prereg": "artifacts/FUNDAMENTAL-TTM-HOLDOUT4-PREREG.json",
+ "openedAt": "2026-10-09",
+ "officialRun": 1,
+ "candidate": {
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v6.json",
+  "status": "DEVELOPMENT_FREEZE",
+  "commit": "3922ff6093d11606dcfc0c5185160c9362bdc88d",
+  "codeHash": "1607fa0372ae2a8ca336d9987cb4c28c94ab7ca1de600865fa0256311a4efc3b",
+  "mappingHash": "81a4cdb356b09dada7e513c61a07265bc733daabc5ed5a40ae742ae7495d2a7b",
+  "normalizationLogic": "1.21.0",
+  "view": "PIT_TTM via PeriodResolver.ttm_ending (Policy AS_OF_LATEST), EPS diluted; Kalender aus CALENDAR_FORMS, Werte aus PERIODIC_FORMS (wie pipeline.py/consumer.py)",
+  "note": "Freeze v6 nach der Praeregistrierung neu geschrieben (nur Audit-Hash); Kern-Code-Hash identisch zu 42a092b"
+ },
+ "hashesVerified": {
+  "evaluator": true,
+  "gates": true,
+  "exclude": true,
+  "frame": true,
+  "archive": true
+ },
+ "deviations": [
+  "keine; ein offizieller Lauf ueber den gesamten Rahmen (4 Shards), 0 Evaluatorfehler, keine Aenderung an Kern, Evaluator oder Gates nach Oeffnung"
+ ],
+ "failureAnalysis": {
+  "correctness": "0 Fehlerfaelle: FALSE_AVAILABLE, WRONG_VALUE, WRONG_CONCEPT, WRONG_PERIOD jeweils 0 bei 5.246 Auswertungen (1.920 Faelle, 1.511 Emittenten); FALSE_MISSING 11,4 %",
+  "failedGates": {
+   "FISCAL_CHANGE_WRONG_PERIOD": {
+    "value": 0.0,
+    "limit": 0.5,
+    "evaluations": 5,
+    "cases": 3,
+    "bad": 0,
+    "minimumCases": 30,
+    "pass": false
+   },
+   "SAME_DAY": {
+    "stratum": "same_day",
+    "value": 0.0,
+    "limit": 1.0,
+    "evaluations": 12,
+    "cases": 4,
+    "bad": 0,
+    "minimumCases": 20,
+    "pass": false
+   },
+   "STUB_PERIOD": {
+    "stratum": "stub",
+    "value": 0.0,
+    "limit": 1.0,
+    "evaluations": 7,
+    "cases": 7,
+    "bad": 0,
+    "minimumCases": 20,
+    "pass": false
+   },
+   "SPLIT_YEAR": {
+    "stratum": "split_year",
+    "value": 0.0,
+    "limit": 1.0,
+    "evaluations": 2,
+    "cases": 2,
+    "bad": 0,
+    "minimumCases": 20,
+    "pass": false
+   }
+  },
+  "cause": "Die vier praeregistrierten Schicht-Gates sind nicht pruefbar (zu wenige Faelle): fy_change 3 (Minimum 30), same_day 4 (20), stub 7 (20), split_year 2 (20). Nach Sperrung von 9.964 bereits gewerteten Fenstern aus Holdout v2 und v3 - deren Stichprobe nahm seltene Schichten zuerst - und dem Ausschluss der untersuchten Emittenten enthaelt der Rahmen kaum noch ungesehene Faelle dieser Strukturen (v3: fy_change 100, same_day 32, stub 68 Faelle). Nach praeregistrierter Regel: nicht pruefbar = FAIL.",
+  "verdictUnaffected": "FAIL bleibt FAIL. Kein 'formal fail but acceptable': die Korrektheit ueber Geschaeftsjahreswechsel, Same-Day, Rumpfperioden und geteilte Jahre ist durch v4 NICHT validiert.",
+  "noFixInThisHoldout": "keine Aenderung am Kern; eine neue Kernversion braucht ohnehin einen neuen Holdout"
+ },
+ "conclusion": {
+  "core": "Kern 1.21.0 BLOCKED (Holdout v4 FAIL)",
+  "freezeV6": "bleibt als FAILED_VALIDATION (Development Freeze, unveraendert)",
+  "pr481": "BLOCKED",
+  "next": "Ein Holdout, der die Fiscal-Change-/Same-Day-/Stub-/Split-Year-Schichten tatsaechlich besetzen kann, braucht ungesehene Faelle dieser Strukturen: z. B. ein frischer companyfacts-Stand mit neuen Einreichungen nach 2026-10-07 (neue Perioden, kein Sperrkonflikt) oder ein vor Oeffnung festgelegter Rahmen ausserhalb der bisherigen Stichproben; Entscheidung des Owners."
+ }
+}

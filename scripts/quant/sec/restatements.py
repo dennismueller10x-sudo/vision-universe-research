@@ -29,9 +29,10 @@ POLICY_ORIGINAL = "original"
 POLICY_LATEST_KNOWN = "latest_known"
 POLICIES = (POLICY_AS_OF_LATEST, POLICY_ORIGINAL, POLICY_LATEST_KNOWN)
 
-# Amendments supersede the filing they amend when both are visible at the same
-# instant; otherwise the later publication wins on its own.
-_AMENDMENT_FORMS = frozenset({"10-K/A", "10-Q/A", "20-F/A", "40-F/A"})
+# Ordering inside one availability instant (amendment last, then accession) only
+# decides between values that agree within SAME_DAY_CONFLICT_TOLERANCE; values
+# that disagree at the same instant are AMBIGUOUS_SAME_DAY (1.20.0). Otherwise
+# the later publication wins on its own.
 
 FLAG_RESTATED = "RESTATED"
 FLAG_CONFLICTING_FACTS = "CONFLICTING_FACTS"
@@ -39,6 +40,90 @@ FLAG_CONFLICTING_FACTS = "CONFLICTING_FACTS"
 # Values differing by less than this relative amount are treated as the same
 # number reported twice, not as a restatement (rounding across filings).
 RESTATEMENT_RELATIVE_TOLERANCE = 1e-9
+# 1.20.0 Same-Day-Policy: zwei Fassungen zum selben Zeitpunkt widersprechen sich, wenn
+# ihre Werte um mehr als eine Rundung auseinanderliegen (relativ 1e-4: 246.634 vs. 246.635
+# ist dieselbe Angabe; ein EPS mit zwei Nachkommastellen muss gleich sein).
+SAME_DAY_CONFLICT_TOLERANCE = 1e-4
+
+# 1.23.0 (F-TTM-7): one cell, one period, one economic concept - chosen at
+# resolution time from what is visible at as_of, never by recency alone.
+#  1. Economic class: the metric's primary concept before another class (total
+#     vs. continuing-operations EPS; owners' net income vs. consolidated profit
+#     including non-controlling interests vs. income available to common).
+#     Forestar Q4 2017: NetIncomeLoss, later filings only ProfitLoss; BRT: the
+#     reverse order.
+#  2. Period: among visible versions reporting different periods for the cell,
+#     the one that fits the fiscal-calendar slot best (Observation.fit, days off
+#     the expected start and end). Novus Robotics Q3 2011, Entest YTD2 2015.
+#  3. Then the newest version of that period, same-day rule as before.
+CONTINUING_PER_SHARE = frozenset((
+    "IncomeLossFromContinuingOperationsPerDilutedShare",
+    "IncomeLossFromContinuingOperationsPerBasicShare",
+    "IncomeLossFromContinuingOperationsPerBasicAndDilutedShare",
+))
+ECONOMIC_CLASS = {
+    **{concept: "continuing_operations" for concept in CONTINUING_PER_SHARE},
+    "ProfitLoss": "consolidated_including_nci",
+    "NetIncomeLossAvailableToCommonStockholdersBasic": "available_to_common",
+}
+SAME_PERIOD_DAYS = 7
+
+
+def economic_class(concept):
+    return ECONOMIC_CLASS.get(concept, "primary")
+
+
+def _same_period(a, b):
+    def day(value):
+        return date.fromisoformat(str(value)[:10]) if value else None
+    if a.period_end is None or b.period_end is None:
+        return a.period_end == b.period_end
+    if abs((day(a.period_end) - day(b.period_end)).days) > SAME_PERIOD_DAYS:
+        return False
+    if a.period_start is None or b.period_start is None:
+        return a.period_start is None and b.period_start is None
+    return abs((day(a.period_start) - day(b.period_start)).days) <= SAME_PERIOD_DAYS
+
+
+SIGN_SLIP_TOLERANCE = 0.02
+
+
+def sign_slip(a, b):
+    """The same amount with the other sign (within 2 %): a tagging slip, not a second figure.
+
+    1.23.0: SOBR Safe 10-Q/A 2025 (NetIncomeLoss +2,505,921 next to ProfitLoss
+    -2,505,921), Lexaria 10-Q 2022 (ProfitLoss +2,011,792 for a -2,003,482 quarter)."""
+    return a * b < 0 and abs(a + b) <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))
+
+
+def told_apart(distinguish_classes, first, second):
+    """Whether the filer's filings show two economic classes of a cell with different values.
+
+    True (the default before evidence is known) tells every pair apart; otherwise a
+    collection of class pairs, each a sorted 2-tuple - for a point in time only the
+    pairs a filing visible then has shown (FactTimeline.class_evidence)."""
+    if first == second:
+        return False
+    if distinguish_classes is True:
+        return True
+    return tuple(sorted((first, second))) in distinguish_classes
+
+
+def preferred(candidates, distinguish_classes=True):
+    """The candidates of the cell's economic class and best-fitting period, in their order.
+
+    Classes are told apart only where the filer's own filings show them different
+    (a filing reporting owners' net income and consolidated profit for one period
+    with two values); otherwise they are one measure for this filer and the newest
+    version stands (US Premium Beef: a mis-scaled first NetIncomeLoss, then
+    ProfitLoss in every later filing)."""
+    if not candidates:
+        return candidates
+    if any(economic_class(obs.provenance.concept) == "primary" for obs in candidates):
+        candidates = [obs for obs in candidates
+                      if not told_apart(distinguish_classes, "primary", economic_class(obs.provenance.concept))]
+    best = min(candidates, key=lambda obs: obs.fit if obs.fit is not None else 0)
+    return [obs for obs in candidates if _same_period(obs, best)]
 
 
 def to_instant(value, end_of_day=False):
@@ -70,10 +155,10 @@ class Observation:
     """One reported value for one (metric, period) cell, with its provenance."""
 
     __slots__ = ("value", "unit", "provenance", "available_from", "filed",
-                 "quality", "flags", "period_start", "period_end")
+                 "quality", "flags", "period_start", "period_end", "fit")
 
     def __init__(self, value, unit, provenance, available_from, filed,
-                 quality=QUALITY_HIGH, flags=None, period_start=None, period_end=None):
+                 quality=QUALITY_HIGH, flags=None, period_start=None, period_end=None, fit=None):
         self.value = value
         self.unit = unit
         self.provenance = provenance
@@ -83,6 +168,8 @@ class Observation:
         self.flags = list(flags or [])
         self.period_start = period_start
         self.period_end = period_end
+        # days between this period and the fiscal-calendar slot of its cell (1.23.0)
+        self.fit = fit
 
     @property
     def available_instant(self):
@@ -100,7 +187,7 @@ class Observation:
         # Ordering within the same availability instant.
         return (
             self.available_instant,
-            1 if (self.form or "") in _AMENDMENT_FORMS else 0,
+            1 if (self.form or "").endswith("/A") else 0,   # every amendment form (1.22.0)
             self.accession or "",
         )
 
@@ -114,6 +201,7 @@ class Observation:
             "flags": list(self.flags),
             "period_start": self.period_start,
             "period_end": self.period_end,
+            "fit": self.fit,
             "provenance": self.provenance.to_dict(),
         }
 
@@ -127,6 +215,8 @@ class FactTimeline:
         self.fiscal_period = fiscal_period
         self._observations = list(observations or [])
         self._sorted = False
+        # the filer's filings show this metric's economic classes with different values (1.23.0)
+        self.distinguish_classes = True
 
     @property
     def key(self):
@@ -148,6 +238,22 @@ class FactTimeline:
 
     # ---------------------------------------------------------------- resolution
 
+    def class_evidence(self, as_of=None, lag_days=0):
+        """The class pairs shown different by filings available at as_of (all without as_of).
+
+        1.23.0, red team R3 CRITICAL-1: evidence is point in time like the values -
+        a later filing telling two classes apart must not change an earlier reading
+        (Apartment Income REIT 2021-08-20, Bausch Health 2011-11-20)."""
+        evidence = self.distinguish_classes
+        if evidence is True:
+            return True
+        cutoff = to_instant(as_of, end_of_day=True) if as_of is not None else None
+        if cutoff is None:
+            return set(evidence)
+        if lag_days:
+            cutoff = cutoff - timedelta(days=lag_days)
+        return {pair for pair, since in evidence.items() if since is None or to_instant(since) <= cutoff}
+
     def visible(self, as_of, lag_days=0):
         """Observations publicly available at as_of (inclusive), oldest first."""
         cutoff = to_instant(as_of, end_of_day=True)
@@ -158,8 +264,11 @@ class FactTimeline:
         return [obs for obs in self.observations
                 if obs.available_instant is not None and obs.available_instant <= cutoff]
 
-    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0):
-        """Return the observation a consumer is allowed to see at as_of."""
+    def resolve(self, as_of=None, policy=POLICY_AS_OF_LATEST, lag_days=0, accept=None, by_class=True):
+        """Return the observation a consumer is allowed to see at as_of (optionally only those `accept` admits).
+
+        by_class=False skips the class preference: a caller reading the cell in one
+        class it chooses itself (periods._window_in_one_class)."""
         if policy not in POLICIES:
             raise ValueError(f"unknown restatement policy: {policy}")
         if policy == POLICY_LATEST_KNOWN:
@@ -168,8 +277,12 @@ class FactTimeline:
             if as_of is None:
                 raise ValueError(f"policy {policy} requires an as_of date")
             candidates = self.visible(as_of, lag_days=lag_days)
+        if accept is not None:
+            candidates = [obs for obs in candidates if accept(obs)]
         if not candidates:
             return None
+        evidence = self.class_evidence(None if policy == POLICY_LATEST_KNOWN else as_of, lag_days)
+        candidates = preferred(candidates, evidence if by_class else ())
 
         if policy == POLICY_ORIGINAL:
             chosen = candidates[0]
@@ -181,26 +294,30 @@ class FactTimeline:
         if len(candidates) > 1 and self._values_differ(candidates):
             flags.append(FLAG_RESTATED)
         peers = [obs for obs in candidates if obs.available_instant == chosen.available_instant]
-        if len(peers) > 1 and self._values_differ(peers):
-            flags.append(FLAG_CONFLICTING_FACTS)
-            quality = QUALITY_MEDIUM
+        if len(peers) > 1 and self._values_differ(peers, SAME_DAY_CONFLICT_TOLERANCE):
+            # 1.20.0 (F-TTM-3): two filings available at the same instant disagree.
+            # Without an acceptance time that orders them, which one was the last
+            # word is unknown - form, accession or file order must not decide
+            # (Landmark Apartment Trust 2013-03-20: 10-K Q3 -1.03, 10-Q/A +1.03).
+            # The cell is AMBIGUOUS_SAME_DAY until a later, unambiguous filing.
+            return None
         if flags == chosen.flags and quality == chosen.quality:
             return chosen
         return Observation(
             value=chosen.value, unit=chosen.unit, provenance=chosen.provenance,
             available_from=chosen.available_from, filed=chosen.filed,
             quality=quality, flags=flags,
-            period_start=chosen.period_start, period_end=chosen.period_end,
+            period_start=chosen.period_start, period_end=chosen.period_end, fit=chosen.fit,
         )
 
     @staticmethod
-    def _values_differ(observations):
+    def _values_differ(observations, tolerance=RESTATEMENT_RELATIVE_TOLERANCE):
         values = [obs.value for obs in observations if obs.value is not None]
         if len(values) < 2:
             return False
         low, high = min(values), max(values)
         scale = max(abs(low), abs(high), 1.0)
-        return (high - low) / scale > RESTATEMENT_RELATIVE_TOLERANCE
+        return (high - low) / scale > tolerance
 
     def is_restated(self):
         return self._values_differ(self.observations)
@@ -211,6 +328,8 @@ class FactTimeline:
             "fiscal_year": self.fiscal_year,
             "fiscal_period": self.fiscal_period,
             "restated": self.is_restated(),
+            "distinguish_classes": self.distinguish_classes if self.distinguish_classes is True
+            else [[*pair, since] for pair, since in sorted(self.distinguish_classes.items())],
             "observations": [obs.to_dict() for obs in self.observations],
         }
 
@@ -223,6 +342,46 @@ class CompanyFactBook:
         self.calendar = calendar
         self.profile = profile
         self.timelines = dict(timelines or {})
+        # (metric, fy, fp) -> earliest filing date of a filing that reported
+        # more than one period into that cell (normalize, AMBIGUOUS_PERIOD).
+        self.ambiguous = {}
+        # metric -> [(period_end, available)] of periods the calendar could not place.
+        self.unplaced = {}
+
+    def note_unplaced(self, metric, period_end, available):
+        if period_end and available:
+            self.unplaced.setdefault(metric, []).append((str(period_end)[:10], available))
+
+    def newest_period_end(self, metric, as_of, lag_days=0):
+        """Newest period end of any visible observation of `metric` (placed or not) at as_of."""
+        newest = None
+        for (name, _, _), timeline in self.timelines.items():
+            if name != metric:
+                continue
+            for obs in timeline.visible(as_of, lag_days=lag_days):
+                end = str(obs.period_end or "")[:10]
+                if end and (newest is None or end > newest):
+                    newest = end
+        cutoff = to_instant(as_of, end_of_day=True)
+        if cutoff is not None and lag_days:
+            cutoff = cutoff - timedelta(days=lag_days)
+        for end, available in self.unplaced.get(metric, []):
+            moment = to_instant(available)
+            if moment is not None and (cutoff is None or moment <= cutoff) and (newest is None or end > newest):
+                newest = end
+        return newest
+
+    def mark_ambiguous(self, metric, fiscal_year, fiscal_period, filed):
+        key = (metric, fiscal_year, fiscal_period)
+        current = self.ambiguous.get(key)
+        if filed and (current is None or str(filed) < str(current)):
+            self.ambiguous[key] = str(filed)
+
+    def is_ambiguous(self, metric, fiscal_year, fiscal_period, as_of=None):
+        filed = self.ambiguous.get((metric, fiscal_year, fiscal_period))
+        if filed is None:
+            return False
+        return as_of is None or to_instant(filed) <= to_instant(as_of, end_of_day=True)
 
     def add_observation(self, metric, fiscal_year, fiscal_period, observation):
         key = (metric, fiscal_year, fiscal_period)

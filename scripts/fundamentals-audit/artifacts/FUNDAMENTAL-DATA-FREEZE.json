@@ -1,0 +1,106 @@
+{
+  "schema": "vu-fundamental-data-freeze-1.0.0",
+  "status": "FROZEN",
+  "frozenAt": "2026-10-07T14:37:06.609Z",
+  "commit": "c324afebc88",
+  "dataVersion": {
+    "normalizationLogic": "1.11.0",
+    "registryMapping": "1.7.0",
+    "consumerSchema": "vu-consumer-fundamentals-1.0.0 (unveraendert)",
+    "label": "vu-fundamentals-core-1.11.0+registry-1.7.0"
+  },
+  "code": {
+    "files": {
+      "scripts/quant/sec/provider.py": "e7b8100f6e133d6119fc942e8af4bce6aff5ad88160e7daa5a42e455111199c4",
+      "scripts/quant/sec/normalize.py": "c8c7313903fcb7f68139079a1a93e01631663d07acf33ea4d4a7da9f4edf159f",
+      "scripts/quant/sec/fiscal.py": "dc65a03f10c3c42452a3f17d9fe8a8a3a00813d16d2203ba7247004a27dc9a9f",
+      "scripts/quant/sec/periods.py": "a4ae1f68061d1fec4f43c13384c7a84f0a6b294b4f0e8401565e5cb61b88a311",
+      "scripts/quant/sec/restatements.py": "3f833a94bb52cffe6caa951c91017c49b4dd4ee1ff38433e6f21fed0e0ed2b2e",
+      "scripts/quant/sec/derived.py": "fb6b7ddb36f283f3886299af4644c93a1986f7c44cad8947f580b4e0e90154a9",
+      "scripts/quant/sec/registry.py": "2d20df129ca6a956ee710c01eea5ac3111737737c32be5aa13614f1d59d539b3",
+      "scripts/quant/sec/consumer.py": "cbaa523de7cafa230d23f9e583a594034fb35b7f8ef7af033a03e227b18ea410",
+      "scripts/quant/sec/canonical.py": "b4457c62ae9622bc6f7deb145d2a12cb4b8e07dc613e29fd4aac6eac38470a77",
+      "scripts/quant/sec/version.py": "407369bc4e531662c3db7d047ee1a0bad5051c92c04eba82f1fe51ff3e8631df"
+    },
+    "hash": "d109550b7667496b420c383a174707ce6cb0a020805676ec89c80b3503838023"
+  },
+  "mapping": {
+    "files": {
+      "quant/config/sec-metric-registry.json": "ac2deb436e3788d0743fb4e86ffd9780720be51404677179056c3411f871ee4c"
+    },
+    "hash": "5128149ec70127dbc02331f3c22090cb0561bfddf456a277a2c2d0f068a57e2d"
+  },
+  "audit": {
+    "files": {
+      "scripts/fundamentals-audit/sec-ground-truth.mjs": "45f84452ad623c36fd1ce76f2eda27c258406f9521a8d3025e981128612e8456",
+      "scripts/fundamentals-audit/compare.mjs": "3ebcfa3ecf09832d61632e92a64cadfc1a2a52605dcb1f9c331bae8c991fcb87",
+      "scripts/fundamentals-audit/error-rates.mjs": "72eacf478ed7b75dc42393b7ecc92fbced140ded6380160d5e835bee87e13794",
+      "scripts/fundamentals-audit/quant_core_dump.py": "bf80f95eca3196667ec902ad1758d09a46dda2cbeb152d690b5015622d1df79a",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-HOLDOUT-PREREG.json": "0e00da6cdb18e7f73186c3a6817ed8ff0661148313a6d22a7348ad2701fcf2a2"
+    },
+    "hash": "9b1c152d1f99f76104a2201ab2d6b69ac361b849c39f69ecb3ddb9bee43f51be"
+  },
+  "tests": {
+    "files": {
+      "scripts/quant/tests/test_sec_ground_truth_regressions.py": "be67a6e55da82fd9c9360bc64625787653c7883a25fdf87a07299e34effcf822"
+    },
+    "hash": "37a49dec88d44dd3fa0eddf67fbd27e5379458a24696fa6587c647004ba828ad"
+  },
+  "regressionSuite": {
+    "file": "scripts/quant/tests/test_sec_ground_truth_regressions.py",
+    "cases": [
+      "E1 TNDM",
+      "E2 AMT",
+      "E3 DE",
+      "E3b CERN",
+      "E4 REPL (gemeldet + ohne Q4-Meldung)"
+    ]
+  },
+  "groundTruthResult": {
+    "label": "AFTER_CORE_FIX (5969a11a99a) - Quant P1; P7/P9 unveraendert",
+    "beforeAfterQuant": {
+      "fixedFacts": 982,
+      "newErrors": 0,
+      "stillWrong": 120,
+      "unchangedCorrect": 17148,
+      "baseline": "main 829b35bdce4",
+      "fixed": "5969a11a99a"
+    },
+    "quantRatesAfter": {
+      "QUANT|EPS_BASIC": {
+        "fact": 0.9946,
+        "value": 0.9949,
+        "pit": 0.9998,
+        "falseMissing": 0.0042,
+        "falseAvailable": 0,
+        "wrong": 0.0012
+      },
+      "QUANT|EPS_DILUTED": {
+        "fact": 0.9946,
+        "value": 0.9948,
+        "pit": 0.9998,
+        "falseMissing": 0.0042,
+        "falseAvailable": 0,
+        "wrong": 0.0012
+      },
+      "QUANT|NET_INCOME": {
+        "fact": 0.9888,
+        "value": 0.989,
+        "pit": 0.9998,
+        "falseMissing": 0.0006,
+        "falseAvailable": 0,
+        "wrong": 0.0106
+      },
+      "QUANT|REVENUE": {
+        "fact": 0.9962,
+        "value": 0.9964,
+        "pit": 0.9998,
+        "falseMissing": 0.0011,
+        "falseAvailable": 0,
+        "wrong": 0.0028
+      }
+    }
+  },
+  "rule": "Nach diesem Freeze keine Aenderung an Kern-Code, Mapping, Ground-Truth-Methode oder Gates. Consumer-Impact und Data-Holdout nur gegen diesen Stand. Builds anderer Staende gelten als STALE_BUILD.",
+  "gitClean": true
+}

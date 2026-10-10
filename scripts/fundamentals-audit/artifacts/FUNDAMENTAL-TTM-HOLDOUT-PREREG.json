@@ -1,0 +1,40 @@
+{
+  "schema": "vu-fundamental-ttm-holdout-prereg-1.0.0",
+  "createdBefore": "jeder Auswertung von Daten fuer die Q4-/TTM-Rekonstruktionsregel und jedem Abruf von TTM-Holdout-Ergebnissen (Commit vor der TTM-Regelentwicklung)",
+  "parentFreeze": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-DATA-FREEZE-v3.json (Kern 1.15.0, Registry 1.8.0)",
+  "purpose": "Ungesehene Pruefung der TTM-EPS-Definition und Q4-Rekonstruktion. Kein Performance-Holdout.",
+  "partition": {
+    "rule": "SHA-256('vu-ttm-holdout-1|' + CIK10) - erstes Hex-Zeichen 0-7 = ENTWICKLUNG, 8-f = HOLDOUT",
+    "universe": "CIKs mit Consumer-Bundle (quant/data/sec/consumer, Stand main 829b35bdce4)",
+    "exclusions": "alle Emittenten der Entwicklungs-GT (99) und des ersten Data-Holdouts (60) sind aus dem TTM-HOLDOUT ausgeschlossen (bereits gesehen)",
+    "developmentUse": "Regelentwicklung (wann ist Q4-EPS ableitbar, welche Vertraeglichkeitspruefungen) ausschliesslich auf ENTWICKLUNG",
+    "holdoutUse": "HOLDOUT wird erst nach dem TTM-Data-Freeze (v4-Kandidat) ausgewertet, einmal"
+  },
+  "truth": {
+    "standaloneQuarter": "erste SEC-Meldung (companyfacts, Erstmeldung) eines Dreimonats-EPS (80-100 Tage) unter EarningsPerShareDiluted bzw. EarningsPerShareBasicAndDiluted (verwaessert) und EarningsPerShareBasic bzw. EarningsPerShareBasicAndDiluted (unverwaessert); Q4 auch aus dem 10-K (Quartalsangaben)",
+    "ttmTruth": "Summe der vier gemeldeten Dreimonats-EPS desselben Konzepts (verwaessert ODER unverwaessert, nie gemischt) fuer vier aufeinanderfolgende Fiskalquartale; nur bewertbar, wenn alle vier gemeldet sind",
+    "knownFrom": "spaeteste Erstveroeffentlichung der vier Quartale (Annahme-/Einreichungsdatum)",
+    "observation": "(Emittent, Fiskaljahr) mit TTM-Fenster bis Q4; zusaetzlich Fenster bis Q1-Q3, wenn bewertbar"
+  },
+  "experiment": {
+    "A_reportedQ4Present": "Kern mit allen Fakten: TTM muss der Wahrheit entsprechen",
+    "B_reportedQ4Hidden": "Kern ohne den gemeldeten Q4-Dreimonats-EPS (Fakt entfernt): TTM muss der Wahrheit innerhalb der Toleranz entsprechen ODER NOT_AVAILABLE sein - ein falscher Wert ist ein Fehler, NOT_AVAILABLE nicht",
+    "pit": "Pruefung je Beobachtung zum Stichtag knownFrom - 1 Tag (muss NOT_AVAILABLE oder ein frueheres Fenster sein) und knownFrom + 1 Tag"
+  },
+  "stratification": ["Groesse (Aktienanzahl x Kurs nicht verfuegbar -> Anzahl Fakten als Naeherung)", "SIC-Abteilung aus submissions", "Jahresgruppe 2009-2014 / 2015-2020 / 2021-2026", "52/53-Wochen-Kalender ja/nein", "Gewinn/Verlust im Fenster", "Split im Fenster (Aktienzahlsprung >= 1,5)", "Inland/Ausland"],
+  "sampleSize": "alle bewertbaren Beobachtungen der HOLDOUT-Emittenten; mindestens 100 (Emittent, Periode)",
+  "acceptanceGates": {
+    "FALSE_AVAILABLE": "== 0 (kein TTM vor Veroeffentlichung seines letzten Quartals)",
+    "WRONG_CONCEPT": "== 0 (keine Mischung verwaessert/unverwaessert, kein fortgefuehrter-Geschaeftsbereich-EPS ohne Kennzeichen)",
+    "WRONG_PERIOD": "<= 0,5 % der Beobachtungen",
+    "WRONG_VALUE_A": "<= 1 % der Beobachtungen ausserhalb Toleranz",
+    "WRONG_VALUE_B": "<= 2 % der Beobachtungen ausserhalb Toleranz (abgeleitetes Q4); NOT_AVAILABLE zaehlt nicht als Fehler",
+    "tolerance": "|TTM - Wahrheit| <= 0,02 Waehrungseinheiten je Aktie ODER <= 1 % relativ (Rundung der vier Quartalswerte)",
+    "coverageReportedNotGated": "Anteil NOT_AVAILABLE in B wird berichtet, ist aber kein Gate (UNKNOWN vor falschem Wert)"
+  },
+  "rules": [
+    "Schwellen, Partition, Wahrheit und Experiment werden nach Oeffnung des Holdouts nicht veraendert.",
+    "Faellt ein Gate, wird das berichtet; kein Nachbessern am Holdout.",
+    "Die Regelentwicklung verwendet keine HOLDOUT-Emittenten."
+  ]
+}

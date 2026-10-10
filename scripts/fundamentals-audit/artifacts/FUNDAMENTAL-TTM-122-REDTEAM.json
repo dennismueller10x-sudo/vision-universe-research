@@ -1,0 +1,163 @@
+{
+ "schema": "vu-fundamental-ttm-122-redteam-1.0.0",
+ "core": "1.22.0",
+ "reviewer": "Opus Pre-Freeze Red Team (Realdaten, 375 Uebergangsemittenten, Archiv 2026-10-07)",
+ "rounds": [
+  {
+   "round": 1,
+   "commit": "8360d9b",
+   "verdict": "NOT_READY",
+   "findings": [
+    {
+     "id": "H-1",
+     "severity": "HIGH",
+     "new": true,
+     "title": "10-QT-Uebergangsquartal bekommt im fortgeschriebenen Jahr einen Quartalsslot und geht in ein TTM",
+     "example": "Mastermind 0001088638: 10-QT 0001477932-24-000794 (2024-02-16) Okt-Dez 2023 als FY2024 Q1; TTM Umsatz zu 2024-12-01 2.276.730 (1.21.0 nicht verfuegbar)",
+     "status": "FIXED",
+     "fix": "Uebergangswerte (auch Deckblatt) nur in Geschaeftsjahren mit beobachteten Enden; Test RedTeam122Tests.test_h1 (vor dem Fix rot)"
+    },
+    {
+     "id": "M-1",
+     "severity": "MEDIUM",
+     "new": true,
+     "title": "Guard verwirft Uebergangsfassungen mit demselben Zeitraum wie die Regelberichte, wenn die gleichmaessige Jahresteilung danebenliegt",
+     "example": "SpartanNash 0000877422 (16/12/12/12 Wochen) Q2 2012-06-24..09-15; 606 verworfene Fakten bei 44 Emittenten mit identischem Regelzeitraum",
+     "status": "FIXED",
+     "fix": "auch der von allen Regelberichten der Zelle einstimmig gemeldete Zeitraum ist Beleg (keine Kollisionszelle F-TTM-7); Test RedTeam122Tests.test_m1. Ursache (b) Phantom-Jahresenden -> F-TTM-8"
+    },
+    {
+     "id": "M-2",
+     "severity": "MEDIUM",
+     "new": "neue Instanz einer bestehenden Klasse",
+     "title": "PIT-TTM mischt zwei Vorgaengereinheiten nach Reverse Merger",
+     "example": "Dawson 0000799165: 10-QT 2015-03-23 meldet Q4 2014 des bilanziellen Erwerbers, Q1-Q3 noch TGC; Umsatz-TTM 143.935.000 statt 118.848.000 (1.21.0) bis zu den restatenden 10-Q 2015",
+     "status": "OPEN_DOCUMENTED",
+     "note": "entspricht der praeregistrierten Wahrheit (je Quartal juengste Fassung zu t); EPS durch Aktienbasis-Guard zurueckgezogen; PIT-TTM-Pruefung in die Nachbarsuche aufgenommen (artifacts/FUNDAMENTAL-TTM-122-NEIGHBOR-SEARCH.json verification.pitTtm); Modellregel TTM_PARTIAL_RESTATEMENT nur in eigenem PR"
+    },
+    {
+     "id": "M-3",
+     "severity": "MEDIUM",
+     "new": false,
+     "title": "Vergleichsspalten eines 10-KT erzeugen Phantom-Jahresenden (Kalender seit 1.21.0)",
+     "example": "Zurn 0001439288; 38 von 375 Uebergangsemittenten",
+     "status": "DOCUMENTED_AS_F-TTM-8",
+     "note": "Kalender in 1.22.0 unveraendert; fehlende statt falscher Werte"
+    },
+    {
+     "id": "L-1",
+     "severity": "LOW",
+     "new": true,
+     "title": "audit_primary_source.py las nur PERIODIC_FORMS (falsche RAW_FACT_NOT_FOUND moeglich); cli._submissions_summary zaehlte nur PERIODIC_FORMS",
+     "status": "FIXED",
+     "fix": "VALUE_FORMS"
+    },
+    {
+     "id": "INFO-1",
+     "severity": "INFO",
+     "title": "Deckblattangaben umgingen den Guard",
+     "status": "FIXED mit H-1 (gleiche Jahresregel)"
+    },
+    {
+     "id": "INFO-2",
+     "severity": "INFO",
+     "title": "Christopher & Banks 0000883943: 11-Monats-Uebergang mit Quartalsslots im Regelpfad (Phantom-Ende 2011-01-29)",
+     "status": "vorbestehend, TTM durch TTM_STUB_PERIOD gestoppt"
+    },
+    {
+     "id": "INFO-3",
+     "severity": "INFO",
+     "title": "fehlende Annahmezeit -> Einreichungstag 00:00 UTC",
+     "status": "vorbestehend, allgemein, nur fuer Intraday-as_of relevant"
+    }
+   ],
+   "clean": [
+    "Uebergangszeitraeume selbst: 25.841 zugelassene Beobachtungen, keine in einer unbeschrifteten Uebergangsspanne",
+    "Amendment-Rangfolge (/A nur bei gleichen Werten zum selben Zeitpunkt)",
+    "Same-Day: 20 Gruppen mit Uebergangsformularen -> AMBIGUOUS",
+    "kein Lookahead (Verfuegbarkeit je Accession aus den vollen Submissions-Metadaten)",
+    "keine Duplikate (fact_id mit Accession; eine aufgeloeste Beobachtung je Zelle)",
+    "Dauern >= 13 Monate als UNEXPECTED_DURATION verworfen"
+   ]
+  },
+  {
+   "round": 2,
+   "commit": "a4ebd5d",
+   "verdict": "READY_FOR_FREEZE (kein neues HIGH/CRITICAL; H-1 geschlossen)",
+   "findings": [
+    {
+     "id": "R2-1",
+     "severity": "MEDIUM",
+     "new": "durch den H-1-Fix",
+     "title": "erstes beobachtetes Jahr und Rueckwaerts-Vergleichsjahre galten als fortgeschrieben (Rueckprojektion der Eroeffnungsbilanz)",
+     "example": "8point3 FY2014 aus dem 10-KT 2016-01-28 erst mit dem 10-K 2017 sichtbar; East Stone 0001760683 10-KT/A-Korrektur verworfen",
+     "status": "FIXED",
+     "fix": "nur VORWAERTS fortgeschriebene Jahre (Ende nach dem letzten beobachteten Jahresende) gesperrt; Test RedTeam122Round2Tests (vor dem Fix rot)"
+    },
+    {
+     "id": "R2-2",
+     "severity": "LOW",
+     "new": "durch M-1",
+     "title": "Einstimmigkeit stuetzte sich auf einen spaeter eingereichten Regelbericht",
+     "example": "MAG MILE 0001879293 FY2022 Q4 (10-QT 2024-01-02, 10-Q 2024-02-12)",
+     "status": "FIXED",
+     "fix": "nur bis zur Verfuegbarkeit des Uebergangsberichts verfuegbare Regelberichte zaehlen (point in time)"
+    },
+    {
+     "id": "R2-3",
+     "severity": "LOW",
+     "new": true,
+     "title": "Deckblattregel pruefte das Jahr des Deckblattdatums statt der Zelle der letzten abgeschlossenen Periode",
+     "example": "Regenerex 0001357878 10-KT 2026: aktuelle Aktienzahl verworfen",
+     "status": "FIXED",
+     "fix": "Pruefung an der letzten abgeschlossenen Periode"
+    }
+   ],
+   "confirmed": [
+    "H-1 geschlossen (kein Uebergangswert in fortgeschriebenem Jahr; Mastermind TTM 2024-03/06/12 nicht verfuegbar)",
+    "verkuerzte gelabelte Jahre zugelassen (8point3, Best Buy, Greif, Esterline, Jefferies, Leidos, Pandora, Infor, Forest City)",
+    "Orbital ATK Q1 FY2015 2,50; M-1-Faelle SpartanNash, Bristow, T3, Republic, Oakridge u. a.",
+    "48 nur ueber Einstimmigkeit zugelassene Gruppen tragen genau den Regelzeitraum",
+    "M-2 Dawson unveraendert (offen)"
+   ]
+  }
+ ],
+ "manuallyExaminedCiks": [
+  "0000003146",
+  "0000033619",
+  "0000083402",
+  "0000093859",
+  "0000104819",
+  "0000799165",
+  "0000810332",
+  "0000830483",
+  "0000866121",
+  "0000868725",
+  "0000877422",
+  "0000883943",
+  "0001011290",
+  "0001080056",
+  "0001088638",
+  "0001173281",
+  "0001304464",
+  "0001309082",
+  "0001343465",
+  "0001357878",
+  "0001397795",
+  "0001439288",
+  "0001525221",
+  "0001551906",
+  "0001571398",
+  "0001584754",
+  "0001590496",
+  "0001603345",
+  "0001628468",
+  "0001635581",
+  "0001639691",
+  "0001641631",
+  "0001760683",
+  "0001787518",
+  "0001879293"
+ ],
+ "finalVerdict": "kein CRITICAL/HIGH offen; offen dokumentiert: M-2 (MEDIUM, vorbestehende Klasse), F-TTM-7, F-TTM-8"
+}

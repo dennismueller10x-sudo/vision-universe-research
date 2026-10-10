@@ -1,0 +1,381 @@
+{
+ "schema": "vu-fundamental-consumer-matrix-1.0.0",
+ "auditedCommit": "829b35bdce4",
+ "columns": [
+  "consumer",
+  "storePipeline",
+  "eps",
+  "revenue",
+  "margins",
+  "netIncome",
+  "fcf",
+  "shares",
+  "pointInTime",
+  "live",
+  "evidence"
+ ],
+ "rows": [
+  {
+   "consumer": "Quant factor evidence v1 (quality, growth, value, profitability)",
+   "storePipeline": "P2 consumer bundle",
+   "eps": "annual epsCagr3y",
+   "revenue": "annual + 8 quarters",
+   "margins": "own (fundamental-inputs.js)",
+   "netIncome": "TTM",
+   "fcf": "derived OCF-capex",
+   "shares": "latest dei instant x close (market cap)",
+   "pointInTime": "filter filed<=cutoff, but ONE latest vintage per cell; cutoff = latest date; history snapshots immutable as-computed; SIC/shares current-state",
+   "live": "factor evidence published; composite WITHHELD (publication.allowed=false)",
+   "evidence": [
+    "scripts/quant/build-factor-evidence.mjs",
+    "quant/engines/fundamental-inputs.js",
+    "quant/methodology/quant-v2.json"
+   ]
+  },
+  {
+   "consumer": "Quant pattern research fundamentals (10 PIT features)",
+   "storePipeline": "P2",
+   "eps": "no",
+   "revenue": "yes",
+   "margins": "gross/fcf/net",
+   "netIncome": "yes",
+   "fcf": "yes",
+   "shares": "shareCountChange3y",
+   "pointInTime": "claims PIT (filed<=asOf) but bundle carries only latest vintage -> delayed visibility, restated values",
+   "live": "research overlay",
+   "evidence": [
+    "scripts/quant/build-pattern-research-fundamentals.mjs",
+    "quant/engines/pit-fundamental-history.js"
+   ]
+  },
+  {
+   "consumer": "Quant Golden Five panel / PIT coverage",
+   "storePipeline": "P3 canonical (bitemporal)",
+   "eps": "no",
+   "revenue": "yes",
+   "margins": "yes",
+   "netIncome": "yes",
+   "fcf": "yes",
+   "shares": "yes",
+   "pointInTime": "true bitemporal; panel built without asOf (latest)",
+   "live": "diagnostic",
+   "evidence": [
+    "providers/sec/adapter.js",
+    "scripts/quant/build-sec-quant-panel.mjs"
+   ]
+  },
+  {
+   "consumer": "Screener",
+   "storePipeline": "P2 -> Discover -> screener universe",
+   "eps": "TTM else FY (labelled TTM), own epsGrowth/epsCagr3 without split guard",
+   "revenue": "TTM else FY",
+   "margins": "from Discover",
+   "netIncome": "growth",
+   "fcf": "yes",
+   "shares": "market cap from Discover (annual shares, mixed types)",
+   "pointInTime": "not needed (current display), latest-restated",
+   "live": "yes",
+   "evidence": [
+    "scripts/screener/build-universe.mjs",
+    "screener/engine/fields.js"
+   ]
+  },
+  {
+   "consumer": "Discover (detail, rankings, klartext)",
+   "storePipeline": "P2",
+   "eps": "TTM eps_diluted, fallback NI/shares",
+   "revenue": "yes + own TTM growth",
+   "margins": "own",
+   "netIncome": "yes",
+   "fcf": "yes",
+   "shares": "currentShares: latest annual of shares_outstanding OR diluted weighted average (mixed types)",
+   "pointInTime": "not needed (current), latest-restated; staleness + plausibility guards",
+   "live": "yes",
+   "evidence": [
+    "discover/engines/fundamentals.js",
+    "discover/engines/unternehmen.js",
+    "scripts/discover/build-discover-data.mjs"
+   ]
+  },
+  {
+   "consumer": "Company Intelligence (earnings summaries, cards)",
+   "storePipeline": "P2 (+canonical, submissions)",
+   "eps": "diluted",
+   "revenue": "yes",
+   "margins": "own",
+   "netIncome": "yes",
+   "fcf": "yes",
+   "shares": "instant only",
+   "pointInTime": "input as_of_latest; output labelled LATEST_KNOWN_RETROSPECTIVE/NOT_CERTIFIED; historical events show restated values",
+   "live": "controlled production",
+   "evidence": [
+    "scripts/company_intelligence/earnings.py",
+    "pipeline.py"
+   ]
+  },
+  {
+   "consumer": "Quant stock page Kennzahlen",
+   "storePipeline": "quant/data/product (producer not traced: UNVERIFIED)",
+   "eps": "growth",
+   "revenue": "growth",
+   "margins": "yes",
+   "netIncome": "-",
+   "fcf": "yield",
+   "shares": "-",
+   "pointInTime": "display with availableAt",
+   "live": "yes",
+   "evidence": [
+    "quant/app/page-stock.js"
+   ]
+  },
+  {
+   "consumer": "Supertrader Minervini 2.0.0 (live)",
+   "storePipeline": "Discover display field only",
+   "eps": "no rule",
+   "revenue": "display",
+   "margins": "-",
+   "netIncome": "display (annual growth)",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "n/a - no fundamental decision",
+   "live": "yes",
+   "evidence": [
+    "scripts/supertrader/engine/strategies/minervini-v2.mjs",
+    "scripts/supertrader/build.mjs fundOf (filtered:false)"
+   ]
+  },
+  {
+   "consumer": "Supertrader CAN SLIM / Piotroski / Greenblatt (partial checks, display)",
+   "storePipeline": "P2 consumer bundle",
+   "eps": "no (net income instead)",
+   "revenue": "yes",
+   "margins": "gross",
+   "netIncome": "quarterly + annual",
+   "fcf": "OCF",
+   "shares": "shares_outstanding",
+   "pointInTime": "latest reported (documented)",
+   "live": "display products",
+   "evidence": [
+    "scripts/supertrader/engine/partial/canslim.mjs",
+    "scripts/supertrader/build.mjs loadSecFundamentals"
+   ]
+  },
+  {
+   "consumer": "Supertrader Minervini 3.0.0 + validations (R11-R15, case studies)",
+   "storePipeline": "P7 sec-pit (private S3)",
+   "eps": "YoY>=25%, acceleration",
+   "revenue": "YoY>0",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "first-filed (claims as-known)",
+   "live": "no (validation)",
+   "evidence": [
+    "scripts/supertrader/engine/earnings.mjs",
+    "scripts/supertrader/validation/sec-pit.mjs"
+   ]
+  },
+  {
+   "consumer": "Minervini replication 1.0/1.1 + ground truth (PR #471/#475)",
+   "storePipeline": "P9 sec-facts (branch, private S3)",
+   "eps": "YoY, acceleration, split-adjusted",
+   "revenue": "YoY",
+   "margins": "log only",
+   "netIncome": "log",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "first-filed per tag, per-period tag priority",
+   "live": "no (research)",
+   "evidence": [
+    "branch: scripts/supertrader/replication/minervini/sec-facts.mjs, sepa.mjs"
+   ]
+  },
+  {
+   "consumer": "Weinstein, Darvas, Turtle/Donchian, Kullamaegi, Trend52, Momentum",
+   "storePipeline": "none",
+   "eps": "-",
+   "revenue": "-",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "NOT AFFECTED",
+   "live": "yes",
+   "evidence": [
+    "scripts/supertrader/registry.mjs fundamental_filters NONE/NV",
+    "darvas-v3.mjs"
+   ]
+  },
+  {
+   "consumer": "ETF / Vorsorge / discover-v2 / api / status",
+   "storePipeline": "none (fund data, redirects)",
+   "eps": "-",
+   "revenue": "-",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "NOT AFFECTED",
+   "live": "yes",
+   "evidence": [
+    "vorsorge/engines/etf-fundamentals.js",
+    "discover-v2/index.html"
+   ]
+  },
+  {
+   "consumer": "FX-Paar-Anforderungen (Marktdaten)",
+   "storePipeline": "P2 units.*",
+   "eps": "-",
+   "revenue": "units.revenue",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "n/a (Waehrungen)",
+   "live": "yes",
+   "evidence": [
+    "scripts/market/build-fx-pair-requirements.mjs:18,90"
+   ],
+   "note": "liest units.* -> E9 kann die Berichtswaehrung eines Emittenten aendern",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Waehrungsschicht-Pruefung (Qualitaet)",
+   "storePipeline": "P2 units.revenue + annual.revenue",
+   "eps": "-",
+   "revenue": "annual",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "n/a",
+   "live": "yes (Gate)",
+   "evidence": [
+    "scripts/quality/verify-currency-layer.mjs:364-367"
+   ],
+   "note": "Gate liest Berichtswaehrung aus units.revenue -> E9-Wirkung messen",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Tiingo-2-Zulassung (secReady/pitValid)",
+   "storePipeline": "P2 quarterly + units",
+   "eps": "quarterly",
+   "revenue": "quarterly",
+   "margins": "-",
+   "netIncome": "quarterly",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "validateQuarterlyFacts gegen asOf",
+   "live": "yes",
+   "evidence": [
+    "scripts/market/tiingo2-refresh.mjs:101-104"
+   ],
+   "note": "Zulassungstor haengt an vorhandenen Quartalsreihen; E4/E10 koennen Reihen leeren",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Capability-Matrix",
+   "storePipeline": "P2 (HAS_TTM u. a.)",
+   "eps": "ttm",
+   "revenue": "ttm",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "n/a",
+   "live": "yes",
+   "evidence": [
+    "scripts/market/build-capability-matrix.mjs:145-151"
+   ],
+   "note": "HAS_TTM-Faehigkeit",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Quant Quartals-API",
+   "storePipeline": "P2 -> quant/data/sec/quarterly",
+   "eps": "quarterly",
+   "revenue": "quarterly",
+   "margins": "-",
+   "netIncome": "quarterly",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "as_of_latest",
+   "live": "yes",
+   "evidence": [
+    "quant/api/product-services.js:42,1232"
+   ],
+   "note": "",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Quant Pattern-Match",
+   "storePipeline": "P2 annual",
+   "eps": "annual",
+   "revenue": "annual",
+   "margins": "-",
+   "netIncome": "annual",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "beansprucht PIT, liest LATEST (E6)",
+   "live": "yes",
+   "evidence": [
+    "scripts/quant/build-pattern-match.mjs:9,44,133"
+   ],
+   "note": "E6/C-PIT-1",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Company Intelligence Kalender-Backtest",
+   "storePipeline": "P2",
+   "eps": "-",
+   "revenue": "-",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "Backtest auf LATEST (E6)",
+   "live": "research",
+   "evidence": [
+    "scripts/company_intelligence/calendar_backtest.py:32"
+   ],
+   "note": "E6/C-PIT-1",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "Quant Null-Faktor-Klassifikation",
+   "storePipeline": "P2 + consumer_coverage",
+   "eps": "quarterly/annual",
+   "revenue": "quarterly/annual",
+   "margins": "-",
+   "netIncome": "-",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "Diagnose",
+   "live": "yes",
+   "evidence": [
+    "scripts/quant/classify-zero-factor-rows.mjs:21,92"
+   ],
+   "note": "",
+   "addedAfterRedTeam": true
+  },
+  {
+   "consumer": "VU2-Release (Quartalsdaten)",
+   "storePipeline": "P2 quarterly",
+   "eps": "quarterly",
+   "revenue": "quarterly",
+   "margins": "-",
+   "netIncome": "quarterly",
+   "fcf": "-",
+   "shares": "-",
+   "pointInTime": "validateQuarterlyFacts",
+   "live": "yes",
+   "evidence": [
+    "scripts/vu2/build-release.mjs:20-24"
+   ],
+   "note": "",
+   "addedAfterRedTeam": true
+  }
+ ],
+ "redTeamNote": "Red Team (F6): neun Leser des Consumer-Bundles fehlten in der ersten Fassung und sind ergaenzt (addedAfterRedTeam). Ihre Wirkung ist ueber dieselben Bundle-Aenderungen erfasst (FUNDAMENTAL-IMPACT.json); E9-Waehrungswechsel in units.* sind dort gesondert gezaehlt."
+}

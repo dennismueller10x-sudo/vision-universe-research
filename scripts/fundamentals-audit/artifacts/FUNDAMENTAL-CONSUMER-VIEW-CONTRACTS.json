@@ -1,0 +1,222 @@
+{
+ "schema": "vu-fundamental-consumer-view-contracts-1.0.0",
+ "bundleViews": {
+  "bundle": "LATEST_RESTATED",
+  "ttm": "CURRENT_TTM",
+  "notProvided": [
+   "AS_REPORTED_AT_TIME",
+   "PIT_TTM(as_of)"
+  ]
+ },
+ "hardContracts": {
+  "HISTORICAL_CONSUMER+LATEST_VIEW": "HARD_FAIL",
+  "TTM_CONSUMER+FY_VALUE": "HARD_FAIL",
+  "CANONICAL_REVENUE+AMBIGUOUS_MAPPING": "HARD_FAIL oder null"
+ },
+ "method": "repo-weite Suche nach Lesern von quant/data/sec/consumer, vu-consumer-fundamentals, fundamental-inputs; Zeilenbelege je Leser",
+ "rows": [
+  {
+   "consumer": "quant/api/fundamentals-contract.js",
+   "metrics": "18 Kennzahlen inkl. eps_diluted",
+   "block": "annual (+quarterly via vu2)",
+   "expectedSemantic": "CURRENT history display",
+   "actualSemantic": "LATEST_RESTATED (LATEST_KNOWN/NOT_CERTIFIED)",
+   "status": "RISK",
+   "evidence": "availableFrom = filed der restated Zeile (nicht Erstbekanntgabe)",
+   "correction": "availableFrom umbenennen/kennzeichnen",
+   "owner": "Quant-API-PR"
+  },
+  {
+   "consumer": "quant/api/product-services.js",
+   "metrics": "f_revenueGrowthTTM, f_pe, f_ps, f_fcfYield, Margen",
+   "block": "Discover-abgeleitet",
+   "expectedSemantic": "CURRENT, TTM",
+   "actualSemantic": "erbt FY-Basis",
+   "status": "RISK",
+   "evidence": "fundamentalsAsOf aus Jahresumsatz auch bei TTM-Basis",
+   "correction": "basis durchreichen",
+   "owner": "Quant-API-PR"
+  },
+  {
+   "consumer": "quant/engines/fundamental-inputs.js",
+   "metrics": "13 annual, 3 quarterly, ~12 TTM; eps_diluted nur annual",
+   "block": "annual/quarterly/ttm",
+   "expectedSemantic": "CURRENT (Cutoff = juengster Markttag)",
+   "actualSemantic": "LATEST_RESTATED, filed<=cutoff",
+   "status": "OK heute / RISK bei Vergangenheits-Cutoff",
+   "evidence": "Kopf behauptet Point-in-Time; dividendCoverageByOcf TTM/FY gemischt",
+   "correction": "PIT-Anspruch entfernen oder cutoff<asOf verweigern",
+   "owner": "Quant-PR (Vorher/Nachher)"
+  },
+  {
+   "consumer": "scripts/quant/build-factor-evidence.mjs",
+   "metrics": "alle fundamental-inputs",
+   "block": "wie oben",
+   "expectedSemantic": "CURRENT",
+   "actualSemantic": "LATEST_RESTATED",
+   "status": "OK (falsch beschriftet 'PIT')",
+   "evidence": "Kopfzeile 'PIT fundamentals'",
+   "correction": "Beschriftung",
+   "owner": "Quant-PR"
+  },
+  {
+   "consumer": "scripts/quant/build-pattern-research-fundamentals.mjs (+ quant/engines/pit-fundamental-history.js)",
+   "metrics": "9 annual",
+   "block": "annual",
+   "expectedSemantic": "HISTORICAL_PIT (Monatsenden)",
+   "actualSemantic": "LATEST_RESTATED gefiltert nach filed",
+   "status": "HARD_FAIL_HISTORICAL_LATEST",
+   "evidence": "featuresAt(bundle,date): restated Jahre mit heutigem Wert oder bis zum Restatement-Datum fehlend; Erstwerte verloren",
+   "correction": "echte AS_REPORTED_AT_TIME-Quelle oder Studie als nicht-PIT kennzeichnen/zurueckziehen",
+   "owner": "M-B5 (Quant-PR, Vorher/Nachher)"
+  },
+  {
+   "consumer": "scripts/quant/build-pattern-match.mjs",
+   "metrics": "9 annual",
+   "block": "annual",
+   "expectedSemantic": "CURRENT Merkmale + historische Befunde",
+   "actualSemantic": "Befunde aus obiger Studie",
+   "status": "HARD_FAIL_HISTORICAL_LATEST (geerbt)",
+   "evidence": "Monatsend-asOf statt doc.asOf",
+   "correction": "Studie korrigieren; doc.asOf",
+   "owner": "M-B5"
+  },
+  {
+   "consumer": "discover/engines/fundamentals.js",
+   "metrics": "annual/ttm/quarterly",
+   "block": "alle",
+   "expectedSemantic": "FY-Historie + CURRENT TTM",
+   "actualSemantic": "LATEST_RESTATED",
+   "status": "RISK",
+   "evidence": "Historie restated als Verlauf; priceVsFundamentals nach end<=Datum",
+   "correction": "als 'zuletzt berichtigt' kennzeichnen",
+   "owner": "Discover-PR"
+  },
+  {
+   "consumer": "discover/engines/unternehmen.js + scripts/discover/build-discover-data.mjs",
+   "metrics": "revenue, net_income, eps_diluted, shares, fcf",
+   "block": "ttm, annual-Fallback",
+   "expectedSemantic": "TTM",
+   "actualSemantic": "FY-Werte in Feldern umsatzTTM/gewinnTTM; EPS = TTM-NI / Jahresaktien gemischt",
+   "status": "HARD_FAIL_TTM_FY (Feldnamen), RISK (Mischung)",
+   "evidence": "unternehmen.js:248-261,277-278; build-discover-data.mjs:669,760",
+   "correction": "Felder basisneutral oder null bei FY; EPS ohne eps.ttmDiluted VERIFIED = nicht verfuegbar",
+   "owner": "M-B1 (Discover-PR)"
+  },
+  {
+   "consumer": "scripts/screener/build-universe.mjs + screener/engine/fields.js",
+   "metrics": "revenue, ebitda, fcf, eps, revGrowth, niGrowthTtm, pe",
+   "block": "latest.ttm ?? annual",
+   "expectedSemantic": "TTM",
+   "actualSemantic": "FY unter TTM-Labels",
+   "status": "HARD_FAIL_TTM_FY",
+   "evidence": "build-universe.mjs:225,226,237,246,247,258; fields.js:78,88,127,129,131,137",
+   "correction": "Wert null oder Basis-Spalte + Label FY; EPS nur aus eps.ttmDiluted VERIFIED",
+   "owner": "M-B1 (Screener-PR)"
+  },
+  {
+   "consumer": "scripts/company_intelligence/earnings.py",
+   "metrics": "10+ inkl. eps_diluted",
+   "block": "quarterly/annual",
+   "expectedSemantic": "Quartalszusammenfassung",
+   "actualSemantic": "LATEST_RESTATED, ehrlich gekennzeichnet",
+   "status": "RISK",
+   "evidence": "summiert EPS nie zu TTM (OK)",
+   "correction": "keine",
+   "owner": "-"
+  },
+  {
+   "consumer": "scripts/company_intelligence/pipeline.py",
+   "metrics": "summary/fact_history",
+   "block": "-",
+   "expectedSemantic": "CURRENT Ereignis",
+   "actualSemantic": "restated Werte am Ereignis gespeichert",
+   "status": "RISK",
+   "evidence": "pipeline.py:326-337",
+   "correction": "bundle-asOf am Ereignis speichern",
+   "owner": "CI-PR"
+  },
+  {
+   "consumer": "scripts/company_intelligence/reporting_calendar.py",
+   "metrics": "nur filed-Daten",
+   "block": "quarterly/annual",
+   "expectedSemantic": "HISTORICAL Einreichungsdaten",
+   "actualSemantic": "restated Zeilen tragen spaetes filed",
+   "status": "RISK",
+   "evidence": "Zeitfenster verwirft restated Perioden; Amendments",
+   "correction": "submissions-Index fuer Erstdaten",
+   "owner": "CI-PR"
+  },
+  {
+   "consumer": "scripts/company_intelligence/calendar_backtest.py",
+   "metrics": "filed via fact_history",
+   "block": "-",
+   "expectedSemantic": "HISTORICAL Backtest",
+   "actualSemantic": "wie oben",
+   "status": "RISK (kein Wertleck, Stichprobenverzerrung)",
+   "evidence": "als 'not PIT financials' offengelegt",
+   "correction": "wie reporting_calendar",
+   "owner": "CI-PR"
+  },
+  {
+   "consumer": "scripts/supertrader/build.mjs",
+   "metrics": "net_income, assets, OCF, debt, shares, revenue, equity, f_revenueGrowthTTM",
+   "block": "annual/quarterly",
+   "expectedSemantic": "CURRENT Teilpruefungen",
+   "actualSemantic": "aktuelle Daten auch an geschlossenen Signalen",
+   "status": "RISK",
+   "evidence": "build.mjs:626-627,643,771-782",
+   "correction": "nur offene Signale oder asOf-Hinweis; Basis mitfuehren",
+   "owner": "Supertrader-PR (Gate A)"
+  },
+  {
+   "consumer": "scripts/supertrader/validation/sec-pit.mjs (Minervini v3 Validierung via engine/earnings.mjs)",
+   "metrics": "EPS, Umsatz Quartale",
+   "block": "companyfacts direkt",
+   "expectedSemantic": "HISTORICAL_PIT",
+   "actualSemantic": "eigener PIT-Store",
+   "status": "HARD_FAIL (E7: Q4-EPS FY-Q1..Q3, Lookahead abgeleitetes Q4)",
+   "evidence": "Abschnitt E7",
+   "correction": "Branch claude/supertrader-sec-pit-q4",
+   "owner": "Supertrader-PR (Gate A)"
+  },
+  {
+   "consumer": "scripts/vu2/build-release.mjs",
+   "metrics": "quarterly",
+   "block": "quarterly",
+   "expectedSemantic": "CURRENT Projektion",
+   "actualSemantic": "as_of_latest erwartet",
+   "status": "OK",
+   "evidence": "build-release.mjs:19-25",
+   "correction": "-",
+   "owner": "-"
+  },
+  {
+   "consumer": "scripts/market/build-capability-matrix.mjs",
+   "metrics": "ttm-Vorhandensein",
+   "block": "index",
+   "expectedSemantic": "Abdeckung",
+   "actualSemantic": "-",
+   "status": "OK",
+   "evidence": "-",
+   "correction": "-",
+   "owner": "-"
+  },
+  {
+   "consumer": "scripts/quant/classify-zero-factor-rows.mjs",
+   "metrics": "Zaehlungen",
+   "block": "quarterly/annual",
+   "expectedSemantic": "Abdeckung",
+   "actualSemantic": "-",
+   "status": "OK",
+   "evidence": "-",
+   "correction": "-",
+   "owner": "-"
+  }
+ ],
+ "summary": {
+  "HARD_FAIL": 5,
+  "RISK": 8,
+  "OK": 5
+ }
+}

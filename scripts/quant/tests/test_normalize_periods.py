@@ -23,11 +23,12 @@ class _NullClient:
         raise AssertionError(f"unexpected network call to {url}")
 
 
-def normalize(builder, registry, cik, profile=None):
+def normalize(builder, registry, cik, profile=None, revenue_evidence=None):
     provider = SECProvider(client=_NullClient())
     raw = list(provider.iter_raw_facts(builder.company_facts()))
     result = normalize_company(str(cik).zfill(10), raw, registry, profile=profile,
-                               filing_metadata=builder.filings)
+                               filing_metadata=builder.filings,
+                               revenue_evidence={} if revenue_evidence is None else revenue_evidence)
     return result, raw
 
 
@@ -320,12 +321,69 @@ class MappingIntegrityTests(unittest.TestCase):
             builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
                         "USD", 1000.0, end, start, f"acc-{year}", "10-K", filed,
                         fy=year, fp="FY")
-        result, _ = normalize(builder, self.registry, 2000000006)
+        evidence = {"acc-2022": "TOTAL", "acc-2023": "TOTAL"}
+        result, _ = normalize(builder, self.registry, 2000000006, revenue_evidence=evidence)
         resolver = PeriodResolver(result.factbook, self.registry)
         fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
-        self.assertEqual(fact.value, 1000.0)
+        # Registry 1.8.0: Revenues ist der Gesamtumsatz (aggregate) und hat Vorrang. 900 neben
+        # 1000 Vertragsumsatz ist - laut Ergebnisrechnung der Einreichung - ein Nettogesamtumsatz
+        # mit negativem Bestandteil (UPST Q2 2022: 228,2 = 258,3 - 30,2 Mio.).
+        self.assertEqual(fact.value, 900.0)
+        self.assertEqual(fact.provenance.concept, "Revenues")
+
+    def test_a_smaller_aggregate_without_filing_evidence_is_empty_not_guessed(self):
+        """1.17.0: ohne Beleg der Einreichung entscheidet kein Groessenverhaeltnis - die Zelle bleibt leer."""
+        builder = FactsBuilder(2000000018)
+        for year in (2022, 2023):
+            start, end = f"{year}-01-01", f"{year}-12-31"
+            filed = f"{year + 1}-02-20"
+            builder.add("us-gaap", "Revenues", "USD", 900.0, end, start,
+                        f"acc-{year}", "10-K", filed, fy=year, fp="FY")
+            builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
+                        "USD", 1000.0, end, start, f"acc-{year}", "10-K", filed,
+                        fy=year, fp="FY")
+        for evidence in ({}, {"acc-2023": "AMBIGUOUS"}):
+            result, _ = normalize(builder, self.registry, 2000000018, revenue_evidence=evidence)
+            resolver = PeriodResolver(result.factbook, self.registry)
+            fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
+            self.assertFalse(fact.available, f"{evidence}: {fact.value}")
+            self.assertIn("AMBIGUOUS_AGGREGATE", [issue["code"] for issue in result.issues])
+
+    def test_a_partial_revenues_tag_does_not_beat_the_contract_revenue(self):
+        builder = FactsBuilder(2000000017)
+        for year in (2022, 2023):
+            start, end = f"{year}-01-01", f"{year}-12-31"
+            filed = f"{year + 1}-02-20"
+            builder.add("us-gaap", "Revenues", "USD", 0.642, end, start,
+                        f"acc-{year}", "10-K", filed, fy=year, fp="FY")
+            builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
+                        "USD", 61.674, end, start, f"acc-{year}", "10-K", filed,
+                        fy=year, fp="FY")
+        evidence = {"acc-2022": "OTHER", "acc-2023": "OTHER:RevenueFromContractWithCustomerExcludingAssessedTax"}
+        result, _ = normalize(builder, self.registry, 2000000017, revenue_evidence=evidence)
+        resolver = PeriodResolver(result.factbook, self.registry)
+        fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
+        # PESI 10-K FY2025: Revenues 642.000 neben 61,7 Mio. Vertragsumsatz ist ein Teilbetrag (E2-R).
+        self.assertEqual(fact.value, 61.674)
         self.assertEqual(fact.provenance.concept,
                          "RevenueFromContractWithCustomerExcludingAssessedTax")
+
+    def test_the_total_revenue_wins_over_a_smaller_contract_revenue(self):
+        builder = FactsBuilder(2000000016)
+        for year in (2022, 2023):
+            start, end = f"{year}-01-01", f"{year}-12-31"
+            filed = f"{year + 1}-02-20"
+            builder.add("us-gaap", "Revenues", "USD", 1953.6, end, start,
+                        f"acc-{year}", "10-K", filed, fy=year, fp="FY")
+            builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
+                        "USD", 137.3, end, start, f"acc-{year}", "10-K", filed,
+                        fy=year, fp="FY")
+        result, _ = normalize(builder, self.registry, 2000000016)
+        resolver = PeriodResolver(result.factbook, self.registry)
+        fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
+        # E2: AMT Q3 2019 - Revenues 1.953,6 Mio., Vertragsumsatz 137,3 Mio. (Teilbetrag).
+        self.assertEqual(fact.value, 1953.6)
+        self.assertEqual(fact.provenance.concept, "Revenues")
 
     def test_disagreeing_concepts_are_flagged_not_averaged(self):
         builder = FactsBuilder(2000000007)
@@ -337,7 +395,8 @@ class MappingIntegrityTests(unittest.TestCase):
             builder.add("us-gaap", "RevenueFromContractWithCustomerExcludingAssessedTax",
                         "USD", 1000.0, end, start, f"acc-{year}", "10-K", filed,
                         fy=year, fp="FY")
-        result, _ = normalize(builder, self.registry, 2000000007)
+        result, _ = normalize(builder, self.registry, 2000000007,
+                              revenue_evidence={"acc-2022": "TOTAL", "acc-2023": "TOTAL"})
         self.assertIn("CONCEPT_DISAGREEMENT", [issue["code"] for issue in result.issues])
 
     def test_an_identical_fact_reported_twice_is_deduplicated(self):

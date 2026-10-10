@@ -1,0 +1,475 @@
+{
+  "schema": "vu-fundamental-data-freeze-1.0.0",
+  "status": "DEVELOPMENT_FREEZE",
+  "frozenAt": "2026-10-08T16:00:45.875Z",
+  "commit": "18d4d88e9bd873fdb83c4e840cd16a834464f32b",
+  "dataVersion": {
+    "normalizationLogic": "1.20.0",
+    "registryMapping": "1.9.0",
+    "consumerSchema": "vu-consumer-fundamentals-1.0.0 (unveraendert)",
+    "label": "vu-fundamentals-core-1.20.0+registry-1.9.0"
+  },
+  "code": {
+    "files": {
+      "scripts/quant/sec/provider.py": "e7b8100f6e133d6119fc942e8af4bce6aff5ad88160e7daa5a42e455111199c4",
+      "scripts/quant/sec/normalize.py": "3b365e019c147fd5a7ec9bba631092caf2cbf2b1ce7d95054b68677abe963e34",
+      "scripts/quant/sec/fiscal.py": "8c66627df34e40dc66bd92ffa758afd0d6b6ee2b51bfa5aa359ff84cdb7c448a",
+      "scripts/quant/sec/periods.py": "2e50fd99d205b716bebe0b29f005ff37885a2183a6c3e86d552a7363de19ec01",
+      "scripts/quant/sec/restatements.py": "58ac7585e8f6a5426248accb9867d67e84d94fdeda146a5ead463847bd2640e6",
+      "scripts/quant/sec/model.py": "2be9c190f7820673c02a55f5e7b91a0fb3621f999c06f313e84583d855278bd9",
+      "scripts/quant/sec/derived.py": "fb6b7ddb36f283f3886299af4644c93a1986f7c44cad8947f580b4e0e90154a9",
+      "scripts/quant/sec/registry.py": "ebd7c58f6e986c78ed88cff04759412f41320b0b1b5036fb21fed05ecf492ca6",
+      "scripts/quant/sec/consumer.py": "1dd6cb1edd4523f68a48fc0dacf1651c7c2e6223149ad10d630180a0825622f5",
+      "scripts/quant/sec/canonical.py": "b4457c62ae9622bc6f7deb145d2a12cb4b8e07dc613e29fd4aac6eac38470a77",
+      "scripts/quant/sec/version.py": "f598af5e77105eea03518264e6661faed7050d01f96e9c1b61c667616627579c"
+    },
+    "hash": "1fda3ed9d7c1199e0746c55036f9da8818701db1123c4a806032e150d966afaa"
+  },
+  "mapping": {
+    "files": {
+      "quant/config/sec-metric-registry.json": "360621f55a587cd75bf3e05b0f7061e8aa87305ddbef35d4e59c0265537792c2",
+      "quant/config/sec-revenue-statement-evidence.json": "07d0b2e93b9bc08a6b0cef40b980f94581df051fa516abdb339daac563a34704"
+    },
+    "hash": "81a4cdb356b09dada7e513c61a07265bc733daabc5ed5a40ae742ae7495d2a7b"
+  },
+  "audit": {
+    "files": {
+      "scripts/fundamentals-audit/sec-ground-truth.mjs": "45f84452ad623c36fd1ce76f2eda27c258406f9521a8d3025e981128612e8456",
+      "scripts/fundamentals-audit/compare.mjs": "3ebcfa3ecf09832d61632e92a64cadfc1a2a52605dcb1f9c331bae8c991fcb87",
+      "scripts/fundamentals-audit/error-rates.mjs": "72eacf478ed7b75dc42393b7ecc92fbced140ded6380160d5e835bee87e13794",
+      "scripts/fundamentals-audit/quant_core_dump.py": "bf80f95eca3196667ec902ad1758d09a46dda2cbeb152d690b5015622d1df79a",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-HOLDOUT-PREREG.json": "0e00da6cdb18e7f73186c3a6817ed8ff0661148313a6d22a7348ad2701fcf2a2",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT-PREREG.json": "9ca7599a9a96063888ccb810c909b91bdd00767d270d2694f45bef8ff96df20e",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT-RESULT.json": "97852c82ea9bc223c0732d31f7dda3a3f4326522c6069ec0814935913271373c",
+      "scripts/fundamentals-audit/ttm_holdout_eval.py": "d44747ca744cbe930eb8ce5c3b133a5143c676c4aca4b5917fd157a469f6e682",
+      "scripts/fundamentals-audit/ttm_holdout_failures.py": "fbd15c563b8783d407cfd329508d2d66603c1dd90c3be221592da5fd844be546",
+      "scripts/fundamentals-audit/build_revenue_evidence.py": "02607a1678ab2f504bc849f4ec60f76bf2e73ae534ce14a9ac28ea5710439b30",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-CONSUMER-VIEW-CONTRACTS.json": "11819715be148744d7de1d0a1a4841a711b1f26e29a56585c8d0f696f8c3c687",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-GROUND-TRUTH.json": "259c1c233553262fd3bf3bfee267d86fc5f1d655e35c2abd7d346787ee231360",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT2-PREREG.json": "551c5396225660e28ff883296f0233a727cdd668ef4665cc8282bf4c7cf38985",
+      "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-TTM-HOLDOUT2-RESULT.json": "eaedfe34378df9443f3aa569f4fb83235646e85e977037e14eea0abf5c75f902",
+      "scripts/fundamentals-audit/ttm_holdout3_eval.py": "51a9f596376958ee4169f8209df2aec177b9869df5177b6268fb79b9241f6214",
+      "scripts/fundamentals-audit/ttm_holdout3_gates.py": "e068c3bd9b20e3bf1ce2a813d02ed74d0b6778526166dc561e4f61116040b3e0"
+    },
+    "hash": "bed060fc78e19acd846cb750a365f80ddc807553af4da062b6c4e23b205a2c8c"
+  },
+  "tests": {
+    "files": {
+      "scripts/quant/tests/test_sec_ground_truth_regressions.py": "1574a0b330fa8f052f9b99182a7fb0d828292d08f3467281006e95ab85290edd",
+      "scripts/quant/tests/test_sec_ttm_integrity.py": "194b269c7a96f22e53ed8099a8a3f51335d9b53cd9417e55552496daf5b00f60",
+      "scripts/quant/tests/test_normalize_periods.py": "8e35d10b5c5b9ed81bc55558c3a2756356edcde20edcc9f4ee6ed6cc9f248ea4",
+      "core/tests/fundamental-cross-consumer.test.mjs": "6e355fec54a984c28f5c1bec61ef4b3fd176ca14be74c651f09f37709d5258a0",
+      "scripts/quant/tests/test_ttm_core_120.py": "96ea7a219e0fce7a920948925cf70ebb3705abf4d3967e512f01418a8ba5b8e4",
+      "scripts/quant/tests/test_restatements.py": "997c5e01c4786d4a77dda7262077aa8d3afcd87733719bee4900934e96fac374",
+      "scripts/quant/tests/test_fiscal.py": "6896211c2e05d72b4999aba62e5fef9afe6b2e9724ef0dfd2648d31e6f511fdc"
+    },
+    "hash": "a9dbf8c2e20ed65e2fb982f7648c26066e5ac6505001726377e5c35f9a8c6284"
+  },
+  "supersedes": {
+    "file": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-DATA-FREEZE-v4.json",
+    "hash": "6b5bb56187cafcfa7d3c10457210cfc55fb5b2137977cd6beaa35eed6747d737",
+    "note": "fruehere Freezes bleiben unveraendert; der Data-Holdout ist gegen v1 gelaufen"
+  },
+  "reason": "Development Freeze vor Holdout v3: Kern 1.20.0 behebt F-TTM-2 (Geschaeftsjahreswechsel) und F-TTM-3 (Same-Day-Konflikt), entdeckt in Holdout v2 (FAIL, unveraendert). Neu geschrieben nach Praeregistrierung von Holdout v3 (Audit-Hash: Gate-Skript FISCAL_CHANGE_WRONG_PERIOD praezisiert), Kern-Code-Hash unveraendert, Holdout ungeoeffnet",
+  "parent": "v4 (FUNDAMENTAL-DATA-FREEZE-v4.json, Kern 1.19.0, Registry 1.9.0)",
+  "revenueEvidence": {
+    "version": "1.1.0",
+    "summary": {
+      "OTHER_STATEMENT_LINE": 739,
+      "REVENUES_STATEMENT_TOTAL": 1193,
+      "AMBIGUOUS": 191
+    },
+    "filings": 2123
+  },
+  "ttmDefinition": {
+    "EPS_TTM": "Summe von vier GEMELDETEN Dreimonats-EPS (keine Q4-Ableitung), Enden verschieden und 12-17 Wochen auseinander, keine Zelle mit zwei Perioden, Fenster nicht vor dem juengsten veroeffentlichten Geschaeftsjahr, eine Einheit, eine Konzeptklasse (gesamt; fortgefuehrt allein = kein EPS-TTM), eine Aktienbasis (kein Sprung >= 1,5 oder um ein Splitverhaeltnis), EPS konsistent mit Ergebnis/Aktien",
+    "basicDiluted": "getrennt: eps_diluted / eps_basic, nie gemischt",
+    "fallback": "nie EPS_FY als TTM; Bundle-Felder eps.ttmDiluted/ttmBasic VERIFIED|NOT_AVAILABLE(+Grund), fy*/latestQuarter* mit Konzeptklasse",
+    "additive": "Umsatz/Ergebnis: Konzeptwechsel nur ohne Unterschiedsbeleg oder im gemeinsamen Konzept (ALT)",
+    "reconstruction": "keine EPS_TTM_RECONSTRUCTED (Q4-Ableitung verfehlt das Genauigkeitsziel; Eigentuemer-Option)"
+  },
+  "revenueAmbiguityPolicy": "Revenues kleiner als ein anderes Umsatzkonzept derselben Zelle: Beleg der Einreichung entscheidet (TOTAL / OTHER:<Konzept>), sonst leer (AMBIGUOUS > GUESSED)",
+  "views": {
+    "bundle": "LATEST_RESTATED",
+    "ttm": "CURRENT_TTM",
+    "resolver": "PIT_TTM(as_of) = PeriodResolver.ttm/ttm_ending(as_of)",
+    "notInBundle": "AS_REPORTED_AT_TIME"
+  },
+  "ttmHoldout": {
+    "previous": {
+      "v1": "FAILED (Kern 1.16.0)",
+      "v2": "FAIL (Kern 1.19.0, unveraendert)"
+    },
+    "v2Findings": [
+      "F-TTM-2 Geschaeftsjahreswechsel",
+      "F-TTM-3 Konflikt am selben Tag"
+    ],
+    "note": "Holdout v2 validiert 1.20.0 nicht; Holdout v3 nach diesem Freeze, genau ein offizieller Lauf"
+  },
+  "policies1200": {
+    "ttmWindow": "vier Quartale als Kette tatsaechlicher Perioden: je 77-119 Tage, Beginn -3 bis +8 Tage um das Ende des vorigen, zusammen 357-374 Tage; jede Quartalszelle auf ihrem Kalenderslot; ein Fenster mit neuerer sichtbarer Periode derselben Kennzahl ist nicht aktuell (TTM_WINDOW_NOT_CURRENT)",
+    "fiscalYearChange": "Geschaeftsjahr ausserhalb 350-380 Tagen = Uebergangsjahr: keine Quartalsslots (NOT_QUARTER_ELIGIBLE), kein Klemmen auf Q4, Jahresbilanz bleibt FY; ein Jahresende nach dem Einreichungsdatum ist kein Geschaeftsjahr",
+    "stub": "NORMAL_QUARTER 77-119 Tage; SHORT_STUB < 77, LONG_STUB > 119: NOT_QUARTER_ELIGIBLE; Fensterspanne 357-374 Tage (TTM_STUB_PERIOD)",
+    "derivation": "YTD/FY-Differenz nur bei gleichem Beginn (+-8 Tage), nie fuer eine am selben Tag mehrdeutige Zelle; keine Q4-EPS-Ableitung (nicht additiv)",
+    "sameDay": "Fassungen zum selben Zeitpunkt mit Wertabweichung > 1e-4 relativ: AMBIGUOUS_SAME_DAY bis zur naechsten eindeutigen Fassung; keine Entscheidung per Formular/Accession; mit Annahmezeit entscheidet die Zeit; kein rueckwirkender Ersatz",
+    "epsPlausibility": "ein EPS mit impliziter Aktienzahl < 1.000 ist kein EPS (TTM_EPS_INCONSISTENT)"
+  },
+  "redTeam1200": {
+    "rounds": 3,
+    "findingsFixed": [
+      "HIGH-1 Ableitung aus Kumulwerten verschiedenen Beginns (Best Buy, Wendys)",
+      "HIGH-2 Same-Day-None durch YTD-Ableitung umgangen (Rayonier)",
+      "HIGH veraltetes TTM als aktuell nach Geschaeftsjahreswechsel (e.l.f., Royal Gold, ADM, Smithfield, Deckers)",
+      "MEDIUM-1 Kettentoleranz (Vishay, Loews)",
+      "MEDIUM-2 Zellen ausserhalb des Kalenderslots (161 Emittenten)",
+      "MEDIUM Jahresende nach Einreichung (Nucor)",
+      "Jahresbilanz im Uebergangsjahr",
+      "EPS < 1.000 Aktien (Stanley Black & Decker)"
+    ],
+    "open": [
+      "MEDIUM-3 canonical.py behaelt die vorige Revision waehrend AMBIGUOUS_SAME_DAY (Golden-Five-Revisionen, nicht TTM)",
+      "LOW Rundung < 1e-4 per Rang entschieden",
+      "LOW gemischte Annahme-/Tageszeitstempel",
+      "LOW unplaced-Perioden mit Tagesdatum statt Annahmezeit",
+      "vorbestehend: negative abgeleitete Umsatzquartale bei gleichem Beginn (298 Emittenten, restated FY minus altes YTD)"
+    ],
+    "result": "kein CRITICAL/HIGH offen (Nachpruefung auf d743d8d)",
+    "compare119": "ttm_ending (jedes 4. Universumsemittent): 92.839 gleich verfuegbar, 0 Wertaenderungen, 0 gewonnen, 325 verloren"
+  },
+  "consumerContracts": "scripts/fundamentals-audit/artifacts/FUNDAMENTAL-CONSUMER-VIEW-CONTRACTS.json",
+  "groundTruthCoreV4": {
+    "development": {
+      "QUANT|EPS_BASIC": {
+        "factAccuracy": 0.9946,
+        "valueAccuracy": 0.9949,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0042,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0012,
+        "facts": 4272,
+        "covered": 4272
+      },
+      "QUANT|EPS_DILUTED": {
+        "factAccuracy": 0.9946,
+        "valueAccuracy": 0.9948,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0042,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0012,
+        "facts": 4257,
+        "covered": 4257
+      },
+      "QUANT|NET_INCOME": {
+        "factAccuracy": 0.9888,
+        "valueAccuracy": 0.989,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0006,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0106,
+        "facts": 5010,
+        "covered": 5010
+      },
+      "QUANT|REVENUE": {
+        "factAccuracy": 0.9919,
+        "valueAccuracy": 0.9921,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0051,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.003,
+        "facts": 4711,
+        "covered": 4711
+      }
+    },
+    "holdout": {
+      "QUANT|EPS_BASIC": {
+        "factAccuracy": 0.9915,
+        "valueAccuracy": 0.992,
+        "pitAccuracy": 0.9995,
+        "falseMissingRate": 0.0058,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0027,
+        "facts": 1884,
+        "covered": 1884
+      },
+      "QUANT|EPS_DILUTED": {
+        "factAccuracy": 0.9915,
+        "valueAccuracy": 0.9921,
+        "pitAccuracy": 0.9995,
+        "falseMissingRate": 0.0058,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0026,
+        "facts": 1892,
+        "covered": 1892
+      },
+      "QUANT|NET_INCOME": {
+        "factAccuracy": 0.981,
+        "valueAccuracy": 0.9824,
+        "pitAccuracy": 0.9985,
+        "falseMissingRate": 0.01,
+        "falseAvailableRate": 0.0005,
+        "wrongValueRate": 0.0086,
+        "facts": 2102,
+        "covered": 2102
+      },
+      "QUANT|REVENUE": {
+        "factAccuracy": 0.9812,
+        "valueAccuracy": 0.9824,
+        "pitAccuracy": 0.9988,
+        "falseMissingRate": 0.0112,
+        "falseAvailableRate": 0.0006,
+        "wrongValueRate": 0.007,
+        "facts": 1703,
+        "covered": 1703
+      }
+    }
+  },
+  "regressionSuite": {
+    "files": [
+      "scripts/quant/tests/test_sec_ground_truth_regressions.py",
+      "scripts/quant/tests/test_sec_ttm_integrity.py"
+    ],
+    "cases": [
+      "E1 TNDM",
+      "E2 AMT",
+      "E3 DE",
+      "E3b CERN",
+      "E4 REPL",
+      "E9 CECO",
+      "E2-R FLS, PESI, AMT, UPST",
+      "E10 NTRS, NVDA",
+      "E11 FUBO",
+      "E12 CSWC",
+      "TTM PEP, MUR, PIPR, CLIR, CSWC",
+      "F-TTM-1 VFC",
+      "Red Team NEOG, WBHC, VFC, HOV, CHDN, VSYS, ESCA, OSK"
+    ]
+  },
+  "groundTruthCoreFinal": {
+    "version": "normalization_logic 1.15.0 + registry 1.8.0 (Data-Freeze v3)",
+    "devRates": {
+      "QUANT|EPS_BASIC": {
+        "facts": 4272,
+        "factAccuracy": 0.9946,
+        "valueAccuracy": 0.9949,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0042,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0012,
+        "byCategory": {
+          "MISSING_FACT": 17,
+          "WRONG_CONCEPT": 4,
+          "FILING_VISIBILITY": 1,
+          "PERIOD_MAPPING": 1
+        }
+      },
+      "QUANT|EPS_DILUTED": {
+        "facts": 4257,
+        "factAccuracy": 0.9946,
+        "valueAccuracy": 0.9948,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0042,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0012,
+        "byCategory": {
+          "MISSING_FACT": 17,
+          "WRONG_CONCEPT": 4,
+          "FILING_VISIBILITY": 1,
+          "PERIOD_MAPPING": 1
+        }
+      },
+      "QUANT|NET_INCOME": {
+        "facts": 5010,
+        "factAccuracy": 0.9888,
+        "valueAccuracy": 0.989,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0006,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0106,
+        "byCategory": {
+          "WRONG_CONCEPT": 47,
+          "Q4_DERIVATION": 6,
+          "YTD_QUARTER": 2,
+          "RESTATEMENT": 1
+        }
+      },
+      "QUANT|REVENUE": {
+        "facts": 4711,
+        "factAccuracy": 0.9947,
+        "valueAccuracy": 0.9949,
+        "pitAccuracy": 0.9998,
+        "falseMissingRate": 0.0011,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0042,
+        "byCategory": {
+          "WRONG_CONCEPT": 18,
+          "MISSING_FACT": 2,
+          "YTD_QUARTER": 2,
+          "RESTATEMENT": 1,
+          "Q4_DERIVATION": 1,
+          "PERIOD_MAPPING": 1
+        }
+      }
+    },
+    "holdoutRates": {
+      "QUANT|EPS_BASIC": {
+        "facts": 1884,
+        "factAccuracy": 0.9915,
+        "valueAccuracy": 0.992,
+        "pitAccuracy": 0.9995,
+        "falseMissingRate": 0.0058,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0027,
+        "byCategory": {
+          "WRONG_CONCEPT": 10,
+          "MISSING_FACT": 4,
+          "OTHER": 1,
+          "FILING_VISIBILITY": 1
+        }
+      },
+      "QUANT|EPS_DILUTED": {
+        "facts": 1892,
+        "factAccuracy": 0.9915,
+        "valueAccuracy": 0.9921,
+        "pitAccuracy": 0.9995,
+        "falseMissingRate": 0.0058,
+        "falseAvailableRate": 0,
+        "wrongValueRate": 0.0026,
+        "byCategory": {
+          "WRONG_CONCEPT": 10,
+          "MISSING_FACT": 4,
+          "OTHER": 1,
+          "FILING_VISIBILITY": 1
+        }
+      },
+      "QUANT|NET_INCOME": {
+        "facts": 2102,
+        "factAccuracy": 0.981,
+        "valueAccuracy": 0.9824,
+        "pitAccuracy": 0.9985,
+        "falseMissingRate": 0.01,
+        "falseAvailableRate": 0.0005,
+        "wrongValueRate": 0.0086,
+        "byCategory": {
+          "WRONG_CONCEPT": 15,
+          "MISSING_FACT": 10,
+          "Q4_DERIVATION": 7,
+          "YTD_QUARTER": 5,
+          "FILING_VISIBILITY": 2,
+          "OTHER": 1
+        }
+      },
+      "QUANT|REVENUE": {
+        "facts": 1703,
+        "factAccuracy": 0.9818,
+        "valueAccuracy": 0.983,
+        "pitAccuracy": 0.9988,
+        "falseMissingRate": 0.0047,
+        "falseAvailableRate": 0.0006,
+        "wrongValueRate": 0.0129,
+        "byCategory": {
+          "WRONG_CONCEPT": 13,
+          "Q4_DERIVATION": 8,
+          "MISSING_FACT": 3,
+          "YTD_QUARTER": 2,
+          "FILING_VISIBILITY": 2,
+          "RESTATEMENT": 1,
+          "PERIOD_MAPPING": 1,
+          "OTHER": 1
+        }
+      }
+    },
+    "stepEffects": {
+      "E9 (1.11 -> 1.12)": "0 veraenderte Zeilen in Dev (18.742) und Holdout (7.581)",
+      "E2-R (1.12 -> 1.13)": {
+        "dev": {
+          "REVENUE|MATCH->WRONG_VALUE|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 27,
+          "REVENUE|MATCH->WRONG_VALUE|OTHER": 6,
+          "REVENUE|MATCH->MATCH|OTHER": 1
+        },
+        "holdout": {
+          "REVENUE|MATCH->WRONG_VALUE|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 26,
+          "REVENUE|MATCH->WRONG_VALUE|OTHER": 5
+        }
+      },
+      "E10 (1.13 -> 1.14)": {
+        "dev": {
+          "REVENUE|MATCH->MISSING|OTHER": 31,
+          "NET_INCOME|MATCH->MISSING|OTHER": 3,
+          "NET_INCOME|WRONG_VALUE->MISSING|OTHER": 3,
+          "REVENUE|WRONG_VALUE->MISSING|OTHER": 3
+        },
+        "holdout": {
+          "NET_INCOME|WRONG_VALUE->MISSING|OTHER": 2,
+          "REVENUE|MATCH->MISSING|OTHER": 8,
+          "NET_INCOME|MATCH->MISSING|OTHER": 2,
+          "REVENUE|WRONG_VALUE->MISSING|OTHER": 7
+        },
+        "reading": "MATCH->MISSING: Quartal war aus zwei Konzepten mit zufaellig gleichem Wert abgeleitet und ist jetzt eine Luecke; WRONG_VALUE->MISSING: falsche Ableitung aus zwei Konzepten ist jetzt eine Luecke"
+      },
+      "Red-Team-Korrektur (1.14 -> 1.15)": {
+        "dev": {
+          "REVENUE|MISSING->MATCH|OTHER": 34,
+          "NET_INCOME|MISSING->MATCH|OTHER": 3,
+          "NET_INCOME|MISSING->WRONG_VALUE|OTHER": 3,
+          "REVENUE|WRONG_VALUE->MATCH|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 20,
+          "REVENUE|WRONG_VALUE->MATCH|OTHER": 3,
+          "REVENUE|MATCH->MATCH|OTHER": 1
+        },
+        "holdout": {
+          "NET_INCOME|MISSING->WRONG_VALUE|OTHER": 2,
+          "REVENUE|MISSING->MATCH|OTHER": 15,
+          "NET_INCOME|MISSING->MATCH|OTHER": 2,
+          "REVENUE|WRONG_VALUE->MATCH|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 12,
+          "REVENUE|WRONG_VALUE->MATCH|OTHER": 1
+        }
+      }
+    }
+  },
+  "groundTruthResult": {
+    "label": "AFTER_CORE_FIX (5969a11a99a) - Quant P1; P7/P9 unveraendert",
+    "beforeAfterQuant": {
+      "fixedFacts": 982,
+      "newErrors": 0,
+      "stillWrong": 120,
+      "unchangedCorrect": 17148,
+      "baseline": "main 829b35bdce4",
+      "fixed": "5969a11a99a"
+    },
+    "quantRatesAfter": {
+      "QUANT|EPS_BASIC": {
+        "fact": 0.9946,
+        "value": 0.9949,
+        "pit": 0.9998,
+        "falseMissing": 0.0042,
+        "falseAvailable": 0,
+        "wrong": 0.0012
+      },
+      "QUANT|EPS_DILUTED": {
+        "fact": 0.9946,
+        "value": 0.9948,
+        "pit": 0.9998,
+        "falseMissing": 0.0042,
+        "falseAvailable": 0,
+        "wrong": 0.0012
+      },
+      "QUANT|NET_INCOME": {
+        "fact": 0.9888,
+        "value": 0.989,
+        "pit": 0.9998,
+        "falseMissing": 0.0006,
+        "falseAvailable": 0,
+        "wrong": 0.0106
+      },
+      "QUANT|REVENUE": {
+        "fact": 0.9962,
+        "value": 0.9964,
+        "pit": 0.9998,
+        "falseMissing": 0.0011,
+        "falseAvailable": 0,
+        "wrong": 0.0028
+      }
+    }
+  },
+  "rule": "DEVELOPMENT_FREEZE: Nach diesem Freeze keine Aenderung an Kern-Code, Mapping, Ground-Truth-Methode oder Gates. Consumer-Impact und Data-Holdout nur gegen diesen Stand. Builds anderer Staende gelten als STALE_BUILD.",
+  "gitClean": true
+}
