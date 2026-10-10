@@ -23,6 +23,7 @@ jobs:
     timeout-minutes: 60
     env:
       NODE_PATH: /tmp/universe-qa/node_modules
+      PYTHONPATH: scripts
       RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
       VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
       VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
