@@ -14,6 +14,23 @@ concurrency:
   group: brevo-admin
   cancel-in-progress: false
 jobs:
+  domain-preparation:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/ops/brevo-contact-audit-20261010' && inputs.operation == 'setup'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: d8005aa8c6ee644a1550ff12febefd540d9bae99
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - name: Prepare sender domain without DNS or email calls
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_OPERATION: setup
+        run: |
+          /usr/bin/python3 -c 'import cryptography'
+          /usr/bin/python3 scripts/brevo/domain_prepare.py
   inventory-audit:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/ops/brevo-contact-audit-20261010' && inputs.operation == 'audit'
     runs-on: ubuntu-latest
