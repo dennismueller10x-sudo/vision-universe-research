@@ -178,9 +178,26 @@ jobs:
         run: |
           # A failed consumer projection leaves the tracked disabled index intact.
           node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
+      - name: Identify immutable consumer cache from authoritative R2 GOOD
+        id: ci_cache
+        env:
+          COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/consumer-cache-key.mjs
+      - uses: actions/cache/restore@v4
+        id: ci_cache_restore
+        if: steps.ci_cache.outputs.key != ''
+        with:
+          path: ${{ runner.temp }}/ci-public-cache
+          key: ${{ steps.ci_cache.outputs.key }}
       - name: Pin approved Company Intelligence production generation (fail closed)
         id: ci_stage
         env:
+          CI_PUBLIC_CACHE_DIR: ${{ runner.temp }}/ci-public-cache
           COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -197,6 +214,11 @@ jobs:
           appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${result.status==='PASS'}\n`);
           console.log(JSON.stringify(result));
           NODE
+      - uses: actions/cache/save@v4
+        if: steps.ci_stage.outputs.enabled == 'true' && steps.ci_cache.outputs.key != '' && steps.ci_cache_restore.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/ci-public-cache
+          key: ${{ steps.ci_cache.outputs.key }}
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der

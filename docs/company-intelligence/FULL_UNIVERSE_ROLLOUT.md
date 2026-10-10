@@ -251,3 +251,44 @@ GitHub's public-repository policy; runner minutes still matter and must be
 measured from successful complete refresh + Pages runs. Initial full browser
 acceptance is separate from the bounded canary/delta QA on routine refreshes.
 No paid provider, AI, Codex or ChatGPT runtime participates in unattended work.
+
+## Release operations corrections and cache acceptance
+
+Run 38040630788 stopped before R2 writes because the new workflow lacked
+PYTHONPATH=scripts; PR #569 corrected it after 23 Python and 97 Node contracts,
+110 Core tests and 340 Discover tests (four existing optional skips) passed.
+
+Run 38041905817 passed the new CURRENT restores and all 239 browser cases, froze
+the verified 46-scope rollback and uploaded/hash-read the entire full consumer.
+Activation remained false: its final contract expected a manifest that the
+public downloader intentionally excludes. The manifest is now reattached from
+verified GOOD only in the private runner proof directory; it is never a public
+asset. Private operational state was not modified by either release attempt.
+
+The existing Pages five-minute market-hours cadence must be included in costs.
+It can produce 2,376 scheduled builds over 22 nine-hour trading days, plus other
+existing triggers. Reading 10,827 retained consumer objects on each rebuild
+would add approximately 25.7 million R2 Class B requests/month unnecessarily.
+
+A derivative GitHub Actions cache now uses exact current/previous consumer
+generations and source policy. Each build still reads authoritative R2 gate/GOOD
+and runs the original hashes, schema, expiry and atomic pointer checks. Swapped,
+corrupt, missing-generation and external-symlink bytes fall back to R2. Only
+hash-listed public JSON is cached; manifests, validation certificates, private
+extras, ledger and checkpoints are excluded. An active full scope with missing
+GOOD cannot silently use the smaller bootstrap. Warm acceptance before gate
+activation requires all current assets served from verified cache and at most
+one previous-index asset read from R2. Actual metrics remain release evidence.
+
+Six changing generations/day require cold cache population; unchanged general
+Pages builds reuse prepared bytes. At approximately 5,414 objects × two retained
+generations × 180 monthly cache misses, cold Pages reads are about 1.95 million
+Class B requests, plus authoritative pointer reads, rather than 25.7 million.
+Routine source publication itself remains measured/accounted separately. Cache
+storage contains compressed public consumer derivatives and uses the existing
+GitHub cache allowance; no new service/provider is introduced.
+
+The exact Master-hook protected-path test uses the immutable accepted f667d826
+example against 440a1645. Later independent Europe renderer changes do not
+broaden that exception; every negative price/identity/extra-code assertion stays
+intact. Actual branch protection still compares current candidate/base files.

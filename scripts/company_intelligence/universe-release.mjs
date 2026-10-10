@@ -11,6 +11,7 @@ import {universeConfig,universeApproved} from './universe-approval.mjs';
 import {refreshConfig} from './refresh-approval.mjs';
 import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
+import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -63,9 +64,21 @@ try{
   const candidate=await prepareCandidate(driver,{namespace:universeConfig.consumerNamespace,directory,good:previous});
   const health=known.health;const inventory=Object.fromEntries(Object.entries(m.eligibility).map(([cid,r])=>[cid,{tickers:r.tickers,status:r.status,modules:r.modules}]));
   await commitGood(driver,{namespace:universeConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health,inventory,expectedGood:previous});
-  const restored=await downloadGood(driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public')});assert.equal(restored.generation,m.generation);await universeContracts(join(temporary,'fresh-public'));
+  const restored=await downloadGood(driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public')});assert.equal(restored.generation,m.generation);
+  // Public downloads intentionally exclude the private validation certificate.
+  // Reattach the independently verified GOOD manifest in the private runner only.
+  writeFileSync(join(temporary,'fresh-public','manifest.json'),JSON.stringify(restored.good.manifest)+'\n');
+  await universeContracts(join(temporary,'fresh-public'));
+  // Exercise the exact cached downloader before activation, without caching
+  // the private manifest just reattached for contract validation.
+  const cacheRoot=join(temporary,'ci-public-cache');
+  await saveConsumerCache(join(temporary,'fresh-public'),restored.good,cacheRoot);
+  assert(!readFileSync(join(cacheRoot,'index.json')).includes(Buffer.from('refreshValidation')));
+  const cached=consumerCacheDriver(driver,restored.good,cacheRoot);
+  const warm=await downloadGood(cached.driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public-cached')});
+  assert.equal(warm.generation,m.generation);assert(cached.stats.cachedAssets>=Object.keys(m.assets).length);assert(cached.stats.remoteAssets<=1);
   const certificate={schema:1,status:'R2_CANDIDATE_ACCEPTED',generation:m.generation,codeSha:process.env.GITHUB_SHA,privateGeneration:audit.authoritativeStateGeneration,privateCheckpointSha256:audit.r2CheckpointSha256,
-   rollback:{generation:known.generation,codeSha:release.sourceCommit,stocks:46,issuers:45,namespace:universeConfig.rollbackNamespace,freshReadback:true},structural,browserCases:browser.cases.length,scalingRunId:scaling.runId,changes,privateStateModified:false};
+   rollback:{generation:known.generation,codeSha:release.sourceCommit,stocks:46,issuers:45,namespace:universeConfig.rollbackNamespace,freshReadback:true},structural,consumerCache:cached.stats,browserCases:browser.cases.length,scalingRunId:scaling.runId,changes,privateStateModified:false};
   await driver.put(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json',Buffer.from(JSON.stringify(certificate)));
   const receipt=JSON.parse(await driver.get(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json'));assert.equal(receipt.generation,m.generation);
   activationWritten=true;await pointer('AVAILABLE',{generation:m.generation,rollbackGeneration:known.generation});
