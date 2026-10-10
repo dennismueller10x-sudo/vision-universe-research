@@ -2,9 +2,9 @@
    VISION UNIVERSE TECHNICAL — verify-technical-data.mjs
 
    Prueft, dass die ausgelieferten Technical-Daten (quant/data/technical/**)
-   noch zu den Engines passen — dieselbe Schutzlogik wie
-   verify-quant-data.mjs: eine geaenderte Methodik ohne Neuberechnung waere
-   ein stiller Datenfehler.
+   noch zu den Engines passen: eine geaenderte Methodik ohne Neuberechnung
+   waere ein stiller Datenfehler. Ausserdem: kein ausgeliefertes Instrument
+   beruht auf dem synthetischen Modelluniversum.
 
    Prueft je Instrument: Methodikversion, parametersHash, Opportunity Score,
    Primary-Scenario-ID und Snapshot-Content-Hash gegen eine Neuberechnung
@@ -23,8 +23,6 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const T = (n) => require(join(root, "quant", "engines", "technical", n));
 const Canonical = T("canonical-bars.js"), Analysis = T("technical-analysis.js"), Snapshot = T("snapshot.js");
-const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
-const MockProvider = require(join(root, "quant", "engines", "mock-provider.js"));
 
 const DATA = join(root, "quant", "data", "technical");
 const read = (rel) => JSON.parse(readFileSync(join(DATA, rel), "utf8"));
@@ -38,6 +36,8 @@ if (!existsSync(join(DATA, "meta.json"))) { console.log("  keine Technical-Daten
 const meta = read("meta.json"), index = read("index.json");
 console.log(`  Stand ${meta.generatedAt}, Methodik ${meta.methodologyVersions.technical} / ${meta.methodologyVersions.elliott}, ${index.instruments.length} Instrumente, ${meta.snapshots} Snapshots`);
 check(meta.methodologyVersions.technical === METH.technical.methodologyVersion, `Methodikversion technical: Daten ${meta.methodologyVersions.technical}, JSON ${METH.technical.methodologyVersion}`);
+check(!meta.mockData, "meta.json traegt noch einen mockData-Block - das Modelluniversum gehoert nicht in die Auslieferung");
+check(!existsSync(join(DATA, "scan-mock.json")), "scan-mock.json liegt noch in quant/data/technical");
 check(meta.methodologyVersions.elliott === METH.elliott.methodologyVersion, `Methodikversion elliott: Daten ${meta.methodologyVersions.elliott}, JSON ${METH.elliott.methodologyVersion}`);
 
 /* Quellen fuer Neuberechnung */
@@ -50,17 +50,6 @@ if (md) for (const sym of Object.keys(md.symbols)) realSeries[sym] = Canonical.f
    verwendet (golden-five-series.mjs), damit diese Nachrechnungspruefung
    nicht an einer zweiten, abweichenden Kopie der Logik vorbeirechnet. */
 Object.assign(realSeries, loadGoldenFiveSeries(root, Canonical));
-let dataset = null, provider = null, benchMock = null;
-function mockSeries(ticker) {
-  if (!dataset) {
-    dataset = Generator.generateDataset(); provider = MockProvider.createMockProvider({ dataset });
-    const bm = provider.getBenchmarkBars(Generator.BENCHMARK_ID, {}).data.bars;
-    benchMock = Canonical.fromRows(bm.map((r) => ({ date: r.date, open: r.level, high: r.level, low: r.level, close: r.level, volume: null })), { instrumentId: Generator.BENCHMARK_ID, priceSeriesType: "SPLIT_ADJUSTED", source: "mock", sourceRevision: dataset.meta.dataSnapshotId });
-  }
-  const id = "sec_" + ticker;
-  return Canonical.fromPriceBars(provider.getPriceBars(id, {}).data, provider.getCorporateActions(id, {}).data, { instrumentId: ticker, source: "mock", sourceRevision: dataset.meta.dataSnapshotId }).SPLIT_ADJUSTED;
-}
-
 const snapshotDir = join(DATA, "snapshots");
 const snapshots = existsSync(snapshotDir) ? readdirSync(snapshotDir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(join(snapshotDir, f), "utf8"))) : [];
 const byId = Object.fromEntries(snapshots.map((s) => [s.snapshotId, s]));
@@ -68,7 +57,9 @@ check(snapshots.length === meta.snapshots, `Snapshot-Anzahl: Dateien ${snapshots
 
 let verified = 0;
 for (const row of index.instruments) {
+  check(row.isMock === false && row.dataMode === "real", `${row.instrumentId}: Index-Zeile ist kein echtes Instrument (isMock ${row.isMock}, dataMode ${row.dataMode})`);
   const file = read(`instruments/${row.instrumentId}.json`);
+  check(file.isMock === false && file.dataMode === "real", `${row.instrumentId}: Instrumentdatei ist kein echtes Instrument`);
   const b = file.bundle;
   check(b.methodologyVersion === METH.technical.methodologyVersion, `${row.instrumentId}: Bundle-Methodik ${b.methodologyVersion}`);
   check(b.priceSeriesType === "SPLIT_ADJUSTED", `${row.instrumentId}: nicht SPLIT_ADJUSTED`);
@@ -82,7 +73,6 @@ for (const row of index.instruments) {
   /* Neuberechnung aus den Quelldaten */
   let series = null, bench = null;
   if (file.dataMode === "real" && realSeries[row.instrumentId]) { series = realSeries[row.instrumentId]; bench = row.instrumentId === file.benchmarkId ? null : realSeries[file.benchmarkId] || null; }
-  else if (file.dataMode === "mock") { series = mockSeries(row.instrumentId); bench = benchMock; }
   if (!series) { check(false, `${row.instrumentId}: Quelldaten fuer Neuberechnung fehlen`); continue; }
   const fresh = Analysis.analyze({ series, benchmarkSeries: bench, methodology: METH, options: { elliott: true, annotations: true, includeChartSeries: false, displayWindow: "5Y" } });
   check(fresh.dataVersion === b.dataVersion, `${row.instrumentId}: dataVersion weicht ab (Quelle ${fresh.dataVersion}, Daten ${b.dataVersion}) — Quelle geaendert, bitte neu bauen`);

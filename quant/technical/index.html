@@ -3,37 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#08080a">
-<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die Plattform-Navigation, Quant startet dunkel -->
-<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
-<title>Technical Intelligence — Vision Universe®</title>
-<script>/* Mission IV §55: abgeloeste V1-Seite → Chartbild (gleiche Daten, eine Darstellung). */
-(function(){var q=new URLSearchParams(location.search),t=(q.get("symbol")||"").toUpperCase();location.replace("/quant/#/"+(/^[A-Z0-9.-]{1,12}$/.test(t)?"aktie/"+encodeURIComponent(t)+"/chartbild":"chartlagen"));})();</script>
-<meta name="description" content="Autonome Marktstruktur-, Trend-, Momentum-, Support/Resistance-, Fibonacci- und Elliott-Wave-Analyse mit Szenarien, Invalidation und Zielzonen — regelbasiert, reproduzierbar, ohne menschliches Einzeichnen.">
-<link rel="stylesheet" href="/quant/ui/quant.css">
-<link rel="stylesheet" href="/quant/ui/technical-chart.css">
-<link rel="stylesheet" href="/assets/site-navigation.css"></head>
-<body><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
-
-
-
-<main class="q-shell" id="q-main"></main>
-<footer class="q-more">
-  <nav class="q-tabs" id="q-tabs" aria-label="Weitere Quant-Bereiche"></nav>
-  <span id="q-datastamp" class="q-hide-sm"></span>
-</footer>
-
-<script src="/quant/engines/hash.js"></script>
-<script src="/quant/engines/schema.js"></script>
-<script src="/quant/engines/catalog.js"></script>
-<script src="/quant/engines/provider.js"></script>
-<script src="/quant/engines/methodology.js"></script>
-<script src="/quant/engines/radar.js"></script>
-<script src="/quant/engines/technical/annotations.js"></script>
-<script src="/quant/ui/shell.js"></script>
-<script src="/quant/ui/charts.js"></script>
-<script src="/quant/ui/technical-chart.js"></script>
-<script src="/quant/ui/components.js"></script>
-<script src="/quant/technical/app.js"></script>
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="/quant/">
+<title>Technical ist umgezogen — Vision Universe® Quant</title>
+<!-- Weiterleitung einer alten Quant-Adresse. Die fruehere Seite lief auf
+     dem synthetischen Modelluniversum und wurde entfernt. Das Ziel
+     (inklusive Ticker, Strategie oder Sicht aus der Adresse) bestimmt
+     quant/ui/legacy-redirect.js. Diese Seite laedt bewusst weder die
+     Quant-Shell noch Daten. -->
+<script src="/quant/ui/legacy-redirect.js"></script>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+</head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<main style="max-width:640px;margin:48px auto;padding:0 16px;font-family:system-ui,sans-serif;line-height:1.5">
+<h1 style="font-size:1.4rem">Technical ist umgezogen</h1>
+<p>Diese Seite ist jetzt Teil von Vision Universe® Quant: <a href="/quant/#/aktien">Aktien (Kursstruktur je Aktie) öffnen</a>.</p>
+<noscript><p>Ohne JavaScript erfolgt keine automatische Weiterleitung. <a href="/quant/#/aktien">Weiter zu Aktien (Kursstruktur je Aktie)</a></p></noscript>
+</main>
 </body>
 </html>

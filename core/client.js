@@ -42,6 +42,8 @@
   var Identity = (typeof module === "object" && module.exports) ? require("./identity.js") : (root.VUCore && root.VUCore.Identity);
 
   var PATHS = {
+    globalDiscoverSearch: function () { return "/discover/data/search/GLOBAL.json"; },
+    globalDiscoverHome: function () { return "/discover/data/global/home.json"; },
     instrumentShard: function (t) { return "/quant/data/universe/instruments/" + Identity.shardKey(t) + ".json"; },
     discoverIndex: function (u) { return "/discover/data/stock-index/" + u + ".json"; },
     dailySeries: function (id) { return "/quant/data/market/discover-series/" + id + ".json"; },
@@ -195,7 +197,26 @@
         sources: Array.isArray(n.data.sources) ? n.data.sources : [], items: items });
     }
 
+    function globalUniverse() { return typeof module === 'object' && module.exports ? require('./discover-universe.js') : root.VUCore.DiscoverUniverse; }
+    async function getDiscoverSearch(query, options) {
+      var o=options||{},result=await tryLoad(PATHS.globalDiscoverSearch());
+      if(!result.ok)return unavailable('SOURCE_MISSING',PATHS.globalDiscoverSearch());
+      return available(PATHS.globalDiscoverSearch(),null,{universeId:'GLOBAL',universeLabel:'Alle Aktien',entries:globalUniverse().search(result.data,query,o)});
+    }
+    async function getDiscoverHome(options) {
+      var o=options||{},result=await tryLoad(PATHS.globalDiscoverHome());
+      if(!result.ok)return unavailable('SOURCE_MISSING',PATHS.globalDiscoverHome());
+      return available(PATHS.globalDiscoverHome(),null,{cards:result.data.cards.filter(function(d){return globalUniverse().eligible(d,o.authority,o.now);})});
+    }
+    async function getDiscoverUniverse(options) {
+      var o=options||{},result=await tryLoad(PATHS.globalDiscoverSearch());
+      if(!result.ok)return unavailable('SOURCE_MISSING',PATHS.globalDiscoverSearch());
+      var entries=result.data.entries.filter(function(d){return globalUniverse().eligible(d,o.authority,o.now)&&(!o.region||o.region==='ALL'||(o.region==='DE'?d.country==='DE':d.region===o.region));});
+      return available(PATHS.globalDiscoverSearch(),null,{entries:entries.slice(o.offset||0,(o.offset||0)+(o.limit||48)),total:entries.length});
+    }
+
     return { CONTRACT_VERSION: CONTRACT_VERSION, universeId: universe, getSecurity: getSecurity, getPriceSeries: getPriceSeries,
+      getDiscoverSearch: getDiscoverSearch, getDiscoverHome: getDiscoverHome, getDiscoverUniverse: getDiscoverUniverse,
       getLatestPrice: getLatestPrice, getFundamentals: getFundamentals, getCorporateActions: getCorporateActions,
       getQuantData: getQuantData, getIntraday: getIntraday, getNews: getNews, stockPage: stockPage, discoverIndex: function () { return tryLoad(PATHS.discoverIndex(universe)); } };
   }

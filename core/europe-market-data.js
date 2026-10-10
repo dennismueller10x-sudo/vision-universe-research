@@ -287,7 +287,13 @@
         var digest = await subtle.digest("SHA-256",new TextEncoder().encode(JSON.stringify(points)));
         var pointHash = Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
         if (pointHash !== chartProof.pointsSha256) return unavailable("CLOSE_SERIES_INTEGRITY_MISMATCH",source);
-        if (!validSegments(chartProof.segments,points)) return unavailable("CLOSE_CHART_SEGMENT_MISMATCH",source);
+        var segments=chartProof.segments || s.segments;
+        if (!validSegments(segments,points)) return unavailable("CLOSE_CHART_SEGMENT_MISMATCH",source);
+        if (chartProof.segmentsSha256) {
+          var segmentDigest=await subtle.digest("SHA-256",new TextEncoder().encode(JSON.stringify(segments)));
+          var segmentHash=Array.from(new Uint8Array(segmentDigest)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+          if(segmentHash!==chartProof.segmentsSha256)return unavailable("CLOSE_CHART_SEGMENT_INTEGRITY_MISMATCH",source);
+        }
         if (!discoverEligibility.chart(h.security,h.listing,opts.now,range).ready) return unavailable("CLOSE_CHART_PROOF_EXPIRED_DURING_LOAD",source);
       }
       return available(source, points[points.length - 1][0], {
@@ -296,7 +302,7 @@
         from: points[0][0], to: points[points.length - 1][0], adjustmentStatus: state.adjustmentStatus,
         freshness: chartProof ? state.discoverFreshness : state.LATEST_EOD, sessionLag: chartProof ? state.sessionLag : null,
         chartStatus: state.CHART, quoteUnit: chartProof ? chartProof.quoteUnit : s.currency,
-        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready;}) : [range], segments: chartProof ? clone(chartProof.segments) : null,
+        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready;}) : [range], segments: chartProof ? clone(chartProof.segments || s.segments) : null,
         sessionContinuity: s.sessionContinuity || "UNKNOWN", provenance: clone(s.provenance)
       });
     }

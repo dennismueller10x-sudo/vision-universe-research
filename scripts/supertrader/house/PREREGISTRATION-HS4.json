@@ -1,0 +1,43 @@
+{
+  "schema": "supertrader-house-prereg-1.0.0",
+  "id": "VU_HOUSE_HS4",
+  "registeredAt": "2026-10-04",
+  "status": "Eingefroren vor Implementierung der Auswertung und vor jedem Lauf von HS4.",
+  "nature": "EXPLORATIV. Der Zeitraum 2016–2026 ist aus HS1–HS3 bekannt, der Holdout verbraucht. HS4 kann deshalb keinen Nachweis liefern, nur einen Hinweis. Nachweis ist ausschließlich der eingefrorene Vorwärtslauf ab Freigabe.",
+  "motivation": "Eigentümer-Hypothese: Einstiege großer Fonds zeigen sich im Volumenprofil (Akkumulation). Kombination mit Trend (200-Tage-Linie, Nähe zum 52-Wochen-Hoch) und Fundamentaldaten, konzentriert auf wenige Titel, weil breite Streuung in HS1–HS3 beim Index landete. Volumen-Akkumulation wurde bisher in keinem Depot-Test geprüft.",
+  "inherits": "Daten, Kosten, Ausführung, Delisting-Szenarien wie HS1; Universum und Marktkapitalisierung wie HS3-D3.",
+  "rules": {
+    "universe": "Die 500 größten US-Inlandsemittenten nach Marktkapitalisierung zum Stichtag (HS3-D3-Regeln).",
+    "filters": ["Schluss über dem 200-Tage-Durchschnitt", "Schluss ≥ 80 % des 52-Wochen-Hochs"],
+    "factors": {
+      "UDV": "Dollar-Umsatz an Plustagen / Dollar-Umsatz an Minustagen, letzte 50 Handelstage",
+      "ACC": "Akkumulation: umsatzgewichteter Mittelwert von ((Schluss−Tief)−(Hoch−Schluss))/(Hoch−Tief), letzte 63 Handelstage",
+      "SUE": "wie HS1", "REVG": "wie HS1", "MOM": "wie HS1"
+    },
+    "portfolio": "Top N nach mittlerem Perzentilrang der Faktoren der Variante innerhalb der gefilterten Titel; gehaltene Titel bleiben bis Rang 2N und solange sie die Filter erfüllen. Monatlich wie HS1, Handelsband wie HS2.",
+    "weights": "gleich, oder (Variante V05) proportional zur Wurzel der Marktkapitalisierung mit höchstens 15 % je Titel"
+  },
+  "trials": [
+    { "id": "V01", "factors": ["UDV", "ACC"], "n": 20 },
+    { "id": "V02", "factors": ["UDV", "ACC", "SUE", "REVG"], "n": 20 },
+    { "id": "V03", "factors": ["UDV", "ACC", "SUE", "REVG", "MOM"], "n": 20 },
+    { "id": "V04", "factors": ["UDV", "ACC", "SUE", "REVG"], "n": 15 },
+    { "id": "V05", "factors": ["UDV", "ACC", "SUE", "REVG"], "n": 20, "sqrtCap": true },
+    { "id": "V06", "factors": ["SUE", "REVG", "MOM"], "n": 20, "control": "ohne Volumen: misst den Beitrag des Volumenprofils" }
+  ],
+  "controls": {
+    "RANDOM": "20 Zufallsauswahlen von 20 Titeln aus denselben gefilterten Titeln (misst, was allein die Filter bringen).",
+    "S0_S2_COST2_SURVIVORS": "für den gewählten Versuch wie HS1."
+  },
+  "selection": "Unter V01–V05 der Versuch mit der höchsten Information Ratio gegenüber SPY über 2016-01-29 bis 2026-09-30 (S1).",
+  "criteria": {
+    "E1": "Überrendite gegenüber SPY > 0 in beiden Hälften (bis 2021-12-31 und ab 2022-01-01)",
+    "E2": "Mit doppelten Kosten Überrendite > 0 über den Gesamtzeitraum",
+    "E3": "S2 (Distress = 0) Überrendite > 0",
+    "E4": "Volumenbeitrag: der gewählte Versuch schlägt V06 in beiden Hälften (bei V01: der Versuch selbst gegen V06)",
+    "E5": "Der gewählte Versuch liegt über dem 80. Perzentil der Zufallsauswahlen",
+    "verdict": "Alle E1–E5 → EXPLORATORY_PROMISING (Regeln einfrieren, Vorwärtslauf als Modelldepot starten). Sonst EXPLORATORY_NO_EDGE.",
+    "significance": "DSR mit allen bisher gezählten Versuchen (43 + 6 = 49) wird berichtet; kein Kriterium, da explorativ."
+  },
+  "publication": "Wie HS1: nur verschlüsselt, öffentlich nur Entscheidungen."
+}

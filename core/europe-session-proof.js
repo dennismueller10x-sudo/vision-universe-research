@@ -16,6 +16,7 @@
    p.sourceEvaluatedAt=p.sourceEvaluatedAt||p.evaluatedAt;p.evaluatedAt=new Date(now).toISOString();p.sessionLag=lag;p.freshness=lag===0?'CURRENT_LAST_SESSION':lag<=3?'DELAYED':'STALE';
    p.calendarProof={mic:l.mic,sourceSha256:c.sourceSha256,source:c.source,coverageFrom:c.coverageFrom,coverageTo:c.coverageTo,expectedLastCompletedSession:last,nextScheduledSession:{date:next.date,close:next.close},evaluatedAt:p.evaluatedAt,verified:true};
    p.sessionEvaluation={kind:'IMMUTABLE_SCHEDULE_REEVALUATION',priceEvidenceRef:p.evidenceRef,sourceEvaluatedAt:p.sourceEvaluatedAt};
+   Object.values(p.ranges||{}).forEach(function(r){if(r.lastDate!==p.lastDate||r.calendarSourceSha256!==p.calendarSourceSha256)throw Error('LONG_HISTORY_SESSION_BINDING_REQUIRED');r.sourceEvaluatedAt=r.sourceEvaluatedAt||r.evaluatedAt;r.evaluatedAt=p.evaluatedAt;r.sessionLag=p.sessionLag;r.freshness=p.freshness;r.calendarProof=JSON.parse(JSON.stringify(p.calendarProof));r.sessionEvaluation=JSON.parse(JSON.stringify(p.sessionEvaluation));});
    l.latest.status=lag===0?'LAST_VALID_SESSION':lag<=3?'DELAYED':'STALE';
   });});return out;
  }

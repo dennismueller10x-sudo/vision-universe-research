@@ -2,7 +2,7 @@
 (function (global) {
   'use strict';
   const D=global.VUDiscover, el=global.QuantShell.el;
-  function navigationAllowed(universeId,hash){const parts=String(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);return universeId==='EUROPE'||parts.length===0||(parts[0]==='u'&&parts[1]==='US_REAL');}
+  function navigationAllowed(){return false;}
   function attachApp({ctx,route,isReady}) {
     D.App={configureEurope(options){
       if(!D.EuropeProduct)throw Error('EUROPE_PRODUCT_MODULE_REQUIRED');
@@ -14,21 +14,12 @@
       if(!['US_REAL','EUROPE'].includes(universeId)||(universeId==='EUROPE'&&!D.europeProduct))throw Error('UNIVERSE_NOT_CONFIGURED');
       ctx.universeId=universeId;global.location.hash=universeId==='EUROPE'?'#/c/EUROPE/all':'#/';return route();
     },route};
-    function navigation(){
-      const main=global.document.getElementById('v2-main');if(!main||!D.europePublicLoader||!navigationAllowed(ctx.universeId,global.location.hash)||main.querySelector('[data-europe-navigation]'))return;
-      const nav=el('nav',{'aria-label':'Aktienuniversum','data-europe-navigation':'true',class:'v2-settings-choices'});
-      [['US_REAL','USA'],['EUROPE','Europa']].forEach(([id,label])=>{const link=el('a',{class:'v2-pill',href:id==='EUROPE'?'#/c/EUROPE/all':'#/u/US_REAL','aria-current':ctx.universeId===id?'page':null,text:label});
-        link.onclick=async event=>{event.preventDefault();link.setAttribute('aria-busy','true');try{await D.App.selectUniverse(id);}finally{link.removeAttribute('aria-busy');}};nav.append(link);});main.prepend(nav);
-    }
-    new MutationObserver(navigation).observe(global.document.getElementById('v2-shell'),{childList:true,subtree:true});
-    global.document.addEventListener('vu-europe-available',navigation);
   }
   function bindRoute(parts,ctx) {
-    if(['s','c','u','watchlist'].includes(parts[0])&&['US_REAL','EUROPE'].includes(parts[1]))ctx.universeId=parts[1];
-    if(parts[0]==='watchlist'&&!parts[1]&&ctx.universeId==='EUROPE'){global.location.hash='#/watchlist/EUROPE';return true;}
+    ctx.universeId = ['s','c','u','watchlist'].includes(parts[0]) && parts[1] === 'EUROPE' ? 'EUROPE' : 'US_REAL';
     return false;
   }
-  function handles(parts,ctx) { return ctx.universeId==='EUROPE'&&(['c','u','watchlist','welten','strategien','einzeln'].includes(parts[0])||!parts.length||(parts[0]==='s'&&parts[1]==='EUROPE'&&parts[2])); }
+  function handles(parts,ctx) { return ctx.universeId==='EUROPE'&&['s','c','u','watchlist'].includes(parts[0]); }
   function loadIndex(ctx) { return ctx.universeId==='EUROPE'?null:D.LiveHub.loadIndex().catch(()=>null); }
   function watchButton(root,id,product,symbol) {
     const button=el('button',{type:'button',class:'v2-watch-button'});
@@ -36,7 +27,7 @@
       const saved=product.savedIds().includes(id);
       button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';
       button.setAttribute('aria-pressed',String(saved));
-      button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));
+      button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));
     };
     button.onclick=async()=>{if((await product.toggle(id)).state==='AVAILABLE')paint();};
     paint();root.prepend(button);
@@ -55,7 +46,6 @@
       const states=el('section',{class:'dx-chapter','aria-label':'Verfügbarkeit der Analysen'},[
         el('p',{text:detail.quantMessage}),el('p',{text:detail.technicalMessage})]);
       if(detail.privatePreview)states.prepend(el('p',{class:'dx-intraday-note',text:detail.disclaimer}));
-      if(detail.chartStatus==='CHART_LIMITED')states.append(el('p',{class:'dx-intraday-note',text:'Chart eingeschränkt: unbereinigte Schlusskurse; begrenzte Historie oder Datenlücken möglich.'}));
       if(detail.freshness==='DELAYED'||detail.freshness==='STALE')states.append(el('p',{class:'dx-intraday-note',text:'Verzögerter Tagesschlusskurs vom '+detail.asOf+'. Kein Echtzeitkurs.'}));
       const analysis=root.querySelector('.dx-analyse');
       if(analysis)analysis.before(states);else root.append(states);

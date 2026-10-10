@@ -115,7 +115,7 @@
   }
 
   function loadSeries(detail) {
-var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, priceSeriesType: data.basis }; }); }
+var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref,{range:'MAX'}).then(function(result){return result.state==='AVAILABLE'?result:D.europeProduct.series(series.ref);}).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, priceSeriesType: data.basis }; }); }
     if (series.source === "technical-instrument" && series.path) {
       return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
         var payload = teile[0], lang = teile[1];
@@ -843,7 +843,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var SS = global.VUQuant && global.VUQuant.SeriesSampling;
     var engineLeiste = Ranges.rangeBar(weekly || daily, { gates: gates });
     var eintag = engineLeiste.filter(function (r) { return r.id === "1D"; })[0] || { id: "1D", label: "1T", available: false, message: "Kein Tagesverlauf" };
-    var leiste = [eintag].concat(verbraucherZeitraeume(state, SS));
+    var leiste = [eintag].filter(function(r){return r.available;}).concat(verbraucherZeitraeume(state, SS));
     leiste.forEach(function (r) {
       var knopf = el("button", { type: "button", text: r.label,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
@@ -976,39 +976,17 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
      bleibt deshalb zu. */
   var VERBRAUCHER_ZEITRAEUME = [
-    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
     { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
+    { id: "3M", label: "3M", quelle: "daily", wort: "in drei Monaten", tage: 92 },
     { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
     { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
+    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096 },
     { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
-    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+    { id: "MAX", label: "MAX", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
   ];
-  function tageZwischen(a, b) { return (Date.parse(b) - Date.parse(a)) / 86400000; }
-  function verbraucherZeitraeume(state, SS) {
-    var daily = state.dailyPoints || [], weekly = state.weeklyPoints || null;
-    return VERBRAUCHER_ZEITRAEUME.map(function (z) {
-      var out = { id: z.id, label: z.label, available: false, message: null };
-      if (state.detail.region === "EUROPE") {
-        out.available = z.id === "1Y" && daily.length >= 20;
-        if (!out.available) out.message = "Für diesen Zeitraum liegt noch keine separat geprüfte Kursreihe vor.";
-        return out;
-      }
-      if (!SS) { out.message = "Zeitraum-Engine nicht geladen"; return out; }
-      var punkte = z.quelle === "weekly" ? (weekly || null) : daily;
-      if (z.id === "MAX") {
-        punkte = weekly || daily;
-        out.available = punkte.length >= 5;
-        if (!out.available) out.message = "Keine Kursreihe";
-        return out;
-      }
-      if (!punkte || punkte.length < 2) { out.message = z.quelle === "weekly" ? "Für diesen Titel liegt noch keine lange Kursreihe vor." : "Keine Kursreihe"; return out; }
-      var deckung = tageZwischen(punkte[0][0], punkte[punkte.length - 1][0]);
-      /* Ein Zeitraum ist verfuegbar, wenn die Reihe mindestens 60 % davon
-         traegt; bei weniger sagt der Knopf, wie weit sie reicht. */
-      if (deckung >= z.tage * 0.6) out.available = true;
-      else out.message = "Die Kursreihe reicht nur " + Math.round(deckung) + " Tage zurück (ab " + C().dateShort(punkte[0][0]) + ").";
-      return out;
-    });
+  function verbraucherZeitraeume(state) {
+    var H=global.VUCore.ChartHistory;
+    return VERBRAUCHER_ZEITRAEUME.map(function(z){var points=z.quelle==='weekly'?(state.weeklyPoints||state.dailyPoints||[]):state.dailyPoints||[];return {id:z.id,label:z.label,available:H.available(points,z.id)};}).filter(function(z){return z.available;});
   }
 
   /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
@@ -1092,7 +1070,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
       return;
     }
-    var sel = SS.sliceRange(punkte, z.id, punkte[punkte.length - 1][0]);
+    var sel = global.VUCore.ChartHistory.sliceRange(punkte, z.id);
     if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
     /* Der Chart wird in der Anzeigewaehrung gezeichnet, Punkt fuer Punkt
        mit dem Kurs SEINES Tages. Nicht mit dem heutigen: eine Reihe, die
@@ -1109,7 +1087,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
                                             complete: sel.complete && !anzeige.gekuerzt };
     var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
-    var veraenderung = erster > 0 ? (letzter / erster - 1) * 100 : null;
+    var vergleichbar = global.VUCore.ChartHistory.performanceComparable(state.europeSegments,sel.from,sel.to);
+    var veraenderung = erster > 0 && vergleichbar ? (letzter / erster - 1) * 100 : null;
     var mobil = global.innerWidth < 860;
     /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
@@ -1121,7 +1100,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (z.quelle === "weekly" && state.weeklyPoints ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") }),
         frischeTages(state)
       ])
@@ -1133,7 +1112,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
-                                                 range: z.id, label: z.wort, grain: z.quelle,
+                                                 range: z.id, label: z.wort, grain: z.quelle === "weekly" && state.weeklyPoints ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
@@ -1144,7 +1123,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
       preis: function (pt) { return alsAngezeigt(pt.close, nativeCurrency); },
-      delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
+      delta: function (pt) { return erster > 0 && vergleichbar ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
     });

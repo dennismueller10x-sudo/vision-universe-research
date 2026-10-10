@@ -453,6 +453,9 @@ p { margin: 0; }
 .st-chain>li p{margin:4px 0 0;font-size:13.5px}
 .st-chain>li p.st-hint{margin-top:2px;font-size:12px}
 
+/* VU Hausstrategie: Depotliste mehrspaltig */
+@media (min-width: 720px) { .st-mplist.st-grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .st-mplist.st-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 /* Helles Farbschema: Weltfarben (Strategie-Akzente wie Gelb oder Limette) sind
    als Flächen gedacht. Als Schrift auf hellem Grund werden sie abgedunkelt,
    damit der Kontrast reicht; Flächen behalten die Originalfarbe. */

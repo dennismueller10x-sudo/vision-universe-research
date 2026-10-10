@@ -1,19 +1,21 @@
 /* =========================================================================
    VISION UNIVERSE QUANT — ui/shell.js
 
-   Gemeinsame Produktschicht aller Quant-Seiten: Datenladen, Navigation,
+   Gemeinsame Produktschicht der Quant-Seiten (App unter /quant/,
+   Marktdaten, Data Inspector) und von Discover: Datenladen, Navigation,
    Formatierung, Zustaende. Enthaelt bewusst KEINE Berechnungslogik — die
    liegt vollstaendig in quant/engines/** und ist damit auch in Node
    testbar. Diese Datei kennt nur Darstellung.
 
-   Das Laden folgt dem Repository-Muster: statisches JSON aus quant/data/**,
-   erzeugt von scripts/quant/build-quant-data.mjs.
+   Das synthetische Modelluniversum (511 erfundene Wertpapiere) und die
+   Seiten, die darauf liefen, sind entfernt; diese Shell laedt keine
+   Mock-Datensaetze mehr. Alte Adressen leitet quant/ui/legacy-redirect.js
+   auf die App weiter.
    ========================================================================= */
 (function (global) {
   "use strict";
 
   var BASE = "/quant/";
-  var Methodology = global.VUMethodology;
   var Catalog = global.VUCatalog;
 
   var cache = Object.create(null);
@@ -115,64 +117,20 @@
     return pending;
   }
 
-  var DATA_FILES = {
-    meta: "data/meta.json",
-    securities: "data/securities.json",
-    scoreHistory: "data/score-history.json",
-    radar: "data/radar.json",
-    events: "data/events.json",
-    rankings: "data/rankings.json",
-    strategies: "data/strategies.json",
-    fieldCatalog: "data/field-catalog.json"
-  };
-
-  /** Shard-Regel der Factor DNA — identisch zu build-quant-data.mjs. */
-  function dnaShardKey(ticker) {
-    if (ticker.indexOf("VUF") === 0) return "f";
-    var n = parseInt(ticker.slice(2), 10);
-    return String(Math.floor((n - 1) / 50));
-  }
-
-  function loadFactorDna(ticker) { return loadJSON(BASE + "data/dna/" + dnaShardKey(ticker) + ".json"); }
-
-  /**
-   * Laedt Methodik und die angeforderten Datensaetze.
-   * @param {string[]} need Schluessel aus DATA_FILES
-   */
-  function boot(need) {
-    var methodologyLoads = Object.keys(Methodology.FILES).map(function (key) {
-      return loadJSON(BASE + "methodology/" + Methodology.FILES[key]).then(function (cfg) { return [key, cfg]; });
-    });
-
-    return Promise.all(methodologyLoads).then(function (pairs) {
-      var configs = {};
-      pairs.forEach(function (p) { configs[p[0]] = p[1]; });
-      Methodology.configure(configs);
-
-      var keys = ["meta"].concat(need || []).filter(function (k, i, arr) { return arr.indexOf(k) === i; });
-      return Promise.all(keys.map(function (k) {
-        if (!DATA_FILES[k]) throw new Error("Unbekannter Datensatz: " + k);
-        return loadJSON(BASE + DATA_FILES[k]).then(function (d) { return [k, d]; });
-      }));
-    }).then(function (pairs) {
-      var data = {};
-      pairs.forEach(function (p) { data[p[0]] = p[1]; });
-      return data;
-    });
-  }
-
   // ---------------------------------------------------------- Navigation
+  /* Navigation der Nebenseiten (Marktdaten, Data Inspector). Die Bereiche
+     der App sind Hash-Routen unter /quant/ (siehe quant/app/app.js). */
   var NAV = [
-    { href: BASE, label: "Quant Home" },
-    { href: BASE + "ranking/", label: "Ranking" },
-    { href: BASE + "screener/", label: "Quant Screener" },
-    { href: "/quant/#/", label: "Radar" },
-    { href: BASE + "strategies/", label: "Strategien" },
-    { href: BASE + "backtests/", label: "Backtests" },
-    { href: BASE + "watchlist/", label: "Watchlist" },
-    { href: BASE + "technical/", label: "Technical" },
-    { href: BASE + "ai/", label: "Ask Vision Universe" },
-    { href: BASE + "markt/", label: "Marktdaten" }
+    { href: BASE + "#/", label: "Quant Home" },
+    { href: BASE + "#/screener", label: "Screener" },
+    { href: BASE + "#/radar", label: "Radar" },
+    { href: BASE + "#/strategien", label: "Strategien" },
+    { href: BASE + "#/backtest", label: "Backtests" },
+    { href: BASE + "#/aktien", label: "Aktien" },
+    { href: BASE + "#/methodik", label: "Methodik" },
+    { href: "/ask/", label: "AI Atlas" },
+    { href: BASE + "markt/", label: "Marktdaten" },
+    { href: BASE + "data-inspector/", label: "Data Inspector" }
   ];
 
   function renderNav(activeHref) {
@@ -187,26 +145,6 @@
     }));
   }
 
-  /** Mock-Kennzeichnung (§94). Steht auf jeder Seite, nicht nur im Footer. */
-  function mockBanner(meta) {
-    return el("div", { class: "q-mock-banner", role: "note" }, [
-      el("span", { class: "q-mock-dot", "aria-hidden": "true" }),
-      el("div", {}, [
-        el("b", { text: "Demo-Daten · synthetisches Universum" }),
-        el("div", { class: "q-provenance-tags" }, [
-          provenanceTag("MODE", "MOCK", "neutral"),
-          provenanceTag("FORM", "PRECOMPUTED", "neutral"),
-          provenanceTag("SOURCE", "MOCK", "neutral")
-        ]),
-        el("span", {
-          text: meta.securityCount + " synthetische Wertpapiere (VU0001 …), erzeugt aus Seed „" + meta.seed +
-                "“. Keine realen Unternehmen, keine realen Marktdaten, keine reale Wertentwicklung. " +
-                "Datenstand des Modells: " + formatDate(meta.asOf) + "."
-        })
-      ])
-    ]);
-  }
-
   // ------------------------------------------------------- Datenherkunft
   /* Phase 2 §17/§21. Der Statusbericht wird serverseitig geschrieben; das
      Frontend liest ihn nur. Fehlt er, ist das kein Fehler, sondern der
@@ -219,7 +157,7 @@
     delayed:          { text: "Verzoegert",     tone: "neutral", note: "Kurse mit Anbieterverzoegerung, typisch 15 Minuten." },
     endOfDay:         { text: "Tagesschluss",   tone: "neutral", note: "Schlusskurse des letzten abgeschlossenen Handelstags." },
     stale:            { text: "Veraltet",       tone: "warn",    note: "Der letzte Abruf ist fehlgeschlagen; angezeigt wird der zuletzt erfolgreiche Stand." },
-    mock:             { text: "Demo",           tone: "neutral", note: "Synthetische Daten. Keine realen Unternehmen." },
+    sec:              { text: "SEC-Meldungen",  tone: "good",    note: "Unternehmenszahlen aus den Pflichtmeldungen bei der SEC (siehe Data Inspector)." },
     unavailable:      { text: "Nicht verfuegbar", tone: "poor",  note: "Fuer diese Datenklasse liegt keine Quelle vor." },
     capabilityMissing:{ text: "Nicht im Zugang", tone: "poor",   note: "Der angebundene Zugang liefert diese Daten grundsaetzlich nicht." }
   };
@@ -236,13 +174,15 @@
   }
 
   /**
-   * Laedt den Statusbericht. Ein fehlender Bericht bedeutet Mock-Modus —
-   * nicht Fehler. Diese Funktion lehnt darum nie ab.
+   * Laedt den Statusbericht des Referenz-Kurszugangs. Ein fehlender Bericht
+   * bedeutet "nicht verfuegbar" - nicht Fehler. Diese Funktion lehnt darum
+   * nie ab.
    */
   function loadMarketStatus() {
     return loadJSON(MARKET_STATUS_PATH, { attempts: 1 }).catch(function () {
       return { dataMode: "mock", configured: false, provider: null,
-               notice: "Kein Datenstand hinterlegt. Das System laeuft vollstaendig im Demo-Modus." };
+               publicDataState: { mode: "UNAVAILABLE" },
+               notice: "Kein Datenstand hinterlegt." };
     });
   }
 
@@ -252,7 +192,7 @@
    * Warum nicht ein einziges Abzeichen fuer die ganze Seite: weil es dann
    * unweigerlich zu "Live" wuerde, sobald irgendetwas live ist. Genau diese
    * Verkuerzung ist die Sorte Halbwahrheit, die eine Seite mit echten
-   * Kursen und synthetischen Fundamentaldaten unehrlich macht. Kurse und
+   * Kursen und fehlenden Fundamentaldaten unehrlich macht. Kurse und
    * Fundamentaldaten haben getrennte Herkuenfte und bekommen getrennte
    * Abzeichen.
    */
@@ -274,14 +214,16 @@
    */
   function dataOriginBar(status) {
     status = status || { dataMode: "mock", configured: false };
+    /* "mock" heisst im Statusbericht des Referenzzugangs nur: kein Zugang
+       konfiguriert. Synthetische Kurse zeigt keine Seite mehr - die
+       Kursklasse ist dann schlicht nicht verfuegbar. */
     var mode = status.dataMode || "mock";
-    var publicUnavailable = status.publicDataState && status.publicDataState.mode === "UNAVAILABLE";
+    var publicUnavailable = mode === "mock" ||
+      (status.publicDataState && status.publicDataState.mode === "UNAVAILABLE");
     var classes = [];
 
     if (publicUnavailable) {
-      classes.push(["marketData", "unavailable"], ["fundamentals", "mock"]);
-    } else if (mode === "mock") {
-      classes.push(["marketData", "mock"], ["fundamentals", "mock"]);
+      classes.push(["marketData", "unavailable"], ["fundamentals", "sec"]);
     } else {
       var anyOk = false, anyStale = false;
       var securities = status.securities || {};
@@ -289,13 +231,9 @@
         if (securities[k].ok) anyOk = true;
         if (securities[k].stale) anyStale = true;
       });
-      var marketOrigin = !anyOk ? "mock" : (anyStale ? "stale" : "endOfDay");
+      var marketOrigin = !anyOk ? "unavailable" : (anyStale ? "stale" : "endOfDay");
       classes.push(["marketData", marketOrigin]);
-      /* Fundamentaldaten bleiben in dieser Phase ausnahmslos synthetisch.
-         Das ist keine Uebergangsloesung, sondern die bewusste Grenze: ein
-         reales Unternehmen mit erfundenen Bilanzzahlen zu zeigen waere die
-         eine Sorte Fehler, die sich nicht durch einen Hinweis heilen laesst. */
-      classes.push(["fundamentals", "mock"]);
+      classes.push(["fundamentals", "sec"]);
       /* Kapitalmassnahmen bekommen ein eigenes Abzeichen, sobald ueber sie
          etwas bekannt ist - in beide Richtungen. Frueher stand hier nur der
          Fall "liefert der Zugang nicht"; seit Splits und Dividenden bei
@@ -311,10 +249,10 @@
     }
 
     var badges = classes.map(function (pair) { return originBadge(pair[0], pair[1]); });
-    var source = publicUnavailable ? "NONE" : (status.provider ? String(status.provider).replace(/-/g, " ").toUpperCase() : "MOCK");
+    var source = publicUnavailable ? "NONE" : (status.provider ? String(status.provider).replace(/-/g, " ").toUpperCase() : "NONE");
     var children = [
       el("div", { class: "q-provenance-tags" }, [
-        provenanceTag("MODE", publicUnavailable ? "UNAVAILABLE" : (mode === "mock" ? "MOCK" : "HYBRID"), mode === "mock" ? "neutral" : "strong"),
+        provenanceTag("MODE", publicUnavailable ? "UNAVAILABLE" : "HYBRID", publicUnavailable ? "neutral" : "strong"),
         provenanceTag("FORM", "PRECOMPUTED", "neutral"),
         provenanceTag("SOURCE", source, "neutral")
       ]),
@@ -346,37 +284,6 @@
                            "aria-label": "Herkunft der angezeigten Daten" }, children);
   }
 
-  /**
-   * Der Hinweis fuer die Seiten, die auf dem Modelluniversum laufen.
-   *
-   * Wichtig genug fuer einen eigenen Baustein: Ranking, Screener, Radar
-   * und Backtests rechnen ausnahmslos auf dem synthetischen Datensatz.
-   * Auf diesen Seiten die Herkunftsleiste mit "Kurse: Tagesschluss" zu
-   * zeigen, nur weil irgendwo im System echte Kurse abgerufen wurden,
-   * waere schlicht falsch — die Kurse dieser Seite sind es nicht.
-   * Der richtige Zusatz ist ein anderer: dass es echte Daten gibt, wo sie
-   * liegen, und dass sie in diese Auswertung nicht einfliessen.
-   */
-  function datasetOriginNote(status) {
-    if (!status || !status.configured) return null;
-    var securities = status.securities || {};
-    var loaded = Object.keys(securities).filter(function (k) { return securities[k].ok; });
-    if (!loaded.length) return null;
-
-    return el("section", { class: "q-origin-bar", role: "note" }, [
-      el("div", { class: "q-origin-row" }, [
-        originBadge("marketData", "mock", "Diese Seite rechnet auf dem Modelluniversum."),
-        originBadge("fundamentals", "mock")
-      ]),
-      el("p", { class: "q-origin-note" }, [
-        "Die Auswertungen dieser Seite beruhen vollstaendig auf dem synthetischen " +
-        "Modelluniversum. Unabhaengig davon liegen echte Tageskurse fuer " + loaded.length +
-        " reale Referenztitel vor; sie fliessen hier nicht ein. ",
-        el("a", { class: "q-link", href: BASE + "markt/", text: "Zur Datenherkunft" })
-      ])
-    ]);
-  }
-
   function formatDateTime(iso) {
     if (!iso) return "unbekannt";
     var d = new Date(iso);
@@ -391,7 +298,7 @@
       el("p", {
         text: "Vision Universe® ist ein Research- und Analysewerkzeug. Die gezeigten Auswertungen sind " +
               "quantitative Kennzahlen und Regelwerke, keine Anlageberatung, keine persoenliche Empfehlung und keine " +
-              "Aufforderung zum Kauf oder Verkauf von Wertpapieren. Ein Quant Score beschreibt die relative Position " +
+              "Aufforderung zum Kauf oder Verkauf von Wertpapieren. Ein Faktorwert beschreibt die relative Position " +
               "eines Wertpapiers innerhalb einer Vergleichsgruppe — er ist keine Aussage ueber die Wahrscheinlichkeit " +
               "kuenftiger Kursentwicklungen. Historische Auswertungen beruhen auf Modellannahmen und lassen keinen " +
               "verlaesslichen Rueckschluss auf die kuenftige Entwicklung zu.",
@@ -399,8 +306,8 @@
       }),
       el("p", {
         text: "Datenherkunft und Verarbeitungsform werden auf jeder Seite anhand der geladenen Metadaten ausgewiesen. " +
-              "MOCK, REAL, HYBRID, PRECOMPUTED und BETA sind getrennte Zustaende; fehlende Daten werden nicht " +
-              "stillschweigend durch Demo-Daten ersetzt.",
+              "REAL, HYBRID, PRECOMPUTED, BETA und UNAVAILABLE sind getrennte Zustaende; fehlende Daten werden nicht " +
+              "stillschweigend ersetzt.",
         style: "margin:0"
       })
     ]);
@@ -436,18 +343,6 @@
     }) + p.suffix;
   }
 
-  function toneFor(score) {
-    if (score === null || score === undefined || !Number.isFinite(score)) return "none";
-    var band = Methodology.bandFor(Methodology.quant().ratingBands, score);
-    return band ? band.tone : "none";
-  }
-
-  function bandLabel(score) {
-    if (score === null || !Number.isFinite(score)) return "Kein Score";
-    var band = Methodology.bandFor(Methodology.quant().ratingBands, score);
-    return band ? band.label : "–";
-  }
-
   var CONFIDENCE_LABEL = { high: "Hoch", medium: "Mittel", low: "Niedrig", insufficient: "Unzureichend" };
   var FACTOR_LABEL = { quality: "Quality", momentum: "Momentum", value: "Value", growth: "Growth", risk: "Risk", revisions: "Revisions" };
 
@@ -475,57 +370,17 @@
     ]);
   }
 
-  /** Standard-Bootstrap einer Seite: Nav, Banner, Disclaimer, Fehlerbehandlung. */
-  function page(options) {
-    renderNav(options.nav);
-    var root = $(options.mount || "#q-main");
-    mount(root, loading());
-    return boot(options.need).then(function (data) {
-      clear(root);
-      if (options.banner !== false) root.appendChild(mockBanner(data.meta));
-
-      /* Die Herkunftsleiste wird nachgereicht, sobald der Statusbericht da
-         ist. Sie darf den Seitenaufbau nicht aufhalten: eine Seite, die auf
-         eine Statusdatei wartet, die es auf den meisten Installationen gar
-         nicht gibt, waere langsamer ohne einen einzigen Gewinn. */
-      var originSlot = el("div", {});
-      if (options.origin !== false) {
-        root.appendChild(originSlot);
-        loadMarketStatus().then(function (status) {
-          /* Im reinen Mock-Modus sagt das Demo-Banner darueber bereits
-             alles; zwei Hinweise nebeneinander stumpfen beide ab. */
-          var note = datasetOriginNote(status);
-          if (note) mount(originSlot, note);
-        });
-      }
-
-      var content = el("div", {});
-      root.appendChild(content);
-      var result = options.render(data, content);
-      root.appendChild(disclaimer());
-      var stamp = $("#q-datastamp");
-      if (stamp) stamp.textContent = "Modellstand " + formatDate(data.meta.asOf) + " · " + data.meta.methodologyVersions.quant;
-      return result;
-    }).catch(function (err) {
-      mount(root, [errorBox(err), disclaimer()]);
-      if (global.console) global.console.error(err);
-      throw err;
-    });
-  }
-
   var api = {
-    BASE: BASE, NAV: NAV, DATA_FILES: DATA_FILES,
+    BASE: BASE, NAV: NAV,
     $: $, $$: $$, el: el, clear: clear, mount: mount, param: param,
     loadJSON: loadJSON, loadCompressedJSON: loadCompressedJSON,
-    loadFactorDna: loadFactorDna, dnaShardKey: dnaShardKey, boot: boot, page: page,
-    renderNav: renderNav, mockBanner: mockBanner, disclaimer: disclaimer,
+    renderNav: renderNav, disclaimer: disclaimer,
     formatDate: formatDate, num: num, signed: signed, fmt: fmt,
-    toneFor: toneFor, bandLabel: bandLabel,
     CONFIDENCE_LABEL: CONFIDENCE_LABEL, FACTOR_LABEL: FACTOR_LABEL,
     stateBox: stateBox, loading: loading, errorBox: errorBox, unavailable: unavailable,
     MARKET_STATUS_PATH: MARKET_STATUS_PATH, ORIGIN_LABEL: ORIGIN_LABEL, CLASS_LABEL: CLASS_LABEL,
     loadMarketStatus: loadMarketStatus, originBadge: originBadge, dataOriginBar: dataOriginBar,
-    datasetOriginNote: datasetOriginNote, provenanceTag: provenanceTag,
+    provenanceTag: provenanceTag,
     formatDateTime: formatDateTime
   };
 

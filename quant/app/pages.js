@@ -564,6 +564,9 @@
     var initial, invalidLink = false;
     try { initial = params.get("query") ? W.decode(params.get("query")) : W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
     catch (e) { invalidLink = true; main.append(X.notice("Gespeicherte Regeln konnten nicht geöffnet werden", "Die Abfrage enthält ungültige Kriterien. Es wurden keine Ersatzregeln ausgeführt – stelle unten eigene Regeln zusammen und tippe auf „Treffer anzeigen“.")); initial = W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
+    /* Weitergeleitet vom frueheren Strategy Lab (quant/ui/legacy-redirect.js):
+       ehrlich sagen, was es dort gab und hier nicht gibt. */
+    if (params.get("hinweis") === "strategy-lab") main.append(X.notice("Das Strategy Lab ist umgezogen", "Eigene historische Strategietests bietet Quant derzeit nicht an: dafür müsste die vollständige Kurshistorie einschließlich delisteter Titel ausgeliefert werden, und das ist nicht möglich. Eigene Regeln stellst du hier auf dem aktuellen Datenstand zusammen."));
     var current = W.methodologyOf(initial) || W.methodologies[0];
     var methodSelect = el("select", { class: "qx-select", "aria-label": "Datenbasis" }, W.methodologies.map(function (m) { return el("option", { value: m.id, text: m.label }); }));
     methodSelect.value = current.id;

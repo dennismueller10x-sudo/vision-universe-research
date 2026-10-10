@@ -1,7 +1,3 @@
-
-
-
-
 (function (global) {
   "use strict";
   var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};

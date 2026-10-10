@@ -1,11 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import vm from 'node:vm';
-import {readFile} from 'node:fs/promises';
-const source=await readFile(new URL('../ui/europe.js',import.meta.url),'utf8'),global={VUDiscover:{},QuantShell:{el:()=>{}}};vm.runInNewContext(source,{globalThis:global});
-const allowed=global.VUDiscover.EuropeView.navigationAllowed;
-test('Europe selector remains on home and Europe routes without moving existing US detail prices',()=>{
- for(const hash of ['','#/','#/u/US_REAL'])assert.equal(allowed('US_REAL',hash),true);
- for(const hash of ['#/s/US_REAL/AAPL','#/s/US_REAL/NVDA','#/settings','#/maerkte','#/watchlist','#/c/US_REAL/top'])assert.equal(allowed('US_REAL',hash),false);
- for(const hash of ['#/c/EUROPE/all','#/s/EUROPE/ref_DBK_DE_XETR','#/watchlist/EUROPE'])assert.equal(allowed('EUROPE',hash),true);
-});
+import test from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFile} from 'node:fs/promises';const source=await readFile(new URL('../ui/europe.js',import.meta.url),'utf8'),global={VUDiscover:{},QuantShell:{el:()=>{}}};vm.runInNewContext(source,{globalThis:global});const view=global.VUDiscover.EuropeView;
+test('Discover never inserts a primary USA/Europe switch',()=>{for(const hash of ['','#/','#/u/US_REAL','#/s/EUROPE/ref_2GB_DE_XETR','#/watchlist'])assert.equal(view.navigationAllowed('EUROPE',hash),false);assert.equal(source.includes('data-europe-navigation'),false);});
+test('explicit listing routes use their canonical region; home, search and watchlist return to global context',()=>{const ctx={universeId:'EUROPE'};for(const parts of [[],['watchlist'],['suche'],['welten'],['s','US_REAL','NVDA']]){assert.equal(view.bindRoute(parts,ctx),false);assert.equal(ctx.universeId,'US_REAL');assert.equal(view.handles(parts,ctx),false);}view.bindRoute(['s','EUROPE','ref_2GB_DE_XETR'],ctx);assert.equal(ctx.universeId,'EUROPE');assert.equal(view.handles(['s','EUROPE','ref_2GB_DE_XETR'],ctx),true);});

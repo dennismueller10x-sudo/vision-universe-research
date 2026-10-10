@@ -1,7 +1,22 @@
 {
   "schemaVersion": "1.0.0",
-  "methodologyVersion": "pattern-research-1.0.0",
+  "methodologyVersion": "pattern-research-1.1.0",
   "status": "ACTIVE_RESEARCH_ONLY",
+  "changelog": [
+    {
+      "version": "pattern-research-1.0.0",
+      "change": "Erste Fassung: zehn Kursmerkmale aus Wochenschlusskursen, fuenfzehn vorregistrierte Kandidaten, Einzel- und Paarhypothesen."
+    },
+    {
+      "version": "pattern-research-1.1.0",
+      "registeredAt": "2026-10-06",
+      "registeredBeforeMeasurement": true,
+      "change": "Drei Volumenmerkmale aus Tageskursen (udv50, acc63, dryUp10over50) und drei Kandidaten darauf, VOR jeder Messung eingetragen. Die Gewinnerstudie hatte bis hierhin kein einziges Volumenmerkmal geprueft.",
+      "unchanged": "Die zehn Kursmerkmale, die fuenfzehn Kandidaten von 1.0.0, ihre Schwellen, Horizonte, Gewinnerschwellen, Raster, Folds und Robustheitsregeln sind unveraendert. Alle 114 Hypothesen von 1.0.0 werden genau so weiter gemessen.",
+      "multipleTesting": "Die neuen Hypothesen (3 Einzel + 46 Paare) gehen in DIESELBE Benjamini-Hochberg-Korrektur ein. Die Korrektur wird dadurch strenger; ein Befund von 1.0.0 kann knapp unter die Schwelle fallen. Damit das sichtbar bleibt und nicht stillschweigend passiert, weist die Studie zusaetzlich die Korrektur nur ueber die 1.0.0-Hypothesen aus (primary.correctionV100Only) samt jeder Hypothese, deren Signifikanz sich dadurch unterscheidet.",
+      "dataSource": "Volumen steht nicht in den Wochenreihen. Es kommt aus der kanonischen Tageshistorie (runner-privat, nur in GitHub Actions lesbar) und wird am woechentlichen Stichtag abgetastet. Rohkurse und Rohvolumen werden nie veroeffentlicht; die Studie enthaelt nur Aggregate."
+    }
+  ],
   "publication": {
     "predictionAllowed": false,
     "backtestAllowed": false,
@@ -28,7 +43,15 @@
     ],
     "cohortRule": "Jeder Titel mit ausreichender Vorgeschichte am Stichtag gehoert zur Grundgesamtheit. Es wird keine Liste bekannter Gewinner ausgewaehlt und daran erzaehlt.",
     "outcomeUnavailablePolicy": "EXCLUDED_AND_REPORTED",
-    "outcomeUnavailableNote": "Endet die Reihe vor dem Horizontende, ist der Ausgang unbekannt. Solche Beobachtungen zaehlen weder als Gewinner noch als Nicht-Gewinner; ihre Zahl wird ausgewiesen. Sie stillschweigend zu den Nicht-Gewinnern zu schlagen waere eine erfundene Beobachtung."
+    "outcomeUnavailableNote": "Endet die Reihe vor dem Horizontende, ist der Ausgang unbekannt. Solche Beobachtungen zaehlen weder als Gewinner noch als Nicht-Gewinner; ihre Zahl wird ausgewiesen. Sie stillschweigend zu den Nicht-Gewinnern zu schlagen waere eine erfundene Beobachtung.",
+    "volumeSource": {
+      "since": "pattern-research-1.1.0",
+      "source": "kanonische Tageshistorie <work-dir>/tiingo/daily/<securityId>.json (runner-privat, aus der dauerhaften Ablage wiederhergestellt)",
+      "sampling": "letzter Tagesbalken mit Datum <= Stichtag t; liegt er mehr als 10 Kalendertage vor t, gilt das Volumenbild als nicht vorhanden",
+      "basis": "Rohschluss, Rohhoch, Rohtief, Rohvolumen und Splitfaktor. Dollarvolumen = Rohschluss x Rohvolumen (splitneutral). Auf/Ab-Tag und Stueckvolumen werden mit den bis t bekannten Splitfaktoren vergleichbar gemacht.",
+      "missingPolicy": "Ohne Tagesbalken sind alle drei Volumenmerkmale null (nicht messbar), nie geschaetzt. Eine Beobachtung ohne Volumenmerkmal faellt aus der Grundgesamtheit eines Volumenmusters heraus; dessen Basisquote wird ueber dieselbe eingeschraenkte Grundgesamtheit gerechnet. Die Abdeckung steht im Artefakt (population.volumeCoverage).",
+      "publication": "Nur Aggregate. Kein Tagesbalken, kein Volumen und kein Merkmalswert je Titel verlaesst den Runner."
+    }
   },
   "survivorshipBias": {
     "state": "PRESENT_AND_UNQUANTIFIED_IN_PART",
@@ -94,6 +117,7 @@
     "outcomeWindowStartsAfter": "t",
     "enforced": "IN_CODE",
     "enforcedNote": "Die Engine prueft fuer jede Beobachtung, dass kein Merkmalsindex groesser als t ist und kein Ausgangsindex kleiner oder gleich t. Ein Verstoss wirft, er wird nicht geloggt.",
+    "volumeEnforcedNote": "Die Volumenmerkmale lesen jeden Tagesbalken ueber einen Zugriff, der bei einem Index nach dem Ankerbalken wirft; zusaetzlich wird geprueft, dass das Datum des spaetesten gelesenen Balkens <= t ist.",
     "forbiddenFeatures": [
       "marketCap",
       "sharesOutstanding",
@@ -164,6 +188,36 @@
       "label": "Kurs zum Allzeithoch",
       "window": 0,
       "kind": "ratio"
+    },
+    {
+      "id": "udv50",
+      "label": "Umsatz an Aufwaertstagen zu Umsatz an Abwaertstagen, 50 Handelstage",
+      "window": 50,
+      "windowUnit": "tradingDays",
+      "kind": "ratio",
+      "grain": "daily",
+      "addedIn": "pattern-research-1.1.0",
+      "definition": "Summe Dollarvolumen (Rohschluss x Rohvolumen) der Tage mit splitbereinigtem Schluss ueber dem Vortag, geteilt durch dieselbe Summe der Tage darunter. Mindestens 45 gueltige Tage; ohne Abwaertsumsatz null."
+    },
+    {
+      "id": "acc63",
+      "label": "Akkumulation nach Chaikin, 63 Handelstage",
+      "window": 63,
+      "windowUnit": "tradingDays",
+      "kind": "ratio",
+      "grain": "daily",
+      "addedIn": "pattern-research-1.1.0",
+      "definition": "Summe(CLV x Dollarvolumen) / Summe(Dollarvolumen), CLV = ((C - L) - (H - C)) / (H - L), bei H = L ist CLV 0. Wertebereich -1 bis +1. Mindestens 57 gueltige Tage."
+    },
+    {
+      "id": "dryUp10over50",
+      "label": "Volumen der letzten 10 zu den letzten 50 Handelstagen",
+      "window": 50,
+      "windowUnit": "tradingDays",
+      "kind": "ratio",
+      "grain": "daily",
+      "addedIn": "pattern-research-1.1.0",
+      "definition": "Mittleres splitbereinigtes Stueckvolumen der letzten 10 Tage geteilt durch das der letzten 50 Tage (inklusive der 10). Mindestens 9 bzw. 45 gueltige Tage."
     }
   ],
   "preRegistration": {
@@ -171,7 +225,14 @@
     "note": "Die Kandidatenliste steht in dieser Datei und wird nicht aus dem Ergebnis heraus erweitert. Ein Muster, das nachtraeglich hinzugefuegt wird, ist eine neue Methodikversion - sonst ist die Mehrfachtestkorrektur eine Zahl ohne Bedeutung.",
     "hypothesisCount": "singles + pairs, in der Engine gezaehlt und im Artefakt ausgewiesen",
     "multipleTesting": "BENJAMINI_HOCHBERG",
-    "alpha": 0.05
+    "alpha": 0.05,
+    "registeredCandidates": 18,
+    "registeredHypotheses": 163,
+    "registeredHypothesesByVersion": {
+      "pattern-research-1.0.0": 114,
+      "pattern-research-1.1.0": 49
+    },
+    "registeredHypothesesNote": "Einzel plus Paare aus Kandidaten mit disjunkten Merkmalen, gezaehlt von derselben Funktion, die die Studie baut (scripts/quant/lib/pattern-study.mjs pricePatternSet); ein Test prueft die Zahl. In die Korrektur gehen davon die ein, die die Mindestbelegung erreichen - das steht als primary.hypotheses im Artefakt."
   },
   "candidates": [
     {
@@ -278,6 +339,37 @@
       "feature": "return3m",
       "operator": "gte",
       "value": 0.3
+    },
+    {
+      "id": "up-volume-dominance",
+      "plain": "An Aufwärtstagen wurde deutlich mehr umgesetzt als an Abwärtstagen",
+      "feature": "udv50",
+      "operator": "gte",
+      "value": 1.5,
+      "addedIn": "pattern-research-1.1.0"
+    },
+    {
+      "id": "volume-accumulation",
+      "plain": "Über drei Monate schloss der Kurs bei hohem Umsatz meist im oberen Teil der Tagesspanne",
+      "feature": "acc63",
+      "operator": "gte",
+      "value": 0.2,
+      "addedIn": "pattern-research-1.1.0"
+    },
+    {
+      "id": "volume-dry-up-near-high",
+      "plain": "Der Umsatz trocknete zuletzt aus, während der Kurs nah am Jahreshoch stand",
+      "feature": "dryUp10over50",
+      "operator": "lte",
+      "value": 0.8,
+      "also": [
+        {
+          "feature": "distanceTo52wHigh",
+          "operator": "gte",
+          "value": -0.15
+        }
+      ],
+      "addedIn": "pattern-research-1.1.0"
     }
   ],
   "interactions": {

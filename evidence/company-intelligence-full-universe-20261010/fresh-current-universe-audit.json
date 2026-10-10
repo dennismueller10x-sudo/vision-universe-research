@@ -1,0 +1,157 @@
+{
+  "activeSourceCount": 5355,
+  "activeSourcesByType": {
+    "IR_EVENTS": 1342,
+    "IR_FEED": 2138,
+    "IR_MATERIALS": 1875
+  },
+  "asOf": "2026-10-10T15:22:56Z",
+  "authoritativeStateGeneration": "85ebdc8c1ff855929a828f38",
+  "collectionLinkExclusions": {
+    "issuers": 117,
+    "records": 126
+  },
+  "confirmedEventIssuers": 190,
+  "consumerAssets": 5414,
+  "consumerBytes": 96952850,
+  "currentMasterIssuerCount": 6073,
+  "eligibilityVersion": "issuer-eligibility-1.0.0",
+  "eligibleIssuerCount": 4789,
+  "eligibleStockCount": 5088,
+  "estimatedEventIssuers": 3123,
+  "financialStates": {
+    "CURRENT": 3697,
+    "NOT_EVALUATED": 23,
+    "NO_SUPPORTED_DATA": 1189,
+    "NO_SUPPORTED_DISPLAY_METRICS": 141,
+    "STALE": 1014,
+    "TOO_STALE": 15
+  },
+  "generation": "99ed34a9e1f01b19589fb14d",
+  "identityInventoryIssuerCount": 6079,
+  "identityOnlyIssuerCount": 959,
+  "ledgerInventory": {
+    "auditRecords": 25014,
+    "eventAliasRecords": 1012,
+    "eventsByType": {
+      "EARNINGS_CALL": 2669,
+      "EARNINGS_CANDIDATE": 1,
+      "EARNINGS_ESTIMATED": 3132,
+      "EARNINGS_PUBLISHED": 1615,
+      "EARNINGS_SCHEDULED": 745,
+      "IR_EVENT": 4168,
+      "MATERIAL_SEC_EVENT": 2,
+      "PERIODIC_REPORT_PUBLISHED": 538,
+      "PRESENTATION_PUBLISHED": 205,
+      "SEC_FILING": 543
+    },
+    "newsIssuers": 2628,
+    "newsRecords": 20555,
+    "operationalStateRecords": 69285,
+    "sourceRecords": 5384
+  },
+  "managementContentIssuers": 481,
+  "moduleCounts": {
+    "aktuelles": 1717,
+    "calls": 562,
+    "documents": 1793,
+    "financials": 4711,
+    "nextEvent": 3274,
+    "profile": 45,
+    "whatChanged": 3626
+  },
+  "moduleFailureClasses": {
+    "GENERIC_IR_COLLECTION_LINKS_EXCLUDED": 117,
+    "INVALID_ROWS_REMOVED": 145,
+    "NO_APPROVED_GERMAN_COPY": 3630,
+    "NO_SAFE_PROFILE_SOURCE": 2374,
+    "NO_VALID_MEANINGFUL_CONTENT": 13044,
+    "STALE_OR_WEAK_PROFILE": 7
+  },
+  "newsCoverage": {
+    "currentIntelligence90": 1717,
+    "days30": 1106,
+    "days90": 1716,
+    "retained180": 1750
+  },
+  "policyExclusions": {
+    "calls": 275,
+    "events": 25,
+    "materials": 4642,
+    "news": 2981
+  },
+  "privateIssuerCount": 5120,
+  "privateListingCount": 6416,
+  "privateOperationalRowsIncluded": false,
+  "privatePayloadCount": 5120,
+  "privateStateAsOf": "2026-10-10T14:36:59Z",
+  "privateStateUnchanged": true,
+  "privateStatusCounts": {
+    "ELIGIBLE_FULL": 1356,
+    "ELIGIBLE_PARTIAL": 3433,
+    "INELIGIBLE_MAPPING": 2,
+    "INELIGIBLE_NO_SAFE_CONTENT": 223,
+    "INELIGIBLE_SOURCE_POLICY": 97,
+    "INELIGIBLE_TOO_STALE": 9
+  },
+  "profileStates": {
+    "GERMAN_APPROVED": 45,
+    "NO_APPROVED_GERMAN_COPY": 3630,
+    "NO_SAFE_PROFILE_SOURCE": 2397,
+    "STALE_OR_WEAK_PROFILE": 7
+  },
+  "rawCoverage": {
+    "callsIssuers": 948,
+    "materialsIssuers": 4944,
+    "newsIssuers": 2628,
+    "payloads": 5120,
+    "profiles": 3684
+  },
+  "runtimeSeconds": 34.535,
+  "schema": 1,
+  "sourceHealth": {
+    "BROKEN": 2,
+    "HEALTHY": 5158,
+    "STALE": 50,
+    "TEMPORARY_FAILURE": 174
+  },
+  "sourceStates": {
+    "NO_APPROVED_SOURCE": 4057,
+    "POLLABLE_APPROVED": 2015,
+    "REGISTERED_NOT_POLLABLE": 7
+  },
+  "sourceUsagePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "status": "PASS",
+  "statusCounts": {
+    "ELIGIBLE_FULL": 1356,
+    "ELIGIBLE_PARTIAL": 3433,
+    "INELIGIBLE_MAPPING": 23,
+    "INELIGIBLE_NO_SAFE_CONTENT": 1161,
+    "INELIGIBLE_SOURCE_POLICY": 97,
+    "INELIGIBLE_TOO_STALE": 9
+  },
+  "r2CheckpointSha256": "14aecddecadb4cd47d04f1cac58d4de87536a74dfb86e79ab3af608d5e6159b8",
+  "r2CheckpointBytes": 31149178,
+  "freshRestoreVerified": true,
+  "allConsumerBytesReproduced": true,
+  "consumerContracts": {
+    "status": "PASS",
+    "generation": "99ed34a9e1f01b19589fb14d",
+    "issuers": 4789,
+    "listings": 5088,
+    "verifiedAssets": 5414,
+    "modules": {
+      "profile": 45,
+      "aktuelles": 1717,
+      "financials": 4711,
+      "whatChanged": 3626,
+      "nextEvent": 3274,
+      "calls": 562,
+      "documents": 1793
+    }
+  },
+  "remoteWrites": 0,
+  "sourceRequests": 0,
+  "codeSha": "c60acb55f45642dcdea5c97c019b65f140f00206",
+  "event": "workflow_dispatch"
+}
