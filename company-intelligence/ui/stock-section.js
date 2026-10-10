@@ -178,7 +178,9 @@ function mount(parent,ticker,options={}){
   }
   render(host,p);
  }).catch(()=>{if(!disposed&&host.isConnected){if(config.eligibility)host.remove();else render(host,{state:'UNAVAILABLE'});}}).finally(()=>{clearTimeout(timeout);host.setAttribute('aria-busy','false');});
- return ()=>{disposed=true;clearTimeout(timeout);controller.abort();host.remove();};
+ // Detach the subscriber on navigation; let prepared same-origin data finish
+ // within its existing deadline. Late results cannot touch the next issuer.
+ return ()=>{disposed=true;host.remove();};
 }
 g.VUCompanyIntelligenceStock={mount,render,number,viewModel,freshness,storyType,changeLabel,materialName};
 })(typeof globalThis!=='undefined'?globalThis:this);

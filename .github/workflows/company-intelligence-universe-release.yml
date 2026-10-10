@@ -58,6 +58,7 @@ jobs:
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_universe_*.py'
           npm install --prefix /tmp/universe-qa --no-audit --no-fund playwright@1.55.0
           node scripts/company_intelligence/install-browser-deps.mjs /tmp/universe-qa/node_modules/.bin/playwright
+          node scripts/company_intelligence/navigation-lifecycle-qa.mjs
       - name: Verify scale receipt from an ancestor of production code
         if: inputs.mode == 'activate'
         env:
