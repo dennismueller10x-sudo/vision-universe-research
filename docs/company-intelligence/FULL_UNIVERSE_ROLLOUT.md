@@ -36,8 +36,8 @@ restored the same authoritative CURRENT state twice: 5,120 issuer payloads,
 union contains 6,079 issuers, including 959 with no private payload; it is not
 5,120 plus 959 additional intelligence datasets.
 
-Eligible: **4,789 issuers / 5,088 current securities**, comprising 1,358 FULL and
-3,431 PARTIAL. Private ineligible: **331**: mapping 2; source policy 97; no safe
+Eligible: **4,789 issuers / 5,088 current securities**, comprising 1,356 FULL and
+3,433 PARTIAL. Private ineligible: **331**: mapping 2; source policy 97; no safe
 content 223; too stale 9; data-invalid/consumer-invalid/other 0. The larger
 current-master inventory has another 959 identity-only cases; those are not
 added to private coverage or silently given empty payloads.
@@ -50,7 +50,7 @@ added to private coverage or silently given empty payloads.
 | What Changed | 3,626 | 75.72% |
 | Next event | 3,274 | 68.37% |
 | Calls/Webcasts | 562 | 11.74% |
-| Documents | 1,800 | 37.59% |
+| Documents | 1,793 | 37.44% |
 
 Approved news: 1,106 issuers within 30 days, 1,716 within 90 days, 1,750 retained
 within 180 days. Aktuelles also includes deterministic material-event classes.
@@ -350,3 +350,15 @@ restore46(). The same authenticated-manifest reattachment is now applied there,
 inside the private runner only. Run 38048270238 must prove the real rollback and
 production legacy cohort before another activation. Scheduler, source policy,
 entity/financial gates and authoritative private state were not changed.
+
+## Final sparse evidence review and latest candidate
+
+Read-only audit [38049825233](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38049825233), code 492a5b3d890ac5a8bbdd75265ed02c21969f3fd8, again restored CURRENT twice without writes. It passed all 5,414 asset contracts and 239 browser cases. Candidate generation 889f00c2b28486d776a8a223, 96,952,850 bytes; eligible count remains 4,789 / 5,088 securities. The latest FULL/PARTIAL and document counts above supersede the earlier candidate counts; underlying private state and policy are unchanged.
+
+Review of document-only issuers found generic IR document-library links consuming consumer space. PR #573 excludes 126 such links across 117 issuers, without excluding any additional issuer. Specific reports remain eligible. Imperial Oil's original 2025 Form 10-K was opened and its issuer verified; document-only cards now show the report/year, publication-date uncertainty and original link. No unsupported fiscal year is guessed.
+
+Actual production rollback [38048270238](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38048270238) succeeded: immutable 46-stock generation 71dc0485476cfa74e59f7fc3 restored, all 86 public assets verified and 16 actual production mobile/desktop cases passed. Private state was unchanged. The frozen payload retains the existing seven-day freshness limit; an older emergency rollback must use the persistent global OFF path rather than bypass expiry.
+
+A release attempt exposed quadratic manifest validation during batch R2 download. PR #572 validates each manifest once, then preserves per-object size/hash/path/generation checks. A 5,120-issuer fixture proves one parse and exactly 5,124 reads; expiry/corruption and disabled-output assertions remain. This fixture is a reader complexity test, not private-data coverage evidence.
+
+The caller workflow verification 38049826974 covered only the legacy 46-stock scope and is not full-universe scaling acceptance. Direct full-universe isolated verification 38052669901 is pending; it does not advance production CURRENT. Full activation remains pending until its valid receipt and final production readback pass.
