@@ -418,7 +418,7 @@ jobs:
                   a.pop('line'); b.pop('line')
           assert old == new, 'Currency audit findings changed beyond source-line references'
           PY_AUDIT
-          unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^quant\/data\/market\/fx\/currency-debt-register.json$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
+          unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^quant\/data\/market\/fx\/currency-debt-register.json$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d; /^discover\/tests\/company-intelligence-master-detail.test.mjs$/d;  /^$/d')
           if [ -n "$unexpected" ]; then echo "$unexpected"; exit 1; fi
   preview:
     if: always() && (inputs.continuous_refresh == '' || inputs.continuous_refresh == 'none') && !inputs.current_restore_only && (inputs.production_release == '' || inputs.production_release == 'none') && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none') && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */4 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED != 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))

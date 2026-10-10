@@ -12,6 +12,11 @@ const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
 const temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const driver=createS3DriverFromEnv(),key=prefixFor(refreshConfig.stateNamespace)+'index.json';
 const read=p=>JSON.parse(readFileSync(p)),sha=b=>createHash('sha256').update(b).digest('hex');
+function publicEligibility(path){
+ const value=read(path);
+ for(const row of Object.values(value.issuers))for(const key of ['sourceState','policyExcluded','hasPrivatePayload','foreignIssuerEvidence'])delete row[key];
+ return JSON.stringify(value,null,2)+'\n';
+}
 function py(file,args){execFileSync('python3',['scripts/company_intelligence/'+file,...args],{stdio:['ignore','ignore','pipe'],timeout:900000,maxBuffer:1024*1024});}
 try{
  const pointer=await driver.get(key);if(!pointer)throw Error('CURRENT_AUTHORITATIVE_POINTER_MISSING');
@@ -34,13 +39,13 @@ try{
  if(!Buffer.from(await driver.get(key)).equals(Buffer.from(pointer)))throw Error('CURRENT_STATE_ADVANCED_DURING_READ_ONLY_AUDIT');
  const evidence=join(temporary,'evidence');mkdirSync(evidence,{recursive:true});
  writeFileSync(join(evidence,'audit.json'),JSON.stringify({...first,status:'STRUCTURAL_PENDING',r2CheckpointSha256:result.sha256,freshRestoreVerified:true,allConsumerBytesReproduced:true,remoteWrites:0},null,2)+'\n');
- writeFileSync(join(evidence,'eligibility.json'),readFileSync(join(temporary,'first/eligibility.json')));
+ writeFileSync(join(evidence,'eligibility.json'),publicEligibility(join(temporary,'first/eligibility.json')));
  writeFileSync(join(evidence,'sample.json'),readFileSync(join(temporary,'first/sample.json')));
  const contracts=await universeContracts(join(temporary,'first/consumer'));
  const report={...first,r2CheckpointSha256:result.sha256,r2CheckpointBytes:result.bytes,freshRestoreVerified:true,
   allConsumerBytesReproduced:true,consumerContracts:contracts,remoteWrites:0,sourceRequests:0,codeSha:process.env.GITHUB_SHA,event:process.env.GITHUB_EVENT_NAME};
  writeFileSync(join(evidence,'audit.json'),JSON.stringify(report,null,2)+'\n');
- writeFileSync(join(evidence,'eligibility.json'),readFileSync(join(temporary,'first/eligibility.json')));
+ writeFileSync(join(evidence,'eligibility.json'),publicEligibility(join(temporary,'first/eligibility.json')));
  writeFileSync(join(evidence,'sample.json'),readFileSync(join(temporary,'first/sample.json')));
  console.log(JSON.stringify({status:'PASS',generation:m.generation,privatePayloads:first.privatePayloadCount,eligibleIssuers:first.eligibleIssuerCount,freshRestoreVerified:true,remoteWrites:0}));
 }catch(e){console.error('UNIVERSE_AUDIT_FAILED');if(e.stderr){const stderr=String(e.stderr),c=stderr.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)/)?.[1],line=[...stderr.matchAll(/File "[^\n]*\/(universe_eligibility\.py|universe_audit\.py|checkpoint\.py)", line (\d+)/g)].at(-1);console.error(c||'PYTHON_'+(stderr.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));}else{
