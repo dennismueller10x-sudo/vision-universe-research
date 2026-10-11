@@ -12,18 +12,21 @@
   },
   "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
   "denominator": {
-    "PRODUCT_TITLES": 6853
+    "PRODUCT_TITLES": 6686
   },
   "marketDataSource": {
     "status": "NOT_CONNECTED",
     "canonicalOwner": "R2-Workstream (quant/data/market/history)",
+    "acceptedAsOf": "2026-10-04",
+    "acceptedIsHistorical": true,
+    "currentAcceptedSource": "quant/data/market/history/coverage-metrics.json",
     "accepted": {
       "PRODUCT_TITLES": 6853,
       "R2_SERIES_AVAILABLE": 7802,
       "HISTORICAL_CHART_AVAILABLE": 6850,
       "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96
     },
-    "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser Workstream liest sie NICHT ein und rechnet nicht mit ihnen - sie stehen hier als benannte Fremdquelle, damit niemand die Gate-Ableitung unten fuer die Marktdatendeckung haelt."
+    "note": "HISTORISCHER Stand vom 04.10.2026 (Produktuniversum vor dem Gattungsbeleg aus dem Boersenverzeichnis), NICHT der aktuelle Nenner. Seit der Neuabnahme vom 10.10.2026 gilt 6686 / 6683 / 5644 (Quelle: currentAcceptedSource). Dieser Workstream liest die Zahlen NICHT ein und rechnet nicht mit ihnen - sie stehen hier als benannte Fremdquelle, damit niemand die Gate-Ableitung unten fuer die Marktdatendeckung haelt."
   },
   "fromGateRuns": {
     "instrumentsWithProviderPriceHistory": 5690,
@@ -31,10 +34,10 @@
     "note": "Aus den Tiingo-Gate-Laeufen abgeleitet, auf INSTRUMENTENEBENE. Die Gate-Laeufe endeten vor der Erweiterung des Wertpapierstamms; diese Zahl ist keine Marktdatendeckung und darf nicht als solche verwendet werden."
   },
   "TECHNICAL_COVERED": null,
-  "FUNDAMENTAL_COVERED": 5751,
+  "FUNDAMENTAL_COVERED": 5584,
   "TECHNICAL_AND_FUNDAMENTAL": null,
   "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
   "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
   "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. Bis dahin waere jede Zahl hier eine Verrechnung zweier verschiedener Bestaende auf zwei verschiedenen Ebenen (Instrument gegen Mitglied).",
-  "generatedAtUtc": "2026-10-10T12:41:09+00:00"
+  "generatedAtUtc": "2026-10-11T05:41:03+00:00"
 }

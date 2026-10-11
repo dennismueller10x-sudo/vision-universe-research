@@ -1,58 +1,58 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-10T19:52:13.786Z",
+ "generatedAt": "2026-10-11T06:25:35.204Z",
  "asOf": "2026-10-09",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 1410,
+  "RADAR_EVENTS_TOTAL": 1422,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 8,
    "SETUP_NEW": 130,
-   "STRATEGY_MATCH_NEW": 38,
+   "STRATEGY_MATCH_NEW": 44,
    "NEW_52W_HIGH": 136,
-   "MOMENTUM_IMPROVED": 129,
-   "TREND_UP": 87,
+   "MOMENTUM_IMPROVED": 127,
+   "TREND_UP": 86,
    "PATTERN_MATCH_NEW": 0,
    "FACTOR_CHANGED": 512,
    "RISK_RISING": 7,
    "SETUP_WEAKENED": 159,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 44,
-   "MOMENTUM_DETERIORATED": 75,
-   "TREND_DOWN": 85,
+   "STRATEGY_MATCH_LOST": 58,
+   "MOMENTUM_DETERIORATED": 73,
+   "TREND_DOWN": 82,
    "EVIDENCE_CHANGED": 0
   },
   "SETUPS_TRACKED": 1267,
   "SETUP_TRANSITIONS": 3259,
   "SETUP_TRANSITIONS_LATEST": 427,
-  "BACKTEST_ELIGIBLE_RULES": 97,
-  "BACKTEST_WITHHELD_RULES": 83,
+  "BACKTEST_ELIGIBLE_RULES": 96,
+  "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5767,
-   "covered": 5410,
-   "available": 4555,
+   "universe": 5631,
+   "covered": 5290,
+   "available": 4481,
    "sufficient": {
-    "m1": 2164,
-    "m3": 2086,
-    "m6": 2004,
-    "m12": 1893
+    "m1": 2153,
+    "m3": 2076,
+    "m6": 1997,
+    "m12": 1886
    },
    "broad": {
-    "m6": 673
+    "m6": 672
    },
    "reasons": {
-    "NOT_COVERED": 357,
-    "NO_PRICE_CONDITION_TODAY": 796,
-    "NO_COMPARABLE_CASE": 59
+    "NOT_COVERED": 341,
+    "NO_PRICE_CONDITION_TODAY": 753,
+    "NO_COMPARABLE_CASE": 56
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5705,
-  "ALERT_READY_EVENTS": 1410
+  "ALERT_READY_EVENTS": 1422
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1226 Karten aus 1410 Ereignissen"
+   "measured": "1237 Karten aus 1422 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2004 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "1997 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",

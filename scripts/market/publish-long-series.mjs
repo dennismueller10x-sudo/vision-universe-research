@@ -49,6 +49,9 @@ const ONLY = arg("--only", null) ? new Set(arg("--only").split(",").map((t) => t
 const CONCURRENCY = parseInt(arg("--concurrency", "8"), 10);
 const DRY_RUN = flag("--dry-run");
 const PRUNE = !flag("--no-prune");
+/* --prune-only: keine Ablage, kein Abruf - nur Reihen entfernen, die nicht mehr im Umfang stehen (z. B. nach einer
+   Gattungskorrektur im Wertpapierstamm), und den Index nachfuehren. Wie publish-discover-series.mjs --prune-only. */
+const PRUNE_ONLY = flag("--prune-only");
 const MIN_WEEKS = 30;
 
 export const LONG_SERIES_DIR = join("quant", "data", "market", "discover-series-long");
@@ -82,6 +85,24 @@ const BENCHMARK = benchmarkSpec(SCALE);
 const securities = scope.securities.filter((s) => (!ONLY || ONLY.has(s.ticker)) &&
   !(BENCHMARK && (s.securityId === BENCHMARK.securityId || s.ticker === BENCHMARK.ticker)));
 console.log(`  Umfang: ${securities.length} Titel`);
+
+if (PRUNE_ONLY) {
+  const imUmfang = new Set(securities.map((s) => s.securityId + ".json"));
+  let entfernt = 0;
+  for (const name of readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    if (imUmfang.has(name)) continue;
+    if (!DRY_RUN) rmSync(join(OUT_DIR, name));
+    entfernt++; console.log(`  entfernt: ${name} (nicht im Umfang)`);
+  }
+  if (!DRY_RUN && entfernt) {
+    const index = JSON.parse(readFileSync(join(OUT_DIR, "index.json"), "utf8"));
+    index.count = readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json").length;
+    index.pruned = { at: new Date().toISOString(), removed: entfernt, reason: "nicht mehr im Umfang (--prune-only)" };
+    writeFileSync(join(OUT_DIR, "index.json"), JSON.stringify(index, null, 1) + "\n");
+  }
+  console.log(`\n  --prune-only: ${entfernt} Reihen entfernt`);
+  process.exit(0);
+}
 
 /* --------------------------------------------------- Ablage */
 let driver;

@@ -253,6 +253,10 @@ class HonestyTests(unittest.TestCase):
         self.assertIsNone(o["TECHNICAL_AND_FUNDAMENTAL"])
         self.assertEqual(o["marketDataSource"]["status"], "NOT_CONNECTED")
         self.assertEqual(o["marketDataSource"]["accepted"]["R2_SERIES_AVAILABLE"], 7802)
+        # Der Block ist ein Altstand: er darf nicht wie der aktuelle Nenner aussehen.
+        self.assertTrue(o["marketDataSource"]["acceptedIsHistorical"])
+        self.assertEqual(o["marketDataSource"]["acceptedAsOf"], "2026-10-04")
+        self.assertIn("HISTORISCH", o["marketDataSource"]["note"])
         self.assertTrue(o["unmeasured"], "eine nicht gemessene Zahl braucht einen Grund")
 
     def test_the_gate_derivation_is_not_labelled_market_data_coverage(self):

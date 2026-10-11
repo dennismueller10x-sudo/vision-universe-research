@@ -46,7 +46,9 @@ test("published inventory: none of the 191 inactive security-master rows is coun
   const reused = sm.rows.filter((r) => r[4] === "D");
   assert.ok(reused.length >= 180, "fast alle inaktiven Zeilen sind neu vergebene Kuerzel");
   assert.ok(reused.every((r) => r[6] === "LATER_LISTING_SAME_TICKER" || r[6] === null), "eine vorhandene Reihe gehoert dem spaeteren Listing");
-  assert.ok(reused.filter((r) => r[6] === "LATER_LISTING_SAME_TICKER").length >= 170);
+  /* 173 vor dem Verzeichnisbeleg; bei 6 Kuerzeln (AFGC, NEWTI, PFH, RILYG, RILYZ, SREA) ist das spaetere Listing eine
+     Anleihe (DEBT/EXCLUDED), deren Reihe nicht mehr veroeffentlicht wird -> 167 */
+  assert.ok(reused.filter((r) => r[6] === "LATER_LISTING_SAME_TICKER").length >= 165);
   /* Gegenprobe zur alten Regel: ein Ticker-Join haette diese Reihen dem delisteten Titel gegeben. */
   assert.equal(sm.backtestEligible, sm.classes.A + sm.classes.B);
   assert.equal(sm.cik.mapped, 0, "keine CIK ueber das Kuerzel");

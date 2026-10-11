@@ -500,13 +500,17 @@ def overlap_report(records, market):
 # 139 Listing-Kuerzungen (#367), 43 junge Reihen ueber 300 Bars, BRTM als
 # nach dem Bezug nachgeladenes neues Listing. Rueckfall, falls die Quelle
 # ihre Zahlen nicht selbst traegt.
+# Neuabnahme 10.10.2026 (Lauf 38040675307), je Titel gegen 04.10. erklaert:
+# Titel 6853-167 (Gattungsbeleg Boersenverzeichnis: 127 DEBT, 32 ETN, 8 Rights/
+# Warrants) = 6686; Charts 6850-167 = 6683; Technik 5780-137+1 (TBHC altert ueber
+# 300 Bars) = 5644.
 ACCEPTED_R2 = {
-    "PRODUCT_TITLES": 6853,
+    "PRODUCT_TITLES": 6686,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6850,
+    "HISTORICAL_CHART_AVAILABLE": 6683,
     "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5780,
-    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.34,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5644,
+    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.42,
 }
 
 
