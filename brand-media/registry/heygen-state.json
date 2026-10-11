@@ -25,7 +25,24 @@
       "status": "CREATED_COMPLETED",
       "createdCostUsd": 1.32,
       "defaultVoiceId": null,
-      "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5"
+      "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5",
+      "engineTested": "avatar_iv",
+      "engineSupportedByApi": [
+        "avatar_v",
+        "avatar_iv",
+        "avatar_iii"
+      ],
+      "voiceProvider": "heygen",
+      "voiceId": "becf484d4ec3411b992206f95e6a3aa5",
+      "voiceVersion": "0.0.0-provisional",
+      "lastSuccessfulGeneration": "2026-10-10",
+      "qaStatus": "REVIEW",
+      "costUsdTotal": 1.87,
+      "costBreakdownUsd": {
+        "avatarCreate": 1.32,
+        "video_2_48s": 0.08,
+        "video_12_15s": 0.47
+      }
     }
   },
   "videos": [
@@ -51,5 +68,34 @@
       "qaStatus": "VISUAL_REVIEW_DONE",
       "releaseStatus": "REVIEW"
     }
-  ]
+  ],
+  "voiceCandidates": {
+    "david": {
+      "provider": "heygen",
+      "voiceId": "ef0632945bc64e3b888bd83a50363671",
+      "name": "Nero - Thoughtful & Clear",
+      "tested": false,
+      "heard": false
+    },
+    "marc": {
+      "provider": "heygen",
+      "voiceId": "d284344a1ba04039bdfdede36a319f32",
+      "name": "Mordecai - Serious & Composed",
+      "tested": false,
+      "heard": false
+    },
+    "sofia": {
+      "provider": "heygen",
+      "voiceId": "133d11fe30af4bd7914bdbe4586357c1",
+      "name": "Jane - Bright & Energetic",
+      "tested": false,
+      "heard": false
+    }
+  },
+  "avatarVTest": {
+    "status": "NOT_RUN",
+    "reason": "Preis fuer Photo-Avatar-V nicht verlaesslich ermittelbar (Freigabe verlangte verifizierten Preis)",
+    "walletAtCheck": 1.8,
+    "preparedRequest": "pipeline/requests/lea_avatar_v_compare_01.json"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "brand-media-avatar-registry-1.0.0",
+  "schemaVersion": "brand-media-avatar-registry-1.1.0",
   "note": "heygen* bleibt null, bis ein Avatar nach Freigabe tatsaechlich angelegt wurde. Keine erfundenen IDs.",
   "legacy": {
     "system": "ATLAS",
@@ -33,7 +33,26 @@
       "heygenTestVoiceId": "becf484d4ec3411b992206f95e6a3aa5",
       "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
-      "status": "CREATED_COMPLETED"
+      "status": "CREATED_COMPLETED",
+      "avatarEngine": "heygen",
+      "avatarEngineTested": "avatar_iv",
+      "avatarEngineSupportedByApi": [
+        "avatar_v",
+        "avatar_iv",
+        "avatar_iii"
+      ],
+      "voiceProvider": "heygen",
+      "voiceId": "becf484d4ec3411b992206f95e6a3aa5",
+      "voiceVersion": "0.0.0-provisional",
+      "voiceCandidate": null,
+      "qaStatus": "REVIEW",
+      "costUsdTotal": 1.87,
+      "costBreakdownUsd": {
+        "avatarCreate": 1.32,
+        "video_2_48s": 0.08,
+        "video_12_15s": 0.47
+      },
+      "lastSuccessfulGeneration": "2026-10-10"
     },
     {
       "id": "david",
@@ -48,7 +67,24 @@
       "heygenTestVoiceId": null,
       "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
-      "status": "NOT_CREATED_BUDGET_GATE"
+      "status": "NOT_CREATED_BUDGET_GATE",
+      "avatarEngine": null,
+      "avatarEngineTested": null,
+      "avatarEngineSupportedByApi": null,
+      "voiceProvider": null,
+      "voiceId": null,
+      "voiceVersion": null,
+      "voiceCandidate": {
+        "provider": "heygen",
+        "voiceId": "ef0632945bc64e3b888bd83a50363671",
+        "name": "Nero - Thoughtful & Clear",
+        "tested": false,
+        "heard": false
+      },
+      "qaStatus": null,
+      "costUsdTotal": 0,
+      "costBreakdownUsd": null,
+      "lastSuccessfulGeneration": null
     },
     {
       "id": "marc",
@@ -63,7 +99,24 @@
       "heygenTestVoiceId": null,
       "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
-      "status": "NOT_CREATED_BUDGET_GATE"
+      "status": "NOT_CREATED_BUDGET_GATE",
+      "avatarEngine": null,
+      "avatarEngineTested": null,
+      "avatarEngineSupportedByApi": null,
+      "voiceProvider": null,
+      "voiceId": null,
+      "voiceVersion": null,
+      "voiceCandidate": {
+        "provider": "heygen",
+        "voiceId": "d284344a1ba04039bdfdede36a319f32",
+        "name": "Mordecai - Serious & Composed",
+        "tested": false,
+        "heard": false
+      },
+      "qaStatus": null,
+      "costUsdTotal": 0,
+      "costBreakdownUsd": null,
+      "lastSuccessfulGeneration": null
     },
     {
       "id": "sofia",
@@ -78,9 +131,32 @@
       "heygenTestVoiceId": null,
       "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
-      "status": "NOT_CREATED_BUDGET_GATE"
+      "status": "NOT_CREATED_BUDGET_GATE",
+      "avatarEngine": null,
+      "avatarEngineTested": null,
+      "avatarEngineSupportedByApi": null,
+      "voiceProvider": null,
+      "voiceId": null,
+      "voiceVersion": null,
+      "voiceCandidate": {
+        "provider": "heygen",
+        "voiceId": "133d11fe30af4bd7914bdbe4586357c1",
+        "name": "Jane - Bright & Energetic",
+        "tested": false,
+        "heard": false
+      },
+      "qaStatus": null,
+      "costUsdTotal": 0,
+      "costBreakdownUsd": null,
+      "lastSuccessfulGeneration": null
     }
   ],
+  "avatarVTest": {
+    "status": "NOT_RUN",
+    "reason": "Preis fuer Photo-Avatar-V nicht verlaesslich ermittelbar (Freigabe verlangte verifizierten Preis)",
+    "walletAtCheck": 1.8,
+    "preparedRequest": "pipeline/requests/lea_avatar_v_compare_01.json"
+  },
   "wallet": {
     "apiWalletUsd": {
       "before": 3.67,
