@@ -55,16 +55,14 @@
   "baseMeasurement": {
    "engineBase": "wie detectVcp: h1 = juengster Index des hoechsten Hochs in [t - vcp.maxBaseSessions, t]; baseSessions = t - h1",
    "selfCheck": "baseSessions muss dem eingefrorenen baseLength entsprechen; bei Abweichung wird der Fall als SELF_CHECK_FAILED markiert und nicht gewertet",
-   "recentBreakout": "Hoch[h1] > hoechstes Hoch in [t - 225, h1 - 1] (strikt) und h1 > t - 225",
-   "priorBaseSessions": "h1 - h0 mit h0 = Index des hoechsten Hochs in [t - 225, h1 - 1] (nur wenn recentBreakout)",
    "pauseSessions": "t - h1",
    "pauseDepth": "1 - min Tief[h1+1..t] / Hoch[h1]; Wahrheitswerte <= 10 %, <= 15 %, <= 25 % (Zahlen der Quelle: Flat Base 10 bis 15 %, Flagge 25 %)",
    "flatSessions": "laengstes Fenster, das in t endet, dessen (hoechstes Hoch - tiefstes Tief) / hoechstes Hoch <= 15 % (bzw. <= 10 %) ist (Q: „flat base … corrects no more than 10 or 15%“; Dauer „4 to 7 weeks“)",
    "baseFinding": {
     "NOT_SHORT": "Engine-Basis >= 15 Sitzungen",
     "FLAT_BASE_MISSED": "Engine-Basis < 15 UND flatSessions15 >= 20 (4 Wochen): die Messung ab dem hoechsten Hoch verfehlt eine Flat Base mit den Zahlen der Quelle. Bei Eintritt: Implementierungs-/Formalisierungsbefund (MR-VCP-08), nicht repariert",
-    "CONTINUATION_AFTER_BREAKOUT": "Engine-Basis < 15 UND recentBreakout UND pauseDepth <= 15 % UND kein FLAT_BASE_MISSED: die Messung ist mit ihrer eigenen Definition konsistent; die Struktur ist eine kurze Pause nach einem Ausbruch (anderer Einstiegstyp, nicht modelliert)",
-    "NO_BASE_STRUCTURE": "Engine-Basis < 15 und keines der obigen Kriterien: nicht mit Quellenzahlen reproduzierbar (Diskretion)"
+    "NO_BASE_STRUCTURE": "Engine-Basis < 15, pauseDepth > 15 %, keine Flat Base: nicht mit Quellenzahlen reproduzierbar",
+    "SHORT_PAUSE_AT_HIGHS": "Engine-Basis < 15 UND pauseDepth <= 15 % UND kein FLAT_BASE_MISSED (Nachtrag A1)"
    }
   },
   "explanation": {
@@ -74,7 +72,7 @@
   },
   "classification": {
    "IMPLEMENTATION_DEFECT": "SELF_CHECK_FAILED oder FLAT_BASE_MISSED (Messung widerspricht den Quellenzahlen)",
-   "FORMALIZATION_LIMIT": "CONTINUATION_AFTER_BREAKOUT oder Power Play erfuellt (belegter, nicht umgesetzter Einstiegstyp)",
+   "FORMALIZATION_LIMIT": "SHORT_PAUSE_AT_HIGHS oder Power Play erfuellt (belegter, nicht umgesetzter Einstiegstyp)",
    "DISCRETION": "weder noch: mit den Quellenzahlen nicht reproduzierbar"
   }
  },
@@ -91,7 +89,7 @@
   },
   {
    "id": "P3",
-   "claim": "Von den 5 BASE_TOO_SHORT-Faellen (DECK, RICK, TNDM, RVNC, MTLS) sind mindestens 3 CONTINUATION_AFTER_BREAKOUT oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED.",
+   "claim": "Von den 5 BASE_TOO_SHORT-Faellen (DECK, RICK, TNDM, RVNC, MTLS) sind mindestens 3 SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED (Kategorien nach Nachtrag A1).",
    "falsifiedIf": "3 oder mehr sind FLAT_BASE_MISSED"
   },
   {
@@ -112,5 +110,21 @@
   "Recall unveraendert / hypothetisch erklaerbar",
   "Echte Implementierungsfehler gegen Diskretion",
   "Aendert sich NOT_FEASIBLE_FROM_PUBLIC_RULES?"
+ ],
+ "amendments": [
+  {
+   "id": "A1",
+   "createdAt": "2026-10-11T05:33Z",
+   "beforeAnyPrivateRun": true,
+   "beforeInfrastructure": "vor Workflow-Aenderung und vor jedem Lauf",
+   "reason": "Beim Schreiben der synthetischen Tests zeigte sich, dass „recentBreakout“ (Hoch[h1] > hoechstes Hoch davor) fuer jedes h1 per Definition wahr ist, weil h1 das hoechste Hoch des Fensters ist. Die Kategorie CONTINUATION_AFTER_BREAKOUT war damit nicht pruefbar.",
+   "changes": [
+    "recentBreakout, priorBaseSessions entfallen.",
+    "Neue Kategorie SHORT_PAUSE_AT_HIGHS statt CONTINUATION_AFTER_BREAKOUT: Engine-Basis < 15 UND pauseDepth <= 15 % (Zahl der Quelle fuer Flat Base) UND kein FLAT_BASE_MISSED. Bedeutung unveraendert: die Messung ist mit ihrer eigenen Definition konsistent, die Struktur ist eine kurze flache Pause unter einem frischen Hoch (anderer Einstiegstyp).",
+    "NO_BASE_STRUCTURE bleibt: Engine-Basis < 15, Pause tiefer als 15 %, keine Flat Base.",
+    "P3 liest damit: mindestens 3 der 5 sind SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED."
+   ],
+   "noNewThreshold": true
+  }
  ]
 }
