@@ -8,6 +8,7 @@
 //   node heygen.mjs balance
 //   node heygen.mjs look <look_id>
 //   node heygen.mjs generate --request req.json --usd-per-sec 0.04 --est-sec 6 --max-usd 0.50 [--out result.json]
+//   node heygen.mjs generate --endpoint models --request req.json --usd-per-sec 0.09 --est-sec 10 --max-usd 1.5   (heygen-video-1: POST /v3/models/videos; Preis = Rate der gewaehlten Aufloesung x Dauer)
 //   node heygen.mjs generate --request req.json --usd-per-clip 7.32 --max-usd 2 ...   (Pauschalpreis je Clip, z. B. Cinematic; bricht ab, wenn Preis > Limit)
 const BASE = 'https://api.heygen.com';
 const H = { 'content-type': 'application/json', ...(process.env.HEYGEN_API_KEY ? { 'x-api-key': process.env.HEYGEN_API_KEY } : {}) };
@@ -25,15 +26,18 @@ const [cmd, a1] = process.argv.slice(2);
 if (cmd === 'balance') console.log(await balance());
 else if (cmd === 'look') { const d = (await api(`/v3/avatars/looks/${a1}`)).data; console.log(JSON.stringify({ id: d.id, type: d.avatar_type, status: d.status, engines: d.supported_api_engines, w: d.image_width, h: d.image_height }, null, 2)); }
 else if (cmd === 'generate') {
-  const req = JSON.parse((await import('node:fs')).readFileSync(arg('request'), 'utf8'));
+  const raw = (await import('node:fs')).readFileSync(arg('request'), 'utf8');
+  if (/PENDING|TODO_/.test(raw)) { console.error('ABBRUCH: Anfrage enthaelt Platzhalter (PENDING/TODO_), z. B. noch nicht freigegebene Voice-ID'); process.exit(3); }
+  const req = JSON.parse(raw);
+  const models = arg('endpoint') === 'models';
   const max = Number(arg('max-usd')), clip = arg('usd-per-clip');
   const est = clip !== undefined ? Number(clip) : Number(arg('usd-per-sec')) * Number(arg('est-sec'));
   if (![est, max].every(Number.isFinite)) throw new Error('--max-usd und (--usd-per-clip oder --usd-per-sec + --est-sec) sind Pflicht');
   const before = await balance();
   if (est > max || est > before) { console.error(`ABBRUCH: Schaetzung ${est.toFixed(3)} USD > Limit ${max} bzw. Wallet ${before}`); process.exit(2); }
   const key = arg('idempotency', `vu-${Date.now()}`);
-  const { data } = await api('/v3/videos', { method: 'POST', headers: { 'Idempotency-Key': key }, body: JSON.stringify(req) });
-  let v; for (let i = 0; i < 60; i++) { await sleep(10000); v = (await api(`/v3/videos/${data.video_id}`)).data; if (['completed', 'failed'].includes(v.status)) break; }
+  const { data } = await api(models ? '/v3/models/videos' : '/v3/videos', { method: 'POST', headers: { 'Idempotency-Key': key }, body: JSON.stringify(req) });
+  let v; for (let i = 0; i < 60; i++) { await sleep(10000); v = (await api(`${models ? '/v3/models/videos' : '/v3/videos'}/${data.video_id}`)).data; if (['completed', 'failed'].includes(v.status)) break; }
   const after = await balance();
   const res = { videoId: data.video_id, status: v.status, duration: v.duration, estimatedUsd: est, walletBefore: before, walletAfter: after, chargedUsd: +(before - after).toFixed(2), videoUrl: v.video_url, failure: v.failure_message ?? null };
   if (arg('out')) (await import('node:fs')).writeFileSync(arg('out'), JSON.stringify(res, null, 2) + '\n');

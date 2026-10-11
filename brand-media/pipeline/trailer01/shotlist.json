@@ -1,0 +1,92 @@
+{
+ "title": "Trailer 01 - Cinematic Studio Launch",
+ "durationS": 20,
+ "format": "1080x1920 9:16 25fps",
+ "status": "PLANNED_NOT_GENERATED",
+ "shots": [
+  {
+   "id": "01",
+   "t": [
+    0,
+    2
+   ],
+   "model": "heygen-video-1",
+   "request": "pipeline/trailer01/requests/g1_plate_768_test.json",
+   "note": "Teil von Plate G1 (10 s)"
+  },
+  {
+   "id": "02",
+   "t": [
+    2,
+    5
+   ],
+   "model": "heygen-video-1",
+   "request": "pipeline/trailer01/requests/g1_plate_768_test.json",
+   "vo": "Jeden Tag tausende Aktien. Millionen Meinungen."
+  },
+  {
+   "id": "03",
+   "t": [
+    5,
+    8
+   ],
+   "model": "heygen-video-1",
+   "request": "pipeline/trailer01/requests/g1_plate_768_test.json",
+   "vo": "Doch was zählt wirklich?"
+  },
+  {
+   "id": "04",
+   "t": [
+    8,
+    10.5
+   ],
+   "model": "avatar_v",
+   "request": "pipeline/trailer01/requests/s04_lea_avatar_v.json",
+   "line": "Investierst du noch nach Bauchgefühl?"
+  },
+  {
+   "id": "05",
+   "t": [
+    10.5,
+    12
+   ],
+   "model": "avatar_v",
+   "request": "pipeline/trailer01/requests/s05_david_avatar_v.json",
+   "line": "Nicht mehr."
+  },
+  {
+   "id": "06",
+   "t": [
+    12,
+    17
+   ],
+   "model": "none (lokale Plattformaufnahmen)",
+   "assets": "video/trailer/platform_recordings_2026-10-09/"
+  },
+  {
+   "id": "07",
+   "t": [
+    17,
+    20
+   ],
+   "model": "HyperFrames",
+   "vo": "Vision Universe.",
+   "text": [
+    "ANDERE RATEN.",
+    "DU VERSTEHST."
+   ],
+   "logo": "assets/vision-universe-logo.png"
+  }
+ ],
+ "costUsd": {
+  "minimal": 0.83,
+  "standard": 1.8,
+  "planWithRetakes": 3.7,
+  "hardLimit": 5.0,
+  "basis": "heygen-video-1 Blog-Listenpreise 0.03/0.09 USD/s (ungemessen); Avatar V 0.116 USD/s gemessen"
+ },
+ "blockedUntil": [
+  "Voice-IDs LEA/DAVID/Off-Sprecher freigegeben",
+  "G1-Test freigegeben"
+ ]
+}

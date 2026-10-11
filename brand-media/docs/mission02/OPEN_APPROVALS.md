@@ -39,3 +39,6 @@
 - **Diskrepanz geklärt:** frühere Trailer = `heygen-video-1` (≈ 0,03–0,09 USD/s), Cinematic Avatar = anderes Produkt (Pauschale ≈ 7,32 USD, unverifiziert). Siehe `COST_DISCREPANCY_ANALYSIS.md`.
 - **Zur Freigabe:** Mini-Test `reference_to_video`, 5 s, 768p, Referenzen = Masterbilder LEA und DAVID, ≈ 0,15 USD (Obergrenze 0,45 USD) – prüft Gesichtserhalt und Kamerabewegung.
 - Offen wie zuvor: Stimmenwahl, finale Plattformaufnahmen/Datenrechte, PR #583.
+
+## Update 2026-10-11 (Trailer 01 vorbereitet)
+Siehe `docs/trailer01/PRODUCTION_PLAN.md`, Abschnitt 9. Es wurde nichts generiert; Wallet 14,72 USD.
