@@ -27,3 +27,9 @@
 - **Finale Plattform-Screenrecordings:** Zugang zur passwortgeschützten Seite oder frische Daten lokal; Datenrechte (Tiingo/Indizes) für Bildschirmaufnahmen klären.
 - Wallet: **14,72 USD** (aufgeladen auf 16,20).
 - MARC/SOFIA unverändert nicht angelegt. ATLAS-Avatare unverändert.
+
+## Update 2026-10-11 (Cinematic-Test, Plattformaufnahmen)
+- **Cinematic-Test nicht ausgeführt** (siehe `CINEMATIC_TEST_PREP.md`): Kosten nicht auf 2 USD begrenzbar, wahrscheinlich ≈ 7,3 USD je Clip (unverifiziert). **Entscheidung nötig:** Option 1 (ein Mehr-Shot-Clip, bis 7,5 USD), Option 2 (ohne Cinematic, ≈ 1,7 USD) oder Aufladen.
+- **Variante B** (3 getrennte Clips) nicht finanzierbar; Schätzung 10,7 USD überholt.
+- **Plattformaufnahmen** aus frischem `origin/main` (Stand 09.10.2026); Supertrader-Signale stale ⇒ nur Hero.
+- Stimmen weiterhin offen (keine vorläufigen Stimmen im Trailer).

@@ -181,5 +181,12 @@
     "budgetLimitUsd": 0.5,
     "budgetExceededByUsd": 0.1,
     "note": "Preis fuer Photo-Avatar-V lag ca. 1.7x ueber der Blog-Schaetzung; API bietet keinen Kostenhoechstbetrag. Wallet-Differenz +-0.01 (Rundung)."
+  },
+  "cinematicTest": {
+    "status": "NOT_RUN",
+    "reason": "Kosten nicht auf <= 2 USD begrenzbar (kein API-Limit, Preis nur aus Drittquellen: 7.32 USD je 720p-Video, pauschal)",
+    "walletAtCheck": 14.72,
+    "preparedRequest": "pipeline/requests/lea_cinematic_test_01.json",
+    "guardVerified": "abort bei --usd-per-clip 7.32 --max-usd 2"
   }
 }

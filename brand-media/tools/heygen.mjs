@@ -8,6 +8,7 @@
 //   node heygen.mjs balance
 //   node heygen.mjs look <look_id>
 //   node heygen.mjs generate --request req.json --usd-per-sec 0.04 --est-sec 6 --max-usd 0.50 [--out result.json]
+//   node heygen.mjs generate --request req.json --usd-per-clip 7.32 --max-usd 2 ...   (Pauschalpreis je Clip, z. B. Cinematic; bricht ab, wenn Preis > Limit)
 const BASE = 'https://api.heygen.com';
 const H = { 'content-type': 'application/json', ...(process.env.HEYGEN_API_KEY ? { 'x-api-key': process.env.HEYGEN_API_KEY } : {}) };
 const api = async (path, init = {}) => {
@@ -25,9 +26,10 @@ if (cmd === 'balance') console.log(await balance());
 else if (cmd === 'look') { const d = (await api(`/v3/avatars/looks/${a1}`)).data; console.log(JSON.stringify({ id: d.id, type: d.avatar_type, status: d.status, engines: d.supported_api_engines, w: d.image_width, h: d.image_height }, null, 2)); }
 else if (cmd === 'generate') {
   const req = JSON.parse((await import('node:fs')).readFileSync(arg('request'), 'utf8'));
-  const rate = Number(arg('usd-per-sec')), sec = Number(arg('est-sec')), max = Number(arg('max-usd'));
-  if (![rate, sec, max].every(Number.isFinite)) throw new Error('--usd-per-sec, --est-sec und --max-usd sind Pflicht');
-  const est = rate * sec, before = await balance();
+  const max = Number(arg('max-usd')), clip = arg('usd-per-clip');
+  const est = clip !== undefined ? Number(clip) : Number(arg('usd-per-sec')) * Number(arg('est-sec'));
+  if (![est, max].every(Number.isFinite)) throw new Error('--max-usd und (--usd-per-clip oder --usd-per-sec + --est-sec) sind Pflicht');
+  const before = await balance();
   if (est > max || est > before) { console.error(`ABBRUCH: Schaetzung ${est.toFixed(3)} USD > Limit ${max} bzw. Wallet ${before}`); process.exit(2); }
   const key = arg('idempotency', `vu-${Date.now()}`);
   const { data } = await api('/v3/videos', { method: 'POST', headers: { 'Idempotency-Key': key }, body: JSON.stringify(req) });
