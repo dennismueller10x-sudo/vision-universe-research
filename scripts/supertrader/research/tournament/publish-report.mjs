@@ -73,6 +73,12 @@ export const ENGINE_DOSSIER_MAP = Object.freeze({
   value_plus_momentum: 'value_plus_momentum', TURTLE_S2_EQUITY_DAILY: 'turtle',
   WEINSTEIN_STAGE_DAILY: 'stan_weinstein', KULLAMAGI_DAILY_ADAPTATION: 'kullamagi_breakout',
 });
+const REQUIRED_SUBJECT_DOSSIERS = Object.freeze([
+  'MINERVINI', 'kullamagi_breakout', 'stan_weinstein', 'nicolas_darvas', 'william_oneil_canslim', 'david_ryan',
+  'richard_dennis', 'turtle', 'ed_seykota', 'jesse_livermore', 'mark_ritchie', 'dan_zanger', 'marty_schwartz',
+  'linda_raschke', 'morales_kacher', 'morales_kacher', 'richard_driehaus', 'gary_bielfeldt', 'william_eckhardt',
+  'tom_basso', 'larry_hite', 'michael_marcus', 'bruce_kovner', 'paul_tudor_jones',
+]);
 const ANSWER_STATUS = ['RESOLVED', 'PRIVATE_ENCRYPTED', 'BLOCKED_DATA', 'PENDING_REVIEW', 'NOT_IDENTIFIED', 'RESEARCH_ONLY'];
 const QUESTION_ENUMS = new Set([...TIERS, ...CONFIDENCE, ...SIGNAL, ...PORTFOLIO, ...RISK,
   'SEEN_HISTORICAL_DATA', 'HYPOTHESIS_GENERATING', 'NOT_CAUSALLY_IDENTIFIED',
@@ -162,6 +168,9 @@ function context(payload = {}, review = {}, metadata) {
     };
   });
   const totals = {
+    requested_person_or_curriculum_subjects: REQUIRED_SUBJECT_DOSSIERS.length,
+    requested_person_or_curriculum_subjects_covered: REQUIRED_SUBJECT_DOSSIERS.filter(id => dossierIds.has(id)).length,
+    requested_subject_distinct_dossier_ids: unique(REQUIRED_SUBJECT_DOSSIERS.filter(id => dossierIds.has(id))).length,
     researched_rows: dossiers.length,
     serious_external_candidates: count(declared.serious_external_candidates) ?? dossiers.filter(d => d.count_as_external_candidate).length,
     legendary_dossiers: count(declared.legendary_candidates) ?? (array(metadata.sourceMap?.legendary_candidate_ids).filter(id => !excludedIds.has(id)).length || dossiers.filter(d => /TRADER/.test(d.type ?? '') && d.count_as_serious_dossier !== false).length),
@@ -204,7 +213,8 @@ function answerRows(ctx) {
 }
 
 function selections(ctx, name) {
-  return {status: ctx.final ? 'REVIEWED_RESEARCH_PRIORITY' : 'PENDING_REVIEW', method_ids: ctx.final ? ctx.approvedIds(ctx.review[name]) : [], performance_ranking_claim: false};
+  const ids = ctx.final ? ctx.approvedIds(ctx.review[name]) : [];
+  return {status: ctx.final ? ids.length ? 'REVIEWED_RESEARCH_PRIORITY' : 'NONE_QUALIFIED' : 'PENDING_REVIEW', method_ids: ids, performance_ranking_claim: false};
 }
 
 function executiveHighlights(ctx) {
@@ -288,6 +298,7 @@ export function buildPublicMarkdown(payload = {}, review = {}, metadata, ownerse
   const lines = ['# Supertrader Full Tournament', '',
     `Status: **${ctx.final ? 'Review abgeschlossen; Research-Tiering' : 'PENDING_REVIEW'}**. Alle Methoden sind Research-Artefakte und ausdrücklich VU Adaptations.`, '',
     `${ctx.totals.serious_external_candidates} ernsthafte externe Kandidaten; ${ctx.totals.active_expanded_rows} aktive Universe-Zeilen; ${ctx.totals.legendary_dossiers} Trader-/Curriculum-Dossiers und ${ctx.totals.systematic_dossiers} systematische Dossiers. Diese Typen sind keine unabhängigen Strategy-Edges.`, '',
+    `${ctx.totals.requested_person_or_curriculum_subjects_covered}/${ctx.totals.requested_person_or_curriculum_subjects} geforderte Personen-/Curriculum-Subjects sind abgedeckt, über ${ctx.totals.requested_subject_distinct_dossier_ids} unterschiedliche Dossier-IDs. Das ist keine Zählung einzigartiger Personen: Gil Morales und Chris Kacher teilen ein Methoden-Dossier; das Original-Turtle-Curriculum ist ein eigener Subject.`, '',
     `${ctx.totals.engine_definitions_implemented} Engine-Definitionen; ${ctx.totals.historical_participants_planned} zugelassene historische Participants; ${ctx.totals.historical_participants_measured} tatsächlich gemessene Participants. ${ctx.totals.blocked_candidates_total} Kandidaten bleiben datenblockiert: ${ctx.totals.blocked_implemented_engines} besitzen eine Formel-Engine, ${ctx.totals.blocked_candidates_without_engines} besitzen keine zugelassene Engine.`, '',
     `Die eingefrorene ursprüngliche Baseline enthält ${ctx.totals.baseline_original_rows} unveränderte Zeilen. Das aktive Universe erweitert und ergänzt andere Zeilen; Minervini bleibt exakt unverändert. Vorhandene Pipeline oder aktuelle Fundamentals belegen keine historischen PIT-Facts.`, '',
     'Öffentlich stehen ausschließlich Methoden-IDs, Enums und Counts. Numerische Provider-Metriken, aktuelle Aktien, Preise und Signal-IDs stehen ausschließlich im privaten verschlüsselten Report. Fehlende Daten bleiben fehlend; null bedeutet unbekannt oder blockiert.', '',
@@ -295,8 +306,8 @@ export function buildPublicMarkdown(payload = {}, review = {}, metadata, ownerse
     '## Executive Counts', '', '| Dimension | Count |', '|---|---:|',
     ...Object.entries(ctx.totals).map(([name, n]) => `| ${name} | ${n} |`), '',
     '## Executive-Auswahl', '',
-    `Top Deep Dives: ${highlights.top_deep_dives.method_ids.length ? highlights.top_deep_dives.method_ids.join(', ') : 'PENDING_REVIEW'}.`, '',
-    ...Object.entries(highlights.methods).map(([name, ids]) => `${name}: ${ids.length ? ids.join(', ') : 'PENDING_OR_NOT_IDENTIFIED'}.`), '',
+    `Top Deep Dives: ${highlights.top_deep_dives.method_ids.length ? highlights.top_deep_dives.method_ids.join(', ') : ctx.final ? 'NONE_QUALIFIED' : 'PENDING_REVIEW'}.`, '',
+    ...Object.entries(highlights.methods).map(([name, ids]) => `${name}: ${ids.length ? ids.join(', ') : ctx.final ? 'NONE_QUALIFIED' : 'PENDING_REVIEW'}.`), '',
     'Beste aktuelle Kandidaten und höchster Aktien-Consensus: PRIVATE_ENCRYPTED; blockierte oder fehlende Scans sind keine beobachteten null Treffer.', '',
     'Tier-Counts beziehen sich separat auf gemessene Methoden. Datenblockierte Methoden bleiben UNRANKED_DATA_BLOCKED; sie erhalten kein historisches Tier D. Educational-Dossiers und ungemessene Legacy-Methoden haben eigene Dossier-Counts. Eine vorläufige Null bei Tier A/B ist vor Abschluss des Reviews keine negative Performance-Aussage.', '',
     '## Methodenstatus', '', '| Methode | Messung | Tier | Signal | Portfolio | Risk | Confidence |', '|---|---|---|---|---|---|---|',
@@ -322,12 +333,160 @@ export function buildPublicMarkdown(payload = {}, review = {}, metadata, ownerse
   return lines.join('\n');
 }
 
-/** Full provider-derived detail stays outside the repository and is never logged. */
-export function buildPrivateMarkdown(payload = {}, review = {}) {
-  return ['# Supertrader Full Tournament — PRIVATE', '',
-    'Provider-derived numerical metrics and security identities. Keep private; public artifacts use enum/count projections only.', '',
-    '## Owner review', '', '``````json', JSON.stringify(review, null, 2), '``````', '',
-    '## Full private payload', '', '``````json', JSON.stringify(payload, null, 2), '``````', ''].join('\n');
+function privateCell(value) {
+  return String(value ?? 'UNAVAILABLE').replaceAll('|', '\\|').replaceAll('\n', '<br>').replaceAll('\r', '');
+}
+function privateNumber(value, style = 'number') {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 'UNAVAILABLE';
+  if (style === 'percent') return `${(value * 100).toFixed(2)}%`;
+  if (style === 'count') return Number.isSafeInteger(value) ? String(value) : 'INVALID_COUNT';
+  return value.toLocaleString('en-US', {maximumFractionDigits: 4});
+}
+function privateTable(headers, rows) {
+  return [`| ${headers.map(privateCell).join(' | ')} |`, `| ${headers.map(() => '---').join(' | ')} |`,
+    ...rows.map(r => `| ${r.map(privateCell).join(' | ')} |`), ''];
+}
+function boundedPrivateValue(value, depth = 0) {
+  if (typeof value === 'string') return value.slice(0, 500);
+  if (!value || typeof value !== 'object') return value;
+  if (depth >= 4) return Array.isArray(value) ? `[${value.length} nested items; full private JSON]` : '[nested object; full private JSON]';
+  if (Array.isArray(value)) return [...value.slice(0, 8).map(v => boundedPrivateValue(v, depth + 1)), ...(value.length > 8 ? [`${value.length - 8} further items; full private JSON`] : [])];
+  return Object.fromEntries(Object.entries(value).slice(0, 20).map(([k, v]) => [k, boundedPrivateValue(v, depth + 1)]));
+}
+function privateTrace(value) {
+  if (value == null) return 'UNAVAILABLE';
+  return JSON.stringify(boundedPrivateValue(value)).slice(0, 1600);
+}
+function privateFileLink(label, value) {
+  if (!value) return `${label}: NOT_LINKED; pass the corresponding private file path to the builder.`;
+  const absolute = path.resolve(value), target = absolute.replaceAll('>', '%3E').replaceAll('\n', '%0A').replaceAll('\r', '%0D');
+  return `[${label}](<${target}>)`;
+}
+
+/** Human-readable provider-derived detail. Called only for an outside-repo destination. */
+export function buildPrivateMarkdown(payload = {}, review = {}, options = {}) {
+  const results = array(payload.results), finalRows = array(review.finalRankings ?? review.methods);
+  const candidateLimit = count(options.maxCandidatesPerMethod) ?? 20, consensusLimit = count(options.maxConsensusRows) ?? 100;
+  const lines = ['# Supertrader Full Tournament — PRIVATE', '',
+    'Provider-derived numerical metrics and security identities. Keep private. This report formats supplied measurements; it calculates no new returns and changes no rules, rankings or parameters.', '',
+    `Review: **${review.finalized === true && review.status === 'PASSED' ? 'FINAL_REVIEW_PASSED' : 'PENDING_REVIEW'}**. Historical results are SEEN_HISTORICAL_DATA, hypothesis-generating and subject to terminal/cost scenarios. No unseen holdout or independent alpha proof.`, '',
+    privateFileLink('Full private payload JSON', options.inputPath), '',
+    privateFileLink('Full private review JSON', options.reviewPath), '',
+    'Large curves, every execution and complete rule traces stay in those private JSON files. This Markdown contains compact comparisons and bounded candidate lists; display truncation is not a data filter or strategy decision.', '',
+    '## Portfolio comparison', '',
+  ];
+  const columns = [{id: 'SPY_BENCHMARK', p: payload.benchmarkMetrics ?? {}}, ...results.map(r => ({id: r.id, p: r.portfolioMetrics ?? {}}))];
+  const metrics = [
+    ['Status', 'status', 'text'], ['From', 'from', 'text'], ['To', 'to', 'text'], ['Observations', 'observations', 'count'],
+    ['Return observations', 'returnObservations', 'count'], ['Elapsed days', 'elapsedDays', 'count'],
+    ['Initial capital', 'initialCapital'], ['Final equity', 'finalEquity'], ['Total return', 'totalReturn', 'percent'],
+    ['CAGR', 'cagr', 'percent'], ['Max drawdown', 'maxDrawdown', 'percent'], ['Annualized volatility', 'annualizedVolatility', 'percent'],
+    ['Sharpe (risk-free 0)', 'sharpe'], ['Average exposure', 'averageExposure', 'percent'], ['Median exposure', 'medianExposure', 'percent'],
+    ['Average holdings', 'averageHoldings'], ['Median holdings', 'medianHoldings'], ['Maximum holdings', 'maxHoldings', 'count'],
+    ['Total turnover', 'turnover'], ['Annualized turnover', 'turnoverAnnualized'], ['Turnover coverage', 'turnoverCoverage', 'text'],
+    ['Execution costs', 'executionCosts'],
+  ];
+  lines.push(...privateTable(['Metric', ...columns.map(c => c.id)], metrics.map(([label, key, style]) =>
+    [label, ...columns.map(c => style === 'text' ? c.p[key] ?? 'UNAVAILABLE' : privateNumber(c.p[key], style))])));
+  lines.push('## Closed-trade comparison', '', 'Trade P&L is already net as supplied by the runner; transaction costs are reporting fields and are not subtracted a second time.', '');
+  const tradeMetrics = [['Closed trades', 'n', 'count'], ['Supplied trades', 'supplied', 'count'], ['Invalid P&L count', 'invalidPnl', 'count'],
+    ['Net P&L', 'pnl'], ['Win rate', 'winRate', 'percent'], ['Average win', 'averageWin'], ['Average loss', 'averageLoss'],
+    ['Average trade return', 'averageReturnPct', 'percent'], ['Median trade return', 'medianReturnPct', 'percent'],
+    ['Profit factor', 'profitFactor'], ['Entry capital basis', 'entryCapitalBasis'], ['Execution costs', 'executionCosts']];
+  lines.push(...privateTable(['Metric', ...results.map(r => r.id)], tradeMetrics.map(([label, key, style]) =>
+    [label, ...results.map(r => privateNumber(r.portfolioMetrics?.trades?.[key], style))])));
+  lines.push('## Final and preliminary evidence', '', ...privateTable(['Method', 'Review state', 'Tier', 'Confidence', 'Signal', 'Portfolio', 'Risk', 'Rubric score'], results.map(r => {
+    const final = review.finalized === true && review.status === 'PASSED' ? finalRows.find(x => x.id === r.id) : null;
+    const ranking = final ?? r.ranking ?? {};
+    return [r.id, final ? 'FINAL_REVIEWED' : 'PRELIMINARY_ONLY', ranking.tier ?? 'PENDING', ranking.confidence ?? 'UNAVAILABLE',
+      ranking.signalClassification ?? ranking.signal ?? 'UNAVAILABLE', ranking.portfolioClassification ?? ranking.portfolio ?? 'UNAVAILABLE',
+      ranking.riskClassification ?? ranking.risk ?? 'UNAVAILABLE', privateNumber(ranking.score)];
+  })));
+  lines.push('## Signals, exposure, regimes and sensitivities by method', '');
+  for (const result of results) {
+    lines.push(`### ${result.id}`, '', `Signal status: ${result.signalMetrics?.status ?? 'UNAVAILABLE'}. Inference remains descriptive; overlapping forward windows are not independent observations.`, '',
+      '#### Forward returns and SPY-matched excess', '',
+      ...privateTable(['Sessions', 'N return', 'N excess', 'Censored', 'Missing', 'Mean return', 'Median return', 'Hit rate', 'Mean excess', 'Median excess', 'Excess hit rate'], [21, 63, 126].map(h => {
+        const s = result.signalMetrics?.horizons?.[h] ?? {};
+        return [h, privateNumber(s.n, 'count'), privateNumber(s.nExcess, 'count'), privateNumber(s.censored, 'count'), privateNumber(s.missing, 'count'),
+          ...['meanReturn', 'medianReturn', 'hitRate', 'meanExcess', 'medianExcess', 'excessHitRate'].map(k => privateNumber(s[k], 'percent'))];
+      })), '#### Tails, excursions and month-cluster inference', '',
+      ...privateTable(['Sessions', 'Left tail', 'Right tail', 'Excess left', 'Excess right', 'Mean MFE', 'Median MFE', 'Mean MAE', 'Median MAE', 'Month clusters', 'Cluster t', 'HAC t', 'HAC SE'], [21, 63, 126].map(h => {
+        const s = result.signalMetrics?.horizons?.[h] ?? {};
+        return [h, ...['leftTail', 'rightTail', 'excessLeftTail', 'excessRightTail'].map(k => privateNumber(s[k], 'percent')),
+          privateNumber(s.meanMfe, 'percent'), privateNumber(s.mfe?.median, 'percent'), privateNumber(s.meanMae, 'percent'), privateNumber(s.mae?.median, 'percent'),
+          privateNumber(s.clusters, 'count'), privateNumber(s.clusterT ?? s.descriptiveT), privateNumber(s.hacT), privateNumber(s.hacStandardError)];
+      })), 'The tail convention and inference provenance are retained in the private JSON. HAC is descriptive and does not correct multiplicity or create an unseen holdout.', '',
+      '#### Exposure distribution', '',
+      ...privateTable(['Session-exposure bucket', 'Sessions'], Object.entries(result.portfolioMetrics?.exposureBuckets ?? {}).map(([label, n]) => [label, privateNumber(n, 'count')])),
+      ...privateTable(['Exposure share', 'Fraction of observations'], Object.entries(result.portfolioMetrics?.exposureBreakdown ?? {}).map(([label, fraction]) => [label, privateNumber(fraction, 'percent')])),
+      '#### Regime-conditioned signal evidence (63 sessions)', '',
+      ...privateTable(['Dimension', 'Regime', 'N excess', 'Clusters', 'Mean excess', 'Median excess', 'Excess hit rate', 'HAC t'], array(result.regimeMetrics?.segments).map(seg => {
+        const s = seg.horizons?.[63] ?? {};
+        return [seg.dimension, seg.label, privateNumber(s.nExcess, 'count'), privateNumber(s.clusters, 'count'), privateNumber(s.meanExcess, 'percent'), privateNumber(s.medianExcess, 'percent'), privateNumber(s.excessHitRate, 'percent'), privateNumber(s.hacT)];
+      })), '#### Conditional portfolio observations', '',
+      'Conditional returns concatenate selected regime sessions and are not contiguous portfolio time series. They are not presented as regime CAGR.', '',
+      ...privateTable(['Regime', 'Sessions', 'Mean daily return', 'Conditional compounded return'], Object.entries(result.conditionalPortfolio ?? {}).map(([label, m]) =>
+        [label, privateNumber(m.sessions, 'count'), privateNumber(m.meanDaily, 'percent'), privateNumber(m.conditionalCompoundedReturn, 'percent')])),
+      '#### Cost and terminal-outcome sensitivity', '',
+      ...privateTable(['Scenario', 'Cost multiplier', 'CAGR', 'Max DD', 'Sharpe', '63-session mean excess', '63-session HAC t'], array(result.sensitivity).map(s =>
+        [s.scenario, privateNumber(s.costMultiplier), privateNumber(s.portfolioMetrics?.cagr, 'percent'), privateNumber(s.portfolioMetrics?.maxDrawdown, 'percent'), privateNumber(s.portfolioMetrics?.sharpe), privateNumber(s.signalMetrics?.horizons?.[63]?.meanExcess, 'percent'), privateNumber(s.signalMetrics?.horizons?.[63]?.hacT)])),
+      '#### Cash/exposure diagnostic attribution', '',
+      ...privateTable(['Field', 'Value'], [
+        ['Exposure-matched benchmark CAGR', privateNumber(result.attribution?.exposureMatchedBenchmarkMetrics?.cagr, 'percent')],
+        ['Method minus exposure-matched benchmark CAGR', privateNumber(result.attribution?.methodMinusExposureMatchedCagr, 'percent')],
+        ['Exposure/cash benchmark CAGR difference', privateNumber(result.attribution?.exposureAndCashBenchmarkCagrDifference, 'percent')],
+        ['Transaction costs', privateNumber(result.attribution?.transactionCosts)], ['Dividends', privateNumber(result.attribution?.dividends)],
+        ['Sizing effect', result.attribution?.sizingEffect ?? 'NOT_CAUSALLY_IDENTIFIED'], ['Exit effect', result.attribution?.exitEffect ?? 'NOT_CAUSALLY_IDENTIFIED'],
+      ]), result.attribution?.interpretation ?? 'Descriptive benchmark substitution only; no additive causal attribution.', '',
+      `Market-cap robustness: ${result.marketCapRobustness?.status ?? 'UNAVAILABLE'}.`, '');
+  }
+  lines.push('## Method overlap', '', 'Correlations and shared constituent observations do not establish independent strategy edges.', '',
+    ...privateTable(['Method A', 'Method B', 'Return correlation', 'Matched intervals', 'ID/month Jaccard', 'ID/date Jaccard'], array(payload.overlap).map(o =>
+      [o.methodA, o.methodB, privateNumber(o.returnCorrelation), privateNumber(o.commonReturnIntervals, 'count'), privateNumber(o.jaccardSameIdMonth), privateNumber(o.jaccardSameIdDate)])),
+    '## Current source-qualified candidates', '', `Snapshot as-of: ${payload.currentAsOf ?? 'UNAVAILABLE'}. Freshness, ticker identity and scanner availability remain data gates. Display up to ${candidateLimit} candidates per method in supplied engine order; this is not a new performance ranking.`, '');
+  for (const scan of array(payload.currentScans)) {
+    const candidates = array(scan.candidates), available = SCAN_WITH_COUNT.includes(scan.status);
+    lines.push(`### ${scan.id}`, '', `Status: ${scan.status ?? 'UNAVAILABLE'}; snapshot: ${scan.asOf ?? 'UNAVAILABLE'}; matches: ${available ? privateNumber(scan.numberMatches ?? candidates.length, 'count') : 'UNAVAILABLE / BLOCKED'}; shown: ${available ? Math.min(candidates.length, candidateLimit) : 0}.`, '');
+    if (!available) { lines.push('No candidate list is inferred from a blocked scan. A missing scan is not zero observed matches.', ''); continue; }
+    lines.push(...privateTable(['Ticker', 'Security ID', 'Signal as-of', 'Freshness', 'Weight', 'Score', 'Identity flags', 'Regime compatibility'], candidates.slice(0, candidateLimit).map(c =>
+      [c.ticker, c.id, c.signalAsOf ?? scan.asOf, c.signalFreshness, privateNumber(c.weight, 'percent'), typeof c.score === 'number' ? privateNumber(c.score) : privateTrace(c.score), array(c.identityFlags).join(', ') || 'NONE_REPORTED', c.regimeCompatibility])));
+    for (const c of candidates.slice(0, candidateLimit)) lines.push(`- ${privateCell(c.ticker)} / ${privateCell(c.id)}: rules=${privateTrace(c.reason ?? c.ruleTrace)}; satisfied=${c.keyRulesSatisfied === true ? 'TRUE' : c.keyRulesSatisfied === false ? 'FALSE' : 'UNAVAILABLE'}; issuer=${privateCell(c.issuerCik)}; related securities=${privateCell(array(c.sameIssuerSecurities).join(', ') || 'NONE_REPORTED')}.`);
+    lines.push('');
+  }
+  const consensusSection = (title, observations, state) => {
+    lines.push(`## ${title}`, '', `Status: ${state}. Display is limited to ${consensusLimit} rows; full private JSON retains all observations.`, '',
+      ...privateTable(['Ticker', 'Security ID', 'As-of', 'Method count', 'Methods'], array(observations).slice(0, consensusLimit).map(c =>
+        [c.ticker, c.id, c.asOf, privateNumber(c.methodCount ?? array(c.methods).length, 'count'), array(c.methods).join(', ')])));
+  };
+  const finalConsensus = review.finalConsensusRecomputed === true && Array.isArray(review.finalConsensus) ? review.finalConsensus : null;
+  consensusSection('Strong-method consensus', finalConsensus ?? payload.consensus?.strongMethods,
+    finalConsensus ? 'FINAL_REVIEW_METHOD_SET_RECOMPUTED' : 'PRELIMINARY_METHOD_SET_ONLY; NOT_FINAL_CONSENSUS');
+  lines.push('Only the final reviewed Tier A/B method set may support a strong-method product view. No consensus implies a proven independent trading score.', '');
+  consensusSection('All-frozen diagnostic consensus', payload.consensus?.allFrozenDiagnostic, 'DIAGNOSTIC_ONLY; INCLUDES_EXPERIMENTAL_METHODS');
+  lines.push('## Frozen source and adaptation references', '',
+    `Freeze: ${payload.freeze?.frozenAt ?? options.metadata?.freeze?.frozenAt ?? 'UNAVAILABLE'}. Rulebook hashes and original/adapted scope are immutable research references.`, '');
+  for (const method of array(payload.freeze?.methods ?? options.metadata?.freeze?.methods)) {
+    const book = method.rulebook ?? {};
+    lines.push(`### ${method.id}`, '', `Historical admission: ${method.historicalAdmission ?? 'UNAVAILABLE'}; rulebook hash: ${method.rulebookHash ?? 'UNAVAILABLE'}.`, '',
+      ...privateTable(['Source ID', 'URL', 'Locator'], array(book.sources).map(s => typeof s === 'string' ? [s, 'See source map', 'See source map'] : [s.id, s.url, s.locator])));
+    const adaptations = array(book.adaptations ?? book.fidelity?.adaptations ?? book.parameters?.adaptations);
+    if (adaptations.length) lines.push('Adaptations:', '', ...adaptations.map(a => `- ${privateCell(a)}`), '');
+  }
+  lines.push('## Data-blocked research candidates', '', ...privateTable(['Method', 'Status', 'Reason / requirements'], array(payload.dataBlocked).map(b =>
+    [b.id, b.status ?? 'BLOCKED_DATA', b.reason ?? (array(b.requirements).join('; ') || 'UNAVAILABLE')])),
+    'Current fundamentals or an existing provider pipeline do not substitute for certified historical annual facts, direct market equity, SIC or factor histories.', '',
+    '## Forward ledger', '', ...privateTable(['Method', 'Priority', 'Records', 'Snapshot is a post-freeze signal'], array(payload.forwardLedger?.methods).map(m =>
+      [m.id, m.priority ?? 'PENDING', array(m.records).length, m.baselineIsPostFreezeSignal === true ? 'TRUE — VERIFY CHRONOLOGY' : 'FALSE'])),
+    'Prepared ledger snapshots are not live orders. Only subsequent chronological immutable observations after the freeze count as forward evidence.', '',
+    '## Twenty final owner-review questions', '');
+  FINAL_QUESTIONS.forEach((q, i) => {
+    const a = array(review.finalAnswers).find(x => (x.questionId ?? x.question_id) === i + 1);
+    lines.push(`### ${i + 1}. ${q}`, '', a ? privateCell(a.privateAnswer ?? a.answerText ?? a.answer ?? a.status ?? a.answerStatus ?? 'PENDING_REVIEW') : 'PENDING_REVIEW', '');
+    if (a?.methodIds || a?.method_ids) lines.push(`Methods: ${array(a.methodIds ?? a.method_ids).join(', ')}.`, '');
+    if (a?.enumValues || a?.enums) lines.push(`Assessment: ${array(a.enumValues ?? a.enums).join(', ')}.`, '');
+  });
+  return lines.join('\n');
 }
 
 function privateDestination(file, repoRoot) {
@@ -357,7 +516,7 @@ export function publishReport({inputPath, reviewPath, outRoot, ownersealedPath, 
   fs.mkdirSync(jsonDir, {recursive: true}); fs.mkdirSync(docDir, {recursive: true});
   for (const [name, artifact] of Object.entries(artifacts)) fs.writeFileSync(path.join(jsonDir, name), JSON.stringify(artifact, null, 2) + '\n');
   fs.writeFileSync(path.join(docDir, 'SUPERTRADER_FULL_TOURNAMENT.md'), buildPublicMarkdown(payload, review, metadata, ownersealedPath));
-  if (privateFile) fs.writeFileSync(privateFile, buildPrivateMarkdown(payload, review), {mode: 0o600});
+  if (privateFile) fs.writeFileSync(privateFile, buildPrivateMarkdown(payload, review, {inputPath, reviewPath, metadata}), {mode: 0o600});
   return {status: 'PUBLIC_ENUM_COUNT_PROJECTIONS_WRITTEN', counts: summary, artifact_count: PUBLIC_OUTPUT_NAMES.length};
 }
 

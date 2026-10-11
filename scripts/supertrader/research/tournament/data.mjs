@@ -84,6 +84,13 @@ function admissibleSourceRows(rows) {
 // The injected dependency contract is private/test only. Production reuses the
 // configured S3 driver, the history-store codec and zero-cost guard; no writes.
 export async function loadRawHistoricalPayload(options = {}, diagnosticContext = {}) {
+  return loadRawHistoricalInput(options, diagnosticContext);
+}
+
+// The callback is internal, never a trusted/pre-canonicalized payload flag.
+// Every production segment goes through the same identity and canonical engine
+// as prepareHistoricalData before its decoded source object can be released.
+async function loadRawHistoricalInput(options, diagnosticContext, consumeSegment = null) {
   diagnosticContext.phase = 'WINDOW_VALIDATION';
   const window = selectedWindow(options), deps = options.rawDataDeps || {};
   if (window.warmupFrom < DATA_WINDOW.warmupFrom || window.to > DATA_WINDOW.to || Listing.WINDOW_NAME !== 'DEV') throw new Error('WINDOW_NOT_SUPPORTED');
@@ -146,27 +153,27 @@ export async function loadRawHistoricalPayload(options = {}, diagnosticContext =
   }
   const selected = options.limit ? members.slice(0, options.limit) : members;
   diagnosticContext.phase = 'R2_SERIES';
-  const loaded = await mapEight(selected, async (m) => {
+  let offCalendar = 0;
+  const perMember = await mapEight(selected, async (m) => {
     const series = await (m.source === 'MAIN' ? mainStore.getSeries(m.listing.ticker) : pitStore.getSeries(`${m.listing.ticker}@${m.listing.startDate}`));
-    return { ...m, raw: preserveRawBars(series?.bars, window) };
-  });
-  diagnosticContext.phase = 'SEGMENT_BUILD';
-  const segs = []; let offCalendar = 0;
-  for (const m of loaded) {
     const l = m.listing;
-    const raw = m.raw.filter((b) => b.date >= l.startDate && (!l.listEnd || b.date <= l.listEnd) && (master.has(b.date) || (offCalendar++, false)));
+    const raw = preserveRawBars(series?.bars, window).filter((b) => b.date >= l.startDate && (!l.listEnd || b.date <= l.listEnd) && (master.has(b.date) || (offCalendar++, false)));
     const segments = Listing.splitSegments(raw);
+    const output = [];
     segments.forEach((part, i) => {
       if (part.length < 2) return;
       const f = pit?.[l.id], d = delist?.[l.id];
       const gapTerminal = i < segments.length - 1;
-      segs.push({ id: i ? `${l.id}#${i}` : l.id, raw: part, cls: m.cls, delisted: !l.active && !gapTerminal,
+      const seg = { id: i ? `${l.id}#${i}` : l.id, raw: part, cls: m.cls, delisted: !l.active && !gapTerminal,
         survivor: m.source === 'MAIN', fund: f ? { eps: f.eps, rev: f.rev, shares: f.shares, cik: f.cik, taxonomy: f.taxonomy || null } : undefined,
         ...(d ? { delistClass: d.cls, delistEvidence: d.evidence } : {}),
-        ...(gapTerminal ? { inputQuarantine: { from: segments[i + 1][0].date, lastValidDate: part.at(-1).date, reason: 'LISTING_DATA_GAP', confidence: 'LOW' } } : {}) });
+        ...(gapTerminal ? { inputQuarantine: { from: segments[i + 1][0].date, lastValidDate: part.at(-1).date, reason: 'LISTING_DATA_GAP', confidence: 'LOW' } } : {}) };
+      output.push(consumeSegment ? consumeSegment(seg, listings) : seg);
     });
-  }
-  return { listings, members, segs, spyRaw, calendar: spyRaw.map((b) => b.date).filter((d) => d >= window.from), sourceWindow: window,
+    return output;
+  });
+  diagnosticContext.phase = 'SEGMENT_BUILD';
+  return { listings, members, ...(consumeSegment ? { normalizedSegments: perMember.flat() } : { segs: perMember.flat() }), spyRaw, calendar: spyRaw.map((b) => b.date).filter((d) => d >= window.from), sourceWindow: window,
     loaderCoverage: { objectReadConcurrency: 8, members: members.length, loadedMembers: selected.length, offCalendar, excluded,
       sourceIdentity: { supportedRows: sourceRows.supportedRows, rejectedRows: Object.values(sourceRows.rejected).reduce((a, b) => a + b, 0), reasons: sourceRows.rejected },
       secPitAvailable: Boolean(pit), delistAvailable: Boolean(delist) } };
@@ -239,7 +246,7 @@ function firstCanonicalFailure(raw, reconstruct) {
   return { index: raw.length - 1, observedAt: raw.at(-1).date, reason: full.reason };
 }
 
-function normalizeSegment(seg, listing, window) {
+function normalizeSegment(seg, listing, window, retainRaw = true) {
   // Validate order BEFORE slicing; never silently repair mixed source histories.
   const original = seg.raw || [];
   for (let i = 0; i < original.length; i++) {
@@ -275,35 +282,57 @@ function normalizeSegment(seg, listing, window) {
     : seg.delisted ? { date: bars.at(-1).date, lastClose: bars.at(-1).close, kind: 'DELISTED', delistClass: seg.delistClass || 'UNKNOWN', proceedsKnown: false, evidence: seg.delistEvidence || null } : null;
   return { security: { id: seg.id, ticker: listing.ticker, securityId: listing.securityId, bars, listing: { id: listing.id, startDate: listing.startDate, endDate: listing.endDate, active: listing.active === true, reusedLater: listing.reusedLater === true, instrumentType: seg.cls || listing.storeClass || null },
     terminal, dataQuarantine: quarantine, fundamentals: fundamentalRows(seg.fund), fundamentalsMissing: ['historical_balance_sheet', 'historical_margins', 'historical_cash_flow', 'analyst_estimates', 'analyst_revisions'],
-    raw, canonicalValidity: quarantine ? 'VALID_PREFIX_QUARANTINED_FUTURE' : 'VALID',
-    corporateActionContract: tr.corporateActionContract, returnContract: tr.contract, returnState: tr.state }, raw };
+    ...(retainRaw ? { raw } : {}), canonicalValidity: quarantine ? 'VALID_PREFIX_QUARANTINED_FUTURE' : 'VALID',
+    corporateActionContract: tr.corporateActionContract, returnContract: tr.contract, returnState: tr.state }, ...(retainRaw ? { raw } : {}) };
+}
+
+function canonicalAccumulator(window, retainRaw = true) {
+  const listings = new Map(), seen = new Set();
+  let initialized = false;
+  return (seg, sourceListings) => {
+    if (!initialized) {
+      for (const l of sourceListings) { if (listings.has(l.id)) throw new Error('DUPLICATE_LISTING_ID'); listings.set(l.id, l); }
+      initialized = true;
+    }
+    if (seen.has(seg.id)) throw new Error('DUPLICATE_SEGMENT_ID'); seen.add(seg.id);
+    const l = listingFor(seg, listings);
+    if (!INCLUDED.has(seg.cls || l.storeClass)) return { rejection: 'NON_EQUITY_OR_UNKNOWN_CLASS' };
+    const result = normalizeSegment(seg, l, window, retainRaw);
+    return retainRaw && result.security ? { ...result, seg: { ...seg, raw: result.raw, bars: result.security.bars, fundamentals: result.security.fundamentals, listing: result.security.listing } } : result;
+  };
+}
+
+function collectNormalized(results) {
+  const securities = [], segs = [], rejected = {};
+  for (const result of results) {
+    if (result.rejection) { rejected[result.rejection] = (rejected[result.rejection] || 0) + 1; continue; }
+    securities.push(result.security);
+    if (result.seg) segs.push(result.seg);
+  }
+  return { securities, segs, rejected, inputSegments: results.length };
 }
 
 export function prepareHistoricalData(payload, options = {}) {
   const window = selectedWindow(options);
   if (payload.sourceWindow && ['warmupFrom', 'from', 'to'].some((k) => payload.sourceWindow[k] !== window[k])) throw new Error('SOURCE_WINDOW_MISMATCH');
-  const listings = new Map();
-  for (const l of payload.listings || []) { if (listings.has(l.id)) throw new Error('DUPLICATE_LISTING_ID'); listings.set(l.id, l); }
-  const seen = new Set(), securities = [], segs = [], rejected = {};
-  for (const seg of payload.segs || []) {
-    if (seen.has(seg.id)) throw new Error('DUPLICATE_SEGMENT_ID'); seen.add(seg.id);
-    const l = listingFor(seg, listings);
-    if (!INCLUDED.has(seg.cls || l.storeClass)) { rejected.NON_EQUITY_OR_UNKNOWN_CLASS = (rejected.NON_EQUITY_OR_UNKNOWN_CLASS || 0) + 1; continue; }
-    const result = normalizeSegment(seg, l, window);
-    if (result.rejection) { rejected[result.rejection] = (rejected[result.rejection] || 0) + 1; continue; }
-    securities.push(result.security);
-    segs.push({ ...seg, raw: result.raw, bars: result.security.bars, fundamentals: result.security.fundamentals, listing: result.security.listing });
-  }
+  // Validate listing-table conflicts even when there are no input segments.
+  const listingIds = new Set();
+  for (const l of payload.listings || []) { if (listingIds.has(l.id)) throw new Error('DUPLICATE_LISTING_ID'); listingIds.add(l.id); }
+  const consume = canonicalAccumulator(window);
+  return completePreparedData(payload, window, collectNormalized((payload.segs || []).map((seg) => consume(seg, payload.listings || []))));
+}
+
+function completePreparedData(payload, window, { securities, segs, rejected, inputSegments }, compact = false) {
   const spyRaw = (payload.spyRaw || []).filter((b) => b.date >= window.warmupFrom && b.date <= window.to);
-  const benchmark = spyRaw.length >= 2 ? normalizeSegment({ id: 'BENCHMARK', raw: spyRaw, delisted: false }, { id: 'tiingo:NYSE:SPY:1993-01-29', ticker: 'SPY', securityId: Identity.securityIdForTicker('SPY'), startDate: '1993-01-29', endDate: null, active: true }, window).security : null;
+  const benchmark = spyRaw.length >= 2 ? normalizeSegment({ id: 'BENCHMARK', raw: spyRaw, delisted: false }, { id: 'tiingo:NYSE:SPY:1993-01-29', ticker: 'SPY', securityId: Identity.securityIdForTicker('SPY'), startDate: '1993-01-29', endDate: null, active: true }, window, !compact).security : null;
   const calendar = (payload.calendar || []).filter((d) => d >= window.from && d <= window.to);
   for (let i = 0; i < calendar.length; i++) { assertDate(calendar[i]); if (i && calendar[i] <= calendar[i - 1]) throw new Error('CALENDAR_NOT_ORDERED'); }
   const spyBars = benchmark?.bars || [];
   return { version: DATA_VERSION, state: securities.length ? 'AVAILABLE' : 'BLOCKED', reason: securities.length ? null : 'NO_USABLE_SECURITIES', universeId: 'US_PIT_2016_A', window,
-    securities, segs, calendar, spyRaw, benchmark, spyBars, spyAdj: { date: spyBars.map((b) => b.date), open: spyBars.map((b) => b.open), high: spyBars.map((b) => b.high), low: spyBars.map((b) => b.low), close: spyBars.map((b) => b.close), volume: spyBars.map((b) => b.volume) },
+    securities, segs, calendar, ...(compact ? {} : { spyRaw }), benchmark, spyBars, spyAdj: { date: spyBars.map((b) => b.date), open: spyBars.map((b) => b.open), high: spyBars.map((b) => b.high), low: spyBars.map((b) => b.low), close: spyBars.map((b) => b.close), volume: spyBars.map((b) => b.volume) },
     spyTR: spyBars.filter((b) => b.date >= window.from).map((b) => ({ date: b.date, value: b.totalReturnIndex })),
     fingerprint: fingerprintData(payload.listings, securities, spyRaw, calendar),
-    coverage: { inputSegments: (payload.segs || []).length, usableSegments: securities.length, rejected, withFundamentals: securities.filter((s) => s.fundamentals.length).length, benchmarkAvailable: Boolean(benchmark) && !benchmark?.dataQuarantine, quarantined: securities.filter((s) => s.dataQuarantine).length, loader: payload.loaderCoverage || null,
+    coverage: { inputSegments, usableSegments: securities.length, rejected, withFundamentals: securities.filter((s) => s.fundamentals.length).length, benchmarkAvailable: Boolean(benchmark) && !benchmark?.dataQuarantine, quarantined: securities.filter((s) => s.dataQuarantine).length, loader: payload.loaderCoverage || null,
       canonicalContractHash: hash({ totalReturn: TotalReturn.contractVersions(), config: TotalReturn.CONFIG, split: ReturnSeries.ENGINE_VERSION }) },
     limitations: ['DELISTING_PROCEEDS_ASSUMED_NOT_OBSERVED', 'REUSED_TICKER_HISTORY_INCOMPLETE', 'PIT_QUALITY_DATA_MISSING', ...(securities.some((s) => s.dataQuarantine) ? ['DATA_QUARANTINE_SCENARIO_UNCERTAINTY'] : [])] };
 }
@@ -320,7 +349,15 @@ export async function loadHistoricalData(options = {}) {
   if (!options.loadPitDataFn && process.env.ST_WINDOW === 'HOLDOUT') return unavailable('WINDOW_NOT_SUPPORTED');
   const diagnosticContext = { phase: options.loadPitDataFn ? 'INJECTED_PIT_LOADER' : 'RAW_HISTORICAL_LOADER' };
   try {
-    const payload = options.loadPitDataFn ? await options.loadPitDataFn({ LIMIT: options.limit || 0, cross: false, log: () => {} }) : await loadRawHistoricalPayload(options, diagnosticContext);
+    if (!options.loadPitDataFn) {
+      const window = selectedWindow(options), consume = canonicalAccumulator(window, false);
+      const payload = await loadRawHistoricalInput(options, diagnosticContext, (seg, listings) => {
+        diagnosticContext.phase = 'CANONICAL_NORMALIZATION';
+        return consume(seg, listings);
+      });
+      return completePreparedData(payload, window, collectNormalized(payload.normalizedSegments), true);
+    }
+    const payload = await options.loadPitDataFn({ LIMIT: options.limit || 0, cross: false, log: () => {} });
     diagnosticContext.phase = 'CANONICAL_NORMALIZATION';
     return prepareHistoricalData(payload, options);
   } catch (error) { return unavailableWithPrivateDiagnostic('HISTORICAL_DATA_LOAD_FAILED', error, diagnosticContext.phase); }
@@ -375,27 +412,28 @@ export async function loadCurrentScannerInputs(options = {}) {
     const spyRaw = preserveRawBars(spySeries?.bars, { warmupFrom: '1900-01-01', from: asOf, to: asOf }).slice(-lookback);
     const formationDate = spyRaw.at(-1)?.date;
     if (!validDate(formationDate) || (Date.parse(asOf) - Date.parse(formationDate)) / 864e5 > (options.maxStaleDays ?? 7)) return unavailable('CURRENT_BENCHMARK_UNAVAILABLE_OR_STALE');
-    const listings = [], segs = [], metadata = new Map(), rejected = { invalidMetadata: 0, inactiveOrProduct: 0, missingSeries: 0 };
+    const rejected = { invalidMetadata: 0, inactiveOrProduct: 0, missingSeries: 0 }, seenCurrentIds = new Set();
     const queue = universe.securities.slice(0, options.limit || undefined);
-    let cursor = 0;
-    async function worker() { while (cursor < queue.length) {
-      const u = queue[cursor++];
+    const currentWindow = { warmupFrom: '1900-01-01', from: formationDate, to: asOf };
+    const currentRows = await mapEight(queue, async (u) => {
       const e = cls.get(u.ticker), instrumentType = e?.instrument_type || u.instrumentType;
-      if (u.active !== true || !INCLUDED.has(instrumentType) || (e && !['ELIGIBLE', 'SEPARATE_CLASS'].includes(e.product_eligibility))) { rejected.inactiveOrProduct++; continue; }
+      if (u.active !== true || !INCLUDED.has(instrumentType) || (e && !['ELIGIBLE', 'SEPARATE_CLASS'].includes(e.product_eligibility))) { rejected.inactiveOrProduct++; return null; }
       const startDate = e?.start_date || u.startDate;
-      if (!validDate(startDate) || !u.exchange || (u.securityId && !Identity.consistent(u.ticker, u.securityId))) { rejected.invalidMetadata++; continue; }
+      if (!validDate(startDate) || !u.exchange || (u.securityId && !Identity.consistent(u.ticker, u.securityId))) { rejected.invalidMetadata++; return null; }
       const series = await getSeries(u.providerSymbol || u.ticker);
-      if (!series?.bars?.length) { rejected.missingSeries++; continue; }
+      if (!series?.bars?.length) { rejected.missingSeries++; return null; }
       // Identity remains the original provider listing identity; same-ticker
       // earlier generations are excluded through startDate, never concatenated.
       const id = `tiingo:${u.exchange}:${u.ticker}:${startDate}`;
-      listings.push({ id, ticker: u.ticker, exchange: u.exchange, startDate, active: true, reusedLater: false, storeClass: instrumentType });
-      segs.push({ id, cls: instrumentType, raw: series.bars.filter((b) => b.date <= asOf).slice(-lookback), delisted: false });
-      metadata.set(id, { sector: u.sector || null, industry: u.industry || null, instrumentType });
-    } }
-    await Promise.all(Array.from({ length: Math.min(8, queue.length) }, () => worker()));
-    listings.sort((a, b) => a.id.localeCompare(b.id)); segs.sort((a, b) => a.id.localeCompare(b.id));
-    const data = prepareHistoricalData({ listings, segs, spyRaw }, { warmupFrom: '1900-01-01', from: formationDate, to: asOf });
+      if (seenCurrentIds.has(id)) throw new Error('DUPLICATE_LISTING_ID'); seenCurrentIds.add(id);
+      const listing = { id, ticker: u.ticker, exchange: u.exchange, startDate, active: true, reusedLater: false, storeClass: instrumentType };
+      const seg = { id, cls: instrumentType, raw: series.bars.filter((b) => b.date <= asOf).slice(-lookback), delisted: false };
+      const confirmed = listingFor(seg, new Map([[id, listing]]));
+      return { listing, normalized: normalizeSegment(seg, confirmed, currentWindow, false), metadata: { sector: u.sector || null, industry: u.industry || null, instrumentType } };
+    });
+    const orderedRows = currentRows.filter(Boolean).sort((a, b) => a.listing.id.localeCompare(b.listing.id));
+    const listings = orderedRows.map((r) => r.listing), metadata = new Map(orderedRows.map((r) => [r.listing.id, r.metadata]));
+    const data = completePreparedData({ listings, spyRaw }, currentWindow, collectNormalized(orderedRows.map((r) => r.normalized)), true);
     if (!data.coverage.benchmarkAvailable) return unavailable('CURRENT_BENCHMARK_CANONICAL_QUARANTINE');
     data.universeId = 'CURRENT_US_PRODUCT_UNIVERSE';
     data.formationDate = formationDate;
@@ -416,7 +454,19 @@ export async function loadCurrentScannerInputs(options = {}) {
     }
     await mapEight(data.securities, async (s) => { s.fundamentals = await currentFacts(s); s.fundamentalReadiness = 'CURRENT_SOURCE_ROWS_ONLY_UNCERTIFIED'; });
     for (const s of data.securities) {Object.assign(s, metadata.get(s.id));const cik=companyCiks.get(s.ticker);s.issuerCikConflict=Boolean(cik&&s.issuerCik&&String(cik)!==String(s.issuerCik));s.issuerCik=s.issuerCik||cik||null;}
-    data.scanner = scannerInputs(data, formationDate).filter((s) => s.bars.at(-1).date === formationDate);
+    // Keep one full canonical history for source-prefix features. The runner's
+    // formationContext performs bounded, causal rebasing per method; copying
+    // all history through featuresAtDate here would double the current heap.
+    data.scanner = data.securities.filter((s) => s.listing.active && !s.listing.reusedLater && s.listing.startDate <= formationDate && (!s.listing.endDate || s.listing.endDate >= formationDate)
+      && (!s.terminal || (s.terminal.kind === 'DATA_QUARANTINE' && s.terminal.date > formationDate))).map((s) => {
+        if (!s.bars.length || s.bars.at(-1).date <= formationDate) return s;
+        // An asynchronous provider object may extend beyond the latest SPY
+        // session. Preserve the old causal scanner prefix without cloning its
+        // bar objects or discarding the original full source-feature history.
+        let end = s.bars.length;
+        while (end && s.bars[end - 1].date > formationDate) end--;
+        return { ...s, bars: s.bars.slice(0, end) };
+      }).filter((s) => s.bars.at(-1)?.date === formationDate);
     data.coverage.currentRejected = rejected;
     data.coverage.staleRejected = data.securities.length - data.scanner.length;
     data.coverage.objectReadConcurrency = 8;

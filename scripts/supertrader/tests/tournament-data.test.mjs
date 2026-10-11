@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import * as Listing from '../validation/lib.mjs';
+import { prepareSourceFeatures } from '../research/tournament/methods.mjs';
+import { formationContext } from '../research/tournament/runner.mjs';
+import { turtleNSeries } from '../research/tournament/engines/legendary.mjs';
 import { prepareHistoricalData, featuresAtDate, scannerInputs, fundamentalRows, loadHistoricalData, loadRawHistoricalPayload, preserveRawBars, loadCurrentScannerInputs, privateDataConfigured } from '../research/tournament/data.mjs';
 const TotalReturn = createRequire(import.meta.url)('../../../quant/engines/canonical-total-return.js');
 
@@ -192,6 +195,78 @@ test('official unsupported identity rows are excluded before series loading, wit
   assert.deepEqual(data.coverage.loader.sourceIdentity, { supportedRows: 7, rejectedRows: 6, reasons: {
     SOURCE_TICKER_UNSUPPORTED: 3, SOURCE_START_DATE_INVALID: 1, SOURCE_END_DATE_INVALID: 1, SOURCE_DATE_RANGE_INVALID: 1 } });
   assert.equal(data.coverage.loader.excluded.SOURCE_TICKER_UNSUPPORTED, 3);
+});
+
+test('production streaming matches raw-path canonical bars, facts, quarantine and fingerprint without retaining raw histories', async () => {
+  const observed = []; let day = new Date('2020-01-02T00:00:00Z');
+  while (day.toISOString().slice(0, 10) <= '2020-02-18') {
+    if (day.getUTCDay() !== 0 && day.getUTCDay() !== 6) observed.push(day.toISOString().slice(0, 10));
+    day.setUTCDate(day.getUTCDate() + 1);
+  }
+  const names = ['ABC', 'SPLIT', 'BAD', 'OLD', 'GAP'];
+  const listingRows = names.map((ticker) => ({ ticker, exchange: 'NASDAQ', assetType: 'Stock', priceCurrency: 'USD', startDate: '2010-01-01', endDate: ticker === 'OLD' ? dates[2] : '' }));
+  const allBars = (ticker) => {
+    const rows = observed.map((d, i) => bar(d, ticker === 'SPLIT' && i >= 2 ? 50 : 100, ticker === 'SPLIT' && i === 2 ? { splitFactor: 2, dividend: 1 } : {}));
+    if (ticker === 'BAD') { delete rows[0].dividend; }
+    if (ticker === 'ABC') { delete rows[rows.length - 1].splitFactor; }
+    return ticker === 'GAP' ? rows.filter((b, i) => i < 2 || b.date >= '2020-02-17') : rows;
+  };
+  const deps = { listingRows, today: '2020-02-19', universe: { securities: names.filter((ticker) => ticker !== 'OLD').map((ticker) => ({ ticker, active: true, startDate: '2010-01-01' })) },
+    eligibility: { decisions: names.map((ticker) => ({ ticker, instrument_type: 'EQUITY_COMMON' })) }, companies: { rows: [] },
+    readPrivate: async (key) => key.includes('manifest') ? { entries: { 'tiingo:NASDAQ:OLD:2010-01-01': { status: 'OK', included: true, cls: 'EQUITY_COMMON' } } }
+      : key.includes('sec-pit') ? Object.fromEntries(names.map((ticker) => [`tiingo:NASDAQ:${ticker}:2010-01-01`, { eps: [['2019-09-30', 2, dates[1]]], rev: [['2019-09-30', 200, dates[1]]] }])) : {},
+    mainStore: { getSeries: async (ticker) => { await new Promise((r) => setTimeout(r, names.indexOf(ticker) * 2)); return { bars: allBars(ticker) }; } },
+    pitStore: { getSeries: async (key) => ({ bars: key.startsWith('SPY@') ? allBars('SPY') : allBars(key.split('@')[0]) }) } };
+  const options = { ...window, to: '2020-02-18', rawDataDeps: deps };
+  const raw = await loadRawHistoricalPayload(options), legacy = prepareHistoricalData(raw, options), streamed = await loadHistoricalData(options);
+  assert.equal(streamed.state, 'AVAILABLE'); assert.equal(streamed.fingerprint, legacy.fingerprint);
+  assert.deepEqual(streamed.coverage, legacy.coverage); assert.deepEqual(streamed.calendar, legacy.calendar);
+  assert.deepEqual(streamed.segs, []); assert.equal(Object.hasOwn(streamed, 'spyRaw'), false);
+  assert.equal(Object.hasOwn(streamed.benchmark, 'raw'), false);
+  for (let i = 0; i < legacy.securities.length; i++) {
+    const { raw: omitted, ...expected } = legacy.securities[i];
+    assert.deepEqual(streamed.securities[i], expected);
+    assert.equal(Object.hasOwn(streamed.securities[i], 'raw'), false);
+  }
+  assert.ok(streamed.securities.some((s) => s.dataQuarantine?.reason === 'LISTING_DATA_GAP'));
+  assert.ok(streamed.securities.some((s) => s.terminal?.kind === 'DELISTED'));
+  assert.ok(streamed.coverage.rejected.DIVIDEND_FIELD_MISSING > 0);
+});
+
+test('current streaming keeps one full canonical source history and scanner references for prior-prefix N', async () => {
+  const observed = []; let day = new Date('2016-01-04T00:00:00Z');
+  while (observed.length < 1100) { if (day.getUTCDay() !== 0 && day.getUTCDay() !== 6) observed.push(day.toISOString().slice(0, 10)); day.setUTCDate(day.getUTCDate() + 1); }
+  const asOf = observed.at(-1), listings = [{ ticker: 'ABC', exchange: 'NASDAQ', startDate: '2010-01-01', active: true, instrumentType: 'EQUITY_COMMON' }];
+  const eligibility = { decisions: [{ ticker: 'ABC', instrument_type: 'EQUITY_COMMON', product_eligibility: 'ELIGIBLE', start_date: '2010-01-01' }] };
+  const data = await loadCurrentScannerInputs({ asOf, listings, eligibility, lookbackBars: 1000000,
+    getSeries: async () => ({ bars: observed.map((date, i) => ({ ...bar(date, 100), high: i < 50 ? 110 : 101, low: i < 50 ? 90 : 99, volume: 100000 })) }) });
+  assert.equal(data.state, 'AVAILABLE'); assert.equal(data.securities[0].bars.length, 1100);
+  assert.equal(data.scanner[0], data.securities[0]); assert.equal(data.scanner[0].bars, data.securities[0].bars);
+  assert.equal(Object.hasOwn(data.securities[0], 'raw'), false); assert.deepEqual(data.segs, []);
+  prepareSourceFeatures(data);
+  const expected = turtleNSeries(data.securities[0].bars);
+  assert.deepEqual(data.scanner[0].sourceFeatures.turtleN20, expected);
+  const protocol = { universe: { priceFloorRaw: 5, dollarVolumeSessions: 20, dollarVolumeFloor: 1000000 } };
+  const context = formationContext(data, { id: 'TURTLE_S2_EQUITY_DAILY', portfolioSemantics: { mode: 'STATEFUL_DAILY' } }, asOf, null, protocol);
+  assert.equal(context.securities[0].bars.length, 400);
+  assert.equal(context.securities[0].preSignalN.value, expected.at(-2));
+  assert.equal(context.securities[0].preSignalN.asOf, observed.at(-2));
+});
+
+test('current scanner preserves a causal prefix when a stock object extends beyond the latest SPY session', async () => {
+  const listings = [{ ticker: 'ABC', exchange: 'NASDAQ', startDate: '2010-01-01', active: true, instrumentType: 'EQUITY_COMMON' }];
+  const eligibility = { decisions: [{ ticker: 'ABC', instrument_type: 'EQUITY_COMMON', product_eligibility: 'ELIGIBLE', start_date: '2010-01-01' }] };
+  const data = await loadCurrentScannerInputs({ asOf: '2020-01-07', listings, eligibility, lookbackBars: 1000000,
+    getSeries: async (ticker) => ({ bars: ticker === 'SPY' ? dates.map((d) => bar(d, 100)) : [...dates.map((d) => bar(d, 100)), bar('2020-01-07', 50, { splitFactor: 2 })] }) });
+  assert.equal(data.formationDate, dates[2]); assert.equal(data.securities[0].bars.length, 4); assert.equal(data.scanner[0].bars.length, 3);
+  assert.equal(data.scanner[0].bars[0], data.securities[0].bars[0]);
+  assert.equal(data.scanner[0].bars.at(-1).date, dates[2]);
+  const protocol = { universe: { priceFloorRaw: 5, dollarVolumeSessions: 2, dollarVolumeFloor: 0 } };
+  const context = formationContext({ ...data, securities: data.scanner }, { id: '52_week_high_effect' }, dates[2], null, protocol);
+  assert.equal(context.securities[0].bars[0].close, 100);
+  assert.equal(context.securities[0].bars.at(-1).close, 100);
+  assert.equal(context.securities[0].bars.at(-1).date, dates[2]);
+  assert.deepEqual(featuresAtDate(data.scanner[0], dates[2]).bars, featuresAtDate(data.securities[0], dates[2]).bars);
 });
 
 test('current fingerprint includes classification, sector and eligibility source metadata', async () => {
