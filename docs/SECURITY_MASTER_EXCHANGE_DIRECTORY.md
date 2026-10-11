@@ -102,16 +102,28 @@ Ebenfalls offline (Stand 10.10.2026, Verzeichnis vom 09.10.2026, Ergebnis identi
 7. Fundamental-Berichte aus den Emittenten-Scherben (Erzeugerpfad von `daily-downstream`: `reports_from_records` + `_write_universe_reports`), danach `cli.py reconcile`.
 8. `build-capability-matrix.mjs` und `vu2/build-product-capabilities.mjs` (Produktuniversum 6.686).
 
-Mit dem CI-Erzeuger auf diesem Zweig:
-9. `product-intelligence-materialization.yml` (force), Lauf 38035577319: technical-signals, factor-evidence (DEBT7), Radar, Muster, Suche ohne die ausgeschlossenen Titel. Vertrags- und Regressionstests des Laufs grün, Datenhygiene grün. Modelle und Rankings unverändert, nur die Grundgesamtheit.
+Mit den CI-Erzeugern auf diesem Zweig (Stand 11.10.2026, nach dem Merge von `main`; Datenkonflikte mit den Tageslaeufen wurden nicht von Hand geloest, sondern mit dem Stand von `main` aufgeloest und danach die Erzeuger neu gefahren):
+9. `product-intelligence-materialization.yml` (force), Lauf 38115637635: technical-signals, factor-evidence (DEBT7), Radar, Muster, Suche ohne die ausgeschlossenen Titel. Vertrags- und Regressionstests des Laufs gruen, Datenhygiene gruen. Modelle und Rankings unveraendert, nur die Grundgesamtheit.
+10. `coverage-metrics.yml`, Lauf 38059126875: Neuabnahme **6.686 / 6.683 / 5.644** (zwei unabhaengige Laeufe, identisch). Die Regressionssuite des Laufs war gruen, der Lauf committete die Messung selbst.
 
 Nach dem Merge auf `main`, in dieser Reihenfolge:
-10. `long-series.yml`: Wochenreihen im neuen Umfang, danach `build-discover-data.mjs` (Discover-Daten; lokal belegt: danach 338/338 Discover-Tests grün). Discover-Daten gehören nicht in diesen PR (Discover-Gate).
-11. `technical-intelligence-build.yml` (startet nach 10 von selbst): Chartbild/Explore gegen das korrigierte Universum.
-12. Pages-Auslieferung.
-13. `coverage-metrics.yml`: Neuabnahme der Deckungskennzahlen. **Blocker:** Der Lauf committet nur bei grüner Regressionssuite. Auf `main` sind 6 Quant-Tests unabhängig hiervon rot (CTR18 und Golden Five: JPM-Dividende im Golden Preview; zwei Total-Return-Verifikationen; SG1; AL-2).
+11. `long-series.yml`: Wochenreihen im neuen Umfang, danach `build-discover-data.mjs` (Discover-Daten; lokal belegt: danach 338/338 Discover-Tests gruen). Discover-Daten gehoeren nicht in diesen PR (Discover-Gate).
+12. `technical-intelligence-build.yml` (startet nach 11 von selbst): Chartbild/Explore gegen das korrigierte Universum.
+13. Pages-Auslieferung.
 
-Bis Schritt 13 steht `test_der_abgleich_trifft_den_neu_abgenommenen_stand` absichtlich rot. Die eigene Rechnung (6.686 / 6.683 / 5.643) weicht vom abgenommenen Messstand (6.853 / 6.850 / 5.780) um genau die belegten 167 bzw. 137 Titel ab. Der Test `test_der_verzeichnisbeleg_erklaert_den_rest_je_titel` prüft diese Herleitung je Titel. Ein neuer Nenner entsteht erst mit der Messung (§4).
+### Neuabnahme der Deckung (10.10.2026)
+
+Gegen den Stand vom 04.10.2026 geht die Bilanz je Titel auf (`coverage-delta.mjs`, Lauf 38040675307):
+
+| Kennzahl | 04.10. | Aenderung | neu | Grund |
+|---|---|---|---|---|
+| Produkttitel | 6.853 | −167 | **6.686** | 127 DEBT, 32 ETN, 8 Rights/Warrants verlassen das Universum; die 85 neu zugelassenen waren als REVIEW schon enthalten |
+| Chart-Historie | 6.850 | −167 | **6.683** | alle 167 waren darstellbar |
+| Technik bereit | 5.780 | −137, +1 | **5.644** | 137 der 167 waren technisch bereit (30 schon zu kurz); TBHC altert mit 301 Bars ueber die 300-Bar-Schwelle, unabhaengig von der Korrektur |
+
+`ABGENOMMEN_0410` in `test_canonical_market.py` haelt den alten Stand als Basis der Herleitung. `marketDataSource.accepted` (6.853 / 6.850) in `universe_coverage.py` ist als historischer Stand vom 04.10.2026 gekennzeichnet (`acceptedIsHistorical`), die aktuelle Quelle ist `coverage-metrics.json`.
+
+Ein Company-Intelligence-Folgeschritt war getrennt: PR #575 entfernte vier verifizierte Quellen fuer Emittenten ohne Aktienlisting (ATHS, NRUC).
 
 ## Folge für Elliott (G6)
 
