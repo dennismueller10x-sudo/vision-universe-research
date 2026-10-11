@@ -46,3 +46,6 @@ Siehe `docs/trailer01/PRODUCTION_PLAN.md`, Abschnitt 9. Es wurde nichts generier
 ## Update 2026-10-11 (Plate-Test erledigt)
 - Plate-Test G1 ausgeführt (0,25 USD) und Off-Proben (0,05 USD); Wallet **14,42 USD**. Bericht: `docs/trailer01/PLATE_TEST_G1_REPORT.md`.
 - **Offen:** Stimmenwahl LEA/DAVID/Off (Hörbögen gesendet), Entscheidung Plate (768p behalten oder 1080p ≈ 0,90 USD), Methode „LEA schaut DAVID an“ (A/B/C), danach Avatar-V-Dialoge.
+
+## Update 2026-10-11 (Raumfilm-Reset)
+Siehe `docs/trailer01/ROOM_FILM_PLAN.md`, Abschnitt 10. Nichts generiert; Wallet 14,42 USD.

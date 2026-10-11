@@ -1,3 +1,5 @@
+> **ÜBERHOLT (2026-10-11):** Der avatarbasierte Trailer ist verworfen. Gültig ist `ROOM_FILM_PLAN.md` (avatarfreier Raumfilm nach neuer Referenz).
+
 # Trailer 01 – „Cinematic Studio Launch“: Produktionsplan
 
 > **Update 2026-10-11:** Off 1 gekürzt; Plate-Test G1 (8 s, 768p, 0,25 USD) erledigt → `PLATE_TEST_G1_REPORT.md`; Animatic v3.1 mit echtem Plate; Wallet 14,42 USD.

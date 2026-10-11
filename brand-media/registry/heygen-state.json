@@ -250,7 +250,7 @@
     "historyFile": "registry/heygen-production-history.json"
   },
   "trailer01": {
-    "status": "PLATE_TEST_DONE",
+    "status": "RESET_ROOM_FILM_PLAN_PREPARED",
     "plan": "docs/trailer01/PRODUCTION_PLAN.md",
     "shotlist": "pipeline/trailer01/shotlist.json",
     "walletAtPlanning": 14.72,
@@ -268,6 +268,13 @@
     "decisions": {
       "eyeline": "LEA soll DAVID ansehen (Methode offen)",
       "off1": "Tausende Aktien. Millionen Meinungen."
+    },
+    "reset": {
+      "date": "2026-10-11",
+      "reason": "Avatar-basierte Trailerproduktion verworfen; neuer avatarfreier Raumfilm nach Referenzbild",
+      "plan": "docs/trailer01/ROOM_FILM_PLAN.md",
+      "referenceAssetId": "8454ae22adbb47f1a8f94b6adc41ad2d",
+      "requests": "pipeline/room_film/requests/"
     }
   }
 }
