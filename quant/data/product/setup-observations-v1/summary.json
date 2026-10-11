@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-10T19:32:18.000Z",
+ "generatedAt": "2026-10-11T06:04:10.000Z",
  "asOf": "2026-10-09",
  "approval": {
   "state": "APPROVED",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5767,
- "observed": 5767,
+ "universe": 5631,
+ "observed": 5631,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4474,
-  "WATCH": 742,
-  "SETUP_FORMING": 536,
-  "CONFIRMED": 15,
+  "NO_SETUP": 4373,
+  "WATCH": 714,
+  "SETUP_FORMING": 530,
+  "CONFIRMED": 14,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 536,
-  "setup.none.fallback": 4474,
-  "setup.watch.bullish-trend": 444,
-  "setup.watch.confirmed-structure-near-high": 298,
-  "setup.confirmed.structure-trend-volume": 15
+  "setup.forming.complete-setup-awaiting-trigger": 530,
+  "setup.none.fallback": 4373,
+  "setup.watch.bullish-trend": 432,
+  "setup.watch.confirmed-structure-near-high": 282,
+  "setup.confirmed.structure-trend-volume": 14
  },
  "pathTier": {
   "states": [
@@ -376,7 +376,7 @@
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5767
+   "instruments": 5631
   }
  },
  "shards": [
@@ -908,7 +908,6 @@
   "UW",
   "UX",
   "UY",
-  "UZ",
   "U_",
   "VA",
   "VB",
@@ -1016,7 +1015,18 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null,
+ "observationDrift": {
+  "asOf": "2026-10-09",
+  "publishedHash": "76c46e473af1a646691334074ca3791e",
+  "recomputedHash": "e2ade886f772194ead7d98be996d6e13",
+  "rowsPublished": 5705,
+  "rowsToday": 5569,
+  "rowsAdded": 0,
+  "rowsChanged": 136,
+  "addedOnly": false,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ },
  "staleBundles": {
   "count": 62,
   "cutoff": "2026-10-09",
