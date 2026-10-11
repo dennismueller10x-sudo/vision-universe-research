@@ -85,7 +85,7 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
   assert.equal(runs[0].payload.productView.timeframes["1D"], 1);           // XOM: Tagesanalyse wie im Produkt
   assert.ok(runs[1].payload.registrationLagDays > 7);
   const pe = L.filter((e) => e.type === "EVENT" && e.payload.view === "CUSTOMER_PRODUCT");
-  for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED|MOTIVE_ALTERNATIVE|EXPLORE_ELLIOTT)$/); assert.equal(e.payload.productElliottSha.length, 32); }
+  for (const e of pe) { assert.match(e.payload.cohort, /^CUSTOMER_PRODUCT_(SETUP|PRIMARY_UNDISPLAYED|MOTIVE_ALTERNATIVE|EXPLORE_ELLIOTT|EXPLORE_HIGHLIGHT)$/); assert.equal(e.payload.productElliottSha.length, 32); }
   /* Registry 1.2.0: neue Kundenprodukt-Ereignisse tragen die eingefrorene Projektionsthese (elliott-projection-1.0.0) */
   assert.ok(pe.length > 0, "mindestens ein Produkt-Ereignis");
   for (const e of pe) { assert.equal(e.payload.projectionEngine, PJV); assert.equal(e.payload.projectionThesis.version, PJV); assert.ok("thesis" in e.payload.projectionThesis); }
@@ -118,26 +118,50 @@ test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eig
   assert.equal(Ver.verifyRegistry(reg).ok, true);
 });
 
-test("M11-P6 Registry 1.4.0: angezeigte Explore-Lesarten als eigene Kohorte eingefroren (Rolle, Rang, verfehlte Leitplanken, Zonen, Versionen); Kette bleibt gültig", async () => {
-  const w = weeklyDir(["ref_VTEX", "ref_PLTR", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
+test("M11-P6 Registry 1.5.0: kuratierte Explore Highlights als eigene Kohorte eingefroren (Rolle, Rang, Leitplanken, Zonen, Kuratierung, Versionen); Candidate Explorer nie registriert; Kette bleibt gültig", async () => {
+  const w = weeklyDir(["ref_AB", "ref_BUR", "ref_GBTG", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
   const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
-  assert.equal(Reg.REGISTRY_VERSION, "elliott-registry-1.4.0"); assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION);
-  const ex = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT");
-  assert.ok(ex.length >= 1, "mindestens eine angezeigte Explore-Lesart registriert");
+  assert.equal(Reg.REGISTRY_VERSION, "elliott-registry-1.5.0"); assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION);
+  const ex = L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT");
+  assert.ok(ex.length >= 2, "mindestens zwei angezeigte Highlights registriert");
+  const types = new Set(ex.map((e) => e.payload.waveType));
+  assert.ok(types.has("WAVE_3") && types.has("WAVE_C"), "Welle 3 und Welle C vertreten: " + [...types]);
   const perSymbol = {};
   for (const e of ex) {
     const p = e.payload, th = p.projectionThesis.thesis;
     perSymbol[p.symbol] = (perSymbol[p.symbol] || 0) + 1;
-    assert.equal(p.role, "EXPLORE"); assert.equal(th.source, "EXPLORE"); assert.equal(p.hardRules, "PASSED");
-    assert.ok(Array.isArray(p.failedGates) && p.failedGates.length >= 1 && p.failedGates.every((g) => /^G[2-5]$/.test(g)));
-    assert.ok(Number.isInteger(p.rank) && p.poolSize > p.rank && (p.rank + 1) / p.poolSize <= 0.5);
+    assert.equal(p.role, "EXPLORE_HIGHLIGHT"); assert.equal(p.interpretation, "EXPLORE_HIGHLIGHT"); assert.equal(th.source, "EXPLORE"); assert.equal(p.hardRules, "PASSED");
+    assert.ok(Array.isArray(p.failedGates) && p.failedGates.length === 1 && ["G2", "G5"].includes(p.failedGates[0]), "genau eine Deutungs-Leitplanke: " + p.failedGates);
+    assert.ok(Number.isInteger(p.rank) && p.poolSize > p.rank && (p.rank + 1) / p.poolSize <= (p.waveType === "WAVE_C" ? 0.10 : 0.25), "Rangschwelle je Wellentyp");
+    assert.equal(p.curation.version, "explore-curation-1.0.0"); assert.equal(p.curation.failedSet, p.failedGates[0]);
     assert.ok(th.zones.length >= 1 && th.invalidation && th.invalidation.price > 0);
-    assert.equal(p.versions.projection, PJV); assert.equal(p.versions.visibility, "EXPLORE_ELLIOTT_1.0.0"); assert.ok(p.versions.engine && p.versions.ruleSet);
+    assert.equal(p.versions.projection, PJV); assert.equal(p.versions.visibility, "EXPLORE_HIGHLIGHT_1.0.0"); assert.ok(p.versions.engine && p.versions.ruleSet);
     assert.ok(/^CLEAN/.test(p.dataQuality.status)); assert.ok(p.waveType && p.degree);
-    assert.equal(p.initialStock, true, "erster Lauf mit Explore = Bestand");
+    assert.equal(p.initialStock, true, "erster Lauf mit Highlights = Bestand");
   }
-  assert.ok(Object.values(perSymbol).every((n) => n <= 3), "höchstens drei je Titel");
+  assert.ok(Object.values(perSymbol).every((n) => n <= 2), "höchstens zwei je Titel");
+  /* Rollentrennung: weder die breite Kohorte noch der Candidate Explorer erzeugen neue Ereignisse */
+  assert.equal(L.filter((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT").length, 0);
+  assert.ok(!L.some((e) => e.type === "EVENT" && /EXPLORE_CANDIDATE/.test(JSON.stringify(e.payload.role || "") + JSON.stringify(e.payload.cohort || "") + JSON.stringify(e.payload.setupType || ""))), "Candidate Explorer wird nicht als Produktereignis registriert");
+  assert.equal(Ver.verifyRegistry(reg).ok, true);
+});
+
+test("M11-P7 Registry 1.5.0: bestehende Ereignisse der breiten Kohorte (1.4.0) bleiben unverändert, neue Highlights werden angehängt; Kette und Nur-Anhängen gültig", async () => {
+  const w = weeklyDir(["ref_AB", "ref_BUR", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-h-"));
+  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-18", workers: 2, identity });
+  /* ein Ereignis der alten breiten Kohorte, wie es der Bestand enthaelt (Registry 1.4.0) */
+  const legacy = { type: "EVENT", id: "EV-legacy-explore", week: "2026-09-18", recordedAt: "2026-10-09T00:00:00Z", payload: { symbol: "ref_AB", cohort: "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT", role: "EXPLORE", setupType: "EXPLORE_ELLIOTT_WAVE_C", view: "CUSTOMER_PRODUCT", registeredBarDate: "2026-09-18", dir: -1, setupStatus: "OPEN" } };
+  Led.append(reg, Led.readLedger(reg), [legacy]);
+  const before = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
+  const after = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  assert.ok(after.startsWith(before), "bestehende Zeilen byte-gleich, nur angehängt");
+  const L = Led.readLedger(reg);
+  assert.equal(L.filter((e) => e.id === "EV-legacy-explore").length, 1);
+  assert.equal(L.find((e) => e.id === "EV-legacy-explore").payload.role, "EXPLORE", "alte Rolle bleibt Geschichte");
+  assert.ok(L.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT"));
   assert.equal(Ver.verifyRegistry(reg).ok, true);
 });
