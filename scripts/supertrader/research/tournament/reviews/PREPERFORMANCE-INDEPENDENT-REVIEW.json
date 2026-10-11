@@ -1,7 +1,7 @@
 {
   "review_date": "2026-10-11",
   "scope": "Independent pre-performance cache, CLI/sharding/workflow and historical source identity-admission fix review; no actual outcomes viewed.",
-  "disposition": "PASS_FINAL_PRE_PERFORMANCE_CACHE_CLI_IDENTITY_WORKFLOW_AND_ASSEMBLY",
+  "disposition": "PASS_GATE_A_PRE_PERFORMANCE_STREAMING_MEMORY_AND_PUBLICATION_PRIVACY",
   "cache_bound": 4096,
   "semantics": {
     "unchanged_uncached_validator": true,
@@ -39,7 +39,7 @@
   },
   "actual_provider_calls": 0,
   "actual_financial_returns_viewed": false,
-  "remaining_gate": "Final content freeze must match launch checkout; private actual-result adversarial review remains required before final rankings or Tier A/live claims.",
+  "remaining_gate": "Observe actual production completion; incomplete/OOM shards remain missing. Private measured result and final-ranking review mandatory; baseline Core regression caveat remains.",
   "cli_review": {
     "operational_only": true,
     "allowed_only_ids": "frozen historical participants only; duplicates/unknown/empty reject",
@@ -89,11 +89,13 @@
     ".github/workflows/supertrader-tournament.yml": "85273cc90d185309e03c553a5ba17d090a426ba93e73d22989e83b31a014be7b",
     "scripts/supertrader/tests/tournament-sharding.test.mjs": "26f668e30e73063ca4b957d258cc9b77815f4503b6cecad8a7e56631d2a8d6ff",
     "scripts/supertrader/tests/tournament-datecache.test.mjs": "eb43cb9c930e55f9b9cf360f9cce42303d0b37f1068f3ac2c883b3173d5c7212",
-    "scripts/supertrader/research/tournament/data.mjs": "caf0054e6eb8c8d3ee6e210fa886d7a80f56bb9fa89e88d0e7c4d53c059e53a3",
-    "scripts/supertrader/tests/tournament-data.test.mjs": "247879e01b78c4753e8be5fffcb12520e0db98dac8151da68ff4702fcaf54286",
+    "scripts/supertrader/research/tournament/data.mjs": "a37d0856249105bc921674b713fa1c658b4ef67ea42c0abc655f8d167b70fada",
+    "scripts/supertrader/tests/tournament-data.test.mjs": "fbf64ecd0e8360dcaa61d88cfd755605dfa0e859bfea0859a94916e59ebb90c4",
     "scripts/supertrader/research/tournament/assemble.mjs": "00ef05e7aaf16bb8b640c7ccad668ad647a51e5aedd40b82692203480abdc442",
     "scripts/supertrader/tests/tournament-assemble.test.mjs": "ba7aecbaaf02c75649b19977fdadf02b86b5e929f61fd26081815a3580e57a8f",
-    "scripts/supertrader/research/tournament/freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25"
+    "scripts/supertrader/research/tournament/freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
+    "scripts/supertrader/research/tournament/publish-report.mjs": "d2fed1f54be7f9e26c4ce410d8c36d218c0c65a9ec438082348b73109dbc2ef2",
+    "scripts/supertrader/tests/publication-review.test.mjs": "75e549a47d0f4ad56c3cd43cb5e0c1321a5ff598b4e787be1f291e1008059aa9"
   },
   "source_identity_fix": {
     "disposition": "PASS",
@@ -139,5 +141,42 @@
     "all_twelve_tournament_test_files_pinned": true,
     "canonical_listing_storage_encryption_dependencies_pinned": true,
     "all_ten_method_rulebook_hashes_unchanged": true
-  }
+  },
+  "memory_review": {
+    "disposition": "PASS",
+    "production_decode_and_canonicalize_per_member": true,
+    "maximum_object_read_concurrency": 8,
+    "no_retained_raw_security_or_benchmark_history": true,
+    "no_raw_seg_universe_retained": true,
+    "shared_identity_and_canonical_accumulator": true,
+    "deterministic_input_order_and_exact_fingerprint_coverage_parity_tested": true,
+    "split_dividend_missing_action_future_quarantine_gap_real_delist_cases_tested": true,
+    "current_full_canonical_history_retained": true,
+    "current_scanner_shared_references": true,
+    "current_future_stock_suffix_uses_causal_prefix_of_same_bars": true,
+    "runner_asof_rebasing_and_full_prefix_N_preserved": true,
+    "raw_export_and_injected_PIT_apis_backward_compatible": true,
+    "no_history_universe_window_or_strategy_truncation": true,
+    "integration_tests_passed": 50,
+    "integration_tests_failed": 0,
+    "production_resource_success": "NOT_YET_OBSERVED_BY_REVIEWER"
+  },
+  "publication_review": {
+    "disposition": "PASS_AFTER_REPORT_ONLY_FIXES",
+    "full_payload_and_public_metadata_freeze_match_required": true,
+    "measured_payload_missing_freeze_rejected": true,
+    "same_protocol_different_code_or_rulebook_rejected": true,
+    "public_ids_enums_counts_only": true,
+    "blocked_scan_match_count_is_null": true,
+    "private_partial_exit_records_labeled_correctly": true,
+    "malformed_private_JSON_CLI_error_generic": true,
+    "private_Markdown_requires_outside_repo_destination": true,
+    "synthetic_privacy_tests_passed": 4,
+    "synthetic_privacy_tests_failed": 0,
+    "test_file": "scripts/supertrader/tests/publication-review.test.mjs",
+    "test_file_outside_frozen_tournament_pattern": true,
+    "reviewer_changed_only_unfrozen_publication_adapter_and_its_test": true
+  },
+  "current_frozen_code_assertion": "PASS",
+  "latest_review_commit": "00b5eb1b715b412d9aed1aef2e70f94be5e017ca"
 }

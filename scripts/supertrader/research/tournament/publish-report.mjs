@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {isDeepStrictEqual} from 'node:util';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '../../../..');
@@ -106,7 +107,8 @@ function context(payload = {}, review = {}, metadata) {
   const approvedIds = value => unique(array(value).map(v => typeof v === 'string' ? v : v?.id).filter(id => knownIds.has(id)));
   const methodResults = array(payload.results);
   if (methodResults.some(r => !frozenIds.has(r.id)) || new Set(methodResults.map(r => r.id)).size !== methodResults.length) throw new Error('UNKNOWN_OR_DUPLICATE_RESULT_METHOD');
-  if (payload.freeze && payload.freeze.protocolHash !== metadata.freeze.protocolHash) throw new Error('PAYLOAD_FREEZE_MISMATCH');
+  if (methodResults.length && !payload.freeze) throw new Error('PAYLOAD_FREEZE_REQUIRED');
+  if (payload.freeze && !isDeepStrictEqual(payload.freeze, metadata.freeze)) throw new Error('PAYLOAD_FREEZE_MISMATCH');
   const final = review.finalized === true && review.status === 'PASSED';
   const finalRows = array(review.finalRankings ?? review.methods);
   if (finalRows.some(r => !frozenIds.has(r.id)) || new Set(finalRows.map(r => r.id)).size !== finalRows.length) throw new Error('UNKNOWN_OR_DUPLICATE_REVIEW_METHOD');
@@ -388,10 +390,10 @@ export function buildPrivateMarkdown(payload = {}, review = {}, options = {}) {
   ];
   lines.push(...privateTable(['Metric', ...columns.map(c => c.id)], metrics.map(([label, key, style]) =>
     [label, ...columns.map(c => style === 'text' ? c.p[key] ?? 'UNAVAILABLE' : privateNumber(c.p[key], style))])));
-  lines.push('## Closed-trade comparison', '', 'Trade P&L is already net as supplied by the runner; transaction costs are reporting fields and are not subtracted a second time.', '');
-  const tradeMetrics = [['Closed trades', 'n', 'count'], ['Supplied trades', 'supplied', 'count'], ['Invalid P&L count', 'invalidPnl', 'count'],
+  lines.push('## Realized exit records', '', 'Counts and win rates include partial exits. Each record represents an allocated position exit, rather than an independent complete round trip. P&L is already net as supplied by the runner; transaction costs are reporting fields and are not subtracted a second time.', '');
+  const tradeMetrics = [['Realized exit records', 'n', 'count'], ['Supplied exit records', 'supplied', 'count'], ['Invalid P&L count', 'invalidPnl', 'count'],
     ['Net P&L', 'pnl'], ['Win rate', 'winRate', 'percent'], ['Average win', 'averageWin'], ['Average loss', 'averageLoss'],
-    ['Average trade return', 'averageReturnPct', 'percent'], ['Median trade return', 'medianReturnPct', 'percent'],
+    ['Average exit-record return', 'averageReturnPct', 'percent'], ['Median exit-record return', 'medianReturnPct', 'percent'],
     ['Profit factor', 'profitFactor'], ['Entry capital basis', 'entryCapitalBasis'], ['Execution costs', 'executionCosts']];
   lines.push(...privateTable(['Metric', ...results.map(r => r.id)], tradeMetrics.map(([label, key, style]) =>
     [label, ...results.map(r => privateNumber(r.portfolioMetrics?.trades?.[key], style))])));
@@ -526,5 +528,5 @@ function flags(argv) {
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { process.stdout.write(JSON.stringify(publishReport(flags(process.argv.slice(2)))) + '\n'); }
-  catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
+  catch { process.stderr.write('PUBLICATION_FAILED\n'); process.exitCode = 1; }
 }
