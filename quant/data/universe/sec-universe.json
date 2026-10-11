@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-10T12:40:05.964Z",
+  "generated_at_utc": "2026-10-11T12:53:12.629Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5351,
+    "withDeliveredStockPage": 5326,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -1295,20 +1295,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "AEFC",
-      "name": "Aegon Ltd.",
-      "cik": "0000769218",
-      "instrumentId": "vu_39f13035b39cc7",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "AEG"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -3689,21 +3675,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "AOMD",
-      "name": "Angel Oak Mortgage REIT, Inc.",
-      "cik": "0001766478",
-      "instrumentId": "vu_f009bf09ea35cc",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "AOMN",
-        "AOMR"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "AON",
       "name": "Aon plc",
       "cik": "0000315293",
@@ -5093,17 +5064,6 @@
       "cik": "0002026353",
       "instrumentId": "vu_5697e06cbc2040",
       "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "ATHS",
-      "name": "Athene Holding Ltd.",
-      "cik": "0001527469",
-      "instrumentId": "vu_e24081b440a8dc",
-      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -6848,23 +6808,6 @@
       "alsoTickers": [
         "BDCIU",
         "BDCIW"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "BDCX",
-      "name": "Ubs Ag",
-      "cik": "0001114446",
-      "instrumentId": "vu_13a04bb9665d65",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CEFD",
-        "IFED",
-        "MLPR",
-        "MVRL"
       ],
       "role": "deliveredStockPage"
     },
@@ -10672,17 +10615,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "CCID",
-      "name": "Carlyle Credit Income Fund",
-      "cik": "0001517767",
-      "instrumentId": "vu_da3d354bbb8787",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "CCII",
       "name": "Cohen Circle Acquisition Corp. II",
       "cik": "0002064683",
@@ -11742,23 +11674,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "CHSCL",
-      "name": "Chs Inc",
-      "cik": "0000823277",
-      "instrumentId": "vu_e367daa8ce62bc",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CHSCM",
-        "CHSCN",
-        "CHSCO",
-        "CHSCP"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -13702,20 +13617,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "CRBD",
-      "name": "Corebridge Financial, Inc.",
-      "cik": "0001889539",
-      "instrumentId": "vu_e74413f3936f4b",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CRBG"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "CRBP",
       "name": "Corbus Pharmaceuticals Holdings, Inc.",
       "cik": "0001595097",
@@ -14579,20 +14480,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "CUBB",
-      "name": "Customers Bancorp, Inc.",
-      "cik": "0001488813",
-      "instrumentId": "vu_01f061b81e7dfd",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CUBI"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "CUBE",
       "name": "CubeSmart",
       "cik": "0001298675",
@@ -15442,17 +15329,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "DBRG",
-      "name": "DigitalBridge Group, Inc.",
-      "cik": "0001679688",
-      "instrumentId": "vu_231e6cc5badd65",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "DBVT",
       "name": "DBV Technologies S.A.",
       "cik": "0001613780",
@@ -15483,21 +15359,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "DCBG",
-      "name": "Dime Commercial Bancshares, Inc. /NY/",
-      "cik": "0000846617",
-      "instrumentId": "vu_fc79d89a1d1b8c",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "DCOM",
-        "DCOM"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -16854,22 +16715,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "DTB",
-      "name": "Dte Energy Co",
-      "cik": "0000936340",
-      "instrumentId": "vu_0de37bb8ece545",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "DTE",
-        "DTG",
-        "DTW"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "DTCX",
       "name": "Datacentrex, Inc.",
       "cik": "0001853825",
@@ -17383,21 +17228,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "ECCC",
-      "name": "Eagle Point Credit Co",
-      "cik": "0001604174",
-      "instrumentId": "vu_08781926884339",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "ECCU",
-        "ECCV"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -17916,17 +17746,6 @@
       "name": "Employers Holdings, Inc.",
       "cik": "0001379041",
       "instrumentId": "vu_dd0a2b0d81dfef",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "EIIA",
-      "name": "Eagle Point Institutional Income Fund",
-      "cik": "0001896036",
-      "instrumentId": "vu_1747cbb8231759",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -21655,17 +21474,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "FSEA",
-      "name": "First Seacoast Bancorp, Inc.",
-      "cik": "0001943802",
-      "instrumentId": "vu_f97b3c960d3d42",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "FSHP",
       "name": "Flag Ship Acquisition Corp",
       "cik": "0001850059",
@@ -23958,17 +23766,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "GPJA",
-      "name": "Georgia Power Co",
-      "cik": "0000041091",
-      "instrumentId": "vu_afcf8942c19121",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "GPK",
       "name": "Graphic Packaging Holding Co",
       "cik": "0001408075",
@@ -24145,20 +23942,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "GREEL",
-      "name": "Vulcan Infrastructure & Power Inc.",
-      "cik": "0001844971",
-      "instrumentId": "vu_638312ca24324d",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "VIP"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -28623,6 +28406,21 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "IPXG",
+      "name": "Inflection Point Acquisition Corp. VII",
+      "cik": "0002088805",
+      "instrumentId": "vu_25620523b24d46",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "IPXGU",
+        "IPXGW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "IQ",
       "name": "iQIYI, Inc.",
       "cik": "0001722608",
@@ -29741,20 +29539,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "JSM",
-      "name": "Navient Corp",
-      "cik": "0001593538",
-      "instrumentId": "vu_bbbfe6717f18c9",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "NAVI"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "JSPR",
       "name": "Jasper Therapeutics, Inc.",
       "cik": "0001788028",
@@ -29773,6 +29557,17 @@
       "name": "Jet.AI Inc.",
       "cik": "0001861622",
       "instrumentId": "vu_f1011ef3e1fd52",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "JTTT",
+      "name": "JATT III Acquisition Corp",
+      "cik": "0002145659",
+      "instrumentId": "vu_6fb83e512be0e2",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -30505,20 +30300,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "KMPB",
-      "name": "KEMPER Corp",
-      "cik": "0000860748",
-      "instrumentId": "vu_f0eb3346141d1e",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "KMPR"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -34844,20 +34625,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "MHLA",
-      "name": "Maiden Holdings, Ltd.",
-      "cik": "0001412100",
-      "instrumentId": "vu_e15896ae3498ec",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "MHNC"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "MHO",
       "name": "M/I Homes, Inc.",
       "cik": "0000799292",
@@ -35013,21 +34780,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "MITN",
-      "name": "TPG Mortgage Investment Trust, Inc.",
-      "cik": "0001514281",
-      "instrumentId": "vu_225d2d5c7ef7c4",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "MITP",
-        "MITT"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -38735,17 +38487,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "NSTS",
-      "name": "NSTS Bancorp, Inc.",
-      "cik": "0001881592",
-      "instrumentId": "vu_312f41751f82ff",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "NSYS",
       "name": "Nortech Systems Inc",
       "cik": "0000722313",
@@ -41273,25 +41014,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "OXLCG",
-      "name": "Oxford Lane Capital Corp.",
-      "cik": "0001495222",
-      "instrumentId": "vu_a3c4d88c1e8dc8",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "OXLCI",
-        "OXLCL",
-        "OXLCM",
-        "OXLCN",
-        "OXLCO",
-        "OXLCZ"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "OXM",
       "name": "Oxford Industries",
       "cik": "0000075288",
@@ -42483,22 +42205,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "PFH",
-      "name": "Prudential Financial Inc",
-      "cik": "0001137774",
-      "instrumentId": "vu_9f4504443153cd",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "PRH",
-        "PRS",
-        "PRU"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "PFIS",
       "name": "Peoples Financial Services Corp.",
       "cik": "0001056943",
@@ -42507,20 +42213,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "PFLA",
-      "name": "PennantPark Floating Rate Capital Ltd.",
-      "cik": "0001504619",
-      "instrumentId": "vu_fc7bd2e57e689d",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "PFLT"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -42551,17 +42243,6 @@
       "cik": "0001745916",
       "instrumentId": "vu_86727e4a092b74",
       "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "PFXNZ",
-      "name": "PhenixFIN Corp",
-      "cik": "0001490349",
-      "instrumentId": "vu_75151225313aa1",
-      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -44372,6 +44053,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "PSQL",
+      "name": "Pasqal Holding SA",
+      "cik": "0002119292",
+      "instrumentId": "vu_5cb2b9b38074fc",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "PSQLW"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -47906,25 +47601,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "SAJ",
-      "name": "Saratoga Investment Corp.",
-      "cik": "0001377936",
-      "instrumentId": "vu_b4ef9e741b2864",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "SAR",
-        "SAT",
-        "SAV",
-        "SAX",
-        "SAY",
-        "SAZ"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "SAM",
       "name": "Boston Beer Co Inc",
       "cik": "0000949870",
@@ -50908,21 +50584,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "SPMA",
-      "name": "Sound Point Meridian Capital, Inc.",
-      "cik": "0001930147",
-      "instrumentId": "vu_79191eb1deafea",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "SPMC",
-        "SPME"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "SPNT",
       "name": "SiriusPoint Ltd",
       "cik": "0001576018",
@@ -52279,17 +51940,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "SWKHL",
-      "name": "SWK Holdings Corp",
-      "cik": "0001089907",
-      "instrumentId": "vu_4a357898e7d844",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "SWKS",
       "name": "Skyworks Solutions",
       "cik": "0000004127",
@@ -52689,20 +52339,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "TBB",
-      "name": "At&T Inc.",
-      "cik": "0000732717",
-      "instrumentId": "vu_fddd2efafc0a5c",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "T"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -57593,17 +57229,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "VRME",
-      "name": "VerifyMe, Inc.",
-      "cik": "0001104038",
-      "instrumentId": "vu_a5acaffdde2921",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "VRNS",
       "name": "Varonis Systems Inc",
       "cik": "0001361113",
@@ -59775,6 +59400,20 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "XLAB",
+      "name": "Exascale Labs Holdings Inc.",
+      "cik": "0002109869",
+      "instrumentId": "vu_bb2adf54588321",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "XLABW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "XLO",
       "name": "Xilio Therapeutics, Inc.",
       "cik": "0001840233",
@@ -60024,6 +59663,21 @@
       "alsoTickers": [
         "XSLLU",
         "XSLLW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "XTER",
+      "name": "Karman Line Acquisition Corp.",
+      "cik": "0002134856",
+      "instrumentId": "vu_4fa2578827d375",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "XTERU",
+        "XTERW"
       ],
       "role": "deliveredStockPage"
     },
@@ -61034,6 +60688,20 @@
       "role": "universe"
     },
     {
+      "ticker": "AEFC",
+      "name": "Aegon Ltd.",
+      "cik": "0000769218",
+      "instrumentId": "vu_39f13035b39cc7",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "AEG"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "AESPU",
       "name": "Aeon Acquisition I Corp.",
       "cik": "0002082526",
@@ -61138,6 +60806,21 @@
       "role": "universe"
     },
     {
+      "ticker": "AOMD",
+      "name": "Angel Oak Mortgage REIT, Inc.",
+      "cik": "0001766478",
+      "instrumentId": "vu_f009bf09ea35cc",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "AOMN",
+        "AOMR"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "APACR",
       "name": "StoneBridge Acquisition II Corp",
       "cik": "0002043630",
@@ -61218,6 +60901,17 @@
       "role": "universe"
     },
     {
+      "ticker": "ATHS",
+      "name": "Athene Holding Ltd.",
+      "cik": "0001527469",
+      "instrumentId": "vu_e24081b440a8dc",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "AXINU",
       "name": "Axiom Intelligence Acquisition Corp 1",
       "cik": "0002057030",
@@ -61250,6 +60944,23 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "NXH"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "BDCX",
+      "name": "Ubs Ag",
+      "cik": "0001114446",
+      "instrumentId": "vu_13a04bb9665d65",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CEFD",
+        "IFED",
+        "MLPR",
+        "MVRL"
       ],
       "role": "universe"
     },
@@ -61371,6 +61082,17 @@
       "role": "universe"
     },
     {
+      "ticker": "CCID",
+      "name": "Carlyle Credit Income Fund",
+      "cik": "0001517767",
+      "instrumentId": "vu_da3d354bbb8787",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "CHAI",
       "name": "Core AI Holdings, Inc.",
       "cik": "0001649009",
@@ -61379,6 +61101,23 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "CHSCL",
+      "name": "Chs Inc",
+      "cik": "0000823277",
+      "instrumentId": "vu_e367daa8ce62bc",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CHSCM",
+        "CHSCN",
+        "CHSCO",
+        "CHSCP"
+      ],
       "role": "universe"
     },
     {
@@ -61432,6 +61171,20 @@
       "role": "universe"
     },
     {
+      "ticker": "CRBD",
+      "name": "Corebridge Financial, Inc.",
+      "cik": "0001889539",
+      "instrumentId": "vu_e74413f3936f4b",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CRBG"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "CRNX",
       "name": "Crinetics Pharmaceuticals, Inc.",
       "cik": "0001658247",
@@ -61468,6 +61221,20 @@
       "role": "universe"
     },
     {
+      "ticker": "CUBB",
+      "name": "Customers Bancorp, Inc.",
+      "cik": "0001488813",
+      "instrumentId": "vu_01f061b81e7dfd",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CUBI"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "CUBWU",
       "name": "Lionheart Holdings",
       "cik": "0002015955",
@@ -61478,6 +61245,32 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "CUBWW"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "DBRG",
+      "name": "DigitalBridge Group, Inc.",
+      "cik": "0001679688",
+      "instrumentId": "vu_231e6cc5badd65",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "DCBG",
+      "name": "Dime Commercial Bancshares, Inc. /NY/",
+      "cik": "0000846617",
+      "instrumentId": "vu_fc79d89a1d1b8c",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "DCOM",
+        "DCOM"
       ],
       "role": "universe"
     },
@@ -61520,6 +61313,48 @@
       "cik": "0001999297",
       "instrumentId": "vu_10ebea0163d546",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "DTB",
+      "name": "Dte Energy Co",
+      "cik": "0000936340",
+      "instrumentId": "vu_0de37bb8ece545",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "DTE",
+        "DTG",
+        "DTW"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "ECCC",
+      "name": "Eagle Point Credit Co",
+      "cik": "0001604174",
+      "instrumentId": "vu_08781926884339",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "ECCU",
+        "ECCV"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "EIIA",
+      "name": "Eagle Point Institutional Income Fund",
+      "cik": "0001896036",
+      "instrumentId": "vu_1747cbb8231759",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -61606,6 +61441,17 @@
       "role": "universe"
     },
     {
+      "ticker": "FSEA",
+      "name": "First Seacoast Bancorp, Inc.",
+      "cik": "0001943802",
+      "instrumentId": "vu_f97b3c960d3d42",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "FSOL",
       "name": "Fidelity Solana Fund",
       "cik": "0002063380",
@@ -61672,6 +61518,31 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "GPJA",
+      "name": "Georgia Power Co",
+      "cik": "0000041091",
+      "instrumentId": "vu_afcf8942c19121",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "GREEL",
+      "name": "Vulcan Infrastructure & Power Inc.",
+      "cik": "0001844971",
+      "instrumentId": "vu_638312ca24324d",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "VIP"
+      ],
       "role": "universe"
     },
     {
@@ -61792,21 +61663,6 @@
       "role": "universe"
     },
     {
-      "ticker": "IPXG",
-      "name": "Inflection Point Acquisition Corp. VII",
-      "cik": "0002088805",
-      "instrumentId": "vu_25620523b24d46",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "IPXGU",
-        "IPXGW"
-      ],
-      "role": "universe"
-    },
-    {
       "ticker": "JONE",
       "name": "Jones Ventures INTL Acquisition1 Corp",
       "cik": "0002129056",
@@ -61822,14 +61678,31 @@
       "role": "universe"
     },
     {
-      "ticker": "JTTT",
-      "name": "JATT III Acquisition Corp",
-      "cik": "0002145659",
-      "instrumentId": "vu_6fb83e512be0e2",
+      "ticker": "JSM",
+      "name": "Navient Corp",
+      "cik": "0001593538",
+      "instrumentId": "vu_bbbfe6717f18c9",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "NAVI"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "KMPB",
+      "name": "KEMPER Corp",
+      "cik": "0000860748",
+      "instrumentId": "vu_f0eb3346141d1e",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "KMPR"
+      ],
       "role": "universe"
     },
     {
@@ -61935,6 +61808,35 @@
       "role": "universe"
     },
     {
+      "ticker": "MHLA",
+      "name": "Maiden Holdings, Ltd.",
+      "cik": "0001412100",
+      "instrumentId": "vu_e15896ae3498ec",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "MHNC"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "MITN",
+      "name": "TPG Mortgage Investment Trust, Inc.",
+      "cik": "0001514281",
+      "instrumentId": "vu_225d2d5c7ef7c4",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "MITP",
+        "MITT"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "MOBBW",
       "name": "Mobilicom Ltd",
       "cik": "0001898643",
@@ -62020,6 +61922,17 @@
       "role": "universe"
     },
     {
+      "ticker": "NSTS",
+      "name": "NSTS Bancorp, Inc.",
+      "cik": "0001881592",
+      "instrumentId": "vu_312f41751f82ff",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "NTZ",
       "name": "Natuzzi S P A",
       "cik": "0000900391",
@@ -62064,10 +61977,70 @@
       "role": "universe"
     },
     {
+      "ticker": "OXLCG",
+      "name": "Oxford Lane Capital Corp.",
+      "cik": "0001495222",
+      "instrumentId": "vu_a3c4d88c1e8dc8",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "OXLCI",
+        "OXLCL",
+        "OXLCM",
+        "OXLCN",
+        "OXLCO",
+        "OXLCZ"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "PFBC",
       "name": "Preferred Bank",
       "cik": "0001492165",
       "instrumentId": "vu_eca8772a2fa1c9",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "PFH",
+      "name": "Prudential Financial Inc",
+      "cik": "0001137774",
+      "instrumentId": "vu_9f4504443153cd",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "PRH",
+        "PRS",
+        "PRU"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "PFLA",
+      "name": "PennantPark Floating Rate Capital Ltd.",
+      "cik": "0001504619",
+      "instrumentId": "vu_fc7bd2e57e689d",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "PFLT"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "PFXNZ",
+      "name": "PhenixFIN Corp",
+      "cik": "0001490349",
+      "instrumentId": "vu_75151225313aa1",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -62083,20 +62056,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "PSQL",
-      "name": "Pasqal Holding SA",
-      "cik": "0002119292",
-      "instrumentId": "vu_5cb2b9b38074fc",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "PSQLW"
-      ],
       "role": "universe"
     },
     {
@@ -62130,6 +62089,25 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "SAJ",
+      "name": "Saratoga Investment Corp.",
+      "cik": "0001377936",
+      "instrumentId": "vu_b4ef9e741b2864",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SAR",
+        "SAT",
+        "SAV",
+        "SAX",
+        "SAY",
+        "SAZ"
+      ],
       "role": "universe"
     },
     {
@@ -62216,10 +62194,36 @@
       "role": "universe"
     },
     {
+      "ticker": "SPMA",
+      "name": "Sound Point Meridian Capital, Inc.",
+      "cik": "0001930147",
+      "instrumentId": "vu_79191eb1deafea",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SPMC",
+        "SPME"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "SPWRW",
       "name": "SunPower Inc.",
       "cik": "0001838987",
       "instrumentId": "vu_fd1da92c2d0449",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "SWKHL",
+      "name": "SWK Holdings Corp",
+      "cik": "0001089907",
+      "instrumentId": "vu_4a357898e7d844",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -62237,6 +62241,20 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "SZZLU"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "TBB",
+      "name": "At&T Inc.",
+      "cik": "0000732717",
+      "instrumentId": "vu_fddd2efafc0a5c",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "T"
       ],
       "role": "universe"
     },
@@ -62343,6 +62361,17 @@
       "role": "universe"
     },
     {
+      "ticker": "VRME",
+      "name": "VerifyMe, Inc.",
+      "cik": "0001104038",
+      "instrumentId": "vu_a5acaffdde2921",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "WSTNR",
       "name": "Westin Acquisition Corp",
       "cik": "0002076192",
@@ -62365,35 +62394,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "XLAB",
-      "name": "Exascale Labs Holdings Inc.",
-      "cik": "0002109869",
-      "instrumentId": "vu_bb2adf54588321",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "XLABW"
-      ],
-      "role": "universe"
-    },
-    {
-      "ticker": "XTER",
-      "name": "Karman Line Acquisition Corp.",
-      "cik": "0002134856",
-      "instrumentId": "vu_4fa2578827d375",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "XTERU",
-        "XTERW"
-      ],
       "role": "universe"
     },
     {
