@@ -113,6 +113,14 @@ Alle historischen Wochendaten sind verbraucht. Ob ein Setup der Library V1 echte
   * Im Lebenszyklus (`projection-theses.json`) bleibt es **dieselbe These**, mit dem angehängten Ereignis `ROLE_CHANGED` (von → nach).
 * **Unverändert:** Bestehende Ereignisse anderer Kohorten werden nicht verändert. Das Register wird nur angehängt, die Hash-Kette prüft das.
 
+## Explore Highlights (ab Registry 1.5.0)
+
+* **Kohorte `CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT`:** Jedes im Chartbild unter „Explore Highlights“ **angezeigte** Highlight (Projection Engine 1.3.0, höchstens 2 je Titel) wird je Titel × Thesenkennung einmal eingefroren. Gespeichert wie bei der breiten Kohorte (Rolle `EXPLORE_HIGHLIGHT`, Rang, `failedGates`, `gateResults`, Wellentyp, eingefrorene These, Datenqualität, Versionen mit Sichtbarkeit `EXPLORE_HIGHLIGHT_1.0.0`) plus `curation` (Version, Rang-Anteil, verfehlte Leitplanke, Kontext-Übereinstimmung).
+* **Candidate Explorer (`EXPLORE_CANDIDATE`) wird nicht registriert.** Er ist eine technische Zusatzansicht, keine Produktaussage. Bis zu sechs Ereignisse je Titel ohne Produktbezug würden das Register aufblähen.
+* **Bestand:** Ereignisse der Kohorte `CUSTOMER_PRODUCT_EXPLORE_ELLIOTT` (1.4.0) bleiben unverändert stehen und werden weiter verfolgt (Revisionen wie bisher). Neue Ereignisse dieser Kohorte entstehen nicht mehr. Dieselbe These kann als Highlight ein neues Ereignis der neuen Kohorte erhalten; die frühere Kohorte behält ihr Ereignis.
+* **Schnappschüsse:** Sie enthalten nur die für Highlights geeigneten Kandidaten (identische Auswahl wie im Produkt, Test X-16); der ganze Pool würde die wöchentlichen Schnappschüsse um Größenordnungen vergrößern.
+* **Rollenwechsel** im Lebenszyklus (`projection-theses.json`): `EXPLORE` → `EXPLORE_HIGHLIGHT` als `ROLE_CHANGED`; Herabstufung zum Candidate Explorer als `ROLE_CHANGED` + `NOT_PROMOTED` + `ARCHIVED`. Frühere Ereignisse und Revisionen bleiben (Tests X-9b, X-9c, X-14, M11-P7).
+
 ## Unveränderlichkeit
 
 * `ledger.jsonl` wird nur angehängt. Jede Zeile trägt `prevHash` und `hash` = SHA-256 über Vorgänger-Hash, Laufnummer, Typ, ID, Verweis, Woche und kanonisches JSON des Inhalts. `HEAD.json` hält den Kopf der Kette.
