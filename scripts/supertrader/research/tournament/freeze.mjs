@@ -6,10 +6,11 @@ import{fileURLToPath}from 'node:url';
 import{methods,rulebook,historicalParticipants,dataBlocked}from './methods.mjs';
 const dir=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(dir,'../../../..');
 export const hash=buf=>crypto.createHash('sha256').update(buf).digest('hex');
-const relevantFiles=()=>['accounting.mjs','data.mjs','runner.mjs','metrics.mjs','methods.mjs','run.mjs','protocol.json','freeze.mjs','session-public-key.pem',...fs.readdirSync(path.join(dir,'engines')).filter(f=>f.endsWith('.mjs')).map(f=>'engines/'+f)];
+const relevantFiles=()=>['accounting.mjs','data.mjs','runner.mjs','metrics.mjs','methods.mjs','run.mjs','assemble.mjs','regression-run.mjs','protocol.json','freeze.mjs','session-public-key.pem',...fs.readdirSync(path.join(dir,'engines')).filter(f=>f.endsWith('.mjs')).map(f=>'engines/'+f)];
 export function createFreeze(){
  const files=Object.fromEntries(relevantFiles().map(f=>[f,hash(fs.readFileSync(path.join(dir,f)))]));
  const dependencyPaths=['core/identity.js','quant/engines/canonical-total-return.js','quant/engines/return-series.js','quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/engines/us-security-master.js','quant/engines/instrument-classification.js','scripts/market/storage/s3-driver.mjs','scripts/supertrader/validation/lib.mjs','scripts/supertrader/validation/results-public-key.pem'];
+ dependencyPaths.push(...fs.readdirSync(path.join(root,'scripts/supertrader/tests')).filter(f=>/^tournament-.*\.test\.mjs$/.test(f)).sort().map(f=>'scripts/supertrader/tests/'+f));
  const dependencies=Object.fromEntries(dependencyPaths.map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]));
  return{schema:'supertrader-method-freezes-1.0.0',frozenAt:new Date().toISOString(),codeCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),frozenBeforePerformance:true,protocolHash:files['protocol.json'],files,dependencies,methods:methods.map(m=>({id:m.id,version:m.version||'1.0.0',rulebookHash:hash(JSON.stringify(rulebook(m))),rulebook:rulebook(m),historicalAdmission:historicalParticipants.some(p=>p.id===m.id)?'ADMITTED_RESEARCH_ADAPTATION':'BLOCKED_DATA',dataRequirements:m.dataContract||m.dataRequirements||m.missingSourceComponents||null})),dataBlocked};
 }

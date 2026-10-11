@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import * as Listing from '../validation/lib.mjs';
 import { prepareHistoricalData, featuresAtDate, scannerInputs, fundamentalRows, loadHistoricalData, loadRawHistoricalPayload, preserveRawBars, loadCurrentScannerInputs, privateDataConfigured } from '../research/tournament/data.mjs';
 const TotalReturn = createRequire(import.meta.url)('../../../quant/engines/canonical-total-return.js');
 
@@ -37,6 +38,7 @@ test('unsorted bars and duplicate listing identities cannot be stitched silently
   assert.throws(() => prepareHistoricalData(fixture({ raw: [bar(dates[1], 100), bar(dates[0], 100)] }), window), /BARS_NOT_ORDERED/);
   const p = fixture(); p.listings.push(p.listings[0]);
   assert.throws(() => prepareHistoricalData(p, window), /DUPLICATE_LISTING_ID/);
+  assert.throws(() => prepareHistoricalData(fixture({ listingExtra: { ticker: 'DEF' } }), window), /LISTING_IDENTITY_CONFLICT/);
 });
 
 test('series respect original listing lifetime and terminal remains an explicit unknown', () => {
@@ -155,6 +157,41 @@ test('raw-preserving historical adapter reuses stores, caps8 reads, and preserve
   assert.equal(prepared.securities.length, 11); assert.equal(prepared.coverage.quarantined, 11);
   assert.deepEqual(prepared.window, window);
   assert.equal(preserveRawBars([{ date: dates[0], close: 100 }], window)[0].dividend, null);
+});
+
+test('official unsupported identity rows are excluded before series loading, without aliases', async () => {
+  // Exact public Tiingo supported_tickers.zip rows observed 2026-10-11. The
+  // shared classifier admits all three as common equity; Core identity rejects
+  // each ticker, which previously aborted canonical normalization globally.
+  const sourceRows = [
+    { ticker: '-P-HIZ', startDate: '2023-08-30', endDate: '2025-09-29' },
+    { ticker: 'CAPTW(EXP20260807)', startDate: '2026-07-28', endDate: '2026-07-31' },
+    { ticker: 'NXT(EXP20091224)', startDate: '2023-02-09', endDate: '2023-02-09' },
+    { ticker: 'BADSTART', startDate: '2023-02-30', endDate: '' },
+    { ticker: 'BADEND', startDate: '2023-02-09', endDate: '2023-02-30' },
+    { ticker: 'BADRANGE', startDate: '2023-02-09', endDate: '2023-02-08' },
+    { ticker: 'ABC', startDate: '2010-01-01', endDate: '' }
+  ].map((r) => ({ exchange: 'NASDAQ', assetType: 'Stock', priceCurrency: 'USD', ...r }));
+  const req = createRequire(import.meta.url), identity = req('../../../core/identity.js'), master = req('../../../quant/engines/us-security-master.js');
+  const roots = master.collectListedRoots(sourceRows);
+  for (const r of sourceRows.slice(0, 3)) {
+    assert.equal(identity.normalizeTicker(r.ticker), null);
+    assert.equal(Listing.classifyListing(master, { ...r, listEnd: r.endDate }, null, roots).included, true);
+  }
+  const observed = ['2023-08-30', '2023-08-31'];
+  const reads = [], bars = observed.map((d) => bar(d, 100));
+  const deps = { listingRows: sourceRows, today: '2026-10-11',
+    universe: { securities: [{ ticker: 'ABC', active: true, startDate: '2010-01-01' }] },
+    eligibility: { decisions: [{ ticker: 'ABC', instrument_type: 'EQUITY_COMMON' }] }, companies: { rows: [] },
+    readPrivate: async (key) => key.includes('manifest') ? { entries: Object.fromEntries(sourceRows.map((r) => [`tiingo:NASDAQ:${r.ticker}:${r.startDate}`, { status: 'OK', included: true, cls: 'EQUITY_COMMON' }])) } : {},
+    mainStore: { getSeries: async (key) => { reads.push(key); return { bars }; } },
+    pitStore: { getSeries: async (key) => { reads.push(key); return { bars }; } } };
+  const data = await loadHistoricalData({ rawDataDeps: deps });
+  assert.equal(data.state, 'AVAILABLE'); assert.deepEqual(data.securities.map((s) => s.ticker), ['ABC']);
+  assert.deepEqual(reads.sort(), ['ABC', 'SPY@1993-01-29']);
+  assert.deepEqual(data.coverage.loader.sourceIdentity, { supportedRows: 7, rejectedRows: 6, reasons: {
+    SOURCE_TICKER_UNSUPPORTED: 3, SOURCE_START_DATE_INVALID: 1, SOURCE_END_DATE_INVALID: 1, SOURCE_DATE_RANGE_INVALID: 1 } });
+  assert.equal(data.coverage.loader.excluded.SOURCE_TICKER_UNSUPPORTED, 3);
 });
 
 test('current fingerprint includes classification, sector and eligibility source metadata', async () => {

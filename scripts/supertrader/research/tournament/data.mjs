@@ -62,6 +62,25 @@ export function preserveRawBars(bars, window = DATA_WINDOW) {
     adjustedClose: b.adjustedClose ?? b.adjClose ?? null }));
 }
 
+// Supported-source classification permits some strings the canonical identity
+// contract deliberately rejects (for example the official historical -P-HIZ
+// row). Reject those source rows before listing construction or series reads;
+// preserve the source spelling rather than inventing a normalized alias.
+function admissibleSourceRows(rows) {
+  const accepted = [], rejected = {}; let supportedRows = 0;
+  for (const r of rows) {
+    if (r.assetType !== 'Stock' || r.priceCurrency !== 'USD' || !Listing.EXCHANGES.has(r.exchange) || !r.startDate) { accepted.push(r); continue; }
+    supportedRows++;
+    const reason = !Identity.normalizeTicker(r.ticker) ? 'SOURCE_TICKER_UNSUPPORTED'
+      : !validDate(r.startDate) ? 'SOURCE_START_DATE_INVALID'
+      : r.endDate && !validDate(r.endDate) ? 'SOURCE_END_DATE_INVALID'
+      : r.endDate && r.endDate < r.startDate ? 'SOURCE_DATE_RANGE_INVALID' : null;
+    if (reason) rejected[reason] = (rejected[reason] || 0) + 1;
+    else accepted.push(r);
+  }
+  return { accepted, rejected, supportedRows };
+}
+
 // The injected dependency contract is private/test only. Production reuses the
 // configured S3 driver, the history-store codec and zero-cost guard; no writes.
 export async function loadRawHistoricalPayload(options = {}, diagnosticContext = {}) {
@@ -83,6 +102,8 @@ export async function loadRawHistoricalPayload(options = {}, diagnosticContext =
     rows = Listing.parseTickerCsv(Listing.unzipCsv(Buffer.from(await response.arrayBuffer())));
   }
   diagnosticContext.phase = 'LISTING_BUILD';
+  const sourceRows = admissibleSourceRows(rows);
+  rows = sourceRows.accepted;
   const cls = new Map(eligibility.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(universe.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
   const listings = Listing.buildListingTable(rows, storeActive, { today: deps.today || new Date().toISOString().slice(0, 10) }).filter((l) => l.startDate <= window.to && (!l.listEnd || l.listEnd >= window.warmupFrom));
@@ -113,7 +134,7 @@ export async function loadRawHistoricalPayload(options = {}, diagnosticContext =
     pitStore.getSeries('SPY@1993-01-29')]);
   const spyRaw = preserveRawBars(spySeries?.bars, window), master = new Set(spyRaw.map((b) => b.date));
   diagnosticContext.phase = 'MEMBER_CLASSIFICATION';
-  const members = [], excluded = {};
+  const members = [], excluded = { ...sourceRows.rejected };
   for (const l of listings) {
     const e = manifest[l.id]; let c;
     if (l.source === 'STORE_ACTIVE') c = { included: INCLUDED.has(l.storeClass), cls: l.storeClass };
@@ -146,7 +167,9 @@ export async function loadRawHistoricalPayload(options = {}, diagnosticContext =
     });
   }
   return { listings, members, segs, spyRaw, calendar: spyRaw.map((b) => b.date).filter((d) => d >= window.from), sourceWindow: window,
-    loaderCoverage: { objectReadConcurrency: 8, members: members.length, loadedMembers: selected.length, offCalendar, excluded, secPitAvailable: Boolean(pit), delistAvailable: Boolean(delist) } };
+    loaderCoverage: { objectReadConcurrency: 8, members: members.length, loadedMembers: selected.length, offCalendar, excluded,
+      sourceIdentity: { supportedRows: sourceRows.supportedRows, rejectedRows: Object.values(sourceRows.rejected).reduce((a, b) => a + b, 0), reasons: sourceRows.rejected },
+      secPitAvailable: Boolean(pit), delistAvailable: Boolean(delist) } };
 }
 
 // Incoming IDs are inherited from the existing listing table, never made from

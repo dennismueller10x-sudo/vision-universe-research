@@ -63,7 +63,19 @@ function positionMap(input) {
   }
   return result;
 }
-function dateValid(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(s + 'T00:00:00Z').toISOString().slice(0,10) === s; }
+// Pure bounded memoization of immutable ISO date strings; trading rules are unchanged.
+const dateValidityCache = new Map();
+const DATE_VALIDITY_CACHE_LIMIT = 4096;
+function dateValid(date) {
+  // Preserve the original false/throw behavior for non-ISO inputs and invalid dates.
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return uncachedDateValid(date);
+  if (dateValidityCache.has(date)) return dateValidityCache.get(date);
+  const valid = uncachedDateValid(date); // Original exceptions propagate; never cache a thrown result.
+  if (dateValidityCache.size >= DATE_VALIDITY_CACHE_LIMIT) dateValidityCache.delete(dateValidityCache.keys().next().value);
+  dateValidityCache.set(date, valid);
+  return valid;
+}
+function uncachedDateValid(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(s + 'T00:00:00Z').toISOString().slice(0,10) === s; }
 function history(rows, asOf, requireOHLCV = true) {
   if (!Array.isArray(rows)) throw Error('Missing price history');
   if (rows.some(b => typeof b?.date !== 'string')) throw Error('Undated bars cannot be assigned point-in-time');

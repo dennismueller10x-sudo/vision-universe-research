@@ -6,8 +6,8 @@ on:
     inputs:
       mode:
         type: choice
-        options: [probe, run]
-        default: probe
+        options: [run]
+        default: run
 permissions:
   contents: read
 concurrency:
@@ -38,20 +38,34 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   research:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-tournament:')
+    if: contains(github.event.head_commit.message, '[supertrader-tournament:run]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'run')
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [systematic, turtle, weinstein, kullamagi, current]
     runs-on: ubuntu-latest
     timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Research only; public logs contain status and counts
         env:
-          MODE: ${{ inputs.mode }}
-          MESSAGE: ${{ github.event.head_commit.message }}
+          GROUP: ${{ matrix.group }}
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -61,19 +75,21 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=14000
         run: |
           set -euo pipefail
-          mode="${MODE:-probe}"
-          case "$MESSAGE" in *'[supertrader-tournament:run]'*) mode=run;; esac
-          if [ "$mode" = run ]; then
-            node --test scripts/supertrader/tests/tournament-*.test.mjs
-            node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament"
-          else
-            node scripts/supertrader/research/tournament/access-probe.mjs --out "$RUNNER_TEMP/tournament"
-          fi
+          node --test scripts/supertrader/tests/tournament-*.test.mjs
+          case "$GROUP" in
+            systematic) only=cross_sectional_momentum,52_week_high_effect,LOW_VOLATILITY ;;
+            turtle) only=TURTLE_S2_EQUITY_DAILY ;;
+            weinstein) only=WEINSTEIN_STAGE_DAILY ;;
+            kullamagi) only=KULLAMAGI_DAILY_ADAPTATION ;;
+            current) node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament" --current-only; exit 0 ;;
+            *) exit 1 ;;
+          esac
+          node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament" --only "$only" --skip-current
       - name: Preserve public status or encrypted owner/session result only
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: supertrader-tournament-${{ github.run_id }}
+          name: supertrader-tournament-${{ github.run_id }}-${{ matrix.group }}
           path: |
             ${{ runner.temp }}/tournament/*status.json
             ${{ runner.temp }}/tournament/*.sealed.json

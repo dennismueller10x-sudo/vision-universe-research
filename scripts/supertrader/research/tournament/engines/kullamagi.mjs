@@ -47,7 +47,19 @@ const high = bs => Math.max(...bs.map(b => b.high));
 const low = bs => Math.min(...bs.map(b => b.low));
 const sma = (bs, n, offset = 0) => mean(bs.slice(bs.length - n - offset, bs.length - offset).map(b => b.close));
 const idCompare = (a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+// Pure bounded memoization of immutable ISO date strings; trading rules are unchanged.
+const dateValidityCache = new Map();
+const DATE_VALIDITY_CACHE_LIMIT = 4096;
 function validDate(date) {
+  // Preserve the original false/throw behavior for non-ISO inputs and invalid dates.
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return uncachedValidDate(date);
+  if (dateValidityCache.has(date)) return dateValidityCache.get(date);
+  const valid = uncachedValidDate(date); // Original exceptions propagate; never cache a thrown result.
+  if (dateValidityCache.size >= DATE_VALIDITY_CACHE_LIMIT) dateValidityCache.delete(dateValidityCache.keys().next().value);
+  dateValidityCache.set(date, valid);
+  return valid;
+}
+function uncachedValidDate(date) {
   return typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)
     && Number.isFinite(Date.parse(date + 'T00:00:00Z'))
     && new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) === date;
