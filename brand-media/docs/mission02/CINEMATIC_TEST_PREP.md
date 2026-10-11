@@ -1,3 +1,5 @@
+> **ÜBERHOLT (2026-10-11):** Die Wahl von `cinematic_avatar` war falsch; die früheren Trailer liefen mit `heygen-video-1` (ca. 0,03 USD/s). Siehe `COST_DISCREPANCY_ANALYSIS.md`. Dieses Dokument bleibt als Preisbeleg für Cinematic Avatar stehen.
+
 # Cinematic-Test LEA (4 s) – Vorbereitung und Konditionen
 
 Stand 2026-10-11. **Nicht ausgeführt.** Freigabebedingung war: kostenpflichtige Generierung nur, wenn sich die Kosten vorab zuverlässig auf ≤ 2 USD begrenzen lassen. Das ist nicht der Fall.

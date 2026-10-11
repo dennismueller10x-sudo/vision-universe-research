@@ -183,10 +183,22 @@
     "note": "Preis fuer Photo-Avatar-V lag ca. 1.7x ueber der Blog-Schaetzung; API bietet keinen Kostenhoechstbetrag. Wallet-Differenz +-0.01 (Rundung)."
   },
   "cinematicTest": {
-    "status": "NOT_RUN",
+    "status": "SUPERSEDED",
     "reason": "Kosten nicht auf <= 2 USD begrenzbar (kein API-Limit, Preis nur aus Drittquellen: 7.32 USD je 720p-Video, pauschal)",
     "walletAtCheck": 14.72,
     "preparedRequest": "pipeline/requests/lea_cinematic_test_01.json",
-    "guardVerified": "abort bei --usd-per-clip 7.32 --max-usd 2"
+    "guardVerified": "abort bei --usd-per-clip 7.32 --max-usd 2",
+    "note": "Produktwahl korrigiert: fruehere Trailer nutzten heygen-video-1 (Sekundenpreis). Siehe docs/mission02/COST_DISCREPANCY_ANALYSIS.md"
+  },
+  "earlierTrailerProduction": {
+    "model": "heygen-video-1",
+    "endpoint": "POST /v3/models/videos",
+    "period": "2026-10-08..2026-10-10",
+    "completedClips": 20,
+    "failedClips": 4,
+    "totalSeconds": 191,
+    "estimatedUsdAtListPrice": 12.3,
+    "estimateBasis": "HeyGen blog list prices 0.02/0.03/0.09 USD/s (480p/768p/1080p); not billed amounts",
+    "historyFile": "registry/heygen-production-history.json"
   }
 }

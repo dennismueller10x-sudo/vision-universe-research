@@ -33,3 +33,9 @@
 - **Variante B** (3 getrennte Clips) nicht finanzierbar; Schätzung 10,7 USD überholt.
 - **Plattformaufnahmen** aus frischem `origin/main` (Stand 09.10.2026); Supertrader-Signale stale ⇒ nur Hero.
 - Stimmen weiterhin offen (keine vorläufigen Stimmen im Trailer).
+
+## Update 2026-10-11 (Kostenanalyse, STOPP bestätigt)
+- Keine kostenpflichtige Generierung seit dem Stopp. Wallet 14,72 USD.
+- **Diskrepanz geklärt:** frühere Trailer = `heygen-video-1` (≈ 0,03–0,09 USD/s), Cinematic Avatar = anderes Produkt (Pauschale ≈ 7,32 USD, unverifiziert). Siehe `COST_DISCREPANCY_ANALYSIS.md`.
+- **Zur Freigabe:** Mini-Test `reference_to_video`, 5 s, 768p, Referenzen = Masterbilder LEA und DAVID, ≈ 0,15 USD (Obergrenze 0,45 USD) – prüft Gesichtserhalt und Kamerabewegung.
+- Offen wie zuvor: Stimmenwahl, finale Plattformaufnahmen/Datenrechte, PR #583.

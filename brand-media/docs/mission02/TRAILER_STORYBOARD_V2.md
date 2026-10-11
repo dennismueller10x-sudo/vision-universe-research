@@ -43,7 +43,9 @@ Negativ: Gesichtsveränderung, andere Frisur, Text, Neon, Hologramme, zusätzlic
 | Studio-Referenz „leer“ | fehlt (nur über Cinematic oder Ausschnitt) |
 | Musik | optional, Lizenzquelle offen; Entwurf nutzt nur Drone/SFX |
 
-## Kostenabschätzung (USD)
+> **Kosten überholt:** Variante B/C beruhen auf einem falschen Produkt (Cinematic Avatar). Aktuelle Empfehlung und Kosten (≈ 4,5 USD mit `heygen-video-1`) in `COST_DISCREPANCY_ANALYSIS.md`.
+
+## Kostenabschätzung (USD, überholt)
 Gemessen: Avatar V 0,116/s · Avatar IV 0,039/s · Sprachprobe ≈ 0,01–0,02 · Bildgenerierung 0,28/Bild (HeyGen-Doku).
 **Ungemessen:** Cinematic. HeyGen nennt Credits (60 bei 720p, 150 bei 1080p je Clip), keinen USD-Preis. Als **unverifizierte Obergrenze** nehme ich den Seedance-2-Preis von Runway: 0,36–0,40 USD/s ⇒ 4–5 s ≈ 1,6–2,0 USD je Clip.
 
