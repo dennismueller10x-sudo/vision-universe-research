@@ -14,6 +14,29 @@ concurrency:
   group: supertrader-tournament-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
+  regression:
+    if: contains(github.event.head_commit.message, '[supertrader-tournament:run]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full relevant regression suites; no provider credentials
+        run: node scripts/supertrader/research/tournament/regression-run.mjs --out "$RUNNER_TEMP/regression"
+      - name: Encrypted diagnostics and public pass/fail only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-regression-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/regression/*status.json
+            ${{ runner.temp }}/regression/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30
   research:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-tournament:')
     runs-on: ubuntu-latest
