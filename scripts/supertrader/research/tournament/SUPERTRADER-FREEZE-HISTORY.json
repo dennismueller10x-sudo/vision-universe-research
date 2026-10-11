@@ -48,12 +48,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -141,14 +141,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -235,14 +235,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -549,7 +549,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -595,7 +595,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -610,7 +610,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -627,7 +627,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -712,7 +712,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -730,19 +730,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -931,7 +931,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -1006,13 +1006,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -1080,13 +1080,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -1135,7 +1135,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -1235,7 +1235,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -1304,12 +1304,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -1397,14 +1397,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -1491,14 +1491,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -1805,7 +1805,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -1851,7 +1851,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -1866,7 +1866,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -1883,7 +1883,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -1968,7 +1968,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -1986,19 +1986,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -2187,7 +2187,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -2262,13 +2262,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -2336,13 +2336,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -2391,7 +2391,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -2491,7 +2491,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -2588,12 +2588,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -2681,14 +2681,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -2775,14 +2775,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -3089,7 +3089,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -3135,7 +3135,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -3150,7 +3150,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -3167,7 +3167,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -3252,7 +3252,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -3270,19 +3270,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -3471,7 +3471,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -3546,13 +3546,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -3620,13 +3620,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -3675,7 +3675,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -3775,7 +3775,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -3908,12 +3908,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -4001,14 +4001,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -4095,14 +4095,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -4409,7 +4409,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -4455,7 +4455,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -4470,7 +4470,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -4487,7 +4487,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -4572,7 +4572,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -4590,19 +4590,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -4791,7 +4791,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -4866,13 +4866,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -4940,13 +4940,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -4995,7 +4995,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -5095,7 +5095,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -5212,12 +5212,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -5305,14 +5305,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -5399,14 +5399,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -5713,7 +5713,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -5759,7 +5759,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -5774,7 +5774,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -5791,7 +5791,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -5876,7 +5876,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -5894,19 +5894,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -6095,7 +6095,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -6170,13 +6170,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -6244,13 +6244,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -6299,7 +6299,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -6399,7 +6399,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -6448,8 +6448,8 @@
       "remediation": "SEMANTICS_PRESERVING_LINEAR_EXTREMA_AND_LARGE_CENSUS_TEST"
     },
     {
-      "freeze_commit": null,
-      "run_id": null,
+      "freeze_commit": "8533b7f607bbc8b8c615df66544ca2abbd2db2ac",
+      "run_id": 38157461683,
       "freeze": {
         "schema": "supertrader-method-freezes-1.0.0",
         "frozenAt": "2026-10-11T16:55:15.745Z",
@@ -6507,12 +6507,12 @@
               "id": "cross_sectional_momentum",
               "name": "JT1993 six/six long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "era": "Section I, printed pp.68–69; representative 6/6 no-skip variant.",
               "sources": [
                 {
                   "id": "jt1993",
                   "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
-                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                  "locator": "Section I, printed pp.68–69; representative 6/6 no-skip variant."
                 }
               ],
               "parameters": {
@@ -6600,14 +6600,14 @@
             "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
             "rulebook": {
               "id": "52_week_high_effect",
-              "name": "George\u2013Hwang proximity long cohort",
+              "name": "George–Hwang proximity long cohort",
               "fidelity": "VU_ADAPTATION",
-              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "era": "Tables I–III, printed pp.2148–2152.",
               "sources": [
                 {
                   "id": "gh2004",
                   "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
-                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                  "locator": "Tables I–III, printed pp.2148–2152."
                 }
               ],
               "parameters": {
@@ -6694,14 +6694,14 @@
             "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
             "rulebook": {
               "id": "LOW_VOLATILITY",
-              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "name": "Blitz–van Vliet low-volatility US long sleeve",
               "fidelity": "VU_ADAPTATION",
-              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "era": "II Data and methodology, printed pp.3–4; April 2007 inner version.",
               "sources": [
                 {
                   "id": "LV-PAPER",
                   "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
-                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                  "locator": "II Data and methodology, printed pp.3–4; April 2007 inner version."
                 }
               ],
               "parameters": {
@@ -7008,7 +7008,7 @@
                 {
                   "id": "eq_magic_interview",
                   "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
-                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                  "locator": "January 22, 2010 interview, pp. 3–6; combined rank"
                 }
               ],
               "fidelity": {
@@ -7054,7 +7054,7 @@
               "id": "value_plus_momentum",
               "parameters": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -7069,7 +7069,7 @@
               },
               "rules": {
                 "bookLagMonths": 6,
-                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "momentum": "MOM2–12_TOTAL_RETURN",
                 "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
                 "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
                 "rebalance": "MONTHLY",
@@ -7086,7 +7086,7 @@
                 {
                   "id": "vm2013",
                   "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
-                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1–3"
                 }
               ],
               "fidelity": {
@@ -7171,7 +7171,7 @@
                 "maxWeight": 0.1,
                 "maxExposure": 1
               },
-              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "sourceEra": "1983–1988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
               "provenance": [
                 {
                   "id": "TUR-F-S2-ENTRY",
@@ -7189,19 +7189,19 @@
                   "id": "TUR-F-N-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12–13; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-UNIT-01",
                   "classification": "SOURCE_DEFINED",
                   "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14–15; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-F-STOP-2N",
                   "classification": "SOURCE_DEFINED",
                   "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
-                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21–22; scripts/supertrader/fidelity/canonical/turtle.json"
                 },
                 {
                   "id": "TUR-E-DAILY",
@@ -7390,7 +7390,7 @@
             "rulebook": {
               "id": "KULLAMAGI_DAILY_ADAPTATION",
               "version": "1.0.0",
-              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "name": "VU Daily Momentum Consolidation — Kullamägi inspired",
               "family": "Momentum / Breakout",
               "fidelity": "VU_ADAPTATION",
               "replicationClaimAllowed": false,
@@ -7465,13 +7465,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -7539,13 +7539,13 @@
                 {
                   "id": "KK-S-SELL",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "description": "Sell 1/3–1/2 after3–5days, move stop to breakeven and trail remainder with10/20-day close.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
                 },
                 {
                   "id": "KK-S-RISK",
                   "classification": "SOURCE_DEFINED_RANGE",
-                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "description": "Most trade risk0.25–1%, most positions10–20%; smaller-account era differs.",
                   "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
                 },
                 {
@@ -7594,7 +7594,7 @@
               "sources": [
                 {
                   "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
-                  "author": "Kristjan Kullam\u00e4gi",
+                  "author": "Kristjan Kullamägi",
                   "era": "January/April2021 public article",
                   "accessStatus": "PRIMARY_BODY_INSPECTED",
                   "accessedDate": "2026-10-11"
@@ -7694,7 +7694,7 @@
             "requirements": [
               "36 complete monthly canonical total returns per stock",
               "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
-              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Standardized 12−1 residuals excluding estimated alpha",
               "Exact source holding horizon freeze"
             ],
             "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
@@ -7714,7 +7714,7 @@
           }
         ]
       },
-      "outcome": "LARGE_SIGNAL_STATISTICS_RUN_PENDING_LAUNCH",
+      "outcome": "ALL_FIVE_RESEARCH_JOBS_COMPLETED_SUCCESSFULLY",
       "changes": [
         "BOUNDED_ARGUMENT_LINEAR_EXTREMA_ONLY",
         "EXACT_SMALL_INPUT_PARITY_AND_300000_SIGNAL_TEST"
@@ -7734,7 +7734,13 @@
       },
       "unique_tests_passed": 141,
       "historical_strategy_outcomes_previously_opened": false,
-      "previous_invalid_partial_results_used_for_tuning": false
+      "previous_invalid_partial_results_used_for_tuning": false,
+      "historicalParticipantsMeasured": 6,
+      "currentMethodDefinitionsScanned": 10,
+      "fullOverlapPairs": 15,
+      "noRulebookOrProtocolChanges": true,
+      "actualHistoricalResultsOpenedOnlyAfterThisFreeze": true,
+      "regressionOutcome": "FAIL_DOCUMENTED_BASELINE_ONLY"
     }
   ]
 }

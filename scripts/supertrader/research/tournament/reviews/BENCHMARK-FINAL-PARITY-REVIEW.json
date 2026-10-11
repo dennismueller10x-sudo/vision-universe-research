@@ -1,0 +1,36 @@
+{
+  "schema": "supertrader-benchmark-final-parity-review-1.0.0",
+  "status": "PASS_RETURN_RISK_PARITY_WITH_REPORTING_CAVEAT",
+  "metricsExactParity": false,
+  "mismatchedFieldNames": [
+    "executionCosts"
+  ],
+  "windowExactParity": true,
+  "primaryStoreParity": "MATCH",
+  "contextStatus": [
+    {
+      "ticker": "IWM",
+      "status": "MISSING_NO_SUBSTITUTION"
+    },
+    {
+      "ticker": "QQQ",
+      "status": "MISSING_NO_SUBSTITUTION"
+    },
+    {
+      "ticker": "IWV",
+      "status": "MISSING_NO_SUBSTITUTION"
+    }
+  ],
+  "limits": [
+    "SHARED_CANONICAL_PRIMITIVE_NOT_AN_INDEPENDENT_PROVIDER",
+    "RAW_BENCHMARK_CURVE_NOT_IN_TOURNAMENT_PAYLOAD"
+  ],
+  "returnRiskMetricsExactParity": true,
+  "reportingDifference": {
+    "field": "executionCosts",
+    "auxiliary": "EXPLICIT_ZERO",
+    "tournament": "NULL_METADATA_NOT_SUPPLIED",
+    "benchmarkCurve": "UN_COSTED_BY_PROTOCOL",
+    "returnMetricsAffected": false
+  }
+}

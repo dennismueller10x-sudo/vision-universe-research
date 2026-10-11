@@ -271,8 +271,10 @@ export function buildPublicArtifacts(payload = {}, review = {}, metadata) {
     priority: ctx.final ? ctx.approvedIds(review.forwardPriority).includes(m.id) ? 'HIGH' : 'LOW' : 'PENDING',
     observations: 'PRIVATE_ENCRYPTED', chronology: 'POST_FREEZE_ONLY',
   }));
-  const legendary = array(metadata.universe.candidates).filter(d => /TRADER/.test(d.type ?? '') && ['LOW', 'NOT_REPRODUCIBLE'].includes(d.reproducibility)).map(d => ({method_id: d.id, reproducibility: d.reproducibility, discretion: enumValue(d.discretion, ['LOW', 'MEDIUM', 'HIGH'], 'UNAVAILABLE'), product_role: 'EDUCATIONAL'}));
-  const systematic = array(metadata.universe.candidates).filter(d => /SYSTEMATIC|ACADEMIC/.test(d.type ?? '') && d.source_coverage === 'HIGH' && d.reproducibility === 'HIGH').map(d => ({method_id: d.id, source_coverage: 'HIGH', reproducibility: 'HIGH', real_trade_ground_truth: 'NONE', historical_admission: ctx.rows.find(r => r.method_id === d.id)?.historical_admission ?? 'NOT_IMPLEMENTED', original_paper_returns_inherited: false}));
+  const referenceIds = new Set(ctx.dossierRows.filter(d => d.disposition === 'REFERENCE_OR_EXCLUDED').map(d => d.dossier_id));
+  const shortlistCandidates = array(metadata.universe.candidates).filter(d => !referenceIds.has(d.id));
+  const legendary = shortlistCandidates.filter(d => /TRADER/.test(d.type ?? '') && ['LOW', 'NOT_REPRODUCIBLE'].includes(d.reproducibility)).map(d => ({method_id: d.id, reproducibility: d.reproducibility, discretion: enumValue(d.discretion, ['LOW', 'MEDIUM', 'HIGH'], 'UNAVAILABLE'), product_role: 'EDUCATIONAL'}));
+  const systematic = shortlistCandidates.filter(d => /SYSTEMATIC|ACADEMIC/.test(d.type ?? '') && d.source_coverage === 'HIGH' && d.reproducibility === 'HIGH').map(d => ({method_id: d.id, source_coverage: 'HIGH', reproducibility: 'HIGH', real_trade_ground_truth: 'NONE', historical_admission: ctx.rows.find(r => r.method_id === d.id)?.historical_admission ?? 'NOT_IMPLEMENTED', original_paper_returns_inherited: false}));
   const out = {
     'SUPERTRADER-IMPLEMENTED-CANDIDATES.json': envelope({counts: ctx.totals, methods: plainRows, dossier_rows: ctx.dossierRows, data_blocked: ctx.blocked}),
     'SUPERTRADER-TOURNAMENT-RESULTS.json': envelope({counts: ctx.totals, executive_highlights: executiveHighlights(ctx), history: 'SEEN_HISTORICAL_DATA', methods: ctx.rows, final_questions: answerRows(ctx)}),
@@ -290,7 +292,13 @@ export function buildPublicArtifacts(payload = {}, review = {}, metadata) {
     'SUPERTRADER-FEATURED-PRODUCT.json': envelope({featured: selections(ctx, 'featured'), secondary: selections(ctx, 'secondary'), educational: selections(ctx, 'educational'), readiness: 'PRODUCT_PENDING'}),
     'SUPERTRADER-FORWARD-LEDGER.json': envelope({status: 'PREPARED_NOT_LIVE', method_count: ledger.length, methods: ledger}),
     'SUPERTRADER-LEGENDARY-NONREPRODUCIBLE.json': envelope({method_count: legendary.length, methods: legendary}),
-    'SUPERTRADER-SYSTEMATIC-HIGH-CONFIDENCE.json': envelope({method_count: systematic.length, methods: systematic, confidence_scope: 'SOURCE_AND_REPRODUCIBILITY_NOT_PROVEN_ALPHA'}),
+    'SUPERTRADER-SYSTEMATIC-HIGH-CONFIDENCE.json': envelope({
+      method_count: systematic.length, methods: systematic,
+      confidence_scope: 'SOURCE_AND_REPRODUCIBILITY_NOT_PROVEN_ALPHA',
+      tournament_high_confidence_method_ids: [], tournament_high_confidence_method_count: 0,
+      clean_pit_validation: 'NOT_ESTABLISHED',
+      historical_confidence_scope: 'OBSERVED_PANEL_ONLY_COMPLETE_PIT_UNIVERSE_NOT_ESTABLISHED',
+    }),
   };
   assertPublicProjection(out, ctx.knownIds);
   return out;
@@ -344,6 +352,7 @@ export function buildPublicMarkdown(payload = {}, review = {}, metadata, ownerse
     else if (a.status === 'PENDING_REVIEW') lines.push('Der Lead beantwortet diese Frage nach unabhängigem Review. Aus vorläufigen Rankings wird keine finale Empfehlung erzeugt.', '');
   });
   lines.push('## Grenzen und nächster Schritt', '',
+    'SYSTEMATIC-HIGH-CONFIDENCE bezeichnet die Qualität der Quellen und Reproduzierbarkeit, einschließlich ungemessener oder datenblockierter Methoden. Es weist aktuell keine Tournament-Methode mit HIGH-Konfidenz aus. Die eingefrorene historische Rubrik erreicht höchstens MEDIUM; eine vollständig validierte PIT-Universe-Grundgesamtheit ist NOT_ESTABLISHED. Beobachtetes Panel, Quellenqualität und saubere historische PIT-Validierung bleiben getrennte Aussagen.', '',
     'PIT-Annual-Facts mit Concept-/Unit-Zertifizierung, direkte historische Market Equity, historische SIC-/Industry-Zuordnung und zertifizierte Faktorserien fehlen für blockierte Methoden. Estimates/Revisions und tatsächliche Event-Timestamps bleiben eigene Daten-Gates.', '',
     'Die aktuelle Snapshot-Liste ist kein post-freeze Forward-Signal. Forward-Ledgers sind PREPARED_NOT_LIVE; nur spätere chronologische Beobachtungen ohne Regeländerung zählen. Keine Live-Orders, Core-Migration oder automatische Veröffentlichung von Provider-Daten.', '',
     'Top Deep Dives, Produktrollen und die nächste Finanzierung sind Lead-Entscheidungen nach Review; keine automatische Auswahl anhand von Scores.', '',
@@ -527,7 +536,16 @@ function privateDestination(file, repoRoot) {
 
 export function publishReport({inputPath, reviewPath, outRoot, ownersealedPath, privateReportPath = null, publish = false}) {
   if (!inputPath || !reviewPath || !outRoot) throw new Error('INPUT_REVIEW_OUTROOT_REQUIRED');
-  const root = path.resolve(outRoot), payload = loadJSON(inputPath), review = loadJSON(reviewPath), metadata = loadPublicMetadata(root);
+  return publishPayload({payload: loadJSON(inputPath), review: loadJSON(reviewPath), outRoot,
+    ownersealedPath, privateReportPath, publish, inputReference: inputPath, reviewReference: reviewPath});
+}
+
+// Accept an already assembled payload without serializing or parsing its full contents.
+// This also supports unchanged private shard manifests exceeding V8's string limit.
+export function publishPayload({payload, review, outRoot, ownersealedPath, privateReportPath = null,
+  publish = false, inputReference = null, reviewReference = null}) {
+  if (!payload || !review || !outRoot) throw new Error('INPUT_REVIEW_OUTROOT_REQUIRED');
+  const root = path.resolve(outRoot), metadata = loadPublicMetadata(root);
   const artifacts = buildPublicArtifacts(payload, review, metadata), summary = artifacts['SUPERTRADER-IMPLEMENTED-CANDIDATES.json'].counts;
   if (!publish) return {status: 'DRY_RUN_NO_FILES_WRITTEN', counts: summary, artifact_count: PUBLIC_OUTPUT_NAMES.length};
   if (review.finalized !== true || review.status !== 'PASSED') throw new Error('FINAL_REVIEW_REQUIRED_BEFORE_PUBLICATION');
@@ -542,7 +560,8 @@ export function publishReport({inputPath, reviewPath, outRoot, ownersealedPath, 
   fs.mkdirSync(jsonDir, {recursive: true}); fs.mkdirSync(docDir, {recursive: true});
   for (const [name, artifact] of Object.entries(artifacts)) fs.writeFileSync(path.join(jsonDir, name), JSON.stringify(artifact, null, 2) + '\n');
   fs.writeFileSync(path.join(docDir, 'SUPERTRADER_FULL_TOURNAMENT.md'), buildPublicMarkdown(payload, review, metadata, ownersealedPath));
-  if (privateFile) fs.writeFileSync(privateFile, buildPrivateMarkdown(payload, review, {inputPath, reviewPath, metadata}), {mode: 0o600});
+  if (privateFile) fs.writeFileSync(privateFile, buildPrivateMarkdown(payload, review,
+    {inputPath: inputReference, reviewPath: reviewReference, metadata}), {mode: 0o600});
   return {status: 'PUBLIC_ENUM_COUNT_PROJECTIONS_WRITTEN', counts: summary, artifact_count: PUBLIC_OUTPUT_NAMES.length};
 }
 

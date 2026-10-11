@@ -1,0 +1,57 @@
+{
+  "schema": "supertrader-public-publication-shard-io-independent-review-1.0.0",
+  "reviewed_at": "2026-10-11T18:56:02.368056+00:00",
+  "status": "PASSED",
+  "scope": "UNFROZEN_PUBLICATION_IO_AND_ALLOWLIST_ONLY",
+  "reviewed_files": [
+    "scripts/supertrader/research/tournament/publish-shards.mjs",
+    "scripts/supertrader/research/tournament/publish-report.mjs",
+    "scripts/supertrader/tests/publication-shards.test.mjs",
+    "scripts/supertrader/tests/publication-review.test.mjs"
+  ],
+  "critical_frozen_files": "UNCHANGED_ASSERT_FREEZE_PASSED",
+  "original_final_six_method_fifteen_pair_review": "UNCHANGED_NOT_RERUN",
+  "engine_rulebook_parameter_protocol_rubric_changes": false,
+  "historical_strategy_outcomes_read_for_this_review": false,
+  "checks": {
+    "per_shard_sha256": "MANDATORY_VALIDATED_BEFORE_JSON_PARSE_AND_ASSEMBLY",
+    "entry_schema": "ALL_ENTRIES_VALIDATED_BEFORE_ANY_SHARD_READ",
+    "bounded_reads": "REGULAR_FILES_PRE_AND_POST_READ_SIZE_CHECKS_MANIFEST_REVIEW_AND_INDIVIDUAL_SHARDS",
+    "combined_payload": "ASSEMBLED_OBJECT_NO_GIANT_COMBINED_JSON_STRING",
+    "production_assembly": "IMPORTED_UNCHANGED_FROZEN_ASSEMBLE_SHARDS",
+    "production_freeze_validation": "IMPORTED_ASSERT_FREEZE_CALLED_AFTER_ASSEMBLY",
+    "cli_failure_disclosure": "GENERIC_PUBLICATION_FAILED_NO_PRIVATE_CONTENT_STACK_OR_PATH",
+    "cli_argument_validation": "KNOWN_FLAGS_REQUIRED_VALUES_DUPLICATE_VALUE_FLAGS_REJECTED",
+    "default_mode": "DRY_RUN_NO_OUTPUT_FILES",
+    "object_entrypoint": "SAME_PUBLISH_PAYLOAD_GATES_AS_EXISTING_FILE_ENTRYPOINT",
+    "full_freeze_binding": "EXACT_METADATA_FREEZE_MATCH_CODE_RULEBOOK_AND_PROTOCOL",
+    "final_review_gate": "FINALIZED_AND_PASSED_COMPLETE_KNOWN_METHOD_REVIEW_REQUIRED_FOR_PUBLICATION",
+    "owner_sealed_gate": "EXISTENCE_AND_EXPECTED_ENVELOPE_SCHEMA_ALGORITHM_AND_BASE64_FIELDS_REQUIRED",
+    "private_report_destination": "OUTSIDE_BOTH_OUTPUT_REPO_AND_SOURCE_REPO_REALPATH_NO_DESTINATION_SYMLINK",
+    "public_content": "EXPLICIT_KNOWN_METHOD_IDS_ENUMS_AND_COUNTS_ALLOWLIST_NO_NUMERICAL_METRICS_OR_SECURITY_IDENTIFIERS",
+    "reference_exclusion": "REFERENCE_OR_EXCLUDED_DOSSIERS_RETAINED_IN_UNIVERSE_REMOVED_FROM_LEGENDARY_AND_SYSTEMATIC_SOURCE_CONFIDENCE_SHORTLISTS",
+    "source_confidence_scope": "SOURCE_REPRODUCIBILITY_SEPARATE_FROM_TOURNAMENT_CONFIDENCE_AND_COMPLETE_PIT_VALIDATION"
+  },
+  "validation": {
+    "publication_tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "actual_result_numeric_audit_rerun": false,
+    "critical_suite_rerun": false,
+    "broader_suite_total_reported_by_lead": 146,
+    "broader_suite_components_reported_by_lead": {
+      "critical": 133,
+      "publication": 9,
+      "auxiliary_context": 4
+    }
+  },
+  "limitations": [
+    "Per-shard hashes establish byte-integrity against the explicit manifest. They are not a signature, encrypted-owner-envelope authentication, or automatic proof that an arbitrary review belongs to an arbitrary manifest. Exact actual input/review binding remains established by the separate completed final adversarial review and lead publication selection.",
+    "Bounds apply to each input file. Assembly retains parsed historical/current objects and does not promise constant total memory usage.",
+    "Test dependency injection can replace assembly/validation/publisher in trusted programmatic tests; production CLI uses the unchanged imported defaults.",
+    "The owner-sealed presence/format gate does not decrypt or cryptographically verify the envelope; private details remain encrypted and separate."
+  ],
+  "blocking_findings": [],
+  "public_output_privacy": "SAFE_ENUMS_COUNTS_SOURCE_FILE_REFERENCES_ONLY",
+  "live_or_performance_approval": false
+}
