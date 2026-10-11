@@ -1,0 +1,120 @@
+{
+  "schema": "supertrader-triage-prereg-1.0.0",
+  "preregisteredAt": "2026-10-11",
+  "purpose": "Ranking/Triage der sechs live-Methoden in einem gemeinsamen Rahmen. Keine Optimierung, keine Regeländerung vor oder nach dem Ergebnis.",
+  "scope": {
+    "methods": [
+      "MOMENTUM_BREAKOUT@3.2.0",
+      "WEINSTEIN_STAGE@4.0.0",
+      "DARVAS_BOX@3.0.2",
+      "MINERVINI_VCP@2.0.0",
+      "DONCHIAN_TURTLE@2.0.2",
+      "VU_TREND_52W@1.0.0"
+    ],
+    "notMeasured": [
+      "CANSLIM",
+      "PIOTROSKI_F",
+      "GREENBLATT_VALUE",
+      "KK_EPISODIC_PIVOT",
+      "KK_PARABOLIC_SHORT",
+      "MARKET_WIZARDS_NEXT",
+      "VU_HOUSE_HS4_V03"
+    ],
+    "notMeasuredReason": "Keine Engine mit Ein-/Ausstiegen, keine PIT-Fundamentals bzw. kein Handelsmodell; Bewertung nur aus Code- und Quellenprüfung (Confidence entsprechend)."
+  },
+  "freeze": {
+    "rule": "Die Messung läuft auf genau einem Commit; der Lauf schreibt Commit, Engine-Versionen, portfolioConfig und Datenfingerabdruck in das verschlüsselte Ergebnis. Danach keine Regeländerung.",
+    "engineConfig": "Live-Konfiguration wie audit-r14.mjs (ENGINES_R14 = live(engine) mit portfolioConfig), unverändert; VU_TREND_52W über simulateRotation wie audit-r14.",
+    "execution": "DEFAULT_EXECUTION (10 bp Slippage, 1 bp Kommission); Zusatz 20/2 bp als Kostenprobe",
+    "window": "DEV (2016-01-04 bis Datenende). Das Fenster ist GESEHEN (SEEN DATA); es gibt keinen Out-of-Sample-Anspruch. HOLDOUT 2008-2015 ist ebenfalls gesehen (R14) und nicht survivorship-frei; wird in dieser Runde nicht erneut gelaufen.",
+    "benchmark": "SPY Total Return (adjClose). Kontext ohne Auswahlrecht: QQQ, IWM, IWV.",
+    "universe": "PIT-Listing-Universum, SEC-klassifizierte Delistings (S1C), Splits/adjClose wie audit-r14; gleiche Kosten für alle Methoden"
+  },
+  "measures": {
+    "signalQuality": "Alle Engine-Einstiege je Methode: Überrendite gegen SPY nach 21, 63 und 126 Sitzungen (Mittel, Median, Trefferquote, n, Cluster-t über Einstiegsmonate); MFE/MAE bis 63 und 126 Sitzungen",
+    "portfolio": "CAGR, Gesamtrendite, MaxDD, Volatilität, Sharpe (Rf=0), Umschlag, Trefferquote, Ø Gewinn/Verlust, gegen SPY TR",
+    "exposure": "Ø und Median, Zeitanteile <25 / 25-50 / 50-75 / 75-100 %, Vollinvestition, Ø Positionen",
+    "robustness": "Segmente: früh (2016-2020) / spät (2021-Ende); Bull/Bear (SPY über/unter 200-Tage-Linie); Volatilität hoch/niedrig (Median der 21-Tage-Realized-Vol von SPY); je Segment Richtung der 63-Sitzungen-Signalüberrendite",
+    "overlap": "Je Methodenpaar: Jaccard der Einstiege (Titel x Einstiegs-Kalenderwoche), Anteil gleicher Titel, Pearson der täglichen Depot-Renditen, Pearson der Überrenditen gegen SPY",
+    "diversification": "Diagnostisch: Korrelation der Überrenditen und Drawdown-Überlappung; keine Composite-Konstruktion",
+    "costProbe": "ENTFÄLLT (Amendment A1)"
+  },
+  "publicClassThresholds": {
+    "note": "Vor dem Lauf festgelegt. Öffentlich im Actions-Log erscheinen NUR diese Klassen und ganze Zähler, keine Kennzahlen (Tiingo-Rechte).",
+    "signalEdge63": {
+      "POSITIVE": "Cluster-t >= 2,0 und Median > 0",
+      "NEGATIVE": "Cluster-t <= -2,0 und Median < 0",
+      "NEUTRAL": "sonst",
+      "UNKNOWN": "weniger als 30 Einstiege oder weniger als 12 Cluster"
+    },
+    "portfolioVsSpy": {
+      "ABOVE": "CAGR-Differenz >= +1 Prozentpunkt",
+      "SIMILAR": "zwischen -1 und +1 Prozentpunkt",
+      "BELOW": "<= -1 Prozentpunkt"
+    },
+    "drawdownVsSpy": {
+      "SHALLOWER": "MaxDD um >= 5 Prozentpunkte kleiner",
+      "SIMILAR": "innerhalb +-5 Prozentpunkte",
+      "DEEPER": "um >= 5 Prozentpunkte größer"
+    },
+    "exposureClass": {
+      "LOW": "Ø Exposure < 25 %",
+      "MID": "25-60 %",
+      "HIGH": "> 60 %"
+    },
+    "overlapClass": {
+      "LOW": "Jaccard < 0,10",
+      "MEDIUM": "0,10-0,30",
+      "HIGH": "> 0,30"
+    },
+    "returnCorrelationClass": {
+      "LOW": "Pearson < 0,50",
+      "MEDIUM": "0,50-0,80",
+      "HIGH": "> 0,80"
+    },
+    "regimeConsistency": "ganze Zahl: Anzahl der 6 Segmente mit gleicher Vorzeichenrichtung der 63-Sitzungen-Signalüberrendite wie im Gesamtfenster, zusätzlich Segmentzahl mit n >= 30"
+  },
+  "tieringRules": {
+    "note": "Interner Score ist ein Ranginstrument; Tier folgt den Qualitätsgates, nicht der Zahl.",
+    "weights": {
+      "signalQuality": 0.2,
+      "portfolioEvidence": 0.2,
+      "robustness": 0.15,
+      "fidelity": 0.15,
+      "dataQuality": 0.1,
+      "riskProfile": 0.1,
+      "productPotential": 0.1
+    },
+    "qualityGatesForTierA": [
+      "keine bekannten CRITICAL Implementierungsfehler",
+      "keine versteckten fremden Defaults mit Wirkung auf das Ergebnis",
+      "Datenbasis ausreichend",
+      "Signal-/Portfolioanalyse reproduzierbar",
+      "kein offensichtliches Lookahead",
+      "keine reine Backtest-Optimierung",
+      "Confidence mindestens MEDIUM"
+    ],
+    "tierAIsNotRequiredToBeatSpy": true,
+    "noRuleChangesAfterResult": true,
+    "seenDataStatement": "Alle Perioden sind gesehen. Kein Out-of-Sample-Anspruch; Forward-Test ist der einzige ungesehene Raum."
+  },
+  "dataRights": "Kennzahlen aus Tiingo-Kursen nur verschlüsselt (results-public-key.pem). Öffentlich: Klassen, Zähler, Hash, Commit, Fenster.",
+  "knownPublicLogIssue": "audit-r14.mjs:409 loggt Überrendite und Exposure je Methode ins öffentliche Log. Der neue Modus loggt das nicht; der alte Befund wird gemeldet, nicht still geändert.",
+  "amendments": [
+    {
+      "id": "A1",
+      "date": "2026-10-11",
+      "beforeAnyRun": true,
+      "change": "Kostenprobe 20/2 bp entfällt in dieser Runde (R14 hat sie bereits im selben Rahmen gemessen; Verdopplung der Laufzeit ohne Triage-Nutzen). Die Messung läuft nur mit DEFAULT_EXECUTION.",
+      "alsoClarified": [
+        "Anteil gleicher Titel = |A∩B| / min(|A|,|B|)",
+        "Frühe/späte Hälfte teilt bei 2020-12-31",
+        "Bull/Bear und Vol-Regime nutzen den Zustand des Vortags",
+        "Umschlag = Kauf plus Verkauf",
+        "VU_TREND_52W: nur ausgeführte, geschlossene Trades; die Engines: alle Signale. Überlappung und Signalqualität gegenüber Trend52 sind daher nur eingeschränkt vergleichbar und werden im versiegelten Ergebnis als tradeSetBasis markiert.",
+        "Der Freeze-Commit wird per git rev-parse HEAD erfasst",
+        "HOLDOUT ist in diesem Modus gesperrt"
+      ]
+    }
+  ]
+}
