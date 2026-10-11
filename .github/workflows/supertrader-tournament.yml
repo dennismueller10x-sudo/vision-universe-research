@@ -1,0 +1,58 @@
+name: Supertrader research tournament (private measurements)
+on:
+  push:
+    branches: ['research/supertrader-full-tournament-*']
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [probe, run]
+        default: probe
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-tournament-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  research:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-tournament:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Research only; public logs contain status and counts
+        env:
+          MODE: ${{ inputs.mode }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: |
+          set -euo pipefail
+          mode="${MODE:-probe}"
+          case "$MESSAGE" in *'[supertrader-tournament:run]'*) mode=run;; esac
+          if [ "$mode" = run ]; then
+            node --test scripts/supertrader/tests/tournament-*.test.mjs
+            node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament"
+          else
+            node scripts/supertrader/research/tournament/access-probe.mjs --out "$RUNNER_TEMP/tournament"
+          fi
+      - name: Preserve public status or encrypted owner/session result only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-tournament-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/tournament/*status.json
+            ${{ runner.temp }}/tournament/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30
