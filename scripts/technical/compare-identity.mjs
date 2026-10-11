@@ -19,9 +19,9 @@ function diffKeys(o, n) {
   const keys = new Set([...Object.keys(o), ...Object.keys(n)]), bad = [];
   for (const k of keys) {
     if (k === "exploreCandidates") continue;
-    if (k === "projection") {
+    if (k === "projection" || k === "projectionWeekly") {
       const po = o[k] || {}, pn = n[k] || {};
-      for (const q of new Set([...Object.keys(po), ...Object.keys(pn)])) if (!ALLOWED_PROJ(q) && canon(po[q]) !== canon(pn[q])) bad.push("projection." + q);
+      for (const q of new Set([...Object.keys(po), ...Object.keys(pn)])) if (!ALLOWED_PROJ(q) && canon(po[q]) !== canon(pn[q])) bad.push(k + "." + q);
       continue;
     }
     if (canon(o[k]) !== canon(n[k])) bad.push(k);
