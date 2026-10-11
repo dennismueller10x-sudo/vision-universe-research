@@ -1,5 +1,7 @@
 # Trailer 01 – „Cinematic Studio Launch“: Produktionsplan
 
+> **Update 2026-10-11:** Off 1 gekürzt; Plate-Test G1 (8 s, 768p, 0,25 USD) erledigt → `PLATE_TEST_G1_REPORT.md`; Animatic v3.1 mit echtem Plate; Wallet 14,42 USD.
+
 Stand 2026-10-11 · 20,000 s · 1080×1920 · 25 fps · Deutsch · Hauptfiguren LEA und DAVID.
 **Es wurde nichts Kostenpflichtiges generiert.** Wallet vor der Arbeit und danach: **14,72 USD**. Vorab-Schnitt mit Platzhaltern (Masterbilder statt generierter Szenen): `video/trailer/trailer01_animatic_v3/animatic_v3_720p.mp4`, Komposition `…/composition/`.
 
@@ -18,7 +20,7 @@ Plate G1 deckt 0–8 s ab (10 s generiert, 2 s Reserve für Schnitt). Die Plate-
 ## 2. Sprecher- und Dialogskript (exakt wie im Briefing)
 | Zeile | Sprecher | Text | Fenster | geschätzte Dauer | Passt? |
 |---|---|---|---|---|---|
-| Off 1 | Off-Sprecher | „Jeden Tag tausende Aktien. Millionen Meinungen.“ | 2,0–5,0 | 3,3–3,9 s (16 Silben, 4,1–4,8 Silben/s) | **knapp zu lang**; Start bei 1,7 s oder Tempo 1,1 |
+| Off 1 | Off-Sprecher | „Tausende Aktien. Millionen Meinungen.“ (gekürzt, freigegeben 2026-10-11) | 2,0–5,0 | 3,3–3,9 s (16 Silben, 4,1–4,8 Silben/s) | **knapp zu lang**; Start bei 1,7 s oder Tempo 1,1 |
 | Off 2 | Off-Sprecher | „Doch was zählt wirklich?“ | 5,0–8,0 | ≈ 1,2 s | ja, Start 5,6 s |
 | LEA | LEA | „Investierst du noch nach Bauchgefühl?“ | 8,0–10,5 | ≈ 2,0–2,2 s | ja |
 | DAVID | DAVID | „Nicht mehr.“ | 10,5–12,0 | ≈ 0,8 s (+ Lächeln) | ja |

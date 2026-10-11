@@ -10,7 +10,9 @@
       "afterAvatarVTest": 1.2,
       "afterTopUp": 16.2,
       "afterDavidAvatar": 14.88,
-      "afterVoiceSamples": 14.72
+      "afterVoiceSamples": 14.72,
+      "afterOffSamples": 14.67,
+      "afterPlateTest": 14.42
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -110,6 +112,17 @@
       "costUsd": 0.6,
       "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
       "releaseStatus": "REVIEW"
+    },
+    {
+      "assetId": "video-trailer01-g1-768-test",
+      "path": "video/trailer/plate_tests/g1_768_test_seed2026_8s.mp4",
+      "heygenVideoId": "a306e396e8e44cc6863f96eb5dc273af",
+      "heygenAvatarId": null,
+      "engine": "heygen-video-1 (reference_to_video, refs LEA+DAVID masters)",
+      "format": "MP4 H.264 768x1344 24fps, 8.0 s, AAC",
+      "costUsd": 0.25,
+      "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
+      "releaseStatus": "REVIEW"
     }
   ],
   "voiceCandidates": {
@@ -165,7 +178,42 @@
         "sample": "voices/samples/DAVID_3_Quiet_Dieter.mp3"
       }
     ],
-    "_note": "Keine endgueltige Voice-ID gespeichert (Freigabe durch Auftraggeber ausstehend). marc/sofia nicht bearbeitet."
+    "_note": "Keine endgueltige Voice-ID gespeichert (Freigabe durch Auftraggeber ausstehend). marc/sofia nicht bearbeitet.",
+    "off": [
+      {
+        "name": "Wolf Spencer",
+        "voiceId": "ad9c4386ea934832b2de3ae2934005e9",
+        "engine": "orca",
+        "sample": "voices/trailer01/OFF_Wolf.wav",
+        "lineDurationsS": {
+          "off1": 2.6,
+          "off2": 1.19,
+          "off3": 0.9
+        }
+      },
+      {
+        "name": "Ilya - Firm & Measured",
+        "voiceId": "cd74981dc65345689233cc3b694faff7",
+        "engine": "orca",
+        "sample": "voices/trailer01/OFF_Ilya.wav",
+        "lineDurationsS": {
+          "off1": 3.09,
+          "off2": 1.9,
+          "off3": 1.03
+        }
+      },
+      {
+        "name": "Deep Dieter",
+        "voiceId": "118949676b0a46629d1ad52981c3ef84",
+        "engine": "orca",
+        "sample": "voices/trailer01/OFF_Deep.wav",
+        "lineDurationsS": {
+          "off1": 3.03,
+          "off2": 1.49,
+          "off3": 1.04
+        }
+      }
+    ]
   },
   "avatarVTest": {
     "status": "RUN",
@@ -202,9 +250,24 @@
     "historyFile": "registry/heygen-production-history.json"
   },
   "trailer01": {
-    "status": "PREPARED_NOT_GENERATED",
+    "status": "PLATE_TEST_DONE",
     "plan": "docs/trailer01/PRODUCTION_PLAN.md",
     "shotlist": "pipeline/trailer01/shotlist.json",
-    "walletAtPlanning": 14.72
+    "walletAtPlanning": 14.72,
+    "plateTest": {
+      "videoId": "a306e396e8e44cc6863f96eb5dc273af",
+      "costUsd": 0.25,
+      "walletBefore": 14.67,
+      "walletAfter": 14.42,
+      "seed": 2026,
+      "resolution": "768p",
+      "durationS": 8,
+      "verdict": "REVIEW"
+    },
+    "offSampleCostUsd": 0.05,
+    "decisions": {
+      "eyeline": "LEA soll DAVID ansehen (Methode offen)",
+      "off1": "Tausende Aktien. Millionen Meinungen."
+    }
   }
 }

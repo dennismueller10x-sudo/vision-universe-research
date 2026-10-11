@@ -10,8 +10,8 @@
   "counts": {
     "characterSlots": 40,
     "studioSlots": 10,
-    "existingFiles": 7,
-    "generatedAssets": 3
+    "existingFiles": 8,
+    "generatedAssets": 4
   },
   "assets": [
     {
@@ -989,6 +989,25 @@
       "heygenId": "7d935f08cf8c0571340376e50f2eed22",
       "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb",
       "costUsd": 0.6,
+      "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
+      "releaseStatus": "REVIEW",
+      "generationStatus": "GENERATED"
+    },
+    {
+      "assetId": "video-trailer01-g1-768-test",
+      "kind": "video-test",
+      "character": "lea+david",
+      "description": "Trailer-01-Plate-Test G1 (heygen-video-1, 768p, 8 s): Raum, Auftritt LEA/DAVID, Hinsetzen, Kamerabogen",
+      "camera": "CAM-D-aehnlich (Totale sitzend, Masterkomposition)",
+      "clothing": "schwarze Lederjacke (Blazer-Schnitt), schwarzes Top, schwarze weite Hose, schwarze Stiefeletten",
+      "originalReference": "originals/lea_master_original.png",
+      "path": "video/trailer/plate_tests/g1_768_test_seed2026_8s.mp4",
+      "format": "MP4 H.264 768x1344 24fps, 8.0 s, AAC",
+      "sha256": "7776e68d3d297fbc5b3f1a7765566e79bd0110170f055aef5877c767f2b4ef27",
+      "model": "HeyGen heygen-video-1 (reference_to_video, refs LEA+DAVID masters) (REST /v3/models/videos)",
+      "heygenId": "a306e396e8e44cc6863f96eb5dc273af",
+      "heygenAvatarId": null,
+      "costUsd": 0.25,
       "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
       "releaseStatus": "REVIEW",
       "generationStatus": "GENERATED"
