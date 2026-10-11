@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-10T15:26:29.372Z",
+ "generatedAt": "2026-10-11T08:30:25.109Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -12,9 +12,9 @@
  },
  "counts": {
   "daily": 5,
-  "weekly": 5125,
-  "skipped": 1178,
-  "shards": 621
+  "weekly": 5030,
+  "skipped": 1125,
+  "shards": 620
  },
  "sources": {
   "daily": "golden-preview (5 Titel)",
@@ -43,19 +43,19 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4712,
+ "runtimeSec": 4522,
  "projection": {
   "version": "elliott-projection-1.2.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4538,
-   "DATA_INVALID": 450,
-   "NO_PROJECTION": 102,
-   "AVAILABLE": 45
+   "ABSTAIN": 4442,
+   "DATA_INVALID": 451,
+   "NO_PROJECTION": 106,
+   "AVAILABLE": 41
   },
-  "consumerVisible": 45,
+  "consumerVisible": 41,
   "types": {
-   "NEXT_MOVE": 37,
+   "NEXT_MOVE": 33,
    "WAVE_C": 2,
    "REVERSAL": 2,
    "THRUST": 3,
@@ -64,51 +64,51 @@
   "highUpside": 0,
   "weeklyForDaily": 5,
   "explore": {
-   "securities": 3785,
-   "theses": 6778,
+   "securities": 3747,
+   "theses": 6679,
    "perSecurity": {
-    "1": 1012,
-    "2": 2553,
-    "3": 220
+    "1": 1027,
+    "2": 2508,
+    "3": 212
    },
    "direction": {
-    "DOWN": 3472,
-    "UP": 3306
+    "UP": 3253,
+    "DOWN": 3426
    },
    "type": {
-    "WAVE_3": 2430,
-    "WAVE_C": 4052,
-    "WAVE_5": 296
+    "WAVE_3": 2404,
+    "WAVE_C": 3994,
+    "WAVE_5": 281
    },
    "pattern": {
-    "IMPULSE": 2430,
-    "FLAT": 2384,
-    "ZIGZAG": 1602,
-    "LEADING_DIAGONAL": 67,
-    "ENDING_DIAGONAL": 229,
-    "DOUBLE_ZIGZAG": 66
+    "IMPULSE": 2404,
+    "FLAT": 2335,
+    "ZIGZAG": 1575,
+    "LEADING_DIAGONAL": 59,
+    "ENDING_DIAGONAL": 222,
+    "DOUBLE_ZIGZAG": 84
    },
    "failedGate": {
-    "G3": 5421,
-    "G4": 4824,
-    "G5": 2459,
-    "G2": 4581
+    "G2": 4522,
+    "G3": 5456,
+    "G4": 4740,
+    "G5": 2377
    },
    "rankPct": {
-    "0-10": 1828,
-    "10-25": 2467,
-    "25-50": 2483,
+    "0-10": 1798,
+    "10-25": 2431,
+    "25-50": 2450,
     "50-100": 0
    },
-   "highUpside": 973
+   "highUpside": 984
   },
-  "splitResolved": 205,
-  "motiveAlternative": 48,
-  "motiveDOWN": 42,
-  "normalAlternative": 44,
-  "motiveUP": 6,
+  "splitResolved": 203,
+  "normalAlternative": 39,
+  "motiveAlternative": 33,
+  "motiveDOWN": 29,
+  "motiveUP": 4,
   "motiveHighUpside": 1,
-  "lifecycleEvents": 0,
-  "tracked": 6911
+  "lifecycleEvents": 5606,
+  "tracked": 6951
  }
 }
