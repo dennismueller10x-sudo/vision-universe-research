@@ -21,7 +21,7 @@ async function main(){
  assertFreeze(freeze);publicStatus({phase:'FREEZE_VERIFIED',methods:methods.length});
  const openedAt=new Date().toISOString();
  const data=await loadHistoricalData({...protocol.window});
- if(data.state!=='AVAILABLE'||!data.coverage.benchmarkAvailable){fs.writeFileSync(path.join(out,'tournament-status.json'),JSON.stringify({status:'BLOCKED_DATA',reason:data.reason||'BENCHMARK_MISSING'}));throw new Error('HISTORICAL_DATA_BLOCKED');}
+ if(data.state!=='AVAILABLE'||!data.coverage.benchmarkAvailable){seal('tournament-data-blocked',{state:data.state,reason:data.reason,diagnostics:data.privateDiagnostics||null,coverage:data.coverage||null,limitations:data.limitations||null});fs.writeFileSync(path.join(out,'tournament-status.json'),JSON.stringify({status:'BLOCKED_DATA',reason:data.reason||'BENCHMARK_MISSING'}));throw new Error('HISTORICAL_DATA_BLOCKED');}
  // Raw input arrays are not required after canonical preparation; avoid retaining
  // a second full copy of every historical row during six independent runs.
  delete data.segs;delete data.spyRaw;delete data.spyAdj;delete data.spyTR;

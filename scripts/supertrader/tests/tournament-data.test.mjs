@@ -72,9 +72,29 @@ test('historical injection has no stdout and does not leak provider exception co
     const blocked = await loadHistoricalData({ loadPitDataFn: async () => { throw new Error('private secret or price'); } });
     assert.equal(blocked.reason, 'HISTORICAL_DATA_LOAD_FAILED');
     assert.ok(!JSON.stringify(blocked).includes('private secret'));
+    assert.equal(blocked.privateDiagnostics.visibility, 'SEALED_ONLY');
+    assert.equal(blocked.privateDiagnostics.phase, 'INJECTED_PIT_LOADER');
+    assert.equal(blocked.privateDiagnostics.errorName, 'Error');
+    assert.equal(blocked.privateDiagnostics.message, 'private secret or price');
+    assert.match(blocked.privateDiagnostics.stack, /private secret or price/);
+    assert.equal(Object.getOwnPropertyDescriptor(blocked, 'privateDiagnostics').enumerable, false);
     assert.equal(prints, 0);
     assert.equal(privateDataConfigured({}), false);
   } finally { console.log = original; }
+});
+
+test('historical dependency and normalization errors retain sealed phase diagnostics only', async () => {
+  const error = Object.assign(new Error('private metadata failure'), { code: 'PRIVATE_READ_ERROR' });
+  const blocked = await loadHistoricalData({ ...window, rawDataDeps: { readJson: async () => { throw error; } } });
+  assert.equal(blocked.reason, 'HISTORICAL_DATA_LOAD_FAILED');
+  assert.equal(blocked.privateDiagnostics.phase, 'PUBLIC_UNIVERSE_METADATA');
+  assert.equal(blocked.privateDiagnostics.code, 'PRIVATE_READ_ERROR');
+  assert.ok(!JSON.stringify(blocked).includes('PRIVATE_READ_ERROR'));
+  assert.ok(!JSON.stringify(blocked).includes('private metadata'));
+  const malformed = await loadHistoricalData({ ...window, loadPitDataFn: async () => fixture({ raw: [bar(dates[1], 100), bar(dates[0], 100)] }) });
+  assert.equal(malformed.privateDiagnostics.phase, 'CANONICAL_NORMALIZATION');
+  assert.equal(malformed.privateDiagnostics.message, 'BARS_NOT_ORDERED');
+  assert.ok(!JSON.stringify(malformed).includes('BARS_NOT_ORDERED'));
 });
 
 test('current scanner caps concurrent object reads, filters products and stale bars', async () => {

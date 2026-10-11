@@ -24,6 +24,20 @@ const validDate = (d) => typeof d === 'string' && DATE.test(d) && Number.isFinit
 const assertDate = (d) => { if (!validDate(d)) throw new Error('INVALID_DATE'); };
 const hash = (value) => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const unavailable = (reason) => ({ version: DATA_VERSION, state: 'BLOCKED', reason, securities: [], segs: [], calendar: [], scanner: [] });
+// Errors may contain private object identifiers or provider response details.
+// Only the sealed research runner explicitly reads this non-enumerable field;
+// ordinary JSON serialization keeps the public BLOCKED result free of details.
+function unavailableWithPrivateDiagnostic(reason, error, phase) {
+  const blocked = unavailable(reason);
+  Object.defineProperty(blocked, 'privateDiagnostics', { enumerable: false, value: {
+    schema: 'supertrader-private-data-diagnostic-1.0.0', visibility: 'SEALED_ONLY', phase,
+    errorName: typeof error?.name === 'string' ? error.name : 'UnknownError',
+    message: typeof error?.message === 'string' ? error.message : String(error),
+    stack: typeof error?.stack === 'string' ? error.stack : null,
+    code: typeof error?.code === 'string' || typeof error?.code === 'number' ? error.code : null
+  } });
+  return blocked;
+}
 export function privateDataConfigured(env = process.env) { return REQUIRED_ENV.every((k) => Boolean(env[k])); }
 
 async function mapEight(items, fn) {
@@ -50,21 +64,25 @@ export function preserveRawBars(bars, window = DATA_WINDOW) {
 
 // The injected dependency contract is private/test only. Production reuses the
 // configured S3 driver, the history-store codec and zero-cost guard; no writes.
-export async function loadRawHistoricalPayload(options = {}) {
+export async function loadRawHistoricalPayload(options = {}, diagnosticContext = {}) {
+  diagnosticContext.phase = 'WINDOW_VALIDATION';
   const window = selectedWindow(options), deps = options.rawDataDeps || {};
   if (window.warmupFrom < DATA_WINDOW.warmupFrom || window.to > DATA_WINDOW.to || Listing.WINDOW_NAME !== 'DEV') throw new Error('WINDOW_NOT_SUPPORTED');
   const read = deps.readJson || (async (p) => JSON.parse(await fs.readFile(path.join(options.root || root, p), 'utf8')));
+  diagnosticContext.phase = 'PUBLIC_UNIVERSE_METADATA';
   const [universe, eligibility, companies] = await Promise.all([
     deps.universe || read('quant/data/market/scale/universe-FULL_UNIVERSE.json'),
     deps.eligibility || read('quant/data/market/security-master/eligibility.json'),
     deps.companies || read('quant/data/market/security-master/company-names.json')]);
   let rows = deps.listingRows;
   if (!rows) {
+    diagnosticContext.phase = 'SUPPORTED_TICKER_LIST';
     const key = process.env.TIINGO_API_KEY;
     const response = await fetch(Listing.LIST_URL, { headers: key ? { Authorization: 'Token ' + key } : {} });
     if (!response.ok) throw new Error('LISTING_SOURCE_UNAVAILABLE');
     rows = Listing.parseTickerCsv(Listing.unzipCsv(Buffer.from(await response.arrayBuffer())));
   }
+  diagnosticContext.phase = 'LISTING_BUILD';
   const cls = new Map(eligibility.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(universe.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
   const listings = Listing.buildListingTable(rows, storeActive, { today: deps.today || new Date().toISOString().slice(0, 10) }).filter((l) => l.startDate <= window.to && (!l.listEnd || l.listEnd >= window.warmupFrom));
@@ -73,23 +91,28 @@ export async function loadRawHistoricalPayload(options = {}) {
   const listedRoots = Master.collectListedRoots(rows);
   let mainStore = deps.mainStore, pitStore = deps.pitStore, readPrivate = deps.readPrivate;
   if (!mainStore || !pitStore || !readPrivate) {
+    diagnosticContext.phase = 'R2_SETUP';
     const { createS3DriverFromEnv } = await import('../../../market/storage/s3-driver.mjs');
     const Store = require(path.join(root, 'quant/engines/history-store.js'));
     const Guard = require(path.join(root, 'quant/engines/zero-cost-guard.js'));
     const driver = createS3DriverFromEnv(process.env), budget = Guard.createBudget({ classAOperations: 0, classBOperations: 30000 });
     mainStore = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US', budget });
     pitStore = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
+    diagnosticContext.phase = 'R2_USAGE_GUARD';
     const [u, v] = await Promise.all([mainStore.readUsage(), pitStore.readUsage()]);
     const usage = Guard.applyUsage(u, { classAOperations: v.classAOperations, classBOperations: v.classBOperations });
     if (Guard.evaluate({ usage, estimate: Guard.estimateOperations({ kind: 'VALIDATION_ANALYZE', objectReads: listings.length + 5 }), operation: 'VALIDATION_ANALYZE' }).verdict !== Guard.ALLOWED) throw new Error('ZERO_COST_GUARD_BLOCKED');
     readPrivate = async (key) => { budget.consumeClassB(1, 'GET PRIVATE_RESEARCH_INPUT'); const buf = await driver.get(pitStore.seriesPrefix + key); if (!buf) return null; budget.noteDownload(buf.length); return JSON.parse(zlib.gunzipSync(buf).toString('utf8')); };
   }
+  diagnosticContext.phase = 'R2_MANIFEST';
   const manifest = (await readPrivate('_validation/manifest.json.gz'))?.entries || {};
+  diagnosticContext.phase = 'R2_SEC_AND_BENCHMARK';
   const [pit, delist, spySeries] = await Promise.all([
     options.secPit === false ? {} : readPrivate(options.secPitKey || '_validation/sec-pit-r13.json.gz'),
     options.delistPit === false ? {} : readPrivate('_validation/sec-delist-r13.json.gz'),
     pitStore.getSeries('SPY@1993-01-29')]);
   const spyRaw = preserveRawBars(spySeries?.bars, window), master = new Set(spyRaw.map((b) => b.date));
+  diagnosticContext.phase = 'MEMBER_CLASSIFICATION';
   const members = [], excluded = {};
   for (const l of listings) {
     const e = manifest[l.id]; let c;
@@ -101,10 +124,12 @@ export async function loadRawHistoricalPayload(options = {}) {
     members.push({ listing: l, cls: c.cls, source: l.source === 'STORE_ACTIVE' ? 'MAIN' : 'PIT' });
   }
   const selected = options.limit ? members.slice(0, options.limit) : members;
+  diagnosticContext.phase = 'R2_SERIES';
   const loaded = await mapEight(selected, async (m) => {
     const series = await (m.source === 'MAIN' ? mainStore.getSeries(m.listing.ticker) : pitStore.getSeries(`${m.listing.ticker}@${m.listing.startDate}`));
     return { ...m, raw: preserveRawBars(series?.bars, window) };
   });
+  diagnosticContext.phase = 'SEGMENT_BUILD';
   const segs = []; let offCalendar = 0;
   for (const m of loaded) {
     const l = m.listing;
@@ -270,10 +295,12 @@ function fingerprintData(listings, securities, spyRaw, calendar) {
 export async function loadHistoricalData(options = {}) {
   if (!options.loadPitDataFn && !options.rawDataDeps && !privateDataConfigured()) return unavailable('PRIVATE_DATA_NOT_CONFIGURED');
   if (!options.loadPitDataFn && process.env.ST_WINDOW === 'HOLDOUT') return unavailable('WINDOW_NOT_SUPPORTED');
+  const diagnosticContext = { phase: options.loadPitDataFn ? 'INJECTED_PIT_LOADER' : 'RAW_HISTORICAL_LOADER' };
   try {
-    const payload = options.loadPitDataFn ? await options.loadPitDataFn({ LIMIT: options.limit || 0, cross: false, log: () => {} }) : await loadRawHistoricalPayload(options);
+    const payload = options.loadPitDataFn ? await options.loadPitDataFn({ LIMIT: options.limit || 0, cross: false, log: () => {} }) : await loadRawHistoricalPayload(options, diagnosticContext);
+    diagnosticContext.phase = 'CANONICAL_NORMALIZATION';
     return prepareHistoricalData(payload, options);
-  } catch { return unavailable('HISTORICAL_DATA_LOAD_FAILED'); }
+  } catch (error) { return unavailableWithPrivateDiagnostic('HISTORICAL_DATA_LOAD_FAILED', error, diagnosticContext.phase); }
 }
 
 // Rebase each historical view to its then-current split basis. Future splits
