@@ -1,0 +1,108 @@
+{
+  "review_date": "2026-10-11",
+  "remote_run_id": "38148311110",
+  "baseline_ref": "6d09816bd813787612c83049d449669023a0ae20",
+  "research_ref": "74ca8865263943ba79e1972315f391f281d34458",
+  "mergebase": "6d09816bd813787612c83049d449669023a0ae20",
+  "unchanged_blobs": [
+    {
+      "path": "core/tests/discover-universe.test.mjs",
+      "identical": true,
+      "sha256": "2dcbf946a4282e7a2bdc8ce200a62d89249097e18d5f6d7de335a302a3198864"
+    },
+    {
+      "path": "core/discover-universe.js",
+      "identical": true,
+      "sha256": "7defa8dae05d7a744860cce45130dfeaf52b2f21df2b8af1c313d13f5c50fff5"
+    },
+    {
+      "path": "core/client.js",
+      "identical": true,
+      "sha256": "952b4cec329e09b8923fdbbd1c99c227441d287cf6b41b25dcd4683d46e4f883"
+    },
+    {
+      "path": "core/identity.js",
+      "identical": true,
+      "sha256": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69"
+    },
+    {
+      "path": "core/chart-history.js",
+      "identical": true,
+      "sha256": "f4444483c4c3deb48db015f1cffc5faad527d9b4deb308c7ead92a2a4f49ee88"
+    },
+    {
+      "path": "discover/data/search/GLOBAL.json",
+      "identical": true,
+      "sha256": "ed137de84a5ff57390fde61c2e4c1f87367df55dbbae9cbf9558d2610a350cfe"
+    },
+    {
+      "path": "discover/data/search/US_REAL.json",
+      "identical": true,
+      "sha256": "84b24eba689f230dc50ca32bb1d9c7f7d643797a40c685018f17bef7c9884704"
+    },
+    {
+      "path": "discover/data/europe/calendar.json",
+      "identical": true,
+      "sha256": "20c5192e717b7b38f0cbc0e33305898cc8cf1c594091fbcb9b111bdbadf375f6"
+    },
+    {
+      "path": "discover/data/europe/manifest.json",
+      "identical": true,
+      "sha256": "77ba281f08397e0782fa783e30ff824e562e1fcb95ea7e8c7f38d203c26268be"
+    }
+  ],
+  "remote_core_result": {
+    "tests": 122,
+    "passed": 121,
+    "failed": 1,
+    "failed_subtest": "all published securities share one canonical search index without changing US IDs"
+  },
+  "baseline_isolated_test": {
+    "exitCode": 1,
+    "failed_subtests": [
+      "not ok 1 - all published securities share one canonical search index without changing US IDs"
+    ],
+    "totals": [
+      "# tests 7",
+      "# pass 6",
+      "# fail 1"
+    ],
+    "snapshot_path": "/workspace/scratch/core-regression-baseline-minimal-msulvtnl",
+    "reporter": "tap"
+  },
+  "classification": "BASELINE_EXISTING_GENERATED_INDEX_COUNT_ASSERTION_FAILURE",
+  "performance_values_included": false,
+  "core_edited": false,
+  "provider_called": false,
+  "baseline_reproduced_same_failure": true,
+  "required_handling": [
+    "Retain overall regression status FAIL; do not report whole repository green.",
+    "Classify this one failure as reproduced unchanged baseline, not a new tournament regression.",
+    "Do not edit core, regenerate Discover artifacts, relax assertion or suppress the test in this research task.",
+    "If frozen research-only run may continue, carry explicit baseline failure caveat and keep merge/live release blocked until separately handled.",
+    "Any repair belongs to a separate Discover/Core track: reconcile published source-index contract against generated index, then revalidate counts and canonical IDs.",
+    "Historical input failure happened before performance and is independent; diagnose sealed-only loader diagnostics without changing method rules."
+  ],
+  "index_contract_counts": {
+    "hardcoded_test_expected_total": 6742,
+    "actual_global_declared_count": 6580,
+    "actual_global_entries": 6580,
+    "unique_security_ids": 6580,
+    "region_counts": {
+      "US": 6131,
+      "EUROPE": 449
+    },
+    "current_us_source_entries": 6131,
+    "us_source_missing_global_entries": 0,
+    "us_source_security_id_mismatches": 0
+  },
+  "failure_interpretation": "The hardcoded expected total disagrees with unchanged generated baseline. GLOBAL is internally count-consistent, has449 Europe entries, and covers6131 current US source entries with canonical IDs. This proves baseline disagreement and no new research regression; it does not establish which intended publication contract/count is correct or why the historical total differs.",
+  "definitive_disposition": {
+    "baseline_existing_failure": true,
+    "new_research_caused_core_failure": false,
+    "overall_regression": "FAIL_BASELINE_CAVEAT",
+    "permission_to_change_core": "NOT_GRANTED",
+    "research_only_run_assessment": "No additional core-regression causality blocker identified; retain documented baseline caveat and separate historical-loader diagnosis.",
+    "merge_or_live_release_approval": false
+  }
+}

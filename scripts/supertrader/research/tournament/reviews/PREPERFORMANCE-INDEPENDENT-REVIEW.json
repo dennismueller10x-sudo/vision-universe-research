@@ -1,0 +1,143 @@
+{
+  "review_date": "2026-10-11",
+  "scope": "Independent pre-performance cache, CLI/sharding/workflow and historical source identity-admission fix review; no actual outcomes viewed.",
+  "disposition": "PASS_FINAL_PRE_PERFORMANCE_CACHE_CLI_IDENTITY_WORKFLOW_AND_ASSEMBLY",
+  "cache_bound": 4096,
+  "semantics": {
+    "unchanged_uncached_validator": true,
+    "non_iso_original_path": true,
+    "false_results_preserved": true,
+    "exceptions_propagated_not_cached": true,
+    "eviction_changes_recomputation_only": true,
+    "no_rule_parameters_or_source_definitions_changed": true
+  },
+  "source_reconstruction_checks": [
+    {
+      "path": "scripts/supertrader/research/tournament/engines/academic.mjs",
+      "original_engine_reconstructed_byte_equal_HEAD": true,
+      "current_sha256": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
+      "baseline_sha256": "350f22ed7447304a0817f12bc04deb24aaad31b404a60b89e7439e3abce8f81d"
+    },
+    {
+      "path": "scripts/supertrader/research/tournament/engines/legendary.mjs",
+      "original_engine_reconstructed_byte_equal_HEAD": true,
+      "current_sha256": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5",
+      "baseline_sha256": "dbdf6d04870a67ad874277df7219d7ab35c0045bb89012ed61104483778df6d5"
+    },
+    {
+      "path": "scripts/supertrader/research/tournament/engines/kullamagi.mjs",
+      "original_engine_reconstructed_byte_equal_HEAD": true,
+      "current_sha256": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+      "baseline_sha256": "8d17f70eab96f0d26090f09203022e49ddbe8e990e0eb6e4397aeb6ef55b54f1"
+    }
+  ],
+  "synthetic_tests": {
+    "passed": 37,
+    "failed": 0,
+    "full_engine_exact_outputs_compared": 168,
+    "covers_malformed_false_throw_repeated_inputs_eviction_and_held_state": true
+  },
+  "actual_provider_calls": 0,
+  "actual_financial_returns_viewed": false,
+  "remaining_gate": "Final content freeze must match launch checkout; private actual-result adversarial review remains required before final rankings or Tier A/live claims.",
+  "cli_review": {
+    "operational_only": true,
+    "allowed_only_ids": "frozen historical participants only; duplicates/unknown/empty reject",
+    "frozen_method_order_preserved": true,
+    "historical_universe_loader_unchanged": true,
+    "benchmark_protocol_sensitivity_execution_unchanged": true,
+    "current_only_historical_loader_avoided": true,
+    "current_only_no_historical_metrics_or_strong_rank": true,
+    "current_only_all_ten_scans_unranked": true,
+    "skipped_current_explicit_status": true,
+    "overlap_selected_scope_explicit": true,
+    "private_diagnostics_sealed_generic_console": true,
+    "import_has_no_loader_or_engine_execution": true,
+    "source_rulebook_hashes_unchanged_all_ten": true
+  },
+  "complete_synthetic_suite": {
+    "passed": 120,
+    "failed": 0,
+    "provider_calls": 0,
+    "actual_financial_returns_viewed": false
+  },
+  "workflow_review": {
+    "run_mode_matrix": [
+      "systematic",
+      "turtle",
+      "weinstein",
+      "kullamagi",
+      "current"
+    ],
+    "historical_method_coverage": 6,
+    "artifact_names_unique_per_shard": true,
+    "upload_allowlist": "status and encrypted sealed JSON only",
+    "regression_baseline_failure_not_waived": true,
+    "issue_reported_to_parent": true,
+    "probe_issue": "RESOLVED: dispatch options/default are run; no dead probe path"
+  },
+  "consolidation_gates": [
+    "Regenerate content freeze after operational code changes; preserve rulebook hashes and earlier freeze history.",
+    "Historical shard freeze/protocol/data fingerprints must match; reject or separate mismatches, never join incompatible populations silently.",
+    "Complete exactly six historical participants once each, plus current shard; failed/missing shards remain missing, not zero/neutral outcomes.",
+    "Recompute global overlap and strong-method consensus after compatible shard consolidation; shard overlap only selected IDs.",
+    "Current BLOCKED and SKIPPED states must not become no-match counts or complete current scan.",
+    "Retain prior core regression FAIL baseline caveat; no core test suppression or live/merge authorization."
+  ],
+  "reviewed_file_hashes": {
+    "scripts/supertrader/research/tournament/run.mjs": "38244cb5cafaf420cf3d341eff83a7e6f5c6f40c48d0226872962a53ea49952e",
+    ".github/workflows/supertrader-tournament.yml": "85273cc90d185309e03c553a5ba17d090a426ba93e73d22989e83b31a014be7b",
+    "scripts/supertrader/tests/tournament-sharding.test.mjs": "26f668e30e73063ca4b957d258cc9b77815f4503b6cecad8a7e56631d2a8d6ff",
+    "scripts/supertrader/tests/tournament-datecache.test.mjs": "eb43cb9c930e55f9b9cf360f9cce42303d0b37f1068f3ac2c883b3173d5c7212",
+    "scripts/supertrader/research/tournament/data.mjs": "caf0054e6eb8c8d3ee6e210fa886d7a80f56bb9fa89e88d0e7c4d53c059e53a3",
+    "scripts/supertrader/tests/tournament-data.test.mjs": "247879e01b78c4753e8be5fffcb12520e0db98dac8151da68ff4702fcaf54286",
+    "scripts/supertrader/research/tournament/assemble.mjs": "00ef05e7aaf16bb8b640c7ccad668ad647a51e5aedd40b82692203480abdc442",
+    "scripts/supertrader/tests/tournament-assemble.test.mjs": "ba7aecbaaf02c75649b19977fdadf02b86b5e929f61fd26081815a3580e57a8f",
+    "scripts/supertrader/research/tournament/freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25"
+  },
+  "source_identity_fix": {
+    "disposition": "PASS",
+    "reason": "Reject source rows that the unchanged Core identity/date contract cannot admit, before listing construction and series reads.",
+    "source_spelling_preserved": true,
+    "no_alias_invented": true,
+    "invalid_source_tickers_rejected": "exact three official historical rows tested",
+    "invalid_date_and_range_rejected": true,
+    "explicit_coverage_counts_and_reason_enums": true,
+    "read_avoidance_proven_by_synthetic_store_calls": true,
+    "canonical_contract_unchanged": true,
+    "duplicate_and_conflict_failures_retained": true,
+    "strategy_parameters_or_source_rulebook_changes": false,
+    "additional_assumption": "Existing active/current product-universe metadata remains Core identity-admissible; unsupported fallback rows are not repaired or aliased by this fix."
+  },
+  "final_preperformance_disposition": {
+    "approved_scope": "Research-only execution of final refrozen code with operational cache/shard/source-admission corrections",
+    "no_new_parameters": true,
+    "no_validation_waiver": true,
+    "source_rulebook_hashes_unchanged_all_ten": true,
+    "performance_conclusion": "NONE",
+    "tier_a_or_live_approval": "NOT_GRANTED",
+    "core_regression": "FAIL_EXISTING_BASELINE_REPRODUCED_SEPARATELY"
+  },
+  "assembly_review": {
+    "disposition": "PASS_AFTER_HARDENING",
+    "all_historical_freeze_protocol_datafingerprint_datacoverage_benchmark_identical": true,
+    "required_metadata_presence_checked": true,
+    "six_unique_historical_participants_required": true,
+    "baseline_cost_and_scenario_checked": true,
+    "exact_three_cost_terminal_sensitivity_variants_required": true,
+    "all_reconciliation_passes_required": true,
+    "all_ten_current_method_ids_unique_required": true,
+    "current_complete_requires_date_and_fingerprint": true,
+    "blocked_current_remains_blocked": true,
+    "fifteen_cross_shard_overlaps_recomputed": true,
+    "regime_overlap_explicitly_not_independent_edges": true,
+    "missing_metadata_and_duplicate_variant_gaps": "RESOLVED_BEFORE_NEW_FREEZE",
+    "no_strategy_parameter_or_ranking_rubric_change": true
+  },
+  "freeze_binding": {
+    "assembler_and_regression_runner_pinned": true,
+    "all_twelve_tournament_test_files_pinned": true,
+    "canonical_listing_storage_encryption_dependencies_pinned": true,
+    "all_ten_method_rulebook_hashes_unchanged": true
+  }
+}
