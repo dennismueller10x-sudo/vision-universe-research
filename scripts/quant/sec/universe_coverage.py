@@ -681,16 +681,22 @@ def reports_from_records(root, per_issuer, registry=None, universe=None):
         "marketDataSource": {
             "status": "NOT_CONNECTED",
             "canonicalOwner": "R2-Workstream (quant/data/market/history)",
+            "acceptedAsOf": "2026-10-04",
+            "acceptedIsHistorical": True,
+            "currentAcceptedSource": "quant/data/market/history/coverage-metrics.json",
             "accepted": {
                 "PRODUCT_TITLES": 6853,
                 "R2_SERIES_AVAILABLE": 7802,
                 "HISTORICAL_CHART_AVAILABLE": 6850,
                 "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
             },
-            "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser "
-                    "Workstream liest sie NICHT ein und rechnet nicht mit ihnen - "
-                    "sie stehen hier als benannte Fremdquelle, damit niemand die "
-                    "Gate-Ableitung unten fuer die Marktdatendeckung haelt.",
+            "note": "HISTORISCHER Stand vom 04.10.2026 (Produktuniversum vor dem "
+                    "Gattungsbeleg aus dem Boersenverzeichnis), NICHT der aktuelle "
+                    "Nenner. Seit der Neuabnahme vom 10.10.2026 gilt 6686 / 6683 / 5644 "
+                    "(Quelle: currentAcceptedSource). Dieser Workstream liest die Zahlen "
+                    "NICHT ein und rechnet nicht mit ihnen - sie stehen hier als benannte "
+                    "Fremdquelle, damit niemand die Gate-Ableitung unten fuer die "
+                    "Marktdatendeckung haelt.",
         },
         "fromGateRuns": {
             "instrumentsWithProviderPriceHistory": technical_instruments.get("PROVIDER_VERIFIED"),
