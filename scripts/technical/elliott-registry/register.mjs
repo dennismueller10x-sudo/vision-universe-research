@@ -43,7 +43,8 @@ import { publishedProduct, productContext, productElliottAt, identitySample, ide
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const SC = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
-export const REGISTRY_VERSION = "elliott-registry-1.4.0";   // 1.4.0: Kohorte CUSTOMER_PRODUCT_EXPLORE_ELLIOTT (Projection Engine 1.2.0, Explore Elliott; nur angezeigte Lesarten)
+export const REGISTRY_VERSION = "elliott-registry-1.5.0";   // 1.5.0: Kohorte CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT (Projection Engine 1.3.0, kuratierte Explore Highlights; nur kundensichtbare Highlights). Der Candidate Explorer (technisch, nachrangig) wird bewusst NICHT als Produktereignis registriert. Bestehende Ereignisse der Kohorte CUSTOMER_PRODUCT_EXPLORE_ELLIOTT (1.4.0) bleiben unveraendert.
+                                                        // 1.4.0: Kohorte CUSTOMER_PRODUCT_EXPLORE_ELLIOTT (Projection Engine 1.2.0, Explore Elliott; nur angezeigte Lesarten)
                                                         // 1.3.0: Kohorte CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE (Projection Engine 1.1.0, Produkt-Sichtbarkeit); productVisible der Forschungskohorte wahrheitsgemaess   // 1.2.0: Projektionsthese (elliott-projection-1.0.0) an neuen Kundenprodukt-Ereignissen, Revisionen PROJECTION_*
 export const VIEWS = Object.freeze({ STATELESS: "STATELESS_ENGINE", PRODUCT: "CUSTOMER_PRODUCT" });
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
@@ -251,7 +252,8 @@ async function registerWeek(o, F) {
   const initialStockProduct = !lines.some((e) => e.type === "RUN" && (e.payload.views || []).includes(VIEWS.PRODUCT));
   /* Bestand der Motiv-Alternativen: erster Lauf mit Registry >= 1.3.0 */
   /* Bestand von Explore Elliott: erster Lauf mit Registry >= 1.4.0 */
-  const initialStockExplore = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT") && !lines.some((e) => { if (e.type !== "RUN") return false; const v = /^elliott-registry-(\d+)\.(\d+)/.exec(e.payload.code && e.payload.code.registry || ""); return !!v && (+v[1] > 1 || +v[2] >= 4); });
+  /* Bestand der Explore Highlights: erster Lauf mit Registry >= 1.5.0 (die breite Kohorte CUSTOMER_PRODUCT_EXPLORE_ELLIOTT aus 1.4.0 bleibt als Geschichte stehen) */
+  const initialStockHighlight = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT") && !lines.some((e) => { if (e.type !== "RUN") return false; const v = /^elliott-registry-(\d+)\.(\d+)/.exec(e.payload.code && e.payload.code.registry || ""); return !!v && (+v[1] > 1 || +v[2] >= 5); });
   const initialStockMotive = !lines.some((e) => e.type === "EVENT" && e.payload.cohort === "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE") && !lines.some((e) => { if (e.type !== "RUN") return false; const v = /^elliott-registry-(\d+)\.(\d+)/.exec(e.payload.code && e.payload.code.registry || ""); return !!v && (+v[1] > 1 || +v[2] >= 3); });
   const skipReasons = {}; for (const r of rows) if (r.skip || r.error) { const k = r.skip || "ERROR"; skipReasons[k] = (skipReasons[k] || 0) + 1; }
   const pvStats = productView ? (() => { const s = { analysed: 0, timeframes: {}, skipReasons: {}, inputAgreement: { compared: 0, equal: 0 } };
@@ -304,15 +306,17 @@ async function registerWeek(o, F) {
           entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
       }
     }
-    /* Registry 1.4.0: angezeigte Explore-Lesarten der Produktsicht (Wochenanalyse), eigene Kohorte, eingefroren, nur anhaengen */
+    /* Registry 1.5.0: angezeigte Explore Highlights der Produktsicht (Wochenanalyse, kuratiert, hoechstens 2), eigene Kohorte, eingefroren, nur anhaengen.
+       Candidate Explorer: nicht registriert (technische Zusatzansicht, keine Produktaussage; sonst bis zu sechs Ereignisse je Titel ohne Produktbezug). */
     const exProj = productView && r.pv && !r.pv.skip && r.pv.exploreIn ? Projection.build(r.pv.exploreIn.E, { ...r.pv.exploreIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null }) : null;
-    for (const th of (exProj && exProj.explore) || []) {
-      const dk = [r.s, "EXPLORE", th.key, VIEWS.PRODUCT].join("|");
+    for (const th of (exProj && exProj.exploreHighlights) || []) {
+      const dk = [r.s, "EXPLORE_HIGHLIGHT", th.key, VIEWS.PRODUCT].join("|");
       if (registered.has(dk)) continue; registered.add(dk);
-      const payload = { ...base, initialStock: initialStockExplore, view: VIEWS.PRODUCT, cohort: "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT", dedupeKey: dk, setupType: "EXPLORE_ELLIOTT_" + th.type,
-        timeframe: exProj.timeframe, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, role: "EXPLORE", interpretation: "EXPLORE",
+      const payload = { ...base, initialStock: initialStockHighlight, view: VIEWS.PRODUCT, cohort: "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT", dedupeKey: dk, setupType: "EXPLORE_HIGHLIGHT_" + th.type,
+        timeframe: exProj.timeframe, productBarDate: r.pv.d, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, role: "EXPLORE_HIGHLIGHT", interpretation: "EXPLORE_HIGHLIGHT",
         primaryShownAs: r.pv.p, primaryAbstained: r.pv.ab, dir: th.direction === "UP" ? 1 : -1, pattern: th.pattern, waveType: th.type, wave: th.target, degree: th.degree, persistenceKey: th.key,
         rank: th.pool.rank, poolSize: th.pool.size, slot: th.slot, failedGates: th.qualityGates.failed, gateResults: th.qualityGates.results, hardRules: th.hardRules.status,
+        curation: { version: th.curation.version, rankPct: th.curation.rankPct, failedSet: th.curation.failedSet, contextAgreement: th.curation.contextAgreement },
         dataQuality: { status: exProj.guardrails.flags.some((f) => f.code === "SPLIT_SUSPICION_RESOLVED") ? "CLEAN_AFTER_SPLIT_RESOLUTION" : "CLEAN", flags: exProj.guardrails.flags.map((f) => f.code).filter((c) => c === "SPLIT_SUSPICION_RESOLVED" || c === "PENNY_STOCK") },
         projectionThesis: registryProjection(Object.assign({}, exProj, { primary: th, alternative: null, highUpside: null, consumerVisible: true })), projectionEngine: PROJECTION_VERSION,
         versions: { engine: exProj.engine.elliott, ruleSet: exProj.engine.ruleSet, projection: PROJECTION_VERSION, visibility: th.visibility }, setupStatus: "OPEN" };
@@ -354,7 +358,7 @@ async function registerWeek(o, F) {
   const written = append(reg, lines, entries);
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
-           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), explore: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
+           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), explore: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT"), exploreHighlight: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
            productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), seconds: Math.round((Date.now() - t0) / 1000) };
 }
 

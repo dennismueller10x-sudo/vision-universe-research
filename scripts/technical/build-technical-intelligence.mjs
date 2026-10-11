@@ -38,7 +38,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
+import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -49,6 +49,7 @@ const Explain = require(join(ROOT, "quant/engines/technical/ti/explain.js"));
 const Alerts = require(join(ROOT, "quant/engines/technical/ti/alerts.js"));
 const Scenario = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
 
+const DUMP = isMainThread ? arg("dump-candidates", null) : (workerData && workerData.dump) || null;   // JSONL-Audit aller Explore-Kandidaten je Titel (Messung)
 const OUT = arg("out", join(ROOT, "quant/data/technical-intelligence/v3"));   // --out: Testlaeufe schreiben nie in die veroeffentlichten Daten
 const Patterns = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
 const EVID = join(ROOT, "quant/data/technical-intelligence/evidence");
@@ -136,6 +137,10 @@ function payload(series, out, currency, withReplay) {
   const pool = candidatePool(series, out, PRODUCT_METHODOLOGY);
   s.motiveCandidate = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY, pool);
   s.exploreCandidates = exploreCandidatesFor(series, out, PRODUCT_METHODOLOGY, pool, s.motiveCandidate, dataIntegrity(series, out, splitRes));
+  /* Audit (nur mit --dump-candidates, Messung ohne Wirkung auf die Produktdaten): alle Kandidaten + alle laufenden Welle-3-Lesarten des Pools */
+  if (DUMP) s.exploreAudit = { pool: s.exploreCandidates.pool, reason: s.exploreCandidates.reason, eligible: s.exploreCandidates.eligible, cands: s.exploreCandidates.cands.map((c) => c.item.sum),
+                               legacy: exploreLegacyPick(s.exploreCandidates.cands, s.exploreCandidates.pool).map((i) => i.item.rank), wave3: wave3PoolAudit(series, out, pool, PRODUCT_METHODOLOGY), atr: out.P && out.P.main ? out.P.main.features.columns.atr[series.length - 1] : null };
+  delete s.exploreCandidates.cands;
   if (withReplay) s.replay = { every: 1, unit: series.timeframe === "1W" ? "Woche" : "Tag", steps: replaySnapshots(series, out.P, out.replay, withReplay, 1),
                                note: "Jeder Schritt zeigt, was die Analyse an diesem Tag mit den damals verfügbaren Daten gezeigt hätte." };
   return s;
@@ -158,7 +163,7 @@ function indexRow(p) {
     alerts: p.alerts,
     proj: (() => { const pr = projRow(p.projectionWeekly && p.projectionWeekly.consumerVisible ? p.projectionWeekly : p.projection);
                    /* Explore und Motiv-Alternative leben fuer Tagestitel in der Wochenanalyse */
-                   if (pr && p.projectionWeekly) { if (!pr.ex && p.projectionWeekly.explore && p.projectionWeekly.explore.length) pr.ex = p.projectionWeekly.explore.length; }
+                   if (pr && p.projectionWeekly) { if (!pr.ex && p.projectionWeekly.exploreHighlights && p.projectionWeekly.exploreHighlights.length) pr.ex = p.projectionWeekly.exploreHighlights.length; if (!pr.xc && p.projectionWeekly.exploreCandidates && p.projectionWeekly.exploreCandidates.length) pr.xc = p.projectionWeekly.exploreCandidates.length; }
                    return pr; })()
   };
 }
@@ -166,10 +171,11 @@ function indexRow(p) {
 function projRow(pr) {
   const t = pr && pr.consumerVisible ? pr.primary || pr.alternative : null;
   const mv = pr && pr.motiveAlternative ? { dir: pr.motiveAlternative.direction, ts: pr.motiveAlternative.status, hu: !!pr.motiveAlternative.highUpside } : undefined;
-  const ex = pr && pr.explore && pr.explore.length ? pr.explore.length : undefined;   // Anzahl weiterer Elliott-Lesarten (Explore)
-  if (!t) return pr ? { st: pr.status, mv, ex } : null;
+  const ex = pr && pr.exploreHighlights && pr.exploreHighlights.length ? pr.exploreHighlights.length : undefined;   // Anzahl Explore Highlights
+  const xc = pr && pr.exploreCandidates && pr.exploreCandidates.length ? pr.exploreCandidates.length : undefined;   // Anzahl Eintraege im Candidate Explorer (Pro)
+  if (!t) return pr ? { st: pr.status, mv, ex, xc } : null;
   const z = (tier) => { const x = t.zones.find((q) => q.tier === tier); return x ? [x.display.low, x.display.high] : null; };
-  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside, mv, ex };
+  return { st: pr.status, tf: pr.timeframe, ty: t.type, src: t.source, dir: t.direction, ts: t.status, b: z("BASE"), x: z("EXTENDED"), e: z("EXTREME"), inv: t.invalidation ? t.invalidation.display : null, hu: !!pr.highUpside, mv, ex, xc };
 }
 
 /** Indexmitglieder (S&P 500, Nasdaq-100, Dow) als Relevanz- und Liquiditaetsfilter fuer Consumer-Reihen. */
@@ -266,7 +272,7 @@ function weeklyFor(ticker, C) {
   series.corporateActions = j.corporateActions || null;
   if (series.length < 160) return null;
   const p = payload(series, analyzeProduct(series, productOpts("weekly", C, j.ticker)), "$", null);
-  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence, motiveCandidate: p.motiveCandidate, exploreCandidates: p.exploreCandidates,
+  return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence, motiveCandidate: p.motiveCandidate, exploreCandidates: p.exploreCandidates, exploreAudit: p.exploreAudit,
            timeframes: null, dataQuality: p.dataQuality, chart: { timestamps: p.chart.timestamps, close: p.chart.close } };
 }
 function runUnit(u, C) {
@@ -303,6 +309,9 @@ async function main() {
   if (limit) dailyFiles = dailyFiles.slice(0, limit);
   let wfiles = readdirSync(C.wdir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort();
   if (limit) wfiles = wfiles.slice(0, limit * 20);
+  /* --only A,B,C: nur diese Titel bauen (Entwicklung und QA; nie fuer die Veroeffentlichung) */
+  const only = arg("only", null) ? new Set(arg("only").split(",").map((x) => x.trim().toUpperCase()).filter(Boolean)) : null;
+  if (only) { wfiles = wfiles.filter((f) => only.has(f.replace(/^ref_|\.json$/g, "").toUpperCase())); dailyFiles = dailyFiles.filter((f) => only.has(f.replace(/^ref_|\.json$/g, "").toUpperCase())); }
   /* Tagesanalyse zuerst (bestimmt, welche Titel keine Wochenanalyse brauchen) */
   const dailyTickers = new Set(dailyFiles.map((f) => { try { return readJson(join(C.dailyDir, f)).ticker; } catch (e) { return null; } }).filter(Boolean));
   const units = dailyFiles.map((f) => ({ kind: "daily", f })).concat(wfiles.filter((f) => !dailyTickers.has(f.replace(/^ref_|\.json$/g, ""))).map((f) => ({ kind: "weekly", f })));
@@ -319,7 +328,7 @@ async function main() {
     const parts = Array.from({ length: nWorkers }, () => []);
     units.forEach((u, i) => parts[i % nWorkers].push(u));
     await Promise.all(parts.map((part) => new Promise((resolve, reject) => {
-      const w = new Worker(new URL(import.meta.url), { workerData: { role: "ti-build", units: part, workDir } });
+      const w = new Worker(new URL(import.meta.url), { workerData: { role: "ti-build", units: part, workDir, dump: DUMP } });
       w.on("message", (m) => { if (m.done) { Object.assign(RULES, m.rules); resolve(); } else handle(m); });
       w.on("error", reject); w.on("exit", (code) => { if (code !== 0) reject(new Error("worker exit " + code)); });
     })));
@@ -378,11 +387,25 @@ function projectAll(got) {
       items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf });
     }
   }
+  if (DUMP) {
+    const lines = [];
+    for (const [t, g] of got) {
+      const A = g.pW ? g.pW.exploreAudit : g.p.exploreAudit, pr = g.p.projectionWeekly || g.p.projection, pin = projectionInput(g.pW || g.p, rs.get(t) || null);
+      if (!A) continue;
+      const th = (x) => x && x.zones ? { type: x.type, dir: x.direction, key: x.key } : null;
+      lines.push(JSON.stringify({ t, tf: (g.pW || g.p).timeframe, daily: !!g.daily, close: (g.pW || g.p).price.close, trend: pin.trend, structureVote: pin.structureVote, rs: pin.rs ? pin.rs.rank : null,
+        status: pr.status, consumerVisible: pr.consumerVisible, primary: th(pr.primary), alternative: th(pr.alternative), motive: pr.motiveAlternative ? { type: pr.motiveAlternative.type, dir: pr.motiveAlternative.direction } : null,
+        splitRes: (g.pW || g.p).dataQuality && (g.pW || g.p).dataQuality.splitResolution ? (g.pW || g.p).dataQuality.splitResolution.status : null,
+        pool: A.pool, reason: A.reason, eligible: A.eligible, legacy: A.legacy, cands: A.cands, wave3: A.wave3,
+        legacyShown: (pr.explore || []).map((x) => ({ key: x.key, type: x.type, dir: x.direction, ms: x.roadmap && x.roadmap.structure ? x.roadmap.structure.state : null })) }));
+    }
+    writeFileSync(DUMP, lines.join("\n") + "\n");
+  }
   /* oeffentlich nur Herkunft und Grund der Motiv-Suche, nicht das ganze Kandidatenobjekt */
   for (const [, g] of got) {
     if (g.p.motiveCandidate) g.p.motiveCandidate = { reason: g.p.motiveCandidate.reason, rank: g.p.motiveCandidate.rank, pool: g.p.motiveCandidate.pool };
     const X = g.pW ? g.pW.exploreCandidates : g.p.exploreCandidates;
-    if (X) g.p.exploreCandidates = { version: X.version, reason: X.reason, pool: X.pool, eligible: X.eligible, selected: X.items.length };
+    if (X) { const pr = g.p.projectionWeekly || g.p.projection; g.p.exploreCandidates = { version: X.version, reason: X.reason, pool: X.pool, eligible: X.eligible, highlights: pr && pr.exploreHighlights ? pr.exploreHighlights.length : 0, candidates: pr && pr.exploreCandidates ? pr.exploreCandidates.length : 0 }; }
   }
   const storePath = join(OUT, "projection-theses.json");
   let prev = null; if (existsSync(storePath)) { try { prev = readJson(storePath); } catch (e) { prev = null; } }
@@ -394,16 +417,29 @@ function projectAll(got) {
     if (it.proj.motiveAlternative) { stats.motiveAlternative = (stats.motiveAlternative || 0) + 1; const d = "motive" + it.proj.motiveAlternative.direction; stats[d] = (stats[d] || 0) + 1; if (it.proj.motiveAlternative.highUpside) stats.motiveHighUpside = (stats.motiveHighUpside || 0) + 1; }
     if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; if (it.proj.alternative) stats.normalAlternative = (stats.normalAlternative || 0) + 1; }
     if (it.proj.guardrails && it.proj.guardrails.flags.some((f) => f.code === "SPLIT_SUSPICION_RESOLVED")) stats.splitResolved = (stats.splitResolved || 0) + 1;
-    /* Explore Elliott: Produkt-Gesundheitsmass (keine Vorhersage) */
-    const X = it.proj.explore || [];
-    if (X.length) {
-      const S = stats.explore = stats.explore || { securities: 0, theses: 0, perSecurity: {}, direction: {}, type: {}, pattern: {}, failedGate: {}, rankPct: { "0-10": 0, "10-25": 0, "25-50": 0, "50-100": 0 }, highUpside: 0 };
-      S.securities++; S.theses += X.length; S.perSecurity[X.length] = (S.perSecurity[X.length] || 0) + 1;
-      for (const th of X) {
-        S.direction[th.direction] = (S.direction[th.direction] || 0) + 1; S.type[th.type] = (S.type[th.type] || 0) + 1; S.pattern[th.pattern] = (S.pattern[th.pattern] || 0) + 1;
-        th.qualityGates.failed.forEach((g) => { S.failedGate[g] = (S.failedGate[g] || 0) + 1; });
-        const q = th.pool.rank / th.pool.size; S.rankPct[q < 0.1 ? "0-10" : q < 0.25 ? "10-25" : q < 0.5 ? "25-50" : "50-100"]++;
-        if (th.direction === "UP" && th.zones.length) { const z = th.zones.find((x) => x.tier === "EXTENDED") || th.zones[th.zones.length - 1]; if (z.mid / it.proj.close - 1 >= 1) S.highUpside++; }
+    /* Explore Highlights und Candidate Explorer: Produkt-Gesundheitsmass (beschreibend, keine Vorhersage, nie Auswahlkriterium) */
+    const HL = it.proj.exploreHighlights || [], CD = it.proj.exploreCandidates || [];
+    if (HL.length || CD.length) {
+      const S = stats.explore = stats.explore || { highlights: { securities: 0, theses: 0, perSecurity: {}, direction: {}, type: {}, pattern: {}, failedSet: {}, rankPct: { "0-10": 0, "10-25": 0, "25-50": 0, "50-100": 0 },
+                                                                   contextAgreement: {}, extendedMove: {}, extremeMove: {} },
+                                                    candidates: { securities: 0, entries: 0, perSecurity: {}, direction: {}, type: {}, failedSet: {} } };
+      const bucket = (v) => (v < 0.5 ? "<50%" : v < 1 ? "50-100%" : v < 2.5 ? "100-250%" : v < 5 ? "250-500%" : v < 10 ? "500-1000%" : ">1000%");
+      const move = (th, tier) => { const z = th.zones.find((x) => x.tier === tier); return z ? Math.abs(z.mid / it.proj.close - 1) : null; };
+      if (HL.length) {
+        const H = S.highlights; H.securities++; H.theses += HL.length; H.perSecurity[HL.length] = (H.perSecurity[HL.length] || 0) + 1;
+        for (const th of HL) {
+          H.direction[th.direction] = (H.direction[th.direction] || 0) + 1; H.type[th.type] = (H.type[th.type] || 0) + 1; H.pattern[th.pattern] = (H.pattern[th.pattern] || 0) + 1;
+          H.failedSet[th.curation.failedSet] = (H.failedSet[th.curation.failedSet] || 0) + 1;
+          const q = th.pool.rank / th.pool.size; H.rankPct[q < 0.1 ? "0-10" : q < 0.25 ? "10-25" : q < 0.5 ? "25-50" : "50-100"]++;
+          H.contextAgreement[th.curation.contextAgreement] = (H.contextAgreement[th.curation.contextAgreement] || 0) + 1;
+          const ex = move(th, "EXTENDED"), xt = move(th, "EXTREME");
+          if (ex !== null) H.extendedMove[th.direction + " " + bucket(ex)] = (H.extendedMove[th.direction + " " + bucket(ex)] || 0) + 1;
+          if (xt !== null) H.extremeMove[th.direction + " " + bucket(xt)] = (H.extremeMove[th.direction + " " + bucket(xt)] || 0) + 1;
+        }
+      }
+      if (CD.length) {
+        const C = S.candidates; C.securities++; C.entries += CD.length; C.perSecurity[CD.length] = (C.perSecurity[CD.length] || 0) + 1;
+        for (const th of CD) { C.direction[th.direction] = (C.direction[th.direction] || 0) + 1; C.type[th.type] = (C.type[th.type] || 0) + 1; C.failedSet[th.curation.failedSet] = (C.failedSet[th.curation.failedSet] || 0) + 1; }
       }
     }
   }

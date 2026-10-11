@@ -22,7 +22,7 @@ import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
-import { projectionElliott, projectionInput, motiveCandidateFor, candidatePool, exploreCandidatesFor, splitResolutionFor, dataIntegrity, withProductInputs } from "../lib/ti-projection.mjs";
+import { projectionElliott, projectionInput, motiveCandidateFor, candidatePool, exploreCandidatesFor, highlightEligibleItems, splitResolutionFor, dataIntegrity, withProductInputs } from "../lib/ti-projection.mjs";
 import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 const Identity = createRequire(import.meta.url)("../../../core/identity.js"); // eine Identitaetsregel (ADR-001)
 
@@ -111,7 +111,7 @@ function analyzeAndSummarize(series, kind, ticker, ctx) {
   const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : v), from = Math.max(0, series.length - 260);
   const splitRes = splitResolutionFor(series, out), pool = candidatePool(series, out, PRODUCT_METHODOLOGY), mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY, pool);
   const xc = exploreCandidatesFor(series, out, PRODUCT_METHODOLOGY, pool, mc, dataIntegrity(series, out, splitRes));
-  const projE = withProductInputs(projectionElliott(pub), { motiveCandidate: mc, exploreCandidates: xc, dataQuality: splitRes.items.length ? { splitResolution: splitRes } : null });
+  const projE = withProductInputs(projectionElliott(pub), { motiveCandidate: mc, exploreCandidates: Object.assign({}, xc, { items: highlightEligibleItems(xc.items) }), dataQuality: splitRes.items.length ? { splitResolution: splitRes } : null });
   const projIn = { E: projE, ctx: projectionInput(Object.assign({}, S, { chart: { timestamps: series.timestamps.slice(from), close: series.close.slice(from).map(r4) } }), null) };
   return { tf: series.timeframe, d: series.timestamps[t], E, px: series.close[t], atr: Number.isFinite(atr) ? atr : null, projIn,
            view: { tf: series.timeframe, d: series.timestamps[series.length - 1], p: p ? p.pattern : null, w: p ? (p.complete ? "done" : p.currentWave && p.currentWave.label) : null,

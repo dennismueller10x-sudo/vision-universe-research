@@ -30,8 +30,10 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Patterns = isNode ? require("../elliott/patterns.js") : (global.VUTechnical && global.VUTechnical.ElliottPatterns);
+  /* Kuratierung des Explore-Pools (rein; wird erst in build() gebraucht) */
+  function curationModule() { return isNode ? require("./explore-curation.js") : (global.VUTechnical && global.VUTechnical.ExploreCuration); }
 
-  var VERSION = "elliott-projection-1.2.0";   // 1.2.0: Explore Elliott (weitere regelkonforme Lesarten, eingeklappt), Split-Aufloesung per Kapitalmassnahmen-Beleg, Rollenwechsel im Lebenszyklus; Formeln unveraendert
+  var VERSION = "elliott-projection-1.3.0";   // 1.3.0: Explore Highlights (kuratiert, hoechstens 2) und Candidate Explorer (technisch, Pro) statt breitem Explore; Formeln, Primaer, Alternative, Motiv-Alternative unveraendert. 1.2.0: Explore Elliott (weitere regelkonforme Lesarten, eingeklappt), Split-Aufloesung per Kapitalmassnahmen-Beleg, Rollenwechsel im Lebenszyklus; Formeln unveraendert
                                                // 1.1.0: Motiv-Alternative aus dem Kandidatenpool der Engine (nur Produkt-Sichtbarkeit, Formeln unveraendert)
   var SCHEMA = "vu-elliott-projection-1.0.0";
   var EWP = "EWP", EWI = "EWI", VU = "VU";
@@ -119,7 +121,7 @@
   var TYPE_DE = { WAVE_3: "Mögliche Welle 3", WAVE_5: "Mögliche Welle 5", WAVE_C: "Mögliche Welle C", NEXT_MOVE: "Mögliche Folgebewegung nach Korrektur", THRUST: "Möglicher Ausbruch aus dem Dreieck", REVERSAL: "Mögliche Gegenbewegung nach Impuls" };
   var MOTIVE = { IMPULSE: 1, LEADING_DIAGONAL: 1, ENDING_DIAGONAL: 1 };
   /* Explore Elliott: Produkt-Leitplanken in Kundensprache (Fachansicht zeigt zusaetzlich Kennung, Wert und Schwelle). */
-  var EXPLORE_VERSION = "EXPLORE_ELLIOTT_1.0.0", EXPLORE_MAX = 3;
+  var EXPLORE_VERSION = "EXPLORE_HIGHLIGHT_1.0.0", EXPLORE_CANDIDATES_VERSION = "EXPLORE_CANDIDATES_1.0.0", EXPLORE_MAX = 2;
   var GATE_DE = {
     G2: { title: "Grad-Zuordnung uneindeutig", text: "Die Lesart erfüllt alle Elliott-Regeln, ihr Wellengrad kollidiert aber mit einer anderen abgeschlossenen Struktur vergleichbarer Größe." },
     G3: { title: "Struktur zu verrauscht", text: "Die Wellen heben sich nicht deutlich genug vom normalen Kursrauschen ab." },
@@ -414,7 +416,7 @@
   function build(E, ctx) {
     var out = { schemaVersion: SCHEMA, version: VERSION, timeframe: ctx.timeframe || null, asOf: ctx.asOf || null, close: r4(ctx.close),
                 engine: { elliott: E ? E.engineVersion || null : null, ruleSet: E ? E.ruleSetVersion || null : null },
-                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, explore: [], exploreDiagnostics: [], exploreWithheld: false,
+                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, exploreHighlights: [], exploreCandidates: [], exploreDiagnostics: [], exploreWithheld: false,
                 context: null, guardrails: { flags: [] },
                 evidence: { status: "INSUFFICIENT", label: "Experimentell – noch keine ausreichende Evidenz", text: "Für Projektionszonen gibt es noch keine belastbare historische Prüfung. Das prospektive Register zeichnet jede angezeigte These ab jetzt ohne Rückblick auf." },
                 disclaimer: "Projektion ≠ Wahrscheinlichkeit: Die Zonen zeigen, wohin die Welle rechnerisch laufen könnte, wenn die Zählung stimmt. Prozentwerte sind Arithmetik vom aktuellen Kurs, keine Trefferquote." };
@@ -473,44 +475,96 @@
         out.motiveAlternative = mt;
       }
     }
-    /* EXPLORE ELLIOTT (1.2.0) — weitere regelkonforme Lesarten, die mindestens eine Produkt-Leitplanke verfehlen
-       (E.explore, ausgewaehlt in ti-projection.mjs#exploreCandidatesFor). Nie Hauptlesart, nie reguläre Alternative,
-       hoechstens 3, eingeklappt. Dieselben Formeln, Invalidation und Datenleitplanken wie jede These. Verworfen werden
-       Lesarten mit derselben Thesenkennung wie eine angezeigte These und nahezu gleiche Leitern (Mitte der erweiterten
-       Stufe innerhalb von 10 % einer angezeigten These derselben Richtung und desselben Typs). */
-    out.explore = []; out.exploreDiagnostics = [];
+    /* EXPLORE HIGHLIGHTS und CANDIDATE EXPLORER (1.3.0) — kuratiert aus dem unveraenderten Kandidatenpool der Engine
+       (E.explore.items = alle zulaessigen Kandidaten, ti-projection.mjs#exploreCandidateList). Die Kuratierung (explore-curation.js)
+       waehlt nur aus; sie erzeugt keine Zaehlung, aendert keinen Rang und keine Formel. Nie Hauptlesart, nie reguläre Alternative.
+       Highlights: hoechstens 2, sichtbar fuer alle. Candidate Explorer: technisch, nachrangig, nur Fachansicht (Pro).
+       Dieselben Formeln, Invalidation und Datenleitplanken wie jede These. Verworfen werden Lesarten mit derselben Thesenkennung
+       wie eine angezeigte These, nahezu gleiche Leitern (Mitte der erweiterten Stufe innerhalb von 10 % einer angezeigten These
+       derselben Richtung und desselben Typs) und ausgeschoepfte oder grenzenlose Thesen. */
+    out.exploreHighlights = []; out.exploreCandidates = []; out.exploreDiagnostics = [];
     /* Explore-Kandidaten des Titels wegen Datenproblem gesperrt (Build): bestehende Explore-Thesen zurueckhalten, nicht umdeuten */
     out.exploreWithheld = !!(E.explore && /^DATA_/.test(E.explore.reason || ""));
     var ex = E.explore && E.explore.items ? E.explore.items : [];
-    ex.slice(0, EXPLORE_MAX).forEach(function (it) {
-      var shownT = [out.primary, out.alternative, out.highUpside && out.highUpside.zones ? out.highUpside : null, out.motiveAlternative].concat(out.explore).filter(Boolean);
-      var th = mk(geometry(it.count), it.count, "EXPLORE", out.exploreDiagnostics);
-      if (!th) return;
-      if (th.status === "EXHAUSTED" || !th.invalidation || !(th.invalidation.price > 0)) { out.exploreDiagnostics.push({ code: "EXPLORE_DROPPED", text: th.label + " (Explore): " + (th.invalidation ? "alle Zonen erreicht" : "keine Invalidation") + " – nicht gezeigt." }); return; }
-      var dup = shownT.some(function (o) {
-        if (o.key === th.key) return true;
-        if (o.direction !== th.direction || o.type !== th.type) return false;
-        var a = upside(o), b = upside(th); return isNum(a) && isNum(b) && Math.abs(a / b - 1) <= 0.1;
+    if (ex.length) {
+      var Cur = curationModule(), built = [];
+      var shownT = [out.primary, out.alternative, out.highUpside && out.highUpside.zones ? out.highUpside : null, out.motiveAlternative].filter(Boolean);
+      ex.forEach(function (it) {
+        var th = mk(geometry(it.count), it.count, "EXPLORE", out.exploreDiagnostics);
+        if (!th) return;
+        if (th.status === "EXHAUSTED" || !th.invalidation || !(th.invalidation.price > 0)) { out.exploreDiagnostics.push({ code: "EXPLORE_DROPPED", text: th.label + " (Explore): " + (th.invalidation ? "alle Zonen erreicht" : "keine Invalidation") + " – nicht gezeigt." }); return; }
+        var dup = shownT.some(function (o) {
+          if (o.key === th.key) return true;
+          if (o.direction !== th.direction || o.type !== th.type) return false;
+          var a = upside(o), b = upside(th); return isNum(a) && isNum(b) && Math.abs(a / b - 1) <= 0.1;
+        });
+        if (dup) { out.exploreDiagnostics.push({ code: "EXPLORE_DUPLICATE", text: th.label + " (Explore): gleiche These oder nahezu gleiche Projektionsleiter wie eine angezeigte Lesart – nicht gezeigt." }); return; }
+        built.push({ it: it, th: th });
       });
-      if (dup) { out.exploreDiagnostics.push({ code: "EXPLORE_DUPLICATE", text: th.label + " (Explore): gleiche These oder nahezu gleiche Projektionsleiter wie eine angezeigte Lesart – nicht gezeigt." }); return; }
-      th.role = "EXPLORE";
-      th.label = th.label.replace(/ \(höherer Grad\)$/, "") + " · Wochenchart";
-      th.headline = "Weitere Elliott-Lesart";
-      th.exploreStatus = { code: "EXPLORATIVE", label: "Explorativ", text: "Nicht als reguläre Alternative freigegeben" };
-      th.clarity = { level: "LOW", label: "Niedrig", text: "Regelkonforme Lesart aus der Kandidatensuche der Engine – nicht die bevorzugte Zählung, nicht als reguläre Alternative freigegeben." };
-      th.pool = { rank: it.rank, size: it.pool, text: "Rang " + (it.rank + 1) + " von " + it.pool + " gültigen Interpretationen" };
-      th.hardRules = { status: "PASSED", label: "Elliott-Regeln: erfüllt", rules: it.count.ruleAudit ? (it.count.ruleAudit.hardRules || []) : [], open: it.count.ruleAudit ? (it.count.ruleAudit.openRules || []) : [] };
-      th.qualityGates = { status: "FAILED", failed: it.failed.slice(), results: it.gates,
-                          label: "Produkt-Leitplanken: verfehlt " + it.failed.join(", "),
-                          reasons: it.failed.map(function (g) { return { gate: g, title: GATE_DE[g].title, text: GATE_DE[g].text, value: it.gates[g] ? it.gates[g].value : null, threshold: it.gates[g] ? it.gates[g].threshold : null }; }) };
-      th.slot = out.explore.length + 1;   // Anzeige-Reihenfolge (nach dem Verwerfen von Dubletten)
-      th.visibility = EXPLORE_VERSION;
-      out.explore.push(th);
-    });
-    out.exploreVisible = out.explore.length;
+      var toCand = function (b) {
+        var th = b.th, tr = ctxOut.trend.state, rs = ctxOut.rs.state, ms = th.roadmap && th.roadmap.structure ? th.roadmap.structure.state : null;
+        return { id: th.key, type: th.type, pattern: th.pattern, variant: th.variant, direction: th.direction, failed: b.it.failed.slice(), rank: b.it.rank, pool: b.it.pool,
+                 w1Weeks: b.it.gates && b.it.gates.G4 ? b.it.gates.G4.value : 0, mid: upside(th),
+                 ctx: { trendAligned: tr === "NEUTRAL" ? null : (tr === "POSITIVE") === (th.direction === "UP"),
+                        rsAligned: rs === "TOP20" ? th.direction === "UP" : rs === "BOTTOM20" ? th.direction === "DOWN" : null,
+                        structureAligned: ms === "CONFIRMED" ? true : ms === "CONFLICTING" ? false : null } };
+      };
+      built.forEach(function (b) { b.c = toCand(b); });
+      /* eine These je Thesenkennung: bei mehreren Zaehlungen mit derselben Kennung gewinnt die fuer Highlights geeignete, sonst die besser platzierte
+         (so haengt die Highlight-Auswahl nie von nicht geeigneten Kandidaten ab; die Registry speichert deshalb nur geeignete Kandidaten) */
+      var best = {};
+      built.forEach(function (b, i) {
+        var k = b.th.key;
+        if (best[k] === undefined) { best[k] = i; return; }
+        if (Cur.highlightEligibility(b.c).eligible && !Cur.highlightEligibility(built[best[k]].c).eligible) best[k] = i;
+      });
+      built = built.filter(function (b, i) {
+        if (best[b.th.key] === i) return true;
+        out.exploreDiagnostics.push({ code: "EXPLORE_DUPLICATE", text: b.th.label + " (Explore): gleiche These wie eine andere Lesart des Titels – nicht gezeigt." }); return false;
+      });
+      var cands = built.map(function (b) { return b.c; });
+      var cur = Cur.curate(cands), byId = {}; built.forEach(function (b) { byId[b.th.key] = b; });
+      var common = function (b, role) {
+        var th = b.th, it = b.it;
+        th.role = role;
+        th.label = th.label.replace(/ \(höherer Grad\)$/, "") + " · Wochenchart";
+        th.exploreStatus = { code: "EXPLORATIVE", label: "Explorativ", text: "Nicht als reguläre Alternative freigegeben" };
+        th.clarity = { level: "LOW", label: "Niedrig", text: "Regelkonforme Lesart aus der Kandidatensuche der Engine – nicht die bevorzugte Zählung, nicht als reguläre Alternative freigegeben." };
+        th.pool = { rank: it.rank, size: it.pool, text: "Rang " + (it.rank + 1) + " von " + it.pool + " gültigen Interpretationen" };
+        th.hardRules = { status: "PASSED", label: "Elliott-Regeln: erfüllt", rules: it.count.ruleAudit ? (it.count.ruleAudit.hardRules || []) : [], open: it.count.ruleAudit ? (it.count.ruleAudit.openRules || []) : [] };
+        th.qualityGates = { status: "FAILED", failed: it.failed.slice(), results: it.gates,
+                            label: "Produkt-Leitplanken: verfehlt " + it.failed.join(", "),
+                            reasons: it.failed.map(function (g) { return { gate: g, title: GATE_DE[g].title, text: GATE_DE[g].text, value: it.gates[g] ? it.gates[g].value : null, threshold: it.gates[g] ? it.gates[g].threshold : null }; }) };
+        return th;
+      };
+      cur.highlights.forEach(function (c, k) {
+        var b = byId[c.id], th = common(b, "EXPLORE_HIGHLIGHT");
+        th.headline = "Explorative Elliott-Chance"; th.subline = "Regelkonforme alternative Lesart";
+        th.curation = { version: Cur.VERSION, tier: "HIGHLIGHT", rankPct: r4(Cur.rankPct(c)), failedSet: Cur.failedSet(c), typePriority: Cur.POLICY.highlight.typePriority[c.type], contextAgreement: Cur.contextAgreement(c),
+                        text: "Hervorgehoben, weil die Zählung alle harten Elliott-Regeln erfüllt, als Struktur trägt (Rauschen und Größe bestanden), im Kandidatenpool der Engine auf Rang " + (c.rank + 1) + " von " + c.pool + " steht und nur eine Deutungs-Leitplanke verfehlt (" + c.failed.join(", ") + "). Der Rang ist ein Platz im Pool, keine Wahrscheinlichkeit." };
+        th.slot = k + 1; th.visibility = EXPLORE_VERSION;
+        out.exploreHighlights.push(th);
+      });
+      cur.candidates.forEach(function (c, k) {
+        var b = byId[c.id], th = common(b, "EXPLORE_CANDIDATE"), d = cur.decisions[c.id];
+        /* schlanke technische Form: Fahrplan, Fingerabdruck und Langtexte entfallen; die Fachansicht rechnet nichts nach */
+        out.exploreCandidates.push({
+          key: th.key, role: th.role, source: th.source, type: th.type, label: th.label, target: th.target, pattern: th.pattern, patternName: th.patternName, variant: th.variant, direction: th.direction,
+          status: th.status, statusLabel: th.statusLabel, headline: "Technische Elliott-Lesart", exploreStatus: th.exploreStatus, pool: th.pool, hardRules: { status: th.hardRules.status },
+          qualityGates: { status: "FAILED", failed: th.qualityGates.failed, results: th.qualityGates.results }, ladderKey: th.ladderKey,
+          zones: th.zones.map(function (z) { return { tier: z.tier, label: z.label, ratios: z.ratios, relationId: z.relationId, low: z.low, high: z.high, display: z.display, pctLow: z.pctLow, pctHigh: z.pctHigh, state: z.state }; }),
+          invalidation: th.invalidation ? { price: th.invalidation.price, direction: th.invalidation.direction, ruleId: th.invalidation.ruleId, display: th.invalidation.display, displayText: th.invalidation.displayText, pct: th.invalidation.pct, text: th.invalidation.text } : null,
+          confirmation: th.confirmation ? { price: th.confirmation.price, ruleId: th.confirmation.ruleId, statement: th.confirmation.statement, passed: th.confirmation.passed, pct: th.confirmation.pct } : null,
+          anchor: th.anchor, anchorWaves: th.anchorWaves, structure: th.roadmap && th.roadmap.structure ? th.roadmap.structure : null,
+          curation: { version: Cur.VERSION, tier: "CANDIDATE", rankPct: r4(Cur.rankPct(c)), failedSet: Cur.failedSet(c), notHighlight: d.why.slice() },
+          slot: k + 1, visibility: EXPLORE_CANDIDATES_VERSION });
+      });
+      out.exploreCandidatesTotal = cands.length;   // zulaessige, verschiedene Kandidaten vor der Begrenzung (Messgroesse, kein Anzeigefeld)
+    }
+    out.exploreVisible = out.exploreHighlights.length;
     /* Verwendete Beziehungen mitliefern (Fachansicht: Formel, Klasse, Quelle) — die Oberflaeche rechnet nicht. */
     var used = {};
-    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside, out.motiveAlternative].concat(out.explore).forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
+    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside, out.motiveAlternative].concat(out.exploreHighlights, out.exploreCandidates).forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
     out.relations = used;
     out.presentation = PRESENTATION;
     out.status = out.primary || out.alternative ? (abstain ? "ABSTAIN" : "AVAILABLE") : "NO_PROJECTION";
@@ -561,6 +615,12 @@
     /* Produkt zeigt die Projektion gerade nicht (Engine enthaelt sich, Datenfehler): weiter verfolgen, nicht umdeuten */
     if (withheld) { if (!e.withheld) { ev("WITHHELD", asOf, { note: "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt." }); e.withheld = true; } return e; }
     if (e.withheld) { ev("SHOWN_AGAIN", asOf); e.withheld = false; }
+    if (!th && meta && meta.demotedTo) {
+      /* 1.3.0: die Zaehlung gibt es weiter, sie wird aber nicht mehr als Highlight gezeigt (Candidate Explorer, nicht verfolgt) — Rollenwechsel, kein Verschwinden */
+      if (e.role && e.role !== meta.demotedTo) { ev("ROLE_CHANGED", asOf, { from: e.role, to: meta.demotedTo }); e.role = meta.demotedTo; }
+      ev("NOT_PROMOTED", asOf, { note: "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)." });
+      e.state = "ARCHIVED"; ev("ARCHIVED", asOf); return e;
+    }
     if (!th) { ev("RELABELLED", asOf, { note: "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)." }); e.state = "RELABELLED"; ev("ARCHIVED", asOf); e.state = "ARCHIVED"; return e; }
     /* 1.2.0: Rollenwechsel (z. B. EXPLORE → MOTIVE_ALTERNATIVE → ALTERNATIVE → PRIMARY) als Ereignis — dieselbe These, Geschichte bleibt */
     if (meta.role && e.role && e.role !== meta.role) { ev("ROLE_CHANGED", asOf, { from: e.role, to: meta.role }); e.role = meta.role; }
@@ -579,10 +639,10 @@
                        versions: meta.versions || null });
   }
   var STATE_DE = { CREATED: "Neu", DEVELOPING: "Im Aufbau", CONFIRMED: "Bestätigt", BASE_PROJECTION_REACHED: "Basis-Projektion erreicht", EXTENDED_PROJECTION_REACHED: "Erweiterte Projektion erreicht",
-                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", ROLE_CHANGED: "Rolle gewechselt", WITHHELD: "Derzeit nicht angezeigt", SHOWN_AGAIN: "Wieder angezeigt" };
+                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", ROLE_CHANGED: "Rolle gewechselt", WITHHELD: "Derzeit nicht angezeigt", SHOWN_AGAIN: "Wieder angezeigt", NOT_PROMOTED: "Nicht mehr als Highlight gezeigt" };
 
   var api = { VERSION: VERSION, SCHEMA: SCHEMA, RELATIONSHIPS: RELATIONSHIPS, LADDERS: LADDERS, PRESENTATION: PRESENTATION, TIER_DE: TIER_DE, TYPE_DE: TYPE_DE, STATE_DE: STATE_DE,
-              GATE_DE: GATE_DE, EXPLORE_VERSION: EXPLORE_VERSION, EXPLORE_MAX: EXPLORE_MAX, build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };
+              GATE_DE: GATE_DE, EXPLORE_VERSION: EXPLORE_VERSION, EXPLORE_CANDIDATES_VERSION: EXPLORE_CANDIDATES_VERSION, EXPLORE_MAX: EXPLORE_MAX, build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottProjection = api; }
 })(typeof window !== "undefined" ? window : globalThis);
