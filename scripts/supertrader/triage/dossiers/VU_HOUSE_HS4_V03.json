@@ -1,0 +1,172 @@
+{
+ "strategy_id": "VU_HOUSE_HS4_V03",
+ "method_name": "VU Volumen-Momentum 20 (Hausstrategie HS4, Versuch V03, Beobachtungsdepot)",
+ "group": "E",
+ "engine": {
+  "files": [
+   "scripts/supertrader/house/engine.mjs",
+   "scripts/supertrader/house/live.mjs",
+   "scripts/supertrader/house/analyze.mjs",
+   "scripts/supertrader/house/stats.mjs"
+  ],
+  "versions_in_repo": [
+   "HS1",
+   "HS2",
+   "HS3 (+D1-D3)",
+   "HS4 (V03 gewählt, eingefroren 2026-10-06)"
+  ],
+  "live_version": "HS4-V03 (Ledger supertrader/data/ledger/VU_HOUSE_HS4_V03.json)",
+  "status": "LIVE",
+  "shared_modules_used": [
+   "validation/lib.mjs loadPitData (laut HOUSE_STRATEGY.md:19-24)",
+   "validation/sec-pit.mjs"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Vorlaufzeit ab 02.01.2015 + Mindesthistorie 273 Tage: Depot im Februar 2016 in bar",
+    "where": "docs/SUPERTRADER_HOUSE_STRATEGY.md:93 (Bekannte Eigenschaft); engine.mjs:9-16 minBars 273",
+    "effect": "Bargeldphase verzerrt Vergleich zu SPY"
+   },
+   {
+    "what": "Test 2008-2015: Universum bis Mitte 2009 leer wegen fehlender SEC-Aktienzahlen",
+    "where": "docs/SUPERTRADER_HOUSE_STRATEGY.md:106",
+    "effect": "Scheinvorsprung aus Bargeldphase möglich; deshalb OOS_NOT_CONFIRMED"
+   }
+  ],
+  "version_drift": "Engine per Hash in LIVE-HS4-V03.json eingefroren (engine.mjs, PREREGISTRATION-HS4.json); Drift durch Hashprüfung begrenzt."
+ },
+ "source_audit": {
+  "core": "Eigenes VU-Faktormodell: 500 größte US-Inlandsemittenten, Filter Kurs>200-Tage-Linie und >=80 % des 52W-Hochs, Rang nach Plus/Minus-Umsatz, Akkumulation, SUE, Umsatzwachstum, Momentum 12-1; 20 Titel gleichgewichtet, Monatsentscheid.",
+  "clear_public_rules": [
+   "Momentum 12-1, SUE, Umsatzwachstum als Literaturfaktoren (HOUSE_STRATEGY.md:44-52)"
+  ],
+  "discretionary_rules": [],
+  "vu_own_formalizations": [
+   "Kombination UDV/ACC (Volumenprofil)",
+   "Puffer bis Rang 40",
+   "Filter 200T/80 %"
+  ],
+  "foreign_rules": [],
+  "source_fidelity": "NOT_REPRODUCIBLE",
+  "source_fidelity_reason": "Kein Trader-Original; Regeln sind VU-Eigenentwicklung (Fidelity-Kriterium 'Nachbau' nicht anwendbar)."
+ },
+ "provenance": {
+  "Entry": "VU (Monatsrang, Top 20)",
+  "Exit": "VU (Rang > 40 oder Filter verletzt)",
+  "Sizing": "VU (Gleichgewicht)",
+  "Portfolio": "VU (20 Titel, Monatsende)",
+  "Risk": "VU (kein Stop, Filter)",
+  "Fundamentals": "VU (SEC PIT: EPS/Umsatz)",
+  "Market": "VU (200T-Filter pro Titel)"
+ },
+ "implementation_fidelity": {
+  "rating": "MEDIUM",
+  "per_area": {
+   "Entry": "präregistriert, Hash-gebunden",
+   "Exit": "präregistriert",
+   "Sizing": "präregistriert",
+   "Portfolio": "präregistriert, Tests house-hs1.test.mjs",
+   "Risk": "Delisting-Szenarien in Analyse",
+   "Fundamentals": "SEC PIT, Aktienzahl-Lücken bei Mehrgattungs-Emittenten",
+   "Market": "kein Marktfilter außer Titel-200T"
+  },
+  "penalties": [
+   "Datenlücke Mehrgattungs-Emittenten (HOUSE_STRATEGY.md:103)"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE",
+   "fundamentals": "PARTIAL",
+   "institutional": "MISSING",
+   "estimates": "MISSING",
+   "sector": "MISSING",
+   "market_regime": "MISSING",
+   "intraday": "MISSING",
+   "earnings_events": "PARTIAL"
+  },
+  "sufficiency": "MEDIUM",
+  "fundamental_core_state": "SEC PIT (sec-pit.mjs, Erst-Einreichungsdatum); Core 1.22+ nicht benutzt",
+  "fundamental_dependency": "LOW"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R11",
+    "result": "nicht betroffen (Hausstrategie eigene Linie HS1-HS4)",
+    "source_file": "-"
+   },
+   {
+    "round": "HS1",
+    "result": "TESTED_NO_EDGE",
+    "source_file": "scripts/supertrader/house/DECISION-HS1.json (laut HOUSE_STRATEGY.md:94)"
+   },
+   {
+    "round": "HS2",
+    "result": "TESTED_NO_EDGE (Größenersatz)",
+    "source_file": "DECISION-HS2.json"
+   },
+   {
+    "round": "HS3-D3 Holdout",
+    "result": "TESTED_NO_EDGE",
+    "source_file": "scripts/supertrader/house/DECISION-HS3-D3-HOLDOUT.json"
+   },
+   {
+    "round": "HS4",
+    "result": "EXPLORATORY_NO_EDGE",
+    "source_file": "scripts/supertrader/house/DECISION-HS4.json"
+   },
+   {
+    "round": "HS4-OOS2008",
+    "result": "OOS_NOT_CONFIRMED",
+    "source_file": "scripts/supertrader/house/DECISION-HS4-OOS2008.json"
+   }
+  ],
+  "signal_quality": "kein belegter Vorteil (alle Entscheidungen NO_EDGE/NOT_CONFIRMED)",
+  "portfolio_result_direction": "nicht besser als SPY belastbar; Volumenbeitrag wiederholt sich 2009-2015 nicht",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "Bargeldphase 2016/2009 beeinflusst Vergleich",
+  "robustness": "gering: Vorsprung nur 2024-2026 (E1_both_halves FAIL)",
+  "ground_truth_light": "nicht anwendbar",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "Selektionsrisiko: V03 aus 12 Versuchen auf bekanntem Zeitraum gewählt (Holdout verbraucht)",
+  "missing_data": "Aktienzahlen vor 2009, Mehrgattungs-Emittenten",
+  "fragile_parameters": "Puffer 40, 80 %-Nähe, 200T"
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "Monatsrang, 20 Titel, gut erklärbar",
+  "signal_frequency": "monatlich",
+  "differentiation": "Faktorportfolio statt Trader-Setup",
+  "explainable_setups": "Rangfaktoren, keine Setups",
+  "mobile": "Depotliste ohne Kurse (Rechte)",
+  "forward_test": "läuft, Ledger mit Zeitstempel vor Ausführung"
+ },
+ "main_problems": [
+  "Historisch kein Vorteil, nur Vorwärtslauf zählt",
+  "Nicht Teil der Trader-Methoden; keine Registry-Karte",
+  "Kennzahlen aus Rechtegründen nicht veröffentlicht"
+ ],
+ "critical_implementation_errors": [],
+ "validation_class": "FORWARD_READY",
+ "preliminary_tier": "C",
+ "confidence": "MEDIUM",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Sauber präregistriertes, eingefrorenes Faktormodell mit laufendem Vorwärtstest, aber ohne historischen Vorteil. Kein Trader-Nachbau; als Beobachtungsdepot Tier C, getrennt von den 30-Methoden-Triage führen.",
+ "open_for_measurement": [
+  "Vorwärtsergebnis nach ausreichender Laufzeit (nur Ledger, keine Neumessung jetzt)"
+ ],
+ "evidence_refs": [
+  "docs/SUPERTRADER_HOUSE_STRATEGY.md:97-108",
+  "scripts/supertrader/house/LIVE-HS4-V03.json",
+  "scripts/supertrader/house/DECISION-HS4.json",
+  "scripts/supertrader/house/DECISION-HS4-OOS2008.json",
+  "scripts/supertrader/house/live.mjs:1-12",
+  "supertrader/data/ledger/VU_HOUSE_HS4_V03.json (origin/main)"
+ ]
+}

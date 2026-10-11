@@ -1,0 +1,107 @@
+{
+  "strategy_id": "MINERVINI_VCP",
+  "method_name": "VU Adaptation – Minervini (Trend Template + VU-VCP) [Referenzzeile, keine neue Analyse]",
+  "group": "D",
+  "engine": {
+    "files": [
+      "scripts/supertrader/engine/strategies/minervini.mjs (1.1.0, variant MINERVINI_TT_VCP_A)",
+      "scripts/supertrader/engine/strategies/minervini-v2.mjs (2.0.0, variant MINERVINI_TT_VCP_R7)",
+      "scripts/supertrader/engine/strategies/minervini-v3.mjs (3.0.0, variant MINERVINI_TT_VCP_EPS_R11)"
+    ],
+    "versions_in_repo": ["1.1.0 (manageCompatible 1.0.0/1.1.0)", "2.0.0 (legacy 1.0.0/1.1.0)", "3.0.0 (manageCompatible 2.0.0/3.0.0, signalCompatible 2.0.0; Forschung)"],
+    "live_version": "2.0.0 (supertrader/data/registry.json strategy_version; LIVE_ENGINES in build.mjs)",
+    "status": "LIVE",
+    "shared_modules_used": [
+      "engine/simulator.mjs",
+      "engine/execution.mjs",
+      "engine/earnings.mjs (nur 3.0.0)",
+      "validation/portfolio.mjs",
+      "fidelity/portfolio-policy.mjs (explizite Policy, kein stilles Erbe)"
+    ],
+    "hidden_fallbacks_or_defaults": [
+      {"what": "Fehlendes Tagesvolumen besteht Ausbruchsregel still (ratio null => Einstieg bestätigt)", "where": "strategies/minervini-v2.mjs:39-41", "effect": "Volumenbedingung 1,4x nur bei vorhandenen Daten wirksam (Referenzbefund, nicht vertieft)."},
+      {"what": "Portfolio explizit in der Engine (1,25 % Risiko, 25 % je Position, 10 Plätze, Risikohalbierung nach 5 netto negativen Trades); Höchstzahl und Halbierung VU", "where": "strategies/minervini-v2.mjs:61; fidelity/portfolio-policy.mjs:53-63", "effect": "Kein Default-Erbe aus backtest.mjs; Quelle SRC-MM-X-RISK laut Policy-Notiz 'genaue Zahl nicht im Abruf verifiziert'."}
+    ],
+    "version_drift": "Live 2.0.0 ohne SEPA-Fundamentalfilter; 3.0.0 (SEC-PIT-EPS/Umsatz, MIN-EPS-01) nur Forschung (R11 RESEARCH, R13 unverändert RESEARCH). Registry variants nennen noch MINERVINI_TT_VCP_A 'Trend Template (25 % über Tief)' als LIVE_MONITORING = Stand 1.1.0, live ist R7-Variante mit 30 %-Regel (MIN-LOW-02). R13-Doku 'Minervini 2.0.0 mit EPS/Umsatz' und 'Darvas-Gewinnfilter' waren falsch (R14, korrigiert)."
+  },
+  "source_audit": {
+    "core": "Trend Template + Volatility Contraction Pattern + Pivot-Ausbruch, Stop <= 10 %, SEPA-Fundamentalcheck, Verkauf in die Stärke; Bücher nicht abgerufen, Zahlen überwiegend aus Sekundärquellen und eigenen X-Beiträgen. Das VCP ist diskretionäre Chartbeurteilung.",
+    "clear_public_rules": ["Trend Template (Mehrfach belegt, einzelne Grenzwerte DISPUTED, 25 vs 30 % über Tief)", "Pivot-Ausbruch mit Volumen", "Stop ca. 10 % Höchstverlust (sekundär)"],
+    "discretionary_rules": ["VCP-Beurteilung (Kontraktionen, Volumenaustrocknung)", "Verkauf in die Stärke", "Pilotkauf/Aufstocken", "Cheat-/Low-Cheat-Einstiege", "Klimax-Signale"],
+    "vu_own_formalizations": ["Zigzag 4 %, 2 Kontraktionen, maxFirstDepth 35 %, maxLastDepth 10 %, Volumen-Austrocknung 0,8", "RS-Perzentil 70 (VU-Faktor, kein IBD-RS)", "Ausstieg nur Hilfsregel (Schluss unter SMA50 mit Volumen)", "Höchstzahl 10, Risikohalbierung"],
+    "foreign_rules": [],
+    "source_fidelity": "LOW",
+    "source_fidelity_reason": "Übernommener Stand: öffentlich reproduzierbare Methode nicht vollständig mechanisch abbildbar; Entscheidung NOT_FEASIBLE_FROM_PUBLIC_RULES bleibt."
+  },
+  "provenance": {
+    "Entry": "VU: Trend Template teils belegt, VCP VU-Formalisierung; Fidelity MEDIUM (Live-Klassifikation).",
+    "Exit": "VU: Hilfsregel Schluss unter SMA50 mit Volumen, Einstand ab 3R; Verkauf in die Stärke fehlt; LOW.",
+    "Sizing": "ORIGINAL_INTERPRETATION: 1,25 % Risiko, 25 % je Position aus Minervinis eigenen Beiträgen; MEDIUM.",
+    "Portfolio": "Teils VU (10 Plätze, Halbierungsregel, kein Aufstocken); MEDIUM.",
+    "Risk": "VU/sekundär: Stop am Kontraktionstief, höchstens 10 % unter Einstieg.",
+    "Fundamentals": "Live 2.0.0 nicht genutzt (SEPA fehlt); 3.0.0 nutzt SEC-PIT-EPS/Umsatz nur als Forschung; Fidelity LOW.",
+    "Market": "MEDIUM (Live-Klassifikation); Marktampel in R12/R13 geprüft und abgelehnt."
+  },
+  "implementation_fidelity": {
+    "rating": "LOW",
+    "per_area": {"Entry": "MEDIUM", "Exit": "LOW", "Sizing": "MEDIUM", "Portfolio": "MEDIUM", "Risk": "UNKNOWN (nicht vertieft)", "Fundamentals": "LOW", "Market": "MEDIUM"},
+    "penalties": ["SEPA/Fundamentalfilter in Live nicht umgesetzt", "Verkauf in die Stärke und Pilotkauf/Aufstocken fehlen", "VCP als starre VU-Formalisierung"],
+    "shared_default_penalty": false
+  },
+  "data": {
+    "needs": {"prices": "AVAILABLE", "volume": "AVAILABLE", "fundamentals": "PARTIAL (nur Forschung 3.0.0, privat sec-pit-r11/r12)", "institutional": "MISSING", "estimates": "MISSING", "sector": "PARTIAL", "market_regime": "AVAILABLE", "intraday": "MISSING", "earnings_events": "PARTIAL"},
+    "sufficiency": "LOW",
+    "fundamental_core_state": "Live 2.0.0 ohne Fundamentaldaten; 3.0.0 mit privaten SEC-PIT-Daten (Erstmeldung, filed < asOf), nicht in Core migriert; Core 1.22+ nicht live. R15: Daten reichen nicht für belastbare Minervini-Replication.",
+    "fundamental_dependency": "HIGH"
+  },
+  "existing_evidence": {
+    "decisions_by_round": [
+      {"round": "R11", "result": "MINERVINI_VCP@3.0.0: a_W4 FAIL, b_fullPortfolio FAIL => RESEARCH. Gewinnfilter senkt die Zahl der Einstiege stark, auch bei Gewinnern.", "source_file": "scripts/supertrader/validation/DECISION-R11.json"},
+      {"round": "R12", "result": "Marktampel für MINERVINI_VCP@2.0.0: a FAIL, b FAIL => UNCHANGED.", "source_file": "scripts/supertrader/validation/DECISION-R12.json"},
+      {"round": "R13", "result": "Marktfilter unter S1C FAIL => UNCHANGED; 3.0.0 bleibt RESEARCH (fallbasierte Bedingung unabhängig von der Delisting-Buchung verfehlt). Zerlegung: Rückstand durch Cash (R14: CONFIRMED, Cash aus fehlenden Signalen).", "source_file": "scripts/supertrader/validation/DECISION-R13.json"},
+      {"round": "R14", "result": "Kategorie D, dann A (Hinweis F: geringe Fallzahl). Exit-Zerstörung H3 false (DEV ja, Holdout nein); O3 Minervini C3 false; O8 Cash in SPY false. Kein Signalvorteil im Holdout. Kennzahlen versiegelt.", "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json"},
+      {"round": "R15", "result": "Größe nah an Quelle, Ausstieg/SEPA/Exposure Lücken; bleibt Adaptation; SEC-Daten reichen nicht für Replication.", "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md"}
+    ],
+    "signal_quality": "Kein robust belegter mechanischer Edge (übernommener Stand). Repo: DEV leicht positiv, nicht signifikant gegen RS-Dezil; Holdout negativ.",
+    "portfolio_result_direction": "Kein Vorteil gegenüber SPY (R13/R14); Kennzahlen SEALED_NOT_READABLE.",
+    "exposure_finding": "Niedrig, Ursache fehlende Signale (R14), nicht Sizing.",
+    "risk_finding": "UNKNOWN (nicht vertieft).",
+    "robustness": "Teilzeiträume widersprechen sich; geringe Fallzahl (Hinweis F). Core-Datenfehler erklären den Recall nicht (übernommener Stand).",
+    "ground_truth_light": "Übernommener Stand: Recall 3/15 = 20 %; private Kursdiagnose: Power Play erklärt höchstens 1 zusätzlichen Fall (hypothetisch 4/15 = 26,7 %, unter der 40-%-Schwelle). Im Repo gefundene R10-Fallprüfung ist ein anderer Fallsatz (19 Gewinner: 11 nie Kandidat, 7 ohne Einstieg, 1 ohne Platz); der 15er-Satz ist im Sparse-Checkout nicht auffindbar (Herkunft UNKNOWN, Stand wie vorgegeben übernommen).",
+    "seen_data": true
+  },
+  "implementation_risk": {
+    "discretion": "HIGH",
+    "bad_formalization": "VCP und Verkauf in die Stärke nicht mechanisch aus öffentlichen Regeln ableitbar; starre Zigzag-Formalisierung.",
+    "missing_data": "SEPA-Fundamentaldaten PIT in Core, Margenreihe, Institutional.",
+    "fragile_parameters": "Zigzag 4 %, Kontraktionstiefen, Volumen 1,4x/0,8, RS-Perzentil 70."
+  },
+  "product_potential": {
+    "rating": "LOW",
+    "understandability": "Mittel (Trend Template + Kontraktionen erklärbar).",
+    "signal_frequency": "Sehr niedrig (Registry: heute 0 Setups).",
+    "differentiation": "Mittel, aber ohne belegten Edge und ohne mechanische Reproduzierbarkeit.",
+    "explainable_setups": "Teils.",
+    "mobile": "Gut.",
+    "forward_test": "Läuft, ohne Erwartung auf belastbare Aussage."
+  },
+  "main_problems": ["Entscheidung NOT_FEASIBLE_FROM_PUBLIC_RULES bleibt", "Recall 3/15 = 20 %", "Kein robust belegter mechanischer Edge", "SEPA/Fundamentalen in Live fehlen", "Exit/Verkauf in die Stärke fehlt"],
+  "critical_implementation_errors": [],
+  "validation_class": "NOT_REPRODUCIBLE",
+  "preliminary_tier": "C",
+  "confidence": "HIGH",
+  "deep_dive_candidate": false,
+  "preliminary_reasoning": "Übernommener Stand: Fidelity LOW, Recall 3/15 = 20 %, öffentlich nicht vollständig mechanisch abbildbar, kein belegter Edge, Power Play erklärt höchstens einen weiteren Fall (4/15 = 26,7 % < 40 %). Repo bestätigt: 3.0.0 mit Fundamentalfilter fiel in R11 durch und bleibt Forschung, 2.0.0 live ohne SEPA. Tier C mit hoher Confidence für 'nicht priorisieren'.",
+  "open_for_measurement": [],
+  "evidence_refs": [
+    "scripts/supertrader/engine/strategies/minervini.mjs:168-172",
+    "scripts/supertrader/engine/strategies/minervini-v2.mjs:26,39-41,61-68",
+    "scripts/supertrader/engine/strategies/minervini-v3.mjs:12-29",
+    "scripts/supertrader/fidelity/portfolio-policy.mjs:53-63",
+    "scripts/supertrader/fidelity/product-classes.mjs (LIVE_CLASSIFICATION MINERVINI_VCP)",
+    "scripts/supertrader/validation/DECISION-R11.json, DECISION-R12.json, DECISION-R13.json, AUDIT-R14-RESULT.json",
+    "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md Abschnitte 4-6",
+    "docs/SUPERTRADER_VALIDATION_INTERNAL.md (R10-Fallprüfung)",
+    "supertrader/data/registry.json strategies[MINERVINI_VCP]"
+  ]
+}

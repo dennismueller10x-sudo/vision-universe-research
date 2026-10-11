@@ -1,0 +1,196 @@
+{
+ "strategy_id": "GREENBLATT_VALUE",
+ "method_name": "Greenblatt Value (Magic Formula, US-Original)",
+ "group": "C",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/strategies/greenblatt.mjs",
+   "scripts/supertrader/build.mjs (greenblattCoverage, :247-274)"
+  ],
+  "versions_in_repo": [
+   "1.0.0 (greenblatt.mjs default-Export, variant GREENBLATT_US_ORIGINAL)"
+  ],
+  "live_version": "1.0.0 - nur Abdeckungsprüfung, kein Ranking (mode DATA_PENDING)",
+  "status": "CARD_ONLY (Engine ist eine Feld-Abdeckungsprüfung; rankingComputable=false)",
+  "shared_modules_used": [
+   "discover/data/stocks/US_REAL/*.json (fundamentals.units, fundamentals.valuation.marketCap)",
+   "quant/data/product/sic-peer-taxonomy-v1.json (SIC)",
+   "quant/data/golden-five-pit-coverage (PIT-Zählung)"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Feldverfügbarkeit wird nur über das Vorhandensein des Einheiten-Schlüssels in fundamentals.units geprüft, nicht über Werte, Periodenalter oder Plausibilität",
+    "where": "build.mjs:257-262",
+    "effect": "'available' heißt nur 'Schlüssel existiert'; Datenqualität/Aktualität/PIT unbewertet."
+   },
+   {
+    "what": "EBIT-Näherung = operating_income",
+    "where": "greenblatt.mjs:15 (Rolle 'Näherung: operatives Ergebnis')",
+    "effect": "Original: EBIT; Abweichung bei Sonderposten/Nichtbetriebserträgen; 4171 von 6293 Titeln haben das Feld (66 %)."
+   },
+   {
+    "what": "Finanzwerte/Versorger per SIC-Bereich 6000-6799 / 4900-4999; unbekannte SIC -> null (weder eligible noch excluded)",
+    "where": "greenblatt.mjs:27-31,38-40",
+    "effect": "859 Titel 'unknownSector'; SIC ist aktueller Snapshot ohne Historie (historicalClassificationAvailable=false)."
+   },
+   {
+    "what": "Kein Ranking, solange ein Pflichtfeld fehlt (rankingComputable = missing.length === 0)",
+    "where": "greenblatt.mjs:11-13,47",
+    "effect": "Bewusst kein Ersatz-ROC; current_assets, current_liabilities, net_ppe = 0 von 6293 Titeln -> Ranking dauerhaft aus."
+   },
+   {
+    "what": "Mindest-Marktkapitalisierung und Handelbarkeitsfilter nicht modelliert",
+    "where": "greenblatt.mjs (nicht vorhanden); Registry liquidity_rules DISPUTED (GB-SIZE-01)",
+    "effect": "Kein Universumsfilter für Microcaps; Original-FAQ nennt >1 Mrd. USD als Option."
+   },
+   {
+    "what": "'PIT-Daten nur für 5 Titel' kommt aus dem Zählen von Dateien im Ordner golden-five-pit-coverage",
+    "where": "build.mjs:202-203,211",
+    "effect": "Die Zahl misst den Golden-Five-Ordner, nicht die PIT-Fähigkeit des Core; Änderung am Core verändert sie nicht."
+   }
+  ],
+  "version_drift": "Registry/Doku konsistent mit Code (DATA_PENDING, Ranking fehlt). Abweichung: docs/SUPERTRADER_METHOD_FIDELITY.md nennt 'Mindest 50 Mio. USD / ohne ausländische Titel' als Quelle, Code/Registry sagen Größenfilter 'DISPUTED'. 'EBIT' im Registry required_data = PIT-EBIT, im Code operating_income aus Discover (latest)."
+ },
+ "source_audit": {
+  "core": "Greenblatt Magic Formula: Rang nach Earnings Yield (EBIT/EV) plus Return on Capital (EBIT/(NWC+Net Fixed Assets)); 20-30 gleiche Beträge, ca. ein Jahr halten, keine Finanzwerte/Versorger. Die Rangformel ist laut Registry mechanisch und mehrfach bestätigt (MULTI_SOURCE_CONFIRMED).",
+  "clear_public_rules": [
+   "EY = EBIT/EV (GB-EY-01)",
+   "ROC = EBIT/(NWC+Net Fixed Assets) (GB-ROC-01)",
+   "Ausschluss Finanzwerte/Versorger (GB-UNIV-01)",
+   "20-30 Titel (GB-DIV-01), gleiche Beträge (GB-POS-01), Haltedauer ~1 Jahr (GB-EXIT-01)"
+  ],
+  "discretionary_rules": [],
+  "vu_own_formalizations": [
+   "EBIT = operating_income (Näherung)",
+   "SIC-Ausschluss aus aktuellem Snapshot",
+   "Mindestgröße offen (DISPUTED)"
+  ],
+  "foreign_rules": [],
+  "source_fidelity": "HIGH",
+  "source_fidelity_reason": "Rangformel und Portfoliomechanik sind mehrquellig bestätigt; Accounting-Details (EBIT, NWC-Definition) laut Registry erst nach Buchabgleich als Original einfrierbar - daher HIGH für die Regelidee, nicht für die Umsetzung."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL (Rangsumme, Top 20-30) - nicht umgesetzt",
+  "Exit": "ORIGINAL (Jahreshaltedauer) - nicht umgesetzt",
+  "Sizing": "ORIGINAL (gleiche Beträge) - nicht umgesetzt",
+  "Portfolio": "ORIGINAL (20-30 Titel) - nicht umgesetzt",
+  "Risk": "ORIGINAL (kein Stop, kein Regimefilter) - bewusst keine fremden Regeln",
+  "Fundamentals": "ORIGINAL-Definition, Daten fehlen (3 von 8 Pflichtfeldern bei 0 %)",
+  "Market": "ORIGINAL: kein Marktfilter"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "Nicht umgesetzt (Abdeckungsprüfung)",
+   "Exit": "Nicht umgesetzt",
+   "Sizing": "Nicht umgesetzt",
+   "Portfolio": "Nicht umgesetzt",
+   "Risk": "n/a (kein Stop, korrekt)",
+   "Fundamentals": "Pflichtfelder fehlen",
+   "Market": "n/a (korrekt)"
+  },
+  "penalties": [
+   "Engine rechnet kein Ranking",
+   "3 von 8 Pflichtfeldern fehlen vollständig",
+   "EBIT nur Näherung",
+   "SIC nur Snapshot"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE",
+   "fundamentals": "MISSING (current_assets/current_liabilities/net_ppe 0 %; PIT-EBIT/EV nicht vorhanden; operating_income 66 %, total_debt 44 %, market_cap 63 %)",
+   "institutional": "MISSING (nicht benötigt)",
+   "estimates": "MISSING (nicht benötigt)",
+   "sector": "PARTIAL (SIC 86 %, aktueller Snapshot)",
+   "market_regime": "MISSING (nicht benötigt)",
+   "intraday": "MISSING (nicht benötigt)",
+   "earnings_events": "MISSING (nicht benötigt)"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "Datenstand: Discover US_REAL fundamentals.units (Latest-Anzeigeschicht, nicht der SEC-Consumer-Vertrag; der Consumer enthält weder operating_income noch current_assets/current_liabilities/net_ppe) plus coverage.json (6293 Titel, 3927 eligible, 1507 Finanz-/Versorgungswerte, 859 unbekannt, earningsYieldComputable 1988, missingFields current_assets, current_liabilities, net_ppe). Fundamental-Core 1.22+/1.23 und PR #481 nicht live; keine Bilanzposten-Migration. PIT: 5 Titel (golden-five-pit-coverage), survivorshipControls=false, delistingReturns=false.",
+  "fundamental_dependency": "HIGH"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R11",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R11.json"
+   },
+   {
+    "round": "R12",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json"
+   },
+   {
+    "round": "R14",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json"
+   },
+   {
+    "round": "R15",
+    "result": "Greenblatt-Pflichtfelder als offene Owner-Entscheidung 2 (außerhalb des Auftrags): AssetsCurrent, LiabilitiesCurrent, PropertyPlantAndEquipmentNet im Consumer-Vertrag fehlen",
+    "source_file": "docs/SUPERTRADER_ARCHITECTURE.md:146-149"
+   }
+  ],
+  "signal_quality": "UNKNOWN - Registry: NOT_TESTED, 'Daten fehlen'; PREREGISTRATION-R7.json:44 'keine Backtests'",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN - Registry nennt als Fehlermodi: lange Durststrecken, Microcap-Effekte, PIT-Fehler, Delisting-Verluste",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "EBIT-Näherung; SIC aktuell; ROC-Ersatz bewusst verboten (gut).",
+  "missing_data": "current_assets, current_liabilities, net_ppe; PIT-EBIT/EV; Delistings; historische SIC; Marktkapitalisierung je Stichtag.",
+  "fragile_parameters": "Mindestgröße (DISPUTED), Zahl der Titel 20-30, Rebalance-Termin."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HIGH (zwei Zahlen, Rangsumme)",
+  "signal_frequency": "Jährlich/gestaffelt; sehr niedrig",
+  "differentiation": "MEDIUM - bekannt, viele Screener",
+  "explainable_setups": "HIGH (EY und ROC je Titel)",
+  "mobile": "HIGH (Liste mit zwei Kennzahlen)",
+  "forward_test": "nur nach Bereitstellung der drei Bilanzfelder und PIT-Fundamentals"
+ },
+ "main_problems": [
+  "Kein Ranking: Pflichtfelder fehlen vollständig (0 % bei drei Feldern)",
+  "Fundamental-Core nicht migriert, Greenblatt-Felder liegen ausserhalb des SEC-Consumer-Vertrags",
+  "Keine PIT-Daten (5 Titel), kein survivorship-freies Universum, keine Delistingrenditen",
+  "SIC nur Snapshot, Mindestgröße DISPUTED"
+ ],
+ "critical_implementation_errors": [
+  "Keine - die Engine verweigert korrekt das Ranking. Hinweis: 'available' = Schlüssel in units vorhanden (build.mjs:257-262), keine Wertprüfung."
+ ],
+ "validation_class": "NOT_REPRODUCIBLE",
+ "preliminary_tier": "C",
+ "confidence": "LOW",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Die Methode ist klar und mehrquellig bestätigt, aber im Repo nur als Abdeckungsprüfung vorhanden; Ranking, Signale und Backtest sind wegen fehlender Bilanzfelder nicht möglich. Fundamental-Core ist nicht migriert (hohe Abhängigkeit), PIT liegt nur für 5 Titel vor und es gibt weder Survivorship-Kontrolle noch Delistingrenditen. Historische Standardmessung ist heute MISSING; Tier C bis die drei Felder und PIT-Daten geliefert werden.",
+ "open_for_measurement": [
+  "EY/ROC-Rangsumme Vorwärtsrenditen vs. Value-only / Quality-only / EW-Universum inkl. Delistings (erst nach Lieferung der Felder und PIT-Daten)",
+  "Wirkung der EBIT-Näherung (operating_income) auf Ränge",
+  "Mindestgrößenvariante (DISPUTED) als Parametersensitivität"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/strategies/greenblatt.mjs:1-54",
+  "scripts/supertrader/build.mjs:195-274,405,748",
+  "supertrader/data/coverage.json:greenblatt",
+  "supertrader/data/registry.json:GREENBLATT_VALUE",
+  "docs/SUPERTRADER_ARCHITECTURE.md:55-56,146-149",
+  "docs/SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md:52,64",
+  "docs/SUPERTRADER_PRODUCT_MATRIX.md:25",
+  "scripts/supertrader/validation/PREREGISTRATION-R7.json:44"
+ ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "supertrader-triage-standard-frame-public-1.0.0",
+  "note": "Nur Klassen und Zaehler aus dem oeffentlichen Actions-Log von Run 38126161777 (Modus standard). Kennzahlen liegen verschluesselt vor. Fenster DEV, GESEHEN (SEEN DATA); kein Out-of-Sample-Anspruch.",
+  "run": 38126161777,
+  "commit": "2af6651e9ee7",
+  "dataFingerprint": "fp_d5a33d623961d638",
+  "window": "DEV",
+  "thresholds": "scripts/supertrader/triage/PREREGISTRATION-TRIAGE.json (publicClassThresholds, unveraendert)",
+  "methods": {
+    "MOMENTUM_BREAKOUT": {
+      "key": "MOMENTUM_BREAKOUT_3.2.0",
+      "engineTrades": 1207,
+      "takenTrades": 1146,
+      "signalEdge63": "NEUTRAL",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "SHALLOWER",
+      "exposureClass": "MID",
+      "regimeConsistency": 3,
+      "regimeConsistentN30": 3,
+      "regimeSegmentsN30": 6
+    },
+    "WEINSTEIN_STAGE": {
+      "key": "WEINSTEIN_STAGE_4.0.0",
+      "engineTrades": 4105,
+      "takenTrades": 1050,
+      "signalEdge63": "NEGATIVE",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "SHALLOWER",
+      "exposureClass": "MID",
+      "regimeConsistency": 6,
+      "regimeConsistentN30": 5,
+      "regimeSegmentsN30": 5
+    },
+    "DARVAS_BOX": {
+      "key": "DARVAS_BOX_3.0.2",
+      "engineTrades": 18597,
+      "takenTrades": 2455,
+      "signalEdge63": "NEUTRAL",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "DEEPER",
+      "exposureClass": "HIGH",
+      "regimeConsistency": 5,
+      "regimeConsistentN30": 5,
+      "regimeSegmentsN30": 6
+    },
+    "MINERVINI_VCP": {
+      "key": "MINERVINI_VCP_2.0.0",
+      "engineTrades": 294,
+      "takenTrades": 263,
+      "signalEdge63": "NEUTRAL",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "SHALLOWER",
+      "exposureClass": "MID",
+      "regimeConsistency": 4,
+      "regimeConsistentN30": 4,
+      "regimeSegmentsN30": 5
+    },
+    "DONCHIAN_TURTLE": {
+      "key": "DONCHIAN_TURTLE_2.0.2",
+      "engineTrades": 67620,
+      "takenTrades": 1330,
+      "signalEdge63": "NEGATIVE",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "DEEPER",
+      "exposureClass": "HIGH",
+      "regimeConsistency": 6,
+      "regimeConsistentN30": 6,
+      "regimeSegmentsN30": 6
+    },
+    "VU_TREND_52W": {
+      "key": "VU_TREND_52W_1.0.0",
+      "engineTrades": 231,
+      "takenTrades": 231,
+      "signalEdge63": "NEUTRAL",
+      "portfolioVsSpy": "BELOW",
+      "drawdownVsSpy": "DEEPER",
+      "exposureClass": "HIGH",
+      "regimeConsistency": 3,
+      "regimeConsistentN30": 3,
+      "regimeSegmentsN30": 5,
+      "tradeSetBasis": "EXECUTED_CLOSED_TRADES_ONLY"
+    }
+  },
+  "pairs": {
+    "count": 15,
+    "overlapClass": "LOW fuer alle 15 Paare - rechnerisch fuer 9 von 15 Paaren durch Groessenverhaeltnis der Signalmengen erzwungen; Redundanz daher NICHT BESTIMMBAR",
+    "returnCorrelationClass": "LOW (< 0,50) fuer alle 15 Paare; kein Berechnungsfehler gefunden, aber ausreisserempfindlich (Pearson)"
+  },
+  "interpretationLimits": [
+    "signalEdge63 misst gegen SPY, nicht gegen das liquide Universum. Ein NEUTRAL/NEGATIVE-Urteil mischt Selektionswirkung und Universumswirkung (kleine/mikro Titel).",
+    "drawdownVsSpy SHALLOWER bei MID-Exposure ist zu einem grossen Teil ein Cash-Effekt, kein Signalvorteil.",
+    "returnCorrelationClass LOW fuer alle Paare ist mit konzentrierten Depots (wenige Positionen, hohe idiosynkratische Varianz) vereinbar; es belegt keinen Diversifikationsgewinn ueber Marktniveau.",
+    "VU_TREND_52W: nur ausgefuehrte, GESCHLOSSENE Trades (offene Endpositionen fehlen); Signal- und Ueberlappungsvergleich zu den Engines nur eingeschraenkt vergleichbar.",
+    "Smoke-Lauf (598 Reihen) wurde fuer kein Urteil verwendet.",
+    "portfolioVsSpy mischt wie das Signal Gleichgewichtung/Small-Cap-Effekt; 2016-2026 war SPY ungewoehnlich stark (R14).",
+    "Live-Konfigurationen wurden in R10-R13 auf demselben DEV-Fenster gewaehlt oder zurueckgenommen.",
+    "Rahmen nutzt lib.mjs#adjustSeries statt quant/engines/return-series.js#splitFactors (ADR-002 geerbt, nicht neu abgeleitet); Kurssprünge > 50 % ohne Split sind laut R14 nicht bereinigt.",
+    "Delisting-Klassifikation unvollstaendig (Auslandsemittenten, SPACs, CIK ohne Zuordnung); Pauschalfaktor trifft Micro-Cap-lastige Signalmengen staerker."
+  ],
+  "series": 8908
+}

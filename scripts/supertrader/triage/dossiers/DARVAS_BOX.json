@@ -1,0 +1,272 @@
+{
+ "strategy_id": "DARVAS_BOX",
+ "method_name": "VU Adaptation – Darvas",
+ "group": "B",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/strategies/darvas.mjs",
+   "scripts/supertrader/engine/strategies/darvas-v2.mjs",
+   "scripts/supertrader/engine/strategies/darvas-v3.mjs",
+   "scripts/supertrader/engine/strategies/darvas-v301.mjs",
+   "scripts/supertrader/engine/strategies/darvas-v302.mjs",
+   "scripts/supertrader/engine/simulator.mjs",
+   "scripts/supertrader/engine/execution.mjs",
+   "scripts/supertrader/validation/portfolio.mjs",
+   "scripts/supertrader/model-portfolio.mjs",
+   "scripts/supertrader/fidelity/portfolio-policy.mjs",
+   "scripts/supertrader/build.mjs (crossSection, marketOkMap)"
+  ],
+  "versions_in_repo": [
+   "1.0.0/1.1.0/1.2.0 (darvas.mjs:173, Tagesschluss-Bestaetigung, Stop an Boxunterkante; abgeloest)",
+   "2.0.0 (darvas-v2.mjs, Stop 1 % unter Oberkante, Kauf zur naechsten Eroeffnung; abgeloest)",
+   "3.0.0 (darvas-v3.mjs, Kauf-Stop intraday, max 6 Titel; abgeloest)",
+   "3.0.1 (darvas-v301.mjs, Kappe 1/6, RS-Rang; abgeloest)",
+   "3.0.2 (darvas-v302.mjs, + SPY-GD200-Ampel; LIVE)"
+  ],
+  "live_version": "3.0.2 (build.mjs:86 LIVE_ENGINES darvas302; registry.json strategy_version 3.0.2; portfolio-policy.mjs:43)",
+  "status": "LIVE",
+  "shared_modules_used": [
+   "engine/simulator.mjs (Lifecycle, Cooldown 5, Ein-Signal-je-Titel, Kauf-Stop-Fuellung)",
+   "engine/execution.mjs (10 bp Slippage, 1 bp Gebuehr)",
+   "engine/backtest.mjs PORTFOLIO_DEFAULTS (riskPerTrade 0,5 % = KK-RISK-01, via darvas-v3 PORTFOLIO)",
+   "validation/portfolio.mjs runPortfolioTR (Sizing, Auswahl, Ampel)",
+   "model-portfolio.mjs (RANK_RS)",
+   "build.mjs crossSection (mom126-Perzentil, rs-Komposit)",
+   "quant/data/product/market-regime-v1.json (nur A/B-Klassifikation)"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Risiko je Trade 0,5 % stammt aus Kullamaegis KK-RISK-01 und ist als 'VU-Standard' gefuehrt",
+    "where": "scripts/supertrader/engine/strategies/darvas-v3.mjs:35 ; scripts/supertrader/engine/backtest.mjs:11 ; scripts/supertrader/fidelity/portfolio-policy.mjs:45",
+    "effect": "Fremdregel im Darvas-Sizing (R15: FOREIGN_RULE). Bei Stop 1 % unter Trigger waere 0,5 %/1 % = ca. 50 % Position; die 1/6-Kappe bindet fast immer, die Zahl wirkt nur bei Gap-Einstiegen (groesseres Risiko -> kleinere Position)."
+   },
+   {
+    "what": "Marktampel SPY > GD200 am Vortag: keine neue Position bei rot (nur Portfolio, Signale laufen weiter)",
+    "where": "scripts/supertrader/engine/strategies/darvas-v302.mjs:10 ; scripts/supertrader/validation/portfolio.mjs:101,178-185 ; scripts/supertrader/build.mjs:553",
+    "effect": "TraderFox-Regel (FOREIGN_RULE) im Darvas-Modell; Quelle Darvas: kein Indexfilter. Fuer die ersten 199 Tage ist die Ampel 'null' und blockiert nie (=== false)."
+   },
+   {
+    "what": "Auswahl gleichzeitiger Signale per RS-Rang: cross.rs = 0,4*Ret63 + 0,2*Ret126 + 0,2*Ret189 + 0,2*Ret252 als Perzentil im Querschnitt aller Titel mit DollarVol20 >= 1 Mio",
+    "where": "scripts/supertrader/engine/strategies/darvas-v301.mjs:10 ; scripts/supertrader/model-portfolio.mjs:32 ; scripts/supertrader/build.mjs:163-183,560",
+    "effect": "Verstecktes Fremd-/IBD-artiges Staerkemass als Selektionsregel (Darvas nur indirekt 'stark steigende Aktien'); Querschnitt-Universum (1 Mio-Filter) ungleich zur Darvas-Liquiditaet (5 Mio)."
+   },
+   {
+    "what": "Momentum-Gate DAR-MOM-02: 6-Monats-Perzentil >= 80 (mom126) als Eintrittsvoraussetzung; bleibt pro Setup bei Entdeckung gueltig (LC-RANK-AT-DISCOVERY)",
+    "where": "scripts/supertrader/engine/strategies/darvas.mjs:17,109-111",
+    "effect": "VU_EXTENSION; ersetzt Darvas' 'starkes Volumen, gut steigend' durch ein Faktorfilter (R14: Signalvorsprung = Momentum-Faktor)."
+   },
+   {
+    "what": "Boxbildung 3-Sitzungen-Regel (TraderFox-Zuschreibung), Oberkante = neues 20-Tage-Hoch, Boxhoehe 3-25 %, Naehe 90 %/95 % des 252-Tage-Hochs",
+    "where": "scripts/supertrader/engine/strategies/darvas.mjs:14-21,76-95,107-123",
+    "effect": "Boxdefinition VU/Sekundaerrekonstruktion (DAR-F-BOX-02 UNRESOLVED); entscheidet, welche Aktien ueberhaupt Signal werden."
+   },
+   {
+    "what": "Stop = Oberkante x 0,99 (1 % unter Kauforder), Nachziehen exakt auf Unterkante hoeherer Boxen ohne Puffer",
+    "where": "scripts/supertrader/engine/strategies/darvas-v2.mjs:15,18,21-28 ; scripts/supertrader/engine/strategies/darvas-v3.mjs:30",
+    "effect": "1 % ist VU; Stop liegt meist innerhalb der Tagesspanne -> sehr viele Sofort-Ausstiege (R14: Mehrheit der Trades nach 1 Tag). Bei Gap-Eroeffnung liegt der Stop >1 % unter dem Fill."
+   },
+   {
+    "what": "Cooldown 5 Sitzungen und Verfall nach 30 Sitzungen ohne Ausbruch",
+    "where": "scripts/supertrader/engine/simulator.mjs:28,277 ; scripts/supertrader/engine/strategies/darvas.mjs:24,155",
+    "effect": "VU_OWN; Darvas studierte Aktien Wochen bis Monate, kaufte aber bei Ausbruch."
+   },
+   {
+    "what": "Max. 6 Positionen, Kappe 1/6, maxExposure 1,0 (kein Kredit), keine Pyramidisierung, ein Signal je Titel",
+    "where": "scripts/supertrader/engine/strategies/darvas-v301.mjs:10 ; scripts/supertrader/engine/strategies/darvas-v3.mjs:35 ; scripts/supertrader/fidelity/shared-rules.mjs:43-53",
+    "effect": "5-6 Titel original (TIME 1959); Kappe VU; Darvas pyramidisierte und nutzte Kredit."
+   },
+   {
+    "what": "Volumen nur Klassifikation: A/B-Qualitaet gated nichts (alle B-Setups werden gehandelt); Regime-Kriterium nutzt das aktuelle Marktregime (CURRENT_REGIME)",
+    "where": "scripts/supertrader/engine/strategies/darvas.mjs:48-72,131 ; scripts/supertrader/build.mjs:407-409",
+    "effect": "Kein Volumenfilter im Einstieg (Darvas: starkes Volumen); Regime fuer historische Tage in der Klassifikation UNKNOWN (nicht geprueft)."
+   },
+   {
+    "what": "Gate-Mapping: jede DARVAS*-Variante -> Plan DARVAS_BOX_N3_VU; EXECUTION_MODEL-Gate fest pass=true",
+    "where": "scripts/supertrader/build.mjs:921 ; scripts/supertrader/engine/gates.mjs:19,105",
+    "effect": "Gate-Status nicht variantenspezifisch fuer 3.0.2 (N4/N5-Varianten in Registry ohne eigenen Plan)."
+   },
+   {
+    "what": "Same-Day: ohne Minutenaufloesung gilt Gleichtags-Ausstieg nur bei Schluss <= Stop; sonst Tagesbalken-Neutralannahme",
+    "where": "scripts/supertrader/engine/simulator.mjs:218-221",
+    "effect": "Bei 1-%-Stop ist der Einstiegstag oft unentscheidbar (R8: Darvas ca. 29 % tatsaechlicher Gleichtags-Ausstieg bei strittigen Tagen; Minuten entschieden 80 % der Trades in R8c)."
+   }
+  ],
+  "version_drift": "Live 3.0.2 nutzt scan() aus darvas.mjs (1.2.0-Signallogik) + Kauf-Stop aus 3.0.0. Registry/Live-Texte aus 1.2.0 stehen teils noch im Quellcode (registry.mjs:320,336,337,340,381,383: 'Schlusskurs-Einstieg', 'Stop an der Unterkante') und widersprechen dem Code (darvas.json liveTextChecks); registry.json zeigt DAR-ENTRY-BS/DAR-STOP-03 korrekt. Registry momentum_filters-Evidenz 'MULTI_SOURCE_CONFIRMED' widerspricht VU_FORMALIZATION. Registry 'portfolio_constraints' nennt 6 Titel (PRIMARY_EXPLICIT), Positions-Teil 'Keine belegte Portfolioformel' in alten Texten. METHOD_FIDELITY.md:53-54 (10 Positionen, 2.0.0) = veraltet."
+ },
+ "source_audit": {
+  "core": "Starke Aktien (Volumen, neue Hochs) kaufen, wenn sie ueber die Oberkante einer Konsolidierungsbox ausbrechen; Kauforder am Ausbruchspunkt, Stop knapp darunter, Stop mit steigenden Boxen nachziehen, 5-6 Titel. Die VU-Variante setzt Kauf-Stop, 1-%-Stop, Box-Algorithmus und Portfolio-Rahmen selbst und mischt TraderFox- und Kullamaegi-Zahlen ein.",
+  "clear_public_rules": [
+   "Kauforder im Voraus am Ausbruchspunkt (TIME 1959, HIGH)",
+   "Stop-Loss knapp unter der Kauforder, gleichzeitig platziert (HIGH, ohne Zahl)",
+   "Stop bei grossem Gewinn nachziehen, kein Kursziel",
+   "5-6 Aktien gleichzeitig",
+   "Auswahl wachsender Firmen mit Gewinnverdopplungspotenzial, starkes Volumen"
+  ],
+  "discretionary_rules": [
+   "Was eine 'Box' ist (exakte Definition nicht im Primaerwerk/Abruf; Buch nicht abgerufen)",
+   "Kaufpunkt-Aufschlag, Stopabstand, Pyramiding-Mengen",
+   "'Gewinne koennten sich verdoppeln' (Techno-Fundamentalismus)",
+   "langes Beobachten vor dem Kauf"
+  ],
+  "vu_own_formalizations": [
+   "Oberkante = neues 20-Tage-Hoch, Boxhoehe 3-25 %, Naehe 90/95 %",
+   "Momentum-Perzentil >= 80, Liquiditaet 5 USD/5 Mio",
+   "Stop genau 1 % unter Kauforder",
+   "Kappe 1/6, RS-Rang, Cooldown 5, Verfall 30",
+   "A/B-Qualitaet (RS>=90, Box<=12 %, Stop>=4 %/1 ADR, Vol 1,5x), Regime-Sperre als Klassifikation"
+  ],
+  "foreign_rules": [
+   "Marktampel SPY>GD200 (TraderFox, FOREIGN_RULE)",
+   "0,5 % Risiko je Trade (Kullamaegi KK-RISK-01)",
+   "3-Tage-Box (Sekundaer-/TraderFox-Zuschreibung)",
+   "RS-Komposit als Rangmass (IBD-aehnlich, VU-Querschnitt)"
+  ],
+  "source_fidelity": "LOW",
+  "source_fidelity_reason": "Nur das Prinzip (Kauforder am Ausbruch, Stop knapp darunter, 5-6 Titel) ist belegt; Boxformel, Stopzahl, Auswahl und Portfolio-Zahlen sind VU/fremd, Gewinn-/Volumenfilter und Pyramidisieren fehlen. R15: Fidelity LOW, 'Darvas' nur als 'VU-Variante nach Darvas' mit Hinweis auf Fremdregeln; Replikation erst nach Buchbeleg."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL fuer Kauf-Stop am Ausbruchspunkt; VU fuer Box (20-Tage-Hoch, 3-25 %, 3-Sitzungen), Naehe und Momentum-Perzentil; FREMD (TraderFox) fuer 3-Tage-Box",
+  "Exit": "ORIGINAL im Prinzip (Stop knapp unter Kauforder, nachziehen, nur Stop-Ausstieg); VU: genau 1 % und Nachziehen ohne Puffer",
+  "Sizing": "FREMD (Kullamaegi 0,5 % Risiko) + VU (Kappe 1/6); Darvas: konzentrierte Bloecke, teils Kredit, keine Prozentregel",
+  "Portfolio": "ORIGINAL 6 Titel; VU 1/6, RS-Rang, Cooldown, Verfall; kein Pyramidisieren",
+  "Risk": "ORIGINAL Stop-Prinzip; keine Drawdown-/Gap-Regel belegt; Slippage VU",
+  "Fundamentals": "ORIGINAL verlangt Wachstumsfilter ('could double or treble'); im Code NICHT vorhanden (R14: Doku-Behauptung eines Gewinnfilters war falsch)",
+  "Market": "FREMD: TraderFox-Ampel; Darvas-Original: kein Indexfilter, Cash ueber Stops"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "MEDIUM (R15-Matrix)",
+   "Exit": "MEDIUM",
+   "Sizing": "LOW",
+   "Portfolio": "MEDIUM",
+   "Risk": "LOW (1-%-Stop gap-/spanneempfindlich, Same-Day unentscheidbar)",
+   "Fundamentals": "LOW (fehlt komplett; fidelity.fundamental=NONE)",
+   "Market": "FOREIGN (SPY>GD200)"
+  },
+  "penalties": [
+   "0,5 % Risiko aus Kullamaegi-Regel (still als 'VU-Standard')",
+   "TraderFox-Marktampel im Darvas-Modell",
+   "3-Tage-Box = TraderFox-Zuschreibung, nicht Darvas",
+   "fehlender Gewinn- und Volumenfilter, kein Pyramidisieren",
+   "1-%-Stop als VU-Zahl, die die Haltedauer dominiert",
+   "RS-Komposit-Rang als verdeckte Selektionsregel"
+  ],
+  "shared_default_penalty": true
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE (Tages-OHLC, adjustiert)",
+   "volume": "AVAILABLE (Liquiditaet, A/B-Volumen; kein Entry-Gate)",
+   "fundamentals": "MISSING im Code (Original braucht Gewinnwachstum; SEC-PIT-EPS liegt privat vor, nicht integriert)",
+   "institutional": "NOT_NEEDED",
+   "estimates": "MISSING (Gewinnerwartung 'doubling' nicht abbildbar)",
+   "sector": "MISSING ('infant industries' nicht automatisiert)",
+   "market_regime": "AVAILABLE (SPY, market-regime-v1.json)",
+   "intraday": "PARTIAL (Einstiegstag/1-%-Stop nur ueber Minutenorakel fuer Teilmenge entscheidbar)",
+   "earnings_events": "NOT_NEEDED im Code"
+  },
+  "sufficiency": "MEDIUM",
+  "fundamental_core_state": "Keine Fundamentaldaten genutzt (Live 3.0.2 ohne Gewinn-/Wachstumsfilter, registry.json fundamental_filters). Core 1.22+ weder live noch migriert; zeitpunktgenaue EPS/Umsatz liegen privat vor.",
+  "fundamental_dependency": "LOW"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R8",
+    "result": "Darvas 3.0.0 robust negativ in beiden Schranken; Ursachenregel (je Trade besser als 2.0.0 neutral UND vorsichtig) unerfuellt; 'mit Tagesbalken nicht entscheidbar' -> kein Vorteil",
+    "source_file": "docs/SUPERTRADER_VALIDATION_INTERNAL.md:197-199,268-269,299"
+   },
+   {
+    "round": "R10",
+    "result": "K1 Kapazitaet (Kappe 1/6) und K3 RS-Rang: Pruefregel an Pruefmenge/Vollportfolio fuer 3.0.1 erfuellt, nicht fuer 3.0.0; kein Vorteil belegt. Gewinnerfaelle: 10 ohne Platz, 6 nie Kandidat, 3 zu frueh (Stop 1 %)",
+    "source_file": "docs/SUPERTRADER_VALIDATION_INTERNAL.md:339-351"
+   },
+   {
+    "round": "R12",
+    "result": "PORT-MARKET-200 a PASS, b PASS -> 3.0.2 LIVE (Ueberrendite insgesamt und in beiden Teilzeitraeumen hoeher als ohne Ampel; Vorteil gegenueber Markt nicht belegt)",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "R12_S1C PASS, UNCHANGED_LIVE; Rueckstand ueberwiegend auf investiertem Kapital (enge Stops, Umschlag); Halten 6 Monate verkleinert Rueckstand; Doku-Behauptung Gewinnfilter FALSE",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json ; scripts/supertrader/validation/AUDIT-R14-RESULT.json (r13Claims.darvasEarningsFilterDoc)"
+   },
+   {
+    "round": "R14",
+    "result": "Kategorie [D, A]; 1-%-Stop beendet Mehrheit der Trades nach 1 Tag, sehr hoher Umschlag; Signale in DEV ueber Universum aber nicht ueber RS-Dezil (Momentum-Faktor), Holdout negativ; Ergebnis stark von der Signalreihenfolge abhaengig; Ampel hilft in beiden Zeitraeumen (O4 true); H3 ExitDestruction Holdout true; O8 Cash-in-SPY false",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json ; docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:113-119"
+   },
+   {
+    "round": "R15",
+    "result": "Klasse VU_ADAPTATION; Fidelity LOW (Sizing LOW, Fundamentals LOW); Fremdregeln: Ampel, 0,5 %, 3-Tage-Box; Reparaturbedarf 'grundlegend' (erst Buchbeleg)",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:123-137,398-411"
+   }
+  ],
+  "signal_quality": "Kein Darvas-Eigenwert belegt: Vorsprung vs. Universum entspricht dem Momentum-Faktor, nicht ueber RS-Dezil; Holdout negativ (R14). Zahlen SEALED_NOT_READABLE.",
+  "portfolio_result_direction": "Hinter SPY in Voll-Portfolio (kein Vorteil in R11-R14); Ampel verbessert relativ zu ohne Ampel, nicht zum Markt.",
+  "exposure_finding": "Hohe Investitionsquote, kein Exposure-Problem; bei Darvas fehlen Plaetze (max. 6).",
+  "risk_finding": "Enger 1-%-Stop -> viele Fehlausbrueche und Umschlagskosten; Gap-Fuellung unter Stop moeglich.",
+  "robustness": "Stark reihenfolgeabhaengig (ALPHA/RALPHA/RS); Same-Day-Unentscheidbarkeit; Parametrisierung der Box (N3/N4/N5 in Registry) ohne eigene Pruefung in den gelesenen Dokumenten (UNKNOWN).",
+  "ground_truth_light": "SMCI: Darvas erkannte die Ausbrueche mehrfach (Nov 2022-Jul 2023), 2 Einstiege am selben Tag ausgestoppt, der lange Einstieg bekam keinen Platz (Rang 7 von 18, alphabetisch). Gewinner: 10 ohne Platz, 6 nie Kandidat, 3 zu frueh.",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "HIGH",
+  "bad_formalization": "Boxdefinition ungeklaert (UNRESOLVED), 1-%-Stop VU, Momentum-Perzentil und Naehe-Schwellen VU, 3-Tage-Box fremd; Auswahl abhaengig von RS-Komposit.",
+  "missing_data": "Gewinnwachstum zum damaligen Stand (privat vorhanden, nicht integriert), Volumenschwelle nicht belegt, Darvas-Buch nicht abgerufen.",
+  "fragile_parameters": "stopBelowTop 1 %, confirmBars 3, topLookback 20, Boxhoehe 3-25 %, Perzentil 80, Kappe 1/6, Ampel GD200."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HOCH: 'Kiste' mit Ober-/Unterkante und Kauf beim Ausbruch ist anschaulich.",
+  "signal_frequency": "MITTEL-HOCH (Registry-Snapshot: 0 A, 157 B-Setups; viele Neubewertungen).",
+  "differentiation": "MITTEL (bekannter Name, aber Darvas-Anspruch darf nicht behauptet werden; A/B-Stufe ist VU).",
+  "explainable_setups": "HOCH (Box, Trigger, Stop sichtbar).",
+  "mobile": "GUT (Karte mit Box und Stop).",
+  "forward_test": "Moeglich (Ledger 3.0.x seit ~02.10.2026); sehr kurze Vorwaertsstrecke."
+ },
+ "main_problems": [
+  "Darvas-Kernelemente fehlen (Gewinnfilter, Volumen, Pyramidisieren) bei gleichzeitig Fremdregeln (Ampel, 0,5 %, 3-Tage-Box)",
+  "Box- und Stopzahlen sind VU: 1-%-Stop dominiert Haltedauer und Umschlag",
+  "Signalvorteil nur Momentum-Faktor",
+  "Reihenfolgeabhaengigkeit der Plaetze (max 6)",
+  "Veraltete Live-Texte (1.2.0) im Quelltext neben aktueller Registry"
+ ],
+ "critical_implementation_errors": [
+  "Kullamaegi-Risikozahl als Darvas-Sizing (darvas-v3.mjs:35; backtest.mjs:11)",
+  "TraderFox-Ampel als Teil der Darvas-Version (darvas-v302.mjs:10); Kommentar darvas-v302.mjs:4 nennt sie TraderFox, :11 'VU'",
+  "registry.mjs:320,336,337,340,381,383 beschreiben 1.2.0 (Schlusskurs-Einstieg/Stop an Unterkante) fuer live 3.0.2",
+  "Gate-Mapping nicht variantenspezifisch (build.mjs:921)"
+ ],
+ "validation_class": "HISTORICAL_ONLY",
+ "preliminary_tier": "C",
+ "confidence": "MEDIUM",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Prinzip belegt, aber Box, Stop, Auswahl und Portfolio-Zahlen sind VU/fremd und Fundamental-/Volumenkern fehlt; R14: Signale nur Momentum-Faktor, 1-%-Stop zerstoert Haltedauer, Holdout negativ. Die Ampel verbessert nur relativ. Ohne Buchbeleg keine bessere Darvas-Rekonstruktion; Tier C, Rekonstruktion nur nach Buchabruf sinnvoll.",
+ "open_for_measurement": [
+  "Darvas-Signal gegen RS-Dezil und Universum getrennt von Portfolio/Ampel/Reihenfolge, nach Regime",
+  "Haltedauer-/Ertragsprofil bei Stop 1 % vs. Stop an Boxunterkante vs. nachgezogen (vorab festgelegt, keine Live-Aenderung)",
+  "Wirkung des Momentum-Perzentils 80 und der Naehe-Schwellen auf Signalzahl und Qualitaet",
+  "Anteil Ausbrueche mit Volumenbestaetigung und deren Qualitaet",
+  "Einfluss der 0,5-%-Zahl nur bei Gap-Einstiegen",
+  "Beitrag der Ampel isoliert (S1C) in Baerenphasen"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/strategies/darvas.mjs:13-178",
+  "scripts/supertrader/engine/strategies/darvas-v2.mjs:15-28",
+  "scripts/supertrader/engine/strategies/darvas-v3.mjs:25-46",
+  "scripts/supertrader/engine/strategies/darvas-v301.mjs:10",
+  "scripts/supertrader/engine/strategies/darvas-v302.mjs:8-13",
+  "scripts/supertrader/fidelity/portfolio-policy.mjs:42-52",
+  "scripts/supertrader/fidelity/shared-rules.mjs:43-53",
+  "scripts/supertrader/fidelity/canonical/darvas.json",
+  "scripts/supertrader/validation/DECISION-R12.json",
+  "scripts/supertrader/validation/DECISION-R13.json",
+  "scripts/supertrader/validation/AUDIT-R14-RESULT.json",
+  "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:113-119",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:123-137,398-411",
+  "docs/SUPERTRADER_VALIDATION_INTERNAL.md:197-199,339-351",
+  "docs/SUPERTRADER_ENTRY_EXIT_RULES.md:70,96-101"
+ ]
+}

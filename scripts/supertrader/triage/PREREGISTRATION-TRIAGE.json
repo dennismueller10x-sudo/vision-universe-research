@@ -115,6 +115,19 @@
         "Der Freeze-Commit wird per git rev-parse HEAD erfasst",
         "HOLDOUT ist in diesem Modus gesperrt"
       ]
+    },
+    {
+      "id": "A2",
+      "date": "2026-10-11",
+      "beforeAnyRun": false,
+      "afterResult": true,
+      "change": "Die Definitionen von Tier B, C und D, der Zusatz 'datenbasierter Grund' fuer Tier A und der Robustheits-Teilscore wurden NACH dem Messergebnis festgelegt bzw. praezisiert (Prereg enthielt nur die A-Gates und die Gewichte). 'Forward-Testbarkeit' ist als alleiniger Grund fuer Tier A gestrichen. Tier-Entscheidungen sind damit Setzungen nach Ergebnis und als solche zu lesen.",
+      "redTeamChanges": [
+        "PIOTROSKI_F: B -> C",
+        "VU_TREND_52W: B -> C (Forward-Prioritaet HIGH bleibt)",
+        "Uebereinstimmung/Redundanz: 'keine Redundanz' -> 'nicht bestimmbar' (Jaccard durch Mengengroessen begrenzt)",
+        "Robustheits-Teilscore: NEUTRAL = 0,3 pauschal (Vorzeichen unbekannt), NEGATIVE = 0, POSITIVE = Konsistenzanteil"
+      ]
     }
   ],
   "smokeRun": {

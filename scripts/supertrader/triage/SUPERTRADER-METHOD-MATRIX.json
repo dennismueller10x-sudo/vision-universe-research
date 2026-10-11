@@ -1,0 +1,511 @@
+{
+  "schema": "supertrader-triage-method-matrix-1.0.0",
+  "generatedBy": "build-triage.mjs",
+  "prereg": "supertrader-triage-prereg-1.0.0",
+  "standardRun": {
+    "run": 38126161777,
+    "commit": "2af6651e9ee7",
+    "dataFingerprint": "fp_d5a33d623961d638",
+    "window": "DEV",
+    "seenData": true
+  },
+  "note": "Research/Triage. Kein Live-Eingriff. Alle Perioden gesehen (SEEN DATA). Teilkomponenten bleiben sichtbar; der interne Score ist ein Ranginstrument.",
+  "methods": [
+    {
+      "id": "MOMENTUM_BREAKOUT",
+      "name": "VU Adaptation – Kullamägi Breakout (Common Breakout, Tageschart-Variante)",
+      "fidelity": {
+        "source": "MEDIUM",
+        "implementation": "MEDIUM",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NEUTRAL",
+      "portfolio": "BELOW",
+      "risk": "SHALLOWER",
+      "exposure": "MID",
+      "robustness": "3/6",
+      "data": "MEDIUM",
+      "confidence": "MEDIUM",
+      "tier": "B",
+      "components": {
+        "signalQuality": 0.5,
+        "portfolioEvidence": 0.2,
+        "robustness": 0.3,
+        "fidelity": 0.5,
+        "dataQuality": 0.6,
+        "riskProfile": 1,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.48,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "VU_TREND_52W",
+      "name": "VU Native – Trendfolge 52W",
+      "fidelity": {
+        "source": "MEDIUM",
+        "implementation": "MEDIUM",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NEUTRAL",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "exposure": "HIGH",
+      "robustness": "3/5",
+      "data": "MEDIUM",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": 0.5,
+        "portfolioEvidence": 0.2,
+        "robustness": 0.3,
+        "fidelity": 0.6,
+        "dataQuality": 0.6,
+        "riskProfile": 0.2,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.415,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "PIOTROSKI_F",
+      "name": "Piotroski F-Score (Teilprüfung)",
+      "fidelity": {
+        "source": "MEDIUM",
+        "implementation": "MEDIUM",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "LOW",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.5,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.457,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE",
+      "name": "VU Adaptation – Weinstein Stage Analysis (Stufe-2-Long, Wochenbasis; Stufe-1-Basisausbruch + Stufe-2-Fortsetzung)",
+      "fidelity": {
+        "source": "MEDIUM",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "SHALLOWER",
+      "exposure": "MID",
+      "robustness": "5/5",
+      "data": "MEDIUM",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": 0,
+        "portfolioEvidence": 0.2,
+        "robustness": 0,
+        "fidelity": 0.32499999999999996,
+        "dataQuality": 0.6,
+        "riskProfile": 1,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.309,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "DARVAS_BOX",
+      "name": "VU Adaptation – Darvas",
+      "fidelity": {
+        "source": "LOW",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NEUTRAL",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "exposure": "HIGH",
+      "robustness": "5/6",
+      "data": "MEDIUM",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": 0.5,
+        "portfolioEvidence": 0.2,
+        "robustness": 0.3,
+        "fidelity": 0.15,
+        "dataQuality": 0.6,
+        "riskProfile": 0.2,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.348,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "DONCHIAN_TURTLE",
+      "name": "VU Equity Adaptation – Turtle Trading",
+      "fidelity": {
+        "source": "MEDIUM",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "exposure": "HIGH",
+      "robustness": "6/6",
+      "data": "HIGH",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": 0,
+        "portfolioEvidence": 0.2,
+        "robustness": 0,
+        "fidelity": 0.32499999999999996,
+        "dataQuality": 1,
+        "riskProfile": 0.2,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.269,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "MINERVINI_VCP",
+      "name": "VU Adaptation – Minervini (Trend Template + VU-VCP) [Referenzzeile, keine neue Analyse]",
+      "fidelity": {
+        "source": "LOW",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NEUTRAL",
+      "portfolio": "BELOW",
+      "risk": "SHALLOWER",
+      "exposure": "MID",
+      "robustness": "4/5",
+      "data": "LOW",
+      "confidence": "HIGH",
+      "tier": "C",
+      "components": {
+        "signalQuality": 0.5,
+        "portfolioEvidence": 0.2,
+        "robustness": 0.3,
+        "fidelity": 0.25,
+        "dataQuality": 0.25,
+        "riskProfile": 1,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.373,
+        "weightCovered": 1,
+        "basis": "FULL"
+      }
+    },
+    {
+      "id": "CANSLIM",
+      "name": "CAN SLIM (Teilprüfung)",
+      "fidelity": {
+        "source": "LOW",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": true
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "LOW",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.15,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.307,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "GREENBLATT_VALUE",
+      "name": "Greenblatt Value (Magic Formula, US-Original)",
+      "fidelity": {
+        "source": "HIGH",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "LOW",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.625,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.511,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "KK_EPISODIC_PIVOT",
+      "name": "Kullamägi Episodic Pivot",
+      "fidelity": {
+        "source": "LOW",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.25,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.25,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "KK_PARABOLIC_SHORT",
+      "name": "Kullamägi Parabolic Short (und seltener Parabolic Long)",
+      "fidelity": {
+        "source": "LOW",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.25,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.25,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "VU_HOUSE_HS4_V03",
+      "name": "VU Volumen-Momentum 20 (Hausstrategie HS4, Versuch V03, Beobachtungsdepot)",
+      "fidelity": {
+        "source": "NOT_REPRODUCIBLE",
+        "implementation": "MEDIUM",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "MEDIUM",
+      "confidence": "MEDIUM",
+      "tier": "C",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.3,
+        "dataQuality": 0.6,
+        "riskProfile": null,
+        "productPotential": 0.6
+      },
+      "internalScore": {
+        "score": 0.471,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "MARKET_WIZARDS_NEXT",
+      "name": "Weitere Market-Wizards-Modelle (Schwager/Coyle, The Next Generation)",
+      "fidelity": {
+        "source": "NOT_REPRODUCIBLE",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "HIGH",
+      "tier": "D",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.125,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.196,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "TURTLE_ORIGINAL_FUTURES",
+      "name": "Turtle Trading – Original-Futures-Methode (nur Referenz)",
+      "fidelity": {
+        "source": "NOT_REPRODUCIBLE",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "HIGH",
+      "tier": "D",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.125,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.196,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "DARVAS_ORIGINAL",
+      "name": "Darvas – Originalmethode (nur Quellenlage/Referenz)",
+      "fidelity": {
+        "source": "NOT_REPRODUCIBLE",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "HIGH",
+      "tier": "D",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.125,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.196,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    },
+    {
+      "id": "NEO_DARVAS",
+      "name": "TraderFox 'Neo-Darvas' (2018/2019) – Fremdmethode, nur Referenz",
+      "fidelity": {
+        "source": "NOT_REPRODUCIBLE",
+        "implementation": "LOW",
+        "sharedDefaultPenalty": false
+      },
+      "signalEdge": "NOT_MEASURED",
+      "portfolio": "NOT_MEASURED",
+      "risk": "NOT_MEASURED",
+      "exposure": "NOT_MEASURED",
+      "robustness": "UNKNOWN",
+      "data": "LOW",
+      "confidence": "HIGH",
+      "tier": "D",
+      "components": {
+        "signalQuality": null,
+        "portfolioEvidence": null,
+        "robustness": null,
+        "fidelity": 0.125,
+        "dataQuality": 0.25,
+        "riskProfile": null,
+        "productPotential": 0.25
+      },
+      "internalScore": {
+        "score": 0.196,
+        "weightCovered": 0.35,
+        "basis": "PARTIAL_NO_MEASUREMENT_RENORMALIZED"
+      }
+    }
+  ]
+}

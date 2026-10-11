@@ -1,0 +1,129 @@
+{
+ "strategy_id": "TURTLE_ORIGINAL_FUTURES",
+ "method_name": "Turtle Trading – Original-Futures-Methode (nur Referenz)",
+ "group": "B",
+ "replication_status": "NOT_REPLICATED",
+ "reference_only": true,
+ "engine": {
+  "files": [],
+  "versions_in_repo": [],
+  "live_version": "keine – es existiert keine Original-Futures-Engine",
+  "status": "CARD_ONLY",
+  "shared_modules_used": [],
+  "hidden_fallbacks_or_defaults": [],
+  "version_drift": "Nicht anwendbar. Regelbuch: scripts/supertrader/fidelity/canonical/turtle.json products.TURTLE_FUTURES_ORIGINAL (29 Regeln). Keine Behauptung einer Originalreplikation; das Regelbuch dient nur als Referenzmassstab fuer die Equity Adaptation."
+ },
+ "source_audit": {
+  "core": "Vollmechanisches Futures-Trendfolgesystem (~20 liquide US-Futures, long und short) mit System 1 (20/10, Gewinner-Filter, 55-Failsafe) und System 2 (55/20), N = EMA20 der TR, Unit = 1 % je N, Aufstocken je 1/2 N bis 4 Units, Stop 2N mit Nachzug, Grenzen 4/6/10/12 Units, Notionalkonto, Staerke-Rang bei gleichzeitigen Signalen.",
+  "clear_public_rules": [
+   "Marktliste und Liquiditaet (S. 10-11)",
+   "N-Formel, Unit-Formel",
+   "S1/S2-Einstieg und -Ausstieg, S1-Filter, Failsafe 55",
+   "Stop 2N, Aufstocken 1/2 N mit Stop-Nachzug",
+   "Unit-Grenzen 4/6/10/12",
+   "Notionalkonto -20 % je 10 %",
+   "Buy Strength - Sell Weakness (S. 29)",
+   "Rollregel, kein Marktregime-/Fundamentalfilter"
+  ],
+  "discretionary_rules": [
+   "Dennis' subjektive Jahresanpassung",
+   "Ordertaktik (Limit statt Stop-Order, Abwarten in schnellen Maerkten)",
+   "Korrelationsgruppen genau",
+   "individuelle S1/S2-Allokation und Marktauswahl der einzelnen Turtles"
+  ],
+  "vu_own_formalizations": [],
+  "foreign_rules": [],
+  "source_fidelity": "NOT_REPRODUCIBLE",
+  "source_fidelity_reason": "Regeln sind HIGH belegt (Volltext-Scan), aber eine echte Replikation braucht Futures-Daten (Continuous Contracts, Rollregel, Konto >= 1 Mio. USD wegen Ganzzahligkeit), die nicht vorliegen ('ohne neue Kosten nicht baubar'; turtle.json replicationDesign A). Nicht reproduzierbar: Dennis' Anpassung, Ordertaktik, Korrelationsgruppen, tatsaechliche Turtle-Ergebnisse."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL (S1/S2, Filter, Failsafe)",
+  "Exit": "ORIGINAL (10-/20-Tage-Tief, Stop 2N)",
+  "Sizing": "ORIGINAL (Unit 1 %/N, Aufstocken, Heat in Units)",
+  "Portfolio": "ORIGINAL (4/6/10/12, Staerke-Rang, long/short, Margin)",
+  "Risk": "ORIGINAL (2N, Notionalkonto) mit NOT_PUBLIC Anteilen (Ordertaktik)",
+  "Fundamentals": "keine",
+  "Market": "keine Marktregel"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "nicht implementiert (Referenz)",
+   "Exit": "nicht implementiert",
+   "Sizing": "nicht implementiert",
+   "Portfolio": "nicht implementiert",
+   "Risk": "nicht implementiert",
+   "Fundamentals": "n/a",
+   "Market": "n/a"
+  },
+  "penalties": [
+   "Es gibt keine Implementierung; jede Aussage ueber 'Turtle' im Produkt bezieht sich auf die Equity Adaptation (DONCHIAN_TURTLE) und darf keine Originalreplikation behaupten."
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "MISSING (Futures-Zeitreihen ~20 Maerkte, Continuous Contracts)",
+   "volume": "PARTIAL (nur fuer Liquiditaetsauswahl)",
+   "fundamentals": "NOT_NEEDED",
+   "institutional": "NOT_NEEDED",
+   "estimates": "NOT_NEEDED",
+   "sector": "MISSING (Korrelationsgruppen als Marktgruppen)",
+   "market_regime": "NOT_NEEDED",
+   "intraday": "PARTIAL (Ordertaktik im Original intraday)",
+   "earnings_events": "NOT_NEEDED"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "nicht relevant",
+  "fundamental_dependency": "NONE"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R15",
+    "result": "Kanonisches Regelbuch erstellt; Futures-Replikation 'nur mit Futures-Daten (nicht vorhanden)'; replicationClaimAllowed=false",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:155-170 ; scripts/supertrader/fidelity/canonical/turtle.json"
+   }
+  ],
+  "signal_quality": "UNKNOWN (nicht gemessen; die 1980er Ergebnisse sind laut Registry nur anekdotisch belegt und kein Beleg fuer die Aktien-Uebertragung)",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN",
+  "seen_data": false
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "n/a (nicht implementiert)",
+  "missing_data": "Futures-Daten, Rollregel, Margin-/Zinsmodell",
+  "fragile_parameters": "Korrelationsgruppen, Notionalkonto-Anpassung"
+ },
+ "product_potential": {
+  "rating": "LOW",
+  "understandability": "Gut erklaerbar, aber Futures-Konzept",
+  "signal_frequency": "UNKNOWN",
+  "differentiation": "n/a im Aktien-Produkt",
+  "explainable_setups": "HOCH",
+  "mobile": "n/a",
+  "forward_test": "nicht moeglich ohne Futures-Daten"
+ },
+ "main_problems": [
+  "Keine Futures-Daten -> nicht replizierbar",
+  "Als Marke/Referenz darf es nicht fuer die Aktien-Adaptation gutgeschrieben werden"
+ ],
+ "critical_implementation_errors": [],
+ "validation_class": "NOT_REPRODUCIBLE",
+ "preliminary_tier": "D",
+ "confidence": "HIGH",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Reine Referenzzeile: Regeln sind belegt, aber ohne Futures-Daten nicht replizierbar; Status NOT_REPLICATED. Nur als Massstab fuer die Equity Adaptation sinnvoll; kein Produkt- oder Validierungskandidat in diesem Datenstand.",
+ "open_for_measurement": [
+  "Nur mit neu beschafften Futures-Daten (Kosten) beantwortbar: Replikation S1+S2, Long/Short, Aufstocken, Gruppengrenzen"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/fidelity/canonical/turtle.json (products.TURTLE_FUTURES_ORIGINAL, futuresDependence, replicationDesign A)",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:155-170",
+  "scripts/supertrader/source-ledger.json (SRC-TURTLE-PDF, SRC-BL-TURTLE)"
+ ]
+}

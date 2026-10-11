@@ -1,0 +1,140 @@
+{
+ "strategy_id": "NEO_DARVAS",
+ "method_name": "TraderFox 'Neo-Darvas' (2018/2019) – Fremdmethode, nur Referenz",
+ "group": "B",
+ "replication_status": "NOT_REPLICATED",
+ "reference_only": true,
+ "engine": {
+  "files": [],
+  "versions_in_repo": [],
+  "live_version": "keine TraderFox-Engine; VU bildet nur die oeffentliche Pivotal-Points-Fassung als VU_TREND_52W ab (eigene Methode)",
+  "status": "CARD_ONLY",
+  "shared_modules_used": [],
+  "hidden_fallbacks_or_defaults": [],
+  "version_drift": "Nicht anwendbar. Regelbuch: darvas.json systems.NEO_DARVAS_TRADERFOX (12 Regeln, Abbildung in rotation-52w.mjs). Quellen: sources-r12-traderfox.json (21 oeffentliche URLs; Texte nur verschluesselt gespeichert). Registry-Eintrag VU_TREND_52W sources: SRC-TF-NEO-PP, SRC-TF-NEO-2018."
+ },
+ "source_audit": {
+  "core": "TraderFox (Dritt-Anbieter) beschreibt ein regelbasiertes Aktien-Musterdepot 'NEO-DARVAS': Kauf bei Staerke (>= 70 % bzw. in der Pivotal-Points-Fassung >= 100 % seit 52W-Tief, neues 52W-Hoch, Up-Gap >= 6 %), Marktampel (S&P 500 > GD200), 10 Positionen, monatliche Umschichtung, Rang nach 'Trendstabilitaet'. TraderFox schreibt einzelne Elemente Darvas zu.",
+  "clear_public_rules": [
+   "Klasse 2018: >= 70 % seit Tief, neues 52W-Hoch in 4 Wochen/20 Tagen, S&P 500 > GD200, 10 Aktien (TF-NEO-CLASS, TF-NEO-SCR-2018)",
+   "Pivotal-Points-Fassung (Regeln 13.02.2021 veroeffentlicht): Universum groesste 1.800 US-Unternehmen, monatlich, 10 % Zielgewicht, >= 1 Mio Tagesumsatz, >= 100 % seit Jahrestief, neues Jahreshoch in 20 Tagen, Up-Gap >= 6 %, Verkauf bei Gewicht < 3 %, < 100 %, kein Hoch in 65 Tagen, Ampel rot -> Positionen <= 5 %, Trim > 20 % -> 15 %",
+   "Depotaenderungen 3 Tage vorher kommuniziert"
+  ],
+  "discretionary_rules": [
+   "Pivotal-News-Points (Quartalszahlen-Gaps) als Einstiegs-/Absicherungszonen",
+   "dynamisierte Echtgeld-Variante 2019 (halbe Positionsgroesse bei rot, 'ueberzeugender' Ausbruch)"
+  ],
+  "vu_own_formalizations": [],
+  "foreign_rules": [
+   "Zuschreibung an Darvas: 100 % seit Tief, 3-Tage-Box, Boxoberkante am historischen Hoch, 'staerkstes Pferd' (TF-ATTR-DARVAS UNRESOLVED – nicht in Darvas' eigenem Material belegt)"
+  ],
+  "source_fidelity": "NOT_REPRODUCIBLE",
+  "source_fidelity_reason": "Rang 'Trendstabilitaet' ist NICHT oeffentlich (TF-PP-RANK NOT_PUBLIC), das aktuelle Musterdepot-Regelwerk liegt im Kundenbereich (TF-DEPOT-DETAIL NOT_PUBLIC), die dynamisierte Echtgeld-Variante nutzt nicht abbildbare Pivotal-News-Points. Anbieter nennt eigenen Backtest/Live-Musterdepot; nicht von Vision Universe reproduziert, Zahlen hier nicht uebernommen."
+ },
+ "provenance": {
+  "Entry": "FREMD (TraderFox, oeffentliche Fassung 2018/2019/2021)",
+  "Exit": "FREMD (65-Tage-Regel, <100 %, Gewicht)",
+  "Sizing": "FREMD (10 % je Neukauf, 10 Plaetze, Trim 20 -> 15 %)",
+  "Portfolio": "FREMD (monatlich, 1.800er Universum)",
+  "Risk": "FREMD (Ampel -> max 5 %, kein Stop zwischen den Terminen)",
+  "Fundamentals": "keine in den oeffentlichen Regeln (Pivotal-News-Points: Quartalszahlen-Gaps, nicht abgebildet)",
+  "Market": "FREMD (S&P 500 > GD200)"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "VU bildet oeffentliche Regeln in VU_TREND_52W ab, aber Rang ersetzt",
+   "Exit": "abgebildet (65 Tage, <100 %)",
+   "Sizing": "abgebildet (10 %, 3 %-Minimum)",
+   "Portfolio": "abgebildet mit VU-Universum (1.800 umsatzstaerkste statt groesste Unternehmen, SPY statt S&P 500)",
+   "Risk": "abgebildet (kein Stop)",
+   "Fundamentals": "n/a",
+   "Market": "abgebildet mit SPY"
+  },
+  "penalties": [
+   "Kein NEO-DARVAS im Produkt: 'Trendstabilitaet' ersetzt (Clenow), Universum ersetzt (Umsatz statt Marktkap), Pivotal-News-Points fehlen",
+   "Keine Aussage ueber TraderFox-Renditen erlaubt"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE",
+   "fundamentals": "PARTIAL (Pivotal-News-Points brauchen Quartalszahlen-Daten)",
+   "institutional": "NOT_NEEDED",
+   "estimates": "UNKNOWN",
+   "sector": "NOT_NEEDED",
+   "market_regime": "AVAILABLE (SPY/S&P 500)",
+   "intraday": "NOT_NEEDED",
+   "earnings_events": "MISSING (Pivotal-News-Points)"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "nicht genutzt; Core 1.22+ weder live noch migriert",
+  "fundamental_dependency": "LOW"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R12",
+    "result": "Quellenlauf TraderFox (sourcesTraderFox) durchgefuehrt; Regeln als VU_TREND_52W umgesetzt; R1-R4 der VU-Version FAIL, 'Tests unserer VU-Versionen, nicht des TraderFox-Systems'",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json ; scripts/supertrader/validation/sources-r12-traderfox.json"
+   },
+   {
+    "round": "R13",
+    "result": "Keine Reproduktion des TraderFox-Backtests behauptet; 'Trendstabilitaet' nicht oeffentlich",
+    "source_file": "docs/SUPERTRADER_AUDIT_R13.md:72-81"
+   },
+   {
+    "round": "R15",
+    "result": "NEO_DARVAS getrennt im Regelbuch gefuehrt; Nutzung nur als 'nach oeffentlichen Regeln der TraderFox-Variante NEO-DARVAS'",
+    "source_file": "scripts/supertrader/fidelity/canonical/darvas.json (answers.mayBeCalledDarvas)"
+   }
+  ],
+  "signal_quality": "UNKNOWN fuer das TraderFox-System (nicht reproduziert); fuer die VU-Abbildung siehe VU_TREND_52W",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN",
+  "seen_data": false
+ },
+ "implementation_risk": {
+  "discretion": "MED",
+  "bad_formalization": "Nicht-oeffentliche Rangregel, wechselnde Fassungen (2018 vs. 2019/2021 vs. Echtgeld) – Gefahr, Fassungen zu vermischen",
+  "missing_data": "Trendstabilitaets-Indikator, Kundenbereichs-Regeln, Pivotal-News-Points-Daten, Morningstar-PIT-Universum",
+  "fragile_parameters": "70 % vs. 100 %, Gap 6 %, 65 Tage, Gewichtsgrenzen"
+ },
+ "product_potential": {
+  "rating": "LOW",
+  "understandability": "mittel",
+  "signal_frequency": "monatlich",
+  "differentiation": "Fremdmarke; nicht als Produkt von VU",
+  "explainable_setups": "mittel",
+  "mobile": "n/a",
+  "forward_test": "nur ueber die VU-Version VU_TREND_52W"
+ },
+ "main_problems": [
+  "Kernrang nicht oeffentlich",
+  "Mehrere Fassungen mit widerspruechlichen Schwellen",
+  "Darvas-Zuschreibung durch den Anbieter unbelegt (Quelle der Vermischung)"
+ ],
+ "critical_implementation_errors": [],
+ "validation_class": "NOT_REPRODUCIBLE",
+ "preliminary_tier": "D",
+ "confidence": "HIGH",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Referenzzeile fuer eine Drittanbieter-Methode: Kernrang und aktuelles Regelwerk nicht oeffentlich, daher nicht reproduzierbar; keine Behauptung ueber Anbieter-Renditen. Eine Pruefung gibt es nur fuer die separate VU-Eigenmethode.",
+ "open_for_measurement": [
+  "Nicht beantwortbar fuer das TraderFox-System (Rang/Regeln nicht oeffentlich)",
+  "Fassungsvergleich 2018 (70 %) vs. Pivotal-Points (100 %, Gap) nur ueber VU-Sensitivitaet (VU_TREND_52W BASE vs. PP)"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/validation/sources-r12-traderfox.json",
+  "scripts/supertrader/fidelity/canonical/darvas.json (systems.NEO_DARVAS_TRADERFOX)",
+  "scripts/supertrader/validation/PREREGISTRATION-R12.json (comparisonSources)",
+  "scripts/supertrader/validation/DECISION-R12.json",
+  "docs/SUPERTRADER_AUDIT_R13.md:72-81",
+  "supertrader/data/registry.json (VU_TREND_52W sources/prohibited_interpretations)"
+ ]
+}

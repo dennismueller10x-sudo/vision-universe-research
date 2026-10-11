@@ -1,0 +1,134 @@
+{
+ "strategy_id": "DARVAS_ORIGINAL",
+ "method_name": "Darvas – Originalmethode (nur Quellenlage/Referenz)",
+ "group": "B",
+ "replication_status": "NOT_REPLICATED",
+ "reference_only": true,
+ "engine": {
+  "files": [],
+  "versions_in_repo": [],
+  "live_version": "keine Original-Engine",
+  "status": "CARD_ONLY",
+  "shared_modules_used": [],
+  "hidden_fallbacks_or_defaults": [],
+  "version_drift": "Nicht anwendbar. Kanon: scripts/supertrader/fidelity/canonical/darvas.json systems.DARVAS_ORIGINAL (35 Regeln inkl. Abbildung in DARVAS_BOX 3.0.2). Quellenliste: source-ledger.json SRC-ND-TIME-1959, -1960, -1960B, SRC-ND-BOOK (nur bibliografisch)."
+ },
+ "source_audit": {
+  "core": "Nicolas Darvas (Taenzer, 1950er): Aktien mit starkem Anstieg bei starkem Volumen, wachsende Firmen in jungen Branchen; Kauforder am Ausbruchspunkt ueber der Kiste, Stop-Loss knapp unter der Kauforder, Stop mit hoeheren Kisten nachziehen, 5-6 Titel, Pyramidisieren, teils Kredit.",
+  "clear_public_rules": [
+   "Kauforder im Voraus am Ausbruchspunkt (TIME 1959)",
+   "Stop-Loss knapp unter der Kauforder, gleichzeitig platziert (TIME 1959)",
+   "Stop-Loss als Kernbaustein, Gap-Risiko (TIME 1960)",
+   "kein Kursziel; Verkauf ueber den nachgezogenen Stop",
+   "5-6 Aktien gleichzeitig",
+   "nur wachsende Firmen, Gewinne koennten sich verdoppeln/verdreifachen (TIME 1959)"
+  ],
+  "discretionary_rules": [
+   "exakte Boxdefinition und Bestaetigung (Buch nicht abgerufen)",
+   "Kaufpunkt-Aufschlag, Stopabstand in Punkten/Prozent",
+   "Pyramiding-Mengen, Margin-Einsatz",
+   "Techno-Fundamentalismus (Gewichtung)",
+   "langes Beobachten ('weeks or months')",
+   "'falsch verhaltende' Titel verkaufen"
+  ],
+  "vu_own_formalizations": [],
+  "foreign_rules": [
+   "TraderFox schreibt Darvas 100 % seit 52W-Tief, 3-Tage-Box, Allzeithoch-Oberkante und 'staerkstes Pferd' zu (UNRESOLVED, nicht aus Darvas-Material belegt)",
+   "Die 2-Mio-Dollar-Erzaehlung ist DISPUTED (Registry: weder bewiesen noch widerlegt)"
+  ],
+  "source_fidelity": "NOT_REPRODUCIBLE",
+  "source_fidelity_reason": "Primaerpresse (TIME 1959/1960) belegt nur Prinzipien ohne Zahlen; das Buch (1960) wurde nicht im Volltext abgerufen (nur MEDIUM-Annahmen aus Gedaechtnis/Sekundaerquellen). Exakte Boxdefinition, Stopabstand, Pyramiding-Mengen sind ohne Buch nicht festlegbar (darvas.json answers.notReproducible)."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL-Prinzip (Kauforder am Ausbruch); Boxformel UNCLEAR",
+  "Exit": "ORIGINAL-Prinzip (Stop knapp unter Kauforder, nachziehen); Zahl UNCLEAR",
+  "Sizing": "ORIGINAL_INTERPRETATION (konzentrierte Bloecke, teils Kredit); keine Prozentregel belegt",
+  "Portfolio": "ORIGINAL (5-6 Titel); Pyramidisieren ORIGINAL_INTERPRETATION",
+  "Risk": "ORIGINAL (Stop-Loss, Gap-Risiko benannt)",
+  "Fundamentals": "ORIGINAL (Wachstum, 'could double or treble'); Quantifizierung UNCLEAR",
+  "Market": "kein Indexfilter belegt (Cash in der Baisse ueber Stops, MEDIUM)"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "keine Original-Implementierung; DARVAS_BOX bildet nur das Prinzip ab",
+   "Exit": "s. o.",
+   "Sizing": "s. o.",
+   "Portfolio": "s. o.",
+   "Risk": "s. o.",
+   "Fundamentals": "nicht abgebildet",
+   "Market": "n/a"
+  },
+  "penalties": [
+   "Keine Implementierung als 'Darvas-Original'; jede Darvas-Aussage im Produkt nur ueber DARVAS_BOX als VU-Variante"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE (Volumenbestaetigung, Schwelle UNKNOWN)",
+   "fundamentals": "PARTIAL (Wachstum/EPS: PIT-EPS privat vorhanden, Schwelle 'verdoppeln' nicht quantifiziert)",
+   "institutional": "NOT_NEEDED",
+   "estimates": "MISSING (Erwartungen)",
+   "sector": "MISSING ('infant industries' qualitativ)",
+   "market_regime": "NOT_NEEDED",
+   "intraday": "PARTIAL (Kauforder im Tagesverlauf)",
+   "earnings_events": "UNKNOWN"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "nicht genutzt; Core 1.22+ weder live noch migriert",
+  "fundamental_dependency": "HIGH"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R15",
+    "result": "Kanonisches Regelbuch; Replikation 'erst Buch beschaffen'; replicationClaimAllowed=false",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:123-137 ; scripts/supertrader/fidelity/canonical/darvas.json"
+   }
+  ],
+  "signal_quality": "UNKNOWN (nicht testbar ohne Boxformel)",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN",
+  "seen_data": false
+ },
+ "implementation_risk": {
+  "discretion": "HIGH",
+  "bad_formalization": "Boxregel nicht belegt; jede Formalisierung ist Sekundaerrekonstruktion",
+  "missing_data": "Darvas-Buch (Primaer), Gewinndaten zum Stichtag + Schwelle, Volumenzahl",
+  "fragile_parameters": "nicht definierbar ohne Buch"
+ },
+ "product_potential": {
+  "rating": "LOW",
+  "understandability": "hoch als Story, aber nicht als Regel",
+  "signal_frequency": "UNKNOWN",
+  "differentiation": "als Original nicht reproduzierbar",
+  "explainable_setups": "nur ueber VU-Variante",
+  "mobile": "n/a",
+  "forward_test": "nicht moeglich"
+ },
+ "main_problems": [
+  "Primaerquelle (Buch) nicht abgerufen",
+  "Zahlen fehlen (Stop, Box, Volumen, Pyramiding)",
+  "Vermischung mit TraderFox-Zuschreibungen als Ursache der Darvas/NEO/Trend52-Verwechslung"
+ ],
+ "critical_implementation_errors": [],
+ "validation_class": "NOT_REPRODUCIBLE",
+ "preliminary_tier": "D",
+ "confidence": "HIGH",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Referenzzeile: nur Prinzipien aus TIME belegt, Boxformel und Zahlen nicht oeffentlich fixierbar; NOT_REPLICATED. Vertrauen in die Einordnung hoch, weil die Quellenlage in R15 explizit als Luecke geklaert wurde.",
+ "open_for_measurement": [
+  "Nur nach Beschaffung des Buchs beantwortbar: Boxdefinition, Stopabstand, Pyramiding, Volumenregel",
+  "Quantifizierung des Gewinnkriteriums aus SEC-PIT-Daten waere VU-Setzung, keine Originalmessung"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/fidelity/canonical/darvas.json (systems.DARVAS_ORIGINAL, answers, exitQuestion)",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:123-137,520",
+  "scripts/supertrader/source-ledger.json (SRC-ND-TIME-1959/1960/1960B, SRC-ND-BOOK)"
+ ]
+}

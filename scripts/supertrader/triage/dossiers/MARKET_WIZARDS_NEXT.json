@@ -1,0 +1,123 @@
+{
+ "strategy_id": "MARKET_WIZARDS_NEXT",
+ "method_name": "Weitere Market-Wizards-Modelle (Schwager/Coyle, The Next Generation)",
+ "group": "E",
+ "engine": {
+  "files": [],
+  "versions_in_repo": [
+   "0.1.0 (Karte)"
+  ],
+  "live_version": null,
+  "status": "CARD_ONLY",
+  "shared_modules_used": [],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "advanced()-Fabrik füllt alle 47 DNA-Felder mit 'Research in progress – noch nicht spezifiziert' (NOT_VERIFIABLE)",
+    "where": "scripts/supertrader/registry.mjs:479-498",
+    "effect": "Karte sieht strukturell wie eine Methode aus, enthält keine Regel; build.mjs setzt Gate-Status ADVANCED_RESEARCH ohne Gates (build.mjs:886-887)"
+   }
+  ],
+  "version_drift": "keine; Version 0.1.0 nur Platzhalter"
+ },
+ "source_audit": {
+  "core": "Sammelkarte für ein 2026 erschienenes Buch (Harriman House). Quelle nur Verlagsseite/Vorschau, Inhalt von VU nicht abgerufen (content_retrieved_by_vu=false). Kein Trader, keine Regel benannt.",
+  "clear_public_rules": [],
+  "discretionary_rules": [],
+  "vu_own_formalizations": [],
+  "foreign_rules": [],
+  "source_fidelity": "NOT_REPRODUCIBLE",
+  "source_fidelity_reason": "Es gibt keine Methode zum Nachbauen: Buch nicht gelesen, Trader nicht identifiziert (scripts/supertrader/source-ledger.json:655-672; registry.mjs:498)."
+ },
+ "provenance": {
+  "Entry": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Exit": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Sizing": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Portfolio": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Risk": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Fundamentals": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+  "Market": "UNCLEAR (nicht spezifiziert, Regeln leer)"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "keine Umsetzung",
+   "Exit": "keine Umsetzung",
+   "Sizing": "keine Umsetzung",
+   "Portfolio": "keine Umsetzung",
+   "Risk": "keine Umsetzung",
+   "Fundamentals": "keine Umsetzung",
+   "Market": "keine Umsetzung"
+  },
+  "penalties": [
+   "keine Engine",
+   "keine Regeln (tests/registry.test.mjs:74 erzwingt rules.length==0)"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "UNKNOWN",
+   "volume": "UNKNOWN",
+   "fundamentals": "UNKNOWN",
+   "institutional": "UNKNOWN",
+   "estimates": "UNKNOWN",
+   "sector": "UNKNOWN",
+   "market_regime": "UNKNOWN",
+   "intraday": "UNKNOWN",
+   "earnings_events": "UNKNOWN"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "nicht anwendbar (keine Regel nutzt Daten)",
+  "fundamental_dependency": "NONE"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [],
+  "signal_quality": "UNKNOWN",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN",
+  "seen_data": false
+ },
+ "implementation_risk": {
+  "discretion": "HIGH",
+  "bad_formalization": "Sammelbegriff aus mehreren Tradern; ohne Kapitelinhalt wären Regeln erfunden.",
+  "missing_data": "Primärquelle fehlt; Daten-Anforderungen unbekannt (PRODUCT_MATRIX:28 'Quellen nicht gelesen').",
+  "fragile_parameters": "keine vorhanden"
+ },
+ "product_potential": {
+  "rating": "LOW",
+  "understandability": "Karte erscheint nur unter 'In Vorbereitung' (PRODUCT_MATRIX 'Namenskarten erscheinen nur gesammelt').",
+  "signal_frequency": "keine",
+  "differentiation": "nicht beurteilbar",
+  "explainable_setups": "keine",
+  "mobile": "Seite statisch (1,6 KB)",
+  "forward_test": "nicht möglich"
+ },
+ "main_problems": [
+  "Kein Inhalt: Karte ohne Methode, Tradername oder Regel",
+  "Quelle nur Verlags-Vorschau, nicht gelesen",
+  "Nennung als eigene 'Methode' verzerrt Methodenzahl",
+  "Kein Urheber-/Rechtekonzept für Buchinhalt (Buch legal beschaffen laut ARCHITECTURE:150-151 offen)"
+ ],
+ "critical_implementation_errors": [],
+ "validation_class": "NOT_REPRODUCIBLE",
+ "preliminary_tier": "D",
+ "confidence": "HIGH",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Platzhalterkarte, keine Methode. Empfehlung Tier D (nicht bewertbar, kein Portfolio-Kandidat), ohne Löschauftrag; Karte kann als Backlog-Eintrag bleiben. Neu bewerten erst, wenn konkrete Trader und Regeln aus gelesenen Kapiteln vorliegen; dann je Trader eigene Karte.",
+ "open_for_measurement": [
+  "Nichts messbar, solange keine Regeln spezifiziert sind"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/registry.mjs:479-498",
+  "supertrader/data/registry.json strategy_id=MARKET_WIZARDS_NEXT (advanced=true, rules=[], product_status ADVANCED_RESEARCH)",
+  "scripts/supertrader/source-ledger.json:655-672",
+  "docs/SUPERTRADER_PRODUCT_MATRIX.md:28",
+  "docs/SUPERTRADER_PRODUCT_READINESS.md:41",
+  "docs/SUPERTRADER_ARCHITECTURE.md:150-151",
+  "scripts/supertrader/tests/registry.test.mjs:71-74",
+  "supertrader/strategies/market-wizards/index.html"
+ ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "supertrader-triage-method-overlap-1.0.0",
+  "generatedBy": "build-triage.mjs",
+  "prereg": "supertrader-triage-prereg-1.0.0",
+  "standardRun": {
+    "run": 38126161777,
+    "commit": "2af6651e9ee7",
+    "dataFingerprint": "fp_d5a33d623961d638",
+    "window": "DEV",
+    "seenData": true
+  },
+  "note": "Research/Triage. Kein Live-Eingriff. Alle Perioden gesehen (SEEN DATA). Teilkomponenten bleiben sichtbar; der interne Score ist ein Ranginstrument.",
+  "window": "DEV",
+  "pairs": {
+    "count": 15,
+    "overlapClass": "LOW fuer alle 15 Paare - rechnerisch fuer 9 von 15 Paaren durch Groessenverhaeltnis der Signalmengen erzwungen; Redundanz daher NICHT BESTIMMBAR",
+    "returnCorrelationClass": "LOW (< 0,50) fuer alle 15 Paare; kein Berechnungsfehler gefunden, aber ausreisserempfindlich (Pearson)"
+  },
+  "classThresholds": {
+    "overlap": {
+      "LOW": "Jaccard < 0,10",
+      "MEDIUM": "0,10-0,30",
+      "HIGH": "> 0,30"
+    },
+    "returnCorrelation": {
+      "LOW": "Pearson < 0,50",
+      "MEDIUM": "0,50-0,80",
+      "HIGH": "> 0,80"
+    }
+  },
+  "caveats": [
+    "signalEdge63 misst gegen SPY, nicht gegen das liquide Universum. Ein NEUTRAL/NEGATIVE-Urteil mischt Selektionswirkung und Universumswirkung (kleine/mikro Titel).",
+    "drawdownVsSpy SHALLOWER bei MID-Exposure ist zu einem grossen Teil ein Cash-Effekt, kein Signalvorteil.",
+    "returnCorrelationClass LOW fuer alle Paare ist mit konzentrierten Depots (wenige Positionen, hohe idiosynkratische Varianz) vereinbar; es belegt keinen Diversifikationsgewinn ueber Marktniveau.",
+    "VU_TREND_52W: nur ausgefuehrte, GESCHLOSSENE Trades (offene Endpositionen fehlen); Signal- und Ueberlappungsvergleich zu den Engines nur eingeschraenkt vergleichbar.",
+    "Smoke-Lauf (598 Reihen) wurde fuer kein Urteil verwendet.",
+    "portfolioVsSpy mischt wie das Signal Gleichgewichtung/Small-Cap-Effekt; 2016-2026 war SPY ungewoehnlich stark (R14).",
+    "Live-Konfigurationen wurden in R10-R13 auf demselben DEV-Fenster gewaehlt oder zurueckgenommen.",
+    "Rahmen nutzt lib.mjs#adjustSeries statt quant/engines/return-series.js#splitFactors (ADR-002 geerbt, nicht neu abgeleitet); Kurssprünge > 50 % ohne Split sind laut R14 nicht bereinigt.",
+    "Delisting-Klassifikation unvollstaendig (Auslandsemittenten, SPACs, CIK ohne Zuordnung); Pauschalfaktor trifft Micro-Cap-lastige Signalmengen staerker."
+  ],
+  "redundancy": "NICHT BESTIMMBAR. Alle 15 Paare LOW, aber der Jaccard ist durch das Groessenverhaeltnis der Signalmengen begrenzt (fuer 9 von 15 Paaren LOW erzwungen, HIGH fuer 14 von 15 unmoeglich); die Depotkorrelation ist ausreisserempfindlich. Auch ein echtes LOW waere kein Diversifikationsbeleg ohne Edge."
+}

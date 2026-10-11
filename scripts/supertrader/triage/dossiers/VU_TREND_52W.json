@@ -1,0 +1,225 @@
+{
+ "strategy_id": "VU_TREND_52W",
+ "method_name": "VU Native – Trendfolge 52W",
+ "group": "B",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/rotation-52w.mjs",
+   "scripts/supertrader/trend52-live.mjs",
+   "scripts/supertrader/validation/analyze-trend52.mjs",
+   "scripts/supertrader/registry-r12.mjs",
+   "supertrader/data/trend52.json (NICHT im Sparse-Checkout: UNKNOWN)"
+  ],
+  "versions_in_repo": [
+   "1.0.0 (rotation-52w.mjs:16, Variante PP primaer/live, Variante BASE (70 %, ohne Gap/Gewichtsregeln, Ampel rot -> Verkauf) nur als Sensitivitaet)"
+  ],
+  "live_version": "1.0.0 (Variante VU_TREND_52W_PP, Rang CLENOW; trend52-live.mjs:44; registry.json strategy_version 1.0.0)",
+  "status": "LIVE",
+  "shared_modules_used": [
+   "engine/rotation-52w.mjs ist eigenstaendig (eigener Simulator, eigene Szenarien S0/S1/S1C, eigene Fuellung bei Eroeffnung +/-10 bp, 1 bp Gebuehr)",
+   "build.mjs loadUniverse (ETF/ETN/Fonds-Ausschluss, R10-U1) und loadBars",
+   "SPY-Serie quant/data/market/multi-asset/series/SPY.json",
+   "KEIN Gebrauch von simulator.mjs, lifecycle.mjs, backtest.mjs PORTFOLIO_DEFAULTS, portfolio-policy.mjs (kein Eintrag fuer TREND52)"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Universum = 1.800 Titel mit hoechstem 63-Tage-Dollarumsatz (VU-Ersatz fuer 'groesste 1.800 Unternehmen', keine historische Marktkapitalisierung); ETF/ETN/Fonds-Ausschluss liegt NICHT in der Engine, sondern vorgelagert",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:19,134-145 ; scripts/supertrader/build.mjs:106-121",
+    "effect": "Universum kann Rohstoff-/Umsatzstaerke statt Groesse bevorzugen; Korrektheit des Fonds-Ausschlusses haengt am Upstream. Live nur heute gelistete Titel."
+   },
+   {
+    "what": "Rang = Clenow-Trendmass (annualisierte Steigung ln-Kurs 90 Tage x R^2) als Ersatz fuer die nicht oeffentliche 'Trendstabilitaet'; Default rank 'CLENOW'",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:37-49,151-154 ; scripts/supertrader/trend52-live.mjs:44",
+    "effect": "Drittkonzept (Clenow 2015) entscheidet, welche Kandidaten die freien Plaetze bekommen; keine TraderFox-Regel. Sensitivitaet RS-Rang aendert Urteil nicht (R12)."
+   },
+   {
+    "what": "Marktampel SPY (nicht S&P 500) > 200-Tage-Schnitt am Entscheidungstag; Kauf nur bei green===true, bei green null (<200 SPY-Tage) keine Kaeufe; bei rot Positionen auf 5 % gekappt (PP)",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:19-22,56-60,119,131,149",
+    "effect": "TraderFox-Regel mit VU-Proxy (SPY); Anlaufphase blockiert Kaeufe."
+   },
+   {
+    "what": "Kaufregeln: DollarVol20 >= 1 Mio, Performance >= 100 % ueber 252-Tage-Tief (Tiefs der Tagesbalken), Hoch(20 Tage) >= 252-Tage-Hoch, Up-Gap (Open/Vortagesschluss) >= 6 % in 20 Tagen; Verkauf < 3 % Gewicht, < 100 %, kein 252-Tage-Hoch in 65 Tagen, Trim > 20 % -> 15 %",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:18-23,52-83,121-133",
+    "effect": "Alles TraderFox (FOREIGN, gewollt ausgewiesen). Ob TraderFox 'Jahrestief' auf Schlusskursen oder Tagestiefs rechnet und ob Gap von Open/Close definiert ist: UNKNOWN (Texte verschluesselt)."
+   },
+   {
+    "what": "Fuellung/Termine: Entscheidung am letzten Handelstag des Monats nach Schluss, Ausfuehrung zur naechsten Eroeffnung mit +/-10 bp; Kauf ueber targetWeight 10 % vom Eroeffnungs-Equity, bei < 3 % leistbar 'NO_CASH'",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:163-195 ; scripts/supertrader/engine/execution.mjs (DEFAULT_EXECUTION)",
+    "effect": "VU_FORMALIZATION; 'TraderFox kommuniziert 3 Tage vorher' nicht abgebildet."
+   },
+   {
+    "what": "Kein Stop zwischen Monatsterminen; Delisting-Rest am letzten Tag nach Szenario (S0/S1/S1C/S2)",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:5-6,27-31,196",
+    "effect": "Gap-/Uebernahme-/Pleite-Risiko voll im Depot; Ergebnis haengt von der Delisting-Buchung (R13: Fehler S1 behoben)."
+   },
+   {
+    "what": "Mindesthistorie 252 Sitzungen je Titel; oeffentliche Tages-OHLCV nur ca. 1,07 Jahre -> Live-Kandidaten erst nach genug Bars",
+    "where": "scripts/supertrader/engine/rotation-52w.mjs:19,143 ; supertrader/data/registry.json dataRealityNote",
+    "effect": "Live-Universum anfangs duenn; Validierung nutzt privaten Langzeit-Speicher."
+   },
+   {
+    "what": "Live-Ledger rechnet frueherere Entscheidungen nie neu; erste Entscheidung erst am ersten Monatsende nach liveSince; keine Rueckrechnung",
+    "where": "scripts/supertrader/trend52-live.mjs:1-8,49-66",
+    "effect": "Sauberer Forward-Test, aber extrem wenige Entscheidungen (Monatstakt)."
+   },
+   {
+    "what": "Keine Gate-Definition: VU_TREND_52W_PP hat weder REQUIREMENTS noch TEST_PLANS -> evaluateGates liefert NOT_COMPARABLE / NO_GATE_DEFINITION",
+    "where": "scripts/supertrader/engine/gates.mjs:59-63 ; scripts/supertrader/build.mjs:917-927",
+    "effect": "Backtest-Lab-Status fuer Trend52 ohne Gate-Pruefung (nur Preregistration R12)."
+   }
+  ],
+  "version_drift": "Keine Version ausser 1.0.0. rotation-52w.mjs:1-3 und registry-r12 trennen Trend52 sauber von Darvas (R15: kein Fund). Registry-Text TR52-PERF 'weniger als 100 % ueber dem Tief' passt zum Code (PP). Registry nennt in alten Texten 'Darvas' nur als TraderFox-Zuschreibung. trend52.json nicht gelesen (nicht im Checkout)."
+ },
+ "source_audit": {
+  "core": "Eigene Vision-Universe-Methode: Monatsdepot aus bis zu 10 Aktien, die sich vom 52-Wochen-Tief mindestens verdoppelt haben, ein frisches 52W-Hoch und einen Up-Gap zeigen; Verkauf bei Trendnachlass (65 Tage ohne Hoch, < 100 %) oder Gewicht < 3 %; Marktampel. Regeln folgen der oeffentlich beschriebenen TraderFox-Pivotal-Points-Fassung, Rang und Universum sind VU-Ersatz. Weder Darvas noch das TraderFox-System.",
+  "clear_public_rules": [
+   "TF-PP-BUY: >= 1 Mio Tagesumsatz, >= 100 % seit Jahrestief, neues Jahreshoch in 20 Tagen, S&P 500 > GD200, Up-Gap >= 6 %",
+   "TF-PP-SELL: Gewicht < 3 %, < 100 %, kein Hoch in 65 Tagen, Ampel rot -> max 5 %, > 20 % -> 15 %",
+   "TF-PP-UNIV: groesste 1.800 US-Unternehmen, monatlich, 10 % Zielgewicht, 10 Positionen",
+   "TF-PP-NOSTOP: kein Stop zwischen den Terminen (MEDIUM, nicht genannt)"
+  ],
+  "discretionary_rules": [
+   "Pivotal-News-Points (Quartalszahlen-Gaps) im Musterdepot – nicht abgebildet",
+   "dynamisierte Echtgeld-Variante"
+  ],
+  "vu_own_formalizations": [
+   "Universum 1.800 umsatzstaerkste (63 Tage), ohne ETF/ETN/Fonds",
+   "Rang Clenow 90 Tage (Ersatz Trendstabilitaet)",
+   "Zeitplan (letzter Handelstag/erster Handelstag), 10 bp/1 bp",
+   "SPY statt S&P 500"
+  ],
+  "foreign_rules": [
+   "alle Kauf-/Verkaufs-/Gewichts-/Ampelregeln stammen von TraderFox (bewusst, als Grundlage ausgewiesen)",
+   "Clenow-Trendmass (Drittkonzept)"
+  ],
+  "source_fidelity": "MEDIUM",
+  "source_fidelity_reason": "Regeln der 2019/2021-Pivotal-Points-Fassung sind oeffentlich und im Volltext gelesen (HIGH), aber der Rang ('Trendstabilitaet') ist nicht oeffentlich und durch Clenow ersetzt, das Universum ist ein Proxy; Quelle ist Drittanbieter-Marketing, keine Primaerquelle eines Traders. Sensitivitaets-Variante BASE bildet Fassung 2018 ab."
+ },
+ "provenance": {
+  "Entry": "FREMD (TraderFox-Regeln, bewusst) + VU (Universum, Rang, Zeitplan)",
+  "Exit": "FREMD (TraderFox 65-Tage/<100 %/Gewicht) – kein Stop",
+  "Sizing": "FREMD (10 % je Neukauf, 3 %-Minimum, Trim 20 -> 15 %)",
+  "Portfolio": "FREMD (10 Plaetze, monatlich) + VU (Universum 1.800 nach Umsatz)",
+  "Risk": "FREMD (kein Stop; Ampel -> 5 %-Cap); Delisting-/Gap-Risiko ungeschuetzt",
+  "Fundamentals": "keine (Pivotal-News-Points nicht abgebildet)",
+  "Market": "FREMD (SPY > GD200 als Proxy fuer S&P 500)"
+ },
+ "implementation_fidelity": {
+  "rating": "MEDIUM",
+  "per_area": {
+   "Entry": "MEDIUM (R15-Matrix)",
+   "Exit": "MEDIUM",
+   "Sizing": "MEDIUM",
+   "Portfolio": "MEDIUM (Universum-Proxy)",
+   "Risk": "HIGH im Sinne der Quelle (kein Stop wie beschrieben), inhaltlich ungeschuetzt",
+   "Fundamentals": "HIGH (keine verlangt)",
+   "Market": "MEDIUM (SPY-Proxy)"
+  },
+  "penalties": [
+   "Rang durch Clenow ersetzt (nicht oeffentliche Trendstabilitaet)",
+   "Universum nach Umsatz statt Groesse, Live nur aktuell gelistete Titel",
+   "SPY statt S&P 500; Definition Jahrestief/Gap nicht verifiziert",
+   "Pivotal-News-Points und dynamisierte Variante fehlen"
+  ],
+  "shared_default_penalty": false
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE (Tages-OHLC mit Open, >= 252 Bars)",
+   "volume": "AVAILABLE (Dollarumsatz 20/63)",
+   "fundamentals": "NOT_NEEDED (Pivotal-News-Points nicht umgesetzt)",
+   "institutional": "NOT_NEEDED",
+   "estimates": "NOT_NEEDED",
+   "sector": "NOT_NEEDED",
+   "market_regime": "AVAILABLE (SPY)",
+   "intraday": "NOT_NEEDED (Fuellung zur Eroeffnung)",
+   "earnings_events": "MISSING (nur fuer Pivotal-News-Points)"
+  },
+  "sufficiency": "MEDIUM",
+  "fundamental_core_state": "Keine Fundamentaldaten genutzt; Core 1.22+ weder live noch migriert, fuer diese Methode irrelevant. Oeffentliche Tages-OHLCV nur ca. 1,07 Jahre (Registry dataRealityNote), Validierung ueber privaten Langzeit-Speicher; PIT-Universum/Delisting ueber SEC-Klassifikation (S1C).",
+  "fundamental_dependency": "NONE"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R12",
+    "result": "technicalControls PASS; R1 FAIL, R2 FAIL, R3 FAIL, R4 FAIL -> LIVE_MODEL_OBSERVATION. Kein historischer Vorteil, hohe Schwankungen; grosse Gewinner werden haeufig rechtzeitig Kandidat und deutlich laenger gehalten als in den Ausbruchsmethoden, Gesamtdepot verliert durch spekulative Fehlgriffe. Sensitivitaeten (Regeln 2018, RS-Rang) aendern das Urteil nicht",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "S1C: R1-R4 weiter FAIL; Abstand zum Markt kleiner als in R12 berichtet; UNCHANGED_LIVE_MODEL_OBSERVATION; keine Reproduktion des TraderFox-Backtests behauptet",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json ; docs/SUPERTRADER_AUDIT_R13.md:80,112,121"
+   },
+   {
+    "round": "R14",
+    "result": "Kategorie [A]; kein Vorteil in beiden Zeitraeumen; hohe Beta- und Konzentrationswirkung; Rangmass ist Ersatz; O7_trend52 false; O8 Cash-in-SPY false",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json ; docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:137-140"
+   },
+   {
+    "round": "R15",
+    "result": "Produktklasse VU_NATIVE (kein Replikationsclaim moeglich); Fidelity MEDIUM gegen TraderFox-Regeln; darf nicht 'Darvas' heissen; Reparaturbedarf klein (nur Benennung)",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:172-181,398-412"
+   }
+  ],
+  "signal_quality": "Kein Vorteil gegenueber dem Markt belegt (R1-R4 FAIL, R14 A: beide Zeitraeume). Fangquote grosser Gewinner qualitativ hoch (R12), aber Fehlgriffe dominieren.",
+  "portfolio_result_direction": "Hinter SPY (Abstand nach S1C kleiner als in R12 berichtet); hohe Schwankung.",
+  "exposure_finding": "Konzentration (10 Titel) und hohe Beta; Cash in rotem Markt (Cap 5 %). Cash-in-SPY-Gegenprobe false (O8).",
+  "risk_finding": "Kein Stop: Verkauf erst zum Monatsende; schnelle Marktwenden und Gaps voll im Depot; Delisting-Buchung sensibel.",
+  "robustness": "RS-Rang und 2018er-Regeln aendern das Urteil nicht (R12); Delisting-Szenarien S0/S1C berichtet (Werte SEALED_NOT_READABLE).",
+  "ground_truth_light": "Qualitativ (R12): grosse Gewinner werden haeufig rechtzeitig Kandidat; konkrete Beispiele nicht in oeffentlichen Dokumenten (UNKNOWN).",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "Clenow-Rang als Ersatz; Universumsproxy; Definition Jahrestief/Gap UNKNOWN; Terminlogik an Handelstagen.",
+  "missing_data": "Trendstabilitaet, historische Marktkapitalisierung, Pivotal-News-Points, lange oeffentliche Historie.",
+  "fragile_parameters": "100 %-Schwelle, 20-/65-Tage-Fenster, Gap 6 %, Gewichtsgrenzen 3/20/5 %, Rang-Fenster 90."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HOCH: monatliches Top-10-Staerke-Depot mit klaren Kauf-/Verkaufsregeln und Ampel.",
+  "signal_frequency": "NIEDRIG (monatliche Entscheidungen, wenige Aenderungen) – gut fuer Ruhe, schlecht fuer Aktivitaet.",
+  "differentiation": "MITTEL: eigene VU-Methode mit offengelegtem Rang-Ersatz; Anbieter-Idee nicht exklusiv.",
+  "explainable_setups": "HOCH (Gruende je Kauf/Verkauf, nearMisses, Rangliste in trend52.json).",
+  "mobile": "SEHR GUT (Depotliste, Orders, Ampel).",
+  "forward_test": "Bereits aktiv: Ledger seit liveSince (Datum UNKNOWN, ledger/trend52.json nicht im Checkout; Entscheidung R12 am 03.10.2026); nur sehr wenige Monatsentscheidungen."
+ },
+ "main_problems": [
+  "Kein historischer Vorteil (R1-R4 FAIL, beide Zeitraeume)",
+  "Hohe Beta/Konzentration, kein Stop",
+  "Rang-/Universum-Ersatz verhindert Reproduktion der Quelle",
+  "Monatstakt: sehr langsame Evidenz",
+  "Gate-Definition fehlt"
+ ],
+ "critical_implementation_errors": [
+  "Keine kritischen Codefehler gefunden; R13-Invarianten ohne Verletzung (alle Live-Methoden, aber Trend52 ausserhalb der 5 gepruefte)",
+  "Gate-Luecke: REQUIREMENTS/TEST_PLANS ohne VU_TREND_52W (gates.mjs:59-63)"
+ ],
+ "validation_class": "FORWARD_READY",
+ "preliminary_tier": "B",
+ "confidence": "MEDIUM",
+ "deep_dive_candidate": true,
+ "preliminary_reasoning": "Sauberste Provenienz der drei Linien (eigene VU-Methode, Fremdregeln ausgewiesen, kein Defaults-Erbe), vollmechanisch, eigenes Forward-Ledger, mobil gut erklaerbar. Historisch kein Vorteil (R1-R4 FAIL, hohe Beta/Konzentration), daher nur B; Deep-Dive lohnt wegen Regime-/Beta-Zerlegung und Rang-/Universum-Sensitivitaet, nicht wegen Reproduktion der TraderFox-Zahlen.",
+ "open_for_measurement": [
+  "Zerlegung in Marktbeta, Momentum-Faktor und Selektion (investiertes Kapital vs. SPY, vorab festgelegt)",
+  "Sensitivitaet Universum (Umsatz vs. Marktkap-Proxy) und Rang (Clenow vs. RS vs. Zufall) – nur Diagnose",
+  "Wirkung der Ampel (SPY vs. S&P 500) und des 5-%-Caps in Baerenphasen",
+  "Verteilung der Haltedauer und Beitrag der Top-Gewinner (Konzentration)",
+  "Effekt der Delisting-Buchung (S0 vs. S1C) auf das Ergebnis"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/rotation-52w.mjs:16-210",
+  "scripts/supertrader/trend52-live.mjs:1-120",
+  "scripts/supertrader/build.mjs:106-121,553,565-575",
+  "scripts/supertrader/engine/gates.mjs:59-63",
+  "scripts/supertrader/fidelity/canonical/darvas.json (systems.VU_TREND_52W, systems.NEO_DARVAS_TRADERFOX)",
+  "scripts/supertrader/validation/DECISION-R12.json",
+  "scripts/supertrader/validation/DECISION-R13.json",
+  "scripts/supertrader/validation/AUDIT-R14-RESULT.json",
+  "scripts/supertrader/validation/PREREGISTRATION-R12.json",
+  "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:137-140",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:172-181",
+  "supertrader/data/registry.json (VU_TREND_52W)"
+ ]
+}

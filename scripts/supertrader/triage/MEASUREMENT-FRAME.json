@@ -1,0 +1,294 @@
+{
+  "schema": "triage-measurement-frame-1.0",
+  "agent": "E2",
+  "commit": "579e6338e9d7087e4632f59231ef7037b240effb",
+  "core_finding": "audit-r14.mjs ist bereits ein gemeinsamer Rahmen fuer 5 Live-Engines (Live-Config via portfolioConfig, audit-r14.mjs:38-39) + VU_TREND_52W (simulateRotation, S1C) in einem Prozess; Luecken klein.",
+  "capabilities": [
+    {
+      "id": "pit_universe",
+      "status": "VORHANDEN",
+      "where": [
+        "validation/lib.mjs:55 buildListingTable",
+        "lib.mjs:91 tableHash",
+        "analyze-methods.mjs:307 loadPitData",
+        "lib.mjs:12 WINDOWS"
+      ],
+      "caveat": "Tickerliste fuer alte Delistings unvollstaendig; Holdout survivorship-verzerrt"
+    },
+    {
+      "id": "delistings_s1c",
+      "status": "VORHANDEN",
+      "where": [
+        "validation/portfolio.mjs:22-31 SCENARIOS S1C/S2C",
+        "validation/sec-pit.mjs:63 classifyDelisting, :80 classifyDelistingR15, :61 DELIST_KEY",
+        "engine/rotation-52w.mjs SCEN"
+      ]
+    },
+    {
+      "id": "splits",
+      "status": "VORHANDEN",
+      "where": [
+        "lib.mjs:132 adjustSeries",
+        "lib.mjs:157 splitChecks",
+        "lib.mjs:241 splitSegments"
+      ],
+      "caveat": "eigene adjustSeries statt quant/engines/return-series.js#splitFactors (ADR-002-Abweichung benennen)"
+    },
+    {
+      "id": "costs",
+      "status": "VORHANDEN",
+      "where": [
+        "engine/execution.mjs:15 DEFAULT_EXECUTION 10bp+1bp",
+        "audit-r14.mjs:33 EXEC2 20/2",
+        "audit-r14.mjs costs"
+      ]
+    },
+    {
+      "id": "spy_tr_benchmark",
+      "status": "VORHANDEN",
+      "where": [
+        "loadPitData spyTR/spyAdj",
+        "portfolio.mjs cagrBetween",
+        "audit-r14.mjs spyFrom",
+        "diagnose-methods.mjs:44 spyWindow",
+        "audit-r14.mjs cashInSpy"
+      ]
+    },
+    {
+      "id": "cagr_maxdd",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs quickA",
+        "portfolio.mjs maxDrawdown",
+        "engine/backtest.mjs:82 computeMetrics"
+      ]
+    },
+    {
+      "id": "volatility",
+      "status": "TEILWEISE",
+      "where": [
+        "backtest.mjs:82 computeMetrics via analyze-methods.mjs:595 metricsOf, analyze.mjs:269, analyze-trend52.mjs:33"
+      ],
+      "gap": "audit-r14 quickA gibt keine Vol aus"
+    },
+    {
+      "id": "turnover",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs costs.turnoverPerYear, tradesPerYear"
+      ]
+    },
+    {
+      "id": "hit_rate",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs summarize().pos",
+        "backtest.mjs computeMetrics.hitRate"
+      ]
+    },
+    {
+      "id": "exposure",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs exposureStats",
+        "attributeIdle"
+      ]
+    },
+    {
+      "id": "signal_quality_vs_spy",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs signal.byHorizon vsSpy/vsUniverse/vsRsDecile + clusterT"
+      ]
+    },
+    {
+      "id": "horizons_21_63_126",
+      "status": "TEILWEISE",
+      "where": [
+        "audit-r14.mjs:34 H=[5,10,20,40,60,120,252]"
+      ],
+      "gap": "20/60/120 statt 21/63/126; Index 5 (=120) hart verdrahtet (edgeByYear, pc.skipped); H=[5,10,21,40,63,126,252] erhaelt Positionen"
+    },
+    {
+      "id": "mfe_mae",
+      "status": "TEILWEISE",
+      "where": [
+        "audit-r14.mjs mfe60/mae60/mfe252/mae252"
+      ],
+      "gap": "Fenster 60/252, nicht 21/63/126"
+    },
+    {
+      "id": "signal_count",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs engineTrades, signal.n, portfolioConstruction.daysWithSignals"
+      ]
+    },
+    {
+      "id": "exposure_buckets",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs:91-96 exposureStats lt25,b25_50,b50_75,b75_100"
+      ]
+    },
+    {
+      "id": "bull_bear",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs segmentReturns regime BULL/BEAR/SIDEWAYS (SPY vs GD200+Steigung)"
+      ],
+      "caveat": "Tagesregime, kein -20%-Baerenmarkt"
+    },
+    {
+      "id": "vol_high_low",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs regime HIGH_VOL/LOW_VOL (20d Vol vs Fenstermedian)"
+      ]
+    },
+    {
+      "id": "early_late",
+      "status": "TEILWEISE",
+      "where": [
+        "analyze-methods.mjs:157 SPLIT_PERIODS (DEV hart)",
+        "audit-r14.mjs YEARS Jahresgruppen"
+      ],
+      "gap": "keine Halbierung in audit-r14"
+    },
+    {
+      "id": "crisis_phases",
+      "status": "VORHANDEN",
+      "where": [
+        "analyze-methods.mjs:158 PHASES",
+        "analyze-trend52.mjs:19"
+      ]
+    },
+    {
+      "id": "method_overlap_correlation",
+      "status": "FEHLT",
+      "where": [
+        "audit-r13.mjs:142 nur intra-Methode"
+      ],
+      "gap": "Join der r.rec ueber Methoden + Rendite-Korrelation"
+    },
+    {
+      "id": "all_six_one_run",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs:39 ENGINES_R14 + simulateRotation"
+      ]
+    },
+    {
+      "id": "normalised_portfolios",
+      "status": "VORHANDEN",
+      "where": [
+        "audit-r14.mjs C2 eqw, B4, C4, C5, C6, C7"
+      ]
+    },
+    {
+      "id": "ground_truth",
+      "status": "TEILWEISE",
+      "where": [
+        "audit-r14.mjs winnerCases",
+        "validation/case-study.mjs"
+      ],
+      "gap": "Minervini-Ground-Truth und Phase-2A/2B-Messlaeufe (06./07.10.) liefen auf claude/**-Zweigen, Code nicht auf main"
+    }
+  ],
+  "minimal_additional_code": [
+    "validation/standard-frame.mjs (~150-250 Zeilen) auf Basis audit-r14-Helfer",
+    "H=[5,10,21,40,63,126,252] + MFE/MAE 21/63/126",
+    "Cross-Methoden: Tagesrenditen + (listing,entry,exit) behalten; Jaccard der offenen Listing-Tage, Pearson der Tagesrenditen/Exposure (~40 Zeilen) = einzige echte Luecke",
+    "Standardzeile: CAGR, MaxDD, Vol, Umschlag, Trefferquote, Exposure+Buckets, frueh/spaet-Halbierung (~30 Zeilen)",
+    "oeffentliche Klassen-Datei ohne Zahlen (~30 Zeilen)",
+    "Workflow-Modus 'standard' (options :28, case :62, Schritt, NODE_OPTIONS 14500, ST_WINDOW)",
+    "Datenstand-Einfrierung: Fingerabdruck loggen/vergleichen, OHLCV-Hash ergaenzen; STORE_ACTIVE-Reihen kommen aus taeglich aktualisiertem Hauptspeicher",
+    "audit-r14.mjs:409 loggt Ueberrendite/Exposure je Methode oeffentlich -> im neuen Skript nur Zaehlwerte",
+    "Test in scripts/supertrader/tests/; alle Pfade in Gate A (supertrader/**, scripts/supertrader/**, supertrader-*.yml)"
+  ],
+  "sealed_output": {
+    "function": "validation/lib.mjs:185 encryptForOwner, :193 decryptSealed",
+    "format": "{schema:'supertrader-sealed-1.0.0', alg:'RSA-OAEP-256+A256GCM+gzip', wrappedKey, iv, tag, body}",
+    "public_key": "scripts/supertrader/validation/results-public-key.pem",
+    "marker": "[supertrader-validation:<mode>] im Kopf-Commit-Text auf claude/** oder workflow_dispatch mode",
+    "storage": "Schritt 'Verschluesseltes Ergebnis ablegen': Schema-Check, dann <stamp>-<name>.sealed.json auf Zweig claude/supertrader-validation-results (direkter git push)",
+    "workflow": ".github/workflows/supertrader-validation.yml, timeout 340 min, permissions contents: write"
+  },
+  "durations_min": {
+    "full_fetch_dev_first": 296,
+    "holdout_fetch": [
+      132,
+      184
+    ],
+    "audit14_dev": 37,
+    "audit14_holdout": 42,
+    "analyze_methods_full": "46-66",
+    "phase2a_dev_holdout_other_branch": [
+      57,
+      101
+    ],
+    "phase2b_dev_holdout_other_branch": [
+      47,
+      31
+    ],
+    "sec_layer_build": "65-95",
+    "estimate_standard_frame_per_window": "40-60"
+  },
+  "run_ids": {
+    "audit14_dev": 37157533338,
+    "audit14_holdout": 37187485768,
+    "holdout_fetch": [
+      37147403220,
+      37165743410
+    ],
+    "full_fetch_dev": 36864058978
+  },
+  "data_state": {
+    "DEV": {
+      "warmup_from": "2015-01-01",
+      "from": "2016-01-04",
+      "to": "2026-09-30",
+      "namespace": "tiingo-delisted",
+      "seen": true
+    },
+    "HOLDOUT": {
+      "warmup_from": "2007-01-02",
+      "from": "2008-01-02",
+      "to": "2015-12-31",
+      "namespace": "tiingo-holdout",
+      "seen": true,
+      "note": "in R14 einmal geoeffnet; HS4-OOS2008 nutzt ihn; survivorship-verzerrt"
+    },
+    "unseen": "nur Vorwaerts-Ledger der Live-Methoden",
+    "fingerprint": "analyze-methods.mjs:423 dataFingerprint {segments, hash} (id|n|first|last|lastClose|sum close) + tableHash; in jedem Ergebnis seit R13"
+  },
+  "publication_policy": {
+    "public_ok": [
+      "Zaehlwerte",
+      "Fingerabdruck-Hash",
+      "Commit",
+      "Fenster",
+      "Laufzeit",
+      "Gate Pass/Fail",
+      "Klassen/Richtungen/Kategorien",
+      "Vorzeichen",
+      "Rangfolgen ohne Zahlen"
+    ],
+    "sealed_only": [
+      "CAGR",
+      "MaxDD",
+      "Vol",
+      "Trefferquote",
+      "Exposure",
+      "Umschlag",
+      "Renditeverteilungen",
+      "Kosten-Excess",
+      "Korrelationen",
+      "Fallkurse",
+      "alle Kurse und Reihen"
+    ],
+    "reason": "Tiingo-Rechte an abgeleiteten Kennzahlen ungeklaert (USAGE_RIGHTS-Gate); Repo oeffentlich",
+    "warning": "audit-r14.mjs:409 loggt Ueberrendite und Exposure je Methode in das oeffentliche Actions-Log"
+  },
+  "sealed_files_read": false
+}

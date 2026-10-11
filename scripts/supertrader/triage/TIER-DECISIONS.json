@@ -1,0 +1,239 @@
+{
+  "schema": "supertrader-triage-tier-decisions-1.0.0",
+  "decidedAt": "2026-10-11",
+  "basis": "Dossiers (Code-/Quellenpruefung), Standardmessung Run 38126161777 (DEV, gesehen), R11-R15 Entscheidungen. Opus-Red-Team danach angewendet (siehe redTeam).",
+  "rules": {
+    "A": "Alle Qualitaetsgates + datenbasierter Grund (Signaledge ODER Risikoprofil ODER Regime ODER Korrelation) + Confidence >= MEDIUM. Forward-Testbarkeit allein genuegt nicht (Amendment A2).",
+    "B": "Quelle mindestens MEDIUM, Implementierungs-Fidelity mindestens MEDIUM, kein belegter Schaden, kein bekannter CRITICAL-Fehler ausser benannten Vorbehalten, Datenbasis fuer die Messung vorhanden; produktseitig sinnvoll, keine Forschungspriorität",
+    "C": "Niedrige Fidelity ODER schwache Reproduzierbarkeit ODER durchgehend negative Evidenz; darf bleiben, nicht als starke Strategie vermarkten",
+    "D": "Nur Empfehlung: Referenz ohne VU-Implementierung, Sammelkarte oder irreführend; kein Loeschauftrag"
+  },
+  "methods": {
+    "MOMENTUM_BREAKOUT": {
+      "tier": "B",
+      "confidence": "MEDIUM",
+      "deepDive": "CONDITIONAL",
+      "forwardPriority": "MEDIUM",
+      "validationClass": "HISTORICAL_PLUS_LIGHT_GT",
+      "productRecommendation": "Standard (nur mit dem Hinweis auf den Exit-Vorbehalt und ohne Vorteilsaussage)",
+      "distinctEdge": "Early breakout / Momentum-Selektion (Kullamaegi-Quelle am naechsten, aber nur Teil der Setups)",
+      "reasons": [
+        "Naechste Quelltreue der Live-Methoden (Exit/Sizing quellnah)",
+        "Signal NEUTRAL, Portfolio BELOW, Regime-Konsistenz nur 3/6",
+        "Bekannter Implementierungsvorbehalt: Exit nutzt Tagestief des ganzen Tages statt Tief bis zum Kauf"
+      ]
+    },
+    "VU_TREND_52W": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "CONDITIONAL",
+      "forwardPriority": "HIGH",
+      "validationClass": "FORWARD_READY",
+      "productRecommendation": "Experimental (Forward-Beobachtungsmodell, klar gekennzeichnet)",
+      "distinctEdge": "Trend persistence / Rotation (eigenes Regelwerk, keine geerbten Defaults)",
+      "reasons": [
+        "Messprofil wie Darvas (C): Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH; R12/R14 ohne Vorteil",
+        "Provenienz ist keine Evidenz: Regeln fast vollstaendig von TraderFox, Rang von Clenow, Universum VU-Ersatz",
+        "Forward-Prioritaet HIGH bleibt: Forward-Ledger ist der einzige ungesehene Raum und kostet wenig; das ist eine Beobachtungs-, keine Empfehlungsaussage"
+      ]
+    },
+    "PIOTROSKI_F": {
+      "tier": "C",
+      "confidence": "LOW",
+      "deepDive": "BLOCKED_BY_DATA",
+      "forwardPriority": "LOW",
+      "validationClass": "HISTORICAL_ONLY",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "Fundamental quality screen (Primaerquelle klar)",
+      "reasons": [
+        "Primaerquelle klar, aber Buch-/Marktwert-Berechnung mit moeglichem Auswahlfehler (build.mjs ~660/669, aus Code abgeleitet, nicht gemessen) und Ticker-zu-CIK-Zuordnung per erstem Treffer (ADR-001-Verstoss)",
+        "Datenbasis LOW, keine Messung moeglich, Fundamental-Core nicht migriert",
+        "Voll pruefbar nur 732 von 2564 Titeln; Kandidaten brauchen alle 8 Signale"
+      ]
+    },
+    "WEINSTEIN_STAGE": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "HISTORICAL_PLUS_LIGHT_GT",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "Stage transition (nur Idee)",
+      "reasons": [
+        "Fremdes Kullamaegi-Sizing still geerbt; Portfolio-Evidenz stark kontaminiert",
+        "Signal gegen SPY NEGATIVE in allen Segmenten (gegen das Universum laut R14 neutral): Aussage gilt nur gegen SPY",
+        "Dekontaminationsmessung bleibt offene Frage, keine Prioritaet"
+      ]
+    },
+    "DARVAS_BOX": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "HISTORICAL_ONLY",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "keine belegt",
+      "reasons": [
+        "Quelle LOW, Boxdefinition VU, fremde Marktampel und 0,5-%-Risiko",
+        "Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH"
+      ]
+    },
+    "DONCHIAN_TURTLE": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "HISTORICAL_ONLY",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "keine belegt (Equity Adaptation, kein Original)",
+      "reasons": [
+        "Bewertet als VU Equity Adaptation, keine Originalreplikation",
+        "Alphabetische Auswahl statt Staerke-Rang, kein Gewichtsdeckel",
+        "Signal gegen SPY NEGATIVE in 6/6 Segmenten (R14: gegen das Universum kein Vorteil), Portfolio BELOW, Drawdown DEEPER"
+      ]
+    },
+    "MINERVINI_VCP": {
+      "tier": "C",
+      "confidence": "HIGH",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "keine belegt",
+      "reasons": [
+        "Bestehendes Urteil uebernommen: Fidelity LOW, Recall 3/15, NOT_FEASIBLE_FROM_PUBLIC_RULES",
+        "Standardmessung: Signal NEUTRAL, Portfolio BELOW (niedrige Fallzahl, 263 Trades)"
+      ]
+    },
+    "CANSLIM": {
+      "tier": "C",
+      "confidence": "LOW",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "HISTORICAL_ONLY",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Teilpruefung: 5 von 7 Kriterien, I fehlt, Nettogewinn statt EPS",
+        "Keine Messung, Fundamentaldaten restated"
+      ]
+    },
+    "GREENBLATT_VALUE": {
+      "tier": "C",
+      "confidence": "LOW",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Engine rechnet kein Ranking (nur Feldabdeckungspruefung)",
+        "Bilanzfelder 0 von 6293 Titeln vorhanden"
+      ]
+    },
+    "KK_EPISODIC_PIVOT": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Namenskarte ohne Regeln; Daten (News-Zeitstempel, Konsens) fehlen"
+      ]
+    },
+    "KK_PARABOLIC_SHORT": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Namenskarte ohne Regeln; Borrow/Locate und Intraday fehlen"
+      ]
+    },
+    "VU_HOUSE_HS4_V03": {
+      "tier": "C",
+      "confidence": "MEDIUM",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "FORWARD_READY",
+      "productRecommendation": "Experimental",
+      "distinctEdge": "Faktormodell, kein Trader; Entscheidungsdateien: kein Vorteil",
+      "reasons": [
+        "Hausstrategie, keine Trader-Methode; nicht im Standardmessrahmen"
+      ]
+    },
+    "MARKET_WIZARDS_NEXT": {
+      "tier": "D",
+      "confidence": "HIGH",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Sammelkarte, keine Methode; Quelle nicht gelesen",
+        "Empfehlung ohne Loeschauftrag"
+      ]
+    },
+    "TURTLE_ORIGINAL_FUTURES": {
+      "tier": "D",
+      "confidence": "HIGH",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Referenzzeile: Futures-Original, nicht repliziert, nicht replizierbar mit vorhandenen Daten"
+      ]
+    },
+    "DARVAS_ORIGINAL": {
+      "tier": "D",
+      "confidence": "HIGH",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Referenzzeile: Buch und Boxformel nicht verifiziert, keine Engine"
+      ]
+    },
+    "NEO_DARVAS": {
+      "tier": "D",
+      "confidence": "HIGH",
+      "deepDive": "NO",
+      "forwardPriority": "LOW",
+      "validationClass": "NOT_REPRODUCIBLE",
+      "productRecommendation": "Educational / Legacy",
+      "distinctEdge": "keine",
+      "reasons": [
+        "Referenzzeile: Rang 'Trendstabilitaet' nicht oeffentlich, keine Engine"
+      ]
+    }
+  },
+  "amendmentA2": {
+    "date": "2026-10-11",
+    "afterResult": true,
+    "disclosure": "Die Definitionen von Tier B, C und D, der Zusatz 'datenbasierter Grund' fuer Tier A und der Robustheits-Teilscore wurden NACH dem Messergebnis festgelegt bzw. praezisiert (Prereg enthielt nur die A-Gates und die Gewichte). 'Forward-Testbarkeit' ist als alleiniger Grund fuer Tier A gestrichen. Tier-Entscheidungen sind damit Setzungen nach Ergebnis und als solche zu lesen.",
+    "redTeamChanges": [
+      "PIOTROSKI_F: B -> C",
+      "VU_TREND_52W: B -> C (Forward-Prioritaet HIGH bleibt)",
+      "Uebereinstimmung/Redundanz: 'keine Redundanz' -> 'nicht bestimmbar' (Jaccard durch Mengengroessen begrenzt)",
+      "Robustheits-Teilscore: NEUTRAL = 0,3 pauschal (Vorzeichen unbekannt), NEGATIVE = 0, POSITIVE = Konsistenzanteil"
+    ]
+  },
+  "redTeam": {
+    "reviewer": "Opus (adversarial)",
+    "report": "nicht im Repo; Befunde sinngemaess in docs/SUPERTRADER_PORTFOLIO_TRIAGE.md §10",
+    "blocker": 0,
+    "major": 6,
+    "minor": 13,
+    "tierAEmpty": "bestaetigt"
+  }
+}

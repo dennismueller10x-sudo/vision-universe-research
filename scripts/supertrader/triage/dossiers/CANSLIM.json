@@ -1,0 +1,246 @@
+{
+ "strategy_id": "CANSLIM",
+ "method_name": "CAN SLIM (Teilprüfung)",
+ "group": "C",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/partial/canslim.mjs",
+   "scripts/supertrader/build.mjs (buildPartialChecks, loadSecFundamentals, crossSection)"
+  ],
+  "versions_in_repo": [
+   "0.9.0 (registry.json strategy_version; canslim.mjs trägt keine eigene Versionskonstante)"
+  ],
+  "live_version": "0.9.0 (PARTIAL_CHECK, kein Signal/Backtest; tägliche Ausgabe unter supertrader/data/signals.json -> partialChecks.CANSLIM)",
+  "status": "LIVE (als Teilprüfung, kein Handelssignal; engine=null in der Registry)",
+  "shared_modules_used": [
+   "engine/indicators.mjs#computeIndicators (high252 aus Tageshochs, dollarVol20, ret63..ret252)",
+   "build.mjs#crossSection (RS-Perzentil, gemeinsam mit Live-Strategien)",
+   "quant/data/market/multi-asset/series/SPY.json (M)",
+   "quant/data/sec/consumer (Fundamentals)"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Nettogewinn statt EPS für C und A (VU-Ersatz)",
+    "where": "canslim.mjs:94-95, Kommentar :14-15",
+    "effect": "Aktienrückkäufe/Verwässerung, Einmalposten (Steuerertrag, Abschreibungen) schlagen voll auf C/A durch; O'Neil nutzt EPS. Split-Konsistenz damit zwar umgangen, aber EPS-Fehlerklasse (TTM-/Verlustpopulation) durch NI-Variante nur teilweise, nicht gelöst."
+   },
+   {
+    "what": "Verlust im Vorjahresquartal = FAIL (nicht NO_DATA); Wachstum null gesetzt",
+    "where": "canslim.mjs:54-56",
+    "effect": "Turnarounds und Verlust-zu-Gewinn-Titel werden ohne Wachstumsbewertung als FAIL gezählt; in csCount landet es als FAIL statt NO_DATA (Verlustpopulation bläht FAIL: 1503 von 2639)."
+   },
+   {
+    "what": "Vorjahresquartal-Suche per Toleranz 364 Tage +-20",
+    "where": "canslim.mjs:51",
+    "effect": "Bei 52/53-Wochen-Geschäftsjahren oder fehlendem Quartal wird still NO_DATA bzw. ein verschobenes Quartal verglichen."
+   },
+   {
+    "what": "Mindestens 5 Quartale, sonst NO_DATA",
+    "where": "canslim.mjs:48",
+    "effect": "Konsum-Bestand hat meist nur 8 Quartale; 1130 von 5073 Emittenten ohne Quartalsreihe -> NO_DATA 451 bei C."
+   },
+   {
+    "what": "Altersgrenzen 200 Tage (Quartal) / 550 Tage (Jahr)",
+    "where": "canslim.mjs:27-28",
+    "effect": "Willkürliche VU-Schwellen; bestimmen NO_DATA-Anteil (A: 224)."
+   },
+   {
+    "what": "A: jedes Jahr strikt höher UND positiv UND CAGR >= 25 % über 3 Jahre (4 Geschäftsjahre)",
+    "where": "canslim.mjs:65-67",
+    "effect": "Strenger als 'Jahres-EPS >= 25 % p. a.' im Einzeljahr; Verlustjahr im Fenster = FAIL; nur 143 von 2639 PASS."
+   },
+   {
+    "what": "N nur Kursteil: close >= 85 % des 252-Tage-HOCHS (Tageshoch, nicht Schlusshoch)",
+    "where": "canslim.mjs:70-74; indicators.mjs:119 (rollingMax(high,252))",
+    "effect": "Kein Basismuster/Pivot/Volumen; 927 PASS (35 %) - kaum selektiv."
+   },
+   {
+    "what": "L = VU-RS-Perzentil (0.4*63d + 0.2*126d + 0.2*189d + 0.2*252d Rendite), Querschnitt nur Titel mit dollarVol20 >= 1 Mio. USD",
+    "where": "build.mjs:170-175; canslim.mjs:76-79 (>=80)",
+    "effect": "Kein IBD-RS; Gewichte sind VU-Annahme; Querschnitt ist ein anderes Universum (>= 1 Mio.) als das der Prüfung (>= 5 USD, 5 Mio.)."
+   },
+   {
+    "what": "M = SPY > SMA50 und > SMA200 und SMA200 > SMA200 vor 21 Tagen; n<230 -> NO_DATA",
+    "where": "canslim.mjs:82-90",
+    "effect": "Ersatz für Follow-Through/Distribution Days; identische Aussage für alle Titel (Stand 2026-10-06: M PASS bei 2639/2639) -> M diskriminiert nicht, sondern schaltet ein."
+   },
+   {
+    "what": "Liquiditätsuniversum close >= 5 USD und dollarVol20 >= 5 Mio. USD (fremde/gemeinsame Handelbarkeitsgrenze der Live-Strategien)",
+    "where": "build.mjs:656 (Kommentar 'gleiche Handelbarkeitsgrenze wie die Live-Strategien')",
+    "effect": "Nicht Teil von O'Neil; aus der Kullamägi/Minervini-Familie übernommen."
+   },
+   {
+    "what": "Ticker->CIK-Zuordnung per erstem Treffer in j.tickers, eigene Symbolsuche statt core/identity.js",
+    "where": "build.mjs:635-636",
+    "effect": "Mehrere Gattungen/Ticker eines Emittenten: der erste Dateiname in sortierter Reihenfolge gewinnt; Verstoß gegen CLAUDE.md-Regel 'Identität nur über core/identity.js' (securityIds liegen in der Datei vor, werden nicht genutzt)."
+   },
+   {
+    "what": "I wird fest als NOT_AVAILABLE gesetzt; Teiltreffer = alle 5 prüfbaren PASS, M zählt mit",
+    "where": "canslim.mjs:99,102-105",
+    "effect": "'partialMatch' (10 Titel am 2026-10-06) ist ein Screen auf C+A+N+L+M, kein CAN-SLIM-Signal."
+   },
+   {
+    "what": "Shares (S) aus letztem Geschäftsjahr, nur Anzeige",
+    "where": "build.mjs:659; canslim.mjs:97",
+    "effect": "Keine Bewertung; Aktienzahl kann nach Splits/Rückkäufen veraltet sein."
+   }
+  ],
+  "version_drift": "Dokumentenstand widersprüchlich zum Code: docs/SUPERTRADER_METHOD_FIDELITY.md:232-246 und registry.fidelity.mechanizableNote sagen M 'fehlt/nicht umgesetzt', der Code hat evalM (canslim.mjs:82-90, registry.market_regime = VU-Ersatz). PRODUCT_MATRIX nennt 7 Teiltreffer (DELL, CHEF, DXCM, FTNT, ANET, BOW, PNTG), die aktuelle signals.json 10. Registry 'engine': null obwohl Engine-Datei existiert."
+ },
+ "source_audit": {
+  "core": "O'Neil: aktueller Quartalsgewinn und jährliches Gewinnwachstum, neues Hoch, Angebot/Nachfrage, Marktführer, institutionelle Unterstützung, Marktrichtung; Kauf am Pivot, Verlustbegrenzung bei 7-8 %. Das Originalbuch wurde laut Registry nicht inhaltlich geprüft (SECONDARY_ONLY).",
+  "clear_public_rules": [
+   "C >= +25 % ggü. Vorjahresquartal (Sekundärquellen)",
+   "A: 3 Jahre Wachstum ~25 % (Sekundärquellen)",
+   "Verlust bei 7-8 % begrenzen (CS-SELL-REF, nicht gerechnet)"
+  ],
+  "discretionary_rules": [
+   "N: neue Produkte/Management, Basismuster (Cup with Handle)",
+   "S: Angebot/Nachfrage nur qualitativ",
+   "I: Qualität der Fondsbeteiligung",
+   "Marktrichtung (Follow-Through-Day) nur halbmechanisch"
+  ],
+  "vu_own_formalizations": [
+   "Nettogewinn statt EPS (C, A)",
+   "N als 15 %-Abstand zum 252-Tage-Hoch (CS-N-VU)",
+   "L als VU-RS-Perzentil >= 80 (CS-L-01)",
+   "M als SPY-Trend (CS-M-VU)",
+   "Liquiditätsuniversum 5 USD / 5 Mio. USD"
+  ],
+  "foreign_rules": [
+   "Liquiditätsgrenze der Live-Strategien (build.mjs:656)",
+   "RS-Querschnitt der Live-Strategien (build.mjs:160-190)"
+  ],
+  "source_fidelity": "LOW",
+  "source_fidelity_reason": "Nur Sekundärquellen; 2 von 5 geprüften Kriterien nur mit Ersatzgrößen, 3 weitere VU-Formalisierungen, I fehlt, Entry/Exit/Basis fehlen. Registry-Text 'Teilweise: 5 von 7 prüfbar, zwei nur mit Ersatzgrößen' stimmt zum Code, nennt aber nicht, dass N, L, M ebenfalls VU-Formalisierungen sind."
+ },
+ "provenance": {
+  "Entry": "VU - keine Einstiegsregel gerechnet; nur Kriterien-Screen; O'Neil-Pivot fehlt",
+  "Exit": "UNCLEAR - Verlustbegrenzung 7-8 % referenziert (CS-SELL-REF), im Code nicht gerechnet; regular_exit NOT_VERIFIABLE",
+  "Sizing": "UNCLEAR - nicht Teil der Teilprüfung (NOT_VERIFIABLE)",
+  "Portfolio": "UNCLEAR - keine Portfoliologik",
+  "Risk": "UNCLEAR - nicht gerechnet",
+  "Fundamentals": "ORIGINAL (Idee C/A >= 25 %) mit VU-Ersatz (Nettogewinn statt EPS, zuletzt berichtet statt PIT)",
+  "Market": "VU - SPY-Trendersatz für Follow-Through-Days; Liquiditätsuniversum von den Live-Strategien (FREMD)"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "Fehlt (kein Pivot, keine Basis)",
+   "Exit": "Fehlt",
+   "Sizing": "Fehlt",
+   "Portfolio": "Fehlt",
+   "Risk": "Fehlt (7-8 % nur referenziert)",
+   "Fundamentals": "MEDIUM-LOW: NI statt EPS, restated, keine PIT",
+   "Market": "MEDIUM-LOW: SPY-Trendersatz, kein Indexvolumen"
+  },
+  "penalties": [
+   "Kein Entry/Exit/Sizing",
+   "I nicht prüfbar",
+   "Nettogewinn statt EPS",
+   "Restated statt Erstmeldung",
+   "N/L/M nur VU-Näherungen",
+   "Teiltreffer können als Signal missverstanden werden"
+  ],
+  "shared_default_penalty": true
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE (Index-Volumen fehlt)",
+   "fundamentals": "PARTIAL (zuletzt berichtet, ~8 Quartale, nur heute gelistete Emittenten, 1130 ohne Quartale)",
+   "institutional": "MISSING (13F-Historie je Aktie)",
+   "estimates": "MISSING (O'Neil nutzt Schätzungen/EPS-Rating; nicht im Code)",
+   "sector": "MISSING (Gruppenstärke nicht verwendet)",
+   "market_regime": "PARTIAL (SPY-Trend statt Follow-Through-Days)",
+   "intraday": "MISSING (nicht benötigt)",
+   "earnings_events": "MISSING (keine Earnings-Termine/Überraschungen)"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "Datenstand: quant/data/sec/consumer/*.json (Schema vu-consumer-fundamentals-1.0.0, normalization_logic 1.10.0, policy 'as_of_latest', Generierung 2026-10-05), gelesen von scripts/supertrader/build.mjs#loadSecFundamentals (build.mjs:628-640). Das ist NICHT der migrierte Fundamental-Core 1.22+/1.23 (PR #481 eigener Track, nicht live) und NICHT PIT: je Periode der zuletzt gemeldete (restated) Wert, kein Erstmeldungs-Filter auf 'filed'. Eigene Messung (nur Lesen) am Konsum-Bestand: 5073 Emittenten, Quartals-Nettogewinn bei 3725 mit 8 Quartalen, 1130 ohne Quartalsreihe, keine Doppelzeilen je Periode, derived-Flag in allen Quartalszeilen 0 und vom Engine-Code ohne Auswertung.",
+  "fundamental_dependency": "HIGH"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R11",
+    "result": "nicht behandelt (kein Treffer für CANSLIM in DECISION-R11/R12/R13.json, AUDIT-R14-RESULT.json)",
+    "source_file": "scripts/supertrader/validation/DECISION-R11.json"
+   },
+   {
+    "round": "R12",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json"
+   },
+   {
+    "round": "R14",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json"
+   },
+   {
+    "round": "R15",
+    "result": "nur Datenarchitektur: consumer-Daten 'für Regeln ungeeignet', nicht zeitpunktgenau; keine Live-Strategie nutzt Fundamentals als Regel (Teilprüfungen ausgenommen)",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:255-263"
+   }
+  ],
+  "signal_quality": "UNKNOWN - Registry evidence.level = NOT_TESTED, data.id = PRICES_NO_PIT_FUNDAMENTALS (decidedAt 2026-09-29); PREREGISTRATION-R7.json:44 'keine Backtests'",
+  "portfolio_result_direction": "UNKNOWN - kein Portfolio gerechnet",
+  "exposure_finding": "UNKNOWN",
+  "risk_finding": "UNKNOWN - Verlustbegrenzung nicht gerechnet",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "Teiltreffer-Liste (Stand Matrix) DELL, CHEF, DXCM, FTNT, ANET, BOW, PNTG ist nur ein Screen-Ergebnis von heute, keine Ground-Truth-Prüfung gegen bekannte historische Gewinneraktien; UNKNOWN",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "HIGH",
+  "bad_formalization": "NI statt EPS; 'Teiltreffer' mit M als globalem Schalter; N so lax (35 % PASS), dass L und C die Auswahl tragen; Verlust-Vorjahr gilt als FAIL.",
+  "missing_data": "13F-Historie, EPS split-konsistent und PIT, Schätzungen, Indexvolumen, Quartals-Erstmeldungen.",
+  "fragile_parameters": "cMinGrowth 0.25, 15 %-N, RS 80, 200/550-Tage-Altersgrenzen, +-20-Tage-Quartalstoleranz, RS-Gewichte 0.4/0.2/0.2/0.2."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HIGH (sieben Buchstaben, Kriterien-Checkliste)",
+  "signal_frequency": "10 Teiltreffer und 136 'near' bei 2639 geprüften Titeln (2026-10-06)",
+  "differentiation": "MEDIUM - bekannte Marke, aber ohne I und Basis nur ein Screener",
+  "explainable_setups": "Teilweise: jedes Kriterium mit Status je Titel",
+  "mobile": "UNKNOWN (Checkliste gut darstellbar)",
+  "forward_test": "möglich als Screener-Forward-Test nach PIT-Migration; sonst nur 'Teiltreffer'-Beobachtung"
+ },
+ "main_problems": [
+  "Fundamental-Core nicht final migriert: Daten sind latest/restated, nicht PIT -> kein historischer Test",
+  "Nettogewinn-Ersatz statt EPS; EPS/TTM-Verlustpopulations-Kernfehler wirkt zumindest in C/A (Verlust = FAIL)",
+  "I fehlt (13F), Basismuster/Pivot/Exit/Sizing fehlen -> kein Handelssystem",
+  "M ist ein globaler Schalter, N lax; Teiltreffer-Definition wirkt scheinpräzise",
+  "Doku-Drift (M 'fehlt' vs. Code vorhanden; 7 vs. 10 Teiltreffer)"
+ ],
+ "critical_implementation_errors": [
+  "Keine harten Rechenfehler gefunden; verdächtig: Ticker->CIK per erstem Treffer (build.mjs:635-636) statt core/identity.js (CLAUDE.md-Regel). Ergebnis kann sich bei Migration auf Core 1.22+ ändern (Wert-/Periodenlogik)."
+ ],
+ "validation_class": "HISTORICAL_ONLY",
+ "preliminary_tier": "C",
+ "confidence": "LOW",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Der Code ist ehrlich als Teilprüfung gekennzeichnet, ist aber ein Screen ohne Entry, Exit, Sizing und ohne I. Die Fundamentaldaten sind latest/restated aus dem Konsumbestand und nicht PIT, der Fundamental-Core ist nicht migriert (hohe Abhängigkeit, Confidence reduziert). Eine historische Signalqualitäts-Messung ist heute nicht möglich (Fundamentals nicht PIT, nur ~8 Quartale, keine Delistings mit Fundamentals). Tier C bis PIT-Daten und eine definierte Einstiegs-/Exit-Regel vorliegen.",
+ "open_for_measurement": [
+  "Vorwärtsrenditen von C/A/N/L/M-Teiltreffern vs. L-only-Baseline - erst mit PIT-Quartals-EPS (Erstmeldung, Filed-Datum) und Delistings möglich",
+  "Wirkung von Nettogewinn vs. EPS (split-konsistent) auf C/A-Trefferlisten",
+  "Diskriminierung von N und M (aktuell 35 % bzw. 100 % PASS)",
+  "Verlustpopulation: Anteil Verlust-Vorjahr-FAIL und Turnaround-Verhalten"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/partial/canslim.mjs:21-106",
+  "scripts/supertrader/build.mjs:160-190,628-643,645-700",
+  "supertrader/data/registry.json:CANSLIM (evidence, source_fidelity, fidelity)",
+  "supertrader/data/signals.json:partialChecks.CANSLIM (asOf 2026-10-06)",
+  "docs/SUPERTRADER_PRODUCT_MATRIX.md:23,32-45",
+  "docs/SUPERTRADER_METHOD_FIDELITY.md:232-246",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:251-263",
+  "scripts/supertrader/validation/PREREGISTRATION-R7.json:44",
+  "quant/data/sec/consumer/*.json (Schema/policy as_of_latest)"
+ ]
+}

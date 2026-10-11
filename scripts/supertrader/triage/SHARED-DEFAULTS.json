@@ -1,0 +1,205 @@
+{
+  "schema": "triage-shared-defaults-1.0",
+  "agent": "E2",
+  "commit": "579e6338e9d7087e4632f59231ef7037b240effb",
+  "scope": "scripts/supertrader/engine/**, validation/portfolio.mjs, model-portfolio.mjs, fidelity/portfolio-policy.mjs, fidelity/shared-rules.mjs, supertrader/data/registry.json (portfolioDefaults, execution, lifecycle)",
+  "live_engines": {
+    "source": "scripts/supertrader/build.mjs:86 LIVE_ENGINES = [kkBreakout32, weinstein4, darvas302, minervini2, donchian202]; VU_TREND_52W separat (engine/rotation-52w.mjs, trend52-live.mjs)",
+    "versions": {"MOMENTUM_BREAKOUT": "3.2.0", "WEINSTEIN_STAGE": "4.0.0", "DARVAS_BOX": "3.0.2", "MINERVINI_VCP": "2.0.0", "DONCHIAN_TURTLE": "2.0.2", "VU_TREND_52W": "1.0.0"}
+  },
+  "direct_answers": {
+    "weinstein_inherits_kullamagi_sizing": {
+      "answer": "JA, unbemerkt geerbt (nur Weinstein unter den Live-Methoden).",
+      "evidence": [
+        "engine/strategies/weinstein-v2.mjs:108 portfolio: null (Kommentar 'VU-Standard'); weinstein-v3.mjs:84 portfolio: null; weinstein-v4.mjs erbt per Spread von v3",
+        "model-portfolio.mjs:34 portfolioConfig: engine.portfolio fehlt -> {...PORTFOLIO_DEFAULTS, source:'VU-Standard: keine belegte Positionsgrößenregel der Methode'}",
+        "engine/backtest.mjs:9-16 PORTFOLIO_DEFAULTS riskPerTrade 0.005 (Kommentar 'KK-RISK-01 Mitte der Spanne 0.3-0.5 %'), maxPositionPct 0.20, maxPositions 10, maxExposure 1.0",
+        "fidelity/portfolio-policy.mjs: WEINSTEIN_STAGE.implicitDefaults + riskPerTrade provenance FOREIGN_RULE 'Kullamägis Risikozahl, still geerbt – keine Weinstein-Quelle'; LEGACY_IMPLICIT = {WEINSTEIN_STAGE}",
+        "validation/analyze-methods.mjs:154 portfolioOf() erbt ebenso: alle Weinstein-Messungen R7-R14 liefen mit 0,5 % / 20 % / 10"
+      ],
+      "original_contradiction": "Weinstein nennt keine Größenregel (model-portfolio.mjs:27 PORTFOLIO_SOURCE_TEXT, shared-rules.mjs:38). Kein Widerspruch, aber Fremdwert (KK-Risikospanne) ohne Weinstein-Beleg."
+    },
+    "darvas_inherits_0_5pct_risk": {
+      "answer": "Der Wert 0,5 % steht ausdrücklich in der Darvas-PORTFOLIO-Datei (kopiert, nicht über PORTFOLIO_DEFAULTS geerbt), ist aber eine Fremdzahl (KK-RISK-01) und trägt das Etikett 'VU-Standard'. Numerisch bindet er praktisch nie.",
+      "evidence": [
+        "engine/strategies/darvas-v3.mjs:35 PORTFOLIO riskPerTrade 0.005, maxPositionPct 0.20, maxPositions 6; Quelltext 'Risiko je Trade und Höchstgewicht sind VU-Standard (keine belegte Zahl)'",
+        "darvas-v301.mjs:10 überschreibt maxPositionPct auf 1/6 und priority 'RS'; darvas-v302.mjs:10 ergänzt marketFilter true",
+        "fidelity/portfolio-policy.mjs DARVAS_BOX riskPerTrade provenance FOREIGN_RULE 'bindet nie, weil die 1/6-Kappe greift'; shared-rules.mjs:52 SH-DEFAULTS FOREIGN_RULE",
+        "Stop = Trigger*(1-0,01) (darvas-v2.mjs:15 stopBelowTop 0.01; darvas-v3.mjs:30) -> 0,5 %/~1,1 % Risiko = ~45 % Gewicht > 1/6; 0,5 %-Risiko greift nur bei Eröffnungs-Gap von mehr als ca. 2 % über Trigger (Stopabstand > 3 %)"
+      ],
+      "original_contradiction": "Darvas (TIME 1959, in portfolio-policy.mjs belegt): 5-6 Aktien gleichzeitig -> maxPositions 6 / Gewicht 1/6 sind als ORIGINAL(_INTERPRETATION) gekennzeichnet; die Marktampel (SPY>GD200) stammt aus TraderFox-Variante, keine Darvas-Regel (FOREIGN_RULE). Effektive Größe = fest 1/6 je Titel, kein risikobasiertes Sizing."
+    },
+    "turtle_alphabetical_selection": {
+      "answer": "JA, bei gleichzeitigen Signalen entscheidet der Symbolname (listingId alphabetisch). Wird in der Engine nicht gesetzt, sondern über Abwesenheit in RANK_RS bzw. als Else-Zweig gewählt.",
+      "evidence": [
+        "model-portfolio.mjs:32 RANK_RS = {MOMENTUM_BREAKOUT, WEINSTEIN_STAGE, DARVAS_BOX, MINERVINI_VCP}; :35 if (!c.priority) c.priority = RANK_RS.has(engine.id) ? 'RS' : 'ALPHA'",
+        "engine/strategies/donchian-v2.mjs:135-137 PORTFOLIO ohne priority; donchian-v202.mjs:6 PORTFOLIO = P2",
+        "validation/portfolio.mjs:47 else-Zweig list.sort(a.listingId.localeCompare(b.listingId)); engine/backtest.mjs:35 sortiert ebenfalls nach Symbol",
+        "model-portfolio.mjs:20-22 Kommentar: 'Turtle: alphabetisch (VU-eigen; die Turtle Rules nennen den Staerke-Rang, Forschungsversion 2.1.0 ging nicht live)'; donchian-v21.mjs:18 priority 'SCORE' (nicht live)",
+        "fidelity/shared-rules.mjs:73 SH-SELECT-SIMULTANEOUS VU_OWN 'ALPHA – ökonomisch bedeutungslos'; portfolio-policy.mjs SELECTION_POLICY.ALPHA requires VU_FORMALIZATION_REQUIRED; blockingFields('DONCHIAN_TURTLE') enthält priority (r15.test.mjs:80)",
+        "R14: audit-r14.mjs:333 C7 prüft ALPHA/RALPHA/RS/20 Zufalls-Seeds (Order-Dispersion O6 = true laut AUDIT-R14-RESULT.json)"
+      ],
+      "original_contradiction": "Ja, im Repo belegt: Turtle Rules nennen Stärke-Rang; Migrationsplan R15-MIGRATION-PLAN.json turtle-equity-adaptation-1.0.0: 'Stärke-Rang (C − C[63]) / N statt ALPHA'."
+    }
+  },
+  "findings": [
+    {
+      "id": "SD-01", "topic": "Portfolio-Defaults (Risiko, Positionslimit, Zahl, Exposure)",
+      "where": ["scripts/supertrader/engine/backtest.mjs:9-16", "supertrader/data/registry.json portfolioDefaults (identische Kopie)", "model-portfolio.mjs:34", "validation/analyze-methods.mjs:154"],
+      "value": {"initialEquity": 100000, "riskPerTrade": 0.005, "maxPositionPct": 0.20, "maxPositions": 10, "maxExposure": 1.0, "riskFreeRate": 0.02},
+      "affects": ["WEINSTEIN_STAGE (alle vier Felder)"],
+      "others_override": "MOMENTUM_BREAKOUT kk-breakout-v3.mjs:68 (0.005/0.25/10), DARVAS darvas-v3.mjs:35 (+v301/v302 1/6, 6), MINERVINI minervini-v2.mjs:61 (0.0125/0.25/10, progressive), DONCHIAN donchian-v2.mjs:135 (0.02/1.0/12)",
+      "explicit_or_inherited": "WEINSTEIN: unbemerkt geerbt; andere: ausdrücklich gesetzt (aber initialEquity, riskFreeRate, maxExposure überall VU-Rahmen)",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["WEINSTEIN_STAGE"],
+      "contradicts_original": "Fremdregel (KK-Risikozahl in Weinstein); kein Weinstein-Quellenwert im Repo"
+    },
+    {
+      "id": "SD-02", "topic": "Auswahl bei gleichzeitigen Signalen (Rangfolge)",
+      "where": ["validation/portfolio.mjs:39-47", "model-portfolio.mjs:32,35", "engine/backtest.mjs:35"],
+      "value": "priority RS (rsAtEntry am Vortag, fehlend = -1), SCORE (rankScore), RALPHA (nur Gegenprobe), sonst ALPHA = listingId alphabetisch; Gleichstand immer alphabetisch",
+      "affects": ["DONCHIAN_TURTLE: ALPHA live", "MOMENTUM/WEINSTEIN/DARVAS/MINERVINI: RS (VU_FORMALIZATION)", "VU_TREND_52W: eigener Clenow-Score, nur Gleichstand alphabetisch (rotation-52w.mjs:154)"],
+      "explicit_or_inherited": "Turtle: geerbter Else-Zweig (nicht in Engine gesetzt); RS-Methoden: über Mengenzugehörigkeit RANK_RS gesetzt",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["DONCHIAN_TURTLE"],
+      "contradicts_original": "Turtle: ja (Stärke-Rang im Original laut Repo-Notiz). Ältere Messläufe R7-R12: ohne priority lief ALLES alphabetisch (analyze-methods.mjs:106,125,134,144 setzen RS erst ab R10/R11 pro Satz)"
+    },
+    {
+      "id": "SD-03", "topic": "Sizing-Formel und Kappen",
+      "where": ["validation/portfolio.mjs:101-113", "engine/backtest.mjs:57-60"],
+      "value": "shares = Eigenkapital*riskPerTrade/(Einstieg-Stop); min(maxPositionPct*Eq/Preis, Cash/(Preis*(1+comm)), maxExposure*Eq-investiert); Sizing mit Vortagesmarks (sizingSameDay=false); risk<=0 -> NO_RISK Skip; open>=maxPositions -> MAX_POSITIONS Skip",
+      "affects": ["alle fünf Einzelaktien-Methoden (nicht Trend52)"],
+      "explicit_or_inherited": "Formel überall geerbt (SH-SIZE-RISK); nur für KK/Minervini/Turtle als ORIGINAL(_INTERPRETATION) belegt, Weinstein/Darvas VU_OWN (shared-rules.mjs:38,49)",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["WEINSTEIN_STAGE", "DARVAS_BOX"],
+      "contradicts_original": "Darvas: Kapital in wenigen Titeln, kein Risikosizing (shared-rules.mjs:49); sonst keine Widerlegung"
+    },
+    {
+      "id": "SD-04", "topic": "Sperre nach Abschluss/Ungültigkeit (Cooldown)",
+      "where": ["engine/simulator.mjs:28 COOLDOWN_SESSIONS = 5", "simulator.mjs:103,108,123,141,152,186,230,238,243,261"],
+      "value": 5,
+      "affects": ["alle sechs live Signalengines (Trend52 nicht)"],
+      "explicit_or_inherited": "Unbemerkt geerbt in Weinstein, Darvas, Minervini, Turtle; Momentum 3.1.0+ überschreibt nur für 'Setup verloren' (kk-breakout-v31.mjs:24 cooldownAfterSetupLost 0, simulator.mjs:261), nach Trades bleibt 5",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["WEINSTEIN_STAGE", "DARVAS_BOX", "MINERVINI_VCP", "DONCHIAN_TURTLE", "MOMENTUM_BREAKOUT"],
+      "contradicts_original": "Minervini kauft Rückkehrer erneut, Turtle: keine Sperre (shared-rules.mjs:55,66, Herkunft VU_OWN)"
+    },
+    {
+      "id": "SD-05", "topic": "Eine Position je Titel, nur Long, kein Aufstocken, kein Hebel",
+      "where": ["engine/simulator.mjs state.signal (ein Signal je Kontext)", "validation/portfolio.mjs maxExposure 1 / Cash-Kappe", "fidelity/shared-rules.mjs:8-9,13"],
+      "value": "1 Position/Titel; Long only; Exposure <= 100 %",
+      "affects": ["alle"],
+      "explicit_or_inherited": "geerbt, in shared-rules.mjs je Methode herkunftsetikettiert (VU_OWN)",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["MOMENTUM_BREAKOUT", "WEINSTEIN_STAGE", "DARVAS_BOX", "MINERVINI_VCP", "DONCHIAN_TURTLE"],
+      "contradicts_original": "Ja je Methode im Repo notiert: KK stockt intraday auf, Weinstein Halbposition + Rücksetzer, Darvas pyramidisiert, Minervini Pilotkauf/Aufstocken, Turtle bis 4 Units; KK/Turtle nutzen Margin/Futures-Hebel"
+    },
+    {
+      "id": "SD-06", "topic": "Slippage/Kosten-Defaults",
+      "where": ["engine/execution.mjs:15-18 DEFAULT_EXECUTION {slippageBps 10, commissionBps 1}", "engine/simulator.mjs:38 closeTrade nutzt X.DEFAULT_EXECUTION.commissionBps*2 unabhängig von opts.exec", "validation/portfolio.mjs:35-36 opts.commissionBps ?? 1, opts.slippageBps ?? 10 (zweite Konstantenkopie)", "engine/rotation-52w.mjs:87 (dritte Kopie 10/1)", "supertrader/data/registry.json execution"],
+      "value": "10 bp Slippage + 1 bp Kommission je Seite; Kostenprobe 20/2 (EXEC2 in analyze-methods.mjs:156, audit-r14.mjs:33)",
+      "affects": ["alle"],
+      "explicit_or_inherited": "einheitlich gesetzt (EXECUTION_MODEL-Gate), aber an drei Stellen dupliziert; closeTrade().result.returnPct ignoriert Kostenvariation (nur Ledger/Einzeltrade-Anzeige)",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "nein (keine Originalkostenregel); Hinweis: gleiche bp für Large-Cap und illiquide Titel (Mindestliquidität nur 5 Mio. $/Tag)"
+    },
+    {
+      "id": "SD-07", "topic": "Füllregeln und Gap-Politik",
+      "where": ["engine/execution.mjs:24-40 stopBuyFill/stopSellFill/marketBuyAtOpen/marketSellAtOpen", "simulator.mjs:107 LC-OPEN-BELOW-STOP, Gleichtags-Logik :217-230 (opts.sameDayCertain !== false, sameDayPolicy)"],
+      "value": "Kauf-Stop: max(Trigger,Open)+Slip; Stop-Verkauf min(Stop,Open)-Slip; Schlusssignale zur nächsten Eröffnung; Same-Bar: sicherer Gleichtags-Exit wenn Close<=Stop, sonst neutral (ungünstig nur mit sameDayPolicy PESSIMISTIC)",
+      "affects": ["BUY_STOP_INTRADAY: Momentum, Weinstein, Darvas, Turtle (kk-breakout-v3.mjs:72, weinstein-v3.mjs:79, darvas-v3.mjs:39, donchian-v2.mjs:141)", "Minervini: Schluss-Bestätigung + nächster Open"],
+      "explicit_or_inherited": "geerbt; Beleglage Intraday: Live-Oracle nur für Tageshoch>=Trigger-Fälle (intraday-prefetch)",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "Nein; Header execution.mjs sagt 'ungünstigere Reihenfolge' als Grundsatz, Code nutzt aber neutral/AMBIGUOUS-Default (Doku-vs-Code-Frage für Koordinator)"
+    },
+    {
+      "id": "SD-08", "topic": "Marktfilter im Portfolio-Layer",
+      "where": ["validation/portfolio.mjs:101 cfg.marketFilter && opts.marketOk (marketOkMap SPY>GD200, Zeile ~176)", "darvas-v302.mjs:10 marketFilter true", "donchian-v201.mjs:8 (nicht live; live 2.0.2 = P2 ohne Filter)", "rotation-52w.mjs spyMaOk/spyMaDays 200"],
+      "value": "keine neue Position wenn SPY am Vortag <= GD200 (Default aus)",
+      "affects": ["DARVAS_BOX live: AN (Fremdregel TraderFox)", "VU_TREND_52W: eigene SPY-GD200-Ampel (Kauf nur grün; PP: Kappung 5 %)", "Weinstein: eigener Markt-Check in der Strategie (WEIN-MKT-01, weinstein-v3.mjs:53), nicht im Portfolio-Layer", "Momentum/Minervini/Turtle: keiner"],
+      "explicit_or_inherited": "ausdrücklich gesetzt; Messläufe müssen marketOk mitgeben (audit-r14.mjs:291 MOK) sonst wirkungslos",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["DARVAS_BOX"],
+      "contradicts_original": "Darvas-Original kennt keine SPY-Ampel (portfolio-policy.mjs marketFilter FOREIGN_RULE)"
+    },
+    {
+      "id": "SD-09", "topic": "Generische Stop-/Risikokappen innerhalb der Strategien",
+      "where": ["minervini.mjs:25 / minervini-v2.mjs:46 maxRisk 0.10 (Stop >= Open*0.9)", "weinstein.mjs:25 stopBuffer 0.02 (Verwendung :90) (Invalidation = Basis-Support*(1-0.02))", "darvas-v2.mjs:15 stopBelowTop 0.01", "donchian-v2.mjs:31 stopN 2 (2N)", "kk-breakout.mjs:~26 gapSkipAdrMultiple 0.5 (v3: null)"],
+      "value": "10 % / 2 % / 1 % / 2N",
+      "affects": ["je Methode eigener Wert, aber als prozentuale VU-Konstanten ohne Quellenbeleg (Kommentar 'VU' bzw. 'KEINE Minervini-Originalzahl')"],
+      "explicit_or_inherited": "ausdrücklich (methodeneigen)",
+      "fidelity_penalty_candidate": true, "penalty_methods": ["MINERVINI_VCP", "WEINSTEIN_STAGE", "DARVAS_BOX"],
+      "contradicts_original": "Turtle 2N ORIGINAL; Minervini 10 %-Kappe VU; Darvas 1 %-Stop beeinflusst bei 0,5 %-Risiko die Gewichtsbindung (siehe direct_answers)"
+    },
+    {
+      "id": "SD-10", "topic": "Liquiditäts-/Preisfilter (kopierte Konstanten)",
+      "where": ["kk-breakout.mjs:~30, weinstein.mjs:~25, darvas.mjs:~22, minervini.mjs:~26: minPrice 5, minDollarVolume 5e6", "donchian-v2.mjs:33 minPrice 10, minDollarVolume 20e6, minAdr 0.01", "kk-breakout.mjs minAdr 0.02", "rotation-52w.mjs:19 minAdv20 1e6, universeSize 1800"],
+      "value": "5 USD/5 Mio. (4 Methoden), 10 USD/20 Mio. (Turtle), 1 Mio. ADV20 + Top-1800 (Trend52)",
+      "affects": ["alle; unterschiedliche Universen je Methode -> Signalzahlen nicht direkt vergleichbar"],
+      "explicit_or_inherited": "je Methode ausdrücklich, aber vier Methoden mit identischem kopiertem Wert (Momentum-Erbe)",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "nicht belegt"
+    },
+    {
+      "id": "SD-11", "topic": "Progressive Exposition",
+      "where": ["validation/portfolio.mjs:104-110 cfg.progressive", "minervini-v2.mjs:61 {lookback 5, factor 0.5}"],
+      "value": "Risiko x0,5 nach netto negativen letzten 5 Trades",
+      "affects": ["MINERVINI_VCP (nur diese)"],
+      "explicit_or_inherited": "ausdrücklich; VU_FORMALIZATION von Minervinis 'progressive exposure'",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "nein (vereinfachte Formalisierung; Startquote/Aufstocken fehlen)"
+    },
+    {
+      "id": "SD-12", "topic": "Turtle-Notionalkonto",
+      "where": ["validation/portfolio.mjs:60-72 tnBase", "donchian-v2.mjs:136 turtleNotional {stepLoss 0.10, cut 0.20}"],
+      "value": "Größenbasis = Kontostand Jahresbeginn, -20 % je 10 % Verlust (ORIGINAL TUR-NOTIONAL-01); R14-Absturzfix (>60 Kürzungen)",
+      "affects": ["DONCHIAN_TURTLE"], "explicit_or_inherited": "ausdrücklich",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "nein; aber maxPositionPct 1.0 (donchian-v2.mjs:135) ohne Gewichtsdeckel: Einzeltitel-Gewichte bis 100 % (portfolio-policy.mjs-Notiz 'sehr hohe Einzelgewichte beobachtet')"
+    },
+    {
+      "id": "SD-13", "topic": "Delisting-/Terminal-Szenario im Portfolio-Layer",
+      "where": ["validation/portfolio.mjs:22-31 SCENARIOS, :34 Default 'S0_LAST_PRICE'", "model-portfolio.mjs:57 runPortfolioTR(..., terminal null)"],
+      "value": "S0 letzter Kurs minus Slippage, S1 -30 %, S2 Distress 0, S1C/S2C: Übernahme = letzter Kurs, sonst -30 %",
+      "affects": ["alle Messläufe (Standard der Audits: S1C_CLASSIFIED, audit-r14.mjs go())"],
+      "explicit_or_inherited": "Default S0, wenn Aufrufer nichts setzt -> Messlauf-Konfiguration kann Methoden unterschiedlich behandeln",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "n/a (Messfrage)"
+    },
+    {
+      "id": "SD-14", "topic": "Messlauf-Konfiguration weicht von Live-Config ab (R13)",
+      "where": ["validation/audit-r13.mjs:28-29 ENGINES_A13 = [rs(kk32), rs(weinstein3), darvas302, rs(minervini2), don201]", "validation/case-study.mjs:41-42 rs()", "audit-r14.mjs:38-39 live() = portfolioConfig(e) (korrekt)"],
+      "value": "R13 setzt priority RS auch für Weinstein-3.0.0 und nutzt don201 (mit Marktfilter) statt Live 2.0.2",
+      "affects": ["Altmessungen R13/R10/R11"], "explicit_or_inherited": "explizit, aber != Live",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "n/a. Für die Standardmessung: R14-Pfad (live()) verwenden"
+    },
+    {
+      "id": "SD-15", "topic": "Fallback bei fehlender Gate-Planung",
+      "where": ["engine/gates.mjs:8 MIN_HISTORY_YEARS = 8", "gates.mjs:27 planOf Rückfall {minYears 8, minBearMarkets 2, minTrades 100}", "gates.mjs:58-63 ohne REQUIREMENTS = NOT_COMPARABLE"],
+      "value": "8 Jahre / 2 Bärenmärkte / 100 Trades", "affects": ["Varianten ohne Eintrag in TEST_PLANS (nur Anzeige-Gates, keine Handelsregel)"],
+      "explicit_or_inherited": "Fallback", "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "n/a"
+    },
+    {
+      "id": "SD-16", "topic": "VU_TREND_52W: eigenes Rahmenwerk",
+      "where": ["engine/rotation-52w.mjs:17-24 PARAMS slots 10, targetWeight 0.10, minWeight 0.03, maxWeight 0.20, trimTo 0.15, redCap 0.05, universeSize 1800, spyMaDays 200", ":87 Kosten 10/1 default"],
+      "value": "monatliche Rotation, Gleichgewicht 10 %, kein Stop, SPY-GD200-Ampel, Rang Clenow(90)*R² (PP) – kein Erbe von PORTFOLIO_DEFAULTS oder runPortfolioTR",
+      "affects": ["VU_TREND_52W"], "explicit_or_inherited": "ausdrücklich, alles VU (TraderFox-NEO-DARVAS-Anlehnung)",
+      "fidelity_penalty_candidate": false, "penalty_methods": [],
+      "contradicts_original": "weder Darvas-Original noch TraderFox-Original (Kopfkommentar)"
+    }
+  ],
+  "penalty_summary_by_method": {
+    "MOMENTUM_BREAKOUT": ["SD-04 Cooldown 5 nach Trades", "SD-05 eine Position/kein Aufstocken/kein Margin"],
+    "WEINSTEIN_STAGE": ["SD-01 stilles Erben von 0,5 %/20 %/10 (FOREIGN_RULE)", "SD-03 Sizing VU_OWN", "SD-04", "SD-05"],
+    "DARVAS_BOX": ["SD-01 0,5 % als Fremdzahl (bindet kaum)", "SD-08 SPY-Ampel (FOREIGN_RULE)", "SD-04", "SD-05"],
+    "MINERVINI_VCP": ["SD-04 Sperre gegen Re-Entry", "SD-05", "SD-09 10 %-Kappe VU"],
+    "DONCHIAN_TURTLE": ["SD-02 alphabetische Auswahl", "SD-12 maxPositionPct 1.0", "SD-04", "SD-05"],
+    "VU_TREND_52W": []
+  },
+  "existing_documentation_of_this_audit": [
+    "scripts/supertrader/fidelity/shared-rules.mjs (SH-* je Methode)",
+    "scripts/supertrader/fidelity/portfolio-policy.mjs (Layer C, FRAME, PORTFOLIO_POLICIES, LEGACY_IMPLICIT)",
+    "scripts/supertrader/fidelity/R15-*.json",
+    "scripts/supertrader/tests/r15.test.mjs (Policy-cfg == portfolioConfig)"
+  ],
+  "caveats": [
+    "portfolio-policy.mjs beschreibt, ändert nichts; Test erzwingt Identität zu portfolioConfig. Policy für Momentum nennt maxPositionPct 0.25 (stimmt mit kk-breakout-v3.mjs:68, nicht mit v2 0.20).",
+    "Zeilennummern ohne ~ sind per grep geprüft; Zeilen mit ~ sind gerundet."
+  ]
+}

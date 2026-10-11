@@ -1,0 +1,200 @@
+{
+  "strategy_id": "MOMENTUM_BREAKOUT",
+  "method_name": "VU Adaptation – Kullamägi Breakout (Common Breakout, Tageschart-Variante)",
+  "group": "A",
+  "engine": {
+    "files": [
+      "scripts/supertrader/engine/strategies/kk-breakout.mjs (1.1.0, Basis: scan/invalidate/Gap-Planung)",
+      "scripts/supertrader/engine/strategies/kk-breakout-v2.mjs (2.0.0)",
+      "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs (3.0.0, intradayEntry/Kauf-Stop, PORTFOLIO)",
+      "scripts/supertrader/engine/strategies/kk-breakout-v31.mjs (3.1.0, TREND-02, Sperre nach Setup-Verlust 0)",
+      "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs (3.2.0 = LIVE, BE-02)",
+      "scripts/supertrader/engine/strategies/kk-breakout-ablation-r8.mjs (3.0.0-A, internalOnly, nie live)",
+      "geteilt: engine/simulator.mjs, execution.mjs, lifecycle.mjs, gates.mjs, backtest.mjs, indicators.mjs; validation/portfolio.mjs, model-portfolio.mjs"
+    ],
+    "versions_in_repo": ["1.1.0 (Datei kk-breakout.mjs; '1.0.0' nur als Stringverweis, keine Datei)", "2.0.0", "3.0.0", "3.0.0-A (Ablation)", "3.1.0", "3.2.0"],
+    "live_version": "3.2.0 (Variante KK_COMMON_BREAKOUT_BUYSTOP_R11; build.mjs:86 LIVE_ENGINES)",
+    "status": "LIVE",
+    "shared_modules_used": [
+      "engine/simulator.mjs (COOLDOWN_SESSIONS=5, Same-Day-Regeln, Invalidation/Lifecycle)",
+      "engine/execution.mjs (10 bp Slippage, 1 bp Kommission je Seite)",
+      "engine/indicators.mjs (adr20, sma10/20, dollarVol20, range1d)",
+      "engine/lifecycle.mjs (Zustandsmaschine)",
+      "build.mjs crossSection (Perzentilrang mom21/63/126)",
+      "validation/portfolio.mjs runPortfolioTR (Sizing, maxPositions, RS-Rang) via model-portfolio.mjs",
+      "engine/backtest.mjs PORTFOLIO_DEFAULTS (nur riskFreeRate/initialEquity wirksam, alle Sizingfelder werden von kk-breakout-v3.mjs:68 explizit überschrieben)",
+      "engine/gates.mjs (Gate-Satz KK_COMMON_BREAKOUT_DAILY)"
+    ],
+    "hidden_fallbacks_or_defaults": [
+      {"what": "5-Sitzungen-Sperre (COOLDOWN_SESSIONS) nach jedem Trade, jedem Gap/Open-below-Stop, jeder Invalidation INV-01/INV-02; nur 'Setup verloren' ist über cooldownAfterSetupLost=0 ausgenommen", "where": "engine/simulator.mjs:28, 103, 108, 123, 141, 152, 186, 230, 238, 243, 277 (Ausnahme 261 + kk-breakout-v31.mjs:24)", "effect": "VU-Wiedereinstiegssperre gilt für Momentum, obwohl Quelle keine nennt; Regelkarte sagt 'keine Sperre' (registry-r8.mjs:58). Verringert Trades nach Stop-Outs desselben Titels."},
+      {"what": "Querschnitt für die 98-Perzentil-Regel wird nur über Titel mit dollarVol20 >= 1 Mio. USD gebildet, die Engine verlangt aber >= 5 Mio. USD", "where": "build.mjs:170 vs kk-breakout.mjs:31-41", "effect": "Rangbasis breiter/illiquider als der handelbare Bereich; 'Top 2 %' ist nach dem 5-Mio-Filter faktisch nicht mehr Top 2 % des Handelbaren. Nur in R15-STRATEGY-GAPS als 'Querschnitt 1 Mio.' erwähnt, nicht in der Regelkarte."},
+      {"what": "Stop = Tagestief des GANZEN Einstiegstags (inkl. Tiefs nach dem Kauf), Einstieg zu max(Open, Trigger); Gleichtags-Ausstieg standardmäßig nur bei Schluss <= Stop, nicht bei Tagestief unter dem Stop", "where": "kk-breakout-v3.mjs:53-65; simulator.mjs:218-221 (sameDayPolicy PESSIMISTIC nur per opts)", "effect": "Tagesbalken-Annahme 'Tief vor Kauf' ist laut docs/SUPERTRADER_METHOD_FIDELITY.md (Korrektur nach Runde 9) systematisch zu günstig; Registry fidelity.sameDayFinding='MOSTLY_EXIT'."},
+      {"what": "Kauf-Stop-Pfad läuft VOR der Invalidation-Prüfung; Header-Regel LC-CONFLICT-01 (Invalidation zuerst) gilt für BUY_STOP_INTRADAY nicht", "where": "simulator.mjs:182-233 vs 235-238 (Header 20-21)", "effect": "An einem Tag mit Hoch >= Trigger und Schluss unter Basistief wird trotzdem gekauft; Dokument/Header widerspricht Code."},
+      {"what": "Optionaler Minuten-Oracle im Live-Build über Umgebungsvariable SUPERTRADER_INTRADAY_CACHE", "where": "build.mjs:369-378, 466; simulator.mjs:192-196", "effect": "Einstieg, Stop und Gleichtags-Exit des Ledgers hängen davon ab, ob ein Cache vorliegt; nicht in Regelversion codiert (Reproduzierbarkeit)."},
+      {"what": "Trigger = Hoch der letzten 5 Sitzungen inkl. Signaltag; feuert bei jedem neuen 5-Tage-Hoch, nicht erst beim Ausbruch über das Basis-/Peak-Hoch", "where": "kk-breakout.mjs:88-89 (pivotBars=5, Zeile 25)", "effect": "Stark VU-geprägt, kann innerhalb der Basis (unterhalb des Peaks) auslösen; Parameter nicht aus Quelle ableitbar."},
+      {"what": "Gap-Parameter bleibt im Engine-PARAMS als null stehen, Gap-Sperre entfernt", "where": "kk-breakout-v3.mjs:40; Registry engine.params.gapSkipAdrMultiple=null", "effect": "wirkungslos (planEntry in 3.x nur Stub, v3:76); kein Fehler, aber toter Parameter."},
+      {"what": "manageCompatible von 3.2.0 listet 2.0.0, 3.0.0, 3.1.0, obwohl BE-02 die Positionsführung ändert; legacy-Map kennt nur 1.0.0/1.1.0 (von v31 geerbt), eine 1.0.0-Datei existiert nicht; kk-breakout-v31 fehlt in PREVIOUS_ENGINES", "where": "kk-breakout-v32.mjs:23; kk-breakout-v31.mjs:23; build.mjs:87", "effect": "Offene Altpositionen würden still nach BE-02 geführt; gering, weil nur offene Positionen betroffen."},
+      {"what": "Gate EXECUTION_MODEL ist hart auf pass=true gesetzt; Gate-Satz wird per Präfix-Mapping vergeben, der Engine-Variantenname KK_COMMON_BREAKOUT_BUYSTOP_R11 existiert in den Registry-Varianten nicht", "where": "gates.mjs:105-106; build.mjs:917-918, 884; kk-breakout-v32.mjs:23", "effect": "Gate sagt nichts über Ausführungsqualität; Registry-Variante KK_COMMON_BREAKOUT_DAILY wird nicht mit Engine verknüpft (timeframe fällt auf 'daily', harmlos)."},
+      {"what": "closeTrade rechnet Kosten mit X.DEFAULT_EXECUTION (2 bp) statt opts.exec", "where": "simulator.mjs:38", "effect": "returnPct im Ledger ignoriert abweichende Kostenannahmen; nur Sensitivitätsläufe betroffen."},
+      {"what": "Überzählige Signale über maxPositions werden verworfen (nicht gequeued); Rang RS aus rsAtEntry, fehlt dieser, fällt es auf alphabetisch zurück", "where": "validation/portfolio.mjs:41-47, 102; model-portfolio.mjs:32-35", "effect": "Auswahlbias möglich, wenn rsOf null; für Momentum RS gesetzt (RANK_RS)."},
+      {"what": "Registry führt KK-BO-PORT-01 (max ~30 % über Nacht) und KK-BO-REGIME-01 als aktiv; im Code nur 25 %-Kappe zum Einstieg, Regime wird nur angehängt (regimeAtCreation), nie gefiltert", "where": "registry.json rule_versioning.active_rule_ids; build.mjs:470; validation/portfolio.mjs:112", "effect": "Gewichtsdrift über 30 % durch Kursanstieg wird nicht begrenzt; kein Marktfilter (gewollt, R12 FAIL)."}
+    ],
+    "version_drift": "Registry strategy_version = 3.2.0 = Engine-Default-Export version 3.2.0 (kein Drift im Live-Pfad). Drift an den Rändern: (a) Engine-Variante KK_COMMON_BREAKOUT_BUYSTOP_R11 vs Registry-Variante KK_COMMON_BREAKOUT_DAILY (Label 'Daily Breakout, Stop gekappt auf 1 ADR' passt eher zu 2.0.0-Logik); (b) Registry-Text 'keine Sperre nach Invalidierung' vs simulator.mjs:238; (c) docs/SUPERTRADER_METHOD_FIDELITY.md Matrix beschreibt Stand R7 (1.1.0/2.0.0) und ist als historisch markiert, R15-T21 weist es aus; (d) research_status/source_fidelity im Registry-Datensatz 'PRIMARY_EXPLICIT / Hoch' ist optimistischer als R15-Matrix (Entry MEDIUM, Portfolio LOW, Claim nicht erlaubt)."
+  },
+  "source_audit": {
+    "core": "Kullamägi beschreibt öffentlich (Setups-Artikel, FAQ) ein diskretionäres Breakout-Setup: stärkste 1-2 % über 1/3/6 Monate, 30-100 % Vorlauf, 2 Wochen bis 2 Monate geordnete Konsolidierung an steigender 10/20-Tage-Linie, Einstieg am Opening-Range-Hoch, Stop Tagestief (<= ADR), 1/3-1/2 nach 3-5 Tagen, Rest an der 10/20-Tage-Linie. Das ist ein Drittel seines Gesamtsystems (EP, Parabolic Short fehlen), mit Ermessen bei Basisqualität, Größe und Marktbild.",
+    "clear_public_rules": [
+      "Auswahl: Top 1-2 % Performer über 1, 3, 6 Monate (KK-BO-MOM-01, Schwelle 98 ist VU)",
+      "Vorlauf 30-100 %+ in 1-3 Monaten (Mindestwert 30 % codiert)",
+      "Konsolidierung 2 Wochen bis 2 Monate, höhere Tiefs, enger werdende Spanne, Kurs 'surft' steigende 10/20-Tage-Linie",
+      "Stop am Tagestief, nicht breiter als ADR/ATR",
+      "1/3 bis 1/2 nach 3-5 Tagen verkaufen, Stop auf Einstand, Rest an 10- oder 20-Tage-Linie (Anfänger: erster Schluss unter 10-Tage-Linie)",
+      "Risiko meist 0,3-0,5 % (selten > 1 %), Positionen meist 10-20 % (FAQ 5-25 %), nie > 30 % über Nacht",
+      "Kein Marktfilter in den schriftlichen Quellen"
+    ],
+    "discretionary_rules": [
+      "Qualität der Basis ('orderly'), Auswahl der Leader/Themen",
+      "Wahl 10- vs. 20-Tage-Linie und 1/3 vs. 1/2 Teilverkauf",
+      "Größe nach Überzeugung und Liquidität",
+      "Markt-Ermessen ('fewer or no trades' in Flauten), Margin-Umfang NOT_PUBLIC",
+      "Intraday: ORH 1/5/60 Min., Aufstocken"
+    ],
+    "vu_own_formalizations": [
+      "Basiserkennung (Peak <= 40 Sitzungen zurück, Basislänge 10-40, Tiefe <= 25 %, Hälftenvergleich der Tiefs, Spannenkontraktion 5 Tage vs. erste Hälfte) kk-breakout.mjs:54-80",
+      "Perzentilgrenze 98 über max(1/3/6 Monate), Vorlauf-Messfenster 63 Sitzungen ab tiefstem Tief vor dem Hoch",
+      "Trigger = 5-Tage-Hoch, ENTRY_READY-Nähe 3 %, Invalidation = Basistief, Verfall 20 Sitzungen",
+      "Liquidität: Kurs >= 5 USD, 5 Mio. USD Umsatz, ADR >= 2 %; ETF-Ausschluss; Querschnitt 1 Mio.",
+      "Tagesbalken-Stopannahme (Tagestief des ganzen Tages), Gleichtagsregel",
+      "Einstand erst bei Schluss über Einstieg (BE-02, 3.2.0), Trailing erst nach Teilverkauf",
+      "Teilverkauf genau nach 3 Sitzungen, Bruchteil 1/3",
+      "Portfolio: max. 10 Positionen, kein Hebel (maxExposure 1,0), RS-Rang, 5-Sitzungen-Sperre, eine Position je Titel"
+    ],
+    "foreign_rules": [
+      "Keine Regel einer anderen Trader-Methode im Signal-/Exit-Pfad gefunden (kein SPY-200-Filter: portfolio.mjs:101 greift nur bei cfg.marketFilter; Momentum-Portfolio setzt keinen).",
+      "Umgekehrt: Kullamägis 0,5 %-Risiko liegt als KK-RISK-01 in engine/backtest.mjs PORTFOLIO_DEFAULTS und wird dort von anderen Methoden geerbt (R15)."
+    ],
+    "source_fidelity": "MEDIUM",
+    "source_fidelity_reason": "Exit und Sizing sind öffentlich konkret und quellennah umgesetzt. Entry-Kern (Breakout aus enger Basis) ist verbal klar, aber die Basiserkennung ist komplett VU-Formalisierung und der Original-Einstieg (Opening-Range-Hoch) fehlt. Nur 1 von 3 Setups, Margin und Markt-Ermessen nicht reproduzierbar. R15: Entry MEDIUM, Exit HIGH, Sizing HIGH, Portfolio LOW, Gesamt MEDIUM, Replikationsanspruch nicht erlaubt."
+  },
+  "provenance": {
+    "Entry": "VU auf Original-Prinzip: Idee (Kauf bei Ausbruch intraday, Top-1-2-%-Leader, 30 %+ Vorlauf) ORIGINAL; Basisalgorithmus, 5-Tage-Hoch-Trigger, Schwellen, Liquidität VU; ORH-Einstieg nicht umgesetzt.",
+    "Exit": "ORIGINAL mit VU-Randbedingungen: Stop Tagestief <= 1 ADR, 1/3 nach 3 Sitzungen, Rest an SMA10 sind Quelle; Einstand-Bedingung (BE-02) und Tagesbalken-Tief sind VU.",
+    "Sizing": "ORIGINAL (Interpretation): 0,5 % Risiko je Trade (Mitte von 0,3-0,5 %), max. 25 % je Titel (FAQ 5-25 %).",
+    "Portfolio": "VU: 10 Plätze, kein Hebel, RS-Rang, 5-Sitzungen-Sperre, Verwerfen statt Queue; Quelle nennt Margin und keine Höchstzahl.",
+    "Risk": "ORIGINAL im Kern (enger Stop, kleines Kontorisiko); 30-%-Überhangkappe und 15-20-%-Drawdownziel nicht mechanisiert; VU: Gap-Risiko unter Stop unbegrenzt.",
+    "Fundamentals": "Keine verlangt (Quelle: kein Fundamentalfilter für Common Breakout).",
+    "Market": "Quelle schriftlich ohne Marktfilter, Ermessen nicht reproduziert; Code: kein Filter, Regime nur Anzeige (R12/R13 PORT-MARKET-200 FAIL, UNCHANGED)."
+  },
+  "implementation_fidelity": {
+    "rating": "MEDIUM",
+    "per_area": {
+      "Entry": "MEDIUM: Daily-Kauf-Stop am 5-Tage-Hoch statt ORH; Basis VU; keine Fremdregel.",
+      "Exit": "HIGH: Stop/Teilverkauf/Trail quellennah; Einschränkung durch Tagesbalken-Tief und BE-02.",
+      "Sizing": "HIGH: 0,5 % / 25 % explizit in kk-breakout-v3.mjs:68, kein stilles Erben.",
+      "Portfolio": "LOW: 10 Plätze, kein Hebel, RS-Rang, Sperre alles VU; Quelle arbeitet mit Margin und Ermessen.",
+      "Risk": "HIGH laut R15, aber Überhang-30-%-Regel und Drawdown-Ziel nicht umgesetzt (Einschätzung hier: MEDIUM-HIGH).",
+      "Fundamentals": "HIGH (keine verlangt).",
+      "Market": "LOW: kein Marktbild; Quelle diskretionär."
+    },
+    "penalties": [
+      "Nur 1 von 3 Kullamägi-Setups (EP/PS fehlen)",
+      "Entry-Trigger Tageschart statt ORH; Tagestief-Annahme systematisch günstig laut Round-9-Korrektur",
+      "Basisalgorithmus komplett VU-Formalisierung, ungetestete Schwellen",
+      "5-Sitzungen-Sperre geerbt, Dokument widerspricht",
+      "Portfolio-Limits (10 Plätze, ohne Margin) VU",
+      "Perzentil-Querschnitt (1 Mio.) ungleich Handelsfilter (5 Mio.)"
+    ],
+    "shared_default_penalty": true
+  },
+  "data": {
+    "needs": {
+      "prices": "AVAILABLE (Tages-OHLCV ab 2016 inkl. Delistings, Registry evidence.data PIT_PRICES; Live aus quant/data/product/technical-signals-v1)",
+      "volume": "AVAILABLE (Tagesvolumen; ORH-Volumen nicht)",
+      "fundamentals": "NOT_NEEDED",
+      "institutional": "NOT_NEEDED",
+      "estimates": "NOT_NEEDED",
+      "sector": "NOT_NEEDED (Themen/Sektor-Leader nur diskretionär)",
+      "market_regime": "NOT_NEEDED (Quelle diskretionär; Regime wird nur angezeigt)",
+      "intraday": "PARTIAL (interne Minutenkurse ab 2017 nur für Studie/Oracle; kein öffentlicher bzw. produktiver Pfad; ORH-Original MISSING)",
+      "earnings_events": "NOT_NEEDED (keine Earnings-Regel im Breakout)"
+    },
+    "sufficiency": "MEDIUM",
+    "fundamental_core_state": "Keine Fundamentaldaten genutzt. Preisbasis: discover/data/stock-index/US_REAL.json (ohne ETF/ETN/Fonds) + quant/data/product/technical-signals-v1 (build.mjs loadUniverse/loadBars), nicht Core 1.22+; Core 1.22+ ist nicht live/migriert und für diese Methode irrelevant.",
+    "fundamental_dependency": "NONE"
+  },
+  "existing_evidence": {
+    "decisions_by_round": [
+      {"round": "R11", "result": "3.2.0 (Fehlerkorrektur Einstand) übernommen, LIVE; Vollportfolio technisch bestanden, 'kein Vorteil'; frühe Verkäufe großer Gewinner kommen vom Tagestief-Stop = Quellregel.", "source_file": "scripts/supertrader/validation/DECISION-R11.json"},
+      {"round": "R12", "result": "PORT-MARKET-200 (Marktampel): a FAIL, b FAIL, Entscheidung UNCHANGED (kein Filter).", "source_file": "scripts/supertrader/validation/DECISION-R12.json"},
+      {"round": "R13", "result": "Marktfilter unter S1C FAIL, UNCHANGED; Zerlegung: Rückstand zu SPY fast vollständig durch Cash, investiertes Kapital etwa Marktniveau; 6 Monate halten schließt den Rückstand fast; Reproduktion weicht ab (tägliche Kursaktualisierung, Datenfingerabdruck gefordert).", "source_file": "scripts/supertrader/validation/DECISION-R13.json"},
+      {"round": "R14", "result": "Kategorie E (diskretionär, Teilumfang). H3 exitDestruction = true; O1 momentum_signal252 = false (Holdout nicht wiederholt); O8 cashInSpy = true; R13-Aussage 'investiert etwa Marktniveau' = MISLEADING, 'ohne Vorteil' = PARTIALLY_CONFIRMED.", "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json; docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md Abschnitt 4"},
+      {"round": "R15", "result": "Keine Codeänderung; Fidelity Entry MEDIUM / Exit HIGH / Sizing HIGH / Portfolio LOW / Gesamt MEDIUM; REPLICATION_CLAIM_ALLOWED=false; Exit Fall A (original).", "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md 2.1, 4, 11; scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json"}
+    ],
+    "signal_quality": "Kein Signalvorteil belegt: in DEV langfristig über dem Universum, gegen RS-Dezil nicht signifikant, im Holdout 2008-2015 nicht wiederholt (R14-Doku). Kennzahlen selbst SEALED_NOT_READABLE.",
+    "portfolio_result_direction": "Live-/Modelldepot schlägt SPY in keinem Zeitraum; mit SPY statt Cash als Basis knapp über SPY (nicht signifikanzgeprüft, Holdout nach oben verzerrt, nicht survivorship-frei).",
+    "exposure_finding": "Exposure niedrig; Ursache fehlende Signale, nicht Positionsgröße oder Fremdregel (R14, R15 Abschnitt 5).",
+    "risk_finding": "Mehr als die Hälfte der Ausstiege fällt auf den Tagestief-Stop des Kauftags; größte Verluste sind Gaps unter diesen Stop; die Mehrzahl späterer Verdoppler wird mit kleinem Gewinn/Verlust verkauft, Halten liegt gepaart in beiden Zeiträumen signifikant vorn (R14 Abschnitt 4).",
+    "robustness": "Zwei Zeiträume gesehen (2016-2026, Holdout 2008-2015, Holdout nicht survivorship-frei). Round-9-Minutenkurse (intern, ab 2017): 3.1.0 auch 2016-2020 unter SPY; Vor-R9-Aussage 'über SPY' zurückgenommen. Reproduktion auf neuem Datenstand wich ab (R13).",
+    "ground_truth_light": "Entwicklungs-/Unabhängige Beispiele laut Registry fidelity: AXON 09.01.2004 getroffen (3.1.0), MNKD 10.05.2013 verfehlt (Trendregel), TSLA 01.06.2020 Entwicklungsbeispiel (kauft einen Tag früher). R14: Fast alle Mega-Gewinner wurden nie Kandidat (Perzentil, starre Basis).",
+    "seen_data": true
+  },
+  "implementation_risk": {
+    "discretion": "HIGH",
+    "bad_formalization": "Basiserkennung und 5-Tage-Hoch-Trigger sind VU und nie isoliert gegen die Originalnotation validiert; Perzentil-Querschnitt (1 Mio.) vs. Handelsfilter (5 Mio.); Tagestief-Annahme systematisch günstig.",
+    "missing_data": "Minutendaten für ORH und Tief zum Kaufzeitpunkt (nur intern ab 2017); Margin/Größe nach Überzeugung nicht modellierbar.",
+    "fragile_parameters": "pivotBars=5, baseMaxDepth 0,25, baseMinBars 10/ baseMaxBars 40, momentumPercentile 98, partialAfterSessions 3, entryReadyDistance 3 %, Sperre 5, maxPositions 10 (alle VU, kk-breakout.mjs:18-34, simulator.mjs:28)."
+  },
+  "product_potential": {
+    "rating": "MEDIUM",
+    "understandability": "HIGH: einfache Story (stärkste Aktien, Pause, Ausbruch, Stop am Tagestief).",
+    "signal_frequency": "Niedrig und marktabhängig (Product Matrix: 2 vorbereitete Setups zum Stichtag); Exposure niedrig.",
+    "differentiation": "MEDIUM: Namensbezug Kullamägi nur als 'VU Adaptation' zulässig; Daily-Variante ähnelt vielen Momentum-Scannern.",
+    "explainable_setups": "HIGH: Regelkarte, Lifecycle-Phasen und Level (Trigger, Invalidation, Stop) je Signal.",
+    "mobile": "HIGH (Kerndaten kompakt; Phasen-Anzeige).",
+    "forward_test": "Läuft bereits als Live-Ledger/Modelldepot (öffentlich 'In Prüfung' ohne Kennzahlen); Registry-Historie beginnt 2026-09-28, der Forward-Zeitraum ist noch kurz."
+  },
+  "main_problems": [
+    "Kein belegter Signalvorteil in zwei Zeiträumen, Exit-Zerstörung von Gewinnern (R14 H3)",
+    "Original-Einstieg (ORH) nicht reproduzierbar mit Tagesdaten; Tagestief-Stop-Annahme systematisch günstig",
+    "Basiserkennung VU-Formalisierung entscheidet über Kandidatenmenge; Mega-Gewinner werden nie Kandidat",
+    "Portfolio/Exposure VU und niedrig; Quelle nutzt Margin und Ermessen",
+    "Dokumentationsdrift (Sperre, Variantennamen, Rest-Texte in Doku)"
+  ],
+  "critical_implementation_errors": [
+    "Kein kritischer Fehler im Live-Pfad gefunden. Bestätigt: dokumentierte Regel 'keine Sperre nach Invalidierung' wird vom Code nicht eingehalten (simulator.mjs:238), und LC-CONFLICT-01 gilt im Kauf-Stop-Pfad nicht (simulator.mjs:182-238). Beides LOW-MEDIUM, ohne Änderung der Fachentscheidung."
+  ],
+  "validation_class": "HISTORICAL_PLUS_LIGHT_GT",
+  "preliminary_tier": "B",
+  "confidence": "MEDIUM",
+  "deep_dive_candidate": true,
+  "preliminary_reasoning": "Am nächsten am Original aller geprüften Methoden (Exit/Sizing quellennah, kein Fremdregelanteil im Signalpfad), Daten sind verfügbar und der Code ist schlank. Aber: kein Signalvorteil in zwei Zeiträumen, Entry/Portfolio nur MEDIUM/LOW und die zentrale Basiserkennung ist VU. Tier B, weil die Methode sauber und erklärbar ist, aber ihr Nutzen nicht belegt; Deep Dive nur gezielt (ORH mit Minutendaten, Exit-Varianten mit SPY-Basis).",
+  "open_for_measurement": [
+    "ORH-Einstieg (1/5/60 Min.) mit Minutendaten gegen 5-Tage-Hoch-Trigger: Trefferquote und Stop-Treffer am Kauftag",
+    "Sensitivität Trigger-Definition (5-Tage-Hoch vs. Basis-/Peak-Hoch) und Basisparameter (Tiefe, Länge, Kontraktion)",
+    "Exit-Varianten vorab registriert (20-Tage-Trail, 1/2-Teilverkauf, kein Kauftags-Stop) mit SPY als Basis (R14-Empfehlung)",
+    "Wirkung der 5-Sitzungen-Sperre und des 1-Mio./5-Mio.-Querschnitts auf Tradeanzahl und Kandidatenmenge",
+    "Anteil der Mega-Gewinner, die nie Kandidat werden, nach Ursache (Perzentil vs. Basis vs. Trend)",
+    "Live-Ledger mit/ohne Minuten-Oracle (SUPERTRADER_INTRADAY_CACHE) auf Gleichtags-Exits"
+  ],
+  "evidence_refs": [
+    "scripts/supertrader/engine/strategies/kk-breakout.mjs:18-34,45-100,126-129",
+    "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:40-68",
+    "scripts/supertrader/engine/strategies/kk-breakout-v31.mjs:16-26",
+    "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs:9-23",
+    "scripts/supertrader/engine/simulator.mjs:28,182-261,277",
+    "scripts/supertrader/engine/backtest.mjs:9-16",
+    "scripts/supertrader/engine/gates.mjs:17,105-106",
+    "scripts/supertrader/validation/portfolio.mjs:41-47,101-113",
+    "scripts/supertrader/model-portfolio.mjs:32-35",
+    "scripts/supertrader/build.mjs:86-87,170,369-378,466,917-918",
+    "scripts/supertrader/registry-r8.mjs:51,58",
+    "scripts/supertrader/fidelity/portfolio-policy.mjs:21-30",
+    "scripts/supertrader/fidelity/R15-STRATEGY-GAPS.json (MOMENTUM_BREAKOUT)",
+    "scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json",
+    "supertrader/data/registry.json (strategies[0], rule_versioning, fidelity, product)",
+    "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:2.1,4,5,11",
+    "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:Abschnitt 4 Kullamägi, Matrix",
+    "docs/SUPERTRADER_METHOD_FIDELITY.md:Korrektur nach Runde 9",
+    "scripts/supertrader/validation/DECISION-R11.json, DECISION-R12.json, DECISION-R13.json, AUDIT-R14-RESULT.json"
+  ]
+}

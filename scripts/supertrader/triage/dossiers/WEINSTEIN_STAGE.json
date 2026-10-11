@@ -1,0 +1,212 @@
+{
+  "strategy_id": "WEINSTEIN_STAGE",
+  "method_name": "VU Adaptation – Weinstein Stage Analysis (Stufe-2-Long, Wochenbasis; Stufe-1-Basisausbruch + Stufe-2-Fortsetzung)",
+  "group": "D",
+  "engine": {
+    "files": [
+      "scripts/supertrader/engine/strategies/weinstein.mjs (1.1.0)",
+      "scripts/supertrader/engine/strategies/weinstein-v2.mjs (2.0.0)",
+      "scripts/supertrader/engine/strategies/weinstein-v3.mjs (3.0.0)",
+      "scripts/supertrader/engine/strategies/weinstein-v4.mjs (4.0.0)",
+      "scripts/supertrader/engine/weekly.mjs",
+      "scripts/supertrader/engine/simulator.mjs (supertrader-simulator-2.0.0)",
+      "scripts/supertrader/engine/execution.mjs",
+      "scripts/supertrader/engine/gates.mjs",
+      "scripts/supertrader/engine/backtest.mjs (PORTFOLIO_DEFAULTS)",
+      "scripts/supertrader/engine/lifecycle.mjs",
+      "scripts/supertrader/validation/portfolio.mjs (runPortfolioTR)",
+      "scripts/supertrader/model-portfolio.mjs",
+      "scripts/supertrader/fidelity/portfolio-policy.mjs"
+    ],
+    "versions_in_repo": ["1.1.0 (weinstein.mjs; manageCompatible 1.0.0/1.1.0)", "2.0.0", "3.0.0", "4.0.0"],
+    "live_version": "4.0.0 (variant WEINSTEIN_STAGE2_CONT_R11; LIVE_ENGINES in build.mjs:86; legacy 1.0.0/1.1.0/2.0.0 nur zum Weiterführen offener Positionen, manageCompatible 3.0.0/4.0.0, signalCompatible 3.0.0)",
+    "status": "LIVE",
+    "shared_modules_used": [
+      "engine/simulator.mjs (Einheitssimulator, COOLDOWN_SESSIONS=5, ein Signal je Titel, 100 % Verkauf, kein Teilverkauf/Aufstocken)",
+      "engine/execution.mjs (10 bp Slippage, 1 bp Gebühr je Seite)",
+      "engine/weekly.mjs (Wochenreihe, Mansfield-RS, Marktreihe)",
+      "engine/backtest.mjs PORTFOLIO_DEFAULTS (still geerbt, weil portfolio:null)",
+      "validation/portfolio.mjs runPortfolioTR (Risiko-Sizing, Kappen, RS-Rang)",
+      "engine/gates.mjs (TEST_PLANS/REQUIREMENTS für WEINSTEIN_STAGE2_WEEKLY)",
+      "fidelity/portfolio-policy.mjs (Layer C, LEGACY_IMPLICIT)"
+    ],
+    "hidden_fallbacks_or_defaults": [
+      {"what": "Weinstein erbt Positionsgröße still aus Kullamägis KK-RISK-01: riskPerTrade 0,5 %, maxPositionPct 20 %, maxPositions 10, maxExposure 1,0 (Engine hat portfolio:null)", "where": "engine/backtest.mjs:9-16 (riskPerTrade :11); strategies/weinstein-v2.mjs:108 und weinstein-v3.mjs:84 (portfolio:null, von v4 per Spread geerbt, weinstein-v4.mjs:58); model-portfolio.mjs:33-36; fidelity/portfolio-policy.mjs:31-41,88 (LEGACY_IMPLICIT)", "effect": "Positionsgröße = 0,5 % ÷ Stopabstand (R15: 15-27 % Stopabstand) = ca. 2-3 % je Position; 10 Plätze => höchstens ca. 30 % investiert (R15 Abschnitt 5). Strukturell niedrige Investitionsquote, Mini-Positionen belegen die Plätze und weisen Signale ab (MAX_POSITIONS-Skip validation/portfolio.mjs:102)."},
+      {"what": "Fehlendes Volumen oder fehlende Marktdaten bestehen den Filter still (Befund R15, bestätigt im Code)", "where": "strategies/weinstein-v3.mjs:71 (low=false bei NaN => kein WEIN-VOL-04-Verkauf); weinstein-v2.mjs:77,79,82-83 (mkt===null und RS nicht finit => Einstieg; Regel-ID WEIN-ST2-02U); weinstein-v3.mjs:52-55 (ohne Vorwoche k===null werden Markt- und RS-Filter ganz übersprungen)", "effect": "Außerhalb des Tagesfensters (live ca. 1 Jahr) greift die Volumenregel nie; Backtest (Tagesbalken ab Fensterbeginn) und Live verhalten sich verschieden (docs METHOD_FIDELITY Abschnitt 8)."},
+      {"what": "Kein Volumenfilter vor dem Kauf; Kauf-Stop wird auf Tageshoch > Trigger entschieden, Volumen der Ausbruchswoche erst nachträglich als Ausstieg (WEIN-VOL-04)", "where": "strategies/weinstein-v3.mjs:47-60 (intradayEntry), :65-75 (manage); simulator.mjs:182-234", "effect": "Nach VU-Lesart wird bei Wochenvolumen < 2x Vier-Wochen-Schnitt beim ersten Schluss über Einstieg verkauft; R14: beendet ca. drei Viertel der Trades nach wenigen Tagen. Bulkowski-Lesart (Aufbau-Alternative, Wochenbasis) nicht abgebildet."},
+      {"what": "Trigger-Rückfall: ohne Tagesbalken für die ganze Basis wird der Wochenschluss-Widerstand als Trigger genommen (Kommentar im Code: würde schon innerhalb der Basis auslösen)", "where": "strategies/weinstein-v3.mjs:35-40 (triggerFallback WEEKLY_CLOSE_RESISTANCE); weinstein-v4.mjs:48 (Tag-Index-Schätzung t-(k-j0)*5, wenn Startdatum nicht in den Tagesbalken liegt)", "effect": "Stiller Wechsel der Triggerdefinition für Basen, die vor dem Tagesfenster beginnen (Live-Ledger, nicht Backtest mit vollem Fenster). Nicht ausgewiesen im Signal außer levels.triggerFallback."},
+      {"what": "Stufenklassifikation mit Übergangszweig: steigende MA30 und Kurs darunter => Stufe 4; fallende MA30 und Kurs darüber => Stufe 2 (transitional); flache MA ohne Vorgeschichte => Stufe 1", "where": "strategies/weinstein.mjs:45,47", "effect": "In v4 verlangt continuationBase nur 'Stufe 2' (weinstein-v4.mjs:15); eine fallende MA30 mit Kurs darüber zählt dort als Stufe 2. Rücksetzer unter eine steigende MA30 wirken wie Stufe 4 (Fehl-Warnung/-Klassifikation)."},
+      {"what": "Zwei Flachheits-Toleranzen: Stufe 1 bei |Steigung| <= 0,5 %/4 Wochen, Basis dagegen bei <= 1,0 % (2x flatSlope)", "where": "strategies/weinstein.mjs:34-36 vs :56", "effect": "Basis kann in Wochen als 'flach' zählen, in denen die Stufenfunktion nicht Stufe 1 sagt; reine VU-Schwellen."},
+      {"what": "Stop/Ausstieg: Anfangsstop 2 % unter tiefstem Basis-Wochenschluss; Hauptausstieg Wochenschluss < MA30; Nachziehen des Stops nicht implementiert (v2 entfernte WEIN-TRAIL-VU)", "where": "strategies/weinstein-v3.mjs (Stop aus v2 planEntry/levels), weinstein-v2.mjs:240-251 (manage), weinstein.mjs:91; Registry trailing_stop/WEIN-TRAIL-ORIG", "effect": "Ausstieg Fall B (VU-Vereinfachung); Stops unter 'Zwischentief' und Rundungsregel fehlen. Prozessketten-Text 'Stop wöchentlich nachziehen' ist laut R14/R15 falsch (process-chain.mjs:34)."},
+      {"what": "Liquiditätsfilter 5 USD und 5 Mio. USD Dollarvolumen (Bulkowski-Zahl)", "where": "strategies/weinstein.mjs:26,77; weinstein-v4.mjs:127", "effect": "Fremd-/VU-Schwelle, filtert Kandidaten."},
+      {"what": "Marktfilter SPY > nicht fallende MA30 binär; Nullwert (fehlende Marktreihe) lässt Einstieg zu", "where": "strategies/weinstein-v2.mjs:30-34,77", "effect": "Forest-to-Trees nur als Binärfilter, Gruppen-/Sektorstärke fehlt (HIGH laut canonical/weinstein.md)."},
+      {"what": "Wochenreihe: lange Reihe nur Wochenschlusskurse, Wochen im Tagesfenster aus Tagesbalken überschrieben; Volumen nur aus Tagesbalken; erste Fensterwoche ohne Volumen. Skalenkonsistenz zwischen langer Reihe und Tagesbalken (Split/Dividende) im Code nicht geprüft", "where": "engine/weekly.mjs:14,23,37,48-52", "effect": "MA30/Mansfield-RS über gemischte Quellen; mögliche Skalenabweichung UNKNOWN (nicht gemessen)."},
+      {"what": "Gate-Plan: WEINSTEIN_STAGE2_WEEKLY verlangt 20 Jahre, 3 Bärenmärkte, 150 Trades; EXECUTION_MODEL-Gate ist hart auf pass=true gesetzt", "where": "engine/gates.mjs:22,49,105; build.mjs:919 (Variantenabbildung WEINSTEIN_STAGE2*)", "effect": "Live-Daten (Volumen ca. 1 Jahr) erfüllen VOLUME_HISTORY nicht; keine Kennzahlenveröffentlichung (dokumentiert: öffentlich 'In Prüfung' ohne Kennzahlen). Ob DEV+Holdout (2008-2026) den 20-Jahre-Plan erfüllen: UNKNOWN."},
+      {"what": "Ausführungsmodell: Kauf zu max(Eröffnung, Trigger) + 10 bp, keine Gap-Obergrenze; Gleichtags-Ausstieg 'sicher' wenn Schluss <= Stop, sonst Reihenfolge Tageshoch/Tagestief unbestimmt", "where": "strategies/weinstein-v3.mjs:57-59; engine/simulator.mjs:196-233 (certain :218); engine/execution.mjs:15-19", "effect": "Gap-Einstiege weit über Trigger vergrößern den Stopabstand und verkleinern die Position weiter. Kein Gap-Limit in der Engine; Registry gap_policy deckt nur Stop-Ausführung."}
+    ],
+    "version_drift": "Live-Engine 4.0.0 ist konsistent (PARAMS volumeMultiple 2 über P2, nicht 1,5 wie in v1). Doku-Drift: registry.mjs bzw. supertrader/data/registry.json variants zeigen noch 'Stage-2-Long, 30 Wochen, Volumen 1,5x' (WEINSTEIN_STAGE2_WEEKLY LIVE_MONITORING) = Stand 1.1.0; R15 meldet 14 Abweichungen/4 HIGH nur bei Weinstein (registry.mjs 255/258/260/269, Sektionen hold/invalid/candidate/lifecycle_mapping beschreiben 1.1.0). Gegenstück im Code: registry.json trailing_stop/volume_filters/position_sizing sind bereits ehrlich korrigiert (Phase 1), process-chain.mjs:29,33-35 laut R15 nicht. R11 und R12 entschieden auf 3.0.0/4.0.0 unter S1; R13 wendet S1C an => R11 'Weinstein 4.0.0 verfehlt' ist überholt (AUDIT_R13). Setups 3.0.0 laufen unter 4.0.0 weiter, Fortsetzungskauf ist neu."
+  },
+  "source_audit": {
+    "core": "Stufenmodell (4 Phasen) mit 30-Wochen-Linie, Kauf in Stufe 2 per Buy-Stop über dem Widerstand, deutliches Ausbruchsvolumen, positive RS, Marktkontext und Gruppenstärke; Buch (1988) liegt nicht vor, Evidenz aus Bulkowski (mit Buchzitaten) und stageanalysis.net, Konfidenz höchstens MEDIUM.",
+    "clear_public_rules": [
+      "Vier Stufen / 30-Wochen-Durchschnitt",
+      "Kauf nur in Stufe 2, Buy-Stop knapp über der Basis (Bulkowski, sekundär mit Buchzitat)",
+      "Ausbruch ohne deutlich höheres Volumen meiden bzw. schnell mit Gewinn verkaufen",
+      "Nie mit negativer relativer Stärke kaufen",
+      "Forest-to-Trees: Gesamtmarkt beachten (Buch S. 75 laut stageanalysis.net)"
+    ],
+    "discretionary_rules": [
+      "Beurteilung von Stufen und Steigung der 30-Wochen-Linie nach Augenmaß",
+      "Basis-/Widerstandserkennung",
+      "Gruppenstärke und gewichtete Marktindikatoren ohne feste Zahl",
+      "Halbposition beim Ausbruch + Rest beim Rücksetzer",
+      "Zwischentief-Stop mit Rundung, Nachziehen, Verengung in Stufe 3"
+    ],
+    "vu_own_formalizations": [
+      "Steigungsschwelle 0,5 %/4 Wochen, Basis >= 10 Wochen, Band +-15 % um MA30",
+      "Fortsetzungsbasis WEIN-CONT-01 (8 Wochen, <= 25 % Tiefe, MA10 steigt; Checkliste eines Dritten)",
+      "Stoppuffer 2 %, Anfangsstop am tiefsten Basis-Wochenschluss",
+      "Hauptausstieg Wochenschluss < MA30 (Fall B)",
+      "WEIN-VOL-04 in engster Lesart (2x Vier-Wochen-Schnitt, erster Schluss über Einstieg)",
+      "Invalidation/60 Sitzungen, 5-Sitzungen-Sperre, 10 Plätze, 20 % Höchstgewicht, Kosten"
+    ],
+    "foreign_rules": [
+      "0,5 % Risiko je Trade (Kullamägi KK-RISK-01) per stillem Default-Erbe (CRITICAL laut canonical/weinstein.md)",
+      "IBD-artiger RS-Rang bei gleichzeitigen Signalen (priority RS)",
+      "5-USD-Minimum (Bulkowski)",
+      "Fortsetzungs-Checkliste von stageanalysis.net als Regelquelle"
+    ],
+    "source_fidelity": "MEDIUM",
+    "source_fidelity_reason": "Der Stufenkern und der Kauf-Stop sind breit sekundär bestätigt, das Buch ist nicht abgerufen (max. MEDIUM, R15). Wesentliche Teile (Gruppen, Marktbreite, Größen- und Streuungsregeln, Augenmaß) sind nicht öffentlich reproduzierbar; Größenregel UNRESOLVED."
+  },
+  "provenance": {
+    "Entry": "ORIGINAL_INTERPRETATION/VU: Kauf-Stop über Basis original (sekundär); Stufen-/Basisschwellen und Fortsetzungsbasis VU-Formalisierung. Fidelity MEDIUM.",
+    "Exit": "VU: Hauptausstieg Wochenschluss < MA30 ist Vereinfachung (Fall B); nur WEIN-VOL-04 im Kern original, in engster Lesart; Nachziehen/Zwischentief-Stop fehlen. Fidelity LOW.",
+    "Sizing": "FREMD: 0,5 % Risiko = Kullamägi KK-RISK-01, still geerbt; 20 %/10 Plätze VU_OWN; Weinsteins Größenregel UNRESOLVED. Fidelity LOW.",
+    "Portfolio": "VU: 10 Plätze, 20 %-Kappe, RS-Rang (IBD-artig, fremd), Cooldown 5, ein Signal je Titel; Halbposition/Rücksetzer fehlt. Fidelity LOW.",
+    "Risk": "VU: Anfangsstop 2 % unter tiefstem Basis-Wochenschluss (Original: unter dem Zwischentief); kein Nachziehen. Fidelity LOW.",
+    "Fundamentals": "Nicht angewendet; Weinstein verlangt keine (HIGH = nicht anwendbar).",
+    "Market": "ORIGINAL_INTERPRETATION: SPY über nicht fallender MA30 (Binärfilter); Gruppen-/Breitenindikatoren fehlen. Fidelity MEDIUM."
+  },
+  "implementation_fidelity": {
+    "rating": "LOW",
+    "per_area": {
+      "Entry": "MEDIUM",
+      "Exit": "LOW",
+      "Sizing": "LOW",
+      "Portfolio": "LOW",
+      "Risk": "LOW",
+      "Fundamentals": "HIGH (nicht anwendbar)",
+      "Market": "MEDIUM"
+    },
+    "penalties": [
+      "Fremdregel Sizing: Kullamägi 0,5 % Risiko still geerbt (CRITICAL) => Fidelity-Penalty Sizing/Portfolio",
+      "Hauptausstieg VU-Vereinfachung statt nachgezogenem Zwischentief-/MA-Stop (HIGH); Nachziehen nicht implementiert, aber im Live-Text behauptet (Doku-Fehler)",
+      "Anfangsstop VU (HIGH); Gruppen-/Sektorfilter fehlt (HIGH)",
+      "Halbposition + Rücksetzer fehlt (MEDIUM)",
+      "Fehlendes Volumen/Markt-/RS-Wert besteht still (Fallbacks)",
+      "Hard Gate (portfolio-policy.mjs): Replication-Claim in Sizing/Portfolio gesperrt; replicationClaimAllowed=false"
+    ],
+    "shared_default_penalty": true
+  },
+  "data": {
+    "needs": {
+      "prices": "AVAILABLE",
+      "volume": "PARTIAL",
+      "fundamentals": "MISSING (nicht verlangt)",
+      "institutional": "MISSING (nicht verlangt)",
+      "estimates": "MISSING (nicht verlangt)",
+      "sector": "MISSING (Gruppen-/Branchenstärke PIT nicht vorhanden; nur SIC)",
+      "market_regime": "AVAILABLE",
+      "intraday": "MISSING (Kauf-Stop nur aus Tageshoch; Reihenfolge im Tag nicht belegt)",
+      "earnings_events": "MISSING (earnings_policy NOT_VERIFIABLE)"
+    },
+    "sufficiency": "MEDIUM",
+    "fundamental_core_state": "Keine Fundamentaldaten genutzt. Core 1.22+ ist für diese Methode irrelevant und nicht live/migriert. Kursdaten: Tiingo-Tagesbalken (PIT_PRICES) ab 2016 im Live-Modell, Holdout 2008-2015 separat abgerufen (nicht survivorship-frei); lange Wochenschlussreihe aus quant/data/market/discover-series-long ohne Volumen.",
+    "fundamental_dependency": "NONE"
+  },
+  "existing_evidence": {
+    "decisions_by_round": [
+      {"round": "R11", "result": "WEINSTEIN_STAGE@4.0.0: (a) W4-Fallprüfung PASS (Fortsetzungsausbrüche bringen erstmals Einstiege); (b) Vollportfolio unter S1 FAIL => damals RESEARCH. Vorab-Regel (b): Überrendite S1 nicht unter dem fünftschlechtesten der 20 Zufallsreihenfolgen der Referenzversion.", "source_file": "scripts/supertrader/validation/DECISION-R11.json; PREREGISTRATION-R11.json"},
+      {"round": "R12", "result": "Marktampel PORT-MARKET-200 für WEINSTEIN_STAGE@3.0.0: a PASS, b FAIL => UNCHANGED (keine Ampel).", "source_file": "scripts/supertrader/validation/DECISION-R12.json"},
+      {"round": "R13", "result": "Delisting-Bewertungsfehler (S1 buchte Barübernahmen als -30 %). Mit S1C: R11_b PASS => WEINSTEIN_STAGE@4.0.0 LIVE. Marktfilter unter S1C FAIL => UNCHANGED. Zerlegung: Rückstand zu SPY fast vollständig durch Cash, auf investiertem Kapital etwa Marktniveau; Halten (6 Monate) verkleinert Rückstände bei Darvas/Turtle/Minervini, Weinstein nicht ausdrücklich genannt. Kein Vorteil gegenüber SPY.", "source_file": "scripts/supertrader/validation/DECISION-R13.json; docs/SUPERTRADER_AUDIT_R13.md"},
+      {"round": "R14", "result": "Kategorie D (Größe, Stop, Ausstieg), dann A (kein Signalvorteil). Holdout 2008-2015: H3 Exit-Zerstörung true (4/5 Methoden), H5 normalisiert (Gleichgewicht + Cash in SPY > SPY) true, O5 Gleichgewicht 1/10 besser als Live-Größe true, O8 Cash in SPY true (Holdout; in DEV verfehlt). H1 Signal-Edge, H2, H4 Portfolio nicht erfüllt. R13-Aussage 'fast nur Cash' PARTIALLY_CONFIRMED; Prozesskette 'Stop nachziehen' FALSE. Kennzahlen versiegelt (SEALED_NOT_READABLE).", "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json; docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md"},
+      {"round": "R15", "result": "Kanonische Rekonstruktion: Fremdregel 0,5 % Risiko (Kullamägi) still geerbt; Stop/Ausstieg VU (Fall B); Replication-Claim unzulässig; Weinstein 'von Grund auf neu' in Größe, Stop, Ausstieg. KEINE neuen Backtests. Qualitative Entwertung siehe robustness/exposure_finding.", "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md; scripts/supertrader/fidelity/canonical/weinstein.md"}
+    ],
+    "signal_quality": "Gegen das Universum neutral, gegen SPY in DEV schlechter, im Holdout kein belegter Edge (H1 nicht erfüllt) – Kategorie A. Einstiegsfindung ist unterscheidend, aber nicht überlegen (R10: irgendeine Methode in 17 von 19 Gewinnern, nur 10 von 19 Fehlkandidaten; Weinstein 3.0.0 bei allen 19 Gewinnern nie Kandidat, 14 davon schon in Stufe 2 => Anlass für 4.0.0).",
+    "portfolio_result_direction": "Unter SPY (Kein Vorteil, 'In Prüfung'); gleichgewichtetes Modell mit Cash in SPY im Holdout über SPY, in DEV nicht; Kennzahlen versiegelt: SEALED_NOT_READABLE.",
+    "exposure_finding": "Strukturell niedrig und bestätigt als Folge einer FREMDREGEL (0,5 % ÷ 15-27 % Stopabstand = ca. 2-3 % je Position; 10 Mini-Positionen ≈ höchstens ca. 30 % investiert). R13-'Rückstand durch Cash' ist deshalb überwiegend ein Sizing-Artefakt, kein Methodenbefund (R14: PARTIALLY_CONFIRMED).",
+    "risk_finding": "Größte Verlustbeiträge sind Buchungsartefakte (Übernahmen mit -30 %, SPAC-Auflösungen); Stop-Lücken nicht für Weinstein quantifiziert (UNKNOWN). Stopabstand 15-27 % macht Risiko je Trade klein, aber Gesamtrisiko/Drawdown nicht belegt (SEALED_NOT_READABLE).",
+    "robustness": "BEWERTUNG R15-KONTAMINATION (qualitativ, nur aus öffentlichen Befunden). (1) Weiter gültig, kaum von Sizing/Exit berührt: Signal-/Einstiegsebene – Kandidatenfindung, Trigger, Fortsetzungsregel (R11-W4 PASS, R10-Fallprüfung), Signalqualität gegen Universum/RS-Dezil (neutral, Kategorie A), Datenintegrität/Buchhaltung (R13 Invarianten, Zweitbuchung), Delisting-Korrektur S1C. Einschränkung: Entry selbst nur MEDIUM-Fidelity (VU-Schwellen), Gültigkeit also für die VU-Formalisierung, nicht für Weinstein. (2) Teilweise kontaminiert: Je-Trade-Ergebnisse und 'Exit-Zerstörung' (H3 true) – gelten für UNSERE Exit-Kombination (VOL-04 + MA30-Wochenschluss + 2-%-Basis-Stop), nicht für Weinsteins nachgezogenen Stop; Aussage über Original-Exit ist unzulässig (Fall B). Das Muster 'Halten besser als Exit' bleibt eine Diagnose, keine Weinstein-Eigenschaft. (3) Stark kontaminiert (Sizing + Exit + Slot-Blockade): alle Portfolio-Aussagen – CAGR/Überrendite gegen SPY, Investitionsquote, 'Rückstand durch Cash', R11(b)/R13-LIVE-Entscheidung (rein relative Referenz 3.0.0 unter derselben Fremdgröße, absolute Aussagekraft gering), R12-Marktampel-Test (Marktfilter ist zudem zur Engine-MKT-01 redundant), O8/H4. Faustregel: Bei ca. 3 % je Position und höchstens ca. 30 % Investitionsgrad sind in Aufwärtsmärkten mindestens rund 70 % des mechanischen Abstands zum Markt Sizing-Folge – damit lassen sich Portfolio-Urteile nicht der Methode zuschreiben. (4) Überlagerungen: Holdout 2008-2015 nicht survivorship-frei, bereits gesehen; DEV 2016-2026 mehrfach gesehen; R14 empfiehlt Neupräregistrierung und Vorwärtsprüfung. Fazit: Evidenz bleibt gültig als 'VU-Einstiegsidee ohne belegten Signalvorteil', ist ungültig als 'Weinstein-Methode funktioniert nicht/ist nur Cash'.",
+    "ground_truth_light": "R10 (19 außergewöhnliche Gewinner): Weinstein 3.0.0 nie Kandidat in 19/19; 14 waren schon in Stufe 2 (Engine suchte nur Stufe-1-Basen). Mit 4.0.0 erstmals Einstiege in W4/Diagnosegewinnern (Zählung versiegelt: SEALED_NOT_READABLE). SMCI 2023: nur Stufe 2, nie Kandidat (vor 4.0.0).",
+    "seen_data": true
+  },
+  "implementation_risk": {
+    "discretion": "HIGH",
+    "bad_formalization": "Stufen und Basis nach Augenmaß in starre Schwellen gegossen (flatSlope 0,5 %, Band 15 %, 10 Wochen); Übergangszweig in classifyStage; Fortsetzungsregel aus Fremdquelle; Ausstieg und Stop vereinfacht; Volumenregel in engster Lesart beendet 3/4 der Trades.",
+    "missing_data": "Gruppen-/Sektor-PIT, Langfrist-Marktindikatoren, Wochenvolumen außerhalb des Tagesfensters (live ca. 1 Jahr), Intraday-Reihenfolge, Weinsteins Größenregeln (Buch).",
+    "fragile_parameters": "riskPerTrade/Stopabstand (Exposure), volumeMultiple 2x/4 Wochen (WEIN-VOL-04), flatSlope, baseBand, contMinWeeks/contMaxDepth, entryReadyDistance, stopBuffer 2 %."
+  },
+  "product_potential": {
+    "rating": "MEDIUM",
+    "understandability": "Hoch: vier Phasen, 30-Wochen-Linie, ruhige Wochenroutine.",
+    "signal_frequency": "Niedrig: Live-Stand 2026-10-02 15 offene Stufe-1-Setups, kein Einstieg, 100 % Cash (docs canonical/weinstein.md).",
+    "differentiation": "Mittel: gut erklärbare Stufenlogik, aber viele Wettbewerber; Original-Kern (Gruppen, Halbposition, Stops) fehlt.",
+    "explainable_setups": "Gut (Basis, Widerstand, Volumen, RS, Markt), sofern Live-Texte korrigiert werden.",
+    "mobile": "Gut: wöchentlicher Takt, wenig Signale.",
+    "forward_test": "Möglich und läuft (Live-Ledger seit 2026-09-28), aber seltene Signale und Volumen live nur ca. 1 Jahr."
+  },
+  "main_problems": [
+    "Fremdregel Sizing (Kullamägi 0,5 %) erzeugt Mini-Positionen, niedrige Quote, Slot-Blockade; alle Portfolio-Urteile kontaminiert",
+    "Ausstieg und Stop VU-Vereinfachung; Original (nachgezogener Zwischentief-/MA-Stop, Stufe-3-Verengung) fehlt; Live-Text behauptet Nachziehen fälschlich",
+    "Kein belegter Signalvorteil (Kategorie A); Backtest-Evidenz aus VU-Variante, nicht aus Weinstein",
+    "Gruppen-/Sektorstärke (HIGH) und Halbposition/Rücksetzer fehlen",
+    "Stille Fallbacks bei fehlendem Volumen/Markt/RS und Triggerrückfall; Live-/Backtest-Unterschied beim Volumen",
+    "Registry-/Prozessketten-Drift (14 Abweichungen, 4 HIGH)",
+    "Beide Testzeiträume gesehen; Holdout nicht survivorship-frei"
+  ],
+  "critical_implementation_errors": [
+    "Stilles Erben von PORTFOLIO_DEFAULTS mit Kullamägi-Risikozahl (backtest.mjs:11; weinstein-v2.mjs:108, weinstein-v3.mjs:84; portfolio-policy.mjs:35)",
+    "Trailing-Stop in Doku/Prozesskette behauptet, im Code nicht vorhanden (process-chain.mjs:34, registry.mjs 269/560 laut R15)",
+    "Fehlendes Wochenvolumen gilt als ausreichend (weinstein-v3.mjs:71, weinstein-v2.mjs:82-83); Markt-/RS-Prüfung entfällt bei fehlender Vorwoche (weinstein-v3.mjs:52)",
+    "Übergangszweig classifyStage kann fallende MA30 als Stufe 2 führen (weinstein.mjs:47) und wird von der Fortsetzungsregel akzeptiert (weinstein-v4.mjs:15)",
+    "Volumenfilter in Prozesskette als Kandidatenfilter beschrieben, im Code Ausstiegsregel (process-chain.mjs:29)"
+  ],
+  "validation_class": "HISTORICAL_PLUS_LIGHT_GT",
+  "preliminary_tier": "B",
+  "confidence": "MEDIUM",
+  "deep_dive_candidate": true,
+  "preliminary_reasoning": "Der Stufenkern ist verständlich, braucht keine Fundamentaldaten und passt zum Wochenrhythmus, aber live läuft nur eine VU-Einstiegsidee mit Fremd-Sizing und VU-Ausstieg, und für keinen Zeitraum ist ein Signalvorteil belegt. Die bisherige Portfolio-Evidenz (Cash-Zerlegung, Exit-Zerstörung, LIVE-Entscheidung) ist durch die Fremdregel und die Slot-Blockade stark kontaminiert und erlaubt weder Lob noch Verwerfung der Methode; nur Signal-/Einstiegs- und Datenintegritätsbefunde bleiben gültig. Tier B (nicht C), weil eine einzelne Standardmessung (Sizing-/Exit-Dekontamination) den Streit klären kann; Confidence MEDIUM wegen versiegelter Kennzahlen und nicht abgerufenem Buch. Replikationsanspruch bleibt unzulässig (replicationClaimAllowed=false).",
+  "open_for_measurement": [
+    "Signalebene getrennt von Sizing und Exit: feste Haltedauer-Ereignisstudie der Einträge (Stufe-1- und Fortsetzungs-Einstiege) gegen Universum, RS-Dezil und SPY, beide Zeiträume",
+    "Gleichgewichts-/Quellen-Sizing-Sensitivität (1/N bzw. 1-2 % Risiko, als VU gekennzeichnet) mit identischen Signalen, Exits unverändert, zur Quantifizierung des Sizing-Anteils am Cash-Rückstand",
+    "Exit-Isolation: gleiche Einträge mit (a) aktueller VU-Exit-Kombination, (b) nur Basis-Stop + MA30-Wochenschluss, (c) nur WEIN-VOL-04, zur Zerlegung der Exit-Zerstörung",
+    "Anteil der Trades, die durch WEIN-VOL-04 beendet werden, getrennt nach Daten mit/ohne Wochenvolumen, und Effekt der Volumen-Fallbacks",
+    "Anteil Signale mit triggerFallback und Gap-Einstiegen; Verteilung des Stopabstands (Text-Mittelwert 17 % nur belegt als Text)",
+    "Skalenkonsistenz lange Wochenreihe vs Tagesbalken im Live-Ledger (Split/Dividende)",
+    "Erfüllen DEV + Holdout den Prüfplan 20 Jahre / 3 Bärenmärkte / 150 Trades (gates.mjs:22)?"
+  ],
+  "evidence_refs": [
+    "scripts/supertrader/engine/strategies/weinstein.mjs:15-148 (PARAMS, classifyStage :30-48, baseInfo :50-65)",
+    "scripts/supertrader/engine/strategies/weinstein-v2.mjs:30-34,71-84,108",
+    "scripts/supertrader/engine/strategies/weinstein-v3.mjs:31-85",
+    "scripts/supertrader/engine/strategies/weinstein-v4.mjs:10-58",
+    "scripts/supertrader/engine/weekly.mjs:10-59",
+    "scripts/supertrader/engine/simulator.mjs:28,182-238",
+    "scripts/supertrader/engine/execution.mjs:15-19",
+    "scripts/supertrader/engine/gates.mjs:22,49,105",
+    "scripts/supertrader/engine/backtest.mjs:9-16",
+    "scripts/supertrader/validation/portfolio.mjs:96-113",
+    "scripts/supertrader/model-portfolio.mjs:27,32-36",
+    "scripts/supertrader/fidelity/portfolio-policy.mjs:31-41,88",
+    "scripts/supertrader/fidelity/shared-rules.mjs (SH-DEFAULTS FOREIGN_RULE)",
+    "scripts/supertrader/fidelity/product-classes.mjs (LIVE_CLASSIFICATION WEINSTEIN_STAGE)",
+    "scripts/supertrader/fidelity/canonical/weinstein.md Abschnitte 1-9",
+    "scripts/supertrader/validation/DECISION-R11.json, DECISION-R12.json, DECISION-R13.json, AUDIT-R14-RESULT.json, PREREGISTRATION-R11.json, PREREGISTRATION-R14.json",
+    "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md Abschnitte 2.2, 3, 4, 5, 13-16",
+    "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md Abschnitte 0, 4, 5, 6",
+    "docs/SUPERTRADER_AUDIT_R13.md Abschnitte 4, 5, 6",
+    "docs/SUPERTRADER_VALIDATION_INTERNAL.md (R10-Fallprüfung, R8 Weinstein 3.0.0)",
+    "supertrader/data/registry.json strategies[WEINSTEIN_STAGE] (engine, product, variants, evidence, trailing_stop, position_sizing)"
+  ]
+}

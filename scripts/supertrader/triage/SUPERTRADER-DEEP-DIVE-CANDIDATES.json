@@ -1,0 +1,170 @@
+{
+  "schema": "supertrader-triage-deep-dive-candidates-1.0.0",
+  "generatedBy": "build-triage.mjs",
+  "prereg": "supertrader-triage-prereg-1.0.0",
+  "standardRun": {
+    "run": 38126161777,
+    "commit": "2af6651e9ee7",
+    "dataFingerprint": "fp_d5a33d623961d638",
+    "window": "DEV",
+    "seenData": true
+  },
+  "note": "Research/Triage. Kein Live-Eingriff. Alle Perioden gesehen (SEEN DATA). Teilkomponenten bleiben sichtbar; der interne Score ist ein Ranginstrument.",
+  "tierA": [],
+  "statement": "Kein Tier-A-Kandidat: keine Methode zeigt im gemeinsamen Rahmen einen datenbasierten Vorteil bei bestandenen Qualitaetsgates. Bedingte Kandidaten sind Beobachtungs-/Klaerungsfragen, keine Empfehlungen.",
+  "conditionalCandidates": [
+    {
+      "id": "MOMENTUM_BREAKOUT",
+      "deepDive": "CONDITIONAL",
+      "forwardPriority": "MEDIUM",
+      "distinctEdge": "Early breakout / Momentum-Selektion (Kullamaegi-Quelle am naechsten, aber nur Teil der Setups)",
+      "why": [
+        "Naechste Quelltreue der Live-Methoden (Exit/Sizing quellnah)",
+        "Signal NEUTRAL, Portfolio BELOW, Regime-Konsistenz nur 3/6",
+        "Bekannter Implementierungsvorbehalt: Exit nutzt Tagestief des ganzen Tages statt Tief bis zum Kauf"
+      ]
+    },
+    {
+      "id": "VU_TREND_52W",
+      "deepDive": "CONDITIONAL",
+      "forwardPriority": "HIGH",
+      "distinctEdge": "Trend persistence / Rotation (eigenes Regelwerk, keine geerbten Defaults)",
+      "why": [
+        "Messprofil wie Darvas (C): Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH; R12/R14 ohne Vorteil",
+        "Provenienz ist keine Evidenz: Regeln fast vollstaendig von TraderFox, Rang von Clenow, Universum VU-Ersatz",
+        "Forward-Prioritaet HIGH bleibt: Forward-Ledger ist der einzige ungesehene Raum und kostet wenig; das ist eine Beobachtungs-, keine Empfehlungsaussage"
+      ]
+    },
+    {
+      "id": "PIOTROSKI_F",
+      "deepDive": "BLOCKED_BY_DATA",
+      "forwardPriority": "LOW",
+      "distinctEdge": "Fundamental quality screen (Primaerquelle klar)",
+      "why": [
+        "Primaerquelle klar, aber Buch-/Marktwert-Berechnung mit moeglichem Auswahlfehler (build.mjs ~660/669, aus Code abgeleitet, nicht gemessen) und Ticker-zu-CIK-Zuordnung per erstem Treffer (ADR-001-Verstoss)",
+        "Datenbasis LOW, keine Messung moeglich, Fundamental-Core nicht migriert",
+        "Voll pruefbar nur 732 von 2564 Titeln; Kandidaten brauchen alle 8 Signale"
+      ]
+    }
+  ],
+  "lowPriority": [
+    {
+      "id": "VU_TREND_52W",
+      "tier": "C",
+      "why": [
+        "Messprofil wie Darvas (C): Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH; R12/R14 ohne Vorteil",
+        "Provenienz ist keine Evidenz: Regeln fast vollstaendig von TraderFox, Rang von Clenow, Universum VU-Ersatz",
+        "Forward-Prioritaet HIGH bleibt: Forward-Ledger ist der einzige ungesehene Raum und kostet wenig; das ist eine Beobachtungs-, keine Empfehlungsaussage"
+      ]
+    },
+    {
+      "id": "PIOTROSKI_F",
+      "tier": "C",
+      "why": [
+        "Primaerquelle klar, aber Buch-/Marktwert-Berechnung mit moeglichem Auswahlfehler (build.mjs ~660/669, aus Code abgeleitet, nicht gemessen) und Ticker-zu-CIK-Zuordnung per erstem Treffer (ADR-001-Verstoss)",
+        "Datenbasis LOW, keine Messung moeglich, Fundamental-Core nicht migriert",
+        "Voll pruefbar nur 732 von 2564 Titeln; Kandidaten brauchen alle 8 Signale"
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE",
+      "tier": "C",
+      "why": [
+        "Fremdes Kullamaegi-Sizing still geerbt; Portfolio-Evidenz stark kontaminiert",
+        "Signal gegen SPY NEGATIVE in allen Segmenten (gegen das Universum laut R14 neutral): Aussage gilt nur gegen SPY",
+        "Dekontaminationsmessung bleibt offene Frage, keine Prioritaet"
+      ]
+    },
+    {
+      "id": "DARVAS_BOX",
+      "tier": "C",
+      "why": [
+        "Quelle LOW, Boxdefinition VU, fremde Marktampel und 0,5-%-Risiko",
+        "Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH"
+      ]
+    },
+    {
+      "id": "DONCHIAN_TURTLE",
+      "tier": "C",
+      "why": [
+        "Bewertet als VU Equity Adaptation, keine Originalreplikation",
+        "Alphabetische Auswahl statt Staerke-Rang, kein Gewichtsdeckel",
+        "Signal gegen SPY NEGATIVE in 6/6 Segmenten (R14: gegen das Universum kein Vorteil), Portfolio BELOW, Drawdown DEEPER"
+      ]
+    },
+    {
+      "id": "MINERVINI_VCP",
+      "tier": "C",
+      "why": [
+        "Bestehendes Urteil uebernommen: Fidelity LOW, Recall 3/15, NOT_FEASIBLE_FROM_PUBLIC_RULES",
+        "Standardmessung: Signal NEUTRAL, Portfolio BELOW (niedrige Fallzahl, 263 Trades)"
+      ]
+    },
+    {
+      "id": "CANSLIM",
+      "tier": "C",
+      "why": [
+        "Teilpruefung: 5 von 7 Kriterien, I fehlt, Nettogewinn statt EPS",
+        "Keine Messung, Fundamentaldaten restated"
+      ]
+    },
+    {
+      "id": "GREENBLATT_VALUE",
+      "tier": "C",
+      "why": [
+        "Engine rechnet kein Ranking (nur Feldabdeckungspruefung)",
+        "Bilanzfelder 0 von 6293 Titeln vorhanden"
+      ]
+    },
+    {
+      "id": "KK_EPISODIC_PIVOT",
+      "tier": "C",
+      "why": [
+        "Namenskarte ohne Regeln; Daten (News-Zeitstempel, Konsens) fehlen"
+      ]
+    },
+    {
+      "id": "KK_PARABOLIC_SHORT",
+      "tier": "C",
+      "why": [
+        "Namenskarte ohne Regeln; Borrow/Locate und Intraday fehlen"
+      ]
+    },
+    {
+      "id": "VU_HOUSE_HS4_V03",
+      "tier": "C",
+      "why": [
+        "Hausstrategie, keine Trader-Methode; nicht im Standardmessrahmen"
+      ]
+    },
+    {
+      "id": "MARKET_WIZARDS_NEXT",
+      "tier": "D",
+      "why": [
+        "Sammelkarte, keine Methode; Quelle nicht gelesen",
+        "Empfehlung ohne Loeschauftrag"
+      ]
+    },
+    {
+      "id": "TURTLE_ORIGINAL_FUTURES",
+      "tier": "D",
+      "why": [
+        "Referenzzeile: Futures-Original, nicht repliziert, nicht replizierbar mit vorhandenen Daten"
+      ]
+    },
+    {
+      "id": "DARVAS_ORIGINAL",
+      "tier": "D",
+      "why": [
+        "Referenzzeile: Buch und Boxformel nicht verifiziert, keine Engine"
+      ]
+    },
+    {
+      "id": "NEO_DARVAS",
+      "tier": "D",
+      "why": [
+        "Referenzzeile: Rang 'Trendstabilitaet' nicht oeffentlich, keine Engine"
+      ]
+    }
+  ]
+}

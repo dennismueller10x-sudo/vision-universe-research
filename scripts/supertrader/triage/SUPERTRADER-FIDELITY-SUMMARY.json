@@ -1,0 +1,299 @@
+{
+  "schema": "supertrader-triage-fidelity-summary-1.0.0",
+  "generatedBy": "build-triage.mjs",
+  "prereg": "supertrader-triage-prereg-1.0.0",
+  "standardRun": {
+    "run": 38126161777,
+    "commit": "2af6651e9ee7",
+    "dataFingerprint": "fp_d5a33d623961d638",
+    "window": "DEV",
+    "seenData": true
+  },
+  "note": "Research/Triage. Kein Live-Eingriff. Alle Perioden gesehen (SEEN DATA). Teilkomponenten bleiben sichtbar; der interne Score ist ein Ranginstrument.",
+  "methods": [
+    {
+      "id": "MOMENTUM_BREAKOUT",
+      "provenance": {
+        "Entry": "VU auf Original-Prinzip: Idee (Kauf bei Ausbruch intraday, Top-1-2-%-Leader, 30 %+ Vorlauf) ORIGINAL; Basisalgorithmus, 5-Tage-Hoch-Trigger, Schwellen, Liquidität VU; ORH-Einstieg nicht umgesetzt.",
+        "Exit": "ORIGINAL mit VU-Randbedingungen: Stop Tagestief <= 1 ADR, 1/3 nach 3 Sitzungen, Rest an SMA10 sind Quelle; Einstand-Bedingung (BE-02) und Tagesbalken-Tief sind VU.",
+        "Sizing": "ORIGINAL (Interpretation): 0,5 % Risiko je Trade (Mitte von 0,3-0,5 %), max. 25 % je Titel (FAQ 5-25 %).",
+        "Portfolio": "VU: 10 Plätze, kein Hebel, RS-Rang, 5-Sitzungen-Sperre, Verwerfen statt Queue; Quelle nennt Margin und keine Höchstzahl.",
+        "Risk": "ORIGINAL im Kern (enger Stop, kleines Kontorisiko); 30-%-Überhangkappe und 15-20-%-Drawdownziel nicht mechanisiert; VU: Gap-Risiko unter Stop unbegrenzt.",
+        "Fundamentals": "Keine verlangt (Quelle: kein Fundamentalfilter für Common Breakout).",
+        "Market": "Quelle schriftlich ohne Marktfilter, Ermessen nicht reproduziert; Code: kein Filter, Regime nur Anzeige (R12/R13 PORT-MARKET-200 FAIL, UNCHANGED)."
+      },
+      "sourceFidelity": "MEDIUM",
+      "implementationFidelity": "MEDIUM",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "Kein kritischer Fehler im Live-Pfad gefunden. Bestätigt: dokumentierte Regel 'keine Sperre nach Invalidierung' wird vom Code nicht eingehalten (simulator.mjs:238), und LC-CONFLICT-01 gilt im Kauf-Stop-Pfad nicht (simulator.mjs:182-238). Beides LOW-MEDIUM, ohne Änderung der Fachentscheidung."
+      ]
+    },
+    {
+      "id": "VU_TREND_52W",
+      "provenance": {
+        "Entry": "FREMD (TraderFox-Regeln, bewusst) + VU (Universum, Rang, Zeitplan)",
+        "Exit": "FREMD (TraderFox 65-Tage/<100 %/Gewicht) – kein Stop",
+        "Sizing": "FREMD (10 % je Neukauf, 3 %-Minimum, Trim 20 -> 15 %)",
+        "Portfolio": "FREMD (10 Plaetze, monatlich) + VU (Universum 1.800 nach Umsatz)",
+        "Risk": "FREMD (kein Stop; Ampel -> 5 %-Cap); Delisting-/Gap-Risiko ungeschuetzt",
+        "Fundamentals": "keine (Pivotal-News-Points nicht abgebildet)",
+        "Market": "FREMD (SPY > GD200 als Proxy fuer S&P 500)"
+      },
+      "sourceFidelity": "MEDIUM",
+      "implementationFidelity": "MEDIUM",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": [
+        "Keine kritischen Codefehler gefunden; R13-Invarianten ohne Verletzung (alle Live-Methoden, aber Trend52 ausserhalb der 5 gepruefte)",
+        "Gate-Luecke: REQUIREMENTS/TEST_PLANS ohne VU_TREND_52W (gates.mjs:59-63)"
+      ]
+    },
+    {
+      "id": "PIOTROSKI_F",
+      "provenance": {
+        "Entry": "ORIGINAL (Idee: hoher F-Score im B/M-Quintil) mit VU-Schwelle 7/8; Zeitpunkt/5.-Monat-Regel fehlt",
+        "Exit": "ORIGINAL (1 Jahr Haltedauer) - im Code nicht gerechnet",
+        "Sizing": "UNCLEAR - nicht Teil der Methode (NOT_VERIFIABLE)",
+        "Portfolio": "UNCLEAR - Jahresportfolio nur als inaktive Variante PIOTROSKI_F_FULL",
+        "Risk": "UNCLEAR - nicht Teil der Methode",
+        "Fundamentals": "ORIGINAL (9 Signale) mit VU-Ersatz bei Verschuldung/Emission, restated",
+        "Market": "UNCLEAR - kein Marktfilter; Liquiditätsuniversum FREMD"
+      },
+      "sourceFidelity": "MEDIUM",
+      "implementationFidelity": "MEDIUM",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "B/M nutzt Aktienzahl des letzten Geschäftsjahrs mit aktuellem split-adjustiertem Kurs (build.mjs:659,667); nach Splits/Emissionen ist die Marktkapitalisierung falsch, Fehler wirkt direkt auf die Kandidatenauswahl. Nicht gemessen, nur aus Code abgeleitet.",
+        "Ticker->CIK per erstem Treffer statt core/identity.js (build.mjs:635-636)."
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE",
+      "provenance": {
+        "Entry": "ORIGINAL_INTERPRETATION/VU: Kauf-Stop über Basis original (sekundär); Stufen-/Basisschwellen und Fortsetzungsbasis VU-Formalisierung. Fidelity MEDIUM.",
+        "Exit": "VU: Hauptausstieg Wochenschluss < MA30 ist Vereinfachung (Fall B); nur WEIN-VOL-04 im Kern original, in engster Lesart; Nachziehen/Zwischentief-Stop fehlen. Fidelity LOW.",
+        "Sizing": "FREMD: 0,5 % Risiko = Kullamägi KK-RISK-01, still geerbt; 20 %/10 Plätze VU_OWN; Weinsteins Größenregel UNRESOLVED. Fidelity LOW.",
+        "Portfolio": "VU: 10 Plätze, 20 %-Kappe, RS-Rang (IBD-artig, fremd), Cooldown 5, ein Signal je Titel; Halbposition/Rücksetzer fehlt. Fidelity LOW.",
+        "Risk": "VU: Anfangsstop 2 % unter tiefstem Basis-Wochenschluss (Original: unter dem Zwischentief); kein Nachziehen. Fidelity LOW.",
+        "Fundamentals": "Nicht angewendet; Weinstein verlangt keine (HIGH = nicht anwendbar).",
+        "Market": "ORIGINAL_INTERPRETATION: SPY über nicht fallender MA30 (Binärfilter); Gruppen-/Breitenindikatoren fehlen. Fidelity MEDIUM."
+      },
+      "sourceFidelity": "MEDIUM",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "Stilles Erben von PORTFOLIO_DEFAULTS mit Kullamägi-Risikozahl (backtest.mjs:11; weinstein-v2.mjs:108, weinstein-v3.mjs:84; portfolio-policy.mjs:35)",
+        "Trailing-Stop in Doku/Prozesskette behauptet, im Code nicht vorhanden (process-chain.mjs:34, registry.mjs 269/560 laut R15)",
+        "Fehlendes Wochenvolumen gilt als ausreichend (weinstein-v3.mjs:71, weinstein-v2.mjs:82-83); Markt-/RS-Prüfung entfällt bei fehlender Vorwoche (weinstein-v3.mjs:52)",
+        "Übergangszweig classifyStage kann fallende MA30 als Stufe 2 führen (weinstein.mjs:47) und wird von der Fortsetzungsregel akzeptiert (weinstein-v4.mjs:15)",
+        "Volumenfilter in Prozesskette als Kandidatenfilter beschrieben, im Code Ausstiegsregel (process-chain.mjs:29)"
+      ]
+    },
+    {
+      "id": "DARVAS_BOX",
+      "provenance": {
+        "Entry": "ORIGINAL fuer Kauf-Stop am Ausbruchspunkt; VU fuer Box (20-Tage-Hoch, 3-25 %, 3-Sitzungen), Naehe und Momentum-Perzentil; FREMD (TraderFox) fuer 3-Tage-Box",
+        "Exit": "ORIGINAL im Prinzip (Stop knapp unter Kauforder, nachziehen, nur Stop-Ausstieg); VU: genau 1 % und Nachziehen ohne Puffer",
+        "Sizing": "FREMD (Kullamaegi 0,5 % Risiko) + VU (Kappe 1/6); Darvas: konzentrierte Bloecke, teils Kredit, keine Prozentregel",
+        "Portfolio": "ORIGINAL 6 Titel; VU 1/6, RS-Rang, Cooldown, Verfall; kein Pyramidisieren",
+        "Risk": "ORIGINAL Stop-Prinzip; keine Drawdown-/Gap-Regel belegt; Slippage VU",
+        "Fundamentals": "ORIGINAL verlangt Wachstumsfilter ('could double or treble'); im Code NICHT vorhanden (R14: Doku-Behauptung eines Gewinnfilters war falsch)",
+        "Market": "FREMD: TraderFox-Ampel; Darvas-Original: kein Indexfilter, Cash ueber Stops"
+      },
+      "sourceFidelity": "LOW",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "Kullamaegi-Risikozahl als Darvas-Sizing (darvas-v3.mjs:35; backtest.mjs:11)",
+        "TraderFox-Ampel als Teil der Darvas-Version (darvas-v302.mjs:10); Kommentar darvas-v302.mjs:4 nennt sie TraderFox, :11 'VU'",
+        "registry.mjs:320,336,337,340,381,383 beschreiben 1.2.0 (Schlusskurs-Einstieg/Stop an Unterkante) fuer live 3.0.2",
+        "Gate-Mapping nicht variantenspezifisch (build.mjs:921)"
+      ]
+    },
+    {
+      "id": "DONCHIAN_TURTLE",
+      "provenance": {
+        "Entry": "ORIGINAL fuer den Trigger (20-Tage-Hoch, Kauf-Stop, Gap zur Eroeffnung, S1-Filter+Failsafe); VU fuer Nahe-/Verfalls-/Sperr-Lifecycle und Liquiditaetsfilter (Signalverlust) -> Mischform",
+        "Exit": "ORIGINAL (10-Tage-Tief intraday, Stop 2N); Stop-Nachzug beim Aufstocken fehlt",
+        "Sizing": "ORIGINAL-Formel (1 %/N, 2N-Stop, Notionalkonto), aber effektive Groesse durch VU-Bargeldgrenze bestimmt (kein Deckel, kein Hebel)",
+        "Portfolio": "VU_OWN: ALPHA-Auswahl, eine Unit je Aktie, keine Korrelationsgrenzen/Heat, 12-Titel-Grenze bindet nie",
+        "Risk": "ORIGINAL 2N-Stop; Gesamt-Heat/Gruppen fehlen; Uebernahme-/Delisting-Gaps strukturell (kleines N -> riesige Unit, TUR-E-CORP-01)",
+        "Fundamentals": "keine (wie Original)",
+        "Market": "keine (wie Original); Ampel aus 2.0.1 zurueckgenommen (R13)"
+      },
+      "sourceFidelity": "MEDIUM",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "Live-Text 'keine Rangregel in der Quelle' ist falsch (model-portfolio.mjs:20-22,36; R14/R15)",
+        "Doku/Registry '<= 6 % Aufnahme' vs. Code: nur ENTRY_READY (<= 3 %) wird Signal (donchian-v2.mjs:104, lifecycle.mjs:22) – zur Pruefung durch Messung vorgemerkt",
+        "TEST_PLANS/Gate-Mapping nicht variantenspezifisch (build.mjs:923)",
+        "(behoben R14) Endlosschleife Notionalkonto bei >50 % Jahresverlust"
+      ]
+    },
+    {
+      "id": "MINERVINI_VCP",
+      "provenance": {
+        "Entry": "VU: Trend Template teils belegt, VCP VU-Formalisierung; Fidelity MEDIUM (Live-Klassifikation).",
+        "Exit": "VU: Hilfsregel Schluss unter SMA50 mit Volumen, Einstand ab 3R; Verkauf in die Stärke fehlt; LOW.",
+        "Sizing": "ORIGINAL_INTERPRETATION: 1,25 % Risiko, 25 % je Position aus Minervinis eigenen Beiträgen; MEDIUM.",
+        "Portfolio": "Teils VU (10 Plätze, Halbierungsregel, kein Aufstocken); MEDIUM.",
+        "Risk": "VU/sekundär: Stop am Kontraktionstief, höchstens 10 % unter Einstieg.",
+        "Fundamentals": "Live 2.0.0 nicht genutzt (SEPA fehlt); 3.0.0 nutzt SEC-PIT-EPS/Umsatz nur als Forschung; Fidelity LOW.",
+        "Market": "MEDIUM (Live-Klassifikation); Marktampel in R12/R13 geprüft und abgelehnt."
+      },
+      "sourceFidelity": "LOW",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "CANSLIM",
+      "provenance": {
+        "Entry": "VU - keine Einstiegsregel gerechnet; nur Kriterien-Screen; O'Neil-Pivot fehlt",
+        "Exit": "UNCLEAR - Verlustbegrenzung 7-8 % referenziert (CS-SELL-REF), im Code nicht gerechnet; regular_exit NOT_VERIFIABLE",
+        "Sizing": "UNCLEAR - nicht Teil der Teilprüfung (NOT_VERIFIABLE)",
+        "Portfolio": "UNCLEAR - keine Portfoliologik",
+        "Risk": "UNCLEAR - nicht gerechnet",
+        "Fundamentals": "ORIGINAL (Idee C/A >= 25 %) mit VU-Ersatz (Nettogewinn statt EPS, zuletzt berichtet statt PIT)",
+        "Market": "VU - SPY-Trendersatz für Follow-Through-Days; Liquiditätsuniversum von den Live-Strategien (FREMD)"
+      },
+      "sourceFidelity": "LOW",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": true,
+      "criticalImplementationErrors": [
+        "Keine harten Rechenfehler gefunden; verdächtig: Ticker->CIK per erstem Treffer (build.mjs:635-636) statt core/identity.js (CLAUDE.md-Regel). Ergebnis kann sich bei Migration auf Core 1.22+ ändern (Wert-/Periodenlogik)."
+      ]
+    },
+    {
+      "id": "GREENBLATT_VALUE",
+      "provenance": {
+        "Entry": "ORIGINAL (Rangsumme, Top 20-30) - nicht umgesetzt",
+        "Exit": "ORIGINAL (Jahreshaltedauer) - nicht umgesetzt",
+        "Sizing": "ORIGINAL (gleiche Beträge) - nicht umgesetzt",
+        "Portfolio": "ORIGINAL (20-30 Titel) - nicht umgesetzt",
+        "Risk": "ORIGINAL (kein Stop, kein Regimefilter) - bewusst keine fremden Regeln",
+        "Fundamentals": "ORIGINAL-Definition, Daten fehlen (3 von 8 Pflichtfeldern bei 0 %)",
+        "Market": "ORIGINAL: kein Marktfilter"
+      },
+      "sourceFidelity": "HIGH",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": [
+        "Keine - die Engine verweigert korrekt das Ranking. Hinweis: 'available' = Schlüssel in units vorhanden (build.mjs:257-262), keine Wertprüfung."
+      ]
+    },
+    {
+      "id": "KK_EPISODIC_PIVOT",
+      "provenance": {
+        "Entry": "UNCLEAR: nicht umgesetzt; Quelle ORIGINAL (Gap, Volumen, ORH), keine VU-Regel vorhanden.",
+        "Exit": "UNCLEAR: nicht umgesetzt; Quelle: Stop Tagestief <= 1,5 ADR, Trail an SMA10/20.",
+        "Sizing": "UNCLEAR: nicht umgesetzt; allgemeine KK-Regeln (0,3-0,5 % Risiko) würden gelten, EP-spezifisch nichts.",
+        "Portfolio": "UNCLEAR: nicht umgesetzt.",
+        "Risk": "UNCLEAR: nicht umgesetzt.",
+        "Fundamentals": "UNCLEAR: Quelle verlangt Wachstum und Überraschung (ORIGINAL), im Repo nichts umgesetzt.",
+        "Market": "UNCLEAR: nicht umgesetzt; Quelle diskretionär."
+      },
+      "sourceFidelity": "LOW",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "KK_PARABOLIC_SHORT",
+      "provenance": {
+        "Entry": "UNCLEAR: nicht umgesetzt; Quelle ORIGINAL (ORL/VWAP intraday).",
+        "Exit": "UNCLEAR: nicht umgesetzt; Quelle Stop Tageshoch, Ziel SMA10/20.",
+        "Sizing": "UNCLEAR: nicht umgesetzt; keine eigene Short-Größenregel in der Quelle (C07).",
+        "Portfolio": "UNCLEAR: nicht umgesetzt (keine Short-Simulation).",
+        "Risk": "UNCLEAR: nicht umgesetzt; Quelle warnt vor größten Verlusten.",
+        "Fundamentals": "UNCLEAR: keine Fundamentalregel in der Quelle gefunden.",
+        "Market": "UNCLEAR: nicht umgesetzt."
+      },
+      "sourceFidelity": "LOW",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "VU_HOUSE_HS4_V03",
+      "provenance": {
+        "Entry": "VU (Monatsrang, Top 20)",
+        "Exit": "VU (Rang > 40 oder Filter verletzt)",
+        "Sizing": "VU (Gleichgewicht)",
+        "Portfolio": "VU (20 Titel, Monatsende)",
+        "Risk": "VU (kein Stop, Filter)",
+        "Fundamentals": "VU (SEC PIT: EPS/Umsatz)",
+        "Market": "VU (200T-Filter pro Titel)"
+      },
+      "sourceFidelity": "NOT_REPRODUCIBLE",
+      "implementationFidelity": "MEDIUM",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "MARKET_WIZARDS_NEXT",
+      "provenance": {
+        "Entry": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Exit": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Sizing": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Portfolio": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Risk": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Fundamentals": "UNCLEAR (nicht spezifiziert, Regeln leer)",
+        "Market": "UNCLEAR (nicht spezifiziert, Regeln leer)"
+      },
+      "sourceFidelity": "NOT_REPRODUCIBLE",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "TURTLE_ORIGINAL_FUTURES",
+      "provenance": {
+        "Entry": "ORIGINAL (S1/S2, Filter, Failsafe)",
+        "Exit": "ORIGINAL (10-/20-Tage-Tief, Stop 2N)",
+        "Sizing": "ORIGINAL (Unit 1 %/N, Aufstocken, Heat in Units)",
+        "Portfolio": "ORIGINAL (4/6/10/12, Staerke-Rang, long/short, Margin)",
+        "Risk": "ORIGINAL (2N, Notionalkonto) mit NOT_PUBLIC Anteilen (Ordertaktik)",
+        "Fundamentals": "keine",
+        "Market": "keine Marktregel"
+      },
+      "sourceFidelity": "NOT_REPRODUCIBLE",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "DARVAS_ORIGINAL",
+      "provenance": {
+        "Entry": "ORIGINAL-Prinzip (Kauforder am Ausbruch); Boxformel UNCLEAR",
+        "Exit": "ORIGINAL-Prinzip (Stop knapp unter Kauforder, nachziehen); Zahl UNCLEAR",
+        "Sizing": "ORIGINAL_INTERPRETATION (konzentrierte Bloecke, teils Kredit); keine Prozentregel belegt",
+        "Portfolio": "ORIGINAL (5-6 Titel); Pyramidisieren ORIGINAL_INTERPRETATION",
+        "Risk": "ORIGINAL (Stop-Loss, Gap-Risiko benannt)",
+        "Fundamentals": "ORIGINAL (Wachstum, 'could double or treble'); Quantifizierung UNCLEAR",
+        "Market": "kein Indexfilter belegt (Cash in der Baisse ueber Stops, MEDIUM)"
+      },
+      "sourceFidelity": "NOT_REPRODUCIBLE",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    },
+    {
+      "id": "NEO_DARVAS",
+      "provenance": {
+        "Entry": "FREMD (TraderFox, oeffentliche Fassung 2018/2019/2021)",
+        "Exit": "FREMD (65-Tage-Regel, <100 %, Gewicht)",
+        "Sizing": "FREMD (10 % je Neukauf, 10 Plaetze, Trim 20 -> 15 %)",
+        "Portfolio": "FREMD (monatlich, 1.800er Universum)",
+        "Risk": "FREMD (Ampel -> max 5 %, kein Stop zwischen den Terminen)",
+        "Fundamentals": "keine in den oeffentlichen Regeln (Pivotal-News-Points: Quartalszahlen-Gaps, nicht abgebildet)",
+        "Market": "FREMD (S&P 500 > GD200)"
+      },
+      "sourceFidelity": "NOT_REPRODUCIBLE",
+      "implementationFidelity": "LOW",
+      "sharedDefaultPenalty": false,
+      "criticalImplementationErrors": []
+    }
+  ]
+}

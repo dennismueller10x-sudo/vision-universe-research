@@ -1,0 +1,234 @@
+{
+ "strategy_id": "PIOTROSKI_F",
+ "method_name": "Piotroski F-Score (Teilprüfung)",
+ "group": "C",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/partial/piotroski.mjs",
+   "scripts/supertrader/build.mjs (buildPartialChecks, B/M-Quintil, loadSecFundamentals)"
+  ],
+  "versions_in_repo": [
+   "0.9.0 (registry)"
+  ],
+  "live_version": "0.9.0 (PARTIAL_CHECK; Kandidatenliste in signals.json -> partialChecks.PIOTROSKI_F)",
+  "status": "LIVE (Teilprüfung, kein Signal; registry engine=null)",
+  "shared_modules_used": [
+   "quant/data/sec/consumer (net_income, total_assets, operating_cash_flow, long_term_debt, shares_outstanding, gross_profit, revenue, stockholders_equity)",
+   "build.mjs Liquiditätsgrenze close>=5 / dollarVol20>=5e6",
+   "split-adjustierte Schlusskurse aus technical-signals-v1"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Werte sind zuletzt berichtet (restated), keine Erstmeldungen",
+    "where": "piotroski.mjs:13; build.mjs:628-640; Consumer policy 'as_of_latest'",
+    "effect": "Look-ahead gegenüber damals bekannten Zahlen; für Live-Screening unkritisch, für jeden historischen Test verzerrend."
+   },
+   {
+    "what": "F-Score 'score' nur wenn alle 8 prüfbaren Signale Daten haben, sonst null",
+    "where": "piotroski.mjs:69",
+    "effect": "Starke Selektion: nur 732 von 2564 Titeln voll prüfbar (29 %); DLEVER NO_DATA 1089 (fehlende LongTermDebt-Reihe = 1809 von 5073 Emittenten; schuldenfreie Firmen fallen systematisch raus), DMARGIN NO_DATA 1267 (gross_profit fehlt bei 2254 von 5073)."
+   },
+   {
+    "what": "Kandidat nur bei partialScore >= 7 (von 8) und B/M >= 80. Perzentil",
+    "where": "piotroski.mjs:26; build.mjs:674,679",
+    "effect": "Originalschwelle ist F >= 8 von 9 (hoch) ; 7 von 8 ist VU-Definition (nur 4 Kandidaten am 2026-10-06)."
+   },
+   {
+    "what": "Buch-/Marktwert = letztes Geschäftsjahr-Eigenkapital / (Aktienzahl letztes GJ x aktueller split-adjustierter Schlusskurs)",
+    "where": "build.mjs:659,666-668",
+    "effect": "Splits (oder Rückkäufe/Emissionen) nach dem Bilanzstichtag machen die Marktkapitalisierung falsch (alte Aktienzahl x neuer Kurs); B/M wird verzerrt, ungeprüft auf EPS/Split-Konsistenz. Das Quintil wird nur über das gefilterte Universum (>= 5 USD, 5 Mio. USD Umsatz) gebildet, nicht über alle NYSE/AMEX/NASDAQ-Titel wie bei Piotroski."
+   },
+   {
+    "what": "B/M-Quintil als floor(n*0.8)-Index über nur positive B/M-Werte",
+    "where": "build.mjs:669-675",
+    "effect": "Negatives Eigenkapital ausgeschlossen (okay), aber Quintilgrenze hängt von Universums- und Datenabdeckung ab (Schwelle heute 0.8154)."
+   },
+   {
+    "what": "Aktienausgabe: Quotient >= 1.8 oder <= 0.55 -> NO_DATA (Split-Vermutung); ratio <= 1.0 -> PASS",
+    "where": "piotroski.mjs:59-60",
+    "effect": "Echte Kapitalerhöhung um >80 % wird verschluckt; Split 3:2 (1.5) oder Reverse-Split 1:2 (0.5 -> NO_DATA, 0.6 -> FAIL) falsch als Emission gewertet; jede minimale Aktienzunahme (>1.0) ist FAIL. 471 NO_DATA bei EQ_OFFER."
+   },
+   {
+    "what": "Verschuldung: Langfristige Schulden / Bilanzsumme am Jahresende (nicht Durchschnittsbilanz) mit <= (gleich zählt als PASS)",
+    "where": "piotroski.mjs:54-56",
+    "effect": "Originalrichtung 'sinkt'; hier zählt 'gleich' (z. B. 0 -> 0) als PASS; VU-Formalisierung."
+   },
+   {
+    "what": "Liquiditätssignal (Umlaufquote) fest NOT_AVAILABLE; Maximum 8",
+    "where": "piotroski.mjs:31,43",
+    "effect": "Der 'F-Score' ist ein Teil-Score; Originalschwelle 8-9 nicht vergleichbar. Consumer-Daten enthalten weder current_assets noch current_liabilities."
+   },
+   {
+    "what": "Bilanzstichtage werden aus den total_assets-Schlüsseln der letzten drei FY gewonnen; andere Metriken per Datumsstring gematcht",
+    "where": "piotroski.mjs:40-45,32-34",
+    "effect": "Weicht ein Metrik-Stichtag (53-Wochen-Jahr) vom total_assets-Stichtag ab, wird das Signal still NO_DATA."
+   },
+   {
+    "what": "ROA = Nettogewinn / Bilanzsumme Vorjahr; ACCRUAL = CFO/TA_Vorjahr > ROA",
+    "where": "piotroski.mjs:48,53",
+    "effect": "Entspricht dem Original (Anfangsbilanzsumme); Altersgrenze 550 Tage (Zeile 26/46)."
+   },
+   {
+    "what": "Ticker->CIK per erstem Treffer, eigene Symbolsuche statt core/identity.js",
+    "where": "build.mjs:635-636",
+    "effect": "Identitätsregel (CLAUDE.md/ADR-001) umgangen."
+   },
+   {
+    "what": "Liquiditätsuniversum close>=5, dollarVol20>=5e6 (fremde Regel)",
+    "where": "build.mjs:656",
+    "effect": "Piotroski-Original: keine Handelbarkeitsgrenze; Selektion kleiner, illiquider Value-Titel (Fehlermodus laut Registry) wird teilweise ausgeblendet, Ergebnis nicht mit Original vergleichbar."
+   }
+  ],
+  "version_drift": "Doku-Drift: docs/SUPERTRADER_METHOD_FIDELITY.md:248-258 und registry.fidelity melden 'Auswahl (B/M-Quintil) fehlt im Code' und 'Zeitpunkt fehlt'; build.mjs:669-680 implementiert B/M-Quintil und Kandidatenliste (Registry-Variante PIOTROSKI_PARTIAL sagt korrekt 'oberes B/M-Quintil'). Zeitlogik (Start 5. Monat nach GJ-Ende) und Jahreshaltedauer fehlen tatsächlich. PRODUCT_MATRIX nennt 8 von 9 Signalen - stimmt zum Code (8 prüfbar). Matrix-Hinweis 'Erstmeldungen statt Restatements' ist ein offener Mangel, kein Code-Zustand."
+ },
+ "source_audit": {
+  "core": "Piotroski 2000 (Journal of Accounting Research 38; SSRN 249455): neun binäre Signale aus Jahresabschlüssen, angewandt im obersten B/M-Quintil, Haltedauer ein Jahr, Start im 5. Monat nach Geschäftsjahresende. Rein mechanisch.",
+  "clear_public_rules": [
+   "Neun Signale (ROA, CFO, DeltaROA, Accrual, DeltaLeverage, DeltaLiquidity, keine Emission, DeltaMargin, DeltaTurnover)",
+   "oberes B/M-Quintil als Universum (PIO-BM-01)",
+   "Haltedauer ein Jahr"
+  ],
+  "discretionary_rules": [],
+  "vu_own_formalizations": [
+   "LTD/Gesamtvermögen statt LTD/Durchschnittsbilanz (PIO-LEV-VU)",
+   "Aktienzahl-Split-Heuristik 1.8/0.55 (PIO-EQ-VU)",
+   "Kandidatenschwelle 7 von 8",
+   "B/M-Berechnung aus letztem GJ-Equity x Aktienzahl x heutigem Kurs",
+   "Liquiditätsuniversum"
+  ],
+  "foreign_rules": [
+   "Liquiditätsgrenze der Live-Strategien (build.mjs:656)"
+  ],
+  "source_fidelity": "MEDIUM",
+  "source_fidelity_reason": "Original ist primär belegt und eindeutig (PRIMARY_EXPLICIT); aber 1 von 9 Signalen fehlt, 2 sind VU-Formalisierungen, Zeitlogik/Haltedauer fehlen, Daten restated."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL (Idee: hoher F-Score im B/M-Quintil) mit VU-Schwelle 7/8; Zeitpunkt/5.-Monat-Regel fehlt",
+  "Exit": "ORIGINAL (1 Jahr Haltedauer) - im Code nicht gerechnet",
+  "Sizing": "UNCLEAR - nicht Teil der Methode (NOT_VERIFIABLE)",
+  "Portfolio": "UNCLEAR - Jahresportfolio nur als inaktive Variante PIOTROSKI_F_FULL",
+  "Risk": "UNCLEAR - nicht Teil der Methode",
+  "Fundamentals": "ORIGINAL (9 Signale) mit VU-Ersatz bei Verschuldung/Emission, restated",
+  "Market": "UNCLEAR - kein Marktfilter; Liquiditätsuniversum FREMD"
+ },
+ "implementation_fidelity": {
+  "rating": "MEDIUM",
+  "per_area": {
+   "Entry": "MEDIUM: Quintil + Score vorhanden, Zeitlogik fehlt, Schwelle 7/8",
+   "Exit": "Fehlt (Haltedauer nicht gerechnet)",
+   "Sizing": "n/a",
+   "Portfolio": "Fehlt (kein Jahresportfolio)",
+   "Risk": "n/a",
+   "Fundamentals": "MEDIUM-LOW: 8/9, restated, B/M-Unschärfe",
+   "Market": "n/a / FREMDE Liquiditätsgrenze"
+  },
+  "penalties": [
+   "Restated statt Erstmeldung",
+   "Liquiditätssignal fehlt",
+   "Kandidat nur bei vollständiger Abdeckung (29 %) -> Auswahlverzerrung",
+   "B/M mit alter Aktienzahl x neuem Kurs",
+   "Quintil nur über gefiltertes Universum",
+   "kein Rebalance-/Haltezyklus"
+  ],
+  "shared_default_penalty": true
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE",
+   "volume": "AVAILABLE (nur Liquiditätsgrenze)",
+   "fundamentals": "PARTIAL (restated, kein PIT, current_assets/-liabilities MISSING, LTD bei 36 % und Bruttogewinn bei 44 % der Emittenten fehlend)",
+   "institutional": "MISSING (nicht benötigt)",
+   "estimates": "MISSING (nicht benötigt)",
+   "sector": "PARTIAL (nicht benötigt; SIC-Snapshot)",
+   "market_regime": "MISSING (nicht benötigt)",
+   "intraday": "MISSING (nicht benötigt)",
+   "earnings_events": "MISSING (Meldedatum je GJ nötig für Zeitlogik)"
+  },
+  "sufficiency": "LOW",
+  "fundamental_core_state": "Datenstand: quant/data/sec/consumer/*.json (Schema vu-consumer-fundamentals-1.0.0, normalization_logic 1.10.0, policy 'as_of_latest', Generierung 2026-10-05), gelesen von scripts/supertrader/build.mjs#loadSecFundamentals (build.mjs:628-640). Das ist NICHT der migrierte Fundamental-Core 1.22+/1.23 (PR #481 eigener Track, nicht live) und NICHT PIT: je Periode der zuletzt gemeldete (restated) Wert, kein Erstmeldungs-Filter auf 'filed'. Eigene Messung (nur Lesen) am Konsum-Bestand: 5073 Emittenten, Quartals-Nettogewinn bei 3725 mit 8 Quartalen, 1130 ohne Quartalsreihe, keine Doppelzeilen je Periode, derived-Flag in allen Quartalszeilen 0 und vom Engine-Code ohne Auswertung.",
+  "fundamental_dependency": "HIGH"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R11",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R11.json"
+   },
+   {
+    "round": "R12",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json"
+   },
+   {
+    "round": "R14",
+    "result": "nicht behandelt",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json"
+   },
+   {
+    "round": "R15",
+    "result": "Datenarchitektur: consumer nicht zeitpunktgenau, 'Teilprüfung, keine Strategie'",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:255"
+   }
+  ],
+  "signal_quality": "UNKNOWN - Registry: NOT_TESTED, PRICES_NO_PIT_FUNDAMENTALS; track_record_note verweist nur auf die Originalstudie (1976-1996), kein Test dieser Umsetzung",
+  "portfolio_result_direction": "UNKNOWN",
+  "exposure_finding": "UNKNOWN (heute 4 Kandidaten bei 440 im Wertuniversum, 732 voll prüfbar)",
+  "risk_finding": "UNKNOWN",
+  "robustness": "UNKNOWN",
+  "ground_truth_light": "UNKNOWN - keine Beispiele aus dem Repo geprüft",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "B/M mit Aktienzahl aus dem letzten GJ x aktueller Kurs; Split-Heuristik 1.8/0.55; Gleichstand zählt bei DLEVER als PASS; Universum fremd gefiltert.",
+  "missing_data": "Umlaufvermögen/kurzfr. Verbindlichkeiten, PIT-Erstmeldungen mit Filed-Datum, Delistings mit Fundamentals, Durchschnittsbilanz.",
+  "fragile_parameters": "minPartialScore 7, B/M-Perzentil 0.8, Splitgrenzen 1.8/0.55, maxYearAgeDays 550, Mindest-Liquidität 5 USD / 5 Mio."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HIGH (neun Ja/Nein-Fragen)",
+  "signal_frequency": "Niedrig: 4 Kandidaten (2026-10-06), jährlicher Rhythmus",
+  "differentiation": "MEDIUM - klassisch, vollständig mechanisch, aber wenig Kandidaten",
+  "explainable_setups": "HIGH (Signal-für-Signal)",
+  "mobile": "UNKNOWN (Checkliste)",
+  "forward_test": "gut geeignet (jährlicher Kohortentest) sobald PIT-Fundamentals vorliegen"
+ },
+ "main_problems": [
+  "Restated Fundamentals statt Erstmeldungen; Core 1.22+ nicht live -> kein valider Test",
+  "Nur 29 % der Titel voll prüfbar; Auswahlverzerrung gegen schuldenfreie und Bruttogewinn-lose Firmen",
+  "Liquiditätssignal fehlt (Teil-Score 0-8)",
+  "B/M-Berechnung anfällig für Splits/Aktienzahl",
+  "Zeitlogik und Jahresportfolio fehlen"
+ ],
+ "critical_implementation_errors": [
+  "B/M nutzt Aktienzahl des letzten Geschäftsjahrs mit aktuellem split-adjustiertem Kurs (build.mjs:659,667); nach Splits/Emissionen ist die Marktkapitalisierung falsch, Fehler wirkt direkt auf die Kandidatenauswahl. Nicht gemessen, nur aus Code abgeleitet.",
+  "Ticker->CIK per erstem Treffer statt core/identity.js (build.mjs:635-636)."
+ ],
+ "validation_class": "HISTORICAL_ONLY",
+ "preliminary_tier": "B",
+ "confidence": "LOW",
+ "deep_dive_candidate": true,
+ "preliminary_reasoning": "Methode ist öffentlich klar, vollständig mechanisch und die Engine setzt 8 von 9 Signalen sauber um, damit die höchste Umsetzungsnähe in Gruppe C. Die Aussagekraft ist aber an Fundamentaldaten gebunden, die latest/restated sind und mit nur 29 % voll prüfbaren Titeln eine starke Auswahlverzerrung haben. Die historische Signalqualitäts-Messung ist ohne PIT-Erstmeldungen und Delistings nicht möglich (PARTIAL/MISSING). Tier B mit Confidence LOW; Deep Dive erst nach PIT-Fundamental-Core (PR #481-Track).",
+ "open_for_measurement": [
+  "Jahreskohorten (1 Jahr Haltedauer, Start 5. Monat) mit PIT-Erstmeldungen und Delistings: Vorwärtsrendite F>=7/8 vs. Value-only-Baseline",
+  "Auswirkung fehlender LTD-/Bruttogewinn-Reihen auf die Kandidatenmenge",
+  "Validierung B/M mit PIT-Aktienzahl (Split-/Emissionsbereinigung)",
+  "Wirkung des Liquiditätsfilters auf Ergebnis vs. Original"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/partial/piotroski.mjs:1-70",
+  "scripts/supertrader/build.mjs:628-700,656-680",
+  "supertrader/data/registry.json:PIOTROSKI_F (fidelity, evidence, variants)",
+  "supertrader/data/signals.json:partialChecks.PIOTROSKI_F (2026-10-06)",
+  "docs/SUPERTRADER_METHOD_FIDELITY.md:248-260",
+  "docs/SUPERTRADER_PRODUCT_MATRIX.md:24",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:255-263",
+  "scripts/supertrader/tests/r4.test.mjs:106-112"
+ ]
+}

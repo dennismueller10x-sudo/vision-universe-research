@@ -1,0 +1,131 @@
+{
+  "strategy_id": "KK_PARABOLIC_SHORT",
+  "method_name": "Kullamägi Parabolic Short (und seltener Parabolic Long)",
+  "group": "A",
+  "engine": {
+    "files": [],
+    "versions_in_repo": ["0.1.0 (nur Registry-Platzhalter, scripts/supertrader/registry.mjs:496 advanced(...); keine Engine-Datei)"],
+    "live_version": "keine",
+    "status": "CARD_ONLY",
+    "shared_modules_used": [],
+    "hidden_fallbacks_or_defaults": [
+      {"what": "Begriff CARD_ONLY existiert im Repo nicht; Registry führt mode='RESEARCH', product_status=['ADVANCED_RESEARCH'], evidence.level NOT_TESTED, presentation NAME_ONLY, engine=null, rules=[], variants=[]", "where": "supertrader/data/registry.json strategies[10]; registry.mjs:496", "effect": "Nur Namenskarte; CARD_ONLY ist Triage-Lesart."},
+      {"what": "Der gemeinsame Simulator/Portfolio-Code ist reine Long-Logik (Stop-Sell, Kauf-Stop, Positionsgröße über Einstieg minus Stop > 0); keine Short-Pfade, kein Borrow/Locate", "where": "engine/execution.mjs:23-39; engine/simulator.mjs:97-126; validation/portfolio.mjs:99-102 (risk = entry - stop, !(risk>0) -> NO_RISK)", "effect": "Ein Short würde im bestehenden Portfolio-Modul als NO_RISK verworfen; es müsste neues Short-Modul mit Kosten/Borrow entstehen."},
+      {"what": "Advanced-Einträge werden aus Gate-/Backtest-Läufen ausgeschlossen", "where": "scripts/supertrader/build.mjs:881", "effect": "Kein Lauf, keine Kennzahl."}
+    ],
+    "version_drift": "Kein Drift: Registry 0.1.0, Engine null. Nur Begriffsdifferenz CARD_ONLY (Auftrag) vs. ADVANCED_RESEARCH/NAME_ONLY (Registry). Kanonisches Regelbuch nennt zusätzlich Parabolic Long (KK-PS-C06), die Registry-Karte nur 'Parabolic Short'."
+  },
+  "source_audit": {
+    "core": "Kullamägi beschreibt den Parabolic Short öffentlich (Setups-Artikel): Aktie in wenigen Tagen/Wochen 50-100 %+ (kleine Werte 300-1000 %+) gestiegen, 3-5+ Tage in Folge hoch; Short am Opening-Range-Tief oder nach VWAP-Fehlschlag, Stop Tageshoch, Ziel 10/20-Tage-Linie. Er nennt es das riskanteste Setup mit den größten Verlusten; Locates sind teuer.",
+    "clear_public_rules": [
+      "Vorlauf 50-100 %+ bzw. 300-1000 %+, 3-5+ Tage in Folge (KK-PS-C01)",
+      "Short am ORL (1/5 Min.), nach erster roter 5-Min-Kerze oder VWAP-Fehlschlag (C02)",
+      "Stop Tageshoch bzw. VWAP-Rückeroberung (C03)",
+      "Ziel Bereich 10/20-Tage-Linie, erwartetes R 5-10x (C04)"
+    ],
+    "discretionary_rules": [
+      "Timing 'nicht zu früh', Auswahl des richtigen Setups (C05)",
+      "Verfügbarkeit und Kosten von Locates über Spezialbroker",
+      "Größe/Teilverkauf: keine eigene schriftliche Regel (C07)",
+      "Parabolic Long nach Absturz 50-60 %+ (C06)"
+    ],
+    "vu_own_formalizations": [],
+    "foreign_rules": [],
+    "source_fidelity": "LOW",
+    "source_fidelity_reason": "Vorlauf-Bedingung ist preisbasiert prüfbar, aber Einstieg (ORL/VWAP, Minuten), Stop (Tageshoch intraday), Borrow/Locate und Squeeze-Risiko sind mit den vorhandenen Daten nicht belastbar abbildbar. Ein Daily-Proxy würde das Setup stark verfälschen."
+  },
+  "provenance": {
+    "Entry": "UNCLEAR: nicht umgesetzt; Quelle ORIGINAL (ORL/VWAP intraday).",
+    "Exit": "UNCLEAR: nicht umgesetzt; Quelle Stop Tageshoch, Ziel SMA10/20.",
+    "Sizing": "UNCLEAR: nicht umgesetzt; keine eigene Short-Größenregel in der Quelle (C07).",
+    "Portfolio": "UNCLEAR: nicht umgesetzt (keine Short-Simulation).",
+    "Risk": "UNCLEAR: nicht umgesetzt; Quelle warnt vor größten Verlusten.",
+    "Fundamentals": "UNCLEAR: keine Fundamentalregel in der Quelle gefunden.",
+    "Market": "UNCLEAR: nicht umgesetzt."
+  },
+  "implementation_fidelity": {
+    "rating": "LOW",
+    "per_area": {
+      "Entry": "Nicht implementiert.",
+      "Exit": "Nicht implementiert.",
+      "Sizing": "Nicht implementiert.",
+      "Portfolio": "Nicht implementiert (keine Short-Simulation).",
+      "Risk": "Nicht implementiert.",
+      "Fundamentals": "Keine erforderlich laut Quelle.",
+      "Market": "Nicht implementiert."
+    },
+    "penalties": ["Keine Engine, keine Regeln, keine Signale (KK-PS-C08)", "Keine Short-Mechanik im Simulator/Portfolio"],
+    "shared_default_penalty": false
+  },
+  "data": {
+    "needs": {
+      "prices": "AVAILABLE (Mehrtages-Anstieg, 3-5 Tage in Folge aus Tagesbalken prüfbar)",
+      "volume": "PARTIAL (Tagesvolumen ja, Intraday-Verlauf nein)",
+      "fundamentals": "NOT_NEEDED",
+      "institutional": "NOT_NEEDED",
+      "estimates": "NOT_NEEDED",
+      "sector": "NOT_NEEDED",
+      "market_regime": "NOT_NEEDED",
+      "intraday": "MISSING (ORL, VWAP, erste 5-Min-Kerze; intern Minutenkurse ab 2017 nur Studie)",
+      "earnings_events": "NOT_NEEDED"
+    },
+    "sufficiency": "LOW",
+    "fundamental_core_state": "Keine Fundamentaldaten benötigt; Core 1.22+ ist nicht live/migriert und hier irrelevant. Blockierend sind Borrow/Locate-Verfügbarkeit, Leihegebühren und Intraday-Ausführungsdaten (Registry-Tagline, Product Matrix), nicht Fundamentaldaten.",
+    "fundamental_dependency": "NONE"
+  },
+  "existing_evidence": {
+    "decisions_by_round": [
+      {"round": "R11", "result": "keine Entscheidung zu PS", "source_file": "scripts/supertrader/validation/DECISION-R11.json"},
+      {"round": "R12", "result": "keine Entscheidung zu PS", "source_file": "scripts/supertrader/validation/DECISION-R12.json"},
+      {"round": "R13", "result": "keine Entscheidung zu PS", "source_file": "scripts/supertrader/validation/DECISION-R13.json"},
+      {"round": "R14", "result": "nicht getestet; als fehlendes Setup (2 von 3) geführt", "source_file": "scripts/supertrader/validation/R14-SOURCE-CHAINS.json:320"},
+      {"round": "R15", "result": "kanonisches Regelbuch (8 PS-Regeln, 6 'missingInCode'); keine Shortsimulation; nur als 'in Forschung' benennbar", "source_file": "scripts/supertrader/fidelity/R15-STRATEGY-GAPS.json; docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:96"}
+    ],
+    "signal_quality": "UNKNOWN (nie getestet, NOT_TESTED)",
+    "portfolio_result_direction": "UNKNOWN",
+    "exposure_finding": "UNKNOWN",
+    "risk_finding": "Nur Quellaussage: 'by far the riskiest setup', größte Verluste beim Shorten (KK-PS-C05); im Repo nichts gemessen.",
+    "robustness": "UNKNOWN",
+    "ground_truth_light": "UNKNOWN",
+    "seen_data": false
+  },
+  "implementation_risk": {
+    "discretion": "HIGH",
+    "bad_formalization": "Daily-Proxy ohne VWAP/ORL und mit Stop über Tageshoch bildet das Setup nicht ab; Squeeze- und Gap-Risiko unbegrenzt; Delisting- und Übernahmeverhalten bei Shorts asymmetrisch.",
+    "missing_data": "Borrow/Locate, Leihegebühren, Hard-to-borrow-Listen historisch, Intraday-Ausführung.",
+    "fragile_parameters": "UNKNOWN (keine Parameter vorhanden)."
+  },
+  "product_potential": {
+    "rating": "LOW",
+    "understandability": "MEDIUM",
+    "signal_frequency": "UNKNOWN; selten laut Quelle.",
+    "differentiation": "MEDIUM, aber Short-Produkt mit Haftungs- und Verlustrisiko.",
+    "explainable_setups": "MEDIUM: Vorlauf darstellbar, Einstieg nicht.",
+    "mobile": "MEDIUM",
+    "forward_test": "Nicht möglich ohne Short-Modul und Locate-Annahmen."
+  },
+  "main_problems": [
+    "Reine Namenskarte ohne Engine, Regeln, Signale",
+    "Keine Short-Simulation, keine Borrow/Locate-/Gebührendaten",
+    "Einstieg und Stop intraday (ORL/VWAP, Tageshoch)",
+    "Unbegrenztes Verlustrisiko und Squeeze-Gaps; Produkt-/Rechtsrisiko"
+  ],
+  "critical_implementation_errors": [],
+  "validation_class": "NOT_REPRODUCIBLE",
+  "preliminary_tier": "C",
+  "confidence": "MEDIUM",
+  "deep_dive_candidate": false,
+  "preliminary_reasoning": "Bestätigt als Namenskarte: Registry engine=null, keine Regeln, kein Code, Simulator und Portfolio nur long. Blockiert durch Borrow/Locate, Gebühren und Intraday-Ausführung; mit Tagesdaten nicht seriös abbildbar. Tier C, keine Vertiefung; ein Beobachtungsprodukt ohne Handelssignale wäre höchstens eine Anzeige von Parabolic-Vorlauf-Kandidaten.",
+  "open_for_measurement": [
+    "Nur Machbarkeit: Häufigkeit des preisbasierten Vorlaufs (50-100 %+ in wenigen Tagen, 3-5 Tage in Folge) im Universum; keine Ergebnismessung ohne Short-Modell und Locate-Daten."
+  ],
+  "evidence_refs": [
+    "supertrader/data/registry.json strategies[10] (mode RESEARCH, engine null, evidence NOT_TESTED, NAME_ONLY)",
+    "scripts/supertrader/registry.mjs:496",
+    "scripts/supertrader/build.mjs:881",
+    "docs/SUPERTRADER_PRODUCT_MATRIX.md:27",
+    "scripts/supertrader/fidelity/canonical/kullamagi.json setups.PARABOLIC_SHORT (KK-PS-C01..C08)",
+    "scripts/supertrader/fidelity/R15-STRATEGY-GAPS.json (missingInCode KK-PS-*)",
+    "scripts/supertrader/engine/execution.mjs:23-39; validation/portfolio.mjs:99-102"
+  ]
+}

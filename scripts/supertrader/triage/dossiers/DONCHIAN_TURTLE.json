@@ -1,0 +1,276 @@
+{
+ "strategy_id": "DONCHIAN_TURTLE",
+ "method_name": "VU Equity Adaptation – Turtle Trading",
+ "group": "B",
+ "engine": {
+  "files": [
+   "scripts/supertrader/engine/strategies/donchian.mjs",
+   "scripts/supertrader/engine/strategies/donchian-v2.mjs",
+   "scripts/supertrader/engine/strategies/donchian-v21.mjs",
+   "scripts/supertrader/engine/strategies/donchian-v201.mjs",
+   "scripts/supertrader/engine/strategies/donchian-v202.mjs",
+   "scripts/supertrader/engine/simulator.mjs",
+   "scripts/supertrader/engine/execution.mjs",
+   "scripts/supertrader/engine/lifecycle.mjs",
+   "scripts/supertrader/validation/portfolio.mjs",
+   "scripts/supertrader/model-portfolio.mjs",
+   "scripts/supertrader/fidelity/portfolio-policy.mjs"
+  ],
+  "versions_in_repo": [
+   "1.0.0 (nur als manageCompatible in donchian.mjs:94, eigene Datei = 1.1.0)",
+   "1.1.0 (donchian.mjs:92, Tagesschluss-Bestaetigung, abgeloest)",
+   "2.0.0 (donchian-v2.mjs:140, Kauf-Stop, N=EMA, Filter+Failsafe, Notionalkonto; abgeloest)",
+   "2.0.1 (donchian-v201.mjs, 2.0.0 + SPY-GD200-Ampel; in R13 zurueckgenommen)",
+   "2.0.2 (donchian-v202.mjs, Regeln wie 2.0.0; LIVE)",
+   "2.1.0 (donchian-v21.mjs, Rang (C-C[63])/N; nie live, RESEARCH)"
+  ],
+  "live_version": "2.0.2 (build.mjs:86 LIVE_ENGINES donchian202; registry.json strategy_version 2.0.2; portfolio-policy.mjs:65 version 2.0.2)",
+  "status": "LIVE",
+  "shared_modules_used": [
+   "engine/simulator.mjs (Lifecycle, Cooldown 5, Ein-Signal-je-Titel, Gap-/Stop-Fuellung)",
+   "engine/execution.mjs (10 bp Slippage, 1 bp Gebuehr)",
+   "engine/lifecycle.mjs (PENDING = SETUP/ENTRY_READY)",
+   "validation/portfolio.mjs runPortfolioTR (Sizing, Auswahl gleichzeitiger Signale, Notionalkonto)",
+   "model-portfolio.mjs portfolioConfig (Prioritaet-Default ALPHA)",
+   "engine/indicators.mjs (dollarVol20, adr20)",
+   "engine/gates.mjs (TEST_PLANS/REQUIREMENTS)"
+  ],
+  "hidden_fallbacks_or_defaults": [
+   {
+    "what": "Auswahl gleichzeitiger Signale alphabetisch: 2.0.2 hat portfolio = P2 ohne priority; Default ALPHA, weil DONCHIAN_TURTLE nicht in RANK_RS",
+    "where": "scripts/supertrader/engine/strategies/donchian-v202.mjs:6 ; scripts/supertrader/model-portfolio.mjs:32,35 ; scripts/supertrader/validation/portfolio.mjs:47",
+    "effect": "Bei vielen Tagessignalen entscheidet das Alphabet, wer Bargeld bekommt (Alphabet-Bias belegt, AUDIT-R14-RESULT findings.alphabetBiasTurtle). Quelle nennt Staerke-Rang (Turtle Rules S. 29, 'Buy Strength - Sell Weakness'); Rang-Variante 2.1.0 existiert (donchian-v21.mjs:10-21), ging nie live."
+   },
+   {
+    "what": "Kein Gewichtsdeckel je Aktie und kein Hebel: maxPositionPct 1.0, maxExposure 1.0, riskPerTrade 0.02 -> Unit = 1 %/N bei 2N-Stop; Bargeld wird faktische Positionsgrenze (maxPositions 12 bindet praktisch nie)",
+    "where": "scripts/supertrader/engine/strategies/donchian-v2.mjs:135 ; scripts/supertrader/validation/portfolio.mjs:110-113",
+    "effect": "Einzelgewichte etwa ein Fuenftel bis weit ueber ein Drittel; voll investiert in gleichgerichteten Ausbruechen; Wirkung nicht Turtle-Original (Futures, gehebelt, 4/6/10/12-Unit-Grenzen)."
+   },
+   {
+    "what": "Signalverlust durch Lifecycle: nur 'ENTRY_READY' (Schluss <= 3 % unter Trigger) wird als Signal eroeffnet; 'WATCH' (3-6 %) ist nicht PENDING und wird nie persistiert; laufendes Setup faellt bei Schluss > 3 % wieder weg (LC-SETUP-LOST); Verfall nach 10 Sitzungen",
+    "where": "scripts/supertrader/engine/strategies/donchian-v2.mjs:96,104,119-121 ; scripts/supertrader/engine/lifecycle.mjs:22 ; scripts/supertrader/engine/simulator.mjs:254-258,274-278",
+    "effect": "Ausbrueche aus groesserer Distanz (z. B. Gap ueber das 20-Tage-Hoch aus >3 %) gehen verloren; TUR-F-CONS-01 ('jedes Signal nehmen') verletzt. DOKU-WIDERSPRUCH: ENTRY_EXIT_RULES.md:72 und Registry sprechen von Aufnahme '<= 6 %'; nach Codelesung gilt effektiv 3 % (6 % nur Momentaufnahme). Nicht gemessen."
+   },
+   {
+    "what": "Cooldown 5 Sitzungen nach Abschluss/Invalidierung je Titel (generisch fuer alle Methoden)",
+    "where": "scripts/supertrader/engine/simulator.mjs:28,277",
+    "effect": "Turtle-Original kennt keine Sperre; stattdessen S1-Filter. Zusaetzlicher VU-Signalverlust (SH-COOLDOWN-5, VU_OWN)."
+   },
+   {
+    "what": "Eine Position je Titel, kein Aufstocken (bis 4 Units je 1/2 N), Long-only, keine Korrelations-/Heat-Grenzen",
+    "where": "scripts/supertrader/engine/simulator.mjs (state.signal) ; scripts/supertrader/fidelity/shared-rules.mjs:66-68",
+    "effect": "Stop-Verlauf und Gewinnbeteiligung nicht wie Original (Stop-Nachzug beim Aufstocken fehlt)."
+   },
+   {
+    "what": "Same-Day-Annahme: ohne Minutendaten gilt Gleichtags-Ausstieg nur, wenn der Tagesschluss <= Stop; unentscheidbare Tage werden neutral behandelt",
+    "where": "scripts/supertrader/engine/simulator.mjs:218-221",
+    "effect": "R8-Check: bei strittigen Tagen tatsaechlich Ausstieg am Kauftag ca. 66 %; betrifft Turtle <1 % der Einstiege (VALIDATION_INTERNAL.md:270,288-289) -> klein."
+   },
+   {
+    "what": "Liquiditaets-/Bewegungsfilter VU: Kurs >= 10, DollarVol20 >= 20 Mio, ADR >= 1 %, Kanalbreite >= 2 %; Start erst ab 57 Balken",
+    "where": "scripts/supertrader/engine/strategies/donchian-v2.mjs:33,84,96",
+    "effect": "Schliesst Titel aus, die das Original-Signal haetten (Aktien-spezifischer Filter gegen Festhaenger/Uebernahmen)."
+   },
+   {
+    "what": "Notionalkonto: Jahresbasis = tatsaechliches Kapital zum Jahresbeginn (bei den Turtles subjektiv durch Dennis); Basis wird mit dem Vortages-Equity gefuettert",
+    "where": "scripts/supertrader/validation/portfolio.mjs:55-71,110",
+    "effect": "Zahl original (-20 % je 10 %), Jahresanpassung VU. Endlosschleife >50 % Jahresverlust in R14 behoben (tnCuts<60, portfolio.mjs:68)."
+   },
+   {
+    "what": "Live-Modellportfolio ohne Dividenden; Validierung mit Dividenden",
+    "where": "scripts/supertrader/model-portfolio.mjs (runPortfolioTR dividends:false)",
+    "effect": "Kleine Abweichung Live vs. Validierung."
+   },
+   {
+    "what": "Gate-Zuordnung per Praefix: jede DONCHIAN*-Variante -> Plan 'DONCHIAN_TURTLE_S1_DAILY' (Variante 1.1.0); EXECUTION_MODEL-Gate fest 'pass = true'",
+    "where": "scripts/supertrader/build.mjs:923 ; scripts/supertrader/engine/gates.mjs:21,105",
+    "effect": "Gate-Status gilt nicht variantenspezifisch fuer 2.0.2; Ausfuehrungsgate ist selbstbehauptet."
+   }
+  ],
+  "version_drift": "Live 2.0.2 = Signale/Units/Stops/Ausstiege/Portfolio wie 2.0.0 (nur Ampel von 2.0.1 zurueckgenommen). METHOD_FIDELITY.md:49-52 beschreibt noch 1.1.0 (kein Filter, 0,5 % Risiko, SMA-N) = veraltet. Registry-Text (registry.json) nennt noch 'DON-ENTRY-D1' als legacy_only. Falscher Live-Text 'keine Rangregel in der Quelle' (model-portfolio.mjs:20-22,36) laut R14/R15 FALSCH (Turtle Rules S. 29). Positionen aus 2.0.0/2.0.1 laufen unter eigener Version weiter (manageCompatible)."
+ },
+ "source_audit": {
+  "core": "Kanal-Ausbruch System 1 (20-Tage-Hoch kaufen, 10-Tage-Tief raus, Stop 2N, N = EMA 19/20 der TR) aus dem vollstaendig mechanischen Turtle-Regelwerk (Curtis Faith u. a., PDF, 27 S.). Die VU-Methode ueberfuehrt nur diese Signale auf liquide US-Einzelaktien (long-only, ohne Hebel, ohne Aufstocken). Bewertet wird die Equity Adaptation als eigene Methode, nicht das Futures-Original.",
+  "clear_public_rules": [
+   "TUR-F-N-01: N = EMA20 der True Range",
+   "TUR-F-S1-ENTRY: Kauf bei Ueberschreiten des 20-Tage-Hochs im Tagesverlauf (Gap -> Eroeffnung)",
+   "TUR-F-STOP-2N: Stop 2N, <= 2 % Risiko",
+   "TUR-F-EXIT-S1: Ausstieg beim 10-Tage-Tief, intraday",
+   "TUR-F-S1-FILTER / FAILSAFE-55 (Gewinner-Filter, richtungsunabhaengig im Original)",
+   "TUR-F-UNIT-01: Unit = 1 % des (notionellen) Kontos/N",
+   "TUR-F-NOTIONAL-01: -20 % je 10 % Verlust",
+   "TUR-F-RANK-01: bei gleichzeitigen Signalen staerkste Maerkte zuerst (S. 29)",
+   "TUR-F-REGIME-01 / FUND-01: weder Marktfilter noch Fundamentals"
+  ],
+  "discretionary_rules": [
+   "Dennis' subjektive Jahresanpassung des Notionalkontos",
+   "Ordertaktik (Limit statt Market, Abwarten)",
+   "Korrelationsgruppen und individuelle S1/S2-Allokation"
+  ],
+  "vu_own_formalizations": [
+   "Lebenszyklus 3 %/6 % Naehe, 10-Sitzungen-Verfall, 5-Sitzungen-Sperre",
+   "Liquiditaets-/ADR-/Kanalbreitenfilter",
+   "ALPHA-Auswahl, maxPositionPct 1,0, maxExposure 1,0",
+   "eine Unit je Aktie, max. 12 Titel",
+   "OPEN-als-Gewinner im Filter, Failsafe-Positionen nach S1-Regeln, nur Long",
+   "Jahresbasis des Notionalkontos = tatsaechliches Kapital",
+   "10 bp Slippage / 1 bp Gebuehr"
+  ],
+  "foreign_rules": [
+   "Anlageklasse Einzelaktien statt ~20 diversifizierter Futures (strukturell fremd, TUR-F-MKT-01 CRITICAL)",
+   "Unit ohne Hebel als Kassa-Nominal (Gewichte 20 % bis >35 %)",
+   "2.0.1: SPY-GD200-Ampel (Fremdregel, zurueckgenommen)"
+  ],
+  "source_fidelity": "MEDIUM",
+  "source_fidelity_reason": "Quelle ist ein Volltext-Primaerdokument (HIGH) und die S1-Signalmechanik ist nahe am Original; das Original ist aber ein Futures-Portfolio-System. Portfolio/Sizing/Auswahl sind auf Aktien strukturell fremd (R15: 'Signale nahe am Original, Portfolio nicht'). Replikationsclaim nicht erlaubt (turtle.json replicationClaimAllowed=false)."
+ },
+ "provenance": {
+  "Entry": "ORIGINAL fuer den Trigger (20-Tage-Hoch, Kauf-Stop, Gap zur Eroeffnung, S1-Filter+Failsafe); VU fuer Nahe-/Verfalls-/Sperr-Lifecycle und Liquiditaetsfilter (Signalverlust) -> Mischform",
+  "Exit": "ORIGINAL (10-Tage-Tief intraday, Stop 2N); Stop-Nachzug beim Aufstocken fehlt",
+  "Sizing": "ORIGINAL-Formel (1 %/N, 2N-Stop, Notionalkonto), aber effektive Groesse durch VU-Bargeldgrenze bestimmt (kein Deckel, kein Hebel)",
+  "Portfolio": "VU_OWN: ALPHA-Auswahl, eine Unit je Aktie, keine Korrelationsgrenzen/Heat, 12-Titel-Grenze bindet nie",
+  "Risk": "ORIGINAL 2N-Stop; Gesamt-Heat/Gruppen fehlen; Uebernahme-/Delisting-Gaps strukturell (kleines N -> riesige Unit, TUR-E-CORP-01)",
+  "Fundamentals": "keine (wie Original)",
+  "Market": "keine (wie Original); Ampel aus 2.0.1 zurueckgenommen (R13)"
+ },
+ "implementation_fidelity": {
+  "rating": "LOW",
+  "per_area": {
+   "Entry": "MEDIUM (R15-Matrix: MEDIUM; Trigger original, Signalverlust durch Lifecycle)",
+   "Exit": "HIGH (R15)",
+   "Sizing": "LOW (Formel original, Wirkung durch Cash/ohne Deckel)",
+   "Portfolio": "LOW bis SEHR NIEDRIG (turtle.json fidelity.portfolio)",
+   "Risk": "LOW (kein Heat, keine Gruppen, Gap-/Delisting-Risiko bei grosser Unit)",
+   "Fundamentals": "HIGH (keine verlangt)",
+   "Market": "HIGH (kein Filter, wie Original)"
+  },
+  "penalties": [
+   "ALPHA-Auswahl statt Staerke-Rang (Quelle S. 29) – Alphabet-Bias belegt (R14)",
+   "Aktien statt Futures; kein Hebel; kein Gewichtsdeckel -> sehr hohe Einzelgewichte",
+   "kein Aufstocken, kein Short, keine Korrelationsgrenzen",
+   "Lifecycle-Signalverlust (3 %-Naehe, 10 Sitzungen, Cooldown 5) widerspricht 'jedes Signal nehmen'",
+   "Notionalkonto auf tatsaechlichem Kapital statt Dennis' Anpassung"
+  ],
+  "shared_default_penalty": true
+ },
+ "data": {
+  "needs": {
+   "prices": "AVAILABLE (Tages-OHLC, adjustiert)",
+   "volume": "AVAILABLE (nur fuer Dollar-Volumen-Filter)",
+   "fundamentals": "NOT_NEEDED",
+   "institutional": "NOT_NEEDED",
+   "estimates": "NOT_NEEDED",
+   "sector": "MISSING (fuer Korrelationsgruppen, wuerde fuer echte Adaptation noetig, nicht im Live-Code)",
+   "market_regime": "NOT_NEEDED (2.0.1 SPY: zurueckgenommen)",
+   "intraday": "PARTIAL (Kauf-Stop-Reihenfolge am Einstiegstag nicht aus Tagesbalken belegbar; Minutenorakel nur fuer Stichprobe, <1 % der Einstiege strittig)",
+   "earnings_events": "NOT_NEEDED"
+  },
+  "sufficiency": "HIGH",
+  "fundamental_core_state": "Keine Fundamentaldaten genutzt. Core 1.22+ weder live noch migriert; fuer Turtle irrelevant. SEC-Metadaten nur zur Delisting-Klassifikation (sec-pit.mjs, S1C).",
+  "fundamental_dependency": "NONE"
+ },
+ "existing_evidence": {
+  "decisions_by_round": [
+   {
+    "round": "R8",
+    "result": "Turtle 2.0.0 robust negativ, schlechter als 1.1.0 trotz fast gleicher Signale je Trade; Hinweis (keine bewiesene Ursache): voll investiert in gleichgerichteten Ausbruechen",
+    "source_file": "docs/SUPERTRADER_VALIDATION_INTERNAL.md:193-196"
+   },
+   {
+    "round": "R10",
+    "result": "Gewinnerfaelle: Turtle 13 ohne Platz (Kapital), 4 zu frueh, 2 nie Kandidat; K3-Rang (RS) gilt nicht fuer Turtle, bleibt alphabetisch",
+    "source_file": "docs/SUPERTRADER_VALIDATION_INTERNAL.md:339-351"
+   },
+   {
+    "round": "R11",
+    "result": "2.1.0 (Rang Staerke/N): a_W4 FAIL, b_fullPortfolio PASS -> RESEARCH; Fehlkandidaten-Verlust steigt >1/3 (kleine Fallzahl); bisherige Version bleibt live",
+    "source_file": "scripts/supertrader/validation/DECISION-R11.json"
+   },
+   {
+    "round": "R12",
+    "result": "PORT-MARKET-200 a PASS, b PASS -> 2.0.1 LIVE (VU-Annahme, fuer Turtles keine Marktregel belegt)",
+    "source_file": "scripts/supertrader/validation/DECISION-R12.json"
+   },
+   {
+    "round": "R13",
+    "result": "2.0.1 WITHDRAWN -> 2.0.2: unter S1C 2016-2020 schlechter. Zerlegung: Rueckstand ueberwiegend auf investiertem Kapital (enge Stops, Umschlag; Bargeld fehlt). Halten der gleichen Einstiege 6 Monate verkleinert Rueckstand deutlich. 2.1.0 bleibt RESEARCH",
+    "source_file": "scripts/supertrader/validation/DECISION-R13.json"
+   },
+   {
+    "round": "R14",
+    "result": "Kategorie [D, A]; Alphabet-Bias belegt; Signale gegen Universum/RS-Dezil ohne Vorteil, im Holdout signifikant darunter; voll investiert; sehr grosse Einzelpositionen; in Baeren besonders schwach; H3 ExitDestruction Holdout true; O8 Cash-in-SPY false; Endlosschleife Notionalkonto behoben",
+    "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json ; docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:129-135"
+   },
+   {
+    "round": "R15",
+    "result": "Klasse VU_ADAPTATION; Fidelity LOW; 'Turtle' als System/Replikation darf nicht behauptet werden; Rebuild 'turtle-equity-adaptation' (Deckel, Rang, Aufstocken, Gruppen, ohne Lifecycle) geplant",
+    "source_file": "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:155-170,398-411"
+   }
+  ],
+  "signal_quality": "Kein belegter Vorteil: neutral gegen Universum, ohne Vorteil gegen RS-Dezil, im Holdout signifikant darunter (R14). Zahlen SEALED_NOT_READABLE.",
+  "portfolio_result_direction": "Hinter SPY in der Voll-Portfolio-Rechnung (R13: 'fuer keine Methode ein Vorteil gegenueber SPY'); Rueckstand auf investiertem Kapital.",
+  "exposure_finding": "Voll investiert; kein Exposure-Problem, sondern Konzentration (hohe Einzelgewichte, Cash bindet).",
+  "risk_finding": "Unit-Regel erzeugt bei volatilitaetsarmen Aktien sehr grosse Positionen; Uebernahme eines Auslandsemittenten kostete grossen Depotteil (R14, Buchung); Baeren schwach.",
+  "robustness": "Reihenfolge-Gegenprobe (ALPHA/RALPHA/Zufall) zeigt starke Abhaengigkeit von der Auswahlreihenfolge; Reproduktion auf neuem Datenstand identisch (R13).",
+  "ground_truth_light": "SMCI-Zeitlinie: 10 Einstiege, 1 aufgenommen (am Folgetag ausgestoppt), Rest ohne Kapital (VALIDATION_INTERNAL.md:346). Bekannte Gewinner werden als Signal erkannt, scheitern an Platz/Kapital.",
+  "seen_data": true
+ },
+ "implementation_risk": {
+  "discretion": "LOW",
+  "bad_formalization": "Auswahl ALPHA; Lifecycle-Signalverlust; kein Gewichtsdeckel; Registry/Doku widerspruechlich zur effektiven 3 %-Aufnahme.",
+  "missing_data": "Futures-Daten (fuer Original), Sektor-/Industriezuordnung (fuer Gruppen), Minutendaten (Kauf-Stop-Reihenfolge).",
+  "fragile_parameters": "Nahe-Schwelle 3 %, Verfall 10, Cooldown 5, Liquiditaetsschwellen, Reihenfolge der Signale."
+ },
+ "product_potential": {
+  "rating": "MEDIUM",
+  "understandability": "HOCH: 20-Tage-Hoch kaufen, 10-Tage-Tief raus, klarer 2N-Stop.",
+  "signal_frequency": "HOCH (Beobachtungsliste ~8,5 % des Universums nahe 20-Tage-Hoch); aufgenommen nur Teil.",
+  "differentiation": "NIEDRIG als reine Aktien-Donchian-Idee (breit bekannt), aber transparent regelbasiert.",
+  "explainable_setups": "HOCH (Kanal, N, Stop sind kurz erklaerbar).",
+  "mobile": "GUT (Liste + Trigger + Stop).",
+  "forward_test": "Moeglich (Ledger 2.0.0/2.0.2 laeuft seit ~02.10.2026), aber nur wenige Tage Vorwaertsdaten."
+ },
+ "main_problems": [
+  "Auswahl alphabetisch statt Staerke-Rang (Quellenwiderspruch, Alphabet-Bias belegt)",
+  "Aktien ohne Hebel ohne Gewichtsdeckel: Konzentration, Cash als faktische Grenze",
+  "Lifecycle verwirft Ausbrueche (>3 % Distanz, 10 Sitzungen, Cooldown)",
+  "Kein Aufstocken/Short/Gruppen -> andere Gewinnverteilung als Original",
+  "Signale ohne belegten Vorteil, im Holdout signifikant unter Universum"
+ ],
+ "critical_implementation_errors": [
+  "Live-Text 'keine Rangregel in der Quelle' ist falsch (model-portfolio.mjs:20-22,36; R14/R15)",
+  "Doku/Registry '<= 6 % Aufnahme' vs. Code: nur ENTRY_READY (<= 3 %) wird Signal (donchian-v2.mjs:104, lifecycle.mjs:22) – zur Pruefung durch Messung vorgemerkt",
+  "TEST_PLANS/Gate-Mapping nicht variantenspezifisch (build.mjs:923)",
+  "(behoben R14) Endlosschleife Notionalkonto bei >50 % Jahresverlust"
+ ],
+ "validation_class": "HISTORICAL_ONLY",
+ "preliminary_tier": "C",
+ "confidence": "MEDIUM",
+ "deep_dive_candidate": false,
+ "preliminary_reasoning": "Signalmechanik nahe an belegten Primaerregeln, aber R14 findet keinen Signalvorteil und im Holdout signifikant darunter; Portfolio ist fuer Aktien strukturell fremd (ALPHA, kein Deckel). Eine Rekonstruktion als eigene 'turtle-equity-adaptation' (Rang, Deckel, Aufstocken, Gruppen) waere ein neues Produkt, nicht diese Live-Version. Daher C; als Rebuild nur bei Kapazitaet beachten.",
+ "open_for_measurement": [
+  "Wie viele echte 20-Tage-Ausbrueche gehen durch 3 %-Naehe/Verfall/Cooldown verloren (Signalvollstaendigkeit gegen 'jeder Ausbruch')?",
+  "Signalqualitaet ohne Portfolio-Artefakte: jeder S1-Ausbruch gleich gewichtet vs. Universum/RS-Dezil und nach Regime",
+  "Ergebnis bei Staerke-Rang (C-C[63])/N plus Gewichtsdeckel (einzeln, vorab festgelegt)",
+  "Verteilung effektiver Einzelgewichte und Cash-Auslastung ueber die Zeit",
+  "Effekt der Turtle-Uebernahme-Buchung (S1C) auf Verlustbeitraege"
+ ],
+ "evidence_refs": [
+  "scripts/supertrader/engine/strategies/donchian-v2.mjs:31-147",
+  "scripts/supertrader/engine/strategies/donchian-v202.mjs:1-7",
+  "scripts/supertrader/engine/simulator.mjs:28,174-277",
+  "scripts/supertrader/validation/portfolio.mjs:33-148",
+  "scripts/supertrader/model-portfolio.mjs:20-36",
+  "scripts/supertrader/fidelity/portfolio-policy.mjs:64-75",
+  "scripts/supertrader/fidelity/shared-rules.mjs:65-75",
+  "scripts/supertrader/fidelity/canonical/turtle.json",
+  "scripts/supertrader/validation/DECISION-R11.json",
+  "scripts/supertrader/validation/DECISION-R12.json",
+  "scripts/supertrader/validation/DECISION-R13.json",
+  "scripts/supertrader/validation/AUDIT-R14-RESULT.json",
+  "docs/SUPERTRADER_INDEPENDENT_AUDIT_R14.md:129-135",
+  "docs/SUPERTRADER_AUDIT_R13.md:23-31,64",
+  "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:155-170,293,398-411",
+  "docs/SUPERTRADER_VALIDATION_INTERNAL.md:193-196,339-351"
+ ]
+}

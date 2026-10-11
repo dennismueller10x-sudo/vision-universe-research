@@ -1,0 +1,134 @@
+{
+  "strategy_id": "KK_EPISODIC_PIVOT",
+  "method_name": "Kullamägi Episodic Pivot",
+  "group": "A",
+  "engine": {
+    "files": [],
+    "versions_in_repo": ["0.1.0 (nur Registry-Platzhalter, scripts/supertrader/registry.mjs:495 advanced(...); keine Engine-Datei)"],
+    "live_version": "keine",
+    "status": "CARD_ONLY",
+    "shared_modules_used": [],
+    "hidden_fallbacks_or_defaults": [
+      {"what": "Begriff CARD_ONLY existiert im Repo nicht; Registry führt mode='RESEARCH', product_status=['ADVANCED_RESEARCH'], evidence.level NOT_TESTED, presentation NAME_ONLY, engine=null, rules=[], variants=[]", "where": "supertrader/data/registry.json strategies[9]; registry.mjs:495", "effect": "Nur Namenskarte; Einordnung CARD_ONLY ist reine Triage-Lesart."},
+      {"what": "Advanced-Einträge werden aus Backtest-/Gate-Läufen ausgeschlossen", "where": "scripts/supertrader/build.mjs:881 (registry.strategies.filter(x => !x.advanced))", "effect": "Kein Gate, kein Lauf, keine Kennzahl; nichts wird simuliert (prohibited_interpretations der Karte)."}
+    ],
+    "version_drift": "Kein Drift: Registry 0.1.0, Engine null, kein Code. Einzige Abweichung: Auftragsbegriff CARD_ONLY vs. Registry-Wortlaut ADVANCED_RESEARCH/NAME_ONLY. Momentum-Karte nennt EP als 'ohne Engine' (konsistent)."
+  },
+  "source_audit": {
+    "core": "Kullamägi beschreibt EP öffentlich (Setups-Artikel 08.01.2021, EP-Artikel 02.11.2021): Kurslücke >= 10 % auf unerwartete Nachricht mit extremem Volumen, am besten nach 3-6 Monaten Seitwärtsphase, Einstieg am Opening-Range-Hoch, Stop am Tagestief (<= 1-1,5 ADR). Kern ist die Beurteilung des Katalysators (Earnings-Überraschung, Wachstum, Guidance), also diskretionär und datenhungrig.",
+    "clear_public_rules": [
+      "Gap >= 10 % (KK-EP-C01)",
+      "Volumen ist Faktor Nr. 1 (C02, Zeitfenster 5-30 Min. schwankt)",
+      "Vorgeschichte 3-6+ Monate Seitwärts ohne vorherige Rally (C04)",
+      "ORH-Einstieg, Aufstocken am 5-Min-Hoch (C06)",
+      "Stop Tagestief <= 1,5 ADR (C07)",
+      "Trailing 10/20-Tage-Linie (C08, 'eigene Verkaufsregeln entwickeln')"
+    ],
+    "discretionary_rules": [
+      "Bewertung des Katalysators (Earnings, FDA, Politik, Verträge, Sektor-EP) KK-EP-C05",
+      "Earnings-EP: starkes Wachstum, deutliche Analystenüberraschung, angehobene Prognose (C03, interpretationNeeded)",
+      "Liquiditätsauswahl, EP-Häufung 3-4 Wochen je Quartal (C10)",
+      "Teilverkauf beim EP schriftlich nicht belegt (C09)"
+    ],
+    "vu_own_formalizations": [],
+    "foreign_rules": [],
+    "source_fidelity": "LOW",
+    "source_fidelity_reason": "Quelle öffentlich und im Volltext gelesen, aber die Kernbedingungen (Nachrichten-Katalysator, Konsens/Guidance, Vorbörsen-/Eröffnungsvolumen) sind weder mechanisch noch mit den vorhandenen Daten reproduzierbar. Eine reine Preis/Volumen-Näherung (Gap >= 10 % + Tagesvolumen) wäre eine VU-Formalisierung, kein EP."
+  },
+  "provenance": {
+    "Entry": "UNCLEAR: nicht umgesetzt; Quelle ORIGINAL (Gap, Volumen, ORH), keine VU-Regel vorhanden.",
+    "Exit": "UNCLEAR: nicht umgesetzt; Quelle: Stop Tagestief <= 1,5 ADR, Trail an SMA10/20.",
+    "Sizing": "UNCLEAR: nicht umgesetzt; allgemeine KK-Regeln (0,3-0,5 % Risiko) würden gelten, EP-spezifisch nichts.",
+    "Portfolio": "UNCLEAR: nicht umgesetzt.",
+    "Risk": "UNCLEAR: nicht umgesetzt.",
+    "Fundamentals": "UNCLEAR: Quelle verlangt Wachstum und Überraschung (ORIGINAL), im Repo nichts umgesetzt.",
+    "Market": "UNCLEAR: nicht umgesetzt; Quelle diskretionär."
+  },
+  "implementation_fidelity": {
+    "rating": "LOW",
+    "per_area": {
+      "Entry": "Nicht implementiert.",
+      "Exit": "Nicht implementiert.",
+      "Sizing": "Nicht implementiert.",
+      "Portfolio": "Nicht implementiert.",
+      "Risk": "Nicht implementiert.",
+      "Fundamentals": "Nicht implementiert (Konsens/Guidance fehlen).",
+      "Market": "Nicht implementiert."
+    },
+    "penalties": ["Keine Engine, keine Regeln, keine Signale (KK-EP-C11)"],
+    "shared_default_penalty": false
+  },
+  "data": {
+    "needs": {
+      "prices": "AVAILABLE (Tagesgap >= 10 % aus Tagesbalken ab 2016 prüfbar)",
+      "volume": "PARTIAL (Tagesvolumen ja; Vorbörse und erste 15-30 Minuten MISSING)",
+      "fundamentals": "PARTIAL (SEC-PIT EPS/Umsatz erste Einreichung ab R11 gebaut, Lücken bei Auslandsemittenten; engine/earnings.mjs nur Minervini-Logik)",
+      "institutional": "NOT_NEEDED",
+      "estimates": "MISSING (pit_gates analystEstimates=false; Konsens/Surprise NOT_PRESENT, fundamentals-matrix.json)",
+      "sector": "NOT_NEEDED (Sektor-EP nur diskretionär)",
+      "market_regime": "NOT_NEEDED",
+      "intraday": "MISSING (ORH 1/5/60 Min.; intern Minutenkurse ab 2017 nur Studie)",
+      "earnings_events": "MISSING (historische News-/Katalysator-Zeitstempel und Guidance; Product Matrix)"
+    },
+    "sufficiency": "LOW",
+    "fundamental_core_state": "Keine Daten zugeordnet (Registry evidence.data NONE). Core 1.22+ ist nicht live/migriert; SEC-PIT-Gewinndaten aus R11/R12 existieren nur im Minervini-Forschungspfad. Keine Konsensdaten.",
+    "fundamental_dependency": "HIGH"
+  },
+  "existing_evidence": {
+    "decisions_by_round": [
+      {"round": "R11", "result": "keine Entscheidung zu EP", "source_file": "scripts/supertrader/validation/DECISION-R11.json"},
+      {"round": "R12", "result": "keine Entscheidung zu EP", "source_file": "scripts/supertrader/validation/DECISION-R12.json"},
+      {"round": "R13", "result": "keine Entscheidung zu EP", "source_file": "scripts/supertrader/validation/DECISION-R13.json"},
+      {"round": "R14", "result": "nicht getestet; R14-Quellenkette zählt EP/PS als fehlende 2 von 3 Setups", "source_file": "scripts/supertrader/validation/AUDIT-R14-RESULT.json; R14-SOURCE-CHAINS.json:320"},
+      {"round": "R15", "result": "kanonisches Regelbuch (11 EP-Regeln, 9 'missingInCode'); Migrationsplan: EP als eigenes Produkt kullamaegi-ep-adaptation-1.0.0 erst mit Engine", "source_file": "scripts/supertrader/fidelity/R15-STRATEGY-GAPS.json; R15-MIGRATION-PLAN.json:60"}
+    ],
+    "signal_quality": "UNKNOWN (nie getestet, Evidenzstufe NOT_TESTED)",
+    "portfolio_result_direction": "UNKNOWN",
+    "exposure_finding": "UNKNOWN; Quelle nennt EP-Häufung 3-4 Wochen je Quartal (C10).",
+    "risk_finding": "UNKNOWN",
+    "robustness": "UNKNOWN",
+    "ground_truth_light": "UNKNOWN (keine Beispiele geprüft)",
+    "seen_data": false
+  },
+  "implementation_risk": {
+    "discretion": "HIGH",
+    "bad_formalization": "Gap-plus-Volumen-Näherung würde Nicht-Katalysator-Gaps (Sektor, Übernahmen, Marktgaps) und schwache Earnings mitnehmen und wäre kein EP.",
+    "missing_data": "Konsens/Guidance/News-Zeitstempel zum Stichtag, Vorbörsenvolumen, Minutenkurse für ORH.",
+    "fragile_parameters": "UNKNOWN (keine Parameter vorhanden); Zeitfenster der Volumenprüfung in der Quelle schwankt 5-30 Minuten."
+  },
+  "product_potential": {
+    "rating": "LOW",
+    "understandability": "MEDIUM: Story 'Überraschung mit Gap' eingängig, Katalysatorbeurteilung nicht.",
+    "signal_frequency": "UNKNOWN; laut Quelle gehäuft zur Berichtssaison.",
+    "differentiation": "MEDIUM wenn mit echten Earnings-Surprise-Daten, sonst gering.",
+    "explainable_setups": "MEDIUM: Gap, Volumen, Vorgeschichte darstellbar, Katalysator nicht ohne Newsdaten.",
+    "mobile": "MEDIUM",
+    "forward_test": "Nicht möglich ohne Regeln und Daten."
+  },
+  "main_problems": [
+    "Reine Namenskarte: keine Engine, keine Regeln, keine Signale, keine Tests",
+    "Historische Konsens-, Guidance- und News-Zeitstempel fehlen (Registry-Tagline, Product Matrix)",
+    "Einstieg am Opening-Range-Hoch und Eröffnungsvolumen brauchen Minuten-/Vorbörsendaten",
+    "Kern der Methode (Katalysatorurteil) ist diskretionär"
+  ],
+  "critical_implementation_errors": [],
+  "validation_class": "NOT_REPRODUCIBLE",
+  "preliminary_tier": "C",
+  "confidence": "MEDIUM",
+  "deep_dive_candidate": false,
+  "preliminary_reasoning": "Registry, Product Matrix und R15 stimmen überein: nur Platzhalter ohne Engine (im Repo ist der Status RESEARCH/ADVANCED_RESEARCH/NAME_ONLY, nicht 'CARD_ONLY'). Die entscheidenden Daten (Konsens, Guidance, News, Eröffnungsminuten) fehlen. Tier C; später höchstens als eigenes Produkt 'EP-Adaptation' mit eingeschränkter Preis-Volumen-Näherung, klar als VU-Formalisierung gekennzeichnet.",
+  "open_for_measurement": [
+    "Nur als Machbarkeit: Wie viele Tagesgaps >= 10 % mit Volumenvielfachem pro Jahr gibt es im Universum, und wie viele davon haben eine SEC-PIT-Earnings-Veröffentlichung am Gaptag (Katalysator-Proxy)?"
+  ],
+  "evidence_refs": [
+    "supertrader/data/registry.json strategies[9] (mode RESEARCH, engine null, evidence NOT_TESTED, NAME_ONLY)",
+    "scripts/supertrader/registry.mjs:495",
+    "scripts/supertrader/build.mjs:881",
+    "docs/SUPERTRADER_PRODUCT_MATRIX.md:26",
+    "scripts/supertrader/fidelity/canonical/kullamagi.json setups.EPISODIC_PIVOT (KK-EP-C01..C11)",
+    "scripts/supertrader/fidelity/R15-STRATEGY-GAPS.json (missingInCode KK-EP-*)",
+    "scripts/supertrader/fidelity/R15-MIGRATION-PLAN.json:60",
+    "scripts/supertrader/fidelity/audit/fundamentals-matrix.json:399-405",
+    "scripts/supertrader/engine/earnings.mjs (Minervini-Gewinnprüfung, kein EP)"
+  ]
+}
