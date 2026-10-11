@@ -20,7 +20,8 @@
     "original_and_adaptation_scope_separate": "PASS",
     "top5_exact_prefix_of_9": "PASS",
     "independent_review": "PASS",
-    "research_only_file_scope": "PASS"
+    "research_only_file_scope": "PASS",
+    "actual_supertrader_gate_A": "PASS"
   },
   "counts": {
     "rows_screened": 45,
@@ -57,5 +58,13 @@
     "scripts/supertrader/research/source-intelligence/SUPERTRADER-TRACK-RECORD-EVIDENCE.json": "92141acc52dad97e1e2022bae746e1b11f5e922046f30d11b404c67e956910a9",
     "scripts/supertrader/research/source-intelligence/SUPERTRADER-VALIDATION.json": "ce5d4821ee84fb6e81068a184136aa1866fbc550392f9a53057580515b79ebac"
   },
-  "verification_scope": "Structural/source/evidence review only. No engine tests, historical backtests, raw provider refresh, annualization or live changes. Exact Gate-A script is run after documentation commit; local path scope was independently enforced before commit."
+  "verification_scope": "Structural/source/evidence review and actual Gate-A execution only. No engine tests, historical backtests, raw provider refresh, annualization or live changes. Validation file is excluded from its own file-hash manifest.",
+  "gate_A_evidence": {
+    "base_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+    "audited_research_commit": "3ee13ae",
+    "changed_files": 15,
+    "DISCOVERY_CHANGED": false,
+    "QUANT_2_CHANGED": false,
+    "result": "OK: nur Supertrader-Pfade veraendert."
+  }
 }
