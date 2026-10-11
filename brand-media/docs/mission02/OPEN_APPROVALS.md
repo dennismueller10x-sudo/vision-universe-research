@@ -1,8 +1,8 @@
 # Offene Freigaben und Blocker (Stand 2026-10-11)
 
 ## Kosten
-1. **Avatar-V-Test mit LEA** (≤ 0,50 USD; tatsächlicher Preis für Photo-Avatar-V nicht verifizierbar, Blogpreis 0,0667 USD/s als Schätzung). Befehl und Anfrage liegen bereit.
-2. **Avatare DAVID, MARC, SOFIA** anlegen: 3 × 1,32 USD. Empfehlung: erst nach Entscheidung zu Engine/V-Test, damit sie nicht neu angelegt werden müssen. Wallet 1,80 USD reicht dafür nicht komfortabel (Rest ≈ −2,16 USD) ⇒ Aufladung nötig.
+1. ~~Avatar-V-Test~~ **durchgeführt** (0,60 USD, Budget um 0,10 USD überschritten, siehe `LEA_AVATAR_V_TEST.md`). Wallet jetzt **1,20 USD**. Offen: IV-Clip mit identischem Testskript für echten A/B (≈ 0,2 USD), Zweitengine-Test.
+2. **Avatare DAVID, MARC, SOFIA** anlegen: 3 × 1,32 USD. Empfehlung: erst nach Entscheidung zu Engine/V-Test, damit sie nicht neu angelegt werden müssen. Wallet 1,20 USD reicht dafür nicht (Fehlbetrag ≈ 2,76 USD) ⇒ Aufladung nötig.
 3. **Stimmen-Blindtest** (Anbieterkonten, < 5 USD geschätzt) und spätere Voice-Anlage/Abo (ElevenLabs 6–99 USD/Monat) – **keine Stimme wurde angelegt**.
 4. **Zweitengine-Test** über fal.ai (Konto + ca. 1–2 USD).
 5. Musiklizenz (Quelle/Kosten offen).

@@ -6,7 +6,8 @@
       "afterAvatarCreate": 2.35,
       "afterTestVideo": 2.27,
       "checkedAt": "2026-10-10",
-      "afterClip15": 1.8
+      "afterClip15": 1.8,
+      "afterAvatarVTest": 1.2
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -26,7 +27,7 @@
       "createdCostUsd": 1.32,
       "defaultVoiceId": null,
       "testVoiceId": "becf484d4ec3411b992206f95e6a3aa5",
-      "engineTested": "avatar_iv",
+      "engineTested": "avatar_iv,avatar_v",
       "engineSupportedByApi": [
         "avatar_v",
         "avatar_iv",
@@ -35,13 +36,14 @@
       "voiceProvider": "heygen",
       "voiceId": "becf484d4ec3411b992206f95e6a3aa5",
       "voiceVersion": "0.0.0-provisional",
-      "lastSuccessfulGeneration": "2026-10-10",
+      "lastSuccessfulGeneration": "2026-10-11",
       "qaStatus": "REVIEW",
-      "costUsdTotal": 1.87,
+      "costUsdTotal": 2.47,
       "costBreakdownUsd": {
         "avatarCreate": 1.32,
         "video_2_48s": 0.08,
-        "video_12_15s": 0.47
+        "video_12_15s": 0.47,
+        "avatarV_5_17s": 0.6
       }
     }
   },
@@ -66,6 +68,17 @@
       "format": "MP4 H.264 1080x1920 25fps, 15.0 s, AAC (HeyGen-Rohclip 12.15 s + Hyperframes-Overlays/Endcard)",
       "costUsd": 0.47,
       "qaStatus": "VISUAL_REVIEW_DONE",
+      "releaseStatus": "REVIEW"
+    },
+    {
+      "assetId": "video-lea-avatarv-compare-01",
+      "path": "video/tests/avatar_v_compare_01/lea_avatarV_test.mp4",
+      "heygenVideoId": "7d935f08cf8c0571340376e50f2eed22",
+      "heygenAvatarId": "5962a9dd56595ecc894cd10ceac004eb",
+      "engine": "avatar_v",
+      "format": "MP4 H.264 1080x1920 25fps, 5.17 s, AAC",
+      "costUsd": 0.6,
+      "qaStatus": "VISUAL_REVIEW_DONE_AUDIO_UNVERIFIED",
       "releaseStatus": "REVIEW"
     }
   ],
@@ -93,9 +106,18 @@
     }
   },
   "avatarVTest": {
-    "status": "NOT_RUN",
-    "reason": "Preis fuer Photo-Avatar-V nicht verlaesslich ermittelbar (Freigabe verlangte verifizierten Preis)",
-    "walletAtCheck": 1.8,
-    "preparedRequest": "pipeline/requests/lea_avatar_v_compare_01.json"
+    "status": "RUN",
+    "videoId": "7d935f08cf8c0571340376e50f2eed22",
+    "engine": "avatar_v",
+    "duration": 5.17225,
+    "walletBefore": 1.8,
+    "walletAfter": 1.2,
+    "chargedUsd": 0.6,
+    "chargedUsdPerSecond": 0.116,
+    "estimatedUsd": 0.37,
+    "estimateBasis": "HeyGen-Blog 0.0667 USD/s (UNVERIFIZIERT, galt fuer Digital Twin)",
+    "budgetLimitUsd": 0.5,
+    "budgetExceededByUsd": 0.1,
+    "note": "Preis fuer Photo-Avatar-V lag ca. 1.7x ueber der Blog-Schaetzung; API bietet keinen Kostenhoechstbetrag. Wallet-Differenz +-0.01 (Rundung)."
   }
 }

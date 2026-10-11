@@ -35,7 +35,7 @@
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
       "status": "CREATED_COMPLETED",
       "avatarEngine": "heygen",
-      "avatarEngineTested": "avatar_iv",
+      "avatarEngineTested": "avatar_iv,avatar_v",
       "avatarEngineSupportedByApi": [
         "avatar_v",
         "avatar_iv",
@@ -46,13 +46,14 @@
       "voiceVersion": "0.0.0-provisional",
       "voiceCandidate": null,
       "qaStatus": "REVIEW",
-      "costUsdTotal": 1.87,
+      "costUsdTotal": 2.47,
       "costBreakdownUsd": {
         "avatarCreate": 1.32,
         "video_2_48s": 0.08,
-        "video_12_15s": 0.47
+        "video_12_15s": 0.47,
+        "avatarV_5_17s": 0.6
       },
-      "lastSuccessfulGeneration": "2026-10-10"
+      "lastSuccessfulGeneration": "2026-10-11"
     },
     {
       "id": "david",
@@ -152,10 +153,19 @@
     }
   ],
   "avatarVTest": {
-    "status": "NOT_RUN",
-    "reason": "Preis fuer Photo-Avatar-V nicht verlaesslich ermittelbar (Freigabe verlangte verifizierten Preis)",
-    "walletAtCheck": 1.8,
-    "preparedRequest": "pipeline/requests/lea_avatar_v_compare_01.json"
+    "status": "RUN",
+    "videoId": "7d935f08cf8c0571340376e50f2eed22",
+    "engine": "avatar_v",
+    "duration": 5.17225,
+    "walletBefore": 1.8,
+    "walletAfter": 1.2,
+    "chargedUsd": 0.6,
+    "chargedUsdPerSecond": 0.116,
+    "estimatedUsd": 0.37,
+    "estimateBasis": "HeyGen-Blog 0.0667 USD/s (UNVERIFIZIERT, galt fuer Digital Twin)",
+    "budgetLimitUsd": 0.5,
+    "budgetExceededByUsd": 0.1,
+    "note": "Preis fuer Photo-Avatar-V lag ca. 1.7x ueber der Blog-Schaetzung; API bietet keinen Kostenhoechstbetrag. Wallet-Differenz +-0.01 (Rundung)."
   },
   "wallet": {
     "apiWalletUsd": {
@@ -163,7 +173,8 @@
       "afterAvatarCreate": 2.35,
       "afterTestVideo": 2.27,
       "checkedAt": "2026-10-10",
-      "afterClip15": 1.8
+      "afterClip15": 1.8,
+      "afterAvatarVTest": 1.2
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   }

@@ -6,7 +6,7 @@ Alle Werte USD, 30 Tage. **Annahmen sind fett markiert, Preise haben Quellenstat
 | Posten | Wert | Status |
 |---|---|---|
 | Avatar IV, Sprechsekunde | **0,039** (gemessen) · 0,05 (HeyGen-Blog/Hilfe) | GETESTET / UNBESTÄTIGT |
-| Avatar V, Sprechsekunde | 0,0667 (HeyGen-Blog, „Digital Twin“) | UNBESTÄTIGT, nicht getestet |
+| Avatar V, Sprechsekunde | **0,116 gemessen** (0,60 USD für 5,17 s, 2026-10-11) · 0,0667 laut HeyGen-Blog (UNVERIFIZIERT, lag um Faktor ≈ 1,7 zu niedrig) | GETESTET (ein Clip) |
 | Photo-Avatar-Anlage | 1,32 je Identität, einmalig | GETESTET |
 | TTS ElevenLabs v3 / multilingual v2 | 0,08 je 1.000 Zeichen (v4-Aktion 0,022 endet 12.10.2026, **nicht** angesetzt) | DOKUMENTIERT (Rohbericht) |
 | ElevenLabs-Abos | Starter 6, Creator 22, Pro 99 USD/Monat | DOKUMENTIERT (Rohbericht) |
@@ -24,7 +24,7 @@ Reel: **10 s Avatar, 600 Zeichen** · Aktienanalyse (2 min): **30 s Avatar, 1.80
 | Photo Avatare DAVID, MARC, SOFIA (3 × 1,32) | 3,96 |
 | Stimmen-Blindtest (ElevenLabs/Azure/Google, geschätzt) | < 5 (Annahme) |
 | Zweitengine-Test (fal.ai, 2 Engines × ~6 s × 0,06–0,16) | ≈ 1–2 |
-| Avatar-V-Test | ≤ 0,50 |
+| Avatar-V-Test | 0,60 (durchgeführt) |
 | Tiingo-Klärung, Rechtsberatung KI-Kennzeichnung/Finanzwerbung | nicht beziffert |
 | Entwicklungsaufwand Templates/Gates | Arbeitszeit, nicht beziffert |
 
@@ -55,3 +55,12 @@ Zuzüglich `30 · N · (p_llm + Speicher)` und eventueller Fixkosten. Je Video s
 
 ## Offene Unschärfen
 HeyGen-Preise weichen zwischen Blog und Messung ab; Rate Limits 10 parallele Workflows (bei 10 Videos/Tag unkritisch); ElevenLabs-Abo vs. API nicht gegengerechnet; Speicherpreise nicht recherchiert.
+
+## Update 2026-10-11: Avatar V gemessen
+Avatar V kostet 0,116 USD/s (≈ 6,96 USD/min), ca. 3× Avatar IV. Monatlich (Avatar + TTS, gleiche Mixe wie oben):
+| Szenario | nur IV (0,039) | nur V (0,116) | Hybrid: 4 s V + Rest IV |
+|---|---|---|---|
+| 1/Tag | 13 | 36 | 22 |
+| 5/Tag | 92 | 254 | 138 |
+| 10/Tag (+ wöchentl. Bericht) | 201 | 552 | 295 |
+Je Reel (10 s Avatar, 600 Zeichen): IV 0,44 · V 1,21 · Hybrid 0,75 USD. Die Spalten „Avatar V Blog“ oben sind damit überholt.

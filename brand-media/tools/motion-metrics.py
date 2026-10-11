@@ -17,6 +17,8 @@ REGIONS = {
     "kopf_gesicht": (0.30, 0.10, 0.62, 0.30),
     "schultern_oberkoerper": (0.08, 0.30, 0.70, 0.50),
     "haende_arme": (0.08, 0.40, 0.75, 0.50),
+    "arm_gestik_rechts": (0.50, 0.15, 0.95, 0.40),
+    "gesamt_ohne_kopf": (0.00, 0.30, 1.00, 0.75),
     "hintergrund_kontrolle": (0.70, 0.00, 1.00, 0.20),
 }
 
@@ -33,7 +35,7 @@ def measure(path):
         diffs = [float(np.mean(np.abs(fs[i + 1][sl] - fs[i][sl]))) for i in range(len(fs) - 1)]
         out[name] = {"mean_abs_diff": round(float(np.mean(diffs)), 3), "p95": round(float(np.percentile(diffs, 95)), 3)}
     base = out["hintergrund_kontrolle"]["mean_abs_diff"] or 1e-6
-    for k in ("kopf_gesicht", "schultern_oberkoerper", "haende_arme"):
+    for k in ("kopf_gesicht", "schultern_oberkoerper", "haende_arme", "arm_gestik_rechts", "gesamt_ohne_kopf"):
         out[k]["verhaeltnis_zu_hintergrund"] = round(out[k]["mean_abs_diff"] / base, 2)
     return out
 
