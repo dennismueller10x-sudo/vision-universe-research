@@ -32,6 +32,31 @@ const UA = 'VisionUniverse-Research/1.0 (method fidelity review; info@visionuniv
 export const PIT_KEY = '_validation/sec-pit-r11.json.gz';
 // Runde 12: erweiterte Fassung (IFRS, weitere EPS-/Umsatzkennzahlen, Ursachen fehlender Reihen); r11 bleibt unveraendert.
 export const PIT_KEY_R12 = '_validation/sec-pit-r12.json.gz';
+// Hausstrategie HS3: zusaetzlich Aktienanzahl zum Einreichungsdatum (Marktkapitalisierung zum Stichtag); r12 bleibt unveraendert.
+export const PIT_KEY_R13 = '_validation/sec-pit-r13.json.gz';
+
+// Aktienanzahl [Stichtag, Stueck, ersteEinreichung, Quelle] aus companyfacts.
+// dei:EntityCommonStockSharesOutstanding (Deckblatt, Stichtag nahe der Einreichung); mehrere Gattungen
+// derselben Einreichung und desselben Stichtags werden addiert (verschiedene Werte), sonst je Stichtag
+// die erste Einreichung. Rueckfall: us-gaap WeightedAverageNumberOfDilutedSharesOutstanding (Quartal).
+export function sharesSeries(cf) {
+  const dei = cf?.facts?.dei?.EntityCommonStockSharesOutstanding?.units?.shares || [];
+  const byFiling = new Map();
+  for (const e of dei) {
+    if (!e.end || !e.filed || !(e.val > 0)) continue;
+    const k = e.accn + '|' + e.end;
+    const cur = byFiling.get(k) || { end: e.end, filed: e.filed, vals: new Set() };
+    cur.vals.add(e.val); if (e.filed < cur.filed) cur.filed = e.filed; byFiling.set(k, cur);
+  }
+  const byEnd = new Map();
+  for (const f of byFiling.values()) { const v = [...f.vals].reduce((a, b) => a + b, 0); const cur = byEnd.get(f.end); if (!cur || f.filed < cur[2]) byEnd.set(f.end, [f.end, v, f.filed, 'dei']); }
+  if (!byEnd.size) {
+    const u = cf?.facts?.['us-gaap']?.WeightedAverageNumberOfDilutedSharesOutstanding?.units?.shares;
+    for (const r of quarterly(u || [])) if (!r[3]) byEnd.set(r[0], [r[0], r[1], r[2], 'wadso']);
+  }
+  return [...byEnd.values()].sort((a, b) => a[0].localeCompare(b[0]));
+}
+
 // Runde 13: Delisting-Klassifikation aus SEC-Einreichungen (PREREGISTRATION-R13-AUDIT D).
 export const DELIST_KEY = '_validation/sec-delist-r13.json.gz';
 export const MERGER_FORMS = new Set(['DEFM14A', 'PREM14A', 'DEFM14C', 'PREM14C', 'SC TO-T', 'SC TO-T/A', 'SC 14D9', 'SC 14D9/A', 'SC 13E3', 'SC 13E3/A', 'SC13E3', '425']);
@@ -138,7 +163,7 @@ export function extractFactsR12(cf) {
       cause = q ? 'FEW_QUARTERS' : 'ANNUAL_ONLY';
     }
   }
-  return { name: cf?.entityName || null, taxonomy: eps ? tax : null, epsTag: eps?.tag || null, epsUnit: eps?.unit || null, eps: eps?.q || [], rev: [...revMap.values()].sort((a, b) => a[0].localeCompare(b[0])), cause };
+  return { name: cf?.entityName || null, taxonomy: eps ? tax : null, epsTag: eps?.tag || null, epsUnit: eps?.unit || null, eps: eps?.q || [], rev: [...revMap.values()].sort((a, b) => a[0].localeCompare(b[0])), shares: sharesSeries(cf), cause };
 }
 
 async function download(url, file) {
@@ -153,6 +178,7 @@ async function download(url, file) {
 async function main() {
   const argv = process.argv.slice(2);
   const OUT = argv[argv.indexOf('--out') + 1] || path.join(os.tmpdir(), 'secpit');
+  const R13 = argv.includes('--r13');
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
   const log = (m) => console.log(`[sec-pit +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
@@ -237,9 +263,12 @@ async function main() {
     cikAll[m.l.id] = { cik, active, listEnd: m.l.listEnd || null };
     const f = await facts(cik);
     if (!f) { stats.noFacts++; cause(active, 'CIK_NO_COMPANYFACTS', m.l); continue; }
-    if (!f.eps.length) { stats.noFacts++; cause(active, f.cause || 'NO_EPS', m.l); continue; }
+    if (!f.eps.length) {
+      if (R13 && f.shares.length) { out[m.l.id] = { cik, how, epsTag: null, taxonomy: null, eps: [], rev: f.rev, shares: f.shares }; stats.sharesOnly = (stats.sharesOnly || 0) + 1; }
+      stats.noFacts++; cause(active, f.cause || 'NO_EPS', m.l); continue;
+    }
     if (!f.eps.some((r) => r[0] >= m.l.startDate && r[0] <= (m.l.listEnd || '2026-12-31'))) cause(active, 'EPS_OUTSIDE_LISTING_WINDOW', m.l); else cause(active, 'OK_' + (f.taxonomy || 'us-gaap'), m.l);
-    out[m.l.id] = { cik, how, epsTag: f.epsTag, taxonomy: f.taxonomy, eps: f.eps, rev: f.rev };
+    out[m.l.id] = { cik, how, epsTag: f.epsTag, taxonomy: f.taxonomy, eps: f.eps, rev: f.rev, ...(R13 ? { shares: f.shares } : {}) };
     stats.withEps[active ? 'active' : 'delisted']++;
     if (++k % 500 === 0) log(`zugeordnet ${k}`);
   }
@@ -272,14 +301,16 @@ async function main() {
   }
   log(`Delistings: mit CIK ${dstats.delistedWithCik}, Uebernahme ${dstats.ACQUISITION}, unbekannt ${dstats.UNKNOWN}, Abruf fehlgeschlagen ${dstats.failed}`);
   budget.consumeClassA(1, 'PUT sec delist');
-  await driver.put(mine.seriesPrefix + DELIST_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(delist))), { contentType: 'application/gzip' });
+  if (!R13) await driver.put(mine.seriesPrefix + DELIST_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(delist))), { contentType: 'application/gzip' });
   budget.consumeClassA(1, 'PUT sec pit');
-  await driver.put(mine.seriesPrefix + PIT_KEY_R12, zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
+  await driver.put(mine.seriesPrefix + (R13 ? PIT_KEY_R13 : PIT_KEY_R12), zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
   log('Gewinnhistorie im privaten Eimer abgelegt');
   const byYear = {};
   for (const v of Object.values(out)) for (const r of v.eps) { const y = r[2].slice(0, 4); byYear[y] = (byYear[y] || 0) + 1; }
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, `sec-pit-r12${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  if (R13) { const sh = Object.values(out).filter((v) => v.shares?.length); stats.withShares = sh.length; stats.sharesSource = sh.reduce((a, v) => ((a[v.shares[0][3]] = (a[v.shares[0][3]] || 0) + 1), a), {}); log(`mit Aktienanzahl: ${sh.length}`); }
+  fs.writeFileSync(path.join(OUT, R13 ? 'sec-pit-r13.sealed.json' : `sec-pit-r12${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', r13: R13, delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  if (R13) { const sp = path.join(root, 'scripts/supertrader/house/session-public-key.pem'); if (fs.existsSync(sp)) fs.writeFileSync(path.join(OUT, 'sec-pit-r13.session.sealed.json'), fs.readFileSync(path.join(OUT, 'sec-pit-r13.sealed.json'), 'utf8') && L.encryptForOwner(fs.readFileSync(sp, 'utf8'), Buffer.from(JSON.stringify({ r13: true, causes, stats, at: new Date().toISOString() })))); }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(String(e?.stack || e)); process.exit(1); });

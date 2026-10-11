@@ -9,12 +9,16 @@
         SPLIT_ADJUSTED). Nur hier, im Build-Skript, wird die Dashboard-
         Datei gelesen — das Frontend liest ausschliesslich quant/data/**.
         Der Import ist vendor-neutral (generischer OHLCV-Adapter).
-     2. Das synthetische Mock-Universum (511 Titel, 2006–2026) fuer den
-        Universe-Scan, die Split-Fixture und lange Lookbacks.
+     2. Die Golden-Five-Reihen (Tiingo EOD, Development Preview).
+
+   Das synthetische Modelluniversum wird hier NICHT mehr verarbeitet:
+   keine ausgelieferte Datei darf auf ihm beruhen (Eigentuemerentscheidung,
+   quant/tests/no-mock-in-product.test.mjs). Die Engine-Tests benutzen den
+   Generator weiterhin direkt.
 
    Ausgabe: quant/data/technical/
      meta.json, index.json, instruments/<ID>.json (Bars + Bundle + Snapshot),
-     scan-mock.json, snapshots/<snapshotId>.json, evidence-walkforward.json
+     snapshots/<snapshotId>.json, evidence-walkforward.json
 
    Ausfuehren: node scripts/technical/build-technical-data.mjs
    ========================================================================= */
@@ -28,9 +32,7 @@ const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const T = (n) => require(join(root, "quant", "engines", "technical", n));
-const Canonical = T("canonical-bars.js"), Analysis = T("technical-analysis.js"), Snapshot = T("snapshot.js"), Storage = T("storage.js"), Scanner = T("scanner.js");
-const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
-const MockProvider = require(join(root, "quant", "engines", "mock-provider.js"));
+const Canonical = T("canonical-bars.js"), Analysis = T("technical-analysis.js"), Snapshot = T("snapshot.js"), Storage = T("storage.js");
 const Hash = require(join(root, "quant", "engines", "hash.js"));
 
 const METH = { technical: JSON.parse(readFileSync(join(root, "quant", "methodology", "technical-v1.json"), "utf8")),
@@ -89,7 +91,7 @@ const store = Storage.createJsonFileStore(join(OUT, "snapshots"));
 const index = [];
 
 /* ------------------------------------------------ 1 Reale Referenztitel */
-console.log("1/4  Reale Tageskurse (Dashboard-Marktdaten, deklariert) → CanonicalBars …");
+console.log("1/3  Reale Tageskurse (Dashboard-Marktdaten, deklariert) → CanonicalBars …");
 const marketFile = join(root, "dashboard", "data", "market_data.json");
 let realSeries = {}, realMeta = null;
 if (existsSync(marketFile)) {
@@ -125,12 +127,11 @@ for (const sym of Object.keys(realSeries)) {
 // (die fuer die zehn uebrigen Referenztitel weiterhin UNAVAILABLE bleibt):
 // quant/data/market/golden-preview/daily/, siehe quant/config/development-preview.json
 // fuer die Titel-Allowlist und die Begruendung der Eigentuemerentscheidung.
-// Split-Bereinigung wird hier, wie beim Mock-Universum (Schritt 3), selbst
-// aus den Rohkursen und den in der Kursreihe mitgefuehrten splitFactor-Werten
+// Split-Bereinigung wird hier selbst aus den Rohkursen und den in der Kursreihe mitgefuehrten splitFactor-Werten
 // abgeleitet (Canonical.fromPriceBars) - nicht aus Tiingos eigener
 // adjClose-Spalte uebernommen. Kein zweiter Netzwerkaufruf: die
 // Kapitalmassnahmen stehen bereits in den gespeicherten Bars.
-console.log("1b/4 Golden Five (Tiingo EOD, Development Preview) → CanonicalBars …");
+console.log("1b/3 Golden Five (Tiingo EOD, Development Preview) → CanonicalBars …");
 const goldenSeries = loadGoldenFiveSeries(root, Canonical);
 let goldenCount = 0;
 for (const ticker of Object.keys(goldenSeries)) {
@@ -159,7 +160,7 @@ for (const ticker of Object.keys(goldenSeries)) {
 console.log(`     ${goldenCount} Golden-Five-Titel verarbeitet`);
 
 /* ------------------------------------------ 2 Walk-Forward: Projected vs Actual */
-console.log("2/4  Walk-Forward-Snapshots (Projected vs Actual) …");
+console.log("2/3  Walk-Forward-Snapshots (Projected vs Actual) …");
 const evidence = [];
 for (const sym of ["NVDA", "MSFT"].filter((k) => realSeries[k])) {
   for (const cut of WALKFORWARD_CUTOFFS) {
@@ -176,38 +177,8 @@ for (const sym of ["NVDA", "MSFT"].filter((k) => realSeries[k])) {
 }
 write("evidence-walkforward.json", { note: "Historische Snapshots mit damaligem Datenstand; Outcome walk-forward ausgewertet. Stichprobe zu klein fuer Erfolgsquoten.", aggregate: Snapshot.aggregateEvidence(evidence.map((e) => e.outcome).filter(Boolean), METH.technical.evidence.minEffectiveSample), records: evidence });
 
-/* ------------------------------------------------------- 3 Mock-Universum */
-console.log("3/4  Synthetisches Universum → Scan …");
-const dataset = Generator.generateDataset();
-const provider = MockProvider.createMockProvider({ dataset });
-const asOf = dataset.meta.end;
-const bm = provider.getBenchmarkBars(Generator.BENCHMARK_ID, {}).data.bars;
-const benchMock = Canonical.fromRows(bm.map((r) => ({ date: r.date, open: r.level, high: r.level, low: r.level, close: r.level, volume: null })), { instrumentId: Generator.BENCHMARK_ID, priceSeriesType: "SPLIT_ADJUSTED", source: "mock", sourceRevision: dataset.meta.dataSnapshotId });
-const universe = [];
-for (const sec of provider.getSecurities({ asOf, status: "active" }).data) {
-  const bars = provider.getPriceBars(sec.securityId, {}).data;
-  if (!bars || bars.length < 300) continue;
-  const worlds = Canonical.fromPriceBars(bars, provider.getCorporateActions(sec.securityId, {}).data, { instrumentId: sec.ticker, source: "mock", sourceRevision: dataset.meta.dataSnapshotId });
-  universe.push({ instrumentId: sec.ticker, series: worlds.SPLIT_ADJUSTED, meta: { name: sec.name, sector: sec.sector, industry: sec.industry, securityId: sec.securityId, isMock: true } });
-}
-const scan = Scanner.scanUniverse({ universe, benchmarkSeries: benchMock, methodology: METH, universeId: "vu-mock-universe", universeVersion: dataset.meta.dataSnapshotId });
-write("scan-mock.json", Object.assign({ isMock: true, mockNotice: dataset.meta.mockNotice || "Synthetisches Universum. Keine realen Marktdaten." }, scan));
-console.log(`     ${scan.count} Titel gescannt, ${scan.errors.length} Fehler`);
-
-/* Fixtures + Top-Scan als Instrumentdateien (mit Elliott/Annotationen). */
-const fixtureIds = Generator.FIXTURES.map((f) => f.ticker);
-const topIds = scan.rows.slice(0, 3).map((r) => r.instrumentId);
-for (const u of universe.filter((x) => fixtureIds.includes(x.instrumentId) || topIds.includes(x.instrumentId))) {
-  const b = Analysis.analyze({ series: u.series, benchmarkSeries: benchMock, methodology: METH, options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "5Y" } });
-  const snap = Snapshot.createSnapshot(b, { createdAt: new Date().toISOString(), universeVersion: dataset.meta.dataSnapshotId });
-  store.put(snap);
-  const from = Math.max(0, u.series.length - DISPLAY_BARS);
-  write(`instruments/${u.instrumentId}.json`, { instrumentId: u.instrumentId, dataMode: "mock", isMock: true, name: u.meta.name, source: "mock", sourceRevision: dataset.meta.dataSnapshotId, priceSeriesType: "SPLIT_ADJUSTED", benchmarkId: Generator.BENCHMARK_ID, bars: compactBars(u.series, from), bundle: compactBundle(b, from, u.series.timestamps[from]), snapshotId: snap.snapshotId });
-  index.push({ instrumentId: u.instrumentId, name: u.meta.name, dataMode: "mock", isMock: true, asOf: b.analysisTime, bars: u.series.length, from: u.series.timestamps[0], opportunityScore: b.opportunityScore.score, trend: b.trend.direction, primaryDirection: b.scenarios.primary ? b.scenarios.primary.direction : null, elliottStatus: b.elliott ? b.elliott.status : null, snapshotId: snap.snapshotId });
-}
-
-/* ------------------------------------------------------------- 4 Meta */
-console.log("4/4  Index und Meta …");
+/* ------------------------------------------------------------- 3 Meta */
+console.log("3/3  Index und Meta …");
 write("index.json", { generatedAt: new Date().toISOString(), instruments: index.sort((a, b) => a.instrumentId.localeCompare(b.instrumentId)) });
 write("meta.json", {
   generatedAt: new Date().toISOString(), bundleVersion: Analysis.ENGINE_BUNDLE_VERSION,
@@ -221,7 +192,7 @@ write("meta.json", {
     benchmark: REAL_BENCHMARK,
     note: Object.keys(realSeries).length
       ? "Reale Tageskurse aus dem Dashboard-Marktdatenbestand. Oeffentliche Anzeige nur bei dokumentierter Freigabe."
-      : "Keine oeffentlich freigegebenen Provider-Kursdaten; Technical wird ausschliesslich aus Mock-Daten erzeugt."
+      : "Keine oeffentlich freigegebenen Provider-Kursdaten im Dashboard-Bestand; Technical-Daten entstehen ausschliesslich aus den freigegebenen Golden-Five-Reihen."
   } : null,
   goldenFive: {
     symbols: goldenCount,
@@ -232,7 +203,6 @@ write("meta.json", {
         "dokumentiert in quant/config/development-preview.json. Kein Benchmark: relative Staerke bleibt UNAVAILABLE."
       : "Keine Golden-Five-Kursdaten unter quant/data/market/golden-preview/daily/ gefunden."
   },
-  mockData: { seed: dataset.meta.seed, dataSnapshotId: dataset.meta.dataSnapshotId, securities: universe.length, isMock: true },
   snapshots: store.count(), walkForwardCutoffs: WALKFORWARD_CUTOFFS
 });
 console.log(`\nFertig in ${((Date.now() - started) / 1000).toFixed(1)} s · ${store.count()} Snapshots`);

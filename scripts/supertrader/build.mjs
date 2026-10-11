@@ -977,6 +977,7 @@ function writeStaticPages() {
     ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
     ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
     ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
+    ['hausstrategie/index.html', 'house', 'VU Hausstrategie — Supertrader — Vision Universe®', 'Die eigene Vision-Universe-Strategie: eingefrorene Regeln, Beobachtungsdepot mit Zeitstempel und ehrliche Prüfgeschichte.', 2],
   ];
   for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
 }

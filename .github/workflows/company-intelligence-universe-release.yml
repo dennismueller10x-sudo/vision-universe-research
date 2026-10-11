@@ -4,7 +4,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [activate, rollback]
+        options: [activate, rollback, health]
         default: activate
       scaling_run:
         description: 'Successful isolated full-universe refresh run ID'
@@ -20,9 +20,13 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Measured full R2 readback plus two broad browser matrices and Pages wait
+    # need separate rollback reserve. This changes only release headroom;
+    # continuous source budgets and cadence remain unchanged.
+    timeout-minutes: 120
     env:
       NODE_PATH: /tmp/universe-qa/node_modules
+      PYTHONPATH: scripts
       RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
       VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
       VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -33,8 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ inputs.mode == 'health' && 1 || 0 }}
       - uses: actions/checkout@v4
+        if: inputs.mode != 'health'
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-identities
@@ -49,11 +54,13 @@ jobs:
         with:
           node-version: '22'
       - name: Browser and policy contracts
+        if: inputs.mode != 'health'
         run: |
           node --test scripts/company_intelligence/tests/*.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_universe_*.py'
           npm install --prefix /tmp/universe-qa --no-audit --no-fund playwright@1.55.0
           node scripts/company_intelligence/install-browser-deps.mjs /tmp/universe-qa/node_modules/.bin/playwright
+          node scripts/company_intelligence/navigation-lifecycle-qa.mjs
       - name: Verify scale receipt from an ancestor of production code
         if: inputs.mode == 'activate'
         env:
@@ -89,14 +96,27 @@ jobs:
           gh workflow run pages-release.yml --ref main
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
-          const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json')).generation;
+          import {acceptedHealthServed} from './scripts/company_intelligence/release-health.mjs';
+          const accepted=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json')),expected=accepted.generation;
           const deadline=Date.now()+20*60000;let ok=false;
           while(Date.now()<deadline){
-            try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?release='+Date.now());const d=await r.json();if(d.generation===expected){ok=true;break;}}catch{}
+            try{
+              const query='?release='+Date.now(),root='https://research.visionuniverse.de/';
+              const r=await fetch(root+'company-intelligence-delivery.json'+query),d=await r.json();
+              if(d.status==='PASS'&&d.generation===expected){
+                if(process.env.RELEASE_MODE==='health'){
+                  const refresh=await(await fetch(root+'company-intelligence-refresh.json'+query)).json();
+                  if(!acceptedHealthServed(d,refresh,accepted))throw Error('RECONCILED_HEALTH_NOT_YET_SERVED');
+                }
+                ok=true;break;
+              }
+            }catch{}
             await new Promise(r=>setTimeout(r,10000));
           }
           if(!ok)throw Error('EXACT_PRODUCTION_GENERATION_NOT_SERVED');
           NODE
+        env:
+          RELEASE_MODE: ${{ inputs.mode }}
       - name: Actual production broad sample and source-to-browser readback
         id: live
         if: inputs.mode == 'activate'
@@ -107,11 +127,24 @@ jobs:
       - name: Actual 46-scope rollback acceptance
         if: inputs.mode == 'rollback'
         run: node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/universe-release/evidence/rollback-live.json"
-      - name: Fail closed to immutable 46 scope on material production failure
-        if: failure() && steps.activation.outcome == 'success'
+      - name: Actual unchanged generation and reconciled source health
+        if: inputs.mode == 'health'
         run: |
-          node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery"
+          node scripts/company_intelligence/refresh-run.mjs health --out "$RUNNER_TEMP/universe-release/evidence/health.json"
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          const root=process.env.RUNNER_TEMP+'/universe-release/evidence/';
+          const release=JSON.parse(readFileSync(root+'release.json')),health=JSON.parse(readFileSync(root+'health.json'));
+          assert.equal(health.generation,release.generation);assert.equal(health.productionState,'VERIFIED');assert.equal(health.status,'HEALTHY');
+          NODE
+      - name: Fail closed to immutable 46 scope on material production failure
+        if: (failure() || cancelled()) && inputs.mode != 'health' && steps.activation.outcome == 'success'
+        run: |
+          recovery_status=0
+          node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery" || recovery_status=$?
           gh workflow run pages-release.yml --ref main
+          exit "$recovery_status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

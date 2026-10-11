@@ -12,9 +12,11 @@
    DIE REGEL, DIE DIESES SKRIPT WICHTIGER MACHT ALS SEINE GROESSE
    -------------------------------------------------------------------------
 
-   Ein grosser Teil der VU-Artefakte ist HEUTE SYNTHETISCH.
-   quant/data/meta.json sagt es selbst: `isMock: true`, 511 erfundene
-   Unternehmen. Die Technical Intelligence dagegen laeuft auf echten Daten
+   Ein grosser Teil der VU-Artefakte WAR SYNTHETISCH: quant/data/meta.json
+   trug `isMock: true`, 511 erfundene Unternehmen. Dieses Modelluniversum
+   ist inzwischen aus der Auslieferung entfernt (quant/data/securities.json
+   und meta.json existieren nicht mehr); fehlen die Dateien, meldet die
+   Quelle MISSING und erzeugt nichts. Die Technical Intelligence laeuft auf echten Daten
    (quant/data/technical/index.json, `dataMode: "real"`, 13 Instrumente).
 
    Ein Signal aus Mock-Daten ist als CONTENT WERTLOS UND GEFAEHRLICH: es
@@ -121,7 +123,7 @@ if (!technical) {
 }
 
 /* =====================================================================
-   QUELLE 2 — QUANT-UNIVERSUM  (heute synthetisch)
+   QUELLE 2 — QUANT-UNIVERSUM  (synthetisch, aus der Auslieferung entfernt)
    ===================================================================== */
 
 const meta = readJson("quant/data/meta.json");
@@ -129,7 +131,7 @@ const securities = readJson("quant/data/securities.json");
 
 if (!securities) {
   sources.push({ id: "quant/data/securities.json", state: "MISSING",
-    note: "Das Quant-Universum fehlt." });
+    note: "Das synthetische Quant-Universum ist aus dem Produkt entfernt; daraus entstehen keine Signale." });
 } else {
   const isMockUniverse = meta ? meta.isMock === true : true;
   sources.push({

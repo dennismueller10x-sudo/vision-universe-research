@@ -236,9 +236,16 @@ jobs:
       # aus quant/data/market/discover-series-long, die der Discovery-Workstream
       # bereits veroeffentlicht. Es wird nichts daran geschrieben, kein Provider
       # angefragt und keine Historie geholt - die Reihen liegen im Repository.
+      #
+      # Seit pattern-research-1.1.0 (06.10.2026) zusaetzlich die kanonischen
+      # Tagesbalken aus --work-dir, nur fuer die drei Volumenmerkmale. Sie
+      # werden zur Laufzeit gelesen und nie geschrieben; die Studie traegt
+      # nur Aggregate (Hygiene-Pruefung unten).
       - name: Materialize Pattern Research study
         if: steps.noetig.outputs.noop != 'true'
-        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
 
       # Die zweite Hypothesenfamilie: dieselbe Maschinerie, aber die Frage
       # nach dem Unternehmen statt nach dem Chart. Liest die bestehenden

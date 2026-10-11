@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-10-10T14:20:00.872Z",
+  "generatedAt": "2026-10-10T12:40:04.686Z",
   "asOf": "2026-10-10",
   "provider": "tiingo",
   "source": {
@@ -19,7 +19,7 @@
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
-        "securities": 6686
+        "securities": 6853
       },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
@@ -2692,13 +2692,13 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "38059126875",
-    "commit": "57cf7626e2ddf12bd28e9d33aabc05ef292e98e1",
-    "normalizeMs": 124,
-    "syncMs": 141,
+    "runId": "38051952495",
+    "commit": "0e4f52a465f11a1cfcccb8b2eda57662957e98ae",
+    "normalizeMs": 119,
+    "syncMs": 125,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
-    "publishedBytes": 10115483
+    "publishedBytes": 10119037
   },
   "identifiers": {
     "cikMap": {
@@ -2769,23 +2769,23 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1492,
+      "classificationDisagreement": 1327,
       "classificationDisagreementByClass": {
         "EQUITY_COMMON->ETF": 133,
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
         "WARRANT->COMMON_STOCK": 453,
         "EQUITY_COMMON->ADR": 1,
-        "TRUST->COMMON_STOCK": 101,
-        "PREFERRED->COMMON_STOCK": 146,
-        "DEBT->COMMON_STOCK": 149,
+        "TRUST->COMMON_STOCK": 115,
+        "PREFERRED->COMMON_STOCK": 125,
+        "DEBT->COMMON_STOCK": 22,
         "WARRANT->ADR": 1,
-        "ETN->COMMON_STOCK": 35,
+        "ETN->COMMON_STOCK": 3,
         "TEST_SECURITY->COMMON_STOCK": 44,
         "ETF->COMMON_STOCK": 2,
         "PREFERRED->ETF": 1,
         "ADR->PREFERRED": 1,
-        "ADR->COMMON_STOCK": 3,
+        "ADR->COMMON_STOCK": 4,
         "TRUST->ETF": 2,
         "CEF->COMMON_STOCK": 1
       },

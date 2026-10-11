@@ -1,0 +1,38 @@
+{
+  "schema": "supertrader-house-prereg-1.0.0",
+  "id": "VU_HOUSE_HS2",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor Implementierung und vor jedem Lauf von HS2. Entworfen NACH dem Entwicklungslauf von HS1 (2016–2021); der Holdout 2022–2026 wurde für HS1 nicht geöffnet und ist unberührt.",
+  "motivation": "HS1: gleichgewichtete Auswahlen verlieren gegen den kapitalgewichteten Index (DECISION-HS1.json). Hypothese HS2: Eine indexnahe Gewichtung nach Größe mit moderater Neigung zu Momentum und Gewinnüberraschung (Literatur: Jegadeesh/Titman 1993; Bernard/Thomas 1989; Enhanced-Indexing-Praxis) schlägt SPY mit geringem Tracking Error.",
+  "inherits": "Daten, Zeiträume, Entwicklungssperre, Ausführung, Kosten, Delisting-Szenarien, Faktordefinitionen und Kontrollen wie PREREGISTRATION-HS1.json, soweit hier nicht anders festgelegt.",
+  "rules": {
+    "universe": "Wie HS1 zulässig (Rohschluss ≥ 5 USD, ≥ 273 Handelstage), davon die 500 Titel mit dem höchsten 63-Tage-Durchschnittsumsatz in USD an D (Point-in-Time-Ersatz für den S&P 500).",
+    "baseWeight": "Proportional zum 252-Tage-Durchschnittsumsatz in USD (Ersatz für die Marktkapitalisierung; keine Point-in-Time-Aktienzahl verfügbar), je Titel höchstens 6 %, Überschuss iterativ proportional verteilt.",
+    "tilt": "Zielgewicht ∝ Basisgewicht × (1 + τ · (2·s − 1)), s = mittlerer Perzentilrang der Faktoren der Variante im 500er-Universum; danach erneut 6 %-Grenze und Normierung auf 100 %.",
+    "cut": "Nur Variante E05: Titel mit s < 0,5 erhalten Gewicht 0; übrige nach Basisgewicht.",
+    "rebalance": "Monatlich wie HS1. Eine gehaltene Position wird nur gehandelt, wenn |Ist − Ziel| > max(25 % des Ziels, 0,05 Prozentpunkte); Titel außerhalb des Ziels werden verkauft, neue gekauft.",
+    "exposure": "100 %, kein Marktfilter."
+  },
+  "trials": [
+    { "id": "E00", "factors": [], "tau": 0, "note": "Kontrolle: Basisgewichtung ohne Neigung (wie gut bildet der Ersatz SPY ab?)" },
+    { "id": "E01", "factors": ["MOM"], "tau": 0.5 },
+    { "id": "E02", "factors": ["MOM", "SUE"], "tau": 0.5 },
+    { "id": "E03", "factors": ["MOM", "SUE", "REVG"], "tau": 0.5 },
+    { "id": "E04", "factors": ["MOM", "SUE"], "tau": 1.0 },
+    { "id": "E05", "factors": ["MOM", "SUE"], "cut": true },
+    { "id": "E06", "factors": ["MOM", "SUE", "LVOL"], "tau": 0.5 }
+  ],
+  "trialBudget": "7 Versuche. Für die Deflated Sharpe Ratio zählen alle 19 Versuche aus HS1 und HS2.",
+  "selection": "Im Entwicklungszeitraum (S1) der Versuch mit der höchsten Information Ratio unter denen mit Überrendite > 0 und Umschlag ≤ 100 % p. a.; E00 ist nicht wählbar. Erfüllt keiner das, ist HS2 TESTED_NO_EDGE und der Holdout bleibt versiegelt.",
+  "criteria": {
+    "H1": "Holdout, gewählter Versuch, S1: Überrendite p. a. gegenüber SPY > 0",
+    "H2": "Holdout mit doppelten Kosten: Überrendite > 0",
+    "H3": "Entwicklungszeitraum: Überrendite > 0 (S1)",
+    "H4": "Holdout S2: Überrendite > 0",
+    "H5": "PBO (CSCV über die HS2-Versuche ohne E00, Entwicklungszeitraum) < 0,5",
+    "H6": "Holdout: gewählter Versuch schlägt auch E00 (der Vorteil stammt aus der Neigung, nicht aus dem Gewichtungsersatz)",
+    "verdict": "Alle H1–H6 erfüllt → CRITERIA_MET. Sonst TESTED_NO_EDGE.",
+    "significance": "Zusätzlich: t-Wert der Überrendite und Deflated Sharpe Ratio mit 19 Versuchen; „statistisch belastbar“ erst ab DSR ≥ 0,95."
+  },
+  "publication": "Wie HS1: nur verschlüsselt, öffentlich nur Entscheidungen."
+}

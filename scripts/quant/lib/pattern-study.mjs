@@ -143,7 +143,7 @@ export function runStudy(observations, candidateMasks, horizon, threshold, patte
       patternId: row.pattern.id,
       kind: row.pattern.kind,
       plain: row.pattern.plain,
-      terms: row.pattern.terms.map((term) => ({ feature: term.feature, operator: term.operator, value: term.value })),
+      terms: row.pattern.terms.map(termOf),
       support: row.overall.support,
       winners: row.overall.winners,
       population: row.overall.population,
@@ -205,6 +205,40 @@ export function runStudy(observations, candidateMasks, horizon, threshold, patte
   };
 }
 
+/* A term as the study reports it. A compound candidate (pattern-research-
+   1.1.0) carries its further conditions in `also`; dropping them here would
+   publish a narrower definition than the one that was measured. */
+function termOf(term) {
+  const out = { feature: term.feature, operator: term.operator, value: term.value };
+  if (term.also && term.also.length) out.also = term.also.map(termOf);
+  return out;
+}
+
+/* The price family's pattern set: every pre-registered candidate alone, and
+   every pair of candidates that read disjoint features. Two conditions on
+   the same feature are a range, not an interaction, and several of them are
+   empty by construction - skipped on purpose. Shared with the tests so the
+   registered hypothesis count is checked against the code that builds it. */
+export function pricePatternSet(candidates) {
+  const singles = candidates.map((candidate, index) => ({
+    id: candidate.id, kind: "SINGLE", plain: candidate.plain, terms: [candidate], mask: 1 << index,
+    addedIn: candidate.addedIn || null
+  }));
+  const pairs = [];
+  for (let i = 0; i < candidates.length; i++) {
+    for (let j = i + 1; j < candidates.length; j++) {
+      const a = candidates[i], b = candidates[j];
+      const fa = Patterns.candidateFeatures(a), fb = Patterns.candidateFeatures(b);
+      if (fa.some((feature) => fb.includes(feature))) continue;
+      pairs.push({ id: a.id + "+" + b.id, kind: "PAIR", plain: a.plain + " UND " + b.plain,
+                   terms: [a, b], mask: (1 << i) | (1 << j),
+                   addedIn: a.addedIn || b.addedIn || null });
+    }
+  }
+  if (candidates.length > 31) throw new Error("pattern-study: more than 31 candidates do not fit the mask");
+  return singles.concat(pairs);
+}
+
 export function maskColumns(observations, candidates) {
   const n = observations.length;
   const hit = new Int32Array(n), measurable = new Int32Array(n);
@@ -220,7 +254,7 @@ function stabilityOf(sweepColumns, pattern, minimumSupport) {
      it would come out with a spread of zero and be recorded as "stable".
      That is not robustness evidence, it is the absence of a test, and the
      two must not read the same. */
-  if (!pattern.terms.some((term) => typeof term.value === "number")) {
+  if (!pattern.terms.some(Patterns.hasNumericThreshold)) {
     return { state: "NOT_APPLICABLE_NO_THRESHOLD", points: [] };
   }
   const lifts = [], points = [];

@@ -10,6 +10,8 @@ import {versionConsumerAssets} from './version-consumer-assets.mjs';
 import {downloadGood,goodState,goodView,activeNamespace} from './refresh-storage.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
+import {universeConfig} from './universe-approval.mjs';
+import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
  const result=await publish(driver,{namespace:approval.namespace,directory});
@@ -73,9 +75,14 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
  // younger than the consumer TTL. Legacy is used only until the first GOOD.
  let result;
  const namespace=await activeNamespace(driver);
- const refreshed=await downloadGood(driver,{namespace,output:resolve(release,'company-intelligence/data')});
+ const expected=await goodState(driver,namespace);
+ if(namespace===universeConfig.consumerNamespace&&!expected)throw Error('VERIFIED_FULL_UNIVERSE_GOOD_REQUIRED');
+ const cache=consumerCacheDriver(driver,expected,process.env.CI_PUBLIC_CACHE_DIR);
+ const output=resolve(release,'company-intelligence/data');
+ const refreshed=await downloadGood(cache.driver,{namespace,output});
  if(refreshed){
   const {good,...publicResult}=refreshed;
+  await saveConsumerCache(output,good,process.env.CI_PUBLIC_CACHE_DIR);
   for(const path of ['company-intelligence/config/rollout.js','quant/release-bundle.js']){
    const file=resolve(release,path);if(!existsSync(file))continue;
    const text=readFileSync(file,'utf8');
@@ -85,7 +92,7 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   const observedBytes=await driver.get(prefixFor(namespace)+'observed.json');
   const observed=observedBytes?JSON.parse(observedBytes):{};
   writeFileSync(resolve(release,'company-intelligence-refresh.json'),JSON.stringify(safePublicRefresh(good.manifest,{...good.health,...observed},good.inventory))+'\n');
-  result={...publicResult,approvalId:good.manifest.productionApproval,cohortStocks:good.manifest.tickers.length,issuers:good.manifest.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(good.manifest.eligibility).length:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
+  result={...publicResult,consumerCache:cache.stats,approvalId:good.manifest.productionApproval,cohortStocks:good.manifest.tickers.length,issuers:good.manifest.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(good.manifest.eligibility).length:45,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()};
   writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify(result)+'\n');
  }else result=await verifyProductionConsumer(driver,release);
  versionConsumerAssets(release);return result;

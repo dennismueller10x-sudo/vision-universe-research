@@ -5,6 +5,13 @@ import vm from 'node:vm';
 const context={VUCompanyIntelligence:{safeLink:url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}}};
 vm.runInNewContext(readFileSync('company-intelligence/ui/stock-section.js','utf8'),context);
 const {viewModel,freshness,storyType,changeLabel}=context.VUCompanyIntelligenceStock;
+test('report titles use explicit source form/year and never guess an ambiguous year',()=>{
+ const name=context.VUCompanyIntelligenceStock.materialName;
+ assert.equal(name({type:'FINANCIAL_REPORT',label:'View the 2025 SEC Form 10-K'}),'Jahresbericht 2025');
+ assert.equal(name({type:'FINANCIAL_REPORT',label:'Form 20-F Annual Report'}),'Jahresbericht');
+ assert.equal(name({type:'FINANCIAL_REPORT',label:'Form 10-K 2024 and 2025'}),'Jahresbericht');
+ assert.equal(name({type:'FINANCIAL_REPORT',label:'Form 10-Q 2026'}),'Quartalsbericht');
+});
 const now=Date.parse('2026-10-07T15:00:00Z'),cid='iss_cik_0001318605';
 const news=(id,date,extra={})=>({companyId:cid,newsId:id,canonicalUrl:'https://www.tesla.com/'+id,publishedAt:date,eventType:'NEWS',...extra});
 test('publication freshness never substitutes observation/update timestamps',()=>{

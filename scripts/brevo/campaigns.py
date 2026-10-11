@@ -44,7 +44,7 @@ def render(content):
     values["items_html"] = "".join('<tr><td style="padding:0 24px 24px"><h2 style="font-size:22px;line-height:1.3">'
             + html.escape(item["title"]) + '</h2><p style="font-size:16px;line-height:1.65">'
             + html.escape(item["text"]) + '</p></td></tr>' for item in content["items"])
-    path = Path(__file__).resolve().parent / "newsletter.html"
+    path = Path(__file__).resolve().parent / "newsletter.html.tmpl"
     return Template(path.read_text(encoding="utf-8")).substitute(values)
 
 

@@ -8,11 +8,16 @@ import { fileURLToPath } from "node:url";
 const QUANT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(join(QUANT, p), "utf8");
 
-test("UI1 · Die Technical-Seite bindet Shell, Navigation, Chartmodul und Annotationen-Schema in richtiger Reihenfolge ein", () => {
-  const html = read("technical/index.html");
-  for (const s of ["/quant/ui/shell.js", "vu-navigation", "site-navigation.css", "/quant/ui/charts.js", "/quant/ui/technical-chart.js", "/quant/engines/technical/annotations.js", "/quant/technical/app.js"]) assert.ok(html.includes(s), s);
+/* UI1, UI3 und UI7 prueften die fruehere Mehrseiten-Technical-Seite
+   (quant/technical/app.js). Sie lief neben den Golden Five auf synthetischen
+   Instrumenten und ist entfernt; /quant/technical/?symbol=T leitet auf
+   #/aktie/T/technik der App weiter (no-mock-in-product.test.mjs). */
+test("UI1 · Die App bindet Chartmodul und Technical-Renderer in richtiger Reihenfolge ein; die alte Technical-Adresse ist eine Weiterleitung", () => {
+  const html = read("index.html");
+  for (const s of ["/quant/ui/shell.js", "vu-navigation", "site-navigation.css", "/quant/ui/charts.js", "/quant/ui/technical-chart.js"]) assert.ok(html.includes(s), s);
   assert.ok(html.indexOf("/quant/ui/charts.js") < html.indexOf("/quant/ui/technical-chart.js"), "Renderer erweitert das Chartmodul und muss danach laden");
-  assert.ok(!html.includes("/quant/engines/technical/elliott") && !html.includes("technical-analysis.js"), "Die Seite rechnet nicht — sie liest praekomputierte Daten");
+  const legacy = read("technical/index.html");
+  assert.ok(legacy.includes("/quant/ui/legacy-redirect.js") && !legacy.includes("/quant/ui/shell.js"));
 });
 
 test("UI2 · Renderer interpretiert nur Annotationen und rechnet keine Struktur", () => {
@@ -23,18 +28,17 @@ test("UI2 · Renderer interpretiert nur Annotationen und rechnet keine Struktur"
   assert.ok(src.includes("QC.technicalChart = technicalChart"), "registriert sich auf dem gemeinsamen Chartmodul");
 });
 
-test("UI3 · Keine Wahrscheinlichkeits- oder Empfehlungssprache in UI-Texten", () => {
-  const app = read("technical/app.js"), css = read("ui/quant.css");
-  assert.doesNotMatch(app, /\d+\s*%\s*(Wahrscheinlichkeit|Chance)/);
-  assert.doesNotMatch(app, /garantiert|sicher kaufen|Kursziel|\bBUY\b|\bSELL\b/);
-  assert.ok(/keine Wahrscheinlichkeit/i.test(app), "Confidence wird als Method Fit ausgewiesen");
-  assert.ok(/Methodology Confidence|Method Fit/.test(app));
+test("UI3 · Keine Wahrscheinlichkeits- oder Empfehlungssprache im Technical-Vertrag der App", () => {
+  const contract = read("api/technical-workspace-contract.js"), css = read("ui/quant.css");
+  assert.doesNotMatch(contract, /\d+\s*%\s*(Wahrscheinlichkeit|Chance)/);
+  assert.doesNotMatch(contract, /garantiert|sicher kaufen|\bBUY\b|\bSELL\b/);
+  assert.match(contract, /isProbability:false/, "Method Fit wird nie als Wahrscheinlichkeit ausgewiesen");
   assert.ok(css.includes(".q-tchart"), "Chart-Styles vorhanden");
 });
 
 test("UI4 · Mobile: 390px-Breakpoint, horizontal scrollbarer Chart, touch-freundliche Layer-Toggles", () => {
   const css = read("ui/quant.css") + read("ui/technical-chart.css");
-  assert.ok(read("technical/index.html").includes("/quant/ui/technical-chart.css"), "shared chart styles loaded by legacy workspace");
+  assert.ok(read("index.html").includes("/quant/ui/technical-chart.css"), "shared chart styles loaded by the app");
   assert.match(css, /@media \(max-width:720px\)[\s\S]*\.q-tech-controls \.q-pill\{min-height:40px\}/);
   assert.match(css, /\.q-tech-chart-wrap\{overflow-x:auto/);
   assert.match(css, /\.q-tchart \.sem-wave-projected\{[^}]*stroke-dasharray/, "Projektion gestrichelt");
@@ -42,58 +46,42 @@ test("UI4 · Mobile: 390px-Breakpoint, horizontal scrollbarer Chart, touch-freun
   assert.match(css, /\.q-tchart \.sem-wave-developing\{[^}]*stroke:var\(--blue\)/, "Developing eigener Stil");
 });
 
-test("UI5 · Navigation fuehrt einen Technical-Tab; oeffentliche Technical-Daten sind versionierte Mock-Bundles", () => {
-  assert.ok(read("ui/shell.js").includes('BASE + "technical/"'));
+test("UI5 · Oeffentliche Technical-Daten sind ausschliesslich echte, versionierte Bundles", () => {
   const meta = JSON.parse(read("data/technical/meta.json")), index = JSON.parse(read("data/technical/index.json"));
   assert.equal(meta.methodologyVersions.technical, JSON.parse(read("methodology/technical-v1.json")).methodologyVersion);
-  assert.ok(index.instruments.every((r) => typeof r.isMock === "boolean" && r.snapshotId && r.asOf));
+  assert.ok(index.instruments.every((r) => r.isMock === false && r.dataMode === "real" && r.snapshotId && r.asOf));
+  assert.equal(meta.mockData, undefined, "kein Block fuer das synthetische Universum mehr");
   /* Phase 5: development-preview.json erlaubt genau fuenf reale Titel
      (Golden Five, Eigentuemerentscheidung). Jeder andere reale Titel waere
-     ein Leck ausserhalb der deklarierten Scope-Liste - genau das prueft
-     dieser Test jetzt, statt "kein einziger realer Titel" zu verlangen. */
+     ein Leck ausserhalb der deklarierten Scope-Liste. */
   const previewScope = new Set(
     JSON.parse(read("config/development-preview.json")).scope || []);
-  const realInstruments = index.instruments.filter((r) => !r.isMock);
-  assert.ok(index.instruments.length > previewScope.size, "es muessen auch Mock-Bundles vorliegen");
-  assert.ok(realInstruments.every((r) => previewScope.has(r.instrumentId)),
+  assert.ok(index.instruments.length > 0);
+  assert.ok(index.instruments.every((r) => previewScope.has(r.instrumentId)),
     "ein realer Titel ausserhalb der Golden-Five-Scope-Liste waere ein Leck: " +
-    realInstruments.filter((r) => !previewScope.has(r.instrumentId)).map((r) => r.instrumentId).join(", "));
-  const fixture = JSON.parse(read("data/technical/instruments/VUF011.json"));
-  assert.equal(fixture.isMock, true);
-  assert.equal(fixture.bundle.priceSeriesType, "SPLIT_ADJUSTED");
-  assert.ok(fixture.bundle.analysisLookback.bars >= fixture.bars.timestamps.length, "Analyse-Lookback ≥ Anzeigefenster");
-  assert.ok(fixture.bundle.annotations.annotations.some((a) => a.type === "NOW_DIVIDER"));
-  assert.ok(fixture.bundle.elliott, "Elliott-Beta-Ergebnis fuer synthetische Fixture");
+    index.instruments.filter((r) => !previewScope.has(r.instrumentId)).map((r) => r.instrumentId).join(", "));
 
   /* Jedes Golden-Five-Bundle traegt source:"tiingo" und eine eigene,
      zutreffende Provenienznotiz - nicht die Dashboard-Formulierung, die
      fuer diese Quelle falsch waere (Fund: SOURCE zeigte "UNKNOWN" und die
-     Notiz nannte den Dashboard-Bestand, obwohl die Quelle Tiingo ist). */
+     Notiz nannte den Dashboard-Bestand, obwohl die Quelle Tiingo ist).
+     Die Bundle-Eigenschaften, die frueher an der synthetischen Fixture
+     VUF011 geprueft wurden, gelten fuer jedes echte Bundle. */
   for (const ticker of previewScope) {
     const bundle = JSON.parse(read(`data/technical/instruments/${ticker}.json`));
     assert.equal(bundle.isMock, false, ticker);
     assert.equal(bundle.source, "tiingo", ticker + ": source muss tiingo sein, nicht die Dashboard-Quelle");
     assert.match(bundle.note || "", /Golden Five/, ticker + ": Provenienznotiz muss die Golden-Five-Herkunft nennen");
+    assert.equal(bundle.bundle.priceSeriesType, "SPLIT_ADJUSTED", ticker);
+    assert.ok(bundle.bundle.analysisLookback.bars >= bundle.bars.timestamps.length, ticker + ": Analyse-Lookback ≥ Anzeigefenster");
+    assert.ok(bundle.bundle.annotations.annotations.some((a) => a.type === "NOW_DIVIDER"), ticker);
   }
 });
 
-test("UI7 · Die SOURCE-Provenienzfunktion kollidiert nicht mit der einparametrigen Zonen-Quellen-Funktion " +
-     "(Fund: eine spaeter im selben Modul deklarierte function sourceLabel(x) ueberschrieb durch Hoisting " +
-     "die frueher deklarierte zweiparametrige Provenienzfunktion gleichen Namens - SOURCE zeigte dadurch " +
-     "'undefined' statt 'TIINGO'/'MOCK', da x.type auf einem {file, meta}-Argumentpaar nie passt)", () => {
-  const app = read("technical/app.js");
-  const call = app.match(/S\.provenanceTag\("SOURCE",\s*(\w+)\(file,\s*meta\)/);
-  assert.ok(call, "SOURCE-Tag muss eine (file, meta)-Funktion aufrufen");
-  const fnName = call[1];
-  assert.notEqual(fnName, "sourceLabel",
-    "darf nicht denselben Namen wie die vorhandene einparametrige Zonen-Quellen-Funktion tragen");
-  const declarations = app.match(new RegExp("function\\s+" + fnName + "\\s*\\(", "g")) || [];
-  assert.equal(declarations.length, 1, fnName + " darf im Modul nur einmal deklariert sein");
-});
 
-test("UI6 · Provenienz nennt Modus, Form, Quelle und Beta ohne globalen Synthetik-Widerspruch", () => {
-  const shell = read("ui/shell.js"), app = read("technical/app.js");
-  for (const label of ["MODE", "FORM", "SOURCE", "PRECOMPUTED"]) assert.ok(shell.includes(label) || app.includes(label), label);
-  assert.ok(app.includes('provenanceTag("ELLIOTT", "BETA"'));
+test("UI6 · Provenienz nennt Modus, Form und Quelle ohne globalen Synthetik-Widerspruch", () => {
+  const shell = read("ui/shell.js");
+  for (const label of ["MODE", "FORM", "SOURCE", "PRECOMPUTED"]) assert.ok(shell.includes(label), label);
   assert.doesNotMatch(shell, /Saemtliche Daten in diesem Bereich sind synthetisch/);
+  assert.doesNotMatch(shell, /Modelluniversum zum Modellstand|Demo-Daten · synthetisches Universum/);
 });

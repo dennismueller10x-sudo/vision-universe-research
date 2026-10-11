@@ -5,7 +5,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -381,20 +381,33 @@ test("§81 · Die Oberflaeche verwendet keine Kauf- oder Verkaufsempfehlungen", 
 
 /* Mock-Kennzeichnung (§94) ---------------------------------------------- */
 test("§94 · Synthetische Daten sind als solche gekennzeichnet", () => {
+  /* Der Generator kennzeichnet jedes Wertpapier - er bleibt die
+     Testgrundlage der Engines. */
   for (const security of dataset.securities) {
     assert.equal(security.isMock, true);
     assert.match(security.name, /^VU Mock /);
   }
-  const meta = JSON.parse(readFileSync(join(QUANT, "data", "meta.json"), "utf8"));
-  assert.equal(meta.isMock, true);
-  assert.ok(meta.mockNotice.length > 40);
+  assert.equal(dataset.meta.isMock, true);
+  assert.equal(dataset.meta.securityCount, dataset.securities.length);
 
-  // Jede Seite bindet die gemeinsame Shell ein, die das Banner rendert.
+  /* Ausgeliefert wird der Datensatz nicht mehr (Eigentuemerentscheidung:
+     keine sichtbare Seite auf dem Modelluniversum, siehe
+     no-mock-in-product.test.mjs). Damit gibt es auch kein Demo-Banner mehr. */
+  assert.ok(!existsSync(join(QUANT, "data", "meta.json")), "quant/data/meta.json wird wieder ausgeliefert");
+  assert.ok(!existsSync(join(QUANT, "data", "securities.json")), "quant/data/securities.json wird wieder ausgeliefert");
+  assert.ok(!readFileSync(join(QUANT, "ui", "shell.js"), "utf8").includes("q-mock-banner"));
+
+  // Jede Seite bindet die gemeinsame Shell ein - Weiterleitungen alter
+  // Adressen ausgenommen: sie laden bewusst weder Shell noch Daten.
   for (const page of walk(QUANT, [".html"])) {
     const html = readFileSync(page, "utf8");
+    if (html.includes("/quant/ui/legacy-redirect.js")) {
+      assert.match(html, /<meta name="robots" content="noindex">/, `${page}: Weiterleitung ohne noindex`);
+      assert.ok(!html.includes("/quant/ui/shell.js"), `${page}: Weiterleitung laedt die Shell`);
+      continue;
+    }
     assert.ok(html.includes("/quant/ui/shell.js"), `${page} ohne gemeinsame Shell`);
   }
-  assert.ok(readFileSync(join(QUANT, "ui", "shell.js"), "utf8").includes("q-mock-banner"));
 });
 
 /* Zentrale Methodik (§72) ----------------------------------------------- */

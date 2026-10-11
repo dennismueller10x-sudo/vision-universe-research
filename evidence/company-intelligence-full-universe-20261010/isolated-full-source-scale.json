@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "runId": "38052669901",
+  "status": "SUCCESS",
+  "verification": true,
+  "scope": "PER_ISSUER_ELIGIBILITY",
+  "sourcePolicy": "OWNED_IR_SEC_METADATA_PREVIEW_V1",
+  "restoredGeneration": "dd958f61bebd9e538f5df279",
+  "consumerGeneration": "44d15587358ea8739ff83a76",
+  "privateCompanies": 5122,
+  "newPrivateGeneration": "ff71178439a33f17e1b4fa8f",
+  "privatePreservation": {
+    "status": "PRESERVED",
+    "sha256": "9621aabe67a7d8f2d77035c525db441d168786c8da1fb7dfa30cb99bc3115603",
+    "bytes": 31278483,
+    "operations": 5
+  },
+  "freshRestoreVerified": true,
+  "published": true,
+  "runtimeSeconds": 723.595,
+  "durationSeconds": 1564,
+  "publicRequests": 137,
+  "secRequests": 83,
+  "sourcesChecked": 83,
+  "secIssuersChecked": 80,
+  "sourcesDeferredByBudget": 5211,
+  "scheduler": {
+    "activeApprovedSources": 5355,
+    "dueByTier": {
+      "DORMANT_NEWS_24H": 77,
+      "EVENTS_8H": 1333,
+      "MATERIALS_24H": 1832,
+      "NEWS_4H": 2052
+    },
+    "dueSources": 5294,
+    "excluded": {
+      "UNAPPROVED_OR_INACTIVE": 20
+    },
+    "fairQueuePattern": [
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "NEWS_4H",
+      "EVENTS_8H",
+      "EVENTS_8H",
+      "MATERIALS_24H",
+      "DORMANT_NEWS_24H"
+    ],
+    "registeredSources": 5375,
+    "tiers": {
+      "DORMANT_NEWS_24H": 77,
+      "EVENTS_8H": 1342,
+      "MATERIALS_24H": 1875,
+      "NEWS_4H": 2061
+    }
+  },
+  "consumerContracts": {
+    "status": "PASS",
+    "generation": "44d15587358ea8739ff83a76",
+    "issuers": 4790,
+    "listings": 5089,
+    "verifiedAssets": 5415,
+    "modules": {
+      "profile": 45,
+      "aktuelles": 1721,
+      "financials": 4711,
+      "whatChanged": 3626,
+      "nextEvent": 3277,
+      "calls": 562,
+      "documents": 1794
+    }
+  },
+  "publication": {
+    "generation": "44d15587358ea8739ff83a76",
+    "status": "PUBLISHED",
+    "uploadedObjects": 5415,
+    "uploadedBytes": 97094603,
+    "unchangedObjects": 0
+  },
+  "sourceLaneSuccess": {
+    "IR_EVENTS": 12,
+    "IR_FEED": 47,
+    "IR_MATERIALS": 6
+  },
+  "sourceOutcomes": {
+    "NO_CHANGE": 7,
+    "POLICY_REJECTED": 18,
+    "SUCCESS": 58
+  },
+  "productionClaim": false,
+  "candidateBrowserCases": 116
+}

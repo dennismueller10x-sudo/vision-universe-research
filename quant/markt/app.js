@@ -4,7 +4,7 @@
    Diese Seite ist absichtlich die einzige im Quant-Bereich, die reale
    Wertpapiere zeigt. Sie beantwortet drei Fragen, und zwar getrennt:
 
-     1. Welche Daten sind gerade echt, welche synthetisch?
+     1. Welche Daten sind gerade verfuegbar, welche nicht?
      2. Was liefert der angebundene Zugang ueberhaupt — und was nicht?
      3. Wie sehen die abgerufenen Reihen aus?
 
@@ -69,9 +69,9 @@
       el("h1", { class: "q-h1", text: "Marktdaten" }),
       el("p", {
         class: "q-lead",
-        text: "Diese Seite zeigt, woher die Daten dieser Anwendung stammen. Sie trennt dabei " +
-              "streng zwischen echten Kursen eines Anbieters und dem synthetischen Modelluniversum, " +
-              "auf dem Ranking, Screener und Backtests laufen."
+        text: "Diese Seite zeigt den Stand des Referenz-Kurszugangs: was der angebundene Anbieter " +
+              "liefert, was davon oeffentlich gezeigt werden darf und was nicht. Quant zeigt " +
+              "ausschliesslich echte, veroeffentlichte Daten; fehlende Werte werden nicht erfunden."
       })
     ]);
   }
@@ -85,8 +85,8 @@
       Q.stateBox(
         "Oeffentliche Marktdaten nicht verfuegbar",
         "Kommerzielle Provider-Rohdaten bleiben bis zur geklaerten Redistribution ausserhalb " +
-        "des statisch ausgelieferten Pfads. Der Quant-Kern arbeitet sichtbar auf dem " +
-        "synthetischen Modelluniversum; reale Titel erhalten keine Mock-Kurse.",
+        "des statisch ausgelieferten Pfads. Fehlende Kurse werden nicht durch erfundene " +
+        "ersetzt.",
         "empty"
       ),
       el("section", { class: "q-section" }, [

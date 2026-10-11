@@ -181,7 +181,7 @@ jobs:
           # Raw SEC payloads and normalized factbooks must never be committed.
           # raw/ and facts/ are large and regenerable and stay local. canonical/
           # is the opposite: it IS the data layer the adapter serves, so it is
-          # committed like quant/data/securities.json.
+          # committed.
           for forbidden in quant/data/sec/raw quant/data/sec/facts .sec-cache .quant-state; do
             if git ls-files --error-unmatch "$forbidden" >/dev/null 2>&1; then
               echo "::error::$forbidden is tracked but must stay local"

@@ -1,0 +1,23 @@
+{
+  "schema": "supertrader-house-prereg-1.0.0",
+  "id": "VU_HOUSE_HS4_OOS2008",
+  "registeredAt": "2026-10-06",
+  "status": "Eingefroren vor dem Lauf. Genau ein Lauf. Regeln unverändert aus LIVE-HS4-V03.json (Hash-Prüfung im Lauf).",
+  "question": "Hält die eingefrorene Regel HS4-V03 in einem Zeitraum, den die Hausstrategie nie gesehen hat (2008–2015, inkl. Finanzkrise)?",
+  "data": {
+    "window": "ST_WINDOW=HOLDOUT der Supertrader-Validierung: Vorlauf ab 2007-01-02, Test 2008-01-31 bis 2015-12-31; eigener Namensraum tiingo-holdout (R14).",
+    "fundamentals": "SEC-Werte zum Einreichungsdatum inkl. Aktienzahl (sec-pit --r13 im HOLDOUT-Namensraum, vor diesem Lauf erzeugt).",
+    "knownBias": "Laut R14 ist die Tickerliste für ältere Delistings unvollständig: Der Zeitraum ist nicht frei von Survivorship Bias. Positive Ergebnisse sind nach oben verzerrt, negative konservativ.",
+    "delisting": "S1 (−30 %) bleibt primär wie in HS4; laut R13 ist S1 für Barübernahmen zu streng, deshalb wird S0 zusätzlich berichtet."
+  },
+  "rules": "Unverändert HS4 (PREREGISTRATION-HS4.json); gewählt ist V03. V01, V02, V04, V05, V06 werden zum Vergleich mitgerechnet, ohne Auswahl.",
+  "criteria": {
+    "O1": "V03, S1: Überrendite p. a. gegenüber SPY > 0 über 2008-01-31 bis 2015-12-31",
+    "O2": "V03 mit doppelten Kosten: Überrendite > 0",
+    "O3": "V03, S2: Überrendite > 0",
+    "O4": "V03 schlägt V06 (gleiche Regel ohne Volumen)",
+    "O5": "V03 liegt über dem 80. Perzentil der 20 Zufallsauswahlen aus denselben gefilterten Titeln",
+    "verdict": "Alle O1–O5 → OOS_CONFIRMED (Hinweis bestätigt sich außerhalb der Entwicklungsdaten; wegen des bekannten Bias kein Beweis). Sonst OOS_NOT_CONFIRMED."
+  },
+  "publication": "Wie HS1: nur verschlüsselt, öffentlich nur die Entscheidung."
+}

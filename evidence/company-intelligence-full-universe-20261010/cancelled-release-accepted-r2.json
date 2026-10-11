@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "status": "ACTIVATED_AWAITING_PRODUCTION_QA",
+  "generation": "5e377973471f23e3ddbcb535",
+  "codeSha": "32e9479eecfdd87e05540b22ca1862565e540776",
+  "privateGeneration": "dd958f61bebd9e538f5df279",
+  "privateCheckpointSha256": "de51416e662afbf1aa2e3d281b1a79062c83ed1494b5760728dcdd999cfcda87",
+  "rollback": {
+    "generation": "71dc0485476cfa74e59f7fc3",
+    "codeSha": "02c986f8caa96af04576555a09d3e4658c845e1b",
+    "stocks": 46,
+    "issuers": 45,
+    "namespace": "eligible-rollback-top46-v1",
+    "freshReadback": true
+  },
+  "structural": {
+    "status": "PASS",
+    "generation": "5e377973471f23e3ddbcb535",
+    "issuers": 4789,
+    "listings": 5088,
+    "verifiedAssets": 5414,
+    "modules": {
+      "profile": 45,
+      "aktuelles": 1717,
+      "financials": 4711,
+      "whatChanged": 3626,
+      "nextEvent": 3274,
+      "calls": 562,
+      "documents": 1793
+    }
+  },
+  "consumerCache": {
+    "cachedAssets": 10827,
+    "remoteAssets": 1
+  },
+  "browserCases": 239,
+  "scalingRunId": "38052669901",
+  "changes": {
+    "status": "PASS",
+    "profiles": 45,
+    "news": 14301,
+    "financials": 4711,
+    "newsIssuers": 1749,
+    "removedIssuers": [],
+    "identityRemappings": 0,
+    "previousGeneration": "71dc0485476cfa74e59f7fc3",
+    "changedIssuerCount": 4789
+  },
+  "privateStateModified": false,
+  "completion": "CANCELLED_BEFORE_PRODUCTION_ACCEPTANCE",
+  "recoveryRun": 38056559970
+}

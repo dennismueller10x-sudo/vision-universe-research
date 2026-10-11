@@ -11,6 +11,7 @@ import {stageProduction,setProductionGate} from '../production-release.mjs';
 import {approval,reviewed} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
 import {runtimeCandidate} from '../runtime-candidate.mjs';
+import {prepareFrozenRollback} from '../frozen-rollback.mjs';
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,v)=>objects.set(k,Buffer.from(v))};}
 function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
  const root=mkdtempSync(join(tmpdir(),'refresh-contract-')),generation=n.toString(16).padStart(24,'0'),schema='vu-company-intelligence-1.0.0';
@@ -26,6 +27,21 @@ function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
  writeFileSync(join(root,'manifest.json'),JSON.stringify(m));return {root,m};
 }
 async function advance(d,namespace,f){const good=await goodState(d,namespace),r=await prepareCandidate(d,{namespace,directory:f.root,good});return commitGood(d,{namespace,payloadNamespace:r.payloadNamespace,manifest:r.manifest,health:{},inventory:frozenInventory,expectedGood:good});}
+test('explicit frozen rollback survives a newer previous slot without weakening normal publication',async()=>{
+ const d=driver(),ns='frozen-recovery',a=fixture(101,'2026-10-09T10:00:00Z'),b=fixture(102,'2026-10-09T11:00:00Z'),c=fixture(103,'2026-10-09T12:00:00Z');
+ try{
+  const frozen=await advance(d,'immutable-frozen',a);
+  await advance(d,ns,b);await advance(d,ns,c);const good=await goodState(d,ns),before=await d.get(goodKey(ns));
+  await assert.rejects(prepareCandidate(d,{namespace:ns,directory:a.root,good}),/STALE_PUBLICATION_REFUSED/);
+  writeFileSync(join(a.root,'manifest.json'),JSON.stringify(frozen.manifest));
+  const r=await prepareFrozenRollback(d,{namespace:ns,directory:a.root,good,frozen});
+  assert.deepEqual(await d.get(goodKey(ns)),before,'candidate cannot advance GOOD');
+  const restored=await commitGood(d,{namespace:ns,payloadNamespace:r.payloadNamespace,manifest:r.manifest,health:frozen.health,inventory:frozen.inventory,expectedGood:good});
+  assert.equal(restored.generation,a.m.generation);assert.equal(restored.previous.generation,c.m.generation);
+  const out=mkdtempSync(join(tmpdir(),'frozen-readback-'));try{await downloadGood(d,{namespace:ns,output:out});assert.equal(JSON.parse(readFileSync(join(out,'index.json'))).generation,a.m.generation);}finally{rmSync(out,{recursive:true});}
+  writeFileSync(join(a.root,'index.json'),'{}');await assert.rejects(prepareFrozenRollback(d,{namespace:ns,directory:a.root,good:restored,frozen}),/LOCAL_CONSUMER_INTEGRITY_FAILED/);
+ }finally{for(const f of [a,b,c])rmSync(f.root,{recursive:true});}
+});
 test('three generations and repeated failed candidates preserve current AND previous good assets',async()=>{
  const d=driver(),ns='contract',fs=[1,2,3,4].map(n=>fixture(n)),out=mkdtempSync(join(tmpdir(),'refresh-download-'));
  try{

@@ -83,10 +83,7 @@ test("GF2 · das Golden-Five-Panel enthaelt tatsaechlich alle fuenf Titel mit ei
   });
 });
 
-test("GF3 · Ranking und Screener zeigen die Golden Five, klar getrennt vom Perzentil-Ranking " +
-     "(Live-Feedback: 'Ranking und Strategy zeigen weiterhin Mock-Titel')", () => {
-  const ranking = read("ranking/app.js");
-  assert.match(ranking, /C\.goldenFiveTeaser\(/, "Ranking muss den geteilten Golden-Five-Baustein einbinden");
-  const screener = read("screener/app.js");
-  assert.match(screener, /C\.goldenFiveTeaser\(/, "Screener muss den geteilten Golden-Five-Baustein einbinden");
-});
+/* GF3 (Ranking und klassischer Screener zeigen die Golden Five) entfaellt:
+   beide Seiten liefen auf dem synthetischen Modelluniversum und sind
+   entfernt; ihre Adressen leiten auf den Screener der App weiter, der nur
+   echte Daten zeigt (no-mock-in-product.test.mjs). */

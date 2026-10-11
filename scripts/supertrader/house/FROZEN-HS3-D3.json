@@ -1,0 +1,28 @@
+{
+  "schema": "supertrader-house-frozen-1.0.0",
+  "id": "VU_HOUSE_HS3_D3",
+  "frozenAt": "2026-10-03",
+  "devRun": 37144385411,
+  "selectedTrial": "M03",
+  "rule": "Auswahl nach PREREGISTRATION-HS3.json (höchste IR gegenüber C00 unter den zulässigen Versuchen); einziger zulässiger Kandidat.",
+  "development": {
+    "excessCagr": 0.0009,
+    "excessVsControl": 0.0028,
+    "pbo": 0.4143,
+    "note": "excessCagr = Minimum aus Überrendite gegenüber SPY und gegenüber C00 (H3 verlangt beides > 0)."
+  },
+  "gate": {
+    "G0": true
+  },
+  "hashes": {
+    "PREREGISTRATION-HS1.json": "aa4a9e2f6393cf88a01040e1e5d0cf08ea93134a338c788e78c6a44ecdd8abeb",
+    "PREREGISTRATION-HS3.json": "e09744634cf9edb8637fd4654371551d4ce00e68d39ebba4d61d9da724ef9d69",
+    "PREREGISTRATION-HS3-D1.json": "9e15b0d2fc17f39081b3c0d990472133a8933441af5afe7b334ad926e93febb7",
+    "PREREGISTRATION-HS3-D2.json": "f7d3acb931303d529b421cd7bb19d5e46cf579afaff8ddebb1722c91c159282c",
+    "PREREGISTRATION-HS3-D3.json": "255e13646480a02dbcee4f3bfb9917917efc920a09cb934db7294433fc39b162",
+    "engine.mjs": "725cf083ab7e6935fee38368fc243d73bbfef2c4d2e135eea633b47155a7d4be",
+    "stats.mjs": "f4143a922bdc53ade7f6ed119b3acdb60a0a38a224a3fec5bd6da903888f220c",
+    "analyze.mjs": "dd9679141885ecafa76dae5c015f5d30f79c9b23c2555b3ae79ec2d28509a876",
+    "seal.mjs": "ff8bdef012fd8a133e371f6c4a7f900e03e81420bb9add8cf746046da88870ed"
+  }
+}

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-10T08:24:25.419Z",
+ "generatedAt": "2026-10-10T19:51:44.320Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -10,40 +10,40 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-10",
-   "to": "2026-10-06",
-   "spanDays": 26,
+   "to": "2026-10-09",
+   "spanDays": 29,
    "replay": {
-    "titles": 157,
-    "observations": 125328,
+    "titles": 156,
+    "observations": 124849,
     "from": "1991-03-08"
    }
   },
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-23",
-   "to": "2026-10-06",
-   "spanDays": 13
+   "to": "2026-10-09",
+   "spanDays": 16
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 9,
-   "from": "2026-10-05",
-   "to": "2026-10-06",
-   "spanDays": 1
+   "count": 10,
+   "from": "2026-10-06",
+   "to": "2026-10-09",
+   "spanDays": 3
   },
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 3,
+   "count": 4,
    "byIndex": {
-    "SP500": 3,
-    "NDX": 3,
-    "DJIA": 3
+    "SP500": 4,
+    "NDX": 4,
+    "DJIA": 4
    },
    "from": "2026-09-15"
   },
@@ -51,14 +51,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6160,
+    "titles": 6308,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6663
+    "titlesLastYear": 6836
    }
   },
   {
@@ -82,7 +82,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 9,
+   "count": 10,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -92,8 +92,8 @@
   {
    "id": "patternObservations",
    "label": "Muster-Beobachtungen",
-   "studyFindings": 114,
-   "robust": 68,
+   "studyFindings": 163,
+   "robust": 97,
    "matchSnapshots": 4
   },
   {
@@ -108,7 +108,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 9,
+   "publishedSnapshots": 10,
    "reconstructible": {
     "titles": 5
    }
@@ -140,14 +140,14 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 4989,
-   "of": 6686
+   "ready": 5119,
+   "of": 6853
   },
   {
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 3,
+   "membershipSnapshots": 4,
    "state": "NOT_CONTROLLED"
   }
  ],
@@ -162,7 +162,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6160 Titel seit 1990-01-05",
+     "value": "6308 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -194,7 +194,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "1371 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "1512 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -231,16 +231,16 @@
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7465,
-     "titles": 146,
+     "n": 7452,
+     "titles": 145,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8241,
-     "titles": 147,
+     "n": 8228,
+     "titles": 146,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     }
@@ -269,7 +269,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6160 Titel seit 1990-01-05",
+     "value": "6308 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -291,40 +291,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 88670,
-     "titles": 5060,
+     "n": 89187,
+     "titles": 5171,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 88933,
-     "titles": 5082,
+     "n": 89473,
+     "titles": 5196,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 85951,
-     "titles": 5037,
+     "n": 86484,
+     "titles": 5147,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 85968,
-     "titles": 5051,
+     "n": 86521,
+     "titles": 5164,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56239,
-     "titles": 4829,
+     "n": 56493,
+     "titles": 4923,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
@@ -346,7 +346,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "3 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "4 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {
@@ -360,7 +360,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "9 Faktor-Snapshots seit 2026-09-23",
+     "value": "10 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -404,14 +404,14 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "9 Snapshots über 13 Tage",
+     "value": "10 Snapshots über 16 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "4989 von 6686 Titeln",
+     "value": "5119 von 6853 Titeln",
      "reason": null
     },
     {
@@ -439,7 +439,7 @@
      "id": "study",
      "label": "Musterstudie mit Out-of-Sample",
      "state": "PASS",
-     "value": "114 Befunde, davon 68 robust",
+     "value": "163 Befunde, davon 97 robust",
      "reason": null
     },
     {

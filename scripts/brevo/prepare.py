@@ -154,7 +154,9 @@ def manual_csvs(data, directory):
         writer = csv.DictWriter(output, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
         for row in rows:
-            writer.writerow({k: str(v).lower() if isinstance(v, bool) else v for k, v in row.items()})
+            # Brevo's manual CSV importer documents Yes/No for Boolean attributes.
+            # Keep real booleans in the private JSON used by the API importer.
+            writer.writerow({k: ("Yes" if v else "No") if isinstance(v, bool) else v for k, v in row.items()})
         private_write(Path(directory) / name, output.getvalue())
 
 

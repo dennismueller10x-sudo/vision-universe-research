@@ -7,6 +7,8 @@ import urllib.parse
 import urllib.request
 from prepare import Blocked
 
+USER_AGENT = "VisionUniverse-Brevo/1.0"
+
 LISTS = ("VU | Newsletter", "VU | App-Warteliste", "VU | Newsletter-Test")
 ATTRS = {"VU_SOURCE": "text", "VU_EMAIL_CONSENT": "text", "VU_BUYER": "boolean",
          "VU_INTERNAL_TEST": "boolean", "VU_FIRSTNAME": "text", "VU_LASTNAME": "text",
@@ -27,7 +29,8 @@ class Client:
             raise Blocked("API-Aufruf liegt außerhalb des freigegebenen Betriebsumfangs.")
         req = urllib.request.Request("https://api.brevo.com/v3" + path,
               data=None if body is None else json.dumps(body).encode(), method=method,
-              headers={"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json"})
+              headers={"api-key": self._key, "Accept": "application/json", "Content-Type": "application/json",
+                       "User-Agent": USER_AGENT})
         try:
             # Redirects are disabled to prevent forwarding the API key to another origin.
             class NoRedirect(urllib.request.HTTPRedirectHandler):

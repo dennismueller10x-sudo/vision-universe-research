@@ -212,14 +212,45 @@
       node.appendChild(svg("line", { class: "dx-range-grid", x1: padL, x2: w - padR, y1: y(v).toFixed(1), y2: y(v).toFixed(1) }));
     });
     node.appendChild(svg("line", { class: "dx-art-base", x1: padL, x2: w - padR, y1: y(closes[0]).toFixed(1), y2: y(closes[0]).toFixed(1) }));
-    var d = "", karte = [];
+    var segmentDates = null;
+    if (opt.segments !== undefined) {
+      if (!Array.isArray(opt.segments) || !opt.segments.length || opt.segments.some(function(segment) { return !Array.isArray(segment) || !segment.length || segment.some(function(pt) { return !Array.isArray(pt) || typeof pt[0] !== 'string' || !isNum(pt[1]); }); })) return null;
+      var flat = opt.segments.flat();
+      if (flat.some(function(pt, i) { return i > 0 && flat[i - 1][0] >= pt[0]; })) return null;
+      segmentDates = new Map();
+      opt.segments.forEach(function (segment, index) {
+        (segment || []).forEach(function (pt) { segmentDates.set(pt[0], { index: index, close: pt[1] }); });
+      });
+      if (p.some(function (pt) { var binding = segmentDates.get(pt[0]); return !binding || binding.close !== pt[1]; })) return null;
+      var groups = [];
+      p.forEach(function (pt) {
+        var index = segmentDates.get(pt[0]).index, group = groups[groups.length - 1];
+        if (!group || group.index !== index) { group = { index: index, points: [] }; groups.push(group); }
+        group.points.push(pt);
+      });
+      node.setAttribute("data-segment-count", groups.length);
+      if (groups.length > 1) {
+        text += ", Datenlücken: getrennte Kursabschnitte";
+        node.setAttribute("aria-label", text); titel.textContent = text;
+      }
+    }
+    var d = "", karte = [], fills = "", previousSegment = null, startX = null, lastX = null;
     p.forEach(function (pt) {
       var px = x(pt[0]), py = y(pt[1]);
       karte.push({ x: px, y: py, date: pt[0], close: pt[1] });
-      d += (d ? "L" : "M") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+      var segment = segmentDates ? segmentDates.get(pt[0]).index : null;
+      var start = !d || (segmentDates && segment !== previousSegment);
+      if (segmentDates) {
+        if (start && startX !== null) fills += "L" + lastX + " " + (h - padBottom) + " L" + startX + " " + (h - padBottom) + " Z ";
+        fills += (start ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+        if (start) startX = px.toFixed(1);
+        lastX = px.toFixed(1); previousSegment = segment;
+      }
+      d += (start ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
     });
+    if (segmentDates) fills += "L" + lastX + " " + (h - padBottom) + " L" + startX + " " + (h - padBottom) + " Z";
     node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxr" + lauf + ")",
-      d: d + "L" + x(p[p.length - 1][0]).toFixed(1) + " " + (h - padBottom) + " L" + x(p[0][0]).toFixed(1) + " " + (h - padBottom) + " Z" }));
+      d: segmentDates ? fills : d + "L" + x(p[p.length - 1][0]).toFixed(1) + " " + (h - padBottom) + " L" + x(p[0][0]).toFixed(1) + " " + (h - padBottom) + " Z" }));
     node.appendChild(svg("path", { class: "dx-art-line dx-range-line", d: d.trim(), "vector-effect": "non-scaling-stroke" }));
     var lx = x(p[p.length - 1][0]), ly = y(closes[closes.length - 1]);
     node.appendChild(svg("circle", { class: "dx-art-node", cx: lx.toFixed(1), cy: ly.toFixed(1), r: 3.4 }));

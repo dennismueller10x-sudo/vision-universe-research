@@ -7,7 +7,7 @@
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
   function syncThemeChrome(state) {
     const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
-    const tag=document.querySelector('meta[name="theme-color"]');if(tag)tag.setAttribute('content',color);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color);
   }
   function message(root, title, copy, retry) {
     S.clear(root);
@@ -24,9 +24,10 @@
   }
   function watchButton(root,symbol){
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
+    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
     button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
   }
+  D.EuropeView.attachApp({ctx,route,isReady:()=>meta});
   function settings(root){
     document.title='Einstellungen — Discover — Vision Universe®';
     root.append(el('p',{class:'v2-eyebrow',text:'Deine Ansicht'}),el('h1',{text:'Einstellungen'}),el('p',{class:'v2-lead',text:'Währung und Darstellung gelten für deine Ansicht auf diesem Gerät.'}));
@@ -102,13 +103,15 @@
     if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
     const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+    if(D.EuropeView.bindRoute(parts,ctx))return;
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
-      await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
-      if(parts[0]==='s'&&parts[2]){
+      await D.EuropeView.loadIndex(ctx);if(!active())return;
+      if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
+      else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
@@ -125,6 +128,7 @@
         root.append(el('h1',{text:'Aktien suchen'}),el('p',{class:'v2-lead',text:'Finde Unternehmen über den Namen oder das Börsenkürzel.'}));
         const open=el('button',{class:'v2-button',type:'button',text:'Suche öffnen'});open.onclick=()=>search.open();root.append(open);
         setTimeout(()=>{if(active())search.open();},0);
+      } else if(parts[0]==='aktien'){await D.GlobalView.browse(root,active);
       } else if(parts[0]==='watchlist'){
         document.title='Watchlist — Discover — Vision Universe®';
         root.append(el('p',{class:'v2-eyebrow',text:'Deine Auswahl'}),el('h1',{text:'Watchlist'}));
@@ -134,6 +138,7 @@
           const list=el('div',{class:'v2-watch-list'});root.append(list);
           symbols.forEach(symbol=>{const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ctx.universeId+'/'+encodeURIComponent(symbol),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(symbol);row.remove();if(!list.children.length)route();};list.append(row);});
         }
+        await D.GlobalView.watchlist(root,{active,route});
       } else if(parts[0]==='welten'){
         root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead',text:'Entdecke Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.'}));
         root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));

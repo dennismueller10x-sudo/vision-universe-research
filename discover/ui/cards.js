@@ -98,9 +98,9 @@
   /* Unter 1 $ vier Nachkommastellen: 0,0031 $ ist nicht "0,00 $"
      (Audit 03.10.2026; die Reihen tragen seitdem die volle Praezision). */
   function priceDecimals(v) { return isNum(v) && Math.abs(v) < 1 ? 4 : 2; }
-  function money(v, when) {
+  function money(v, when, nativeCurrency) {
     if (!isNum(v)) return "–";
-    var dec = priceDecimals(v);
+    var dec = priceDecimals(v); if (nativeCurrency) return vuFormat("formatPrice", v, nativeCurrency, { numberLocale: "de-DE", decimals: dec }) || v.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + " " + nativeCurrency;
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     if (L) {
       var m = L.money(v, "USD", when || null, when ? "MARKET_PRICE" : "CURRENT_VALUE",
@@ -309,10 +309,15 @@
                     range: opts.range || (card.priceSeries && card.priceSeries.range) || null };
     var host = el("div", { class: opts.klasse || "dx-lazy-media" });
     var ps = card.priceSeries;
+    if (card.region === 'EUROPE' && ps && ps.points && D().MicroChart) {
+      var chart = D().MicroChart.renderRange(ps.points, { width: w, height: h, segments: ps.segments, symbol: card.symbol, label: 'Tagesschlusskurse · unbereinigt · ' + card.currency });
+      if (chart) host.appendChild(chart);
+      return host;
+    }
     var Loader = D() && D().SeriesLoader;
     var Hub = D() && D().LiveHub;
     var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
-    var liveFaehig = !!(Hub && Hub.enabled() && card.dataMode === "real" && opts.live !== false && card.symbol);
+    var liveFaehig = !!(Hub && Hub.enabled() && card.region !== "EUROPE" && card.dataMode === "real" && opts.live !== false && card.symbol);
     host.setAttribute("data-symbol", card.symbol || "");
     if (!verweis && !liveFaehig) {
       host.appendChild(D().Artwork.stockArtwork(card, artOpts));
@@ -412,7 +417,7 @@
   /* Das Firmenlogo vor dem Namen (ui/logos.js) - fehlt das Modul, fehlt es. */
   function logo(card, size, only) {
     var L = D() && D().Logos;
-    return L ? L.mark(card.symbol, { name: card.companyName, size: size, onlyLogo: only }) : null;
+    return L ? L.mark(card.region === "EUROPE" ? (card.logoKey || "") : card.symbol, { name: card.companyName, size: size, onlyLogo: only }) : null;
   }
 
   /* ------------------------------------------------------------- Signale */
@@ -468,14 +473,14 @@
     /* Ein Kurs, der nicht vom letzten Handelstag des Universums stammt,
        wird als solcher gekennzeichnet; seine "Tagesaenderung" waere die
        eines alten Tages und entfaellt (AIXC zeigte -39 % vom 29.09.). */
-    var altStand = staleAsOf(card);
+    var altStand = card.region === "EUROPE" ? dateShort(card.asOf) : staleAsOf(card);
     if (altStand) change = null;
 
     var gesehen = D() && D().memory && D().memory.opened(card.symbol);
     var node = el("a", {
       class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : "") +
              (gesehen ? " dx-poster--gesehen" : ""),
-      href: "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
+      href: card.href || "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
       "data-symbol": card.symbol,
       /* Die Karte trägt die Welt ihrer REIHE; das Signal darauf trägt seine
          eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein
@@ -494,7 +499,7 @@
           el("span", { class: "dx-poster-sub" }, [
             el("span", { class: "dx-poster-sym", text: card.symbol }),
             isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
-              document.createTextNode(money(preis, card.asOf)),
+              document.createTextNode(money(preis, card.asOf, card.region === "EUROPE" ? card.currency : null)),
               altStand ? el("small", { class: "dx-poster-stand", text: " · Stand " + altStand }) : null,
               isNum(change) ? el("i", { class: toneClass(change),
                                         text: pctPoints(change) }) : null

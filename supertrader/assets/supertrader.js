@@ -419,6 +419,7 @@
   function renderStrategies(D) {
     var reg = D.registry;
     main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Methoden vergleichen' }), h('h1', { text: 'Was sucht welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Methode zeigt drei getrennte Aussagen: ob ihre Regeln laufen, wie gut ihre Quellen sind und ob sie historisch geprüft ist.' })]));
+    main.appendChild(sec('Eigene Strategie', [h('div', { class: 'st-list' }, [houseCard()])]));
     var groups = [['LIVE', 'Aktuelle Setups — mit Ein- und Ausstiegen'], ['LIVE_RESEARCH', 'Forschung · Modellbeobachtung — weiter protokolliert, nicht hervorgehoben'], ['MODEL', 'Modelldepots — monatliche Umschichtung, Positionen mit Begründung'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
     groups.forEach(function (g) {
       var list = reg.strategies.filter(function (s) { return g[0] === 'LIVE' ? s.mode === 'LIVE' && !isResearchS(s) : g[0] === 'LIVE_RESEARCH' ? s.mode === 'LIVE' && isResearchS(s) : s.mode === g[0]; });
@@ -1203,9 +1204,66 @@
     main.appendChild(disclaimer(D.signals));
   }
 
+
+  /* ================================================ VU HAUSSTRATEGIE */
+  var HOUSE_HISTORY = [
+    ['Breite Faktor-Depots (HS1)', '12 gleichgewichtete Varianten aus Momentum, Gewinnüberraschung, 52-Wochen-Hoch und niedriger Schwankung, 2016–2021 mit delisteten Titeln und Kosten. Ergebnis: kein Vorteil gegenüber dem S&P 500.'],
+    ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus SEC-Meldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
+    ['Volumenprofil, konzentriert (HS4)', '20 Titel aus den 500 größten US-Firmen mit Aufwärtstrend, Akkumulation im Volumen und starken Quartalszahlen. Das Volumen verbesserte die Auswahl gegenüber derselben Regel ohne Volumen. Der Vorsprung gegenüber dem Index entstand aber vor allem 2024–2026 und ist statistisch nicht belastbar.'],
+    ['Gegenprobe 2008–2015', 'Die eingefrorene HS4-Regel lief einmal auf einem Zeitraum, den sie nie gesehen hatte. Ergebnis: nicht bestätigt. Ab dem ersten investierten Monat lag sie hinter dem Index, und dieselbe Regel ohne Volumen schnitt besser ab.'],
+    ['Deshalb jetzt: Vorwärtslauf', 'Die Regeln von HS4 sind eingefroren. Ab dem Start wird jede Monatsentscheidung vor der Umsetzung mit Zeitstempel veröffentlicht. Erst dieser Verlauf zeigt, ob die Strategie den Markt schlägt.'],
+  ];
+  function renderHouse(D) {
+    var L = D.house;
+    main.appendChild(h('header', { class: 'st-hero sm' }, [
+      h('div', { class: 'st-kick', text: 'Vision Universe · eigene Strategie' }),
+      h('h1', { text: 'VU Hausstrategie' }),
+      h('p', { class: 'st-lead', text: 'Unsere eigene Strategie aus Kursen, Volumenprofil und Quartalszahlen. Die Regeln sind eingefroren; jede Entscheidung wird vor der Umsetzung mit Zeitstempel festgehalten.' }),
+    ]));
+    main.appendChild(h('div', { class: 'st-evbanner', 'data-t': 'warn' }, [
+      h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Stand der Evidenz' }), h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Beobachtungsdepot' })]),
+      h('p', { class: 'res', text: 'Historisch ist kein belastbarer Vorteil gegenüber dem S&P 500 belegt. Das Depot läuft als Vorwärtsbeobachtung: Es zeigt ab dem Start, was die Regeln tatsächlich tun – ohne Rückrechnung und ohne nachträgliche Anpassung.' }),
+      h('p', { class: 'np', text: 'Regelbasierte Modellbeobachtung. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung.' }),
+    ]));
+    if (!L || !L.decisions || !L.decisions.length) {
+      main.appendChild(sec('Modelldepot', [emptyBox('Start steht bevor', 'Die erste Entscheidung wird gerade festgeschrieben. Danach erscheinen hier die 20 Titel des Depots.')], { kicker: 'Vorwärtslauf' }));
+    } else {
+      var cur = L.current || {}, last = L.decisions[L.decisions.length - 1];
+      var kids = [h('div', { class: 'st-mphead' }, [
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Titel' }), h('strong', { text: String((cur.holdings || []).length) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Gewicht je Titel' }), h('strong', { text: cur.holdings && cur.holdings.length ? pct(1 / cur.holdings.length, 0) : '–' })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Entschieden am' }), h('strong', { text: dateDe(cur.date) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Nächste Entscheidung' }), h('strong', { text: dateDe(L.nextDecision) })]),
+      ])];
+      kids.push(h('ul', { class: 'st-mplist st-grid3' }, (cur.holdings || []).map(function (x) {
+        return h('li', null, [h('a', { href: '/quant/#/aktie/' + encodeURIComponent(x.ticker) }, [
+          h('div', { class: 'r1' }, [h('strong', { text: x.ticker }), h('span', { class: 'w', text: pct(x.weight, 1) })]),
+          h('div', { class: 'r2', text: (last.buys || []).indexOf(x.ticker) >= 0 ? 'neu aufgenommen am ' + dateDe(last.date) : 'gehalten' }),
+        ])]);
+      })));
+      kids.push(h('p', { class: 'st-hint', text: 'Umsetzung zur Eröffnung am ' + (last.executeOn ? dateDe(last.executeOn) : 'nächsten Handelstag') + '. Live seit ' + dateDe(L.liveSince) + '. Veröffentlicht werden Titel und Zielgewichte, keine Kurse und keine Renditen.' }));
+      main.appendChild(sec('Modelldepot', kids, { kicker: 'Aktuelle Zusammensetzung' }));
+      main.appendChild(sec('Protokoll', [h('ul', { class: 'st-ul' }, L.decisions.slice().reverse().map(function (d) {
+        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Kauf: ' + ((d.buys || []).join(', ') || '–') + ' · Verkauf: ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
+      }))], { kicker: 'Jede Entscheidung mit Zeitstempel' }));
+    }
+    main.appendChild(sec('Regeln', [h('ol', { class: 'st-chain' }, ((L && L.rules) || []).map(function (r) { return h('li', null, [h('p', { text: r })]); })),
+      h('p', { class: 'st-hint', text: 'Die Regeln sind mit Prüfsummen eingefroren. Jede Änderung wäre eine neue Strategie mit neuem Start.' })], { kicker: 'Fest und vollständig' }));
+    main.appendChild(sec('Wie wir hierhin gekommen sind', [h('ol', { class: 'st-chain' }, HOUSE_HISTORY.map(function (x) { return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x[0] })]), h('p', { text: x[1] })]); })),
+      h('p', { class: 'st-hint', text: 'Alle Tests mit echten Kursen inklusive später delisteter Aktien, Dividenden und Handelskosten; jede Versuchsreihe vor dem Lauf festgelegt. Kennzahlen werden erst veröffentlicht, wenn die Rechte an abgeleiteten Kennzahlen geklärt sind.' })], { kicker: 'Ehrliche Prüfgeschichte' }));
+    main.appendChild(disclaimer(D.signals));
+  }
+  function houseCard() {
+    return h('a', { class: 'st-cmp', href: BASE + 'hausstrategie/', style: { '--w': 'var(--st-accent)' } }, [
+      h('div', { class: 'top' }, [h('div', null, [h('h3', { text: 'VU Hausstrategie' }), h('div', { class: 'who', text: 'Vision Universe · eigene Strategie' })])]),
+      h('dl', null, [h('dt', { text: 'Sucht' }), h('dd', { text: 'Große US-Firmen im Aufwärtstrend mit Kaufdruck im Volumen und starken Quartalszahlen.' }),
+        h('dt', { text: 'Evidenz' }), h('dd', { text: 'Beobachtungsdepot – historisch kein belegter Vorteil, Nachweis per Vorwärtslauf.' })]),
+    ]);
+  }
+
   /* ============================================================= BOOT */
-  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'] };
-  var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json', trend52: 'trend52.json' };
+  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'], house: ['registry', 'signals', 'market', 'house'] };
+  var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json', trend52: 'trend52.json', house: 'ledger/VU_HOUSE_HS4_V03.json' };
   var need = NEED[page] || NEED.home;
   /* Signale nur so weit laden, wie die Seite sie braucht (vorher 3,3 MB auf
      jeder Seite): Aktienseite ihren Ausschnitt, Signalliste alles, der Rest
@@ -1232,13 +1290,13 @@
       }).catch(function () { return getJSON(FILE.signals); });
     });
   }
-  Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52') return null; throw e; }); })).then(function (res) {
+  Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); })).then(function (res) {
     var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
     main.innerHTML = '';
     chrome(D.signals.asOf);
-    ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources }[page] || renderHome)(D);
+    ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
   }).catch(function (e) {
     main.innerHTML = '';
     main.appendChild(emptyBox('Supertrader konnte nicht geladen werden', 'Die Daten sind gerade nicht erreichbar (' + (e && e.message) + '). Bitte später erneut versuchen.'));

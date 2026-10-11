@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-10T08:07:24.000Z",
- "asOf": "2026-10-06",
+ "generatedAt": "2026-10-10T19:32:18.000Z",
+ "asOf": "2026-10-09",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5611,
- "observed": 5611,
+ "universe": 5767,
+ "observed": 5767,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4302,
-  "WATCH": 745,
-  "SETUP_FORMING": 548,
-  "CONFIRMED": 16,
+  "NO_SETUP": 4474,
+  "WATCH": 742,
+  "SETUP_FORMING": 536,
+  "CONFIRMED": 15,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 548,
-  "setup.none.fallback": 4302,
-  "setup.watch.bullish-trend": 472,
-  "setup.watch.confirmed-structure-near-high": 273,
-  "setup.confirmed.structure-trend-volume": 16
+  "setup.forming.complete-setup-awaiting-trigger": 536,
+  "setup.none.fallback": 4474,
+  "setup.watch.bullish-trend": 444,
+  "setup.watch.confirmed-structure-near-high": 298,
+  "setup.confirmed.structure-trend-volume": 15
  },
  "pathTier": {
   "states": [
@@ -368,14 +368,15 @@
    "2026-10-01",
    "2026-10-02",
    "2026-10-05",
-   "2026-10-06"
+   "2026-10-06",
+   "2026-10-09"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5611
+   "instruments": 5767
   }
  },
  "shards": [
@@ -907,6 +908,7 @@
   "UW",
   "UX",
   "UY",
+  "UZ",
   "U_",
   "VA",
   "VB",
@@ -1014,21 +1016,10 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-10-06",
-  "publishedHash": "7b37a0fdcabf205aa6253b4108132379",
-  "recomputedHash": "b7aab825e1858382d44c536bec26ef42",
-  "rowsPublished": 5686,
-  "rowsToday": 5550,
-  "rowsAdded": 0,
-  "rowsChanged": 136,
-  "addedOnly": false,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- },
+ "observationDrift": null,
  "staleBundles": {
-  "count": 61,
-  "cutoff": "2026-10-06",
+  "count": 62,
+  "cutoff": "2026-10-09",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-09-29": 5,
@@ -1058,6 +1049,7 @@
    "2026-10-05": 1,
    "2026-08-25": 2,
    "2026-09-25": 3,
+   "2026-10-07": 1,
    "2026-08-20": 3,
    "2026-09-02": 1
   },

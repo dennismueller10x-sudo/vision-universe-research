@@ -115,7 +115,7 @@
   }
 
   function loadSeries(detail) {
-    var series = detail.series || {};
+var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref,{range:'MAX'}).then(function(result){return result.state==='AVAILABLE'?result:D.europeProduct.series(series.ref);}).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, priceSeriesType: data.basis }; }); }
     if (series.source === "technical-instrument" && series.path) {
       return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
         var payload = teile[0], lang = teile[1];
@@ -225,7 +225,7 @@
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
+    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock && detail.region !== "EUROPE") intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
@@ -242,7 +242,7 @@
     var analyse = el("details", { class: "dx-analyse dx-fade" }, [kapitelTrenner()]);
     var telefon = !!(global.matchMedia && global.matchMedia("(max-width: 860px)").matches);
     if (!telefon) analyse.open = true;
-    [belege(detail), panels(detail), technicalIntelligence(detail)].forEach(function (node) {
+    (detail.region === "EUROPE" ? [] : [belege(detail), panels(detail), technicalIntelligence(detail)]).forEach(function (node) {
       if (node) analyse.appendChild(node);
     });
     kapitel(analyse);
@@ -255,7 +255,7 @@
        Standard-Zeitraum 1T ist, wenn es einen gibt, und 1J, wenn nicht. */
     var Hub = D.LiveHub;
     var liveErst = new Promise(function (resolve) {
-      if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
+      if (!Hub || !Hub.enabled() || detail.region === "EUROPE" || detail.dataMode !== "real") { resolve(null); return; }
       var erledigt = false;
       /* Die Aktienseite ist der EINZIGE Ort, der den Strom benutzt
          (Zero-Cost Realtime V1 §6). live() beginnt mit demselben
@@ -284,7 +284,7 @@
         state.bars = loaded.bars;
         state.weeklyBars = loaded.weeklyBars || null;
         state.bundle = loaded.bundle;
-        state.dailyPoints = loaded.dailyPoints || null;
+        state.dailyPoints = loaded.dailyPoints || null; state.europeSegments = loaded.segments || null;
         state.weeklyPoints = loaded.weeklyPoints || null;
         state.seriesAsOf = loaded.asOf || null;
         state.closeOnly = !!loaded.closeOnly;
@@ -373,7 +373,7 @@
     var preisKnoten = null;
     var rechts = isNum(preis)
       ? (preisKnoten = el("div", { class: "dx-price" }, [
-          el("b", { class: "num", text: C().money(preis) }),
+          el("b", { class: "num", text: detail.region === "EUROPE" ? nativePrice(preis, detail.currency) : C().money(preis) }),
           el("span", { class: C().toneClass(change),
                        /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute".
                           Mit laufendem Kurs ist es das sehr wohl, und dann steht es auch da. */
@@ -420,7 +420,7 @@
           /* Logo und Name: am Desktop uebereinander, am Handy in einer Zeile,
              damit der Kurs weit oben bleibt. */
           el("div", { class: "dx-dhero-title" }, [
-            D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
+            D.Logos ? D.Logos.mark(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
             el("h1", { text: detail.companyName || detail.symbol })
           ]),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
@@ -843,7 +843,7 @@
     var SS = global.VUQuant && global.VUQuant.SeriesSampling;
     var engineLeiste = Ranges.rangeBar(weekly || daily, { gates: gates });
     var eintag = engineLeiste.filter(function (r) { return r.id === "1D"; })[0] || { id: "1D", label: "1T", available: false, message: "Kein Tagesverlauf" };
-    var leiste = [eintag].concat(verbraucherZeitraeume(state, SS));
+    var leiste = [eintag].filter(function(r){return r.available;}).concat(verbraucherZeitraeume(state, SS));
     leiste.forEach(function (r) {
       var knopf = el("button", { type: "button", text: r.label,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
@@ -976,34 +976,17 @@
      andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
      bleibt deshalb zu. */
   var VERBRAUCHER_ZEITRAEUME = [
-    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
     { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
+    { id: "3M", label: "3M", quelle: "daily", wort: "in drei Monaten", tage: 92 },
     { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
     { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
+    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096 },
     { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
-    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+    { id: "MAX", label: "MAX", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
   ];
-  function tageZwischen(a, b) { return (Date.parse(b) - Date.parse(a)) / 86400000; }
-  function verbraucherZeitraeume(state, SS) {
-    var daily = state.dailyPoints || [], weekly = state.weeklyPoints || null;
-    return VERBRAUCHER_ZEITRAEUME.map(function (z) {
-      var out = { id: z.id, label: z.label, available: false, message: null };
-      if (!SS) { out.message = "Zeitraum-Engine nicht geladen"; return out; }
-      var punkte = z.quelle === "weekly" ? (weekly || null) : daily;
-      if (z.id === "MAX") {
-        punkte = weekly || daily;
-        out.available = punkte.length >= 5;
-        if (!out.available) out.message = "Keine Kursreihe";
-        return out;
-      }
-      if (!punkte || punkte.length < 2) { out.message = z.quelle === "weekly" ? "Für diesen Titel liegt noch keine lange Kursreihe vor." : "Keine Kursreihe"; return out; }
-      var deckung = tageZwischen(punkte[0][0], punkte[punkte.length - 1][0]);
-      /* Ein Zeitraum ist verfuegbar, wenn die Reihe mindestens 60 % davon
-         traegt; bei weniger sagt der Knopf, wie weit sie reicht. */
-      if (deckung >= z.tage * 0.6) out.available = true;
-      else out.message = "Die Kursreihe reicht nur " + Math.round(deckung) + " Tage zurück (ab " + C().dateShort(punkte[0][0]) + ").";
-      return out;
-    });
+  function verbraucherZeitraeume(state) {
+    var H=global.VUCore.ChartHistory;
+    return VERBRAUCHER_ZEITRAEUME.map(function(z){var points=z.quelle==='weekly'?(state.weeklyPoints||state.dailyPoints||[]):state.dailyPoints||[];return {id:z.id,label:z.label,available:H.available(points,z.id)};}).filter(function(z){return z.available;});
   }
 
   /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
@@ -1023,7 +1006,13 @@
      Chartreihe ist oben bereits umgerechnet worden, und sie danach durch
      money() zu schicken hiesse, sie ein zweites Mal mit dem Kurs zu
      multiplizieren. */
-  function alsAngezeigt(v) {
+  function nativePrice(v, currency) {
+    if (!isNum(v)) return "–";
+    var result = vuFormat("formatPrice", v, currency, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
+    return result || v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + " " + currency;
+  }
+  function alsAngezeigt(v, currency) {
+    if (currency) return nativePrice(v, currency);
     if (!isNum(v)) return "–";
     var FX = (typeof VUFx !== "undefined") ? VUFx : null;
     var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
@@ -1056,7 +1045,10 @@
     return kopie;
   }
 
-  function inAnzeigewaehrung(punkte) {
+  function inAnzeigewaehrung(punkte, currency) {
+    // Europe retains its explicit native listing currency until an audited
+    // FX contract covers it; never treat European prices as US dollars.
+    if (currency) return { punkte: punkte || [], gekuerzt: false };
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false };
     var r = L.series(punkte, "USD");
@@ -1078,7 +1070,7 @@
       chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
       return;
     }
-    var sel = SS.sliceRange(punkte, z.id, punkte[punkte.length - 1][0]);
+    var sel = global.VUCore.ChartHistory.sliceRange(punkte, z.id);
     if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
     /* Der Chart wird in der Anzeigewaehrung gezeichnet, Punkt fuer Punkt
        mit dem Kurs SEINES Tages. Nicht mit dem heutigen: eine Reihe, die
@@ -1089,24 +1081,27 @@
        Deshalb ist die EUR-Rendite auch eine andere als die USD-Rendite -
        und sie wird unten aus DIESER Reihe gerechnet, nicht uebernommen
        (§41). */
-    var anzeige = inAnzeigewaehrung(sel.points);
+    var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
+    var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
                                             complete: sel.complete && !anzeige.gekuerzt };
     var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
-    var veraenderung = erster > 0 ? (letzter / erster - 1) * 100 : null;
+    var vergleichbar = global.VUCore.ChartHistory.performanceComparable(state.europeSegments,sel.from,sel.to);
+    var veraenderung = erster > 0 && vergleichbar ? (letzter / erster - 1) * 100 : null;
     var mobil = global.innerWidth < 860;
     /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: alsAngezeigt(letzter) }),
+        el("b", { class: "num", text: alsAngezeigt(letzter, nativeCurrency) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt" }),
+          (z.quelle === "weekly" && state.weeklyPoints ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") }),
         frischeTages(state)
       ])
     ]);
@@ -1117,7 +1112,8 @@
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
-                                                 range: z.id, label: z.wort, grain: z.quelle });
+                                                 range: z.id, label: z.wort, grain: z.quelle === "weekly" && state.weeklyPoints ? "weekly" : "daily",
+                                                 segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
     }
@@ -1126,8 +1122,8 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return alsAngezeigt(pt.close); },
-      delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
+      preis: function (pt) { return alsAngezeigt(pt.close, nativeCurrency); },
+      delta: function (pt) { return erster > 0 && vergleichbar ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
     });
@@ -1140,6 +1136,13 @@
   /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
      der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
   function frischeTages(state) {
+    if (state.detail.region === "EUROPE") {
+      var status = state.detail.freshness || "MISSING";
+      return el("span", { class: "dx-live-label", "data-freshness": status }, [
+        document.createTextNode("Schluss " + C().dateShort(state.seriesAsOf) + " · " +
+          (["CURRENT", "LAST_VALID_SESSION", "CURRENT_LAST_SESSION"].indexOf(status) >= 0 ? "letzter abgeschlossener Handelstag" : status === "DELAYED" ? "verzögert" : status === "STALE" ? "älterer Stand" : "Stand nicht bestätigt"))
+      ]);
+    }
     var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
     var asOf = state.seriesAsOf;
     if (!asOf || !FR || !Hub || !Hub.resolution) return null;
@@ -1421,6 +1424,9 @@
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
   function controlBar(state, redraw) {
     var host = el("div", {});
+    if (state.detail.region === "EUROPE") {
+      return host;
+    }
     /* V4 §15: der Analyse-Chart ist ein Werkzeug, kein Standard. */
     var pro = el("label", { class: "dx-pro-toggle" }, [
       el("input", { type: "checkbox", checked: state.pro ? "checked" : null }),
@@ -1860,7 +1866,7 @@
         document.createTextNode(" · " + (detail.disclaimer || "Keine Anlageempfehlung."))
       ]),
       /* Herkunft des Logos (Urheber und Lizenz bzw. Website/SEC). */
-      D.Logos ? D.Logos.creditLine(detail.symbol) : null
+      D.Logos ? D.Logos.creditLine(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol) : null
     ]);
   }
 

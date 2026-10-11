@@ -62,16 +62,20 @@ jobs:
           '
 
       - name: HTML-Seiten binden die gemeinsame Shell und die Navigation ein
+        # Weiterleitungen alter Adressen (quant/ui/legacy-redirect.js) sind
+        # keine Seiten: sie laden bewusst keine Shell und keine Daten. Was sie
+        # stattdessen tragen muessen, prueft quant/tests/no-mock-in-product.test.mjs.
         run: |
           for page in $(find quant -name 'index.html'); do
-            grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+            if grep -q '/quant/ui/legacy-redirect.js' "$page"; then
+              grep -q 'noindex' "$page" || { echo "$page: Weiterleitung ohne noindex"; exit 1; }
+            else
+              grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+            fi
             grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
             grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
           done
           echo "$(find quant -name 'index.html' | wc -l) Seiten geprueft"
-
-      - name: Praekomputierte Daten stimmen mit der Engine ueberein
-        run: node scripts/quant/verify-quant-data.mjs
 
       - name: Praekomputierte Technical-Intelligence-Daten stimmen mit den Engines ueberein
         run: node scripts/technical/verify-technical-data.mjs

@@ -103,6 +103,7 @@
     return box;
   }
   function compactCard(card,ctx,anchor,stage){
+    if(card.quantAvailable===false||card.technicalAvailable===false)return anchor;
     var box=node('article','v2-tile-shell');box.dataset.symbol=card.symbol;box.appendChild(anchor);
     var content=Array.from(stage.childNodes);
     function chart(){stage.append.apply(stage,content);}

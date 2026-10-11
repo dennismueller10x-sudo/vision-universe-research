@@ -1,0 +1,83 @@
+{
+  "schema": "supertrader-house-prereg-1.0.0",
+  "id": "VU_HOUSE_HS1",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor Implementierung der Auswertung und vor jedem Lauf. Änderungen an Universum, Faktoren, Versuchsliste, Auswahlregel oder Kriterien sind nur als neue Präregistrierung (HS2 …) zulässig; die Versuche aus HS1 bleiben gezählt.",
+  "goal": "Eine eigene Vision-Universe-Strategie (Modelldepot), die nach Kosten, mit delisteten Titeln und außerhalb der Entwicklungsdaten den S&P 500 inklusive Dividenden (SPY) schlägt. Ein Backtest ist dabei nur die Hypothese; der Nachweis ist der eingefrorene Vorwärtslauf ab Freigabe.",
+  "honestPriors": [
+    "Alle bisher geprüften Super-Trader-Methoden (Momentum, Weinstein, Darvas, Minervini, Turtle, VU Trendfolge 52W) blieben 2016–2026 auf diesem Universum ohne belegten Vorteil gegenüber SPY (DECISION-R11/R12).",
+    "2016–2026 war ein Zeitraum mit starker Konzentration auf große Technologiewerte; gleichgewichtete Portfolios lagen in dieser Zeit typischerweise deutlich hinter dem kapitalgewichteten Index. Das ist ein bekannter Gegenwind für jede gleichgewichtete Auswahl aus 1 000 Titeln.",
+    "Die Faktoren unten stammen aus der veröffentlichten Literatur (Jegadeesh/Titman 1993; Bernard/Thomas 1989; George/Hwang 2004; Ang et al. 2006; Barroso/Santa-Clara 2015) und wurden nicht an diesen Daten entwickelt. Frühere Sitzungen kannten den Gesamtzeitraum 2016–2026 bereits aus anderen Methoden; das ist eine dokumentierte, nicht vermeidbare Vorkenntnis."
+  ],
+  "data": {
+    "universe": "US_PIT_2016_A wie Supertrader-Validierung (loadPitData, excludeNonEquity: true): alle an Tag D gelisteten US-Stammaktien, ADR und REIT an NYSE/NASDAQ/AMEX inklusive später delisteter Listings; ohne ETF/ETN/Fonds (R10 U1).",
+    "prices": "Tageskurse aus dem privaten Eimer (tiingo und tiingo-delisted), Split-Rückrechnung und Dividenden selbst aus Rohschluss, divCash und splitFactor (lib.adjustSeries). Reihenbrüche > 30 Tage wie A2.",
+    "fundamentals": "SEC EDGAR companyfacts zum damaligen Stand (sec-pit-r12): Quartals-EPS und Umsatz je Periode mit dem Datum der ERSTEN Einreichung. Ein Wert zählt an Tag D nur, wenn firstFiled < D.",
+    "benchmark": "SPY Gesamtrendite (Schluss + Dividende, eigene Rechnung).",
+    "cash": "Barmittel verzinsen sich mit 0 % (konservativ; benachteiligt Varianten mit Marktfilter)."
+  },
+  "periods": {
+    "warmup": "2015-01-01 bis 2016-01-29 (nur Kennzahlen, keine Positionen)",
+    "development": { "from": "2016-01-29", "to": "2021-12-31" },
+    "holdout": { "from": "2021-12-31", "to": "2026-09-30" },
+    "holdoutSeal": "Im Entwicklungsmodus schneidet die Auswertung ALLE Kurs- und Fundamentalreihen vor jeder Rechnung bei 2021-12-31 ab (Code-Sperre, getestet). Der Holdout-Modus läuft genau einmal und nur, wenn FROZEN-HS1.json mit dem Hash dieser Datei und der Engine committet ist."
+  },
+  "rules": {
+    "schedule": "Entscheidung am letzten Handelstag des Monats (D) nach Schluss; Ausführung zur Eröffnung des nächsten Handelstags mit 10 bp Slippage und 1 bp Kommission je Seite.",
+    "eligibility": [
+      "Rohschluss an D ≥ 5 USD",
+      "mindestens 273 Handelstage Historie im laufenden Segment",
+      "unter den 1 000 Titeln mit dem höchsten 63-Tage-Durchschnittsumsatz in USD (Rohschluss × Volumen) an D (Point-in-Time-Ersatz für Large/Mid Caps)"
+    ],
+    "factors": {
+      "MOM": "Rendite (split-bereinigt) von t−252 bis t−21",
+      "MOMV": "MOM geteilt durch die annualisierte Volatilität der Tagesrenditen der letzten 126 Tage",
+      "LVOL": "minus Volatilität der Tagesrenditen der letzten 252 Tage",
+      "HIGH52": "Schluss / höchstes Hoch der letzten 252 Tage",
+      "SUE": "(EPS_q − EPS_q−4) / Standardabweichung dieser Differenzen über die letzten 8 Quartale (mind. 4), jüngstes Quartal mit firstFiled < D und höchstens 135 Tage alt",
+      "REVG": "Umsatz_q / Umsatz_q−4 − 1, gleiche Zeitregel wie SUE"
+    },
+    "scoring": "Je Faktor Perzentilrang im zulässigen Universum an D. Fehlender Fundamentalwert = 0,5 (neutral); fehlender Kurswert = nicht zulässig. Gesamtwert = Mittel der Faktorränge der Variante.",
+    "portfolio": "Top N gleichgewichtet. Puffer: eine gehaltene Aktie bleibt, solange ihr Rang ≤ 2N ist. Gewichte werden nur zurückgesetzt, wenn eine Position unter 0,5× oder über 2× Zielgewicht liegt.",
+    "regimeFilter": "Nur in Varianten mit R: Liegt SPY an D unter seinem 200-Tage-Durchschnitt, beträgt das Zielexposure 50 %.",
+    "delisting": "Szenarien wie Supertrader: S0 letzter Kurs, S1 −30 % (primär), S2 Distress = 0."
+  },
+  "trials": [
+    { "id": "T01", "factors": ["MOM"], "n": 30, "regime": false },
+    { "id": "T02", "factors": ["MOMV"], "n": 30, "regime": false },
+    { "id": "T03", "factors": ["LVOL"], "n": 30, "regime": false },
+    { "id": "T04", "factors": ["SUE"], "n": 30, "regime": false },
+    { "id": "T05", "factors": ["MOM", "SUE"], "n": 30, "regime": false },
+    { "id": "T06", "factors": ["MOM", "SUE", "REVG"], "n": 30, "regime": false },
+    { "id": "T07", "factors": ["MOM", "SUE", "HIGH52"], "n": 30, "regime": false },
+    { "id": "T08", "factors": ["MOMV", "SUE", "LVOL"], "n": 30, "regime": false },
+    { "id": "T09", "factors": ["MOM", "SUE", "HIGH52"], "n": 30, "regime": true },
+    { "id": "T10", "factors": ["MOM", "SUE", "HIGH52"], "n": 50, "regime": false },
+    { "id": "T11", "factors": ["MOM", "SUE", "HIGH52"], "n": 20, "regime": false },
+    { "id": "T12", "factors": ["MOMV", "SUE", "REVG", "HIGH52"], "n": 30, "regime": false }
+  ],
+  "trialBudget": "Höchstens 12 Versuche in HS1. Jeder gerechnete Versuch zählt für Deflated Sharpe Ratio und PBO, auch wenn er verworfen wird.",
+  "controls": {
+    "EW_UNIVERSE": "Gleichgewichtetes zulässiges Universum (monatlich), trennt Faktoreffekt von Größeneffekt.",
+    "RANDOM": "20 Zufallsauswahlen von N=30 aus dem zulässigen Universum mit denselben Regeln (Glücksverteilung).",
+    "SURVIVORS": "Gewählter Versuch nur auf heute noch gelisteten Titeln (Größe des Survivorship-Effekts).",
+    "COST2": "Gewählter Versuch mit 20 bp Slippage und 2 bp Kommission.",
+    "C_RECONCILE": "Endwert = Barmittel + Marktwert offener Positionen; jede Ausführung gegen die Eröffnung von D+1.",
+    "C_LOOKAHEAD": "Unit-Test: vergiftete Balken und Einreichungen nach D verändern weder Universum noch Ränge an D."
+  },
+  "selection": "Gewählt wird im Entwicklungszeitraum der Versuch mit der höchsten Information Ratio gegenüber SPY (Szenario S1), sofern sein jährlicher Umschlag ≤ 300 % beträgt. Kein anderer Versuch kann nach dem Holdout nachträglich gewählt werden.",
+  "criteria": {
+    "H1": "Holdout, gewählter Versuch, S1: Überrendite p. a. gegenüber SPY > 0",
+    "H2": "Holdout mit COST2: Überrendite > 0",
+    "H3": "Entwicklungszeitraum: Überrendite > 0 (S1)",
+    "H4": "Holdout S2 (Distress = 0): Überrendite > 0",
+    "H5": "PBO (CSCV über alle Versuche, Entwicklungszeitraum, 8 Blöcke) < 0,5",
+    "verdict": "Alle H1–H5 erfüllt → CRITERIA_MET (vorab festgelegte Kriterien erfüllt, kein Versprechen). Sonst TESTED_NO_EDGE.",
+    "significance": "Zusätzlich, nicht Teil des Urteils: t-Wert der täglichen Überrendite über den Gesamtzeitraum und Deflated Sharpe Ratio (Bailey/López de Prado 2014) mit der Zahl der gerechneten Versuche. Erst DSR ≥ 0,95 rechtfertigt die Aussage „statistisch belastbar“."
+  },
+  "afterVerdict": {
+    "CRITERIA_MET": "Regeln einfrieren, Modelldepot ab dem nächsten Monatsende live führen; jede Monatsentscheidung wird vor Ausführung mit Zeitstempel committet. Öffentlich erst nach Klärung der Rechte an abgeleiteten Kennzahlen.",
+    "TESTED_NO_EDGE": "Ehrlich so dokumentieren. Eine neue Idee ist HS2 mit eigener Präregistrierung; der Holdout von HS1 ist verbraucht und darf nur zusammen mit dem Vorwärtslauf neu bewertet werden."
+  },
+  "publication": "Ergebnisse nur verschlüsselt (Eigentümer-Schlüssel und Sitzungsschlüssel). Logs nur Zählwerte. Öffentlich nur Entscheidungen ohne Kennzahlen, bis die Rechte an abgeleiteten Kennzahlen geklärt sind."
+}

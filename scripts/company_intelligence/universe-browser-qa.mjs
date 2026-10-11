@@ -9,6 +9,7 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
+import {readLiveAsset} from './live-asset-read.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
@@ -17,9 +18,9 @@ const proof=live?await(await fetch(origin+'/company-intelligence-refresh.json?qa
 const m=live?proof.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));assert(eligibilityValid(m));assert.equal(m.generation,sample.generation);
 const payloads=new Map();
 await objectPool(Object.entries(m.assets),async ([path,meta])=>{
- const b=live?Buffer.from(await(await fetch(origin+'/company-intelligence/data/'+path+'?qa='+Date.now())).arrayBuffer()):readFileSync(join(directory,path));
+ const b=live?await readLiveAsset(origin+'/company-intelligence/data/'+path,meta,{onRetry:r=>console.log(JSON.stringify({hostingRetry:path,...r}))}):readFileSync(join(directory,path));
  assert.equal(b.length,meta.bytes,path);assert.equal(createHash('sha256').update(b).digest('hex'),meta.sha256,path);payloads.set(path,b);
-},12);
+},live?4:12);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']}),cases=[];
 const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD),ui=readFileSync('company-intelligence/ui/stock-section.js'),contract=readFileSync('company-intelligence/api/contract.js');
 const detail=readFileSync('discover/ui/detail.js');
