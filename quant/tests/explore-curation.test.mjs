@@ -100,27 +100,31 @@ test("C-9 · Eine grosse Projektion allein macht kein Highlight, und sie sortier
   /* gleiche Prioritaetsstufen: die Projektionsgroesse (mid) aendert die Reihenfolge nie */
   const small = cand({ id: "A", rank: 5, mid: 1 }), big = cand({ id: "B", rank: 5, mid: 1e9, direction: "DOWN" });
   assert.deepEqual(C.sortByOrder([big, small]).map((x) => x.id), ["A", "B"], "Gleichstand → stabile Kennung, nicht Groesse");
+  /* Gegenprobe: tauschen die Kennungen die Seiten, folgt die Reihenfolge der Kennung, nicht der Groesse */
+  const bigA = Object.assign({}, big, { id: "A" }), smallB = Object.assign({}, small, { id: "B" });
+  assert.deepEqual(C.sortByOrder([smallB, bigA]).map((x) => x.mid), [1e9, 1], "mit Kennung A steht die grosse vorn – allein wegen der Kennung");
+  assert.deepEqual(C.sortByOrder([bigA, smallB]).map((x) => x.mid), C.sortByOrder([smallB, bigA]).map((x) => x.mid), "Eingabereihenfolge ohne Einfluss");
   const better = cand({ id: "C", rank: 3, mid: 2 });
   assert.equal(C.sortByOrder([big, better])[0].id, "C");
   assert.ok(!/mid|upside|target/i.test(JSON.stringify(C.orderKey(small).slice(0, 5))), "Reihenfolge nutzt keine Projektionsgroesse");
 });
 
-test("C-10 · Kontext (Trend, Relative Staerke, Marktstruktur) senkt nur die Reihenfolge innerhalb gleich guter Lesarten, sperrt nie", () => {
-  const against = cand({ id: "X1", rank: 5, ctx: { trendAligned: false, rsAligned: false, structureAligned: false } });
+test("C-10 · Kontext (Trend, Marktstruktur) senkt nur die Reihenfolge innerhalb gleich guter Lesarten, sperrt nie", () => {
+  const against = cand({ id: "X1", rank: 5, ctx: { trendAligned: false, structureAligned: false } });
   assert.equal(C.highlightEligibility(against).eligible, true, "Gegenkontext sperrt nicht");
   /* gleiche Struktur, gleicher Typ, gleiche Rang-Stufe: zuerst die Lesart mit Kontext, auch wenn ihr genauer Rang etwas schlechter ist */
-  const withCtx = cand({ id: "X2", rank: 8, ctx: { trendAligned: true, rsAligned: true, structureAligned: true }, direction: "DOWN" });
+  const withCtx = cand({ id: "X2", rank: 8, ctx: { trendAligned: true, structureAligned: true }, direction: "DOWN" });
   assert.equal(C.rankTier(against), C.rankTier(withCtx));
   assert.deepEqual(C.sortByOrder([against, withCtx]).map((x) => x.id), ["X2", "X1"]);
-  assert.equal(C.contextAgreement(against), 0); assert.equal(C.contextAgreement(withCtx), 3);
-  assert.equal(C.contextAgreement(cand({ ctx: { trendAligned: null, rsAligned: null, structureAligned: true } })), 1, "unbekannt zaehlt nicht als Gegenkontext");
+  assert.equal(C.contextAgreement(against), 0); assert.equal(C.contextAgreement(withCtx), 2);
+  assert.equal(C.contextAgreement(cand({ ctx: { trendAligned: null, structureAligned: true } })), 1, "unbekannt zaehlt nicht als Gegenkontext");
   /* aber nie vor einer besseren Rang-Stufe */
   const betterTier = cand({ id: "X3", rank: 1, ctx: {} });
   assert.ok(C.rankTier(betterTier) < C.rankTier(cand({ rank: rk(0.20) })));
-  const worseTierWithCtx = cand({ id: "X4", rank: rk(0.20), ctx: { trendAligned: true, rsAligned: true, structureAligned: true } });
+  const worseTierWithCtx = cand({ id: "X4", rank: rk(0.20), ctx: { trendAligned: true, structureAligned: true } });
   assert.equal(C.sortByOrder([worseTierWithCtx, betterTier])[0].id, "X3");
   /* und nie vor einem besseren Wellentyp */
-  const w3 = cand({ id: "X5", type: "WAVE_3", rank: 9, ctx: {} }), c = cand({ id: "X6", type: "WAVE_C", pattern: "ZIGZAG", rank: 0, ctx: { trendAligned: true, rsAligned: true, structureAligned: true } });
+  const w3 = cand({ id: "X5", type: "WAVE_3", rank: 9, ctx: {} }), c = cand({ id: "X6", type: "WAVE_C", pattern: "ZIGZAG", rank: 0, ctx: { trendAligned: true, structureAligned: true } });
   assert.equal(C.sortByOrder([c, w3])[0].id, "X5");
 });
 

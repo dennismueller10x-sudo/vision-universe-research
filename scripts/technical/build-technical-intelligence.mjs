@@ -413,6 +413,7 @@ function projectAll(got) {
   const adv = advanceStore(prev, items, versions);
   for (const it of items) {
     attachLifecycle(it.proj, adv.bySymbol.get(it.symbol + "|" + it.tf));
+    delete it.proj.exploreKeys;   // nur fuer den Lebenszyklus-Store, nicht veroeffentlicht
     stats.status[it.proj.status] = (stats.status[it.proj.status] || 0) + 1;
     if (it.proj.motiveAlternative) { stats.motiveAlternative = (stats.motiveAlternative || 0) + 1; const d = "motive" + it.proj.motiveAlternative.direction; stats[d] = (stats[d] || 0) + 1; if (it.proj.motiveAlternative.highUpside) stats.motiveHighUpside = (stats.motiveHighUpside || 0) + 1; }
     if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; if (it.proj.alternative) stats.normalAlternative = (stats.normalAlternative || 0) + 1; }

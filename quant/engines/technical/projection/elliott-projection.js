@@ -121,7 +121,7 @@
   var TYPE_DE = { WAVE_3: "Mögliche Welle 3", WAVE_5: "Mögliche Welle 5", WAVE_C: "Mögliche Welle C", NEXT_MOVE: "Mögliche Folgebewegung nach Korrektur", THRUST: "Möglicher Ausbruch aus dem Dreieck", REVERSAL: "Mögliche Gegenbewegung nach Impuls" };
   var MOTIVE = { IMPULSE: 1, LEADING_DIAGONAL: 1, ENDING_DIAGONAL: 1 };
   /* Explore Elliott: Produkt-Leitplanken in Kundensprache (Fachansicht zeigt zusaetzlich Kennung, Wert und Schwelle). */
-  var EXPLORE_VERSION = "EXPLORE_HIGHLIGHT_1.0.0", EXPLORE_CANDIDATES_VERSION = "EXPLORE_CANDIDATES_1.0.0", EXPLORE_MAX = 2;
+  var EXPLORE_VERSION = "EXPLORE_HIGHLIGHT_1.0.0", EXPLORE_CANDIDATES_VERSION = "EXPLORE_CANDIDATES_1.0.0";   // Obergrenzen stehen allein in explore-curation.js (POLICY)
   var GATE_DE = {
     G2: { title: "Grad-Zuordnung uneindeutig", text: "Die Lesart erfüllt alle Elliott-Regeln, ihr Wellengrad kollidiert aber mit einer anderen abgeschlossenen Struktur vergleichbarer Größe." },
     G3: { title: "Struktur zu verrauscht", text: "Die Wellen heben sich nicht deutlich genug vom normalen Kursrauschen ab." },
@@ -416,7 +416,7 @@
   function build(E, ctx) {
     var out = { schemaVersion: SCHEMA, version: VERSION, timeframe: ctx.timeframe || null, asOf: ctx.asOf || null, close: r4(ctx.close),
                 engine: { elliott: E ? E.engineVersion || null : null, ruleSet: E ? E.ruleSetVersion || null : null },
-                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, exploreHighlights: [], exploreCandidates: [], exploreDiagnostics: [], exploreWithheld: false,
+                status: "NO_PROJECTION", reason: null, consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, exploreHighlights: [], exploreCandidates: [], exploreCandidatesTotal: 0, exploreDiagnostics: [], exploreDiagnosticsTotal: 0, exploreWithheld: false,
                 context: null, guardrails: { flags: [] },
                 evidence: { status: "INSUFFICIENT", label: "Experimentell – noch keine ausreichende Evidenz", text: "Für Projektionszonen gibt es noch keine belastbare historische Prüfung. Das prospektive Register zeichnet jede angezeigte These ab jetzt ohne Rückblick auf." },
                 disclaimer: "Projektion ≠ Wahrscheinlichkeit: Die Zonen zeigen, wohin die Welle rechnerisch laufen könnte, wenn die Zählung stimmt. Prozentwerte sind Arithmetik vom aktuellen Kurs, keine Trefferquote." };
@@ -502,11 +502,10 @@
         built.push({ it: it, th: th });
       });
       var toCand = function (b) {
-        var th = b.th, tr = ctxOut.trend.state, rs = ctxOut.rs.state, ms = th.roadmap && th.roadmap.structure ? th.roadmap.structure.state : null;
+        var th = b.th, tr = ctxOut.trend.state, ms = th.roadmap && th.roadmap.structure ? th.roadmap.structure.state : null;
         return { id: th.key, type: th.type, pattern: th.pattern, variant: th.variant, direction: th.direction, failed: b.it.failed.slice(), rank: b.it.rank, pool: b.it.pool,
                  w1Weeks: b.it.gates && b.it.gates.G4 ? b.it.gates.G4.value : 0, mid: upside(th),
                  ctx: { trendAligned: tr === "NEUTRAL" ? null : (tr === "POSITIVE") === (th.direction === "UP"),
-                        rsAligned: rs === "TOP20" ? th.direction === "UP" : rs === "BOTTOM20" ? th.direction === "DOWN" : null,
                         structureAligned: ms === "CONFIRMED" ? true : ms === "CONFLICTING" ? false : null } };
       };
       built.forEach(function (b) { b.c = toCand(b); });
@@ -560,11 +559,16 @@
           slot: k + 1, visibility: EXPLORE_CANDIDATES_VERSION });
       });
       out.exploreCandidatesTotal = cands.length;   // zulaessige, verschiedene Kandidaten vor der Begrenzung (Messgroesse, kein Anzeigefeld)
+      /* Kennungen ALLER verschiedenen Kandidaten (nur fuer den Lebenszyklus-Store: eine herabgestufte These besteht weiter; wird vor der Veroeffentlichung entfernt) */
+      out.exploreKeys = cands.map(function (c) { return c.id; });
     }
+    /* Diagnosen begrenzen: sie sind Hinweise zum Nachvollziehen, kein Datenfeld (je Titel hoechstens fuenf, dazu die Gesamtzahl) */
+    out.exploreDiagnosticsTotal = out.exploreDiagnostics.length;
+    if (out.exploreDiagnostics.length > 5) out.exploreDiagnostics = out.exploreDiagnostics.slice(0, 5);
     out.exploreVisible = out.exploreHighlights.length;
     /* Verwendete Beziehungen mitliefern (Fachansicht: Formel, Klasse, Quelle) — die Oberflaeche rechnet nicht. */
     var used = {};
-    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside, out.motiveAlternative].concat(out.exploreHighlights, out.exploreCandidates).forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
+    [out.primary, out.primary && out.primary.subStructure, out.alternative, out.highUpside, out.motiveAlternative].concat(out.exploreHighlights).forEach(function (t) { if (t && t.zones) t.zones.forEach(function (z) { used[z.relationId] = RELATIONSHIPS[z.relationId]; }); });
     out.relations = used;
     out.presentation = PRESENTATION;
     out.status = out.primary || out.alternative ? (abstain ? "ABSTAIN" : "AVAILABLE") : "NO_PROJECTION";
@@ -642,7 +646,7 @@
                    EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", ROLE_CHANGED: "Rolle gewechselt", WITHHELD: "Derzeit nicht angezeigt", SHOWN_AGAIN: "Wieder angezeigt", NOT_PROMOTED: "Nicht mehr als Highlight gezeigt" };
 
   var api = { VERSION: VERSION, SCHEMA: SCHEMA, RELATIONSHIPS: RELATIONSHIPS, LADDERS: LADDERS, PRESENTATION: PRESENTATION, TIER_DE: TIER_DE, TYPE_DE: TYPE_DE, STATE_DE: STATE_DE,
-              GATE_DE: GATE_DE, EXPLORE_VERSION: EXPLORE_VERSION, EXPLORE_CANDIDATES_VERSION: EXPLORE_CANDIDATES_VERSION, EXPLORE_MAX: EXPLORE_MAX, build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };
+              GATE_DE: GATE_DE, EXPLORE_VERSION: EXPLORE_VERSION, EXPLORE_CANDIDATES_VERSION: EXPLORE_CANDIDATES_VERSION, build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottProjection = api; }
 })(typeof window !== "undefined" ? window : globalThis);

@@ -177,7 +177,7 @@ export function dataIntegrity(series, out, splitRes) {
 }
 
 /* =========================================================================
-   EXPLORE ELLIOTT 1.0.0 — Auswahl (deterministisch, vor jeder Auswertung festgelegt, nicht an Einzeltiteln eingestellt)
+   EXPLORE-POOL (explore-pool-1.0.0) — Kandidaten, nicht Auswahl. Die Kuratierung (explore-curation.js) entscheidet, was Highlight wird.
      Kandidat:  Lesart aus dem unveraenderten Pool, nicht abgeschlossen, letzte Welle laeuft, Muster mit Projektionsformel
                 (Impuls/Diagonale Welle 2-5, Zigzag/Flat/W-X-Y Welle B-C, Doppel-/Dreifach-Zigzag), nicht schon angezeigt
                 (Primaer, Alternativen, Motiv-Alternative), ALLE Regeln erfuellt (Doppelpruefung), kein Schluss jenseits
@@ -185,15 +185,8 @@ export function dataIntegrity(series, out, splitRes) {
                 Produkt-Leitplanke G2-G5 verfehlt (eine Lesart ohne verfehlte Leitplanke gehoert nicht in Explore).
      Titel:     nur Wochenanalyse; Wertpapierart EQUITY_COMMON/ELIGIBLE (G6 sperrt den Titel, ist kein Explore-Grund);
                 Datenintegritaet sauber (dataIntegrity).
-     Rang:      nur Lesarten in der besseren Haelfte des Pools (Rang <= 50 %, fuer jeden Platz) — Lesarten vom Ende des
-                Pools sind Rauschen der Kandidatensuche, keine Lesart fuer Kunden (Anti-Spam; Rang wird angezeigt).
-     Auswahl:   Platz 1 = bestplatzierte Motiv-Lesart (These Welle 3), gibt es keine, der bestplatzierte Kandidat.
-                Platz 2 = bestplatzierte Lesart mit der GEGENRICHTUNG zu Platz 1 (materiell anderes Szenario).
-                Platz 3 = bestplatzierte Lesart mit einem anderen Thesentyp als beide, nur im oberen Viertel des Pools.
-                Hoechstens 3; lieber eine als drei aehnliche. (Vor der Freigabe verschaerft: Die erste Fassung — Platz
-                2/3 bei jeder anderen Kombination aus Typ und Richtung — fuellte auf 1.184 Titeln alle drei Plaetze,
-                ueberwiegend mit Flat-C-Lesarten; Produktgesundheit, nicht Ergebnis.)
-     Leiter:    nahezu gleiche Projektionsleitern werden in der Projection Engine (Anzeige) zusaetzlich verworfen.
+     Rang:      nur Lesarten in der besseren Haelfte des Pools (Rang <= 50 %).
+     Alt:       exploreLegacyPick ist die Drei-Plaetze-Auswahl von Explore Elliott 1.0.0 und dient nur noch dem Vorher-Vergleich im Audit.
    ========================================================================= */
 export const EXPLORE = Object.freeze({ version: "explore-pool-1.0.0", rankHalf: 0.5, gates: ["G2", "G3", "G4", "G5"] });
 /* Explore Elliott 1.0.0 (bis zur Kuratierung): die alte Drei-Plaetze-Auswahl. Nur noch fuer den Vorher-Vergleich im Audit. */
@@ -389,7 +382,8 @@ export function advanceStore(prev, items, versions) {
     const blocked = !it.proj || it.proj.status === "DATA_INVALID" || it.proj.status === "UNAVAILABLE";
     const isExplore = (r) => r === "EXPLORE" || r === "EXPLORE_HIGHLIGHT";
     const withheldFor = (e) => blocked || (isExplore(e.role) && !!it.proj.exploreWithheld) || (e.role !== "MOTIVE_ALTERNATIVE" && !isExplore(e.role) && !it.proj.consumerVisible);
-    const candidateKeys = new Set(((it.proj && it.proj.exploreCandidates) || []).map((c) => c.key));
+    /* Kandidaten des Titels: die gezeigten Eintraege des Candidate Explorer UND alle uebrigen verschiedenen Kandidaten (exploreKeys): besteht die Zaehlung weiter, ist es eine Herabstufung, kein Verschwinden */
+    const candidateKeys = new Set(((it.proj && it.proj.exploreCandidates) || []).map((c) => c.key).concat((it.proj && it.proj.exploreKeys) || []));
     const active = Object.keys(theses).filter((id) => theses[id].symbol === it.symbol && theses[id].timeframe === it.tf && theses[id].state !== "ARCHIVED");
     for (const id of active) {
       const e = theses[id], hit = cur.find(([, th]) => th.key === e.key);

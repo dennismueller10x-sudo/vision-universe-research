@@ -600,6 +600,8 @@
     function draw() {
       var width = Math.max(300, Math.min(1100, chartHost.clientWidth || main.clientWidth - 24));
       pjSel = pickProjection(a, view === "pro");
+      /* gewaehlte Lesart ist in dieser Ansicht nicht mehr vorhanden (z. B. Candidate Explorer nach Wechsel von Profi zu Einfach) → zurueck zum Szenario */
+      if (lens === "projection" && !pjThesis()) { lens = "scenario"; pjWhich = "primary"; if (lensSeg) lensSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", q === 0 ? "true" : "false"); }); }
       var pjT = !replayStep && lens === "projection" ? pjThesis() : null, pjOnChart = !!(pjT && pjT.zones);
       if (lensSeg) lensSeg.hidden = !pjSel || !(pjSel.p.primary || pjSel.p.alternative || pjSel.motive || pjSel.exploreH.length || pjSel.exploreC.length) || (!pjSel.p.consumerVisible && !pjSel.motive && !pjSel.exploreH.length && view !== "pro");
       if (logSeg) logSeg.hidden = !pjOnChart;
@@ -819,7 +821,7 @@
     var hasX = function (q) { return !!q && ((q.exploreHighlights || []).length || (pro && (q.exploreCandidates || []).length)); };
     var ex = hasX(w) ? w : hasX(d) ? d : null;
     var withMotive = function (x) { x.motive = mo ? mo.motiveAlternative : null; x.motiveP = mo; x.motiveTf = mo ? (mo === w ? "1W" : a.timeframe) : null;
-      x.exploreH = ex ? ex.exploreHighlights || [] : []; x.exploreC = ex && pro ? ex.exploreCandidates || [] : []; x.explore = x.exploreH; x.exploreP = ex; return x; };
+      x.exploreH = ex ? ex.exploreHighlights || [] : []; x.exploreC = ex && pro ? ex.exploreCandidates || [] : []; x.exploreP = ex; return x; };
     if (w && w.consumerVisible) return withMotive({ p: w, tf: "1W", other: d && d.consumerVisible ? d : null });
     if (d && (d.consumerVisible || pro)) return withMotive({ p: d, tf: a.timeframe, other: null });
     if (w && pro) return withMotive({ p: w, tf: "1W", other: null });
@@ -1027,7 +1029,7 @@
         el("p", { class: "cb-pj-gate-bad" }, [el("b", { text: "PRODUKT-LEITPLANKEN: VERFEHLT " + G.failed.join(", ") })]),
         el("div", { class: "cb-table-wrap", tabindex: "0", role: "region", "aria-label": "Produkt-Leitplanken" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, ["Leitplanke", "Ergebnis", "Wert", "Schwelle"].map(function (h) { return el("th", { text: h }); }))]),
           el("tbody", {}, ["G2", "G3", "G4", "G5"].map(function (g) { var r = G.results[g] || {}; return el("tr", {}, [el("td", { text: g + " · " + GN[g] }), el("td", { text: r.passed ? "erfüllt" : "verfehlt" }), el("td", { class: "num", text: r.value === null || r.value === undefined ? "–" : String(r.value).replace(".", ",") }), el("td", { class: "num", text: (g === "G2" ? "= " : "≥ ") + String(r.threshold).replace(".", ",") })]); }))])]),
-        el("p", { class: "cb-small" }, [el("b", { text: "Kuratierung: " }), el("span", { text: (t.curation ? t.curation.version + " · Rang " + (t.pool.rank + 1) + " von " + t.pool.size + " (" + String(Math.round(t.curation.rankPct * 1000) / 10).replace(".", ",") + " %) · verfehlt " + t.curation.failedSet + " · Wellentyp-Priorität " + t.curation.typePriority + " · Kontext-Übereinstimmung " + t.curation.contextAgreement + " von 3 (nur Reihenfolge)" : "–") + " · " + (t.patternName || t.pattern) + " · Wellen " + (t.anchorWaves || []).map(function (w) { return w.label + " " + fmt(w.fromPrice) + "→" + fmt(w.toPrice) + " (" + X.dateDe(w.toTime) + ")"; }).join(", ") + " · Sichtbarkeit " + (t.visibility || "–") })])]));
+        el("p", { class: "cb-small" }, [el("b", { text: "Kuratierung: " }), el("span", { text: (t.curation ? t.curation.version + " · Rang " + (t.pool.rank + 1) + " von " + t.pool.size + " (" + String(Math.round(t.curation.rankPct * 1000) / 10).replace(".", ",") + " %) · verfehlt " + t.curation.failedSet + " · Wellentyp-Priorität " + t.curation.typePriority + " · Kontext-Übereinstimmung " + t.curation.contextAgreement + " von 2 (Trend, Marktstruktur; nur Reihenfolge)" : "–") + " · " + (t.patternName || t.pattern) + " · Wellen " + (t.anchorWaves || []).map(function (w) { return w.label + " " + fmt(w.fromPrice) + "→" + fmt(w.toPrice) + " (" + X.dateDe(w.toTime) + ")"; }).join(", ") + " · Sichtbarkeit " + (t.visibility || "–") })])]));
     });
     /* Candidate Explorer: technisch, nachrangig, eingeklappt */
     var cs = candidateSection(sel.exploreC, onChart); if (cs) kids.push(cs);

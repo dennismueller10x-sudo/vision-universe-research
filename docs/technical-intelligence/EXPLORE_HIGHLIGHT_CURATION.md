@@ -13,7 +13,7 @@ Stand 11.10.2026 · `explore-highlight-1.0.0` · `explore-candidates-1.0.0` · K
 | 3 **Explore Highlights** | höchstens 2 kuratierte, regelkonforme alternative Lesarten | alle, unter Primär und Alternative |
 | 4 **Candidate Explorer** | weitere technische Lesarten (höchstens 6, strukturell verschieden) | nur Profi-Ansicht, eingeklappt |
 
-Primär, Alternative, Motiv-Alternative, Formeln und Invalidation sind byte-gleich zum Stand vor der Kuratierung (Prüfung unten).
+Primär, Alternative, Motiv-Alternative, Formeln und Invalidation sind byte-gleich zum Stand vor der Kuratierung (Prüfung: Abschnitt „Identitätsprüfung“ am Ende).
 
 ## Eignung für ein Highlight (`explore-curation.js`, vor der Auswertung festgelegt)
 
@@ -26,7 +26,7 @@ Ein Kandidat kommt aus dem Pool (`ti-projection.mjs#exploreCandidateList`; Filte
 4. **Wesentlich verschieden** von einem zweiten Highlight: Gegenrichtung oder anderer Wellentyp. Nahezu gleiche Leitern (Mitte der erweiterten Stufe innerhalb 10 %, gleiche Richtung, gleicher Typ) werden nie doppelt gezeigt, weder zu einer angezeigten These noch untereinander.
 5. **Höchstens 2 Highlights je Titel**, lieber eines.
 
-Eine große Projektion ist **kein** Kriterium und sortiert nie nach vorn. Trend, Relative Stärke und Marktstruktur sperren nie.
+Eine große Projektion ist **kein** Kriterium und sortiert nie nach vorn. Trend und Marktstruktur sperren nie; die Relative Stärke wird gezeigt, geht aber nicht in die Reihenfolge ein.
 
 ## Reihenfolge (lexikographisch, kein Punktwert)
 
@@ -35,7 +35,7 @@ Kein Gewicht, keine 100-Punkte-Zahl, keine Wahrscheinlichkeit, keine Projektions
 1. weniger verfehlte Leitplanken;
 2. Wellentyp: **Welle 3 vor Welle 5 vor Welle C**;
 3. Rang-Stufe im Pool (≤ 10 %, ≤ 25 %, ≤ 50 %);
-4. Kontext hinter der These (0–3: Trend, Relative Stärke, Marktstruktur stehen in Thesenrichtung; unbekannt zählt nicht als Gegenkontext). Er senkt nur die Reihenfolge innerhalb gleich guter Lesarten;
+4. Kontext hinter der These (0–2: Trend und Marktstruktur stehen in Thesenrichtung; unbekannt zählt nicht als Gegenkontext. Die Relative Stärke ist ein Querschnittsrang des Laufs; Produkt-Build und Register rechnen ihn getrennt, daher bliebe sie aus der Reihenfolge heraus, damit beide dieselben Highlights wählen). Er senkt nur die Reihenfolge innerhalb gleich guter Lesarten;
 5. größere Struktur (längere erste Welle);
 6. genauer Rang; 7. stabile Kennung.
 
@@ -128,3 +128,7 @@ Alles wird im Build vorberechnet (`Projection.build` je Titel). Der Browser lies
 node scripts/technical/build-technical-intelligence.mjs --workers 4 --out DIR --dump-candidates DUMP.jsonl
 node scripts/technical/explore-curation-audit.mjs DUMP.jsonl --out AUSGABE --titles SE,OSCR,VTEX,XPEV,CGC
 ```
+
+## Identitätsprüfung
+
+`node scripts/technical/compare-identity.mjs --new <Build-Ausgabe>` vergleicht einen vollständigen Build mit den veröffentlichten Shards. Erlaubt verschieden sind nur `projection.explore*`, `exploreCandidates`, `projection.lifecycle`, `projection.relations` und `projection.version`. Alle übrigen Felder (Primär, Alternativen, Motiv-Alternative, Hochpotenzial, Formeln, Leitplanken, Kontext, Nachweise, `pro.elliott`) müssen byte-gleich sein; jede Abweichung beendet das Skript mit Fehlercode. Das Ergebnis des Laufs mit dem endgültigen Code steht im PR.

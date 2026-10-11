@@ -73,7 +73,7 @@ const toInput = (r, c, k) => {
   const dir = c.direction === "UP" ? 1 : -1, tr = r.trend && r.trend.state, ext = zoneMid(c, "EXTENDED") || zoneMid(c, "BASE");
   return { id: r.t + "#" + k, t: r.t, type: c.type, pattern: c.pattern, variant: c.variant, direction: c.direction, failed: c.failed, rank: c.rank, pool: c.pool, w1Weeks: c.w1Weeks, mid: ext,
            zones: c.zones, close: c.close, invalidation: c.invalidation,
-           ctx: { trendAligned: tr === "UP" || tr === "DOWN" ? (tr === "UP") === (dir > 0) : null, rsAligned: typeof r.rs === "number" ? (r.rs >= 0.8 ? dir > 0 : r.rs <= 0.2 ? dir < 0 : null) : null,
+           ctx: { trendAligned: tr === "UP" || tr === "DOWN" ? (tr === "UP") === (dir > 0) : null,
                   structureAligned: typeof r.structureVote === "number" ? (r.structureVote * dir >= 0.5 ? true : r.structureVote * dir <= -0.5 ? false : null) : null } };
 };
 const sim = (pol) => {

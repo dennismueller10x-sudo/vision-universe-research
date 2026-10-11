@@ -27,7 +27,7 @@
    KEINE WAHRSCHEINLICHKEIT
    Rang ist ein Platz im Pool, keine Trefferquote. Die Sortierung ist lexikographisch (keine Gewichte, kein Punktwert)
    und benutzt weder Projektionsgroesse noch Kursziele noch Zukunftsrenditen. Trend, Relative Staerke und Marktstruktur
-   senken hoechstens die Reihenfolge (Gleichstand-Stufe), sperren nie.
+   senken hoechstens die Reihenfolge (Gleichstand-Stufe), sperren nie. (Die Relative Staerke bleibt Anzeige: sie entsteht nur im Querschnitt eines Laufs.)
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -59,11 +59,13 @@
   function failedSet(c) { return (c.failed || []).slice().sort().join("+"); }
   function typeP(c, policy) { var p = policy.highlight.typePriority[c.type]; return isNum(p) ? p : 9; }
 
-  /** Kontext-Uebereinstimmung (0..3): Trend, Relative Staerke, Marktstruktur stehen hinter der These. Nur Reihenfolge, nie Sperre. */
+  /** Kontext-Uebereinstimmung (0..2): Trend und Marktstruktur stehen hinter der These. Nur Reihenfolge, nie Sperre.
+      Die Relative Staerke wird dem Kunden gezeigt, geht aber NICHT in die Reihenfolge ein: sie entsteht nur im Querschnitt aller Titel eines Laufs,
+      Produkt-Build und Register rechnen diesen Querschnitt getrennt. Mit ihr koennten beide verschiedene Highlights waehlen. Trend und Marktstruktur
+      folgen allein aus den Daten des Titels und sind in Produkt und Register gleich. */
   function contextAgreement(c) {
     var x = c.ctx || {}, n = 0;
     if (x.trendAligned === true) n++;
-    if (x.rsAligned === true) n++;
     if (x.structureAligned === true) n++;
     return n;
   }
@@ -99,7 +101,7 @@
       (c.failed || []).length,        // 1 weniger verfehlte Leitplanken
       typeP(c, policy),               // 2 Wellentyp: 3 vor 5 vor C
       rankTier(c, policy),            // 3 Rang-Stufe im Pool (<=10 %, <=25 %, <=50 %)
-      -contextAgreement(c),           // 4 Kontext hinter der These (0..3)
+      -contextAgreement(c),           // 4 Kontext hinter der These (0..2: Trend, Marktstruktur)
       -(c.w1Weeks || 0),              // 5 groessere Struktur (laengere erste Welle) zuerst
       rankPct(c),                     // 6 genauer Rang im Pool
       String(c.id)                    // 7 stabil

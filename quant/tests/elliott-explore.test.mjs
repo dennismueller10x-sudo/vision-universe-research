@@ -89,7 +89,7 @@ test("X-4 · Höchstens zwei Highlights, keine nahezu gleichen Leitern, keine Du
   const mix = [item(count("IMPULSE", [10, 30, 16]), ["G2"]), item(ALT(), ["G5"], 4),
                item(count("IMPULSE", [40, 20, 32], { m: 3, invalidation: { price: 40, direction: "above", ruleId: "W2_NOT_BEYOND_W1_ORIGIN", kind: "HARD_RULE" } }), ["G5"], 8), item(count("IMPULSE", [12, 40, 20], { m: 4 }), ["G3"], 6)];
   const q = PJ.build(withExplore(E(corr()), mix), ctx(22));
-  assert.ok(q.exploreHighlights.length <= PJ.EXPLORE_MAX && q.exploreHighlights.length >= 1 && PJ.EXPLORE_MAX === 2);
+  assert.ok(q.exploreHighlights.length <= 2 && q.exploreHighlights.length >= 1);
   assert.deepEqual(q.exploreHighlights.map((t) => t.slot), q.exploreHighlights.map((_, k) => k + 1));
   const all = q.exploreHighlights.concat(q.exploreCandidates);
   assert.equal(new Set(all.map((t) => t.key)).size, all.length, "keine Dubletten über beide Ebenen");
@@ -300,4 +300,24 @@ test("X-16 · Registry-Schnappschuss mit nur geeigneten Kandidaten liefert byte-
   assert.equal(full.exploreHighlights[0].qualityGates.failed.join(), "G5", "bei gleicher Kennung gewinnt die geeignete Zählung");
   assert.ok(L.highlightEligibleItems(all).length < all.length);
   assert.equal(JSON.stringify(slimmed.primary), JSON.stringify(full.primary));
+});
+
+test("X-17 · exploreKeys nennt alle verschiedenen Kandidaten; Herabstufung statt Umbenennung; Relationen nur fuer Highlights; Diagnosen begrenzt", async () => {
+  const L = await import("../../scripts/technical/lib/ti-projection.mjs");
+  const items = [item(count("IMPULSE", [10, 30, 16]), ["G2"], 3), item(count("IMPULSE", [40, 20, 32], { m: 3, invalidation: { price: 40, direction: "above", ruleId: "W2_NOT_BEYOND_W1_ORIGIN", kind: "HARD_RULE" } }), ["G2"], 4),
+                 item(count("IMPULSE", [12, 40, 20], { m: 4 }), ["G2"], 6)];
+  const p = PJ.build(withExplore(E(corr()), items), ctx(22));
+  assert.ok(Array.isArray(p.exploreKeys) && p.exploreKeys.length >= p.exploreHighlights.length + p.exploreCandidates.length, "exploreKeys deckt auch nicht angezeigte Kandidaten");
+  assert.equal(p.exploreCandidatesTotal, p.exploreKeys.length);
+  const used = new Set(Object.keys(p.relations));
+  p.exploreCandidates.forEach((c) => (c.zones || []).forEach((z) => assert.ok(!used.has(z.relationId) || p.exploreHighlights.some((h) => (h.zones || []).some((hz) => hz.relationId === z.relationId)), "Candidate-Explorer-Zonen belegen keine Relationen")));
+  assert.ok(p.exploreDiagnostics.length <= 5 && p.exploreDiagnosticsTotal >= p.exploreDiagnostics.length);
+  assert.equal(PJ.build(E(corr()), ctx(22)).exploreCandidatesTotal, 0);
+  /* Herabstufung: ein Highlight, das spaeter nur noch im Pool (exploreKeys) steht, wird nicht als verschwunden gewertet */
+  const a = L.advanceStore(null, [{ symbol: "X", tf: "1W", proj: p, bars: { t: ["2020-02-01"], c: [22] }, asOf: "2020-02-01" }], { projection: PJ.VERSION });
+  const key = Object.keys(a.store.theses)[0];
+  const next = JSON.parse(JSON.stringify(p)); next.exploreHighlights = []; next.exploreCandidates = [];
+  const b = L.advanceStore(a.store, [{ symbol: "X", tf: "1W", proj: next, bars: { t: ["2020-02-01", "2020-02-08"], c: [22, 23] }, asOf: "2020-02-08" }], { projection: PJ.VERSION });
+  const th = b.store.theses[key];
+  assert.ok(th && th.status !== "RELABELLED" && !(th.events || []).some((e) => e.type === "RELABELLED"), "kein RELABELLED bei weiter bestehender Zaehlung");
 });
