@@ -1,130 +1,135 @@
 {
- "schema": "vu-minervini-rule-fidelity-private-diagnostic-prereg-1.0.0",
- "createdAt": "2026-10-11T05:31Z",
- "status": "PREREGISTERED_BEFORE_CODE_AND_BEFORE_ANY_PRIVATE_RUN",
- "authorisedBy": "Nutzeranweisung vom 2026-10-11: private Kursdiagnose ausfuehren, Umfang ausschliesslich Power Play und Basismessung",
- "scope": [
-  "Power-Play-Ausnahme gegen die eingefrorenen Ground-Truth-Faelle pruefen (Q-POWERPLAY-DEF, Q-FLAG, Q-POWERPLAY-FUND)",
-  "Basismessung/Base-Length-Logik (MR-VCP-01/MR-VCP-08) gegen dieselben Faelle pruefen, insbesondere DECK, RICK, TNDM, RVNC",
-  "Private Kurse nur fuer diese Diagnose"
- ],
- "hardLimits": [
-  "Keine Aenderung von Strategieparametern, Schwellen, Fundamentalregeln, VCP-Regeln oder Portfolio-Regeln",
-  "Keine neue Engine-Version; keine Reparatur einer Basismessung (nur Befund)",
-  "Keine Performanceoptimierung",
-  "MAIN-Faelle und ihre Klassifikation bleiben eingefroren (Fallliste, Ergebnisse, CASE-CLASSES)",
-  "Kein Merge, kein Live-Release",
-  "t* je Fall wird aus den eingefrorenen Ergebnissen uebernommen (evaluatedClose), nicht neu bestimmt"
- ],
- "frozenInputs": {
-  "cases": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json",
-  "casesSha256": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
-  "results": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-RESULTS.json",
-  "resultsSha256": "fe55c86ff5f5df2ab5d5655982e05d95f42d1cfe6ca026baa081b4e508577557",
-  "classes": "scripts/supertrader/fidelity/MINERVINI-RULE-FIDELITY-CASE-CLASSES.json",
-  "classesSha256": "6d63d12bdea996776a6b19e5e277dc067b4bbac528611f8464a649f378f35613"
- },
- "privacy": {
-  "rule": "Lizenzpflichtige Kennzahlen bleiben intern. Das Repository ist oeffentlich und Actions-Logs sind oeffentlich.",
-  "publicLog": "nur Fall-ID, Ticker, Gruppe, Wahrheitswerte, Enums und GANZE ZAHLEN (Sitzungsanzahlen, Offsets). Keine Kurse, keine Prozentwerte, keine Verhaeltnisse. Das Programm bricht ab, wenn ein Wert der oeffentlichen Zeile keine ganze Zahl, kein Wahrheitswert und kein Enum ist.",
-  "sealed": "alle Detailwerte (Verhaeltnisse, Tiefen, Hoch/Tief-Positionen) nur im mit dem Eigentuemerschluessel verschluesselten Ergebnis auf dem Zweig claude/supertrader-validation-results",
-  "repo": "Es werden keine Ergebnisse dieser Diagnose im Klartext committet, ausser der oeffentlichen Zeilen-Sicht, die nur die oben genannten Typen enthaelt."
- },
- "definitions": {
-  "sessions": "Handelstage der bereinigten Reihe; 1 Woche = 5 Sitzungen",
-  "powerPlay": {
-   "sourceNumbers": {
-    "thrust": "+100 % oder mehr in weniger als 8 Wochen (Q-POWERPLAY-DEF)",
-    "flagLength": "3 bis 6 Wochen, einzelne schon nach 12 Tagen (Q-FLAG)",
-    "flagDepth": "nicht mehr als 20 bis 25 % (Q-FLAG)",
-    "flagTightness": "nicht mehr als 10 % oder VCP-Merkmale (Q-FLAG)"
-   },
-   "highIndex": "Index des hoechsten Tageshochs der letzten 30 Sitzungen bis t (Gleichstand: juengerer Balken)",
-   "flagSessions": "t - highIndex",
-   "flagLenOk": "12 <= flagSessions <= 30 (12 als einzige Abweichung vom 3-Wochen-Minimum, wie Q-FLAG; 15 bis 30 = Regelbereich)",
-   "thrustWindow": "Startindex s mit highIndex - s <= 39 Sitzungen (weniger als 8 Wochen = hoechstens 39)",
-   "thrustLoose": "Hoch[highIndex] / min Tief[s..highIndex] >= 2,0",
-   "thrustStrict": "Schluss[highIndex] / min Schluss[s..highIndex] >= 2,0",
-   "flagDepth": "1 - min Tief[highIndex+1..t] / Hoch[highIndex]",
-   "vcpLike": "decomposeBase der eingefrorenen Engine ab highIndex bis t liefert mindestens 2 Kontraktionen mit streng fallenden Tiefen",
-   "ppStrict": "thrustStrict UND flagLenOk UND flagDepth <= 20 % UND (flagDepth <= 10 % ODER vcpLike)",
-   "ppLoose": "thrustLoose UND flagLenOk UND flagDepth <= 25 % UND (flagDepth <= 10 % ODER vcpLike)",
-   "verdict": "YES wenn ppStrict; POSSIBLE wenn nur ppLoose; sonst NO. Zusaetzlich das erste verfehlte Kriterium in der Reihenfolge THRUST, FLAG_LENGTH, FLAG_DEPTH, FLAG_TIGHTNESS",
-   "evaluationDays": "primaer t* (eingefrorener bewerteter Schluss); zusaetzlich jeder Tag t*-5 .. t*+5 (Signaltoleranz der Engine) als „ppAnyInWindow“ mit dem Offset des ersten Treffers"
+  "schema": "vu-minervini-rule-fidelity-private-diagnostic-prereg-1.0.0",
+  "createdAt": "2026-10-11T05:31Z",
+  "status": "PREREGISTERED_BEFORE_CODE_AND_BEFORE_ANY_PRIVATE_RUN",
+  "authorisedBy": "Nutzeranweisung vom 2026-10-11: private Kursdiagnose ausfuehren, Umfang ausschliesslich Power Play und Basismessung",
+  "scope": [
+    "Power-Play-Ausnahme gegen die eingefrorenen Ground-Truth-Faelle pruefen (Q-POWERPLAY-DEF, Q-FLAG, Q-POWERPLAY-FUND)",
+    "Basismessung/Base-Length-Logik (MR-VCP-01/MR-VCP-08) gegen dieselben Faelle pruefen, insbesondere DECK, RICK, TNDM, RVNC",
+    "Private Kurse nur fuer diese Diagnose"
+  ],
+  "hardLimits": [
+    "Keine Aenderung von Strategieparametern, Schwellen, Fundamentalregeln, VCP-Regeln oder Portfolio-Regeln",
+    "Keine neue Engine-Version; keine Reparatur einer Basismessung (nur Befund)",
+    "Keine Performanceoptimierung",
+    "MAIN-Faelle und ihre Klassifikation bleiben eingefroren (Fallliste, Ergebnisse, CASE-CLASSES)",
+    "Kein Merge, kein Live-Release",
+    "t* je Fall wird aus den eingefrorenen Ergebnissen uebernommen (evaluatedClose), nicht neu bestimmt"
+  ],
+  "frozenInputs": {
+    "cases": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json",
+    "casesSha256": "cf74a6eaa62f68824f62b2ed55ee88989a5abe5198e2cc2d75c3a1767a5737cd",
+    "results": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-RESULTS.json",
+    "resultsSha256": "fe55c86ff5f5df2ab5d5655982e05d95f42d1cfe6ca026baa081b4e508577557",
+    "classes": "scripts/supertrader/fidelity/MINERVINI-RULE-FIDELITY-CASE-CLASSES.json",
+    "classesSha256": "6d63d12bdea996776a6b19e5e277dc067b4bbac528611f8464a649f378f35613"
   },
-  "baseMeasurement": {
-   "engineBase": "wie detectVcp: h1 = juengster Index des hoechsten Hochs in [t - vcp.maxBaseSessions, t]; baseSessions = t - h1",
-   "selfCheck": "baseSessions muss dem eingefrorenen baseLength entsprechen; bei Abweichung wird der Fall als SELF_CHECK_FAILED markiert und nicht gewertet",
-   "pauseSessions": "t - h1",
-   "pauseDepth": "1 - min Tief[h1+1..t] / Hoch[h1]; Wahrheitswerte <= 10 %, <= 15 %, <= 25 % (Zahlen der Quelle: Flat Base 10 bis 15 %, Flagge 25 %)",
-   "flatSessions": "laengstes Fenster, das in t endet, dessen (hoechstes Hoch - tiefstes Tief) / hoechstes Hoch <= 15 % (bzw. <= 10 %) ist (Q: „flat base … corrects no more than 10 or 15%“; Dauer „4 to 7 weeks“)",
-   "baseFinding": {
-    "NOT_SHORT": "Engine-Basis >= 15 Sitzungen",
-    "FLAT_BASE_MISSED": "Engine-Basis < 15 UND flatSessions15 >= 20 (4 Wochen): die Messung ab dem hoechsten Hoch verfehlt eine Flat Base mit den Zahlen der Quelle. Bei Eintritt: Implementierungs-/Formalisierungsbefund (MR-VCP-08), nicht repariert",
-    "NO_BASE_STRUCTURE": "Engine-Basis < 15, pauseDepth > 15 %, keine Flat Base: nicht mit Quellenzahlen reproduzierbar",
-    "SHORT_PAUSE_AT_HIGHS": "Engine-Basis < 15 UND pauseDepth <= 15 % UND kein FLAT_BASE_MISSED (Nachtrag A1)"
-   }
+  "privacy": {
+    "rule": "Lizenzpflichtige Kennzahlen bleiben intern. Das Repository ist oeffentlich und Actions-Logs sind oeffentlich.",
+    "publicLog": "nur Fall-ID, Ticker, Gruppe, Wahrheitswerte, Enums und GANZE ZAHLEN (Sitzungsanzahlen, Offsets). Keine Kurse, keine Prozentwerte, keine Verhaeltnisse. Das Programm bricht ab, wenn ein Wert der oeffentlichen Zeile keine ganze Zahl, kein Wahrheitswert und kein Enum ist.",
+    "sealed": "alle Detailwerte (Verhaeltnisse, Tiefen, Hoch/Tief-Positionen) nur im mit dem Eigentuemerschluessel verschluesselten Ergebnis auf dem Zweig claude/supertrader-validation-results",
+    "repo": "Es werden keine Ergebnisse dieser Diagnose im Klartext committet, ausser der oeffentlichen Zeilen-Sicht, die nur die oben genannten Typen enthaelt."
   },
-  "explanation": {
-   "explainedByPowerPlay": "verdict in (YES, POSSIBLE) UND kein Universums- oder Trend-Blocker im Fall (ein Power Play umgeht Fundamentaldaten und VCP)",
-   "explainedByBaseMeasurement": "baseFinding = FLAT_BASE_MISSED UND ausser BASE_TOO_SHORT kein weiterer Blocker (SEPA, Trend, Universum bestanden)",
-   "note": "„erklaert“ heisst nur: Der Fall haette keinen verbleibenden Blocker, wenn diese Punkte akzeptiert wuerden. Es heisst nicht: Die Engine haette ihn erkannt (Kontraktionen, Pivot, Signalzeitpunkt bleiben ungeprueft)."
+  "definitions": {
+    "sessions": "Handelstage der bereinigten Reihe; 1 Woche = 5 Sitzungen",
+    "powerPlay": {
+      "sourceNumbers": {
+        "thrust": "+100 % oder mehr in weniger als 8 Wochen (Q-POWERPLAY-DEF)",
+        "flagLength": "3 bis 6 Wochen, einzelne schon nach 12 Tagen (Q-FLAG)",
+        "flagDepth": "nicht mehr als 20 bis 25 % (Q-FLAG)",
+        "flagTightness": "nicht mehr als 10 % oder VCP-Merkmale (Q-FLAG)"
+      },
+      "highIndex": "Index des hoechsten Tageshochs der letzten 30 Sitzungen bis t (Gleichstand: juengerer Balken)",
+      "flagSessions": "t - highIndex",
+      "flagLenOk": "12 <= flagSessions <= 30 (12 als einzige Abweichung vom 3-Wochen-Minimum, wie Q-FLAG; 15 bis 30 = Regelbereich)",
+      "thrustWindow": "Startindex s mit highIndex - s <= 39 Sitzungen (weniger als 8 Wochen = hoechstens 39)",
+      "thrustLoose": "Hoch[highIndex] / min Tief[s..highIndex] >= 2,0",
+      "thrustStrict": "Schluss[highIndex] / min Schluss[s..highIndex] >= 2,0",
+      "flagDepth": "1 - min Tief[highIndex+1..t] / Hoch[highIndex]",
+      "vcpLike": "decomposeBase der eingefrorenen Engine ab highIndex bis t liefert mindestens 2 Kontraktionen mit streng fallenden Tiefen",
+      "ppStrict": "thrustStrict UND flagLenOk UND flagDepth <= 20 % UND (flagDepth <= 10 % ODER vcpLike)",
+      "ppLoose": "thrustLoose UND flagLenOk UND flagDepth <= 25 % UND (flagDepth <= 10 % ODER vcpLike)",
+      "verdict": "YES wenn ppStrict; POSSIBLE wenn nur ppLoose; sonst NO. Zusaetzlich das erste verfehlte Kriterium in der Reihenfolge THRUST, FLAG_LENGTH, FLAG_DEPTH, FLAG_TIGHTNESS",
+      "evaluationDays": "primaer t* (eingefrorener bewerteter Schluss); zusaetzlich jeder Tag t*-5 .. t*+5 (Signaltoleranz der Engine) als „ppAnyInWindow“ mit dem Offset des ersten Treffers"
+    },
+    "baseMeasurement": {
+      "engineBase": "wie detectVcp: h1 = juengster Index des hoechsten Hochs in [t - vcp.maxBaseSessions, t]; baseSessions = t - h1",
+      "selfCheck": "baseSessions muss dem eingefrorenen baseLength entsprechen; bei Abweichung wird der Fall als SELF_CHECK_FAILED markiert und nicht gewertet",
+      "pauseSessions": "t - h1",
+      "pauseDepth": "1 - min Tief[h1+1..t] / Hoch[h1]; Wahrheitswerte <= 10 %, <= 15 %, <= 25 % (Zahlen der Quelle: Flat Base 10 bis 15 %, Flagge 25 %)",
+      "flatSessions": "laengstes Fenster, das in t endet, dessen (hoechstes Hoch - tiefstes Tief) / hoechstes Hoch <= 15 % (bzw. <= 10 %) ist (Q: „flat base … corrects no more than 10 or 15%“; Dauer „4 to 7 weeks“)",
+      "baseFinding": {
+        "NOT_SHORT": "Engine-Basis >= 15 Sitzungen",
+        "FLAT_BASE_MISSED": "Engine-Basis < 15 UND flatSessions15 >= 20 (4 Wochen): die Messung ab dem hoechsten Hoch verfehlt eine Flat Base mit den Zahlen der Quelle. Bei Eintritt: Implementierungs-/Formalisierungsbefund (MR-VCP-08), nicht repariert",
+        "NO_BASE_STRUCTURE": "Engine-Basis < 15, pauseDepth > 15 %, keine Flat Base: nicht mit Quellenzahlen reproduzierbar",
+        "SHORT_PAUSE_AT_HIGHS": "Engine-Basis < 15 UND pauseDepth <= 15 % UND kein FLAT_BASE_MISSED (Nachtrag A1)"
+      }
+    },
+    "explanation": {
+      "explainedByPowerPlay": "verdict in (YES, POSSIBLE) UND kein Universums- oder Trend-Blocker im Fall (ein Power Play umgeht Fundamentaldaten und VCP)",
+      "explainedByBaseMeasurement": "baseFinding = FLAT_BASE_MISSED UND ausser BASE_TOO_SHORT kein weiterer Blocker (SEPA, Trend, Universum bestanden)",
+      "note": "„erklaert“ heisst nur: Der Fall haette keinen verbleibenden Blocker, wenn diese Punkte akzeptiert wuerden. Es heisst nicht: Die Engine haette ihn erkannt (Kontraktionen, Pivot, Signalzeitpunkt bleiben ungeprueft)."
+    },
+    "classification": {
+      "IMPLEMENTATION_DEFECT": "SELF_CHECK_FAILED oder FLAT_BASE_MISSED (Messung widerspricht den Quellenzahlen)",
+      "FORMALIZATION_LIMIT": "SHORT_PAUSE_AT_HIGHS oder Power Play erfuellt (belegter, nicht umgesetzter Einstiegstyp)",
+      "DISCRETION": "weder noch: mit den Quellenzahlen nicht reproduzierbar"
+    }
   },
-  "classification": {
-   "IMPLEMENTATION_DEFECT": "SELF_CHECK_FAILED oder FLAT_BASE_MISSED (Messung widerspricht den Quellenzahlen)",
-   "FORMALIZATION_LIMIT": "SHORT_PAUSE_AT_HIGHS oder Power Play erfuellt (belegter, nicht umgesetzter Einstiegstyp)",
-   "DISCRETION": "weder noch: mit den Quellenzahlen nicht reproduzierbar"
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "Die Neuberechnung der Engine-Basis stimmt fuer alle auswertbaren Faelle mit dem eingefrorenen baseLength ueberein (selfCheck).",
+      "falsifiedIf": "ein auswertbarer Fall weicht ab (dann ist der Datenstand nicht identisch und die Diagnose fuer den Fall ungueltig)"
+    },
+    {
+      "id": "P2",
+      "claim": "Hoechstens 3 der 7 Verlust->Verlust-Faelle (ZGNX, ROKU, ACAD, SG, REPL, TNDM, RVNC) erfuellen das Power-Play-Kriterium (YES oder POSSIBLE).",
+      "falsifiedIf": "4 oder mehr erfuellen es"
+    },
+    {
+      "id": "P3",
+      "claim": "Von den 5 BASE_TOO_SHORT-Faellen (DECK, RICK, TNDM, RVNC, MTLS) sind mindestens 3 SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED (Kategorien nach Nachtrag A1).",
+      "falsifiedIf": "3 oder mehr sind FLAT_BASE_MISSED"
+    },
+    {
+      "id": "P4",
+      "claim": "Power Play und Basismessung zusammen erklaeren ausschliesslich hoechstens 3 der 12 verpassten MAIN-Faelle.",
+      "falsifiedIf": "4 oder mehr"
+    }
+  ],
+  "decisionRule": {
+    "hypotheticalRecall": "(3 + Anzahl der durch Power Play oder Basismessung ausschliesslich erklaerten verpassten MAIN-Faelle) / 15. Obere Schranke, keine Engine-Messung.",
+    "labels": "unveraendert aus der Praeregistrierung: < 40 % NOT_FEASIBLE_FROM_PUBLIC_RULES; 40 % bis < 70 % PARTIAL; >= 70 % HIGH_FIDELITY_ADAPTATION_FEASIBLE",
+    "verdictChangesIf": "hypothetischer Recall >= 40 % (ab 3 erklaerten Faellen: 6/15). Dann wird das Label nur als „hypothetisch PARTIAL, nicht gebaut“ berichtet, nicht uebernommen.",
+    "recallReported": "Der Recall der Engine bleibt 3/15, weil keine Engine veraendert wird."
+  },
+  "selfCheckAbort": "Weichen mehr als 2 Faelle im selfCheck ab, ist der Lauf ungueltig und wird nicht ausgewertet.",
+  "reporting": [
+    "Je Fall: Minervini-Fall, Kursstruktur (nur Wahrheitswerte/ganze Zahlen), gemessene Base, Power-Play-Kriterium ja/nein, Engine-Entscheidung, ob ausschliesslich diese beiden Punkte den Fall erklaeren",
+    "Recall unveraendert / hypothetisch erklaerbar",
+    "Echte Implementierungsfehler gegen Diskretion",
+    "Aendert sich NOT_FEASIBLE_FROM_PUBLIC_RULES?"
+  ],
+  "amendments": [
+    {
+      "id": "A1",
+      "createdAt": "2026-10-11T05:33Z",
+      "beforeAnyPrivateRun": true,
+      "beforeInfrastructure": "vor Workflow-Aenderung und vor jedem Lauf",
+      "reason": "Beim Schreiben der synthetischen Tests zeigte sich, dass „recentBreakout“ (Hoch[h1] > hoechstes Hoch davor) fuer jedes h1 per Definition wahr ist, weil h1 das hoechste Hoch des Fensters ist. Die Kategorie CONTINUATION_AFTER_BREAKOUT war damit nicht pruefbar.",
+      "changes": [
+        "recentBreakout, priorBaseSessions entfallen.",
+        "Neue Kategorie SHORT_PAUSE_AT_HIGHS statt CONTINUATION_AFTER_BREAKOUT: Engine-Basis < 15 UND pauseDepth <= 15 % (Zahl der Quelle fuer Flat Base) UND kein FLAT_BASE_MISSED. Bedeutung unveraendert: die Messung ist mit ihrer eigenen Definition konsistent, die Struktur ist eine kurze flache Pause unter einem frischen Hoch (anderer Einstiegstyp).",
+        "NO_BASE_STRUCTURE bleibt: Engine-Basis < 15, Pause tiefer als 15 %, keine Flat Base.",
+        "P3 liest damit: mindestens 3 der 5 sind SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED."
+      ],
+      "noNewThreshold": true
+    }
+  ],
+  "smokeRun": {
+    "run": "38115403836",
+    "mode": "rf-diag-smoke",
+    "result": "technical only: 600 series, 3 MAIN cases with data, self-check P1 reproduced the frozen baseLength on 3/3; public rows carried only booleans, integers and identifiers. Smoke results are not used for P2-P4."
   }
- },
- "predictions": [
-  {
-   "id": "P1",
-   "claim": "Die Neuberechnung der Engine-Basis stimmt fuer alle auswertbaren Faelle mit dem eingefrorenen baseLength ueberein (selfCheck).",
-   "falsifiedIf": "ein auswertbarer Fall weicht ab (dann ist der Datenstand nicht identisch und die Diagnose fuer den Fall ungueltig)"
-  },
-  {
-   "id": "P2",
-   "claim": "Hoechstens 3 der 7 Verlust->Verlust-Faelle (ZGNX, ROKU, ACAD, SG, REPL, TNDM, RVNC) erfuellen das Power-Play-Kriterium (YES oder POSSIBLE).",
-   "falsifiedIf": "4 oder mehr erfuellen es"
-  },
-  {
-   "id": "P3",
-   "claim": "Von den 5 BASE_TOO_SHORT-Faellen (DECK, RICK, TNDM, RVNC, MTLS) sind mindestens 3 SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED (Kategorien nach Nachtrag A1).",
-   "falsifiedIf": "3 oder mehr sind FLAT_BASE_MISSED"
-  },
-  {
-   "id": "P4",
-   "claim": "Power Play und Basismessung zusammen erklaeren ausschliesslich hoechstens 3 der 12 verpassten MAIN-Faelle.",
-   "falsifiedIf": "4 oder mehr"
-  }
- ],
- "decisionRule": {
-  "hypotheticalRecall": "(3 + Anzahl der durch Power Play oder Basismessung ausschliesslich erklaerten verpassten MAIN-Faelle) / 15. Obere Schranke, keine Engine-Messung.",
-  "labels": "unveraendert aus der Praeregistrierung: < 40 % NOT_FEASIBLE_FROM_PUBLIC_RULES; 40 % bis < 70 % PARTIAL; >= 70 % HIGH_FIDELITY_ADAPTATION_FEASIBLE",
-  "verdictChangesIf": "hypothetischer Recall >= 40 % (ab 3 erklaerten Faellen: 6/15). Dann wird das Label nur als „hypothetisch PARTIAL, nicht gebaut“ berichtet, nicht uebernommen.",
-  "recallReported": "Der Recall der Engine bleibt 3/15, weil keine Engine veraendert wird."
- },
- "selfCheckAbort": "Weichen mehr als 2 Faelle im selfCheck ab, ist der Lauf ungueltig und wird nicht ausgewertet.",
- "reporting": [
-  "Je Fall: Minervini-Fall, Kursstruktur (nur Wahrheitswerte/ganze Zahlen), gemessene Base, Power-Play-Kriterium ja/nein, Engine-Entscheidung, ob ausschliesslich diese beiden Punkte den Fall erklaeren",
-  "Recall unveraendert / hypothetisch erklaerbar",
-  "Echte Implementierungsfehler gegen Diskretion",
-  "Aendert sich NOT_FEASIBLE_FROM_PUBLIC_RULES?"
- ],
- "amendments": [
-  {
-   "id": "A1",
-   "createdAt": "2026-10-11T05:33Z",
-   "beforeAnyPrivateRun": true,
-   "beforeInfrastructure": "vor Workflow-Aenderung und vor jedem Lauf",
-   "reason": "Beim Schreiben der synthetischen Tests zeigte sich, dass „recentBreakout“ (Hoch[h1] > hoechstes Hoch davor) fuer jedes h1 per Definition wahr ist, weil h1 das hoechste Hoch des Fensters ist. Die Kategorie CONTINUATION_AFTER_BREAKOUT war damit nicht pruefbar.",
-   "changes": [
-    "recentBreakout, priorBaseSessions entfallen.",
-    "Neue Kategorie SHORT_PAUSE_AT_HIGHS statt CONTINUATION_AFTER_BREAKOUT: Engine-Basis < 15 UND pauseDepth <= 15 % (Zahl der Quelle fuer Flat Base) UND kein FLAT_BASE_MISSED. Bedeutung unveraendert: die Messung ist mit ihrer eigenen Definition konsistent, die Struktur ist eine kurze flache Pause unter einem frischen Hoch (anderer Einstiegstyp).",
-    "NO_BASE_STRUCTURE bleibt: Engine-Basis < 15, Pause tiefer als 15 %, keine Flat Base.",
-    "P3 liest damit: mindestens 3 der 5 sind SHORT_PAUSE_AT_HIGHS oder NO_BASE_STRUCTURE und hoechstens 2 FLAT_BASE_MISSED."
-   ],
-   "noNewThreshold": true
-  }
- ]
 }
