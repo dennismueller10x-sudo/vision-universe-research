@@ -1511,7 +1511,7 @@ def cmd_consumer(args):
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
     from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle,
-                                    load_product_universe_ciks, summarize_bundle)
+                                    load_product_universe_ciks, split_pit, summarize_bundle)
     registry = MetricRegistry.load()
     provider = SECProvider()
     names_file = Path(args.names)
@@ -1524,6 +1524,9 @@ def cmd_consumer(args):
         wanted = set(sorted(wanted)[:args.limit])
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    # AS_REPORTED_AT_TIME (M-B5) in einem eigenen Speicher neben den LATEST-Bundles.
+    pit_dir = Path(args.pit_out) if args.pit_out else out_dir.parent / consumer_module.PIT_STORE
+    pit_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
     print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
 
@@ -1553,8 +1556,10 @@ def cmd_consumer(args):
         if bundle is None:
             failures.append({"cik": cik, "tickers": entry["tickers"], "error": "NO_PERIODIC_FACTS"})
             continue
+        bundle, pit_document = split_pit(bundle)
         path = out_dir / f"CIK{cik}.json"
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
+        (pit_dir / path.name).write_text(json.dumps(pit_document, separators=(",", ":")) + "\n", encoding="utf-8")
         written.add(path.name)
         summary = summarize_bundle(bundle)
         cov = bundle["coverage"]
@@ -1568,6 +1573,7 @@ def cmd_consumer(args):
     unmatched = sorted(wanted - seen)
     if not args.keep_stale:
         _prune(out_dir, written)
+        _prune(pit_dir, written)
     by_ticker = {}
     for row in index_rows:
         for ticker in row["tickers"]:
@@ -1755,6 +1761,7 @@ def build_parser():
     consumer = subparsers.add_parser("consumer", help="compact consumer fundamentals for the product universe")
     consumer.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
     consumer.add_argument("--out", default=str(DATA_DIR / "consumer"))
+    consumer.add_argument("--pit-out", help="AS_REPORTED_AT_TIME store (default: <out>/../consumer-pit)")
     consumer.add_argument("--as-of")
     consumer.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request) instead of per-company calls")
     consumer.add_argument("--archive", help="local companyfacts.zip instead of fetching; implies --bulk")

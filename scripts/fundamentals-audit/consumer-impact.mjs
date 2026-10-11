@@ -80,8 +80,8 @@ for (const f of files) {
   const ticker = (b.tickers || [])[0] || b.cik;
   n += 1;
   const before = { ...counters };
-  const qa = Inputs.compute(a, cutoff, MARKET_CAP);
-  const qb = Inputs.compute(b, cutoff, MARKET_CAP);
+  const qa = Inputs.compute(a, cutoff, MARKET_CAP, { view: Inputs.VIEW });
+  const qb = Inputs.compute(b, cutoff, MARKET_CAP, { view: Inputs.VIEW });
   compareFields("quant.raws", qa?.raws, qb?.raws, ticker);
   compareFields("quant.change", qa?.change, qb?.change, ticker);
   const mark = (k) => Object.keys(counters).some((key) => key.startsWith(k) && counters[key] !== before[key]);

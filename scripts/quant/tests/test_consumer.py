@@ -152,8 +152,15 @@ class ConsumerBundleTest(unittest.TestCase):
                            "EBITDA ohne Aufschlag waere das operative Ergebnis")
 
     def test_bundle_is_compact(self):
-        size = len(json.dumps(self.bundle, separators=(",", ":")))
+        # Geschrieben wird das LATEST-Bundle ohne die PIT-Sicht; sie hat ihren eigenen Speicher (M-B5).
+        latest, pit_document = consumer.split_pit(self.bundle)
+        size = len(json.dumps(latest, separators=(",", ":")))
         self.assertLess(size, 30000, f"bundle too large for 6,000 companies: {size} bytes")
+        self.assertNotIn("pit", latest)
+        pit_size = len(json.dumps(pit_document, separators=(",", ":")))
+        self.assertLess(pit_size, 12000, f"pit document too large for 6,000 companies: {pit_size} bytes")
+        self.assertEqual(pit_document["view"], consumer.VIEW_AS_REPORTED_AT_TIME)
+        self.assertEqual(pit_document["pit"]["view"], consumer.VIEW_AS_REPORTED_AT_TIME)
 
 
 class ProductUniverseTest(unittest.TestCase):

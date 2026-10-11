@@ -532,7 +532,7 @@ function main() {
            published close. The first pass resolves the share count; the
            second computes the price-dependent block from it rather than
            guessing a capitalization beforehand. */
-        const shares = FundamentalInputs.compute(doc, cutoff, null)?.shares || null;
+        const shares = FundamentalInputs.compute(doc, cutoff, null, { view: FundamentalInputs.VIEW })?.shares || null;
         /* EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN.
          *
          * Gemessen am 26.09.2026 im veroeffentlichten Artefakt: 110 CIKs
@@ -580,7 +580,7 @@ function main() {
         const berichtswaehrung = MarketCap.reportingCurrency(doc.units);
         const gleicheWaehrung = MarketCap.sameCurrencyAsListing(doc.units);
         const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung ? shares.value * quote.close : null;
-        fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
+        fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap, { view: FundamentalInputs.VIEW });
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
           fundamentals.priceAsOf = quote?.asOf || null;

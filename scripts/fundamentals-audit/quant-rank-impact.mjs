@@ -16,7 +16,7 @@ const raws = { old: {}, new: {} };
 for (const f of fs.readdirSync(newDir).filter((x) => /^CIK\d+\.json$/.test(x))) {
   if (!fs.existsSync(path.join(oldDir, f))) continue;
   for (const [k, dir] of [["old", oldDir], ["new", newDir]]) {
-    const r = Inputs.compute(JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")), cutoff, 1e10);
+    const r = Inputs.compute(JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")), cutoff, 1e10, { view: Inputs.VIEW });
     for (const [name, v] of Object.entries(r?.raws || {})) if (fin(v)) (raws[k][name] ||= {})[f] = v;
   }
 }
