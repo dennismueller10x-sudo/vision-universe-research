@@ -1,23 +1,25 @@
 {
   "schema": "supertrader-method-freezes-1.0.0",
-  "frozenAt": "2026-10-11T14:54:12.392Z",
-  "codeCommit": "2677c3744f0796f3a516a9702a46aebefbfdebf8",
+  "frozenAt": "2026-10-11T15:08:23.332Z",
+  "codeCommit": "05a8273db71e5f41ad4302498931f52df7a44502",
   "frozenBeforePerformance": true,
   "protocolHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
   "files": {
     "accounting.mjs": "e2a8b535989254b7bc4cb8ce073aa6e114aa1ee236d5892f31255a6069fb833b",
-    "data.mjs": "9921c3c805a1ecdff60503b55a53c4cb03d3b989a9e3b53b90a09be6ccadd012",
+    "data.mjs": "caf0054e6eb8c8d3ee6e210fa886d7a80f56bb9fa89e88d0e7c4d53c059e53a3",
     "runner.mjs": "ed643892cf3fa1a91849a7a99bcd644655dc93d14ae5ee05008b78e85ab168ad",
     "metrics.mjs": "4882b946c13b6a4acf332cf9695c5aec384a0c9ba1ddc582d62c75ac150eb72e",
     "methods.mjs": "4517b2996d870cd4fc738d14e2f2f6ed4397b293a2a1b0fed6a1e819a6171f7c",
-    "run.mjs": "3dfbe524f91f24a7cbf45eab730f4f558d3c4d2f6e6df59bc982e04718c49cdd",
+    "run.mjs": "38244cb5cafaf420cf3d341eff83a7e6f5c6f40c48d0226872962a53ea49952e",
+    "assemble.mjs": "00ef05e7aaf16bb8b640c7ccad668ad647a51e5aedd40b82692203480abdc442",
+    "regression-run.mjs": "c64745820b1fee4554cd94403f2bc304a9cc9a5e6730c2120d895692aab4af53",
     "protocol.json": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
-    "freeze.mjs": "5bc9f1cf40619b257a66b9695c6f6095433267db574d9b54daba9eb7f056df91",
+    "freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
     "session-public-key.pem": "9408414a70dcc55073e0fdc7e5995ac595c7a1c8db2534a58ff4f52adacf57c0",
-    "engines/academic.mjs": "350f22ed7447304a0817f12bc04deb24aaad31b404a60b89e7439e3abce8f81d",
+    "engines/academic.mjs": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
     "engines/fundamental.mjs": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
-    "engines/kullamagi.mjs": "8d17f70eab96f0d26090f09203022e49ddbe8e990e0eb6e4397aeb6ef55b54f1",
-    "engines/legendary.mjs": "dbdf6d04870a67ad874277df7219d7ab35c0045bb89012ed61104483778df6d5"
+    "engines/kullamagi.mjs": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+    "engines/legendary.mjs": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5"
   },
   "dependencies": {
     "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
@@ -30,7 +32,19 @@
     "quant/engines/instrument-classification.js": "86fd46b650400a1763a77dd8e04e23ad8618ab38577af5b928bf25ba3bedf817",
     "scripts/market/storage/s3-driver.mjs": "4ed3315cfd325c376b57067631b9b14c370e2aea8bd3690be14a4a4b2e17269a",
     "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c",
-    "scripts/supertrader/validation/results-public-key.pem": "b399ed9049aaf89e4ba62b6dc93c1831946af8d1fff32f299e0fb3dd82a61a7f"
+    "scripts/supertrader/validation/results-public-key.pem": "b399ed9049aaf89e4ba62b6dc93c1831946af8d1fff32f299e0fb3dd82a61a7f",
+    "scripts/supertrader/tests/tournament-academic.test.mjs": "03a1cbc51c154631d39b3c854a69bc960066fa21b60bd5dcd26abc6cecb0be5d",
+    "scripts/supertrader/tests/tournament-accounting.test.mjs": "1eb0d87c6572eba7091a5c3c4b563ee193a4d2213a2307b0cbab7f4002f4aa45",
+    "scripts/supertrader/tests/tournament-assemble.test.mjs": "ba7aecbaaf02c75649b19977fdadf02b86b5e929f61fd26081815a3580e57a8f",
+    "scripts/supertrader/tests/tournament-data.test.mjs": "247879e01b78c4753e8be5fffcb12520e0db98dac8151da68ff4702fcaf54286",
+    "scripts/supertrader/tests/tournament-datecache.test.mjs": "eb43cb9c930e55f9b9cf360f9cce42303d0b37f1068f3ac2c883b3173d5c7212",
+    "scripts/supertrader/tests/tournament-freeze.test.mjs": "0eebd174856cd6d36fabdbb273af34356204719981f00c600cd0c0c68d130318",
+    "scripts/supertrader/tests/tournament-fundamental.test.mjs": "4837d02ec5382d9ec55e6470fa9ccf9e7091b14c81cb0dca26fd728bcec55a4f",
+    "scripts/supertrader/tests/tournament-kullamagi.test.mjs": "a71315a43744aaf04699ef74966ed86435167b9378ba7ddb4d8942b3c7a845b4",
+    "scripts/supertrader/tests/tournament-legendary.test.mjs": "9566e318a0ac506c24e95030d033e14579d18837f108aac87df4eb6ded67d270",
+    "scripts/supertrader/tests/tournament-metrics.test.mjs": "10c00a7ec8e6f0eafa1724595785caed7ee280936f1388d82a89b66834a8b89b",
+    "scripts/supertrader/tests/tournament-runner.test.mjs": "4964b9625d96fae8f8c531c9e361350718202e9db7a7cf3b7184367c8a802922",
+    "scripts/supertrader/tests/tournament-sharding.test.mjs": "26f668e30e73063ca4b957d258cc9b77815f4503b6cecad8a7e56631d2a8d6ff"
   },
   "methods": [
     {
