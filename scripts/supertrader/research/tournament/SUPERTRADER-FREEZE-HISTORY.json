@@ -3847,6 +3847,1310 @@
         }
       },
       "proof": "Public workflow job logs contain FREEZE_VERIFIED followed by heap OOM; no HISTORICAL_DATA_READY or METHOD_STARTED event; no research result artifact."
+    },
+    {
+      "freeze_commit": "00b5eb1b715b412d9aed1aef2e70f94be5e017ca",
+      "run_id": 38151795624,
+      "freeze": {
+        "schema": "supertrader-method-freezes-1.0.0",
+        "frozenAt": "2026-10-11T15:33:34.341Z",
+        "codeCommit": "b39d02d08d7d6076738926bf5a8c39bc4e6404dd",
+        "frozenBeforePerformance": true,
+        "protocolHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+        "files": {
+          "accounting.mjs": "e2a8b535989254b7bc4cb8ce073aa6e114aa1ee236d5892f31255a6069fb833b",
+          "data.mjs": "a37d0856249105bc921674b713fa1c658b4ef67ea42c0abc655f8d167b70fada",
+          "runner.mjs": "ed643892cf3fa1a91849a7a99bcd644655dc93d14ae5ee05008b78e85ab168ad",
+          "metrics.mjs": "4882b946c13b6a4acf332cf9695c5aec384a0c9ba1ddc582d62c75ac150eb72e",
+          "methods.mjs": "4517b2996d870cd4fc738d14e2f2f6ed4397b293a2a1b0fed6a1e819a6171f7c",
+          "run.mjs": "38244cb5cafaf420cf3d341eff83a7e6f5c6f40c48d0226872962a53ea49952e",
+          "assemble.mjs": "00ef05e7aaf16bb8b640c7ccad668ad647a51e5aedd40b82692203480abdc442",
+          "regression-run.mjs": "c64745820b1fee4554cd94403f2bc304a9cc9a5e6730c2120d895692aab4af53",
+          "protocol.json": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+          "freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
+          "session-public-key.pem": "9408414a70dcc55073e0fdc7e5995ac595c7a1c8db2534a58ff4f52adacf57c0",
+          "engines/academic.mjs": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
+          "engines/fundamental.mjs": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
+          "engines/kullamagi.mjs": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+          "engines/legendary.mjs": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5"
+        },
+        "dependencies": {
+          "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+          "quant/engines/canonical-total-return.js": "b569e63bef67604d96f1f7fba1f3ee9e7033564e0b9b0af08f81769c4d0e2b2c",
+          "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+          "quant/engines/history-store.js": "755804a9939a1f19e586feea6694c6831c6bf4d8d693876ac2a23cca22522493",
+          "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+          "quant/engines/zero-cost-guard.js": "3a3942e50d9605d9fd09127a5446371ebe77dfed09f64d32291cebcc0b26bac9",
+          "quant/engines/us-security-master.js": "cde6827d4112bb8f55bb818bd39322c580e25a6e721b3e3ddc9d05513fc287d9",
+          "quant/engines/instrument-classification.js": "86fd46b650400a1763a77dd8e04e23ad8618ab38577af5b928bf25ba3bedf817",
+          "scripts/market/storage/s3-driver.mjs": "4ed3315cfd325c376b57067631b9b14c370e2aea8bd3690be14a4a4b2e17269a",
+          "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c",
+          "scripts/supertrader/validation/results-public-key.pem": "b399ed9049aaf89e4ba62b6dc93c1831946af8d1fff32f299e0fb3dd82a61a7f",
+          "scripts/supertrader/tests/tournament-academic.test.mjs": "03a1cbc51c154631d39b3c854a69bc960066fa21b60bd5dcd26abc6cecb0be5d",
+          "scripts/supertrader/tests/tournament-accounting.test.mjs": "1eb0d87c6572eba7091a5c3c4b563ee193a4d2213a2307b0cbab7f4002f4aa45",
+          "scripts/supertrader/tests/tournament-assemble.test.mjs": "ba7aecbaaf02c75649b19977fdadf02b86b5e929f61fd26081815a3580e57a8f",
+          "scripts/supertrader/tests/tournament-data.test.mjs": "fbf64ecd0e8360dcaa61d88cfd755605dfa0e859bfea0859a94916e59ebb90c4",
+          "scripts/supertrader/tests/tournament-datecache.test.mjs": "eb43cb9c930e55f9b9cf360f9cce42303d0b37f1068f3ac2c883b3173d5c7212",
+          "scripts/supertrader/tests/tournament-freeze.test.mjs": "0eebd174856cd6d36fabdbb273af34356204719981f00c600cd0c0c68d130318",
+          "scripts/supertrader/tests/tournament-fundamental.test.mjs": "4837d02ec5382d9ec55e6470fa9ccf9e7091b14c81cb0dca26fd728bcec55a4f",
+          "scripts/supertrader/tests/tournament-kullamagi.test.mjs": "a71315a43744aaf04699ef74966ed86435167b9378ba7ddb4d8942b3c7a845b4",
+          "scripts/supertrader/tests/tournament-legendary.test.mjs": "9566e318a0ac506c24e95030d033e14579d18837f108aac87df4eb6ded67d270",
+          "scripts/supertrader/tests/tournament-metrics.test.mjs": "10c00a7ec8e6f0eafa1724595785caed7ee280936f1388d82a89b66834a8b89b",
+          "scripts/supertrader/tests/tournament-runner.test.mjs": "4964b9625d96fae8f8c531c9e361350718202e9db7a7cf3b7184367c8a802922",
+          "scripts/supertrader/tests/tournament-sharding.test.mjs": "26f668e30e73063ca4b957d258cc9b77815f4503b6cecad8a7e56631d2a8d6ff"
+        },
+        "methods": [
+          {
+            "id": "cross_sectional_momentum",
+            "version": "1.0.0",
+            "rulebookHash": "562cae757872967ae5e3d09d04da3b2950d2b6d21f8cc7a4f4cc5c17e9c39c49",
+            "rulebook": {
+              "id": "cross_sectional_momentum",
+              "name": "JT1993 six/six long cohort",
+              "fidelity": "VU_ADAPTATION",
+              "era": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant.",
+              "sources": [
+                {
+                  "id": "jt1993",
+                  "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
+                  "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+                }
+              ],
+              "parameters": {
+                "formationMonths": 6,
+                "holdingMonths": 6,
+                "skipDays": 0,
+                "selectionFraction": 0.1,
+                "cohortEqualWeight": true,
+                "tieBreak": "STABLE_ID_ASCENDING",
+                "quantileRounding": "CEIL"
+              },
+              "portfolioSemantics": {
+                "rebalance": "MONTHLY_FORMATION",
+                "targetWeightScope": "NEW_COHORT",
+                "cohortMonths": 6,
+                "cohortCapitalFraction": 0.16666666666666666,
+                "capitalRampUp": "UNFORMED_COHORT_SLEEVES_REMAIN_CASH",
+                "retainedCohorts": "RUNNER_PRESERVES_PREVIOUS_SELECTIONS_UNTIL_EXPIRY_AND_EQUAL_WEIGHTS_WITHIN_EACH",
+                "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+                "stopLoss": null,
+                "leverage": 1,
+                "longOnly": true
+              },
+              "selectionRuleId": "JT_TOP_DECILE",
+              "rules": [
+                {
+                  "id": "JT_FORMATION_6M_NO_SKIP",
+                  "provenance": "SOURCE_VARIANT",
+                  "description": "Six-month total return; representative 6/6 no-skip paper variant."
+                },
+                {
+                  "id": "JT_TOP_DECILE",
+                  "provenance": "SOURCE",
+                  "description": "Highest prior-return decile."
+                },
+                {
+                  "id": "COHORT_EQUAL_WEIGHT",
+                  "provenance": "SOURCE_LONG_SLEEVE",
+                  "description": "Equal weights within each monthly cohort; cohort expires after six months."
+                }
+              ],
+              "adaptations": [
+                "VU PIT US universe and long sleeve; original short leg omitted.",
+                "Six-month variant frozen before performance; no optimization.",
+                "Ceil quantile counts and stable-id ties are declared VU discrete-universe conventions.",
+                "Next-open execution, cash ramp-up and explicit data guards are operational VU choices."
+              ],
+              "dataContract": {
+                "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+                "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+                "close": "split-adjusted historical close",
+                "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+                "futureBars": "IGNORED",
+                "invalidOrDuplicateDates": "REJECT_SECURITY",
+                "maximumEndpointStalenessCalendarDays": 7,
+                "maximumHistoryGapCalendarDays": 10,
+                "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 65,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/academic.mjs",
+                "test": "tournament-academic.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": {
+              "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+              "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+              "close": "split-adjusted historical close",
+              "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+              "futureBars": "IGNORED",
+              "invalidOrDuplicateDates": "REJECT_SECURITY",
+              "maximumEndpointStalenessCalendarDays": 7,
+              "maximumHistoryGapCalendarDays": 10,
+              "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+            }
+          },
+          {
+            "id": "52_week_high_effect",
+            "version": "1.0.0",
+            "rulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
+            "rulebook": {
+              "id": "52_week_high_effect",
+              "name": "George\u2013Hwang proximity long cohort",
+              "fidelity": "VU_ADAPTATION",
+              "era": "Tables I\u2013III, printed pp.2148\u20132152.",
+              "sources": [
+                {
+                  "id": "gh2004",
+                  "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
+                  "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+                }
+              ],
+              "parameters": {
+                "formationMonths": 12,
+                "holdingMonths": 6,
+                "selectionFraction": 0.3,
+                "priceField": "close",
+                "cohortEqualWeight": true,
+                "tieBreak": "STABLE_ID_ASCENDING",
+                "quantileRounding": "CEIL"
+              },
+              "portfolioSemantics": {
+                "rebalance": "MONTHLY_FORMATION",
+                "targetWeightScope": "NEW_COHORT",
+                "cohortMonths": 6,
+                "cohortCapitalFraction": 0.16666666666666666,
+                "capitalRampUp": "UNFORMED_COHORT_SLEEVES_REMAIN_CASH",
+                "retainedCohorts": "RUNNER_PRESERVES_PREVIOUS_SELECTIONS_UNTIL_EXPIRY_AND_EQUAL_WEIGHTS_WITHIN_EACH",
+                "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+                "stopLoss": null,
+                "leverage": 1,
+                "longOnly": true
+              },
+              "selectionRuleId": "GH_TOP_30_PERCENT",
+              "rules": [
+                {
+                  "id": "GH_52W_PROXIMITY",
+                  "provenance": "SOURCE_WITH_PRICE_CONVENTION",
+                  "description": "Latest split-adjusted close divided by maximum split-adjusted close over trailing twelve calendar months."
+                },
+                {
+                  "id": "GH_TOP_30_PERCENT",
+                  "provenance": "SOURCE",
+                  "description": "Highest 30 percent price-proximity ranks, no breakout trigger."
+                },
+                {
+                  "id": "COHORT_EQUAL_WEIGHT",
+                  "provenance": "SOURCE_LONG_SLEEVE",
+                  "description": "Monthly equal-weight cohorts retained for six months."
+                }
+              ],
+              "adaptations": [
+                "VU PIT US universe and long sleeve; original short leg omitted.",
+                "Daily split-adjusted close and twelve-calendar-month cutoff explicitly fix source highest-price convention.",
+                "Ceil quantile counts, stable-id ties, next-open fills and cash ramp-up are operational VU choices."
+              ],
+              "dataContract": {
+                "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+                "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+                "close": "split-adjusted historical close",
+                "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+                "futureBars": "IGNORED",
+                "invalidOrDuplicateDates": "REJECT_SECURITY",
+                "maximumEndpointStalenessCalendarDays": 7,
+                "maximumHistoryGapCalendarDays": 10,
+                "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 70,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/academic.mjs",
+                "test": "tournament-academic.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": {
+              "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+              "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+              "close": "split-adjusted historical close",
+              "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+              "futureBars": "IGNORED",
+              "invalidOrDuplicateDates": "REJECT_SECURITY",
+              "maximumEndpointStalenessCalendarDays": 7,
+              "maximumHistoryGapCalendarDays": 10,
+              "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+            }
+          },
+          {
+            "id": "LOW_VOLATILITY",
+            "version": "1.0.0",
+            "rulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
+            "rulebook": {
+              "id": "LOW_VOLATILITY",
+              "name": "Blitz\u2013van Vliet low-volatility US long sleeve",
+              "fidelity": "VU_ADAPTATION",
+              "era": "II Data and methodology, printed pp.3\u20134; April 2007 inner version.",
+              "sources": [
+                {
+                  "id": "LV-PAPER",
+                  "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
+                  "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+                }
+              ],
+              "parameters": {
+                "lookbackMonths": 36,
+                "weeklySampling": "LAST_OBSERVED_SESSION_OF_ISO_WEEK_INCLUDING_ASOF_PARTIAL_WEEK",
+                "returns": "LOG_TOTAL_RETURN",
+                "riskFreeSubtraction": false,
+                "volatilityDdof": 1,
+                "selectionFraction": 0.1,
+                "annualizeScore": false,
+                "tieBreak": "STABLE_ID_ASCENDING",
+                "quantileRounding": "CEIL"
+              },
+              "portfolioSemantics": {
+                "rebalance": "MONTHLY",
+                "targetWeightScope": "FULL_PORTFOLIO",
+                "cohortMonths": 1,
+                "cohortCapitalFraction": 1,
+                "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+                "stopLoss": null,
+                "leverage": 1,
+                "longOnly": true
+              },
+              "selectionRuleId": "LV_BOTTOM_VOLATILITY_DECILE",
+              "rules": [
+                {
+                  "id": "LV_3Y_WEEKLY_VOLATILITY",
+                  "provenance": "SOURCE_WITH_EXPLICIT_ADAPTATIONS",
+                  "description": "Three-calendar-year sample volatility of weekly log total returns; risk-free subtraction omitted explicitly."
+                },
+                {
+                  "id": "LV_BOTTOM_VOLATILITY_DECILE",
+                  "provenance": "SOURCE",
+                  "description": "Lowest volatility decile; equal weights refreshed monthly."
+                },
+                {
+                  "id": "COHORT_EQUAL_WEIGHT",
+                  "provenance": "SOURCE",
+                  "description": "Full-portfolio equal weight monthly."
+                }
+              ],
+              "adaptations": [
+                "US VU PIT universe instead of historical FTSE World Developed members.",
+                "Paper uses local excess log returns; VU ranking uses log total returns without risk-free subtraction.",
+                "Paper does not fix weekly weekday or sample denominator; ISO last-session/partial-week and ddof1 are frozen VU conventions.",
+                "No later Conservative Formula, beta sizing or liquidity rule is imported."
+              ],
+              "dataContract": {
+                "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+                "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+                "close": "split-adjusted historical close",
+                "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+                "futureBars": "IGNORED",
+                "invalidOrDuplicateDates": "REJECT_SECURITY",
+                "maximumEndpointStalenessCalendarDays": 7,
+                "maximumHistoryGapCalendarDays": 10,
+                "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 90,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/academic.mjs",
+                "test": "tournament-academic.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": {
+              "asOf": "YYYY-MM-DD; formation date supplied by monthly runner",
+              "historicalCutoffs": "END_OF_TARGET_CALENDAR_MONTH; last available session on/before cutoff",
+              "close": "split-adjusted historical close",
+              "totalReturnIndex": "canonical point-in-time total-return index; no fallback",
+              "futureBars": "IGNORED",
+              "invalidOrDuplicateDates": "REJECT_SECURITY",
+              "maximumEndpointStalenessCalendarDays": 7,
+              "maximumHistoryGapCalendarDays": 10,
+              "universe": "PIT VU universe supplied by runner; no liquidity defaults in strategy"
+            }
+          },
+          {
+            "id": "gross_profitability_novy_marx",
+            "version": "1.0.0",
+            "rulebookHash": "f9c5200be3553ef3ed3ad39bcd698ba8877203a7910da8780f59079c751bb41a",
+            "rulebook": {
+              "id": "gross_profitability_novy_marx",
+              "parameters": {
+                "formula": "(revenue - cogs) / assets",
+                "quantile": 0.8,
+                "weighting": "PIT market equity",
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "annualPolicy": "Prior-calendar-year fiscal statements; original vintage available at signal time",
+                "adaptations": [
+                  "VU reference-universe quintiles replace NYSE breakpoints",
+                  "US equities long sleeve only"
+                ],
+                "sources": [
+                  "eq_gp_2012"
+                ]
+              },
+              "rules": {
+                "formula": "(revenue - cogs) / assets",
+                "quantile": 0.8,
+                "weighting": "PIT market equity",
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "annualPolicy": "Prior-calendar-year fiscal statements; original vintage available at signal time",
+                "adaptations": [
+                  "VU reference-universe quintiles replace NYSE breakpoints",
+                  "US equities long sleeve only"
+                ],
+                "sources": [
+                  "eq_gp_2012"
+                ]
+              },
+              "sources": [
+                {
+                  "id": "eq_gp_2012",
+                  "url": "https://mysimon.rochester.edu/novy-marx/research/OSoV.pdf",
+                  "locator": "June 2012 manuscript, section 2 / table 2"
+                }
+              ],
+              "fidelity": {
+                "classification": "VU_ADAPTATION",
+                "originalReplication": false,
+                "paperReturnsInherited": false,
+                "confidence": "SOURCE_DEFINED_WITH_EXPLICIT_ADAPTATIONS",
+                "adaptations": [
+                  "VU reference-universe quintiles replace NYSE breakpoints",
+                  "US equities long sleeve only"
+                ]
+              },
+              "portfolioSemantics": {
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "signalAt": "ASOF_CLOSE",
+                "execution": "NEXT_SESSION_OR_LATER",
+                "longOnly": true,
+                "leverage": 1,
+                "noPriceStopsInvented": true,
+                "unconditionalSnapshot": true,
+                "runnerEnforcesCalendar": true
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 85,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/fundamental.mjs",
+                "test": "tournament-fundamental.test.mjs"
+              }
+            },
+            "historicalAdmission": "BLOCKED_DATA",
+            "dataRequirements": null
+          },
+          {
+            "id": "piotroski_value_fscore",
+            "version": "1.0.0",
+            "rulebookHash": "210b41245cee93be30c1cedf8a4e6f248a5d1918dfd37955d96af377f1d399f3",
+            "rulebook": {
+              "id": "piotroski_value_fscore",
+              "parameters": {
+                "bookToMarketQuantile": 0.8,
+                "minimumFScore": 8,
+                "weighting": "EQUAL_DOLLAR",
+                "turnoverDenominator": "BEGINNING_ASSETS",
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "adaptations": [
+                  "June batch replaces issuer fifth-month annual cohorts",
+                  "VU reference universe",
+                  "US equities long sleeve only",
+                  "Source body beginning-assets turnover chosen over conflicting table"
+                ],
+                "sources": [
+                  "eq_piotroski_paper",
+                  "eq_piotroski_review"
+                ]
+              },
+              "rules": {
+                "bookToMarketQuantile": 0.8,
+                "minimumFScore": 8,
+                "weighting": "EQUAL_DOLLAR",
+                "turnoverDenominator": "BEGINNING_ASSETS",
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "adaptations": [
+                  "June batch replaces issuer fifth-month annual cohorts",
+                  "VU reference universe",
+                  "US equities long sleeve only",
+                  "Source body beginning-assets turnover chosen over conflicting table"
+                ],
+                "sources": [
+                  "eq_piotroski_paper",
+                  "eq_piotroski_review"
+                ]
+              },
+              "sources": [
+                {
+                  "id": "eq_piotroski_paper",
+                  "url": "https://www.chicagobooth.edu/~/media/FE874EE65F624AAEBD0166B1974FD74D",
+                  "locator": "Selected Paper 84, sections 2.3 and 3; body turnover definition"
+                },
+                {
+                  "id": "eq_piotroski_review",
+                  "url": "https://www.chicagobooth.edu/review/separating-winners-losers",
+                  "locator": "Original high-book-to-market conditioning"
+                }
+              ],
+              "fidelity": {
+                "classification": "VU_ADAPTATION",
+                "originalReplication": false,
+                "paperReturnsInherited": false,
+                "confidence": "SOURCE_DEFINED_WITH_EXPLICIT_ADAPTATIONS",
+                "adaptations": [
+                  "June batch replaces issuer fifth-month annual cohorts",
+                  "VU reference universe",
+                  "US equities long sleeve only",
+                  "Source body beginning-assets turnover chosen over conflicting table"
+                ]
+              },
+              "portfolioSemantics": {
+                "rebalance": "ANNUAL_JUNE",
+                "holdMonths": 12,
+                "signalAt": "ASOF_CLOSE",
+                "execution": "NEXT_SESSION_OR_LATER",
+                "longOnly": true,
+                "leverage": 1,
+                "noPriceStopsInvented": true,
+                "unconditionalSnapshot": true,
+                "runnerEnforcesCalendar": true
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 80,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/fundamental.mjs",
+                "test": "tournament-fundamental.test.mjs"
+              }
+            },
+            "historicalAdmission": "BLOCKED_DATA",
+            "dataRequirements": null
+          },
+          {
+            "id": "greenblatt_magic_formula",
+            "version": "1.0.0",
+            "rulebookHash": "1aad3bec6df3d5031a68fe07397ca7c8500452273e8354abc164ca9efdb34631",
+            "rulebook": {
+              "id": "greenblatt_magic_formula",
+              "parameters": {
+                "minimumPositions": 20,
+                "maximumPositions": 30,
+                "weighting": "EQUAL_DOLLAR",
+                "earningsYield": "EBIT / (market equity + total interest-bearing debt - cash)",
+                "returnOnCapital": "EBIT / (current assets - cash - current liabilities + current debt + net PPE)",
+                "rebalance": "ANNUAL_BATCH",
+                "holdMonths": 12,
+                "adaptations": [
+                  "Explicit VU accounting normalization; unread original appendix prevents exact replication",
+                  "Annual batch; no discretionary name removal or tax optimization",
+                  "No quarterly Formula Investing cohort inheritance"
+                ],
+                "sources": [
+                  "eq_magic_faq",
+                  "eq_magic_work",
+                  "eq_magic_interview"
+                ]
+              },
+              "rules": {
+                "minimumPositions": 20,
+                "maximumPositions": 30,
+                "weighting": "EQUAL_DOLLAR",
+                "earningsYield": "EBIT / (market equity + total interest-bearing debt - cash)",
+                "returnOnCapital": "EBIT / (current assets - cash - current liabilities + current debt + net PPE)",
+                "rebalance": "ANNUAL_BATCH",
+                "holdMonths": 12,
+                "adaptations": [
+                  "Explicit VU accounting normalization; unread original appendix prevents exact replication",
+                  "Annual batch; no discretionary name removal or tax optimization",
+                  "No quarterly Formula Investing cohort inheritance"
+                ],
+                "sources": [
+                  "eq_magic_faq",
+                  "eq_magic_work",
+                  "eq_magic_interview"
+                ]
+              },
+              "sources": [
+                {
+                  "id": "eq_magic_faq",
+                  "url": "https://www.magicformulainvesting.com/Home/Faqs",
+                  "locator": "Equal dollars; annual holding; financial/utility exclusions"
+                },
+                {
+                  "id": "eq_magic_work",
+                  "url": "https://www.magicformulainvesting.com/Home/HowItWorks",
+                  "locator": "Diversification, annual replacement"
+                },
+                {
+                  "id": "eq_magic_interview",
+                  "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
+                  "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+                }
+              ],
+              "fidelity": {
+                "classification": "VU_ADAPTATION",
+                "originalReplication": false,
+                "paperReturnsInherited": false,
+                "confidence": "LOW",
+                "adaptations": [
+                  "Explicit VU accounting normalization; unread original appendix prevents exact replication",
+                  "Annual batch; no discretionary name removal or tax optimization",
+                  "No quarterly Formula Investing cohort inheritance"
+                ]
+              },
+              "portfolioSemantics": {
+                "rebalance": "ANNUAL_BATCH",
+                "holdMonths": 12,
+                "signalAt": "ASOF_CLOSE",
+                "execution": "NEXT_SESSION_OR_LATER",
+                "longOnly": true,
+                "leverage": 1,
+                "noPriceStopsInvented": true,
+                "unconditionalSnapshot": true,
+                "runnerEnforcesCalendar": true
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 80,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/fundamental.mjs",
+                "test": "tournament-fundamental.test.mjs"
+              }
+            },
+            "historicalAdmission": "BLOCKED_DATA",
+            "dataRequirements": null
+          },
+          {
+            "id": "value_plus_momentum",
+            "version": "1.0.0",
+            "rulebookHash": "967a16fe08c4532436ce765e7065e8fd663365a5a155af7f3661ecbee74be0fc",
+            "rulebook": {
+              "id": "value_plus_momentum",
+              "parameters": {
+                "bookLagMonths": 6,
+                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
+                "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
+                "rebalance": "MONTHLY",
+                "holdMonths": 1,
+                "adaptations": [
+                  "VU PIT universe replaces original large/liquid universe",
+                  "Two positive long sleeves; no short legs or factor-return inheritance"
+                ],
+                "sources": [
+                  "vm2013"
+                ]
+              },
+              "rules": {
+                "bookLagMonths": 6,
+                "momentum": "MOM2\u201312_TOTAL_RETURN",
+                "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
+                "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
+                "rebalance": "MONTHLY",
+                "holdMonths": 1,
+                "adaptations": [
+                  "VU PIT universe replaces original large/liquid universe",
+                  "Two positive long sleeves; no short legs or factor-return inheritance"
+                ],
+                "sources": [
+                  "vm2013"
+                ]
+              },
+              "sources": [
+                {
+                  "id": "vm2013",
+                  "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
+                  "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+                }
+              ],
+              "fidelity": {
+                "classification": "VU_ADAPTATION",
+                "originalReplication": false,
+                "paperReturnsInherited": false,
+                "confidence": "SOURCE_DEFINED_WITH_EXPLICIT_ADAPTATIONS",
+                "adaptations": [
+                  "VU PIT universe replaces original large/liquid universe",
+                  "Two positive long sleeves; no short legs or factor-return inheritance"
+                ]
+              },
+              "portfolioSemantics": {
+                "rebalance": "MONTHLY",
+                "holdMonths": 1,
+                "signalAt": "ASOF_CLOSE",
+                "execution": "NEXT_SESSION_OR_LATER",
+                "longOnly": true,
+                "leverage": 1,
+                "noPriceStopsInvented": true,
+                "unconditionalSnapshot": true,
+                "runnerEnforcesCalendar": true
+              },
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "distinctivenessProductScore": 85,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/fundamental.mjs",
+                "test": "tournament-fundamental.test.mjs"
+              }
+            },
+            "historicalAdmission": "BLOCKED_DATA",
+            "dataRequirements": null
+          },
+          {
+            "id": "TURTLE_S2_EQUITY_DAILY",
+            "version": "1.0.0",
+            "rulebookHash": "4cf9612a1992665e0857e44778bd3c813589c37af7526943d22d1ac4bcfffc02",
+            "rulebook": {
+              "id": "TURTLE_S2_EQUITY_DAILY",
+              "name": "Turtle S2 inspired equity daily adaptation",
+              "family": "Trend Following",
+              "fidelity": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "confidence": "MEDIUM",
+              "execution": "NEXT_SESSION_OPEN",
+              "portfolioPolicy": {
+                "mode": "STATEFUL_DAILY",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+                "tieBreak": "SECURITY_ID_ASCENDING",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "portfolioSemantics": {
+                "mode": "STATEFUL_DAILY",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+                "tieBreak": "SECURITY_ID_ASCENDING",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "params": {
+                "entrySessions": 55,
+                "exitSessions": 20,
+                "nSessions": 20,
+                "riskUnitFraction": 0.01,
+                "initialStopN": 2,
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxExposure": 1
+              },
+              "sourceEra": "1983\u20131988 original futures program; publicly documented original rules 2003; research daily equity adaptation",
+              "provenance": [
+                {
+                  "id": "TUR-F-S2-ENTRY",
+                  "classification": "SOURCE_DEFINED",
+                  "description": "55 prior-session highest high; source takes intraday price break, this engine evaluates closing price strictly above prior high.",
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed p.19; scripts/supertrader/fidelity/canonical/turtle.json"
+                },
+                {
+                  "id": "TUR-F-EXIT-S2",
+                  "classification": "SOURCE_DEFINED",
+                  "description": "20 prior-session lowest low exit-channel concept.",
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed p.26; scripts/supertrader/fidelity/canonical/turtle.json"
+                },
+                {
+                  "id": "TUR-F-N-01",
+                  "classification": "SOURCE_DEFINED",
+                  "description": "N20 seeds with 20 true ranges then updates (19*N+TR)/20.",
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.12\u201313; scripts/supertrader/fidelity/canonical/turtle.json"
+                },
+                {
+                  "id": "TUR-F-UNIT-01",
+                  "classification": "SOURCE_DEFINED",
+                  "description": "One source unit risks 1% equity for a 1N move: share unit = 0.01*equity/N.",
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.14\u201315; scripts/supertrader/fidelity/canonical/turtle.json"
+                },
+                {
+                  "id": "TUR-F-STOP-2N",
+                  "classification": "SOURCE_DEFINED",
+                  "description": "Initial stop concept is actual execution fill minus 2 pre-signal N, not a future-day low.",
+                  "source": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf printed pp.21\u201322; scripts/supertrader/fidelity/canonical/turtle.json"
+                },
+                {
+                  "id": "TUR-E-DAILY",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Closed daily signals execute at next session open; stop only closes below known level, no intraday orders.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "TUR-E-SIZE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Use prior-day N daily and signal-close reference price for planned weight; cap each ticker at 10%, maximum ten, cash-only. Actual fill may change realized initial risk.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "TUR-E-PORT",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Long-only equities; one unit with no pyramid, no correlated-market limits, no annual notional-account drawdown haircut; deterministic security-id ordering.",
+                  "source": "Tournament protocol / explicit adaptation"
+                }
+              ],
+              "missingSourceComponents": [
+                "Original futures asset universe and both directions",
+                "Intraday channel execution",
+                "Half-N pyramiding up to four units",
+                "Weekly sizing sheet",
+                "Correlated-market unit limits",
+                "Dennis discretionary notional capital and drawdown cuts",
+                "Source strength selection when signals compete"
+              ],
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "distinctivenessProductScore": 60,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/legendary.mjs",
+                "test": "tournament-legendary.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": [
+              "Original futures asset universe and both directions",
+              "Intraday channel execution",
+              "Half-N pyramiding up to four units",
+              "Weekly sizing sheet",
+              "Correlated-market unit limits",
+              "Dennis discretionary notional capital and drawdown cuts",
+              "Source strength selection when signals compete"
+            ]
+          },
+          {
+            "id": "WEINSTEIN_STAGE_DAILY",
+            "version": "1.0.0",
+            "rulebookHash": "4da4079440dfd5527ee1393e9d1d9be36535f50a27288c929efeca33baf21771",
+            "rulebook": {
+              "id": "WEINSTEIN_STAGE_DAILY",
+              "name": "Weinstein inspired daily stage adaptation",
+              "family": "Stage Analysis",
+              "fidelity": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "confidence": "LOW",
+              "execution": "NEXT_SESSION_OPEN",
+              "portfolioPolicy": {
+                "mode": "STATEFUL_DAILY",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+                "tieBreak": "SECURITY_ID_ASCENDING",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "portfolioSemantics": {
+                "mode": "STATEFUL_DAILY",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+                "tieBreak": "SECURITY_ID_ASCENDING",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "params": {
+                "averageSessions": 150,
+                "slopeSessions": 20,
+                "entrySessions": 50,
+                "maxBaseWidth": 0.3,
+                "volumeSessions": 20,
+                "volumeMultiple": 1.5,
+                "relativeStrengthSessions": 63,
+                "stopBuffer": 0.01,
+                "fixedWeight": 0.1,
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxExposure": 1
+              },
+              "sourceEra": "1988 stage-analysis investor concepts; public secondary book excerpts; research daily equity adaptation",
+              "provenance": [
+                {
+                  "id": "WEI-C-ST-01",
+                  "classification": "SOURCE_PRINCIPLE_SECONDARY",
+                  "description": "Stage 2 means price above a rising 30-week average; avoid buying below a falling average.",
+                  "source": "https://thepatternsite.com/TradingWeinstein.html; scripts/supertrader/fidelity/canonical/weinstein.json"
+                },
+                {
+                  "id": "WEI-C-ENTRY-01",
+                  "classification": "SOURCE_PRINCIPLE_SECONDARY",
+                  "description": "Resistance break supported by volume and relative strength; market direction matters.",
+                  "source": "https://thepatternsite.com/TradingWeinstein.html; scripts/supertrader/fidelity/canonical/weinstein.json"
+                },
+                {
+                  "id": "WEI-C-STOP-01",
+                  "classification": "SOURCE_PRINCIPLE_SECONDARY",
+                  "description": "Source chart-dependent support stops are not a fixed universal percent or basis low.",
+                  "source": "https://thepatternsite.com/WeinsteinStops.html; scripts/supertrader/fidelity/canonical/weinstein.json"
+                },
+                {
+                  "id": "WEI-E-STAGE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "150-session daily SMA substitutes 30 weeks; rising means current SMA above SMA20 sessions earlier, for stock and supplied market.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "WEI-E-ENTRY",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Close strictly above prior50-session high; prior-base width <=30%; signal-day volume >=1.5*prior20 average.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "WEI-E-RS",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Stock63-session close-price return exceeds same-date market return; this is not source Mansfield RS.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "WEI-E-STOP",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Initial stop level 1% below prior50-session lowest low; close below known stop or daily SMA150 triggers next-open exit; no trailing swing logic.",
+                  "source": "Tournament protocol / explicit adaptation"
+                },
+                {
+                  "id": "WEI-E-PORT",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Fixed10% each, maximum ten, cash-only, no short side, half-position pullback or industry selection; deterministic security-id ordering.",
+                  "source": "Tournament protocol / explicit adaptation"
+                }
+              ],
+              "missingSourceComponents": [
+                "Own book text not inspected in canonical audit",
+                "Completed-week source calculations",
+                "Mansfield RS and 52-week average",
+                "Source market breadth and strongest-industry selection",
+                "Half-position plus pullback",
+                "Chart-defined swing stops and trailing stops",
+                "Source portfolio sizing policy"
+              ],
+              "version": "1.0.0",
+              "classification": "VU_ADAPTATION",
+              "distinctivenessProductScore": 70,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/legendary.mjs",
+                "test": "tournament-legendary.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": [
+              "Own book text not inspected in canonical audit",
+              "Completed-week source calculations",
+              "Mansfield RS and 52-week average",
+              "Source market breadth and strongest-industry selection",
+              "Half-position plus pullback",
+              "Chart-defined swing stops and trailing stops",
+              "Source portfolio sizing policy"
+            ]
+          },
+          {
+            "id": "KULLAMAGI_DAILY_ADAPTATION",
+            "version": "1.0.0",
+            "rulebookHash": "9c0c6338195a843f327bef604529965b96f271199dd404d2dc72ad15eeca8d95",
+            "rulebook": {
+              "id": "KULLAMAGI_DAILY_ADAPTATION",
+              "version": "1.0.0",
+              "name": "VU Daily Momentum Consolidation \u2014 Kullam\u00e4gi inspired",
+              "family": "Momentum / Breakout",
+              "fidelity": "VU_ADAPTATION",
+              "replicationClaimAllowed": false,
+              "confidence": "MEDIUM",
+              "parameters": {
+                "momentumSessions": [
+                  21,
+                  63,
+                  126
+                ],
+                "leaderFraction": 0.02,
+                "baseSessions": 20,
+                "impulseSessions": 63,
+                "minimumImpulse": 0.3,
+                "maximumBaseWidth": 0.15,
+                "tighteningSessions": 5,
+                "maximumRangeRatio": 0.8,
+                "averageSessions": 10,
+                "trendSessions": 20,
+                "slopeSessions": 5,
+                "atrSessions": 20,
+                "partialAfterSessions": 4,
+                "sellFraction": 0.3333333333333333,
+                "riskFraction": 0.005,
+                "maxWeight": 0.1,
+                "maxPositions": 10,
+                "maxExposure": 1
+              },
+              "params": {
+                "momentumSessions": [
+                  21,
+                  63,
+                  126
+                ],
+                "leaderFraction": 0.02,
+                "baseSessions": 20,
+                "impulseSessions": 63,
+                "minimumImpulse": 0.3,
+                "maximumBaseWidth": 0.15,
+                "tighteningSessions": 5,
+                "maximumRangeRatio": 0.8,
+                "averageSessions": 10,
+                "trendSessions": 20,
+                "slopeSessions": 5,
+                "atrSessions": 20,
+                "partialAfterSessions": 4,
+                "sellFraction": 0.3333333333333333,
+                "riskFraction": 0.005,
+                "maxWeight": 0.1,
+                "maxPositions": 10,
+                "maxExposure": 1
+              },
+              "rules": [
+                {
+                  "id": "KK-S-LEADER",
+                  "classification": "SOURCE_PRINCIPLE",
+                  "description": "Recent 1/3/6-month leaders, prior impulse, orderly tighter consolidation, then breakout.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Breakouts"
+                },
+                {
+                  "id": "KK-S-DAILY",
+                  "classification": "SOURCE_DEFINED_OPTION",
+                  "description": "Author expressly permits daily-chart entry instead of an intraday chart.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ How do you trade this setup? item2"
+                },
+                {
+                  "id": "KK-S-STOP",
+                  "classification": "SOURCE_PRINCIPLE",
+                  "description": "Day-low stop and distance bounded by ATR or ADR; source intraday behavior is not reproduced.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item3"
+                },
+                {
+                  "id": "KK-S-SELL",
+                  "classification": "SOURCE_DEFINED_RANGE",
+                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
+                },
+                {
+                  "id": "KK-S-RISK",
+                  "classification": "SOURCE_DEFINED_RANGE",
+                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
+                },
+                {
+                  "id": "KK-V-LEADER",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Prior completed21/63/126-session close returns; topceil(2%*eligible cross-section) on any window, positive return; ties by security id.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-BASE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Prior20-session high/low width<=15%; last5 mean daily ranges<=0.8*first5; last5 minimum low>first5 minimum low; prior MA10 rising over5 sessions, last prior close>=MA20.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-IMPULSE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "The63-session close return ending immediately before the20-session base must be>=30%.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-EXECUTION",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Signal close strictly above prior base high; next-session open only. Initial stop is known SIGNAL-day low, never future execution-day low. Reject actual fill<=stop or fill-stop>prior ATR20.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-ATR",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Simple mean of prior20 true ranges, excluding signal day; choose ATR instead of ADR.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-SELL",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Partial after heldSessions>=4: sell1/3 at next open; executor then marks partialDone and raises stop to entryPrice. After successful partial, close below SMA10 triggers next-open full exit. Known-stop close exit takes precedence.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-PORTFOLIO",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "0.5% planned trade risk, entry10% weight cap, ten positions,100% total, unlevered long only; actual fill risk sizing uses fixed known stop. Hold current weights; no hidden market filter, pyramiding or anticipation.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                }
+              ],
+              "provenance": [
+                {
+                  "id": "KK-S-LEADER",
+                  "classification": "SOURCE_PRINCIPLE",
+                  "description": "Recent 1/3/6-month leaders, prior impulse, orderly tighter consolidation, then breakout.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Breakouts"
+                },
+                {
+                  "id": "KK-S-DAILY",
+                  "classification": "SOURCE_DEFINED_OPTION",
+                  "description": "Author expressly permits daily-chart entry instead of an intraday chart.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ How do you trade this setup? item2"
+                },
+                {
+                  "id": "KK-S-STOP",
+                  "classification": "SOURCE_PRINCIPLE",
+                  "description": "Day-low stop and distance bounded by ATR or ADR; source intraday behavior is not reproduced.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item3"
+                },
+                {
+                  "id": "KK-S-SELL",
+                  "classification": "SOURCE_DEFINED_RANGE",
+                  "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
+                },
+                {
+                  "id": "KK-S-RISK",
+                  "classification": "SOURCE_DEFINED_RANGE",
+                  "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+                  "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
+                },
+                {
+                  "id": "KK-V-LEADER",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Prior completed21/63/126-session close returns; topceil(2%*eligible cross-section) on any window, positive return; ties by security id.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-BASE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Prior20-session high/low width<=15%; last5 mean daily ranges<=0.8*first5; last5 minimum low>first5 minimum low; prior MA10 rising over5 sessions, last prior close>=MA20.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-IMPULSE",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "The63-session close return ending immediately before the20-session base must be>=30%.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-EXECUTION",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Signal close strictly above prior base high; next-session open only. Initial stop is known SIGNAL-day low, never future execution-day low. Reject actual fill<=stop or fill-stop>prior ATR20.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-ATR",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Simple mean of prior20 true ranges, excluding signal day; choose ATR instead of ADR.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-SELL",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "Partial after heldSessions>=4: sell1/3 at next open; executor then marks partialDone and raises stop to entryPrice. After successful partial, close below SMA10 triggers next-open full exit. Known-stop close exit takes precedence.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                },
+                {
+                  "id": "KK-V-PORTFOLIO",
+                  "classification": "VU_FORMALIZATION",
+                  "description": "0.5% planned trade risk, entry10% weight cap, ten positions,100% total, unlevered long only; actual fill risk sizing uses fixed known stop. Hold current weights; no hidden market filter, pyramiding or anticipation.",
+                  "source": "Explicit frozen VU tournament specification, not attributed to trader"
+                }
+              ],
+              "sources": [
+                {
+                  "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
+                  "author": "Kristjan Kullam\u00e4gi",
+                  "era": "January/April2021 public article",
+                  "accessStatus": "PRIMARY_BODY_INSPECTED",
+                  "accessedDate": "2026-10-11"
+                }
+              ],
+              "execution": "NEXT_SESSION_OPEN",
+              "portfolioSemantics": {
+                "rebalance": "DAILY",
+                "mode": "STATEFUL_DAILY",
+                "targetWeightScope": "STATEFUL",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT_OR_PARTIAL",
+                "stopExecution": "CLOSE_SIGNAL_NEXT_OPEN",
+                "marketFilter": "NONE",
+                "partialStateUpdate": "ONLY_AFTER_SUCCESSFUL_EXECUTION",
+                "tieBreak": "SCORE_DESC_SECURITY_ID_ASC",
+                "initialStopBasis": "KNOWN_SIGNAL_DAY_LOW",
+                "entryFillValidation": "validateKullamagiEntryFill",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "portfolioPolicy": {
+                "rebalance": "DAILY",
+                "mode": "STATEFUL_DAILY",
+                "targetWeightScope": "STATEFUL",
+                "execution": "NEXT_SESSION_OPEN",
+                "maxPositions": 10,
+                "maxWeight": 0.1,
+                "maxWeightAppliesAt": "ENTRY_ONLY",
+                "maxExposure": 1,
+                "leverage": false,
+                "shorts": false,
+                "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT_OR_PARTIAL",
+                "stopExecution": "CLOSE_SIGNAL_NEXT_OPEN",
+                "marketFilter": "NONE",
+                "partialStateUpdate": "ONLY_AFTER_SUCCESSFUL_EXECUTION",
+                "tieBreak": "SCORE_DESC_SECURITY_ID_ASC",
+                "initialStopBasis": "KNOWN_SIGNAL_DAY_LOW",
+                "entryFillValidation": "validateKullamagiEntryFill",
+                "provenance": "VU_FORMALIZATION"
+              },
+              "missingSourceComponents": [
+                "Subjective visual setup selection",
+                "Intraday ORH and day-low stop execution",
+                "Choice among exit and sizing ranges",
+                "Original portfolio leverage and personal account verification"
+              ],
+              "classification": "VU_ADAPTATION",
+              "distinctivenessProductScore": 80,
+              "runnerOperationalProvenance": "protocol.json",
+              "codeAndTestMap": {
+                "module": "engines/kullamagi.mjs",
+                "test": "tournament-kullamagi.test.mjs"
+              }
+            },
+            "historicalAdmission": "ADMITTED_RESEARCH_ADAPTATION",
+            "dataRequirements": [
+              "Subjective visual setup selection",
+              "Intraday ORH and day-low stop execution",
+              "Choice among exit and sizing ranges",
+              "Original portfolio leverage and personal account verification"
+            ]
+          }
+        ],
+        "dataBlocked": [
+          {
+            "id": "gross_profitability_novy_marx",
+            "reason": "CERTIFIED_HISTORICAL_ANNUAL_FACTS_AND_DIRECT_MARKET_EQUITY_UNAVAILABLE",
+            "status": "BLOCKED_DATA"
+          },
+          {
+            "id": "piotroski_value_fscore",
+            "reason": "CERTIFIED_HISTORICAL_ANNUAL_FACTS_AND_DIRECT_MARKET_EQUITY_UNAVAILABLE",
+            "status": "BLOCKED_DATA"
+          },
+          {
+            "id": "greenblatt_magic_formula",
+            "reason": "CERTIFIED_HISTORICAL_ANNUAL_FACTS_AND_DIRECT_MARKET_EQUITY_UNAVAILABLE",
+            "status": "BLOCKED_DATA"
+          },
+          {
+            "id": "value_plus_momentum",
+            "reason": "CERTIFIED_HISTORICAL_ANNUAL_FACTS_AND_DIRECT_MARKET_EQUITY_UNAVAILABLE",
+            "status": "BLOCKED_DATA"
+          },
+          {
+            "id": "residual_momentum",
+            "status": "DATA_UNAVAILABLE_UNTIL_CERTIFIED",
+            "sourceIds": [
+              "residual2011"
+            ],
+            "requirements": [
+              "36 complete monthly canonical total returns per stock",
+              "PIT aligned monthly FF3 mktRF/smb/hml/rf series, with units and vintage contract",
+              "Standardized 12\u22121 residuals excluding estimated alpha",
+              "Exact source holding horizon freeze"
+            ],
+            "reason": "Factor availability is not established by raw prices; no market/industry proxy permitted."
+          },
+          {
+            "id": "industry_momentum",
+            "status": "DATA_UNAVAILABLE_UNTIL_CERTIFIED",
+            "sourceIds": [
+              "mg1999"
+            ],
+            "requirements": [
+              "PIT two-digit SIC classification and exact original 20-group mapping",
+              "PIT market capitalization for value weights within industry",
+              "Six-month industry returns; three winning industries; equal industry sleeves"
+            ],
+            "reason": "Current sector labels cannot reconstruct historical SIC membership; no sector-ETF proxy."
+          }
+        ]
+      },
+      "outcome": "CANCELLED_INDEPENDENT_SIGNAL_AND_FORMATION_ELIGIBILITY_ACCOUNTING_BUGS",
+      "changes": [
+        "LOSSLESS_PER_LISTING_STREAMING_MEMORY_BUG_FIX",
+        "CURRENT_CANONICAL_HISTORY_REFERENCE_REUSE"
+      ],
+      "identical_protocol_hash": true,
+      "identical_rulebook_hashes": {
+        "cross_sectional_momentum": true,
+        "52_week_high_effect": true,
+        "LOW_VOLATILITY": true,
+        "gross_profitability_novy_marx": true,
+        "piotroski_value_fscore": true,
+        "greenblatt_magic_formula": true,
+        "value_plus_momentum": true,
+        "TURTLE_S2_EQUITY_DAILY": true,
+        "WEINSTEIN_STAGE_DAILY": true,
+        "KULLAMAGI_DAILY_ADAPTATION": true
+      },
+      "tests_passed": 123,
+      "actual_strategy_outcomes_opened": false,
+      "bugs": [
+        "Held-position liquidity bypass affected new academic formation eligibility",
+        "Legendary signal census depended on holdings and portfolio admission rather than independent eligible setups"
+      ],
+      "correction_kind": "REPRODUCIBLE_MEASUREMENT_AND_UNIVERSE_ACCOUNTING_BUG_FIX_NOT_PARAMETER_TUNING",
+      "phase_proof": {
+        "all_historical_shards": "HISTORICAL_DATA_READY",
+        "turtle": "METHOD_STARTED",
+        "weinstein": "METHOD_STARTED",
+        "kullamagi": "METHOD_STARTED",
+        "systematic": "FIRST_METHOD_COMPLETED_NEXT_STARTED",
+        "current": "CURRENT_SCAN_STARTED"
+      },
+      "memory_fix_production": "HISTORICAL_NORMALIZATION_SUCCEEDED_NO_HEAP_OOM",
+      "partial_strategy_results": "SEALED_ARCHIVED_NOT_OPENED_NOT_USED_FOR_RANKING_OR_PARAMETER_CHOICE",
+      "archived_partial_zip": "/workspace/attachments/8d573f9a-b770-4961-9788-7afda90587d5/invalid-census-run.zip"
     }
   ]
 }

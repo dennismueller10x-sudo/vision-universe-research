@@ -38,7 +38,7 @@ export function formationContext(data,method,asOf,book,protocol,indexed=indexDat
  const securities=[];
  for(const s of data.securities){const i=indexed.positions.get(s.id).get(asOf);if(i===undefined||i+1<minLookback(method))continue;
   if(s.dataQuarantine?.from<=asOf)continue;
-  if(eligibleAt(s,i,protocol)||book?.positions.has(s.id))securities.push(snapshot(s,i,asOf,methodLookback(method)));
+  if(eligibleAt(s,i,protocol)||(isStateful(method)&&book?.positions.has(s.id)))securities.push(snapshot(s,i,asOf,methodLookback(method)));
  }
  const benchmarkBars=data.benchmark?.bars||data.spyBars||[];
  const market={bars:benchmarkBars.filter(b=>b.date<=asOf).slice(-400)};
@@ -64,12 +64,24 @@ function targetsInExecutionBasis(result,context,indexed){
  });
 }
 function combineCohorts(cohorts,fraction){const combined=new Map();for(const c of cohorts)for(const t of c.targets){if(!combined.has(t.id))combined.set(t.id,{...t,weight:0});combined.get(t.id).weight+=t.weight*fraction;}return[...combined.values()];}
-function collectSignals(method,result,asOf,regime,signals){
- let selected;
- if(isStateful(method)){
-  selected=(result.signals||[]).filter(s=>['ENTER','ENTRY','BUY'].includes(s.action));
- }else selected=result.targets;
- for(const t of selected)signals.push({id:t.id,ticker:t.ticker,date:asOf,ruleTrace:t.ruleTrace||result.ruleTrace?.find(r=>r.id===t.id)||result.ruleTrace||[],regime,forward:{}});
+// A setup census shares already-built causal snapshots, but removes portfolio
+// positions and rechecks common raw-price/liquidity eligibility. Engine trace
+// decisions include setups rejected only by portfolio capacity; rejected stop,
+// history or N checks do not become signals. Execution receives the original
+// portfolio result and never these measurement-only rows.
+export function statefulSetupCensus(data,method,context,protocol,indexed=indexData(data)){
+ if(!isStateful(method))throw new Error('STATEFUL_SETUP_CENSUS_REQUIRED');
+ const securities=context.securities.filter(s=>{const source=indexed.byId.get(s.id),i=indexed.positions.get(s.id)?.get(context.asOf);return source&&i!==undefined&&eligibleAt(source,i,protocol);});
+ const result=method.evaluate({...context,securities,positions:[],state:{}}),byId=new Map(securities.map(s=>[s.id,s])),seen=new Set(),setups=[];
+ if(success.has(result.status))for(const trace of result.ruleTrace||[]){
+  if(!['ENTRY_CANDIDATE','ENTER','REJECT_PORTFOLIO_CAP'].includes(trace.decision)||!byId.has(trace.id)||seen.has(trace.id))continue;
+  const security=byId.get(trace.id);seen.add(trace.id);
+  setups.push({id:security.id,ticker:security.ticker,ruleTrace:trace,measurementBasis:'PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP',setupOnly:true});
+ }
+ return{status:result.status,eligible:securities.length,setups,result};
+}
+function collectSignals(selected,result,asOf,regime,signals){
+ for(const t of selected)signals.push({id:t.id,ticker:t.ticker,date:asOf,ruleTrace:t.ruleTrace||result.ruleTrace?.find(r=>r.id===t.id)||result.ruleTrace||[],...(t.measurementBasis?{measurementBasis:t.measurementBasis,setupOnly:true}:{}),regime,forward:{}});
 }
 function terminalRows(data,date){return data.securities.filter(s=>s.terminal?.date===date).map(s=>({...s.terminal,id:s.id,trailingRawReturn60:s.bars.length>60?s.bars.at(-1).close/s.bars.at(-61).close-1:null}));}
 export function benchmarkCurve(data,capital){
@@ -81,7 +93,7 @@ export function benchmarkCurve(data,capital){
 export function runMethod(data,method,protocol,{costMultiplier=1,scenario=protocol.delisting.baseline,measureSignals=true}={}){
  if(data.calendar[0]<protocol.window.from||data.calendar.at(-1)>protocol.window.to)throw new Error('WINDOW_MISMATCH');
  const indexed=indexData(data),book=createBook(protocol.execution.initialCapital),cfg={...protocol.execution,slippageBpsPerSide:protocol.execution.slippageBpsPerSide*costMultiplier,commissionBpsPerSide:protocol.execution.commissionBpsPerSide*costMultiplier};
- const signals=[],cohorts=[],states={},formationCounts={};let pending=null,blocked=0;
+ const signals=[],cohorts=[],states={},formationCounts={},setupFormationCounts={};let pending=null,blocked=0;
  for(let di=0;di<data.calendar.length;di++){
   const date=data.calendar[di],bars=indexed.days.get(date)||new Map();creditDividends(book,bars);let turnover=0;
   if(pending){turnover=executeTargets(book,pending.targets,bars,date,cfg,{stateful:isStateful(method),signals:pending.signals,asOf:pending.asOf,validateEntryFill:method.validateEntryFill});
@@ -97,11 +109,17 @@ export function runMethod(data,method,protocol,{costMultiplier=1,scenario=protoc
   if(method.portfolioSemantics.targetWeightScope==='NEW_COHORT'){
    const month=monthNumber(date);while(cohorts.length&&month-cohorts[0].month>=method.portfolioSemantics.cohortMonths)cohorts.shift();
   }
-  const context=formationContext(data,method,date,book,protocol,indexed),result=method.evaluate(context);
+  const context=formationContext(data,method,date,book,protocol,indexed);
+  const regime=measureSignals?marketRegime(data.benchmark?.bars||data.spyBars,date,protocol):null;
+  if(measureSignals&&isStateful(method)){
+   const census=statefulSetupCensus(data,method,context,protocol,indexed);
+   setupFormationCounts[census.status]=(setupFormationCounts[census.status]||0)+1;
+   if(success.has(census.status))collectSignals(census.setups,{},date,regime,signals);
+  }
+  const result=method.evaluate(context);
   formationCounts[result.status]=(formationCounts[result.status]||0)+1;
   if(!success.has(result.status)){blocked++;if(method.portfolioSemantics.targetWeightScope==='NEW_COHORT')pending={asOf:date,targets:combineCohorts(cohorts,method.portfolioSemantics.cohortCapitalFraction),signals:[]};continue;}
-  const regime=marketRegime(data.benchmark?.bars||data.spyBars,date,protocol);
-  if(measureSignals)collectSignals(method,result,date,regime,signals);
+  if(measureSignals&&!isStateful(method))collectSignals(result.targets,result,date,regime,signals);
   let targets=targetsInExecutionBasis(result,context,indexed);
   if(method.portfolioSemantics.targetWeightScope==='NEW_COHORT'){
    cohorts.push({month:monthNumber(date),targets});
@@ -112,7 +130,7 @@ export function runMethod(data,method,protocol,{costMultiplier=1,scenario=protoc
  }
  const reconciliation=reconcileBook(book);if(!reconciliation.pass)throw new Error('ACCOUNTING_RECONCILIATION_FAILED');
  if(measureSignals)populateForwardReturns(signals,data,protocol,indexed,scenario);
- return{id:method.id,curve:book.curve,signals,trades:book.trades,turnover:book.turnover,executionCosts:book.executionCosts,dividends:book.dividends,terminalCount:book.terminalCount,formationCounts,blockedFormations:blocked,rejections:book.rejections,reconciliation,scenario,costMultiplier,states,pendingForwardTargets:pending,endingPositions:[...book.positions.values()]};
+ return{id:method.id,curve:book.curve,signals,trades:book.trades,turnover:book.turnover,executionCosts:book.executionCosts,dividends:book.dividends,terminalCount:book.terminalCount,formationCounts,blockedFormations:blocked,signalCensus:{basis:isStateful(method)?'PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP':'ACADEMIC_FORMATION_SELECTION',measured:measureSignals,formationCounts:setupFormationCounts},rejections:book.rejections,reconciliation,scenario,costMultiplier,states,pendingForwardTargets:pending,endingPositions:[...book.positions.values()]};
 }
 // Start every signal return at the first available benchmark session AFTER the
 // signal date, at its open. Compare SPY over exactly the same timestamps.
@@ -142,9 +160,10 @@ export function currentScan(data,method,protocol,asOf){
  // join a cross-section whose other observations are dated today.
  const fresh=prepared.securities.filter(s=>s.bars.at(-1)?.date===asOf);
  prepared.securities=fresh;
- const context=formationContext(prepared,method,asOf,null,protocol),result=method.evaluate(context);
- const candidates=result.targets.map(t=>{const security=fresh.find(s=>s.id===t.id),issuerCik=security?.issuerCik||null,sameIssuer=issuerCik?fresh.filter(s=>String(s.issuerCik)===String(issuerCik)).map(s=>s.ticker):[];return{id:t.id,ticker:t.ticker,weight:t.weight,score:t.score??null,reason:t.ruleTrace||result.ruleTrace?.find(r=>r.id===t.id)||result.signals?.find(r=>r.id===t.id)||null,signalAsOf:asOf,signalFreshness:'CLOSED_SESSION',keyRulesSatisfied:true,issuerCik,sameIssuerSecurities:sameIssuer,identityFlags:[...(!issuerCik?['ISSUER_CIK_UNAVAILABLE']:[]),...(sameIssuer.length>1?['MULTIPLE_SECURITIES_SAME_ISSUER']:[]),...(security?.instrumentType==='ADR'?['ADR_SEPARATE_CLASS']:[]),...(security?.issuerCikConflict?['ISSUER_CIK_CONFLICT']:[])],regimeCompatibility:method.id==='WEINSTEIN_STAGE_DAILY'?'ENGINE_MARKET_GATE':'NO_SOURCE_REGIME_GATE',researchOnly:true};});
- return{id:method.id,asOf,status:result.status,numberMatches:candidates.length,candidates,formationTiming:'RESEARCH_SNAPSHOT; scheduled trading dates remain frozen',dataLimitations:data.limitations,universeExamined:context.securities.length};
+ const context=formationContext(prepared,method,asOf,null,protocol),census=isStateful(method)?statefulSetupCensus(prepared,method,context,protocol):null,result=census?census.result:method.evaluate(context);
+ const selectedTargets=new Map(result.targets.map(t=>[t.id,t])),matches=census?census.setups:result.targets;
+ const candidates=matches.map(t=>{const target=selectedTargets.get(t.id),security=fresh.find(s=>s.id===t.id),issuerCik=security?.issuerCik||null,sameIssuer=issuerCik?fresh.filter(s=>String(s.issuerCik)===String(issuerCik)).map(s=>s.ticker):[];return{id:t.id,ticker:t.ticker,weight:census?(target?.weight??null):t.weight,score:census?(target?.score??null):(t.score??null),...(census?{portfolioAdmission:target?'CAP_SELECTED':'SOURCE_SETUP_ONLY',portfolioTarget:target||null,measurementBasis:t.measurementBasis}:{}),reason:t.ruleTrace||result.ruleTrace?.find(r=>r.id===t.id)||result.signals?.find(r=>r.id===t.id)||null,signalAsOf:asOf,signalFreshness:'CLOSED_SESSION',keyRulesSatisfied:true,issuerCik,sameIssuerSecurities:sameIssuer,identityFlags:[...(!issuerCik?['ISSUER_CIK_UNAVAILABLE']:[]),...(sameIssuer.length>1?['MULTIPLE_SECURITIES_SAME_ISSUER']:[]),...(security?.instrumentType==='ADR'?['ADR_SEPARATE_CLASS']:[]),...(security?.issuerCikConflict?['ISSUER_CIK_CONFLICT']:[])],regimeCompatibility:method.id==='WEINSTEIN_STAGE_DAILY'?'ENGINE_MARKET_GATE':'NO_SOURCE_REGIME_GATE',researchOnly:true};});
+ return{id:method.id,asOf,status:result.status,numberMatches:candidates.length,candidates,...(census?{matchBasis:'STATEFUL_SOURCE_SETUP_CENSUS',portfolioAdmittedMatches:result.targets.length}:{}),formationTiming:'RESEARCH_SNAPSHOT; scheduled trading dates remain frozen',dataLimitations:data.limitations,universeExamined:context.securities.length};
 }
 export function currentConsensus(scans,eligibleMethodIds){
  const eligible=new Set(eligibleMethodIds),map=new Map();

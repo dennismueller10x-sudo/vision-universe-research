@@ -1,7 +1,7 @@
 {
   "review_date": "2026-10-11",
   "scope": "Independent pre-performance cache, CLI/sharding/workflow and historical source identity-admission fix review; no actual outcomes viewed.",
-  "disposition": "PASS_GATE_A_PRE_PERFORMANCE_STREAMING_MEMORY_AND_PUBLICATION_PRIVACY",
+  "disposition": "PASS_GATE_A_PRE_PERFORMANCE_PORTFOLIO_INDEPENDENT_SETUP_CENSUS",
   "cache_bound": 4096,
   "semantics": {
     "unchanged_uncached_validator": true,
@@ -112,7 +112,7 @@
     "additional_assumption": "Existing active/current product-universe metadata remains Core identity-admissible; unsupported fallback rows are not repaired or aliased by this fix."
   },
   "final_preperformance_disposition": {
-    "approved_scope": "Research-only execution of final refrozen code with operational cache/shard/source-admission corrections",
+    "approved_scope": "Research-only execution of newly refrozen code with operational memory corrections and portfolio-independent setup measurement",
     "no_new_parameters": true,
     "no_validation_waiver": true,
     "source_rulebook_hashes_unchanged_all_ten": true,
@@ -177,6 +177,41 @@
     "test_file_outside_frozen_tournament_pattern": true,
     "reviewer_changed_only_unfrozen_publication_adapter_and_its_test": true
   },
-  "current_frozen_code_assertion": "PASS",
-  "latest_review_commit": "00b5eb1b715b412d9aed1aef2e70f94be5e017ca"
+  "current_frozen_code_assertion": "REFREEZE_REQUIRED_FOR_REVIEWED_RUNNER_AND_TEST_CHANGES",
+  "latest_review_commit": "00b5eb1b715b412d9aed1aef2e70f94be5e017ca",
+  "last_reviewed_at": "2026-10-11T15:59:05.597Z",
+  "setup_census_review": {
+    "disposition": "PASS",
+    "reviewed_files": [
+      "scripts/supertrader/research/tournament/runner.mjs",
+      "scripts/supertrader/tests/tournament-runner.test.mjs"
+    ],
+    "held_eligibility_bypass_limited_to_stateful_exit_management": true,
+    "academic_new_formations_obey_common_raw_price_and_dollar_volume_floors": true,
+    "retained_academic_cohort_accounting_unchanged": true,
+    "source_qualified_stateful_setups_measured_with_empty_positions_and_rechecked_common_eligibility": true,
+    "all_cap_rejected_setup_trace_rows_retained": true,
+    "source_rejected_history_N_and_stop_rows_excluded": true,
+    "census_precedes_actual_portfolio_status_gate": true,
+    "actual_execution_targets_sizing_and_fill_validator_unchanged": true,
+    "current_scan_uses_same_census_as_historical_membership": true,
+    "cap_rejected_current_rows_have_null_weight_score_and_target": true,
+    "synthetic_three_real_engines_setup_count": 12,
+    "synthetic_three_real_engines_portfolio_admitted_count": 10,
+    "synthetic_KK_common_eligible_universe_size": 600,
+    "historical_setup_objects_unchanged_by_cost_and_holdings": true,
+    "portfolio_synthetic_outputs_identical_with_and_without_census_measurement": true,
+    "independent_previous_HEAD_runner_full_portfolio_comparisons_passed": true,
+    "independent_KK_active_entry_and_partial_baseline_parity_passed": true,
+    "independent_current_historical_Weinstein_membership_parity_passed": true,
+    "entire_current_synthetic_suite_passed": 138,
+    "entire_current_synthetic_suite_failed": 0,
+    "all_ten_method_rulebook_hashes_unchanged": true,
+    "protocol_hash_unchanged": true,
+    "performance_values_accessed": false,
+    "performance_conclusion": "NONE",
+    "production_resource_success": "NOT_YET_OBSERVED_BY_REVIEWER",
+    "new_freeze_required": true,
+    "rule_scope": "Census represents source-qualified signal-close setups; actual next-open admission/fill validation remains a separate portfolio execution event."
+  }
 }
