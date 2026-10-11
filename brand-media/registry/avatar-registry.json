@@ -44,7 +44,39 @@
       "voiceProvider": "heygen",
       "voiceId": "becf484d4ec3411b992206f95e6a3aa5",
       "voiceVersion": "0.0.0-provisional",
-      "voiceCandidate": null,
+      "voiceStatus": "REJECTED_BY_OWNER_2026-10-11 (Stimme 'Lea' becf484d... passt nicht, zu kuenstlich); Ersatz: Kandidaten, keine endgueltige ID bis Freigabe",
+      "voiceCandidates": [
+        {
+          "name": "Susi",
+          "voiceId": "3be7fbe93bb14a16b14ecb3a6082fedf",
+          "engine": "orca",
+          "sample": "voices/samples/LEA_1_Susi.mp3"
+        },
+        {
+          "name": "Pleasant Petra",
+          "voiceId": "897e08ae92a54e2f9178ae074120262b",
+          "engine": "orca",
+          "sample": "voices/samples/LEA_2_Pleasant_Petra.mp3"
+        },
+        {
+          "name": "Greta Stein",
+          "voiceId": "2347d5abd10f4a0c85a5b13eb24c6c39",
+          "engine": "orca",
+          "sample": "voices/samples/LEA_3_Greta_Stein.mp3"
+        },
+        {
+          "name": "Sylvia - Warm & Friendly",
+          "voiceId": "41021db5177e42bbb5d025db36f8ac46",
+          "engine": "orca",
+          "sample": "voices/samples/LEA_4_Sylvia.mp3"
+        },
+        {
+          "name": "Liberty X",
+          "voiceId": "24ce8c26e4b24adb9e9d6b17a782bc7d",
+          "engine": "orca",
+          "sample": "voices/samples/LEA_5_Liberty.mp3"
+        }
+      ],
       "qaStatus": "REVIEW",
       "costUsdTotal": 2.47,
       "costBreakdownUsd": {
@@ -62,30 +94,52 @@
       "masterPath": "originals/david_master_original.png",
       "masterSha256": "c9bc5187c9b578d471b34c9d2f47372448b48896f3b809ad4ecbb6b170a39235",
       "heygenAssetId": "e746360d109047cab0777f9571e50610",
-      "heygenAvatarGroupId": null,
-      "heygenLookIds": [],
+      "heygenAvatarGroupId": "91bd009cb1c607c1065257daa4c85b8f",
+      "heygenLookIds": [
+        "91bd009cb1c607c1065257daa4c85b8f"
+      ],
       "heygenDefaultVoiceId": null,
       "heygenTestVoiceId": null,
       "consentStatus": "NOT_REQUIRED_BY_HEYGEN_PHOTO_AVATAR",
       "consentRecord": "Eigener Nachweis: Auftraggeber hat Upload und Avatar-Anlage fuer diese Figur am 2026-10-10 im Mission-01-Auftrag (Chat) beauftragt; Figur gilt als fiktiv/KI-generiert (vom Auftraggeber zu bestaetigen).",
-      "status": "NOT_CREATED_BUDGET_GATE",
-      "avatarEngine": null,
+      "status": "CREATED_COMPLETED",
+      "avatarEngine": "heygen",
       "avatarEngineTested": null,
-      "avatarEngineSupportedByApi": null,
+      "avatarEngineSupportedByApi": [
+        "avatar_v",
+        "avatar_iv",
+        "avatar_iii"
+      ],
       "voiceProvider": null,
       "voiceId": null,
       "voiceVersion": null,
-      "voiceCandidate": {
-        "provider": "heygen",
-        "voiceId": "ef0632945bc64e3b888bd83a50363671",
-        "name": "Nero - Thoughtful & Clear",
-        "tested": false,
-        "heard": false
+      "voiceStatus": "CANDIDATES_PENDING_OWNER_CHOICE",
+      "voiceCandidates": [
+        {
+          "name": "Nero - Thoughtful & Clear",
+          "voiceId": "ef0632945bc64e3b888bd83a50363671",
+          "engine": "orca",
+          "sample": "voices/samples/DAVID_1_Nero.mp3"
+        },
+        {
+          "name": "Mordecai - Serious & Composed",
+          "voiceId": "d284344a1ba04039bdfdede36a319f32",
+          "engine": "orca",
+          "sample": "voices/samples/DAVID_2_Mordecai.mp3"
+        },
+        {
+          "name": "Quiet Dieter",
+          "voiceId": "45535f795f41425fa45e58ad66687d4d",
+          "engine": "orca",
+          "sample": "voices/samples/DAVID_3_Quiet_Dieter.mp3"
+        }
+      ],
+      "qaStatus": "DRAFT",
+      "costUsdTotal": 1.32,
+      "costBreakdownUsd": {
+        "avatarCreate": 1.32
       },
-      "qaStatus": null,
-      "costUsdTotal": 0,
-      "costBreakdownUsd": null,
-      "lastSuccessfulGeneration": null
+      "lastSuccessfulGeneration": "2026-10-11"
     },
     {
       "id": "marc",
@@ -107,13 +161,8 @@
       "voiceProvider": null,
       "voiceId": null,
       "voiceVersion": null,
-      "voiceCandidate": {
-        "provider": "heygen",
-        "voiceId": "d284344a1ba04039bdfdede36a319f32",
-        "name": "Mordecai - Serious & Composed",
-        "tested": false,
-        "heard": false
-      },
+      "voiceStatus": null,
+      "voiceCandidates": null,
       "qaStatus": null,
       "costUsdTotal": 0,
       "costBreakdownUsd": null,
@@ -139,13 +188,8 @@
       "voiceProvider": null,
       "voiceId": null,
       "voiceVersion": null,
-      "voiceCandidate": {
-        "provider": "heygen",
-        "voiceId": "133d11fe30af4bd7914bdbe4586357c1",
-        "name": "Jane - Bright & Energetic",
-        "tested": false,
-        "heard": false
-      },
+      "voiceStatus": null,
+      "voiceCandidates": null,
       "qaStatus": null,
       "costUsdTotal": 0,
       "costBreakdownUsd": null,
@@ -174,7 +218,10 @@
       "afterTestVideo": 2.27,
       "checkedAt": "2026-10-10",
       "afterClip15": 1.8,
-      "afterAvatarVTest": 1.2
+      "afterAvatarVTest": 1.2,
+      "afterTopUp": 16.2,
+      "afterDavidAvatar": 14.88,
+      "afterVoiceSamples": 14.72
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   }

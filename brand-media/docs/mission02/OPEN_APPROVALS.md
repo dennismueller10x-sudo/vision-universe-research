@@ -19,3 +19,11 @@
 ## Repository
 11. **PR #583** (`brand-media/` aus Pages ausschließen) vor jedem Merge von `claude/brand-media-mission-01`; zusätzlich ein Ausschluss für `video/` bei künftigem Pipeline-Code. Keine Merges durch mich.
 12. Binärspeicher für Videos: LFS-Kontingent oder S3/R2 festlegen.
+
+## Update 2026-10-11 (Stimmen, DAVID, Trailer)
+- **Stimmen wählen:** LEA 1–5, DAVID 1–3 (`VOICE_SELECTION_LEA_DAVID.md`). Danach Voice-ID festschreiben.
+- **DAVID-Avatar angelegt** (1,32 USD, Gruppe/Look `91bd009c…`). Avatar-V-Test mit DAVID offen.
+- **Cinematic-Preis-Sonde** (≈ 2 USD Obergrenze) und danach Variante A/B/C.
+- **Finale Plattform-Screenrecordings:** Zugang zur passwortgeschützten Seite oder frische Daten lokal; Datenrechte (Tiingo/Indizes) für Bildschirmaufnahmen klären.
+- Wallet: **14,72 USD** (aufgeladen auf 16,20).
+- MARC/SOFIA unverändert nicht angelegt. ATLAS-Avatare unverändert.
