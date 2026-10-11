@@ -49,3 +49,6 @@ Siehe `docs/trailer01/PRODUCTION_PLAN.md`, Abschnitt 9. Es wurde nichts generier
 
 ## Update 2026-10-11 (Raumfilm-Reset)
 Siehe `docs/trailer01/ROOM_FILM_PLAN.md`, Abschnitt 10. Nichts generiert; Wallet 14,42 USD.
+
+## Update 2026-10-11 (Revision 2 Raumfilm)
+Siehe `docs/trailer01/ROOM_FILM_PLAN.md`, Abschnitt „REVISION 2“. Offen zusätzlich: optionaler gesprochener Satz für Akt IV, Freigabe Gate 1 (Clip A+B, 768p), Off-Stimme. Nichts generiert, Wallet 14,42 USD.
