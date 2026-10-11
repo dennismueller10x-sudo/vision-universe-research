@@ -13,8 +13,15 @@ function quantile(xs, q) {
   const sorted = xs.slice().sort((a, b) => a - b), p = q * (sorted.length - 1), lo = Math.floor(p), hi = Math.ceil(p);
   return sorted[lo] + (sorted[hi] - sorted[lo]) * (p - lo);
 }
+function extrema(xs) {
+  if (!xs.length) return { min: null, max: null };
+  let min = Infinity, max = -Infinity;
+  for (const x of xs) { min = Math.min(min, x); max = Math.max(max, x); }
+  return { min, max };
+}
 function summary(xs) {
-  return { n: xs.length, mean: mean(xs), median: quantile(xs, 0.5), hitRate: xs.length ? xs.filter((x) => x > 0).length / xs.length : null, leftTail: quantile(xs, 0.05), rightTail: quantile(xs, 0.95), min: xs.length ? Math.min(...xs) : null, max: xs.length ? Math.max(...xs) : null };
+  const bounds = extrema(xs);
+  return { n: xs.length, mean: mean(xs), median: quantile(xs, 0.5), hitRate: xs.length ? xs.filter((x) => x > 0).length / xs.length : null, leftTail: quantile(xs, 0.05), rightTail: quantile(xs, 0.95), min: bounds.min, max: bounds.max };
 }
 function curveIssues(curve) {
   if (!Array.isArray(curve)) return ['CURVE_NOT_ARRAY'];
@@ -71,7 +78,7 @@ export function portfolioMetrics(curve, options = {}) {
     sharpeRiskFree: 0, annualization: { sessionDays: 252, calendarDaysPerYear: 365.25, standardDeviationDdof: 1 },
     averageExposure: mean(exposureValues), medianExposure: quantile(exposureValues,0.5), exposureCoverage: { valid: exposureValues.length, total: curve.length }, exposureBuckets,
     exposureBreakdown: { lt25: exposureValues.filter(x=>x<0.25).length/exposureValues.length, between25and50: exposureValues.filter(x=>x>=0.25&&x<0.5).length/exposureValues.length, between50and75: exposureValues.filter(x=>x>=0.5&&x<0.75).length/exposureValues.length, between75and100: exposureValues.filter(x=>x>=0.75&&x<=1).length/exposureValues.length, nearFull95: exposureValues.filter(x=>x>=0.95&&x<=1).length/exposureValues.length },
-    averageHoldings: mean(holdingValues), medianHoldings: quantile(holdingValues,0.5), maxHoldings: holdingValues.length ? Math.max(...holdingValues) : null,
+    averageHoldings: mean(holdingValues), medianHoldings: quantile(holdingValues,0.5), maxHoldings: extrema(holdingValues).max,
     turnover, turnoverCoverage, turnoverAnnualized: turnover !== null && elapsedDays > 0 ? turnover * 365.25 / elapsedDays : null,
     trades: inputTrades ? { n: netTrades.length, supplied: inputTrades.length, invalidPnl: inputTrades.length - netTrades.length, pnl: sum(netTrades.map((t) => t.pnl)), winRate: netTrades.length ? winners.length / netTrades.length : null, averageWin: mean(winners.map((t) => t.pnl)), averageLoss: mean(losers.map((t) => t.pnl)), averageReturnPct: mean(tradeReturns), medianReturnPct: quantile(tradeReturns, 0.5), profitFactor: losers.length ? sum(winners.map((t) => t.pnl)) / -sum(losers.map((t) => t.pnl)) : null, entryCapitalBasis: inputTrades.every((t) => finite(t.cost)) ? sum(inputTrades.map((t) => t.cost)) : null, executionCosts, accounting: 'pnl is net supplied by runner; cost is entry capital basis; transactionCosts/executionCosts are reporting only, never subtracted again' } : null,
     executionCosts,

@@ -1,0 +1,146 @@
+{
+  "schema": "supertrader-current-scan-independent-review-1.0.0",
+  "status": "PASS_WITH_LIMITATIONS",
+  "review_scope": "OUTPUT_AND_FROZEN_CODE_NOT_INDEPENDENT_RAW_BAR_REPLAY",
+  "as_of": "2026-10-09",
+  "measurement_bug_count": 0,
+  "checks": [
+    {
+      "check": "EXACT_TEN_METHOD_SCOPE",
+      "status": "PASS"
+    },
+    {
+      "check": "FROZEN_METHOD_AND_DEPENDENCY_HASH_MATCH",
+      "status": "PASS"
+    },
+    {
+      "check": "LATEST_CLOSED_SESSION_ALL_METHODS",
+      "status": "PASS"
+    },
+    {
+      "check": "CANDIDATE_FRESHNESS_SELF_CONSISTENT",
+      "status": "PASS"
+    },
+    {
+      "check": "MATCH_COUNTS_AND_UNIQUE_IDS",
+      "status": "PASS"
+    },
+    {
+      "check": "CURRENT_METADATA_AND_IDENTITY_FLAGS_MATCH",
+      "status": "PASS"
+    },
+    {
+      "check": "NO_OFFICIAL_REUSE_GENERATION_CONTAMINATION_OBSERVED",
+      "status": "PASS"
+    },
+    {
+      "check": "BENCHMARK_CANONICAL_AVAILABLE",
+      "status": "PASS"
+    },
+    {
+      "check": "ALL_REPORTED_TRACE_DATES_KNOWN_BY_ASOF",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_CENSUS_SCOPE_TURTLE_S2_EQUITY_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_RAW_NO_INVENTED_SIZE_TURTLE_S2_EQUITY_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_ADMITTED_METADATA_TURTLE_S2_EQUITY_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_SOURCE_SETUP_TRACE_TURTLE_S2_EQUITY_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_CENSUS_SCOPE_WEINSTEIN_STAGE_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_RAW_NO_INVENTED_SIZE_WEINSTEIN_STAGE_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_ADMITTED_METADATA_WEINSTEIN_STAGE_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_SOURCE_SETUP_TRACE_WEINSTEIN_STAGE_DAILY",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_CENSUS_SCOPE_KULLAMAGI_DAILY_ADAPTATION",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_RAW_NO_INVENTED_SIZE_KULLAMAGI_DAILY_ADAPTATION",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_ADMITTED_METADATA_KULLAMAGI_DAILY_ADAPTATION",
+      "status": "PASS"
+    },
+    {
+      "check": "STATEFUL_SOURCE_SETUP_TRACE_KULLAMAGI_DAILY_ADAPTATION",
+      "status": "PASS"
+    },
+    {
+      "check": "ALL_FOUR_FUNDAMENTAL_METHODS_EXPLICITLY_BLOCKED",
+      "status": "PASS"
+    },
+    {
+      "check": "DIAGNOSTIC_CONSENSUS_EXACT_MEMBERSHIP",
+      "status": "PASS"
+    },
+    {
+      "check": "CONSENSUS_DATE_AND_METHOD_COUNTS",
+      "status": "PASS"
+    },
+    {
+      "check": "STRONG_CONSENSUS_NOT_PROMOTED_BEFORE_HISTORY",
+      "status": "PASS"
+    },
+    {
+      "check": "CURRENT_ONLY_NO_PERFORMANCE_OR_RANKING",
+      "status": "PASS"
+    },
+    {
+      "check": "FORWARD_LEDGER_PREPARED_NOT_LIVE",
+      "status": "PASS"
+    },
+    {
+      "check": "CANONICAL_RETURN_CONFIG_HASH_EXACT",
+      "status": "PASS"
+    },
+    {
+      "check": "PROTOCOL_BYTES_MATCH_FROZEN_HASH",
+      "status": "PASS"
+    },
+    {
+      "check": "CURRENT_OPENED_AFTER_FREEZE_AND_LEDGER_BOUND",
+      "status": "PASS"
+    }
+  ],
+  "limitation_codes": [
+    "OUTPUT_AND_FROZEN_CODE_AUDIT_NOT_AN_INDEPENDENT_R2_BAR_REPLAY",
+    "CURRENT_UNIVERSE_IS_PRODUCT_UNIVERSE_NOT_HISTORICAL_PIT_UNIVERSE",
+    "STOCK_AND_SPY_EXACT_DATE_ENFORCEMENT_VERIFIED_THROUGH_FROZEN_LOADER_AND_RUNNER; raw last bars not serialized in report",
+    "CANONICAL_RETURN_VALIDITY_VERIFIED_THROUGH_FROZEN_CODE_CONTRACT_COVERAGE_AND_REJECTIONS; raw action fields unavailable for replay",
+    "PUBLIC_SOURCE_GENERATION_RECONCILIATION_HAS_CONSERVATIVE_LATER_METADATA_STARTS_AND_SOME_MISSING_SOURCE_TICKERS; no observed reused-generation contradiction",
+    "SHARE_CLASSES_AND_ADRS_REMAIN_DISTINCT_SECURITIES_WITH_FLAGS_NOT_ISSUER_DEDUPLICATED",
+    "MISSING_CIKS_EXPLICITLY_FLAGGED_AND_PREVENT_COMPLETE_ISSUER_RECONCILIATION",
+    "PARTIAL_ACADEMIC_STATUSES_REFLECT_INCOMPLETE_REQUIRED_HISTORY_NO_PROXY_FILL",
+    "CURRENT_FUNDAMENTAL_ROWS_UNCERTIFIED_AND_FOUR_METHODS_BLOCKED",
+    "COVERAGE_WITHFUNDAMENTALS_IS_INITIAL_PRICE_ADAPTER_COUNT_BEFORE_CURRENT_FACT_ATTACHMENTS_NOT_FINAL_SEC_COVERAGE",
+    "QUARANTINED_OR_STALE_HISTORIES_EXCLUDED_FROM_CURRENT_SAME_SESSION_SELECTION; public counts do not identify which raw input fault",
+    "CURRENT_SNAPSHOT_IS_RESEARCH_AND_NOT_A_PORTFOLIO_EXECUTION_RECOMMENDATION",
+    "STRONG_CONSENSUS_AND_FORWARD_PRIORITY_REQUIRE_HISTORICAL_REVIEW; current diagnostic overlap is not independent evidence"
+  ],
+  "provider_metrics_and_security_identifiers": "PRIVATE_ENCRYPTED",
+  "code_or_rule_changes": false
+}

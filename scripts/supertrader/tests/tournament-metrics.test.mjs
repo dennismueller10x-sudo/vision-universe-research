@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { portfolioMetrics, signalMetrics, regimeMetrics, methodOverlap, rankEvidence } from '../research/tournament/metrics.mjs';
 const protocol = JSON.parse(fs.readFileSync(new URL('../research/tournament/protocol.json', import.meta.url), 'utf8'));
+// Test-only access to the existing internal summary; production exports stay unchanged.
+const metricsSource = fs.readFileSync(new URL('../research/tournament/metrics.mjs', import.meta.url), 'utf8');
+const { testSummary } = await import(`data:text/javascript;base64,${Buffer.from(`${metricsSource}\nexport { summary as testSummary };`).toString('base64')}`);
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-10, `${a} != ${b}`);
 function signal(id, date, value, regime = { trend: 'BULL', vol: 'LOW_VOL', era: 'EARLY' }) {
   return { id, ticker: id.toUpperCase(), date, entryDate: date, regime, forward: Object.fromEntries([21, 63, 126].map((h) => [h, { return: value + 0.02, excess: value, mfe: 0.2, mae: -0.1, censored: false }])) };
@@ -15,6 +18,59 @@ function evidenceRow() {
   const signals = adequateSignals();
   return { executable: true, fidelityCategory: 'SYSTEMATIC', portfolioMetrics: { cagr: 0.15, sharpe: 1, maxDrawdown: -0.2 }, signalMetrics: signalMetrics(signals), regimeMetrics: regimeMetrics(signals), dataQuality: { pitListings: true, canonicalPrices: true, terminalScenarioUncertainty: true, missingRequiredPitFundamentals: false }, distinctivenessProductScore: 80, sensitivities: { terminalPass: true, costPass: true }, adversarialReviewPass: true };
 }
+
+test('linear summary extrema exactly match the original spread summary, including signed zero and empty input', () => {
+  const originalQuantile = (xs, q) => {
+    if (!xs.length) return null;
+    const sorted = xs.slice().sort((a, b) => a - b), p = q * (sorted.length - 1), lo = Math.floor(p), hi = Math.ceil(p);
+    return sorted[lo] + (sorted[hi] - sorted[lo]) * (p - lo);
+  };
+  const originalSummary = xs => ({ n: xs.length, mean: xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null,
+    median: originalQuantile(xs, 0.5), hitRate: xs.length ? xs.filter(x => x > 0).length / xs.length : null,
+    leftTail: originalQuantile(xs, 0.05), rightTail: originalQuantile(xs, 0.95),
+    min: xs.length ? Math.min(...xs) : null, max: xs.length ? Math.max(...xs) : null });
+  for (const xs of [[], [-0], [0], [-0, 0], [0, -0], [3, -4, 2, 9, -4], [1e-200, -1e200, 1e200], [NaN, 1], [Infinity, -Infinity]]) {
+    assert.deepEqual(testSummary(xs), originalSummary(xs), `exact original summary for ${xs}`);
+  }
+  assert.ok(Object.is(testSummary([-0, 0]).min, -0));
+  assert.ok(Object.is(testSummary([-0, 0]).max, 0));
+  assert.ok(Object.is(testSummary([-0]).max, -0));
+  assert.equal(testSummary([]).min, null);
+  assert.equal(testSummary([]).max, null);
+});
+
+test('300000 setup signals exceed spread argument limits while all horizon summaries retain analytic values', () => {
+  const pattern = [
+    { return: -0.125, excess: -0.125, mfe: 0.25, mae: -0.5, censored: false },
+    { return: 0, excess: 0.125, mfe: 0.5, mae: -0.25, censored: false },
+    { return: 0.25, excess: 0.375, mfe: 0.75, mae: 0, censored: false },
+  ];
+  const seeds = Array.from({ length: 300000 }, (_, i) => ({ date: `2024-${String(1 + Math.floor(i / 25000)).padStart(2, '0')}-15`,
+    forward: { 21: pattern[i % 3], 63: pattern[i % 3], 126: pattern[i % 3] } }));
+  const output = signalMetrics(seeds);
+  assert.equal(output.status, 'READY');
+  assert.equal(output.totalSignals, 300000);
+  for (const horizon of [21, 63, 126]) {
+    const h = output.horizons[horizon];
+    assert.equal(h.n, 300000); assert.equal(h.nExcess, 300000); assert.equal(h.censored, 0); assert.equal(h.missing, 0);
+    assert.equal(h.clusters, 12);
+    assert.equal(h.meanReturn, 1 / 24); assert.equal(h.medianReturn, 0); assert.equal(h.hitRate, 1 / 3);
+    assert.equal(h.meanExcess, 0.125); assert.equal(h.medianExcess, 0.125); assert.equal(h.excessHitRate, 2 / 3);
+    assert.equal(h.returns.min, -0.125); assert.equal(h.returns.max, 0.25); assert.equal(h.leftTail, -0.125); assert.equal(h.rightTail, 0.25);
+    assert.equal(h.excess.min, -0.125); assert.equal(h.excess.max, 0.375); assert.equal(h.excessLeftTail, -0.125); assert.equal(h.excessRightTail, 0.375);
+    assert.equal(h.meanMfe, 0.5); assert.equal(h.mfe.min, 0.25); assert.equal(h.mfe.max, 0.75);
+    assert.equal(h.meanMae, -0.25); assert.equal(h.mae.min, -0.5); assert.equal(h.mae.max, 0);
+  }
+});
+
+test('holding maximum uses the same bounded-argument scan above the call limit and preserves signed zero', () => {
+  const curve = Array.from({ length: 300000 }, (_, i) => ({ date: new Date(Date.UTC(2000, 0, i + 1)).toISOString().slice(0, 10), equity: 100, n: i % 11 }));
+  const out = portfolioMetrics(curve, { initialCapital: 100 });
+  assert.equal(out.status, 'READY'); assert.equal(out.maxHoldings, 10); assert.equal(out.observations, 300000);
+  assert.ok(Object.is(portfolioMetrics([{ date: '2024-01-01', equity: 100, n: -0 }], { initialCapital: 100 }).maxHoldings, -0));
+  assert.ok(Object.is(portfolioMetrics([{ date: '2024-01-01', equity: 100, n: -0 }, { date: '2024-01-02', equity: 100, n: 0 }], { initialCapital: 100 }).maxHoldings, 0));
+  assert.equal(portfolioMetrics([{ date: '2024-01-01', equity: 100 }], { initialCapital: 100 }).maxHoldings, null);
+});
 
 test('calendar CAGR, total return and high-water drawdown include initial capital', () => {
   const curve = [{ date: '2019-01-01', equity: 100, exposure: 0, n: 0 }, { date: '2020-01-01', equity: 80, exposure: 0.2, n: 1 }, { date: '2021-01-01', equity: 120, exposure: 0.6, n: 2 }, { date: '2023-01-01', equity: 200, exposure: 1, n: 3 }];

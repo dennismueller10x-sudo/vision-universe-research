@@ -1,7 +1,7 @@
 {
   "review_date": "2026-10-11",
   "scope": "Independent pre-performance cache, CLI/sharding/workflow and historical source identity-admission fix review; no actual outcomes viewed.",
-  "disposition": "PASS_GATE_A_PRE_PERFORMANCE_PORTFOLIO_INDEPENDENT_SETUP_CENSUS",
+  "disposition": "PASS_GATE_A_PRE_OUTCOME_EXTREMA_RUNTIME_FIX",
   "cache_bound": 4096,
   "semantics": {
     "unchanged_uncached_validator": true,
@@ -175,9 +175,19 @@
     "synthetic_privacy_tests_failed": 0,
     "test_file": "scripts/supertrader/tests/publication-review.test.mjs",
     "test_file_outside_frozen_tournament_pattern": true,
-    "reviewer_changed_only_unfrozen_publication_adapter_and_its_test": true
+    "reviewer_changed_only_unfrozen_publication_adapter_and_its_test": true,
+    "setup_census_allowlist_review": {
+      "disposition": "PASS",
+      "unknown_status_keys_sanitized_to_OTHER_STATUS": true,
+      "only_allowlisted_basis_enums_booleans_and_counts_added": true,
+      "raw_setup_and_portfolio_admission_counts_distinguished": true,
+      "blocked_count_nulls_preserved": true,
+      "private_null_sizing_display_explicit": true,
+      "synthetic_sentinel_absent_from_public_outputs": true,
+      "no_rank_or_metric_calculation": true
+    }
   },
-  "current_frozen_code_assertion": "REFREEZE_REQUIRED_FOR_REVIEWED_RUNNER_AND_TEST_CHANGES",
+  "current_frozen_code_assertion": "REFREEZE_REQUIRED_AFTER_REVIEWED_REPORTING_RUNTIME_FIX",
   "latest_review_commit": "00b5eb1b715b412d9aed1aef2e70f94be5e017ca",
   "last_reviewed_at": "2026-10-11T15:59:05.597Z",
   "setup_census_review": {
@@ -212,6 +222,81 @@
     "performance_conclusion": "NONE",
     "production_resource_success": "NOT_YET_OBSERVED_BY_REVIEWER",
     "new_freeze_required": true,
-    "rule_scope": "Census represents source-qualified signal-close setups; actual next-open admission/fill validation remains a separate portfolio execution event."
+    "rule_scope": "Census represents source-qualified signal-close setups; actual next-open admission/fill validation remains a separate portfolio execution event.",
+    "test_count_breakdown": {
+      "tournament_unique": 130,
+      "publication_unique": 4,
+      "core_requested_unique": 134,
+      "auxiliary_context_additional_unique": 4,
+      "all_invoked_unique": 138,
+      "duplicate_test_invocations": 0,
+      "command": "node --test scripts/supertrader/tests/tournament-*.test.mjs scripts/supertrader/tests/auxiliary-context.test.mjs scripts/supertrader/tests/publication-review.test.mjs",
+      "independent_scratch_portfolio_comparisons": "SEPARATE_NOT_INCLUDED_IN_NODE_TEST_COUNT"
+    }
+  },
+  "residual_factor_auxiliary_review": {
+    "disposition": "PASS_SOURCE_METADATA_SCOPE_ONLY",
+    "official_free_annual_archives": "AVAILABLE",
+    "contemporaneous_monthly_PIT_release_vintages": "UNCERTIFIED",
+    "factor_values_public": false,
+    "redistribution_license": "UNCERTIFIED",
+    "frozen_admission_unchanged": "BLOCKED_DATA",
+    "independent_external_downloads": "NOT_REPEATED"
+  },
+  "additional_data_quality_review": {
+    "artifact": "/workspace/scratch/tournament-data-quality-caveats.json",
+    "disposition": "RESEARCH_PANEL_USABLE_WITH_UNRESOLVED_REPRESENTATIVENESS; NOT_COMPLETE_PIT_OR_HIGH_CONFIDENCE_CERTIFICATION",
+    "findings_count": 8,
+    "actual_strategy_outcomes_read": false,
+    "final_review_required": true
+  },
+  "extrema_runtime_review": {
+    "schema": "supertrader-independent-extrema-runtime-review-1.0.0",
+    "reviewedAt": "2026-10-11T16:54:30.526Z",
+    "disposition": "PASS_PRE_OUTCOME_SEMANTICALLY_PRESERVING_REPORTING_RUNTIME_FIX",
+    "scope": "Unbounded numerical summary/min-max and portfolio holding maximum only",
+    "reviewer_repo_edits": false,
+    "historical_numeric_strategy_outcomes_opened": false,
+    "prior_runtime_failure_class": "JAVASCRIPT_SPREAD_ARGUMENT_LIMIT_RANGE_ERROR",
+    "current_method_rulebook_hashes_unchanged_all_ten": true,
+    "current_protocol_hash_unchanged": true,
+    "rankEvidence_entire_rubric_section_exact_source_unchanged": true,
+    "rankEvidence_rubric_section_sha256": "196b6cad7703476319a41c138bd1ce652d18d7c50f788569b0d45e6e38d5cec4",
+    "new_frozen_code_required": true,
+    "reviewed_files": [
+      {
+        "path": "scripts/supertrader/research/tournament/metrics.mjs",
+        "sha256": "655a5d89d6de204e65c30d37d0d45a8ece780d60447049dbbccd539ebc823ca5"
+      },
+      {
+        "path": "scripts/supertrader/tests/tournament-metrics.test.mjs",
+        "sha256": "a744043479e91b8240b3e6e3bfb18f68e897a78274e6d0c6358e5c2e473a7d60"
+      }
+    ],
+    "semantic_checks": {
+      "bounded_two_argument_Math_min_max": true,
+      "empty_summary_bounds_remain_null": true,
+      "positive_and_negative_zero_preserved": true,
+      "NaN_and_Infinity_direct_summary_semantics_preserved": true,
+      "production_finite_number_filters_unchanged": true,
+      "input_iteration_order_and_all_other_statistics_unchanged": true,
+      "mean_quantiles_HAC_confidence_tiers_and_weights_unchanged": true
+    },
+    "test_evidence": {
+      "metrics_tests_passed": 24,
+      "metrics_tests_failed": 0,
+      "large_signal_horizon_analytic_test_count": 300000,
+      "large_portfolio_holdings_curve_test_count": 300000,
+      "independent_full_signal_and_regime_parity_cases": 87,
+      "independent_signed_zero_checks": 8,
+      "independent_large_signal_analytic_count": 250000,
+      "original_large_array_RangeError_reproduced": true,
+      "independent_script": "/workspace/scratch/extrema-independent-review.mjs",
+      "baseline_module": "/workspace/scratch/metrics-before-extrema-fix.mjs"
+    },
+    "data_quality_scope_findings_preserved": "/workspace/scratch/tournament-data-quality-caveats.json",
+    "actual_result_adversarial_review": "PENDING_FULL_CONSOLIDATED_PAYLOAD",
+    "performance_or_final_tier_conclusion": "NONE",
+    "live_or_merge_approval": "NOT_GRANTED"
   }
 }

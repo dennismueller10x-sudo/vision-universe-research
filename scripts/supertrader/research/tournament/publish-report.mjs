@@ -67,6 +67,14 @@ const RISK = ['SHALLOWER', 'SIMILAR', 'DEEPER', 'UNAVAILABLE'];
 const REVIEW = ['PASSED', 'FAILED', 'PENDING', 'BLOCKED', 'NOT_RUN'];
 const SCAN = ['OK', 'AVAILABLE', 'READY', 'PARTIAL', 'DATA_GAP', 'BLOCKED_DATA', 'DATA_UNAVAILABLE', 'INSUFFICIENT_DATA', 'UNAVAILABLE'];
 const SCAN_WITH_COUNT = ['OK', 'AVAILABLE', 'READY', 'PARTIAL'];
+const CENSUS_BASIS = ['PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP', 'ACADEMIC_FORMATION_SELECTION'];
+const MATCH_BASIS = ['STATEFUL_SOURCE_SETUP_CENSUS', 'ACADEMIC_FORMATION_SELECTION'];
+function publicStatusCounts(value) {
+  const entries = Object.entries(value ?? {}).filter(([, n]) => count(n) !== null);
+  const known = Object.fromEntries(entries.filter(([status]) => SCAN.includes(status)));
+  const other = entries.filter(([status]) => !SCAN.includes(status)).reduce((n, [, amount]) => n + amount, 0);
+  return count(other) !== null && other > 0 ? {...known, OTHER_STATUS: other} : known;
+}
 export const ENGINE_DOSSIER_MAP = Object.freeze({
   cross_sectional_momentum: 'cross_sectional_momentum', '52_week_high_effect': '52_week_high_effect',
   LOW_VOLATILITY: 'LOW_VOLATILITY', gross_profitability_novy_marx: 'gross_profitability_novy_marx',
@@ -127,6 +135,10 @@ function context(payload = {}, review = {}, metadata) {
       portfolio: r ? enumValue(r.portfolioClassification ?? r.portfolio, PORTFOLIO, 'UNAVAILABLE') : blocked ? 'UNAVAILABLE' : 'PENDING',
       risk: r ? enumValue(r.riskClassification ?? r.risk, RISK, 'UNAVAILABLE') : blocked ? 'UNAVAILABLE' : 'PENDING',
       signal_count: measured ? count(measured.signalMetrics?.totalSignals ?? measured.run?.signals?.length) : null,
+      signal_census_basis: enumValue(measured?.run?.signalCensus?.basis, CENSUS_BASIS, 'UNAVAILABLE'),
+      signal_census_measured: typeof measured?.run?.signalCensus?.measured === 'boolean' ? measured.run.signalCensus.measured : null,
+      signal_census_status_counts: publicStatusCounts(measured?.run?.signalCensus?.formationCounts),
+      portfolio_formation_status_counts: publicStatusCounts(measured?.run?.formationCounts),
       evidence_kind: measured ? 'SEEN_HISTORICAL_DATA' : 'UNMEASURED',
     };
   });
@@ -140,6 +152,8 @@ function context(payload = {}, review = {}, metadata) {
   const scans = array(payload.currentScans).filter(s => frozenIds.has(s.id)).map(s => ({
     method_id: s.id, status: enumValue(s.status, SCAN, 'UNAVAILABLE'),
     match_count: SCAN_WITH_COUNT.includes(s.status) ? count(s.numberMatches ?? array(s.candidates).length) : null,
+    match_basis: enumValue(s.matchBasis, MATCH_BASIS, 'UNSPECIFIED'),
+    portfolio_admitted_match_count: SCAN_WITH_COUNT.includes(s.status) ? count(s.portfolioAdmittedMatches) : null,
     identifiers: 'PRIVATE_ENCRYPTED', metrics: 'PRIVATE_ENCRYPTED',
   }));
   const declared = metadata.universe.counts ?? {};
@@ -262,7 +276,10 @@ export function buildPublicArtifacts(payload = {}, review = {}, metadata) {
   const out = {
     'SUPERTRADER-IMPLEMENTED-CANDIDATES.json': envelope({counts: ctx.totals, methods: plainRows, dossier_rows: ctx.dossierRows, data_blocked: ctx.blocked}),
     'SUPERTRADER-TOURNAMENT-RESULTS.json': envelope({counts: ctx.totals, executive_highlights: executiveHighlights(ctx), history: 'SEEN_HISTORICAL_DATA', methods: ctx.rows, final_questions: answerRows(ctx)}),
-    'SUPERTRADER-SIGNAL-QUALITY.json': envelope({methods: ctx.rows.map(r => ({method_id: r.method_id, signal: r.signal, confidence: r.confidence, signal_count: r.signal_count, inference: 'DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA'}))}),
+    'SUPERTRADER-SIGNAL-QUALITY.json': envelope({methods: ctx.rows.map(r => ({method_id: r.method_id, signal: r.signal, confidence: r.confidence, signal_count: r.signal_count,
+      signal_census_basis: r.signal_census_basis, signal_census_measured: r.signal_census_measured,
+      signal_census_status_counts: r.signal_census_status_counts, portfolio_formation_status_counts: r.portfolio_formation_status_counts,
+      inference: 'DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA', observations_are_independent_trades: false}))}),
     'SUPERTRADER-RISK-MATRIX.json': envelope({methods: riskRows}),
     'SUPERTRADER-REGIME-MATRIX.json': envelope({methods: regimes}),
     'SUPERTRADER-METHOD-OVERLAP.json': envelope({pair_count: overlap.length, pairs: overlap, independence_proven: false}),
@@ -305,6 +322,7 @@ export function buildPublicMarkdown(payload = {}, review = {}, metadata, ownerse
     `Die eingefrorene ursprüngliche Baseline enthält ${ctx.totals.baseline_original_rows} unveränderte Zeilen. Das aktive Universe erweitert und ergänzt andere Zeilen; Minervini bleibt exakt unverändert. Vorhandene Pipeline oder aktuelle Fundamentals belegen keine historischen PIT-Facts.`, '',
     'Öffentlich stehen ausschließlich Methoden-IDs, Enums und Counts. Numerische Provider-Metriken, aktuelle Aktien, Preise und Signal-IDs stehen ausschließlich im privaten verschlüsselten Report. Fehlende Daten bleiben fehlend; null bedeutet unbekannt oder blockiert.', '',
     'Historie: SEEN_HISTORICAL_DATA. Die Auswertung erzeugt Hypothesen; sie ist kein ungesehener Holdout, kein unabhängiger Alpha-Beweis und kein Beleg einer vollständigen Legendary-Replication. Cash-/Exposure-Attribution ist beschreibend; Sizing und Exit sind nicht kausal identifiziert.', '',
+    'Stateful-Signalqualität misst einen Portfolio-unabhängigen Census aller Source-Setups im gemeinsam zulässigen Universe, einschließlich ausschließlich wegen Kapazität abgelehnter Setups. Das ist eine Setup-Diagnose; tatsächliche Portfolio-Admissions, Next-open-Fill-Prüfungen und abgeschlossene Trades sind getrennte Ebenen. Wiederholte Setup-Daten derselben Aktie sind keine unabhängigen Trades. Akademische Signalqualität bezieht sich auf die eingefrorene Formation-Auswahl.', '',
     '## Executive Counts', '', '| Dimension | Count |', '|---|---:|',
     ...Object.entries(ctx.totals).map(([name, n]) => `| ${name} | ${n} |`), '',
     '## Executive-Auswahl', '',
@@ -406,7 +424,12 @@ export function buildPrivateMarkdown(payload = {}, review = {}, options = {}) {
   })));
   lines.push('## Signals, exposure, regimes and sensitivities by method', '');
   for (const result of results) {
-    lines.push(`### ${result.id}`, '', `Signal status: ${result.signalMetrics?.status ?? 'UNAVAILABLE'}. Inference remains descriptive; overlapping forward windows are not independent observations.`, '',
+    const census = result.run?.signalCensus;
+    lines.push(`### ${result.id}`, '', `Signal status: ${result.signalMetrics?.status ?? 'UNAVAILABLE'}; census basis: ${census?.basis ?? 'UNAVAILABLE'}; census measured: ${census?.measured === true ? 'TRUE' : census?.measured === false ? 'FALSE' : 'UNAVAILABLE'}.`, '',
+      'A portfolio-independent stateful census includes source-valid raw setups even when portfolio capacity rejects admission. Setup observations are not actual portfolio entries or completed trades. A target still needs a valid next-session fill; repeated dates for the same security are not independent trades. Academic evidence uses the frozen formation selection. Overlapping forward windows remain dependent.', '',
+      ...privateTable(['Source setup census status', 'Formation count'], Object.entries(census?.formationCounts ?? {}).map(([status, n]) => [status, privateNumber(n, 'count')])),
+      ...privateTable(['Actual portfolio evaluation status', 'Formation count'], Object.entries(result.run?.formationCounts ?? {}).map(([status, n]) => [status, privateNumber(n, 'count')])),
+      'An absent or empty separate census-status ledger is not evidence of zero observed setups; academic formation statuses remain in the portfolio evaluation ledger.', '',
       '#### Forward returns and SPY-matched excess', '',
       ...privateTable(['Sessions', 'N return', 'N excess', 'Censored', 'Missing', 'Mean return', 'Median return', 'Hit rate', 'Mean excess', 'Median excess', 'Excess hit rate'], [21, 63, 126].map(h => {
         const s = result.signalMetrics?.horizons?.[h] ?? {};
@@ -446,14 +469,15 @@ export function buildPrivateMarkdown(payload = {}, review = {}, options = {}) {
   lines.push('## Method overlap', '', 'Correlations and shared constituent observations do not establish independent strategy edges.', '',
     ...privateTable(['Method A', 'Method B', 'Return correlation', 'Matched intervals', 'ID/month Jaccard', 'ID/date Jaccard'], array(payload.overlap).map(o =>
       [o.methodA, o.methodB, privateNumber(o.returnCorrelation), privateNumber(o.commonReturnIntervals, 'count'), privateNumber(o.jaccardSameIdMonth), privateNumber(o.jaccardSameIdDate)])),
-    '## Current source-qualified candidates', '', `Snapshot as-of: ${payload.currentAsOf ?? 'UNAVAILABLE'}. Freshness, ticker identity and scanner availability remain data gates. Display up to ${candidateLimit} candidates per method in supplied engine order; this is not a new performance ranking.`, '');
+    '## Current source-qualified candidates', '', `Snapshot as-of: ${payload.currentAsOf ?? 'UNAVAILABLE'}. Freshness, ticker identity and scanner availability remain data gates. Display up to ${candidateLimit} candidates per method in supplied engine order; this is not a new performance ranking.`, '',
+    'For STATEFUL_SOURCE_SETUP_CENSUS, matches are all common-eligible raw source setups. CAP_SELECTED marks the current portfolio-selection subset; SOURCE_SETUP_ONLY has no portfolio target, weight or sizing score. Selection is not proof of next-open fill feasibility or a live order. Academic formation matches retain their source selection basis.', '');
   for (const scan of array(payload.currentScans)) {
     const candidates = array(scan.candidates), available = SCAN_WITH_COUNT.includes(scan.status);
-    lines.push(`### ${scan.id}`, '', `Status: ${scan.status ?? 'UNAVAILABLE'}; snapshot: ${scan.asOf ?? 'UNAVAILABLE'}; matches: ${available ? privateNumber(scan.numberMatches ?? candidates.length, 'count') : 'UNAVAILABLE / BLOCKED'}; shown: ${available ? Math.min(candidates.length, candidateLimit) : 0}.`, '');
+    lines.push(`### ${scan.id}`, '', `Status: ${scan.status ?? 'UNAVAILABLE'}; snapshot: ${scan.asOf ?? 'UNAVAILABLE'}; match basis: ${scan.matchBasis ?? 'UNSPECIFIED'}; source matches: ${available ? privateNumber(scan.numberMatches ?? candidates.length, 'count') : 'UNAVAILABLE / BLOCKED'}; portfolio-admitted matches: ${available ? privateNumber(scan.portfolioAdmittedMatches, 'count') : 'UNAVAILABLE / BLOCKED'}; shown: ${available ? Math.min(candidates.length, candidateLimit) : 0}.`, '');
     if (!available) { lines.push('No candidate list is inferred from a blocked scan. A missing scan is not zero observed matches.', ''); continue; }
-    lines.push(...privateTable(['Ticker', 'Security ID', 'Signal as-of', 'Freshness', 'Weight', 'Score', 'Identity flags', 'Regime compatibility'], candidates.slice(0, candidateLimit).map(c =>
-      [c.ticker, c.id, c.signalAsOf ?? scan.asOf, c.signalFreshness, privateNumber(c.weight, 'percent'), typeof c.score === 'number' ? privateNumber(c.score) : privateTrace(c.score), array(c.identityFlags).join(', ') || 'NONE_REPORTED', c.regimeCompatibility])));
-    for (const c of candidates.slice(0, candidateLimit)) lines.push(`- ${privateCell(c.ticker)} / ${privateCell(c.id)}: rules=${privateTrace(c.reason ?? c.ruleTrace)}; satisfied=${c.keyRulesSatisfied === true ? 'TRUE' : c.keyRulesSatisfied === false ? 'FALSE' : 'UNAVAILABLE'}; issuer=${privateCell(c.issuerCik)}; related securities=${privateCell(array(c.sameIssuerSecurities).join(', ') || 'NONE_REPORTED')}.`);
+    lines.push(...privateTable(['Ticker', 'Security ID', 'Signal as-of', 'Freshness', 'Portfolio admission', 'Weight', 'Score', 'Identity flags', 'Regime compatibility'], candidates.slice(0, candidateLimit).map(c =>
+      [c.ticker, c.id, c.signalAsOf ?? scan.asOf, c.signalFreshness, c.portfolioAdmission ?? 'UNSPECIFIED', c.portfolioAdmission === 'SOURCE_SETUP_ONLY' ? 'NOT_ASSIGNED_SETUP_ONLY' : privateNumber(c.weight, 'percent'), c.portfolioAdmission === 'SOURCE_SETUP_ONLY' ? 'NOT_ASSIGNED_SETUP_ONLY' : typeof c.score === 'number' ? privateNumber(c.score) : privateTrace(c.score), array(c.identityFlags).join(', ') || 'NONE_REPORTED', c.regimeCompatibility])));
+    for (const c of candidates.slice(0, candidateLimit)) lines.push(`- ${privateCell(c.ticker)} / ${privateCell(c.id)}: measurementBasis=${privateCell(c.measurementBasis)}; portfolioAdmission=${privateCell(c.portfolioAdmission)}; portfolioTarget=${c.portfolioAdmission === 'SOURCE_SETUP_ONLY' ? 'NONE_SOURCE_SETUP_ONLY' : privateTrace(c.portfolioTarget)}; rules=${privateTrace(c.reason ?? c.ruleTrace)}; satisfied=${c.keyRulesSatisfied === true ? 'TRUE' : c.keyRulesSatisfied === false ? 'FALSE' : 'UNAVAILABLE'}; issuer=${privateCell(c.issuerCik)}; related securities=${privateCell(array(c.sameIssuerSecurities).join(', ') || 'NONE_REPORTED')}.`);
     lines.push('');
   }
   const consensusSection = (title, observations, state) => {
@@ -464,7 +488,7 @@ export function buildPrivateMarkdown(payload = {}, review = {}, options = {}) {
   const finalConsensus = review.finalConsensusRecomputed === true && Array.isArray(review.finalConsensus) ? review.finalConsensus : null;
   consensusSection('Strong-method consensus', finalConsensus ?? payload.consensus?.strongMethods,
     finalConsensus ? 'FINAL_REVIEW_METHOD_SET_RECOMPUTED' : 'PRELIMINARY_METHOD_SET_ONLY; NOT_FINAL_CONSENSUS');
-  lines.push('Only the final reviewed Tier A/B method set may support a strong-method product view. No consensus implies a proven independent trading score.', '');
+  lines.push('Only the final reviewed Tier A/B method set may support a strong-method product view. A setup-census consensus is a diagnostic overlap of raw setups, not a portfolio-admission list or proof of executable fills. No consensus implies a proven independent trading score.', '');
   consensusSection('All-frozen diagnostic consensus', payload.consensus?.allFrozenDiagnostic, 'DIAGNOSTIC_ONLY; INCLUDES_EXPERIMENTAL_METHODS');
   lines.push('## Frozen source and adaptation references', '',
     `Freeze: ${payload.freeze?.frozenAt ?? options.metadata?.freeze?.frozenAt ?? 'UNAVAILABLE'}. Rulebook hashes and original/adapted scope are immutable research references.`, '');
