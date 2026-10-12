@@ -81,8 +81,14 @@ GitHub bestätigt Research mit `build_type: workflow`, main und `research.vision
 
 **14 bekannte öffentliche NS-/Mail-/Research-DNS-Abfragen** identisch zur Stichprobe vom 09.10. [Vergleich ohne TXT-Rohwerte](verification-2026-10-10/public-dns.json). Kein Ersatz für einen vollständigen authentifizierten Zonenauszug oder eine lückenlose DKIM-Aufzählung. Keine DNS-/Nameserver-Änderung durch diesen Auftrag. united-domains bleibt Registrar; Brevo und Shopify-Abo unverändert. Die manuelle Web-Domainumstellung des Owners wird nicht als eigene DNS-Änderung ausgegeben.
 
-## Rechtstext-Korrektur vom 12.10.2026
+## Rechtstexte und neues Abo-Modell – 12.10.2026
 
-Auf Wunsch des Owners wird das ursprüngliche Shopify-Impressum vollständig und wortgetreu wiederhergestellt; die bisherige Kurzfassung entfällt. [Original-Policy-Auszug und Herkunft](../legal-source/README.md). Quelle ist der gespeicherte Abruf vom 09.10.; der alte Shopify-Host leitet inzwischen auf die neue Cloudflare-Seite. Nur die sichtbare E-Mail-Adresse wird technisch aus der alten Cloudflare-Obfuskation aufgelöst, kein Absatz verändert.
+Der Owner hat Datenschutz, AGB und Impressum als vollständige Anhänge sowie Widerruf und Versand-/Lieferbedingungen geliefert. Alle Originale sind [unverändert archiviert](../legal-source/README.md). Die frühere Beschaffungslücke ist damit geschlossen.
 
-Die vollständige alte Shopify-Datenschutzerklärung muss der Owner noch aus **Shopify → Einstellungen → Richtlinien → Datenschutzerklärung** liefern. Die aktuellen Cloudflare-Aliase und der vorhandene Vorschautext sind kein Ersatz für die Originalquelle. Keine wortgetreue Übernahme des Datenschutzes behauptet, solange dieser Text fehlt. Die noch erforderliche Cloudflare-/spätere Brevo-Anpassung bleibt separat offen; keine automatische Inhaltsfreigabe, keine Produktions-/Provideränderung.
+Zusätzlich klargestellt: künftig **App und Web-App mit Free/Paid-Abo-Varianten**, kein bisheriger PDF-Einzelkauf. Deshalb werden die Shop-Aussagen zu Shopify-Konten/-Zahlungen/-Email, Download-Lieferung, fehlenden Aktualisierungspflichten und Widerrufsverzicht nicht als aktuelle App-Verträge veröffentlicht.
+
+Die beiden Landing-Rechtsseiten enthalten jetzt gekennzeichnete **Coming-soon-Entwürfe** für den tatsächlich beurteilten Ankündigungsbetrieb; die komplette Originalfassung bleibt im Quellenordner erhalten. Der Cloudflare-Datenschutzentwurf ist damit synchronisiert. [Änderungstabelle, App-Abo-AGB, Widerruf, Bereitstellung und konkrete fehlende Angaben](../legal-drafts/README.md). Diese zusätzlichen Vertragsentwürfe werden nicht in dist kopiert; keine aktiven Abo-/Kündigungs-/Widerrufsfunktionen suggeriert.
+
+Noch offen: bestätigte Abo-Regeln und Kaufwege; App-/Konto-/Zahlungsanbieter; konkrete Cloudflare-/Mail-Vertrags-, Sicherheits- und Aufbewahrungsangaben; passende fachliche Freigabe. Beide aktuellen Rechtsseiten bleiben als Entwurf markiert, der Newsletter deaktiviert. Der bestehende Produktions-/Datenschutz-Gate bleibt unverändert. Kein Merge, keine Provider-Veröffentlichung und keine Änderungen an Research, DNS, Brevo oder Shopify-Abo durch diese Rechtstext-Anpassung.
+
+Die am 10.10. erhobenen Live-Befunde oben sind historische Messungen der damals ausgelieferten Seite. Die neuen Texte befinden sich zunächst nur im PR und getesteten Preview-Build; eine Aktualisierung der öffentlichen Domain wird nicht behauptet.
