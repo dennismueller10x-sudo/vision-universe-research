@@ -24,19 +24,23 @@
   // Abschnitte unterhalb des ersten Bildschirms sind mit content-visibility:auto nur mit geschaetzter
   // Hoehe im Layout. Fuer einen Sprung zu einem Anker werden die davor liegenden Abschnitte vorher
   // freigegeben (.cv-on), damit der Zielpunkt exakt stimmt (Link-Klick, Aufruf mit #..., Zurueck).
+  // Ungueltige Prozent-Kodierung (z. B. #%zz) darf nichts abbrechen: dann den Rohtext nehmen
+  function unhash(h) { h = String(h || '').replace(/^#/, ''); try { return decodeURIComponent(h); } catch (e) { return h; } }
+  var noComp = 0;                                    // Ausgleich pausiert, solange ein Anker-Sprung laeuft
   function release(id) {
     var t = id && document.getElementById(id);
     if (!t) return;
+    noComp = Date.now() + 2000;
     [].forEach.call(document.querySelectorAll('[data-cv]'), function (n) {
       if (n === t || n.contains(t) || (n.compareDocumentPosition(t) & 4)) n.classList.add('cv-on');
     });
   }
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href^="#"]');
-    if (a && a.getAttribute('href').length > 1) release(decodeURIComponent(a.getAttribute('href').slice(1)));
+    if (a && a.getAttribute('href').length > 1) release(unhash(a.getAttribute('href')));
   }, true);
-  window.addEventListener('hashchange', function () { release(decodeURIComponent(location.hash.slice(1))); });
-  if (location.hash.length > 1) release(decodeURIComponent(location.hash.slice(1)));
+  window.addEventListener('hashchange', function () { release(unhash(location.hash)); });
+  if (location.hash.length > 1) release(unhash(location.hash));
 
   // ---------- Start ----------
   // Der Kopf (Scroll-Zustand) ist sofort aktiv. Alles andere steht unterhalb des
@@ -285,15 +289,69 @@
   // content-visibility:auto rendert in Chrome grosszuegig im Voraus, in Safari erst beim Eintritt ins
   // Bild (kurzes Aufpoppen). Ab der ersten Eingabe geben wir Abschnitte eine Bildschirmhoehe vor dem
   // Rand frei (.cv-on, bleibt). Vorher nicht: das Rendern gehoert nicht in die Ladephase.
-  var cvDone = false;
+  // Aendert ein Abschnitt oberhalb des Bildes seine Hoehe (erstes Rendern: echte statt geschaetzte
+  // Hoehe), wandert der sichtbare Inhalt. Ein ResizeObserver meldet das noch vor dem Zeichnen; die
+  // Differenz wird sofort per scrollBy ausgeglichen (kein Layout-Shift, Leseposition bleibt).
+  var cvDone = false, queue = [], lastY = window.scrollY;
   function cvInit() {
     if (cvDone) return; cvDone = true;
     if (!IO || !window.CSS || !CSS.supports || !CSS.supports('content-visibility', 'auto')) return;
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('cv-on'); io.unobserve(e.target); } });
-    }, { rootMargin: '100% 0px' });
-    [].forEach.call(document.querySelectorAll('[data-cv]'), function (n) { io.observe(n); });
+    if (window.ResizeObserver) {
+      var sizes = new Map();
+      var ro = new ResizeObserver(function (es) {
+        var shift = 0;
+        es.forEach(function (e) {
+          var n = e.target, h = e.borderBoxSize && e.borderBoxSize[0] ? e.borderBoxSize[0].blockSize : e.contentRect.height, old = sizes.get(n);
+          sizes.set(n, h);
+          if (old == null || h === old) return;
+          if (n.getBoundingClientRect().bottom - (h - old) <= 0) shift += h - old;   // lag vor der Aenderung ganz ueber dem Bild
+        });
+        if (shift && Date.now() > noComp) window.scrollBy({ top: shift, left: 0, behavior: 'instant' });
+      });
+      [].forEach.call(document.querySelectorAll('[data-cv]'), function (n) { sizes.set(n, n.getBoundingClientRect().height); ro.observe(n); });
+    }
+    // Danach alle uebrigen Abschnitte nacheinander (naechster zum Bild zuerst, je Abschnitt eine eigene Aufgabe)
+    // mit echter Hoehe rendern. Das ist dieselbe Arbeit, die beim Scrollen ohnehin anfaellt, aber
+    // vor dem Eintritt ins Bild: keine geschaetzten Hoehen mehr, Hochscrollen und Wiederherstellung wie zuvor.
+    queue = [].slice.call(document.querySelectorAll('[data-cv]'));
+    // Grosser Sprung (Ende-Taste, Scrollleiste, Wiederherstellung): alle noch nicht gerenderten Abschnitte
+    // oberhalb des Bildes sofort mit echter Hoehe rendern (einmalig, ausgeglichen durch den ResizeObserver),
+    // damit das Hochscrollen danach nicht an geschaetzten Hoehen springt.
+    function onJump() {
+      var y = window.scrollY, far = Math.abs(y - lastY) > window.innerHeight * 1.5; lastY = y;
+      if (!far || !queue.length || Date.now() < noComp) return;
+      queue.forEach(function (n) { if (!n.classList.contains('cv-on') && n.getBoundingClientRect().bottom < window.innerHeight * 0.5) n.classList.add('cv-on'); });
+      queue.forEach(function (n) { n.classList.contains('cv-on') && n.getBoundingClientRect(); });
+    }
+    window.addEventListener('scroll', onJump, { passive: true });
+    onJump();
+    (function drain() {
+      queue = queue.filter(function (n) { return !n.classList.contains('cv-on'); });
+      if (!queue.length) { window.removeEventListener('scroll', onJump); return; }
+      var mid = window.innerHeight / 2, best = 0, bd = 1e12;
+      queue.forEach(function (n, i) { var r = n.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - mid); if (d < bd) { bd = d; best = i; } });
+      queue[best].classList.add('cv-on');
+      setTimeout(drain, 0);
+    })();
   }
+
+  // Wiederherstellung der Scrollposition (Reload, Zurueck): vor dem Seitenwechsel merken wir den
+  // obersten sichtbaren Abschnitt; beim naechsten Laden werden alle Abschnitte bis dorthin sofort
+  // mit echter Hoehe gerendert, damit die Position stimmt und nicht an der Schaetzung haengt.
+  var CVKEY = 'vu-home-cv-v1';
+  try {
+    var saved = parseInt(sessionStorage.getItem(CVKEY), 10);
+    if (saved > 0) [].slice.call(document.querySelectorAll('[data-cv]'), 0, saved + 1).forEach(function (n) { n.classList.add('cv-on'); });
+  } catch (e) {}
+  function remember() {
+    try {
+      var list = [].slice.call(document.querySelectorAll('[data-cv]')), idx = 0;
+      for (var i = 0; i < list.length; i++) { if (list[i].getBoundingClientRect().bottom > 0) { idx = i; break; } idx = i; }
+      sessionStorage.setItem(CVKEY, String(window.scrollY > 600 ? idx : 0));
+    } catch (e) {}
+  }
+  window.addEventListener('pagehide', remember);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') remember(); });
 
   var booted = false, EV = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'];
   function boot(now) {

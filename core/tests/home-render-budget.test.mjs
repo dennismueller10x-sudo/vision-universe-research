@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 /* Startseite (/): Render-Budget.
    Die Messung (LCP, TBT, Eingabeverzoegerung) liegt in der PR-Beschreibung; diese Tests halten die
@@ -50,6 +51,9 @@ test('Jeder data-cv-Abschnitt hat content-visibility:auto und eine Hoehenschaetz
   assert.ok(marked.length >= 15);
   const autoBlock = css.match(/RENDER-KOSTEN[\s\S]*?\{content-visibility:auto\}/)[0];
   const sizes = css.slice(css.indexOf('RENDER-KOSTEN'));
+  const tiers = Number(css.match(/(\d+) Stufen mit/)[1]);
+  assert.ok(tiers >= 12, 'Hoehenschaetzung in feinen Breitenstufen (320-1920 px)');
+  assert.equal([...css.matchAll(/@media \(min-width:\d+px\)\{#app-module\{contain-intrinsic/g)].length, tiers - 1);
   const covered = [];
   for (const tag of marked) {
     const id = (tag.match(/\bid="([^"]+)"/) || [])[1];
@@ -58,11 +62,11 @@ test('Jeder data-cv-Abschnitt hat content-visibility:auto und eine Hoehenschaetz
     const sel = candidates.find(c => autoBlock.includes(c + ',') || autoBlock.includes(c + '{'));
     if (!sel) { covered.push(null); continue; }                       // ohne id/Klasse: Position, siehe unten
     covered.push(sel);
-    assert.equal(sizes.split(`${sel}{contain-intrinsic-block-size:auto `).length - 1, 3, `${sel}: Hoehenschaetzung fuer Desktop, Tablet und Handy`);
+    assert.equal(sizes.split(`${sel}{contain-intrinsic-block-size:auto `).length - 1, tiers, `${sel}: Hoehenschaetzung in jeder Breitenstufe`);
   }
   assert.equal(covered.filter(c => c === null).length, 3, 'genau drei Abschnitte werden ueber nth-of-type angesprochen');
   // Abschnitte ohne id werden ueber ihre Position angesprochen
-  for (const n of [8, 9, 11]) assert.equal(sizes.split(`main > section:nth-of-type(${n}){contain-intrinsic-block-size:auto `).length - 1, 3);
+  for (const n of [8, 9, 11]) assert.equal(sizes.split(`main > section:nth-of-type(${n}){contain-intrinsic-block-size:auto `).length - 1, tiers);
   assert.match(css, /\.cv-on\{content-visibility:visible!important\}/);
 });
 
@@ -95,4 +99,22 @@ test('home-motion.js: Einrichtung im Leerlauf bzw. bei erster Eingabe, Abschnitt
 test('Die Hero-Textzeitachse startet sofort (Ueberschrift ohne Verzoegerung), Endzustand unveraendert', () => {
   assert.match(css, /html\.intro \.hero h1\{animation:hx-up \.45s 0s /);
   assert.match(css, /@keyframes hx-up\{from\{opacity:0;transform:translateY\(26px\);filter:blur\(8px\)\}to\{opacity:1;transform:none;filter:none\}\}/);
+});
+
+test('Ungueltige Hashes (#%zz) brechen home-motion.js nicht ab: Einrichtung bleibt verdrahtet (Verhalten)', () => {
+  for (const hash of ['#%zz', '#%E0%A4%A', '#%', '#vorsorge', '#']) {
+    const listeners = [];
+    const node = () => ({ classList: { add() {}, toggle() {}, remove() {}, contains: () => false }, contains: () => false, compareDocumentPosition: () => 4, addEventListener() {}, setAttribute() {}, querySelector: () => null, querySelectorAll: () => [] });
+    const doc = { readyState: 'complete', getElementById: id => (id === 'vorsorge' ? node() : null), querySelector: () => null, querySelectorAll: sel => (sel === '[data-cv]' ? [node()] : []), addEventListener: (n, f) => listeners.push(['doc', n, f]) };
+    const win = { location: { hash }, matchMedia: () => ({ matches: false }), addEventListener: (n, f) => listeners.push(['win', n, f]), requestIdleCallback: f => listeners.push(['idle', 'idle', f]), scrollY: 0 };
+    const sandbox = { window: win, document: doc, location: win.location, IntersectionObserver: class { observe() {} unobserve() {} disconnect() {} }, performance: { now: () => 0 }, requestIdleCallback: win.requestIdleCallback, requestAnimationFrame: f => f(), setTimeout: f => f(), clearTimeout() {}, Intl, Math, Set, console };
+    sandbox.globalThis = sandbox;
+    assert.doesNotThrow(() => vm.runInNewContext(motion, sandbox), `Hash ${hash}`);
+    assert.ok(listeners.some(l => l[1] === 'scroll'), `Hash ${hash}: Eingabe-Start nicht verdrahtet`);
+    assert.ok(listeners.some(l => l[1] === 'idle'), `Hash ${hash}: Leerlauf-Start nicht verdrahtet`);
+    const click = listeners.find(l => l[0] === 'doc' && l[1] === 'click')[2];
+    assert.doesNotThrow(() => click({ target: { closest: () => ({ getAttribute: () => '#%zz' }) } }));
+    const hc = listeners.find(l => l[1] === 'hashchange')[2];
+    assert.doesNotThrow(() => hc());
+  }
 });
