@@ -4,7 +4,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { mkdtempSync, writeFileSync, mkdirSync, readFileSync, appendFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync, mkdirSync, readFileSync, appendFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -115,4 +115,19 @@ test("M10-R4 Registrierung, Idempotenz, nur vorwaerts, Pruefung und Auswertung n
   /* Snapshot nachtraeglich veraendert → Pruefung schlaegt fehl */
   appendFileSync(join(reg, "snapshots", "2026-06-05.jsonl.gz"), "x");
   assert.equal(Ver.verifyRegistry(reg).ok, false);
+});
+
+test("M10-R5 Ein Titel ohne Wochenreihe (aus dem Produkt gefallen) beendet den Lauf nicht; sein Ereignis bleibt offen, nichts wird veraendert", async () => {
+  const w = mkdtempSync(join(tmpdir(), "m10-w5-")), reg = mkdtempSync(join(tmpdir(), "m10-r5-"));
+  for (const id of ["ref_AAPL", "ref_MSFT", "ref_JPM", "ref_XOM"]) writeFileSync(join(w, id + ".json"), readFileSync(join(ROOT, "quant/data/market/discover-series-long", id + ".json")));
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1, productView: false });
+  /* offenes Ereignis eines Titels, dessen Wochenreihe es nicht mehr gibt (kein File im Wochenverzeichnis) */
+  const payload = { symbol: "ref_GONE", timeframe: "1W", setupType: "S1", registeredWeek: "2026-06-05", registeredBarDate: "2026-06-05" };
+  Led.append(reg, Led.readLedger(reg), [{ type: "EVENT", id: Led.eventId(payload), week: "2026-06-05", recordedAt: "2026-06-06T00:00:00.000Z", payload }]);
+  const before = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  const r2 = await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, productView: false });
+  assert.ok(r2.openWithoutSeries >= 1, "Ereignis ohne Reihe wird gezaehlt, nicht als Fehler gewertet");
+  const after = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  assert.ok(after.startsWith(before), "nur angehaengt");
+  assert.equal(Ver.verifyRegistry(reg).ok, true);
 });

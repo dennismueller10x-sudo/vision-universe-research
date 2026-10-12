@@ -338,13 +338,18 @@ async function registerWeek(o, F) {
   }
   /* REVISIONS fuer offene Ereignisse aus allen frueheren Laeufen */
   const byS = new Map(ok.map((r) => [r.s, r]));
+  const noSeries = new Set();
   const revs = new Map(); for (const e of lines.filter((x) => x.type === "REVISION")) { const s = revs.get(e.ref) || new Set(); s.add(e.payload.type); revs.set(e.ref, s); }
   for (const ev of lines.filter((x) => x.type === "EVENT")) {
     const done = revs.get(ev.id) || new Set();
     /* Ereignisse ohne Projektionsthese (alle bis 1.1.0): unveraendert. Mit These laeuft nur deren Verfolgung weiter, bis sie selbst ungueltig ist. */
     const projOnly = (done.has("INVALIDATED") || done.has("EXPIRED")) && !!ev.payload.projectionThesis && !done.has("EXPIRED") && !done.has("PROJECTION_INVALIDATED");
     if ((done.has("INVALIDATED") || done.has("EXPIRED")) && !projOnly) continue;
-    const x = readJson(join(o.weeklyDir, ev.payload.symbol + ".json")), k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
+    /* Ein Titel, der aus dem Produkt gefallen ist (z. B. als Anleihe ausgeschlossen), hat keine Wochenreihe mehr: sein Ereignis bleibt offen, es gibt nichts zu pruefen
+       (nichts wird geschrieben, nichts veraendert). Frueher beendete das fehlende File den ganzen Lauf mit ENOENT. */
+    const seriesFile = join(o.weeklyDir, ev.payload.symbol + ".json");
+    if (!existsSync(seriesFile)) { noSeries.add(ev.payload.symbol); continue; }
+    const x = readJson(seriesFile), k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
     const pts = (x.points || []).slice(0, k + 1).filter((p) => p[0] > ev.payload.registeredBarDate);
     const cur = byS.get(ev.payload.symbol);
     /* Umdeutung je Sicht: Produkt-Ereignisse gegen die Produkt-Primaerzaehlung, zustandslose gegen die zustandslose */
@@ -359,7 +364,7 @@ async function registerWeek(o, F) {
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
            research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), explore: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT"), exploreHighlight: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
-           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), seconds: Math.round((Date.now() - t0) / 1000) };
+           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), openWithoutSeries: noSeries.size, seconds: Math.round((Date.now() - t0) / 1000) };
 }
 
 if (isMainThread && process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
