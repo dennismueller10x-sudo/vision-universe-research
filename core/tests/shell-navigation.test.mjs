@@ -198,6 +198,8 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   assert.equal(state('/elliott/').group, 'elliott');
   assert.equal(state('/elliott/').expanded, null, 'Startseite klappt das Menue nicht auf');
   assert.equal(state('/elliott/#/?welle=3').href, '/elliott/#/?welle=3');
+  assert.equal(state('/elliott/#/?welle=3').expanded, 'elliott', 'Filterzustand oeffnet den Produktbereich');
+  assert.equal(state('/elliott/#/?richtung=ab').expanded, 'elliott');
   assert.equal(state('/elliott/#/?richtung=ab').href, '/elliott/#/?richtung=ab');
   // Aktienbild: Pfad /quant/, aber Produkt Elliott (kein doppelter aktiver Zustand)
   for (const url of ['/quant/#/elliott/NVDA', '/quant/#/elliott/SE?ansicht=profi']) {

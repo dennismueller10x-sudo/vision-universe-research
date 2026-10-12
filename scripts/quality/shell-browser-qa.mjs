@@ -112,7 +112,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
           marked:groups.flatMap(g=>[...g.querySelectorAll('.links a[aria-current=page]')]).map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length})),
           small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
       });
-      const home=['/discover/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
+      const home=['/discover/#/','/elliott/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
       if(routeMenu.current!==product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
       if(home ? routeMenu.expanded.length!==0 : routeMenu.expanded.length!==1||routeMenu.expanded[0]!==product.toLowerCase()) fail(where,'Accordion-Direkteinstieg falsch: '+JSON.stringify(routeMenu));
       if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));

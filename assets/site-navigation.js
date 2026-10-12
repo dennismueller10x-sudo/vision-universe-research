@@ -121,7 +121,7 @@
     const params = new URLSearchParams(loc.search), explicit = params.get('view');
     const screenerView = ['start','build','results','saved','changes','compare','watchlist'].includes(explicit) ? explicit : (params.getAll('f').some(f=>f.trim()) || params.get('mode') === 'pro' ? 'build' : 'start');
     if(product && product.id === 'screener') href = {start:'/screener/',build:'/screener/?view=build',results:'/screener/?view=results',compare:'/screener/?view=results',saved:'/screener/?view=saved',changes:'/screener/?view=saved',watchlist:'/screener/?view=watchlist'}[screenerView];
-    const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && (product.id === 'screener' ? screenerView === 'start' : !params.has('view'));
+    const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && !(product.id === 'elliott' && (loc.hash || '').includes('?')) && (product.id === 'screener' ? screenerView === 'start' : !params.has('view'));
     return {group: group && group.id, href, expanded: group && !home ? group.id : null};
   };
   /* Linien-Icons der Leiste: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
