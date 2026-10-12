@@ -4,7 +4,7 @@ Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 üb
 
 ## Aktuelle Hosting-Vorgabe: Cloudflare Pages
 
-Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe**, GitHub dieses Repository, Produktion main, Root landing, Build node scripts/build.mjs, Ausgabe dist. [Öffentliche Seite](https://www.visionuniverse.de/) · [Pages-Adresse](https://vision-universe.pages.dev/). Research bleibt auf GitHub Pages. [Nachweise, API-Rechte und offene Punkte](deployment/README.md). Öffentlich steht noch ein Preview-Build mit noindex und vorläufigem Datenschutz; zwei globale Navigations-Assets liefern HTML statt CSS/JS. Keine finale Datenschutz- oder vollständige Browserfreigabe behaupten. Kein weiteres Projekt/Repository anlegen.
+Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe**, GitHub dieses Repository, Produktion main, Root landing, Build node scripts/build.mjs, Ausgabe dist. [Öffentliche Seite](https://www.visionuniverse.de/) · [Pages-Adresse](https://vision-universe.pages.dev/). Research bleibt auf GitHub Pages. [Nachweise, API-Rechte und offene Punkte](deployment/README.md). Öffentlich steht noch ein Preview-Build mit noindex und vorläufigem Datenschutz; die früher fehlerhaften globalen Navigationsreferenzen sind in PR #577 entfernt. Keine finale Datenschutz- oder vollständige Browserfreigabe behaupten. Kein weiteres Projekt/Repository anlegen.
 
 ## Vorschau und Abnahme
 

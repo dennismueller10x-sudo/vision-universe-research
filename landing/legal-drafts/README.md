@@ -73,12 +73,12 @@ Kostenlos ist nicht automatisch frei von Verbraucherrecht: mögliche Gegenleistu
 - [EU-Kommission – OS-Plattform seit 20.07.2025 geschlossen](https://consumer-redress.ec.europa.eu/site-relocation_en)
 - [Cloudflare DPA](https://www.cloudflare.com/cloudflare-customer-dpa/), [Privacy Policy](https://www.cloudflare.com/privacypolicy/): allgemeine Anbieterbedingungen, kein Nachweis des individuellen Kontovertrags.
 
-Research, dessen Deployment/CNAME, DNS, Brevo und Shopify-Abo werden durch diese Arbeiten nicht verändert. Keine Veröffentlichung oder Merge beauftragt; die Inhalte liegen zur Review im bestehenden PR.
+Research, dessen Deployment/CNAME, DNS, Brevo und Shopify-Abo werden durch diese Arbeiten nicht verändert. Der Owner hat inzwischen den Merge und die Veröffentlichung der soweit vorbereiteten Coming-soon-Fassung autorisiert. Die Abo-Texte bleiben interne Entwürfe; Hosting-/Mail-Details werden nicht automatisch bestätigt.
 
 ## Prüfung der Umsetzung
 
 Alle drei Anhänge wurden bytegenau kopiert; SHA-256/Dateigröße sämtlicher fünf archivierten Quellen geprüft. Quellen und Abo-Entwürfe fehlen erwartungsgemäß im öffentlichen Build. Beide Rechtsseiten und die /policies/-Aliase behalten die Draft-Markierung; Newsletter weiterhin gesperrt.
 
-10 vorhandene Landing-Tests und Preview-Build bestanden. Neue Rechtsseiten auf Desktop 1440×900 und iPhone-Viewport 390×844 geprüft: Axe 0, keine Ressourcen-/Skriptfehler, sichtbarer Tastaturfokus und kein horizontaler Überlauf bei normaler oder echter 200-%-Schriftvergrößerung. Lange deutsche Rechtsbegriffe umbrechen in legal.css, ohne Abschneiden/Scroll-Sperre. Haupt-Landingpage, Newsletter-JavaScript und Build-Gates wurden nicht geändert.
+10 vorhandene Landing-Tests und Preview-Build bestanden. Neue Rechtsseiten auf Desktop 1440×900 und iPhone-Viewport 390×844 geprüft: Axe 0, keine Ressourcen-/Skriptfehler, sichtbarer Tastaturfokus und kein horizontaler Überlauf bei normaler oder echter 200-%-Schriftvergrößerung. Lange deutsche Rechtsbegriffe umbrechen in legal.css, ohne Abschneiden/Scroll-Sperre. Hero/Design, Newsletter-JavaScript und Build-Gates wurden nicht geändert; die ungültigen globalen Navigationsreferenzen wurden auch aus der Hauptseite entfernt.
 
 [Messwerte](review/metrics.json) · [Datenschutz Desktop](review/datenschutz-desktop.png) · [Datenschutz iPhone](review/datenschutz-iphone.png) · [Impressum Desktop](review/impressum-desktop.png) · [Impressum iPhone](review/impressum-iphone.png). Die separaten Rechtsseiten dürfen länger als zwei Bildschirmhöhen sein; das Landing-Längenbudget wird nicht verändert. Physisches Safari-Gerät nicht geprüft.
