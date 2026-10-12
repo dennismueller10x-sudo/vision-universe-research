@@ -26,3 +26,25 @@ statt anders zu zeichnen.
 `scripts/social/make-test-asset.mjs` lädt weiterhin aus dem Netz. Das
 Skript erzeugt genau ein Bild und sagt ausdrücklich an, wenn es
 zurückgefallen ist; dort ist der Kompromiss vertretbar.
+
+## `inter-latin-ext.woff2`
+
+| | |
+|---|---|
+| Schrift | Inter (variabel, Gewichte 100–900), Ausschnitt latin-ext |
+| Bezogen von | `https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7W0Q5n-wU.woff2` |
+| Bezogen am | 2026-10-12 |
+| Lizenz | SIL Open Font License 1.1 |
+| Größe | 85 272 Bytes |
+
+### Warum die Seiten Inter von hier laden
+
+`quant/ui/quant.css` (Quant und Discover) und `macro/styles.css` luden Inter
+per `@import` von `fonts.googleapis.com`. Ein `@import` in einem
+Stylesheet ist eine Kette: erst das Stylesheet, dann das Google-CSS von
+einem fremden Host, dann die Schrift von einem dritten Host – jeweils mit
+eigenem Verbindungsaufbau, und das Google-CSS sperrt das Rendern. Beide
+Dateien hier sind dieselbe Schrift mit denselben `unicode-range`-Bereichen
+wie Googles `latin` und `latin-ext`; `latin-ext` lädt der Browser nur, wenn
+eine Seite solche Zeichen zeigt (z. B. „Č“ oder „ő“ in europäischen
+Firmennamen).

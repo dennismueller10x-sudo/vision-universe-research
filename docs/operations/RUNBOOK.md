@@ -36,13 +36,16 @@ Die Zustände bedeuten:
 
 ## 3. Ein Datenlauf ist rot
 
+Ein roter Marktdaten-Refresh oder ein roter Freshness-Monitor öffnet automatisch ein Issue mit dem Label `pipeline-alarm` (`scripts/ci/pipeline-alarm.mjs`): Lauf, fehlgeschlagene Schritte, rote Tests. Der nächste grüne Lauf schließt es. Tests, die erst nach der Veröffentlichung rot werden (Gate C), stehen in einem eigenen Issue `[market-data-refresh · Beobachtung]`.
+
 1. Log des Schritts **„Commit und Push“** lesen.
+   - Konflikte in den eigenen Erzeugerpfaden des Refresh (`discover/data` ohne `europe`, `quant/data/technical`, Faktoren, Kursreihen; `PUSH_OWNED_PATHS` im Workflow) löst das Skript seit 10/2026 nach eigenem Stand auf.
    - `Konflikt ausserhalb erzeugter Artefakte: <Datei>`: Ein anderer Commit hat dieselbe Datei geändert.
      - Kam der Commit aus einem Feature-PR? Dann den PR korrigieren (generierte Dateien auf den Stand von `main`).
      - War es ein zweiter Datenlauf? Dann einfach wiederholen. Seit ADR-005 checkt jeder Lauf die Spitze aus.
    - `Push nach N Versuchen nicht möglich`: `main` bewegt sich zu schnell. Den Lauf wiederholen.
 2. `P0_DATA_PIPELINE_FROZEN` aus dem Schritt `freshness-contract`: Der Marktlauf war grün, die Materialisierung nicht. Den Job `materialize` im selben Lauf ansehen.
-3. **Gate A** (vor dem Abruf) rot: Die Regressionssuite ist auf `main` rot. Zuerst den Code reparieren, dann den Abruf wiederholen.
+3. **Gate A** (vor dem Abruf) rot: Ein Code-Test des Marktlaufs ist auf `main` rot. Gate A umfasst seit 10/2026 nur Testdateien, die Code aus der Importhülle des Jobs `refresh` prüfen und keinen erzeugten Datenstand lesen (`node scripts/market/run-eod-publish-gates.mjs --explain`). Zuerst den Code reparieren, dann den Abruf wiederholen. Rote Tests anderer Produkte oder am Datenstand des Vorabends halten den Abruf nicht mehr an; sie laufen in Gate C und erscheinen im Beobachtungs-Issue.
 4. **Gate B** (nach dem Abruf) rot: Die neuen Daten verletzen einen Integritätstest. Nichts wurde veröffentlicht. Die Testausgabe lesen.
 
 Wiederholen: Actions → Workflow → „Run workflow“ auf `main`. Für einen Datenlauf ist das idempotent.

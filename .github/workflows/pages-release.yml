@@ -224,6 +224,14 @@ jobs:
           key: ${{ steps.ci_cache.outputs.key }}
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
+      # Alle uebrigen JS-/CSS-Dateien des Releases verkleinern (nur Leerraum und
+      # Syntax, keine Umbenennung). Ohne diesen Schritt lief alles ausser dem
+      # Quant-Bundle unkomprimiert aus: ca. 3,3 MB weniger Skript und Stil.
+      # Fehlschlaege einzelner Dateien lassen das Original stehen.
+      - name: Minify remaining release scripts and styles
+        env:
+          ESBUILD_PATH: /tmp/vu2-release/node_modules/esbuild
+        run: node scripts/vu2/minify-release.mjs "$RUNNER_TEMP/site"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
       # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
       # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und

@@ -2059,6 +2059,7 @@ for (const universe of universes) {
   });
 
 
+
   rowIndex.push({ universeId: universe.universeId, rows });
 
   /* Der Live-Umfang: welche Titel stehen auf einer Discover-Flaeche

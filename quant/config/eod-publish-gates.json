@@ -1,15 +1,25 @@
 {
-  "schemaVersion": "eod-publish-gates-1.0.0",
+  "schemaVersion": "eod-publish-gates-1.1.0",
   "workflow": ".github/workflows/market-data-refresh.yml",
   "auftrag": "Owner 24.09.2026 P0: Ein einzelner, datenabhaengig instabiler Regressionstest darf nach erfolgreichem Abruf keinen vollstaendigen EOD-Lauf (6.000+ Anfragen) mehr verwerfen. Ein echter Data-Integrity-Fehler verhindert die Veroeffentlichung weiterhin.",
   "incident": "18./21./22./23.09.2026: Abruf, Freshness-Check und Lebenszyklus-Waechter gruen; die Regressionssuite vor 'Commit und Push' scheiterte an Tests, die Werte des gerade fortgeschriebenen Bestands zaehlten (zuletzt market-signal-contract.test.mjs, 5 !== 4). Vier Tagesstaende verworfen.",
-  "suites": ["quant/tests/*.test.mjs", "discover/tests/*.test.mjs"],
+  "suites": [
+    "quant/tests/*.test.mjs",
+    "discover/tests/*.test.mjs"
+  ],
   "classes": {
     "PRE_FETCH_CODE_REGRESSION": {
       "blocking": true,
       "when": "vor dem ersten Provider-Abruf, auf dem ausgecheckten Stand",
-      "scope": "die vollstaendigen Suiten - derselbe Code, der gleich die Daten baut. Rot: kein Abruf, keine Anfrage.",
-      "files": "ALL"
+      "scope": "Code-Regression des Erzeugers: Testdateien, die etwas aus der transitiven Importhuelle der Skripte des Jobs `refresh` importieren und keinen erzeugten Datenstand (quant/data, discover/data, ...) lesen. Abgeleitet von scripts/market/eod-gate-classes.mjs, nicht aufgezaehlt. Rot: kein Abruf, keine Anfrage. Alles andere laeuft unveraendert in B (Datenvertraege, blockierend) oder C (nach dem Commit, gemeldet).",
+      "files": "PIPELINE_CODE",
+      "pipeline": {
+        "workflow": ".github/workflows/market-data-refresh.yml",
+        "job": "refresh"
+      },
+      "alsoBlocking": [],
+      "neverBlocking": [],
+      "note": "alsoBlocking/neverBlocking nur mit Begruendung im Commit. Erklaerung je Datei: node scripts/market/run-eod-publish-gates.mjs --explain"
     },
     "POST_FETCH_DATA_INTEGRITY": {
       "blocking": true,
@@ -40,9 +50,12 @@
     "NON_BLOCKING_OBSERVABILITY": {
       "blocking": false,
       "when": "nach 'Commit und Push'",
-      "scope": "alle uebrigen Testdateien der Suiten. Sie waren vor dem Abruf auf DEMSELBEN Code gruen; wird eine davon erst mit den neuen Daten rot, haengt ihre Erwartung an Werten des fortgeschriebenen Bestands, nicht an einem Datenvertrag. Der Befund wird als ::error annotiert und im Summary gemeldet; der Lauf bleibt gruen, damit Pages ausliefert (pages-release verlangt conclusion == success).",
-      "scripts": ["scripts/market/check-freshness.mjs"],
+      "scope": "alle uebrigen Testdateien der Suiten, auf den frisch veroeffentlichten Daten. Rot wird als ::error annotiert, im Summary und im Pipeline-Alarm (Issue) gemeldet; der Lauf bleibt gruen, damit Pages ausliefert (pages-release verlangt conclusion == success). Nichts wird uebersprungen: was nicht in A steht, laeuft hier oder in B.",
+      "scripts": [
+        "scripts/market/check-freshness.mjs"
+      ],
       "files": "ALL minus POST_FETCH_DATA_INTEGRITY"
     }
-  }
+  },
+  "incident2": "08.-10.10.2026 (und 21.-24.09.): Gate A ruehrte die ganzen Suiten an und blieb rot an Tests, die entweder keinen Code des Marktlaufs pruefen (ti-ui, total-return-verification, canonical-total-return) oder den vom Vorabend erzeugten Datenstand lesen (return-series Golden Five, scale-gate SG1, market-signal-contract, product-services). 13 von 19 geplanten Laeufen 15.09.-12.10. ohne Veroeffentlichung; Discover stand bis zu drei Sitzungen still."
 }
