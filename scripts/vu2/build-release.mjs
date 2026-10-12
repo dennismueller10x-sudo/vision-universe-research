@@ -24,7 +24,21 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
-export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
+export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024,CAPABILITY_SHARD_BUDGET=64*1024;
+/* Je Master.shardKey die unveraenderten Mitgliedsobjekte der
+   Kapazitaetsdatei, in ihrer Reihenfolge, mit den Kopffeldern
+   (product-services.js#memberFor). Kein zweiter Schluessel (ADR-001). */
+export function capabilityShards(capability){
+ if(!capability||!Array.isArray(capability.members))throw Error('INVALID_CAPABILITY_SOURCE');
+ const out={};
+ for(const member of capability.members){
+  if(!member||typeof member.s!=='string')continue;
+  const key=Master.shardKey(member.s);
+  if(!out[key]){out[key]={};for(const h of Object.keys(capability))if(h!=='members')out[key][h]=capability[h];out[key].shard=key;out[key].members=[];}
+  out[key].members.push(member);
+ }
+ return out;
+}
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -58,6 +72,17 @@ export async function buildRelease({root,output}){
    if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('FACTOR_SHARD_KEY_INVALID');
    const b=Buffer.from(JSON.stringify(part));if(b.length>FACTOR_SHARD_BUDGET)throw Error('FACTOR_SHARD_BUDGET_EXCEEDED');
    await writeFile(resolve(output,'quant/data/market/factors/product-shards/'+key+'.json'),b);
+  }
+ }
+ /* Die Aktienseite braucht ein Mitglied der Kapazitaetsdatei (1,2 MB),
+    nicht alle: je shardKey ein Ausschnitt. Die volle Datei bleibt daneben
+    (Uebersicht, Signale). */
+ if(paths.includes('quant/data/universe/market-capability.json')){
+  await mkdir(resolve(output,'quant/data/universe/capability-shards'),{recursive:true});
+  for(const [key,part] of Object.entries(capabilityShards(await load('quant/data/universe/market-capability.json')))){
+   if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('CAPABILITY_SHARD_KEY_INVALID');
+   const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET)throw Error('CAPABILITY_SHARD_BUDGET_EXCEEDED');
+   await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
   }
  }
  const index=await load('quant/data/sec/inspector_index.json');

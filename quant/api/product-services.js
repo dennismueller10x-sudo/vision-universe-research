@@ -96,6 +96,21 @@ function create(options){
   const [capabilities,productSummary]=await Promise.all([load('/quant/data/universe/market-capability.json'),load('/quant/data/product/capabilities-summary-v1.json').catch(()=>null)]);
   c.capabilities=capabilities;c.productSummary=productSummary;return c;
  }
+ /* Die Aktienseite braucht EIN Mitglied, nicht das Universum (1,2 MB): sein
+  * Shard (Release-Build, wenige KB, Schluessel Master.shardKey wie bei den
+  * Faktor-Shards). Ohne Shard - lokal, alter Stand - die Universumsdatei.
+  * Ist das Universum schon geladen, gilt es. Der Shard traegt die
+  * Mitgliedsobjekte unveraendert und in derselben Reihenfolge; das
+  * Ergebnis ist dasselbe wie members.find(m=>m.s===ticker) ueber die
+  * volle Datei. c.capabilities bleibt dem vollen Universum vorbehalten. */
+ async function memberFor(c,ticker){
+  const fromUniverse=x=>(x.capabilities.members||[]).find(m=>m.s===ticker);
+  if(c.capabilities)return fromUniverse(c);
+  const key=Master.shardKey(ticker);
+  const shard=await load('/quant/data/universe/capability-shards/'+key+'.json').catch(()=>null);
+  if(!shard||shard.shard!==key||!Array.isArray(shard.members))return fromUniverse(await hydrateCapabilities(c));
+  return shard.members.find(m=>m.s===ticker);
+ }
  /* Die Produktprojektion (Release-Build, factor-product-projection.js) traegt
   * genau die Felder, die broadRow liest: 3,4 statt 19,2 MB. Ohne sie (lokal,
   * alter Stand) gilt die volle Datei. */
@@ -991,8 +1006,8 @@ function create(options){
  async function getTechnicalIntelligence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);
+  try{const c=await init(),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+   const member=await memberFor(c,ticker);
    /* DAS ARTEFAKT ENTSCHEIDET, NICHT DIE VORMERKUNG.
     *
     * Hier stand `member.t!=='TECHNICAL_READY'` als Riegel VOR dem Lesen des
@@ -1043,8 +1058,8 @@ function create(options){
   /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
      vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
      Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
-  try{const c=await factorsFor(await hydrateCapabilities(await init()),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return identityOnlyStock(ticker);
+  try{const c=await factorsFor(await init(),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+   const member=await memberFor(c,ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
    const consumer=await consumerFor(ticker);if(consumer)stock=applyConsumer(stock,consumer);if(!permission(c,ticker,'raw').allowed)stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};
@@ -1211,13 +1226,13 @@ function create(options){
      - beide Namen sind nicht die Identitaetsquelle. */
   const mitGrund=(model)=>{if(model&&model.state==='AVAILABLE'&&grund)withholdValuation({marketCapReason:grund,quant:model});
    if(model&&model.state==='AVAILABLE'&&verzeichnisName)model.name=verzeichnisName;return ohneErfundenenNamen(model);};
-  try{const c=await hydrateCapabilities(await init());const stock=await row(c,ticker);if(stock)return mitGrund(QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions));
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return mitGrund(model);
+  try{const c=await init();const stock=await row(c,ticker);if(stock)return mitGrund(QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions));
+   const member=await memberFor(c,ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return mitGrund(model);
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getTechnicalWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init());const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_BUNDLE_NOT_PUBLISHED');
+  try{const c=await init();const member=await memberFor(c,ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_BUNDLE_NOT_PUBLISHED');
    if(!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
    const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
    const source=await technicalSource(ticker,member.m);
@@ -1228,7 +1243,7 @@ function create(options){
  async function getHistoricalFundamentals(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const c=await hydrateCapabilities(await init()),member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.fr!==true)return unavailable('FUNDAMENTALS_NOT_PUBLISHED');
+   const c=await init(),member=await memberFor(c,ticker);if(!member||member.fr!==true)return unavailable('FUNDAMENTALS_NOT_PUBLISHED');
    if(selection.period==='quarterly'){
     if(!/^\d{10}$/.test(instrument.cik))return unavailable('FUNDAMENTAL_IDENTITY_UNAVAILABLE');
      const shard=instrument.cik.slice(-2),bucket=await compressedJSON('/quant/data/sec/quarterly/'+shard+'.json.gz');
