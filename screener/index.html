@@ -12,7 +12,10 @@
      Discover (discover/engines/theme.js). Hell ist Standard. -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/screener/screener.css">
-<link rel="preload" href="/screener/data/universe-US_REAL.json" as="fetch" crossorigin="anonymous">
+<!-- Vorladen: Startansicht ohne Link-Zustand braucht zuerst nur die Kopfdatei
+     (wenige KB, app.js laedt das volle Universum sofort danach); jeder Link mit
+     Zustand (?view=, ?f=, ?stock=) braucht sofort das volle Universum. -->
+<script>(function(){var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/screener/data/universe-US_REAL"+(location.search?"":".meta")+".json";document.head.appendChild(l);})();</script>
 </head>
 <body class="sc"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="sc-skip" href="#sc-main">Zum Inhalt</a>

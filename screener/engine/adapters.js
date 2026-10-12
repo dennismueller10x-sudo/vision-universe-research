@@ -7,6 +7,9 @@
 
      adapter.info()                          -> { id, mode, asOf, universe, count }
      adapter.load()                          -> Promise<void>
+     adapter.loadMeta()                      -> Promise<info()-Form | null>
+         nur Kopfdaten (ohne Spalten) fuer die Startansicht, bevor das
+         ganze Universum geladen ist; ersetzt load() nie.
      adapter.screen(query, { offset, limit })-> Promise<ScreenResult>
          ScreenResult = { total, universe, funnel, perFilter,
                           rows: [{ i, symbol }], order: [i...] }
@@ -43,9 +46,14 @@
   function StaticUniverseAdapter(opts) {
     opts = opts || {};
     var url = opts.url || '/screener/data/universe-US_REAL.json';
+    /* Kopfdatei = dasselbe Artefakt ohne `cols` (scripts/screener/build-universe.mjs). */
+    var metaUrl = opts.metaUrl || url.replace(/\.json$/, '.meta.json');
     var researchBase = opts.researchBase || '/discover/data/stocks/US_REAL/';
     var ds = null, loading = null;
     var researchCache = Object.create(null), seriesCache = Object.create(null);
+    function infoOf(m, count) {
+      return { id: self.id, mode: 'real', asOf: m.asOf, fundamentalsAsOf: m.fundamentalsAsOf, universe: m.universeId, universeLabel: m.universeLabel, count: count, sources: m.sources, factorPublication: m.factorPublication, formulas: m.formulas, rule: m.universeRule };
+    }
     var self = {
       id: 'static-json',
       load: function () {
@@ -57,11 +65,20 @@
         }).catch(function (e) { loading = null; throw e; });
         return loading;
       },
+      /** Kopfdaten fuer die Startansicht. Fehlt die Datei oder passt sie
+          nicht, liefert das Promise null - die Oberflaeche wartet dann wie
+          bisher auf load(). Ist das Universum schon geladen, gilt dessen info(). */
+      loadMeta: function () {
+        if (ds) return Promise.resolve(self.info());
+        return (opts.fetchJson || fetchJson)(metaUrl).then(function (m) {
+          if (!m || m.schema !== 'vu-screener-universe-1.0.0' || m.cols || typeof m.count !== 'number') return null;
+          return infoOf(m, m.count);
+        }).catch(function () { return null; });
+      },
       dataset: function () { return ds; },
       info: function () {
         if (!ds) return null;
-        var m = ds.meta;
-        return { id: self.id, mode: 'real', asOf: m.asOf, fundamentalsAsOf: m.fundamentalsAsOf, universe: m.universeId, universeLabel: m.universeLabel, count: ds.size, sources: m.sources, factorPublication: m.factorPublication, formulas: m.formulas, rule: m.universeRule };
+        return infoOf(ds.meta, ds.size);
       },
       /** Wertet lokal aus. Pagination ueber offset/limit wie beim Server. */
       screen: function (query, page) {
