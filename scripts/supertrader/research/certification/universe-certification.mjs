@@ -11,12 +11,12 @@ const hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex'
 const CIK=c=>typeof c==='string'&&/^\d{10}$/.test(c);
 const official=e=>{try{const u=new URL(e?.url);return u.protocol==='https:'&&(u.hostname==='sec.gov'||u.hostname.endsWith('.sec.gov')||['nasdaq.com','www.nasdaq.com','nasdaqtrader.com','www.nasdaqtrader.com','nyse.com','www.nyse.com'].includes(u.hostname))&&typeof e.locator==='string'&&e.locator.length>0&&/^[a-f0-9]{64}$/.test(e.sha256||'');}catch{return false;}};
 export function canonicalListing(listing){
- const ticker=Identity.normalizeTicker(listing?.ticker),start=listing?.startDate,end=listing?.listEnd??listing?.endDate??null;
- if(!ticker||ticker!==listing.ticker||!iso(start)||(end!==null&&(!iso(end)||end<start)))throw Error('LISTING_SOURCE_IDENTITY_INVALID');
+ const ticker=Identity.normalizeTicker(listing?.ticker),start=listing?.startDate,sourceEnd=listing?.listEnd??listing?.endDate??null,end=listing?.endDate??(listing?.active===true?null:sourceEnd);
+ if(!ticker||ticker!==listing.ticker||!iso(start)||(sourceEnd!==null&&(!iso(sourceEnd)||sourceEnd<start))||(end!==null&&(!iso(end)||end<start)))throw Error('LISTING_SOURCE_IDENTITY_INVALID');
  if(listing.id!==`tiingo:${listing.exchange}:${ticker}:${start}`||!listing.exchange)throw Error('LISTING_IDENTITY_CONFLICT');
  const securityId=Identity.securityIdForTicker(ticker);
  if(listing.securityId&&listing.securityId!==securityId)throw Error('CANONICAL_SECURITY_ID_CONFLICT');
- return {...listing,securityId,startDate:start,endDate:end};
+ return {...listing,securityId,startDate:start,endDate:end,observedSourceEndDate:sourceEnd,activeStatusBasis:'EXISTING_PROVIDER_RECENCY_HEURISTIC_NOT_OFFICIAL_EXCHANGE_CERTIFICATE'};
 }
 /** A historical source-content review is required, not a current SEC profile. */
 export function certifyHistoricalIdentity(listing,evidence=[],asOf=null){
@@ -37,7 +37,8 @@ export function certifyHistoricalIdentity(listing,evidence=[],asOf=null){
  if(new Set(usable.map(e=>e.assertions.cik)).size!==1)return unverified('CONFLICTING_HISTORICAL_ISSUER_LINKS');
  const e=usable.sort((a,b)=>a.assertions.knownFrom.localeCompare(b.assertions.knownFrom)||hash(a).localeCompare(hash(b)))[0],a=e.assertions;
  const single=a.issuerStructure==='SINGLE_CLASS'&&a.classRosterComplete===true&&Array.isArray(a.classListingIds)&&a.classListingIds.length===1&&a.classListingIds[0]===l.id;
- return {status:'VERIFIED',historical:true,issuerId:a.issuerId,cik:a.cik,listingId:l.id,securityId:l.securityId,validFrom:a.validFrom,validTo:a.validTo??null,knownFrom:a.knownFrom,source:{...e.officialSource,review:e.review},issuerStructure:single?'SINGLE_CLASS':'UNKNOWN',independentSourceContentReviewRequired:true};
+ const instrumentType=a.historicalClassConfirmed===true&&['COMMON_STOCK','ADR','REIT'].includes(a.instrumentType)?a.instrumentType:'UNKNOWN';
+ return {status:'VERIFIED',historical:true,issuerId:a.issuerId,cik:a.cik,listingId:l.id,securityId:l.securityId,validFrom:a.validFrom,validTo:a.validTo??null,knownFrom:a.knownFrom,originalKnownFromDate:a.knownFrom,availabilityResolution:'UTC_DAY_END_CONSERVATIVE_BOUND',instrumentType,source:{...e.officialSource,review:e.review},issuerStructure:single?'SINGLE_CLASS':'UNKNOWN',independentSourceContentReviewRequired:true};
 }
 export function listingAtDate(listing,date,certificate=null){
  if(!iso(date))throw Error('INVALID_FORMATION_DATE');const l=canonicalListing(listing);
@@ -45,11 +46,14 @@ export function listingAtDate(listing,date,certificate=null){
  const verified=certificate?.status==='VERIFIED'&&certificate.historical===true&&certificate.listingId===l.id&&certificate.securityId===l.securityId&&iso(certificate.knownFrom)&&certificate.knownFrom<date&&certificate.validFrom<=date&&(!certificate.validTo||certificate.validTo>=date);
  return {status:verified?'HISTORICAL_LISTING_LINK_CERTIFIED':'OBSERVED_INTERVAL_ONLY',admissible:verified,observedMember:true};
 }
-function populationGate(listings,certificates,population,window){
+function populationGate(listings,certificates,population,window,expectedCalendar){
  if(!population)return {status:'NOT_ESTABLISHED',reason:'INDEPENDENT_HISTORICAL_MARKET_DENOMINATOR_MISSING'};
- if(population.status!=='REVIEWED_COMPLETE_OFFICIAL_POPULATION'||!official(population.officialSource)||population.review?.status!=='PASS'||population.review.assertionHash!==hash(population.assertions))return {status:'NOT_ESTABLISHED',reason:'POPULATION_SOURCE_NOT_INDEPENDENTLY_CERTIFIED'};
+ if(population.status!=='REVIEWED_COMPLETE_OFFICIAL_POPULATION'||!official(population.officialSource)||population.review?.status!=='PASS'||population.review.assertionHash!==hash(population.assertions)||!population.review.reviewer||!iso(population.review.reviewedAt))return {status:'NOT_ESTABLISHED',reason:'POPULATION_SOURCE_NOT_INDEPENDENTLY_CERTIFIED'};
  const a=population.assertions,dates=a?.formationDates;
  if(a?.scope!=='US_EXCHANGE_COMMON_ADR_REIT'||a.from!==window.from||a.to!==window.to||!Array.isArray(dates)||!dates.length||a.completeFormationCalendar!==true)return {status:'NOT_ESTABLISHED',reason:'POPULATION_SCOPE_OR_CALENDAR_INCOMPLETE'};
+ if(!expectedCalendar||expectedCalendar.status!=='REVIEWED_OFFICIAL_FORMATION_CALENDAR'||!official(expectedCalendar.officialSource)||expectedCalendar.review?.status!=='PASS'||!expectedCalendar.review.reviewer||!iso(expectedCalendar.review.reviewedAt)||expectedCalendar.review.assertionHash!==hash(expectedCalendar.assertions))return {status:'NOT_ESTABLISHED',reason:'INDEPENDENT_FORMATION_CALENDAR_MISSING'};
+ const c=expectedCalendar.assertions;
+ if(c.from!==window.from||c.to!==window.to||!Array.isArray(c.dates)||!c.dates.length||c.dates.some((d,i)=>!iso(d)||d<window.from||d>window.to||(i&&d<=c.dates[i-1]))||JSON.stringify(dates)!==JSON.stringify(c.dates))return {status:'NOT_ESTABLISHED',reason:'OFFICIAL_FORMATION_CALENDAR_MISMATCH'};
  const byId=new Map(listings.map(l=>[l.id,l]));
  for(const date of dates){
   if(!iso(date)||date<window.from||date>window.to)return {status:'NOT_ESTABLISHED',reason:'POPULATION_DATE_INVALID'};
@@ -60,15 +64,15 @@ function populationGate(listings,certificates,population,window){
  }
  return {status:'VERIFIED_COMPLETE_WITHIN_EXPLICIT_SCOPE',source:population.officialSource,formationDates:dates.length,scope:a.scope};
 }
-export function certifyUniversePanel({listings=[],providerRows=[],identityEvidence=[],populationEvidence=null,window,asOf,canonicalData=null}={}){
+export function certifyUniversePanel({listings=[],providerRows=[],identityEvidence=[],populationEvidence=null,expectedFormationCalendar=null,window,asOf,canonicalData=null}={}){
  if(!window||!iso(window.from)||!iso(window.to)||window.from>window.to||!iso(asOf))throw Error('EXPLICIT_VALID_WINDOW_AND_ASOF_REQUIRED');
  const ids=new Set(),ls=listings.map(l=>{const v=canonicalListing(l);if(ids.has(v.id))throw Error('DUPLICATE_LISTING_ID');ids.add(v.id);return v;});
  const certificates=new Map(ls.map(l=>[l.id,certifyHistoricalIdentity(l,identityEvidence,null)]));
- const verified=[...certificates.values()].filter(c=>c.status==='VERIFIED').length,population=populationGate(ls,certificates,populationEvidence,window);
+ const verified=[...certificates.values()].filter(c=>c.status==='VERIFIED'&&c.validFrom<=window.to&&c.knownFrom<window.to&&(!c.validTo||c.validTo>=window.from)).length,population=populationGate(ls,certificates,populationEvidence,window,expectedFormationCalendar);
  const state=population.status==='VERIFIED_COMPLETE_WITHIN_EXPLICIT_SCOPE'?'PIT_COMPLETE':verified?'PIT_PARTIAL':'OBSERVED_ONLY';
  const reuse=ls.filter(l=>l.reusedLater).length,closed=ls.filter(l=>l.endDate).length;
  const missing=state==='PIT_COMPLETE'?[]:['HISTORICAL_POPULATION_DENOMINATOR_UNCERTIFIED','DELISTED_POPULATION_COMPLETENESS_UNCERTIFIED'];
  const priceState=canonicalData?.state==='AVAILABLE'?'OBSERVED_CANONICAL_PRICES':'NOT_PROBED';
- const methodCoverage=Object.fromEntries(['cross_sectional_momentum','52_week_high_effect','LOW_VOLATILITY','TURTLE_S2_EQUITY_DAILY','WEINSTEIN_STAGE_DAILY','KULLAMAGI_DAILY_ADAPTATION','GROSS_PROFITABILITY','PIOTROSKI','GREENBLATT','VALUE_MOMENTUM'].map(id=>[id,{universe:state,prices:priceState,historicalIssuerLink:verified?'PARTIAL':'UNVERIFIED',historicalClassRoster:'UNVERIFIED',marketEquity:'NOT_CERTIFIED',annualFundamentals:'NOT_CERTIFIED',performanceCalculated:false}]));
+ const methodCoverage=Object.fromEntries(['cross_sectional_momentum','52_week_high_effect','LOW_VOLATILITY','TURTLE_S2_EQUITY_DAILY','WEINSTEIN_STAGE_DAILY','KULLAMAGI_DAILY_ADAPTATION','gross_profitability_novy_marx','piotroski_value_fscore','greenblatt_magic_formula','value_plus_momentum'].map(id=>[id,{universe:state,prices:priceState,historicalIssuerLink:verified?'PARTIAL':'UNVERIFIED',historicalClassRoster:'UNVERIFIED',marketEquity:'NOT_CERTIFIED',annualFundamentals:'NOT_CERTIFIED',performanceCalculated:false}]));
  return {schema:UNIVERSE_CERT_VERSION,state,asOf,window,counts:{providerListingRecords:providerRows.length,observedListingGenerations:ls.length,closedObservedListings:closed,reusedEarlierListings:reuse,verifiedHistoricalIssuerLinks:verified,canonicalObservedSegments:canonicalData?.coverage?.usableSegments??null},countUnitsDistinct:true,marketDenominator:null,coveragePercentage:null,populationEvidence:population,missing,methodCoverage,listingCertificates:[...certificates.values()],rights:{providerDerived:'PRIVATE_OWNER_SESSION_ONLY_EXISTING_PROVIDER_RIGHTS_UNCONFIRMED',secSources:'OFFICIAL_FREE_SEC_EDGAR_SOURCE_DATA',newPaidProvider:false},limitations:['CANONICAL_PRICE_VALIDITY_IS_NOT_UNIVERSE_COMPLETENESS','SEC_CURRENT_TICKERS_OR_FORMER_NAMES_DO_NOT_PROVE_HISTORICAL_SECURITY_LINKS','CURRENT_CIK_NOT_APPLIED_TO_OLDER_TICKER_GENERATIONS','ADR_RATIO_AND_MULTI_CLASS_MARKET_EQUITY_REQUIRE_SEPARATE_CERTIFICATION']};
 }

@@ -47,7 +47,8 @@ export async function collectDataInventory(options={}){
  const budget=Guard.createBudget({classAOperations:0,classBOperations:30000});
  let driver=options.driver;
  if(!driver){const {createS3DriverFromEnv}=await import('../../../market/storage/s3-driver.mjs');driver=createS3DriverFromEnv(process.env);}
- const readOnly={kind:driver.kind,async get(key){budget.consumeClassB(1,'READ_ONLY_SOURCE_GET');const b=await driver.get(key);if(b)budget.noteDownload(b.length);return b;}};
+ const readReceipts=new Map();
+ const readOnly={kind:driver.kind,async get(key){budget.consumeClassB(1,'READ_ONLY_SOURCE_GET');const b=await driver.get(key);if(b){budget.noteDownload(b.length);readReceipts.set(key,{sourceKey:key,sha256:hash(b),capturedAt:new Date().toISOString(),bytes:b.length});}return b;}};
  // Separate store meters are deliberately unmetered: the driver meters each
  // physical GET once, including usage and optional full canonical series.
  const mainStore=Store.createHistoryStore({driver:readOnly,provider:'tiingo',market:'US',budget:Guard.createBudget({unmetered:true})});
@@ -86,19 +87,39 @@ export async function collectDataInventory(options={}){
  if(options.canonical){
   const readPrivate=k=>getJson(pitStore.seriesPrefix+k);
   canonicalData=await (options.canonicalLoader||loadHistoricalData)({...protocol.window,rawDataDeps:{universe,eligibility,companies,listingRows,mainStore,pitStore,readPrivate,today:asOf}});
+  if(canonicalData.state==='AVAILABLE'){
+   const attach=(security,store,symbol)=>{const key=store.seriesKey(symbol),receipt=readReceipts.get(key);security.priceSource=receipt?{provider:'Tiingo',sourceKey:receipt.sourceKey,sha256:receipt.sha256,capturedAt:receipt.capturedAt,canonicalContractHash:canonicalData.coverage?.canonicalContractHash||null,dataFingerprint:canonicalData.fingerprint,publicationTimeCertification:'NOT_ESTABLISHED_BY_OBJECT_RETRIEVAL'}:null;};
+   for(const security of canonicalData.securities){
+    const l=security.listing||{},baseId=String(l.id||security.id).split('#')[0],f=pit?.[baseId];
+    if(l.source==='STORE_ACTIVE')attach(security,mainStore,l.ticker);else if(l.ticker&&l.startDate)attach(security,pitStore,`${l.ticker}@${l.startDate}`);
+    if(f?.cik){security.issuerCik=f.cik;security.issuerCikEvidence={status:'UNVERIFIED',historical:false,sourceKey:pitStore.seriesPrefix+privateKeys[1],legacyHow:f.how||null,reason:'LEGACY_CIK_OBSERVATION_NOT_REVIEWED_HISTORICAL_SECURITY_LINK'};}
+    if(f?.fiscalPeriodLinks)security.fiscalPeriodLinks=f.fiscalPeriodLinks;
+   }
+   if(canonicalData.benchmark)attach(canonicalData.benchmark,pitStore,'SPY@1993-01-29');
+  }
  }
- const certification=certifyUniversePanel({listings,providerRows:sourceRows.kept,identityEvidence:options.identityEvidence||[],populationEvidence:options.populationEvidence||null,window:protocol.window,asOf,canonicalData});
- const privateInput={schema:INVENTORY_VERSION,observedAt,protocolWindow:protocol.window,listingSource:{url:Listing.LIST_URL,sha256:listingSourceHash,observedAt,classification:'EXISTING_PROVIDER_SUPPORTED_SNAPSHOT_NOT_INDEPENDENT_PIT_POPULATION'},sourceObjects,observedListings,secFundamentalManifest:secManifest,secFundamentalIndex:secIndex,secFactDocuments:factDocs,certification,
+ const certification=certifyUniversePanel({listings,providerRows:sourceRows.kept,identityEvidence:options.identityEvidence||[],populationEvidence:options.populationEvidence||null,expectedFormationCalendar:options.expectedFormationCalendar||null,window:protocol.window,asOf,canonicalData});
+ const privateInput={schema:INVENTORY_VERSION,observedAt,protocolWindow:protocol.window,listingSource:{url:Listing.LIST_URL,sha256:listingSourceHash,observedAt,classification:'EXISTING_PROVIDER_SUPPORTED_SNAPSHOT_NOT_INDEPENDENT_PIT_POPULATION'},sourceObjects,readReceipts:[...readReceipts.values()],observedListings,secFundamentalManifest:secManifest,secFundamentalIndex:secIndex,secFactDocuments:factDocs,certification,
   availableOfficialResources:[{url:'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',role:'RAW_COMPANYFACTS_BULK_NO_HISTORICAL_SECURITY_ROSTER'},{url:'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip',role:'FILINGS_AND_CURRENT_PROFILE_NOT_HISTORICAL_TICKER_VALIDITY'},{url:'https://www.sec.gov/files/company_tickers_exchange.json',role:'CURRENT_ISSUER_TICKER_SNAPSHOT_NOT_HISTORICAL_MAPPING'}],
   limits:['SEC_NORMALIZED_R2_FACTBOOKS_ARE_SOURCE_INPUTS_NOT_A_MIGRATED_CORE_CERTIFICATE','LEGACY_SHARES_DEI_SUM_AND_WADSO_FALLBACK_REQUIRE_REVALIDATION','SEC_SUBMISSIONS_FORMER_NAMES_DATES_DO_NOT_DATE_SECURITY_OR_EXCHANGE_MEMBERSHIP','CURRENT_INSTRUMENT_CLASS_NOT_RETROACTIVE_PIT_CLASS_PROOF'],performanceCalculated:false};
  const publicStatus={schema:INVENTORY_VERSION,status:manifest&&pit?'SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED':'PARTIAL_SOURCE_INPUTS',mode:options.canonical?'READ_ONLY_CANONICAL_INVENTORY':'READ_ONLY_COMPACT_INVENTORY',universeState:certification.state,counts:{providerSupportedListingRecords:sourceRows.supported,sourceRowsRejected:Object.values(sourceRows.rejected).reduce((s,n)=>s+n,0),observedListingGenerations:listings.length,legacyPitEntries:Object.keys(pit||{}).length,legacyDelistingEntries:Object.keys(delist||{}).length,secFundamentalIndexedIssuers:Object.keys(secIndex?.objects||{}).length,sourceObjectsAvailable:sourceObjects.filter(o=>o.status==='AVAILABLE').length,sourceObjectsMissing:sourceObjects.filter(o=>o.status==='MISSING').length,readOnlyGetCalls:budget.spent.classB,writeCalls:budget.spent.classA},sourceRights:'PRIVATE_OWNER_SESSION_ONLY',performanceCalculated:false};
  if(canonicalData){publicStatus.canonicalStatus=canonicalData.state;publicStatus.canonicalCounts={inputSegments:canonicalData.coverage?.inputSegments??0,usableSegments:canonicalData.coverage?.usableSegments??0};if(canonicalData.state==='BLOCKED')privateInput.canonicalPrivateDiagnostic=canonicalData.privateDiagnostics||{reason:canonicalData.reason};}
  return {privateInput,publicStatus,canonicalData};
 }
-export function sealInventory(result,out,{ownerKey,sessionKey}){
- const dest=path.resolve(out);if(dest===root||dest.startsWith(root+path.sep))throw Error('PRIVATE_OUTPUT_OUTSIDE_REPO_REQUIRED');fs.mkdirSync(dest,{recursive:true,mode:0o700});
- for(const [stem,payload] of [['data-certification-inputs',result.privateInput],...(result.canonicalData?.state==='AVAILABLE'?[['canonical-dataset',{schema:'supertrader-private-canonical-dataset-1.0.0',state:result.canonicalData.state,window:result.canonicalData.window,fingerprint:result.canonicalData.fingerprint,coverage:result.canonicalData.coverage,securities:result.canonicalData.securities,benchmark:result.canonicalData.benchmark,calendar:result.canonicalData.calendar,performanceCalculated:false}]]:[])]){
-  const bytes=Buffer.from(JSON.stringify(payload));for(const [audience,key] of [['owner',ownerKey],['session',sessionKey]])fs.writeFileSync(path.join(dest,`${stem}.${audience}.sealed.json`),Listing.encryptForOwner(key,bytes),{mode:0o600});
+export function sealInventory(result,out,{ownerKey,sessionKey,canonicalChunkBytes=8*1024*1024}){
+ const dest=path.resolve(out);if(dest===root||dest.startsWith(root+path.sep))throw Error('PRIVATE_OUTPUT_OUTSIDE_REPO_REQUIRED');fs.mkdirSync(dest,{recursive:true,mode:0o700});fs.chmodSync(dest,0o700);
+ const seal=(stem,bytes)=>{for(const [audience,key] of [['owner',ownerKey],['session',sessionKey]])fs.writeFileSync(path.join(dest,`${stem}.${audience}.sealed.json`),Listing.encryptForOwner(key,bytes),{mode:0o600});};
+ seal('data-certification-inputs',Buffer.from(JSON.stringify(result.privateInput)));
+ // Full canonical history can exceed V8's single-string ceiling. Preserve
+ // every security/bar/fact in bounded encrypted parts; never truncate inputs.
+ if(result.canonicalData?.state==='AVAILABLE'){
+  if(!Number.isSafeInteger(canonicalChunkBytes)||canonicalChunkBytes<128||canonicalChunkBytes>64*1024*1024)throw Error('INVALID_CANONICAL_CHUNK_BYTES');
+  const data=result.canonicalData,parts=[];let batch=[],batchBytes=0;
+  const flush=()=>{if(!batch.length)return;const stem=`canonical-dataset-part-${String(parts.length).padStart(4,'0')}`,bytes=Buffer.from('{"schema":"supertrader-private-canonical-dataset-part-1.0.0","securities":['+batch.join(',')+']}');seal(stem,bytes);parts.push({stem,sha256:hash(bytes),plaintextBytes:bytes.length,securities:batch.length});batch=[];batchBytes=0;};
+  for(const security of data.securities){const encoded=JSON.stringify(security),bytes=Buffer.byteLength(encoded);if(bytes>64*1024*1024)throw Error('CANONICAL_SECURITY_OBJECT_TOO_LARGE');if(batch.length&&batchBytes+bytes>canonicalChunkBytes)flush();batch.push(encoded);batchBytes+=bytes+1;}
+  flush();
+  seal('canonical-dataset-manifest',Buffer.from(JSON.stringify({schema:'supertrader-private-canonical-dataset-manifest-1.0.0',state:data.state,window:data.window,fingerprint:data.fingerprint,coverage:data.coverage,limitations:data.limitations,benchmark:data.benchmark,calendar:data.calendar,securities:data.securities.length,parts,barHistoryTruncated:false,canonicalCoreReused:true,performanceCalculated:false})));
+  result.publicStatus.canonicalSealedParts=parts.length;
  }
  fs.writeFileSync(path.join(dest,'data-certification-status.json'),JSON.stringify(result.publicStatus,null,2)+'\n',{mode:0o600});return result.publicStatus;
 }

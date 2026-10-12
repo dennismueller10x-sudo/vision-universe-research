@@ -6,7 +6,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [probe]
+        options: [probe, canonical]
         default: probe
 permissions:
   contents: read
@@ -15,9 +15,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   data-probe:
-    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'probe')
+    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +45,14 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
-        run: node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 0
+          CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || inputs.mode == 'canonical' }}
+        run: |
+          set -euo pipefail
+          if [ "$CERTIFICATION_CANONICAL" = "true" ]; then
+            node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical
+          else
+            node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 0
+          fi
       - name: Preserve encrypted inventory and public statuses only
         if: always()
         uses: actions/upload-artifact@v4

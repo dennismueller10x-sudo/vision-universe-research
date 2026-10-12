@@ -13,7 +13,7 @@ const old={id:'tiingo:NASDAQ:ABC:2016-01-01',ticker:'ABC',exchange:'NASDAQ',star
 const next={id:'tiingo:NASDAQ:ABC:2021-01-01',ticker:'ABC',exchange:'NASDAQ',startDate:'2021-01-01',active:true};
 const hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
 function link(overrides={}){
- const assertions={listingId:old.id,securityId:'ref_ABC',ticker:'ABC',cik:'0000000001',issuerId:'iss_cik_0000000001',relationship:'ISSUER_SECURITY',admissionConfirmed:true,validFrom:'2016-01-01',validTo:'2019-12-31',knownFrom:'2016-01-01',issuerStructure:'SINGLE_CLASS',classRosterComplete:true,classListingIds:[old.id],...overrides};
+ const assertions={listingId:old.id,securityId:'ref_ABC',ticker:'ABC',cik:'0000000001',issuerId:'iss_cik_0000000001',relationship:'ISSUER_SECURITY',admissionConfirmed:true,validFrom:'2016-01-01',validTo:'2019-12-31',knownFrom:'2016-01-01',instrumentType:'COMMON_STOCK',historicalClassConfirmed:true,issuerStructure:'SINGLE_CLASS',classRosterComplete:true,classListingIds:[old.id],...overrides};
  return {type:'HISTORICAL_ISSUER_SECURITY_LINK',historical:true,assertions,officialSource:{url:'https://www.sec.gov/Archives/edgar/data/1/source.htm',locator:'reviewed historical security cover-page link',sha256:'a'.repeat(64)},review:{status:'PASS',reviewer:'independent-fixture-review',reviewedAt:'2026-10-12',assertionHash:hash(assertions)}};
 }
 function fixture(extra={}){
@@ -42,10 +42,26 @@ test('current profiles and later ticker generation cannot certify historical iss
  assert.equal(certifyHistoricalIdentity(old,[link({securityId:'ref_OTHER'})],'2018-01-02').status,'UNVERIFIED');
 });
 test('a reviewed original historical link respects formation availability and class roster',()=>{
- const x=certifyHistoricalIdentity(old,[link()],'2018-01-02');assert.equal(x.status,'VERIFIED');assert.equal(x.issuerStructure,'SINGLE_CLASS');
+ const x=certifyHistoricalIdentity(old,[link()],'2018-01-02');assert.equal(x.status,'VERIFIED');assert.equal(x.issuerStructure,'SINGLE_CLASS');assert.equal(x.instrumentType,'COMMON_STOCK');assert.equal(x.availabilityResolution,'UTC_DAY_END_CONSERVATIVE_BOUND');assert.equal(x.originalKnownFromDate,'2016-01-01');
  assert.equal(listingAtDate(old,'2016-01-01',x).admissible,false);assert.equal(listingAtDate(old,'2018-01-02',x).admissible,true);
  assert.equal(certifyHistoricalIdentity(old,[link({classListingIds:[old.id,'another-class']})],'2018-01-02').issuerStructure,'UNKNOWN');
+ assert.equal(certifyHistoricalIdentity(old,[link({historicalClassConfirmed:false})],'2018-01-02').instrumentType,'UNKNOWN');
  assert.equal(certifyHistoricalIdentity(old,[link(),link({cik:'0000000002',issuerId:'iss_cik_0000000002'})],'2018-01-02').reason,'CONFLICTING_HISTORICAL_ISSUER_LINKS');
+});
+test('PIT_COMPLETE requires exact unique ordered dates from a separate reviewed official formation calendar',()=>{
+ const narrow={from:'2018-01-02',to:'2018-01-03'},source={url:'https://www.nyse.com/official-calendar',locator:'reviewed session membership',sha256:'d'.repeat(64)};
+ const assertions={scope:'US_EXCHANGE_COMMON_ADR_REIT',from:narrow.from,to:narrow.to,formationDates:['2018-01-02'],completeFormationCalendar:true,listingIdsByDate:{'2018-01-02':[old.id],'2018-01-03':[old.id]}};
+ const pop={status:'REVIEWED_COMPLETE_OFFICIAL_POPULATION',assertions,officialSource:source,review:{status:'PASS',reviewer:'fixture',reviewedAt:'2026-10-12',assertionHash:hash(assertions)}};
+ const c={from:narrow.from,to:narrow.to,dates:['2018-01-02','2018-01-03']},calendar={status:'REVIEWED_OFFICIAL_FORMATION_CALENDAR',assertions:c,officialSource:source,review:{status:'PASS',reviewer:'calendar-fixture',reviewedAt:'2026-10-12',assertionHash:hash(c)}};
+ const opts={listings:[old],identityEvidence:[link()],populationEvidence:pop,window:narrow,asOf:'2026-10-12'};
+ assert.equal(certifyUniversePanel(opts).populationEvidence.reason,'INDEPENDENT_FORMATION_CALENDAR_MISSING');
+ assert.equal(certifyUniversePanel({...opts,expectedFormationCalendar:calendar}).populationEvidence.reason,'OFFICIAL_FORMATION_CALENDAR_MISMATCH');
+ assertions.formationDates=[...c.dates];pop.review.assertionHash=hash(assertions);assert.equal(certifyUniversePanel({...opts,expectedFormationCalendar:calendar}).state,'PIT_COMPLETE');
+ c.dates=['2018-01-02','2018-01-02'];calendar.review.assertionHash=hash(c);assert.equal(certifyUniversePanel({...opts,expectedFormationCalendar:calendar}).state,'PIT_PARTIAL');
+});
+test('active provider last-data dates are retained as source endpoints, not inferred delistings',async()=>{
+ const f=fixture();f.options.listingRows[1].endDate='2026-10-09';const x=await collectDataInventory(f.options),r=x.privateInput.observedListings.find(r=>r.listing.id===next.id);
+ assert.equal(r.listing.active,true);assert.equal(r.listing.endDate,null);assert.equal(r.listing.observedSourceEndDate,'2026-10-09');assert.equal(x.privateInput.certification.counts.closedObservedListings,1);
 });
 test('unreviewed or scope-incomplete population claims never become PIT_COMPLETE',()=>{
  const x=certifyUniversePanel({listings:[old],identityEvidence:[link()],populationEvidence:{status:'REVIEWED_COMPLETE_OFFICIAL_POPULATION',formationDates:['2018-01-02']},window,asOf:'2026-10-12'});
@@ -69,4 +85,16 @@ test('optional SEC fact reads are bounded and foreign object keys are never foll
 test('owner/session seals round-trip complete compact inputs; public output contains only enums and counts',async()=>{
  const f=fixture(),x=await collectDataInventory(f.options),keys=crypto.generateKeyPairSync('rsa',{modulusLength:2048,publicKeyEncoding:{type:'spki',format:'pem'},privateKeyEncoding:{type:'pkcs8',format:'pem'}}),out=fs.mkdtempSync(path.join(os.tmpdir(),'cert-inventory-'));
  try{sealInventory(x,out,{ownerKey:keys.publicKey,sessionKey:keys.publicKey});for(const a of ['owner','session']){const recovered=JSON.parse(decryptSealed(keys.privateKey,fs.readFileSync(path.join(out,`data-certification-inputs.${a}.sealed.json`),'utf8')));assert.deepEqual(recovered,x.privateInput);}const pub=fs.readFileSync(path.join(out,'data-certification-status.json'),'utf8');assert.equal(pub.includes('ABC'),false);assert.equal(pub.includes('0000000001'),false);assert.equal(pub.includes('123'),false);assert.equal(pub.includes('sourceKey'),false);}finally{fs.rmSync(out,{recursive:true,force:true});}
+});
+test('optional canonical probe reuses the exact source snapshot and preserves every object across encrypted parts',async()=>{
+ const f=fixture(),securities=Array.from({length:3},(_,i)=>({id:'fixture:'+i,listing:{id:'fixture:'+i},bars:[{date:'2018-01-02',open:100+i,high:101+i,low:99+i,close:100+i,volume:1000,dividend:0,splitFactor:1,comment:'x'.repeat(200)}],fundamentals:[]}));let called=false;
+ const canonicalLoader=async o=>{called=true;assert.deepEqual(o.rawDataDeps.listingRows,f.options.listingRows);assert.deepEqual(o.rawDataDeps.universe,f.options.documents.universe);return {state:'AVAILABLE',window,coverage:{inputSegments:3,usableSegments:3},securities,benchmark:{bars:[]},calendar:['2018-01-02'],fingerprint:'c'.repeat(64),limitations:[]};};
+ const x=await collectDataInventory({...f.options,canonical:true,canonicalLoader});assert.equal(called,true);assert.equal(x.publicStatus.canonicalStatus,'AVAILABLE');
+ const keys=crypto.generateKeyPairSync('rsa',{modulusLength:2048,publicKeyEncoding:{type:'spki',format:'pem'},privateKeyEncoding:{type:'pkcs8',format:'pem'}}),out=fs.mkdtempSync(path.join(os.tmpdir(),'cert-canonical-'));
+ try{sealInventory(x,out,{ownerKey:keys.publicKey,sessionKey:keys.publicKey,canonicalChunkBytes:128});const manifest=JSON.parse(decryptSealed(keys.privateKey,fs.readFileSync(path.join(out,'canonical-dataset-manifest.session.sealed.json'),'utf8')));assert.equal(manifest.barHistoryTruncated,false);assert.equal(manifest.securities,3);assert.equal(manifest.parts.length,3);const recovered=manifest.parts.flatMap(p=>{const b=decryptSealed(keys.privateKey,fs.readFileSync(path.join(out,`${p.stem}.session.sealed.json`),'utf8'));assert.equal(crypto.createHash('sha256').update(b).digest('hex'),p.sha256);return JSON.parse(b).securities;});assert.deepEqual(recovered,securities);}finally{fs.rmSync(out,{recursive:true,force:true});}
+});
+test('canonical price provenance binds exact physical R2 read receipts, never a fabricated provider label',async()=>{
+ const f=fixture(),raw=Buffer.from('exact fixture object bytes'),key='v1/tiingo/daily/US/ABC.json.'+(typeof zlib.zstdCompressSync==='function'?'zst':'gz');f.objects.set(key,raw);
+ const canonicalLoader=async o=>{const k=o.rawDataDeps.mainStore.seriesKey('ABC');assert.equal(k,key);await o.rawDataDeps.mainStore.driver.get(k);return {state:'AVAILABLE',window,coverage:{inputSegments:1,usableSegments:1,canonicalContractHash:'b'.repeat(64)},securities:[{id:next.id,listing:{...next,source:'STORE_ACTIVE'},bars:[],fundamentals:[]}],benchmark:null,calendar:[],fingerprint:'c'.repeat(64)};};
+ const x=await collectDataInventory({...f.options,canonical:true,canonicalLoader}),s=x.canonicalData.securities[0];assert.equal(s.priceSource.sourceKey,key);assert.equal(s.priceSource.sha256,crypto.createHash('sha256').update(raw).digest('hex'));assert.equal(s.priceSource.dataFingerprint,'c'.repeat(64));assert.equal(s.priceSource.canonicalContractHash,'b'.repeat(64));assert.equal(s.priceSource.publicationTimeCertification,'NOT_ESTABLISHED_BY_OBJECT_RETRIEVAL');assert.equal(x.privateInput.readReceipts.some(r=>r.sourceKey===key),true);
 });
