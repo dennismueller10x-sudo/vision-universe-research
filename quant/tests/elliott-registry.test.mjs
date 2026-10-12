@@ -16,6 +16,7 @@ const Led = await import(join(ROOT, "scripts/technical/elliott-registry/ledger.m
 const Reg = await import(join(ROOT, "scripts/technical/elliott-registry/register.mjs"));
 const Ver = await import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs"));
 const Ev = await import(join(ROOT, "scripts/technical/elliott-registry/evaluate-registry.mjs"));
+const Pv = await import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs"));
 const { loadWeekly } = await import(join(ROOT, "scripts/technical/lib/ti-data.mjs"));
 const Core = await import(join(ROOT, "scripts/technical/hsab/lib/replay-core.mjs"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
@@ -130,4 +131,31 @@ test("M10-R5 Ein Titel ohne Wochenreihe (aus dem Produkt gefallen) beendet den L
   const after = readFileSync(join(reg, "ledger.jsonl"), "utf8");
   assert.ok(after.startsWith(before), "nur angehaengt");
   assert.equal(Ver.verifyRegistry(reg).ok, true);
+});
+
+test("M10-R6 Vollvergleich der Explore Highlights: gleich, abweichend, fehlender Titel, Zeitausnahme", () => {
+  const pubK = new Map([["AAA", ["K1"]], ["BBB", ["K2", "K3"]], ["CCC", ["K4"]], ["DDD", ["K5"]]]);
+  const asOf = new Map([["AAA", "2026-10-09"], ["BBB", "2026-10-09"], ["CCC", "2026-10-09"], ["DDD", "2026-10-02"], ["EEE", "2026-10-09"]]);
+  const same = new Map([["AAA", { d: "2026-10-09", keys: ["K1"] }], ["BBB", { d: "2026-10-09", keys: ["K2", "K3"] }], ["CCC", { d: "2026-10-09", keys: ["K4"] }], ["DDD", { d: "2026-10-02", keys: ["K5"] }]]);
+  const a = Pv.compareHighlights(pubK, same, asOf); assert.equal(a.ok, true); assert.equal(a.identical, 4); assert.equal(a.different.length, 0);
+  /* ein Titel fehlt im Register (z. B. Reihe endet vor der Woche): Abweichung, nicht still uebergangen */
+  const missing = new Map(same); missing.delete("CCC");
+  const b = Pv.compareHighlights(pubK, missing, asOf); assert.equal(b.ok, false); assert.deepEqual(b.different.map((x) => [x.t, x.reason]), [["CCC", "NOT_IN_REGISTRY_UNIVERSE"]]);
+  /* Register hat ein Highlight, das das Produkt nicht zeigt */
+  const extra = new Map(same); extra.set("EEE", { d: "2026-10-09", keys: ["K9"] });
+  const c = Pv.compareHighlights(pubK, extra, asOf); assert.equal(c.ok, false); assert.deepEqual(c.different.map((x) => x.t), ["EEE"]);
+  /* andere Schluessel bei gleichem Stand */
+  const diff = new Map(same); diff.set("BBB", { d: "2026-10-09", keys: ["K2"] });
+  assert.equal(Pv.compareHighlights(pubK, diff, asOf).ok, false);
+  /* Zeitausnahme: anderer Stand der letzten Bar → ausgewiesen, keine Abweichung */
+  const timing = new Map(same); timing.set("AAA", { d: "2026-10-02", keys: ["KX"] });
+  const d = Pv.compareHighlights(pubK, timing, asOf); assert.equal(d.ok, true); assert.deepEqual(d.timing.map((x) => x.t), ["AAA"]);
+});
+
+test("M10-R7 lastBarUpTo: Reihe darf vor der Woche enden (Produktsicht), nie danach", async () => {
+  const pts = [["2026-09-18", 1], ["2026-09-25", 2], ["2026-10-01", 3], ["2026-10-14", 4]];
+  assert.equal(Reg.lastBarUpTo(pts, "2026-10-09"), 2, "letzte Bar der Woche 2026-10-02 (Donnerstag 01.10.)");
+  assert.equal(Reg.lastBarUpTo(pts, "2026-09-25"), 1);
+  assert.equal(Reg.lastBarUpTo(pts, "2026-09-11"), -1);
+  assert.equal(Reg.cutIndex(pts, "2026-10-01", "2026-10-09"), -1, "strenge Regel der zustandslosen Sicht bleibt");
 });
