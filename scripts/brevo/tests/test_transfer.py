@@ -126,6 +126,28 @@ class Transfer(unittest.TestCase):
         self.assertEqual(self.fake.contacts,before)
         self.assertFalse(any(m!="GET" for m,_,_ in self.fake.calls))
 
+    def test_omitted_empty_text_is_verified_without_relaxing_consent(self):
+        data=self.fixture()
+        data.update(import_policy="subscribers_new_or_unchanged_v1", expected_list_ids=self.fake.lists)
+        data["records"]=[r for r in data["records"] if r["attributes"]["VU_EMAIL_CONSENT"]=="subscribed"]
+        call=self.fake.call
+        def omit(method,path,body=None,**kwargs):
+            result=call(method,path,body,**kwargs)
+            if method=="POST" and path=="/contacts":
+                a=self.fake.contacts[body["email"]]["attributes"]
+                for k in list(a):
+                    if a[k]=="":del a[k]
+            return result
+        self.fake.call=omit
+        first=import_contacts(self.fake,data,self.review(data))
+        self.assertEqual(first["created"],1)
+        again=import_contacts(self.fake,data,self.review(data))
+        self.assertEqual(again["unchanged"],1)
+        self.assertEqual(again["held_existing"],2)
+        del self.fake.contacts["yes@example.invalid"]["attributes"]["VU_EMAIL_CONSENT"]
+        self.assertEqual(preflight(self.fake,data)["held_existing"],3)
+        self.assertFalse(any(m=="PUT" for m,_,_ in self.fake.calls))
+
     def test_dispatch_review_requires_actual_evidence_and_exact_private_version(self):
         from prepare import prepared_digest
         import datetime as dt
@@ -176,6 +198,13 @@ class Transfer(unittest.TestCase):
         self.assertNotIn("example.invalid", rendered)
         self.assertEqual(result["plan_types"], ["unknown"])
         self.assertEqual(result["authenticated_domains_count"], 1)
+
+    def test_audit_counts_actual_main_test_and_empty_waitlist_privately(self):
+        result=audit(self.fake)
+        self.assertEqual(result["vu_list_contact_counts"], {
+            "VU | Newsletter":0,"VU | App-Warteliste":0,"VU | Newsletter-Test":2})
+        self.assertFalse(any(m!="GET" for m,_,_ in self.fake.calls))
+        self.assertNotIn("example.invalid",json.dumps(result))
 
 
 if __name__ == "__main__":

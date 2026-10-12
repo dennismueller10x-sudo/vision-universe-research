@@ -37,13 +37,11 @@ Ein aktuell ausgewählter Oberflächenordner oder ein Suchfilter ist über diese
 
 PR 609 wurde nach erfolgreichen relevanten Checks gemergt (`54acec5889dc65b8b914531ab3d3affcbc58a902`). Der bisherige manuelle Importauftrag ist durch den aktuellen API-Importauftrag ersetzt.
 
-Der tatsächliche [Actions-Import-Preview 38251453506](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38251453506) scheiterte vor Kontaktabgleich und Mutation: `BREVO_IMPORT_PAYLOAD` fehlt oder ist zu groß. Aus dieser kombinierten Fehlermeldung wird nicht behauptet, die Existenz des Secrets sei unabhängig nachgewiesen. Der Zugang erhält beim Secret-Übergabe-Endpunkt HTTP 403; kein API-Schlüssel steht im lokalen Prozess zur Verfügung. Deshalb fehlt weiterhin der **private Adressvergleich** mit dem bestehenden Brevo-Kontakt. Ein Brevo-Export wird dafür nicht benötigt.
+Die Übergabeblockade ist behoben: Der Owner hat `BREVO_IMPORT_PAYLOAD` hinterlegt. [Preview 38262071051](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38262071051) ist erfolgreich: Base64/Gzip/JSON und Schema gültig, 137 Kandidaten privat per API geprüft, 137 neu, 0 vorhanden, 135 regulär, zwei intern, fünf Käufer, keine Nicht-Abonnenten. Der bestehende Brevo-Kontakt kommt nicht im Paket vor und bleibt unverändert. 0 Kontakte importiert/verändert, 0 E-Mails, 0 Actions-Artefakte. Der vorherige gesperrte Preview bleibt lediglich historisch.
 
-Ein neues privates Paket enthält exakt 137 angemeldete Kandidaten (135 regulär, zwei intern, fünf Käufer), feste Ziel-IDs 4/5/6 und die konservative Importpolicy. Alle 13 Nicht-Abonnenten sind ausgeschlossen. Gzip/Base64-Payload: 6.236 Byte, lokal mit `0600` außerhalb von Git, Roundtrip validiert. Base64 ist keine Verschlüsselung; Datei und Übergabe bleiben privat. Originaldatei und ursprüngliche CSVs unverändert. Private Downloads werden ausschließlich im bestätigten Owner-Bereich bereitgestellt; unbegrenzte Speicherung wird nicht zugesagt.
+Das private Paket umfasst 137 angemeldete Kandidaten, feste Ziel-IDs 4/5/6 und die konservative Importpolicy. Alle 13 Nicht-Abonnenten sind ausgeschlossen. Gzip/Base64-Payload: 6.236 Byte, außerhalb von Git mit 0600 und validiertem Roundtrip. Originalexport bytegleich aus dem privaten ZIP erhalten, ursprüngliche CSVs unverändert. Private Downloads liegen im bestätigten Owner-Bereich; keine unbegrenzte Speicherung behauptet. Kein erneuter Secret-Upload oder Brevo-Export erforderlich.
 
-**Einmaliger Betreiber-Schritt:** vollständigen privaten Payload als Repository-Actions-Secret `BREVO_IMPORT_PAYLOAD` hinterlegen. Danach kann Actions den Bestandsabgleich selbst ausführen. Keine weiteren Import-Secrets, API-Schlüsselexporte oder dauerhaft manuellen CSV-Importe. Details: [API-EXECUTION.md](API-EXECUTION.md).
-
-Aktive Automationen sind weiterhin nicht tatsächlich vollständig geprüft. Im aktuellen Arbeitszugang stehen keine Automationsscreenshots zur Verfügung. Zusätzlich benötigt wird nur **Automatisierungen → Workflows → Aktiv**, einschließlich klassischer Workflows/aller Seiten; bei aktiven Workflows deren Eintrittstrigger und Kontaktfilter. Nachweis an exakten privaten Payload und höchstens 24 Stunden alten tatsächlichen Prüfzeitpunkt binden. Keine automatischen Prüfaussagen und keine pauschale Deaktivierung.
+Der Owner meldet auf die konkrete Frage zur vollständigen **Automatisierungen → Workflows → Aktiv**-Ansicht, einschließlich klassischer Workflows/weiterer Seiten: **„dort erscheint nichts“**. Dieser Betreiber-Nachweis wird privat als leerer Aktiv-Bestand dokumentiert und an exakten Payload sowie tatsächlichen aktuellen Prüfzeitpunkt gebunden. Kein eigener UI-/Screenshot-Zugriff für Codex und keine pauschale Deaktivierung. Der tatsächliche Import muss nach Code-Merge nochmals den Bestand lesen und seine Ergebnisse zurückprüfen.
 
 Separater Newsletter-Ausführungsweg vorbereitet, noch nicht auf main aktiviert: manuelle Entwurfs-/Versionsprüfung, geschützter Vorabtest, separate geschützte Hauptfreigabe und dauerhafte Reservierungen ohne personenbezogene Daten. GitHub liefert beim Einrichten der benötigten Review-Umgebung ebenfalls HTTP 403. Keine vorhandene Review-Umgebung eingerichtet, keine Entwürfe, keine Tests oder Newsletter gesendet. Ein einmaliger Owner-Review-Gate-Schritt ist daher zusätzlich für den **späteren Versand**, nicht den Import, erforderlich.
 
@@ -53,14 +51,14 @@ Separater Newsletter-Ausführungsweg vorbereitet, noch nicht auf main aktiviert:
 |---|---|
 | Tarif | free; keine Buchung oder Tarifänderung |
 | VU-Merkmale | 10 von 10 vorhanden, keine Typkonflikte |
-| Kontaktinventar | 1 bestehender Kontakt; privater Abgleich mit Shopify-Dateien weiterhin offen |
+| Kontaktinventar | 1 bestehender Kontakt; keiner der 137 Kandidaten ist vorhanden |
 | Einwilligung/Sperren | Audit vom 10. Oktober: globale E-Mail-Sperre false, keine protokollierte Abmeldung, Listen-Abmeldedaten nicht geliefert und VU-Einwilligung ungeklärt; keine Anmeldung daraus abgeleitet |
 | Interne Testempfänger | eindeutig privat vorbereitet; noch nicht als VU-Testkontakte eingerichtet |
 | Segmente | 0; Käufersegment weiterhin in der UI anzulegen |
 | Absender | 1, aktiv laut API; Adresse bleibt privat |
 | Domain | 1 registriert; Bestätigung und Authentifizierung fehlen laut aktuellem Audit |
 | DNS-Werte | am 10. Oktober tatsächlich abgerufen und ausschließlich privat bereitgestellt; keine DNS-Änderung |
-| Aktive Automationen | tatsächliche vollständige Prüfung weiterhin über Brevo-UI erforderlich |
+| Aktive Automationen | Owner meldet die angeforderte vollständige Aktiv-Ansicht leer; privater Betreiber-Nachweis |
 | Kontaktimport / Newsletter- und Testversand | nicht durchgeführt |
 
 135 reguläre Kontakte und zwei interne Testkontakte sind vorbereitet; 13 Nicht-Abonnenten bleiben auf ausdrücklichen Wunsch zurückgestellt. Insgesamt sechs Käufer, davon einer nicht angemeldet. Der Bestands-/Sperrenabgleich, die tatsächliche Automationsprüfung und die Kontozuordnung/Listenansicht müssen vor jedem Import abgeschlossen sein. Alle 150 Kontakte bleiben zurückgestellt. Keine Bestandskontakte in die App-Warteliste übernehmen und keine vorhandenen Sperren oder Abmeldungen aufheben.

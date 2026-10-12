@@ -45,6 +45,13 @@ def merge_attributes(incoming, existing):
     return attrs
 
 
+def attribute_matches(actual, name, expected):
+    # Brevo may omit unset text attributes; an empty tag has no consent meaning.
+    if ATTRS.get(name) == "text" and expected == "":
+        return actual.get(name) in (None, "")
+    return actual.get(name) == expected
+
+
 def held_existing(prepared, record, existing, lists=None):
     """Current stock import: never interpret missing status as renewed consent."""
     if prepared.get("import_policy") != "subscribers_new_or_unchanged_v1" or existing is None:
@@ -56,7 +63,7 @@ def held_existing(prepared, record, existing, lists=None):
     attrs = existing["attributes"]
     if existing["emailBlacklisted"] or attrs.get("VU_EMAIL_CONSENT") != "subscribed":
         return True
-    if any(attrs.get(k) != v for k, v in record["attributes"].items()):
+    if any(not attribute_matches(attrs, k, v) for k, v in record["attributes"].items()):
         return True
     if existing.get("listUnsubscribed"):
         return True
@@ -133,12 +140,14 @@ def import_contacts(client, prepared, review, protected_actions=False):
             result["created"] += 1
         # Read back every upsert without logging contact data; abort on a mismatch.
         actual = client.contact(email)
-        if not actual or any(actual.get("attributes", {}).get(k) != v for k, v in attrs.items()):
+        if not actual or any(not attribute_matches(actual.get("attributes", {}), k, v) for k, v in attrs.items()):
             raise Blocked("Import-Rückprüfung fehlgeschlagen; privaten Zustand prüfen.")
         if eligible != (lists[LISTS[0]] in actual.get("listIds", [])):
             raise Blocked("Newsletter-Zuordnung stimmt nicht mit Einwilligung überein.")
         if attrs["VU_INTERNAL_TEST"] and lists[LISTS[2]] not in actual.get("listIds", []):
             raise Blocked("Testlisten-Zuordnung fehlt.")
+        if prepared.get("import_policy") == "subscribers_new_or_unchanged_v1" and lists[LISTS[1]] in actual.get("listIds", []):
+            raise Blocked("Bestandskontakt wurde unerwartet in die App-Warteliste aufgenommen.")
         if existing and existing.get("emailBlacklisted") and not actual.get("emailBlacklisted"):
             raise Blocked("Bestehende Sperre wurde verändert; Import anhalten.")
         result["newsletter"] += eligible
