@@ -1,0 +1,58 @@
+name: Supertrader data and execution certification (private)
+on:
+  push:
+    branches: ['research/supertrader-data-execution-certification-*']
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [probe]
+        default: probe
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-certification-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  data-probe:
+    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'probe')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only data inventory; no strategy performance
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 0
+      - name: Preserve encrypted inventory and public statuses only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-certification-probe-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/datacert/*status.json
+            ${{ runner.temp }}/datacert/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30
