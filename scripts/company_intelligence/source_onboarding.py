@@ -54,7 +54,10 @@ def candidate_inventory(companies, store, sources, reviewed):
         if not url or publisher(url) or not url.startswith('https://'):
             continue
         rows.append({'companyId': cid, 'url': url, 'kind': 'EXACT_HTTPS_RECONFIRMATION' if cid in insecure and approved else 'MISSING_PROVEN_SOURCE'})
-    rows.sort(key=lambda r: (r['companyId'] not in MANDATORY, r['kind'] != 'EXACT_HTTPS_RECONFIRMATION', r['companyId']))
+    # Missing sources take priority over repairs of already pollable archives.
+    # Mandatory exact-protocol cases remain first; current owner verification
+    # still runs for every candidate before registration or polling.
+    rows.sort(key=lambda r: (r['companyId'] not in MANDATORY, r['kind'] != 'MISSING_PROVEN_SOURCE', r['companyId']))
     return rows
 
 def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, now=None):
