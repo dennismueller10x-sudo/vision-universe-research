@@ -201,3 +201,34 @@ The GitHub runner reported `ROBOTS_UNAVAILABLE:HTTP_403` for the existing Intell
 The reviewed URL correction accepts only the already registered, approved, active source and a currently accepted owner, with an exact existing issuer/headline/publication timestamp/host/path match. It delegates the correction to the existing `Store.ingest` HTTPS reconfirmation rule, preserving IDs, first discovery and previous provenance. It registers no source, creates no news and never changes source-health success timestamps. Date-only records, changed titles/times, new paths, foreign domains and conflicting owners are refused. A private application marker survives restore; observation age is bounded for first use. Runner polling outages are still reported independently. Production delivery of these corrections remains pending until the current candidate is accepted and published.
 
 The local full Python regression suite passed 743 tests after the URL correction. Later editorial additions require the same source/hash/style contract and full production-candidate acceptance before any live count is claimed.
+
+## Additional data-honesty review: ACH
+
+On 2026-10-12 the actual SEC submissions endpoint
+`https://data.sec.gov/submissions/CIK0000075252.json` identified
+`ACCENDRA HEALTH INC/VA/`, ticker `ACH`, exchange `NYSE`, formerly
+`OWENS & MINOR INC/VA/`. The committed SEC consumer agrees, as of
+2026-10-05. The current Master instead labels this security Aluminum
+Corporation of China. This is a **consumer entity-name conflict**, not
+proof that the current ACH-to-CIK pair is wrong. The existing operator
+disable for this issuer prevents surfacing US healthcare financials under
+the Chinese-company label in the next validated generation. No Master,
+price, factor or security identifiers are changed. ACH becomes a permanent
+negative browser canary. The separately required Master display correction
+remains documented; normal Discover remains available.
+
+The native `schedule` run 38287243830 (2026-10-12T17:53:40Z) was observed,
+but failed before publication. It is not evidence of a successful scheduled
+refresh. The previously opaque failure was reproduced in isolated run
+38286748683: Ranger Energy Services (`iss_cik_0001699039`) disagreed with
+the rendered Aktuelles module at the 90-day clock boundary. The export now
+uses exact elapsed time for known publication clocks and calendar days for
+date-only records; the UI retains date-only precision. The previous GOOD
+was preserved. Local full suites passed 744 Python and 117 Node tests after
+this correction; a source-bound German investment-wording test was added
+subsequently. Production acceptance is still pending.
+
+A further prose review removed 44 nonfactual padding sentences and withdrew
+eight generic/legal-only descriptions. Approved catalogue counts are not
+live coverage counts until the actual generation and production readback
+are accepted.

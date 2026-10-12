@@ -56,6 +56,10 @@ def create(state, consumer, decisions, output):
         # Existing browser QA expects these structural group names.
         selected['SPARSE']=base['groups']['SPARSE'];selected['INTERNATIONAL_ADR']=selected['ADR_GLOBAL'][:2];selected['MASTER_DETAIL']=base['groups']['MASTER_DETAIL']
         chosen=sorted({t for ts in selected.values()for t in ts})
+        # A proven display-identity conflict stays a permanent negative canary.
+        rejected=rows.get('iss_cik_0000075252',{})
+        if rejected and not rejected.get('status','').startswith('ELIGIBLE') and 'ACH' in rejected.get('tickers',[]):
+            base['ineligible']=sorted(set([*base['ineligible'],'ACH']))
         result={'schema':1,'generation':m['generation'],'seed':SEED,'method':'SHA256_SEED_ISSUER_ORDER_WITH_RECORDED_SEC_BUSINESS_COUNTRY_AND_SIC',
                 'stocks':chosen,'ineligible':base['ineligible'],'groups':selected,'groupTargets':TARGETS,
                 'availableGroupCounts':{k:len(groups[k])for k in TARGETS},'groupShortfalls':{k:TARGETS[k]-len(selected[k])for k in TARGETS if len(selected[k])<TARGETS[k]},
