@@ -13,7 +13,7 @@ const old={id:'tiingo:NASDAQ:ABC:2016-01-01',ticker:'ABC',exchange:'NASDAQ',star
 const next={id:'tiingo:NASDAQ:ABC:2021-01-01',ticker:'ABC',exchange:'NASDAQ',startDate:'2021-01-01',active:true};
 const hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
 function link(overrides={}){
- const assertions={listingId:old.id,securityId:'ref_ABC',ticker:'ABC',cik:'0000000001',issuerId:'iss_cik_0000000001',relationship:'ISSUER_SECURITY',admissionConfirmed:true,validFrom:'2016-01-01',validTo:'2019-12-31',knownFrom:'2016-01-01',instrumentType:'COMMON_STOCK',historicalClassConfirmed:true,issuerStructure:'SINGLE_CLASS',classRosterComplete:true,classListingIds:[old.id],...overrides};
+ const assertions={listingId:old.id,securityId:'ref_ABC',ticker:'ABC',cik:'0000000001',issuerId:'iss_cik_0000000001',relationship:'ISSUER_SECURITY',admissionConfirmed:true,validFrom:'2016-01-01',validTo:'2019-12-31',knownFrom:'2016-01-01',instrumentType:'COMMON_STOCK',historicalClassConfirmed:true,issuerStructure:'SINGLE_CLASS',classRosterComplete:true,classRosterScope:'ALL_ISSUER_COMMON_EQUITY_CLASSES',classListingIds:[old.id],...overrides};
  return {type:'HISTORICAL_ISSUER_SECURITY_LINK',historical:true,assertions,officialSource:{url:'https://www.sec.gov/Archives/edgar/data/1/source.htm',locator:'reviewed historical security cover-page link',sha256:'a'.repeat(64)},review:{status:'PASS',reviewer:'independent-fixture-review',reviewedAt:'2026-10-12',assertionHash:hash(assertions)}};
 }
 function fixture(extra={}){
@@ -59,6 +59,11 @@ test('PIT_COMPLETE requires exact unique ordered dates from a separate reviewed 
  assertions.formationDates=[...c.dates];pop.review.assertionHash=hash(assertions);assert.equal(certifyUniversePanel({...opts,expectedFormationCalendar:calendar}).state,'PIT_COMPLETE');
  c.dates=['2018-01-02','2018-01-02'];calendar.review.assertionHash=hash(c);assert.equal(certifyUniversePanel({...opts,expectedFormationCalendar:calendar}).state,'PIT_PARTIAL');
 });
+test('exact UTC evidence stays exact while invalid or rolled-over publication times cannot admit a source',()=>{
+ const e=link({knownFrom:'2016-01-01T19:03:04Z'});e.review.reviewedAt='2026-10-12T12:00:00Z';const c=certifyHistoricalIdentity(old,[e],'2018-01-02');assert.equal(c.status,'VERIFIED');assert.equal(c.knownFrom,'2016-01-01T19:03:04Z');assert.equal(c.originalKnownFromDate,'2016-01-01');assert.equal(c.availabilityResolution,'UTC_EXACT');
+ assert.equal(certifyHistoricalIdentity(old,[link({knownFrom:'2016-01-01T24:00:00Z'})],'2018-01-02').status,'UNVERIFIED');
+ assert.equal(certifyHistoricalIdentity(old,[link({classRosterScope:'CURRENT_US_LISTINGS_ONLY'})],'2018-01-02').issuerStructure,'UNKNOWN');
+});
 test('active provider last-data dates are retained as source endpoints, not inferred delistings',async()=>{
  const f=fixture();f.options.listingRows[1].endDate='2026-10-09';const x=await collectDataInventory(f.options),r=x.privateInput.observedListings.find(r=>r.listing.id===next.id);
  assert.equal(r.listing.active,true);assert.equal(r.listing.endDate,null);assert.equal(r.listing.observedSourceEndDate,'2026-10-09');assert.equal(x.privateInput.certification.counts.closedObservedListings,1);
@@ -78,6 +83,10 @@ test('unsupported source ticker is rejected before listing construction without 
  const f=fixture({rows:[{ticker:'-P-HIZ',exchange:'NASDAQ',assetType:'Stock',priceCurrency:'USD',startDate:'2016-01-01',endDate:'2018-01-01'}]}),x=await collectDataInventory(f.options);
  assert.equal(x.publicStatus.counts.sourceRowsRejected,1);assert.equal(x.privateInput.observedListings.length,2);assert.equal(f.calls.some(c=>c.key.includes('HIZ')),false);
 });
+test('source records absent from observed listing table are preserved separately rather than dropped or alias joined',async()=>{
+ const f=fixture(),foreign='tiingo:NASDAQ:OLD_SOURCE:2010-01-01';f.objects.set(f.p+'_validation/sec-pit-r13.json.gz',zlib.gzipSync(Buffer.from(JSON.stringify({[foreign]:{cik:'0000000003',shares:[['2013-12-31',17,'2014-02-01','dei']]}}))));f.objects.set(f.p+'_validation/sec-delist-r13.json.gz',zlib.gzipSync(Buffer.from(JSON.stringify({[foreign]:{cls:'UNKNOWN',evidence:[]}}))));const x=await collectDataInventory(f.options);
+ assert.deepEqual(x.privateInput.unmatchedLegacySecInputs[foreign].shares,[['2013-12-31',17,'2014-02-01','dei']]);assert.equal(x.privateInput.unmatchedDelistingHints[foreign].cls,'UNKNOWN');assert.equal(x.privateInput.observedListings.some(r=>r.listing.id===foreign),false);assert.equal(x.privateInput.certification.state,'OBSERVED_ONLY');
+});
 test('optional SEC fact reads are bounded and foreign object keys are never followed',async()=>{
  const f=fixture({secIndex:{objects:{'0000000001':{key:'v1/sec/fundamentals/facts/0000000001.json.gz'},'0000000002':{key:'outside/private.json.gz'}}}}),x=await collectDataInventory({...f.options,factDocLimit:2});
  assert.equal(x.privateInput.secFactDocuments[0].status,'AVAILABLE');assert.equal(x.privateInput.secFactDocuments[1].status,'SOURCE_KEY_REJECTED');assert.equal(f.calls.some(c=>c.key==='outside/private.json.gz'),false);
@@ -95,6 +104,6 @@ test('optional canonical probe reuses the exact source snapshot and preserves ev
 });
 test('canonical price provenance binds exact physical R2 read receipts, never a fabricated provider label',async()=>{
  const f=fixture(),raw=Buffer.from('exact fixture object bytes'),key='v1/tiingo/daily/US/ABC.json.'+(typeof zlib.zstdCompressSync==='function'?'zst':'gz');f.objects.set(key,raw);
- const canonicalLoader=async o=>{const k=o.rawDataDeps.mainStore.seriesKey('ABC');assert.equal(k,key);await o.rawDataDeps.mainStore.driver.get(k);return {state:'AVAILABLE',window,coverage:{inputSegments:1,usableSegments:1,canonicalContractHash:'b'.repeat(64)},securities:[{id:next.id,listing:{...next,source:'STORE_ACTIVE'},bars:[],fundamentals:[]}],benchmark:null,calendar:[],fingerprint:'c'.repeat(64)};};
+ const canonicalLoader=async o=>{const k=o.rawDataDeps.mainStore.seriesKey('ABC');assert.equal(k,key);await o.rawDataDeps.mainStore.driver.get(k);return {state:'AVAILABLE',window,coverage:{inputSegments:1,usableSegments:1,canonicalContractHash:'b'.repeat(64)},securities:[{id:next.id,ticker:'ABC',listing:{id:next.id,startDate:next.startDate,endDate:null,active:true,reusedLater:false,instrumentType:'EQUITY_COMMON'},bars:[],fundamentals:[]}],benchmark:null,calendar:[],fingerprint:'c'.repeat(64)};};
  const x=await collectDataInventory({...f.options,canonical:true,canonicalLoader}),s=x.canonicalData.securities[0];assert.equal(s.priceSource.sourceKey,key);assert.equal(s.priceSource.sha256,crypto.createHash('sha256').update(raw).digest('hex'));assert.equal(s.priceSource.dataFingerprint,'c'.repeat(64));assert.equal(s.priceSource.canonicalContractHash,'b'.repeat(64));assert.equal(s.priceSource.publicationTimeCertification,'NOT_ESTABLISHED_BY_OBJECT_RETRIEVAL');assert.equal(x.privateInput.readReceipts.some(r=>r.sourceKey===key),true);
 });

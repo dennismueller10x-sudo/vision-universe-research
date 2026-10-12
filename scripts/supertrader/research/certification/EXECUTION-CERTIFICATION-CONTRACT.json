@@ -1,0 +1,205 @@
+{
+  "schema": "supertrader-execution-certification-contract-1.0.0",
+  "status": "DRAFT_PENDING_INDEPENDENT_REVIEW",
+  "research_only": true,
+  "phase": "DATA_EXECUTION_CERTIFICATION_BEFORE_PERFORMANCE",
+  "versions": {
+    "legacy_entry_gate": "LEGACY_KK_ENTRY_TIME_EVIDENCE_V1",
+    "accounting_overlay": "OFFICIAL_CASH_RECEIVABLE_TWO_STAGE_V2",
+    "terminal_class_PIT_filter": "TERMINAL_CLASS_PIT_FILTER_V1"
+  },
+  "original_files_changed": false,
+  "new_tournament_participants": 0,
+  "historical_performance_runs": 0,
+  "paths": {
+    "original_legacy_entry": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:51",
+    "inheriting_legacy_versions": [
+      "scripts/supertrader/engine/strategies/kk-breakout-v31.mjs",
+      "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs"
+    ],
+    "legacy_consumer": "scripts/supertrader/engine/simulator.mjs:194",
+    "legacy_portfolio_risk_consumers": [
+      "scripts/supertrader/engine/backtest.mjs:58",
+      "scripts/supertrader/validation/portfolio.mjs:99"
+    ],
+    "isolated_legacy_gate": "scripts/supertrader/research/certification/legacy-momentum-execution.mjs",
+    "original_accounting": "scripts/supertrader/research/tournament/accounting.mjs",
+    "isolated_accounting": "scripts/supertrader/research/certification/execution-audit-accounting.mjs",
+    "event_contract": "scripts/supertrader/research/certification/execution-audit.mjs",
+    "tests": "scripts/supertrader/tests/certification-execution.test.mjs",
+    "version_note": "scripts/supertrader/research/certification/EXECUTION-BUG-VERSION-NOTE.md"
+  },
+  "findings": [
+    {
+      "id": "LEGACY_EXECUTION_DAY_LOW_LOOKAHEAD",
+      "status": "CONFIRMED_DAILY_FALLBACK_BUG",
+      "scope": "LEGACY_MOMENTUM_BREAKOUT_3_2",
+      "temporal_dependency": "EXECUTION_DAY_COMPLETED_LOW_USED_FOR_INTRADAY_ENTRY_STOP_AND_RISK_SIZING",
+      "resolved_intraday_oracle_exception": "RESOLVED_ORACLE_SUBSTITUTES_ENTRY_TIME_STOP",
+      "isolated_fix": "INSTANT_ENTRY_EVIDENCE_REQUIRED_NO_COMPLETED_DAY_LOW_FALLBACK",
+      "past_tournament_assessment": "UNCHANGED_LEGACY_NOT_A_PARTICIPANT_KK_USES_PREVIOUS_CLOSED_SIGNAL_DAY_LOW"
+    },
+    {
+      "id": "LEGACY_SIZING_SAME_DAY_CLOSE",
+      "status": "CONFIRMED_BACKTEST_PATH_NOT_TOURNAMENT_PATH",
+      "scope": "ENGINE_BACKTEST_RUNPORTFOLIO",
+      "temporal_dependency": "HELD_POSITION_CURRENT_DAY_CLOSE_IN_INTRADAY_ENTRY_EQUITY",
+      "validation_portfolio_default": "PREVIOUS_MARKS_USED_SIZING_SAME_DAY_ONLY_COMPATIBILITY_OPTION",
+      "tournament_assessment": "UNCHANGED_TOURNAMENT_OPEN_MARK_SIZING",
+      "fix_scope": "LEGACY_NOT_ADMITTED_NO_ENGINE_OR_PERFORMANCE_RUN"
+    },
+    {
+      "id": "KNOWN_CASH_TERMINAL_IGNORED",
+      "status": "CONFIRMED_PRIMITIVE_OMISSION_SYNTHETIC_REGRESSION",
+      "scope": "FROZEN_ACCOUNTING_TERMINAL_USES_LAST_CLOSE_SCENARIO_NOT_OFFICIAL_CASH_AMOUNT",
+      "actual_events_certified": 0,
+      "isolated_fix": "CERTIFIED_CASH_EVENT_RECEIVABLE_THEN_DATED_SETTLEMENT",
+      "unknown_proceeds": "ORIGINAL_SCENARIOS_PRESERVED_NOT_REALIZED_OUTCOME_CERTIFICATION"
+    },
+    {
+      "id": "R15_CLASS_HINT_NOT_PAYOUT_CERTIFICATE",
+      "status": "CONFIRMED_SOURCE_SCOPE_GAP",
+      "original_loader": "R13_CLASS_HINTS_ONLY",
+      "r15_metadata_regression_cases": 5,
+      "certified_payouts_from_metadata": 0,
+      "spac_sic_caveat": "SIC_6770_DOES_NOT_PROVE_REDEMPTION_AMOUNT_TIMING_OR_SHARE_ENTITLEMENT"
+    },
+    {
+      "id": "NEXT_OPEN_AND_MISSING_OPEN",
+      "status": "ORIGINAL_TIMING_PRESERVED",
+      "order": "EX_DATE_DISTRIBUTIONS_THEN_CERTIFIED_BEFORE_OPEN_EVENTS_THEN_PRIOR_SIGNAL_PENDING_MARKET_ORDERS_THEN_CERTIFIED_AFTER_CLOSE_EVENTS_THEN_CLOSE_MARK_AND_SIGNAL",
+      "missing_or_zero_open": "REJECT_NO_CARRY_FORWARD_FILL_NO_PARTIAL_STATE_MUTATION",
+      "held_gaps": "POSITION_AND_LAST_MARK_PRESERVED_DATA_GAP_REMAINS_VISIBLE",
+      "intraday_high_low": "NOT_USED_FOR_DAILY_CLOSE_NEXT_OPEN_STOP_EXECUTION"
+    },
+    {
+      "id": "SAME_TIMESTAMP_EVENT_PRIORITY",
+      "status": "EXPLICIT_PHASE_CLOCK_REQUIRED",
+      "automatic_actions": "EVENT_EFFECTIVE_BEFORE_OPEN_PRECEDES_PENDING_ORDER_AND_BLOCKS_REENTRY",
+      "market_orders": "ORIGINAL_EXITS_BEFORE_INCREASES_PROPORTIONAL_CASH_SHORTFALL_SCALING",
+      "intraday_corporate_action": "NOT_CERTIFIED_WITH_DAILY_BARS_ONLY"
+    },
+    {
+      "id": "QUARANTINE_TERMINAL_IS_NOT_REALIZED_ECONOMIC_OUTCOME",
+      "status": "EXPLICIT_CERTIFICATION_LIMIT",
+      "code_paths": [
+        "scripts/supertrader/research/tournament/runner.mjs:102",
+        "scripts/supertrader/research/tournament/runner.mjs:147"
+      ],
+      "original_portfolio": "SYNTHETIC_LAST_MARK_PLUS_TERMINAL_SCENARIO",
+      "original_signals": "CENSORED_DATA_QUARANTINE",
+      "realized_outcome_certification": "UNAVAILABLE",
+      "original_scenario_changed": false
+    },
+    {
+      "id": "R13_TERMINAL_CLASSIFICATION_PUBLICATION_PIT",
+      "status": "CONFIRMED_METADATA_TEMPORAL_RISK",
+      "version": "TERMINAL_CLASS_PIT_FILTER_V1",
+      "filter": "POST_TERMINAL_AND_UNDATED_HINT_EVIDENCE_UNKNOWN_SAME_DAY_REQUIRES_EXACT_VALID_PUBLICATION_CLOCK",
+      "method_cost_thresholds_changed": false,
+      "metadata_diagnostic_count_unit": "OBSERVED_LISTING_ROWS_WITH_R13_HINT_AT_METADATA_LISTEND_NOT_ACTUAL_TERMINAL_BAR_CUTOFF",
+      "metadata_rows_with_hints": 2263,
+      "raw_source_dictionary_entries": 2265,
+      "nonunknown_metadata_hints_stripped": 297,
+      "actual_proceeds_certified": 0,
+      "affected_method_outcomes_measured": false
+    }
+  ],
+  "ordinary_order_invariants": {
+    "timing": "NEXT_SESSION_OPEN",
+    "slippage_bps_per_side": 10,
+    "commission_bps_per_side": 1,
+    "cost_sensitivity_multiplier": 2,
+    "leverage": false,
+    "shorts": false,
+    "cash_yield": 0,
+    "method_parameters": "UNCHANGED",
+    "partial_state": "ONLY_AFTER_SUCCESSFUL_EXECUTION"
+  },
+  "official_event_contract": {
+    "required": [
+      "eventId",
+      "id",
+      "listingId",
+      "securityId",
+      "identityStatus=PIT_IDENTITY_CERTIFIED",
+      "eventType",
+      "availableAt UTC",
+      "effectiveAt UTC",
+      "USD currency",
+      "RAW_SHARE priceBasis",
+      "perShareCash",
+      "executionAdjustmentFactor",
+      "adjustmentBasisStatus=CERTIFIED_AT_EFFECTIVE_EVENT",
+      "officialSource.kind",
+      "officialSource.url",
+      "officialSource.locator",
+      "officialSource.inspectionStatus=BODY_INSPECTED",
+      "officialSource.bodySha256",
+      "economicActionId",
+      "cashAmountStatus=EXACT_OFFICIAL_CASH_AMOUNT",
+      "status=CERTIFIED_LEGAL_CASH_ENTITLEMENT_OR_FULL_OFFICIAL_EVENT_CERTIFIED"
+    ],
+    "types": [
+      "CASH_ACQUISITION",
+      "SPAC_CASH_REDEMPTION",
+      "EQUITY_CANCELLED_ZERO"
+    ],
+    "missing_fields": "UNAVAILABLE_NEVER_INFER_FROM_CLASS_SIC_LAST_PRICE_OR_DISTRESS",
+    "date_only_cash_availability": "EXPLICIT_AFTER_SETTLEMENT_DATE_CLOSE_VU_CONSERVATIVE_REQUIRED_NOT_AN_ACTUAL_SETTLEMENT_CLOCK_CLAIM",
+    "receivable_treatment": "EXACT_LEGAL_CLAIM_ENTERS_EQUITY_AT_EFFECTIVE_TIME_WITHOUT_PAYMENT_DATE_CASH_RELEASE_ONLY_SEPARATE_VISIBLE_ACTUAL_CONFIRMATION",
+    "market_cost_exception": "AUTOMATIC_DOCUMENTED_DISTRIBUTION_IS_NOT_A_MARKET_ORDER_NO_ARTIFICIAL_SLIPPAGE_OR_COMMISSION",
+    "publication_guard": "SOURCE_MUST_BE_AVAILABLE_AT_PHASE_TIMESTAMP",
+    "zero_cancellation": "FINAL_CERTIFIED_EQUITY_CANCELLED_ZERO_REALIZED_AT_VISIBLE_EFFECTIVE_ACTION_CASH_ZERO_FEE_ZERO_NO_FAKE_SETTLEMENT",
+    "source_labels": "VALIDATOR_CHECKS_SHAPE_ASSERTIONS_NOT_DOCUMENT_AUTHENTICITY_OR_IDENTITY_PROOF",
+    "pending_known_event": "BEFORE_EFFECTIVE_TIME_HOLD_LAST_OBSERVED_MARK_NO_TERMINAL_HAIRCUT_THEN_RECOGNIZE_DATED_RECEIVABLE",
+    "conflicts": "ACCEPTED_CAUSAL_RECORD_PREFLIGHT_ONE_ACTION_PER_LISTING_IMMUTABLE_ECONOMIC_BINDING_ATOMIC_REJECTION",
+    "scope_exclusion": "MULTI_INSTALLMENT_DISTRIBUTIONS_AND_MIXED_CASH_STOCK_CONSIDERATION_REQUIRE_SEPARATE_CONTRACT",
+    "legacy_closed_session_clock": "VALIDATED_UTC_TIMESTAMP_SAME_SESSION_EXCHANGE_CALENDAR_CERTIFIED",
+    "settlement_stage_required": [
+      "status=ACTUAL_CASH_SETTLEMENT_CERTIFIED",
+      "claimEventId",
+      "same id/listingId/securityId/economicActionId",
+      "actual settlementDate",
+      "settlementDateStatus=ACTUAL_CONFIRMED",
+      "settlementAt or disclosed conservative confirmed-date clock",
+      "payment proof availableAt <= current phase",
+      "same exact cash/unit/basis",
+      "inspected official payment source and hash"
+    ],
+    "unknown_payment_date": "LEGAL_CLAIM_ALLOWED_NONSPENDABLE_RECEIVABLE_WITHOUT_FAKE_PAYMENT_DATE",
+    "settlement_basis": "MATCH_RAW_PER_SHARE_CASH_CURRENCY_PRICE_BASIS_AND_EVENT_ADJUSTMENT_FACTOR_NOT_ONLY_EQUIVALENT_ADJUSTED_VALUE",
+    "arithmetic": "PREFLIGHT_FINITE_AGGREGATE_ENTITLEMENT_BEFORE_ANY_SHARE_CASH_MUTATION",
+    "full_certificate_temporal_consistency": "ACTUAL_SETTLEMENT_CANNOT_POSTDATE_CONFIRMING_SOURCE_PUBLICATION_CONSERVATIVE_DATE_CLOSE_IS_ONLY_VU_CASH_AVAILABILITY"
+  },
+  "integration_requirements": [
+    "ROOT_RUNNER_COPY_IMPORTS_ISOLATED_ACCOUNTING_ONLY_NO_FROZEN_METHOD_CHANGE",
+    "CERTIFIED_EXCHANGE_OPEN_AND_CLOSE_CLOCK_INPUTS_REQUIRED",
+    "PROCESS_OFFICIAL_EVENTS_ON_SESSIONS_WITHOUT_PENDING_ORDERS_BEFORE_OPEN",
+    "SIGNAL_TERMINAL_CASH_ENDPOINT_AND_PORTFOLIO_PAYOUT_BASIS_MUST_MATCH",
+    "DUPLICATE_OR_CONFLICTING_EVENT_LEDGER_REQUIRES_REJECTION",
+    "PAYOUTS_LATE_DISCLOSED_CANNOT_RETROACTIVELY_ENTER_A_PRIOR_DECISION_CERTIFICATE",
+    "LEGACY_PESSIMISTIC_CLOSE_EXIT_POLICY_EVALUATED_ONLY_IN_LATER_CLOSED_SESSION_PHASE",
+    "MISSING_SETTLEMENT_BLOCKS_CASH_RELEASE_NOT_LEGAL_ENTITLEMENT_RECOGNITION",
+    "EXACT_LEGAL_CASH_AND_EFFECTIVE_DATE_MUST_NOT_INHERIT_UNKNOWN_TERMINAL_HAIRCUT",
+    "FUTURE_OR_UNDATED_CLASSIFICATION_EVIDENCE_FILTERED_AT_ACTUAL_TERMINAL_TIMESTAMP_BEFORE_MEASUREMENT"
+  ],
+  "privacy": {
+    "public": "CODE_PATHS_CONTRACT_CLASSES_ENUMS_COUNTS_SYNTHETIC_FIXTURES_ONLY",
+    "provider_security_signals_prices_portfolio_returns": "PRIVATE_OR_OWNER_SEALED",
+    "official_source_receipts": "PRIVATE_SOURCE_BODY_HASH_AND_LOCATOR_NO_PROVIDER_SIGNAL_RETURN_PUBLICATION"
+  },
+  "validation": {
+    "synthetic_tests": 16,
+    "passed": 16,
+    "failed": 0,
+    "independent_review": "PENDING",
+    "actual_official_payout_ledger": "NOT_ESTABLISHED",
+    "official_source_discovery": {
+      "submissions_retrieved": 4,
+      "primary_bodies_retrieved": 4,
+      "complete_official_cash_certificates": 0,
+      "source_scope": "BODY_DISCOVERY_APPROXIMATE_OR_EXPECTED_VALUES_NOT_PROMOTED"
+    }
+  }
+}

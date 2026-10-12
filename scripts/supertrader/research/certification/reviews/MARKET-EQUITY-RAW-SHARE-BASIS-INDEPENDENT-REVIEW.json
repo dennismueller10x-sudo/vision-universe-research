@@ -1,0 +1,50 @@
+{
+  "schema": "supertrader-market-equity-raw-share-basis-review-1.1.0",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "reviewer": "INDEPENDENT_REVIEW_AGENT",
+  "phase": "PRE_MEASUREMENT",
+  "performanceInspected": false,
+  "actualSourceOutcomesRead": false,
+  "strategyParametersChanged": false,
+  "actualObservationBasisProofsIssued": 0,
+  "actualMarketEquityCertificatesIssued": 0,
+  "files": {
+    "scripts/supertrader/research/certification/market-equity.mjs": "568b070d3ef5e228c2a1c1fd619f9b2ff5382c56c4c401eedffeefff65bcc0e4",
+    "scripts/supertrader/tests/certification-market-equity.test.mjs": "4fa315c5a2fe50f68c707408fc01fde73d4aaa821173869c21020df3265081ff",
+    "scripts/supertrader/tests/certification-factor-industry.test.mjs": "6b58dedaea779645a1c53e9379e004e2c526d6a71a8ba8026328a714fa8ed4ca",
+    "scripts/supertrader/research/certification/MARKET-EQUITY-RAW-SHARE-BASIS-CONTRACT.md": "6334c078a966d066ce9ab62ae47fad289624a57413252bf4a6f4223c77bd4ee5"
+  },
+  "independentSyntheticVerification": {
+    "marketEquityTests": 27,
+    "factorIndustryTests": 18,
+    "canonicalTests": 3,
+    "passed": 48,
+    "failed": 0
+  },
+  "authorIntegrationVerification": {
+    "marketEquityTests": 27,
+    "factorIndustryTests": 18,
+    "filingIdentityTests": 26,
+    "passed": 71,
+    "failed": 0
+  },
+  "checks": {
+    "explicitRawBasisBeforeDerivation": "PASS",
+    "exactObservationValueUnitConceptContextBinding": "PASS",
+    "historicalIssuerListingSecurityBinding": "PASS",
+    "fullOriginalSourceBodyHashBinding": "PASS",
+    "originalSourceAuthenticationStatusRequired": "PASS",
+    "sourceAcceptanceKnownAtFormation": "PASS",
+    "postObservationAdjustedOrUnknownBasisRejected": "PASS",
+    "asReportedOrInstantInferenceRejected": "PASS",
+    "sourcePointExtractionDoesNotEmitRawBasisProof": "PASS",
+    "earlierExplicitCertificateFiniteCalculationParity": "PASS"
+  },
+  "limits": [
+    "EXTERNAL_GENUINE_ORIGINAL_BODY_AND_SPLIT_NOTE_REVIEW_REQUIRED",
+    "METADATA_LABELS_ALONE_DO_NOT_AUTHENTICATE_FILING_BODY",
+    "NO_ACTUAL_RAW_OBSERVATION_BASIS_OR_MARKET_EQUITY_CERTIFICATE_ESTABLISHED",
+    "MULTICLASS_AND_ADR_FULL_EQUITY_SCOPE_REMAIN_UNIMPLEMENTED"
+  ],
+  "implementationBlockers": []
+}

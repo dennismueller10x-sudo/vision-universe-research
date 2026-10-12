@@ -1,0 +1,487 @@
+{
+  "schema": "supertrader-method-eligibility-2.0.0",
+  "baseline_pr": 589,
+  "baseline_commit": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+  "baseline_protocol_hash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "phase": "PRE_MEASUREMENT",
+  "decision_basis": "SOURCE_DATA_AND_EXECUTION_EVIDENCE_BEFORE_RERUN_OUTCOMES",
+  "strategy_parameters_changed": false,
+  "performance_selected_data_mapping": false,
+  "rerun_performance_consulted": false,
+  "private_provider_values_and_security_identities_included": false,
+  "status": "FINAL_PREMEASUREMENT_DATA_DISPOSITION_REVIEW_REQUIRED",
+  "certification_freeze_binding": "HASH_BY_ROOT_BEFORE_RERUN",
+  "immutable_before_rerun_performance": true,
+  "review_required_before_rerun": true,
+  "counts": {
+    "implemented_engines": 10,
+    "baseline_measured_methods": 6,
+    "partial_observed_panel_methods": 6,
+    "fully_certified_eligible_methods": 0,
+    "blocked_engines": 4,
+    "blocked_unimplemented_candidates": 2,
+    "total_data_or_rule_blocked_candidates": 6,
+    "qualified_consensus_methods": 0,
+    "strong_consensus_methods": 0
+  },
+  "methods": [
+    {
+      "id": "cross_sectional_momentum",
+      "method_id": "cross_sectional_momentum",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "CANONICAL_DAILY_AND_MONTHLY_TOTAL_RETURN",
+        "CAUSAL_COMMON_ELIGIBLE_PANEL",
+        "NEXT_SESSION_OPEN_AND_COST_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "52_week_high_effect",
+      "method_id": "52_week_high_effect",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "SOURCE_BOUND_DAILY_OHLCV_AND_52_WEEK_HISTORY",
+        "CAUSAL_COMMON_ELIGIBLE_PANEL",
+        "NEXT_SESSION_OPEN_AND_COST_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "LOW_VOLATILITY",
+      "method_id": "LOW_VOLATILITY",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "CANONICAL_DAILY_TOTAL_RETURNS",
+        "SOURCE_COMPLETE_TRAILING_VOLATILITY_WINDOW",
+        "CAUSAL_COMMON_ELIGIBLE_PANEL",
+        "NEXT_SESSION_OPEN_AND_COST_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "gross_profitability_novy_marx",
+      "method_id": "gross_profitability_novy_marx",
+      "implemented": true,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_DATA",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "UNRANKED_DATA_BLOCKED",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_BLOCKED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "ANNUAL_REVENUE",
+        "ANNUAL_COGS",
+        "ANNUAL_ASSETS",
+        "PIT_SIC",
+        "CURRENT_PIT_MARKET_EQUITY"
+      ],
+      "missing_contracts": [
+        "BROAD_ANNUAL_SOURCE_COVERAGE_AND_CAUSAL_RECEIVER_INTEGRATION",
+        "HISTORICAL_ISSUER_SECURITY_FULL_COMMON_CLASS_BINDING",
+        "SOURCE_AS_KNOWN_PIT_SIC",
+        "VERIFIED_OR_DERIVED_EXACT_SCOPE_MARKET_EQUITY_NOT_APPROXIMATE"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_MEASUREMENT_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "piotroski_value_fscore",
+      "method_id": "piotroski_value_fscore",
+      "implemented": true,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_DATA",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "UNRANKED_DATA_BLOCKED",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_BLOCKED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "ANNUAL_PROFITABILITY",
+        "CFO",
+        "CURRENT_AND_TWO_PRIOR_FISCAL_ASSETS",
+        "LEVERAGE",
+        "LIQUIDITY",
+        "EFFICIENCY",
+        "GROSS_COMMON_ISSUANCE_EVIDENCE",
+        "COMMON_BOOK_EQUITY",
+        "FISCAL_END_PIT_MARKET_EQUITY"
+      ],
+      "missing_contracts": [
+        "BROAD_CURRENT_AND_TWO_PRIOR_SOURCE_LINKED_FISCAL_PERIODS",
+        "COMPLETE_SAME_PERIOD_F_SCORE_OPERANDS",
+        "PRE_ASU_INCOME_SCOPE_OR_VERIFIED_APPLICABLE_ASU_NORMALIZATION",
+        "SOURCE_COMMON_PERMANENT_BOOK_EQUITY_AND_NONMISSING_COMMON_ISSUANCE_FLAG",
+        "FISCAL_MARKET_EQUITY_IDENTITY_PRICE_SHARES_AND_SPLIT_BRIDGE"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_MEASUREMENT_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "greenblatt_magic_formula",
+      "method_id": "greenblatt_magic_formula",
+      "implemented": true,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_DATA",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "LOW",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "UNRANKED_DATA_BLOCKED",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_BLOCKED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "required_data": [
+        "SOURCE_COMPATIBLE_EBIT",
+        "TOTAL_INTEREST_BEARING_DEBT",
+        "CASH",
+        "CURRENT_ASSETS",
+        "CURRENT_LIABILITIES",
+        "CURRENT_DEBT",
+        "NET_PPE",
+        "CURRENT_PIT_MARKET_EQUITY",
+        "PIT_SIC"
+      ],
+      "missing_contracts": [
+        "EXACT_SOURCE_COMPATIBLE_OPERATING_EBIT_INTEREST_AND_OWNER_SCOPE",
+        "COMPLETE_NONOVERLAPPING_DEBT_SAME_PERIOD_OPERANDS",
+        "BROAD_ANNUAL_ASSETS_LIABILITIES_CASH_AND_PPE_SOURCE_COVERAGE",
+        "HISTORICAL_ISSUER_CLASS_MARKET_EQUITY_AND_SIC"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_MEASUREMENT_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "value_plus_momentum",
+      "method_id": "value_plus_momentum",
+      "implemented": true,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_DATA",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "MEDIUM",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "UNRANKED_DATA_BLOCKED",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_BLOCKED",
+        "EXECUTION_LIMITED"
+      ],
+      "required_data": [
+        "ANNUAL_COMMON_BOOK_EQUITY_LAGGED_SIX_MONTHS",
+        "CURRENT_PIT_MARKET_EQUITY",
+        "CANONICAL_MOM2_TO_12_TOTAL_RETURN_WITH_SOURCE_PROVENANCE"
+      ],
+      "missing_contracts": [
+        "BROAD_LAGGED_SOURCE_COMMON_PERMANENT_BOOK_EQUITY",
+        "HISTORICAL_ISSUER_CLASS_AND_CURRENT_PIT_MARKET_EQUITY",
+        "CANONICAL_TOTAL_RETURN_SOURCE_RECEIVER_AND_CAUSAL_KNOWLEDGE_BINDING"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_MEASUREMENT_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "TURTLE_S2_EQUITY_DAILY",
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "LOW",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "required_data": [
+        "CAUSAL_DAILY_OHLCV_CHANNELS_AND_ATR",
+        "SOURCE_BOUND_IDENTITY_AND_TERMINAL_CONTEXT",
+        "NEXT_SESSION_OPEN_AND_STATEFUL_PORTFOLIO_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "WEINSTEIN_STAGE_DAILY",
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "LOW",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "required_data": [
+        "CAUSAL_DAILY_OHLCV_TREND_AND_VOLUME",
+        "SOURCE_BOUND_IDENTITY_AND_TERMINAL_CONTEXT",
+        "NEXT_SESSION_OPEN_AND_STATEFUL_PORTFOLIO_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "KULLAMAGI_DAILY_ADAPTATION",
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "implemented": true,
+      "measured_in_baseline_589": true,
+      "eligibility": "PARTIAL",
+      "eligibility_status": "PARTIAL_OBSERVED_PANEL_TERMINAL_UNCERTAIN",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "LOW",
+      "overall_confidence": "LOW",
+      "qualified_tier": "NOT_ASSIGNED_PREMEASUREMENT",
+      "qualified_tier_ceiling": "C",
+      "performance_tier": "NOT_CONSULTED",
+      "reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "required_data": [
+        "CAUSAL_CLOSED_SIGNAL_DAY_OHLCV_AND_KNOWN_STOP",
+        "SOURCE_BOUND_IDENTITY_AND_TERMINAL_CONTEXT",
+        "NEXT_SESSION_OPEN_AND_PARTIAL_EXIT_STATE_LEDGER"
+      ],
+      "missing_contracts": [
+        "INDEPENDENT_HISTORICAL_MARKET_POPULATION_DENOMINATOR_NOT_ESTABLISHED",
+        "BROAD_HISTORICAL_SECURITY_ISSUER_CLASS_IDENTITY_NOT_CERTIFIED",
+        "ACTUAL_TERMINAL_PROCEEDS_AND_SETTLEMENT_LEDGER_NOT_ESTABLISHED",
+        "QUARANTINE_TERMINAL_OUTCOMES_ARE_SCENARIOS_NOT_REALIZED_PROCEEDS"
+      ],
+      "allowed_use": "UNCHANGED_METHOD_OBSERVED_PANEL_DIAGNOSTIC_RERUN_ONLY",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    }
+  ],
+  "unimplemented_candidates": [
+    {
+      "id": "industry_momentum",
+      "method_id": "industry_momentum",
+      "implemented": false,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_HISTORICAL_MEMBERSHIP_TAXONOMY_AND_MARKET_EQUITY",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "NOT_ASSESSED_UNIMPLEMENTED",
+      "overall_confidence": "LOW",
+      "qualified_tier": "UNRANKED_UNIMPLEMENTED",
+      "qualified_tier_ceiling": "UNRANKED_DATA_OR_RULE_BLOCKED",
+      "reason_codes": [
+        "DATA_BLOCKED"
+      ],
+      "required_data": [
+        "ORIGINAL_MG20_GROUPED_SIC2_TAXONOMY",
+        "PIT_CLASSIFICATION_EVENTS",
+        "HISTORICAL_BROAD_CONSTITUENTS",
+        "SOURCE_BOUND_PRIOR_MONTH_MARKET_EQUITY"
+      ],
+      "missing_contracts": [
+        "HISTORICAL_BROAD_SOURCE_GROUP_CONSTITUENTS",
+        "PIT_SOURCE_TAXONOMY_MEMBERSHIP_NOT_CURRENT_SIC_OR_SECTOR_PROXY",
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_BINDING",
+        "SOURCE_BOUND_PRIOR_MONTH_MARKET_EQUITY"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_ENGINE_OR_RERUN_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    },
+    {
+      "id": "residual_momentum",
+      "method_id": "residual_momentum",
+      "implemented": false,
+      "measured_in_baseline_589": false,
+      "eligibility": "BLOCKED",
+      "eligibility_status": "BLOCKED_RULE_VARIANT_UNSELECTED",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_fidelity_confidence": "NOT_ASSESSED_UNIMPLEMENTED",
+      "overall_confidence": "LOW",
+      "qualified_tier": "UNRANKED_UNIMPLEMENTED",
+      "qualified_tier_ceiling": "UNRANKED_DATA_OR_RULE_BLOCKED",
+      "reason_codes": [
+        "RULE_VARIANT_UNSELECTED",
+        "DATA_LIMITED"
+      ],
+      "required_data": [
+        "FF3_AND_RF_MONTHLY_SOURCE_SNAPSHOT",
+        "EXACT_36_MONTH_REGRESSION_WINDOW",
+        "AUTHOR_RESIDUAL_WITHOUT_SUBTRACTING_ALPHA",
+        "PRESELECTED_HOLDING_VARIANT"
+      ],
+      "missing_contracts": [
+        "HOLDING_VARIANT_NOT_SELECTED_IN_BASELINE_589",
+        "HISTORICAL_AS_KNOWN_MONTHLY_FACTOR_VINTAGES_NOT_CERTIFIED",
+        "LAST_PREDECLARED_FACTOR_WINDOW_INCOMPLETE"
+      ],
+      "allowed_use": "SOURCE_RESEARCH_ONLY_NO_ENGINE_OR_RERUN_ADMISSION",
+      "qualified_consensus_eligible": false,
+      "strong_consensus_eligible": false,
+      "blocked_metrics_are_zero": false
+    }
+  ],
+  "qualification_policy": {
+    "complete_certificate_required_for_ELIGIBLE": true,
+    "partial_methods_are_ELIGIBLE": false,
+    "data_or_execution_limited_qualified_ceiling": "C",
+    "blocked_methods": "UNRANKED_NOT_ZERO_RETURN_OR_ZERO_SIGNALS",
+    "performance_tiering": "ORIGINAL_FIXED_RUBRIC_SEPARATE_FROM_THIS_CERTIFICATE",
+    "consensus": "ELIGIBLE_METHODS_ONLY_PARTIAL_DIAGNOSTIC_SEPARATE",
+    "greenblatt_source_fidelity": "LOW_INHERITED_NOT_REPAIRED_BY_DATA_NORMALIZATION"
+  },
+  "evidence_reference_sha256": {
+    "CERTIFICATION-POLICIES.json": "c42b19483536455590fb366990954a3cc0e25a99e1390f3369f221d1bcdbd4c2",
+    "ANNUAL-FACT-CERTIFICATION-CONTRACT.json": "f2f7bd92e4fb8814c4a65ab25181ea448dc02e1c15fbf411e43f866c9603035d",
+    "ANNUAL-DERIVATION-APPROVALS.json": "bba4a8ea8b4cf003c10a15f7d6a4989bd1edf8651ba3516258ae5530fd369f48",
+    "reviews/ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json": "c71445cd254da0c5f07051811e7b8add39bba16d5b49b377e83b1454e6936912",
+    "reviews/FILING-IDENTITY-PILOT.json": "bf0cc4923bcc4cdf02302bdf540c813422c36ae2d01d71db3244a3467214ede8",
+    "reviews/FILING-IDENTITY-SCALABILITY.json": "eea91e088fc7bdd9ac4ecd264d9519fb37e1fabbdd0c8a9a67b6471b70c32102",
+    "EXECUTION-CERTIFICATION-CONTRACT.json": "9bc40b340692fd144c5495b1069e6ebe87882050608c339e8e8734f738f7d90c",
+    "SUPERTRADER-INDUSTRY-RESIDUAL-CONTRACT-PROOF.json": "1d266cb7ea51766c309f999caaf67f982d510bc337e29058b9bb2c795de1d45a"
+  }
+}

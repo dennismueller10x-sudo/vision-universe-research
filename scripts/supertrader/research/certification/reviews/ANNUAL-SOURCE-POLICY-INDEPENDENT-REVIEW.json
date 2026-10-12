@@ -1,0 +1,108 @@
+{
+  "schema": "supertrader-annual-source-policy-independent-review-1.0.0",
+  "reviewedAt": "2026-10-12T06:58:43.309432+00:00",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "registeredBeforeRerunPerformance": true,
+  "rerunOutcomesRead": false,
+  "reviewer": "independent_review",
+  "codeHashes": {
+    "annual-facts.mjs": "841a3f9f9d6e3c21e37b674b5f5d6f98c47d2ba494554780d4e197617613019c",
+    "fiscal-period-links.mjs": "e46af08840f0bfaea6d9df07fdd68529b125fa166c528008eafc1c4a8f5ec435",
+    "fundamental-v2.mjs": "8103b5b93adeb45fc3beee8492503f0e5bbd7485bf9b7968952318aa2e373ceb"
+  },
+  "sourceEvidenceSha256": "cd21e8967fada0eff108f9a988ccd2eb6203cfc9d74bd7427f07352a9c1d40b4",
+  "sourceKinds": [
+    "OFFICIAL_LOCAL_SEC_COMPANYFACTS_STANDARD_TAXONOMY_DESCRIPTIONS",
+    "ORIGINAL_PRIMARY_SEC_XBRL_ACCESSION_CONTEXT_AND_UNIT_BYTES",
+    "ORIGINAL_SEC_SUBMISSION_HEADERS",
+    "FASB_ASU_2015_01_PRIMARY_PDF",
+    "PIOTROSKI_ORIGINAL_PAPER_DEFINITION"
+  ],
+  "actualSourceComparisons": {
+    "primaryVsCompanyfactsCases": 6,
+    "passed": 6,
+    "failed": 0,
+    "sourceValueUnitPeriodAccessionIdentity": "MATCHED",
+    "partialBoundNotEarlierThanPrimary": "CHECKED",
+    "broadUniverseValidation": "NOT_ESTABLISHED",
+    "noPerformanceComparison": true
+  },
+  "strictPrimaryContract": {
+    "actualNamespaceScopeAndUniqueIds": "VERIFIED_BY_STATIC_REVIEW_AND_REGRESSIONS",
+    "contextUnits": "ORIGINAL_NON_DIMENSIONAL_MATCHED_ISSUER_CONTEXT_AND_DECLARED_NORMALIZED_UNITS",
+    "filingYears": "DEI_CURRENT_REPORT_FOCUS_ONLY_NOT_COMPANYFACTS_COMPARATIVE_FY",
+    "fyLineage": "SOURCE_LINKED_ACTUAL_FY_PERIODS_WITH_CAUSAL_FUTURE_CONFLICT_VISIBILITY",
+    "timestamp": "ORIGINAL_ARCHIVAL_HEADER_IANA_NY_CONVERSION_EXPLICIT_API_CLOCK_CONFLICT_PIT_PARTIAL",
+    "sameDayAfterClose": "EXPLICIT_UTC_CONSERVATIVE_CONSUMER_BOUND_REQUIRED",
+    "amendments": "ACTUAL_PUBLICATION_TIMESTAMP_NOT_BACKDATED",
+    "conflicts": "DATED_KEY_PERIOD_CONFLICT_INVALIDATES_OLDER_VALUES_AT_KNOWN_TIME"
+  },
+  "partialBulkContract": {
+    "mode": "COMPANYFACTS_ACCESSION_BOUND_CURRENT_ANNUAL",
+    "confidence": "MEDIUM",
+    "pitState": "PIT_PARTIAL",
+    "sourceIntegrity": "OFFICIAL_API_OR_BULK_ENTRY_ORIGINAL_BYTES_ISSUER_BOUND_SHA_RECEIPTS",
+    "annualPeriod": "ORIGINAL_10K_ACCESSION_CURRENT_REPORT_END_AND_REPORTED_LONG_DURATION",
+    "fiscalYear": "NOT_CERTIFIED_NULL",
+    "originalContext": "NOT_PRIMARY_VERIFIED_NO_DIMENSIONAL_SCOPE_CLAIM_BEYOND_SEC_ENTITY_AGGREGATION",
+    "actualAcceptance": "UNKNOWN_NULL_NO_API_Z_REINTERPRETATION",
+    "availability": "DECLARED_CONSERVATIVE_BOUND_AFTER_NY_FILING_DAY",
+    "mandatoryConsumerFilter": "FORMED_SESSION_AND_EXPLICIT_INPUT_KNOWLEDGE_BOUND",
+    "missingOrMalformedApiClock": "DOES_NOT_FABRICATE_CLOCK_OR_PREVENT_CONSERVATIVE_FILED_DATE_MODE",
+    "amendmentScopeAndComparativeValueChanges": "DATED_INVALIDATIONS_NO_FUTURE_BACKFILL_OR_OLDER_CONFLICT_FALLBACK",
+    "historicalSic": "ORIGINAL_HEADER_ONLY_NO_CURRENT_API_SIC",
+    "broadHistoricalSecurityIdentity": "NOT_CERTIFIED_BY_ISSUER_FACTS_ALONE"
+  },
+  "supportedConditionalIds": [
+    {
+      "id": "US_GAAP_ASU2015_01_NET_INCOME_PARENT_NO_EXTRAORDINARY",
+      "decision": "SUPPORTED_SOURCE_NORMALIZATION_CONDITIONAL",
+      "guards": [
+        "Actual US_GAAP annual period start strictly after2015-12-15, not fiscal label or filing year",
+        "Original parent NetIncomeLoss source/unit/context; no common-EPS or NCI-inclusive alternate",
+        "Default disabled until this real review hash and explicit premeasurement approval record",
+        "VU normalization and dataset/PIT limitations preserved; no source Compustat all-era replication claim"
+      ]
+    },
+    {
+      "id": "COMMON_EQUITY_PARENT_WITH_ZERO_PREFERRED_OUTSTANDING",
+      "decision": "SUPPORTED_SOURCE_NORMALIZATION_CONDITIONAL",
+      "guards": [
+        "Parent permanent StockholdersEquity excludes NCI/temporary equity",
+        "Explicit same-period nonredeemable or issuer-option preferred actual outstanding shares0",
+        "No missing preferred-as-zero, no unverified carrying-value or treasury proxy",
+        "Field definition explicitly parent common permanent equity under VU normalization; full equity/class issuer scope remains separately required"
+      ]
+    },
+    {
+      "id": "TOTAL_DEBT_CURRENT_PLUS_NONCURRENT_WITH_EXPLICIT_FINANCE_LEASE_COVERAGE",
+      "decision": "SUPPORTED_SOURCE_NORMALIZATION_CONDITIONAL",
+      "debtDefinition": "DEBT_EXCLUDING_OPERATING_LEASES_INCLUDING_FINANCE_LEASES",
+      "guards": [
+        "DebtCurrent includes current capital/finance leases by independently read source definition",
+        "LongTermDebtNoncurrent explicitly excludes capital lease obligations",
+        "Noncurrent finance/capital lease liability added once only with explicit operand",
+        "All operands same fiscal period/issuer/context/normalizedUSD, explicit zero allowed, missing never0",
+        "Operating leases not silently added or treated as interest-bearing debt"
+      ]
+    }
+  ],
+  "disabledConditionalIds": [
+    {
+      "id": "EBIT_PBT_PLUS_GROSS_INTEREST_SOURCE_COMPATIBLE",
+      "decision": "REVIEW_REQUIRED_DEFAULT_DISABLED",
+      "reason": "PBT includes equity-method and NCI earnings; generic addition does not establish Greenblatt source operating-earnings and EV scope. No automatic OperatingIncomeLoss or total-NetIncome proxy."
+    },
+    {
+      "id": "COMMON_EQUITY_PARENT_MINUS_VERIFIED_PREFERRED_CARRYING",
+      "decision": "REVIEW_REQUIRED_DEFAULT_DISABLED",
+      "reason": "Exact preferred carrying scope/presentation and non-overlap with parent permanent equity not independently source-verified in this review."
+    }
+  ],
+  "methodRulesSourceMapsWeightsAndParameters": "UNCHANGED",
+  "sourceExactReplication": "NOT_CLAIMED",
+  "fundamentalCore481": "UNCHANGED_NO_MIGRATION_OR_MERGE",
+  "fullDatasetQualification": "NOT_IMPLIED",
+  "measurementClearance": "SEPARATE_ROOT_V2_FREEZE_AND_RUNNER_INTEGRATION_REVIEW_REQUIRED",
+  "privateInputValuesIncluded": false
+}

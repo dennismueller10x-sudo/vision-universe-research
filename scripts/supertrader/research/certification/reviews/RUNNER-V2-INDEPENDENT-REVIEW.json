@@ -1,0 +1,38 @@
+{
+  "schema": "supertrader-independent-premeasurement-review-2.0.0",
+  "reviewedAt": "2026-10-12T07:17:10.965587+00:00",
+  "reviewer": "independent_review",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "performanceInspected": false,
+  "oldPerformanceUsedForMappingChoice": false,
+  "privateInputValuesIncluded": false,
+  "scope": "SOURCE_CONTEXT_AND_EXECUTION_RECEIVER_ONLY",
+  "codeHashes": {
+    "runner-v2.mjs": "9b2ae889295476d79c617d61c166d8293cbd468b0fe5eec03d1b3cde64644e67",
+    "execution-audit-accounting.mjs": "919215c83df18dad85a0ffd7cb624126cf58b7e05efbc7bb5d06275c192fb996",
+    "execution-audit.mjs": "22610695cda1d5024d49425cdd4a332a439d6b8b61f2d437c8e5c6df089f246f"
+  },
+  "originalPriceRulesRanksWeightsStopsCostsHoldingAndSignalCensus": "UNCHANGED",
+  "fundamentalVisibility": "ORIGINAL_availableAt_STRICTLY_LESS_THAN_asOf_DAY_PRESERVED",
+  "sourceContext": "PRICE_PROVENANCE_ISSUER_AND_CONFLICT_FLAG_FISCAL_LINKS_RETAINED",
+  "inputKnowledgeBound": "SIGNAL_DAY_MIDNIGHT_CONSERVATIVE_BOUND_NOT_ACTUAL_EXCHANGE_SIGNAL_TIMESTAMP",
+  "invalidations": "KNOWN_KEY_PERIOD_CONFLICT_EXCLUDES_ALL_OLDER_VALUES_NO_FALLBACK",
+  "fiscalLinks": "SOURCE_KNOWN_STRICTLY_BEFORE_SAME_BOUND",
+  "sixOriginalMethodsGoldenParity": "FULL_SIGNALS_CURVES_TRADES_RECONCILIATION_SENSITIVITY_UNCHANGED_WITHOUT_NEW_EVIDENCE",
+  "syntheticTests": {
+    "runner": 5,
+    "execution": 16,
+    "passed": 21,
+    "failed": 0
+  },
+  "nonemptyCertifiedCashLedger": "BLOCKED_CERTIFIED_CASH_SIGNAL_OUTCOME_CONTRACT_NOT_INTEGRATED_EVEN_WITH_VALID_SESSION_CLOCKS",
+  "ordinaryNoCertificateAccounting": "ORIGINAL_PARITY",
+  "actualCashLedgerAdmission": "NONE",
+  "terminalClassOverlay": "EXPLICIT_CAUSAL_DATA_CONTRACT_CHANGE_BEFORE_MEASUREMENT_NOT_STRATEGY_THRESHOLD_CHANGE",
+  "limitations": [
+    "ACTUAL_TERMINAL_CASH_NOT_CERTIFIED",
+    "PRICE_PANEL_NOT_COMPLETE_PIT_MARKET_POPULATION",
+    "SOURCE_RECEIPT_NOT_PUBLICATION_CLOCK_OR_CURRENCY_CERTIFICATE"
+  ],
+  "issuerIdentityMetadata": "UNVERIFIED_LEGACY_DIAGNOSTIC_RETAINED_AND_FLAGGED_NO_HISTORICAL_VERIFICATION_FROM_CIK_ALONE"
+}

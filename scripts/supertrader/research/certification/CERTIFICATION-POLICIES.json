@@ -1,0 +1,80 @@
+{
+  "schema": "supertrader-certification-policies-2.0.0",
+  "phase": "REGISTERED_BEFORE_RERUN_PERFORMANCE",
+  "baseline_pr": 589,
+  "baseline_commit": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+  "strategy_parameters_changed": false,
+  "protocol_score_weights_and_tier_thresholds_changed": false,
+  "input_knowledge": {
+    "fundamental_receiver": "PRESERVE_ORIGINAL_STRICT_availableAt_LEXICOGRAPHICALLY_LESS_THAN_asOf_DAY",
+    "inputKnowledgeBoundUTC": "SIGNAL_DATE_AT_00_00_00_UTC_CONSERVATIVE_INPUT_BOUND",
+    "compatibility_field": "formationCutoffUTC",
+    "compatibility_field_is_actual_signal_timestamp": false,
+    "fiscal_links_and_invalidation_visibility": "STRICTLY_BEFORE_SAME_INPUT_KNOWLEDGE_BOUND",
+    "ohlcv_signal_and_execution": "ORIGINAL_CLOSED_SESSION_SIGNAL_THEN_NEXT_SESSION_OPEN_UNCHANGED",
+    "daily_price_publication_bound": "SOURCE_DAY_END_UPPER_BOUND_NOT_EXACT_ACTUAL_PUBLICATION",
+    "price_field_available_same_day_to_fundamental_receiver": false
+  },
+  "market_equity": {
+    "quality_states_allowed_for_partial_measurement": [
+      "VERIFIED",
+      "DERIVED"
+    ],
+    "approximate_not_eligible_and_missing": "BLOCKED",
+    "current_as_known_latest_actual_max_share_age_days": 185,
+    "current_market_equity_max_valuation_age_days": 7,
+    "current_max_valuation_age_is_original_engine_rule": true,
+    "share_age_policy_basis": "DECLARED_CONSERVATIVE_DATA_FRESHNESS_LIMIT_FOR_PERIODIC_ACTUAL_SHARES_NOT_A_STRATEGY_RANK_OR_TRADE_PARAMETER",
+    "last_closed_prior_session_valuation": "ALLOWED_WITHIN_ORIGINAL_SEVEN_DAY_RULE_AND_PRIOR_DAY_KNOWLEDGE_BOUND",
+    "matched_fiscal_end_shares_published_later": "ALLOWED_ONLY_AFTER_ACTUAL_PUBLIC_KNOWLEDGE_AT_FORMATION_NEVER_BACKDATED",
+    "issuer_scope": "EXPLICIT_ALL_ISSUER_COMMON_EQUITY_CLASSES",
+    "unregistered_common_classes": "CANNOT_INFER_ABSENCE_FROM_SINGLE_REGISTERED_12B_CLASS",
+    "adr_or_unreconciled_multiclass": "BLOCKED_UNTIL_EXACT_RATIO_OR_FULL_ISSUER_AGGREGATION_CONTRACT",
+    "same_fiscal_point_identity": "AS_REPORTED_ORIGINAL_FILING_CONTEXT_POINT_MAY_BE_MEDIUM_PIT_PARTIAL_NOT_CONTINUOUS_EXCHANGE_ADMISSION",
+    "snapshot_carry": "PARTIAL_DECLARED_AS_KNOWN_ONLY_NEVER_VERIFIED_CONTINUOUS_HISTORY",
+    "raw_share_observation_basis": "EXPLICIT_ORIGINAL_SOURCE_CERTIFICATE_REQUIRED_NO_AS_REPORTED_INFERENCE",
+    "raw_basis_source_authentication": "INSPECTED_ORIGINAL_FILING_SHARE_CONTEXT_AND_SPLIT_DISCLOSURE_BODY_SHA_AND_IDENTITY_BINDING_NOT_SELF_AUTHENTICATING_STATUS_LABELS"
+  },
+  "confidence_and_qualification": {
+    "overall_confidence": "MINIMUM_OF_SOURCE_FIDELITY_DATA_AND_EXECUTION_DIMENSIONS",
+    "inherited_greenblatt_fidelity": "LOW",
+    "inherited_legendary_adaptation_fidelity": "LOW",
+    "performance_tier": "ORIGINAL_FIXED_RANK_EVIDENCE_ALGORITHM",
+    "qualified_tier": "SEPARATE_ADMISSIBILITY_CEILING_WITH_REASON_CODES",
+    "not_fully_certified_data_or_execution": "AT_MOST_C_NEVER_FULLY_QUALIFIED_A_OR_B",
+    "blocked_method": "UNRANKED_DATA_OR_EXECUTION_BLOCKED_NOT_ZERO_SIGNAL_OR_ZERO_RETURN",
+    "reason_codes": [
+      "PERFORMANCE_FAIL",
+      "DATA_BLOCKED",
+      "DATA_LIMITED",
+      "FIDELITY_LIMITED",
+      "EXECUTION_LIMITED"
+    ],
+    "rubric_data_input_correction": "ORIGINAL_RANK_EVIDENCE_ALGORITHM_WEIGHTS_UNCHANGED_PIT_LISTINGS_FLAG_FALSE_FROM_CERTIFICATION_TRUTH_NOT_NOMINAL_LOADER_CLAIM"
+  },
+  "consensus": {
+    "qualified_methods": "FULLY_CERTIFIED_ELIGIBLE_METHOD_SET_ONLY",
+    "strong_methods": "FINAL_QUALIFIED_TIER_A_OR_B_ONLY",
+    "partial_diagnostic": "SEPARATE_LABEL_NO_BLOCKED_METHODS_NO_INDEPENDENT_TRADING_SCORE"
+  },
+  "fundamental_core": "READ_ONLY_RESEARCH_REUSE_NO_MIGRATION_OR_MERGE",
+  "outcome_selection": "NO_DATA_MAPPING_POLICY_CHOSEN_USING_RERUN_OUTCOMES",
+  "baseline_comparison_control": {
+    "registered_before_rerun_outcomes": true,
+    "trigger": "SOURCE_ONLY_RECEIPT_PROVES_BASE_DATA_FINGERPRINT_DIFFERS_FROM_589",
+    "control": "ALL_ORIGINAL_SIX_METHODS_WITH_ORIGINAL_FROZEN_RUNNER_AND_ACCOUNTING_ON_SAME_NEW_CANONICAL_UNFILTERED_DATA",
+    "cost_and_terminal_scenario": "ORIGINAL_BASELINE_ONLY",
+    "source_snapshot_delta": "OLD_589_VS_NEW_SOURCE_ORIGINAL_EXECUTION_CONTROL",
+    "certification_delta": "NEW_SOURCE_ORIGINAL_EXECUTION_CONTROL_VS_SAME_NEW_SOURCE_V2_EXECUTION",
+    "strategy_rule_or_parameter_changes": false,
+    "causal_claim_limit": "OLD_589_TO_FINAL_V2_IS_COMBINED_SOURCE_SNAPSHOT_AND_CERTIFICATION_CHANGE_NOT_CERTIFICATION_ONLY"
+  },
+  "missing_metric_sensitivity_guard": {
+    "registered_before_rerun_outcomes": true,
+    "version": "NULL_METRIC_NOT_ZERO_V2",
+    "finite_original_cases": "ORIGINAL_SIGN_AND_COST_THRESHOLD_COMPARISONS_UNCHANGED",
+    "missing_terminal_excess_or_cagr": "TERMINAL_PASS_NULL_WITH_UNAVAILABLE_DIAGNOSTIC_NOT_MATH_SIGN_NULL_ZERO",
+    "missing_cost_or_benchmark_cagr": "COST_PASS_NULL_UNAVAILABLE_NOT_NUMERIC_COERCION",
+    "ranking_gate": "ORIGINAL_REQUIRE_PASS_STRICT_TRUE_UNCHANGED"
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "supertrader-execution-contracts-2.0.0",
+  "phase": "REGISTERED_BEFORE_RERUN_PERFORMANCE",
+  "strategy_rules_and_costs_changed": false,
+  "implementation_version": "TERMINAL_CLASS_PIT_FILTER_V1_WITH_ORIGINAL_ACCOUNTING_DEFAULT_PARITY",
+  "signal_timestamp": "AFTER_CLOSED_SESSION_T",
+  "execution_timestamp": "NEXT_AVAILABLE_BENCHMARK_SESSION_T_PLUS_1_OPEN_ONLY_IF_SECURITY_OPEN_AVAILABLE",
+  "same_close_fill": false,
+  "missing_open": "REJECT_NO_CARRY_FORWARD_PRICE",
+  "open_sizing": "KNOWN_OPEN_MARKS_NO_SAME_DAY_CLOSE",
+  "ordinary_cost_model": {
+    "timing": "NEXT_SESSION_OPEN",
+    "slippage_bps_per_side": 10,
+    "commission_bps_per_side": 1,
+    "cost_sensitivity_multiplier": 2,
+    "leverage": false,
+    "shorts": false,
+    "cash_yield": 0,
+    "method_parameters": "UNCHANGED",
+    "partial_state": "ONLY_AFTER_SUCCESSFUL_EXECUTION"
+  },
+  "terminal_classification": "SOURCE_PUBLICATION_PIT_FILTER_AT_ACTUAL_LAST_BAR_TERMINAL_DATE",
+  "cash_event_primitives": "OFFICIAL_CASH_RECEIVABLE_TWO_STAGE_V2_UNIT_TESTED_NOT_FULLY_INTEGRATED_SIGNAL_OUTCOME",
+  "actual_cash_certificates": 0,
+  "nonempty_certified_cash_ledger": "BLOCKED_CERTIFIED_CASH_SIGNAL_OUTCOME_CONTRACT_NOT_INTEGRATED",
+  "unknown_terminal_outcomes": "FROZEN_BASELINE_AND_TWO_SENSITIVITIES_RETAINED_NOT_CERTIFIED_REALIZED_PROCEEDS",
+  "data_quarantine": "SIGNALS_CENSORED_PORTFOLIO_SYNTHETIC_LAST_MARK_SCENARIO_NOT_ECONOMIC_PROCEEDS",
+  "corporate_actions": "ORIGINAL_CANONICAL_PRICE_SPLITS_DIVIDENDS_SOURCE_HASH_BOUND",
+  "methods": [
+    {
+      "id": "cross_sectional_momentum",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    },
+    {
+      "id": "52_week_high_effect",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    },
+    {
+      "id": "LOW_VOLATILITY",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    },
+    {
+      "id": "TURTLE_S2_EQUITY_DAILY",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    },
+    {
+      "id": "WEINSTEIN_STAGE_DAILY",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    },
+    {
+      "id": "KULLAMAGI_DAILY_ADAPTATION",
+      "execution_quality": "LOW",
+      "execution_eligibility": "PARTIAL",
+      "limiting_contracts": [
+        "EXACT_TERMINAL_PROCEEDS_AND_PUBLICATION_TIMING",
+        "HISTORICAL_LISTING_SECURITY_IDENTITY"
+      ],
+      "parameter_changes": false,
+      "next_session_open_component_quality": "HIGH",
+      "terminal_classification_component_quality": "MEDIUM",
+      "actual_proceeds_component_quality": "LOW"
+    }
+  ],
+  "confirmed_findings": [
+    {
+      "id": "LEGACY_EXECUTION_DAY_LOW_LOOKAHEAD",
+      "status": "CONFIRMED_DAILY_FALLBACK_BUG",
+      "scope": "LEGACY_MOMENTUM_BREAKOUT_3_2",
+      "temporal_dependency": "EXECUTION_DAY_COMPLETED_LOW_USED_FOR_INTRADAY_ENTRY_STOP_AND_RISK_SIZING",
+      "resolved_intraday_oracle_exception": "RESOLVED_ORACLE_SUBSTITUTES_ENTRY_TIME_STOP",
+      "isolated_fix": "INSTANT_ENTRY_EVIDENCE_REQUIRED_NO_COMPLETED_DAY_LOW_FALLBACK",
+      "past_tournament_assessment": "UNCHANGED_LEGACY_NOT_A_PARTICIPANT_KK_USES_PREVIOUS_CLOSED_SIGNAL_DAY_LOW"
+    },
+    {
+      "id": "LEGACY_SIZING_SAME_DAY_CLOSE",
+      "status": "CONFIRMED_BACKTEST_PATH_NOT_TOURNAMENT_PATH",
+      "scope": "ENGINE_BACKTEST_RUNPORTFOLIO",
+      "temporal_dependency": "HELD_POSITION_CURRENT_DAY_CLOSE_IN_INTRADAY_ENTRY_EQUITY",
+      "validation_portfolio_default": "PREVIOUS_MARKS_USED_SIZING_SAME_DAY_ONLY_COMPATIBILITY_OPTION",
+      "tournament_assessment": "UNCHANGED_TOURNAMENT_OPEN_MARK_SIZING",
+      "fix_scope": "LEGACY_NOT_ADMITTED_NO_ENGINE_OR_PERFORMANCE_RUN"
+    },
+    {
+      "id": "KNOWN_CASH_TERMINAL_IGNORED",
+      "status": "CONFIRMED_PRIMITIVE_OMISSION_SYNTHETIC_REGRESSION",
+      "scope": "FROZEN_ACCOUNTING_TERMINAL_USES_LAST_CLOSE_SCENARIO_NOT_OFFICIAL_CASH_AMOUNT",
+      "actual_events_certified": 0,
+      "isolated_fix": "CERTIFIED_CASH_EVENT_RECEIVABLE_THEN_DATED_SETTLEMENT",
+      "unknown_proceeds": "ORIGINAL_SCENARIOS_PRESERVED_NOT_REALIZED_OUTCOME_CERTIFICATION"
+    },
+    {
+      "id": "R15_CLASS_HINT_NOT_PAYOUT_CERTIFICATE",
+      "status": "CONFIRMED_SOURCE_SCOPE_GAP",
+      "original_loader": "R13_CLASS_HINTS_ONLY",
+      "r15_metadata_regression_cases": 5,
+      "certified_payouts_from_metadata": 0,
+      "spac_sic_caveat": "SIC_6770_DOES_NOT_PROVE_REDEMPTION_AMOUNT_TIMING_OR_SHARE_ENTITLEMENT"
+    },
+    {
+      "id": "NEXT_OPEN_AND_MISSING_OPEN",
+      "status": "ORIGINAL_TIMING_PRESERVED",
+      "order": "EX_DATE_DISTRIBUTIONS_THEN_CERTIFIED_BEFORE_OPEN_EVENTS_THEN_PRIOR_SIGNAL_PENDING_MARKET_ORDERS_THEN_CERTIFIED_AFTER_CLOSE_EVENTS_THEN_CLOSE_MARK_AND_SIGNAL",
+      "missing_or_zero_open": "REJECT_NO_CARRY_FORWARD_FILL_NO_PARTIAL_STATE_MUTATION",
+      "held_gaps": "POSITION_AND_LAST_MARK_PRESERVED_DATA_GAP_REMAINS_VISIBLE",
+      "intraday_high_low": "NOT_USED_FOR_DAILY_CLOSE_NEXT_OPEN_STOP_EXECUTION"
+    },
+    {
+      "id": "SAME_TIMESTAMP_EVENT_PRIORITY",
+      "status": "EXPLICIT_PHASE_CLOCK_REQUIRED",
+      "automatic_actions": "EVENT_EFFECTIVE_BEFORE_OPEN_PRECEDES_PENDING_ORDER_AND_BLOCKS_REENTRY",
+      "market_orders": "ORIGINAL_EXITS_BEFORE_INCREASES_PROPORTIONAL_CASH_SHORTFALL_SCALING",
+      "intraday_corporate_action": "NOT_CERTIFIED_WITH_DAILY_BARS_ONLY"
+    },
+    {
+      "id": "QUARANTINE_TERMINAL_IS_NOT_REALIZED_ECONOMIC_OUTCOME",
+      "status": "EXPLICIT_CERTIFICATION_LIMIT",
+      "code_paths": [
+        "scripts/supertrader/research/tournament/runner.mjs:102",
+        "scripts/supertrader/research/tournament/runner.mjs:147"
+      ],
+      "original_portfolio": "SYNTHETIC_LAST_MARK_PLUS_TERMINAL_SCENARIO",
+      "original_signals": "CENSORED_DATA_QUARANTINE",
+      "realized_outcome_certification": "UNAVAILABLE",
+      "original_scenario_changed": false
+    },
+    {
+      "id": "R13_TERMINAL_CLASSIFICATION_PUBLICATION_PIT",
+      "status": "CONFIRMED_METADATA_TEMPORAL_RISK",
+      "version": "TERMINAL_CLASS_PIT_FILTER_V1",
+      "filter": "POST_TERMINAL_AND_UNDATED_HINT_EVIDENCE_UNKNOWN_SAME_DAY_REQUIRES_EXACT_VALID_PUBLICATION_CLOCK",
+      "method_cost_thresholds_changed": false,
+      "metadata_diagnostic_count_unit": "OBSERVED_LISTING_ROWS_WITH_R13_HINT_AT_METADATA_LISTEND_NOT_ACTUAL_TERMINAL_BAR_CUTOFF",
+      "metadata_rows_with_hints": 2263,
+      "raw_source_dictionary_entries": 2265,
+      "nonunknown_metadata_hints_stripped": 297,
+      "actual_proceeds_certified": 0,
+      "affected_method_outcomes_measured": false
+    }
+  ],
+  "public_rights": "ENUMS_COUNTS_DIRECTIONS_ONLY_PROVIDER_NUMERIC_RESULTS_AND_CURRENT_IDENTITIES_OWNER_SEALED",
+  "independent_review": "PENDING_FINAL_PREMEASUREMENT_REVIEW"
+}

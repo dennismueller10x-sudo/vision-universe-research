@@ -1,0 +1,462 @@
+{
+  "schema": "supertrader-industry-residual-source-contract-proof-1.0.0",
+  "createdAt": "2026-10-12T05:56:03.249Z",
+  "beforeMeasurement": true,
+  "noPerformanceResultsConsulted": true,
+  "noFrozenTenRulesChanged": true,
+  "noEnginesAdded": true,
+  "factorValuesIncluded": false,
+  "primarySources": [
+    {
+      "id": "residual2011",
+      "url": "https://repub.eur.nl/pub/22252/ResidualMomentum-2011.pdf",
+      "locator": "Accepted manuscript pp.9–12, Equation (1), French(2010) reference",
+      "sha256": "db0ebbbe9de1d46deccef39cc4160416a5df39fd46b5a5ca4045df5b3ec227ee"
+    },
+    {
+      "id": "mg1999",
+      "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/DoIndustriesExplainMomentum.pdf",
+      "locator": "Journal of Finance54(1999), SectionI/footnote3/TableI pp1252–1254; SectionIII.B p1259",
+      "sha256": "9c9a49a6920d8cbe00fd2b8585bcd3d129acd40754e3906a912f89457b950207"
+    }
+  ],
+  "residualContract": {
+    "schema": "supertrader-residual-factor-contract-1.0.0",
+    "methodId": "residual_momentum",
+    "priorReference": "#589",
+    "source": {
+      "id": "residual2011",
+      "url": "https://repub.eur.nl/pub/22252/ResidualMomentum-2011.pdf",
+      "locator": "Accepted manuscript pp.9–12, Equation (1), French(2010) reference"
+    },
+    "original": {
+      "regressionMonths": 36,
+      "regressionMonthOffsets": [
+        -36,
+        -1
+      ],
+      "formationMonthOffsets": [
+        -12,
+        -2
+      ],
+      "formationMonths": 11,
+      "interceptEstimated": true,
+      "estimatedAlphaIncludedInScore": false,
+      "scoreResidualFormula": "stockExcessReturn - beta_market*mktRf - beta_smb*smb - beta_hml*hml; estimated intercept is NOT subtracted",
+      "alphaRationale": "Manuscript p11: including the estimated alpha would make stocks with large positive old t-36..t-13 returns rank low; authors explicitly avoid that long-term-reversal effect. This is not raw OLS epsilon=excessReturn-alpha-beta*F.",
+      "factors": [
+        "mktRf",
+        "smb",
+        "hml"
+      ],
+      "stockReturnBasis": "MONTHLY_TOTAL_RETURN_MINUS_MATCHED_RF",
+      "standardization": "RESIDUAL_RETURN_DIVIDED_BY_RESIDUAL_STANDARD_DEVIATION_OVER_SAME_11_MONTHS",
+      "stockWeights": "EQUAL_WEIGHT_DECILE",
+      "publishedHoldingMonths": [
+        1,
+        3,
+        6,
+        12
+      ],
+      "chosenHoldingMonths": null,
+      "eligibleHistory": "COMPLETE_36_MONTHS",
+      "stockUniverse": "DOMESTIC_PRIMARY_NYSE_AMEX_NASDAQ",
+      "excludedInstruments": [
+        "CLOSED_END_FUNDS",
+        "REITS",
+        "UNIT_TRUSTS",
+        "ADRS",
+        "FOREIGN_STOCKS"
+      ],
+      "priceRule": "EXCLUDE_STOCK_MONTHS_BELOW_ONE_DOLLAR"
+    },
+    "engineEligibility": "BLOCKED_RULE_VARIANT_UNSELECTED",
+    "allowedDataMode": "EX_POST_SCIENTIFIC_PARTIAL",
+    "historicalAsKnown": "BLOCKED_UNCERTIFIED_MONTHLY_PUBLICATION_VINTAGES",
+    "scientificInterpretation": "The paper cites one French(2010) historical research dataset and uses lagged economic observations; it does not specify archived monthly publication vintages. A frozen later revised snapshot supports only explicitly ex-post scientific partial research, not reproduction of the original data snapshot or an as-known/PIT/live claim.",
+    "conventionChanges": [
+      "JANUARY_2025_FIZ_TO_CIZ_RECONSTRUCTION",
+      "JUNE_2024_RF_IBBOTSON_TO_ICE_BOFA"
+    ],
+    "rights": "FREE_PUBLIC_DOWNLOAD_COPYRIGHTED_REDISTRIBUTION_UNCERTIFIED",
+    "noPaperReturnInheritance": true,
+    "noMissingFactorProxy": true,
+    "noFrozenTenMethodChanges": true
+  },
+  "factorSnapshot": {
+    "schema": "supertrader-public-factor-contract-proof-1.0.0",
+    "methodId": "residual_momentum",
+    "source": {
+      "id": "residual2011",
+      "url": "https://repub.eur.nl/pub/22252/ResidualMomentum-2011.pdf",
+      "locator": "Accepted manuscript pp.9–12, Equation (1), French(2010) reference"
+    },
+    "dataMode": "EX_POST_SCIENTIFIC_PARTIAL",
+    "pitCertified": false,
+    "engineEligibility": "BLOCKED_RULE_VARIANT_UNSELECTED",
+    "officialUrls": {
+      "current": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "archiveIndex": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/f-f_factors_archive.html",
+      "library": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html"
+    },
+    "provenance": {
+      "sourceUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "retrievedAt": "2026-10-12T05:56:03.207Z",
+      "archiveSha256": "593f4fbef03181bc0b22ff6292f217689dd1fb79355049ca905d95b262040a66",
+      "csvSha256": "d7d7fe37b150b5b15c9c069b3ba101dfe1af568c6d7b5db6e73cd0a6c0c9e5e5",
+      "publicHeaders": [
+        "This file was created using the 202608 CRSP database.",
+        "The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index. ",
+        "The annual TBill return is compounded from the monthly T-bill rates from January to December. ",
+        ",Mkt-RF,SMB,HML,RF",
+        " Annual Factors: January-December ",
+        ",Mkt-RF,SMB,HML,RF",
+        "Copyright 2026 Eugene F. Fama and Kenneth R. French"
+      ],
+      "dataStartMonth": "1926-07",
+      "dataCutMonth": "2026-08",
+      "publicationVintage": "FROZEN_REVISED_SNAPSHOT_NOT_HISTORICAL_AS_KNOWN",
+      "rights": "FREE_PUBLIC_DOWNLOAD_COPYRIGHTED_REDISTRIBUTION_UNCERTIFIED",
+      "conventionChanges": [
+        "JANUARY_2025_FIZ_TO_CIZ_RECONSTRUCTION",
+        "JUNE_2024_RF_IBBOTSON_TO_ICE_BOFA"
+      ]
+    },
+    "monthlyRows": 1202,
+    "missingMonthlyRows": 0,
+    "factorValuesIncluded": false,
+    "noPerformanceMeasurement": true
+  },
+  "predeclaredCalendarDataWindowCheck": {
+    "formationStart": "2016-01",
+    "formationEnd": "2026-10",
+    "testedWindows": 130,
+    "completeWindows": 129,
+    "incompleteWindows": [
+      {
+        "formationMonth": "2026-10",
+        "status": "BLOCKED_FACTOR_WINDOW_INCOMPLETE",
+        "missingMonths": [
+          "2026-09"
+        ]
+      }
+    ]
+  },
+  "industryContract": {
+    "schema": "supertrader-industry-contract-1.0.0",
+    "methodId": "industry_momentum",
+    "priorReference": "#589",
+    "source": {
+      "id": "mg1999",
+      "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/DoIndustriesExplainMomentum.pdf",
+      "locator": "Journal of Finance54(1999), SectionI/footnote3/TableI pp1252–1254; SectionIII.B p1259"
+    },
+    "original": {
+      "rankingMonths": 6,
+      "rankingOffsets": [
+        -6,
+        -1
+      ],
+      "skipMonths": 0,
+      "selectedIndustries": 3,
+      "holdingMonths": 6,
+      "cohorts": 6,
+      "industryWeights": "EQUAL",
+      "stockWeights": "VALUE_WEIGHT_MONTHLY_INDUSTRY_CONSTITUENTS",
+      "classification": "CRSP_TIME_SERIES_SIC_EXACT_TABLE_I_GROUPED_TWO_DIGIT",
+      "longShort": true
+    },
+    "adaptation": "SEC_FILING_HEADER_SIC_KNOWN_FROM_ACCEPTANCE_IS_NOT_CRSP_CLASSIFICATION_IDENTITY",
+    "engineEligibility": "BLOCKED_HISTORICAL_BROAD_CONSTITUENTS_AND_MARKET_EQUITY_UNCERTIFIED",
+    "noFrenchIndustryProxy": true,
+    "noSectorEtfProxy": true,
+    "noCurrentSicFallback": true,
+    "noPaperReturnInheritance": true,
+    "noFrozenTenMethodChanges": true
+  },
+  "industryTaxonomy": [
+    {
+      "id": "MINING",
+      "name": "Mining",
+      "sourceTableIndex": 1,
+      "sic2Ranges": [
+        [
+          10,
+          14
+        ]
+      ]
+    },
+    {
+      "id": "FOOD",
+      "name": "Food",
+      "sourceTableIndex": 2,
+      "sic2Ranges": [
+        [
+          20,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "APPAREL",
+      "name": "Apparel",
+      "sourceTableIndex": 3,
+      "sic2Ranges": [
+        [
+          22,
+          23
+        ]
+      ]
+    },
+    {
+      "id": "PAPER",
+      "name": "Paper",
+      "sourceTableIndex": 4,
+      "sic2Ranges": [
+        [
+          26,
+          26
+        ]
+      ]
+    },
+    {
+      "id": "CHEMICAL",
+      "name": "Chemical",
+      "sourceTableIndex": 5,
+      "sic2Ranges": [
+        [
+          28,
+          28
+        ]
+      ]
+    },
+    {
+      "id": "PETROLEUM",
+      "name": "Petroleum",
+      "sourceTableIndex": 6,
+      "sic2Ranges": [
+        [
+          29,
+          29
+        ]
+      ]
+    },
+    {
+      "id": "CONSTRUCTION",
+      "name": "Construction",
+      "sourceTableIndex": 7,
+      "sic2Ranges": [
+        [
+          32,
+          32
+        ]
+      ]
+    },
+    {
+      "id": "PRIMARY_METALS",
+      "name": "Primary Metals",
+      "sourceTableIndex": 8,
+      "sic2Ranges": [
+        [
+          33,
+          33
+        ]
+      ]
+    },
+    {
+      "id": "FABRICATED_METALS",
+      "name": "Fabricated Metals",
+      "sourceTableIndex": 9,
+      "sic2Ranges": [
+        [
+          34,
+          34
+        ]
+      ]
+    },
+    {
+      "id": "MACHINERY",
+      "name": "Machinery",
+      "sourceTableIndex": 10,
+      "sic2Ranges": [
+        [
+          35,
+          35
+        ]
+      ]
+    },
+    {
+      "id": "ELECTRICAL_EQUIPMENT",
+      "name": "Electrical Equipment",
+      "sourceTableIndex": 11,
+      "sic2Ranges": [
+        [
+          36,
+          36
+        ]
+      ]
+    },
+    {
+      "id": "TRANSPORT_EQUIPMENT",
+      "name": "Transport Equipment",
+      "sourceTableIndex": 12,
+      "sic2Ranges": [
+        [
+          37,
+          37
+        ]
+      ]
+    },
+    {
+      "id": "MANUFACTURING",
+      "name": "Manufacturing",
+      "sourceTableIndex": 13,
+      "sic2Ranges": [
+        [
+          38,
+          39
+        ]
+      ]
+    },
+    {
+      "id": "RAILROADS",
+      "name": "Railroads",
+      "sourceTableIndex": 14,
+      "sic2Ranges": [
+        [
+          40,
+          40
+        ]
+      ]
+    },
+    {
+      "id": "OTHER_TRANSPORT",
+      "name": "Other Transportation",
+      "sourceTableIndex": 15,
+      "sic2Ranges": [
+        [
+          41,
+          47
+        ]
+      ]
+    },
+    {
+      "id": "UTILITIES",
+      "name": "Utilities",
+      "sourceTableIndex": 16,
+      "sic2Ranges": [
+        [
+          49,
+          49
+        ]
+      ]
+    },
+    {
+      "id": "DEPARTMENT_STORES",
+      "name": "Department Stores",
+      "sourceTableIndex": 17,
+      "sic2Ranges": [
+        [
+          53,
+          53
+        ]
+      ]
+    },
+    {
+      "id": "RETAIL",
+      "name": "Retail",
+      "sourceTableIndex": 18,
+      "sic2Ranges": [
+        [
+          50,
+          52
+        ],
+        [
+          54,
+          59
+        ]
+      ]
+    },
+    {
+      "id": "FINANCIAL",
+      "name": "Financial",
+      "sourceTableIndex": 19,
+      "sic2Ranges": [
+        [
+          60,
+          69
+        ]
+      ]
+    },
+    {
+      "id": "OTHER",
+      "name": "Other",
+      "sourceTableIndex": 20,
+      "sic2Ranges": []
+    }
+  ],
+  "coverageVerdict": {
+    "status": "BLOCKED_DATA_CERTIFICATION_PENDING",
+    "historicalBroadConstituents": "UNCERTIFIED",
+    "historicalMarketEquity": "UNCERTIFIED",
+    "secDatedSicAdapter": "SYNTHETICALLY_TESTED_NOT_POPULATION_CERTIFIED",
+    "originalCrspSicReplication": false,
+    "observedListingGenerationCount": 15557,
+    "secManifestCikCount": 5480,
+    "cikLinks": "UNVERIFIED",
+    "classificationPopulation": "UNCERTIFIED",
+    "historicalMarketEquityBinding": "REQUIRES_ACTUAL_POINT_IN_TIME_SPLIT_ALIGNED_SECURITY_ISSUER_LISTING_DATUM",
+    "clockStatus": "PIT_PARTIAL_API_CLOCK_CONFLICT",
+    "noPromotionFromCurrentSicOrProviderMetadata": true,
+    "monthlyValuationEndpoint": "REQUIRES_CERTIFIED_PRIOR_MONTH_LAST_SESSION_OR_FROZEN_RUNNER_ENDPOINT"
+  },
+  "sourceDecision": {
+    "scientificFactorData": "EX_POST_SCIENTIFIC_PARTIAL",
+    "historicalAsKnownFactorData": "BLOCKED_MONTHLY_PUBLICATION_VINTAGES_UNCERTIFIED",
+    "residualExecutable": "BLOCKED_RULE_VARIANT_UNSELECTED",
+    "industryExecutable": "BLOCKED_HISTORICAL_BROAD_CONSTITUENTS_AND_MARKET_EQUITY_UNCERTIFIED",
+    "noFactorProxy": true,
+    "noIndustryProxy": true
+  },
+  "tests": {
+    "syntheticTests": 18,
+    "status": "PASSED",
+    "marketEquityAdapterIntegration": "PASSED",
+    "combinedFactorIndustryAndSiblingMarketEquityTests": 41
+  },
+  "realPrimarySecAcceptanceSample": {
+    "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/0001045810-26-000021.txt",
+    "acceptanceSourceUrl": "https://data.sec.gov/submissions/CIK0001045810.json",
+    "headerSha256": "c4b1420f24a0157f17c5af448e14b07b62cd5eb7bc22237da5f759faf75ae5a1",
+    "apiSha256": "a700c65f586670b6a56725f903900abc1b39a06110e7c30cf691d8ecb902e52d",
+    "sourceRequests": 2,
+    "companyfactsRequests": 0,
+    "accessionComparison": "MATCHED",
+    "freshApiMatchesPriorSample": true,
+    "apiUtcTimestamp": "2026-02-26T02:42:19.000Z",
+    "headerEasternLocalTimestamp": "20260225164219",
+    "headerNormalizedUtc": "2026-02-25T21:42:19.000Z",
+    "status": "PIT_PARTIAL_API_CLOCK_CONFLICT",
+    "universalCause": "UNRESOLVED",
+    "explicitPolicy": "HEADER_EASTERN_AUTHORITATIVE_IANA_DST",
+    "noBlindApiUtcReinterpretation": true,
+    "noTimestampHighConfidenceClaim": true,
+    "providerSecurityValuesIncluded": false
+  },
+  "independentPremeasurementReview": {
+    "status": "PASS_WITH_DATA_LIMITS",
+    "reviewer": "independent_review",
+    "scope": "DATA_ADAPTERS_AND_SOURCE_CONTRACTS_ONLY_NOT_POPULATION_OR_STRATEGY_CERTIFICATION",
+    "testsReperformed": 18,
+    "factorMode": "EX_POST_SCIENTIFIC_PARTIAL",
+    "pitClaim": false,
+    "industryPopulationCertified": false,
+    "residualEngineEligible": false,
+    "industryEngineEligible": false,
+    "rootDependencyFreezeStillRequired": true
+  },
+  "reviewedCode": {
+    "factor-contract.mjs": "79acd7bb448299fdd3f92888b894c6ccc57dea28ba743410712e44b99b16d36e",
+    "industry-contract.mjs": "8cc0393c31874e3280d316f0db43b6a54ebca81f619b25b6b612c6949a6e69f4"
+  }
+}

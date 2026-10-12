@@ -39,6 +39,8 @@ export async function collectDataInventory(options={}){
  const eligibility=documents.eligibility||await read('quant/data/market/security-master/eligibility.json');
  const companies=documents.companies||await read('quant/data/market/security-master/company-names.json');
  const consumerIndex=documents.consumerIndex||await Promise.resolve().then(()=>read('quant/data/sec/consumer/index.json')).catch(()=>null);
+ const metadataProof=(p,value)=>{if(!value)return {path:p,status:'MISSING'};let bytes,representation;try{if(options.documents||options.readJson)throw Error('INJECTED');bytes=fs.readFileSync(path.join(options.root||root,p));representation='EXACT_TRACKED_FILE_BYTES';}catch{bytes=Buffer.from(JSON.stringify(value));representation='INJECTED_OBJECT_JSON_BYTES';}return {path:p,status:'AVAILABLE',sha256:hash(bytes),representation,declaredAsOf:value.asOf??null,declaredGeneratedAt:value.generatedAt??null,scope:'CURRENT_SNAPSHOT_ONLY_NOT_HISTORICAL_VALIDITY'};};
+ const metadataSources=[metadataProof('quant/data/market/scale/universe-FULL_UNIVERSE.json',universe),metadataProof('quant/data/market/security-master/eligibility.json',eligibility),metadataProof('quant/data/market/security-master/company-names.json',companies),metadataProof('quant/data/sec/consumer/index.json',consumerIndex),metadataProof('scripts/supertrader/research/tournament/protocol.json',protocol)];
  let listingRows=options.listingRows,listingSourceHash=listingRows?hash(Buffer.from(JSON.stringify(listingRows))):null;
  if(!listingRows){const r=await fetch(Listing.LIST_URL);if(!r.ok)throw Error('PUBLIC_LISTING_SOURCE_UNAVAILABLE');const bytes=Buffer.from(await r.arrayBuffer());listingRows=Listing.parseTickerCsv(Listing.unzipCsv(bytes));listingSourceHash=hash(bytes);}
  const sourceRows=assertSourceRows(listingRows),classByTicker=new Map((eligibility.decisions||[]).map(d=>[d.ticker,d.instrument_type]));
@@ -76,6 +78,9 @@ export async function collectDataInventory(options={}){
    legacySecInputs:f?{cik:f.cik||null,how:f.how||null,taxonomy:f.taxonomy||null,epsTag:f.epsTag||null,eps:f.eps||[],revenue:f.rev||[],shares:f.shares||[],sourceKey:pitStore.seriesPrefix+privateKeys[1],tupleContract:'periodEnd,value,firstFiled,derivedOrConcept; accession/unit/class scope not retained',certification:'RAW_LEGACY_SOURCE_ONLY_NOT_REVALIDATED'}:null,
    observedDelistingHint:d?{...d,sourceKey:pitStore.seriesPrefix+privateKeys[2],certification:'CLASS_HINT_ONLY_PROCEEDS_NOT_OBSERVED'}:null};
  });
+ const observedListingIds=new Set(listings.map(l=>l.id));
+ const unmatchedLegacySecInputs=Object.fromEntries(Object.entries(pit||{}).filter(([id])=>!observedListingIds.has(id)));
+ const unmatchedDelistingHints=Object.fromEntries(Object.entries(delist||{}).filter(([id])=>!observedListingIds.has(id)));
  const factDocs=[];
  const limit=options.factDocLimit??0;if(!Number.isSafeInteger(limit)||limit<0||limit>64)throw Error('INVALID_FACT_DOC_LIMIT');
  for(const cik of Object.keys(secIndex?.objects||{}).sort().slice(0,limit)){
@@ -88,9 +93,10 @@ export async function collectDataInventory(options={}){
   const readPrivate=k=>getJson(pitStore.seriesPrefix+k);
   canonicalData=await (options.canonicalLoader||loadHistoricalData)({...protocol.window,rawDataDeps:{universe,eligibility,companies,listingRows,mainStore,pitStore,readPrivate,today:asOf}});
   if(canonicalData.state==='AVAILABLE'){
+   const fullListingById=new Map(listings.map(l=>[l.id,l]));
    const attach=(security,store,symbol)=>{const key=store.seriesKey(symbol),receipt=readReceipts.get(key);security.priceSource=receipt?{provider:'Tiingo',sourceKey:receipt.sourceKey,sha256:receipt.sha256,capturedAt:receipt.capturedAt,canonicalContractHash:canonicalData.coverage?.canonicalContractHash||null,dataFingerprint:canonicalData.fingerprint,publicationTimeCertification:'NOT_ESTABLISHED_BY_OBJECT_RETRIEVAL'}:null;};
    for(const security of canonicalData.securities){
-    const l=security.listing||{},baseId=String(l.id||security.id).split('#')[0],f=pit?.[baseId];
+    const baseId=String(security.listing?.id||security.id).split('#')[0],l=fullListingById.get(baseId)||{},f=pit?.[baseId];
     if(l.source==='STORE_ACTIVE')attach(security,mainStore,l.ticker);else if(l.ticker&&l.startDate)attach(security,pitStore,`${l.ticker}@${l.startDate}`);
     if(f?.cik){security.issuerCik=f.cik;security.issuerCikEvidence={status:'UNVERIFIED',historical:false,sourceKey:pitStore.seriesPrefix+privateKeys[1],legacyHow:f.how||null,reason:'LEGACY_CIK_OBSERVATION_NOT_REVIEWED_HISTORICAL_SECURITY_LINK'};}
     if(f?.fiscalPeriodLinks)security.fiscalPeriodLinks=f.fiscalPeriodLinks;
@@ -99,7 +105,7 @@ export async function collectDataInventory(options={}){
   }
  }
  const certification=certifyUniversePanel({listings,providerRows:sourceRows.kept,identityEvidence:options.identityEvidence||[],populationEvidence:options.populationEvidence||null,expectedFormationCalendar:options.expectedFormationCalendar||null,window:protocol.window,asOf,canonicalData});
- const privateInput={schema:INVENTORY_VERSION,observedAt,protocolWindow:protocol.window,listingSource:{url:Listing.LIST_URL,sha256:listingSourceHash,observedAt,classification:'EXISTING_PROVIDER_SUPPORTED_SNAPSHOT_NOT_INDEPENDENT_PIT_POPULATION'},sourceObjects,readReceipts:[...readReceipts.values()],observedListings,secFundamentalManifest:secManifest,secFundamentalIndex:secIndex,secFactDocuments:factDocs,certification,
+ const privateInput={schema:INVENTORY_VERSION,observedAt,provenance:{workflowRunId:process.env.GITHUB_RUN_ID||null,codeCommit:process.env.GITHUB_SHA||null,metadataSources},protocolWindow:protocol.window,listingSource:{url:Listing.LIST_URL,sha256:listingSourceHash,observedAt,classification:'EXISTING_PROVIDER_SUPPORTED_SNAPSHOT_NOT_INDEPENDENT_PIT_POPULATION'},sourceObjects,readReceipts:[...readReceipts.values()],observedListings,unmatchedLegacySecInputs,unmatchedDelistingHints,unmatchedSourceDisposition:'PRESERVED_SOURCE_ONLY_NOT_ADDED_TO_UNIVERSE_OR_ALIAS_NORMALIZED',secFundamentalManifest:secManifest,secFundamentalIndex:secIndex,secFactDocuments:factDocs,certification,
   availableOfficialResources:[{url:'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',role:'RAW_COMPANYFACTS_BULK_NO_HISTORICAL_SECURITY_ROSTER'},{url:'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip',role:'FILINGS_AND_CURRENT_PROFILE_NOT_HISTORICAL_TICKER_VALIDITY'},{url:'https://www.sec.gov/files/company_tickers_exchange.json',role:'CURRENT_ISSUER_TICKER_SNAPSHOT_NOT_HISTORICAL_MAPPING'}],
   limits:['SEC_NORMALIZED_R2_FACTBOOKS_ARE_SOURCE_INPUTS_NOT_A_MIGRATED_CORE_CERTIFICATE','LEGACY_SHARES_DEI_SUM_AND_WADSO_FALLBACK_REQUIRE_REVALIDATION','SEC_SUBMISSIONS_FORMER_NAMES_DATES_DO_NOT_DATE_SECURITY_OR_EXCHANGE_MEMBERSHIP','CURRENT_INSTRUMENT_CLASS_NOT_RETROACTIVE_PIT_CLASS_PROOF'],performanceCalculated:false};
  const publicStatus={schema:INVENTORY_VERSION,status:manifest&&pit?'SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED':'PARTIAL_SOURCE_INPUTS',mode:options.canonical?'READ_ONLY_CANONICAL_INVENTORY':'READ_ONLY_COMPACT_INVENTORY',universeState:certification.state,counts:{providerSupportedListingRecords:sourceRows.supported,sourceRowsRejected:Object.values(sourceRows.rejected).reduce((s,n)=>s+n,0),observedListingGenerations:listings.length,legacyPitEntries:Object.keys(pit||{}).length,legacyDelistingEntries:Object.keys(delist||{}).length,secFundamentalIndexedIssuers:Object.keys(secIndex?.objects||{}).length,sourceObjectsAvailable:sourceObjects.filter(o=>o.status==='AVAILABLE').length,sourceObjectsMissing:sourceObjects.filter(o=>o.status==='MISSING').length,readOnlyGetCalls:budget.spent.classB,writeCalls:budget.spent.classA},sourceRights:'PRIVATE_OWNER_SESSION_ONLY',performanceCalculated:false};

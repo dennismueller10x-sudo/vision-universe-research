@@ -1,0 +1,178 @@
+{
+  "schema": "supertrader-pit-coverage-2.0.0",
+  "baseline_pr": 589,
+  "baseline_commit": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+  "baseline_protocol_hash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "phase": "PRE_MEASUREMENT",
+  "decision_basis": "SOURCE_DATA_AND_EXECUTION_EVIDENCE_BEFORE_RERUN_OUTCOMES",
+  "strategy_parameters_changed": false,
+  "performance_selected_data_mapping": false,
+  "rerun_performance_consulted": false,
+  "private_provider_values_and_security_identities_included": false,
+  "status": "PARTIAL_OBSERVED_PANEL_NO_COMPLETE_PIT_UNIVERSE_CERTIFICATE",
+  "counts": {
+    "implemented_engines": 10,
+    "baseline_measured_methods": 6,
+    "partial_observed_panel_methods": 6,
+    "fully_certified_eligible_methods": 0,
+    "blocked_engines": 4,
+    "blocked_unimplemented_candidates": 2,
+    "total_data_or_rule_blocked_candidates": 6,
+    "qualified_consensus_methods": 0,
+    "strong_consensus_methods": 0
+  },
+  "historical_population": {
+    "state": "OBSERVED_ONLY",
+    "independent_denominator_status": "NOT_ESTABLISHED",
+    "coverage_ratio": null,
+    "survivorship_bias_eliminated": false,
+    "historical_classification_complete": false,
+    "historical_security_identity_complete": false,
+    "broad_verified_historical_security_issuer_links": 0,
+    "source_data_availability_is_population_completeness": false
+  },
+  "annual_source_coverage": {
+    "primary_source_pilot": "AVAILABLE",
+    "official_companyfacts_partial_source_mode": "AVAILABLE_MEDIUM_PIT_PARTIAL",
+    "primary_vs_companyfacts_comparison_count": 6,
+    "comparison_pass_count": 6,
+    "comparison_failure_count": 0,
+    "comparison_scope": "REVENUE_COGS_ASSETS_TWO_ORIGINAL_ANNUAL_FILINGS_SOURCE_ONLY",
+    "source_values_included": false,
+    "broad_certified_historical_source_channel_count": 0,
+    "full_four_fundamental_method_input_sets_established": false,
+    "conditional_normalization_approval_is_source_coverage": false
+  },
+  "identity_class_pilot": {
+    "original_source_proof_cases": 2,
+    "broad_market_population_or_exchange_membership_certified": false,
+    "as_reported_point_is_continuous_identity_interval": false,
+    "final_accepted_historical_full_class_cases": 1,
+    "final_accepted_partial_fiscal_context_points": 1,
+    "final_pilot_revalidation_status": "REVIEWED_SINGLE_SOURCE_POINT_PARTIAL",
+    "final_source_graph_status": "INCORPORATED_FULL_CHARTER_BODIES_INDEPENDENTLY_REVIEWED",
+    "original_source_disclosures_available": true,
+    "incorporated_full_charter_bylaws_source_inspected": true,
+    "independently_reviewed_full_charter_body_count": 3,
+    "confidence": "MEDIUM",
+    "quality": "PIT_PARTIAL",
+    "market_equity_certified": false
+  },
+  "factor_source_coverage": {
+    "method_id": "residual_momentum",
+    "snapshot_state": "AVAILABLE_FROZEN_REVISED_EX_POST_RESEARCH_SNAPSHOT",
+    "factor_values_included": false,
+    "predeclared_factor_windows": 130,
+    "complete_factor_windows": 129,
+    "incomplete_factor_windows": 1,
+    "as_known_monthly_publication_vintages": "NOT_ESTABLISHED",
+    "holding_variant": "UNSELECTED",
+    "engine_eligibility": "BLOCKED_RULE_VARIANT_UNSELECTED",
+    "factor_presence_is_method_admission": false
+  },
+  "industry_source_coverage": {
+    "paper_taxonomy_definition": "ORIGINAL_TABLE_I_AVAILABLE",
+    "actual_historical_source_taxonomy_identity_and_membership": "NOT_CERTIFIED",
+    "broad_group_constituents": "NOT_CERTIFIED",
+    "prior_month_market_equity": "NOT_CERTIFIED",
+    "engine_eligibility": "BLOCKED_HISTORICAL_MEMBERSHIP_TAXONOMY_AND_MARKET_EQUITY",
+    "current_SIC_or_sector_proxy_allowed": false
+  },
+  "execution_coverage": {
+    "ordinary_next_open_rules": "REVIEWED_SYNTHETIC_INVARIANTS_ORIGINAL_METHOD_PARAMETERS",
+    "actual_cash_entitlement_and_settlement_ledger": "NOT_ESTABLISHED",
+    "complete_actual_terminal_cash_certificates": 0,
+    "quarantine_scenarios_are_actual_economic_terminal_outcomes": false,
+    "late_or_undated_terminal_classification": "CAUSAL_PREFILTER_REQUIRED_BEFORE_RERUN",
+    "unknown_terminal_cash": "ORIGINAL_UNKNOWN_PROCEEDS_SCENARIOS_RETAINED_WITH_UNCERTIFIED_FLAG",
+    "execution_confidence_ceiling": "LOW"
+  },
+  "method_coverage": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "gross_profitability_novy_marx",
+      "eligibility": "BLOCKED",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "piotroski_value_fscore",
+      "eligibility": "BLOCKED",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "greenblatt_magic_formula",
+      "eligibility": "BLOCKED",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "value_plus_momentum",
+      "eligibility": "BLOCKED",
+      "fully_certified": false,
+      "data_confidence": "LOW",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    },
+    {
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "eligibility": "PARTIAL",
+      "fully_certified": false,
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW"
+    }
+  ],
+  "data_rights": {
+    "existing_provider_values": "PRIVATE_OWNER_SESSION_OR_ENCRYPTED_ONLY",
+    "SEC_public_sources": "OFFICIAL_FREE_SOURCE_WITH_EXISTING_CONTACT_USER_AGENT",
+    "French_factors": "FREE_PUBLIC_DOWNLOAD_COPYRIGHTED_REDISTRIBUTION_UNCERTIFIED",
+    "new_paid_integration": false
+  },
+  "evidence_reference_sha256": {
+    "CERTIFICATION-POLICIES.json": "c42b19483536455590fb366990954a3cc0e25a99e1390f3369f221d1bcdbd4c2",
+    "ANNUAL-FACT-CERTIFICATION-CONTRACT.json": "f2f7bd92e4fb8814c4a65ab25181ea448dc02e1c15fbf411e43f866c9603035d",
+    "ANNUAL-DERIVATION-APPROVALS.json": "bba4a8ea8b4cf003c10a15f7d6a4989bd1edf8651ba3516258ae5530fd369f48",
+    "reviews/ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json": "c71445cd254da0c5f07051811e7b8add39bba16d5b49b377e83b1454e6936912",
+    "reviews/FILING-IDENTITY-PILOT.json": "bf0cc4923bcc4cdf02302bdf540c813422c36ae2d01d71db3244a3467214ede8",
+    "reviews/FILING-IDENTITY-SCALABILITY.json": "eea91e088fc7bdd9ac4ecd264d9519fb37e1fabbdd0c8a9a67b6471b70c32102",
+    "EXECUTION-CERTIFICATION-CONTRACT.json": "9bc40b340692fd144c5495b1069e6ebe87882050608c339e8e8734f738f7d90c",
+    "SUPERTRADER-INDUSTRY-RESIDUAL-CONTRACT-PROOF.json": "1d266cb7ea51766c309f999caaf67f982d510bc337e29058b9bb2c795de1d45a"
+  }
+}
