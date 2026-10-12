@@ -158,6 +158,8 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             'provenSourceProviderCounts': dict(proven_providers), 'provenSourceRoleCounts': dict(proven_roles),
             'sourceClassifications': dict(source_flags), 'publicIssuersWithoutProvenPollableSource': sum(r['consumerEligible'] and r['sourceStatus'] != 'POLLABLE_PROVEN' for r in rows.values()),
             'scheduler': scheduler,
+            'approvedNewsCoverage': {key: sum(decisions[cid].get('news', {}).get(key, 0)>0 for cid in rows) for key in ('days30','days90','retained180','currentIntelligence90')},
+            'eligibleModuleCoverage': {key: sum(row.get('modules', {}).get(key, False) for cid, row in decisions.items() if cid in rows and row['status'].startswith('ELIGIBLE_')) for key in ('profile','aktuelles','financials','whatChanged','nextEvent','calls','documents')},
             'missingApprovedBootstrapSources': len(missing), 'missingApprovedBootstrapIssuers': len({s['companyId'] for s in missing}),
             'missingApprovedBootstrapByProvider': dict(Counter(s.get('provider') for s in missing)), 'mandatoryCases': mandatory, 'issuers': rows,
             'privateOperationalRowsIncluded': False, 'sourceRequests': 0, 'remoteWrites': 0}
