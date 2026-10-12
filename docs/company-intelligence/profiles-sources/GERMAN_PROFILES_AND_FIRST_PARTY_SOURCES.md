@@ -476,3 +476,47 @@ available; it does not replace or truncate the private 5,122-issuer state.
 The ACH negative canary remains fail-closed: CIK 75252 is ACCENDRA HEALTH,
 while current Master still describes Aluminum Corporation of China. Correcting
 that underlying Master display name is separate work, not a source/profile hack.
+
+
+## Completed broad actual-production acceptance
+
+Read-only [38320988201](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38320988201)
+**completed SUCCESS**. Its report is `ACTUAL_PRODUCTION`, not a routed/local
+preview: **434 passing cases**, 203 eligible sampled stocks and **21 ineligible
+negative cases**, including ACH. All **5,564 actually hosted consumer assets**
+passed byte-length and SHA-256 verification. Generation remained
+`2cd2c4f227bdafe2bf1fec3f`; recorded production code was
+`fc42fcb19fcae1c07ad4e01b93cb02843d6f2ad9`.
+
+Seed: `vision-universe-reviewed-german-profiles-20261012-v1`.
+Required language groups contain actual approved German copy: US 50; Europe 25;
+ADR/global 25; small/micro 25; biotech/health 25; finance 25;
+industrial/consumer 25. Groups overlap; they are not added as distinct companies.
+The 23 mandatory stocks, sparse combinations and 390/430/768/1440 dark/light
+matrices passed with unchanged access checks and no JS errors or overflow.
+Full production report is preserved in
+`evidence/company-intelligence-profiles-production-browser-20261012.json`.
+
+Broad-case ready time: median **1,043 ms**, p95 **1,220 ms**, maximum **2,138 ms**.
+There were three transient hosting 503 asset responses; bounded retry recovered
+and every final asset hash passed. This is not misclassified as new source
+coverage or ignored missing assets. The actual Pages deployment ZIP was
+**665,776,174 bytes** (whole existing site, not just Company Intelligence),
+artifact 11778070800; consumer assets were 102,208,095 bytes.
+
+Real production viewport screenshots for PYPL and NTLA include 390/430/1440,
+dark/light. The final visual review opened both 430 light and 1440 dark views,
+in addition to real 390 dark: correct German descriptions, visibly stale PayPal
+financials, Intellia's clinical-development wording and three current-intelligence
+items, intact navigation and source access. No new UI/design system was added.
+Screenshots: [production review artifact](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38320988201/artifacts/11779516199)
+(14-day Actions retention). The structured report remains committed after the
+artifact expires.
+
+The next actual `schedule` source event after this release is **not yet observed**.
+The latest observed scheduled source run remains 38287243830, at older code,
+which failed the now-fixed exact 90-day clock contract before publication.
+Manual acceptance and this read-only dispatch are not claimed as scheduled
+persistence proof. Thus the German-profile/live-product release is verified,
+while the separate next-scheduled-refresh acceptance remains open. The source
+backlog and PayPal/Intellia GHA robots outages remain genuine limitations.
