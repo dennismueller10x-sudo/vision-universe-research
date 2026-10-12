@@ -114,7 +114,7 @@ jobs:
               const uploaded = spawnSync(process.execPath, [client], {
                 env: {...process.env, INPUT_NAME: `supertrader-certification-bounded-${context.runId}-${item.file.replace('.zip', '')}`,
                   INPUT_PATH: path.join(dir, item.file), 'INPUT_RETENTION-DAYS': '30',
-                  'INPUT_IF-NO-FILES-FOUND': 'error', 'INPUT_COMPRESSION-LEVEL': '0', INPUT_OVERWRITE: 'false'},
+                  'INPUT_IF-NO-FILES-FOUND': 'error', 'INPUT_COMPRESSION-LEVEL': '0', INPUT_OVERWRITE: 'false', 'INPUT_INCLUDE-HIDDEN-FILES': 'false'},
                 stdio: 'inherit'
               });
               if (uploaded.status !== 0) throw new Error('BOUNDED_ARTIFACT_UPLOAD_FAILED');
