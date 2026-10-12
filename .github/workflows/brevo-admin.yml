@@ -8,6 +8,26 @@ on:
         options: [audit, setup, import-preview, import]
         default: audit
         required: true
+      automations_checked:
+        description: Alle aktiven Automationen tatsächlich geprüft (kein Ersatz für UI-Nachweis)
+        type: boolean
+        default: false
+      import_triggers_excluded:
+        description: Anlage, Änderung und Listenzugang lösen nachweislich keinen Flow aus
+        type: boolean
+        default: false
+      automations_reviewed_at:
+        description: Tatsächlicher Prüfzeitpunkt ISO-8601 mit Zeitzone, höchstens 24h
+        type: string
+        default: ''
+      automation_evidence_sha256:
+        description: SHA256 des privaten Nachweises, niemals Screenshot/Text/Adressen
+        type: string
+        default: ''
+      review_prepared_sha256:
+        description: prepared_sha256 aus dem privaten Übergabemanifest
+        type: string
+        default: ''
 permissions:
   contents: read
 concurrency:
@@ -27,6 +47,11 @@ jobs:
       - name: Brevo-Prüfung oder Struktureinrichtung
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_AUTOMATIONS_CHECKED: ${{ inputs.automations_checked }}
+          BREVO_IMPORT_TRIGGERS_EXCLUDED: ${{ inputs.import_triggers_excluded }}
+          BREVO_AUTOMATIONS_REVIEWED_AT: ${{ inputs.automations_reviewed_at }}
+          BREVO_AUTOMATION_EVIDENCE_SHA256: ${{ inputs.automation_evidence_sha256 }}
+          BREVO_REVIEW_PREPARED_SHA256: ${{ inputs.review_prepared_sha256 }}
           BREVO_OPERATION: ${{ inputs.operation }}
           BREVO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           BREVO_IMPORT_PAYLOAD: ${{ (inputs.operation == 'import-preview' || inputs.operation == 'import') && secrets.BREVO_IMPORT_PAYLOAD || '' }}

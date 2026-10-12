@@ -1,6 +1,6 @@
 # Brevo: belegter Kontostand und Listenansicht
 
-Stand: 12. Oktober 2026, 12:07 Uhr Europe/Berlin. **Import vorbereitet, noch nicht durchgeführt.** Alle heutigen Brevo-Aufrufe waren GET-Leseprüfungen. Keine neuen Listen oder Merkmale, kein Kontaktimport und kein E-Mail-Versand.
+Stand: 12. Oktober 2026. Letzter Listen-Leseabgleich: 12:07 Uhr Europe/Berlin. **Import vorbereitet, noch nicht durchgeführt.** Alle heutigen Brevo-Aufrufe waren GET-Leseprüfungen. Keine neuen Listen oder Merkmale, kein Kontaktimport und kein E-Mail-Versand.
 
 ## Setup-Nachweis und erneuter Leseabgleich
 
@@ -31,7 +31,21 @@ Der ungefilterte API-Abruf liefert insgesamt 4 Listen in 2 Ordnern. Alle drei Zi
 
 Ein aktuell ausgewählter Oberflächenordner oder ein Suchfilter ist über diese API nicht sichtbar. Dass ein Filter die Listen tatsächlich ausblendet, ist **nicht nachgewiesen**. Die dokumentierte Ordnerauswahl kann die Listenansicht jedoch auf einen anderen Ordner begrenzen.
 
-**Genau der nächste nötige Schritt:** In Brevo **CRM → Kontakte → Listen** öffnen und im Dropdown **„Ordner“ den vorhandenen Ordner „Vision Universe“ (ID 3)** auswählen; ein eventuell vorhandenes Listensuchfeld leeren. Keine Listen neu anlegen. Siehe [offizielle Ordner-/Listen-Anleitung](https://help.brevo.com/hc/de/articles/5526943347858-Listen-und-Ordner-zum-Organisieren-Ihrer-Kontakte-erstellen).
+**Listenabgleich erledigt:** Der Owner bestätigt die Listen 4, 5 und 6 als sichtbar und leer. Keine weitere Listenansicht oder Neuanlage erforderlich.
+
+## API-Import und einmalige private Übergabe
+
+PR 609 wurde nach erfolgreichen relevanten Checks gemergt (`54acec5889dc65b8b914531ab3d3affcbc58a902`). Der bisherige manuelle Importauftrag ist durch den aktuellen API-Importauftrag ersetzt.
+
+Der tatsächliche [Actions-Import-Preview 38251453506](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38251453506) scheiterte vor Kontaktabgleich und Mutation: `BREVO_IMPORT_PAYLOAD` fehlt oder ist zu groß. Aus dieser kombinierten Fehlermeldung wird nicht behauptet, die Existenz des Secrets sei unabhängig nachgewiesen. Der Zugang erhält beim Secret-Übergabe-Endpunkt HTTP 403; kein API-Schlüssel steht im lokalen Prozess zur Verfügung. Deshalb fehlt weiterhin der **private Adressvergleich** mit dem bestehenden Brevo-Kontakt. Ein Brevo-Export wird dafür nicht benötigt.
+
+Ein neues privates Paket enthält exakt 137 angemeldete Kandidaten (135 regulär, zwei intern, fünf Käufer), feste Ziel-IDs 4/5/6 und die konservative Importpolicy. Alle 13 Nicht-Abonnenten sind ausgeschlossen. Gzip/Base64-Payload: 6.236 Byte, lokal mit `0600` außerhalb von Git, Roundtrip validiert. Base64 ist keine Verschlüsselung; Datei und Übergabe bleiben privat. Originaldatei und ursprüngliche CSVs unverändert. Private Downloads werden ausschließlich im bestätigten Owner-Bereich bereitgestellt; unbegrenzte Speicherung wird nicht zugesagt.
+
+**Einmaliger Betreiber-Schritt:** vollständigen privaten Payload als Repository-Actions-Secret `BREVO_IMPORT_PAYLOAD` hinterlegen. Danach kann Actions den Bestandsabgleich selbst ausführen. Keine weiteren Import-Secrets, API-Schlüsselexporte oder dauerhaft manuellen CSV-Importe. Details: [API-EXECUTION.md](API-EXECUTION.md).
+
+Aktive Automationen sind weiterhin nicht tatsächlich vollständig geprüft. Im aktuellen Arbeitszugang stehen keine Automationsscreenshots zur Verfügung. Zusätzlich benötigt wird nur **Automatisierungen → Workflows → Aktiv**, einschließlich klassischer Workflows/aller Seiten; bei aktiven Workflows deren Eintrittstrigger und Kontaktfilter. Nachweis an exakten privaten Payload und höchstens 24 Stunden alten tatsächlichen Prüfzeitpunkt binden. Keine automatischen Prüfaussagen und keine pauschale Deaktivierung.
+
+Separater Newsletter-Ausführungsweg vorbereitet, noch nicht auf main aktiviert: manuelle Entwurfs-/Versionsprüfung, geschützter Vorabtest, separate geschützte Hauptfreigabe und dauerhafte Reservierungen ohne personenbezogene Daten. GitHub liefert beim Einrichten der benötigten Review-Umgebung ebenfalls HTTP 403. Keine vorhandene Review-Umgebung eingerichtet, keine Entwürfe, keine Tests oder Newsletter gesendet. Ein einmaliger Owner-Review-Gate-Schritt ist daher zusätzlich für den **späteren Versand**, nicht den Import, erforderlich.
 
 ## Tatsächlicher weiterer Stand
 

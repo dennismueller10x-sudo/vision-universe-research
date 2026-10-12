@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from client import Client, audit, permitted_call, USER_AGENT
 from import_contacts import import_contacts, preflight
 from prepare import Blocked
-from transfer import MAX_RAW_BYTES, decode, encode, run, trusted_dispatch
+from transfer import MAX_RAW_BYTES, decode, encode, run, trusted_dispatch, reviewed_dispatch
 import test_safety as safety
 
 
@@ -89,10 +89,15 @@ class Transfer(unittest.TestCase):
         self.assertFalse(any(m != "GET" for m, _, _ in self.fake.calls))
 
     def test_protected_secret_import_and_repetition(self):
-        data = self.fixture(); review = self.review(data)
+        data = self.fixture()
+        data["records"] = [r for r in data["records"] if r["attributes"]["VU_EMAIL_CONSENT"] == "subscribed"]
+        data["import_policy"] = "subscribers_new_or_unchanged_v1"
+        data["expected_list_ids"] = self.fake.lists
+        review = self.review(data)
         with patch.dict(os.environ, self.environment(data, review)), patch("transfer.Client", return_value=self.fake):
             result = run("import")
-        self.assertEqual(result["created"], 2)
+        self.assertEqual(result["created"], 1)
+        self.assertEqual(result["held_existing"], 2)
         self.assertEqual(result["emails_sent"], 0)
         with patch.dict(os.environ, self.environment(data, review)), patch("transfer.Client", return_value=self.fake):
             repeat = run("import")
@@ -106,6 +111,33 @@ class Transfer(unittest.TestCase):
         self.fake.contacts["yes@example.invalid"] = {"attributes": {}, "listIds": []}
         with self.assertRaises(Blocked): import_contacts(self.fake, data, self.review(data))
         self.assertFalse(any(m != "GET" for m, _, _ in self.fake.calls))
+
+    def test_current_policy_holds_unknown_or_blocked_existing_without_updates(self):
+        data=self.fixture()
+        data["import_policy"]="subscribers_new_or_unchanged_v1"
+        data["expected_list_ids"]=self.fake.lists
+        data["records"]=[r for r in data["records"] if r["attributes"]["VU_EMAIL_CONSENT"]=="subscribed"]
+        self.fake.contacts["yes@example.invalid"]={"attributes":{},"emailBlacklisted":False,"listIds":[]}
+        before=copy.deepcopy(self.fake.contacts)
+        preview=preflight(self.fake,data)
+        self.assertEqual(preview["held_existing"],3)
+        result=import_contacts(self.fake,data,self.review(data))
+        self.assertEqual(result["held_existing"],3)
+        self.assertEqual(self.fake.contacts,before)
+        self.assertFalse(any(m!="GET" for m,_,_ in self.fake.calls))
+
+    def test_dispatch_review_requires_actual_evidence_and_exact_private_version(self):
+        from prepare import prepared_digest
+        import datetime as dt
+        data=self.fixture()
+        env={"BREVO_AUTOMATIONS_CHECKED":"true","BREVO_IMPORT_TRIGGERS_EXCLUDED":"true",
+             "BREVO_REVIEW_PREPARED_SHA256":prepared_digest(data),"BREVO_AUTOMATION_EVIDENCE_SHA256":"a"*64,
+             "BREVO_AUTOMATIONS_REVIEWED_AT":dt.datetime.now(dt.timezone.utc).isoformat(),"GITHUB_ACTOR":"Synthetic"}
+        with patch.dict(os.environ,env): self.assertEqual(reviewed_dispatch(data,self.fake.lists)["reviewer"],"Synthetic")
+        for key,value in (("BREVO_AUTOMATIONS_CHECKED","false"),("BREVO_REVIEW_PREPARED_SHA256","b"*64),
+                          ("BREVO_AUTOMATIONS_REVIEWED_AT","2020-01-01T00:00:00+00:00")):
+            with patch.dict(os.environ,{**env,key:value}):
+                with self.assertRaises(Blocked): reviewed_dispatch(data,self.fake.lists)
 
     def test_api_allowlist_never_permits_any_email_endpoint(self):
         for mode in ("admin", "import"):
