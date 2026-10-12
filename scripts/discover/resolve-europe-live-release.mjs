@@ -4,7 +4,7 @@
 import {execFile} from 'node:child_process';import {promisify} from 'node:util';import {mkdir,writeFile,appendFile} from 'node:fs/promises';import {dirname,resolve} from 'node:path';import {pathToFileURL} from 'node:url';
 import {publicTarget} from './europe-public-live-qa.mjs';
 const exec=promisify(execFile),isSha=s=>typeof s==='string'&&/^[a-f0-9]{40}$/.test(s);
-const codeScope=['core','discover','scripts/discover','scripts/marketstack','quant/ui','quant/engines',':(exclude)discover/data',':(exclude)discover/live',':(exclude)core/tests',':(exclude)discover/tests',':(exclude)scripts/discover/tests',':(exclude)scripts/marketstack/tests'];
+const codeScope=['core','discover','scripts/discover','scripts/marketstack','quant/ui','quant/engines',':(exclude)discover/data',':(exclude)discover/live',':(exclude)core/tests',':(exclude)discover/tests',':(exclude)scripts/discover/tests',':(exclude)scripts/marketstack/tests',...['europe-public-live-qa.mjs','global-live-qa.mjs','europe-continuity-live-qa.mjs','resolve-europe-live-release.mjs'].map(p=>':(exclude)scripts/discover/'+p)];
 const dataScope=['discover/data/europe','discover/data/search/GLOBAL.json','discover/data/search/US_REAL.json','discover/data/global/home.json'];
 async function git(root,args){return (await exec('git',args,{cwd:root,maxBuffer:1024*1024})).stdout.trim();}
 export async function verifyPublishedSource({root,baseline,actual}){
@@ -15,11 +15,25 @@ export async function verifyPublishedSource({root,baseline,actual}){
  for(const [scope,paths]of [['code',codeScope],['canonicalData',dataScope]]){const changed=await git(root,['diff','--name-only',baseline,actual,'--',...paths]);if(changed)throw Error('PUBLISHED_PROTECTED_SCOPE_CHANGED:'+scope+':'+changed);}
  return {baselineSourceCommit:baseline,actualSourceCommit:actual,baselineIncluded:true,protectedProductCodeUnchanged:true,protectedEuropeAndSearchDataUnchanged:true};
 }
+/** Bind the checked-out reviewed QA ref to its latest production-affecting
+ * first-parent commit. Tests and QA runners do not need a site deployment.
+ * Runtime and canonical data remain byte-identical to the reviewed checkout. */
+export async function productionBaselineFor({root,reviewed}){
+ if(!isSha(reviewed))throw Error('VALID_REVIEWED_SHA_REQUIRED');
+ await git(root,['cat-file','-e',reviewed+'^{commit}']);
+ const candidates=await Promise.all([codeScope,dataScope].map(paths=>git(root,['log','--first-parent','-1','--format=%H',reviewed,'--',...paths])));
+ if(candidates.some(s=>!isSha(s)))throw Error('PRODUCTION_BASELINE_NOT_FOUND');
+ const history=(await git(root,['rev-list','--first-parent',reviewed])).split('\n');
+ const baseline=history.find(sha=>candidates.includes(sha));
+ if(!baseline)throw Error('PRODUCTION_BASELINE_NOT_ON_REVIEWED_CHAIN');
+ await verifyPublishedSource({root,baseline,actual:reviewed});
+ return {reviewedQaSourceCommit:reviewed,productionBaselineSourceCommit:baseline};
+}
 export async function resolvePublishedTarget({root=process.cwd(),baseline,origin,fetcher=fetch,pause=ms=>new Promise(r=>setTimeout(r,ms)),deadlineMs=20*60*1000}){
- if(!isSha(baseline))throw Error('VALID_BASELINE_SHA_REQUIRED');const target=publicTarget(origin),deadline=Date.now()+deadlineMs;let attempts=0;
+ if(!isSha(baseline))throw Error('VALID_BASELINE_SHA_REQUIRED');const reviewed=await productionBaselineFor({root,reviewed:baseline});baseline=reviewed.productionBaselineSourceCommit;const target=publicTarget(origin),deadline=Date.now()+deadlineMs;let attempts=0;
  while(Date.now()<deadline){attempts++;const response=await fetcher(target+'/release-delivery.json?continuity_baseline='+baseline+'&attempt='+attempts,{cache:'no-store',signal:AbortSignal.timeout(20000)});
   if(response.ok){const metadata=await response.json();if(metadata.status!=='PASS'||!isSha(metadata.sourceCommit))throw Error('INVALID_PUBLISHED_DELIVERY_METADATA');
-   try{return {...await verifyPublishedSource({root,baseline,actual:metadata.sourceCommit}),observedAt:new Date().toISOString(),attempts};}catch(e){if(e.message!=='PUBLISHED_RELEASE_NOT_READY')throw e;}
+   try{return {...reviewed,...await verifyPublishedSource({root,baseline,actual:metadata.sourceCommit}),observedAt:new Date().toISOString(),attempts};}catch(e){if(e.message!=='PUBLISHED_RELEASE_NOT_READY')throw e;}
   }await pause(5000);
  }throw Error('VERIFIED_PUBLISHED_RELEASE_NOT_OBSERVED');
 }
