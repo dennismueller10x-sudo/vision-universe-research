@@ -256,7 +256,7 @@ async function registerWeek(o, F) {
   const exByS = new Map(), rsUniverse = rs.length;
   if (productView) for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip && r.pv.exploreIn) exByS.set(r.s, Projection.build(r.pv.exploreIn.E, { ...r.pv.exploreIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rsUniverse } : null }));
   let highlightIdentity = null;
-  if (productView && o.highlightGate !== false) {
+  if (productView && o.highlightGate !== false && !o.limit) {   // Teilmengen (--limit, Tests) koennen den Vollvergleich nicht erfuellen
     const pub = publishedProduct(o.publishedDir || undefined), reg = new Map(), asOfOf = new Map([...pub.bySymbol].map(([t, v]) => [t, v.asOf]));
     for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip) reg.set(r.ticker || r.s.replace(/^ref_/, ""), { d: r.pv.d, keys: ((exByS.get(r.s) || {}).exploreHighlights || []).map((h) => h.key).sort() });
     highlightIdentity = compareHighlights(publishedHighlights(pub.dir), reg, asOfOf);
