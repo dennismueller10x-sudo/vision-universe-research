@@ -173,6 +173,9 @@
     var mobile = function () { return global.innerWidth < 860; };
     function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 40 : 1100))); }
     function height() { return mobile() ? Math.round(Math.max(300, Math.min(global.innerHeight * 0.52, 480))) : 440; }
+    /* Die Flaeche bleibt bis zum ersten Zeichnen leer (Tagesverlauf bis zu 3 s). Ohne
+       reservierte Hoehe schob das spaetere SVG alles darunter weg (CLS 0,25 auf NVDA). */
+    plot.style.minHeight = height() + "px";
 
     /* Beruehrung wie in Discover (beruehrung): Finger oder Zeiger zeigen den
        Kurs an dieser Stelle - im Kopf und als Marke im Bild. Loslassen
@@ -303,6 +306,7 @@
 
     function draw(id) {
       if (st.disposed) return;
+      plot.style.minHeight = height() + "px";
       var r = RANGES.filter(function (x) { return x.id === id; })[0] || RANGES[6];
       st.range = r.id;
       node.dataset.range = r.id;

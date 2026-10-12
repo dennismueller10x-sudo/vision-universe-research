@@ -106,6 +106,9 @@ body.qd .down{color:var(--q-down)}
 .qd .qx-btn.v2-pill-dark,.qd .v2-pill-dark{background:var(--q-lime);color:var(--q-lime-ink)}
 .qd .qx-btn.v2-pill-ghost,.qd .v2-pill-ghost{background:transparent;color:var(--q-text);border-color:var(--q-line2)}
 .qd .qx-loading{padding:36px 0;color:var(--q-dim);font-size:13px}
+/* Solange eine Seite laedt (Hauptbereich leer oder mit Ladeanzeige), ist der Inhalt kuerzer als der Bildschirm und die Fusszeile
+   stand mitten im Bild - beim Eintreffen der Daten sprang sie weg (CLS bis 0,69). */
+.qd .qx-main:empty,.qd .qx-main:has(.qx-loading){min-height:100vh;min-height:100svh}
 .qd .qx-notice,.qd .dx-note{margin:14px 0;padding:14px 16px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line)}
 .qd .qx-notice b,.qd .dx-note b{display:block;font-size:14px;color:var(--q-text)}
 .qd .qx-notice p,.qd .dx-note p{margin:6px 0 0;font-size:13.5px;color:var(--q-muted);line-height:1.55}
