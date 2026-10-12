@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {assertRecoveryBaseline,finishProfileRecovery} from '../profile-release-recovery.mjs';
 import {universeConfig} from '../universe-approval.mjs';
 import {approval} from '../production-approval.mjs';
+import {activationKey,goodKey} from '../refresh-storage.mjs';
+import {prefixFor} from '../public-delivery.mjs';
 const env={GITHUB_REF:'refs/heads/main',GITHUB_REPOSITORY:'dennismueller10x-sudo/vision-universe-research'};
 function baseline(){
  const generation='a'.repeat(24),eligibility={},assets={'index.json':{bytes:2,sha256:'b'.repeat(64)}},tickers=[];
@@ -36,4 +38,21 @@ test('fresh success cannot recover a different or missing GOOD generation',async
  let writes=0;const driver={get:async()=>null,put:async()=>writes++};
  await assert.rejects(finishProfileRecovery(driver,{}, {status:'SUCCESS',verification:false,freshRestoreVerified:true,candidateQA:{status:'PASS'},contentAcceptance:{status:'PASS'}}),/RECOVERY_GOOD_MISMATCH/);
  assert.equal(writes,0);
+});
+test('activation integrity failure closes the public gate and restores the prior scope without deleting GOOD',async()=>{
+ const v=baseline(),gateKey=prefixFor(approval.namespace)+'gate.json';
+ const activationBytes=Buffer.from(JSON.stringify(v.activation)),gateBytes=Buffer.from(JSON.stringify(v.gate));
+ const good={schema:1,state:'GOOD',generation:v.full.manifest.generation,payloadNamespace:universeConfig.consumerNamespace+'-a',manifest:v.full.manifest};
+ const objects=new Map([[activationKey(),activationBytes],[gateKey,gateBytes],[goodKey(universeConfig.consumerNamespace),Buffer.from(JSON.stringify(good))]]);
+ let corruptOnce=true;
+ const driver={get:async key=>{
+  const bytes=objects.get(key);
+  if(key===activationKey()&&JSON.parse(bytes).state==='AVAILABLE'&&corruptOnce){corruptOnce=false;return Buffer.from('{}');}
+  return bytes||null;
+ },put:async(key,bytes)=>objects.set(key,Buffer.from(bytes))};
+ const report={status:'SUCCESS',verification:false,freshRestoreVerified:true,candidateQA:{status:'PASS'},contentAcceptance:{status:'PASS'},consumerGeneration:good.generation,privatePreservation:{sha256:'d'.repeat(64)},runId:'test-recovery'};
+ await assert.rejects(finishProfileRecovery(driver,{activationBytes,gateBytes,gateKey},report),/RECOVERY_ACTIVATION_READBACK_FAILED/);
+ assert(objects.get(activationKey()).equals(activationBytes));
+ assert.equal(JSON.parse(objects.get(gateKey)).state,'DISABLED');
+ assert.equal(JSON.parse(objects.get(goodKey(universeConfig.consumerNamespace))).generation,good.generation);
 });
