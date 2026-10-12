@@ -8,8 +8,9 @@ Stand: 12.10.2026 · Methodik `emerging-leaders-1.0.0` · Studie `quant/data/pro
 Die Engine sollte Aktien finden, deren Marktführerschaft *gerade beginnt*: beschleunigende relative Stärke,
 Trendwende, Akkumulation, Volatilitätskompression, fundamentale Beschleunigung. Alle Regeln standen vor dem ersten
 Ergebnis in der Vorregistrierung (`quant/methodology/emerging-leaders-v1.json`). Die Point-in-Time-Studie über
-2008–2026 (Überlebende **und** delistete Listings) findet **keinen belastbaren Mehrwert** gegenüber einfachem
-Momentum, relativer Stärke oder SPY:
+2008–2026 (Überlebende **und** delistete Listings) findet **keinen belastbaren Nachweis eines Mehrwerts** gegenüber
+einfachem Momentum, relativer Stärke oder SPY. Das ist fehlende Evidenz, kein Beweis, dass die Modelle schlechter
+sind (26 Validierungs-Stichtage, geringe Teststärke):
 
 - Auf der Validierungsperiode (2021–06/2023) erfüllte kein Modell die vorab festgelegte Auswahlregel
   (Rang-IC h=63 Newey-West-t ≥ 2). Höchster Wert: t = 0,51 (M3). Kein Modell wurde gewählt.
@@ -105,10 +106,28 @@ aus den h=21-Aggregaten abgeleitet, Information Ratio ≈ t·√(12/n)):
 | HOLDOUT_EARLY | −6,1 % | −3,5 % | −6,9 % | −1,3 % | −2,2 % | +1,2 % |
 
 Umschlag je Monat: M1 77 %, M3 63 %, M4 78 % gegenüber Momentum 30 %. Das Topdezil teilt nur 9–14 % seiner Titel mit
-dem Momentum-Dezil – es ist eine eigene, aber keine bessere Auswahl. → **kein Mehrwert**, nach Kosten schlechter.
+dem Momentum-Dezil – es ist eine eigene, aber keine bessere Auswahl. Dass fast alles unter SPY liegt, teilt auch
+das gleichgewichtete Universum (Großwerte-Dominanz, Kursrendite ohne Dividenden); der Maßstab für Können ist die
+Differenz zum Universum, und die liegt bei rund 0. Diese Portfolio-Sicht ist beschreibend und nicht vorregistriert.
+→ **kein belastbarer Mehrwert**.
 
-**Fazit:** Emerging Leaders liefert in dieser Fassung keinen belastbaren zusätzlichen Mehrwert gegenüber
-Momentum, relativer Stärke oder SPY – weder als Signal noch in den Forward Returns noch als investierbares Portfolio.
+**Statistische Belastbarkeit (Review 3):** Die Newey-West-Regel (Lag ⌈h/21⌉−1) lehnt bei wenigen Stichtagen zu oft
+ab. Simulation unter der Nullhypothese mit derselben Überlappung:
+
+| Horizont | Stichtage | Anteil |t| ≥ 2 unter H0 | wahrer 97,5-%-Wert |
+|---|---|---|---|
+| 21 | 28 | 6,2 % | 2,10 |
+| 63 | 26 | 16,5 % | 2,97 |
+| 126 | 23 | 26,8 % | 4,79 |
+| 252 | 17 | 52,6 % | 12,5 |
+
+Alle scheinbar positiven Befunde (t ≥ 2) liegen bei h ≥ 126 und sind kein Nachweis; bei h=21 und h=63 gibt es keinen.
+Die Auswahlregel t ≥ 2 war damit eher zu großzügig – und trotzdem qualifizierte sich kein Modell.
+
+**Fazit:** Emerging Leaders liefert in dieser Fassung keinen belastbaren Nachweis eines zusätzlichen Mehrwerts
+gegenüber Momentum, relativer Stärke oder SPY – weder als Signal noch in den Forward Returns noch als
+investierbares Portfolio. Bei h=63 liegen die Modelle in VALIDATION und HOLDOUT_EARLY knapp und nicht signifikant
+vor Momentum/RS, im HOLDOUT_RECENT dahinter.
 Die Engine bleibt **EXPERIMENTAL** und wird nicht als Prognosemodell freigegeben.
 
 ## 7. Reviews und Integrität
@@ -118,6 +137,12 @@ gewerteten Lauf u. a.: verlorene Delisting-Renditen über heutige Reihen, still 
 delisteter Kopien, veraltete Reihen als Schein-Delisting, SPY-Eintrittsausrichtung, Fundamentaldaten in
 Technik-Gruppen. Lauf 1 wurde vor jeder Auswertung abgebrochen (Protokolle ungelesen). Der gewertete Lauf trägt
 Code-Fingerabdruck und Laufprotokoll (`runs`, `holdoutEvaluations` = 1).
+
+Review 3 (Abschluss, nach dem gewerteten Lauf): Point-in-Time-Integrität, Holdout-Unabhängigkeit und Modellwahl
+bestanden; Delisting-Logik bestanden; keine Fehler, die das Ergebnis ändern könnten. Offene Grenzen: unentdeckte
+Kürzelwechsel bei abweichender letzter Kerze (verzerrt alle Auswahlen gleich), HOLDOUT_EARLY mit wenigen beendeten
+Listings (714 gegen 4.560 Überlebende; Delisting-Anteil 1,2 % gegen 3–4 % 2016–2026, wahrscheinlich nach oben
+verzerrt, nur beschreibend), Laufprotokoll erfasst keinen Lauf, der schreibt, aber nicht pusht.
 
 ## 8. Grenzen
 
