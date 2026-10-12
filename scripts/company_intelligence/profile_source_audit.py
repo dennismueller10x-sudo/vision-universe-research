@@ -13,7 +13,7 @@ import re
 import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from company_intelligence.consumer_usage import first_party, publisher, host
+from company_intelligence.consumer_usage import first_party, publisher, host, filter_for_preview
 from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.profiles import public_profile
 from company_intelligence.store import Store, atomic_json
@@ -32,6 +32,8 @@ def source_profile_status(profile, cid, now, mapping_ok=True, web_owned=False, s
         return 'SOURCE_CONFLICT'
     value = public_profile(profile, cid, now)
     if not value:
+        if profile.get('priorState') == 'AVAILABLE' and public_profile({**profile, 'state': 'AVAILABLE'}, cid, now):
+            return 'SOURCE_AVAILABLE_WEAK'
         return 'SOURCE_POLICY_BLOCKED' if profile.get('sources') else 'NO_PROFILE_SOURCE'
     if any(s['type'] == 'FIRST_PARTY_WEB' for s in value['sources']) and not web_owned:
         return 'SOURCE_POLICY_BLOCKED'
@@ -76,6 +78,8 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             mapping_ok = row['status'] != 'INELIGIBLE_MAPPING'
             conflict = official.get('status') == 'CONFLICTING_OWNER' or 'CONFLICTING' in official.get('reason', '')
             status = source_profile_status(p, cid, stamp, mapping_ok, web_owned, conflict)
+            if row.get('modules', {}).get('profile') and mapping_ok:
+                status = 'PROFILE_APPROVED_DE'
             profiles[status] += 1
             approved = [s for s in issuer_sources if s.get('active') and first_party(s, cid) and not publisher(s.get('url'))]
             proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported')]
@@ -91,13 +95,22 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             rows[cid] = {'profileStatus': status, 'sourceStatus': source_status, 'newsPollingProven': bool(news), 'committedSourceProfileMatches': matches, 'consumerEligible': row['status'].startswith('ELIGIBLE_')}
             if cid in ('iss_cik_0001633917', 'iss_cik_0001652130'):
                 raw = store.company_payload(companies[cid], stamp)
+                policy_sources = issuer_sources
+                if official.get('status') in ('CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS'):
+                    policy_sources = []
+                safe_payload, usage = filter_for_preview(raw, policy_sources)
                 mandatory[cid] = {**rows[cid], 'companyName': raw['companyName'], 'tickers': row.get('tickers', []),
                     'sourceProfile': public_profile(p, cid, stamp), 'ledgerNewsCount': len(raw['news']),
+                    'ledgerNewsLatestPublishedAt': max((e.get('publishedAt') or e.get('publishedDate') or '' for e in raw['news']), default=None),
+                    'ledgerPrimaryUrlSchemes': dict(Counter((e.get('canonicalUrl') or '').split(':', 1)[0] for e in raw['news'])),
+                    'policyAllowedNews': len(safe_payload['news']), 'policyExcludedNews': usage['excluded']['news'],
+                    'officialRootPolicyWithheld': not policy_sources and bool(issuer_sources),
                     'approvedRegisteredSources': len(approved), 'provenPollableSources': len(proven),
                     'committedBootstrapSourcesMissingFromLedger': sum(s.get('companyId') == cid and s.get('sourceId') not in source_ids and first_party(s, cid) for s in configured)}
         missing = [s for s in configured if s.get('sourceId') not in source_ids and first_party(s, s.get('companyId')) and not publisher(s.get('url')) and s.get('bootstrapValidatedAt')]
         report = {'schema': 1, 'asOf': stamp, 'privateIssuers': len(rows), 'profileClassifications': dict(profiles),
-            'stages': {'storedSourceProfiles': available, 'approvedProvenance': safe, 'rawGermanProfiles': raw_de, 'matchedCommittedEnglishInputs': matched,
+            'stages': {'storedSourceProfileStatesIncludingWithdrawals': available,
+                       'approvedProvenanceIncludingWeakSources': safe, 'rawGermanProfiles': raw_de, 'matchedCommittedEnglishInputs': matched,
                        'approvedGermanConsumerProfiles': sum(r.get('modules', {}).get('profile', False) for r in decisions.values())},
             'sourceClassifications': dict(source_flags), 'publicIssuersWithoutProvenPollableSource': sum(r['consumerEligible'] and r['sourceStatus'] != 'POLLABLE_PROVEN' for r in rows.values()),
             'missingApprovedBootstrapSources': len(missing), 'missingApprovedBootstrapIssuers': len({s['companyId'] for s in missing}),

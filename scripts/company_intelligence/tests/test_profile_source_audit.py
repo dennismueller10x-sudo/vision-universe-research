@@ -42,6 +42,8 @@ class ProfileSourceAuditTests(unittest.TestCase):
         for text in ['Example Therapeutics is the first company to advance genome editing into Phase 3 development.',
                      'Example Therapeutics makes it a priority to protect the privacy of its products and users.']:
             self.assertEqual(source_profile_status(profile(text), CID, NOW), 'SOURCE_AVAILABLE_WEAK')
+        retired = {**profile(), 'state': 'UNAVAILABLE', 'priorState': 'AVAILABLE'}
+        self.assertEqual(source_profile_status(retired, CID, NOW), 'SOURCE_AVAILABLE_WEAK')
 
     def test_unverified_web_and_wrong_sec_issuer_are_not_approved(self):
         p = profile(); p['sources'][0]['url'] = 'https://www.sec.gov/Archives/edgar/data/320193/annual.htm'
