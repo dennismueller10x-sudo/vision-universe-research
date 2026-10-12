@@ -93,7 +93,7 @@
       return Object.assign(stock,{region:'EUROPE',companyId:i.companyId,listingId:i.listingId,country:i.country,isin:i.isin,
         europeRef:refs.get(i.securityId),href:href(i.securityId),logoKey:data.logoKey,universeLabel:'Europäische Aktien',
         scores:{leadership:null,momentum:null,relativeStrength:null,breakout:null},ranks:{},
-        fundamentals:{available:false,message:'Für dieses Wertpapier liegen noch keine vollständig geprüften und zugeordneten Fundamentaldaten vor.'},
+        cardFundamentals:i.cardFundamentals||{status:'MISSING',metrics:[],marketCap:null},homeCardQuality:i.homeCardQuality||{},fundamentals:{available:false,message:'Für dieses Wertpapier liegen noch keine vollständig geprüften und zugeordneten Fundamentaldaten vor.'},
         technicalIntelligence:{layers:{}},quantAvailable:false,technicalAvailable:false,quantMessage:QUANT_MISSING,technicalMessage:TECHNICAL_MISSING,
         why:[],indexMemberships:[],readiness:r,discoveryEligible:true,asOf:price.date,priceBasis:price.basis,basisLabel:basisLabel(price.basis),
         priceSeries:{status:'CALCULATED',source:'vu-core-europe',priceSeriesType:price.basis,range:'1Y',asOf:price.date,points:copy(data.chart.data.points),segments:copy(data.chart.data.segments||[data.chart.data.points])},

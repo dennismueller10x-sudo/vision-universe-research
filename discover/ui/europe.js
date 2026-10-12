@@ -49,6 +49,13 @@
       if(detail.freshness==='DELAYED'||detail.freshness==='STALE')states.append(el('p',{class:'dx-intraday-note',text:'Verzögerter Tagesschlusskurs vom '+detail.asOf+'. Kein Echtzeitkurs.'}));
       const analysis=root.querySelector('.dx-analyse');
       if(analysis)analysis.before(states);else root.append(states);
+      const facts=detail.cardFundamentals||{metrics:[]},basis=el('section',{class:'dx-chapter','aria-label':'Fundamentale Basisinformationen'},[el('h2',{text:'Fundamentale Basisinformationen'})]);
+      if(facts.metrics&&facts.metrics.length){
+        const labels={revenue:'Umsatz',netIncome:'Gewinn',operatingCashFlow:'Operativer Cashflow'};
+        facts.metrics.forEach(m=>{const row=el('p',{},[document.createTextNode(labels[m.metric]+' · Geschäftsjahr '+m.fiscalYear+' · '+new Intl.NumberFormat('de-DE',{style:'currency',currency:m.currency,notation:'compact',maximumFractionDigits:1}).format(m.value)+' · Konzernzahlen · '),el('a',{href:m.sourceDocument,text:m.source+'-Quelle',target:'_blank',rel:'noopener noreferrer'})]);basis.append(row);});
+        basis.append(el('p',{text:'Basisinformationen zum Unternehmen. Keine Bewertung oder Quant-Freigabe.'}));
+      }else basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));
+      states.after(basis);
       watchButton(root,id,product,detail.symbol);document.title=(detail.companyName||detail.symbol)+' — Discover';
     }else if(parts[0]==='watchlist'){
       document.title='Watchlist — Discover — Vision Universe®';

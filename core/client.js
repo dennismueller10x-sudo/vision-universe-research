@@ -206,7 +206,7 @@
     async function getDiscoverHome(options) {
       var o=options||{},result=await tryLoad(PATHS.globalDiscoverHome());
       if(!result.ok)return unavailable('SOURCE_MISSING',PATHS.globalDiscoverHome());
-      return available(PATHS.globalDiscoverHome(),null,{cards:result.data.cards.filter(function(d){return globalUniverse().eligible(d,o.authority,o.now);})});
+      return available(PATHS.globalDiscoverHome(),null,{cards:result.data.cards.filter(function(d){return d.homeCardQuality&&d.homeCardQuality.status==='HOME_CARD_READY'&&globalUniverse().eligible(d,o.authority,o.now);})});
     }
     async function getDiscoverUniverse(options) {
       var o=options||{},result=await tryLoad(PATHS.globalDiscoverSearch());
