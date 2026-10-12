@@ -1,6 +1,6 @@
 # Cloudflare Pages: tatsächlich eingerichtetes Projekt
 
-**Prüfstand: 10.10.2026.** Der Owner hat **`vision-universe`** manuell eingerichtet. Das Projekt ist live; `vision-universe-landing` und ein zweites GitHub-Pages-Repository sind überholt. Keine weiteren Projekte anlegen. Research bleibt auf GitHub Pages. Dieser Prüflauf änderte keine Provider-Konfiguration, DNS-Einträge, Brevo-Einstellungen oder das Shopify-Abo.
+**Aktueller Veröffentlichungsstand: 12.10.2026.** Die nachfolgenden Abschnitte vom 10.10. sind als damalige Prüfungen zu lesen; aktuelle Nachweise stehen im Live-Bericht unten. Der Owner hat **`vision-universe`** manuell eingerichtet. Das Projekt ist live; `vision-universe-landing` und ein zweites GitHub-Pages-Repository sind überholt. Keine weiteren Projekte anlegen. Research bleibt auf GitHub Pages. Dieser Prüflauf änderte keine Provider-Konfiguration, DNS-Einträge, Brevo-Einstellungen oder das Shopify-Abo.
 
 ## Öffentliche Auslieferung
 
@@ -96,3 +96,17 @@ Die am 10.10. erhobenen Live-Befunde oben sind historische Messungen der damals 
 ## Freigabe zur Live-Aktualisierung
 
 Der Owner hat den Merge und die Veröffentlichung der soweit vorbereiteten Coming-soon-Fassung autorisiert. Die Live-Aktualisierung nutzt die vorhandene Git-Integration des Projekts vision-universe; keine Provider-/DNS-Mutation. Bekannte ungültige globale Navigationsreferenzen wurden aus der Hauptseite und den Rechtsseiten entfernt. Rechtstexte bleiben Entwürfe und der Newsletter gesperrt; offene Hosting-/Mail-Details und App-Abo-Regeln gelten nicht als bestätigt. LANDING_PUBLICATION_MODE wird nicht auf production umgestellt und keine Privacy-Freigabevariable gesetzt. Damit bleibt die Seite öffentlich erreichbar, jedoch noindex. Quellen und Abo-Arbeitsentwürfe bleiben außerhalb des Builds.
+
+## Verifizierte Live-Aktualisierung am 12.10.2026
+
+PR #577 ist regulär gemergt: **f688d8cc4a9a08735fd35e5def9eb1ba2ba1f76f**. Landing-CI, Core, CI Config und Currency des geprüften Kopfes grün, keine Schutzregel verändert. Die neue Coming-soon-Fassung und beide aktualisierten Rechtsseiten sind auf **https://www.visionuniverse.de/** tatsächlich ausgeliefert.
+
+Cloudflare meldete zunächst nach erfolgreichen Builds interne Uploadfehler. Der unveränderte geprüfte Merge-Build wurde deshalb mit Wrangler 4.149.0 im **bestehenden** Git-Projekt vision-universe, Branch main, veröffentlicht ([Run 38256451609](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38256451609)); die erzeugte Adresse lieferte bytegenau den Build. Anschließend war auch der Retry des regulären Git-Deployments erfolgreich: **https://a39a1a90.vision-universe.pages.dev**. Die ursprüngliche direkte Adresse bleibt **https://aa273d54.vision-universe.pages.dev**. Die GitHub-App meldet Cloudflare Pages success für denselben Merge-Commit. Kein dauerhafter Wechsel des Hosting-Modells.
+
+Der Konto-GET bestätigte nach direktem Upload unverändert source=github, main, Root landing, node scripts/build.mjs, dist und aktivierte automatische Produktionsbuilds. Node 22 in beiden Umgebungen, Veröffentlichungsmodus-Variable nicht gesetzt, keine Privacy-/Formularfreigabe. Der Build nutzt deshalb bewusst weiter seinen bestehenden Preview-Modus. Kein Projekt angelegt, keine Provider-/DNS-Konfiguration geändert, keine kostenpflichtige Buchung. Temporäre Diagnose-/Upload-Workflows liefen ausschließlich auf einem isolierten Branch; das Original-cloudflare-probe.yml und Research-Deployment auf main blieben erhalten. Dieser Hilfsbranch wird nach Abschluss entfernt.
+
+Öffentlich geprüft: www und pages.dev HTTPS 200, HTTP→HTTPS 301, Apex→www 301 mit Pfad/Query, neue Impressums-/Datenschutztitel und Draft-Markierungen. Hauptseite ohne ungültige globale Navigationsreferenzen, Password-Gate oder aktiven Newsletter. Desktop 1.191 px, iPhone 1.684 px; 17 originale Stilgruppen, Axe 0, keine horizontalen Überläufe und **0 Browser-/Netzwerkfehler**. Research HTTPS 200 mit gleichem Hash wie unmittelbar vor der Veröffentlichung; GitHub Pages/CNAME unverändert. Alle 14 unmittelbar vor/nach Veröffentlichung verglichenen geschützten öffentlichen DNS-Antworten identisch; kein vollständiger Zonenexport behauptet.
+
+**Weiterhin bewusst offen:** Hosting-/Mail-Vertrags- und Speicherangaben sowie die künftigen Abo-/Zahlungsregeln. Rechtsseiten bleiben Entwürfe, robots/header weiterhin noindex, Newsletter gesperrt. App-Abo-Texte und vollständige Originalquellen sind außerhalb des Landing-Builds. Nachreichen der Geschäftsangaben ist keine bereits erfolgte App-/Brevo-Aktivierung.
+
+[HTTP-Nachweis](release-2026-10-12/http.json) · [DNS-Stichprobe](release-2026-10-12/protected-dns-sample.json) · [Browserwerte](release-2026-10-12/browser.json) · [Git-Deploy](release-2026-10-12/git-deployment.json) · [Desktop](release-2026-10-12/desktop.png) · [iPhone](release-2026-10-12/iphone.png).

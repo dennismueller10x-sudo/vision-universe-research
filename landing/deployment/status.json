@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-10",
+  "checkedAt": "2026-10-12",
   "projectName": "vision-universe",
   "projectCreatedBy": "manual owner setup; verified with read-only API",
   "pagesDevUrl": "https://vision-universe.pages.dev",
@@ -26,9 +26,9 @@
     "outputDirectory": "dist",
     "nodeVersion": {
       "value": "22",
-      "evidence": "owner configuration; not independently retrieved from provider environment"
+      "evidence": "Read-only Cloudflare project/environment audit on 2026-10-12, major 22 confirmed"
     },
-    "successfulPagesCheckCommit": "dc454c7d8982cc5a36545c1d9013bf7d0d827fd1",
+    "successfulPagesCheckCommit": "f688d8cc4a9a08735fd35e5def9eb1ba2ba1f76f",
     "successfulPagesCheckId": 114236632634
   },
   "changesByAgent": {
@@ -55,11 +55,11 @@
     "githubPagesCname": "research.visionuniverse.de",
     "httpsStatus": 200,
     "accessGatePresent": true,
-    "homeResponseSha256": "7d734dbdfc8610be975a9e895641fdb3e0bb0d17c3cb26b2667e9b3d3842013f"
+    "homeResponseSha256": "b57a0f8056d35c09ab832675978a668271e397939e074b6d188828afce0a500d"
   },
   "protectedPublicDnsSample": {
     "queries": 14,
-    "unchangedSince20261009": 14,
+    "unchangedDuringRelease": 14,
     "completeZoneExport": false
   },
   "newsletter": "BLOCKED; no action, disabled controls, no test submission or Brevo mutation",
@@ -70,8 +70,8 @@
     "headerRobots": "noindex, nofollow",
     "robotsTxt": "Disallow: /",
     "approvedPrivacyLive": false,
-    "privacyLiveTitle": "Datenschutzhinweise zur Vorschau – Vision Universe",
-    "providerPublicationModeVariable": "NOT_CONFIRMED; output is consistent with default or explicit preview mode",
+    "privacyLiveTitle": "Datenschutz – Vision Universe · Entwurf Coming soon",
+    "providerPublicationModeVariable": "Absent in both environments; default preview output confirmed",
     "productionGate": "Still enforced only when production mode is selected; not a domain publication guard"
   },
   "browser": {
@@ -80,21 +80,17 @@
     "horizontalOverflow": false,
     "axeViolations": 0,
     "researchStyleGroupsMatching": 17,
-    "networkErrorsPresent": true,
-    "networkFindings": [
-      "/assets/site-navigation.css returns HTML",
-      "/assets/site-navigation.js returns HTML"
-    ],
+    "networkErrorsPresent": false,
+    "networkFindings": [],
     "device": "Chromium iPhone viewport, not physical Safari"
   },
   "openPoints": [
-    "Verify and publish account-specific Cloudflare privacy text",
-    "Switch explicitly to production only after privacy review; recheck robots and sitemap",
-    "Resolve landing-only invalid site-navigation references without copying protected Research functionality",
-    "DNS-read access needed for complete origin/mail audit",
+    "Verify account-specific Cloudflare/mail privacy details before final production/indexing approval",
+    "Subscription rules and app/payment infrastructure pending owner details",
+    "DNS-read permission still required for complete authenticated zone/mail inventory",
     "Build watch paths and preview branch policy remain unverified"
   ],
-  "evidenceDirectory": "verification-2026-10-10",
+  "evidenceDirectory": "release-2026-10-12",
   "legalCopyUpdate": {
     "date": "2026-10-12",
     "originalSources": "All five legal texts received and preserved; attachment bytes unchanged",
@@ -103,7 +99,7 @@
     "privacy": "Full original received; adapted Cloudflare/coming-soon draft with 16 sections; account-specific details still unconfirmed",
     "futureAppTerms": "AGB, withdrawal and access drafts outside public build; subscription/payment decisions pending",
     "currentLegalDraftsMarked": true,
-    "publishedByThisUpdate": false,
+    "publishedByThisUpdate": true,
     "source": "../legal-source/source.json",
     "review": "../legal-drafts/README.md"
   },
@@ -114,6 +110,24 @@
     "subscriptionTerms": "Not published; commercial details pending",
     "newsletter": "BLOCKED",
     "providerOrDnsMutations": false,
-    "finalDeploymentVerification": "Pending until merge and existing Cloudflare deployment completes"
+    "finalDeploymentVerification": "PASS: public HTTPS, redirects, browser layout/accessibility, protected public DNS sample"
+  },
+  "release": {
+    "commit": "f688d8cc4a9a08735fd35e5def9eb1ba2ba1f76f",
+    "pullRequest": 577,
+    "merged": true,
+    "live": true,
+    "verifiedUrl": "https://www.visionuniverse.de/",
+    "initialDirectDeploymentUrl": "https://aa273d54.vision-universe.pages.dev",
+    "successfulGitDeploymentUrl": "https://a39a1a90.vision-universe.pages.dev",
+    "gitDeploymentStatus": "success after retry",
+    "existingProjectGitSource": "github",
+    "automaticProductionEnabled": true,
+    "directDeploymentRun": 38256451609,
+    "gitConfigurationAndRetryRun": 38257898959,
+    "existingProjectSettingsChanged": false,
+    "dnsChanged": false,
+    "contentMode": "Public preview; noindex, legal drafts, disabled newsletter",
+    "evidenceDirectory": "release-2026-10-12"
   }
 }
