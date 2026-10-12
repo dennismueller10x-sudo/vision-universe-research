@@ -66,7 +66,7 @@ def poll_sec_hints(store,companies,pipeline,now,budget,max_pages=8):
 def advance(value, hours):
     return (datetime.fromisoformat(value.replace('Z','+00:00'))+timedelta(hours=hours)).isoformat(timespec='seconds').replace('+00:00','Z')
 
-def source_queue(sources, companies, now):
+def source_queue(sources, companies, now, blocked_issuers=()):
     owners=defaultdict(set)
     for s in sources:
         if s.get('companyId') in companies and first_party(s,s['companyId']):
@@ -74,6 +74,8 @@ def source_queue(sources, companies, now):
     queued=[];excluded=Counter();tiers=Counter();due=Counter()
     for s in sources:
         cid=s.get('companyId')
+        if cid in blocked_issuers:
+            excluded['CURRENT_OWNER_REVIEW_REQUIRED']+=1;continue
         if cid not in companies or not s.get('active') or not first_party(s,cid) or publisher(s.get('url')):
             excluded['UNAPPROVED_OR_INACTIVE']+=1;continue
         if len(owners[canonical_url(s.get('url'))])!=1:

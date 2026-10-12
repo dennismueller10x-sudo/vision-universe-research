@@ -143,7 +143,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         scheduler={}
         if universe:
             from company_intelligence.universe_scheduler import source_queue
-            eligible,scheduler=source_queue(sources,selected,now)
+            blocked={cid for cid in {s.get('companyId') for s in sources} if store.state('officialSite:'+cid,{}).get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')}
+            eligible,scheduler=source_queue(sources,selected,now,blocked_issuers=blocked)
         for s in eligible:
             if not network: break
             hours=s.get('intervalHours') if universe else config['newsHours'] if s['type']=='IR_FEED' else config['eventsHours'] if s['type']=='IR_EVENTS' else config['materialsHours']

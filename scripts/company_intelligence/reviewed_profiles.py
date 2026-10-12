@@ -25,6 +25,11 @@ GERMAN_ACTIVITY = re.compile(r'\b(?:ist|sind|entwickelt|betreibt|bietet|liefert|
 def digest(value):
     return hashlib.sha256(value.encode()).hexdigest()
 
+def copy_version(entry):
+    pins = {'text': entry.get('profileTextHash'), 'sourceDescription': entry.get('sourceDescriptionHash'),
+            'sourceHashes': entry.get('sourceHashes'), 'additionalSources': entry.get('additionalSources', [])}
+    return 'reviewed-de-' + digest(json.dumps(pins, sort_keys=True, ensure_ascii=False))[:24]
+
 @lru_cache(maxsize=1)
 def catalogue():
     value = json.loads((ROOT / 'company-intelligence/config/profile-reviewed-de.json').read_text())
@@ -43,7 +48,7 @@ def approved_copy(source, entry, cid, now):
     if entry.get('sourceDescriptionHash') != digest(source['description']) or entry.get('sourceHashes') != sorted(s['contentHash'] for s in source['sources']):
         raise ValueError('PROFILE_COPY_SOURCE_CHANGED')
     reviewed = timestamp(entry.get('reviewedAt'))
-    if not reviewed or reviewed > now or not re.fullmatch(r'reviewed-de-[a-f0-9]{24}', entry.get('profileVersion', '')):
+    if not reviewed or reviewed > now or entry.get('profileVersion') != copy_version(entry):
         raise ValueError('INVALID_PROFILE_REVIEW_VERSION')
     text = entry.get('description')
     if not isinstance(text, str) or not 40 <= len(text) <= 900 or not 15 <= len(text.split()) <= 95 or not GERMAN_ACTIVITY.search(text):
@@ -76,12 +81,46 @@ def apply(store, companies, now, reviewed=None):
     for s in store.sources():
         if first_party(s, s.get('companyId')):
             owned[s['companyId']].update(host(u) for u in [s.get('url'), *s.get('allowedSites', [])] if host(u) and not publisher(u))
+    def withhold(cid, profile, reason):
+        if profile.get('editorialStatus') == 'WITHHELD_CONSUMER':
+            return
+        store.set_state('profileReviewHistory:' + cid + ':' + digest(json.dumps(profile, sort_keys=True)), profile)
+        store.set_state('companyProfile:' + cid, {**profile, 'editorialStatus': 'WITHHELD_CONSUMER'})
+        store.set_state('profileReviewPending:' + cid, {'status': 'REVIEW_REQUIRED', 'reasons': [reason], 'detectedAt': now})
+        store.audit(now, cid, 'REVIEWED_PROFILE_CONSUMER_WITHHELD', reason=reason)
+    signature = lambda name: re.sub(r'[^a-z0-9]', '', SUFFIX.sub('', display_name(name)).casefold())
+    def current_identity(cid, value):
+        names = companies[cid].get('names', [])
+        if names and signature(value['companyName']) not in {signature(name) for name in names}:
+            raise ValueError('PROFILE_CURRENT_MASTER_NAME_REVIEW_REQUIRED')
+        official = store.state('officialSite:' + cid, {})
+        allowed = set(owned[cid])
+        if official.get('status') == 'VALIDATED':
+            allowed.add(host(official.get('url')))
+        if any(s.get('type') == 'FIRST_PARTY_WEB' and (publisher(s.get('url')) or host(s.get('url')) not in allowed or official.get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')) for s in value['sources']):
+            raise ValueError('PROFILE_WEB_OWNERSHIP_NOT_VERIFIED')
+    # Explicit removal/revocation withdraws only this consumer module. Full
+    # descriptions, source records and correction history stay in the ledger.
+    if hasattr(store, 'db'):
+        for row in store.db.execute("SELECT key,payload FROM state WHERE key LIKE 'companyProfile:%'").fetchall():
+            cid=row[0].split(':',1)[1];profile=json.loads(row[1]);entry=reviewed['profiles'].get(cid)
+            if cid in companies and profile.get('generationMethod') in METHODS and (entry is None or entry.get('status') in ('WITHHELD','REVOKED')):
+                withhold(cid, profile, 'PROFILE_REVIEW_REVOKED')
     for cid, entry in sorted(reviewed['profiles'].items()):
         if cid not in companies:
             skipped += 1
             continue
         prior = store.state('companyProfile:' + cid)
-        if prior and prior.get('language') == 'de' and prior.get('profileVersion') == entry.get('profileVersion'):
+        if prior and prior.get('language') == 'de':
+            try: current_identity(cid, prior)
+            except ValueError as error:
+                withhold(cid, prior, str(error));prior=store.state('companyProfile:' + cid)
+        if prior and entry.get('status') in ('WITHHELD','REVOKED'):
+            withhold(cid, prior, 'PROFILE_REVIEW_REVOKED')
+            rejected[cid]='PROFILE_COPY_NOT_APPROVED'
+            continue
+        unchanged = prior and prior.get('editorialStatus') != 'WITHHELD_CONSUMER' and prior.get('language') == 'de' and prior.get('profileVersion') == entry.get('profileVersion')
+        if unchanged:
             changed = store.state('profileRefreshPending:' + cid)
             original = store.state('profileReviewSource:' + cid)
             if changed and original and changed.get('description') != original.get('description'):
@@ -91,32 +130,34 @@ def apply(store, companies, now, reviewed=None):
                 if not old or old.get('sourceDescriptionHash') != value['sourceDescriptionHash']:
                     store.set_state('profileReviewPending:' + cid, value)
                 pending += 1
-            skipped += 1
-            continue
         # Existing independently reviewed German copy is never replaced by an
         # English-catalogue overlay. New entries require their actual source.
         source = store.state('profileReviewSource:' + cid) if prior and prior.get('language') == 'de' else prior
         candidate = store.state('profileRefreshPending:' + cid)
         if candidate and digest(candidate.get('description', '')) == entry.get('sourceDescriptionHash'):
             source = candidate
+        snapshot = entry.get('reviewedSourceSnapshot')
+        # A separately reviewed annual/About source can fill an extractor gap.
+        # It goes through the same issuer, policy, age, hash and ownership gates.
+        if snapshot and snapshot.get('language') == 'en' and digest(snapshot.get('description', '')) == entry.get('sourceDescriptionHash'):
+            source = snapshot
         try:
             value = approved_copy(source, entry, cid, now)
-            names = companies[cid].get('names', [])
-            signature = lambda name: re.sub(r'[^a-z0-9]', '', SUFFIX.sub('', display_name(name)).casefold())
-            if names and signature(value['companyName']) not in {signature(name) for name in names}:
-                raise ValueError('PROFILE_CURRENT_MASTER_NAME_REVIEW_REQUIRED')
-            official = store.state('officialSite:' + cid, {})
-            allowed = set(owned[cid])
-            if official.get('status') == 'VALIDATED':
-                allowed.add(host(official.get('url')))
-            if any(s.get('type') == 'FIRST_PARTY_WEB' and (publisher(s.get('url')) or host(s.get('url')) not in allowed or official.get('status') == 'CONFLICTING_OWNER') for s in value['sources']):
-                raise ValueError('PROFILE_WEB_OWNERSHIP_NOT_VERIFIED')
+            current_identity(cid, value)
         except ValueError as error:
             rejected[cid] = str(error)
+            continue
+        if unchanged:
+            skipped += 1
             continue
         if prior and prior.get('language') == 'de' and not source:
             skipped += 1
             continue
+        if prior and prior != source:
+            prior_hash = digest(json.dumps(prior, sort_keys=True))
+            history_key = 'profileReviewHistory:' + cid + ':' + prior_hash
+            if store.state(history_key) is None:
+                store.set_state(history_key, prior)
         store.set_state('profileReviewSource:' + cid, public_profile(source, cid, now))
         store.set_state('companyProfile:' + cid, value)
         store.set_state('profileReviewPending:' + cid, {'status': 'REVIEWED', 'profileVersion': value['profileVersion'], 'reviewedAt': value['reviewedAt']})

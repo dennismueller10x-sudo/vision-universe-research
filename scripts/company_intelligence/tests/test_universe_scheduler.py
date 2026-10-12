@@ -8,6 +8,12 @@ NOW='2026-10-10T08:00:00Z'
 def source(i,cid='iss_cik_0000000001'):
     return {'sourceId':str(i),'companyId':cid,'url':f'https://company.example/feed/{i}','type':'IR_FEED','provider':'FIRST_PARTY','active':True,'verified':True,'allowedSites':['https://company.example/'],'lastSuccess':'2026-10-09T08:00:00Z'}
 class SchedulerTests(unittest.TestCase):
+    def test_owner_conflict_does_not_poll_or_starve_independent_owned_sources(self):
+        a=source(1);b=source(2,'iss_cik_0000000002')
+        rows,r=source_queue([a,b],{a['companyId']:{},b['companyId']:{}},NOW,blocked_issuers={a['companyId']})
+        self.assertEqual([x['sourceId']for x in rows],['2'])
+        self.assertEqual(r['excluded']['CURRENT_OWNER_REVIEW_REQUIRED'],1)
+        self.assertTrue(a['active'])
     def test_sec_global_metadata_hints_require_exact_known_cik_not_a_name(self):
         body=b'''<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Apple</title><updated>2026-10-10T07:00:00Z</updated><link href="https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/x.htm" /></entry><entry><title>Apple</title><updated>2026-10-10T07:00:00Z</updated><link href="https://other.example/Archives/edgar/data/320193/000032019326000001/x.htm" /></entry></feed>'''
         rows,dates,count=sec_feed_entries(body,{'iss_cik_0000320193':{}});self.assertEqual(len(rows),1);self.assertEqual(rows[0]['accession'],'0000320193-26-000001');self.assertEqual(count,2)

@@ -11,7 +11,9 @@ const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
 const verification=!args.includes('--publish'),driver=createS3DriverFromEnv();
 if(!verification&&!await universeActive(driver))throw Error('CURRENT_FULL_ELIGIBLE_PRODUCTION_REQUIRED');
 const sourceBatch=args.includes('--sources');
-const beforeBuild=sourceBatch?async({state,temporary})=>{
+const beforeBuild=async({state,temporary,identityRoot})=>{
+ execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
+ if(!sourceBatch)return {sourceRequests:0,universeDiscovery:false};
  const out=join(temporary,'source-onboarding.json');
  try{
   execFileSync('python3',['scripts/company_intelligence/source_onboarding.py','--state',state,'--out',out,
@@ -24,7 +26,7 @@ const beforeBuild=sourceBatch?async({state,temporary})=>{
   throw Error(code||'ONBOARDING_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
  }
  return JSON.parse(readFileSync(out));
-}:undefined;
+};
 const validateContent=async({state,consumer,temporary,identityRoot})=>{
  const audit=join(temporary,'profile-source-funnel.json'),sample=join(temporary,'profile-sample.json');
  const decisions=join(temporary,'eligibility-decisions.json');

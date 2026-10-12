@@ -39,6 +39,8 @@ def source_profile_status(profile, cid, now, mapping_ok=True, web_owned=False, s
         return 'SOURCE_POLICY_BLOCKED'
     if value.get('stale'):
         return 'SOURCE_AVAILABLE_WEAK'
+    if value.get('editorialStatus') == 'WITHHELD_CONSUMER':
+        return 'SOURCE_AVAILABLE_WEAK'
     if value.get('language') == 'de':
         return 'PROFILE_APPROVED_DE'
     sentences = profile.get('businessActivities') or [profile.get('description', '')]
@@ -51,14 +53,21 @@ def audit(state, identity_root, eligibility_path, out, now=None):
         raise ValueError('CURRENT_FULL_RESTORED_STATE_REQUIRED')
     before = database_proof(state / 'state.sqlite')
     stamp = now or datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
-    decisions = json.loads(Path(eligibility_path).read_text())['issuers']
+    decisions = json.loads(Path(eligibility_path).read_text())['issuers'] if eligibility_path else None
     catalogue = json.loads((ROOT / 'company-intelligence/config/company-profiles.json').read_text())['profiles']
     configured = json.loads((ROOT / 'company-intelligence/config/sources.json').read_text())
     store = Store(state / 'state.sqlite')
     profiles, source_flags, by_issuer, source_ids = Counter(), Counter(), defaultdict(list), set()
     rows, mandatory, matched, available, safe, raw_de = {}, {}, 0, 0, 0, 0
     try:
-        companies = {**identities(ROOT, store), **identities(identity_root, store)}
+        current = identities(ROOT, store)
+        companies = {**current, **identities(identity_root, store)}
+        if decisions is None:
+            # Read-only projection on the actual restored tables. It is a
+            # baseline projection, never a claim about currently served scope.
+            from company_intelligence.universe_eligibility import generate
+            _, projected = generate(store, companies, out.parent / (out.stem + '-projection'), stamp, current)
+            decisions = projected['issuers']
         sources = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         for s in sources:
             source_ids.add(s['sourceId'])
@@ -82,9 +91,12 @@ def audit(state, identity_root, eligibility_path, out, now=None):
                 status = 'PROFILE_APPROVED_DE'
             profiles[status] += 1
             approved = [s for s in issuer_sources if s.get('active') and first_party(s, cid) and not publisher(s.get('url'))]
+            owner_withheld = official.get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')
+            if owner_withheld:
+                approved = []
             proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported')]
             news = [s for s in proven if s['type'] == 'IR_FEED']
-            source_status = 'POLLABLE_PROVEN' if proven else 'REGISTERED_NOT_POLLING_PROVEN' if approved else 'NO_APPROVED_REGISTERED_SOURCE'
+            source_status = 'SOURCE_POLICY_WITHHELD' if owner_withheld and issuer_sources else 'POLLABLE_PROVEN' if proven else 'REGISTERED_NOT_POLLING_PROVEN' if approved else 'NO_APPROVED_REGISTERED_SOURCE'
             source_flags[source_status] += 1
             available += bool(p)
             safe += status in ('PROFILE_APPROVED_DE', 'SOURCE_AVAILABLE_NO_DE_COPY', 'SOURCE_AVAILABLE_WEAK')
@@ -126,6 +138,6 @@ def audit(state, identity_root, eligibility_path, out, now=None):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--state', required=True); p.add_argument('--identity-root', required=True)
-    p.add_argument('--eligibility', required=True); p.add_argument('--out', required=True)
+    p.add_argument('--eligibility'); p.add_argument('--out', required=True)
     a = p.parse_args(); r = audit(a.state, a.identity_root, a.eligibility, a.out)
     print(json.dumps({k: r[k] for k in ('privateIssuers', 'profileClassifications', 'stages', 'sourceClassifications', 'missingApprovedBootstrapSources')}))

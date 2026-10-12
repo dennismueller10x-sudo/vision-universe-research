@@ -21,6 +21,17 @@ def finances():
             'reportingPeriod': '2026-06-30', 'metrics': {'revenue': {'state': 'AVAILABLE', 'current': {'value': 123, 'unit': 'USD', 'periodEnd': '2026-06-30', 'filedAt': '2026-07-23', 'filingId': '0001318605-26-000001'}}}}
 
 class EligibilityTests(unittest.TestCase):
+    def test_review_withdrawal_hides_profile_but_keeps_safe_financials(self):
+        from test_profile_source_audit import profile
+        p=payload();p['latestFinancials']=finances()
+        value=profile('Tesla entwickelt Elektrofahrzeuge und Energiespeichersysteme für Verbraucher und Unternehmen.', 'de')
+        value.update(companyId=CID, editorialStatus='WITHHELD_CONSUMER')
+        value['sources'][0].update(companyId=CID,url='https://www.sec.gov/Archives/edgar/data/1318605/annual.htm')
+        p['companyProfile']=value
+        r,v=evaluate(p,[])
+        self.assertFalse(r['modules']['profile']);self.assertTrue(r['modules']['financials'])
+        self.assertEqual(r['moduleReasons']['profile'],'PROFILE_REVIEW_WITHHELD')
+        self.assertNotIn('companyProfile',v)
     def test_owned_current_news_alone_is_useful_partial(self):
         p=payload();p['news']=[news()];r,v=evaluate(p,[SOURCE]);self.assertEqual(r['status'],'ELIGIBLE_PARTIAL');self.assertTrue(r['modules']['aktuelles']);self.assertNotIn('companyProfile',v)
 

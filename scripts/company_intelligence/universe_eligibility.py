@@ -147,11 +147,11 @@ def evaluate(raw, sources, mapping_ok=True, disabled=False):
     p = project(safe)
     p['state'] = 'AVAILABLE'
     profile = p.get('companyProfile')
-    if profile and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b\d+[\d.,]*\s+(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
+    if profile and profile.get('editorialStatus') != 'WITHHELD_CONSUMER' and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b\d+[\d.,]*\s+(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
         row['modules']['profile'] = True
     else:
         p.pop('companyProfile', None)
-        row['moduleReasons']['profile'] = 'STALE_OR_WEAK_PROFILE' if profile and profile.get('stale') else 'NO_APPROVED_GERMAN_COPY' if raw.get('companyProfile') else 'NO_SAFE_PROFILE_SOURCE'
+        row['moduleReasons']['profile'] = 'PROFILE_REVIEW_WITHHELD' if profile and profile.get('editorialStatus') == 'WITHHELD_CONSUMER' else 'STALE_OR_WEAK_PROFILE' if profile and profile.get('stale') else 'NO_APPROVED_GERMAN_COPY' if raw.get('companyProfile') else 'NO_SAFE_PROFILE_SOURCE'
     for key in ('news', 'earnings', 'events', 'calls', 'materials', 'presentations', 'materialEvents', 'filings', 'timeline'):
         before = p.get(key, [])
         p[key] = [e for e in before if valid_row(e, cid)]
@@ -266,6 +266,8 @@ def generate(store, companies, output, now, current_companies=None):
         issuer_sources = by_source[cid]
         if official.get('status') in ('CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS'):
             issuer_sources = []
+            if any(s.get('type') == 'FIRST_PARTY_WEB' for s in (raw.get('companyProfile') or {}).get('sources', [])):
+                raw['companyProfile'] = {**raw['companyProfile'], 'editorialStatus': 'WITHHELD_CONSUMER'}
         try:
             row, value = evaluate(raw, issuer_sources, mapping_ok, cid in disabled)
         except (ValueError, TypeError, KeyError, AttributeError, OverflowError):

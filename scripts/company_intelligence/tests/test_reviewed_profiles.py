@@ -3,16 +3,18 @@ import unittest
 import tempfile
 from pathlib import Path
 from company_intelligence.store import Store, dumps
-from company_intelligence.reviewed_profiles import approved_copy, apply, flag_reviews, digest, SCHEMA
+from company_intelligence.reviewed_profiles import approved_copy, apply, flag_reviews, digest, copy_version, SCHEMA
 from test_profile_source_audit import CID, NOW, profile
 
 TEXT = 'Example Therapeutics entwickelt Wirkstoffkandidaten zur Behandlung von Krebserkrankungen. Das Biotechnologieunternehmen befindet sich mit diesen Therapien in der klinischen Entwicklung und arbeitet an der Erforschung neuer Behandlungsmöglichkeiten.'
 def entry(source=None):
     source = source or profile()
-    return {'companyId': CID, 'companyName': source['companyName'], 'status': 'APPROVED', 'description': TEXT,
+    value = {'companyId': CID, 'companyName': source['companyName'], 'status': 'APPROVED', 'description': TEXT,
             'sourceDescriptionHash': digest(source['description']), 'sourceHashes': sorted(s['contentHash'] for s in source['sources']),
             'reviewedAt': '2026-10-12T09:00:00Z', 'profileVersion': 'reviewed-de-' + digest(TEXT)[:24],
             'profileTextHash': digest(TEXT), 'method': 'MODEL_ASSISTED_STATIC_PARAPHRASE'}
+    value['profileVersion'] = copy_version(value)
+    return value
 class MemoryStore:
     def __init__(self, source): self.values = {'companyProfile:' + CID: source}; self.audits = []
     def state(self, key, default=None): return deepcopy(self.values.get(key, default))
@@ -32,10 +34,13 @@ class ReviewedProfilesTests(unittest.TestCase):
         for text in ['Example Therapeutics verkauft zugelassene Medikamente zur Behandlung von Krebs und verfügt über ein umfangreiches Angebot an Therapien für Patienten.',
                      'Example Therapeutics ist ein führendes Unternehmen und entwickelt klinische Wirkstoffkandidaten für Patienten mit unterschiedlichen Arten von Krebserkrankungen.',
                      'Example Therapeutics entwickelt klinische Wirkstoffkandidaten und beschäftigt 500 Mitarbeiter in der Forschung und Entwicklung von Therapien gegen Krebs.']:
-            with self.assertRaises(ValueError): approved_copy(p, {**e, 'description': text, 'profileTextHash': digest(text)}, CID, NOW)
+            changed = {**e, 'description': text, 'profileTextHash': digest(text)}
+            changed['profileVersion'] = copy_version(changed)
+            with self.assertRaises(ValueError): approved_copy(p, changed, CID, NOW)
     def test_exact_issuer_supplementary_provenance_is_required(self):
         p = profile(); e = entry(p); wrong = {**p['sources'][0], 'companyId': 'iss_cik_0000320193'}
-        with self.assertRaises(ValueError): approved_copy(p, {**e, 'additionalSources': [wrong]}, CID, NOW)
+        changed = {**e, 'additionalSources': [wrong]}; changed['profileVersion'] = copy_version(changed)
+        with self.assertRaisesRegex(ValueError, 'INVALID_SUPPLEMENTARY_PROFILE_SOURCE'): approved_copy(p, changed, CID, NOW)
     def test_static_copy_survives_next_refresh_without_generation_and_flags_new_source(self):
         p = profile(); e = entry(p); store = MemoryStore(p); companies = {CID: {}}
         reviewed = {'schema': SCHEMA, 'profiles': {CID: e}}
@@ -65,9 +70,38 @@ class ReviewedProfilesTests(unittest.TestCase):
         store.set_state('profileRefreshPending:' + CID, changed)
         e = entry(changed); text = TEXT + ' Ein weiterer Forschungsschwerpunkt sind seltene Erkrankungen.'
         e.update(description=text, profileTextHash=digest(text), profileVersion='reviewed-de-' + digest(text)[:24])
+        e['profileVersion'] = copy_version(e)
         self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: e}})['updatedProfiles'], 1)
         self.assertEqual(store.state('profileReviewSource:' + CID)['description'], changed['description'])
         self.assertEqual(store.state('profileReviewPending:' + CID)['status'], 'REVIEWED')
+    def test_reviewed_source_snapshot_can_fill_an_extraction_gap_but_cannot_bypass_policy(self):
+        p = profile(); store = MemoryStore(None); e = {**entry(p), 'reviewedSourceSnapshot': p}
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: e}})['updatedProfiles'], 1)
+        self.assertEqual(store.state('profileReviewSource:' + CID)['description'], p['description'])
+        wrong = deepcopy(p); wrong['sources'][0]['url'] = 'https://www.sec.gov/Archives/edgar/data/320193/annual.htm'
+        store = MemoryStore(None)
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: {**e, 'reviewedSourceSnapshot': wrong}}})['rejectedProfiles'], 1)
+        self.assertIsNone(store.state('companyProfile:' + CID))
+    def test_same_text_with_new_source_hash_has_a_new_version_and_can_be_reviewed(self):
+        p = profile(); old = entry(p); changed = deepcopy(p); changed['sources'][0]['contentHash'] = 'b' * 64
+        new = entry(changed)
+        self.assertNotEqual(old['profileVersion'], new['profileVersion'])
+        store = MemoryStore(p); apply(store, {CID: {}}, NOW, {'profiles': {CID: old}})
+        store.set_state('profileRefreshPending:' + CID, changed)
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: new}})['updatedProfiles'], 1)
+        self.assertEqual(store.state('companyProfile:' + CID)['sources'][0]['contentHash'], 'b' * 64)
+    def test_review_revocation_and_later_identity_changes_withhold_only_profile(self):
+        p = profile(); e = entry(p); store = MemoryStore(p)
+        apply(store, {CID: {}}, NOW, {'profiles': {CID: e}})
+        store.set_state('financials:' + CID, {'state': 'AVAILABLE'})
+        apply(store, {CID: {}}, NOW, {'profiles': {CID: {**e, 'status': 'REVOKED'}}})
+        withheld = store.state('companyProfile:' + CID)
+        self.assertEqual(withheld['editorialStatus'], 'WITHHELD_CONSUMER')
+        self.assertEqual(withheld['description'], TEXT)
+        self.assertEqual(store.state('financials:' + CID), {'state': 'AVAILABLE'})
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: e}})['updatedProfiles'], 1)
+        apply(store, {CID: {'names': ['Different Business Inc.']}}, NOW, {'profiles': {CID: e}})
+        self.assertEqual(store.state('companyProfile:' + CID)['editorialStatus'], 'WITHHELD_CONSUMER')
     def test_quarterly_checks_and_policy_safe_signals_queue_review_without_inference(self):
         with tempfile.TemporaryDirectory() as directory:
             store = Store(Path(directory) / 'state.sqlite')

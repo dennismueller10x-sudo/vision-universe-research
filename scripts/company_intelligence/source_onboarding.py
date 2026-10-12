@@ -127,7 +127,16 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 store.set_state(key + cid, {'status': 'BUDGET_DEFERRED', 'checkedAt': stamp})
                 break
             except (ValueError, SourceError) as error:
-                code = 'OWNER_OR_ENDPOINT_WITHHELD' if isinstance(error, ValueError) else 'TEMPORARY_SOURCE_FAILURE'
+                reason = str(error).split(':', 1)[0]
+                code = 'OWNER_OR_ENDPOINT_WITHHELD' if isinstance(error, ValueError) or reason.startswith('OFFICIAL_SITE_CANDIDATE_') else 'TEMPORARY_SOURCE_FAILURE'
+                if 'CONFLICT' in reason or 'WRONG_COMPANY' in reason:
+                    proof = getattr(error, 'ownershipEvidence', {})
+                    old = store.state('officialSite:' + cid, {})
+                    key_hash = proof.get('contentHash') or 'conflict-' + stamp
+                    store.set_state('officialSiteReviewHistory:' + cid + ':' + key_hash, old)
+                    store.set_state('officialSite:' + cid, {**old, 'status': 'CONFLICTING_OWNER', 'reason': reason,
+                        'lastVerified': stamp, 'ownershipEvidence': proof, 'url': row['url']})
+                    code = 'CURRENT_OWNER_CONFLICT_WITHHELD'
                 outcomes[code] += 1
                 store.set_state(key + cid, {'status': code, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
             except Exception as error:
