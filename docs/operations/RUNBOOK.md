@@ -57,6 +57,12 @@ Wiederholen: Actions → Workflow → „Run workflow“ auf `main`. Für einen 
 - Nach Börsenschluss holt der Lauf um 21:35 UTC (`intraday-snapshots.yml`) den Schluss und das Universum.
 - Ist er gescheitert, holt ein manueller Lauf mit `scope=auto` nach. Das Siegel funktioniert seit 03.10. auch mit Bindestrich-Tickern.
 
+### Im Blick (Intraday) steht oder zeigt „Experimentell/EOD“ statt der Live-Auswahl
+
+- `discover/live/monitor-US_REAL.json`: `plan.lastDueSlot`, `published.slot`, `lastRun`, `error`.
+- `node scripts/discover/check-im-blick-live.mjs --site=https://research.visionuniverse.de` nennt den Befund (`RECOMPUTE_OVERDUE` = Lauf nicht gestartet; `DATA_STALE` = Kurse alt, dann Abschnitt 4).
+- Keine Läufe von `discover-im-blick-live.yml`: GitHub verwirft Zeitplan-Ereignisse (belegt 12.10.2026). Der Cloudflare-Wecker stößt alle 30 Minuten an; fehlt auch das: Workflow von Hand starten. Details: `docs/DISCOVER_IM_BLICK.md`.
+
 ## 5. News sind alt
 
 `update-news.yml` hat keinen Zeitplan. Manuell starten: Actions → „Update VISION UNIVERSE news“.
