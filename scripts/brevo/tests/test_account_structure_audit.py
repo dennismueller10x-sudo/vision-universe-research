@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from account_structure_audit import EXPECTED_IDS,ReadOnlyStructure,label_check,summarize
+from account_structure_audit import EXPECTED_IDS,ReadOnlyStructure,label_check,label_context,summarize
 from prepare import Blocked
 
 
@@ -14,6 +14,11 @@ class AccountStructure(unittest.TestCase):
         self.assertEqual(label_check({"companyName":"RAMConsulting"}),"matches_spacing_variant")
         self.assertEqual(label_check({"companyName":"Different synthetic company"}),"differs")
         self.assertEqual(label_check({}),"field_unavailable")
+
+    def test_legal_suffix_and_punctuation_do_not_establish_wrong_account(self):
+        self.assertTrue(label_context({"companyName":"RAM-Consulting GmbH"})["expected_business_words_present"])
+        self.assertTrue(label_context({"companyName":"Vision Universe"})["vu_brand_label_match"])
+        self.assertFalse(label_context({"companyName":"Different company"})["expected_business_words_present"])
 
     def test_inventory_agrees_with_folder_and_detail_without_identity_output(self):
         lists=[{"id":i,"name":n,"folderId":2} for n,i in EXPECTED_IDS.items()]

@@ -36,6 +36,14 @@ def label_check(account):
     return "differs"
 
 
+def label_context(account):
+    value=account.get("companyName")
+    if not isinstance(value,str): return {"expected_business_words_present":False,"vu_brand_label_match":False}
+    words=re.findall(r"[a-z]+",unicodedata.normalize("NFC",value).casefold())
+    return {"expected_business_words_present":{"ram","consulting"}.issubset(words),
+            "vu_brand_label_match":"".join(words)=="visionuniverse"}
+
+
 def summarize(client):
     account=client.call("GET","/account")
     lists=client.pages("/contacts/lists","lists")
@@ -60,6 +68,7 @@ def summarize(client):
         details.append(row)
     return {"operation":"audit","scope":"account-label and unfiltered folder/list GET verification",
             "account_company_label_comparison":label_check(account),
+            "account_company_label_context":label_context(account),
             "account_company_field_available":isinstance(account.get("companyName"),str),
             "all_lists_count":len(lists),"all_folders_count":len(folders),"vu_lists":details,
             "ui_filter_status":"not observable through API; no browser session available",
