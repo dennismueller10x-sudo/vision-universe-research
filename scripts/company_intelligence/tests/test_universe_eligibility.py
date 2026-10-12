@@ -32,6 +32,23 @@ class EligibilityTests(unittest.TestCase):
         self.assertFalse(r['modules']['profile']);self.assertTrue(r['modules']['financials'])
         self.assertEqual(r['moduleReasons']['profile'],'PROFILE_REVIEW_WITHHELD')
         self.assertNotIn('companyProfile',v)
+    def test_current_intelligence_clock_boundary_matches_ui_and_date_only_keeps_precision(self):
+        now='2026-10-12T18:00:00Z'
+        for when,expected in [('2026-07-14T17:11:48Z',False),('2026-07-14T18:00:00Z',True),
+                              ('2026-07-14T17:59:59Z',False),('2026-07-14',True),
+                              ('2026-10-12T18:00:01Z',False)]:
+            with self.subTest(when=when):
+                p=payload();p['generatedAt']=now;p['latestFinancials']=finances();n=news()
+                n.pop('publishedDate',None)
+                n['publishedAt' if 'T' in when else 'publishedDate']=when;p['news']=[n]
+                r,v=evaluate(p,[SOURCE])
+                self.assertEqual(r['modules']['aktuelles'],expected)
+                self.assertEqual(r['news']['days90']>0,expected)
+                self.assertTrue(r['modules']['financials'])
+                if when.startswith('2026-07-14'):
+                    self.assertEqual(len(v['news']),1) # Older remains inspectable.
+                    self.assertEqual('publishedAt' in v['news'][0], 'T' in when)
+
     def test_owned_current_news_alone_is_useful_partial(self):
         p=payload();p['news']=[news()];r,v=evaluate(p,[SOURCE]);self.assertEqual(r['status'],'ELIGIBLE_PARTIAL');self.assertTrue(r['modules']['aktuelles']);self.assertNotIn('companyProfile',v)
 

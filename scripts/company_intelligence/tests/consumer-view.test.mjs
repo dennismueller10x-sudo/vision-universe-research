@@ -62,3 +62,14 @@ test('new official earnings news does not silently freshen stale normalized fina
  const payload={companyId:cid,latestFinancials:f,news:[news('q2-release','2026-08-24',{categories:['Earnings'],headline:'Second Quarter 2026 Unaudited Financial Results'})]};
  const m=viewModel(payload,now);assert.equal(m.recent.length,1);assert.equal(storyType(m.recent[0]),'Geschäftszahlen');assert.equal(payload.latestFinancials.stale,true);assert.equal(payload.latestFinancials.reportingPeriod,'2025-12-31');assert.deepEqual(Array.from(m.metrics),['cash_and_equivalents']);
 });
+
+test('90-day publication boundary respects a real clock and retains date-only precision',()=>{
+ const reference=Date.parse('2026-10-12T18:00:00Z');
+ assert.equal(freshness('2026-07-14T17:11:48Z',reference),'OLDER');
+ assert.equal(freshness('2026-07-14T18:00:00Z',reference),'90_DAYS');
+ assert.equal(freshness('2026-07-14',reference),'90_DAYS');
+ assert.equal(freshness('2026-10-12T18:00:01Z',reference),'FUTURE');
+ const p={companyId:cid,news:[news('precise','2026-07-14T17:11:48Z'),{...news('date-only',null),publishedDate:'2026-07-14'}]};
+ const v=viewModel(p,reference);assert.equal(v.recent.length,1);assert.equal(v.archive.length,1);
+ assert.equal(v.recent[0].publishedDate,'2026-07-14');assert.equal(v.recent[0].publishedAt,null);
+});
