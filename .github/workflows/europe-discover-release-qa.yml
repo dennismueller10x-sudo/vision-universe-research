@@ -9,11 +9,12 @@ on:
       - 'scripts/discover/europe-public-live-qa.mjs'
       - 'scripts/discover/global-live-qa.mjs'
       - 'scripts/discover/europe-continuity-live-qa.mjs'
+      - 'scripts/discover/resolve-europe-live-release.mjs'
       - '.github/workflows/europe-discover-release-qa.yml'
 permissions:
   contents: read
 concurrency:
-  group: europe-discover-live-qa
+  group: europe-discover-live-qa-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   live:
@@ -23,6 +24,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -30,11 +32,19 @@ jobs:
         run: |
           npm install --prefix /tmp/europe-qa --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
           /tmp/europe-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Resolve verified actual publication for europe-live-target.json
+        id: resolve_europe
+        if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/europe-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
       - name: Verify exact published release on desktop and iPhone WebKit
+        if: ${{ !cancelled() && steps.resolve_europe.outcome == 'success' }}
         env:
           NODE_PATH: /tmp/europe-qa/node_modules
           SITE_URL: https://research.visionuniverse.de
-          EXPECTED_SOURCE_SHA: ${{ github.sha }}
           QA_OUT: ${{ runner.temp }}/europe-live-qa
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/discover/europe-public-live-qa.mjs
@@ -46,12 +56,19 @@ jobs:
           name: europe-discover-live-${{ github.sha }}
           path: ${{ runner.temp }}/europe-live-qa/
           if-no-files-found: error
-      - name: Verify global search, full chart ranges and saved watchlists
+      - name: Resolve verified actual publication for global-live-target.json
+        id: resolve_global
         if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/global-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      - name: Verify global search, full chart ranges and saved watchlists
+        if: ${{ !cancelled() && steps.resolve_global.outcome == 'success' }}
         env:
           NODE_PATH: /tmp/europe-qa/node_modules
           SITE_URL: https://research.visionuniverse.de
-          EXPECTED_SOURCE_SHA: ${{ github.sha }}
           QA_OUT: ${{ runner.temp }}/global-discover-live-qa
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/discover/global-live-qa.mjs
@@ -62,12 +79,19 @@ jobs:
           name: global-discover-live-${{ github.sha }}
           path: ${{ runner.temp }}/global-discover-live-qa/
           if-no-files-found: error
-      - name: Verify all 449 full histories and available ranges on desktop and iPhone WebKit
+      - name: Resolve verified actual publication for continuity-live-target.json
+        id: resolve_continuity
         if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/continuity-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      - name: Verify all 449 full histories and available ranges on desktop and iPhone WebKit
+        if: ${{ !cancelled() && steps.resolve_continuity.outcome == 'success' }}
         env:
           NODE_PATH: /tmp/europe-qa/node_modules
           SITE_URL: https://research.visionuniverse.de
-          EXPECTED_SOURCE_SHA: ${{ github.sha }}
           QA_OUT: ${{ runner.temp }}/europe-continuity-live-qa
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/discover/europe-continuity-live-qa.mjs
