@@ -114,6 +114,13 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/company_intelligence/universe-audit.mjs --temporary "$RUNNER_TEMP/universe-audit" --identity-root .accepted-identities
+      - name: Read-only private profile and first-party source funnel
+        run: |
+          python3 scripts/company_intelligence/profile_source_audit.py \
+            --state "$RUNNER_TEMP/universe-audit/first-state" \
+            --identity-root .accepted-identities \
+            --eligibility "$RUNNER_TEMP/universe-audit/first/eligibility.json" \
+            --out "$RUNNER_TEMP/universe-audit/evidence/profile-source-audit.json"
       - name: Representative protected real Discover candidate browser review
         if: inputs.universe_browser
         env:

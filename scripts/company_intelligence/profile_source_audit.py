@@ -1,0 +1,118 @@
+"""Read-only profile/source funnel over the authoritative fresh restoration.
+
+Emit categorical decisions, hashes/counts and public provenance for mandatory
+cases; never export registry rows, checkpoints, raw filings or private ledgers.
+"""
+import argparse
+from collections import Counter, defaultdict
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import sys
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from company_intelligence.consumer_usage import first_party, publisher, host
+from company_intelligence.current_state_acceptance import database_proof
+from company_intelligence.profiles import public_profile
+from company_intelligence.store import Store, atomic_json
+from company_intelligence.top46_content import identities
+
+NON_BUSINESS = re.compile(r'\b(?:makes it a priority|have come a long way|has come a long way|first company to|our mission|was founded|is incorporated|reincorporated|traded on|registered office)\b', re.I)
+CONCRETE = re.compile(r'\b(?:bank(?:ing)?|insurance|financial|payments?|lending|loans?|biotech(?:nology)?|biopharmaceutical|pharmaceutical|clinical|therapeutics?|gene editing|genome editing|medical|healthcare|software|cloud|semiconductor|computing|data|telecommunications?|retail|restaurants?|food|beverages?|agriculture|agribusiness|industrial|manufactur\w*|mining|metals?|oil|gas|energy|electric\w*|solar|transport\w*|aerospace|aviation|real estate|properties|REIT|mortgages?|acquisition company|blank check|investment|asset management|chemicals?|construction|engineering|education|entertainment|media|travel|hotels?|hospitality|logistics|shipping|distribution|apparel|clothing|furniture|packaging|paper|water|waste|security|safety|wireless|network\w*|equipment|devices?|vehicles?|machinery)\b', re.I)
+ACTIVITY = re.compile(r'\b(?:is (?:a|an|the)|designs?|develops?|manufactures?|markets?|sells?|provides?|operates?|offers?|distributes?|produces?|supplies?|commercializes?|researches?|licenses?|delivers?|builds?|specializes?|engages?|focuses?)\b', re.I)
+
+def source_profile_status(profile, cid, now, mapping_ok=True, web_owned=False, source_conflict=False):
+    if not mapping_ok:
+        return 'MAPPING_BLOCKED'
+    if not profile:
+        return 'NO_PROFILE_SOURCE'
+    if source_conflict and all(s.get('type') != 'SEC' for s in profile.get('sources', [])):
+        return 'SOURCE_CONFLICT'
+    value = public_profile(profile, cid, now)
+    if not value:
+        return 'SOURCE_POLICY_BLOCKED' if profile.get('sources') else 'NO_PROFILE_SOURCE'
+    if any(s['type'] == 'FIRST_PARTY_WEB' for s in value['sources']) and not web_owned:
+        return 'SOURCE_POLICY_BLOCKED'
+    if value.get('stale'):
+        return 'SOURCE_AVAILABLE_WEAK'
+    if value.get('language') == 'de':
+        return 'PROFILE_APPROVED_DE'
+    sentences = profile.get('businessActivities') or [profile.get('description', '')]
+    strong = [s for s in sentences if not NON_BUSINESS.search(s) and CONCRETE.search(s) and ACTIVITY.search(s)]
+    return 'SOURCE_AVAILABLE_NO_DE_COPY' if strong else 'SOURCE_AVAILABLE_WEAK'
+
+def audit(state, identity_root, eligibility_path, out, now=None):
+    state, out = Path(state), Path(out)
+    if not (state / 'state.sqlite').is_file():
+        raise ValueError('CURRENT_FULL_RESTORED_STATE_REQUIRED')
+    before = database_proof(state / 'state.sqlite')
+    stamp = now or datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+    decisions = json.loads(Path(eligibility_path).read_text())['issuers']
+    catalogue = json.loads((ROOT / 'company-intelligence/config/company-profiles.json').read_text())['profiles']
+    configured = json.loads((ROOT / 'company-intelligence/config/sources.json').read_text())
+    store = Store(state / 'state.sqlite')
+    profiles, source_flags, by_issuer, source_ids = Counter(), Counter(), defaultdict(list), set()
+    rows, mandatory, matched, available, safe, raw_de = {}, {}, 0, 0, 0, 0
+    try:
+        companies = {**identities(ROOT, store), **identities(identity_root, store)}
+        sources = store.sources()
+        for s in sources:
+            source_ids.add(s['sourceId'])
+            by_issuer[s.get('companyId')].append(s)
+        for cid, row in decisions.items():
+            # The full eligibility report is private inside the restored runner;
+            # use its explicit payload membership, not Company Master totals.
+            if not row.get('hasPrivatePayload'):
+                continue
+            p = store.state('companyProfile:' + cid)
+            issuer_sources = by_issuer[cid]
+            owned = {host(u) for s in issuer_sources if first_party(s, cid) for u in [s.get('url'), *s.get('allowedSites', [])]}
+            official = store.state('officialSite:' + cid, {})
+            if official.get('status') == 'VALIDATED':
+                owned.add(host(official.get('url')))
+            web_owned = bool(p) and all(s.get('type') == 'SEC' or host(s.get('url')) in owned for s in p.get('sources', []))
+            mapping_ok = row['status'] != 'INELIGIBLE_MAPPING'
+            conflict = official.get('status') == 'CONFLICTING_OWNER' or 'CONFLICTING' in official.get('reason', '')
+            status = source_profile_status(p, cid, stamp, mapping_ok, web_owned, conflict)
+            profiles[status] += 1
+            approved = [s for s in issuer_sources if s.get('active') and first_party(s, cid) and not publisher(s.get('url'))]
+            proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported')]
+            news = [s for s in proven if s['type'] == 'IR_FEED']
+            source_status = 'POLLABLE_PROVEN' if proven else 'REGISTERED_NOT_POLLING_PROVEN' if approved else 'NO_APPROVED_REGISTERED_SOURCE'
+            source_flags[source_status] += 1
+            available += bool(p)
+            safe += status in ('PROFILE_APPROVED_DE', 'SOURCE_AVAILABLE_NO_DE_COPY', 'SOURCE_AVAILABLE_WEAK')
+            raw_de += bool(p and p.get('language') == 'de')
+            c = catalogue.get(cid)
+            matches = bool(p and c and p.get('language') == 'en' and p['description'] == c['description'] and sorted(s['contentHash'] for s in p.get('sources', [])) == sorted(s['contentHash'] for s in c.get('sources', [])))
+            matched += matches
+            rows[cid] = {'profileStatus': status, 'sourceStatus': source_status, 'newsPollingProven': bool(news), 'committedSourceProfileMatches': matches, 'consumerEligible': row['status'].startswith('ELIGIBLE_')}
+            if cid in ('iss_cik_0001633917', 'iss_cik_0001652130'):
+                raw = store.company_payload(companies[cid], stamp)
+                mandatory[cid] = {**rows[cid], 'companyName': raw['companyName'], 'tickers': row.get('tickers', []),
+                    'sourceProfile': public_profile(p, cid, stamp), 'ledgerNewsCount': len(raw['news']),
+                    'approvedRegisteredSources': len(approved), 'provenPollableSources': len(proven),
+                    'committedBootstrapSourcesMissingFromLedger': sum(s.get('companyId') == cid and s.get('sourceId') not in source_ids and first_party(s, cid) for s in configured)}
+        missing = [s for s in configured if s.get('sourceId') not in source_ids and first_party(s, s.get('companyId')) and not publisher(s.get('url')) and s.get('bootstrapValidatedAt')]
+        report = {'schema': 1, 'asOf': stamp, 'privateIssuers': len(rows), 'profileClassifications': dict(profiles),
+            'stages': {'storedSourceProfiles': available, 'approvedProvenance': safe, 'rawGermanProfiles': raw_de, 'matchedCommittedEnglishInputs': matched,
+                       'approvedGermanConsumerProfiles': sum(r.get('modules', {}).get('profile', False) for r in decisions.values())},
+            'sourceClassifications': dict(source_flags), 'publicIssuersWithoutProvenPollableSource': sum(r['consumerEligible'] and r['sourceStatus'] != 'POLLABLE_PROVEN' for r in rows.values()),
+            'missingApprovedBootstrapSources': len(missing), 'missingApprovedBootstrapIssuers': len({s['companyId'] for s in missing}),
+            'missingApprovedBootstrapByProvider': dict(Counter(s.get('provider') for s in missing)), 'mandatoryCases': mandatory, 'issuers': rows,
+            'privateOperationalRowsIncluded': False, 'sourceRequests': 0, 'remoteWrites': 0}
+    finally:
+        store.close()
+    if before != database_proof(state / 'state.sqlite'):
+        raise ValueError('PROFILE_AUDIT_CHANGED_PRIVATE_TABLES')
+    atomic_json(out, report)
+    return report
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--state', required=True); p.add_argument('--identity-root', required=True)
+    p.add_argument('--eligibility', required=True); p.add_argument('--out', required=True)
+    a = p.parse_args(); r = audit(a.state, a.identity_root, a.eligibility, a.out)
+    print(json.dumps({k: r[k] for k in ('privateIssuers', 'profileClassifications', 'stages', 'sourceClassifications', 'missingApprovedBootstrapSources')}))
