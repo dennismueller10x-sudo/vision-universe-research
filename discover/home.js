@@ -374,7 +374,7 @@
     function draw(surface) {
       var view;
       if (surface.type === 'hero') {
-        view=spotlight(surface,ctx);
+        view=D.Featured.live(surface,ctx,spotlight);
       } else if (topRows.some(function(x){return x[0]===surface.id;})) {rankings.push(surface);return;}
       else if (surface.type==='theme') return;
       else if (surface.id&&surface.id.indexOf('sektor-')===0) return;

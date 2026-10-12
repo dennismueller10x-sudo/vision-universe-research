@@ -80,7 +80,7 @@
     damping: { perSession: 4, max: 20, window: 20 },
     recognitionTieBreak: { 1: 2, 2: 1 },
     profileRepeatPenalty: 6,
-    minProfilePoints: 15,
+    minProfilePoints: 10,
     requireTrendForMoves: true,
     minAvgDollarVolume: 0,
     instrumentTypes: ["EQUITY_COMMON", "ADR", "REIT"],
@@ -314,6 +314,64 @@
     };
   }
 
+  /* ------------------------------------------------------ Intraday
+
+     Waehrend der Sitzung wird die Auswahl aus den 5-Minuten-Kursen neu
+     gerechnet (scripts/discover/build-im-blick-live.mjs). Getrennt von den
+     bestaetigten Schlusskurs-Signalen:
+       - ein Schlusshoch gibt es intraday nicht (closeAtHigh = false);
+         "ueber dem bisherigen 52W-Schlusshoch" zaehlt wie ein Hoch im
+         Tagesverlauf und heisst auch so
+       - Ausbruch und Volumen entfallen: die Intraday-Quelle fuehrt nur
+         IEX-Volumen, das nicht mit dem Tagesvolumen vergleichbar ist
+       - Fuehrerschaft, RS-Perzentil, Beschleunigung, Trend und
+         Schwankung stammen vom letzten Schluss (basis), nie aus der Sitzung
+     Kein Look-ahead: die Basis gilt zum Schluss der Vorsitzung, der Kurs
+     zum Zeitpunkt asOf des Snapshots. */
+
+  /** Die EOD-Basis eines zulaessigen Titels fuer die naechste Sitzung. */
+  function basis(entry, closes) {
+    var inp = entry.inputs, res = entry.result;
+    var hi = null, close = null;
+    if (Array.isArray(closes) && closes.length) {
+      var von = Math.max(0, closes.length - 252);
+      for (var i = von; i < closes.length; i++) if (isNum(closes[i][1]) && (hi === null || closes[i][1] > hi)) hi = closes[i][1];
+      close = closes[closes.length - 1][1];
+    }
+    return {
+      s: inp.symbol, sec: inp.sector, tier: inp.recognitionTier || null,
+      lp: inp.leadershipPercentile, rs: res.relativeStrength1MPercentile, acc: inp.acceleration,
+      vol: isNum(inp.dailyVol) ? r6(inp.dailyVol) : null, trend: inp.trendSupport === true,
+      age: isNum(inp.eventAge) ? inp.eventAge : null, hi: hi, close: close, eod: res.score
+    };
+  }
+
+  /** Eingaben aus Basis + Intraday-Stand {price, previousClose, dayHigh}. */
+  function liveInputs(b, live) {
+    var prev = live && isNum(live.previousClose) && live.previousClose > 0 ? live.previousClose : null;
+    var price = live && isNum(live.price) ? live.price : null;
+    return {
+      symbol: b.s, sector: b.sec || null, live: true,
+      return1D: prev && price ? price / prev - 1 : null,
+      dailyVol: isNum(b.vol) ? b.vol : null,
+      volumeSpike: null, closeAtHigh: false, breakout: false,
+      touchedHigh: !!(live && isNum(live.dayHigh) && isNum(b.hi) && live.dayHigh > b.hi),
+      relativeStrength1M: null, rsPctFixed: isNum(b.rs) ? b.rs : null,
+      trendSupport: b.trend === true, avgDollarVolume: null,
+      acceleration: isNum(b.acc) ? b.acc : null,
+      leadershipPercentile: isNum(b.lp) ? b.lp : null,
+      recognitionTier: b.tier || null,
+      eventAge: isNum(b.age) ? b.age + 1 : null,
+      eligible: true, qualified: true, displayable: true, instrumentType: null, fundLike: false
+    };
+  }
+
+  function scoreLive(b, live, cfg) {
+    var inp = liveInputs(b, live);
+    var res = score(inp, { rsPct: function () { return inp.rsPctFixed; }, config: cfg });
+    return { inputs: inp, result: res, admissible: isNum(inp.return1D) };
+  }
+
   /** Wer darf ueberhaupt auf die Eingangsflaeche? */
   function admissible(inp, cfg) {
     var c = config(cfg);
@@ -377,10 +435,10 @@
     res.components.forEach(function (x) {
       if (out.length >= 3) return;
       if (x.id === "closeAtHigh") out.push({ id: x.id, label: "Schlusskurs", value: "höchster seit 52 Wochen" });
-      else if (x.id === "touchedHigh") out.push({ id: x.id, label: "im Tagesverlauf", value: "52-Wochen-Hoch erreicht" });
+      else if (x.id === "touchedHigh") out.push({ id: x.id, label: "im Tagesverlauf", value: inp.live ? "über dem 52-Wochen-Schlusshoch" : "52-Wochen-Hoch erreicht" });
       else if (x.id === "breakout") out.push({ id: x.id, label: "Ausbruch", value: "über den Durchschnitten, mit Volumen" });
       else if (x.id === "volume" && isNum(inp.volumeSpike)) out.push({ id: x.id, label: "Volumen", value: inp.volumeSpike.toFixed(1).replace(".", ",") + "× Ø 20 Tage" });
-      else if (x.id === "dayMove" && isNum(inp.return1D)) out.push({ id: x.id, label: "am letzten Handelstag", value: pct(inp.return1D) });
+      else if (x.id === "dayMove" && isNum(inp.return1D)) out.push({ id: x.id, label: inp.live ? "heute bisher" : "am letzten Handelstag", value: pct(inp.return1D) });
       else if ((x.id === "shortRs" || x.id === "emerging") && isNum(res.relativeStrength1MPercentile) && !out.some(function (o) { return o.id === "shortRs" || o.id === "emerging"; })) {
         out.push({ id: x.id, label: "1 Monat gegen den Markt", value: "stärker als " + Math.min(99, Math.round(res.relativeStrength1MPercentile)) + " %" });
       } else if (x.id === "acceleration" && isNum(inp.acceleration)) out.push({ id: x.id, label: "letzter Monat", value: "Anstieg beschleunigt" });
@@ -412,7 +470,8 @@
     ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, LABELS: LABELS, PROFILES: PROFILES, HEADLINES: HEADLINES,
     config: config, inputs: inputs, closingHigh: closingHigh, percentileScale: percentileScale, eventAge: eventAge,
     score: score, admissible: admissible, rate: rate, select: select,
-    reasons: reasons, headline: headline, evidence: evidence
+    reasons: reasons, headline: headline, evidence: evidence,
+    basis: basis, liveInputs: liveInputs, scoreLive: scoreLive
   };
   if (isNode) module.exports = api;
   else { global.VUDiscover = global.VUDiscover || {}; global.VUDiscover.ImBlick = api; }

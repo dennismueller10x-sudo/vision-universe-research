@@ -2043,6 +2043,20 @@ for (const universe of universes) {
     basis: "EOD_CLOSE",
     count: featured.length, stocks: featured
   });
+  /* Basis der Intraday-Neuberechnung (scripts/discover/build-im-blick-live.mjs):
+     je zulaessigem Titel, was zum Schluss dieser Sitzung feststeht -
+     Fuehrerschaft, RS-Perzentil, Trend, Schwankung, Ereignisalter und das
+     52-Wochen-Schlusshoch, gegen das ein Kurs der naechsten Sitzung
+     gemessen wird. Keine Karten: die laedt der Live-Lauf aus den
+     Aktienseiten, nur fuer seine Auswahl. */
+  write(`im-blick/basis-${universe.universeId}.json`, {
+    schemaVersion: "discover-im-blick-basis-1.0.0", universeId: universe.universeId,
+    engineVersion: ImBlick.ENGINE_VERSION, asOf: universe.asOf, generatedAt: universe.generatedAt,
+    note: "EOD-Basis je zulaessigem Titel (Schluss asOf). hi = hoechster Schluss der letzten 252 Sitzungen einschliesslich asOf.",
+    stocks: universe.stocks.filter((s) => s.imBlick && s.imBlick.admissible)
+      .map((s) => ImBlick.basis(s.imBlick, s.priceSeries && s.priceSeries.status === "CALCULATED" ? s.priceSeries.points : null))
+      .sort((x, y) => (x.s < y.s ? -1 : 1))
+  });
 
 
   rowIndex.push({ universeId: universe.universeId, rows });

@@ -1,0 +1,70 @@
+name: Discover Im Blick (stuendlich waehrend der Sitzung)
+
+# =============================================================================
+# Die Eingangsflaeche "Im Blick" kommt aus dem Abendlauf (Schlusskurse).
+# Waehrend der Sitzung schreibt der Intraday-Taktgeber alle fuenf Minuten
+# Kurse fuer die Titel auf Discover-Flaechen. Dieser Workflow rechnet daraus
+# stuendlich die Auswahl neu (scripts/discover/build-im-blick-live.mjs):
+#
+#   - keine Anbieteranfrage, kein Schluessel: gelesen werden nur committete
+#     Snapshots (quant/data/market/intraday) und die EOD-Basis
+#     (discover/data/im-blick/basis-US_REAL.json)
+#   - geschrieben wird genau eine Datei: discover/live/im-blick-US_REAL.json
+#   - intraday gibt es kein Schlusshoch, keinen Ausbruch und kein Volumen;
+#     die Karte sagt "im Tagesverlauf, Stand HH:MM, unbestaetigt"
+#   - nach dem Abendlauf gilt wieder die Schlusskurs-Auswahl (EOD_CURRENT)
+#
+# Zeitplan (UTC): stuendlich zur Minute 17 von 13 bis 21 Uhr, Mo-Fr. Das
+# deckt 09:30-16:00 New York in Sommer- und Winterzeit; ausserhalb der
+# Sitzung schreibt das Skript einen ehrlichen Zustand statt einer Auswahl.
+# =============================================================================
+
+on:
+  schedule:
+    - cron: '17 13-21 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: discover-im-blick-live-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Im Blick aus den 5-Minuten-Kursen neu rechnen
+        run: node scripts/discover/build-im-blick-live.mjs
+
+      - name: Commit und Push
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add discover/live
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          status=$(node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+(l.asOfLocal||"")+" "+l.stocks.map(s=>s.symbol).join(","))')
+          git commit -m "Discover Im Blick live: ${status}"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Discover Im Blick (Intraday)'
+            echo ''
+            node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log("| Feld | Wert |\n|---|---|");for(const k of ["status","sessionDate","asOfLocal","eodAsOf","reason"])console.log("| "+k+" | "+(l[k]??"-")+" |");console.log("| Abdeckung | "+JSON.stringify(l.coverage)+" |");console.log("| Auswahl | "+l.stocks.map(s=>s.symbol+" "+s.imBlick.score.toFixed(0)).join(", ")+" |")' || echo 'Keine Ausgabe.'
+          } >> "$GITHUB_STEP_SUMMARY"
