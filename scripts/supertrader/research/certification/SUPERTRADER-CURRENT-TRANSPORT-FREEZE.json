@@ -1,0 +1,50 @@
+{
+  "schema": "supertrader-current-transport-bugfix-freeze-1.1.0",
+  "version": "1.1",
+  "classification": "DELIVERY_ONLY",
+  "frozenAt": "2026-10-12T09:03:43.879Z",
+  "originalV2Freeze": {
+    "path": "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json",
+    "sha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+    "assertFreezeV2": true
+  },
+  "protectedOriginalFiles": {
+    "scripts/supertrader/research/certification/repack-artifact.py": "7bbba18f6fae5fe31901c47ef8b7c6aeb2dfcbb17a2dcf3c4aed3dcfd912acdf",
+    "scripts/supertrader/research/certification/current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+    "scripts/supertrader/research/certification/run-rerun.mjs": "fd213207451c52abf5243521a936df56071bd142a6b9b4da14d3239ac131b5b1",
+    "scripts/supertrader/research/certification/freeze-v2.mjs": "4f7136bb597f67f48d6be74245b74d53c6577715fc806d7debcf0a8341a7e06c"
+  },
+  "deliveryFiles": {
+    "scripts/supertrader/research/certification/repack-current-artifact.py": "616ef38438e7b2fffff8ce40ee655de296c9ba193e7610dc9a85f70b0c80047b",
+    "scripts/supertrader/tests/test_certification_current_repack.py": "e1fa15f9a53181806e7538c41c685f6fc750c77a1b46c6523ad83d845d1c266e",
+    ".github/workflows/supertrader-certification.yml": "5ac0df37f25645c78cef3df6ad1ef8dd0091757319aa38d912285c18c3b80658"
+  },
+  "change": "Accept one optional JSON string envelope layer for current ciphertext validation while copying original source bytes and hashes unchanged.",
+  "ciphertextFormats": [
+    "RAW_OBJECT",
+    "EXACTLY_ONE_OUTER_JSON_STRING"
+  ],
+  "bundleTargetBytes": 25165824,
+  "maxZipBytes": 33554432,
+  "rulebookParametersChanged": false,
+  "strategyDefinitionsChanged": false,
+  "engineCodeChanged": false,
+  "originalRepackCodeChanged": false,
+  "currentSourceGeneratorChanged": false,
+  "historicalWorkerChanged": false,
+  "providerReads": 0,
+  "decryptedByTransport": false,
+  "performanceCalculatedByTransport": false,
+  "currentTriggered": false,
+  "validation": {
+    "currentTransportTests": 3,
+    "originalRepackTests": 3,
+    "status": "PASS"
+  },
+  "independentReview": {
+    "required": true,
+    "binding": "EXTERNAL_REVIEW_BINDS_THIS_MANIFEST_SHA_AND_ALL_COMPONENT_HASHES",
+    "reportPath": "scripts/supertrader/research/certification/SUPERTRADER-CURRENT-TRANSPORT-REVIEW.json"
+  },
+  "currentAsOfSelection": "EXPLICIT_OPERATIONAL_SESSION_ARGUMENT; NOT_A_METHOD_PARAMETER"
+}
