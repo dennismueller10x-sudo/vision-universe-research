@@ -729,6 +729,14 @@
         if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
         if (global.QXChartbildCss) global.QXChartbildCss();   // Stile der Teaser-Karte (lazy, siehe app.js)
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
+        /* Datenstand-Richtlinie: zurueckgehaltene Titel zeigen statt des Ausblicks nur den Hinweis */
+        if (a.withheld) {
+          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chartbild(ticker) }, [
+            el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
+            el("b", { class: "cb-teaser-o" }, [el("span", { text: (a.freshness && a.freshness.title) || "Analyse zurückgehalten" })]),
+            el("span", { class: "cb-small cb-dim", text: (a.freshness && a.freshness.text) || "" })]));
+          return;
+        }
         /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
         var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
         var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;

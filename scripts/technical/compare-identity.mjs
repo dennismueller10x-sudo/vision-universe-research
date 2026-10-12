@@ -17,8 +17,9 @@ const ALLOWED_PROJ = (k) => /^explore/.test(k) || k === "lifecycle" || k === "re
 const canon = (v) => JSON.stringify(v);
 function diffKeys(o, n) {
   const keys = new Set([...Object.keys(o), ...Object.keys(n)]), bad = [];
+  if (n.withheld) return bad;   // Datenstand-Richtlinie: zurueckgehaltener Titel – Shard enthaelt bewusst keine laufende These (Vergleich: freshness-Block)
   for (const k of keys) {
-    if (k === "exploreCandidates") continue;
+    if (k === "exploreCandidates" || k === "freshness") continue;
     if (k === "projection" || k === "projectionWeekly") {
       const po = o[k] || {}, pn = n[k] || {};
       for (const q of new Set([...Object.keys(po), ...Object.keys(pn)])) if (!ALLOWED_PROJ(q) && canon(po[q]) !== canon(pn[q])) bad.push(k + "." + q);

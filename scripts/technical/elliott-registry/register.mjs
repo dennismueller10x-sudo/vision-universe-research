@@ -38,7 +38,8 @@ import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 import { classify, researchInternalWave3, SPEC_SHA256, LIBRARY_VERSION, SPEC } from "../elliott-setups/setup-library.mjs";
 import { readLedger, append, verifyChain, eventId, LEDGER_VERSION } from "./ledger.mjs";
 import { Projection, registryProjection, PROJECTION_VERSION } from "../lib/ti-projection.mjs";
-import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, publishedHighlights, compareHighlights, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
+import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, publishedHighlights, compareHighlights, publishedFreshness, compareFreshness, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
+import { Freshness, loadMaster } from "../lib/ti-freshness.mjs";
 
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
@@ -65,6 +66,12 @@ export function cutIndex(points, seriesAsOf, F) {
   return k >= 0 && fridayOf(points[k][0]) === F ? k : -1;
 }
 
+/** Zaehler je Zustand fuer den Lauf-Eintrag (Datenstand-Richtlinie). */
+function freshnessSummary(rows) {
+  const c = {}; for (const r of rows) c[r.fr.state] = (c[r.fr.state] || 0) + 1;
+  return { version: Freshness.VERSION, titles: rows.length, states: c };
+}
+
 /** Index der letzten Bar bis einschliesslich Woche F (die Reihe darf davor enden). */
 export function lastBarUpTo(points, F) {
   let k = -1; for (let i = 0; i < points.length; i++) { if (fridayOf(points[i][0]) <= F) k = i; else break; }
@@ -82,7 +89,12 @@ function analyzeSymbol(file, F, W) {
        nur fuer die Produktsicht analysiert (stale) und nicht in Snapshot, Abdeckung oder RS-Querschnitt gezaehlt. */
     const kp = lastBarUpTo(pts, F);
     if (!(W && W.ctx) || kp < 0) return { s: sym, skip: "NO_COMPLETED_BAR_FOR_WEEK" };
-    k = kp; stale = { lastBar: pts[kp][0], weeksBehind: Math.round((Date.parse(F) - Date.parse(fridayOf(pts[kp][0]))) / (7 * dayMs)) };
+    const tk = x.ticker || sym.replace(/^ref_/, ""), mm = W.master.get(tk) || {};
+    stale = { lastBar: pts[kp][0], weeksBehind: Math.round((Date.parse(F) - Date.parse(fridayOf(pts[kp][0]))) / (7 * dayMs)) };
+    const fr0 = Freshness.classify({ lastBar: pts[kp][0], reference: F, venue: mm.venue || null, active: mm.active });
+    /* Datenstand-Richtlinie: ist der Titel zurueckgehalten, sieht der Kunde keine These – es gibt nichts zu registrieren (nur den Zustand fuer den Vergleich mit dem Produkt) */
+    if (fr0.withheld) return { s: sym, ticker: tk, stale, fr: fr0 };
+    k = kp;
   }
   if (k + 1 < MIN_BARS) return { s: sym, skip: "TOO_SHORT" };
   const used = pts.slice(0, k + 1), series = weeklySeriesFromPoints(used, x.ticker || sym), t = series.length - 1;
@@ -92,7 +104,8 @@ function analyzeSymbol(file, F, W) {
   const c = series.close, atr = P.main.features.columns.atr[t];
   /* einfacher Trend wie panel.mjs (40-Wochen-Durchschnitt mit Steigung ueber 4 Wochen) */
   let trend = 0; if (t >= 43) { const sma = (j) => { let s = 0; for (let q = j - 39; q <= j; q++) s += c[q]; return s / 40; }; const m = sma(t), m4 = sma(t - 4); trend = c[t] > m && m > m4 ? 1 : c[t] < m && m < m4 ? -1 : 0; }
-  return { s: sym, ticker: x.ticker || null, stale, d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
+  const tkr = x.ticker || sym.replace(/^ref_/, ""), mst = (W && W.master && W.master.get(tkr)) || {};
+  return { s: sym, ticker: tkr, stale, fr: Freshness.classify({ lastBar: series.timestamps[t], reference: F, venue: mst.venue || null, active: mst.active }), d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
            ew: rec.ew ? { p: rec.ew.p, w: rec.ew.w, ab: rec.ew.ab, d: rec.ew.d, key: rec.ew.key, app: rec.ew.app } : null, outlook: rec.o, clarity: rec.cl,
            E: E && E.primary ? { primary: E.primary, alternatives: (E.alternatives || []).slice(0, 1), applicability: E.applicability, higherDegree: E.higherDegree ? { current: E.higherDegree.current, pattern: E.higherDegree.pattern } : null } : null,
            rw3: researchInternalWave3(E, c, t), rw3Start: (() => { const q = researchInternalWave3(E, c, t); return q ? series.timestamps[q.pivotIdx[0]] : null; })(), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to,
@@ -120,6 +133,7 @@ let W = null;
 function workerContext(d) {
   if (W) return W;
   W = { productInputDir: d.productInputDir || null };
+  W.master = loadMaster();
   if (d.productView) { W.pub = publishedProduct(d.publishedDir || undefined); const ctx = productContext(W.pub, d.workDir || null); if (ctx.error) throw new Error(ctx.error); W.ctx = ctx; }
   return W;
 }
@@ -238,6 +252,9 @@ async function registerWeek(o, F) {
   const ok = rows.filter((r) => !r.skip && !r.error && !r.stale);
   /* Titel, deren Reihe vor dem Ende von W* aufhoert: nur fuer die Kundenprodukt-Sicht (siehe analyzeSymbol), nicht in Snapshot, Abdeckung oder RS-Querschnitt */
   const staleRows = productView ? rows.filter((r) => r.stale && !r.skip && !r.error && r.pv && !r.pv.skip) : [];
+  /* Datenstand-Richtlinie: ein zurueckgehaltener Titel hat in der Kundenprodukt-Sicht keine sichtbare These (Zustand statt Zaehlung) */
+  for (const r of ok) if (r.fr && r.fr.withheld && r.pv && !r.pv.skip) r.pv = { skip: "WITHHELD_" + r.fr.state, tf: r.pv.tf };
+  const allFr = rows.filter((r) => r.fr);   // Zustand je Titel (auch zurueckgehaltene) fuer Vergleich und Lauf-Eintrag
   /* 2) Abdeckung: deutlich weniger Titel als im vorigen Lauf heisst veraltete oder unvollstaendige Daten → nicht registrieren */
   const prevRun = lines.filter((e) => e.type === "RUN").pop(), minCov = isNum(o.minCoverage) ? o.minCoverage : 0.9;
   if (prevRun && ok.length < minCov * prevRun.payload.universe.analysed)
@@ -255,11 +272,17 @@ async function registerWeek(o, F) {
   /* Explore Highlights der Produktsicht je Titel (einmal gerechnet; Ereignisse und Vergleich nutzen dasselbe) und VOLLSTAENDIGER Vergleich mit dem veroeffentlichten Produkt - vor jeder Schreiboperation */
   const exByS = new Map(), rsUniverse = rs.length;
   if (productView) for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip && r.pv.exploreIn) exByS.set(r.s, Projection.build(r.pv.exploreIn.E, { ...r.pv.exploreIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rsUniverse } : null }));
-  let highlightIdentity = null;
+  let highlightIdentity = null, freshnessIdentity = null;
   if (productView && o.highlightGate !== false && !o.limit) {   // Teilmengen (--limit, Tests) koennen den Vollvergleich nicht erfuellen
     const pub = publishedProduct(o.publishedDir || undefined), reg = new Map(), asOfOf = new Map([...pub.bySymbol].map(([t, v]) => [t, v.asOf]));
     for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip) reg.set(r.ticker || r.s.replace(/^ref_/, ""), { d: r.pv.d, keys: ((exByS.get(r.s) || {}).exploreHighlights || []).map((h) => h.key).sort() });
     highlightIdentity = compareHighlights(publishedHighlights(pub.dir), reg, asOfOf);
+    /* Datenstand: letzte Bar, Zustand und Sichtbarkeit je Titel (alle Titel des Produkts) – Teil der Kundensicht */
+    const regFr = new Map(allFr.map((r) => [r.ticker || r.s.replace(/^ref_/, ""), { st: r.fr.state, last: r.fr.lastBar }]));
+    const pf = publishedFreshness(pub.dir);
+    if (o.freshnessTickers) { const keep = new Set(o.freshnessTickers); pf.byTicker = new Map([...pf.byTicker].filter(([t]) => keep.has(t))); }   // Teilmengen (Nachweisskript): nur diese Titel vergleichen
+    freshnessIdentity = compareFreshness(pf, regFr, F);
+    if (!freshnessIdentity.ok) throw new Error("Datenstand (letzte Bar, Zustand) weicht vom veroeffentlichten Produkt ab (" + freshnessIdentity.different.length + " Titel, z. B. " + freshnessIdentity.different.slice(0, 5).map((d) => d.t + ":" + d.reason).join(", ") + ") - nichts registriert");
     if (!highlightIdentity.ok) throw new Error("Explore Highlights weichen vom veroeffentlichten Produkt ab (" + highlightIdentity.different.length + " Titel, z. B. " + highlightIdentity.different.slice(0, 5).map((d) => d.t + ":" + d.reason).join(", ") + ") - nichts registriert");
   }
   /* Snapshot (Kontrollkohorte) */
@@ -288,7 +311,7 @@ async function registerWeek(o, F) {
     return s; })() : null;
   entries.push({ type: "RUN", id: "RUN-" + F, week: F, recordedAt, payload: { week: F, asOf: o.asOf || null, code: codeVersion(), universe: { files: files.length, analysed: ok.length, skipped: rows.filter((r) => r.skip).length, errors: rows.filter((r) => r.error).length, skipReasons }, initialStockRun: initialStock,
     views: productView ? [VIEWS.STATELESS, VIEWS.PRODUCT] : [VIEWS.STATELESS], registrationLagDays: Math.round((Date.parse(recordedAt.slice(0, 10)) - Date.parse(F)) / dayMs),
-    ...(productView ? { productView: { version: PRODUCT_VIEW_VERSION, initialStockRun: initialStockProduct, identity, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, different: highlightIdentity.different.length, timing: highlightIdentity.timing.length, timingExceptions: highlightIdentity.timing.slice(0, 20).map((x) => x.t), ok: highlightIdentity.ok } : null, productOnlyStale: staleRows.length, ...pvStats } } : {}),
+    ...(productView ? { productView: { version: PRODUCT_VIEW_VERSION, initialStockRun: initialStockProduct, identity, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, different: highlightIdentity.different.length, timing: highlightIdentity.timing.length, timingExceptions: highlightIdentity.timing.slice(0, 20).map((x) => x.t), ok: highlightIdentity.ok } : null, productOnlyStale: staleRows.length, freshness: freshnessSummary(allFr), freshnessIdentity: freshnessIdentity ? { applicable: freshnessIdentity.applicable, compared: freshnessIdentity.compared, identical: freshnessIdentity.identical, different: freshnessIdentity.different.length, timing: freshnessIdentity.timing.length, ok: freshnessIdentity.ok } : null, ...pvStats } } : {}),
     snapshot: { file: "snapshots/" + F + ".jsonl.gz", sha256: sha(snapBody), rows: snap.length }, data: { source: o.dataSource || "weekly closes (discover-series-long format)", seriesAsOfMin: ok.reduce((m, r) => (r.seriesAsOf < m ? r.seriesAsOf : m), "9999"), seriesAsOfMax: ok.reduce((m, r) => (r.seriesAsOf > m ? r.seriesAsOf : m), "0000") } } });
   /* EVENTS: neu qualifizierte Setups und neue Forschungskandidaten */
   const registered = new Set(lines.filter((e) => e.type === "EVENT").map((e) => e.payload.dedupeKey));
@@ -364,7 +387,9 @@ async function registerWeek(o, F) {
   }
   /* REVISIONS fuer offene Ereignisse aus allen frueheren Laeufen */
   const byS = new Map(ok.map((r) => [r.s, r]));
-  const noSeries = new Set();
+  const noSeries = new Set(), freshMaster = loadMaster();
+  /* letzter Sichtbarkeitszustand je Ereignis aus den angehaengten Revisionen */
+  const visState = new Map(); for (const e of lines) if (e.type === "REVISION" && (e.payload.type === "WITHHELD_STALE_DATA" || e.payload.type === "VISIBILITY_RESTORED")) visState.set(e.ref, e.payload.type);
   const revs = new Map(); for (const e of lines.filter((x) => x.type === "REVISION")) { const s = revs.get(e.ref) || new Set(); s.add(e.payload.type); revs.set(e.ref, s); }
   for (const ev of lines.filter((x) => x.type === "EVENT")) {
     const done = revs.get(ev.id) || new Set();
@@ -375,7 +400,19 @@ async function registerWeek(o, F) {
        (nichts wird geschrieben, nichts veraendert). Frueher beendete das fehlende File den ganzen Lauf mit ENOENT. */
     const seriesFile = join(o.weeklyDir, ev.payload.symbol + ".json");
     if (!existsSync(seriesFile)) { noSeries.add(ev.payload.symbol); continue; }
-    const x = readJson(seriesFile), k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
+    const x = readJson(seriesFile);
+    /* Datenstand-Richtlinie: die Sichtbarkeit einer Kundenprodukt-These aendert sich nur ueber angehaengte Zustandsereignisse (WITHHELD_STALE_DATA / VISIBILITY_RESTORED) */
+    if (ev.payload.view === VIEWS.PRODUCT) {
+      const kp = lastBarUpTo(x.points || [], F);
+      if (kp >= 0) {
+        const tk = x.ticker || ev.payload.symbol.replace(/^ref_/, ""), mm = freshMaster.get(tk) || {};
+        const f = Freshness.classify({ lastBar: x.points[kp][0], reference: F, venue: mm.venue || null, active: mm.active }), last = visState.get(ev.id) || null;
+        const v = f.withheld && last !== "WITHHELD_STALE_DATA" ? "WITHHELD_STALE_DATA" : !f.withheld && last === "WITHHELD_STALE_DATA" ? "VISIBILITY_RESTORED" : null;
+        if (v) entries.push({ type: "REVISION", id: eventId({ ref: ev.id, type: v, week: F }), ref: ev.id, week: F, recordedAt, payload: { type: v, week: F, barDate: f.lastBar, freshness: f.state, ageTradingDays: f.ageTradingDays, reasonCode: f.reason ? f.reason.code : null,
+          policy: Freshness.VERSION, eventSetupType: ev.payload.setupType, symbol: ev.payload.symbol } });
+      }
+    }
+    const k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
     const pts = (x.points || []).slice(0, k + 1).filter((p) => p[0] > ev.payload.registeredBarDate);
     const cur = byS.get(ev.payload.symbol);
     /* Umdeutung je Sicht: Produkt-Ereignisse gegen die Produkt-Primaerzaehlung, zustandslose gegen die zustandslose */
@@ -390,7 +427,7 @@ async function registerWeek(o, F) {
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
            research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), explore: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT"), exploreHighlight: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
-           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), openWithoutSeries: noSeries.size, productOnlyStale: staleRows.length, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, timing: highlightIdentity.timing.length } : null, seconds: Math.round((Date.now() - t0) / 1000) };
+           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), openWithoutSeries: noSeries.size, productOnlyStale: staleRows.length, freshnessIdentity: freshnessIdentity ? { applicable: freshnessIdentity.applicable, compared: freshnessIdentity.compared, identical: freshnessIdentity.identical, different: freshnessIdentity.different.length, timing: freshnessIdentity.timing.length } : null, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, timing: highlightIdentity.timing.length } : null, seconds: Math.round((Date.now() - t0) / 1000) };
 }
 
 if (isMainThread && process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

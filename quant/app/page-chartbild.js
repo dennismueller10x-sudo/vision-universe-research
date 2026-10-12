@@ -504,6 +504,21 @@
         el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
       return;
     }
+    /* Datenstand-Richtlinie (data-freshness-1.0.0): zurueckgehaltene Titel zeigen keine laufende These – nur Zustand, Hinweis und im Profi-Modus die Belege. */
+    var fz = a.freshness || null;
+    if (a.withheld && fz) {
+      var ageTxt = fz.ageTradingDays == null ? "–" : fz.ageTradingDays + (fz.ageTradingDays === 1 ? " Handelstag" : " Handelstage");
+      host.append(el("p", { class: "v2-eyebrow", text: "Chartbild · " + ticker }), el("h1", { class: "qx-h1", text: fz.title || "Analyse zurückgehalten" }),
+        X.notice(fz.badge || "Zurückgehalten", fz.text || "Die Kursreihe ist nicht aktuell genug für eine laufende technische These."),
+        el("p", { class: "cb-small cb-dim", text: "Letzter Stand der Kursreihe: " + X.dateDe(fz.lastBar) + "." }),
+        view === "pro" ? el("dl", { class: "cb-facts" }, [
+          el("dt", { text: "Letzte Bar" }), el("dd", { class: "num", text: X.dateDe(fz.lastBar) }),
+          el("dt", { text: "Alter" }), el("dd", { class: "num", text: ageTxt + " (Bezug " + X.dateDe(fz.reference) + ")" }),
+          el("dt", { text: "Einstufung" }), el("dd", { text: fz.state + " · Richtlinie " + fz.version }),
+          el("dt", { text: "Grund" }), el("dd", { text: fz.reason ? fz.reason.text + (fz.reason.known ? "" : " (nicht belegt)") : "–" })]) : null,
+        el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
+      return;
+    }
     var rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
     var tfLabel = a.timeframe === "1W" ? "Wochenchart" : "Tageschart";
     var scen = a.scenarios || [], kinds = scen.map(function (s) { return s.kind; });
@@ -517,6 +532,7 @@
     var outlook = a.outlook.label, tone = TONE[outlook] || "flat";
     var hero = el("header", { class: "cb-hero cb-tone-" + tone }, [
       el("p", { class: "cb-eyebrow", text: ticker + " · " + tfLabel + " · Stand " + X.dateDe(a.asOf) }),
+      fz && fz.state === "DELAYED" ? el("p", { class: "cb-small cb-delayed", role: "status", text: fz.line + (view === "pro" && fz.ageTradingDays != null ? " · " + fz.ageTradingDays + " Handelstage alt" : "") }) : null,
       el("p", { class: "cb-kicker", text: "Technischer Ausblick" }),
       el("h1", { class: "cb-outlook" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.OUTLOOK[outlook]) || outlook })]),
       el("p", { class: "cb-structure", text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || a.outlook.structure }),

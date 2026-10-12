@@ -40,6 +40,7 @@ import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, 
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
+import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -305,7 +306,13 @@ async function main() {
   const C = workCtx(workDir), ev1W = C.ev1W, ev1D = C.ev1D;
   const shards = {}, rows = [], t0 = Date.now(), dailyDone = new Set();
   const members = C.members;
-  const add = (p) => { const k = shardKey(p.symbol); (shards[k] = shards[k] || {})[p.symbol] = p; const row = indexRow(p); row.indexes = members[p.symbol] || []; rows.push(row); };
+  const add = (p, f) => {
+    const k = shardKey(p.symbol); (shards[k] = shards[k] || {})[p.symbol] = p;
+    const row = p.withheld ? withheldIndexRow(p, f) : indexRow(p);
+    if (!p.withheld) row.indexes = members[p.symbol] || [];
+    if (f && f.state !== Freshness.STATES.FRESH) row.fr = Freshness.compact(f);   // fehlt = FRESH
+    rows.push(row);
+  };
   let dailyFiles = existsSync(C.dailyDir) ? readdirSync(C.dailyDir).filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort() : [];
   if (limit) dailyFiles = dailyFiles.slice(0, limit);
   let wfiles = readdirSync(C.wdir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort();
@@ -336,7 +343,7 @@ async function main() {
   }
   /* ---- Elliott Projection Engine: Relative Staerke im Querschnitt, Thesen, Lebenszyklus (nur angezeigte Thesen) */
   const projStats = projectAll(got);
-  [...got.keys()].sort().forEach((t) => { const g = got.get(t); if (g.daily) dailyDone.add(t); else weekly++; add(g.p); });
+  [...got.keys()].sort().forEach((t) => { const g = got.get(t); if (g.daily) dailyDone.add(t); else weekly++; add(g.p, g.f); });
   Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
   // ---- Alerts gegen den vorherigen Index (Mission IV §51: nie aus Methoden-/Engine-Wechsel, nur bei neuen Marktdaten)
   const idxPath = join(OUT, "index.json.gz");
@@ -382,12 +389,19 @@ async function main() {
 function projectAll(got) {
   const rs = rsRanks([...got].map(([t, g]) => [t, rsInput(g.pW || g.p)]));
   const items = [], stats = { version: PROJECTION_VERSION, store: STORE_SCHEMA, status: {}, consumerVisible: 0, types: {}, highUpside: 0, weeklyForDaily: 0 };
+  /* Datenstand-Richtlinie: Bezugstag = letzte abgeschlossene Sitzung (--reference zum Nachrechnen), Zustand je Titel aus der letzten Bar */
+  const reference = arg("reference", null) || Freshness.lastCompletedSession(new Date().toISOString()), master = loadMaster(), FS = newStats(reference);
+  for (const [t, g] of got) {
+    g.f = freshnessOf(g.p, { reference, master });
+    g.p.freshness = shardBlock(g.f);
+  }
+  const freshOf = (t) => { const f = got.get(t).f; return Object.assign(Freshness.compact(f), { withheld: f.withheld }); };
   for (const [t, g] of got) {
     g.p.projection = projectFor(g.p, rs.get(t) || null);
-    items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf });
+    items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf, freshness: freshOf(t) });
     if (g.pW) {
       g.p.projectionWeekly = projectFor(g.pW, rs.get(t) || null); stats.weeklyForDaily++;
-      items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf });
+      items.push({ symbol: t, tf: "1W", proj: g.p.projectionWeekly, bars: { t: g.pW.chart.timestamps, c: g.pW.chart.close }, asOf: g.pW.asOf, freshness: freshOf(t) });
     }
   }
   if (DUMP) {
@@ -417,6 +431,8 @@ function projectAll(got) {
   for (const it of items) {
     attachLifecycle(it.proj, adv.bySymbol.get(it.symbol + "|" + it.tf));
     delete it.proj.exploreKeys;   // nur fuer den Lebenszyklus-Store, nicht veroeffentlicht
+    /* zurueckgehaltene Titel: die vollstaendige These lebt im Lebenszyklus-Store weiter; veroeffentlicht wird nur der Zustand (siehe unten) */
+    if (it.freshness && it.freshness.withheld) { stats.status.WITHHELD = (stats.status.WITHHELD || 0) + 1; continue; }
     stats.status[it.proj.status] = (stats.status[it.proj.status] || 0) + 1;
     if (it.proj.motiveAlternative) { stats.motiveAlternative = (stats.motiveAlternative || 0) + 1; const d = "motive" + it.proj.motiveAlternative.direction; stats[d] = (stats[d] || 0) + 1; if (it.proj.motiveAlternative.highUpside) stats.motiveHighUpside = (stats.motiveHighUpside || 0) + 1; }
     if (it.proj.consumerVisible) { stats.consumerVisible++; const k = (it.proj.primary || it.proj.alternative).type; stats.types[k] = (stats.types[k] || 0) + 1; if (it.proj.highUpside) stats.highUpside++; if (it.proj.alternative) stats.normalAlternative = (stats.normalAlternative || 0) + 1; }
@@ -447,6 +463,9 @@ function projectAll(got) {
       }
     }
   }
+  /* Datenstand-Richtlinie: betroffene Thesen zaehlen (vor dem Zurueckhalten), dann die laufende These aus den Produktdaten nehmen */
+  for (const [, g] of got) { addStats(FS, g.p, g.f); if (g.f.withheld) g.p = withholdPayload(g.p, g.f); }
+  stats.freshness = FS;
   mkdirSync(OUT, { recursive: true });
   writeFileSync(storePath, JSON.stringify(adv.store, null, 1));
   stats.lifecycleEvents = adv.events; stats.tracked = Object.values(adv.store.theses).filter((e) => e.state !== "ARCHIVED").length;

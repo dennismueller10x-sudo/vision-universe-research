@@ -600,6 +600,11 @@
     var box = h('div', { class: 'ak-card' }, [h('h3', { text: 'Chartbild' })]);
     res.stocks.forEach(function (x) {
       if (!x.found) { box.appendChild(h('p', { text: x.symbol + ': Für diesen Titel liegt kein Chartbild vor.' })); return; }
+      if (x.withheld) {
+        box.appendChild(h('p', { text: x.symbol + ': ' + (x.notice || 'Analyse zurückgehalten.') }));
+        box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/quant/#/aktie/' + encodeURIComponent(x.symbol) + '/chartbild', text: x.symbol + ' im Chartbild öffnen' })]));
+        return;
+      }
       var p = x.primaryScenario || {};
       var rows = [
         ['Ausblick', x.outlook && x.outlook.label], ['Kursstruktur', x.structure && x.structure.label],
@@ -608,7 +613,7 @@
         ['Elliott (experimentell)', x.elliott.abstained ? 'keine belastbare Zählung' : x.elliott.applicability.label + (x.elliott.count ? ' · ' + x.elliott.count : '')]
       ];
       box.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
-        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: x.symbol }), h('th', { scope: 'col', text: 'Stand ' + (x.asOf || '–') + (x.stale ? ' · veraltet' : '') })])]),
+        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: x.symbol }), h('th', { scope: 'col', text: 'Stand ' + (x.asOf || '–') + (x.delayed ? ' · verzögert' : x.stale ? ' · veraltet' : '') })])]),
         h('tbody', {}, rows.map(function (rw) { return h('tr', {}, [h('td', { text: rw[0] }), h('td', { text: rw[1] || '–' })]); }))
       ])]));
       if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-atlas-hint', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Linie', confirmation: 'Bestätigung', target1: 'Zielzone 1' }[k] || k; }).join(', ') + '.' }));
