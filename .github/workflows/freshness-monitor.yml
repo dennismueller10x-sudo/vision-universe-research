@@ -78,6 +78,16 @@ jobs:
             echo '```'; cat freshness-repo.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Befund fuer den Alarm sichern
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshness-befund
+          path: freshness-*.txt
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Ergebnis
         if: steps.live.outcome == 'failure'
         run: |
@@ -181,3 +191,43 @@ jobs:
         run: |
           echo "::error::P0_DATA_PIPELINE_FROZEN - die Produkt-Artefakte tragen nicht die letzte abgeschlossene Handelssitzung."
           exit 1
+
+  # ===================================================================
+  # ALARM: VERALTETE DISCOVER-/MARKTDATEN BLEIBEN NICHT UNBEMERKT.
+  #
+  # Bis 10/2026 war das Ergebnis dieses Monitors ein roter Lauf in der
+  # Actions-Liste. Discover stand trotzdem bis zu drei Sitzungen still.
+  # Jetzt oeffnet ein roter Befund ein Issue (Label pipeline-alarm), das
+  # offen bleibt, bis ein gruener Monitorlauf es schliesst.
+  # ===================================================================
+  alarm:
+    needs: [monitor, produktstand]
+    if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: freshness-befund
+          path: ${{ runner.temp }}/befund
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht
+        # den Lauf nicht rot (pages-release verlangt conclusion == success).
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: freshness-monitor
+          ALARM_TITLE: 'Veroeffentlichte Markt-/Discover-Daten veraltet'
+          RESULT_MONITOR: ${{ needs.monitor.result }}
+          RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
+          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-live.txt
+        run: node scripts/ci/pipeline-alarm.mjs
