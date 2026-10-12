@@ -61,6 +61,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
     store = Store(state / 'state.sqlite')
     profiles, source_flags, by_issuer, source_ids = Counter(), Counter(), defaultdict(list), set()
     rows, mandatory, matched, available, safe, raw_de = {}, {}, 0, 0, 0, 0
+    registry_counts, proven_providers, proven_roles = Counter(), Counter(), Counter()
     try:
         current = identities(ROOT, store)
         companies = {**current, **identities(identity_root, store)}
@@ -101,6 +102,11 @@ def audit(state, identity_root, eligibility_path, out, now=None):
                 approved = []
             proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported')]
             news = [s for s in proven if s['type'] == 'IR_FEED']
+            registry_counts['approvedActiveFirstPartyRowsForPrivateIssuers'] += len(approved)
+            registry_counts['provenPollableFirstPartyRowsForPrivateIssuers'] += len(proven)
+            registry_counts['provenNewsSourceRowsForPrivateIssuers'] += len(news)
+            proven_providers.update(s.get('provider', 'UNKNOWN') for s in proven)
+            proven_roles.update(s['type'] for s in proven)
             source_status = 'SOURCE_POLICY_WITHHELD' if owner_withheld and issuer_sources else 'POLLABLE_PROVEN' if proven else 'REGISTERED_NOT_POLLING_PROVEN' if approved else 'NO_APPROVED_REGISTERED_SOURCE'
             source_flags[source_status] += 1
             available += bool(p)
@@ -145,6 +151,8 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             'stages': {'storedSourceProfileStatesIncludingWithdrawals': available,
                        'approvedProvenanceIncludingWeakSources': safe, 'rawGermanProfiles': raw_de, 'matchedCommittedEnglishInputs': matched,
                        'approvedGermanConsumerProfiles': sum(r.get('modules', {}).get('profile', False) for r in decisions.values())},
+            'sourceRegistryCounts': {'allRegistryRows': len(sources), **dict(registry_counts)},
+            'provenSourceProviderCounts': dict(proven_providers), 'provenSourceRoleCounts': dict(proven_roles),
             'sourceClassifications': dict(source_flags), 'publicIssuersWithoutProvenPollableSource': sum(r['consumerEligible'] and r['sourceStatus'] != 'POLLABLE_PROVEN' for r in rows.values()),
             'missingApprovedBootstrapSources': len(missing), 'missingApprovedBootstrapIssuers': len({s['companyId'] for s in missing}),
             'missingApprovedBootstrapByProvider': dict(Counter(s.get('provider') for s in missing)), 'mandatoryCases': mandatory, 'issuers': rows,
