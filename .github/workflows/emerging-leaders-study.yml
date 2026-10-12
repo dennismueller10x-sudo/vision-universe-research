@@ -1,0 +1,123 @@
+name: Emerging Leaders - historische Studie (Point-in-Time)
+
+# Rechnet die vorregistrierte Studie emerging-leaders-1.0.0
+# (quant/methodology/emerging-leaders-v1.json) auf der kanonischen
+# Tageshistorie: heute gelistete Titel aus der Arbeitsablage, beendete
+# Listings ab 2015 (tiingo-delisted) und das volle Universum 2007-2015
+# (tiingo-holdout). Kein Anbieter-Abruf; die Reihen bleiben im Runner,
+# committet wird nur das Aggregat quant/data/product/emerging-leaders-v1/.
+#
+# Ausloeser: manuell oder eine Marke in der Commit-Nachricht auf claude/**:
+#   [emerging-leaders-study]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: emerging-leaders-study-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[emerging-leaders-study]')) && github.run_id || 'run' }}
+  cancel-in-progress: false
+
+jobs:
+  study:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[emerging-leaders-study]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine and study contract tests (before any data is read)
+        run: node --test quant/tests/emerging-leaders.test.mjs quant/tests/emerging-leaders-study.test.mjs
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/el-preflight.json"
+
+      - name: Restore existing canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/el-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/el-sync.json"
+
+      - name: Emerging Leaders study (emerging-leaders-1.0.0)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-emerging-leaders-study.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Findings (aggregates only)
+        run: |
+          node -e '
+            const s = require("./quant/data/product/emerging-leaders-v1/study.json");
+            console.log({ status: s.status, evidence: s.evidenceStatus, gate: s.gate, selection: s.selection.chosen, calendar: s.calendar, coverage: s.coverage, sources: s.dataSources, dev: s.development });
+            for (const p of Object.keys(s.results)) for (const m of Object.keys(s.results[p])) {
+              const r = s.results[p][m][63];
+              if (r && r.dates) console.log([p, m, "n=" + r.dates, "names=" + r.avgNames, "gross=" + r.meanExcessGross, "t=" + r.tNW, "netBase=" + r.meanExcessNet.BASE, "spread=" + r.spreadVsUniverse.mean, "spreadT=" + r.spreadVsUniverse.t, "ic=" + (r.ic && r.ic.mean), "icT=" + (r.ic && r.ic.t)].join("  "));
+            }
+            console.log("random", JSON.stringify(s.random), "fm", JSON.stringify(s.famaMacBeth));'
+
+      - name: Commit the study to the current branch
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/product/emerging-leaders-v1
+          if git diff --cached --quiet; then echo "Studie unveraendert."; exit 0; fi
+          git commit -m "Emerging-Leaders-Studie emerging-leaders-1.0.0 gerechnet (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Retain metadata evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emerging-leaders-study-evidence
+          path: |
+            ${{ runner.temp }}/el-preflight.json
+            ${{ runner.temp }}/el-sync.json
+            quant/data/product/emerging-leaders-v1/study.json
+          if-no-files-found: warn
+          retention-days: 30
