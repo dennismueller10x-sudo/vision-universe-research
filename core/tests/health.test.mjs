@@ -111,6 +111,21 @@ test("Intraday · vollstaendiger Schluss mit Universum ist OK", () => {
   assert.equal(run(d, data).status, "OK");
 });
 
+test("Intraday · nach Schluss geholt, aber illiquide Titel ohne letzten Slot: OK (fetchedAfterClose), wirklich fehlender Schluss: STALE", () => {
+  const d = registry.domains.find((x) => x.id === "intraday");
+  /* Stand vom 09.10.2026: 5.045 von 5.049 Snapshots nach Schluss geholt,
+     4.512 mit Kurs im letzten Slot - regularComplete false, Schluss da. */
+  const mk = (extra) => ({ generatedAt: "2026-10-02T21:40:00Z", entryCount: 1375,
+    dataSession: Object.assign({ sessionDate: "2026-10-02", asOf: "2026-10-02T20:55:00Z", asOfLocal: "16:55", regularComplete: false }, extra),
+    displaySession: { isRunning: false }, universeSessions: ["2026-10-02"] });
+  assert.equal(run(d, mk({ fetchedAfterClose: true, afterCloseSnapshots: 5045, finalSlotSnapshots: 4512 })).status, "OK");
+  const fehlt = run(d, mk({ fetchedAfterClose: false }));
+  assert.equal(fehlt.status, "STALE");
+  assert.equal(fehlt.reason, "SESSION_NOT_COMPLETED");
+  /* Aeltere Verzeichnisse ohne das Feld behalten ihre Lesart. */
+  assert.equal(run(d, mk({})).reason, "SESSION_NOT_COMPLETED");
+});
+
 test("Intraday · bei offener Boerse zaehlt das Alter des letzten Takts", () => {
   const d = registry.domains.find((x) => x.id === "intraday");
   const mk = (asOf) => ({ generatedAt: asOf, entryCount: 1, dataSession: { sessionDate: "2026-10-02", asOf, regularComplete: false } });
