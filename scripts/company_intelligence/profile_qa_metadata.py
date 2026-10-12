@@ -65,7 +65,10 @@ def complete(state,out,budget=250,max_seconds=600):
     client._opener=bounded;provider=SECProvider(client);outcomes=Counter();completed=0
     try:
         companies=load_universe(ROOT);profiles=json.loads((ROOT/'company-intelligence/config/company-profiles.json').read_text())['profiles']
-        queue=candidates(companies,profiles)
+        reviewed=json.loads((ROOT/'company-intelligence/config/profile-reviewed-de.json').read_text())['profiles']
+        profiles={**profiles,**{cid:e['reviewedSourceSnapshot']for cid,e in reviewed.items()if e.get('reviewedSourceSnapshot')}}
+        approved={cid:c for cid,c in companies.items()if reviewed.get(cid,{}).get('status')=='APPROVED'}
+        queue=list(dict.fromkeys(candidates(approved,profiles)+candidates(companies,profiles)))
         for cid in queue:
             prior=store.state('profileQaIssuerMetadata:'+cid)
             if prior:continue
