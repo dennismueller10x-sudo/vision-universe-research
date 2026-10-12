@@ -268,7 +268,9 @@ for(const width of [1440,390]){
       "Home"); der sichtbare Eintrag "Screener" steht neben "Quant" und
       heisst fuer Screenreader "Quant Screener" (Owner-Entscheid 29.09.2026
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
-   const sollBereiche=['Quant','Screener','Strategien','Aktien'];
+   /* Elliott ist ein eigenes Produkt: sein Aktienbild (#/elliott/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
+   const elliottBild=/#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
+   const sollBereiche=elliottBild?['Elliott','Welle 3','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
@@ -285,7 +287,7 @@ for(const width of [1440,390]){
      if(bereiche.some(t=>t===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
     if(await page.locator(leiste).getByRole('link',{name:'Screener',exact:true}).count())bad.push('FREMDES_PRODUKT_IN_NAV:Screener ohne Quant');
     const markiert=await page.locator(leiste+' a[aria-current="page"]').allTextContents();
-    const soll=SECTION[route];
+    const soll=elliottBild?'':SECTION[route];
     if(soll!==undefined&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
    }
    const box=await page.locator(leiste).boundingBox();
