@@ -1,6 +1,6 @@
 # German profiles and first-party source coverage
 
-This work continues Discover V2 and the full per-issuer eligibility release. No UI,
+This work continues Discover V2 and the full per-issuer eligibility release. No UI redesign,
 Company Master, Quant factors, prices or access controls are changed.
 
 ## Authoritative baseline (12 October 2026)
@@ -327,3 +327,152 @@ full source catalogue remains completely classified. These conservative
 withdrawals must be included in the publicly closed production candidate's
 structural, browser, R2 and deterministic-restore acceptance; an earlier
 2,832-copy candidate is not claimed as an identical final generation.
+
+
+## Final production publication, 12 October 2026
+
+PR #610 merged as `37ae905c0e0ee3c024c5987c33f5146b5bdac0df`.
+Production acceptance run [38308985623](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38308985623)
+restored all **5,122** private issuers and preserved generation
+`fc20ce50e1615be2fe884ab6`, checkpoint SHA-256
+`5c2812f76058178ae181dbbfc87b52753ca4176e31cdcfabdfbbf15bde6999e1`
+(33,035,722 compressed bytes). Cold R2 restoration and deterministic consumer
+reproduction passed. Final static catalogue: **2,830** reviewed copies, **814**
+withheld. Import updated 2,828 and retained two already identical profiles.
+The actual consumer contains **2,873 German profiles**, not the catalogue count.
+
+Consumer `2cd2c4f227bdafe2bf1fec3f` contains **4,938 eligible issuers / 5,091
+stocks**, 5,564 assets and 102,208,095 bytes. All structural contracts, 434 broad
+candidate cases and 134 candidate canary/delta cases passed before publication.
+Pages [38318291581](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38318291581)
+completed successfully and served code `fc42fcb19fcae1c07ad4e01b93cb02843d6f2ad9`.
+Actual production acceptance then passed **134 cases**, including PYPL and NTLA
+at 390/430/768/1440 widths, dark/light, exact German text, generation, access
+gate, staleness, source links, navigation and overflow checks. Ready time median
+1,123 ms, p95 1,952 ms, maximum 4,004 ms in this runner/network environment;
+these are measured browser observations, not an iPhone cellular performance SLA.
+
+The enclosing job reached its 120-minute timeout during the subsequent broader
+live sample. It had already published, verified Pages and completed the 134
+live cases. There was no recorded material consumer failure. Its aggregate
+health SUCCESS is not a claim that the entire enclosing workflow succeeded.
+The frozen larger sample is being completed by separate **read-only** job
+[38320988201](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38320988201),
+with no R2 credentials, no private writes and no gate changes. Its status and the
+next actual scheduled refresh must be recorded separately when completed.
+
+### Measured comparable before/after (current-Master projection)
+
+The publication runner's before and after audits use the same current Master,
+clock and private universe. This avoids mixing historical live securities with
+a changed Master projection.
+
+| Metric | Before | After |
+|---|---:|---:|
+| German profiles / private 5,122 | 45 (0.879%) | 2,873 (56.091%) |
+| Distinct issuers with proven first-party polling | 1,970 | 1,972 |
+| Public eligible issuers without proven source | 2,818 | 2,971 |
+| Approved news issuers, last 30 days | 1,072 | 1,078 |
+| Approved news issuers, last 90 days | 1,712 | 1,713 |
+| Approved Aktuelles issuers, last 90 days | 1,720 | 1,723 |
+| Retained approved news issuers, 180 days | 1,747 | 1,748 |
+
+The no-source public count increases because useful, reviewed profile-only
+issuers become eligible. It does not imply that 153 working feeds broke.
+Public module counts: profile 2,873; Aktuelles 1,723; financials 4,704;
+What Changed 3,622; next event 3,276; calls 562; documents 1,796.
+Remaining profile classes: 1,379 no source, 861 weak source, nine mapping-blocked.
+Only approved German descriptions render; no inferred industry filler is added.
+
+### Mandatory real-production outcomes
+
+[PayPal](https://research.visionuniverse.de/discover/#/s/US_REAL/PYPL)
+shows the exact reviewed German payments description and marked-stale Q1 2026
+financials. Ledger / allowed / consumer / initial visible news: **0 / 0 / 0 / 0**.
+The separately probed RSS is not silently promoted: native GHA robots checks
+return 403 and no approved pollable PayPal source exists in the durable state.
+Annual source: `https://www.sec.gov/Archives/edgar/data/1633917/000163391726000024/pypl-20251231.htm`,
+actual source hash `e425a45ede32ad8e05eb5475f5433880ab7174fe1cbab3899031189304e48aa6`.
+
+[Intellia](https://research.visionuniverse.de/discover/#/s/US_REAL/NTLA)
+shows the reviewed clinical CRISPR development description. It does not claim
+commercially approved medicines. Ledger / allowed / excluded / consumer /
+initial visible news: **10 / 10 / 0 / 10 / 3**. Ten exact owned HTTPS links were
+reconfirmed from the robots-checked native RSS observation; no new news item,
+source registration or GHA poll success was invented. Two previously proven
+sources remain, while their current GHA robots outage remains a real limitation.
+Annual source: `https://www.sec.gov/Archives/edgar/data/1652130/000119312526076550/ntla-20251231.htm`,
+actual source hash `887fbd2f550857439ff6f20f2be29860a0adac6ad9e4f4dc5468167c0fd6d497`.
+
+End-to-end current-announcement evidence is also present: NVIDIA's owned IR
+announcement "NVIDIA and Cisco Introduce New Pluggable Optics Form Factor to
+Scale AI Factories", published 12 October 15:00 UTC, was ingested at 21:28:42 UTC
+and is delivered in the actual production generation as news identity
+`4f7d9d1c6bc572b0a93460b6`, source `44f4d8b356a87b5857be025d`.
+Palantir's 12 October earnings-date announcement preserves **DATE_ONLY**;
+it does not acquire an invented time. The routine lane added 24 news and 21
+events, with 51 successful news-feed polls. ACME United gained real news polling
+proof but has no accepted news items; an empty successful feed is not invented
+coverage. American Biltrite gained polling proof in another role, not news.
+Bristol Myers Squibb's conflicting current owner is withheld; independent
+SEC-supported German profile/financial modules remain available.
+
+### Operations, size and cost limits
+
+Routine requests remained bounded: **140 public + 84 SEC**, 80 sources checked,
+724.954 seconds engine runtime, 5,171 sources deferred. The deep profile/source
+release took 3,938 seconds before the additional gate-enable asset readback,
+Pages wait and live matrices. Source audit after processing: 5,357 approved active
+sources, 5,175 due, median successful-check age 174.29 hours, p95 197.63 hours,
+maximum 204.29 hours, 3,724 older than seven days and 188 never proven. This is a
+material freshness/backlog limitation. The deterministic fair queue is bounded;
+there is no proof that every registered source is refreshed every four hours.
+No increased cadence, paid provider or runtime AI is introduced.
+
+Reviewed-copy text totals 745,742 UTF-8 bytes; preparation/provenance catalogue
+2,767,806 bytes is stripped from the public package. Consumer assets total
+102,208,095 bytes; issuer-specific browser fetches for PYPL and NTLA are
+15,925 and 41,060 bytes respectively, not the full universe/profile catalogue.
+PYPL's issuer JSON is 11,570 bytes (profile object 1,941); NTLA 31,679 (1,796).
+
+Measured routine full-state source runner baseline is 28 rounded job minutes,
+**5,040 minutes/month at six runs/day**, excluding Pages/live review and other
+products. This remains a baseline, not final total operation cost. If every
+consumer asset changes in each generation: 5,564 x 6 = **33,384 consumer PUTs/day**
+and approximately 1,001,520/month, plus private pointer/state and consumer/health
+pointer writes. Peak active consumer bytes and retained rollback slots remain
+bounded. Actual invoice costs depend on the existing GitHub/R2 plans; no dollar
+amount is claimed without billing evidence. Release-only broad browser sampling
+is not run every four hours.
+
+### Regression evidence and three review rounds
+
+Final local Company Intelligence suite: **746 Python + 121 Node passed**.
+Exact PR-head CI `38305075619` passed required checks. Whole-product suite:
+3,525 tests, 3,514 passes, nine skips, two independently reproduced pre-existing
+failures. The candidate and independent main baseline failed the same API-2
+calibration/invalidation and M11-P8 Explore Highlights input contracts; zero new
+branch failures and zero protected-input differences. No assertion was removed
+or softened. A green classified CI is not a claim that those unrelated failures
+were fixed.
+
+1. Consumer/source review rejected generic, subsidiary, ancillary, legal-only,
+   outdated-business and forward-looking fragments, including the final ARL and
+   Princeton withdrawals. Sparse safe issuers retain independent modules.
+2. Real viewport review inspected PYPL and NTLA at 390 dark, with readable German
+   descriptions, existing navigation and stale financial label. Candidate
+   light/desktop and live 134-case matrices retained every honesty/access check.
+3. Operations review distinguished private 5,122 from public 4,938, cold restore
+   from mere upload, feed registration from polling proof, actual schedule from
+   dispatch, successful data publication from enclosing job timeout, and
+   large source backlog from a universal freshness claim. The immutable 46-stock
+   rollback was freshly restored before recovery and retained unchanged.
+
+Rollback remains the existing `refresh-run.mjs rollback`, production gate
+`production-release.mjs disable`, then `pages-release.yml` with
+`company_intelligence_off=true`. It selects the immutable verified 46-stock
+rollback and disables Company Intelligence while ordinary Discover remains
+available; it does not replace or truncate the private 5,122-issuer state.
+The ACH negative canary remains fail-closed: CIK 75252 is ACCENDRA HEALTH,
+while current Master still describes Aluminum Corporation of China. Correcting
+that underlying Master display name is separate work, not a source/profile hack.
