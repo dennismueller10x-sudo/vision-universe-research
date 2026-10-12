@@ -7,9 +7,13 @@ import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {runRefresh} from './refresh-run.mjs';
 import assert from 'node:assert/strict';
 import {universeActive} from './refresh-storage.mjs';
+import {prepareProfileRecovery,finishProfileRecovery} from './profile-release-recovery.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
 const verification=!args.includes('--publish'),driver=createS3DriverFromEnv();
-if(!verification&&!await universeActive(driver))throw Error('CURRENT_FULL_ELIGIBLE_PRODUCTION_REQUIRED');
+const recover=args.includes('--recover-full-scope');
+if(recover&&verification)throw Error('RECOVERY_REQUIRES_EXPLICIT_PRODUCTION_PUBLICATION');
+const recovery=recover?await prepareProfileRecovery(driver,resolve(arg('--temporary'))):null;
+if(!verification&&!recovery&&!await universeActive(driver))throw Error('CURRENT_FULL_ELIGIBLE_PRODUCTION_REQUIRED');
 const sourceBatch=args.includes('--sources');
 const beforeBuild=async({state,temporary,identityRoot})=>{
  execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
@@ -52,6 +56,7 @@ const validateContent=async({state,consumer,temporary,identityRoot})=>{
  return {status:'PASS',mandatory,sample:sampling.availableGroupCounts};
 };
 const report=await runRefresh(driver,{temporary:resolve(arg('--temporary')),identityRoot:arg('--identity-root'),
- verification,universe:true,network:true,financial:false,runId:process.env.GITHUB_RUN_ID||'profile-source-verification',beforeBuild,validateContent});
+ verification,universe:true,approvedUniverseRecovery:!!recovery,network:true,financial:false,runId:process.env.GITHUB_RUN_ID||'profile-source-verification',beforeBuild,validateContent});
+if(recovery&&report.status==='SUCCESS')console.log(JSON.stringify(await finishProfileRecovery(driver,recovery,report)));
 console.log(JSON.stringify(report));
 if(report.status!=='SUCCESS')process.exitCode=1;

@@ -232,3 +232,87 @@ A further prose review removed 44 nonfactual padding sentences and withdrew
 eight generic/legal-only descriptions. Approved catalogue counts are not
 live coverage counts until the actual generation and production readback
 are accepted.
+
+## Complete catalogue review and pre-release evidence
+
+The available 3,678-entry English catalogue was reviewed without an arbitrary
+count cap. The final static catalogue contains 2,832 approved German copies:
+2,829 match entries in that catalogue and three additional mandatory annual
+source snapshots fill missing catalogue entries (Intel, ASML and Netflix).
+Uber's newer annual snapshot replaces an inadequate older source fragment.
+There are 812 hash-bound withheld fragments and 37 remaining catalogue entries
+already covered by existing independently approved German copy. These sets do
+not overlap. The private universe still contains 5,122 issuers, including issuers
+without profile sources. Approved text bytes: 746,111; preparation catalogue:
+2,768,761 bytes. These are preparation measurements, not production coverage.
+No preparation catalogue is copied into the public Pages configuration.
+
+Full local regressions passed 745 Python and 117 Node tests. The separate
+explicit recovery contracts subsequently passed alongside the existing storage,
+rollback and publication tests (15 cases). A seeded source/text review used
+seed 20261012 and additional actual language-group samples; clinical status,
+noncommercial development, mining/exploration, third-party manufacturing and
+external management were checked against the underlying source text. Earlier
+padding and ancillary-only fragments were withdrawn rather than counted.
+
+Isolated authenticated run
+[38290819358](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38290819358)
+passed at code `849250fb5a0a6df20658bd584e011cf1345228f8` with 2,002 reviewed
+copies, before the final catalogue. Complete private generation
+`11b3bd67dc25889556426490`, fresh checkpoint SHA-256
+`8b0ded0f62ab5b329eac240ec4fbe509901e1f832835f39ecc035adfc25ebe44`,
+consumer `44c4c141bf995e3b5855cb18`: 4,906 issuers / 5,059 stocks,
+2,046 German profiles, 5,532 assets and 100,769,718 consumer bytes.
+All 432 broad browser cases plus 132 delta/permanent-canary cases passed.
+Language groups required actual approved German profiles, with 202 sampled
+stocks and all mandatory group targets met. This is not final production proof.
+
+That run proved Intellia's ten existing ledger records reached the allowed
+consumer news array: 10 ledger / 10 allowed / 0 excluded / 10 consumer.
+PayPal remained 0 / 0 / 0 / 0; its missing news was not manufactured.
+Source polling proof increased from 1,970 to 1,972 distinct issuers (three new
+source rows, two newly covered issuers). The source registry contained 5,387
+rows; registration and source-row counts are not issuer coverage. Source
+onboarding used 87 requests for 16 bounded candidates from the existing
+616-candidate resumable queue. It did not crawl the universe.
+
+The observed full deep acceptance took 3,429 seconds, with 138 public and 84 SEC
+routine requests, 709.814 seconds engine time, 80 sources checked and 5,171 due
+sources deferred. One-time QA metadata completion and browser matrices are
+additional release work; they are not inserted into the four-hour scheduler.
+The growing number of eligible profile-only issuers can increase the public
+no-pollable-source count even while genuine source coverage improves.
+
+## Existing production rollback discovered during final readback
+
+Production Pages run
+[38289015350](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38289015350)
+failed actual browser acceptance at 18:25 UTC on 12 October. The evidence shows
+Apple's ordinary Discover page displayed "Gerade nicht erreichbar", with no
+Company Intelligence requests and no JavaScript errors. The existing safety
+handler rolled back the consumer to `80b801c85d5a33d0e57dc8d5`, selected
+`ROLLBACK_46` and disabled the public gate. Subsequent successful Pages runs
+verified gate-off behavior; they were not successful live Company Intelligence
+acceptance. At 20:12 UTC both intelligence proof endpoints returned 404 and the
+served rollout had `productionOff:true`. This is separate from the profile
+candidate and the Ranger exact-clock defect.
+
+An explicit `recover_full_scope` publication option handles this proven
+operational state. It is main-only and requires the prior accepted full-eligible
+receipt, a policy-approved full GOOD and freshly restored immutable 46-stock
+rollback. It leaves both existing gates unchanged and publicly closed during
+full private restore, profile/source processing, consumer contracts, broad
+candidate browsers, R2 upload, fresh restore, byte reproduction and candidate
+GOOD readback. Only that successful production candidate can restore the
+existing full eligibility namespace and public gate. A failed activation
+readback closes the public gate and restores the original scope pointer.
+Normal scheduled refresh cannot invoke this explicit recovery option.
+The gate's enable check validates the actually selected active GOOD, including
+full eligibility, instead of accidentally validating only the legacy 46-stock
+namespace. Existing source and per-issuer gates remain mandatory.
+
+The production workflow then uses existing Pages deployment and actual live
+browser acceptance. A material regression retains the existing rollback/OFF
+handler. No source outage or mere successful private backup authorizes opening
+an empty or inaccessible consumer generation. Final release evidence and the
+subsequent real `schedule` event must still be recorded after publication.

@@ -66,9 +66,9 @@ export function validateChanges(directory,previous){
  }
  return {status:'PASS',profiles,news,newsIssuers:issuers,expiredNews:expired};
 }
-export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,beforeBuild,validateContent}={}){
+export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,approvedUniverseRecovery=false,beforeBuild,validateContent}={}){
  const start=Date.now(),root=resolve(temporary);mkdirSync(root,{recursive:true});
- if(!verification)universe=await universeActive(driver);
+ if(!verification)universe=await universeActive(driver)||approvedUniverseRecovery;
  const namespace=verification?(universe?'verify-universe-'+runId:'verify-continuous-top46'):refreshConfig.stateNamespace;
  const consumerNamespace=verification?(universe?'verify-eligible-'+runId:'verify-continuous-discover-top46'):universe?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;
  const restoreNamespace=universe?refreshConfig.stateNamespace:namespace;

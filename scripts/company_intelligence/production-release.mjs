@@ -23,7 +23,7 @@ export async function publishProduction(driver,directory){
 export async function setProductionGate(driver,state){
  if(!['AVAILABLE','DISABLED','STAGED'].includes(state))throw Error('INVALID_PRODUCTION_GATE');
  if(state==='AVAILABLE'){
-  const good=await goodState(driver);
+  const good=await goodState(driver,await activeNamespace(driver));
   if(good){
    const view=goodView(driver,good.payloadNamespace,good);
    for(const asset of Object.keys(good.manifest.assets))await readAsset(view,{namespace:good.payloadNamespace,asset});

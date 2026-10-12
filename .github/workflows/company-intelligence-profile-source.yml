@@ -10,6 +10,10 @@ on:
         default: true
   workflow_dispatch:
     inputs:
+      recover_full_scope:
+        description: 'Explicit recovery of previously accepted full-eligible scope after an existing gate-off rollback; keeps gate closed until fresh acceptance'
+        type: boolean
+        default: false
       publish:
         description: 'Main-only controlled update through existing full private restore, eligibility and GOOD guards'
         type: boolean
@@ -72,6 +76,7 @@ jobs:
           NODE_PATH: /tmp/ci-profile-source/node_modules
           PUBLISH: ${{ inputs.publish }}
           SOURCES: ${{ inputs.sources }}
+          RECOVER_FULL_SCOPE: ${{ inputs.recover_full_scope }}
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -82,6 +87,7 @@ jobs:
           options=()
           if [ "$PUBLISH" = true ]; then options+=(--publish); fi
           if [ "$SOURCES" = true ]; then options+=(--sources); fi
+          if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
       - name: Existing Pages deployment and real consumer verification
         id: live
