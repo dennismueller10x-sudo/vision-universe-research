@@ -256,8 +256,6 @@
   }
   async function boot(){
     try {
-      // Kurse laden ab dem Start parallel zu meta.json, nicht erst danach.
-      if(global.VUFx&&global.VUFx.Bootstrap)global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
       [meta,calendar]=await Promise.all([S.loadJSON(BASE+'meta.json'),S.loadJSON('/quant/config/market-calendar.json').catch(()=>null)]);
       ctx.meta=meta;ctx.calendar=calendar;global.VUDiscoverMeta=meta;
       const universe=meta.universes.find(u=>u.universeId===ctx.universeId);
@@ -272,6 +270,9 @@
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));
       document.addEventListener('vu-fx-ready',()=>route(1));
+      if(global.VUFx&&global.VUFx.Bootstrap){
+        global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
+      }
       await route();
     }catch(err){message(document.getElementById('v2-shell'),'Discover ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}
   }
