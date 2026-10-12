@@ -1,0 +1,235 @@
+{
+  "schema": "supertrader-public-rerun-2-0-0",
+  "status": "FINAL_REVIEWED_RERUN_PROJECTION",
+  "methods": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "NEUTRAL"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "NEUTRAL"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEUTRAL"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEUTRAL"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    },
+    {
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    },
+    {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEUTRAL"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    },
+    {
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "regimes": [
+        {
+          "regime": "BULL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "BEAR",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "SIDEWAYS",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "HIGH_VOL",
+          "direction": "INSUFFICIENT"
+        },
+        {
+          "regime": "LOW_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "MID_VOL",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "EARLY",
+          "direction": "NEGATIVE"
+        },
+        {
+          "regime": "LATE",
+          "direction": "NEGATIVE"
+        }
+      ],
+      "interpretation": "OBSERVED_CONDITIONAL_RESEARCH_NOT_CONTIGUOUS_CAGR"
+    }
+  ],
+  "no_regime_performance_optimized_variant": true
+}

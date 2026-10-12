@@ -1,10 +1,10 @@
 {
   "schema": "supertrader-operational-recovery-review-2.0.0",
-  "status": "RECOVERY_VALIDATED_WAITING_FINAL_FRAME",
-  "scope": "OPERATIONAL_RECOVERY_ONLY_NOT_FINAL_NUMERIC_OR_DATA_CERTIFICATION",
-  "observed_at": "2026-10-12T12:52:00Z",
+  "status": "RECOVERY_AND_FULL_FINAL_FRAME_VALIDATED",
+  "scope": "OPERATIONAL_RECOVERY_WITH_ACTUAL_FINAL_FRAME_REVIEWS_NOT_FULL_PIT_QUALIFICATION",
+  "observed_at": "2026-10-12T19:38:25.492619Z",
   "branch": "research/supertrader-data-execution-certification-20261012",
-  "remote_head_sha": "bfc92c3fd7a5a551051d6a6167300be96f535a6c",
+  "remote_head_sha": "051f1e24732c69d6134b72475205254a45eaca0f",
   "baseline_pr": {
     "number": 589,
     "state": "OPEN",
@@ -14,6 +14,15 @@
   },
   "new_draft_pr_opened": false,
   "workflow_audit": [
+    {
+      "id": 38272517992,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "051f1e24732c69d6134b72475205254a45eaca0f",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38272517992",
+      "scope": "FROZEN_CURRENT_CAPTURE_ALL_TEN_ENGINE_DEFINITIONS"
+    },
     {
       "id": 38237114432,
       "status": "completed",
@@ -166,17 +175,72 @@
       "ALL_FIFTEEN_PAIRS",
       "PRESERVED_COMPLETED_BYTES_UNCHANGED"
     ],
-    "final_six_way_assembly_completed": false
+    "final_six_way_assembly_completed": true,
+    "atomic_interrupted_control_retry": {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "previous_control_preserved": true,
+      "original_atomic_worker_regenerated_control": true,
+      "byte_exact_old_control_equality_independently_verified": true,
+      "new_independent_trial": false,
+      "completed_primary_methods_repeated": false
+    }
   },
   "rules_and_parameters_changed": false,
   "original_tournament_core_quant_discover_and_live_files_changed": false,
-  "current_scan_started": false,
-  "sensitivity_raw_replays_started": false,
+  "current_scan_started": true,
+  "sensitivity_raw_replays_started": true,
   "finalization": false,
   "independent_operational_review": {
     "status": "PASSED_OPERATIONAL_WITH_FINAL_FRAME_GATE",
     "private_review_sha256": "17777a33a960eabdcb470f4146428352c943fd937633d05f795f00e520d78297",
-    "final_frame_gate_required": true,
-    "final_numeric_review_approved": false
-  }
+    "final_frame_gate_required": false,
+    "final_numeric_review_approved": true
+  },
+  "remote_head_sha_scope": "HEAD_BEFORE_FINAL_PUBLICATION_COMMIT",
+  "current_scan_completed": true,
+  "current_as_of": "2026-10-09",
+  "current_method_definitions_reviewed": 10,
+  "sensitivity_raw_replays_completed": 18,
+  "sensitivity_raw_arithmetic_review_completed": true,
+  "actual_final_reviews": {
+    "primary_methods": 6,
+    "same_new_source_original_execution_controls": 6,
+    "overlap_pairs": 15,
+    "registered_full_raw_sensitivities": 18,
+    "current_original_engine_definitions": 10,
+    "numeric_status": "PASSED",
+    "red_team_status": "PASSED",
+    "source_current_replay_status": "PASS_WITH_DATA_LIMITS",
+    "fully_qualified_methods": 0,
+    "complete_pit_market_panel_certified": false
+  },
+  "actual_final_review_file_hashes": {
+    "final-numeric-review.json": "eafd3032013ffc40252ef61c397192669b70bc73c2a492979297581a1393ca1e",
+    "final-redteam-review.json": "e8432297581413f51fb0c8f0006cc7ec42da71af11ea4959e414350fdc6eaa06",
+    "current-frozen-scanner-replay-review.json": "66371383b729673c896dd0d30a68fc28b85d98140ca902ad9b41f1d9fadf4264",
+    "final-chain-independent-completion-review.private.json": "3dd9db1efd06450a946ba20f8169683d74ba065d2258cdadc97c51538ea02feb",
+    "operational-completion-proof.json": "963e6d6746b2419052f194a3e0e81e357f39dfad995b510605801556b9525500",
+    "atomic-interrupted-control-retry-proof.json": "b77902d18a4c738ceb57d012cd39c43774ebf9c15207313226d886777c23363e",
+    "operational-control-retry-independent-review.json": "e6eae66452d341de6a9d57285d261be5b8443b194310991c50bcef7714ed3594"
+  },
+  "transport_retention": {
+    "unique_source_members_preserved": true,
+    "completed_old_outer_transport_zip_duplicates_removed": 69,
+    "old_transport_byte_exact_reconstruction_verified": true,
+    "current_outer_transport_zip_duplicates_removed": 116,
+    "current_outer_zip_byte_exact_reconstruction_claimed": false,
+    "current_inner_source_content_original_cipher_and_plaintext_preserved": true,
+    "indefinite_workspace_or_actions_retention_claimed": false,
+    "private_retention_review_sha256": "eadc7a8652d737490bd19a38d154a35c941324c0fa2b2691f03ce3c4a614b8d7"
+  },
+  "observation_interruptions": {
+    "tool_transport_observer_interruptions_occurred": true,
+    "detached_actual_measurement_restarted_due_to_observer_transport": false,
+    "agent_model_capacity_error_occurred": true,
+    "actual_compute_failed_due_to_agent_capacity": false
+  },
+  "finalization_scope": "RESEARCH_REPORTS_OWNER_DELIVERY_COMPLETE_NEW_DRAFT_PR_PENDING",
+  "owner_delivery_completed": true,
+  "owner_delivery_independent_review": "PASSED",
+  "final_public_artifact_checks": "PASSED"
 }

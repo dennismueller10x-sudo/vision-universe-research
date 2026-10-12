@@ -1,0 +1,271 @@
+{
+  "schema": "supertrader-public-encrypted-owner-delivery-2.0.0",
+  "status": "ACTUAL_VERIFIED_ENCRYPTED_DELIVERY",
+  "alg": "RSA-OAEP-256+A256GCM+gzip",
+  "compact": {
+    "file": "scripts/supertrader/research/certification/sealed/SUPERTRADER-RERUN-COMPACT.owner.sealed.json",
+    "bytes": 4862138,
+    "sha256": "78290084d8c9055a9547438408fc8ee15801676d4b065c81e41fe15d3ff53976"
+  },
+  "archives": [
+    {
+      "ordinal": 1,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0001/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "76c7ea7fd08d93203be01c893bdcfbf6073a9cd145025e493ee8e675a967666e"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0001/owner-part-0002.bin",
+          "bytes": 50331648,
+          "sha256": "e7ec4cd2efd0e22f2c6e1c42c9af38975e6f4653be720883dec2f8a161544cf4"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0001/owner-part-0003.bin",
+          "bytes": 5146426,
+          "sha256": "65d313d8f2efc5a6d9ed82525a51d441550bcd790b615d2ce58bdd4c42754b93"
+        }
+      ],
+      "ownerEnvelopeSha256": "9379a65a1eac16dcc1085b8073ba90844bd2a328b9df62f40592fb2940568538",
+      "ownerEnvelopeBytes": 105809722,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "040f223754653374dd3e51970ad1ba1ab107eeebac8a70b12edd4e1baf8fdc74",
+      "sourceManifestSha256": "27c3039d83e01ac4fec5ad2735b9c80d654369b2b198c1a8c2666137648c7bcd",
+      "sourceFileCount": 1,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 2,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0002/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "d3352b42aff28f27d6e412b846d1bf5a59a5a32553a81077385ebb948cde1e47"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0002/owner-part-0002.bin",
+          "bytes": 13317678,
+          "sha256": "030c30dd3b2c400a66f71ec5cdc541310e6d5e73b49ee92cf25fed36f34aa9fc"
+        }
+      ],
+      "ownerEnvelopeSha256": "5976a76bbc9cb22beede47506c78773596818c3bd06469a80ee102c39d3edac5",
+      "ownerEnvelopeBytes": 63649326,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "4731013fd7451c228024da163fa8162c11e58b29acd4946f7adf17c11b633103",
+      "sourceManifestSha256": "fda1c733ee519a342ec98a6638ab30f61f4c622272ff4f080982184d6b6c3c32",
+      "sourceFileCount": 4,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 3,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0003/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "9f3d395e6c99c6913fbd1e9b708ec037962a3fbf7a96b23d0bf11959b95ef14d"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0003/owner-part-0002.bin",
+          "bytes": 14891438,
+          "sha256": "631cb19339ac9034e883a99ba6ea56d8df00e838e7312db03f5c424acc8eb225"
+        }
+      ],
+      "ownerEnvelopeSha256": "7fd3e02536ba794430f7bd4d32efc76118c969c8f1396181f1726eb795a076d5",
+      "ownerEnvelopeBytes": 65223086,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "b03068b45b29e432fd3a543b3409d1560d8ee7a48a1624e52c7ee4920dc62f7c",
+      "sourceManifestSha256": "1853ce00776c10d2e0ffe12af47029b4c2d513d7ed905d2227b77d1f8f7bb24a",
+      "sourceFileCount": 8,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 4,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0004/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "9249df120f11d442f2e1db6f374d7412109c323c9f9fd9c068696aae4fa4f8d1"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0004/owner-part-0002.bin",
+          "bytes": 13300546,
+          "sha256": "6870cf3adf5eee1087e174403f6c911bea44730b27c33293f865a101db1176d9"
+        }
+      ],
+      "ownerEnvelopeSha256": "8b67775fb15e1f1e8145ec23d8d5da8c609396df796e6f7ec437efb83f549647",
+      "ownerEnvelopeBytes": 63632194,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "320dbf6fa24cc315919dd63efbd47d2411a231be2ad1f97608fef2d296b549a9",
+      "sourceManifestSha256": "6005a041c93affd4c6734424d02b3b304facd69db5a5bc528b7ece92f61c046b",
+      "sourceFileCount": 3,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 5,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0005/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "fef387becf8a64a10295cbae29fc1d5040d010aaf343098273d38fd33c9d621c"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0005/owner-part-0002.bin",
+          "bytes": 13022710,
+          "sha256": "3b6ab90ad13392be718814e499491cb8e92fbf2ff85e645b79656d532f5e0310"
+        }
+      ],
+      "ownerEnvelopeSha256": "93947999adafc3d86dce77c7822a9ddc12f3c3b7534bc1b634287484070f86e8",
+      "ownerEnvelopeBytes": 63354358,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "b3f92e3c305a384e90d8b23c7e73b6e7c49ecd2d589fe5e88d6317cde98e9c99",
+      "sourceManifestSha256": "654d38a7a24b03ce8a3f35ec63533490feb259ccb0e5dcb7341489d8e34f75ea",
+      "sourceFileCount": 3,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 6,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0006/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "57de663314363ede9ee2fb1be1ecc40151daf892c3d5b12007da7954a973d226"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0006/owner-part-0002.bin",
+          "bytes": 12822042,
+          "sha256": "78040ddffa6f1d93bfea675284bc0bb2852ed6170e4198b4f3aa7e6104bdbc49"
+        }
+      ],
+      "ownerEnvelopeSha256": "01784de936f07d1cb83550a3371d33b9d874bce2ca79fa9abbdeb8ed1701d69e",
+      "ownerEnvelopeBytes": 63153690,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "c36bb1109a398dd63a55f34b953128565ac31353bb822ca36e12b50e3c16e3f8",
+      "sourceManifestSha256": "2d0afd687bd104d91441595f3a8ca1cca8f14addd90a2362d325fcefded726ce",
+      "sourceFileCount": 4,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 7,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0007/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "ce5f1fe244b803e5b122a9e24cd5b48b10a404134de468693207a70c6e731064"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0007/owner-part-0002.bin",
+          "bytes": 6661562,
+          "sha256": "8c931524208b95abc5f7faea404fe3854ae150933ee32b763bf5c639676fed96"
+        }
+      ],
+      "ownerEnvelopeSha256": "b60ce4a005c7a5ecc61c52396d0d742ac0dbfbaaea8eb964ae8b6e2ed8e1e3bf",
+      "ownerEnvelopeBytes": 56993210,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "3413c0f752f42f131420035026252e7ce2c05e49f45eb939893bfedd3456ce4c",
+      "sourceManifestSha256": "869b55aae7498c204306a3c5bb6e610df2c179ae631dc4f8ca8c4c5bc051a775",
+      "sourceFileCount": 2,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 8,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0008/owner-part-0001.bin",
+          "bytes": 50331648,
+          "sha256": "73320c3c044a584c3e98cef762c84e403c674d572d7a90f670e2cd32bafdb83a"
+        },
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0008/owner-part-0002.bin",
+          "bytes": 3817386,
+          "sha256": "5b513ded24d84f05ec0860f301eed133ba64820f0e23b655f0c0f7f6882906ec"
+        }
+      ],
+      "ownerEnvelopeSha256": "334081fe344b120daaaf1de30b3199088395e54850e3a38924c766480736de22",
+      "ownerEnvelopeBytes": 54149034,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "30cddfcd7806e6791a1184b0fc695018c8a1402084f7ffb2b67e212cc197961f",
+      "sourceManifestSha256": "1fa3145e962803133f8bde46bd062bbac5180109e25973cb36e6c284d6cbffb8",
+      "sourceFileCount": 8,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 9,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0009/owner-part-0001.bin",
+          "bytes": 42386258,
+          "sha256": "c314bf0f4bbc8f393282d82fbf2da51beceed625503bb2263f39f695b379266e"
+        }
+      ],
+      "ownerEnvelopeSha256": "c314bf0f4bbc8f393282d82fbf2da51beceed625503bb2263f39f695b379266e",
+      "ownerEnvelopeBytes": 42386258,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "bd2d7c115852a8a5174cd51ed379da949f3d978ea8257c5000689f68652ab330",
+      "sourceManifestSha256": "2d2d3e98463219a8c372efc7e26d02c4ecfa284b77ddf0116d1723bc3002fff6",
+      "sourceFileCount": 3,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 10,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0010/owner-part-0001.bin",
+          "bytes": 42039090,
+          "sha256": "8d63c7fee0e5d9652b307c393930a5e97f01b250679a0ce236bc22c15756a105"
+        }
+      ],
+      "ownerEnvelopeSha256": "8d63c7fee0e5d9652b307c393930a5e97f01b250679a0ce236bc22c15756a105",
+      "ownerEnvelopeBytes": 42039090,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "94297911fdfc2a8c905a497704e3d76329995e7e1734349f231c5392791cee9b",
+      "sourceManifestSha256": "ea6b7ef5e263f79da0f13dc8f17b504e933fd8a2273ea1d3087bfece9eb43551",
+      "sourceFileCount": 3,
+      "roundTripVerified": true
+    },
+    {
+      "ordinal": 11,
+      "format": "RSA-OAEP-256+A256GCM+gzip_ENVELOPE_CONTAINING_TAR",
+      "parts": [
+        {
+          "file": "scripts/supertrader/research/certification/sealed/archive-0011/owner-part-0001.bin",
+          "bytes": 18195802,
+          "sha256": "331d123fcacb601176d7946f273b61ab18ba86642543999ab0be75edbd80837f"
+        }
+      ],
+      "ownerEnvelopeSha256": "331d123fcacb601176d7946f273b61ab18ba86642543999ab0be75edbd80837f",
+      "ownerEnvelopeBytes": 18195802,
+      "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+      "plaintextPayloadSha256": "6d8f35f8e44a849ab9a7fbc3e05e827f37275df546af2b4fc9d6d12f84949164",
+      "sourceManifestSha256": "73f8679a75c8c4df36125b4493fb4028a4df0c218df4b24be09004c9827b3fb4",
+      "sourceFileCount": 33,
+      "roundTripVerified": true
+    }
+  ],
+  "counts": {
+    "mainRaw": 6,
+    "originalControlRaw": 6,
+    "sensitivityRaw": 18,
+    "sensitivityAudit": 18,
+    "currentSnapshots": 10,
+    "finalQuestions": 20,
+    "pairs": 15
+  },
+  "combinedHistoricalIncluded": true,
+  "ownerRecipientSpkiSha256": "a7fcc40843fe136c5640dc35c0947638d5ca54cdcaea6e65f4e7929d6804c7ab",
+  "plaintextProviderValuesIncluded": false,
+  "sessionRecipientFilesIncluded": false,
+  "keysIncluded": false,
+  "sourceDependenciesSeparatelyRetained": true,
+  "sourceDependencyRetentionIndefinite": false
+}
