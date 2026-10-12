@@ -54,31 +54,29 @@ Die Nachbildung der alten Regel trifft die damals veröffentlichte Auswahl zu 85
 | Kennzahl | alt | neu |
 |---|---|---|
 | Sitzungen | 17 | 17 |
-| Wiederholungsquote (Titel schon am Vortag in der Auswahl) | 63,7 % | 34,8 % |
-| Mittlere Ueberlappung Tag zu Tag (Jaccard) | 48,4 % | 23,7 % |
-| Verschiedene Titel insgesamt | 29 | 44 |
+| Wiederholungsquote (Titel schon am Vortag in der Auswahl) | 63,7 % | 33,3 % |
+| Mittlere Ueberlappung Tag zu Tag (Jaccard) | 48,4 % | 21,8 % |
+| Verschiedene Titel insgesamt | 29 | 45 |
 | Wechsel auf Platz 1 | 6 von 16 | 13 von 16 |
 | Laengste Serie in Folge | 17 (VLO) | 7 (AMD) |
-| Anteil mit frischem Ereignis am Tag | 55,3 % | 87,7 % |
+| Anteil mit frischem Ereignis am Tag | 55,3 % | 89,0 % |
 | Anteil Schlusskurs am 52W-Hoch | 50,6 % | 76,7 % |
 | Mittlerer Ereigniswert (0-100) | 36,8 | 57,0 |
-| Mittlere Tagesrendite der Auswahl | 4,11 % | 8,80 % |
-| Anteil mit Kursverlust am Tag | 34,1 % | 12,3 % |
-| Mittleres Volumen (x Ø 20 Tage) | 1,60 | 2,70 |
-| Folgetag ggue. Median (nur Auswertung) | 0,85 % | 0,36 % |
+| Mittlere Tagesrendite der Auswahl | 4,11 % | 8,86 % |
+| Anteil mit Kursverlust am Tag | 34,1 % | 11,0 % |
+| Mittleres Volumen (x Ø 20 Tage) | 1,60 | 2,71 |
+| Folgetag ggue. Median (nur Auswertung) | 0,85 % | 0,38 % |
 | 5 Sitzungen ggue. Median (nur Auswertung) | 0,59 % | 1,18 % |
-
 
 Haeufigste Titel alt: VLO 17x, MRK 13x, AMD 12x, PSX 6x, RVTY 6x
 
-Haeufigste Titel neu: AMD 10x, VLO 9x, TMO 4x, COP 2x, SDGR 2x
+Haeufigste Titel neu: AMD 10x, VLO 8x, TMO 4x, ABBV 3x, COP 2x
 
-Profile neu: breakout 17, highs 43, leadership 11, momentum 2
-
+Profile neu: breakout 17, highs 48, momentum 7, leadership 1
 
 Einordnung:
 
-- **Aktualität:** Platz 1 wechselt an 13 statt 6 von 16 Tagen. 88 % statt 55 % der Titel hatten am Tag selbst ein frisches Ereignis, nur 12 % statt 34 % einen Kursverlust.
+- **Aktualität:** Platz 1 wechselt an 13 statt 6 von 16 Tagen. 89 % statt 55 % der Titel hatten am Tag selbst ein frisches Ereignis, nur 11 % statt 34 % einen Kursverlust.
 - **Bleibende Titel:** AMD und VLO erscheinen weiterhin oft. Sie machten in dieser Phase tatsächlich laufend neue Schlusshochs. Das ist gewollt.
 - **Vorwärtsrenditen:**
   - Es sind nur 17 Sitzungen mit etwa 75 Auswahlen. Ein Unterschied von unter etwa 1 Prozentpunkt liegt im Rauschen. Discover gibt keine Empfehlung.
@@ -95,7 +93,7 @@ Einordnung:
 | 2026-09-17 | VLO, PSX, RVTY, FRO, MRK | SDGR, NTRA, PSX, VLO, AMD |
 | 2026-09-18 | VLO, PSX, JNJ, MRK, MPC | MG, TH, VLO, PSX, AMD° |
 | 2026-09-21 | AMD, VLO, MRK, FRO, HSHP | PRTH, AMD, WBD, INTC, VLO° |
-| 2026-09-23 | AMD, DE, VLO, MRK, FRO | RSKD, FRO, AMD°, DE |
+| 2026-09-23 | AMD, DE, VLO, MRK, FRO | RSKD, FRO, DE, AMD° |
 | 2026-09-24 | AMD, VLO, RVTY, MRK, CDNA | RSKD, QMCO, AMD, TMO |
 | 2026-09-25 | AMD, VLO, MRK, HQI, QMCO | QMCO, AMD, PRLB, AAPL |
 | 2026-09-28 | VLO, AMD, MRK, SGHT, KOD | KOD, AGEN, TMO, AMD°, ABBV |
@@ -104,8 +102,28 @@ Einordnung:
 | 2026-10-01 | VLO, AMD, PAYS, XRPN, MRK | PAYS, SCSC, ACN, VLO |
 | 2026-10-02 | AMD, VLO, JRSH, NVDA, NTAP | IMOS, NTAP, AMD, TXN |
 | 2026-10-05 | VLO, AMD, NVDA, MTRN, UGP | XP, AZTA, VLO, NVDA, AMD° |
-| 2026-10-06 | VLO, AMD, RVTY, NVDA, XP | XP, FRSH, AMD, VLO°, NVDA |
+| 2026-10-06 | VLO, AMD, RVTY, NVDA, XP | XP, FRSH, AMD, CSCO, ABBV |
 | 2026-10-09 | VLO, PSX, SSL, AMD, SHEL | NVAX, HUM, ABBV, AMT, PM |
 
 ° = ohne frisches Ereignis an diesem Tag.
 
+## Intraday (stündlich während der Sitzung)
+
+Erzeuger ist `scripts/discover/build-im-blick-live.mjs`. Der Workflow `discover-im-blick-live.yml` läuft Mo–Fr stündlich um :17 von 13 bis 21 Uhr UTC und schreibt das Artefakt `discover/live/im-blick-US_REAL.json`.
+
+- **Daten:**
+  - die 5-Minuten-Kurse, die der Intraday-Taktgeber ohnehin für alle Titel auf Discover-Flächen committet (`quant/data/market/intraday/<sitzung>/`)
+  - die EOD-Basis vom Schluss der Vorsitzung (`discover/data/im-blick/basis-US_REAL.json`)
+  - **keine Anbieteranfrage, kein API-Budget**
+- **Getrennt von den Schlusskurs-Signalen:**
+  - Intraday gibt es kein Schlusshoch. „Über dem bisherigen 52-Wochen-Schlusshoch“ zählt wie ein Hoch im Tagesverlauf (12).
+  - Kein Ausbruch und kein Volumen: Die Intraday-Quelle führt nur IEX-Volumen, das nicht mit dem Tagesvolumen vergleichbar ist.
+  - Die Karte sagt „IM TAGESVERLAUF · STAND HH:MM“ und „Unbestätigt bis zum Handelsschluss“.
+- **Kein Look-ahead:**
+  - Die Basis gilt zum Schluss der Vorsitzung, der Kurs zum Stand des Snapshots.
+  - Snapshots, die mehr als 45 Minuten hinter dem jüngsten liegen, fallen heraus. Ebenso Snapshots, deren Vortagesschluss nicht zur Basis passt.
+  - Liegt die Basis nicht genau eine Sitzung zurück, bleibt die Fläche bei der EOD-Auswahl (`EOD_STALE`).
+- **Vorrang:**
+  - Der Client ersetzt die Abendauswahl nur bei `LIVE`, gleicher Basis, mindestens drei Titeln und einem Stand unter drei Stunden.
+  - Nach dem Abendlauf gilt wieder die bestätigte Schlusskurs-Auswahl (`EOD_CURRENT`).
+- **Europa** ist nicht enthalten. Der Europa-Katalog führt nur manuell veröffentlichte Schlusskurse (`MANUAL_ONLY`) ohne Intraday-Quelle und ohne Rangfreigabe („visibility never grants analytics or rank admission“, `core/registry/domains.json`). Sobald es dafür eine laufende Quelle gibt, ist die Engine marktunabhängig nutzbar.

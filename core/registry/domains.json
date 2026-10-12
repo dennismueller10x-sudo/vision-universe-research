@@ -228,6 +228,22 @@
       "consumers": ["/discover/", "/screener/ (Build-Projektion)", "Supertrader (Universum)"]
     },
     {
+      "id": "discoverImBlickLive",
+      "label": "Discover Im Blick (Intraday)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/discover/live/im-blick-US_REAL.json",
+      "timestamp": ["generatedAt"],
+      "records": "stocks",
+      "role": "Stuendliche Neuberechnung der Eingangsflaeche 'Im Blick' aus den 5-Minuten-Kursen gegen die EOD-Basis (discover/data/im-blick). Keine Anbieteranfrage; intraday kein Schlusshoch, kein Ausbruch, kein Volumen. Nach dem Abendlauf gilt die Schlusskurs-Auswahl.",
+      "producer": "scripts/discover/build-im-blick-live.mjs",
+      "workflow": "discover-im-blick-live.yml",
+      "schedule": "Mo-Fr stuendlich 13:17-21:17 UTC",
+      "freshness": { "kind": "none" },
+      "consumers": ["Discover Startseite (Im Blick, ui/featured.js)"]
+    },
+    {
       "id": "supertrader",
       "label": "Supertrader",
       "layer": "PRODUCT",

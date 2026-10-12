@@ -135,5 +135,21 @@
     box.append(link('Alle Ereignisse →','#/c/'+ctx.universeId+'/im-blick','v2-world-more'),link('Vollbild entdecken →','#/einzeln/'+ctx.universeId,'v2-world-more v2-feed-entry'));
     return box;
   }
-  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links};
+  /* Intraday (scripts/discover/build-im-blick-live.mjs): rendert sofort die
+     Auswahl des Abendlaufs und ersetzt sie, wenn eine stuendliche
+     Neuberechnung der laufenden Sitzung vorliegt - nur zur selben Basis
+     (eodAsOf = Stand der Karten), nur mit mindestens drei Titeln, nur bis
+     drei Stunden alt. Sonst bleibt die bestaetigte Schlusskurs-Auswahl. */
+  function live(surface,ctx,render){
+    var view=render(surface,ctx),cards=surface.cards||[],asOf=cards[0]&&cards[0].asOf;
+    S.loadJSON('/discover/live/im-blick-'+ctx.universeId+'.json',{attempts:1}).then(function(l){
+      if(!l||l.status!=='LIVE'||!asOf||l.eodAsOf!==asOf||!(l.stocks||[]).length||l.stocks.length<3)return;
+      if(Date.now()-Date.parse(l.generatedAt)>3*3600000||!view.isConnected)return;
+      var next=render(Object.assign({},surface,{cards:l.stocks,live:true}),ctx);
+      next.className=view.className;Object.keys(view.dataset).forEach(function(k){next.dataset[k]=view.dataset[k];});
+      next.dataset.basis='intraday';view.replaceWith(next);
+    }).catch(function(){});
+    return view;
+  }
+  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links,live:live};
 })(window);
