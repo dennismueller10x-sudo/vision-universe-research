@@ -150,3 +150,36 @@ Existing consumer rollback and global gate remain available. Rollback never
 replaces the authoritative private universe with the 46-stock consumer subset.
 Remote code, copy and public-safe evidence are preserved separately from private
 R2 operational state. Publication statuses are recorded only after real proof.
+
+## Additional acceptance defects found during this work
+
+The old submissions compaction dropped SIC and business-country metadata. A
+sample consequently reported zero verified US, European and sector groups.
+The gate stopped the release instead of assigning countries from the US listing
+venue. The correction retains public SIC and state/country metadata only,
+excluding full addresses and personal details. Bounded one-time SEC metadata
+completion supports the initial QA; normal budgeted submissions refresh retains
+these fields afterward. Sampling remains seeded and requires actual approved
+German copy in every language-quality group. Sparse pages without copy are
+additional render tests, not successful German-language reviews.
+
+An initial candidate reproduced all consumer bytes from fresh R2 restoration,
+but a screenshot failed when existing price/screener hydration replaced the
+chapter after its first ready marker. All content, identity, navigation and
+width checks had passed. The browser harness now waits for the established
+network-hydration completion helper and checks the exact complete reviewed
+profile text, including the collapsed continuation. Assertions are retained.
+
+Copy versions bind both wording and provenance; a source-document update can
+therefore receive a new review even when the German wording stays identical.
+Explicit revocation or removal withdraws the profile module, keeps the full
+private description/history and leaves valid financials or news available.
+Current name and ownership conflicts are checked on every import, including
+unchanged copy. Conflicting website ownership also excludes affected IR sources
+from the refresh queue and the consumer view; independently proven SEC content
+remains available.
+
+HTTPS repairs now re-poll the existing registered owned news RSS, not only a
+newly discovered endpoint. One explicit fresh read prevents an old conditional
+cache body from being accepted as new HTTPS evidence. Robots, network limits,
+timeouts and source cooldowns remain enforced.
