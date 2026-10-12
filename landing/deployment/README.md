@@ -80,3 +80,9 @@ Nur für einen gewünschten vollständigen DNS-Audit: eigenes begrenztes **lesen
 GitHub bestätigt Research mit `build_type: workflow`, main und `research.visionuniverse.de`. HTTPS 200, derselbe Startseiten-Hash wie am 09.10. (`7d734dbdfc8610be975a9e895641fdb3e0bb0d17c3cb26b2667e9b3d3842013f`). Bestehendes Research-Deployment, CNAME und Anwendung unverändert.
 
 **14 bekannte öffentliche NS-/Mail-/Research-DNS-Abfragen** identisch zur Stichprobe vom 09.10. [Vergleich ohne TXT-Rohwerte](verification-2026-10-10/public-dns.json). Kein Ersatz für einen vollständigen authentifizierten Zonenauszug oder eine lückenlose DKIM-Aufzählung. Keine DNS-/Nameserver-Änderung durch diesen Auftrag. united-domains bleibt Registrar; Brevo und Shopify-Abo unverändert. Die manuelle Web-Domainumstellung des Owners wird nicht als eigene DNS-Änderung ausgegeben.
+
+## Rechtstext-Korrektur vom 12.10.2026
+
+Auf Wunsch des Owners wird das ursprüngliche Shopify-Impressum vollständig und wortgetreu wiederhergestellt; die bisherige Kurzfassung entfällt. [Original-Policy-Auszug und Herkunft](../legal-source/README.md). Quelle ist der gespeicherte Abruf vom 09.10.; der alte Shopify-Host leitet inzwischen auf die neue Cloudflare-Seite. Nur die sichtbare E-Mail-Adresse wird technisch aus der alten Cloudflare-Obfuskation aufgelöst, kein Absatz verändert.
+
+Die vollständige alte Shopify-Datenschutzerklärung muss der Owner noch aus **Shopify → Einstellungen → Richtlinien → Datenschutzerklärung** liefern. Die aktuellen Cloudflare-Aliase und der vorhandene Vorschautext sind kein Ersatz für die Originalquelle. Keine wortgetreue Übernahme des Datenschutzes behauptet, solange dieser Text fehlt. Die noch erforderliche Cloudflare-/spätere Brevo-Anpassung bleibt separat offen; keine automatische Inhaltsfreigabe, keine Produktions-/Provideränderung.
