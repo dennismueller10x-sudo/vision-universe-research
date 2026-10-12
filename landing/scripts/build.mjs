@@ -27,7 +27,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','cookie-consent.css','cookie-consent.js','consent-state.js','impressum/index.html','datenschutz/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -59,7 +59,22 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
     await mkdir(resolve(output,'policies',alias),{recursive:true});
     const legal=await readFile(resolve(output,target,'index.html'),'utf8');
-    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../'));
+    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../').replaceAll('src="../','src="../../'));
+  }
+  // One shared, first-party consent UI on every public page, including aliases
+  // and a future reviewed privacy override. No draft/source files are deployed.
+  const consentTemplate = await readFile(resolve(root,'cookie-consent.html'),'utf8');
+  for (const path of ['index.html','impressum/index.html','datenschutz/index.html','policies/legal-notice/index.html','policies/privacy-policy/index.html']) {
+    const prefix = relative(dirname(resolve(output,path)),output).replaceAll('\\','/') || '.';
+    const privacyUrl = `${prefix}/datenschutz/`;
+    let page = await readFile(resolve(output,path),'utf8');
+    if (!page.includes('data-cookie-settings')) {
+      const link = `<a href="${privacyUrl}#cookie-einstellungen" data-cookie-settings>Cookie-Einstellungen</a>`;
+      page = page.includes('</footer>') ? page.replace('</footer>',link+'</footer>') : page.replace('</body>',`<footer>${link}</footer></body>`);
+    }
+    page = page.replace('</head>',`<link rel="stylesheet" href="${prefix}/cookie-consent.css"><script type="module" src="${prefix}/cookie-consent.js"></script></head>`)
+      .replace('</body>',consentTemplate.replaceAll('{{PRIVACY_URL}}',privacyUrl)+'\n</body>');
+    await writeFile(resolve(output,path),page);
   }
   await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
