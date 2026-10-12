@@ -10,6 +10,10 @@ on:
         default: true
   workflow_dispatch:
     inputs:
+      live_review_only:
+        description: Read-only completion of the frozen 38308985623 production sample; never modifies state or gates
+        type: boolean
+        default: false
       recover_full_scope:
         description: 'Explicit recovery of previously accepted full-eligible scope after an existing gate-off rollback; keeps gate closed until fresh acceptance'
         type: boolean
@@ -30,7 +34,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   upgrade:
-    if: ${{ !inputs.publish || github.ref == 'refs/heads/main' }}
+    if: ${{ !inputs.live_review_only && (!inputs.publish || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -147,4 +151,37 @@ jobs:
             ${{ runner.temp }}/ci-profile-source/profile-browser-qa.json-*.png
             ${{ runner.temp }}/ci-profile-source/profile-live-browser-qa.json-*.png
             ${{ runner.temp }}/ci-profile-source/candidate-qa.json-*.png
+          retention-days: 14
+
+  live_review:
+    if: inputs.live_review_only
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing browser runtime
+        run: |
+          npm install --prefix /tmp/ci-profile-review --no-audit --no-fund playwright@1.55.0
+          node scripts/company_intelligence/install-browser-deps.mjs /tmp/ci-profile-review/node_modules/.bin/playwright
+      - name: Frozen successful acceptance sample; consumer-safe artifact only
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 38308985623 -n company-intelligence-profile-source-38308985623 -D "$RUNNER_TEMP/ci-profile-review"
+      - name: Complete actual production matrix without any data or gate mutation
+        env:
+          NODE_PATH: /tmp/ci-profile-review/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: |
+          node scripts/company_intelligence/universe-browser-qa.mjs --live --sample "$RUNNER_TEMP/ci-profile-review/profile-sample.json" --out "$RUNNER_TEMP/ci-profile-review/profile-live-browser-qa.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-intelligence-profile-production-review-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ci-profile-review/profile-live-browser-qa.json
+            ${{ runner.temp }}/ci-profile-review/profile-live-browser-qa.json-*.png
           retention-days: 14
