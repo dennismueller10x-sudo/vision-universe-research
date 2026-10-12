@@ -106,8 +106,9 @@ jobs:
             const {spawnSync} = require('child_process');
             const dir = process.env.REPACK_DIRECTORY;
             const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'repack-manifest.json'), 'utf8'));
-            const client = path.resolve(process.env.GITHUB_WORKSPACE, '../../_actions/actions/upload-artifact/v4/dist/index.js');
-            if (!fs.existsSync(client)) throw new Error('OFFICIAL_ARTIFACT_CLIENT_UNAVAILABLE');
+            const actionRoot = path.resolve(process.env.GITHUB_WORKSPACE, '../../_actions/actions/upload-artifact/v4');
+            const client = ['dist/upload/index.js', 'dist/index.js'].map(f => path.join(actionRoot, f)).find(f => fs.existsSync(f));
+            if (!client) throw new Error('OFFICIAL_ARTIFACT_CLIENT_UNAVAILABLE');
             for (const item of manifest.bundles) {
               if (!/^canonical-bundle-\d{4}\.zip$/.test(item.file)) throw new Error('INVALID_BUNDLE_NAME');
               const uploaded = spawnSync(process.execPath, [client], {
