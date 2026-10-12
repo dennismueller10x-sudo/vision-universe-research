@@ -109,7 +109,9 @@
     const root=shell();root.setAttribute('aria-busy','true');
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
-      await D.EuropeView.loadIndex(ctx);if(!active())return;
+      // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
+      const index=D.EuropeView.loadIndex(ctx),home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(parts[0]||'');
+      if(!home){await Promise.all([index,parts[0]==='maerkte'&&D.Markets.ensureStyles()]);if(!active())return;}
       if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
       else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
@@ -240,7 +242,7 @@
       } else if(parts[0]==='daten'){
         root.append(D.Daten.render({meta,universe:meta.universes.find(u=>u.universeId===ctx.universeId),calendar}));
       } else {
-        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active}));
+        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active,liveIndex:index}));
         if(typeof result==='function')homeDispose=result;
       }
       if(active()){
@@ -254,6 +256,8 @@
   }
   async function boot(){
     try {
+      // Kurse laden ab dem Start parallel zu meta.json, nicht erst danach.
+      if(global.VUFx&&global.VUFx.Bootstrap)global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
       [meta,calendar]=await Promise.all([S.loadJSON(BASE+'meta.json'),S.loadJSON('/quant/config/market-calendar.json').catch(()=>null)]);
       ctx.meta=meta;ctx.calendar=calendar;global.VUDiscoverMeta=meta;
       const universe=meta.universes.find(u=>u.universeId===ctx.universeId);
@@ -268,9 +272,6 @@
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));
       document.addEventListener('vu-fx-ready',()=>route(1));
-      if(global.VUFx&&global.VUFx.Bootstrap){
-        global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
-      }
       await route();
     }catch(err){message(document.getElementById('v2-shell'),'Discover ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}
   }
