@@ -1,5 +1,5 @@
 {
-  "methodologyVersion": "discover-v4.0.0",
+  "methodologyVersion": "discover-v4.1.0",
   "note": "Regelwerk für Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschätzung. Wer eine Gewichtung ändert, ändert sie hier, und der Build rechnet sie nach.",
   "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich nach discover/data/**. Es verändert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
   "universes": {
@@ -226,6 +226,21 @@
     }
   },
   "rows": [
+    {
+      "id": "im-blick",
+      "title": "HEUTE IM BLICK",
+      "subtitle": "Was sich am letzten Handelstag belegbar bewegt hat: neue Jahreshochs, Ausbrüche mit Volumen, Stärke im Trend.",
+      "sort": "imBlickScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "imBlickScore"
+      ],
+      "world": "momentum",
+      "microRange": "1M",
+      "qualify": true,
+      "rule": "Ereigniswert (im-blick.js): 70 % Ereignisse des letzten Handelstags, 30 % Fuehrerschaft 12 Monate; nur qualifizierte Unternehmen (keine Fonds, SPACs, Trusts). Qualifikation zuerst (V4 §21)."
+    },
     {
       "id": "new-52-week-highs",
       "title": "NEUE JAHRESHOCHS",
@@ -959,5 +974,66 @@
   "positioning": {
     "line": "Entdecke Aktien, die gerade auffallen – und verstehe in Sekunden, warum.",
     "second": "Kurse, Trends und Geschäftszahlen aus echten Daten. Keine Empfehlung."
+  },
+  "imBlick": {
+    "engineVersion": "discover-im-blick-1.0.0",
+    "note": "Eingangsflaeche und Reihe 'Heute im Blick' (discover/engines/im-blick.js). 70 % belegte Ereignisse des letzten Handelstags, 30 % Fuehrerschaft ueber 12 Monate. Ohne frisches Ereignis 4 Punkte Abzug je Sitzung seit dem letzten Ereignis (aus der Tagesreihe, hoechstens 20); keine Rotation, keine Hoechstverweildauer. Bekanntheit nur als Gleichstandsbrecher (<= 2). Kalibriert im Replay 11.09.-09.10.2026, siehe docs/DISCOVER_IM_BLICK.md. Die Gewichte unten sind massgeblich; die Engine traegt dieselben Werte als Rueckfall.",
+    "weights": {
+      "event": 0.7,
+      "persistent": 0.3
+    },
+    "points": {
+      "closeAtHigh": 30,
+      "touchedHigh": 12,
+      "breakout": 20,
+      "volume": 15,
+      "dayMove": 10,
+      "shortRs": 10,
+      "acceleration": 10,
+      "emerging": 5
+    },
+    "ranges": {
+      "volume": [
+        1.5,
+        4
+      ],
+      "dayMoveSigma": [
+        1,
+        3
+      ],
+      "shortRsPct": [
+        75,
+        95
+      ],
+      "acceleration": [
+        0,
+        0.15
+      ],
+      "emergingRsPct": [
+        90,
+        100
+      ]
+    },
+    "emergingMaxLeadership": 80,
+    "fresh": {
+      "volume": 2,
+      "dayMoveSigma": 2
+    },
+    "damping": {
+      "perSession": 4,
+      "max": 20,
+      "window": 20
+    },
+    "requireTrendForMoves": true,
+    "instrumentTypes": [
+      "EQUITY_COMMON",
+      "ADR",
+      "REIT"
+    ],
+    "maxPerSector": 2,
+    "profileRepeatPenalty": 6,
+    "count": 5,
+    "minScore": 40,
+    "rowMinScore": 20
   }
 }

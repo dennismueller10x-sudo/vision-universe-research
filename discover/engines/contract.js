@@ -56,6 +56,8 @@
     "trendAlignment", "leadershipScore", "momentumScore", "relativeStrengthScore",
     "breakoutScore", "leadershipPercentile", "momentumPercentile",
     "relativeStrengthPercentile",
+    /* Im Blick (im-blick.js): Ereigniswert 0..100, null fuer nicht zulaessige Titel. */
+    "imBlickScore",
     /* Fundamental (Praefix f_): Geschaeftsjahre der SEC-Pipeline; Bewertung
        aus Kurs und Fundamentals. null, wo die Reihe fehlt - nie geschaetzt. */
     "f_revenue", "f_revenueGrowth3y", "f_revenueGrowth10y", "f_revenueGrowthTTM", "f_netMargin", "f_fcfMargin",
