@@ -508,7 +508,7 @@
     var fz = a.freshness || null;
     if (a.withheld && fz) {
       var ageTxt = fz.ageTradingDays == null ? "–" : fz.ageTradingDays + (fz.ageTradingDays === 1 ? " Handelstag" : " Handelstage");
-      host.append(el("p", { class: "v2-eyebrow", text: "Chartbild · " + ticker }), el("h1", { class: "qx-h1", text: fz.title || "Analyse zurückgehalten" }),
+      host.append.apply(host, [el("p", { class: "v2-eyebrow", text: "Chartbild · " + ticker }), el("h1", { class: "qx-h1", text: fz.title || "Analyse zurückgehalten" }),
         X.notice(fz.badge || "Zurückgehalten", fz.text || "Die Kursreihe ist nicht aktuell genug für eine laufende technische These."),
         el("p", { class: "cb-small cb-dim", text: "Letzter Stand der Kursreihe: " + X.dateDe(fz.lastBar) + "." }),
         view === "pro" ? el("dl", { class: "cb-facts" }, [
@@ -516,7 +516,7 @@
           el("dt", { text: "Alter" }), el("dd", { class: "num", text: ageTxt + " (Bezug " + X.dateDe(fz.reference) + ")" }),
           el("dt", { text: "Einstufung" }), el("dd", { text: fz.state + " · Richtlinie " + fz.version }),
           el("dt", { text: "Grund" }), el("dd", { text: fz.reason ? fz.reason.text + (fz.reason.known ? "" : " (nicht belegt)") : "–" })]) : null,
-        el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
+        el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")])].filter(Boolean));   // null-Kinder wuerden als Text "null" erscheinen
       return;
     }
     var rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
