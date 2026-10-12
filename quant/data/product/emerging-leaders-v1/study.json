@@ -11,7 +11,7 @@
   "discover/methodology/discover-v1.json": "f899be12ab505c1c50c7b569635d3e9617f5c092e9ccef8a19fda2f0b085efad",
   "quant/methodology/emerging-leaders-v1.json": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939"
  },
- "gitSha": "ba3c5d323fd53a1dac71b8b2f86d3c5ba2502bf5",
+ "gitSha": "81349aec09219c42f3bbd2a72f450891f72e03d7",
  "runs": [
   {
    "at": "2026-10-12T10:37:49.848Z",
@@ -31,13 +31,32 @@
    "evidenceStatus": "EXPERIMENTAL",
    "selected": null,
    "holdoutEvaluated": true
+  },
+  {
+   "at": "2026-10-12T11:18:44.216Z",
+   "status": "COMPLETE",
+   "gitSha": "81349aec09219c42f3bbd2a72f450891f72e03d7",
+   "codeSha256": {
+    "quant/engines/emerging-leaders.js": "b926b130d8ba07a2909e34217ab4c45afd8c9828e08e42fe299685cf94a64f61",
+    "scripts/quant/build-emerging-leaders-study.mjs": "d09de5d1eeefec200ce021fdbd165748709dc0c6806dae78c65bb9264bf3cfc5",
+    "scripts/quant/lib/emerging-leaders-inputs.mjs": "3848280a81d0416a206682061f9f8eb4bc187960f7bfc76e0b00718a26461e31",
+    "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+    "quant/engines/survivorship-control.js": "ec13a50662c99828a077db4c218461ee5960786148a8ea394edc02918411aa88",
+    "quant/engines/pit-fundamental-history.js": "45971386207fb16432df0a278a26accc6c96955d3f47dedcce8bb5b9775a5499",
+    "discover/engines/scoring.js": "9184dfa041a7995fd824738abfbfc390bfde24cd37264067f12a7f3f31ee05e0",
+    "discover/methodology/discover-v1.json": "f899be12ab505c1c50c7b569635d3e9617f5c092e9ccef8a19fda2f0b085efad",
+    "quant/methodology/emerging-leaders-v1.json": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939"
+   },
+   "evidenceStatus": "EXPERIMENTAL",
+   "selected": null,
+   "holdoutEvaluated": true
   }
  ],
- "holdoutEvaluations": 1,
+ "holdoutEvaluations": 2,
  "methodologyVersion": "emerging-leaders-1.0.0",
  "engineVersion": "emerging-leaders-1.0.0",
  "methodologySha256": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939",
- "generatedAt": "2026-10-12T10:37:49.848Z",
+ "generatedAt": "2026-10-12T11:18:44.217Z",
  "status": "COMPLETE",
  "evidenceStatus": "EXPERIMENTAL",
  "label": "Experimentell - keine belastbare Ueberlegenheit nachgewiesen",
@@ -7996,7 +8015,8 @@
   "Der maximale Rueckgang im Fenster ist durch die Maximum Adverse Excursion (tiefster Schluss gegen Einstieg) ersetzt; ein Rueckgang von einem Zwischenhoch wird nicht berichtet.",
   "Alt-Listings spaeter neu vergebener Kuerzel (Klasse D) sind nicht abrufbar und fehlen.",
   "Europa: keine Tagesreihen mit Volumen - nicht Teil der Studie.",
-  "Beobachtungen ueberlappen bei h > 21 (monatliches Raster); Standardfehler nach Newey-West."
+  "Beobachtungen ueberlappen bei h > 21 (monatliches Raster); Standardfehler nach Newey-West.",
+  "Holdout dieser Methodikversion wurde 2-mal ausgewertet (siehe runs); Aenderungen zwischen den Laeufen sind ueber codeSha256/gitSha nachvollziehbar."
  ],
  "notes": {
   "holdoutUse": "Die Holdouts werden im selben Lauf gerechnet, die Modellwahl liest aber nur die eingefrorene VALIDATION-Kopie; Holdout-Zahlen der nicht gewaehlten Modelle sind beschreibend.",
