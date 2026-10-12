@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail, registered_repair_sources
+from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail, registered_repair_sources, ownership_company
 from company_intelligence.store import Store
 from company_intelligence.top46_content import matching_resolver
 
@@ -17,6 +17,18 @@ class SourceOnboardingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             resolver = matching_resolver(companies, Path(directory))
         self.assertEqual(set(resolver.companies), set(companies))
+    def test_owner_legal_alias_requires_exact_cik_and_complete_base_without_master_mutation(self):
+        company={'companyId':CID,'cik':'0001652130','names':['Example Therapeutics'],'listings':[]}
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);path=root/'quant/data/sec/consumer/CIK0001652130.json';path.parent.mkdir(parents=True)
+            for data,accepted in [({'cik':'0001652130','name':'Example Therapeutics Corp'},True),
+                                  ({'cik':'0000320193','name':'Example Therapeutics Corp'},False),
+                                  ({'cik':'0001652130','name':'Example Therapeutics Japan LLC'},False)]:
+                path.write_text(json.dumps({**data,'asOf':'2026-10-05'}));value,reference=ownership_company(company,root,'2026-10-12T00:00:00Z')
+                self.assertEqual(bool(reference),accepted)
+                self.assertEqual(company['names'],['Example Therapeutics'])
+                if accepted:self.assertIn(data['name'],value['names'])
+                else:self.assertEqual(value,company)
     def test_existing_owned_feed_repair_never_grants_new_ownership(self):
         official = {'status': 'VALIDATED', 'url': 'https://www.intelliatx.com/'}
         source = {**SOURCE, 'allowedSites': ['https://www.intelliatx.com/', 'https://ir.intelliatx.com/']}

@@ -567,7 +567,11 @@ class Pipeline:
     def discover_company(self, company, official_site):
         cid = company['companyId']
         try:
-            sources, configurations = discover_ir(company, official_site, self.http, self.now)
+            from .owner_identity import ownership_company
+            source_company, legal_reference = ownership_company(company, self.root, self.now)
+            sources, configurations = discover_ir(source_company, official_site, self.http, self.now)
+            if legal_reference:
+                self.store.audit(self.now, cid, 'SOURCE_VERIFICATION_SEC_LEGAL_NAME_REUSED', **legal_reference)
             for source in sources:
                 self.store.source(source)
             from .materials import retain_source_configurations

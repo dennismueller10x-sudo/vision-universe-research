@@ -25,6 +25,7 @@ from company_intelligence.store import Store, atomic_json
 from company_intelligence.transport import PublicHTTP, BudgetExhausted, SourceError
 from company_intelligence.top46_content import matching_resolver
 from company_intelligence.current_state_acceptance import database_proof
+from company_intelligence.owner_identity import ownership_company
 
 MANDATORY = ('iss_cik_0001633917', 'iss_cik_0001652130')
 
@@ -68,7 +69,8 @@ def candidate_inventory(companies, store, sources, reviewed):
     # Missing sources take priority over repairs of already pollable archives.
     # Mandatory exact-protocol cases remain first; current owner verification
     # still runs for every candidate before registration or polling.
-    rows.sort(key=lambda r: (r['companyId'] not in MANDATORY, r['kind'] != 'MISSING_PROVEN_SOURCE', r['companyId']))
+    rechecks=set(reviewed.get('currentOwnerRecheckIssuerIds',[]))
+    rows.sort(key=lambda r: (r['companyId'] not in MANDATORY, r['companyId'] not in rechecks, r['kind'] != 'MISSING_PROVEN_SOURCE', r['companyId']))
     return rows
 
 def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, now=None):
@@ -113,7 +115,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 continue
             selected.append(cid)
             try:
-                repair_sources = registered_repair_sources(sources, cid, official) if row['kind'] == 'EXACT_HTTPS_RECONFIRMATION' else []
+                repair_sources = registered_repair_sources(sources, cid, official) if row['kind'] == 'EXACT_HTTPS_RECONFIRMATION' and cid not in reviewed.get('currentOwnerRecheckIssuerIds',[]) else []
                 if repair_sources:
                     checked = 0
                     for source in repair_sources:
@@ -129,7 +131,9 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                         'newProvenSources': 0, 'method': 'EXISTING_VERIFIED_IR_ROUTINE_POLL_EXACT_HTTPS_RECONFIRMATION'})
                     outcomes[status] += 1
                     continue
-                proof = validate_discovery_candidate(companies[cid], {'url': row['url'], 'evidence': 'EXISTING_RECORDED_ROOT_CANDIDATE'}, http, stamp)
+                owner_company,legal_reference=ownership_company(companies[cid],now=stamp)
+                proof = validate_discovery_candidate(owner_company, {'url': row['url'], 'evidence': 'EXISTING_RECORDED_ROOT_CANDIDATE'}, http, stamp)
+                if legal_reference:proof['ownershipEvidence']['currentSECConsumerLegalNameReference']=legal_reference
                 if proof.get('status') != 'VALIDATED':
                     raise ValueError('CURRENT_NATIVE_OWNER_PROOF_REQUIRED')
                 history = 'officialSiteReviewHistory:' + cid + ':' + proof['contentHash']
@@ -137,7 +141,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                     store.set_state(history, official)
                 store.set_state('officialSite:' + cid, proof)
                 store.audit(stamp, cid, 'SOURCE_ROOT_OWNER_REVERIFIED', priorStatus=official.get('status'), contentHash=proof['contentHash'])
-                discovered, configs = discover_ir(companies[cid], proof['url'], http, stamp)
+                discovered, configs = discover_ir(owner_company, proof['url'], http, stamp)
                 registered = [s for s in sources if s.get('companyId') == cid and s.get('type') == 'IR_FEED' and first_party(s, cid)
                     and not publisher(s.get('url')) and any(within_domain(site, proof['url']) for site in s.get('allowedSites', []))]
                 allowed = list({s['sourceId']:s for s in registered + discovered if first_party(s, cid) and not publisher(s.get('url'))}.values())

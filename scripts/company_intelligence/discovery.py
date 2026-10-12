@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-10'
+OWNERSHIP_VERSION = 'corporate-ownership-11'
 CORPORATE_HEADER_EVIDENCE_VERSION = 'corporate-header-1'
 OVERSIZED_IR_RECOVERY_VERSION = 'owned-ir-after-size-limit-1'
 
@@ -268,6 +268,8 @@ def _recover_oversized_root_ir(company, candidate, http, now, original):
 def _validate_response(company, candidate, response, now, header_body=None):
     """Wikidata is discovery evidence only: require corporate header and legal-name ownership."""
     from .model import normalize, clean, SUFFIX, within_domain
+    from .owner_identity import ownership_company
+    company, legal_reference = ownership_company(company, now=now)
     import hashlib
     from .feeds import parse_links
     from .platforms import fingerprint
@@ -390,6 +392,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
                                r'are trademarks owned by(?: or licensed to)?\s+([^,;|()©]{1,100}),', extension, re.I)
             if notice and not suffixless and legal_normalize(notice[1]) == wanted:
                 extension = extension[:notice.start()]
+            # A standard self-copyright sentence repeats the same precise
+            # legal owner. It cannot authorize a subsidiary, different owner,
+            # customer mention or arbitrary punctuation-based truncation.
+            self_notice = re.search(r'\bAll website design,\s+text,\s+graphics,\s+the selection and arrangement thereof,\s+'
+                                    r'and all software are copyright by\s+([^;|()©]{1,100}?)\.\s*(?:ALL RIGHTS RESERVED\b|$)', extension, re.I)
+            if self_notice and not suffixless and legal_normalize(self_notice[1]) == wanted:
+                extension = extension[:self_notice.start()]
             extension = legal_normalize(extension)
             if ((suffixless or not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension)) and
                     re.match(r'(?:\w+\s+)*(?:llc|ltd|corp|inc|plc)\b', extension)):
@@ -476,6 +485,7 @@ def _validate_response(company, candidate, response, now, header_body=None):
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
             'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
                                   'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2],
-                                  'structuredOrganizations':structured_owner[:2], 'excludedProviderCredits':provider_credits[:2]},
+                                  'structuredOrganizations':structured_owner[:2], 'excludedProviderCredits':provider_credits[:2],
+                                  **({'currentSECConsumerLegalNameReference':legal_reference} if legal_reference else {})},
             'contentHash': hashlib.sha256(response['body']).hexdigest(), 'platformHint': fingerprint(response['body']),
             'irCandidates': list(dict.fromkeys(l['url'] for l in parse_links(response['body'],response['finalUrl']) if re.search(r'investor.relations|\binvestors?\b',l['text'],re.I) and not re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)',l['url'],re.I)))[:5]}
