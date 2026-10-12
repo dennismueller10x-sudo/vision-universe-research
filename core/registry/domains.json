@@ -236,12 +236,12 @@
       "artifact": "/discover/live/im-blick-US_REAL.json",
       "timestamp": ["generatedAt"],
       "records": "stocks",
-      "role": "Stuendliche Neuberechnung der Eingangsflaeche 'Im Blick' aus den 5-Minuten-Kursen gegen die EOD-Basis (discover/data/im-blick). Keine Anbieteranfrage; intraday kein Schlusshoch, kein Ausbruch, kein Volumen. Nach dem Abendlauf gilt die Schlusskurs-Auswahl.",
+      "role": "Neuberechnung der Eingangsflaeche 'Im Blick' ca. alle zwei Stunden aus den 5-Minuten-Kursen gegen die EOD-Basis (discover/data/im-blick); daneben discover/live/monitor-US_REAL.json (faelliger Slot, letzter Lauf, letzter Erfolg, Datenalter, Fehler). Keine Anbieteranfrage; intraday kein Schlusshoch, kein Ausbruch, kein Volumen. Nach dem Schluss SESSION_CLOSED (nie LIVE), danach gilt die Schlusskurs-Auswahl.",
       "producer": "scripts/discover/build-im-blick-live.mjs",
       "workflow": "discover-im-blick-live.yml",
-      "schedule": "Mo-Fr stuendlich 13:17-21:17 UTC",
+      "schedule": "Slots aus dem Boersenkalender (11:00, 13:00, 15:00, 16:20 New York; verkuerzte Tage 11:00 + Schluss+20). Ausloeser: Cloudflare-Wecker alle 30 Min. (Min. 5/35, 15-21 UTC, Mo-Fr) und GitHub-Zeitplan Min. 27, 15-21 UTC (Rueckfall); der Lauf rechnet nur, wenn der faellige Slot offen ist",
       "freshness": { "kind": "none" },
-      "consumers": ["Discover Startseite (Im Blick, ui/featured.js)"]
+      "consumers": ["Discover Startseite (Im Blick, ui/featured.js)", "Freshness-Monitor (scripts/discover/check-im-blick-live.mjs)"]
     },
     {
       "id": "supertrader",

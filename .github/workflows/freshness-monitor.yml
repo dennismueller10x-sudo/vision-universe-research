@@ -31,6 +31,11 @@ on:
     - cron: '5 14 * * 1-5'
     - cron: '15 15 * * 1-5'
     - cron: '15 23 * * 1-5'
+    # Im Blick (Intraday): 19:40 UTC liegt 100 Minuten nach dem zweiten und
+    # 40 nach dem dritten Slot des Winters (18:00/20:00) bzw. 160/40 des
+    # Sommers (17:00/19:00) - ein nicht gestarteter Lauf faellt hier auf
+    # (check-im-blick-live.mjs). Ausserhalb des Laufzeitfensters der Kette.
+    - cron: '40 19 * * 1-5'
   push:
     branches:
       - 'claude/**'
@@ -63,6 +68,18 @@ jobs:
           SITE="$IN_SITE"
           node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
 
+      # Im Blick (Intraday): wurde zum faelligen Termin neu gerechnet? Ein nicht
+      # gestarteter Workflow meldet keinen Fehler - deshalb fragt dieser Schritt
+      # das Ergebnis, nicht den Workflow (discover/engines/refresh-plan.js).
+      - name: Im Blick - zum faelligen Termin neu gerechnet?
+        id: imblick
+        continue-on-error: true
+        env:
+          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
+        run: |
+          set -o pipefail
+          node scripts/discover/check-im-blick-live.mjs --strict --site="$IN_SITE" | tee freshness-imblick.txt
+
       - name: Freshness des Repository-Stands (zur Einordnung)
         run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
 
@@ -92,6 +109,12 @@ jobs:
         if: steps.live.outcome == 'failure'
         run: |
           echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."
+          exit 1
+
+      - name: Ergebnis Im Blick
+        if: steps.imblick.outcome == 'failure'
+        run: |
+          echo "::error::Im Blick wurde zum faelligen Termin nicht neu gerechnet (siehe Zusammenfassung)."
           exit 1
 
   # ===================================================================
