@@ -128,6 +128,8 @@
   /** Ein neutraler Satz je Titel zum Vorlesen - Lage und Bedingung, keine Empfehlung. */
   function chartbildSentence(x) {
     if (!x || !x.found) return (x && x.symbol || '') + ': Für diesen Titel liegt kein Chartbild vor.';
+    /* Datenstand-Richtlinie: ein zurückgehaltener Titel wird nie als aktuelle Lage beschrieben */
+    if (x.withheld) return x.symbol + ': ' + (x.notice || 'Analyse zurückgehalten.');
     var usd = function (v) { return Fields.format('price', v); };
     var p = x.primaryScenario, parts = [];
     parts.push(x.symbol + ': Ausblick ' + (x.outlook && x.outlook.label || '–') + (x.structure && x.structure.label ? ', ' + x.structure.label : '') + '.');
@@ -136,6 +138,7 @@
         ' nicht per Schlusskurs ' + (p.direction === 'BEARISH' ? 'überschritten' : 'unterschritten') + ' wird.');
     }
     parts.push(x.elliott.abstained ? 'Elliott: keine belastbare Zählung.' : 'Elliott (experimentell): Strukturklarheit ' + x.elliott.applicability.label.toLowerCase() + '.');
+    if (x.delayed && x.notice) parts.push(x.notice + '.');
     return parts.join(' ');
   }
 

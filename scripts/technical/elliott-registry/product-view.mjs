@@ -70,6 +70,34 @@ export function compareHighlights(published, registry, asOfOf) {
   return r;
 }
 
+/** Datenstand je Titel im veroeffentlichten Produkt (Index: `fr` fehlt = FRESH) und Bezugstag der Richtlinie (meta.projection.freshness.reference; fehlt bei Staenden vor der Richtlinie). */
+export function publishedFreshness(dir = PUBLISHED_DIR) {
+  const idx = JSON.parse(gunzipSync(readFileSync(join(dir, "index.json.gz"))).toString()), meta = readJson(join(dir, "meta.json"));
+  const by = new Map(idx.rows.map((r) => [r.t, { st: r.fr ? r.fr.st : "FRESH", last: r.fr ? r.fr.last : r.asOf }]));
+  const f = meta.projection && meta.projection.freshness;
+  return { reference: f ? f.reference : null, version: f ? f.version : null, byTicker: by };
+}
+
+/** Vollvergleich des Datenstands (letzte Bar, Zustand, damit Sichtbarkeit) ueber ALLE Titel des Produkts.
+ *  Das Register rechnet auf frisch gebauten Wochenreihen, das Produkt auf den committeten Langreihen; die letzte Bar eines Titels kann daher je Titel abweichen
+ *  (Ausnahme TIMING: gezaehlt und ausgewiesen), ebenso bei anderem Bezugstag des Produkts. Hart abweichend ist nur:
+ *   - Sichtbarkeit (zurueckgehalten ja/nein) verschieden BEI GLEICHER letzter Bar, oder gleicher Zustand-Klasse nicht erreichbar → STATE_DIFFERS,
+ *   - ein Produkttitel fehlt im Register → NOT_IN_REGISTRY_UNIVERSE.
+ *  Ohne Richtlinie im veroeffentlichten Stand: nicht anwendbar. */
+export function compareFreshness(pub, registry, F) {
+  const r = { applicable: !!pub.reference, compared: 0, identical: 0, timing: [], different: [], ok: true };
+  if (!pub.reference) return r;
+  const withheld = (st) => st === "STALE" || st === "NON_TRADING";
+  for (const [t, p] of [...pub.byTicker].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    const g = registry.get(t);
+    if (!g) { r.compared++; r.different.push({ t, reason: "NOT_IN_REGISTRY_UNIVERSE", published: p }); continue; }
+    if (g.st === p.st && g.last === p.last) { r.compared++; r.identical++; continue; }
+    if (g.last !== p.last || pub.reference !== F) { r.timing.push({ t, published: p, registry: g, publishedReference: pub.reference }); continue; }
+    r.compared++; r.different.push({ t, reason: "STATE_DIFFERS", published: p, registry: g, visibilityDiffers: withheld(g.st) !== withheld(p.st) });
+  }
+  r.ok = r.different.length === 0; return r;
+}
+
 /** Kontext wie der Produkt-Build (gleiche Evidenztabellen, gleiche Tagesquelle). */
 export function productContext(pub, workDir = null) {
   if (pub.dailyFromCanonical && !workDir) return { error: "PRODUCT_DAILY_SOURCE_IS_CANONICAL_HISTORY_BUT_NO_WORK_DIR" };
@@ -166,6 +194,8 @@ export function identityOne(sym, ctx, pub, productInputDir) {
   }
   if (series.timestamps[series.length - 1] !== P.asOf) return { s: sym, status: "INPUT_NEWER_OR_OLDER", inputAsOf: series.timestamps[series.length - 1], publishedAsOf: P.asOf };
   const shard = JSON.parse(gunzipSync(readFileSync(join(pub.dir, "shards", shardKey(sym) + ".json.gz"))).toString()).instruments[sym];
+  /* Datenstand-Richtlinie: ein zurueckgehaltener Titel traegt keine Elliott-Zaehlung im Produkt; seine Identitaet ist der Datenstand (compareFreshness) */
+  if (shard && shard.withheld) return { s: sym, tf: P.tf, status: "WITHHELD" };
   const mine = analyzeAndSummarize(series, kind, sym, ctx);
   const theirs = elliottSha(shard && shard.pro ? shard.pro.elliott : null);
   return { s: sym, tf: P.tf, status: mine.view.sha === theirs ? "IDENTICAL" : "DIFFERENT", mine: mine.view.sha, published: theirs };

@@ -402,6 +402,19 @@ export function advanceStore(prev, items, versions) {
       events += theses[id].events.length; matched.add(th.key);
     }
   }
+  /* Datenstand-Richtlinie (data-freshness-1.0.0): Sichtbarkeit je These. Wird die laufende These wegen veralteter Kursdaten zurueckgehalten, entsteht ein angehaengtes Ereignis
+     WITHHELD_STALE_DATA (Zustand, letzte Bar, Alter); setzen frische Daten wieder ein, VISIBILITY_RESTORED. Die These selbst, ihre Revisionen und ihr Zustand bleiben unveraendert. */
+  for (const it of items) {
+    if (!it.freshness) continue;
+    for (const id of Object.keys(theses)) {
+      const e = theses[id]; if (e.symbol !== it.symbol || e.timeframe !== it.tf || e.state === "ARCHIVED") continue;
+      const was = e.visibility === "WITHHELD", now = !!it.freshness.withheld;
+      if (now === was || (!now && !e.visibility)) continue;
+      const ev = now ? { d: it.freshness.ref, type: "WITHHELD_STALE_DATA", rev: e.rev, freshness: it.freshness.st, lastBar: it.freshness.last, ageTradingDays: it.freshness.age, reason: it.freshness.rc }
+                     : { d: it.freshness.ref, type: "VISIBILITY_RESTORED", rev: e.rev, freshness: it.freshness.st, lastBar: it.freshness.last, ageTradingDays: it.freshness.age };
+      theses[id] = Object.assign({}, e, { visibility: now ? "WITHHELD" : "VISIBLE", events: e.events.concat([ev]) }); events++;
+    }
+  }
   for (const [id, e] of Object.entries(theses)) {
     if (e.state === "ARCHIVED") continue;
     const k = e.symbol + "|" + e.timeframe, m = bySymbol.get(k) || new Map(); m.set(e.key, Object.assign({ id }, e)); bySymbol.set(k, m);

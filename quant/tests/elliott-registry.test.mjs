@@ -159,3 +159,59 @@ test("M10-R7 lastBarUpTo: Reihe darf vor der Woche enden (Produktsicht), nie dan
   assert.equal(Reg.lastBarUpTo(pts, "2026-09-11"), -1);
   assert.equal(Reg.cutIndex(pts, "2026-10-01", "2026-10-09"), -1, "strenge Regel der zustandslosen Sicht bleibt");
 });
+
+test("M10-R8 Datenstand-Richtlinie im Register: Zurueckhalten und Wiederaufnahme als angehaengte Revisionen, Ereignis und Historie unveraendert", async () => {
+  const w = mkdtempSync(join(tmpdir(), "m10-w8-")), reg = mkdtempSync(join(tmpdir(), "m10-r8-"));
+  for (const id of ["ref_AAPL", "ref_MSFT"]) writeFileSync(join(w, id + ".json"), readFileSync(join(ROOT, "quant/data/market/discover-series-long", id + ".json")));
+  const pts = (to) => { const o = []; let d = new Date("2024-01-05T00:00:00Z"); while (d.toISOString().slice(0, 10) <= to) { o.push([d.toISOString().slice(0, 10), 10 + o.length * 0.01]); d = new Date(d.getTime() + 7 * 864e5); } return o; };
+  const series = (to) => writeFileSync(join(w, "ref_STALEX.json"), JSON.stringify({ ticker: "STALEX", points: pts(to), asOf: to }));
+  series("2026-05-29");
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1, productView: false });
+  const payload = { symbol: "ref_STALEX", timeframe: "1W", view: "CUSTOMER_PRODUCT", cohort: "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT", setupType: "EXPLORE_HIGHLIGHT_WAVE_3", dir: 1, registeredWeek: "2026-06-05", registeredBarDate: "2026-05-29", levels: null };
+  Led.append(reg, Led.readLedger(reg), [{ type: "EVENT", id: Led.eventId(payload), week: "2026-06-05", recordedAt: "2026-06-06T00:00:00.000Z", payload }]);
+  const evId = Led.eventId(payload), vis = () => Led.readLedger(reg).filter((e) => e.type === "REVISION" && e.ref === evId && /WITHHELD_STALE_DATA|VISIBILITY_RESTORED/.test(e.payload.type));
+  /* Woche 2026-06-05: letzte Bar 2026-05-29 = 1 Handelstag alt → FRESH, nichts */
+  assert.equal(vis().length, 0);
+  /* spaetere Woche, Reihe endet weiter 2026-05-29 → STALE → genau eine Revision */
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, productView: false });
+  assert.deepEqual(vis().map((e) => e.payload.type), ["WITHHELD_STALE_DATA"]);
+  const r1 = vis()[0].payload; assert.equal(r1.freshness, "STALE"); assert.equal(r1.barDate, "2026-05-29"); assert.ok(r1.ageTradingDays > 60); assert.equal(r1.policy, "data-freshness-1.0.0");
+  const before = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  /* weitere Woche, weiter stale → keine zweite Revision */
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-10-02", workers: 1, productView: false });
+  assert.equal(vis().length, 1, "kein zweites WITHHELD");
+  /* frische Daten setzen wieder ein → Sichtbarkeit ueber neue Revision */
+  series("2026-10-09");
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-10-09", workers: 1, productView: false });
+  assert.deepEqual(vis().map((e) => e.payload.type), ["WITHHELD_STALE_DATA", "VISIBILITY_RESTORED"]);
+  const after = readFileSync(join(reg, "ledger.jsonl"), "utf8");
+  assert.ok(after.startsWith(before), "nur angehaengt: fruehere Zeilen unveraendert");
+  /* Hash-Kette gueltig; der einzige Pruefhinweis stammt vom kuenstlich angehaengten Produkt-Ereignis (der Testlauf hat keine Produktsicht) */
+  const vr = Ver.verifyRegistry(reg); assert.deepEqual(vr.errors, ["Produkt-Ereignis ohne Produkt-Lauf: seq 2"]);
+  assert.equal(Led.verifyChain(Led.readLedger(reg), JSON.parse(readFileSync(join(reg, "HEAD.json"), "utf8"))).ok, true);
+  assert.equal(Led.readLedger(reg).filter((e) => e.type === "EVENT" && e.id === evId).length, 1, "das Ereignis selbst wurde nie veraendert oder ersetzt");
+});
+
+test("M10-R9 Produkt/Register-Identitaet des Datenstands: letzte Bar, Zustand und Sichtbarkeit je Titel", () => {
+  const pub = (o) => ({ reference: "2026-10-09", version: "data-freshness-1.0.0", byTicker: new Map(Object.entries(o)) });
+  const P = { A: { st: "FRESH", last: "2026-10-09" }, B: { st: "DELAYED", last: "2026-10-05" }, C: { st: "STALE", last: "2026-08-17" } };
+  const same = new Map(Object.entries(P));
+  const a = Pv.compareFreshness(pub(P), same, "2026-10-09"); assert.equal(a.ok, true); assert.equal(a.identical, 3);
+  /* Zustand weicht ab (Sichtbarkeit!) */
+  const st = new Map(same); st.set("C", { st: "DELAYED", last: "2026-08-17" });
+  const b = Pv.compareFreshness(pub(P), st, "2026-10-09"); assert.equal(b.ok, false); assert.deepEqual(b.different.map((x) => [x.t, x.reason]), [["C", "STATE_DIFFERS"]]);
+  /* letzte Bar weicht je Titel ab (frisch gebaute Reihen vs. committete Langreihen): Zeitausnahme, ausgewiesen, nicht hart */
+  const lb = new Map(same); lb.set("B", { st: "DELAYED", last: "2026-10-06" });
+  const l = Pv.compareFreshness(pub(P), lb, "2026-10-09"); assert.equal(l.ok, true); assert.deepEqual(l.timing.map((x) => x.t), ["B"]);
+  /* gleiche letzte Bar, aber verschiedene Sichtbarkeit: hart */
+  const vis = new Map(same); vis.set("B", { st: "STALE", last: "2026-10-05" });
+  const vv = Pv.compareFreshness(pub({ ...P, B: { st: "DELAYED", last: "2026-10-05" } }), vis, "2026-10-09"); assert.equal(vv.ok, false); assert.equal(vv.different[0].visibilityDiffers, true);
+  /* Titel fehlt im Register */
+  const miss = new Map(same); miss.delete("A");
+  assert.deepEqual(Pv.compareFreshness(pub(P), miss, "2026-10-09").different.map((x) => x.reason), ["NOT_IN_REGISTRY_UNIVERSE"]);
+  /* Produkt auf anderem Bezugstag gebaut → Zeitausnahme, ausgewiesen, keine Abweichung */
+  const t = Pv.compareFreshness(pub(P), st, "2026-10-02"); assert.equal(t.ok, true); assert.equal(t.timing.length, 1); assert.equal(t.timing[0].t, "C");
+  /* Stand ohne Richtlinie (vor der ersten Veroeffentlichung): nicht anwendbar, kein Fehler */
+  const n = Pv.compareFreshness({ reference: null, byTicker: new Map() }, same, "2026-10-09"); assert.equal(n.applicable, false); assert.equal(n.ok, true);
+});
+

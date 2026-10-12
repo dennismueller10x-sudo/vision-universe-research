@@ -15,10 +15,12 @@ if (!NEW) { console.error("--new DIR fehlt"); process.exit(2); }
 const read = (p) => JSON.parse(gunzipSync(readFileSync(p)).toString("utf8"));
 const ALLOWED_PROJ = (k) => /^explore/.test(k) || k === "lifecycle" || k === "relations" || k === "version";
 const canon = (v) => JSON.stringify(v);
+const withheldTitles = [];
 function diffKeys(o, n) {
   const keys = new Set([...Object.keys(o), ...Object.keys(n)]), bad = [];
+  if (n.withheld) { withheldTitles.push(n.symbol); return bad; }   // Datenstand-Richtlinie: zurueckgehaltener Titel – Shard enthaelt bewusst keine laufende These; wird gezaehlt und ausgewiesen
   for (const k of keys) {
-    if (k === "exploreCandidates") continue;
+    if (k === "exploreCandidates" || k === "freshness") continue;
     if (k === "projection" || k === "projectionWeekly") {
       const po = o[k] || {}, pn = n[k] || {};
       for (const q of new Set([...Object.keys(po), ...Object.keys(pn)])) if (!ALLOWED_PROJ(q) && canon(po[q]) !== canon(pn[q])) bad.push(k + "." + q);
@@ -38,5 +40,5 @@ for (const f of readdirSync(join(OLD, "shards")).filter((x) => x.endsWith(".json
     if (bad.length) { differing++; bad.forEach((b) => { byField[b] = (byField[b] || 0) + 1; }); if (examples.length < 8) examples.push({ s, bad }); }
   }
 }
-console.log(JSON.stringify({ titles, missingShards: missing, differing, byField, examples }));
+console.log(JSON.stringify({ titles, missingShards: missing, differing, withheldNotCompared: withheldTitles.length, withheldTitles: withheldTitles.slice(0, 80), byField, examples }));
 process.exit(differing || missing ? 1 : 0);
