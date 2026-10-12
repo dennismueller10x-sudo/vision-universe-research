@@ -200,9 +200,12 @@ test("M10-R9 Produkt/Register-Identitaet des Datenstands: letzte Bar, Zustand un
   /* Zustand weicht ab (Sichtbarkeit!) */
   const st = new Map(same); st.set("C", { st: "DELAYED", last: "2026-08-17" });
   const b = Pv.compareFreshness(pub(P), st, "2026-10-09"); assert.equal(b.ok, false); assert.deepEqual(b.different.map((x) => [x.t, x.reason]), [["C", "STATE_DIFFERS"]]);
-  /* letzte Bar weicht ab */
+  /* letzte Bar weicht je Titel ab (frisch gebaute Reihen vs. committete Langreihen): Zeitausnahme, ausgewiesen, nicht hart */
   const lb = new Map(same); lb.set("B", { st: "DELAYED", last: "2026-10-06" });
-  assert.equal(Pv.compareFreshness(pub(P), lb, "2026-10-09").ok, false);
+  const l = Pv.compareFreshness(pub(P), lb, "2026-10-09"); assert.equal(l.ok, true); assert.deepEqual(l.timing.map((x) => x.t), ["B"]);
+  /* gleiche letzte Bar, aber verschiedene Sichtbarkeit: hart */
+  const vis = new Map(same); vis.set("B", { st: "STALE", last: "2026-10-05" });
+  const vv = Pv.compareFreshness(pub({ ...P, B: { st: "DELAYED", last: "2026-10-05" } }), vis, "2026-10-09"); assert.equal(vv.ok, false); assert.equal(vv.different[0].visibilityDiffers, true);
   /* Titel fehlt im Register */
   const miss = new Map(same); miss.delete("A");
   assert.deepEqual(Pv.compareFreshness(pub(P), miss, "2026-10-09").different.map((x) => x.reason), ["NOT_IN_REGISTRY_UNIVERSE"]);

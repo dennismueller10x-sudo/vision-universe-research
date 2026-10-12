@@ -40,7 +40,7 @@ import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, 
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
-import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats } from "./lib/ti-freshness.mjs";
+import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -391,6 +391,7 @@ function projectAll(got) {
   const items = [], stats = { version: PROJECTION_VERSION, store: STORE_SCHEMA, status: {}, consumerVisible: 0, types: {}, highUpside: 0, weeklyForDaily: 0 };
   /* Datenstand-Richtlinie: Bezugstag = letzte abgeschlossene Sitzung (--reference zum Nachrechnen), Zustand je Titel aus der letzten Bar */
   const reference = arg("reference", null) || Freshness.lastCompletedSession(new Date().toISOString()), master = loadMaster(), FS = newStats(reference);
+  if (!validReference(reference)) throw new Error("--reference muss JJJJ-MM-TT sein: " + reference);
   for (const [t, g] of got) {
     g.f = freshnessOf(g.p, { reference, master });
     g.p.freshness = shardBlock(g.f);
@@ -466,6 +467,10 @@ function projectAll(got) {
   /* Datenstand-Richtlinie: betroffene Thesen zaehlen (vor dem Zurueckhalten), dann die laufende These aus den Produktdaten nehmen */
   for (const [, g] of got) { addStats(FS, g.p, g.f); if (g.f.withheld) g.p = withholdPayload(g.p, g.f); }
   stats.freshness = FS;
+  /* Systemischer Ausfall (Pipeline, Anbieter, Eingabe): nichts veroeffentlichen, laut scheitern (Ausnahme --allow-systemic-stale fuer bewusste Laeufe) */
+  FS.systemic = systemicCheck(FS);
+  if (FS.systemic.systemic && !process.argv.includes("--allow-systemic-stale") && !process.argv.includes("--only") && !process.argv.includes("--limit"))
+    throw new Error("Datenstand-Richtlinie: " + FS.affected.titles + " von " + FS.titles + " Titeln (" + Math.round(FS.systemic.share * 100) + " %) waeren zurueckgehalten - Schwelle " + Math.round(FS.systemic.maxShare * 100) + " %. Vermutlich Datenlage (Pipeline/Anbieter/Eingang), nichts geschrieben. Bezugstag " + reference + ".");
   mkdirSync(OUT, { recursive: true });
   writeFileSync(storePath, JSON.stringify(adv.store, null, 1));
   stats.lifecycleEvents = adv.events; stats.tracked = Object.values(adv.store.theses).filter((e) => e.state !== "ARCHIVED").length;

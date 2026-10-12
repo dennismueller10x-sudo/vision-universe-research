@@ -10,6 +10,7 @@ import { ROOT } from "./ti-data.mjs";
 
 const require = createRequire(import.meta.url);
 export const Freshness = require(join(ROOT, "quant/engines/technical/ti/data-freshness.js"));
+const Identity = require(join(ROOT, "core/identity.js"));
 
 /** Wertpapierstamm: Boerse und Aktivitaet je Ticker (Datei: security-master/eligibility.json). */
 export function loadMaster(root = ROOT) {
@@ -22,7 +23,7 @@ export function loadMaster(root = ROOT) {
 
 /** Stand der Datenaktualisierung des Titels (nur zur Ursachenangabe): sourceUpdatedAt der kompakten Tagesreihe. */
 function refreshedAt(ticker, root) {
-  const f = join(root, "quant/data/market/discover-series", "ref_" + ticker.replace(/[^A-Z0-9]/g, "_") + ".json");
+  const f = join(root, "quant/data/market/discover-series", Identity.securityIdForTicker(ticker) + ".json");   // ADR-001: Identitaet nur ueber core/identity.js
   try { const u = JSON.parse(readFileSync(f, "utf8")).sourceUpdatedAt; return u ? String(u).slice(0, 10) : null; } catch { return null; }
 }
 
@@ -36,7 +37,8 @@ export function freshnessOf(p, ctx) {
 }
 
 /** Inhalt, der im Shard eines zurueckgehaltenen Titels bleibt: Tatsachen (Kurs, Chart, Datenqualitaet), keine laufende These. */
-const KEEP = ["schemaVersion", "symbol", "timeframe", "asOf", "price", "dataQuality", "chart", "overlays", "versions", "diagnostics", "history", "freshness"];
+/* bewusst NICHT enthalten: overlays (Zonen, Pfade, Wellen), history (fruehere Szenarien), explain – das waeren Szenario- und Elliott-Thesen */
+const KEEP = ["schemaVersion", "symbol", "timeframe", "asOf", "price", "dataQuality", "chart", "versions", "diagnostics", "freshness"];
 
 /** Zurueckhalten: ersetzt die laufende These durch einen ausdruecklichen Zustand. Gibt das neue Payload zurueck (das alte bleibt unveraendert). */
 export function withholdPayload(p, f) {
@@ -48,7 +50,7 @@ export function withholdPayload(p, f) {
   out.scenarios = [];
   out.alerts = null;
   out.regime = null; out.confidence = null; out.confluence = null; out.signature = null; out.evidence = null; out.timeframes = null; out.clarity = null; out.evidenceBadge = null; out.explain = null;
-  out.pro = { withheld: true };
+  out.pro = { withheld: true }; out.overlays = { withheld: true }; out.history = { withheld: true };
   const stub = (tf) => ({ schemaVersion: "elliott-projection-withheld-1", timeframe: tf || p.timeframe, asOf: p.asOf, close: p.price && p.price.close, status: "WITHHELD", reason: f.state === Freshness.STATES.NON_TRADING ? "NON_TRADING" : "STALE_DATA",
     consumerVisible: false, primary: null, alternative: null, highUpside: null, motiveAlternative: null, exploreHighlights: [], exploreCandidates: [], exploreCandidatesTotal: 0, exploreWithheld: true, relations: {},
     freshness: shardBlock(f), message: L.title ? L.title + " – " + L.text : null });
@@ -91,3 +93,12 @@ export function addStats(s, p, f) {
     if ((p.projection || {}).consumerVisible || (p.projectionWeekly || {}).consumerVisible) a.consumerVisibleProjections++;
   }
 }
+
+/** Systemischer Ausfall: ist ein grosser Teil des Universums zurueckgehalten, liegt das meist an der Datenlage (Pipeline, Anbieter, Eingabe), nicht an einzelnen Titeln. Der Build bricht dann ab statt alle Thesen still zurueckzuhalten. */
+export const SYSTEMIC_MAX_WITHHELD_SHARE = 0.2;
+export function systemicCheck(stats, maxShare = SYSTEMIC_MAX_WITHHELD_SHARE) {
+  const share = stats.titles ? stats.affected.titles / stats.titles : 0;
+  return { share: Math.round(share * 1e4) / 1e4, maxShare, systemic: share > maxShare };
+}
+/** Bezugstag muss ein gueltiges Datum sein (ein Tippfehler wuerde sonst alle Titel als frisch erscheinen lassen). */
+export function validReference(s) { return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s + "T00:00:00Z")); }

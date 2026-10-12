@@ -99,7 +99,7 @@
   var REASONS = {
     SECURITY_INACTIVE: "Der Wertpapierstamm führt den Titel als nicht mehr gehandelt.",
     NO_NEWER_BARS: "Der Datenanbieter liefert nach der letzten Bar keine weiteren Kurse (z. B. Übernahme, Handelsaussetzung, Delisting oder Abdeckungslücke); die Ursache ist aus den Daten nicht zu bestimmen.",
-    REFRESH_STOPPED: "Die Kursreihe wird seit der letzten Bar nicht mehr aktualisiert; die Ursache ist aus den Daten nicht zu bestimmen.",
+    REFRESH_STOPPED: "Nach der letzten Bar liegt keine neuere Bar vor und die Reihe wurde danach nicht mehr aktualisiert; die Ursache ist aus den Daten nicht zu bestimmen.",
     NO_BAR: "Es liegt keine Kursbar vor."
   };
 

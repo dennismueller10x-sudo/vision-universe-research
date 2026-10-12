@@ -17,7 +17,7 @@ Bezugstag = letzte abgeschlossene US-Handelssitzung (ab 22:00 UTC gilt die Sitzu
 
 ### Schwellen und Begründung (Bestandsaufnahme 2026-10-12, Bezugstag 2026-10-09)
 
-Die Altersverteilung der 5.035 Produkttitel ist zweigipflig: **4.979 Titel haben Alter 0**, danach bleibt nur ein Einzelfall bei 2 Handelstagen; die übrigen liegen bei 4 bis 41. Es gibt keine Häufung im Bereich 1 bis 3, die eine Schwelle verschieben würde.
+Die Altersverteilung der 5.035 Produkttitel ist zweigipflig: **4.979 Titel haben Alter 0**, danach bleibt nur ein Einzelfall bei 2 Handelstagen; die übrigen liegen bei 4 bis 41. Es gibt keine Häufung im Bereich 1 bis 3, die eine Schwelle verschieben würde. Die Grenze 5/6 liegt dagegen **nicht** in einer natürlichen Lücke (Alter 5: 6 Titel, 6: 4, 8: 4); sie ist eine Setzung, begründet mit der bestehenden Datenprüfung.
 
 * `FRESH ≤ 1`: Das Produkt wird nach Börsenschluss gebaut; ein Handelstag Verzug ist die normale Veröffentlichungslage.
 * `DELAYED ≤ 5`: gleiche Grenze wie die bestehende Datenprüfung (`quant/engines/market-quality.js`, `maxStaleTradingDays = 5`, Befund `stale_last_bar`); bis dahin fehlt der Wochenanalyse höchstens eine Wochenbar.
@@ -34,6 +34,10 @@ Die Schwellen sind keine Ticker-Ausnahmen und nicht auf Beispiele abgestimmt (Te
 * **Screener**: zurückgehaltene Zeilen werden wie schon unveränderte Kursreihen ausgelassen.
 * **Lebenszyklus** (`projection-theses.json`): Die vollständige These bleibt im Store; der Lebenszyklus wird weiter mit der echten Projektion geführt. Beim Zurückhalten wird **einmal** das Ereignis `WITHHELD_STALE_DATA` angehängt (Zustand, letzte Bar, Alter, Grund), bei frischen Daten `VISIBILITY_RESTORED`. Revisionen, Zustand und frühere Ereignisse bleiben unverändert (Test D-13).
 
+## Systemischer Ausfall
+
+Wären mehr als 20 % des Universums zurückgehalten, bricht der Build ab, bevor etwas geschrieben wird (Datenlage: Pipeline, Anbieter oder Eingang). Bewusste Läufe: `--allow-systemic-stale`. `--reference` wird auf das Format JJJJ-MM-TT geprüft. Der Anteil steht in `meta.projection.freshness.systemic`.
+
 ## Ursachen (nur was die Daten belegen)
 
 | Code | Bedeutung | belegt |
@@ -48,7 +52,7 @@ Bestandsaufnahme (`data/freshness-audit-2026-10-12.json`, Bezugstag 2026-10-09):
 
 * Das Register führt die **Kundenprodukt-Sicht** nur für Titel, die der Kunde sieht. Für zurückgehaltene Titel entstehen keine neuen Produktereignisse.
 * Offene Produktereignisse: Wird der Titel zurückgehalten, hängt der Lauf eine Revision `WITHHELD_STALE_DATA` an (Zustand, letzte Bar, Alter, Richtlinie); kehren frische Daten zurück, `VISIBILITY_RESTORED`. Je Ereignis höchstens ein Übergang je Zustandswechsel; das Ereignis selbst und alle früheren Einträge bleiben unverändert (Test M10-R8).
-* **Identität von Produkt und Register** umfasst jetzt den Datenstand: letzte Bar, Zustand und Sichtbarkeit je Titel für **alle** Produkttitel (`compareFreshness`) sowie die Explore Highlights (`compareHighlights`). Abweichung = „nichts registriert“. Einzige Ausnahme `TIMING`: Das Produkt wurde auf einem anderen Bezugstag gebaut als die registrierte Woche; sie wird gezählt und ausgewiesen. `verify.mjs` weist einen Lauf zurück, dessen Vergleich nicht bestanden ist. Solange das veröffentlichte Produkt noch ohne Richtlinie gebaut ist, ist der Datenstand-Vergleich „nicht anwendbar“.
+* **Identität von Produkt und Register** umfasst jetzt den Datenstand: letzte Bar, Zustand und Sichtbarkeit je Titel für **alle** Produkttitel (`compareFreshness`) sowie die Explore Highlights (`compareHighlights`). Hart abweichend (= „nichts registriert“) ist nur: verschiedene Sichtbarkeit bei gleicher letzter Bar, oder ein Produkttitel fehlt im Register. Ausnahme `TIMING`, gezählt und ausgewiesen: andere letzte Bar je Titel (das Register rechnet auf frisch gebauten Wochenreihen, das Produkt auf den committeten Langreihen) oder ein Produkt, das auf einem anderen Bezugstag als die registrierte Woche gebaut wurde. `verify.mjs` weist einen Lauf zurück, dessen Vergleich nicht bestanden ist. Solange das veröffentlichte Produkt noch ohne Richtlinie gebaut ist, ist der Datenstand-Vergleich „nicht anwendbar“.
 
 ## Dateien
 

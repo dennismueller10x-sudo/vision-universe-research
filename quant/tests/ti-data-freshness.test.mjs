@@ -68,7 +68,7 @@ test("D-6 · Kundentexte (Deutsch) und kompakte Form", () => {
 });
 
 /* ---- Zurueckhalten im Produkt ---- */
-const payload = () => ({ schemaVersion: "vu-ti-api-3.0.0", symbol: "ZZT", timeframe: "1W", asOf: "2026-08-17", price: { close: 5.25, atr: 0.2 }, dataQuality: { bars: 300 }, chart: { timestamps: ["2026-08-17"], close: [5.25] }, overlays: {}, versions: { api: "x" }, diagnostics: {}, history: {},
+const payload = () => ({ schemaVersion: "vu-ti-api-3.0.0", symbol: "ZZT", timeframe: "1W", asOf: "2026-08-17", price: { close: 5.25, atr: 0.2 }, dataQuality: { bars: 300 }, chart: { timestamps: ["2026-08-17"], close: [5.25] }, overlays: { zones: [{ kind: "ENTRY", lo: 5.2, hi: 5.3 }], invalidations: [{ price: 5.05 }], projectedPaths: [{ pts: [1, 2] }], waves: [{ label: "C", pattern: "FLAT" }] }, versions: { api: "x" }, diagnostics: {}, history: { cases: [{ date: "2026-09-21", direction: "BULLISH", outcome: "HIT" }] },
   outlook: { label: "BULLISH", structure: "UPTREND_ADVANCING", confidence: "LOW" }, scenarios: [{ kind: "PRIMARY", direction: "BULLISH" }], alerts: { scenarioId: "s", outlook: "BULLISH", direction: "BULLISH", levels: { entryLow: 5.2 }, flags: { inEntryZone: true } },
   regime: {}, confidence: {}, confluence: {}, signature: {}, evidence: {}, timeframes: {}, clarity: {}, evidenceBadge: {}, explain: { summary: "x" }, pro: { elliott: { primary: {} } },
   projection: { status: "OK", consumerVisible: true, primary: { key: "K" } }, projectionWeekly: { status: "OK", consumerVisible: true, primary: { key: "K" }, exploreHighlights: [{ key: "H" }], exploreCandidates: [{ key: "C" }] },
@@ -84,7 +84,8 @@ test("D-7 · Zurueckhalten: keine laufende These in Shard und Index, Tatsachen b
   assert.equal(w.exploreCandidates.candidates, 0); assert.equal(w.exploreCandidates.highlights, 0); assert.equal(w.motiveCandidate, null);
   assert.deepEqual(w.pro, { withheld: true }, "keine Elliott-Zaehlung im Produkt");
   assert.equal(w.price.close, 5.25); assert.ok(w.chart && w.dataQuality, "Kurs, Chart und Datenqualitaet bleiben als Tatsachen");
-  assert.ok(!/BULLISH|"key":"K"|"key":"H"|"key":"C"/.test(JSON.stringify(w).replace('"label":"WITHHELD"', "")), "keine These im Text");
+  assert.ok(!/BULLISH|"key":"K"|"key":"H"|"key":"C"|zones|invalidations|projectedPaths|waves|ENTRY|HIT/.test(JSON.stringify(w).replace('"label":"WITHHELD"', "")), "keine These im Text (auch nicht in overlays/history)");
+  assert.deepEqual(w.overlays, { withheld: true }); assert.deepEqual(w.history, { withheld: true });
   const row = FB.withheldIndexRow(p, f);
   assert.equal(row.withheld, 1); assert.equal(row.outlook, null); assert.equal(row.direction, null); assert.equal(row.entry, null); assert.equal(row.proj, null); assert.equal(row.alerts, null); assert.deepEqual(row.fr, F.compact(f));
 });
@@ -187,4 +188,24 @@ test("D-15 · Ereignisnamen sind im Chartbild beschriftet", () => {
 
 test("D-16 · Richtlinie ist eingefroren und nennt Version und Schwellen", () => {
   assert.equal(F.VERSION, "data-freshness-1.0.0"); assert.equal(F.POLICY.freshMaxTradingDays, 1); assert.equal(F.POLICY.delayedMaxTradingDays, 5); assert.throws(() => { "use strict"; F.POLICY.freshMaxTradingDays = 9; });
+});
+
+
+test("D-17 · Systemischer Ausfall: mehr als 20 % zurueckgehalten → Build bricht ab; Bezugstag wird validiert", () => {
+  const s = FB.newStats(REF); for (let i = 0; i < 10; i++) FB.addStats(s, payload(), at(i < 3 ? "2026-08-17" : "2026-10-09"));
+  const c = FB.systemicCheck(s); assert.equal(c.systemic, true); assert.equal(c.share, 0.3);
+  const ok = FB.newStats(REF); for (let i = 0; i < 100; i++) FB.addStats(ok, payload(), at(i < 5 ? "2026-08-17" : "2026-10-09")); assert.equal(FB.systemicCheck(ok).systemic, false);
+  assert.equal(FB.validReference("2026-10-09"), true); for (const bad of ["foo", "2026-13-40", "09.10.2026", undefined]) assert.equal(FB.validReference(bad), false, String(bad));
+});
+
+test("D-18 · VU Ask: getChartbild/-Alternatives tragen bei verzoegerten Daten den Hinweis, bei zurueckgehaltenen nur den Zustand", async () => {
+  const reg = { tools: {}, register(def, fn) { this.tools[def.name] = fn; } };
+  const analysis = (extra) => Object.assign({ asOf: "2026-10-05", timeframe: "1W", explain: { facts: ["x"], summary: "s", evidence: "e" }, scenarios: [{ kind: "PRIMARY", direction: "BULLISH" }], pro: { elliott: null } }, extra);
+  const mk = (a) => ({ getAnalysis: () => Promise.resolve({ state: "AVAILABLE", analysis: a }) });
+  AiTools.register(reg, mk(analysis({ freshness: { state: "DELAYED", lastBar: "2026-10-05", ageTradingDays: 4, badge: "Kursdaten verzögert · letzter Stand 05.10.2026" } })));
+  const d = await reg.tools.getChartbild({ symbol: "ZZT" }); assert.equal(d.found, true); assert.equal(d.notice, "Kursdaten verzögert · letzter Stand 05.10.2026"); assert.equal(d.freshness.state, "DELAYED");
+  const da = await reg.tools.getChartbildAlternatives({ symbol: "ZZT" }); assert.equal(da.notice, "Kursdaten verzögert · letzter Stand 05.10.2026");
+  AiTools.register(reg, mk(analysis({ withheld: true, freshness: { state: "STALE", lastBar: "2026-08-17", ageTradingDays: 38, reason: { code: "NO_NEWER_BARS" }, title: "Analyse zurückgehalten", text: "Die Kursreihe ist nicht aktuell genug für eine laufende technische These." } })));
+  const w = await reg.tools.getChartbild({ symbol: "ZZT" }); assert.equal(w.withheld, true); assert.equal(w.facts, undefined); assert.equal(w.summaryText, undefined); assert.match(w.notice, /Analyse zurückgehalten\. Die Kursreihe ist nicht aktuell genug/);
+  const wa = await reg.tools.getChartbildAlternatives({ symbol: "ZZT" }); assert.equal(wa.withheld, true); assert.equal(wa.scenarios, undefined);
 });

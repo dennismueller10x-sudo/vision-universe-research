@@ -79,16 +79,21 @@ export function publishedFreshness(dir = PUBLISHED_DIR) {
 }
 
 /** Vollvergleich des Datenstands (letzte Bar, Zustand, damit Sichtbarkeit) ueber ALLE Titel des Produkts.
- *  Weicht der Bezugstag des Produkts vom Registerwoche F ab, rechnen beide auf verschiedenen Staenden: Ausnahme TIMING (gezaehlt, ausgewiesen). Ohne Richtlinie im veroeffentlichten Stand: nicht anwendbar. */
+ *  Das Register rechnet auf frisch gebauten Wochenreihen, das Produkt auf den committeten Langreihen; die letzte Bar eines Titels kann daher je Titel abweichen
+ *  (Ausnahme TIMING: gezaehlt und ausgewiesen), ebenso bei anderem Bezugstag des Produkts. Hart abweichend ist nur:
+ *   - Sichtbarkeit (zurueckgehalten ja/nein) verschieden BEI GLEICHER letzter Bar, oder gleicher Zustand-Klasse nicht erreichbar → STATE_DIFFERS,
+ *   - ein Produkttitel fehlt im Register → NOT_IN_REGISTRY_UNIVERSE.
+ *  Ohne Richtlinie im veroeffentlichten Stand: nicht anwendbar. */
 export function compareFreshness(pub, registry, F) {
   const r = { applicable: !!pub.reference, compared: 0, identical: 0, timing: [], different: [], ok: true };
   if (!pub.reference) return r;
+  const withheld = (st) => st === "STALE" || st === "NON_TRADING";
   for (const [t, p] of [...pub.byTicker].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
     const g = registry.get(t);
     if (!g) { r.compared++; r.different.push({ t, reason: "NOT_IN_REGISTRY_UNIVERSE", published: p }); continue; }
     if (g.st === p.st && g.last === p.last) { r.compared++; r.identical++; continue; }
-    if (pub.reference !== F) { r.timing.push({ t, published: p, registry: g, publishedReference: pub.reference }); continue; }
-    r.compared++; r.different.push({ t, reason: "STATE_DIFFERS", published: p, registry: g });
+    if (g.last !== p.last || pub.reference !== F) { r.timing.push({ t, published: p, registry: g, publishedReference: pub.reference }); continue; }
+    r.compared++; r.different.push({ t, reason: "STATE_DIFFERS", published: p, registry: g, visibilityDiffers: withheld(g.st) !== withheld(p.st) });
   }
   r.ok = r.different.length === 0; return r;
 }

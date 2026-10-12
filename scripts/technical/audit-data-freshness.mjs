@@ -7,7 +7,10 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { ROOT } from "./lib/ti-data.mjs";
-import { Freshness, loadMaster, shardBlock } from "./lib/ti-freshness.mjs";
+import { createRequire } from "node:module";
+import { Freshness, loadMaster } from "./lib/ti-freshness.mjs";
+const require = createRequire(import.meta.url);
+const Identity = require("../../core/identity.js"), Materialization = require("../../quant/engines/technical/product-materialization.js");   // ADR-001: Identitaet und Shard-Schluessel nur ueber die gemeinsamen Module
 
 const arg = (k, d) => { const i = process.argv.indexOf("--" + k); return i >= 0 ? process.argv[i + 1] : d; };
 const V3 = join(ROOT, "quant/data/technical-intelligence/v3");
@@ -15,9 +18,9 @@ const idx = JSON.parse(gunzipSync(readFileSync(join(V3, "index.json.gz"))).toStr
 const meta = JSON.parse(readFileSync(join(V3, "meta.json"), "utf8"));
 const reference = arg("reference", null) || (meta.projection && meta.projection.freshness && meta.projection.freshness.reference) || Freshness.lastCompletedSession(meta.generatedAt);
 const master = loadMaster();
-const sk = (t) => (t.toUpperCase() + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_");
+const sk = (t) => Materialization.shardKey(t);
 const shards = new Map();
-const refreshed = (t) => { try { const u = JSON.parse(readFileSync(join(ROOT, "quant/data/market/discover-series", "ref_" + t.replace(/[^A-Z0-9]/g, "_") + ".json"), "utf8")).sourceUpdatedAt; return u ? String(u).slice(0, 10) : null; } catch { return null; } };
+const refreshed = (t) => { try { const u = JSON.parse(readFileSync(join(ROOT, "quant/data/market/discover-series", Identity.securityIdForTicker(t) + ".json"), "utf8")).sourceUpdatedAt; return u ? String(u).slice(0, 10) : null; } catch { return null; } };
 const BUCKETS = [["0-3", 3], ["4-5", 5], ["6-10", 10], ["11-20", 20], ["21-40", 40], [">40", 1e9]];
 const bucketOf = (a) => BUCKETS.find(([, hi]) => a <= hi)[0];
 const zero = () => ({ titles: 0, tiScenario: 0, projectionConsumerVisible: 0, primary: 0, alternative: 0, motiveAlternative: 0, exploreHighlights: 0, exploreCandidates: 0, anyTi: 0 });

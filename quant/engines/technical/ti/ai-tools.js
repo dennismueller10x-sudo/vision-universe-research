@@ -127,7 +127,13 @@
           return { found: true, symbol: symbol, withheld: true, rule: RULE, asOf: r.analysis.asOf, freshness: { state: fz.state, lastBar: fz.lastBar, ageTradingDays: fz.ageTradingDays, reasonCode: fz.reason ? fz.reason.code : null },
                    notice: (fz.title || "Analyse zurückgehalten") + ". " + (fz.text || "") + " Letzter Stand: " + dateDe(fz.lastBar) + ".", isProbability: false };
         }
-        return r && r.state === "AVAILABLE" ? fn(r.analysis) : { found: false, symbol: symbol, reason: (r && r.reason) || "NOT_AVAILABLE" };
+        if (r && r.state === "AVAILABLE") {
+          var out = fn(r.analysis), dz = r.analysis.freshness;
+          /* verzoegerte Kursdaten: gleicher Hinweis wie im Chartbild */
+          if (out && out.found && dz && dz.state === "DELAYED") { out.freshness = { state: dz.state, lastBar: dz.lastBar, ageTradingDays: dz.ageTradingDays }; out.notice = dz.badge; }
+          return out;
+        }
+        return { found: false, symbol: symbol, reason: (r && r.reason) || "NOT_AVAILABLE" };
       });
     }
     registry.register(defs.getChartbild, function (a) {

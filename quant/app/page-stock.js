@@ -748,7 +748,8 @@
             p && p.invalidation ? el("span", {}, [el("small", { text: p.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: Ex.fmt(p.invalidation.price) })]) : null,
             cl ? el("span", {}, [el("small", { text: "Struktur" }), el("strong", { text: cl })]) : null
           ]),
-          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })]));
+          a.freshness && a.freshness.state === "DELAYED" ? el("span", { class: "cb-small cb-dim", role: "status", text: a.freshness.line }) : null,
+          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })].filter(Boolean)));
       }).catch(function () { return null; }); };
       if (!global.IntersectionObserver) cbLoad();
       else {
