@@ -1,0 +1,182 @@
+{
+  "schema": "supertrader-operational-recovery-review-2.0.0",
+  "status": "RECOVERY_VALIDATED_WAITING_FINAL_FRAME",
+  "scope": "OPERATIONAL_RECOVERY_ONLY_NOT_FINAL_NUMERIC_OR_DATA_CERTIFICATION",
+  "observed_at": "2026-10-12T12:52:00Z",
+  "branch": "research/supertrader-data-execution-certification-20261012",
+  "remote_head_sha": "bfc92c3fd7a5a551051d6a6167300be96f535a6c",
+  "baseline_pr": {
+    "number": 589,
+    "state": "OPEN",
+    "draft": true,
+    "head_sha": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+    "unchanged": true
+  },
+  "new_draft_pr_opened": false,
+  "workflow_audit": [
+    {
+      "id": 38237114432,
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "bfc92c3fd7a5a551051d6a6167300be96f535a6c",
+      "created_at": "2026-10-12T10:33:51Z",
+      "updated_at": "2026-10-12T10:33:53Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38237114432"
+    },
+    {
+      "id": 38227655816,
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "2dbac3d85ee71c32f9eae2d9a34e16dc55dcc03c",
+      "created_at": "2026-10-12T09:05:37Z",
+      "updated_at": "2026-10-12T09:05:38Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38227655816"
+    },
+    {
+      "id": 38226679747,
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "5f8e2387ff07fbb1c776ce11761b8cb4456f89a1",
+      "created_at": "2026-10-12T08:56:28Z",
+      "updated_at": "2026-10-12T08:56:29Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38226679747"
+    },
+    {
+      "id": 38220176451,
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "44ae2c57db51a6af36e658f1f25134535e1a7a4f",
+      "created_at": "2026-10-12T07:52:14Z",
+      "updated_at": "2026-10-12T07:52:15Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38220176451"
+    },
+    {
+      "id": 38215282128,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "1dca5149fc43f135cca2e5677d5b218bdbf05a36",
+      "created_at": "2026-10-12T06:59:17Z",
+      "updated_at": "2026-10-12T07:03:24Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38215282128"
+    },
+    {
+      "id": 38215086077,
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "c2c76e0c99630d4d9392e66fec329c752470d859",
+      "created_at": "2026-10-12T06:57:00Z",
+      "updated_at": "2026-10-12T06:58:23Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38215086077"
+    },
+    {
+      "id": 38214813299,
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "28db79e1963e9193e57add3d0f9191420fa473aa",
+      "created_at": "2026-10-12T06:53:51Z",
+      "updated_at": "2026-10-12T06:55:31Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38214813299"
+    },
+    {
+      "id": 38211486301,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "7369c2cfe7529a4dc9e4d8659a1d5abc934c4ae0",
+      "created_at": "2026-10-12T06:13:26Z",
+      "updated_at": "2026-10-12T06:27:33Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38211486301"
+    },
+    {
+      "id": 38210527797,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "53d72eaa35c58e0142572fed9e4e58f3ebe21fbf",
+      "created_at": "2026-10-12T06:01:08Z",
+      "updated_at": "2026-10-12T06:01:26Z",
+      "attempt": 1,
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38210527797"
+    }
+  ],
+  "previous_resolved_transport_failures": [
+    {
+      "run_id": 38214813299,
+      "failed_step": "Upload each bounded encrypted package with the official artifact client",
+      "cause": "OFFICIAL_ARTIFACT_CLIENT_UNAVAILABLE",
+      "resolved_by_run": 38215282128
+    },
+    {
+      "run_id": 38215086077,
+      "failed_step": "Upload each bounded encrypted package with the official artifact client",
+      "cause": "MISSING_EXPLICIT_INCLUDE_HIDDEN_FILES_YAML_BOOLEAN",
+      "resolved_by_run": 38215282128
+    }
+  ],
+  "local_interruption": {
+    "last_successful_methods": [
+      "TURTLE_S2_EQUITY_DAILY",
+      "KULLAMAGI_DAILY_ADAPTATION"
+    ],
+    "interrupted_method": "WEINSTEIN_STAGE_DAILY",
+    "interrupted_final_historical_artifact_present": false,
+    "original_driver_session_present": false,
+    "original_driver_and_workers_present_at_initial_recovery_check": false,
+    "error_artifact_present": false,
+    "github_timeout_or_concurrency_abort_evidence": false,
+    "recorded_cgroup_oom_kill_count": 0,
+    "root_cause": "UNESTABLISHED",
+    "root_cause_limit": "Process/session disappearance is observed; no exit-status or causal runtime record survives. It is not presented as a proven timeout, concurrency cancellation or out-of-memory kill."
+  },
+  "recovery": {
+    "detached_supervisor": true,
+    "stdin": "IGNORED",
+    "parent_process": "INIT",
+    "private_logs": true,
+    "preserved_completed_methods": [
+      "TURTLE_S2_EQUITY_DAILY",
+      "KULLAMAGI_DAILY_ADAPTATION"
+    ],
+    "remaining_methods": [
+      "WEINSTEIN_STAGE_DAILY",
+      "cross_sectional_momentum",
+      "52_week_high_effect",
+      "LOW_VOLATILITY"
+    ],
+    "completed_method_raw_and_control_hashes_registered_before_restart": true,
+    "interrupted_files_preserved_unchanged": true,
+    "only_remaining_methods_restarted": true,
+    "fresh_private_output_directories": true,
+    "frozen_original_cli_reused": true,
+    "workers": 1,
+    "old_and_new_source_snapshots_combined": false,
+    "required_final_assembly_checks": [
+      "ORIGINAL_SIX_METHOD_IDS",
+      "ORIGINAL_RULEBOOK_AND_PROTOCOL_HASHES",
+      "V2_FREEZE_EQUALITY",
+      "SOURCE_AND_EFFECTIVE_SOURCE_FINGERPRINT_EQUALITY",
+      "FULL_RAW_CONTROL_HASHES",
+      "ALL_RECONCILIATIONS",
+      "ALL_FIFTEEN_PAIRS",
+      "PRESERVED_COMPLETED_BYTES_UNCHANGED"
+    ],
+    "final_six_way_assembly_completed": false
+  },
+  "rules_and_parameters_changed": false,
+  "original_tournament_core_quant_discover_and_live_files_changed": false,
+  "current_scan_started": false,
+  "sensitivity_raw_replays_started": false,
+  "finalization": false,
+  "independent_operational_review": {
+    "status": "PASSED_OPERATIONAL_WITH_FINAL_FRAME_GATE",
+    "private_review_sha256": "17777a33a960eabdcb470f4146428352c943fd937633d05f795f00e520d78297",
+    "final_frame_gate_required": true,
+    "final_numeric_review_approved": false
+  }
+}
