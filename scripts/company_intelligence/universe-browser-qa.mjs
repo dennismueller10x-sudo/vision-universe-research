@@ -46,11 +46,13 @@ try{
   try{
    await routes(page);await page.addInitScript(({key,state,theme})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1',theme);},{key:STORAGE_KEY,state,theme});
    page.on('pageerror',e=>errors.push(String(e.stack||e.message).slice(0,500)));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,status:r.status()});if(r.request().resourceType()==='script'&&r.status()>=400)scriptFailures.push({path:new URL(r.url()).pathname,status:r.status()});});page.on('requestfailed',r=>{if(r.resourceType()==='script')scriptFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});});
+   const navigationStarted=Date.now();
    await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});
    await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:expected.generatedAt},{timeout:30000});
    // Price/screener hydration can replace the chapter after its first ready
    // marker. Inspect the settled real page, preserving every content assertion.
    await waitForHydratedConsumer(page,{companyId:cid,generatedAt:expected.generatedAt,timeout:30000});
+   const consumerReadyMilliseconds=Date.now()-navigationStarted;
    const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
    assert.equal(await chapter.locator('.ci-profile[lang=de]').count()>0,flags.profile,ticker+':profile');
    if(flags.profile){
@@ -77,7 +79,10 @@ try{
     await page.screenshot({path:out+'-viewport-'+ticker+'-'+width+'-'+theme+'.png'});
    }
    cases.push({ticker,cid,width,theme,status:'PASS',modules:flags,consumerNews:expected.news.length,
-    visibleIntelligenceItems:await chapter.locator('.ci-story[data-intelligence-type]:visible').count(),profileTextHash:expected.companyProfile?.profileTextHash||null});
+    visibleIntelligenceItems:await chapter.locator('.ci-story[data-intelligence-type]:visible').count(),profileTextHash:expected.companyProfile?.profileTextHash||null,
+    consumerReadyMilliseconds,issuerPayloadBytes:m.assets[`snapshots/${m.generation}/${cid}.json`].bytes,
+    profileObjectBytes:expected.companyProfile?Buffer.byteLength(JSON.stringify(expected.companyProfile)):0,
+    uniqueConsumerRequestedBytes:[...new Set(requests.map(r=>r.path.split('/company-intelligence/data/')[1]))].reduce((sum,path)=>sum+(m.assets[path]?.bytes||0),0)});
   }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500)};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
  },1);
  for(const ticker of sample.ineligible){
