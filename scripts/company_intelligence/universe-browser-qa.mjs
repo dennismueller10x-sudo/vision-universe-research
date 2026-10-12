@@ -69,6 +69,13 @@ try{
    assert(!text.includes('keine Meldungen enthalten'));assert(!text.includes('Kein bestätigter kommender Termin'));
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(l=>l.height>0).every(l=>l.height>=44&&l.url.startsWith('https:')));
    if(width===390&&theme==='dark'||matrices.includes(ticker)&&[430,1440].includes(width)&&theme==='dark')await chapter.screenshot({path:out+'-'+ticker+'-'+width+'-'+theme+'.png'});
+   // Element captures can reposition fixed navigation within a tall image.
+   // Also retain the actual viewport, including the existing header and nav,
+   // for the high-profile mobile/desktop light and dark manual review.
+   if(sample.groups.HIGH_PROFILE.includes(ticker)&&[390,430,1440].includes(width)){
+    await chapter.evaluate(e=>window.scrollTo({top:window.scrollY+e.getBoundingClientRect().top-88,behavior:'instant'}));
+    await page.screenshot({path:out+'-viewport-'+ticker+'-'+width+'-'+theme+'.png'});
+   }
    cases.push({ticker,cid,width,theme,status:'PASS',modules:flags,consumerNews:expected.news.length,
     visibleIntelligenceItems:await chapter.locator('.ci-story[data-intelligence-type]:visible').count(),profileTextHash:expected.companyProfile?.profileTextHash||null});
   }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500)};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
