@@ -3,7 +3,8 @@
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
-    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Elliott Wave','/quant/#/aktie/NVDA/chartbild?ansicht=profi','◬'],['Technische Analyse','/quant/#/aktie/NVDA/technik','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Analyse','/quant/#/aktie/NVDA/technik','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
@@ -18,6 +19,9 @@
      active(loc) liefert die id des aktiven Eintrags oder null; dann zeigt
      der Produkteintrag nur, in welchem Produkt man ist. */
   const hashPart = (loc, i) => (loc.hash.replace(/^#\/?/, '').split('?')[0].split('/')[i] || '');
+  /* Elliott ist ein eigenes Produkt. Seine Startseite liegt unter /elliott/; die Detailansicht einer Aktie (Chartbild) rendert die Quant-SPA
+     unter #/elliott/<TICKER> und gehoert fuer die Shell trotzdem zu Elliott. match bekommt Pfad UND Adresse. */
+  const isElliottDetail = (p, loc) => p === '/quant/' && !!loc && /^#\/elliott(\/|$|\?)/.test(loc.hash || '');
   const PRODUCTS = [
     {id: 'discover', label: 'Discover', match: p => p.startsWith('/discover/'),
       items: [['discover','Discover','/discover/#/','discover'],['welten','Welten','/discover/#/welten','worlds'],['strategien','Strategien','/discover/#/strategien','strategies'],['entdecken','Entdecken','/discover/#/einzeln/US_REAL','explore']],
@@ -27,7 +31,17 @@
         if (k === 'c') { const themes = globalThis.VUDiscover?.Views?.Themes; return themes && themes.byRow(hashPart(loc, 2)) ? 'welten' : 'strategien'; }
         return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken'}[k] || null;
       }},
-    {id: 'quant', label: 'Quant', match: p => p.startsWith('/quant/'),
+    {id: 'elliott', label: 'Elliott', match: (p, loc) => p.startsWith('/elliott/') || isElliottDetail(p, loc),
+      items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
+      active: loc => {
+        if (loc.pathname !== '/elliott/') return null;
+        const q = new URLSearchParams((loc.hash || '').split('?')[1] || '');
+        if (q.get('suche') === '1') return 'suche';
+        if (q.get('neu') === '1') return 'neu';
+        if (q.get('welle') === '3') return 'welle3';
+        return q.get('welle') || q.get('richtung') || q.get('status') || q.get('rolle') ? null : 'elliott';
+      }},
+    {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
       items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Strategien','/quant/#/strategien','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
       active: loc => {
         const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien'}[loc.pathname];
@@ -66,6 +80,7 @@
   "screener": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 5h18M6 10.5h12M9 16h6M12 16v5\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"3\" cy=\"5\" r=\"1.4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"21\" cy=\"5\" r=\"1.4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"6\" cy=\"10.5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"18\" cy=\"10.5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"9\" cy=\"16\" r=\"1.2\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"15\" cy=\"16\" r=\"1.2\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"21\" r=\"1.5\"/></g>",
   "vorsorge": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11.5a9 9 0 0 1 18 0z\"/><path d=\"M12 11.5v7a2.2 2.2 0 0 0 4.4 0\"/><path class=\"dim\" opacity=\".45\" d=\"M12 2.5V1M7.5 11.5c0-4 2-7 4.5-9M16.5 11.5c0-4-2-7-4.5-9\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20\" cy=\"20\" r=\"1.3\"/><path class=\"dim\" opacity=\".45\" d=\"M18.5 16l1.5 4\"/></g>",
   "supertrader": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path class=\"dim\" opacity=\".45\" d=\"M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5\"/><rect x=\"10.3\" y=\"9\" width=\"3.4\" height=\"6\" rx=\".6\"/><path d=\"M12 6.8V9M12 15v2.2\"/></g>",
+  "elliott": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path class=\"dim\" opacity=\".45\" d=\"M2 21h20\" stroke-dasharray=\"1.5 2\"/><path d=\"M2 19 6 12l2.5 3L14 5l2.5 4L21 3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"6\" cy=\"12\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"8.5\" cy=\"15\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"16.5\" cy=\"9\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"21\" cy=\"3\" r=\"1.5\"/></g>",
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>"
 };
   const dockProductIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>`;
@@ -87,7 +102,7 @@
     return target.pathname.length + wanted.length * 10 + (target.search.length + (target.hash.split('?')[1] || '').length) * 20;
   };
   const menuState = loc => {
-    const product = PRODUCTS.find(p => p.match(loc.pathname));
+    const product = PRODUCTS.find(p => p.match(loc.pathname, loc));
     let group = product && groups.find(g => g.id === product.id), href = null, best = -1;
     for (const candidate of groups) for (const [, target] of candidate.entries) {
       const score = routeScore(target, loc);
@@ -98,6 +113,7 @@
       const aliases = { '/quant/methodology/':'/quant/#/methodik', '/quant/watchlist/':'/quant/#/aktien' };
       href = aliases[loc.pathname] || (dock && dock[2]);
       if (product.id === 'quant' && href === '/quant/#/') href = '/quant/';
+      if (product.id === 'elliott' && loc.pathname !== '/elliott/') href = '/elliott/';
       if (product.id === 'hedgefonds' && hashPart(loc, 0) === 'fonds') href = '/hedgefonds/#/datenbank';
       if (product.id === 'discover' && hashPart(loc, 0) === 's') href = '/discover/#/einzeln/US_REAL';
     }
@@ -126,6 +142,9 @@
     backtests: '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
     users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5M16 4.8a3.2 3.2 0 0 1 0 6.4M17.5 14.6c2 .5 3.2 2.2 3.5 5.4"/>',
     table: '<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M3.5 15h17M9.5 9.5V20"/>',
+    wave: '<path d="M3 19 8 11l3 3 5-9 5 5"/>',
+    spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+    search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
   };
   /* Die Leiste ist auf hellen und dunklen Flaechen dieselbe: ein ruhiges,
@@ -298,7 +317,7 @@
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
       const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a><a class="q-extra" href="/vorsorge/">Vorsorge</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a>${this.hasAttribute('theme-switch')?'<button class="mode" type="button" aria-label="Farbschema wechseln"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>':''}<button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a><a href="/elliott/">Elliott</a><a class="q-extra" href="/vorsorge/">Vorsorge</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a>${this.hasAttribute('theme-switch')?'<button class="mode" type="button" aria-label="Farbschema wechseln"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>':''}<button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
       const host=root.querySelector('.groups');
       const setGroup = id => {
         host.querySelectorAll('.group').forEach(section => {
@@ -337,7 +356,8 @@
       };
       syncActive();
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
-      root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
+      const syncQuick=()=>root.querySelectorAll('.quick a').forEach(a=>{const h=a.getAttribute('href'),detail=isElliottDetail(location.pathname,location),on=h==='/elliott/'?(detail||location.pathname.startsWith(h)):h==='/quant/'?(!detail&&location.pathname.startsWith(h)):location.pathname.startsWith(h);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+      syncQuick();
       const modeButton=root.querySelector('.mode');
       const syncMode=()=>{if(!modeButton)return;const dark=currentTheme()==='dark';modeButton.setAttribute('aria-pressed',String(dark));modeButton.setAttribute('aria-label',dark?'Helles Farbschema':'Dunkles Farbschema');modeButton.title=dark?'Hell':'Dunkel';};
       if(modeButton){modeButton.onclick=()=>{window.VUTheme.toggle();syncMode();};syncMode();
@@ -365,7 +385,7 @@
       });
       // Escape auch dann, wenn der Fokus (noch) ausserhalb des Menues liegt
       document.addEventListener('keydown',event=>{if(event.key==='Escape'&&this.hasAttribute('open')){close();restore();}});
-      window.addEventListener('hashchange',()=>{close();syncActive();});window.addEventListener('popstate',()=>{close();syncActive();});
+      window.addEventListener('hashchange',()=>{close();syncActive();syncQuick();});window.addEventListener('popstate',()=>{close();syncActive();syncQuick();});
       if(dockBus.requested)this.mountDock();
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());
@@ -376,7 +396,7 @@
        eigenem Shadow Root, damit sie unabhaengig vom Kopf (z-index des
        Kopfes) unter Produkt-Overlays liegen kann. */
     mountDock(){
-      const product=PRODUCTS.find(p=>p.match(location.pathname));
+      const product=PRODUCTS.find(p=>p.match(location.pathname,location));
       if(!product||this.hasAttribute('no-dock')||document.getElementById('vu-dock'))return;
       this.setAttribute('dock',product.id);
       document.documentElement.setAttribute('data-vu-dock',product.id);
@@ -414,6 +434,15 @@
       dockBus.listeners.push(paint);
       window.addEventListener('hashchange',paint);window.addEventListener('popstate',paint);
       paint();
+      /* Eine SPA kann das Produkt unter demselben Pfad wechseln (Quant -> Elliott-Detail): dann Leiste neu aufbauen. */
+      const reshape=()=>{
+        const next=PRODUCTS.find(p=>p.match(location.pathname,location));
+        if(!next||next.id===product.id)return;
+        [['hashchange',paint],['popstate',paint],['hashchange',reshape],['popstate',reshape]].forEach(([t,f])=>window.removeEventListener(t,f));
+        const at=dockBus.listeners.indexOf(paint);if(at>=0)dockBus.listeners.splice(at,1);
+        host.remove();this.removeAttribute('dock');this.dockHost=null;this.dockMenuButton=null;this.mountDock();
+      };
+      window.addEventListener('hashchange',reshape);window.addEventListener('popstate',reshape);
       const attach=()=>document.body.append(host);
       if(document.body)attach();else document.addEventListener('DOMContentLoaded',attach);
     }
