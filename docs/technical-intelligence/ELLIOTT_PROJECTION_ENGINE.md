@@ -8,7 +8,8 @@ Stand: 09.10.2026.
 * **Oberfläche:** Chartbild (`quant/app/page-chartbild.js`), Karte „Elliott-Projektion“, Chart-Ebene „Elliott-Projektion“ (`quant/ui/ti-chart.js`), Profi-Ansicht „Elliott-Projektion · Fachdetails“.
 * **Tests:**
   * `quant/tests/elliott-projection.test.mjs` (P-1 bis P-26)
-  * `quant/tests/elliott-explore.test.mjs` (X-1 bis X-15, Explore)
+  * `quant/tests/elliott-explore.test.mjs` (X-1 bis X-16, Explore Highlights, Candidate Explorer, Rollen, Lebenszyklus)
+  * `quant/tests/explore-curation.test.mjs` (C-1 bis C-12, reine Kuratierung)
   * `quant/tests/corporate-action-evidence.test.mjs` (CA-1 bis CA-6, Split-Beleg)
   * `quant/tests/elliott-registry-product-view.test.mjs` (M11-P4 bis M11-P6, Registerform)
 
@@ -188,6 +189,8 @@ Bekannte Grenze: Der Security Master führt einige börsengehandelte Anleihen al
 
 ## 1.2.0 · Explore Elliott („Weitere Elliott-Lesarten“) und Split-Beleg
 
+> **Ab 1.3.0 ersetzt:** Die hier beschriebene breite Auswahl (bis zu drei Lesarten auf 74 % der Titel) ist durch kuratierte Explore Highlights und den Candidate Explorer abgelöst, siehe unten und `EXPLORE_HIGHLIGHT_CURATION.md`. Der Pool, die Zulassung des Kandidaten und die Datenintegrität bleiben unverändert; die Abschnitte „Auswahl“ und „Oberfläche“ gelten nur noch als Geschichte. Die Split-Auflösung (OSCR) gilt unverändert weiter.
+
 Stand 09.10.2026. Nur Sichtbarkeit und Datenqualität. Unverändert bleiben:
 - Grammatik, harte Regeln, Ranking, Kandidatensuche und Grad-Logik der Engine;
 - Projektionsformeln;
@@ -299,3 +302,18 @@ Explore erscheint bei 71 % der Titel, weil sich die Engine bei 85 % der Wochenti
 - Explore wird dann geprüft.
 
 Der Beleg erscheint mit dem nächsten Lauf von `long-series.yml`.
+
+## 1.3.0 · Explore Highlights und Candidate Explorer
+
+Stand 11.10.2026. Nur Auswahl und Anzeige der Explore-Ebene. Unverändert bleiben Grammatik, harte Regeln, Ranking, Kandidatensuche, Grad-Logik, **alle Projektionsformeln**, Invalidation, Primär, Alternative, Motiv-Alternative und die Leitplanken G2–G6.
+
+* `ti-projection.mjs#exploreCandidatesFor` liefert jetzt **alle** zulässigen Kandidaten in Rangfolge des Pools (Filter wie in 1.2.0).
+* `Projection.build` kuratiert über `explore-curation.js`: `exploreHighlights` (höchstens 2, Rolle `EXPLORE_HIGHLIGHT`, volle These, `headline` „Explorative Elliott-Chance“, `subline` „Regelkonforme alternative Lesart“) und `exploreCandidates` (höchstens 6, Rolle `EXPLORE_CANDIDATE`, schlank, `headline` „Technische Elliott-Lesart“). `explore` entfällt.
+* Je Highlight: `curation` (Version, Rang-Anteil, verfehlte Leitplanke, Wellentyp-Priorität, Kontext-Übereinstimmung, Begründungstext); je Candidate-Eintrag: `curation.notHighlight` (Gründe, warum kein Highlight).
+* Lebenszyklus: nur Highlights werden verfolgt. Herabstufung: `ROLE_CHANGED` → `EXPLORE_CANDIDATE`, `NOT_PROMOTED`, `ARCHIVED`.
+* Register 1.5.0: Kohorte `CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT`.
+* Build-Statistik `meta.projection.explore`: Highlights (Titel, Lesarten, je Titel, Richtung, Typ, Muster, verfehlte Leitplanke, Rang, Kontext, Projektionsgröße beschreibend) und Candidate Explorer (Titel, Einträge, je Titel, Richtung, Typ).
+* Neue Felder je Titel: `projection.exploreVisible` (Anzahl Highlights), `projection.exploreCandidatesTotal` (zulässige, verschiedene Kandidaten vor der Begrenzung).
+* Listenzeile des Index: `proj.ex` = Anzahl Highlights, `proj.xc` = Anzahl Candidate-Einträge.
+
+Details, Audit und Richtlinie: `EXPLORE_HIGHLIGHT_CURATION.md`.

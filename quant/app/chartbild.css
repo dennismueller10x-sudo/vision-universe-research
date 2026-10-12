@@ -512,6 +512,22 @@
 .qd .cb-pj-why-l{margin:0;padding-left:18px;font-size:13px;line-height:1.45}
 .qd .cb-pj-xcard .cb-pj-ladder{opacity:.85}
 .qd .cb-pj-xcard .cb-pj-tier-v{font-size:15px}
+/* Explore Highlights (Projection Engine 1.3.0): kuratiert, sichtbar unter Haupt- und Alternativlesart; explorativ getoent, nie als Empfehlung */
+.qd .cb-pj-hl{margin:18px 0 8px;padding-top:12px;border-top:1px dashed rgba(166,171,179,.35);min-width:0;overflow-wrap:anywhere}
+.qd .cb-pj-hl-h{margin:0 0 4px;font-size:clamp(16px,4.4vw,19px);font-weight:700;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px}
+.qd .cb-pj-hlcard{border-color:rgba(179,166,255,.4);background:rgba(179,166,255,.05)}
+.qd .cb-pj-hlcard .cb-pj-alt-k{color:var(--cb-alt)}
+.qd .cb-pj-hlcard .cb-pj-ladder{opacity:1}
+/* Candidate Explorer (nur Profi): technisch, nachrangig, eingeklappt */
+.qd .cb-pj-cexp{margin-top:18px}
+.qd .cb-pj-ccard{padding:10px 12px;background:transparent;border-style:dashed}
+.qd .cb-pj-ccard .cb-pj-xh{font-size:clamp(14px,3.9vw,16px)}
+.qd .cb-pj-ccard .cb-kv,.qd .cb-pj-ccard dl{min-width:0}
+.qd .cb-pj-xcard .cb-pj-tier-p{max-width:24ch}
+.qd .cb-pj-ccard .cb-kv2{grid-template-columns:minmax(0,40%) minmax(0,1fr);gap:4px 10px;margin:6px 0 8px;font-size:13px}
+.qd .cb-pj-ccard .cb-kv2 dt{font-size:12px} .qd .cb-pj-ccard .cb-kv2 dd{margin:0}
+.qd .cb-pj-clad{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.5;color:var(--cb-flat);overflow-wrap:anywhere}
+.qd .cb-pj-cnote{border-left:3px solid rgba(166,171,179,.55);padding-left:8px}
 .qd .cb-pj-gates{margin:6px 0 14px}
 .qd .cb-pj-gate-ok b{color:var(--cb-up)} .qd .cb-pj-gate-bad b{color:var(--cb-mixed)}
 .qd .cb-pj-gates .cb-table{min-width:460px}.qd .cb-pj-gates .cb-table-wrap{overflow-x:auto}
