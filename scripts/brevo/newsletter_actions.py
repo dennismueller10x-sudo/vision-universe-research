@@ -32,7 +32,8 @@ class Github:
         req = urllib.request.Request("https://api.github.com/repos/"+repo+path,
             data=None if body is None else json.dumps(body).encode(),method=method,
             headers={"Authorization":"Bearer "+os.environ.get("GITHUB_TOKEN", ""),
-                     "Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28",
+                     "Accept":"application/vnd.github+json","Content-Type":"application/json",
+                     "X-GitHub-Api-Version":"2022-11-28",
                      "User-Agent":"VisionUniverse-Brevo/1.0"})
         try:
             with urllib.request.build_opener(NoRedirect).open(req,timeout=30) as r: return json.load(r)

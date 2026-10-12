@@ -112,6 +112,11 @@ class Process:
             from newsletter_actions import trusted_newsletter
             if not trusted_newsletter() or len(config.get("ledger_hmac_key", "")) != 64:
                 raise Blocked("Geschützter Newsletter-Ausführungsweg oder private Zustandsbindung fehlt.")
+            try:
+                if len(bytes.fromhex(config["ledger_hmac_key"])) != 32:
+                    raise ValueError()
+            except ValueError:
+                raise Blocked("Private Zustandsbindung ungültig.") from None
             self.state = ledger.load()
             return
         self.path = private_path(state_file)
