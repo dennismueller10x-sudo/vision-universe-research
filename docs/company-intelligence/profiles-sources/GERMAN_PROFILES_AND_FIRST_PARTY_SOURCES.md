@@ -316,3 +316,14 @@ browser acceptance. A material regression retains the existing rollback/OFF
 handler. No source outage or mere successful private backup authorizes opening
 an empty or inaccessible consumer generation. Final release evidence and the
 subsequent real `schedule` event must still be recorded after publication.
+
+The final consumer-value sample review subsequently withdrew American Realty
+Investors (`iss_cik_0001102238`) and Princeton Bancorp (`iss_cik_0001913971`):
+the selected inputs describe external management or legal bank ownership and
+formation, without sufficiently explaining the operating business. No activity
+is inferred from the company name. Final approved static copies: **2,830**;
+withheld: **814**. Existing financial/news modules remain independent. The
+full source catalogue remains completely classified. These conservative
+withdrawals must be included in the publicly closed production candidate's
+structural, browser, R2 and deterministic-restore acceptance; an earlier
+2,832-copy candidate is not claimed as an identical final generation.
