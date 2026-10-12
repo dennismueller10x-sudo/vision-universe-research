@@ -96,6 +96,7 @@
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
     watchButton(root,symbol);
   }
+  let fxReady=null;
   async function route(k) {
     if(!meta)return;const y=k===1?scrollY:0;
     const id=++generation,active=()=>generation===id;
@@ -242,7 +243,7 @@
       } else if(parts[0]==='daten'){
         root.append(D.Daten.render({meta,universe:meta.universes.find(u=>u.universeId===ctx.universeId),calendar}));
       } else {
-        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active,liveIndex:index}));
+        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active,liveIndex:index,fxReady}));
         if(typeof result==='function')homeDispose=result;
       }
       if(active()){
@@ -271,7 +272,7 @@
       document.addEventListener('vu-currency-change',()=>route(1));
       document.addEventListener('vu-fx-ready',()=>route(1));
       if(global.VUFx&&global.VUFx.Bootstrap){
-        global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
+        fxReady=global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
       }
       await route();
     }catch(err){message(document.getElementById('v2-shell'),'Discover ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}

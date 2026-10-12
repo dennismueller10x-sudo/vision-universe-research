@@ -366,7 +366,7 @@
     }
     try {
       // Karten entscheiden synchron ueber den Tagesverlauf (cards.js): erst zeichnen, wenn auch das Intraday-Verzeichnis da ist. Beide laden parallel.
-      var first = (await Promise.all([S.loadJSON(home.chunks[0]), ctx.liveIndex]))[0]; if (!active()) return;
+      var first = (await Promise.all([S.loadJSON(home.chunks[0]), ctx.liveIndex, Promise.race([ctx.fxReady, new Promise(function (r) { setTimeout(r, 2500); })])]))[0]; if (!active()) return;
       seen.add(home.chunks[0]); loading.remove(); drawChunk(first.surfaces);
       if (first.next) next(first.next); else finish();
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
