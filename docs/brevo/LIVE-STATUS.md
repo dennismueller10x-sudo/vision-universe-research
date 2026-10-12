@@ -1,49 +1,60 @@
-# Brevo: Live-Status und manuelle Übergabe
+# Brevo: belegter Kontostand und Listenansicht
 
-Stand: 9. Oktober 2026. **Import vorbereitet, noch nicht durchgeführt.**
+Stand: 12. Oktober 2026, 12:07 Uhr Europe/Berlin. **Import vorbereitet, noch nicht durchgeführt.** Alle heutigen Brevo-Aufrufe waren GET-Leseprüfungen. Keine neuen Listen oder Merkmale, kein Kontaktimport und kein E-Mail-Versand.
 
-PR [544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) wurde mit ausdrücklicher bedingter Owner-Freigabe gemergt, Commit `6bd5893858897c2bde3a7d58e3f955c9898b6828`. Der einzige rote Core-Check war der separat auf der unveränderten Basis reproduzierte News-/Company-Master-Fehler (93/94 erfolgreiche Tests). Keine Gates oder Research-Dateien wurden verändert. Siehe historischen [Prüfnachweis](MERGE-REVIEW.md).
+## Setup-Nachweis und erneuter Leseabgleich
 
-## Diagnose des HTTP 403
+PR [544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) und [545](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/545) sind gemergt. PR 545 wurde am 10. Oktober mit ausdrücklicher Freigabe nach aktuellen Checks gemergt (`a72978dca497528d9695d0695fe67a570e2efdac`): 133/133 Core-Tests und 37 Brevo-Prüfungen erfolgreich. Der ältere rote Core-Check bleibt als News-/Company-Master-Baselinefehler im historischen [Merge-Prüfbericht](MERGE-REVIEW.md) dokumentiert. Keine Gates oder fremden Produktdateien wurden durch den Brevo-PR geändert.
 
-Der erste [Audit 37934324872](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37934324872) meldete HTTP 403 ohne Endpoint-Angabe. Die frühere Zuordnung zu `GET /account` war deshalb nicht belegt. Der gezielte read-only [Vergleich 37950403422](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37950403422) zeigt:
-
-| Abruf / Client | Tatsächliches Ergebnis |
+| Nachweis | Ergebnis |
 |---|---|
-| `GET /account`, bisheriger urllib-Client | HTTP 200 |
-| `GET /senders`, bisheriger urllib-Client | HTTP 403, numerischer Fehlercode 1010 |
-| Derselbe Audit mit `User-Agent: VisionUniverse-Brevo/1.0` | sämtliche sieben Abrufarten HTTP 200; vollständiger Aggregate-Audit erfolgreich |
+| [Setup 38061539873](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38061539873), 10. Oktober, 16:55 Uhr Europe/Berlin | erfolgreich; VU-Listen IDs 4, 5 und 6; 0 Kontakte importiert, 0 E-Mails versendet |
+| [Anschließender API-Audit 38061582213](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38061582213), 10. Oktober, 16:56 Uhr | dieselben drei IDs gelesen; 10 von 10 kompatiblen VU-Merkmalen, keine Typkonflikte |
+| [Regulärer API-Audit 38233376781](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38233376781), 12. Oktober, 11:59 Uhr | dieselben drei IDs erneut gelesen; kostenloser Tarif, 10 Merkmale, 1 Kontakt, 1 aktiver Absender, 1 registrierte Domain |
+| [Konto-/Ordner-Audit 38234286301](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38234286301), 12. Oktober, 12:07 Uhr | vollständiges Listeninventar, drei Einzelabrufe und Ordnerabrufe stimmen überein; jede VU-Liste genau einmal vorhanden, Ordner ID 3, alle leer |
 
-`BREVO_API_KEY` ist im Runner gesetzt, hat das API-v3-Format und enthält keine äußeren Leerzeichen oder Anführungszeichen. Schlüsselwert, Schlüsselfragmente und Fingerprints werden nicht ausgegeben oder gespeichert. Der Header `api-key` und `https://api.brevo.com/v3/account` stimmen mit der offiziellen Schnittstelle überein. Die Secret-Metadatenabfrage bleibt für diesen GitHub-Zugang mit HTTP 403 gesperrt; die Verfügbarkeit ist stattdessen durch den erfolgreichen authentifizierten Abruf belegt.
+Die historischen Setup-/Audit-Läufe wurden erneut anhand ihres Status, Dispatch-Commits und ihrer zulässigen JSON-Zählwertausgaben geprüft. Beide liefen auf Commit `a72978dc...`. Der neue reguläre Audit lief auf `d6b2737bfda1a25bf5dab7d9380ed24297150aac`; die manuelle Konto-/Ordnerprüfung auf einem isolierten Betriebsbranch mit fest gepinntem, rein lesendem Code. Der normale Admin-Guard auf dem Standardbranch blieb unverändert.
 
-Cloudflare beschreibt [1010](https://github.com/cloudflare/cloudflare-docs/blob/production/src/content/docs/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010.mdx) als Sperre anhand der Client-/Browser-Signatur. Im kontrollierten Vergleich wurde nur der User-Agent geändert; Schlüssel, Authentifizierungsheader und Endpoints blieben gleich. Die konkrete Korrektur ist deshalb eine ausdrücklich benannte Integrationskennung im HTTP-Client. Keine Schlüsselrotation, Tarifbuchung oder Änderung der IP-/DNS-Konfiguration ist für diese Korrektur erforderlich. Sie ist im offenen Folge-PR vorbereitet, noch nicht auf `main` wirksam. Der Diagnose-Job lief ausschließlich manuell auf einem eigenen Branch mit unveränderlichem Code-Checkout und reinen GET-Aufrufen; der bestehende Admin-Job blieb dort übersprungen.
+## Konto, Ordner und Oberflächenfilter
 
-## Tatsächlicher Kontostand
+Der private Vergleich mit der vom Owner genannten Kontobezeichnung passt zum Geschäftsnamen; der vollständige API-Unternehmensname enthält lediglich einen Rechtsform-/Schreibzusatz. Ein exakter kurzer Textvergleich meldete deshalb zunächst eine Abweichung. Die verfeinerte Prüfung berücksichtigt ausschließlich bekannte Rechtsform- und Schreibvarianten und gibt nur den Vergleichsstatus aus. Aus dieser Namensabweichung wird **kein falscher API-Schlüssel oder anderes Konto behauptet**.
 
-| Gegenstand | Ergebnis des erfolgreichen Audits |
+Die aktive Browser-Sitzung wurde nicht eingesehen. Der Vergleich einer Unternehmensbezeichnung allein beweist keine eindeutige Kontonummer oder Login-Identität. Eine vollständig bestätigte Gleichheit von API-Konto und Browser-Sitzung wird deshalb nicht behauptet. Keine Kontoadresse, vollständigen Identitätswerte, fremden Listen-/Ordnernamen, Rohantworten, Schlüsselwerte oder Schlüsselfingerprints wurden ausgegeben.
+
+Der ungefilterte API-Abruf liefert insgesamt 4 Listen in 2 Ordnern. Alle drei Ziel-Listen liegen in **„Vision Universe“ (Ordner-ID 3)** und wurden zusätzlich über `GET /contacts/lists/{id}` sowie `GET /contacts/folders/3/lists` bestätigt:
+
+| Liste | Listen-ID | Ordner-ID | Kontakte |
+|---|---:|---:|---:|
+| VU \| Newsletter | 4 | 3 | 0 |
+| VU \| App-Warteliste | 5 | 3 | 0 |
+| VU \| Newsletter-Test | 6 | 3 | 0 |
+
+Ein aktuell ausgewählter Oberflächenordner oder ein Suchfilter ist über diese API nicht sichtbar. Dass ein Filter die Listen tatsächlich ausblendet, ist **nicht nachgewiesen**. Die dokumentierte Ordnerauswahl kann die Listenansicht jedoch auf einen anderen Ordner begrenzen.
+
+**Genau der nächste nötige Schritt:** In Brevo **CRM → Kontakte → Listen** öffnen und im Dropdown **„Ordner“ den vorhandenen Ordner „Vision Universe“ (ID 3)** auswählen; ein eventuell vorhandenes Listensuchfeld leeren. Keine Listen neu anlegen. Siehe [offizielle Ordner-/Listen-Anleitung](https://help.brevo.com/hc/de/articles/5526943347858-Listen-und-Ordner-zum-Organisieren-Ihrer-Kontakte-erstellen).
+
+## Tatsächlicher weiterer Stand
+
+| Gegenstand | Belegter Stand |
 |---|---|
-| Tarif | free |
-| Kontaktinventar | 1 bestehender Kontakt; Einzelstatus und Shopify-Abgleich noch ungeprüft |
-| VU-Listen | keine |
-| VU-Merkmale | 0 von 10 vorhanden, keine Typkonflikte |
-| Segmente | 0 |
-| Absender | 1, aktiv/Bestätigung laut API vorhanden; Adresse bleibt privat |
-| Domains | 0 registriert; keine kontospezifischen DNS-Werte verfügbar |
-| Aktive Automationen | vollständiger Abgleich weiterhin über Brevo-UI erforderlich |
-| setup, Kontaktimport und Newsletter-/Testversand | nicht ausgeführt |
+| Tarif | free; keine Buchung oder Tarifänderung |
+| VU-Merkmale | 10 von 10 vorhanden, keine Typkonflikte |
+| Kontaktinventar | 1 bestehender Kontakt; privater Abgleich mit Shopify-Dateien weiterhin offen |
+| Einwilligung/Sperren | Audit vom 10. Oktober: globale E-Mail-Sperre false, keine protokollierte Abmeldung, Listen-Abmeldedaten nicht geliefert und VU-Einwilligung ungeklärt; keine Anmeldung daraus abgeleitet |
+| Interne Testempfänger | eindeutig privat vorbereitet; noch nicht als VU-Testkontakte eingerichtet |
+| Segmente | 0; Käufersegment weiterhin in der UI anzulegen |
+| Absender | 1, aktiv laut API; Adresse bleibt privat |
+| Domain | 1 registriert; Bestätigung und Authentifizierung fehlen laut aktuellem Audit |
+| DNS-Werte | am 10. Oktober tatsächlich abgerufen und ausschließlich privat bereitgestellt; keine DNS-Änderung |
+| Aktive Automationen | tatsächliche vollständige Prüfung weiterhin über Brevo-UI erforderlich |
+| Kontaktimport / Newsletter- und Testversand | nicht durchgeführt |
 
-Der aktuelle Auftrag erlaubt ausschließlich Audits. Nach Freigabe der Client-Korrektur kann der normale Audit auf `main` erneut ausgeführt werden. `setup`, Import und Versand werden dadurch nicht automatisch gestartet.
+135 reguläre Kontakte und zwei interne Testkontakte sind vorbereitet; 13 Nicht-Abonnenten bleiben auf ausdrücklichen Wunsch zurückgestellt. Insgesamt sechs Käufer, davon einer nicht angemeldet. Der Bestands-/Sperrenabgleich, die tatsächliche Automationsprüfung und die Kontozuordnung/Listenansicht müssen vor jedem Import abgeschlossen sein. Alle 150 Kontakte bleiben zurückgestellt. Keine Bestandskontakte in die App-Warteliste übernehmen und keine vorhandenen Sperren oder Abmeldungen aufheben.
 
-## E-Mail-Vorlage und manuelle Importgrenzen
+## Bereits behobener HTTP 403 und Vorlagenstand
 
-Der vorhandene Navigations-Sync fügte nach dem Merge in Commit `f268fe0` automatisch Website-CSS und JavaScript in `scripts/brevo/newsletter.html` ein. Die E-Mail-Vorlage wird deshalb als `newsletter.html.tmpl` isoliert und von `render` unter diesem Namen gelesen. Der Sync verarbeitet ausschließlich Dateien mit Endung `.html`. Kein fremder Workflow oder Navigationscode wird verändert; die Vorlage enthält wieder ausschließlich E-Mail-Inhalt.
+Der erste [Audit 37934324872](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37934324872) meldete HTTP 403 ohne Endpoint-Angabe. Die frühere Zuordnung zu `/account` war nicht belegt. Die gezielte Diagnose bestätigte `/account` mit HTTP 200 und `/senders` mit 403 / Cloudflare 1010. Der explizite `User-Agent: VisionUniverse-Brevo/1.0` behob die Client-Signatur-Sperre; diese Korrektur ist mit PR 545 bereits auf `main` wirksam. Keine Schlüsselrotation oder Änderung der IP-/DNS-Konfiguration war dafür erforderlich.
 
-Der Owner wählt private manuelle CSVs; zusätzliche Import-Secrets werden nicht angelegt. CSV-Boolean-Werte müssen nach [offiziellem Format](https://help.brevo.com/hc/en-us/articles/208729849-Create-a-file-to-import-your-contacts) `Yes`/`No` sein. Die private API-JSON und der Originalexport bleiben unverändert.
+Die E-Mail-Vorlage liegt als `newsletter.html.tmpl` vor, damit der vorhandene Website-Navigations-Sync kein CSS/JavaScript hineinschreibt. Die privaten manuellen CSVs verwenden Brevos dokumentierte Boolean-Werte `Yes`/`No`; Originalexport und private API-JSON bleiben außerhalb des Repositories. Es gibt keinen freigegebenen Newsletter-Inhalt und keine Versandfreigabe.
 
-Vorbereitet: 135 reguläre Kontakte, zwei eindeutige interne Testkontakte, 13 nicht angemeldete Kontakte; sechs Käufer insgesamt, davon einer nicht angemeldet. Da Bestands-/Sperrenabgleich und Automationsprüfung noch fehlen, sind **alle 150 Kontakte zurückgestellt**. Die drei VU-Listen sind noch nicht eingerichtet; beide internen Empfänger noch nicht als VU-Testkontakte angelegt.
-
-Die manuelle Klickfolge und Attribute stehen in der [README](README.md#verbleibende-schritte-in-brevo--in-dieser-reihenfolge). Bestehende Kontakte privat abgleichen und aus den Dateien für neue Kontakte ausschließen. Attribut-Updates auszuschalten schützt keine Listenmitgliedschaft automatisch. Kein Import, solange Kontaktanlage, Änderungen oder Listenzugang aktive Automationen auslösen könnten. Keine fremden Automationen pauschal deaktivieren.
-
-Die 13 nicht angemeldeten Kontakte bleiben zusätzlich zurückgestellt, falls die Oberfläche keinen sicheren listenlosen Import mit E-Mail-Blocklist erlaubt. Keine Aufnahme in Haupt-, Test- oder App-Warteliste und keine zusätzliche Dauerliste zur Vereinfachung.
-
-Korrigierte CSVs und die Klickanleitung liegen ausschließlich in der bestehenden privaten ChatGPT-Dateiablage. Private Dateireferenzen, Adressen und personenbezogene Prüfberichte gehören nicht in dieses öffentliche Dokument. Ein bestätigter privater Upload ist keine Zusage unbegrenzter Aufbewahrung.
+Private CSVs, DNS-Werte, Downloadreferenzen und personenbezogene Prüfberichte gehören nicht in dieses öffentliche Dokument. Ein bestätigter privater Upload ist keine Zusage unbegrenzter Aufbewahrung. Die genaue Spaltenzuordnung und verbleibenden Importbedingungen stehen in der [README](README.md#verbleibende-schritte-in-brevo--in-dieser-reihenfolge).
