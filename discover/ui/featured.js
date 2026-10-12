@@ -133,6 +133,7 @@
   function links(ctx){
     var box=node('div','v2-world-links');
     box.append(link('Alle Ereignisse →','#/c/'+ctx.universeId+'/im-blick','v2-world-more'),link('Vollbild entdecken →','#/einzeln/'+ctx.universeId,'v2-world-more v2-feed-entry'));
+    if(D.Leaders)box.append(D.Leaders.teaser(ctx));
     return box;
   }
   /* Intraday (scripts/discover/build-im-blick-live.mjs): rendert sofort die

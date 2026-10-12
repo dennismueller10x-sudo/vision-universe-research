@@ -244,6 +244,23 @@
       "consumers": ["Discover Startseite (Im Blick, ui/featured.js)"]
     },
     {
+      "id": "discoverEmergingLeaders",
+      "label": "Discover Emerging Leaders",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/discover/data/emerging-leaders/US_REAL.json",
+      "asOf": ["asOf"],
+      "timestamp": ["generatedAt"],
+      "records": "count",
+      "role": "Taeglicher Zustand je US-Titel aus der Emerging-Leaders-Engine (emerging-leaders-1.0.0): Zustand S1-S5, Modellwert, Begruendung, Signalhistorie der letzten 25 Sitzungen (zustandslos neu gerechnet). Evidenzstatus aus der historischen Studie.",
+      "producer": "scripts/discover/build-emerging-leaders.mjs",
+      "workflow": "discover-emerging-leaders.yml",
+      "schedule": "Di-Sa 05:47 UTC",
+      "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 3 },
+      "consumers": ["Discover #/leader (ui/leaders.js)", "Discover Startseite (Eingang unter Im Blick)"]
+    },
+    {
       "id": "supertrader",
       "label": "Supertrader",
       "layer": "PRODUCT",

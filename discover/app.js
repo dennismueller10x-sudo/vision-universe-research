@@ -111,9 +111,10 @@
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
-      const index=D.EuropeView.loadIndex(ctx),home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(parts[0]||'');
+      const index=D.EuropeView.loadIndex(ctx),home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten|leader)$/.test(parts[0]||'');
       if(!home){await Promise.all([index,parts[0]==='maerkte'&&D.Markets.ensureStyles()]);if(!active())return;}
       if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
+      else if(/^leader/.test(parts[0])){await D.Leaders.render(root,{ctx,active});}
       else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');

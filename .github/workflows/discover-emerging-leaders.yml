@@ -1,0 +1,79 @@
+name: Discover - Emerging Leaders (Tageslauf)
+
+# Wendet die Emerging-Leaders-Engine (quant/engines/emerging-leaders.js) auf
+# den letzten Handelstag an und schreibt discover/data/emerging-leaders/.
+# Die Tagesreihen kommen aus der privaten Ablage (kein Anbieter-Abruf) und
+# bleiben im Runner; das Artefakt traegt nur Raenge, Renditen und Zustaende.
+# Die Signalhistorie (seit wann, Wechsel der letzten 25 Sitzungen) wird
+# jedes Mal aus den Reihen neu gerechnet - keine Verlaufsdatei.
+#
+# Zeitplan: Di-Sa 05:47 UTC, nach dem Marktdaten-Refresh des Vorabends
+# (Mo-Fr 22:30 UTC). Er aendert keinen bestehenden Lauf.
+on:
+  schedule:
+    - cron: '47 5 * * 2-6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: discover-emerging-leaders-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine and builder tests
+        run: node --test quant/tests/emerging-leaders.test.mjs discover/tests/emerging-leaders.test.mjs
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/el-daily-preflight.json"
+
+      - name: Restore existing canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/el-daily-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/el-daily-sync.json"
+
+      - name: Build Emerging Leaders
+        run: >-
+          node --max-old-space-size=6144 scripts/discover/build-emerging-leaders.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit und Push
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add discover/data/emerging-leaders
+          if git diff --cached --quiet; then echo "Unveraendert."; exit 0; fi
+          git commit -m "Discover Emerging Leaders: Tageslauf (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
