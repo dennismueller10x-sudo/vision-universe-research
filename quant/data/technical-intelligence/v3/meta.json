@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-11T08:30:25.109Z",
+ "generatedAt": "2026-10-12T03:39:22.943Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,9 +43,9 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4522,
+ "runtimeSec": 2531,
  "projection": {
-  "version": "elliott-projection-1.2.0",
+  "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
    "ABSTAIN": 4442,
@@ -64,43 +64,104 @@
   "highUpside": 0,
   "weeklyForDaily": 5,
   "explore": {
-   "securities": 3747,
-   "theses": 6679,
-   "perSecurity": {
-    "1": 1027,
-    "2": 2508,
-    "3": 212
+   "highlights": {
+    "securities": 109,
+    "theses": 111,
+    "perSecurity": {
+     "1": 107,
+     "2": 2
+    },
+    "direction": {
+     "DOWN": 61,
+     "UP": 50
+    },
+    "type": {
+     "WAVE_C": 85,
+     "WAVE_3": 25,
+     "WAVE_5": 1
+    },
+    "pattern": {
+     "ZIGZAG": 60,
+     "FLAT": 24,
+     "IMPULSE": 25,
+     "ENDING_DIAGONAL": 1,
+     "DOUBLE_ZIGZAG": 1
+    },
+    "failedSet": {
+     "G5": 67,
+     "G2": 44
+    },
+    "rankPct": {
+     "0-10": 88,
+     "10-25": 23,
+     "25-50": 0,
+     "50-100": 0
+    },
+    "contextAgreement": {
+     "0": 44,
+     "1": 41,
+     "2": 26
+    },
+    "extendedMove": {
+     "DOWN <50%": 16,
+     "UP 100-250%": 18,
+     "UP 50-100%": 10,
+     "UP 500-1000%": 2,
+     "DOWN 50-100%": 7,
+     "DOWN 100-250%": 1,
+     "UP <50%": 10,
+     "UP 250-500%": 8,
+     "UP >1000%": 2
+    },
+    "extremeMove": {
+     "UP 250-500%": 9,
+     "UP 100-250%": 15,
+     "UP 500-1000%": 7,
+     "DOWN <50%": 1,
+     "UP 50-100%": 4,
+     "DOWN 50-100%": 2,
+     "UP >1000%": 3,
+     "UP <50%": 1
+    }
    },
-   "direction": {
-    "UP": 3253,
-    "DOWN": 3426
-   },
-   "type": {
-    "WAVE_3": 2404,
-    "WAVE_C": 3994,
-    "WAVE_5": 281
-   },
-   "pattern": {
-    "IMPULSE": 2404,
-    "FLAT": 2335,
-    "ZIGZAG": 1575,
-    "LEADING_DIAGONAL": 59,
-    "ENDING_DIAGONAL": 222,
-    "DOUBLE_ZIGZAG": 84
-   },
-   "failedGate": {
-    "G2": 4522,
-    "G3": 5456,
-    "G4": 4740,
-    "G5": 2377
-   },
-   "rankPct": {
-    "0-10": 1798,
-    "10-25": 2431,
-    "25-50": 2450,
-    "50-100": 0
-   },
-   "highUpside": 984
+   "candidates": {
+    "securities": 3777,
+    "entries": 13395,
+    "perSecurity": {
+     "1": 482,
+     "2": 717,
+     "3": 688,
+     "4": 693,
+     "5": 539,
+     "6": 658
+    },
+    "direction": {
+     "DOWN": 6870,
+     "UP": 6525
+    },
+    "type": {
+     "WAVE_C": 9973,
+     "WAVE_3": 3010,
+     "WAVE_5": 412
+    },
+    "failedSet": {
+     "G3+G4": 1939,
+     "G3+G4+G5": 584,
+     "G2+G3+G4": 3114,
+     "G2+G3+G4+G5": 1470,
+     "G2+G3": 1518,
+     "G3": 783,
+     "G3+G5": 484,
+     "G2+G4": 764,
+     "G2+G3+G5": 920,
+     "G2+G5": 203,
+     "G4+G5": 261,
+     "G2+G4+G5": 515,
+     "G4": 521,
+     "G2": 203,
+     "G5": 116
+    }
+   }
   },
   "splitResolved": 203,
   "normalAlternative": 39,
@@ -108,7 +169,7 @@
   "motiveDOWN": 29,
   "motiveUP": 4,
   "motiveHighUpside": 1,
-  "lifecycleEvents": 5606,
-  "tracked": 6951
+  "lifecycleEvents": 48,
+  "tracked": 6990
  }
 }

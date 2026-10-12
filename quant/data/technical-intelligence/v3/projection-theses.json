@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-elliott-projection-theses-1.0.0",
- "engine": "elliott-projection-1.2.0",
+ "engine": "elliott-projection-1.3.0",
  "rule": "Nur anhängen: eine eingefrorene Revision wird nie geändert; neue Anker → neue Revision; Wegfall → RELABELLED/ARCHIVED.",
  "theses": {
   "AACG|1W|FLAT|2022-01-07|-1|WAVE_C|C": {
@@ -19520,6 +19520,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "AHG|1W|ZIGZAG|2023-07-28|1|WAVE_C|C": {
+   "id": "AHG|1W|ZIGZAG|2023-07-28|1|WAVE_C|C",
+   "symbol": "AHG",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-07-28|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2023-07-28|1|WAVE_C|C|0.75|0|2.33||0.27|2.6|BASE:2.18994-3.08,EXTENDED:3.08-4.51994,EXTREME:4.51994-6.84994",
+     "anchor": {
+      "price": 0.75,
+      "time": "2026-09-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 2.33,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.18994,
+       "high": 3.08,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.08,
+       "high": 4.51994,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.51994,
+       "high": 6.84994,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.27,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.6,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -50209,6 +50285,82 @@
     }
    ]
   },
+  "ASIX|1W|ZIGZAG|2022-03-25|-1|WAVE_C|C": {
+   "id": "ASIX|1W|ZIGZAG|2022-03-25|-1|WAVE_C|C",
+   "symbol": "ASIX",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-03-25|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2022-03-25|-1|WAVE_C|C|43.86|0|22.62||54.55|31.93|BASE:21.24-29.88084,EXTENDED:7.26084-21.24",
+     "anchor": {
+      "price": 43.86,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 22.62,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 21.24,
+       "high": 29.88084,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 7.26084,
+       "high": 21.24,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 54.55,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 31.93,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "ASIX|1W|ZIGZAG|2025-11-21|1|WAVE_C|C": {
    "id": "ASIX|1W|ZIGZAG|2025-11-21|1|WAVE_C|C",
    "symbol": "ASIX",
@@ -61123,6 +61275,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "AVNW|1W|ZIGZAG|2024-11-15|1|WAVE_C|C": {
+   "id": "AVNW|1W|ZIGZAG|2024-11-15|1|WAVE_C|C",
+   "symbol": "AVNW",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-11-15|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2024-11-15|1|WAVE_C|C|15.81|0|12.57||13.79|26.36|BASE:23.57826-28.38,EXTENDED:28.38-36.14826,EXTREME:36.14826-48.71826",
+     "anchor": {
+      "price": 15.81,
+      "time": "2026-05-08",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 12.57,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 23.57826,
+       "high": 28.38,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 28.38,
+       "high": 36.14826,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 36.14826,
+       "high": 48.71826,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 13.79,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 26.36,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -76193,6 +76421,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "BDTX|1W|ZIGZAG|2022-10-14|1|WAVE_C|C": {
+   "id": "BDTX|1W|ZIGZAG|2022-10-14|1|WAVE_C|C",
+   "symbol": "BDTX",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-10-14|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2022-10-14|1|WAVE_C|C|4.47|0|5.69||1.27|6.96|BASE:7.98642-10.16,EXTENDED:10.16-13.67642,EXTREME:13.67642-19.36642",
+     "anchor": {
+      "price": 4.47,
+      "time": "2024-07-05",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 5.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.98642,
+       "high": 10.16,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 10.16,
+       "high": 13.67642,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 13.67642,
+       "high": 19.36642,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.27,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 6.96,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -94085,6 +94389,76 @@
     }
    ]
   },
+  "BOC|1W|ZIGZAG|2021-02-19|-1|WAVE_C|C": {
+   "id": "BOC|1W|ZIGZAG|2021-02-19|-1|WAVE_C|C",
+   "symbol": "BOC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-02-19|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-02-19|-1|WAVE_C|C|28.76|0|26.72||46.98|20.26|BASE:2.04-12.24704",
+     "anchor": {
+      "price": 28.76,
+      "time": "2022-12-02",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 26.72,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.04,
+       "high": 12.24704,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 46.98,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 20.26,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "BOH|1W|FLAT|2024-11-22|-1|WAVE_C|C": {
    "id": "BOH|1W|FLAT|2024-11-22|-1|WAVE_C|C",
    "symbol": "BOH",
@@ -97753,6 +98127,76 @@
     }
    ]
   },
+  "BRLT|1W|FLAT|2024-10-25|1|WAVE_C|C": {
+   "id": "BRLT|1W|FLAT|2024-10-25|1|WAVE_C|C",
+   "symbol": "BRLT",
+   "timeframe": "1W",
+   "key": "FLAT|2024-10-25|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2024-10-25|1|WAVE_C|C|1.03|0|1.39||0.14|2.92|BASE:2.95098-3.27902,EXTENDED:3.27902-4.66902",
+     "anchor": {
+      "price": 1.03,
+      "time": "2026-06-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 1.39,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.95098,
+       "high": 3.27902,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.27902,
+       "high": 4.66902,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.14,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 2.92,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "BRLT|1W|IMPULSE|2026-06-26|1|WAVE_3|3": {
    "id": "BRLT|1W|IMPULSE|2026-06-26|1|WAVE_3|3",
    "symbol": "BRLT",
@@ -99038,6 +99482,82 @@
      "d": "2026-10-09",
      "type": "ARCHIVED",
      "rev": 1
+    }
+   ]
+  },
+  "BRT|1W|ZIGZAG|2022-08-12|-1|WAVE_C|C": {
+   "id": "BRT|1W|ZIGZAG|2022-08-12|-1|WAVE_C|C",
+   "symbol": "BRT",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-08-12|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2022-08-12|-1|WAVE_C|C|20.06|0|9.73||25.35|15.62|BASE:10.33-14.04686,EXTENDED:4.31686-10.33",
+     "anchor": {
+      "price": 20.06,
+      "time": "2024-11-29",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 9.73,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10.33,
+       "high": 14.04686,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 4.31686,
+       "high": 10.33,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 25.35,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 15.62,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -123554,6 +124074,70 @@
     }
    ]
   },
+  "CEPU|1W|FLAT|2025-01-03|-1|WAVE_C|C": {
+   "id": "CEPU|1W|FLAT|2025-01-03|-1|WAVE_C|C",
+   "symbol": "CEPU",
+   "timeframe": "1W",
+   "key": "FLAT|2025-01-03|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2025-01-03|-1|WAVE_C|C|17.55|0|8.16||24|7.68|BASE:4.34712-6.27288",
+     "anchor": {
+      "price": 17.55,
+      "time": "2025-12-19",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 8.16,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.34712,
+       "high": 6.27288,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 24,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 7.68,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "CEPU|1W|IMPULSE|2025-12-19|-1|WAVE_3|3": {
    "id": "CEPU|1W|IMPULSE|2025-12-19|-1|WAVE_3|3",
    "symbol": "CEPU",
@@ -139696,6 +140280,76 @@
     },
     {
      "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "CMCSA|1W|ZIGZAG|2021-09-03|-1|WAVE_C|C": {
+   "id": "CMCSA|1W|ZIGZAG|2021-09-03|-1|WAVE_C|C",
+   "symbol": "CMCSA",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-09-03|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-09-03|-1|WAVE_C|C|43.36|0|30.41||57.84|27.43|BASE:12.95-24.56662",
+     "anchor": {
+      "price": 43.36,
+      "time": "2024-01-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 30.41,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.95,
+       "high": 24.56662,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 57.84,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 27.43,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
@@ -159540,6 +160194,70 @@
      "confirmationPassedAtFreeze": false,
      "versions": {
       "projection": "elliott-projection-1.2.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "CSR|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C": {
+   "id": "CSR|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "symbol": "CSR",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-12-31|-1|WAVE_C|C|75.5|0|63.08||110.9|47.82|BASE:12.42-36.51656",
+     "anchor": {
+      "price": 75.5,
+      "time": "2024-09-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 63.08,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.42,
+       "high": 36.51656,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 110.9,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 47.82,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
       "elliott": "elliott-3.2.2",
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
@@ -183733,6 +184451,82 @@
     }
    ]
   },
+  "DMA|1W|ZIGZAG|2023-07-21|1|WAVE_C|C": {
+   "id": "DMA|1W|ZIGZAG|2023-07-21|1|WAVE_C|C",
+   "symbol": "DMA",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-07-21|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2023-07-21|1|WAVE_C|C|7.09|0|3.93||4.9|8.83|BASE:9.51874-11.02,EXTENDED:11.02-13.44874,EXTREME:13.44874-17.37874",
+     "anchor": {
+      "price": 7.09,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.93,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 9.51874,
+       "high": 11.02,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 11.02,
+       "high": 13.44874,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 13.44874,
+       "high": 17.37874,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 4.9,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 8.83,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "DMC|1W|FLAT|2023-11-03|1|WAVE_C|C": {
    "id": "DMC|1W|FLAT|2023-11-03|1|WAVE_C|C",
    "symbol": "DMC",
@@ -190573,6 +191367,70 @@
     }
    ]
   },
+  "DSX|1W|IMPULSE|2022-05-27|-1|WAVE_3|3": {
+   "id": "DSX|1W|IMPULSE|2022-05-27|-1|WAVE_3|3",
+   "symbol": "DSX",
+   "timeframe": "1W",
+   "key": "IMPULSE|2022-05-27|-1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "IMPULSE|2022-05-27|-1|WAVE_3|3|4.7|1|2.88||6.42|3.54|BASE:0.04016-1.82",
+     "anchor": {
+      "price": 4.7,
+      "time": "2023-03-03",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 2.88,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.04016,
+       "high": 1.82,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 6.42,
+      "direction": "above",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 3.54,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "DSX|1W|IMPULSE|2025-04-04|1|WAVE_3|3": {
    "id": "DSX|1W|IMPULSE|2025-04-04|1|WAVE_3|3",
    "symbol": "DSX",
@@ -193850,6 +194708,76 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "DV|1W|FLAT|2022-01-21|1|WAVE_C|C": {
+   "id": "DV|1W|FLAT|2022-01-21|1|WAVE_C|C",
+   "symbol": "DV",
+   "timeframe": "1W",
+   "key": "FLAT|2022-01-21|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2022-01-21|1|WAVE_C|C|9.06|0|18.46||4.59|41.51|BASE:34.57172-38.92828,EXTENDED:38.92828-57.38828",
+     "anchor": {
+      "price": 9.06,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 18.46,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 34.57172,
+       "high": 38.92828,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 38.92828,
+       "high": 57.38828,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 4.59,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 41.51,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -201202,6 +202130,76 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "EFC|1W|ZIGZAG|2021-06-25|-1|WAVE_C|C": {
+   "id": "EFC|1W|ZIGZAG|2021-06-25|-1|WAVE_C|C",
+   "symbol": "EFC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-06-25|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-06-25|-1|WAVE_C|C|14.35|0|8.61||19.44|10.83|BASE:5.74-9.02902,EXTENDED:0.41902-5.74",
+     "anchor": {
+      "price": 14.35,
+      "time": "2025-02-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 8.61,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.74,
+       "high": 9.02902,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.41902,
+       "high": 5.74,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 19.44,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 10.83,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -211922,6 +212920,88 @@
     },
     {
      "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "EPAC|1W|ZIGZAG|2024-11-08|-1|WAVE_C|C": {
+   "id": "EPAC|1W|ZIGZAG|2024-11-08|-1|WAVE_C|C",
+   "symbol": "EPAC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-11-08|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2024-11-08|-1|WAVE_C|C|43.71|0|13.39||50.9|37.51|BASE:30.32-35.43498,EXTENDED:22.04498-30.32,EXTREME:8.65498-22.04498",
+     "anchor": {
+      "price": 43.71,
+      "time": "2025-08-22",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 13.39,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 30.32,
+       "high": 35.43498,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 22.04498,
+       "high": 30.32,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 8.65498,
+       "high": 22.04498,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 50.9,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 37.51,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
@@ -222653,6 +223733,70 @@
     }
    ]
   },
+  "EXR|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C": {
+   "id": "EXR|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "symbol": "EXR",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-12-31|-1|WAVE_C|C|180.41|0|122.34||226.73|104.39|BASE:58.07-104.80388",
+     "anchor": {
+      "price": 180.41,
+      "time": "2024-09-20",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 122.34,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 58.07,
+       "high": 104.80388,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 226.73,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 104.39,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "EXTR|1W|IMPULSE|2026-07-10|-1|WAVE_3|3": {
    "id": "EXTR|1W|IMPULSE|2026-07-10|-1|WAVE_3|3",
    "symbol": "EXTR",
@@ -231856,6 +233000,76 @@
     },
     {
      "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "FIP|1W|ZIGZAG|2024-07-26|-1|WAVE_C|C": {
+   "id": "FIP|1W|ZIGZAG|2024-07-26|-1|WAVE_C|C",
+   "symbol": "FIP",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-07-26|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2024-07-26|-1|WAVE_C|C|6.75|0|6.69||9.97|3.28|BASE:0.06-2.61558",
+     "anchor": {
+      "price": 6.75,
+      "time": "2025-07-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 6.69,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.06,
+       "high": 2.61558,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 9.97,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 3.28,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
@@ -278405,6 +279619,70 @@
     }
    ]
   },
+  "HAFC|1W|FLAT|2022-10-28|-1|WAVE_C|C": {
+   "id": "HAFC|1W|FLAT|2022-10-28|-1|WAVE_C|C",
+   "symbol": "HAFC",
+   "timeframe": "1W",
+   "key": "FLAT|2022-10-28|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2022-10-28|-1|WAVE_C|C|32.67|0|13.24||40.25|13.77|BASE:11.24768-14.37232",
+     "anchor": {
+      "price": 32.67,
+      "time": "2026-06-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 13.24,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.24768,
+       "high": 14.37232,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 40.25,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 13.77,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "HAFC|1W|IMPULSE|2026-06-26|-1|WAVE_3|3": {
    "id": "HAFC|1W|IMPULSE|2026-06-26|-1|WAVE_3|3",
    "symbol": "HAFC",
@@ -286924,6 +288202,76 @@
     }
    ]
   },
+  "HKD|1W|FLAT|2025-04-11|1|WAVE_C|C": {
+   "id": "HKD|1W|FLAT|2025-04-11|1|WAVE_C|C",
+   "symbol": "HKD",
+   "timeframe": "1W",
+   "key": "FLAT|2025-04-11|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2025-04-11|1|WAVE_C|C|1.33|0|1.13||0.69|2.95|BASE:2.89166-3.15834,EXTENDED:3.15834-4.28834",
+     "anchor": {
+      "price": 1.33,
+      "time": "2025-12-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 1.13,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.89166,
+       "high": 3.15834,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.15834,
+       "high": 4.28834,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.69,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 2.95,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "HKD|1W|IMPULSE|2025-12-26|1|WAVE_3|3": {
    "id": "HKD|1W|IMPULSE|2025-12-26|1|WAVE_3|3",
    "symbol": "HKD",
@@ -287235,6 +288583,82 @@
     {
      "d": "2026-10-09",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "HLF|1W|ZIGZAG|2025-02-07|1|WAVE_C|C#2": {
+   "id": "HLF|1W|ZIGZAG|2025-02-07|1|WAVE_C|C#2",
+   "symbol": "HLF",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-02-07|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2025-02-07|1|WAVE_C|C|11.43|0|14.62||5.34|19.96|BASE:20.46516-26.05,EXTENDED:26.05-35.08516,EXTREME:35.08516-49.70516",
+     "anchor": {
+      "price": 11.43,
+      "time": "2026-06-05",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 14.62,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 20.46516,
+       "high": 26.05,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 26.05,
+       "high": 35.08516,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 35.08516,
+       "high": 49.70516,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 5.34,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 19.96,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -291539,6 +292963,70 @@
     {
      "d": "2026-10-09",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "HOV|1W|ZIGZAG|2024-08-23|-1|WAVE_C|C#2": {
+   "id": "HOV|1W|ZIGZAG|2024-08-23|-1|WAVE_C|C#2",
+   "symbol": "HOV",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-08-23|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2024-08-23|-1|WAVE_C|C|155.99|0|138.51||228.44|89.93|BASE:17.48-70.39082",
+     "anchor": {
+      "price": 155.99,
+      "time": "2025-08-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 138.51,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 17.48,
+       "high": 70.39082,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 228.44,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 89.93,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -302093,6 +303581,82 @@
      "type": "REVISED",
      "rev": 2,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    }
+   ]
+  },
+  "IBIO|1W|ZIGZAG|2025-08-08|1|WAVE_C|C": {
+   "id": "IBIO|1W|ZIGZAG|2025-08-08|1|WAVE_C|C",
+   "symbol": "IBIO",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-08-08|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2025-08-08|1|WAVE_C|C|1.76|0|2.2258||0.5942|2.82|BASE:3.1355444-3.9858,EXTENDED:3.9858-5.3613444,EXTREME:5.3613444-7.5871444",
+     "anchor": {
+      "price": 1.76,
+      "time": "2026-03-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 2.2258,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 3.1355444,
+       "high": 3.9858,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.9858,
+       "high": 5.3613444,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 5.3613444,
+       "high": 7.5871444,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.5942,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.82,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
     }
    ]
   },
@@ -313826,6 +315390,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "INGN|1W|ZIGZAG|2023-10-27|1|WAVE_C|C": {
+   "id": "INGN|1W|ZIGZAG|2023-10-27|1|WAVE_C|C",
+   "symbol": "INGN",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-10-27|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2023-10-27|1|WAVE_C|C|5.14|0|8.64||4.21|12.85|BASE:10.47952-13.78,EXTENDED:13.78-19.11952,EXTREME:19.11952-27.75952",
+     "anchor": {
+      "price": 5.14,
+      "time": "2026-09-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 8.64,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10.47952,
+       "high": 13.78,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 13.78,
+       "high": 19.11952,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 19.11952,
+       "high": 27.75952,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 4.21,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 12.85,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -326707,6 +328347,82 @@
      "type": "REVISED",
      "rev": 2,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    }
+   ]
+  },
+  "IZEA|1W|ZIGZAG|2025-04-11|1|WAVE_C|C": {
+   "id": "IZEA|1W|ZIGZAG|2025-04-11|1|WAVE_C|C",
+   "symbol": "IZEA",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-04-11|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2025-04-11|1|WAVE_C|C|2.3|1|3.88||1.72|5.6|BASE:4.69784-6.18,EXTENDED:6.18-8.57784,EXTREME:8.57784-12.45784",
+     "anchor": {
+      "price": 2.3,
+      "time": "2026-10-09",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.88,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.69784,
+       "high": 6.18,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.18,
+       "high": 8.57784,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 8.57784,
+       "high": 12.45784,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.72,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 5.6,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
     }
    ]
   },
@@ -341372,6 +343088,82 @@
     {
      "d": "2026-10-09",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "KLTR|1W|DOUBLE_ZIGZAG|2024-06-07|1|WAVE_C|Y·c": {
+   "id": "KLTR|1W|DOUBLE_ZIGZAG|2024-06-07|1|WAVE_C|Y·c",
+   "symbol": "KLTR",
+   "timeframe": "1W",
+   "key": "DOUBLE_ZIGZAG|2024-06-07|1|WAVE_C|Y·c",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle Y·c · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "DOUBLE_ZIGZAG|2024-06-07|1|WAVE_C|Y·c|1.31|1|0.67||1.08|2.71|BASE:1.72406-1.98,EXTENDED:1.98-2.39406,EXTREME:2.39406-3.06406",
+     "anchor": {
+      "price": 1.31,
+      "time": "2026-10-02",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle Y·a",
+      "length": 0.67,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 1.72406,
+       "high": 1.98,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 1.98,
+       "high": 2.39406,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 2.39406,
+       "high": 3.06406,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.08,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.71,
+      "ruleId": "Y_BEYOND_W_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -370538,6 +372330,82 @@
     }
    ]
   },
+  "LUV|1W|ZIGZAG|2023-10-27|1|WAVE_C|C": {
+   "id": "LUV|1W|ZIGZAG|2023-10-27|1|WAVE_C|C",
+   "symbol": "LUV",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-10-27|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2023-10-27|1|WAVE_C|C|37.36|0|31.92||22.34|54.26|BASE:57.08656-69.28,EXTENDED:69.28-89.00656,EXTREME:89.00656-120.92656",
+     "anchor": {
+      "price": 37.36,
+      "time": "2026-03-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 31.92,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 57.08656,
+       "high": 69.28,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 69.28,
+       "high": 89.00656,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 89.00656,
+       "high": 120.92656,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 22.34,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 54.26,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "LUV|1W|ZIGZAG|2026-02-06|-1|WAVE_C|C": {
    "id": "LUV|1W|ZIGZAG|2026-02-06|-1|WAVE_C|C",
    "symbol": "LUV",
@@ -381609,6 +383477,88 @@
     },
     {
      "d": "2026-10-06",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
+  "MCY|1W|IMPULSE|2023-09-29|1|WAVE_3|3": {
+   "id": "MCY|1W|IMPULSE|2023-09-29|1|WAVE_3|3",
+   "symbol": "MCY",
+   "timeframe": "1W",
+   "key": "IMPULSE|2023-09-29|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "IMPULSE|2023-09-29|1|WAVE_3|3|48.19|0|50.93||28.03|78.96|BASE:99.12-130.59474,EXTENDED:130.59474-181.52474,EXTREME:181.52474-263.92948",
+     "anchor": {
+      "price": 48.19,
+      "time": "2025-01-17",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 50.93,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 99.12,
+       "high": 130.59474,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 130.59474,
+       "high": 181.52474,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 181.52474,
+       "high": 263.92948,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 28.03,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 78.96,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
@@ -428596,6 +430546,76 @@
     }
    ]
   },
+  "NPCT|1W|FLAT|2023-10-20|1|WAVE_C|C": {
+   "id": "NPCT|1W|FLAT|2023-10-20|1|WAVE_C|C",
+   "symbol": "NPCT",
+   "timeframe": "1W",
+   "key": "FLAT|2023-10-20|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2023-10-20|1|WAVE_C|C|9.06|1|3.16||5.51|11.83|BASE:12.22-12.96576,EXTENDED:12.96576-14.17288",
+     "anchor": {
+      "price": 9.06,
+      "time": "2026-10-09",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.16,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.22,
+       "high": 12.96576,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 12.96576,
+       "high": 14.17288,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 5.51,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 11.83,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "NPCT|1W|IMPULSE|2023-10-20|1|WAVE_3|3": {
    "id": "NPCT|1W|IMPULSE|2023-10-20|1|WAVE_3|3",
    "symbol": "NPCT",
@@ -429921,6 +431941,82 @@
     {
      "d": "2026-10-09",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "NRC|1W|ZIGZAG|2025-04-17|1|WAVE_C|C#2": {
+   "id": "NRC|1W|ZIGZAG|2025-04-17|1|WAVE_C|C#2",
+   "symbol": "NRC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2025-04-17|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2025-04-17|1|WAVE_C|C|12.08|0|11.68||10.54|22.22|BASE:19.29824-23.76,EXTENDED:23.76-30.97824,EXTREME:30.97824-42.65824",
+     "anchor": {
+      "price": 12.08,
+      "time": "2026-02-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 11.68,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 19.29824,
+       "high": 23.76,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 23.76,
+       "high": 30.97824,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 30.97824,
+       "high": 42.65824,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 10.54,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 22.22,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -433263,6 +435359,82 @@
      "d": "2026-10-06",
      "type": "CREATED",
      "rev": 1
+    }
+   ]
+  },
+  "NTIC|1W|FLAT|2021-07-16|-1|WAVE_C|C": {
+   "id": "NTIC|1W|FLAT|2021-07-16|-1|WAVE_C|C",
+   "symbol": "NTIC",
+   "timeframe": "1W",
+   "key": "FLAT|2021-07-16|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2021-07-16|-1|WAVE_C|C|18.95|0|9.99||29.6|9.62|BASE:6.60236-8.96,EXTENDED:2.78618-6.60236",
+     "anchor": {
+      "price": 18.95,
+      "time": "2024-05-10",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 9.99,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.60236,
+       "high": 8.96,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 2.78618,
+       "high": 6.60236,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 29.6,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 9.62,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -463217,6 +465389,82 @@
     }
    ]
   },
+  "PAYO|1W|ZIGZAG|2022-03-04|1|WAVE_C|C": {
+   "id": "PAYO|1W|ZIGZAG|2022-03-04|1|WAVE_C|C",
+   "symbol": "PAYO",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-03-04|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2022-03-04|1|WAVE_C|C|6.21|0|7.01||3.94|10.95|BASE:10.54218-13.22,EXTENDED:13.22-17.55218,EXTREME:17.55218-24.56218",
+     "anchor": {
+      "price": 6.21,
+      "time": "2025-04-04",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 7.01,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10.54218,
+       "high": 13.22,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 13.22,
+       "high": 17.55218,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 17.55218,
+       "high": 24.56218,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 3.94,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 10.95,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "PAYO|1W|ZIGZAG|2024-12-06|-1|WAVE_C|C": {
    "id": "PAYO|1W|ZIGZAG|2024-12-06|-1|WAVE_C|C",
    "symbol": "PAYO",
@@ -468403,6 +470651,70 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "PDX|1W|FLAT|2025-01-17|-1|WAVE_C|C": {
+   "id": "PDX|1W|FLAT|2025-01-17|-1|WAVE_C|C",
+   "symbol": "PDX",
+   "timeframe": "1W",
+   "key": "FLAT|2025-01-17|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2025-01-17|-1|WAVE_C|C|20.83|1|13.04||45.04|18.96|BASE:4.71256-7.79",
+     "anchor": {
+      "price": 20.83,
+      "time": "2026-10-09",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 13.04,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.71256,
+       "high": 7.79,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 45.04,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 18.96,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -519499,6 +521811,82 @@
     }
    ]
   },
+  "RMM|1W|ZIGZAG|2021-08-13|-1|WAVE_C|C": {
+   "id": "RMM|1W|ZIGZAG|2021-08-13|-1|WAVE_C|C",
+   "symbol": "RMM",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-08-13|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2021-08-13|-1|WAVE_C|C|16.4|0|7.85||21.55|13.7|BASE:8.55-11.5487,EXTENDED:3.6987-8.55",
+     "anchor": {
+      "price": 16.4,
+      "time": "2023-02-03",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 7.85,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.55,
+       "high": 11.5487,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.6987,
+       "high": 8.55,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.55,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 13.7,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-10-09",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "RMNI|1W|FLAT|2023-10-13|1|WAVE_C|C": {
    "id": "RMNI|1W|FLAT|2023-10-13|1|WAVE_C|C",
    "symbol": "RMNI",
@@ -521122,6 +523510,76 @@
     {
      "d": "2026-10-09",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "RNW|1W|FLAT|2023-03-10|1|WAVE_C|C": {
+   "id": "RNW|1W|FLAT|2023-03-10|1|WAVE_C|C",
+   "symbol": "RNW",
+   "timeframe": "1W",
+   "key": "FLAT|2023-03-10|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2023-03-10|1|WAVE_C|C|4.51|0|3.52||0.97|8.01|BASE:8.03-8.86072,EXTENDED:8.86072-10.20536",
+     "anchor": {
+      "price": 4.51,
+      "time": "2026-03-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.52,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.03,
+       "high": 8.86072,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 8.86072,
+       "high": 10.20536,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.97,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 8.01,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -523433,6 +525891,76 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "RPC|1W|FLAT|2024-04-26|1|WAVE_C|C": {
+   "id": "RPC|1W|FLAT|2024-04-26|1|WAVE_C|C",
+   "symbol": "RPC",
+   "timeframe": "1W",
+   "key": "FLAT|2024-04-26|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2024-04-26|1|WAVE_C|C|7.54|0|6.64||0.82|14.1|BASE:14.18-15.74704,EXTENDED:15.74704-18.28352",
+     "anchor": {
+      "price": 7.54,
+      "time": "2026-09-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 6.64,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 14.18,
+       "high": 15.74704,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 15.74704,
+       "high": 18.28352,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.82,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 14.1,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -542534,6 +545062,76 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "SGHT|1W|FLAT|2022-04-29|1|WAVE_C|C": {
+   "id": "SGHT|1W|FLAT|2022-04-29|1|WAVE_C|C",
+   "symbol": "SGHT",
+   "timeframe": "1W",
+   "key": "FLAT|2022-04-29|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "FLAT|2022-04-29|1|WAVE_C|C|1.5|0|6.37||0.61|13.35|BASE:10.30334-11.80666,EXTENDED:11.80666-18.17666",
+     "anchor": {
+      "price": 1.5,
+      "time": "2023-10-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 6.37,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 10.30334,
+       "high": 11.80666,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 11.80666,
+       "high": 18.17666,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.61,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 13.35,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -588109,6 +590707,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "TDC|1W|ZIGZAG|2020-10-30|1|WAVE_C|C": {
+   "id": "TDC|1W|ZIGZAG|2020-10-30|1|WAVE_C|C",
+   "symbol": "TDC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2020-10-30|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2020-10-30|1|WAVE_C|C|27.39|0|38.67||18.37|57.04|BASE:51.28806-66.06,EXTENDED:66.06-89.95806,EXTREME:89.95806-128.62806",
+     "anchor": {
+      "price": 27.39,
+      "time": "2026-08-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 38.67,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 51.28806,
+       "high": 66.06,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 66.06,
+       "high": 89.95806,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 89.95806,
+       "high": 128.62806,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 18.37,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 57.04,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
@@ -634636,6 +637310,82 @@
     }
    ]
   },
+  "VANI|1W|ZIGZAG|2022-12-30|1|WAVE_C|C": {
+   "id": "VANI|1W|ZIGZAG|2022-12-30|1|WAVE_C|C",
+   "symbol": "VANI",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-12-30|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2022-12-30|1|WAVE_C|C|1.63|0|2.2403||0.8497|3.09|BASE:3.0145054-3.8703,EXTENDED:3.8703-5.2548054,EXTREME:5.2548054-7.4951054",
+     "anchor": {
+      "price": 1.63,
+      "time": "2024-04-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 2.2403,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 3.0145054,
+       "high": 3.8703,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.8703,
+       "high": 5.2548054,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 5.2548054,
+       "high": 7.4951054,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.8497,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 3.09,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "VANI|1W|ZIGZAG|2025-10-17|-1|WAVE_C|C": {
    "id": "VANI|1W|ZIGZAG|2025-10-17|-1|WAVE_C|C",
    "symbol": "VANI",
@@ -668924,6 +671674,82 @@
    "events": [
     {
      "d": "2026-10-06",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
+  "XGN|1W|ZIGZAG|2024-04-19|1|WAVE_C|C": {
+   "id": "XGN|1W|ZIGZAG|2024-04-19|1|WAVE_C|C",
+   "symbol": "XGN",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-04-19|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-10-09",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-10-09",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-10-09",
+     "signature": "ZIGZAG|2024-04-19|1|WAVE_C|C|2.68|0|10.59||1.37|11.96|BASE:9.22462-13.27,EXTENDED:13.27-19.81462,EXTREME:19.81462-30.40462",
+     "anchor": {
+      "price": 2.68,
+      "time": "2026-03-27",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 10.59,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 9.22462,
+       "high": 13.27,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 13.27,
+       "high": 19.81462,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 19.81462,
+       "high": 30.40462,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.37,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 11.96,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-10-09",
      "type": "CREATED",
      "rev": 1
     }
