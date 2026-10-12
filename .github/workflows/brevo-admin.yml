@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: 9d18dac34e96a723efcf2ba5c0610292bece43eb
+          ref: 29b4a43885ea78e029e4c2ebbdc1731f76737047
           persist-credentials: false
           sparse-checkout: scripts/brevo
       - name: Isolierte Brevo-Domain und Cloudflare-DNS-Prüfung
