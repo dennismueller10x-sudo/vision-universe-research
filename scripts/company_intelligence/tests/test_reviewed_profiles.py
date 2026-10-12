@@ -1,0 +1,58 @@
+from copy import deepcopy
+import unittest
+from company_intelligence.reviewed_profiles import approved_copy, apply, digest, SCHEMA
+from test_profile_source_audit import CID, NOW, profile
+
+TEXT = 'Example Therapeutics entwickelt Wirkstoffkandidaten zur Behandlung von Krebserkrankungen. Das Biotechnologieunternehmen befindet sich mit diesen Therapien in der klinischen Entwicklung und arbeitet an der Erforschung neuer Behandlungsmöglichkeiten.'
+def entry(source=None):
+    source = source or profile()
+    return {'companyId': CID, 'companyName': source['companyName'], 'status': 'APPROVED', 'description': TEXT,
+            'sourceDescriptionHash': digest(source['description']), 'sourceHashes': sorted(s['contentHash'] for s in source['sources']),
+            'reviewedAt': '2026-10-12T09:00:00Z', 'profileVersion': 'reviewed-de-' + digest(TEXT)[:24],
+            'profileTextHash': digest(TEXT), 'method': 'MODEL_ASSISTED_STATIC_PARAPHRASE'}
+class MemoryStore:
+    def __init__(self, source): self.values = {'companyProfile:' + CID: source}; self.audits = []
+    def state(self, key, default=None): return deepcopy(self.values.get(key, default))
+    def set_state(self, key, value): self.values[key] = deepcopy(value)
+    def sources(self): return []
+    def audit(self, *args, **kwargs): self.audits.append((args, kwargs))
+class ReviewedProfilesTests(unittest.TestCase):
+    def test_drafts_and_changed_source_cannot_approve_a_profile(self):
+        p = profile(); e = entry(p)
+        result = approved_copy(p, e, CID, NOW)
+        self.assertEqual(result['language'], 'de'); self.assertEqual(result['description'], TEXT)
+        for alteration in [{'status': 'DRAFT_ONLY'}, {'companyId': 'iss_cik_0000320193'}, {'sourceDescriptionHash': '0' * 64},
+                           {'sourceHashes': ['0' * 64]}, {'profileTextHash': '0' * 64}, {'reviewedAt': '2027-01-01T00:00:00Z'}]:
+            with self.assertRaises(ValueError): approved_copy(p, {**e, **alteration}, CID, NOW)
+    def test_clinical_products_never_become_commercial_or_promotional(self):
+        p = profile(); e = entry(p)
+        for text in ['Example Therapeutics verkauft zugelassene Medikamente zur Behandlung von Krebs und verfügt über ein umfangreiches Angebot an Therapien für Patienten.',
+                     'Example Therapeutics ist ein führendes Unternehmen und entwickelt klinische Wirkstoffkandidaten für Patienten mit unterschiedlichen Arten von Krebserkrankungen.',
+                     'Example Therapeutics entwickelt klinische Wirkstoffkandidaten und beschäftigt 500 Mitarbeiter in der Forschung und Entwicklung von Therapien gegen Krebs.']:
+            with self.assertRaises(ValueError): approved_copy(p, {**e, 'description': text, 'profileTextHash': digest(text)}, CID, NOW)
+    def test_exact_issuer_supplementary_provenance_is_required(self):
+        p = profile(); e = entry(p); wrong = {**p['sources'][0], 'companyId': 'iss_cik_0000320193'}
+        with self.assertRaises(ValueError): approved_copy(p, {**e, 'additionalSources': [wrong]}, CID, NOW)
+    def test_static_copy_survives_next_refresh_without_generation_and_flags_new_source(self):
+        p = profile(); e = entry(p); store = MemoryStore(p); companies = {CID: {}}
+        reviewed = {'schema': SCHEMA, 'profiles': {CID: e}}
+        self.assertEqual(apply(store, companies, NOW, reviewed)['updatedProfiles'], 1)
+        current = store.state('companyProfile:' + CID)
+        self.assertEqual(apply(store, companies, NOW, reviewed)['updatedProfiles'], 0)
+        self.assertEqual(store.state('companyProfile:' + CID), current)
+        store.set_state('profileRefreshPending:' + CID, {**p, 'description': 'A materially changed business.'})
+        self.assertEqual(apply(store, companies, NOW, reviewed)['sourceChangesAwaitingReview'], 1)
+        self.assertEqual(store.state('companyProfile:' + CID), current)
+        self.assertEqual(store.state('profileReviewPending:' + CID)['status'], 'SOURCE_CHANGED_REVIEW_REQUIRED')
+    def test_failed_copy_or_unknown_web_owner_preserves_previous_safe_data(self):
+        p = profile(); store = MemoryStore(p); e = entry(p)
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: {**e, 'status': 'DRAFT_ONLY'}}})['rejectedProfiles'], 1)
+        self.assertEqual(store.state('companyProfile:' + CID), p)
+        p['sources'][0].update(type='FIRST_PARTY_WEB', url='https://unknown.example/about'); store = MemoryStore(p)
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: entry(p)}})['rejectionReasons'], {'PROFILE_WEB_OWNERSHIP_NOT_VERIFIED': 1})
+    def test_same_cik_does_not_reuse_old_business_description_after_a_name_change(self):
+        p = profile(); store = MemoryStore(p)
+        result = apply(store, {CID: {'names': ['New Operating Business Inc.']}}, NOW, {'profiles': {CID: entry(p)}})
+        self.assertEqual(result['rejectionReasons'], {'PROFILE_CURRENT_MASTER_NAME_REVIEW_REQUIRED': 1})
+        self.assertEqual(store.state('companyProfile:' + CID), p)
+if __name__ == '__main__': unittest.main()

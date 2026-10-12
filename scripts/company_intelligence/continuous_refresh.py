@@ -128,10 +128,12 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         selected={cid:c for cid,c in current.items() if c['names']} if universe else cohort(companies)
         cids=sorted(selected)
         before=outside_proof(store.db,cids); prior=store.state('continuousRefresh',{})
+        from company_intelligence.reviewed_profiles import apply as apply_reviewed_profiles
+        profile_import = apply_reviewed_profiles(store, selected, now)
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
         prior_events=store.db.execute('SELECT count(*) FROM events').fetchone()[0]
         http=http or CheckedHTTP(state/'http',budget=config['publicRequestBudget'],max_seconds=config['publicMaxSeconds'])
-        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set()
+        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set(profile_import['updatedIssuerIds'])
         all_sources=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         sources=[s for s in all_sources if s.get('companyId') in selected]
         eligible=[s for s in sources if s.get('active') and first_party(s,s['companyId']) and not publisher(s['url'])]
@@ -247,7 +249,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
-                'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,
+                'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,'profileImport':profile_import,
                 'publicRequests':http.requests,'secRequests':getattr(sec,'_sec_client',None).stats['requests'] if getattr(sec,'_sec_client',None) else 0,
                 'httpStats':http.stats,'run':pipeline.run,'privateIntegrity':proof,'inventory':inventory,'health':health,'runtimeSeconds':round(time.monotonic()-started,3),'privateOperationalRowsIncluded':False}
         atomic_json(state/'latest-run.json',report); atomic_json(evidence,report)
