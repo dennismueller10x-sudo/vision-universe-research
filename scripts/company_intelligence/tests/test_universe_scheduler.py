@@ -8,6 +8,17 @@ NOW='2026-10-10T08:00:00Z'
 def source(i,cid='iss_cik_0000000001'):
     return {'sourceId':str(i),'companyId':cid,'url':f'https://company.example/feed/{i}','type':'IR_FEED','provider':'FIRST_PARTY','active':True,'verified':True,'allowedSites':['https://company.example/'],'lastSuccess':'2026-10-09T08:00:00Z'}
 class SchedulerTests(unittest.TestCase):
+    def test_age_measurements_distinguish_unknown_history_and_do_not_change_queue(self):
+        a=source(1);b=source(2);b.pop('lastSuccess');c=source(3);c['lastSuccess']='2026-10-01T08:00:00Z'
+        rows,r=source_queue([a,b,c],{a['companyId']:{}},NOW)
+        self.assertEqual([s['sourceId']for s in rows],['2','3','1'])
+        self.assertEqual(r['sourceAge']['provenActiveSources'],2)
+        self.assertEqual(r['sourceAge']['neverProvenActiveSources'],1)
+        self.assertEqual(r['sourceAge']['maximumLastSuccessAgeHours'],216)
+        self.assertEqual(r['sourceAge']['medianLastSuccessAgeHours'],120)
+        self.assertEqual(r['sourceAge']['maximumKnownOverdueHours'],212)
+        self.assertEqual(r['sourceAge']['lastSuccessOlderThanSevenDays'],1)
+        self.assertEqual(r['sourceAge']['dueSourcesWithoutKnownDueTime'],1)
     def test_owner_conflict_does_not_poll_or_starve_independent_owned_sources(self):
         a=source(1);b=source(2,'iss_cik_0000000002')
         rows,r=source_queue([a,b],{a['companyId']:{},b['companyId']:{}},NOW,blocked_issuers={a['companyId']})

@@ -147,6 +147,9 @@ def audit(state, identity_root, eligibility_path, out, now=None):
                     'approvedRegisteredSources': len(approved), 'provenPollableSources': len(proven),
                     'committedBootstrapSourcesMissingFromLedger': sum(s.get('companyId') == cid and s.get('sourceId') not in source_ids and first_party(s, cid) for s in configured)}
         missing = [s for s in configured if s.get('sourceId') not in source_ids and first_party(s, s.get('companyId')) and not publisher(s.get('url')) and s.get('bootstrapValidatedAt')]
+        from company_intelligence.universe_scheduler import source_queue
+        blocked={cid for cid in companies if store.state('officialSite:'+cid,{}).get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')}
+        _, scheduler = source_queue(sources, companies, stamp, blocked_issuers=blocked)
         report = {'schema': 1, 'asOf': stamp, 'privateIssuers': len(rows), 'profileClassifications': dict(profiles),
             'stages': {'storedSourceProfileStatesIncludingWithdrawals': available,
                        'approvedProvenanceIncludingWeakSources': safe, 'rawGermanProfiles': raw_de, 'matchedCommittedEnglishInputs': matched,
@@ -154,6 +157,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             'sourceRegistryCounts': {'allRegistryRows': len(sources), **dict(registry_counts)},
             'provenSourceProviderCounts': dict(proven_providers), 'provenSourceRoleCounts': dict(proven_roles),
             'sourceClassifications': dict(source_flags), 'publicIssuersWithoutProvenPollableSource': sum(r['consumerEligible'] and r['sourceStatus'] != 'POLLABLE_PROVEN' for r in rows.values()),
+            'scheduler': scheduler,
             'missingApprovedBootstrapSources': len(missing), 'missingApprovedBootstrapIssuers': len({s['companyId'] for s in missing}),
             'missingApprovedBootstrapByProvider': dict(Counter(s.get('provider') for s in missing)), 'mandatoryCases': mandatory, 'issuers': rows,
             'privateOperationalRowsIncluded': False, 'sourceRequests': 0, 'remoteWrites': 0}

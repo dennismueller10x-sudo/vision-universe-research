@@ -5,6 +5,8 @@ Budget deferrals keep their old due time and therefore lead the following run.
 """
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
+from math import ceil
+from statistics import median
 from .consumer_usage import first_party, publisher
 from .model import canonical_url
 from .model import ACCESSION, timestamp
@@ -71,7 +73,7 @@ def source_queue(sources, companies, now, blocked_issuers=()):
     for s in sources:
         if s.get('companyId') in companies and first_party(s,s['companyId']):
             owners[canonical_url(s.get('url'))].add(s['companyId'])
-    queued=[];excluded=Counter();tiers=Counter();due=Counter()
+    queued=[];excluded=Counter();tiers=Counter();due=Counter();ages=[];never_proven=0
     for s in sources:
         cid=s.get('companyId')
         if cid in blocked_issuers:
@@ -87,6 +89,11 @@ def source_queue(sources, companies, now, blocked_issuers=()):
         if s['type']=='IR_FEED' and s.get('latestContentAt') and s['latestContentAt'][:10]<advance(now,-90*24)[:10]:
             hours=24;tier='DORMANT_NEWS_24H'
         tiers[tier]+=1
+        checked=timestamp(s.get('lastSuccess'))
+        if checked:
+            ages.append(max(0, (datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(checked.replace('Z','+00:00'))).total_seconds()/3600))
+        else:
+            never_proven+=1
         due_at=(s.get('nextCheck') or '') if s.get('failureCount') else advance(s['lastSuccess'],hours) if s.get('lastSuccess') else ''
         if due_at>now:continue
         due[tier]+=1
@@ -103,7 +110,16 @@ def source_queue(sources, companies, now, blocked_issuers=()):
         for k in pattern:
             i=positions[k]
             if i<len(buckets[k]):queued.append(buckets[k][i]);positions[k]+=1
-    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded),'fairQueuePattern':pattern}
+    ages.sort()
+    overdue=[max(0,(datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(s['dueAt'].replace('Z','+00:00'))).total_seconds()/3600) for s in queued if timestamp(s.get('dueAt'))]
+    age_summary={'provenActiveSources':len(ages),'neverProvenActiveSources':never_proven,
+                 'medianLastSuccessAgeHours':round(median(ages),2) if ages else None,
+                 'p95LastSuccessAgeHours':round(ages[ceil(.95*len(ages))-1],2) if ages else None,
+                 'maximumLastSuccessAgeHours':round(max(ages),2) if ages else None,
+                 'lastSuccessOlderThanSevenDays':sum(a>168 for a in ages),
+                 'maximumKnownOverdueHours':round(max(overdue),2) if overdue else None,
+                 'dueSourcesWithoutKnownDueTime':sum(not timestamp(s.get('dueAt')) for s in queued)}
+    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded),'fairQueuePattern':pattern,'sourceAge':age_summary}
 
 def sec_queue(store, companies, now, limit=80):
     """Bounded metadata repair queue with permanent canaries; cursor is private.
