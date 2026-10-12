@@ -357,6 +357,15 @@ export function safeSymbol(sym) {
   return /^[A-Z0-9][A-Z0-9.\-]{0,23}$/.test(String(sym || "")) ? sym : null;
 }
 
+/** Explicit reviewed native issuer bindings; no ADR data transfer. */
+export function nativeEuropeLogoMembers(catalog) {
+  return (catalog?.securities || []).flatMap(s => {
+    const l=s.listings?.find(x=>x.listingId===s.primaryListingId),b=s.logo?.nativeBinding;
+    if(s.region!=='EUROPE'||s.identity?.status!=='VERIFIED'||!b||b.companyId!==s.companyId||b.isin!==s.isin||b.issuerName!==s.name||s.logo.key!==l?.ticker||!safeSymbol(l.ticker)||!/^LEI:[A-Z0-9]{20}$/.test(b.companyId)||!/^https:\/\//.test(b.page)||!/^[a-f0-9]{64}$/.test(b.sourcePageSha256||''))return [];
+    return [{symbol:l.ticker,name:s.name,cik:null,nativeIssuerBinding:b}];
+  });
+}
+
 /* --------------------------------------------------------- Namens-Weg */
 
 /* Ein Item gilt als Unternehmen, wenn es Kennzeichen eines Unternehmens

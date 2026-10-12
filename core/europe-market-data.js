@@ -229,7 +229,7 @@
         ticker: l.ticker || s.ticker || null, providerSymbol: l.providerSymbol || null, mic: l.mic || null,
         exchange: l.exchange || null, country: (l.identityAdmission && l.identityAdmission.issuerCountry) || l.country || null,
         issuerCountry: l.identityAdmission && l.identityAdmission.issuerCountry || null, exchangeCountry:l.exchangeCountry || l.country || null, currency: l.currency || null,
-        isin: s.isin || null, aliases: clone(s.aliases || []), provenance: clone(l.provenance || {}), contract: CONTRACT_VERSION };
+        isin: s.isin || null, aliases: clone(s.aliases || []), cardFundamentals: clone(s.cardFundamentals || {status:'MISSING',metrics:[],marketCap:null}), homeCardQuality: clone(s.homeCardQuality || {}), provenance: clone(l.provenance || {}), contract: CONTRACT_VERSION };
     }
     function readHit(ref, scope) {
       if (!gate(scope)) return { error: unavailable("DISPLAY_RIGHTS_UNCONFIRMED", source) };
@@ -296,13 +296,22 @@
         }
         if (!discoverEligibility.chart(h.security,h.listing,opts.now,range).ready) return unavailable("CLOSE_CHART_PROOF_EXPIRED_DURING_LOAD",source);
       }
+      var displayPolicy=h.listing.discoverDisplay,displayWindow=null,displaySegments=chartProof?chartProof.segments||s.segments:null;
+      if(displayPolicy){
+        var window=displayPolicy.ranges&&displayPolicy.ranges[range];
+        if(displayPolicy.version!=='vu-discover-display-policy-1'||!window||window.version!=='vu-discover-display-window-1'||!chartProof||window.sourcePointsSha256!==chartProof.pointsSha256||window.sourceSegmentsSha256!==chartProof.segmentsSha256||window.calendarSha256!==chartProof.calendarSourceSha256||window.truncated!==(window.safeHistoryStart!==points[0][0])||!['CLEAN','MINOR_GAPS','MAJOR_GAPS','BROKEN'].includes(window.visualQualityStatus)||!validDate(window.safeHistoryStart)||!points.some(function(p){return p[0]===window.safeHistoryStart;}))return unavailable('DISPLAY_WINDOW_PROOF_MISMATCH',source);
+        displayWindow=clone(window);displayWindow.originalFirst=points[0][0];
+        points=points.filter(function(p){return p[0]>=window.safeHistoryStart;});
+        displaySegments=displaySegments.map(function(segment){return segment.filter(function(p){return p[0]>=window.safeHistoryStart;});}).filter(function(segment){return segment.length;});
+        if(points.length<20||Date.parse(points[points.length-1][0])-Date.parse(points[0][0])<30*86400000)return unavailable('INSUFFICIENT_SAFE_DISPLAY_WINDOW',source);
+      }
       return available(source, points[points.length - 1][0], {
         securityId: request.securityId, listingId: request.listingId, ticker: h.listing.ticker || null,
         grain: s.grain || "daily", range: range, basis: basis, currency: s.currency, points: clone(points),
         from: points[0][0], to: points[points.length - 1][0], adjustmentStatus: state.adjustmentStatus,
         freshness: chartProof ? state.discoverFreshness : state.LATEST_EOD, sessionLag: chartProof ? state.sessionLag : null,
         chartStatus: state.CHART, quoteUnit: chartProof ? chartProof.quoteUnit : s.currency,
-        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready;}) : [range], segments: chartProof ? clone(chartProof.segments || s.segments) : null,
+        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){var years={'1Y':366,'3Y':1096,'5Y':1827,'10Y':3653};return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready&&(!displayWindow||r==='MAX'||Date.parse(points[points.length-1][0])-Date.parse(points[0][0])>=years[r]*86400000*.95);}) : [range], segments: displaySegments ? clone(displaySegments) : null, displayWindow:displayWindow,
         sessionContinuity: s.sessionContinuity || "UNKNOWN", provenance: clone(s.provenance)
       });
     }
