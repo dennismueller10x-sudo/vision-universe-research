@@ -17,6 +17,8 @@ class AccountStructure(unittest.TestCase):
 
     def test_legal_suffix_and_punctuation_do_not_establish_wrong_account(self):
         self.assertTrue(label_context({"companyName":"RAM-Consulting GmbH"})["expected_business_words_present"])
+        self.assertTrue(label_context({"companyName":"RAM Consulting UG (haftungsbeschränkt)"})["only_legal_or_punctuation_variant"])
+        self.assertFalse(label_context({"companyName":"RAM Consulting synthetic other account"})["only_legal_or_punctuation_variant"])
         self.assertTrue(label_context({"companyName":"Vision Universe"})["vu_brand_label_match"])
         self.assertFalse(label_context({"companyName":"Different company"})["expected_business_words_present"])
 

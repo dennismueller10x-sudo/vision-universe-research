@@ -40,7 +40,15 @@ def label_context(account):
     value=account.get("companyName")
     if not isinstance(value,str): return {"expected_business_words_present":False,"vu_brand_label_match":False}
     words=re.findall(r"[a-z]+",unicodedata.normalize("NFC",value).casefold())
+    normalized=unicodedata.normalize("NFC",value).casefold()
+    phrase=bool(re.search(r"\bram[\s._-]+consulting\b",normalized))
+    suffix_words=re.findall(r"[a-z]+","".join(ch for ch in unicodedata.normalize("NFKD",value).casefold()
+                                             if not unicodedata.combining(ch)))
+    legal={"gmbh","ug","haftungsbeschrankt","mbh","ag","gbr","co","kg","ohg","e","k","ek"}
+    legal_variant=suffix_words[:2]==["ram","consulting"] and set(suffix_words[2:]).issubset(legal)
     return {"expected_business_words_present":{"ram","consulting"}.issubset(words),
+            "expected_business_phrase_present":phrase,
+            "only_legal_or_punctuation_variant":legal_variant,
             "vu_brand_label_match":"".join(words)=="visionuniverse"}
 
 
