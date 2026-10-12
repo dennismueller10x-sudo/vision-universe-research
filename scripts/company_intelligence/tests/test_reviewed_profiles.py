@@ -22,6 +22,15 @@ class MemoryStore:
     def sources(self): return []
     def audit(self, *args, **kwargs): self.audits.append((args, kwargs))
 class ReviewedProfilesTests(unittest.TestCase):
+    def test_neutral_german_investment_activity_remains_source_bound(self):
+        p=profile('The company invests in senior and subordinate secured financing.')
+        p['companyName']='Example Finance';e=entry(p)
+        text='Die Gesellschaft investiert in vorrangige und nachrangig besicherte Finanzierungen. Dazu gehören Darlehen mit einem ersten oder zweiten Zugriff auf Sicherheiten.'
+        e.update(description=text,profileTextHash=digest(text));e['profileVersion']=copy_version(e)
+        self.assertEqual(approved_copy(p,e,CID,NOW)['description'],text)
+        with self.assertRaisesRegex(ValueError,'PROFILE_COPY_SOURCE_CHANGED'):
+            approved_copy({**p,'description':'The company manages investment portfolios of commercial property debt for institutional clients in multiple regions.'},e,CID,NOW)
+
     def test_drafts_and_changed_source_cannot_approve_a_profile(self):
         p = profile(); e = entry(p)
         result = approved_copy(p, e, CID, NOW)
