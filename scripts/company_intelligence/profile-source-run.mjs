@@ -16,7 +16,12 @@ const beforeBuild=sourceBatch?async({state,temporary})=>{
   execFileSync('python3',['scripts/company_intelligence/source_onboarding.py','--state',state,'--out',out,
    '--run-id','german-profile-source-20261012','--limit','16','--request-budget','200','--max-seconds','600'],
    {stdio:['ignore','ignore','pipe'],timeout:720000,maxBuffer:1024*1024});
- }catch(error){throw Error(String(error.stderr||'').match(/ValueError: ([A-Z0-9_:-]+)/)?.[1]||'BOUNDED_ONBOARDING_FAILED');}
+ }catch(error){
+  const text=String(error.stderr||'');
+  const code=text.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)\s*$/)?.[1];
+  const line=[...text.matchAll(/File "[^\n]*\/(source_onboarding\.py|current_state_acceptance\.py)", line (\d+)/g)].at(-1);
+  throw Error(code||'ONBOARDING_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
+ }
  return JSON.parse(readFileSync(out));
 }:undefined;
 const report=await runRefresh(driver,{temporary:resolve(arg('--temporary')),identityRoot:arg('--identity-root'),
