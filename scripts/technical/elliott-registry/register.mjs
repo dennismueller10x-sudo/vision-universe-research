@@ -38,7 +38,7 @@ import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 import { classify, researchInternalWave3, SPEC_SHA256, LIBRARY_VERSION, SPEC } from "../elliott-setups/setup-library.mjs";
 import { readLedger, append, verifyChain, eventId, LEDGER_VERSION } from "./ledger.mjs";
 import { Projection, registryProjection, PROJECTION_VERSION } from "../lib/ti-projection.mjs";
-import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
+import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, publishedHighlights, compareHighlights, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
 
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
@@ -65,11 +65,25 @@ export function cutIndex(points, seriesAsOf, F) {
   return k >= 0 && fridayOf(points[k][0]) === F ? k : -1;
 }
 
+/** Index der letzten Bar bis einschliesslich Woche F (die Reihe darf davor enden). */
+export function lastBarUpTo(points, F) {
+  let k = -1; for (let i = 0; i < points.length; i++) { if (fridayOf(points[i][0]) <= F) k = i; else break; }
+  return k;
+}
+
 /* ---------- Analyse eines Titels (Worker) ---------- */
 function analyzeSymbol(file, F, W) {
   const x = readJson(file), sym = file.split("/").pop().replace(/\.json$/, "");
-  const pts = x.points || [], k = cutIndex(pts, x.asOf || x.to, F);
-  if (k < 0) return { s: sym, skip: "NO_COMPLETED_BAR_FOR_WEEK" };
+  const pts = x.points || [];
+  let k = cutIndex(pts, x.asOf || x.to, F), stale = null;
+  if (k < 0) {
+    /* Kundenprodukt-Sicht: das Produkt veroeffentlicht einen Titel auch dann, wenn seine Reihe vor dem Wochenende von W* endet (Handelspause, Verzoegerung, Ausstieg),
+       mit dem Stand seiner letzten Bar. Die zustandslose Sicht und die Snapshots behalten die strenge Regel (Reihe muss W* erreichen). Der Titel wird deshalb
+       nur fuer die Produktsicht analysiert (stale) und nicht in Snapshot, Abdeckung oder RS-Querschnitt gezaehlt. */
+    const kp = lastBarUpTo(pts, F);
+    if (!(W && W.ctx) || kp < 0) return { s: sym, skip: "NO_COMPLETED_BAR_FOR_WEEK" };
+    k = kp; stale = { lastBar: pts[kp][0], weeksBehind: Math.round((Date.parse(F) - Date.parse(fridayOf(pts[kp][0]))) / (7 * dayMs)) };
+  }
   if (k + 1 < MIN_BARS) return { s: sym, skip: "TOO_SHORT" };
   const used = pts.slice(0, k + 1), series = weeklySeriesFromPoints(used, x.ticker || sym), t = series.length - 1;
   const P = Core.prepareSeries(series);
@@ -78,7 +92,7 @@ function analyzeSymbol(file, F, W) {
   const c = series.close, atr = P.main.features.columns.atr[t];
   /* einfacher Trend wie panel.mjs (40-Wochen-Durchschnitt mit Steigung ueber 4 Wochen) */
   let trend = 0; if (t >= 43) { const sma = (j) => { let s = 0; for (let q = j - 39; q <= j; q++) s += c[q]; return s / 40; }; const m = sma(t), m4 = sma(t - 4); trend = c[t] > m && m > m4 ? 1 : c[t] < m && m < m4 ? -1 : 0; }
-  return { s: sym, d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
+  return { s: sym, ticker: x.ticker || null, stale, d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
            ew: rec.ew ? { p: rec.ew.p, w: rec.ew.w, ab: rec.ew.ab, d: rec.ew.d, key: rec.ew.key, app: rec.ew.app } : null, outlook: rec.o, clarity: rec.cl,
            E: E && E.primary ? { primary: E.primary, alternatives: (E.alternatives || []).slice(0, 1), applicability: E.applicability, higherDegree: E.higherDegree ? { current: E.higherDegree.current, pattern: E.higherDegree.pattern } : null } : null,
            rw3: researchInternalWave3(E, c, t), rw3Start: (() => { const q = researchInternalWave3(E, c, t); return q ? series.timestamps[q.pivotIdx[0]] : null; })(), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to,
@@ -221,7 +235,9 @@ async function registerWeek(o, F) {
     if (!identity.ok) throw new Error("Produkt-Identitaet nicht bestaetigt (" + (identity.error || identity.different + " abweichend, " + identity.compared + " verglichen") + ") — nichts registriert");
   }
   const rows = await pool("analyze", files, o.workers || 4, { F, productView, productInputDir: o.productInputDir || null, workDir: o.workDir || null, publishedDir: o.publishedDir || null });
-  const ok = rows.filter((r) => !r.skip && !r.error);
+  const ok = rows.filter((r) => !r.skip && !r.error && !r.stale);
+  /* Titel, deren Reihe vor dem Ende von W* aufhoert: nur fuer die Kundenprodukt-Sicht (siehe analyzeSymbol), nicht in Snapshot, Abdeckung oder RS-Querschnitt */
+  const staleRows = productView ? rows.filter((r) => r.stale && !r.skip && !r.error && r.pv && !r.pv.skip) : [];
   /* 2) Abdeckung: deutlich weniger Titel als im vorigen Lauf heisst veraltete oder unvollstaendige Daten → nicht registrieren */
   const prevRun = lines.filter((e) => e.type === "RUN").pop(), minCov = isNum(o.minCoverage) ? o.minCoverage : 0.9;
   if (prevRun && ok.length < minCov * prevRun.payload.universe.analysed)
@@ -235,7 +251,17 @@ async function registerWeek(o, F) {
   /* Setup-Klassifikation (gleiche Implementierung wie die Historie) */
   for (const r of ok) { r.setup = r.E ? classify(r.E, { px: r.px, atr: r.atr, trend: r.trend, rsQ: isNum(r.rsQ) ? r.rsQ : null, msVote: r.ms }) : null; }
   /* Kundenprodukt-Sicht: dieselbe Klassifikation auf der Produkt-Elliott-Ausgabe (Trend, RS, Marktstruktur wie oben) */
-  for (const r of ok) if (r.pv && !r.pv.skip) r.pv.setup = r.pv.E ? classify(r.pv.E, { px: r.pv.px, atr: r.pv.atr, trend: r.trend, rsQ: isNum(r.rsQ) ? r.rsQ : null, msVote: r.ms }) : null;
+  for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip) r.pv.setup = r.pv.E ? classify(r.pv.E, { px: r.pv.px, atr: r.pv.atr, trend: r.trend, rsQ: isNum(r.rsQ) ? r.rsQ : null, msVote: r.ms }) : null;
+  /* Explore Highlights der Produktsicht je Titel (einmal gerechnet; Ereignisse und Vergleich nutzen dasselbe) und VOLLSTAENDIGER Vergleich mit dem veroeffentlichten Produkt - vor jeder Schreiboperation */
+  const exByS = new Map(), rsUniverse = rs.length;
+  if (productView) for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip && r.pv.exploreIn) exByS.set(r.s, Projection.build(r.pv.exploreIn.E, { ...r.pv.exploreIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rsUniverse } : null }));
+  let highlightIdentity = null;
+  if (productView && o.highlightGate !== false) {
+    const pub = publishedProduct(o.publishedDir || undefined), reg = new Map(), asOfOf = new Map([...pub.bySymbol].map(([t, v]) => [t, v.asOf]));
+    for (const r of ok.concat(staleRows)) if (r.pv && !r.pv.skip) reg.set(r.ticker || r.s.replace(/^ref_/, ""), { d: r.pv.d, keys: ((exByS.get(r.s) || {}).exploreHighlights || []).map((h) => h.key).sort() });
+    highlightIdentity = compareHighlights(publishedHighlights(pub.dir), reg, asOfOf);
+    if (!highlightIdentity.ok) throw new Error("Explore Highlights weichen vom veroeffentlichten Produkt ab (" + highlightIdentity.different.length + " Titel, z. B. " + highlightIdentity.different.slice(0, 5).map((d) => d.t + ":" + d.reason).join(", ") + ") - nichts registriert");
+  }
   /* Snapshot (Kontrollkohorte) */
   const snap = ok.map((r) => ({ s: r.s, d: r.d, px: r.px, atr: r.atr, trend: r.trend, rsQ: r4(r.rsQ), ms: r4(r.ms), ew: r.ew, setup: r.setup ? { id: r.setup.setupId, status: r.setup.status, displayed: r.setup.displayed, variants: r.setup.variants || null } : null,
                                 rw3: r.rw3 ? r.rw3.qualifies : false, dataSha: r.dataSha,
@@ -262,12 +288,12 @@ async function registerWeek(o, F) {
     return s; })() : null;
   entries.push({ type: "RUN", id: "RUN-" + F, week: F, recordedAt, payload: { week: F, asOf: o.asOf || null, code: codeVersion(), universe: { files: files.length, analysed: ok.length, skipped: rows.filter((r) => r.skip).length, errors: rows.filter((r) => r.error).length, skipReasons }, initialStockRun: initialStock,
     views: productView ? [VIEWS.STATELESS, VIEWS.PRODUCT] : [VIEWS.STATELESS], registrationLagDays: Math.round((Date.parse(recordedAt.slice(0, 10)) - Date.parse(F)) / dayMs),
-    ...(productView ? { productView: { version: PRODUCT_VIEW_VERSION, initialStockRun: initialStockProduct, identity, ...pvStats } } : {}),
+    ...(productView ? { productView: { version: PRODUCT_VIEW_VERSION, initialStockRun: initialStockProduct, identity, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, different: highlightIdentity.different.length, timing: highlightIdentity.timing.length, timingExceptions: highlightIdentity.timing.slice(0, 20).map((x) => x.t), ok: highlightIdentity.ok } : null, productOnlyStale: staleRows.length, ...pvStats } } : {}),
     snapshot: { file: "snapshots/" + F + ".jsonl.gz", sha256: sha(snapBody), rows: snap.length }, data: { source: o.dataSource || "weekly closes (discover-series-long format)", seriesAsOfMin: ok.reduce((m, r) => (r.seriesAsOf < m ? r.seriesAsOf : m), "9999"), seriesAsOfMax: ok.reduce((m, r) => (r.seriesAsOf > m ? r.seriesAsOf : m), "0000") } } });
   /* EVENTS: neu qualifizierte Setups und neue Forschungskandidaten */
   const registered = new Set(lines.filter((e) => e.type === "EVENT").map((e) => e.payload.dedupeKey));
-  for (const r of ok) {
-    const base = { initialStock, symbol: r.s, timeframe: "1W", registeredWeek: F, registeredBarDate: r.d, price: r.px, atr: r.atr, dataVersion: { seriesAsOf: r.seriesAsOf, sha256_16: r.dataSha }, codeVersion: { library: LIBRARY_VERSION, specSha256: SPEC_SHA256, engine: EV3.ENGINE_VERSION },
+  for (const r of ok.concat(staleRows)) {
+    const base = { initialStock, ...(r.stale ? { stalePriceInput: r.stale } : {}), symbol: r.s, timeframe: "1W", registeredWeek: F, registeredBarDate: r.d, price: r.px, atr: r.atr, dataVersion: { seriesAsOf: r.seriesAsOf, sha256_16: r.dataSha }, codeVersion: { library: LIBRARY_VERSION, specSha256: SPEC_SHA256, engine: EV3.ENGINE_VERSION },
                    confirmationsAtRegistration: { trend: r.trend, rs26Rank: r4(r.rsQ), rs26Top20: isNum(r.rsQ) ? r.rsQ >= 0.8 : null, rs26Bottom20: isNum(r.rsQ) ? r.rsQ <= 0.2 : null, marketStructureVote: r4(r.ms), volume: "NOT_AVAILABLE" } };
     if (r.setup && r.setup.status === "QUALIFIED") {
       const S = r.setup, dk = [r.s, S.setupId, S.persistenceKey].join("|");
@@ -308,7 +334,7 @@ async function registerWeek(o, F) {
     }
     /* Registry 1.5.0: angezeigte Explore Highlights der Produktsicht (Wochenanalyse, kuratiert, hoechstens 2), eigene Kohorte, eingefroren, nur anhaengen.
        Candidate Explorer: nicht registriert (technische Zusatzansicht, keine Produktaussage; sonst bis zu sechs Ereignisse je Titel ohne Produktbezug). */
-    const exProj = productView && r.pv && !r.pv.skip && r.pv.exploreIn ? Projection.build(r.pv.exploreIn.E, { ...r.pv.exploreIn.ctx, rs: isNum(r.rsQ) ? { rank: r.rsQ, rankPrev: null, universe: rs.length } : null }) : null;
+    const exProj = exByS.get(r.s) || null;
     for (const th of (exProj && exProj.exploreHighlights) || []) {
       const dk = [r.s, "EXPLORE_HIGHLIGHT", th.key, VIEWS.PRODUCT].join("|");
       if (registered.has(dk)) continue; registered.add(dk);
@@ -364,7 +390,7 @@ async function registerWeek(o, F) {
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
            research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), motiveAlternative: count("EVENT", "CUSTOMER_PRODUCT_MOTIVE_ALTERNATIVE"), explore: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT"), exploreHighlight: count("EVENT", "CUSTOMER_PRODUCT_EXPLORE_HIGHLIGHT"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
-           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), openWithoutSeries: noSeries.size, seconds: Math.round((Date.now() - t0) / 1000) };
+           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), openWithoutSeries: noSeries.size, productOnlyStale: staleRows.length, highlightIdentity: highlightIdentity ? { compared: highlightIdentity.compared, identical: highlightIdentity.identical, timing: highlightIdentity.timing.length } : null, seconds: Math.round((Date.now() - t0) / 1000) };
 }
 
 if (isMainThread && process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

@@ -43,6 +43,33 @@ export function publishedProduct(dir = PUBLISHED_DIR) {
   return { dir, meta, bySymbol, dailyFromCanonical, generatedAt: meta.generatedAt, methodologyKey: idx.methodologyKey };
 }
 
+/** Kennungen der veroeffentlichten Explore Highlights je Titel (Wochenanalyse; Ticker -> sortierte Schluessel). Liest alle Shards. */
+export function publishedHighlights(dir = PUBLISHED_DIR) {
+  const out = new Map(), sd = join(dir, "shards");
+  for (const f of readdirSync(sd).filter((x) => x.endsWith(".json.gz")).sort()) {
+    const ins = JSON.parse(gunzipSync(readFileSync(join(sd, f))).toString()).instruments || {};
+    for (const [t, p] of Object.entries(ins)) { const pr = p.projectionWeekly || p.projection; const ks = ((pr && pr.exploreHighlights) || []).map((h) => h.key).sort(); if (ks.length) out.set(t, ks); }
+  }
+  return out;
+}
+
+/** Vollstaendiger Vergleich der Explore Highlights: Register (Produktsicht) gegen den veroeffentlichten Stand.
+ *  published: Ticker -> Schluessel (nur Titel mit Highlights); registry: Ticker -> { d: Datum der letzten Bar, keys }; asOfOf: Ticker -> veroeffentlichter Stand.
+ *  Ausnahme TIMING: Registry und Produkt rechnen auf verschiedenen Staenden (letzte Bar verschieden) - gezaehlt und ausgewiesen, nicht als Abweichung. */
+export function compareHighlights(published, registry, asOfOf) {
+  const tickers = new Set([...published.keys(), ...[...registry].filter(([, v]) => v.keys.length).map(([t]) => t)]);
+  const r = { compared: 0, identical: 0, timing: [], different: [] };
+  for (const t of [...tickers].sort()) {
+    const pk = published.get(t) || [], row = registry.get(t), rk = row ? row.keys : [];
+    if (JSON.stringify(pk) === JSON.stringify(rk)) { r.compared++; r.identical++; continue; }
+    const pubAsOf = asOfOf.get(t);
+    if (row && pubAsOf && row.d && pubAsOf !== row.d) { r.timing.push({ t, publishedAsOf: pubAsOf, registryBar: row.d, published: pk, registry: rk }); continue; }
+    r.compared++; r.different.push({ t, reason: row ? "KEYS_DIFFER" : "NOT_IN_REGISTRY_UNIVERSE", published: pk, registry: rk });
+  }
+  r.ok = r.different.length === 0;
+  return r;
+}
+
 /** Kontext wie der Produkt-Build (gleiche Evidenztabellen, gleiche Tagesquelle). */
 export function productContext(pub, workDir = null) {
   if (pub.dailyFromCanonical && !workDir) return { error: "PRODUCT_DAILY_SOURCE_IS_CANONICAL_HISTORY_BUT_NO_WORK_DIR" };

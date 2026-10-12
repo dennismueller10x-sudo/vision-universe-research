@@ -27,6 +27,8 @@ export function verifyRegistry(reg, againstGit) {
     if ((e.payload.views || []).includes("CUSTOMER_PRODUCT")) { productWeeks.add(e.week); const id = e.payload.productView && e.payload.productView.identity;
       if (!id || id.ok !== true || !(id.compared > 0) || id.different !== 0) errors.push("Produkt-Identitaet im Lauf " + e.week + " nicht bestaetigt"); } });
   for (const e of lines) if (e.type === "EVENT" && e.payload.view === "CUSTOMER_PRODUCT" && !productWeeks.has(e.week)) errors.push("Produkt-Ereignis ohne Produkt-Lauf: seq " + e.seq);
+  /* Explore Highlights: Laeufe mit Vollvergleich (ab 1.5.0 nach Korrektur) muessen ihn bestanden haben */
+  for (const e of runs) { const h = e.payload.productView && e.payload.productView.highlightIdentity; if (h && h.ok !== true) errors.push("Explore-Highlight-Identitaet im Lauf " + e.week + " nicht bestaetigt"); }
   /* Revisionen verweisen nur auf vorher registrierte Ereignisse; Ereignis-IDs eindeutig */
   const seen = new Set();
   for (const e of lines) { if (e.type === "EVENT") { if (seen.has(e.id)) errors.push("doppelte Ereignis-ID " + e.id); seen.add(e.id); } if (e.type === "REVISION" && !seen.has(e.ref)) errors.push("Revision ohne vorheriges Ereignis: seq " + e.seq); }
