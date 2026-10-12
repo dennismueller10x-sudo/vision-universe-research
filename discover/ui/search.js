@@ -145,6 +145,8 @@
       S.clear(results);
       treffer = [];
       global.setTimeout(function () { input.focus(); }, 60);
+      /* Gemeinsamer Index (USA + Europa) und Europa-Freigabe schon beim Oeffnen anstossen - bis zur ersten Eingabe laufen sie. */
+      if (D.GlobalUniverse && D.GlobalUniverse.warm) D.GlobalUniverse.warm();
     }
 
     function schliessen() {

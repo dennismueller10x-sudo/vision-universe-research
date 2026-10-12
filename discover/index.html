@@ -3,6 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- STARTREIHENFOLGE DER STARTSEITE
+     Der erste Bildschirm besteht aus Stilen, Kopfbild und dem vorgerenderten Kopf (unten in #v2-shell). Alles andere - die rund
+     50 Skripte aus dem Template dx-start (unten) und die Datenabrufe der Startseite - wartet, bis das Kopfbild da ist
+     (spaetestens STAGE_MS), damit es sich nicht mit Stilen und Kopfbild um dieselbe Leitung streitet. Nur meta.json und der
+     Marktkalender (zusammen 17 KB) laufen sofort mit: aus meta.json ergeben sich Adresse der ersten Auswahl und des
+     Intraday-Verzeichnisses. Auf jeder anderen Route (Aktie, Maerkte, ...) gibt es weder Kopfbild noch vorgeladene Daten;
+     dort starten die Skripte, sobald das Dokument gelesen ist.
+     Die Skripte laufen unveraendert in ihrer Reihenfolge (async=false), nur eben nachgeladen. Jede Antwort der Startseite
+     bekommt dieselbe Adresse und denselben Cache-Modus wie der spaetere fetch() der Seite und wird genau diesem
+     uebergeben (danach ist der Eintrag weg); schlaegt sie fehl, laeuft dessen eigene Wiederholung normal.
+     Ein Tipp auf die Suche vor dem Skriptstart wird gemerkt (__vuSearchTap) und oeffnet sie, sobald home.js laeuft. -->
+<script>(function(w,d){var home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(location.hash.replace(/^#\/?/,"").split("/")[0]),STAGE_MS=2500,ready=!home,parsed=false,started=false,f=w.fetch,e={},N={cache:"no-cache"},meta;
+function go(u,o){var r=e[u]=f.call(w,u,o);r.catch(function(){});return r}
+function json(r){return r.clone().json()}
+if(home&&f){w.fetch=function(u){var r=typeof u==="string"&&e[u];if(r){delete e[u];return r}return f.apply(this,arguments)};
+meta=go("/discover/data/meta.json",N).then(json);meta.catch(function(){});go("/quant/config/market-calendar.json",N)}
+function data(){
+meta.then(function(m){var h=(m.home||[]).filter(function(x){return x.universeId==="US_REAL"})[0],r=m.realtime;if(h&&h.chunks&&h.chunks[0])go(h.chunks[0],N);if(r&&r.available===true&&r.intraday&&r.intraday.index)go(r.intraday.index)}).catch(function(){});
+go("/discover/live/im-blick-US_REAL.json",N);
+go("/quant/data/market/multi-asset/snapshot.json",N);
+go("/quant/config/multi-asset.json",N);
+go("/quant/config/fx-license.json");
+go("/quant/data/market/fx/ecb/index.json").then(json).then(function(x){var p=(x.pairs||[]).filter(function(q){return q.base==="EUR"&&q.quote==="USD"})[0];if(p&&p.file)go("/quant/data/market/fx/ecb/"+p.file)}).catch(function(){})}
+function start(){if(started||!ready||!parsed)return;started=true;
+var t=d.getElementById("dx-start"),s=t.content.querySelectorAll("script[src]"),i,n;
+if(meta)data();
+for(i=0;i<s.length;i++){n=d.createElement("script");n.src=s[i].getAttribute("src");n.async=false;d.head.appendChild(n)}}
+w.__vuParsed=function(){parsed=true;start()};
+// Suche vor dem Skriptstart: Tipp auf das Suchfeld oder die Taste "/" werden gemerkt; home.js oeffnet die Suche, sobald sie laeuft.
+d.addEventListener("click",function(v){var b=v.target.closest&&v.target.closest("[data-static] .v2-search-prompt");if(b)w.__vuSearchTap=1},true);
+d.addEventListener("keydown",function(v){if(v.key==="/"&&!/^(INPUT|TEXTAREA|SELECT)$/.test(v.target&&v.target.tagName||"")&&d.querySelector("[data-static]")){v.preventDefault();w.__vuSearchTap=1}},true);
+if(home){var l=d.createElement("link");l.rel="preload";l.as="image";l.href="/assets/hero-visuals/discover.webp";l.setAttribute("fetchpriority","high");
+l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeout(function(){ready=true;start()},STAGE_MS)}
+})(window,document);</script>
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:,">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -27,23 +61,18 @@
 <body class="dx dv2"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script src="/assets/scroll-memory.js"></script>
 
 <a class="v2-skip" href="#v2-main">Zum Inhalt</a>
-<div id="v2-shell"></div>
+<div id="v2-shell"><main id="v2-main" class="v2-main" tabindex="-1" aria-busy="true"><div class="v2-home"><!-- Kopf der Startseite, Markup wie in home.js#render; app.js uebergibt ihn an V.Home.render (data-static), das nur noch die Suche anbindet. -->
+<header class="v2-intro vu-product-hero vu-hero-fidelity" data-product="discover" data-static><div class="vu-hero-scene" aria-hidden="true"></div><div class="v2-intro-copy vu-product-hero__copy"><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#discover"></use></svg></span><p class="vu-hero-name">Discover</p><h1 class="vu-product-title vu-hero-headline">Sieh den Markt mit anderen Augen.</h1><p class="v2-intro-lead vu-product-lead vu-hero-description">Entdecke Unternehmen, Trends und Themenwelten weltweit.</p><button class="v2-search-prompt" type="button" aria-label="Unternehmen oder Symbol suchen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14m9 16-4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Unternehmen oder Symbol suchen</span><span class="v2-search-arrow"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button><div class="v2-intro-actions"><a class="v2-pill v2-pill-dark v2-intro-cta" href="#/aktien">Jetzt entdecken →</a><a class="v2-pill v2-pill-ghost" href="#/welten">Themenwelten</a><a class="v2-pill v2-pill-ghost" href="#/maerkte">Märkte</a></div></div></header></div></main></div>
+<script>if(/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)(\/|$)/.test(location.hash)){var n=document.querySelector("#v2-shell .v2-intro[data-static]");if(n)n.closest("main").remove();}</script>
 
+<template id="dx-start">
 <!-- Bestehende Vision-Universe-Infrastruktur (unveraendert wiederverwendet) -->
 <script src="/quant/ui/shell.js"></script>
-<script src="/quant/ui/charts.js"></script>
-<script src="/quant/ui/technical-chart.js"></script>
-<script src="/quant/engines/chart-ranges.js"></script>
-<script src="/quant/engines/hash.js"></script>
-<script src="/quant/engines/instrument-classification.js"></script>
-<script src="/quant/engines/company-master.js"></script>
-<script src="/quant/engines/instrument-directory.js"></script>
 <script src="/quant/engines/realtime/market-hours.js"></script>
 <script src="/quant/engines/realtime/trading-session.js"></script>
 <script src="/quant/engines/realtime/intraday-snapshot.js"></script>
 <script src="/quant/engines/realtime/freshness.js"></script>
 <script src="/quant/engines/realtime/source-state.js"></script>
-<script src="/quant/engines/series-sampling.js"></script>
 
 <!-- Discover-eigene Engines -->
 <script src="/quant/engines/fx/fx-provider-registry.js"></script>
@@ -61,25 +90,16 @@
 <script src="/quant/engines/realtime/session-profiles.js"></script>
 <script src="/quant/engines/realtime/asset-freshness.js"></script>
 <script src="/quant/api/multi-asset-contract.js"></script>
-<script src="/quant/engines/multi-asset/market-pulse.js"></script>
 <script src="/discover/engines/contract.js"></script>
 <script src="/discover/engines/europe-product.js"></script>
-<script src="/discover/engines/high52w.js"></script>
-<script src="/discover/engines/scoring.js"></script>
-<script src="/discover/engines/indicators.js"></script>
 <script src="/discover/engines/klartext.js"></script>
 <script src="/discover/engines/fundamentals.js"></script>
-<script src="/discover/engines/unternehmen.js"></script>
-<script src="/discover/engines/einordnung.js"></script>
-<script src="/discover/engines/narrative.js"></script>
-<script src="/discover/engines/technical-intelligence.js"></script>
-<script src="/discover/engines/realtime-source.js"></script>
 <script src="/discover/engines/analytics.js"></script>
 <script src="/discover/engines/memory.js"></script>
 <script src="/discover/engines/theme.js"></script>
-<script src="/discover/engines/recommendation.js"></script>
 
 <!-- Discover-Oberflaeche -->
+<script src="/discover/ui/lazy.js"></script>
 <script src="/discover/ui/swipe.js"></script>
 <script src="/discover/ui/series-loader.js"></script>
 <script src="/discover/ui/live-hub.js"></script>
@@ -87,32 +107,68 @@
 <script src="/discover/ui/artwork.js"></script>
 <script src="/discover/ui/logos.js"></script>
 <script src="/discover/ui/cards.js"></script>
-<script src="/discover/ui/feed.js"></script>
 <script src="/discover/ui/surfaces.js"></script>
 <script src="/core/identity.js"></script>
 <script src="/core/client.js"></script>
-<script src="/core/chart-history.js"></script>
 <script src="/core/discover-universe.js"></script>
 <script src="/discover/engines/global-universe.js"></script>
 <script src="/discover/ui/global.js"></script>
 <script src="/discover/ui/search.js"></script>
+<script src="/discover/ui/markets.js"></script>
+<script src="/discover/themes.js"></script>
+<script src="/discover/ui/home-market.js"></script>
+<script src="/discover/home.js"></script>
+<script src="/discover/ui/featured.js"></script>
+<script src="/discover/ui/europe.js"></script>
+<script src="/discover/app.js"></script>
+<script src="/discover/engines/europe-bootstrap.js"></script>
+</template>
+<script>window.__vuParsed&&window.__vuParsed();</script>
+
+<!-- Bedarfsgerecht nachgeladene Skriptgruppen (discover/ui/lazy.js). Inerte Templates: nichts wird beim Start abgerufen.
+     Die Adressen stehen hier im Klartext, damit die Release-Pipeline (version-consumer-assets) ihre ?v=-Schluessel setzt. -->
+<!-- Aktiendetail (#/s/...), Europa-Detail und Instrumentensuche der Detailroute -->
+<template id="dx-lazy-detail">
+<script src="/quant/ui/charts.js"></script>
+<script src="/quant/ui/technical-chart.js"></script>
+<script src="/quant/engines/chart-ranges.js"></script>
+<script src="/quant/engines/hash.js"></script>
+<script src="/quant/engines/instrument-classification.js"></script>
+<script src="/quant/engines/company-master.js"></script>
+<script src="/quant/engines/instrument-directory.js"></script>
+<script src="/quant/engines/series-sampling.js"></script>
+<script src="/core/chart-history.js"></script>
+<script src="/discover/engines/high52w.js"></script>
+<script src="/discover/engines/scoring.js"></script>
+<script src="/discover/engines/indicators.js"></script>
+<script src="/discover/engines/unternehmen.js"></script>
+<script src="/discover/engines/einordnung.js"></script>
+<script src="/discover/engines/narrative.js"></script>
+<script src="/discover/engines/technical-intelligence.js"></script>
+<script src="/discover/engines/realtime-source.js"></script>
+<script src="/discover/engines/recommendation.js"></script>
 <script src="/discover/ui/detail-fundamentals.js"></script>
 <script src="/company-intelligence/api/contract.js"></script>
 <script src="/company-intelligence/config/rollout.js"></script>
 <script src="/company-intelligence/ui/stock-section.js"></script>
 <script src="/discover/ui/detail.js"></script>
-<script src="/discover/ui/daten.js"></script>
-<script src="/discover/ui/markets.js"></script>
+<script src="/discover/detail.js"></script>
+</template>
+<!-- Maerkte-Unterseiten (#/maerkte/...): Einordnung, Barometer, Marktdetail -->
+<template id="dx-lazy-markets">
+<script src="/quant/engines/series-sampling.js"></script>
+<script src="/quant/engines/multi-asset/market-pulse.js"></script>
 <script src="/discover/ui/market-intelligence.js"></script>
 <script src="/discover/ui/market-barometer.js"></script>
 <script src="/discover/ui/market-detail.js"></script>
-<script src="/discover/themes.js"></script>
-<script src="/discover/ui/home-market.js"></script>
-<script src="/discover/home.js"></script>
-<script src="/discover/ui/featured.js"></script>
-<script src="/discover/detail.js"></script>
-<script src="/discover/ui/europe.js"></script>
-<script src="/discover/app.js"></script>
-<script src="/discover/engines/europe-bootstrap.js"></script>
+</template>
+<!-- Daten & Quellen (#/daten) -->
+<template id="dx-lazy-daten">
+<script src="/discover/ui/daten.js"></script>
+</template>
+<!-- Einzelansicht (#/einzeln/...) -->
+<template id="dx-lazy-feed">
+<script src="/discover/ui/feed.js"></script>
+</template>
 </body>
 </html>

@@ -63,3 +63,37 @@ test('registered publication starts the existing rights-gated public loader',asy
   const api=fixture(async url=>{requests.push(url);return {ok:true,json:async()=>url==='/core/registry/domains.json'?registry:manifest};},{VUDiscover:state,document:{dispatchEvent:event=>events.push(event)},location:{hash:''},Event});
   const loader=await api.start();assert.equal(typeof loader.connect,'function');assert.equal(state.europePublicLoader,loader);assert.deepEqual(requests,['/core/registry/domains.json','/discover/data/europe/manifest.json']);assert.equal(events[0].type,'vu-europe-available');
 });
+
+function browserContext(fetch, hash = '') {
+  const context = {VUDiscover: {}, location: {hash}, document: {dispatchEvent() {}}, crypto: webcrypto, URL, TextDecoder, fetch};
+  context.globalThis = context;
+  vm.runInNewContext(source, context);
+  return context;
+}
+test('Start der Seite holt das Europa-Verzeichnis nicht; erst ensure() (Suche, Alle-Aktien-Liste, Watchlist) tut es - und nur einmal', async () => {
+  const requests = [];
+  const context = browserContext(async url => { requests.push(url); return {ok: false}; });
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.deepEqual(requests, [], 'beim Laden darf nichts abgerufen werden');
+  const api = context.VUDiscover.EuropeBootstrap;
+  const [a, b] = [api.ensure(), api.ensure()];
+  assert.equal(a, b, 'ein gemeinsamer Start');
+  assert.equal(await a, null);
+  assert.deepEqual(requests, ['/core/registry/domains.json']);
+  await api.ensure();
+  assert.equal(requests.length, 1);
+});
+test('ein Netzfehler beim Start wird nicht festgehalten: der naechste ensure()-Aufruf versucht es erneut', async () => {
+  let calls = 0;
+  const context = browserContext(async () => { if (++calls === 1) throw new Error('offline'); return {ok: false}; });
+  const api = context.VUDiscover.EuropeBootstrap;
+  assert.equal(await api.ensure(), null);
+  assert.equal(await api.ensure(), null);
+  assert.equal(calls, 2);
+});
+test('direkter Aufruf einer Europa-Route stoesst den Start sofort an', async () => {
+  const requests = [];
+  browserContext(async url => { requests.push(url); return {ok: false}; }, '#/s/EUROPE/ref_ALV_DE_XETR');
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.deepEqual(requests, ['/core/registry/domains.json']);
+});

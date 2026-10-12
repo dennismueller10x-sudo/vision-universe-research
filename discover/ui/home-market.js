@@ -78,7 +78,8 @@
     section.dataset.archetype='market';
     var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
     copy.appendChild(el('a',{class:'v2-pill v2-pill-light',href:'#/maerkte/einordnung',text:'Marktbarometer verstehen →'}));section.appendChild(copy);
-    S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
+    // Der Teaser liegt unter dem ersten Bildschirm: seine 10 KB laden, wenn die Seite zur Ruhe gekommen ist.
+    (D.Lazy ? D.Lazy.settled() : Promise.resolve()).then(function(){ return S.loadJSON('/quant/data/market/intelligence/market-pulse.json'); }).then(function(p){
       if(!section.isConnected||!p.environment)return;
       var env=p.environment;copy.querySelector('.v2-pulse-statement').textContent=env.statement||'Das Marktumfeld im Überblick.';
       var state=node('div','v2-pulse-state');state.append(node('span','','Marktumfeld'),node('strong','',env.label||'Nicht bestimmbar'));

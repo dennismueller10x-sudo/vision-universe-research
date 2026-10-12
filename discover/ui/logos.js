@@ -21,7 +21,7 @@
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
-    global.fetch(BASE + "index.json", { cache: "default" })
+    global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
       .then(function (r) { return r.ok ? r.json() : { files: {} }; })
       .catch(function () { return { files: {} }; })
       .then(function (data) {
