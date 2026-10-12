@@ -4,11 +4,11 @@ Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 üb
 
 ## Aktuelle Hosting-Vorgabe: Cloudflare Pages
 
-Der Owner hat die separate Cloudflare-Pages-Veröffentlichung aus diesem Repository autorisiert, einschließlich der späteren ausschließlichen Shopify-Web-DNS-Umstellung. Research bleibt auf GitHub Pages. [Konfiguration, Audit, genaue Kontoschritte und noch offene Datenschutzfreigabe](deployment/README.md). Die nachfolgenden älteren GitHub-Pages-Zielschritte sind historisch; das zweite Repository wird nicht angelegt.
+Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe**, GitHub dieses Repository, Produktion main, Root landing, Build node scripts/build.mjs, Ausgabe dist. [Öffentliche Seite](https://www.visionuniverse.de/) · [Pages-Adresse](https://vision-universe.pages.dev/). Research bleibt auf GitHub Pages. [Nachweise, API-Rechte und offene Punkte](deployment/README.md). Öffentlich steht noch ein Preview-Build mit noindex und vorläufigem Datenschutz; die früher fehlerhaften globalen Navigationsreferenzen sind in PR #577 entfernt. Keine finale Datenschutz- oder vollständige Browserfreigabe behaupten. Kein weiteres Projekt/Repository anlegen.
 
 ## Vorschau und Abnahme
 
-- [Private Review-Vorschau](https://vision-universe-coming-soon-review.dennis91-mueller.chatgpt.site): Aktualisierung auf die Modulansicht derzeit durch Hosting-Authentifizierungsfehler blockiert; [Status und neue Screenshots](review/README.md).
+- [Tatsächliche Live-Abnahme vom 10.10.2026](deployment/README.md#live-abnahme-layout-bestanden-ressourcenfehler-offen): [Desktop](deployment/verification-2026-10-10/desktop.png), [iPhone](deployment/verification-2026-10-10/iphone.png). Die ältere private Review-Kopie ist kein Betriebsziel und wird nicht neu veröffentlicht.
 - [Desktop-Gegenüberstellung](review/comparison-desktop.png), [iPhone-Gegenüberstellung](review/comparison-iphone.png): links der originale Header/Hero aus dem Repository, rechts Coming soon, jeweils gleicher Viewport.
 - Ganze Landingpage: [Desktop](review/desktop.png), [iPhone](review/iphone.png).
 - [Gemessene Designwerte und Herkunft](review/design-comparison.json), [Layout-/Zugänglichkeitswerte](review/metrics.json), [knappe Abweichungen](review/README.md).
@@ -48,7 +48,7 @@ Vom bestehenden Brevo-Prozess noch zu liefern:
 2. Zuordnung zur aus PR #544 vorhandenen `VU | App-Warteliste`, `EMAIL`, anfangs leere verpflichtende Einwilligung `OPT_IN` und vom Formular akzeptiertes `VU_SOURCE`. Abweichende Export-Feldnamen konkret prüfen, statt zu raten. Der vorhandene Brevo-Honeypot `email_address_check` bleibt erhalten; ein accountseitig nötiges CAPTCHA nicht entfernen.
 3. Verifiziertes Double-Opt-in, deutsche DOI-Mail, Abmeldelink und tatsächliche Anbieterbestätigung: zunächst zur E-Mail-Bestätigung auffordern. Vor DOI keinen bestätigten Status setzen. Die Einwilligungsattribute aus PR #544 erst nach echtem Nachweis setzen; bestehende Abmeldungen/Sperren berücksichtigen. Keine automatische Übernahme von Shopify-Bestandskontakten.
 4. Neue kontrollierte Adresse live testen: Validierung/Einwilligung, Empfang der DOI-Mail, unbestätigter Status vor dem Klick, richtige Liste/Quelle nach dem Klick, erneute Anmeldung, Abmeldung, Anbieterfehler. Keine Testadressen oder DOI-Daten in Git, Logs oder Artefakten.
-5. Passende geprüfte Datenschutzhinweise für das tatsächlich freigegebene Hosting und Brevo bereitstellen. Der vorhandene Shopify-/Shopify-Email-Text genügt hierfür nicht; die Vorschau ist ausdrücklich vorläufig. Unternehmensangaben stammen aus dem am 09.10.2026 geprüften [aktuellen Impressum](https://www.visionuniverse.de/policies/legal-notice).
+5. Passende geprüfte Datenschutzhinweise für das tatsächlich freigegebene Hosting und Brevo bereitstellen. Der vorhandene Shopify-/Shopify-Email-Text genügt hierfür nicht; die Vorschau ist ausdrücklich vorläufig. Die vollständigen Original-Rechtstexte wurden am 12.10.2026 vom Owner bereitgestellt und [unverändert archiviert](legal-source/README.md). Für App/Web-App-Abos werden [gesonderte Entwürfe](legal-drafts/README.md) vorbereitet; der aktuelle Landing-Datenschutz beschreibt weiterhin den Coming-soon-Betrieb mit gesperrtem Newsletter.
 
 `newsletter.config.example.json` nach `newsletter.config.json` kopieren (ignoriert), die tatsächliche Formularaktion eintragen, `doubleOptInVerified` erst nach Live-Test und `privacyReviewed` erst mit passendem geprüftem Rechtstext setzen. `sourceAttribute` ist standardmäßig `VU_SOURCE`; `privacyHtmlPath` verweist auf ein vollständiges deutsches freigegebenes HTML-Dokument. Ein mit `data-policy-status="draft"` markierter Text wird abgelehnt.
 
@@ -60,44 +60,10 @@ node scripts/build.mjs --config=newsletter.config.json --production
 
 Alternativ **öffentliche** Build-Variablen: `BREVO_FORM_ACTION`, `BREVO_DOUBLE_OPT_IN_VERIFIED=true`, `BREVO_SOURCE_ATTRIBUTE=VU_SOURCE`, `LANDING_PRIVACY_REVIEWED=true`, `LANDING_PRIVACY_HTML_PATH`. Kein `BREVO_API_KEY` in dieser Anwendung. Unbekannte Konfigurationsfelder werden abgelehnt. Ohne freigegebene Datenschutzhinweise blockiert der Produktionsbuild; Vorbereitungsbuilds bleiben `noindex`.
 
-## Hosting wie Research: separates GitHub-Pages-Ziel
+## Historische GitHub-Pages-Vorbereitung
 
-Tatsächlich geprüft über GitHub API am 09.10.2026: Das bestehende Repository nutzt Pages **`build_type: workflow`**, Quelle `main`, Domain **`research.visionuniverse.de`**. `pages-release.yml` bleibt unverändert. Ein Repository hat eine Pages-Veröffentlichung; zwei verschiedene Seiten mit getrennten Domains benötigen deshalb ein zweites Ziel. united-domains bleibt Domain-/DNS-Verwalter, ohne Nameserverwechsel.
+Der ausschließlich manuelle Workflow landing-pages-publish.yml und seine Staging-Prüfungen stammen aus der überholten Planung eines zweiten Ziel-Repositories. Für die Landingpage **nicht verwenden**: kein Ziel-Repository und keinen Deploy-Key anlegen, keine GitHub-Pages-Domain setzen. Die tatsächliche Landing-Auslieferung nutzt das bestehende Cloudflare-Projekt vision-universe; maßgeblich ist die [Deployment-Dokumentation](deployment/README.md). research.visionuniverse.de bleibt allein an das vorhandene GitHub-Pages-Deployment gebunden.
 
-### Konkrete Architektur – Ziel noch nicht angelegt
+## Rechtstext-Stand 12.10.2026
 
-```text
-vision-universe-research/landing (maßgeblicher Quellcode)
-    → separater manueller landing-pages-publish.yml
-    → nur statischer dist-Build, über zielgebundenen SSH-Deploy-Key
-vision-universe-landing-pages (neues kleines öffentliches Veröffentlichungsziel)
-    → Branch gh-pages, Pages /, später eigene Domain www.visionuniverse.de
-```
-
-Der neue Workflow ist ausschließlich manuell, nur auf `main`, mit lesendem `GITHUB_TOKEN`. Er hat keine Verbindung zum Research-Pages-Deployment und löst sich weder bei Daten-Commits noch bei PRs aus. Der Ziel-Deploy-Key ist das einzige Schreibrecht. `stage-pages.mjs` prüft Owner, exakten Zielnamen, Branch, sauberen Checkout, Produktionsbuild und vorhandene CNAME vor jeder Mutation. Keine Quell-CNAME wird übertragen; eine später bereits gesetzte Ziel-CNAME `www.visionuniverse.de` bleibt unverändert. Push erfolgt ohne Force über den vorhandenen Retry-Helfer. Der Workflow wird erst nach separat autorisiertem Merge auf dem Standardbranch verfügbar.
-
-### GitHub-Bedingungen und Kosten – öffentliche Nutzung noch ungeklärt
-
-[GitHub Pages Limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits), am 09.10.2026 geprüft: „GitHub Pages is not intended for or allowed to be used as a free web-hosting service to run your online business, e-commerce site, or any other website that is primarily directed at either facilitating commercial transactions or providing commercial software as a service (SaaS).“ Diese Seite bietet keine Käufe oder laufende SaaS-Funktion, kündigt aber ein geschäftliches Produkt an und sammelt künftig Leads. Daher wird **keine bestätigte Zulässigkeit behauptet**. Vor öffentlicher Veröffentlichung muss dieser konkrete Nutzungszweck mit GitHub geklärt sein. `LANDING_PAGES_USAGE_CONFIRMED` bleibt bis dahin ungesetzt. Falls unzulässig, ist eine separate Hosting-Entscheidung erforderlich; Cloudflare ist **nicht** die Standardlösung und wurde nicht verbunden.
-
-Für öffentliche Repositories ist Pages mit [GitHub Free verfügbar](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages). Keine privaten Pages-/Pro- oder sonstigen kostenpflichtigen Dienste buchen. Die technischen Limits (1 GB Site, 100 GB/Monat weiche Bandbreitengrenze) liegen weit über diesem statischen Build. Der öffentliche Ziel-Repository-Name unten ist ein Vorschlag, keine angelegte Ressource.
-
-### Exakte einmalige Schritte und Berechtigungen
-
-1. Zuerst den geschäftlichen Nutzungszweck anhand der oben genannten GitHub-Bedingungen klären. Bis dahin die private Review-Vorschau nutzen.
-2. **Vor Anlegen bekannt:** Ziel `dennismueller10x-sudo/vision-universe-landing-pages`, öffentlich, ausschließlich Build-Ausgabe. Der Owner braucht Repository-Erstellungsrecht sowie Administratorrechte am neuen Ziel für Deploy-Key und Pages-Einstellungen; für Konfiguration per Fine-grained-Token wären Administration `write`, Pages `write` und für eine erste Branch-Erstellung Contents `write` nötig. Diese Rechte werden nicht dem Quell-Workflow gegeben. Ein Quell-`GITHUB_TOKEN` kann keine fremden Repository-Schreibrechte ersetzen.
-3. Nach separater Freigabe das öffentliche Ziel mit initialem README anlegen, Branch `gh-pages` erstellen. Im **neuen Ziel** Settings → Pages → Deploy from a branch → `gh-pages` → `/`. Noch keine Custom Domain setzen. Research-Einstellungen nicht öffnen oder ändern.
-4. Ein eigenes SSH-Schlüsselpaar erzeugen. Öffentlichen Schlüssel ausschließlich beim neuen Ziel unter Deploy keys mit Schreibrecht eintragen. Privaten Schlüssel als Actions-Secret **`LANDING_PAGES_DEPLOY_KEY`** im Quell-Repository hinterlegen; nicht an Codex geben, nicht als Datei/Argument in Git oder Logs. Keine Schlüssel dieses Auftrags wurden erzeugt.
-5. Quell-Repository-Variablen **`LANDING_PAGES_TARGET_READY=true`** erst nach Ziel/Key-Prüfung und **`LANDING_PAGES_USAGE_CONFIRMED=true`** erst nach geklärter Nutzungszulässigkeit. Geprüfte Privacy-Datei und oben genannte öffentliche Build-Variablen bereitstellen. Der Live-Newsletter kann weiterhin gesperrt bleiben, sofern die öffentliche Datenschutzerklärung dies korrekt beschreibt.
-6. PR #543 separat prüfen/übernehmen, anschließend den neuen Workflow **„Coming-soon | separates Pages-Ziel (manuell)“** auf `main` starten. Build-/Alias-/Formulartests bestehen vor Zielzugriff. Der noch nicht abgerufene tatsächliche `github.io`-Projektlink wird erst aus den Ziel-Pages-Einstellungen übernommen; keine erfolgreiche Veröffentlichung behaupten.
-
-`_headers` ist auf GitHub Pages wirkungslos. Der Build liefert deshalb seine unterstützte CSP als HTML-Meta sowie `no-referrer`; keine Behauptung eigener HTTP-Header-Konfiguration. Originale Inline-Styles der Geräte dürfen über `style-src-attr` wirken, Skripte bleiben ausschließlich lokal. `.nojekyll` ist enthalten. Alte Research-Rechtslinks `/policies/legal-notice` und `/policies/privacy-policy` funktionieren durch statische Inhalts-Aliase; kein vorgetäuschter serverseitiger 301.
-
-## Spätere Domainumstellung – separat, bei united-domains
-
-1. Zone einschließlich Shopify, Mail und `research` sichern. Die Domain gemäß [GitHub-Domainverifizierung](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages) für den richtigen Owner verifizieren; dafür später den tatsächlich angezeigten TXT-Wert verwenden.
-2. Im **neuen** Pages-Ziel die Custom Domain **`www.visionuniverse.de`** setzen und deren Bereitstellung/TLS prüfen. Erst zum separat freigegebenen Umschaltzeitpunkt bei united-domains den `www`-CNAME auf den von GitHub angegebenen Owner-Host und den Apex auf die [aktuellen offiziellen GitHub-Pages-DNS-Werte](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site) richten. Keine IPs raten oder alte Werte ungeprüft übernehmen.
-3. GitHub Pages übernimmt bei korrekt konfiguriertem Apex und `www` die [automatische Weiterleitung](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages) zur eingetragenen Custom Domain `www`. Canonical ist bereits `https://www.visionuniverse.de/`. Die `_redirects`-Datei aus dem alten Cloudflare-Vorschlag wird nicht verwendet.
-4. HTTPS, Zertifikate, Apex-Redirect mit Pfad/Query, Canonical, Newsletter und alte Rechtslinks prüfen. `research.visionuniverse.de`, dessen Repository-CNAME und Workflow, MX/SPF/DKIM/DMARC und Shopify bleiben erhalten. Kein Nameserverwechsel, keine Kündigung und keine DNS-Änderung durch diesen Auftrag.
-
-Die vorhandene Sites-Kopie ist ausschließlich eine **private** Review-Veröffentlichung. Sie ersetzt weder das geplante Pages-Ziel noch die öffentliche Domain. Ihr aktueller Zugriff bleibt erhalten; keine Custom Domain hinzufügen.
+Alle fünf Original-Shoptexte sind vollständig gesichert. Die künftige App/Web-App mit Free/Paid-Abos erfordert eine inhaltliche Anpassung gegenüber dem PDF-Shop. [Coming-soon-Rechtsseiten, vollständige Quellen, Änderungstabelle und Abo-Entwürfe](legal-drafts/README.md). Kein erfundener Tarif, keine automatische Verlängerungsregel und keine Zahlungsanbindung angenommen. Beide Rechtsseiten sind Entwürfe; Abo-Texte und Originalquellen bleiben außerhalb des Builds. Produktionsprüfung und Brevo-Sperre bleiben unverändert.
