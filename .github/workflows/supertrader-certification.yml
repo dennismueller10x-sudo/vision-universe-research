@@ -6,16 +6,20 @@ on:
     inputs:
       mode:
         type: choice
-        options: [probe, canonical]
+        options: [probe, canonical, repack]
         default: probe
+      source_run:
+        type: string
+        default: '38211486301'
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: supertrader-certification-${{ github.ref_name }}-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   data-probe:
-    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || (github.event_name == 'workflow_dispatch' && inputs.mode != 'repack')
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -63,3 +67,55 @@ jobs:
             ${{ runner.temp }}/datacert/*.sealed.json
           if-no-files-found: error
           retention-days: 30
+  repack-existing-encrypted-inputs:
+    if: contains(github.event.head_commit.message, '[supertrader-certification:repack]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'repack')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: scripts/supertrader/research/certification
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ inputs.source_run || '38211486301' }}
+          name: supertrader-certification-probe-${{ inputs.source_run || '38211486301' }}
+          path: ${{ runner.temp }}/encrypted-inputs
+      - name: Lossless bounded packages; no decrypt, provider reads or performance
+        run: python3 scripts/supertrader/research/certification/repack-artifact.py --input "$RUNNER_TEMP/encrypted-inputs" --out "$RUNNER_TEMP/repacked"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-certification-repack-manifest-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/repacked/repack-status.json
+            ${{ runner.temp }}/repacked/repack-manifest.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload each bounded encrypted package with the official artifact client
+        uses: actions/github-script@v7
+        env:
+          REPACK_DIRECTORY: ${{ runner.temp }}/repacked
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const {spawnSync} = require('child_process');
+            const dir = process.env.REPACK_DIRECTORY;
+            const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'repack-manifest.json'), 'utf8'));
+            const client = path.resolve(process.env.GITHUB_WORKSPACE, '../../_actions/actions/upload-artifact/v4/dist/index.js');
+            if (!fs.existsSync(client)) throw new Error('OFFICIAL_ARTIFACT_CLIENT_UNAVAILABLE');
+            for (const item of manifest.bundles) {
+              if (!/^canonical-bundle-\d{4}\.zip$/.test(item.file)) throw new Error('INVALID_BUNDLE_NAME');
+              const uploaded = spawnSync(process.execPath, [client], {
+                env: {...process.env, INPUT_NAME: `supertrader-certification-bounded-${context.runId}-${item.file.replace('.zip', '')}`,
+                  INPUT_PATH: path.join(dir, item.file), 'INPUT_RETENTION-DAYS': '30',
+                  'INPUT_IF-NO-FILES-FOUND': 'error', 'INPUT_COMPRESSION-LEVEL': '0', INPUT_OVERWRITE: 'false'},
+                stdio: 'inherit'
+              });
+              if (uploaded.status !== 0) throw new Error('BOUNDED_ARTIFACT_UPLOAD_FAILED');
+            }
+            core.info(JSON.stringify({status: 'ENCRYPTED_BUNDLES_PRESERVED', bundles: manifest.bundles.length, providerReads: 0, performanceCalculated: false}));
