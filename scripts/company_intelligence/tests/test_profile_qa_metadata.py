@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
-from company_intelligence.profile_qa_metadata import metadata, candidates
+from company_intelligence.profile_qa_metadata import metadata, candidates, approved_reference
 from company_intelligence.transport import PublicHTTP, SourceError
 
 CID='iss_cik_0000353278';NOW='2026-10-12T13:00:00Z'
@@ -17,6 +17,12 @@ class MetadataTests(unittest.TestCase):
         self.assertEqual(value['sic'],'2834');self.assertEqual(value['addresses']['business']['stateOrCountryDescription'],'DENMARK')
         self.assertNotIn('street1',str(value));self.assertNotIn('zipCode',str(value))
         with self.assertRaisesRegex(ValueError,'QA_METADATA_ISSUER_MISMATCH'):metadata(raw,'0000320193',NOW)
+    def test_reusable_public_reference_is_identity_hash_date_and_field_bound(self):
+        value=metadata({'cik':353278,'sic':'2834','addresses':{'business':{'stateOrCountryDescription':'DENMARK'}}},'0000353278',NOW)
+        self.assertEqual(approved_reference(value,'0000353278',NOW),value)
+        for changed in [{**value,'sic':'6020'}, {**value,'privateCheckpoint':'not permitted'}, {**value,'verifiedAt':'2027-01-01T00:00:00Z'}]:
+            with self.assertRaises(ValueError):approved_reference(changed,'0000353278',NOW)
+        with self.assertRaises(ValueError):approved_reference(value,'0000320193',NOW)
     def test_collection_hint_is_not_inferred_country_or_sector(self):
         c={CID:{'cik':'0000353278','listings':[{'symbol':'NVO'}]}}
         self.assertEqual(candidates(c,{}),[CID])
