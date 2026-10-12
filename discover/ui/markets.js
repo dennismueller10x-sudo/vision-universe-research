@@ -585,8 +585,30 @@
     });
   }
 
+  /* Die Stile der Maerkte-Seiten (discover/markets.css, ~136 KB) blockieren
+     nicht mehr das erste Bild jeder Discover-Seite: index.html haelt den
+     <link> in einem <template id="dx-markets-css"> (gleiche Adresse, an
+     derselben Stelle der Kaskade), und app.js wartet vor einer #/maerkte-
+     Route auf diesen Ladevorgang - die Seite erscheint nie ungestylt.
+     Schlaegt das Laden fehl, wird trotzdem gezeichnet (wie bisher, wenn die
+     Datei fehlte), und der naechste Aufruf versucht es erneut. */
+  var stylesLaden = null;
+  function ensureStyles() {
+    if (stylesLaden) return stylesLaden;
+    var doc = global.document, tpl = doc && doc.getElementById && doc.getElementById("dx-markets-css");
+    var vorlage = tpl && tpl.content && tpl.content.firstElementChild;
+    if (!vorlage) return Promise.resolve(false);
+    var link = doc.importNode(vorlage, true);
+    stylesLaden = new Promise(function (resolve) {
+      link.addEventListener("load", function () { resolve(true); });
+      link.addEventListener("error", function () { stylesLaden = null; link.remove(); resolve(false); });
+    });
+    tpl.parentNode.insertBefore(link, tpl);
+    return stylesLaden;
+  }
+
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Markets = { render: render, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
+  global.VUDiscover.Markets = { render: render, ensureStyles: ensureStyles, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
                                 marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, moversTitel: moversTitel, namen: namen,

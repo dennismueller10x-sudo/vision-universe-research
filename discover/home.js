@@ -192,53 +192,6 @@
     section.appendChild(D.Cards.withRailNav(track, { label: 'Themenwelten', universeId: ctx.universeId }));
     return section;
   }
-  function miniLine(points) {
-    var last = (points || []).slice(-30).map(function (p) { return Array.isArray(p) ? p[1] : null; }).filter(function (v) { return typeof v === 'number' && Number.isFinite(v); });
-    if (last.length < 2) return null;
-    var lo = Math.min.apply(null,last), hi = Math.max.apply(null,last), span = hi - lo || 1;
-    var path = last.map(function (v,i) { return (i ? 'L' : 'M') + (i * 100 / (last.length - 1)).toFixed(1) + ',' + (28 - (v - lo) / span * 24).toFixed(1); }).join(' ');
-    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 100 32');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schlusskursverlauf der letzten 30 Handelstage');svg.classList.add('v2-market-spark');
-    var line = document.createElementNS('http://www.w3.org/2000/svg','path');line.setAttribute('d',path);svg.appendChild(line);return svg;
-  }
-  function marketToday(ctx) {
-    var section=node('section','v2-market-today v2-world');section.dataset.surface='market-today';
-    var head=node('div','v2-world-head'),intro=node('div','');intro.appendChild(node('h2','','Heute bei Vision Universe'));
-    intro.appendChild(node('p','v2-world-subtitle','Letzter verfügbarer Handelsstand der großen US-Märkte.'));
-    head.append(intro,link('Märkte ansehen →','#/maerkte','v2-world-more'));section.appendChild(head);
-    var grid=node('div','v2-market-today-grid');grid.appendChild(node('p','v2-market-loading','Marktdaten werden geladen …'));section.appendChild(grid);
-    Promise.all([S.loadJSON('/quant/data/market/multi-asset/snapshot.json'),S.loadJSON('/quant/config/multi-asset.json').catch(function(){return null;})]).then(function(r){
-      if(!section.isConnected)return;
-      var MA=global.VUMultiAssetContract, M=D.Markets, snap=r[0];grid.replaceChildren();
-      ['QQQ','SPY','DIA'].forEach(function(symbol){
-        var raw=(snap.instruments||[]).find(function(c){return c.instrument&&c.instrument.symbol===symbol;});if(!raw)return;
-        var c=MA&&MA.refresh?MA.refresh(raw,{now:new Date(),calendar:ctx.calendar,config:r[1]||{}}):raw;
-        var label=M.kopfText(c),change=M.veraenderungText(c),available=c.quote&&c.quote.state==='AVAILABLE';
-        var a=link('','#/maerkte/'+symbol,'v2-market-kpi');
-        a.append(node('span','v2-market-name',label.titel),node('span','v2-market-change'+(c.quote.change&&c.quote.change.percent<0?' is-down':''),available?(change||'Keine Veränderung verfügbar'):'Kein aktueller Wert'));
-        a.append(node('span','v2-market-fresh',label.klasse+' · '+M.frischeText(c)+(c.quote.asOf?' · '+M.standText(c.quote.asOf):'')));
-        grid.appendChild(a);
-        if(available&&raw.tracker&&raw.tracker.history&&raw.tracker.history.path){
-          S.loadJSON(raw.tracker.history.path).then(function(series){if(a.isConnected){var spark=miniLine(series.points);if(spark)a.insertBefore(spark,a.querySelector('.v2-market-fresh'));}}).catch(function(){});
-        }
-      });
-      if(!grid.children.length)grid.appendChild(node('p','v2-market-loading','Marktstände sind momentan nicht verfügbar.'));
-    }).catch(function(){if(section.isConnected)grid.replaceChildren(node('p','v2-market-loading','Marktstände sind momentan nicht verfügbar.'));});
-    return section;
-  }
-  function marketPulse() {
-    var section=node('section','v2-pulse-teaser');section.dataset.surface='market-pulse';
-    section.dataset.archetype='market';
-    var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
-    copy.appendChild(link('Marktbarometer verstehen →','#/maerkte/einordnung','v2-pill v2-pill-light'));section.appendChild(copy);
-    S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
-      if(!section.isConnected||!p.environment)return;
-      var env=p.environment;copy.querySelector('.v2-pulse-statement').textContent=env.statement||'Das Marktumfeld im Überblick.';
-      var state=node('div','v2-pulse-state');state.append(node('span','','Marktumfeld'),node('strong','',env.label||'Nicht bestimmbar'));
-      if(p.evaluation&&p.evaluation.dataAsOf)state.append(node('small','','Datenstand '+D.Cards.dateShort(p.evaluation.dataAsOf)));
-      section.appendChild(state);
-    }).catch(function(){});
-    return section;
-  }
   var topRows = [
     ['top-10','Momentum'],['top-ndx','Nasdaq 100'],['top-sp500','S&P 500'],
     ['top-djia','Dow Jones'],['bekannte-namen','Bekannte Namen']
@@ -354,7 +307,7 @@
     intro.appendChild(introCopy);
     page.appendChild(intro);
     var body = node('div', 'v2-journey'); page.appendChild(body);
-    body.appendChild(marketToday(ctx)); D.GlobalView.home(body,ctx);
+    body.appendChild(D.HomeMarket.today(ctx)); D.GlobalView.home(body,ctx);
     if (T()) body.appendChild(themesRail(ctx));
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
@@ -385,7 +338,7 @@
       } else if (surface.type === 'story' && (surface.cards || []).length) view = story(surface, ctx);
       else view = D.Surfaces.render(surface, ctx);
       if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); }
-      if(surface.type==='hero'&&!pulseRendered){body.appendChild(marketPulse());pulseRendered=true;}
+      if(surface.type==='hero'&&!pulseRendered){body.appendChild(D.HomeMarket.pulse());pulseRendered=true;}
     }
     function drawChunk(surfaces){
       (surfaces||[]).forEach(draw);
@@ -412,7 +365,8 @@
       if (global.IntersectionObserver) { observer = new IntersectionObserver(function (entries, io) { if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); load(); } }, { rootMargin: '600px' }); observer.observe(button); }
     }
     try {
-      var first = await S.loadJSON(home.chunks[0]); if (!active()) return;
+      // Karten entscheiden synchron ueber den Tagesverlauf (cards.js): erst zeichnen, wenn auch das Intraday-Verzeichnis da ist. Beide laden parallel.
+      var first = (await Promise.all([S.loadJSON(home.chunks[0]), ctx.liveIndex, Promise.race([ctx.fxReady, new Promise(function (r) { setTimeout(r, 2500); })])]))[0]; if (!active()) return;
       seen.add(home.chunks[0]); loading.remove(); drawChunk(first.surfaces);
       if (first.next) next(first.next); else finish();
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
