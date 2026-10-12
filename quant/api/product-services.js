@@ -44,7 +44,7 @@ function create(options){
      !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      path!=='/quant/data/product/strategy-index-v1.json.gz'&&
-     !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
+     !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|by-ticker\/[A-Z0-9.-]{1,12}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
   if(input[0]!==31||input[1]!==139){if(response.headers.get('content-encoding')==='gzip')return JSON.parse(new TextDecoder().decode(input));throw Error('INVALID_COMPRESSION');}
@@ -762,8 +762,21 @@ function create(options){
     changeHeadline:ChangeEngine.headline(ChangeEngine.hydrate(record.change))};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
+ /* Die Auswertung EINES Titels: im Release ein Ausschnitt je Ticker (im Aufbau
+  * des Scherbens, auf diesen Titel beschnitten; scripts/vu2/build-release.mjs,
+  * technicalTickerDocs), sonst - lokal, alter Stand - der Scherben mit allen
+  * Titeln der zwei Zeichen. Beide tragen Kopf und Titelobjekte unveraendert;
+  * die Pruefungen der Leser (Schema, Scherbenschluessel, Kennung) bleiben. */
+ const technicalDocs=new Map();
+ function technicalDoc(ticker){
+  if(technicalDocs.has(ticker))return technicalDocs.get(ticker);
+  const shardPath='/quant/data/product/technical-signals-v1/'+technicalShard(ticker)+'.json.gz';
+  const doc=(/^[A-Z0-9.-]{1,12}$/.test(ticker)?compressedJSON('/quant/data/product/technical-signals-v1/by-ticker/'+ticker+'.json.gz').catch(()=>compressedJSON(shardPath)):compressedJSON(shardPath));
+  technicalDocs.set(ticker,doc);doc.catch(()=>technicalDocs.delete(ticker));
+  return doc;
+ }
  async function materializedTechnical(ticker,securityId){
-  const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
+  const key=technicalShard(ticker),shard=await technicalDoc(ticker),source=shard?.instruments?.[ticker];
   if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!==securityId)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
   return source;
  }
@@ -815,7 +828,7 @@ function create(options){
   * auch eine Fassung, die es noch nicht gibt. */
  const TECHNICAL_UNAVAILABLE_SCHEMAS=['technical-unavailable-1.0.0','technical-unavailable-1.1.0'];
  async function technicalUnavailability(ticker){
-  try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
+  try{const key=technicalShard(ticker),shard=await technicalDoc(ticker);
    if(!shard||shard.shard!==key||TECHNICAL_UNAVAILABLE_SCHEMAS.indexOf(shard.unavailableSchemaVersion)<0)return null;
    const entry=shard.unavailable&&shard.unavailable[ticker];
    if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
@@ -858,6 +871,21 @@ function create(options){
    universeList={generatedAt:d.generatedAt,coverage:d.coverage||null,byTicker};
   }catch{universeList={generatedAt:null,coverage:null,byTicker:{}};}
   return universeList;
+ }
+ /* Der Verzeichniseintrag EINES Titels. Im Release liegt je Master.shardKey ein
+  * Ausschnitt der Liste (unveraenderte Eintraege, scripts/vu2/build-release.mjs,
+  * universeListViews): wenige KB statt 126 KB gzip. Ohne Ausschnitt - lokal,
+  * alter Stand - die volle Liste. Ist die Liste schon geladen, gilt sie. Wie
+  * universeIndex gewinnt bei doppeltem Kuerzel der letzte Eintrag. */
+ async function universeEntry(ticker){
+  if(universeList!==null)return universeList.byTicker[ticker];
+  const key=Master.shardKey(ticker);
+  try{
+   const part=await load('/quant/data/product/universe-list-shards/'+key+'.json');
+   if(!part||part.shard!==key||UNIVERSE_LIST_SCHEMAS.indexOf(part.schemaVersion)<0||!Array.isArray(part.entries))throw Error('contract');
+   let hit;for(const e of part.entries)if(e&&e.s===ticker)hit=e;
+   return hit;
+  }catch{return (await universeIndex()).byTicker[ticker];}
  }
  /* EIN KUERZEL IST KEIN FIRMENNAME.
 
@@ -1063,7 +1091,16 @@ function create(options){
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
    const consumer=await consumerFor(ticker);if(consumer)stock=applyConsumer(stock,consumer);if(!permission(c,ticker,'raw').allowed)stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};
-   try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
+   try{
+    /* Fuer die Titel mit voller Historie (Konfiguration: fullHistory) liefert der Release
+       neben der Tagesdatei (rund 1 MB) eine Kursansicht mit Datum, Schluss und
+       Splitfaktor je Kerze (build-release.mjs, goldenChartView). Alles, was
+       diese Funktion und die Seite je Kerze lesen, steht darin; ohne sie die volle Datei. */
+    const fullHistory=c.preview?.discoverSeries?.fullHistory;let p=null;
+    if(Array.isArray(fullHistory)&&fullHistory.includes(ticker)&&/^[A-Za-z0-9_-]+$/.test(String(stock.masterMemberId||''))){
+     try{const view=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.chart.json');if(view&&view.chartView==='golden-chart-view-1.0.0')p=view;}catch{/* keine Ansicht: volle Datei */}
+    }
+    if(!p)p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
     /* DER CHART TRAEGT DIE BASIS, DIE SEIN VERTRAG BINDET.
@@ -1129,7 +1166,7 @@ function create(options){
    /* Dasselbe Verzeichnis, das die Liste liest. Es traegt Name, letzten Kurs
       und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
       die Aktienseite darf daran nicht weniger wissen als die Liste. */
-   try{const index=await universeIndex();mitVerzeichnis(stock,index.byTicker[ticker]);}catch{/* das Verzeichnis ist eine Ergaenzung, keine Bedingung */}
+   try{mitVerzeichnis(stock,await universeEntry(ticker));}catch{/* das Verzeichnis ist eine Ergaenzung, keine Bedingung */}
    ohneErfundenenNamen(stock);
    /* NACH dem Verzeichnis, weil erst es den Grund mitbringt - und nach der
       Arbeitsflaeche, weil auch ihre Kennzahlen daran haengen. */
@@ -1217,7 +1254,7 @@ function create(options){
      und den breiten. Er wird deshalb einmal davor geholt und am Ende auf das
      Ergebnis angewandt, statt zweimal formuliert zu werden. */
   let grund=null,verzeichnisName=null;
-  try{const index=await universeIndex();const eintrag=index.byTicker[ticker];grund=eintrag&&eintrag.v?eintrag.v:null;verzeichnisName=eintrag&&eintrag.n?eintrag.n:null;}catch{}
+  try{const eintrag=await universeEntry(ticker);grund=eintrag&&eintrag.v?eintrag.v:null;verzeichnisName=eintrag&&eintrag.n?eintrag.n:null;}catch{}
   /* DER NAME GILT AUCH HIER.
      Gemessen am 28.09.2026 ueber eine Probe von 977 Titeln: 976 trugen auf
      dieser Flaeche das KUERZEL als Firmennamen ("A" statt "Agilent
@@ -1363,6 +1400,11 @@ function create(options){
   * Die Flaechen rufen sie, statt sich die Saetze selbst zu bilden - sonst
   * haetten Aktienseite und Quant-Ansicht zwei Zusammenfassungen desselben
   * Titels, und ein Leser zwei Wahrheiten. */
+ /* Fuer die Aktienseite (Art und Gattungszahl im Kopf): der Eintrag oder null, nie ein Fehler. */
+ async function universeEntryOrNull(ticker){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return null;
+  try{return (await universeEntry(ticker))||null;}catch{return null;}
+ }
  async function getIntelligenceBrief(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
@@ -1376,7 +1418,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
