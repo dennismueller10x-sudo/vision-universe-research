@@ -153,6 +153,34 @@
   VS.master = function () {
     return getJSON("/vorsorge/data/etf-index.json").then(function (m) { if (!m.etfs) indexObject(m, m.rows); return m; });
   };
+  /** Startseiten-Auszug (etf-index-home.json): Zaehler, Stand und die Zeilen der Kern-ETFs, unveraendert
+      aus etf-index.json kopiert. null, wenn der Auszug fehlt oder unvollstaendig ist -> dann gilt VS.master(). */
+  VS.homeIndex = function () {
+    if (VS._home) return VS._home;
+    VS._home = getJSON("/vorsorge/data/etf-index-home.json").then(function (h) {
+      if (!h || !Array.isArray(h.fields) || !Array.isArray(h.rows) || !Array.isArray(h.symbols) || !h.counts || h.fields.indexOf("symbol") < 0) return null;
+      var m = indexObject(Object.assign({}, h), h.rows);
+      m._covers = {}; h.symbols.forEach(function (s) { m._covers[String(s).toUpperCase()] = 1; });
+      return m;
+    }).catch(function () { return null; });
+    return VS._home;
+  };
+  /** Index fuer die Schluessel `keys` (Slug oder Ticker): der Auszug, wenn er alle abdeckt, sonst der Haupt-Index. */
+  VS.masterFor = function (keys) {
+    return VS.homeIndex().then(function (h) {
+      var ok = h && (keys || []).every(function (k) { return h._covers[String(k || "").toUpperCase()]; });
+      return ok ? h : VS.master();
+    });
+  };
+  /** Holdings-Feed und Quartale (holdings/feed.json); faellt auf holdings/index.json zurueck. */
+  VS.holdingsFeed = function () {
+    if (VS._feed) return VS._feed;
+    var valid = function (x) { return x && Array.isArray(x.feed) && Array.isArray(x.quarters); };
+    VS._feed = getJSON("/vorsorge/data/holdings/feed.json").then(function (f) { if (!valid(f)) throw new Error("INVALID_FEED"); return f; })
+      .catch(function () { return getJSON("/vorsorge/data/holdings/index.json"); })
+      .catch(function (e) { delete VS._feed; throw e; });
+    return VS._feed;
+  };
   /** Vollstaendig: zusaetzlich Archiv und Pruefschicht - nur bei Bedarf geladen. */
   VS.masterAll = function () {
     if (VS._all) return VS._all;

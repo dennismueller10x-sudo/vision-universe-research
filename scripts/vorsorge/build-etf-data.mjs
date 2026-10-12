@@ -15,6 +15,7 @@
 
    AUSGABE
      vorsorge/data/etf-index.json       spaltenfoermiger Index (Screener, Suche)
+     vorsorge/data/etf-index-home.json  Auszug fuer die Startseite (Zaehler + Kern-ETFs)
      vorsorge/data/etf/<slug>.json      Detail: Taxonomie, Metriken (Kurs- und
                                         Gesamtrendite getrennt), DNA, Provenienz
      vorsorge/data/series/<SYM>.json    Reihen aus Repository-Quellen (origin
@@ -31,6 +32,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { homeIndex } from "./slim-index.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -397,6 +399,8 @@ export function build() {
   const isMain = (r) => r[INDEX_FIELDS.indexOf("layer")] === "PUBLIC_ANALYSIS" || r[INDEX_FIELDS.indexOf("layer")] === "COMPLEX";
   const mainIndex = Object.assign({}, index, { part: "MAIN", rows: index.rows.filter(isMain), extraPath: "/vorsorge/data/etf-index-extra.json" });
   writeFileSync(join(OUT, "data/etf-index.json"), JSON.stringify(mainIndex));
+  // Startseite: Zaehler + Kern-ETFs als eigener kleiner Auszug (dieselben Zeilen, unveraendert kopiert).
+  writeFileSync(join(OUT, "data/etf-index-home.json"), JSON.stringify(homeIndex(mainIndex)));
   writeFileSync(join(OUT, "data/etf-index-extra.json"), JSON.stringify({ schemaVersion: index.schemaVersion, part: "EXTRA", asOf, fields: INDEX_FIELDS, rows: index.rows.filter((r) => !isMain(r)) }));
   if (existsSync(join(OUT, "data/etf-master.json"))) rmSync(join(OUT, "data/etf-master.json"));
 

@@ -15,6 +15,7 @@
      vorsorge/data/holdings/index.json      je Ticker: Serie, Stand, Positionen, Top 10,
                                             Fondsvermoegen, Aenderungszaehler; Feed relevanter
                                             Aenderungen
+     vorsorge/data/holdings/feed.json       nur Feed + Quartale (Startseite, Monitor)
 
    Der erste Snapshot eines Fonds ist die Baseline (keine Ereignisse).
    Deterministisch: gleiche Eingaben -> byte-gleiche Ausgaben (kein Zeitstempel ausser den Quelldaten).
@@ -23,6 +24,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { holdingsFeed } from "./slim-index.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -173,4 +175,6 @@ const ms = stats.mappedShare.slice().sort((a, b) => a - b);
 index.stats = { series: stats.series, symbols: Object.keys(index.bySymbol).length, snapshots: stats.snapshots, currentHoldingRows: stats.rows, events: stats.events, eventsByType: stats.eventsByType,
   medianMappedShareOfEquity: ms.length ? ms[Math.floor(ms.length / 2)] : null, qualityErrors: stats.qualityErrors, qualityWarnings: stats.qualityWarnings };
 writeFileSync(join(OUT, "index.json"), JSON.stringify(index));
+// Startseite und Monitor brauchen nur Feed und Quartale - ohne bySymbol (der Grossteil von index.json).
+writeFileSync(join(OUT, "feed.json"), JSON.stringify(holdingsFeed(index)));
 console.log(`Holdings: ${stats.series} Serien, ${index.stats.symbols} Ticker, ${stats.snapshots} Snapshots, ${stats.events} Ereignisse, Zuordnung Median ${index.stats.medianMappedShareOfEquity}`);
