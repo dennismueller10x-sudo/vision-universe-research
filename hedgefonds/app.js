@@ -441,6 +441,12 @@
       else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
       else if (e.key === "Enter") {
         var target = items[active >= 0 ? active : 0];
+        if (!target && !S.uniReady && !opts.stocksOnly && input.value.trim()) {
+          // Enter, bevor universe.json da ist: wie bisher zum ersten Treffer, sobald es geladen ist
+          e.preventDefault();
+          ensureUniverse().then(function () { render(); var t = items[0]; if (t) { location.hash = t.getAttribute("data-go"); if (opts.onGo) opts.onGo(); } });
+          return;
+        }
         if (target) { e.preventDefault(); location.hash = target.getAttribute("data-go"); if (opts.onGo) opts.onGo(); }
       } else if (e.key === "Escape") { panel.hidden = true; input.blur(); if (opts.onGo) opts.onGo(); }
     });
