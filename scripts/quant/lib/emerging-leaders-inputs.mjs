@@ -65,6 +65,14 @@ export function commonEquityIds() {
   return ids;
 }
 
+/** Im Security Master als INACTIVE gefuehrte Stammaktien (securityId). */
+export function inactiveEquityIds() {
+  const sm = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/us-security-master.json"), "utf8"));
+  const ids = new Set();
+  for (const r of sm.rows) if (r.instrument_type === "EQUITY_COMMON" && r.active_status === "INACTIVE") ids.add(r.baseline_security_id || Identity.securityIdForTicker(r.ticker));
+  return ids;
+}
+
 const FUND_METRICS = ["revenue", "net_income", "free_cash_flow"];
 /** SEC-Consumer-Buendel je heutigem Kuerzel (nur die drei benutzten Kennzahlen). */
 export function loadFundamentals(tickers) {

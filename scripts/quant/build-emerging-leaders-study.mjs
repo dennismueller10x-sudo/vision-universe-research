@@ -37,7 +37,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import zlib from "node:zlib";
 import { execFileSync } from "node:child_process";
-import { uniqueBars, benchmarkFromBars, engineSeries, commonEquityIds, loadFundamentals, fundamentalsAt, leadershipScore } from "./lib/emerging-leaders-inputs.mjs";
+import { uniqueBars, benchmarkFromBars, engineSeries, commonEquityIds, inactiveEquityIds, loadFundamentals, fundamentalsAt, leadershipScore } from "./lib/emerging-leaders-inputs.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -51,6 +51,7 @@ const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[
 const WORK = arg("--work-dir");
 const OUT = arg("--out", join(ROOT, "quant/data/product/emerging-leaders-v1/study.json"));
 const SYNTH = arg("--synthetic") ? Number(arg("--synthetic")) : 0;
+if (SYNTH && !argv.includes("--out")) throw new Error("--synthetic braucht --out (das Produktartefakt wird nie synthetisch ueberschrieben)");
 const LIMIT = arg("--limit") ? Number(arg("--limit")) : 0;
 const CONCURRENCY = Number(arg("--concurrency", "16"));
 const NO_R2 = argv.includes("--no-r2");
@@ -161,9 +162,13 @@ function processListing(L, keepKeys) {
     /* Ergebnisse: Eintritt Schluss t+1 (SPY-Kalender), Ausstieg Schluss t+1+h */
     const entryDate = CAL[pos + 1];
     const e = i + 1;
-    const ePos = e < n ? CAL_IDX.get(dates[e]) : undefined;
-    if (entryDate && e < n && ePos !== undefined && days(entryDate, dates[e]) <= 5 && days(entryDate, dates[e]) >= 0) {
-      /* SPY tritt am selben Tag ein wie der Titel (Review 1, Befund 5) */
+    /* Eintritt nur, wenn der Titel am SPY-Tag t+1 handelt: dann gelten fuer
+       alle Titel eines Stichtags dieselben SPY-Fenster (Purge, Begrenzung,
+       -100-%-Variante; Review 2, S7). */
+    const tradesNext = entryDate && e < n && dates[e] === entryDate;
+    const gapEnd = !tradesNext && (e >= n || days(entryDate || dates[i], dates[e]) > 5);
+    if (tradesNext) {
+      const ePos = pos + 1;
       const entry = s.close[e], spyEntry = SPY[ePos];
       let j = e, low = entry;
       for (const h of H) {
@@ -182,8 +187,9 @@ function processListing(L, keepKeys) {
         vals[C["dl" + h]] = delisted;
         vals[C["mae" + h]] = low / entry - 1;
       }
-    } else if (L.ended && i === n - 1 && entryDate) {
-      /* Letzte Kerze am Stichtag, danach beendet: kein Eintritt moeglich.
+    } else if (L.ended && entryDate && (i === n - 1 || gapEnd)) {
+      /* Beendetes Listing ohne Handel an t+1 (letzte Kerze am Stichtag oder
+         Handelsaussetzung vor dem Ende, Review 2, S4): kein Eintritt moeglich.
          Primaer: Wert bleibt als Barmittel (0 %), Sensitivitaet -100 %. */
       for (const h of H) {
         const xp = pos + 1 + h;
@@ -216,10 +222,10 @@ function markDuplicates(activeLastKeyHits) {
 }
 
 /* ------------------------------------------------------------ Quellen */
-let activeEnded = 0;
+const activeCounts = { endedInactive: 0, staleActive: 0, copiesOfDelisted: 0 };
 async function* activeSource(fundByTicker, endedLastKeys, hits) {
   const dir = join(WORK, "tiingo", "daily");
-  const common = commonEquityIds();
+  const common = commonEquityIds(), inactive = inactiveEquityIds();
   let files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
   if (LIMIT) files = files.slice(0, LIMIT);
   for (const file of files) {
@@ -231,14 +237,23 @@ async function* activeSource(fundByTicker, endedLastKeys, hits) {
     const lastDate = seg.bars.length ? seg.bars[seg.bars.length - 1].date : null;
     /* Doppelhistorie nur, wenn die heutige Reihe nach dieser Kerze weiterlaeuft
        (sonst ist es dasselbe beendete Listing, Review 1, Befund 1). */
+    let copy = false;
     if (endedLastKeys.size) for (const b of seg.bars) {
       const k = keyHash(b.date, b.close, b.volume);
-      if (endedLastKeys.has(k) && days(b.date, lastDate) > 30) hits.add(k);
+      if (!endedLastKeys.has(k)) continue;
+      if (days(b.date, lastDate) > 30) hits.add(k);
+      else copy = true;
     }
-    /* Reihe endet mehr als 30 Tage vor dem Kalenderende: beendet (Delisting-Regel). */
+    /* Dieselbe beendete Reihe liegt schon aus tiingo-delisted vor: nicht
+       doppelt zaehlen (Review 2, S1). */
+    if (copy) { activeCounts.copiesOfDelisted++; continue; }
+    /* Beendet nur, wenn der Security Master es sagt; eine bloss veraltete
+       Reihe ist eine Datenluecke, ihre Ergebnisse sind nicht verfuegbar
+       (Review 2, S2). */
     const stale = !lastDate || days(lastDate, CAL[CAL.length - 1]) > 30;
-    if (stale) activeEnded++;
-    yield { key: id, ticker: p.ticker, source: "ACTIVE", universe: "MAIN", ended: stale, bars: seg.bars, fund: fundByTicker.get(p.ticker) || null };
+    const ended = stale && inactive.has(id);
+    if (ended) activeCounts.endedInactive++; else if (stale) activeCounts.staleActive++;
+    yield { key: id, ticker: p.ticker, source: "ACTIVE", universe: "MAIN", ended, bars: seg.bars, fund: fundByTicker.get(p.ticker) || null };
   }
 }
 
@@ -439,6 +454,7 @@ async function main() {
         for await (const L of dl2.iterate()) { const m = processListing(L, true); if (m.obs) used++; }
         sources.delisted = { available: true, asOf, manifestUpdatedAt: dl2.manifestUpdatedAt, counts: dl2.counts, listingsRead: dl2.list.length, readFailures: dl2.failed, seriesMissing: dl2.missing, listingsWithObservations: used };
         if (dl2.failed) { status = "INCOMPLETE"; limitations.push(dl2.failed + " delistete Reihen nicht lesbar."); }
+        if (dl2.missing) { limitations.push(dl2.missing + " delistete Listings ohne Reihe in der Ablage."); if (dl2.missing > 0.01 * dl2.list.length) status = "INCOMPLETE"; }
         if (asOf < PERIODS.HOLDOUT_RECENT.to) limitations.push("Delisting-Manifest vom " + asOf + ": spaeter beendete Listings erscheinen nur, wenn ihre Reihe in der Arbeitsablage liegt (dort als beendet behandelt, sobald sie > 30 Tage vor Datenende endet).");
         log(`DELISTED: ${dl2.list.length} Listings gelesen, ${used} mit Beobachtungen`);
       } else { sources.delisted = { available: false, reason: dl2.reason }; }
@@ -449,6 +465,7 @@ async function main() {
         for await (const L of ho.iterate()) { const m = processListing(L, true); if (m.obs) used++; }
         sources.holdout = { available: true, manifestUpdatedAt: ho.manifestUpdatedAt, counts: ho.counts, listingsRead: ho.list.length, readFailures: ho.failed, seriesMissing: ho.missing, listingsWithObservations: used };
         if (ho.failed) { status = "INCOMPLETE"; limitations.push(ho.failed + " Holdout-Reihen nicht lesbar."); }
+        if (ho.missing) { limitations.push(ho.missing + " Holdout-Listings ohne Reihe in der Ablage."); if (ho.missing > 0.01 * ho.list.length) status = "INCOMPLETE"; }
         log(`HOLDOUT: ${ho.list.length} Listings gelesen, ${used} mit Beobachtungen`);
       } else { sources.holdout = { available: false, reason: ho.reason }; }
       const sp = r2.budget.spent;
@@ -470,7 +487,7 @@ async function main() {
     log(`Fundamentaldaten fuer ${fundByTicker.size} heutige Titel`);
     let n = 0, used = 0;
     for await (const L of activeSource(fundByTicker, endedLastKeys, hits)) { const m = processListing(L, false); n++; if (m.obs) used++; if (n % 1000 === 0) log(`ACTIVE ${n}`); }
-    sources.active = { available: true, listings: n, listingsWithObservations: used, withFundamentals: fundByTicker.size };
+    sources.active = { available: true, listings: n, listingsWithObservations: used, withFundamentals: fundByTicker.size, ...activeCounts };
     const dups = markDuplicates(hits);
     sources.tickerChangeDuplicatesDropped = dups;
     log(`ACTIVE ${n} Listings (${used} mit Beobachtungen); Doppelhistorien verworfen: ${dups}`);
@@ -595,7 +612,7 @@ async function main() {
             const xs = rows.filter((r) => r.state === s).map(exOf).filter(isNum);
             const A2 = stAcc[period][s][h];
             for (const x of xs) { A2.pooled.push(x); A2.n++; if (x > 0) A2.hits++; }
-            if (xs.length >= 5) { means[s] = EL.stats.mean(xs.map(wins)); A2.dm.push(means[s]); }
+            if (xs.length >= 5) { means[s] = EL.stats.mean(xs.map(wx)); A2.dm.push(means[s]); }
           }
           for (let q = 1; q < ST.length; q++) {
             const key = ST[q] + "_vs_" + ST[q - 1], key0 = ST[q] + "_vs_S0_NONE";
@@ -621,7 +638,7 @@ async function main() {
               const sub = rows.filter((r, j) => dv[j] >= t / 3 && (t === 2 ? dv[j] <= 1 : dv[j] < (t + 1) / 3));
               const sTop = selectTop(sub, m);
               if (!sTop) continue;
-              const xs = sTop.map(exOf).filter(isNum).map(wins), us = sub.map(exOf).filter(isNum).map(wins);
+              const xs = sTop.map(exOf).filter(isNum).map(wx), us = sub.map(exOf).filter(isNum).map(wx);
               if (xs.length) sizeSplit[period][m][t].push(EL.stats.mean(xs) - EL.stats.mean(us));
             }
           }
@@ -730,13 +747,15 @@ async function main() {
      sie ersetzt. Was nach dem ersten Holdout-Blick geaendert wurde, steht
      damit offen da. */
   const sha = (rel) => createHash("sha256").update(readFileSync(join(ROOT, rel))).digest("hex");
-  const CODE = ["quant/engines/emerging-leaders.js", "scripts/quant/build-emerging-leaders-study.mjs", "scripts/quant/lib/emerging-leaders-inputs.mjs"];
+  const CODE = ["quant/engines/emerging-leaders.js", "scripts/quant/build-emerging-leaders-study.mjs", "scripts/quant/lib/emerging-leaders-inputs.mjs",
+    "quant/engines/return-series.js", "quant/engines/survivorship-control.js", "quant/engines/pit-fundamental-history.js",
+    "discover/engines/scoring.js", "discover/methodology/discover-v1.json", "quant/methodology/emerging-leaders-v1.json"];
   const codeSha256 = Object.fromEntries(CODE.map((f) => [f, sha(f)]));
   let gitSha = null; try { gitSha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT }).toString().trim(); } catch { /* ohne Git */ }
   let previous = null; try { previous = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : null; } catch { previous = null; }
   const runs = (previous && previous.methodologyVersion === PREREG.methodologyVersion && Array.isArray(previous.runs) ? previous.runs : []).slice(-20);
   runs.push({ at: new Date().toISOString(), status, gitSha, codeSha256, evidenceStatus: gate.evidenceStatus, selected: selection.chosen,
-    holdoutEvaluated: status === "COMPLETE" });
+    holdoutEvaluated: ["HOLDOUT_RECENT", "HOLDOUT_EARLY"].some((p) => results[p].UNIVERSE[H_PRIMARY].dates > 0) });
   const holdoutEvaluations = runs.filter((x) => x.holdoutEvaluated).length;
   if (holdoutEvaluations > 1) limitations.push("Holdout dieser Methodikversion wurde " + holdoutEvaluations + "-mal ausgewertet (siehe runs); Aenderungen zwischen den Laeufen sind ueber codeSha256/gitSha nachvollziehbar.");
   const out = {
@@ -745,7 +764,7 @@ async function main() {
     methodologySha256: createHash("sha256").update(PREREG_TEXT).digest("hex"),
     generatedAt: new Date().toISOString(), status,
     evidenceStatus: gate.evidenceStatus,
-    label: gate.evidenceStatus === "VALIDATED" ? "Historisch validiert (Point-in-Time, beide Holdouts)" : gate.evidenceStatus === "PARTIAL" ? "Teilweise belegt - nicht in allen Holdouts" : "Experimentell - keine belastbare Ueberlegenheit nachgewiesen",
+    label: gate.evidenceStatus === "VALIDATED" ? (gate.holdoutsAvailable === 2 ? "Historisch validiert (Point-in-Time, beide Prüfzeiträume)" : "Historisch validiert (Point-in-Time, ein verfügbarer Prüfzeitraum)") : gate.evidenceStatus === "PARTIAL" ? "Teilweise belegt - nicht in allen Holdouts" : "Experimentell - keine belastbare Ueberlegenheit nachgewiesen",
     aggregatesOnly: true, noProbabilities: true,
     dataSources: sources, coverage,
     calendar: { from: CAL[0], to: CAL[CAL.length - 1], monthEnds: MONTH_END.size, observations: store.n, listings: LISTINGS.length, listingsUsed: LISTINGS.filter((l) => l.obs && !l.dup).length },
