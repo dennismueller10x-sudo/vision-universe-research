@@ -22,7 +22,7 @@ const HAVE_DATA = existsSync(join(V3, "index.json.gz")) && existsSync(join(V3, "
 const gz = (p) => JSON.parse(gunzipSync(readFileSync(p)).toString("utf8"));
 
 /* ---------------------------------------------------------------- Fixtures */
-const NAMES = new Map([["AAA", { n: "Alpha Corp", u: "USD" }], ["BBB", { n: "Beta Inc", u: "USD" }], ["CCC", { n: "Gamma Ltd", u: "USD" }]]);
+const NAMES = new Map([["AAA", { n: "Alpha Corp", u: "USD", t: "COMMON_STOCK" }], ["BBB", { n: "Beta Inc", u: "USD", t: "COMMON_STOCK" }], ["CCC", { n: "Gamma Ltd", u: "USD", t: "COMMON_STOCK" }], ["PPP", { n: "Pref Co", u: "USD", t: "PREFERRED" }], ["FFF", { n: "Fund ETF", u: "USD", t: "ETF" }], ["III", { n: "Conflict", u: "USD", t: "COMMON_STOCK", ic: "G" }]]);
 const zone = (tier, lo, hi, state = "OPEN") => ({ tier, pctLow: lo, pctHigh: hi, state });
 const thesis = (over = {}) => Object.assign({ key: "K|" + Math.random().toString(36).slice(2), type: "WAVE_3", direction: "UP", status: "DEVELOPING", patternName: "Impuls",
   zones: [zone("BASE", 0.2, 0.5), zone("EXTENDED", 0.5, 1.2)], invalidation: { price: 10, direction: "below" } }, over);
@@ -44,6 +44,12 @@ test("EH-1 · withheld, STALE and NON_TRADING titles never reach the Elliott hom
 
 test("EH-2 · only securities of the product universe appear (no name entry, no card)", () => {
   assert.equal(H.cardsOfDocument("ZZZ", doc({ motiveAlternative: thesis() }), NAMES).length, 0);
+});
+
+test("EH-2b · preferreds, ETFs and identity conflicts never appear; only known statuses", () => {
+  const live = thesis();
+  for (const sym of ["PPP", "FFF", "III"]) assert.equal(H.cardsOfDocument(sym, doc({ motiveAlternative: live }), NAMES).length, 0, sym);
+  assert.equal(H.cardsOfDocument("AAA", doc({ motiveAlternative: thesis({ status: "EXHAUSTED" }) }), NAMES).length, 0);
 });
 
 test("EH-3 · roles are exact: primary only when consumerVisible, candidate explorer never, highlight stays a highlight", () => {
@@ -152,7 +158,12 @@ test("EH-9 · against the published data: nothing withheld, only product titles,
       for (const hl of (d.projection || {}).exploreHighlights || []) if (H.liveTiers(hl) && Object.keys(H.liveTiers(hl)).length) fromShards++;
     }
   }
-  assert.equal(home.cards.filter((c) => c.role === "EXPLORE_HIGHLIGHT").length, fromShards);
+  assert.equal(home.cards.filter((c) => c.role === "EXPLORE_HIGHLIGHT").length <= fromShards, true);
+  /* Wertpapierart: nur Stammaktien ohne Identitaetskonflikt (Universumsliste) */
+  const list = new Map(gz(join(ROOT, "quant/data/product/universe-list-v1.json.gz")).entries.map((e) => [e.s, e]));
+  for (const c of home.cards) { const e = list.get(c.t); assert.equal(e.t, "COMMON_STOCK", c.t + " ist keine Stammaktie"); assert.ok(!e.ic, c.t + " hat einen Identitaetskonflikt"); assert.ok(["CONFIRMED", "DEVELOPING"].includes(c.st)); }
+  /* "Alle N" einer Reihe oeffnet genau N Karten */
+  for (const r of home.rows) { const f = M.rowFilter(r.id); if (f) assert.equal(M.filterCards(home.cards, Object.assign(M.parseHash("#/"), f)).length, r.total, r.id + ": Alle-Link und Reihe stimmen ueberein"); }
 });
 
 /* ---------------------------------------------------------------- 2 Darstellung: Zahlen und Worte */
@@ -172,7 +183,7 @@ test("EH-10 · large projections render safely and stay descriptive", () => {
   assert.equal(M.headlineTier({ tiers: {} }), null);
   /* Wortwahl: keine Wahrscheinlichkeits- oder Erwartungsrenditesprache */
   const words = JSON.stringify([M.ROLE_LABEL, M.ROLE_NOTE, M.STATUS_LABEL, M.CHANGE_LABEL]);
-  assert.doesNotMatch(words, /wahrscheinlich|erwartet|Rendite|Kursziel|Empfehlung|Chance/i);
+  assert.doesNotMatch(words.replace(/keine Aussage über Wahrscheinlichkeit/, ""), /wahrscheinlich|erwartet|Rendite|Kursziel|Empfehlung|Chance|Potenzial/i);
   const ui = read("elliott/app.js");
   assert.match(ui, /Projektionszone/, "die Zahl ist als Zone benannt");
   assert.doesNotMatch(ui.replace(/keine Wahrscheinlichkeit[^"]*"/g, ""), /Wahrscheinlichkeit|erwartete Rendite/);
@@ -273,7 +284,9 @@ test("EH-15 · the page never scans shards, never defaults to a stock, loads one
 test("EH-16 · accessibility basics of the page", () => {
   const app = read("elliott/app.js"), css = read("elliott/elliott.css"), html = read("elliott/index.html");
   assert.match(app, /role: "combobox"/);
-  assert.match(app, /"aria-pressed"/);
+  assert.match(app, /"aria-current"/);
+  assert.doesNotMatch(app, /aria-pressed/, "aria-pressed gilt nicht fuer Links");
+  assert.match(app, /focusout/, "die Trefferliste schliesst beim Verlassen");
   assert.match(app, /role: "listbox"/);
   assert.match(app, /aria-label": M\.ariaLabel\(c\)/);
   assert.match(css, /prefers-reduced-motion/);

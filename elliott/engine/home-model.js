@@ -28,14 +28,14 @@
   var ROLE_LABEL = {
     PRIMARY: "Primäre Lesart",
     ALTERNATIVE: "Alternative",
-    HIGH_UPSIDE: "Alternative mit hohem Potenzial",
+    HIGH_UPSIDE: "Alternative mit großer Spanne",
     MOTIVE_ALTERNATIVE: "Motiv-Alternative",
     EXPLORE_HIGHLIGHT: "Explore Highlight"
   };
   var ROLE_NOTE = {
     PRIMARY: "Die derzeit bevorzugte Zählung der Engine.",
     ALTERNATIVE: "Gleichrangige zweite Lesart der Engine.",
-    HIGH_UPSIDE: "Zweite Lesart mit großer rechnerischer Spanne.",
+    HIGH_UPSIDE: "Zweite Lesart mit großer rechnerischer Spanne (keine Aussage über Wahrscheinlichkeit).",
     MOTIVE_ALTERNATIVE: "Eine laufende Welle 2 oder 3, die neben der Hauptzählung geprüft wird.",
     EXPLORE_HIGHLIGHT: "Explorativ: regelkonforme Lesart, nicht als reguläre Alternative freigegeben."
   };
@@ -99,7 +99,7 @@
   /* ---------------------------------------------------------- Filter (URL-Zustand) */
   var DIR_PARAM = { auf: "UP", ab: "DOWN" };
   var ST_PARAM = { bestaetigt: "CONFIRMED", aufbau: "DEVELOPING" };
-  var ROLE_PARAM = { primaer: ["PRIMARY"], alternative: ["ALTERNATIVE", "HIGH_UPSIDE", "MOTIVE_ALTERNATIVE"], highlight: ["EXPLORE_HIGHLIGHT"] };
+  var ROLE_PARAM = { engine: ["PRIMARY", "ALTERNATIVE", "HIGH_UPSIDE"], primaer: ["PRIMARY"], alternative: ["ALTERNATIVE", "HIGH_UPSIDE", "MOTIVE_ALTERNATIVE"], highlight: ["EXPLORE_HIGHLIGHT"] };
 
   /** "#/?welle=3&richtung=ab" -> Zustand. Unbekannte Werte werden verworfen (keine leere Liste durch einen Tippfehler in der Adresse). */
   function parseHash(hash) {
@@ -140,7 +140,13 @@
   /** Gefilterte Karten in der Reihenfolge des Index (Index ist bereits geordnet). Neu-Filter: juengste Ereignisse zuerst. */
   function filterCards(cards, s) {
     var out = cards.filter(function (c) { return matches(c, s); });
-    if (s.neu) out = out.slice().sort(function (a, b) { return a.chg.d < b.chg.d ? 1 : a.chg.d > b.chg.d ? -1 : 0; });
+    /* Neu und veraendert: dieselbe Reihenfolge wie die Reihe (juengstes Datum, dann Ereignisart), sonst die Ordnung des Index */
+    if (s.neu) {
+      var prio = { CONFIRMED: 0, ROLE: 1, NEW: 2, ZONE: 3, REVISED: 4 };
+      out = out.map(function (c, i) { return { c: c, i: i }; }).sort(function (a, b) {
+        return (a.c.chg.d < b.c.chg.d ? 1 : a.c.chg.d > b.c.chg.d ? -1 : 0) || (prio[a.c.chg.k] - prio[b.c.chg.k]) || a.i - b.i;
+      }).map(function (x) { return x.c; });
+    }
     return out;
   }
   /** Chips mit Anzahl; Gruppen ohne Karten entfallen, eine einzelne Karte reicht fuer einen Chip (z. B. Welle 5). */
@@ -172,7 +178,7 @@
     if (s.welle) parts.push("Welle " + s.welle);
     if (s.richtung) parts.push(DIR_LABEL[DIR_PARAM[s.richtung]]);
     if (s.status) parts.push(STATUS_LABEL[ST_PARAM[s.status]]);
-    if (s.rolle) parts.push({ primaer: "Primäre Lesart", alternative: "Alternativen", highlight: "Explore Highlights" }[s.rolle]);
+    if (s.rolle) parts.push({ engine: "Bevorzugte Lesart der Engine", primaer: "Primäre Lesart", alternative: "Alternativen", highlight: "Explore Highlights" }[s.rolle]);
     if (s.neu) parts.unshift("Neu und verändert");
     return parts.join(" · ");
   }
@@ -188,7 +194,7 @@
   }
   /** Filter, der "Alle ansehen" einer Reihe oeffnet; null, wenn die Reihe keinem Chip entspricht. */
   function rowFilter(rowId) {
-    return { wave3: { welle: "3" }, wave5: { welle: "5" }, waveC: { welle: "C" }, recent: { neu: true }, bullish: { richtung: "auf" }, bearish: { richtung: "ab" }, engine: { rolle: "primaer" } }[rowId] || null;
+    return { wave3: { welle: "3" }, wave5: { welle: "5" }, waveC: { welle: "C" }, recent: { neu: true }, bullish: { richtung: "auf" }, bearish: { richtung: "ab" }, engine: { rolle: "engine" } }[rowId] || null;
   }
 
   /* ---------------------------------------------------------- Vertrag */
