@@ -97,9 +97,9 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
   if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
-  report.consumerContracts=await consumerContracts(consumer);
+  stage='CONSUMER_CONTRACT';report.consumerContracts=await consumerContracts(consumer);
   if(universe){report.cohortStocks=report.consumerContracts.listings;report.cohortIssuers=report.consumerContracts.issuers;}
-  const checks=validateChanges(consumer,old);report.consumerChecks=checks;
+  stage='GENERATION_REGRESSION';const checks=validateChanges(consumer,old);report.consumerChecks=checks;
   save(join(root,'delta-qa.json'),checks);
   if(validateContent){stage='CONTENT_ACCEPTANCE';report.contentAcceptance=await validateContent({state,consumer,temporary:root,identityRoot});}
   stage='PRIVATE_CHECKPOINT';
@@ -143,6 +143,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   await commitGood(driver,{namespace:consumerNamespace,payloadNamespace:result.payloadNamespace,manifest:result.manifest,health,inventory,expectedGood:good});
   report.published=true;report.retainedLastGood=false;report.publication={generation:result.generation,status:result.status,uploadedObjects:result.uploadedObjects,uploadedBytes:result.uploadedBytes,unchangedObjects:result.unchangedObjects};report.status='SUCCESS';report.failureStage=null;
  }catch(error){report.status='PIPELINE_FAILURE';report.failureStage=stage;report.failureCode=/^[A-Z0-9_:-]+$/.test(error.message)?error.message:'REFRESH_STAGE_FAILED';
+  if(error.consumerDiagnostic)report.consumerDiagnostic=error.consumerDiagnostic;
   if(stage==='CANDIDATE_QA'&&existsSync(join(root,'candidate-qa.json')))report.candidateQA=json(join(root,'candidate-qa.json'));
  }
  const observed=await driver.get(prefixFor(consumerNamespace)+'observed.json').catch(()=>null);
