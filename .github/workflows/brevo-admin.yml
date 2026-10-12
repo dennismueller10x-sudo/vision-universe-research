@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: 29b4a43885ea78e029e4c2ebbdc1731f76737047
+          ref: 450561b3a1697c54e29b4ccd7f0a8e577bd95218
           persist-credentials: false
           sparse-checkout: scripts/brevo
       - name: Isolierte Brevo-Domain und Cloudflare-DNS-Prüfung
@@ -58,6 +58,8 @@ jobs:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_CLOUDFLARE_DNS_TOKEN: ${{ secrets.BREVO_CLOUDFLARE_DNS_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
