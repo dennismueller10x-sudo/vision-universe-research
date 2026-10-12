@@ -221,6 +221,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             health['lastSuccessfulFinancialProjection']=now
         store.set_state('continuousRefresh',health)
         if outside_proof(store.db,cids)!=before: raise ValueError('NON_COHORT_PRIVATE_CONTENT_CHANGED')
+        from company_intelligence.reviewed_profiles import flag_reviews
+        profile_import['reviewFlags'] = flag_reviews(store, selected, now)
         exported=store.export(companies,state/'public/company-intelligence/data',now)
         if exported['exportedCompanies']<config['minimumPrivateCompanies']: raise ValueError('FULL_PRIVATE_UNIVERSE_SHRINK')
         if universe:

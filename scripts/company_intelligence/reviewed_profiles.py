@@ -48,7 +48,8 @@ def approved_copy(source, entry, cid, now):
     text = entry.get('description')
     if not isinstance(text, str) or not 40 <= len(text) <= 900 or not 15 <= len(text.split()) <= 95 or not GERMAN_ACTIVITY.search(text):
         raise ValueError('INVALID_GERMAN_CONSUMER_COPY')
-    if entry.get('profileTextHash') != digest(text) or PROMOTION.search(text) or STAFF_COUNT.search(text) or re.search(r'<[^>]+>|https?://', text):
+    style_text = text.replace(source['companyName'], '')
+    if entry.get('profileTextHash') != digest(text) or PROMOTION.search(style_text) or STAFF_COUNT.search(text) or re.search(r'<[^>]+>|https?://', text):
         raise ValueError('INVALID_PROFILE_STYLE_OR_HASH')
     if re.search(r'clinical[ -]stage|preclinical[ -]stage', source['description'], re.I) and (not re.search(r'klinisch|präklinisch|Wirkstoffkandidat|Therapiekandidat', text, re.I) or re.search(r'verkauft|zugelassen\w*|vermarktet Medikamente', text, re.I)):
         raise ValueError('CLINICAL_CANDIDATE_MISREPRESENTED')
@@ -95,6 +96,9 @@ def apply(store, companies, now, reviewed=None):
         # Existing independently reviewed German copy is never replaced by an
         # English-catalogue overlay. New entries require their actual source.
         source = store.state('profileReviewSource:' + cid) if prior and prior.get('language') == 'de' else prior
+        candidate = store.state('profileRefreshPending:' + cid)
+        if candidate and digest(candidate.get('description', '')) == entry.get('sourceDescriptionHash'):
+            source = candidate
         try:
             value = approved_copy(source, entry, cid, now)
             names = companies[cid].get('names', [])
@@ -115,7 +119,42 @@ def apply(store, companies, now, reviewed=None):
             continue
         store.set_state('profileReviewSource:' + cid, public_profile(source, cid, now))
         store.set_state('companyProfile:' + cid, value)
+        store.set_state('profileReviewPending:' + cid, {'status': 'REVIEWED', 'profileVersion': value['profileVersion'], 'reviewedAt': value['reviewedAt']})
         store.audit(now, cid, 'REVIEWED_STATIC_GERMAN_PROFILE_IMPORTED', profileVersion=entry['profileVersion'], profileTextHash=entry['profileTextHash'])
         updated.append(cid)
     return {'updatedProfiles': len(updated), 'updatedIssuerIds': updated, 'unchangedProfiles': skipped,
             'rejectedProfiles': len(rejected), 'rejectionReasons': dict(Counter(rejected.values())), 'sourceChangesAwaitingReview': pending}
+
+def flag_reviews(store, companies, now):
+    """Queue dated checks and existing policy-safe material signals; no rewriting.
+
+    A filing category or news classification is a reason to inspect the source,
+    not proof that a transaction completed or a medicine was approved.
+    """
+    from .consumer_usage import filter_for_preview
+    sources = store.sources()
+    total = Counter()
+    for cid in companies:
+        profile = store.state('companyProfile:' + cid)
+        if not profile or not profile.get('profileVersion') or not timestamp(profile.get('reviewedAt')):
+            continue
+        since = profile['reviewedAt']; reasons = []
+        if profile.get('nextReviewAt', now) < now:
+            reasons.append('PERIODIC_SOURCE_REVIEW_DUE')
+        news = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM items WHERE company=? AND published>=?', (cid, since))]
+        events = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM events WHERE company=? AND date>=?', (cid, since[:10]))]
+        safe, _ = filter_for_preview({'companyId': cid, 'news': news, 'events': events}, sources)
+        signals = sorted({r.get('newsId') or r.get('eventId') for r in safe['news'] + safe['events']
+            if (set(r.get('categories', [])) & {'M&A', 'Product', 'Regulation', 'Restructuring', 'Bankruptcy'}
+                or set(r.get('secItems', [])) & {'1.03', '2.01', '2.05'}) and (r.get('newsId') or r.get('eventId'))})
+        if signals:
+            reasons.append('MATERIAL_SIGNAL_SOURCE_REVIEW_REQUIRED')
+        old = store.state('profileReviewPending:' + cid, {})
+        if reasons:
+            value = {**old, 'status': 'REVIEW_REQUIRED', 'profileVersion': profile['profileVersion'],
+                     'reasons': sorted(set(old.get('reasons', []) + reasons)), 'signalIdentityHash': digest(json.dumps(signals)),
+                     'signalCount': len(signals), 'firstDetectedAt': old.get('firstDetectedAt', now)}
+            if value != old:
+                store.set_state('profileReviewPending:' + cid, value)
+            total.update(reasons)
+    return dict(total)

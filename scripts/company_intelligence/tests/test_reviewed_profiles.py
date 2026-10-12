@@ -1,6 +1,9 @@
 from copy import deepcopy
 import unittest
-from company_intelligence.reviewed_profiles import approved_copy, apply, digest, SCHEMA
+import tempfile
+from pathlib import Path
+from company_intelligence.store import Store, dumps
+from company_intelligence.reviewed_profiles import approved_copy, apply, flag_reviews, digest, SCHEMA
 from test_profile_source_audit import CID, NOW, profile
 
 TEXT = 'Example Therapeutics entwickelt Wirkstoffkandidaten zur Behandlung von Krebserkrankungen. Das Biotechnologieunternehmen befindet sich mit diesen Therapien in der klinischen Entwicklung und arbeitet an der Erforschung neuer Behandlungsmöglichkeiten.'
@@ -55,4 +58,33 @@ class ReviewedProfilesTests(unittest.TestCase):
         result = apply(store, {CID: {'names': ['New Operating Business Inc.']}}, NOW, {'profiles': {CID: entry(p)}})
         self.assertEqual(result['rejectionReasons'], {'PROFILE_CURRENT_MASTER_NAME_REVIEW_REQUIRED': 1})
         self.assertEqual(store.state('companyProfile:' + CID), p)
+    def test_new_review_can_pin_the_changed_source_without_reusing_old_source(self):
+        p = profile(); store = MemoryStore(p)
+        apply(store, {CID: {}}, NOW, {'profiles': {CID: entry(p)}})
+        changed = profile('Example Therapeutics develops clinical-stage treatments for cancer and rare diseases.')
+        store.set_state('profileRefreshPending:' + CID, changed)
+        e = entry(changed); text = TEXT + ' Ein weiterer Forschungsschwerpunkt sind seltene Erkrankungen.'
+        e.update(description=text, profileTextHash=digest(text), profileVersion='reviewed-de-' + digest(text)[:24])
+        self.assertEqual(apply(store, {CID: {}}, NOW, {'profiles': {CID: e}})['updatedProfiles'], 1)
+        self.assertEqual(store.state('profileReviewSource:' + CID)['description'], changed['description'])
+        self.assertEqual(store.state('profileReviewPending:' + CID)['status'], 'REVIEWED')
+    def test_quarterly_checks_and_policy_safe_signals_queue_review_without_inference(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory) / 'state.sqlite')
+            try:
+                p = approved_copy(profile(), entry(), CID, NOW)
+                store.set_state('companyProfile:' + CID, p)
+                for ident, url in [('owned-sec', 'https://www.sec.gov/Archives/edgar/data/1652130/material.htm'),
+                                   ('rejected-publisher', 'https://globenewswire.com/article')]:
+                    row = {'companyId': CID, 'newsId': ident, 'canonicalUrl': url,
+                           'publishedAt': '2026-10-13T09:00:00Z', 'categories': ['M&A']}
+                    store.db.execute('INSERT INTO items VALUES(?,?,?,?)', (ident, CID, row['publishedAt'], dumps(row)))
+                store.db.commit()
+                before = store.state('companyProfile:' + CID)
+                self.assertEqual(flag_reviews(store, {CID: {}}, '2027-02-01T10:00:00Z'),
+                                 {'PERIODIC_SOURCE_REVIEW_DUE': 1, 'MATERIAL_SIGNAL_SOURCE_REVIEW_REQUIRED': 1})
+                pending = store.state('profileReviewPending:' + CID)
+                self.assertEqual(pending['signalCount'], 1)
+                self.assertEqual(store.state('companyProfile:' + CID), before)
+            finally: store.close()
 if __name__ == '__main__': unittest.main()

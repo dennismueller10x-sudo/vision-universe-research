@@ -5,11 +5,18 @@ import unittest
 from unittest.mock import patch
 from company_intelligence.source_onboarding import candidate_inventory, proven, onboard
 from company_intelligence.store import Store
+from company_intelligence.top46_content import matching_resolver
 
 CID = 'iss_cik_0001652130'
 SOURCE = {'sourceId': 'owned', 'companyId': CID, 'verified': True, 'active': True, 'type': 'IR_FEED', 'provider': 'GCS',
           'url': 'https://ir.intelliatx.com/rss/news-releases.xml', 'allowedSites': ['https://ir.intelliatx.com/']}
 class SourceOnboardingTests(unittest.TestCase):
+    def test_current_master_international_rows_without_sec_cik_remain_resolvable(self):
+        companies = {'issuer-global': {'companyId': 'issuer-global', 'cik': None, 'names': ['Example Global'], 'listings': [{'symbol': 'EXG'}]},
+                     CID: {'companyId': CID, 'cik': '0001652130', 'names': ['Intellia Therapeutics'], 'listings': [{'symbol': 'NTLA'}]}}
+        with tempfile.TemporaryDirectory() as directory:
+            resolver = matching_resolver(companies, Path(directory))
+        self.assertEqual(set(resolver.companies), set(companies))
     def test_registered_urls_are_not_polling_proof(self):
         self.assertEqual(proven([SOURCE], CID), [])
         self.assertEqual(len(proven([{**SOURCE, 'lastSuccess': '2026-10-05T10:00:00Z'}], CID)), 1)

@@ -7,6 +7,7 @@ import argparse
 from copy import deepcopy
 import hashlib
 import json
+import re
 import sqlite3
 from pathlib import Path
 import sys
@@ -64,6 +65,10 @@ def matching_resolver(selected, root=ROOT):
     # Otherwise a fresh restore has identical tables but hashes different names.
     resolver = Resolver(deepcopy(selected))
     for cid, company in selected.items():
+        # International Master rows without a SEC CIK still belong to the
+        # resolver. They simply have no SEC-consumer alias to load.
+        if not isinstance(company.get('cik'), str) or not re.fullmatch(r'\d{10}', company['cik']):
+            continue
         consumer_path = Path(root)/'quant/data/sec/consumer'/('CIK'+company['cik']+'.json')
         if consumer_path.is_file():
             data=json.loads(consumer_path.read_text())
