@@ -54,12 +54,12 @@ class PublicHTTP:
         self.opener = opener or urllib.request.build_opener(NoRedirect()).open
         self.sleep, self.clock, self.validator = sleep, clock, validator
         self.requests = 0
-        self.stats = {'memoHits': 0, 'cacheHits': 0, 'notModified': 0, 'retries': 0, 'bytesDownloaded': 0}
+        self.stats = {'memoHits': 0, 'cacheHits': 0, 'notModified': 0, 'retries': 0, 'bytesDownloaded': 0, 'robotsFailureMemoHits': 0}
         self.deadline = clock() + max_seconds
         self.host_delay = {}
         self.last_request = 0
         self.host_last = {}
-        self.memo, self.robots = {}, {}
+        self.memo, self.robots, self.robots_failures = {}, {}, {}
         self.user_agent = 'VisionUniverseResearch/CompanyIntelligence (+https://visionuniverse.de; info@visionuniverse.de)'
 
     def _paths(self, url):
@@ -98,6 +98,11 @@ class PublicHTTP:
     def robots_allowed(self, url):
         parts = urlsplit(url)
         origin = parts.scheme + '://' + parts.netloc
+        if origin in self.robots_failures:
+            self.stats['robotsFailureMemoHits'] += 1
+            # One failed origin-policy read per run, not one retry storm per
+            # Q4/news/events/material endpoint. This never authorizes a fetch.
+            raise SourceError(self.robots_failures[origin])
         if origin not in self.robots:
             try:
                 r = self.get(origin + '/robots.txt', robots=False, ttl=86400)
@@ -112,7 +117,8 @@ class PublicHTTP:
                     parser.parse([])
                     self.robots[origin] = parser
                 else:
-                    raise SourceError('ROBOTS_UNAVAILABLE:' + str(exc)) from exc
+                    self.robots_failures[origin] = 'ROBOTS_UNAVAILABLE:' + str(exc)
+                    raise SourceError(self.robots_failures[origin]) from exc
         parser = self.robots[origin]
         if not parser.can_fetch(self.user_agent, url):
             raise SourceError('ROBOTS_DISALLOWED')

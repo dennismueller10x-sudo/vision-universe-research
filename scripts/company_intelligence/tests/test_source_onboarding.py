@@ -29,6 +29,10 @@ class SourceOnboardingTests(unittest.TestCase):
                 self.assertEqual(company['names'],['Example Therapeutics'])
                 if accepted:self.assertIn(data['name'],value['names'])
                 else:self.assertEqual(value,company)
+            for asof in [None,'2025-01-01','2027-01-01','not-a-date']:
+                path.write_text(json.dumps({'cik':'0001652130','name':'Example Therapeutics Corp','asOf':asof}))
+                value,reference=ownership_company(company,root,'2026-10-12T00:00:00Z')
+                self.assertIsNone(reference);self.assertEqual(value,company)
     def test_existing_owned_feed_repair_never_grants_new_ownership(self):
         official = {'status': 'VALIDATED', 'url': 'https://www.intelliatx.com/'}
         source = {**SOURCE, 'allowedSites': ['https://www.intelliatx.com/', 'https://ir.intelliatx.com/']}

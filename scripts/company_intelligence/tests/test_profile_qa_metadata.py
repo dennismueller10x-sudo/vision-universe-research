@@ -28,6 +28,21 @@ class MetadataTests(unittest.TestCase):
         self.assertEqual(candidates(c,{}),[CID])
         value=metadata({'cik':353278},'0000353278',NOW)
         self.assertEqual(value['addresses']['business'],{});self.assertEqual(value['sic'],'')
+    def test_failed_robots_origin_is_fail_closed_without_repeated_endpoint_requests(self):
+        with tempfile.TemporaryDirectory() as directory:
+            calls=[]
+            def opener(request,timeout=None):
+                calls.append(request.full_url)
+                import urllib.error
+                raise urllib.error.HTTPError(request.full_url,403,'denied',{},None)
+            http=PublicHTTP(Path(directory),opener=opener,validator=lambda u:u,interval=0,sleep=lambda _:None)
+            for url in ['https://owned.example/news','https://owned.example/events','https://owned.example/materials']:
+                with self.assertRaisesRegex(SourceError,'ROBOTS_UNAVAILABLE:HTTP_403'):http.get(url,fresh=True)
+            self.assertEqual(calls,['https://owned.example/robots.txt'])
+            self.assertEqual(http.requests,1)
+            fresh=PublicHTTP(Path(directory),opener=opener,validator=lambda u:u,interval=0,sleep=lambda _:None)
+            with self.assertRaisesRegex(SourceError,'ROBOTS_UNAVAILABLE:HTTP_403'):fresh.get('https://owned.example/news')
+            self.assertEqual(len(calls),2)  # A later run may retry; no durable blanket denial.
     def test_explicit_fresh_read_retains_robots_and_budget_but_skips_stale_memo_and_validators(self):
         calls=[]
         def opener(request,timeout=None):calls.append(dict(request.header_items()));return Response(b'fresh HTTPS source')
