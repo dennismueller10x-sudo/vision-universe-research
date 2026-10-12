@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: 0c8a130417902cd0d80221a8084098c589e44327
+          ref: 37d35e32cb19a5161b1150e608eeb87a48c6c220
           persist-credentials: false
           sparse-checkout: scripts/brevo
       - name: GET-only account label and folder verification
