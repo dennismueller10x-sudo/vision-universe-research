@@ -136,20 +136,47 @@
     return box;
   }
   /* Intraday (scripts/discover/build-im-blick-live.mjs): rendert sofort die
-     Auswahl des Abendlaufs und ersetzt sie, wenn eine stuendliche
-     Neuberechnung der laufenden Sitzung vorliegt - nur zur selben Basis
-     (eodAsOf = Stand der Karten), nur mit mindestens drei Titeln, nur bis
-     drei Stunden alt. Sonst bleibt die bestaetigte Schlusskurs-Auswahl. */
+     Auswahl des Abendlaufs und ersetzt sie, wenn eine Neuberechnung der
+     laufenden oder gerade beendeten Sitzung vorliegt - nur zur selben Basis
+     (eodAsOf = Stand der Karten), nur mit mindestens drei Titeln und nur
+     innerhalb der Gueltigkeit, die die Datei selbst nennt (validUntil: naechster
+     Termin + Karenz; aeltere Dateien ohne Angabe: drei Stunden).
+
+     Zustaende: LIVE (Sitzung laeuft) und SESSION_CLOSED (Sitzung beendet,
+     Abendlauf steht aus) werden gezeigt - der zweite nie als "live"
+     gekennzeichnet. Alles andere (INTRADAY_STALE, NO_INTRADAY, EOD_*)
+     laesst die bestaetigte Schlusskurs-Auswahl stehen.
+
+     Abruf: eigener fetch mit no-cache und einem Fuenf-Minuten-Parameter statt
+     QuantShell.loadJSON - dessen Zwischenspeicher haelt eine Antwort bis zum
+     Neuladen der Seite, ein lange offener Tab zeigte sonst stundenalte Titel;
+     GitHub Pages liefert bis zu zehn Minuten aus dem CDN-Cache. */
+  function fetchLive(path){
+    var url=path+'?t='+Math.floor(Date.now()/300000);
+    return fetch(url,{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
+  }
+  function liveUsable(l,asOf,now){
+    if(!l||(l.status!=='LIVE'&&l.status!=='SESSION_CLOSED')||!asOf||l.eodAsOf!==asOf)return false;
+    if(!(l.stocks||[]).length||l.stocks.length<3)return false;
+    var until=l.validUntil?Date.parse(l.validUntil):Date.parse(l.generatedAt)+3*3600000;
+    return isFinite(until)&&now<=until;
+  }
+  /* "intraday" nur, solange die Boerse offen ist: eine LIVE-Auswahl, die nach
+     dem Schluss noch gueltig ist (der Schlussslot kam nicht), heisst danach
+     unbestaetigt - nie "live" ausserhalb der Handelszeit. */
+  function liveLabel(l,now){
+    var close=l&&l.sessionClose?Date.parse(l.sessionClose):NaN;
+    return l&&l.status==='LIVE'&&(!isFinite(close)||now<=close)?'intraday':'close-unconfirmed';
+  }
   function live(surface,ctx,render){
     var view=render(surface,ctx),cards=surface.cards||[],asOf=cards[0]&&cards[0].asOf;
-    S.loadJSON('/discover/live/im-blick-'+ctx.universeId+'.json',{attempts:1}).then(function(l){
-      if(!l||l.status!=='LIVE'||!asOf||l.eodAsOf!==asOf||!(l.stocks||[]).length||l.stocks.length<3)return;
-      if(Date.now()-Date.parse(l.generatedAt)>3*3600000||!view.isConnected)return;
+    fetchLive('/discover/live/im-blick-'+ctx.universeId+'.json').then(function(l){
+      if(!liveUsable(l,asOf,Date.now())||!view.isConnected)return;
       var next=render(Object.assign({},surface,{cards:l.stocks,live:true}),ctx);
       next.className=view.className;Object.keys(view.dataset).forEach(function(k){next.dataset[k]=view.dataset[k];});
-      next.dataset.basis='intraday';view.replaceWith(next);
+      next.dataset.basis=liveLabel(l,Date.now());view.replaceWith(next);
     }).catch(function(){});
     return view;
   }
-  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links,live:live};
+  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links,live:live,liveUsable:liveUsable,liveLabel:liveLabel};
 })(window);
