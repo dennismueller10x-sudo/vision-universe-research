@@ -1,5 +1,10 @@
 import unittest
-from company_intelligence.profile_source_audit import source_profile_status
+import json
+from pathlib import Path
+import tempfile
+from unittest.mock import patch
+from company_intelligence.profile_source_audit import source_profile_status, audit
+from company_intelligence.store import Store
 
 CID = 'iss_cik_0001652130'
 NOW = '2026-10-12T09:52:45Z'
@@ -11,6 +16,23 @@ def profile(description='Example Therapeutics develops clinical-stage treatments
                          'form': '10-K', 'filedAt': '2026-02-26', 'contentHash': 'a' * 64}]}
 
 class ProfileSourceAuditTests(unittest.TestCase):
+    def test_cli_string_paths_are_normalized_and_fresh_ledger_stays_unchanged(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); state = root / 'state'; state.mkdir()
+            config = root / 'company-intelligence/config'; config.mkdir(parents=True)
+            (config / 'company-profiles.json').write_text(json.dumps({'profiles': {CID: profile()}}))
+            (config / 'sources.json').write_text('[]')
+            decisions = root / 'eligibility.json'
+            decisions.write_text(json.dumps({'issuers': {CID: {'hasPrivatePayload': True, 'status': 'ELIGIBLE_PARTIAL', 'modules': {'profile': False}}}}))
+            store = Store(state / 'state.sqlite'); store.set_state('companyProfile:' + CID, profile()); store.close()
+            def identity(path, store):
+                self.assertIsInstance(path, Path)
+                return {CID: {'companyId': CID, 'cik': '0001652130', 'names': ['Example Therapeutics'], 'listings': []}}
+            with patch('company_intelligence.profile_source_audit.ROOT', root), patch('company_intelligence.profile_source_audit.identities', side_effect=identity):
+                report = audit(str(state), str(root), str(decisions), str(root / 'audit.json'), now=NOW)
+            self.assertEqual(report['privateIssuers'], 1)
+            self.assertEqual(report['stages']['matchedCommittedEnglishInputs'], 1)
+            self.assertEqual(report['remoteWrites'], 0)
     def test_missing_translation_is_not_missing_source(self):
         self.assertEqual(source_profile_status(profile(), CID, NOW), 'SOURCE_AVAILABLE_NO_DE_COPY')
         self.assertEqual(source_profile_status(None, CID, NOW), 'NO_PROFILE_SOURCE')

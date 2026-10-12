@@ -44,7 +44,7 @@ def source_profile_status(profile, cid, now, mapping_ok=True, web_owned=False, s
     return 'SOURCE_AVAILABLE_NO_DE_COPY' if strong else 'SOURCE_AVAILABLE_WEAK'
 
 def audit(state, identity_root, eligibility_path, out, now=None):
-    state, out = Path(state), Path(out)
+    state, identity_root, out = Path(state), Path(identity_root), Path(out)
     if not (state / 'state.sqlite').is_file():
         raise ValueError('CURRENT_FULL_RESTORED_STATE_REQUIRED')
     before = database_proof(state / 'state.sqlite')
@@ -57,7 +57,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
     rows, mandatory, matched, available, safe, raw_de = {}, {}, 0, 0, 0, 0
     try:
         companies = {**identities(ROOT, store), **identities(identity_root, store)}
-        sources = store.sources()
+        sources = [json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         for s in sources:
             source_ids.add(s['sourceId'])
             by_issuer[s.get('companyId')].append(s)
