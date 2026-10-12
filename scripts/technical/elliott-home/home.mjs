@@ -16,7 +16,7 @@
        und Explore Highlights eigenstaendig; Candidate Explorer nie).
      - Datenstand (data-freshness-1.0.0): nur FRESH und DELAYED. Zurueckgehaltene
        Titel (STALE, NON_TRADING) tragen im Shard keine Projektion und stehen hier nie.
-     - Wertpapierart: nur Titel des Index (= Produktuniversum des Builds) mit Namenseintrag.
+     - Wertpapierart: nur Titel des Index (Produktuniversum des Builds) mit Namenseintrag der Art COMMON_STOCK ohne Identitaetskonflikt.
      - Reihenfolge: deterministisch, ohne Projektionsgroesse und ohne Zukunftsdaten.
    ========================================================================= */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
@@ -30,6 +30,7 @@ export const HOME_PATH = "quant/data/technical-intelligence/v3/elliott-home.json
 
 /** Rollen in Anzeigereihenfolge (klein = vorn). Rolle und Kennzeichnung bleiben im Kartenfeld role. */
 export const ROLE_ORDER = { PRIMARY: 0, ALTERNATIVE: 1, HIGH_UPSIDE: 2, MOTIVE_ALTERNATIVE: 3, EXPLORE_HIGHLIGHT: 4 };
+const STATUS_OK = new Set(["CONFIRMED", "DEVELOPING"]);
 const VISIBLE_FRESHNESS = new Set(["FRESH", "DELAYED"]);
 const TIERS = { BASE: "base", EXTENDED: "ext", EXTREME: "xtr" };
 /** Welle je Projektionstyp. Folgebewegung, Gegenbewegung und Ausbruch sind keine Wellennummer. */
@@ -142,13 +143,15 @@ export function cardsOfDocument(symbol, doc, names) {
   const fr = doc.freshness || {};
   if (!VISIBLE_FRESHNESS.has(fr.state || "FRESH")) return [];
   const entry = names.get(symbol);
-  if (!entry) return [];
+  /* Wertpapierart und Identitaet aus der Universumsliste: nur Stammaktien (keine Vorzugsaktien, ETFs, Anleihen); Titel mit
+     Identitaetskonflikt (Kennzeichen ic) zeigt die Aktienseite mit Hinweis, die Startseite zeigt sie nicht. */
+  if (!entry || entry.t !== "COMMON_STOCK" || entry.ic) return [];
   const out = [], seen = new Set();
   let ordinal = 0;
   for (const proj of [doc.projectionWeekly, doc.projection]) {
     if (!proj || proj.exploreWithheld === true && !proj.consumerVisible && !proj.motiveAlternative) continue;
     for (const [role, thesis] of displayedTheses(proj)) {
-      if (!thesis || !thesis.zones || !thesis.key || seen.has(thesis.key)) continue;
+      if (!thesis || !thesis.zones || !thesis.key || seen.has(thesis.key) || !STATUS_OK.has(thesis.status)) continue;
       seen.add(thesis.key);
       if (!Object.keys(liveTiers(thesis)).length) continue;      // alle Zonen durchlaufen oder gegenlaeufig: keine Entdeckung
       out.push(cardOf({ symbol, name: entry.n || symbol, currency: entry.u, role, thesis, proj, doc, ordinal: ordinal++ }));
@@ -202,7 +205,7 @@ const readGz = (p) => JSON.parse(gunzipSync(readFileSync(p)).toString("utf8"));
 export function loadNames(root) {
   const m = new Map(), f = join(root, "quant/data/product/universe-list-v1.json.gz");
   if (!existsSync(f)) return m;
-  for (const e of readGz(f).entries || []) if (e && e.s) m.set(e.s, { n: e.n || e.s, u: e.u || null });
+  for (const e of readGz(f).entries || []) if (e && e.s) m.set(e.s, { n: e.n || e.s, u: e.u || null, t: e.t || null, ic: e.ic || null });
   return m;
 }
 

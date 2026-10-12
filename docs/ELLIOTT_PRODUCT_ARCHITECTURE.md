@@ -87,7 +87,7 @@ Karte: `id, t, n, cur, role, type, wave, dir, st, pattern, close, tiers{base|ext
 
 1. **Welche Thesen der Kunde sieht:** `displayedTheses()` aus `ti-projection.mjs` – Primär, Alternative, Hochpotenzial nur bei `consumerVisible`; Motiv-Alternative und Explore Highlights eigenständig; **Candidate Explorer nie**.
 2. **Datenstand (`data-freshness-1.0.0`):** nur `FRESH` und `DELAYED`. Zurückgehaltene Titel tragen im Shard keine Projektion. `DELAYED` zeigt die bestehende Warnung „Kursdaten verzögert · letzter Stand …“.
-3. **Wertpapierart:** nur Titel des Produktuniversums des Builds (Index-Zeile) mit Namenseintrag. Keine eigene Eignungslogik.
+3. **Wertpapierart:** nur Titel des Produktuniversums des Builds (Index-Zeile) mit Namenseintrag der Art `COMMON_STOCK` und ohne Identitätskonflikt (`ic`) in der Universumsliste – keine Vorzugsaktien, ETFs oder Anleihen. Unbekannte Thesenstatus (außer CONFIRMED/DEVELOPING) werden nicht gezeigt. Keine eigene Eignungslogik.
 4. **Kein Treffer ohne offene Zone:** Thesen, deren Zonen alle durchlaufen (`PASSED`) sind oder gegen die Thesenrichtung liegen, sind keine Entdeckung. Enthält eine Zone den Kurs, zeigt die Karte nur den Teil in Thesenrichtung; der Chart zeigt die volle Zone.
 5. **Reihenfolge:** Rolle (Primär → Alternative → Motiv-Alternative → Highlight), bestätigt vor im Aufbau, Rang im Kandidatenpool, Kontext (Trend und Marktstruktur in Thesenrichtung; Relative Stärke bewusst nicht), Kürzel. **Nie nach Projektionsgröße, nie Zukunftsdaten.**
 

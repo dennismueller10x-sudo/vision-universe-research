@@ -41,7 +41,7 @@
 
   /* ------------------------------------------------------------ Daten */
   function fetchBuffer(path) {
-    return fetch(path, { credentials: "omit" }).then(function (res) {
+    return fetch(path, { credentials: "same-origin" }).then(function (res) {
       if (!res.ok) { var e = new Error("HTTP " + res.status); e.status = res.status; throw e; }
       return res;
     });
@@ -88,6 +88,7 @@
         el("strong", { class: "el-proj-v num", text: head.text }),
         others.length ? el("span", { class: "el-proj-o", text: others.map(function (o) { return o.label + " " + o.text; }).join(" · ") }) : null
       ]) : null,
+      c.role === "EXPLORE_HIGHLIGHT" ? el("p", { class: "el-note-role", text: "Explorativ – nicht als reguläre Alternative freigegeben" }) : null,
       el("p", { class: "el-meta" }, [M.STATUS_LABEL[c.st]].concat(ctx.length ? [" · " + ctx[0]] : [])),
       c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kursdaten verzögert · letzter Stand " + M.dateDe(c.last) }) : null,
       el("span", { class: "el-cta", "aria-hidden": "true", text: "Analyse öffnen →" })
@@ -120,12 +121,12 @@
   }
   function chips(s) {
     var wrap = el("div", { class: "el-chips", role: "group", "aria-label": "Lesarten filtern" });
-    var all = el("a", { class: "el-chip" + (M.isFiltered(s) ? "" : " is-on"), href: "#/", "aria-pressed": String(!M.isFiltered(s)), text: "Alle" });
+    var all = el("a", { class: "el-chip" + (M.isFiltered(s) ? "" : " is-on"), href: "#/", "aria-current": M.isFiltered(s) ? null : "true", text: "Alle" });
     wrap.append(all);
     M.chipGroups(state.home, s).forEach(function (g) {
       wrap.append(el("span", { class: "el-chip-sep", "aria-hidden": "true" }));
       g.options.forEach(function (o) {
-        wrap.append(el("a", { class: "el-chip" + (o.active ? " is-on" : ""), href: M.buildHash(M.withChip(s, g.id, o.value)), "aria-pressed": String(o.active), title: g.label },
+        wrap.append(el("a", { class: "el-chip" + (o.active ? " is-on" : ""), href: M.buildHash(M.withChip(s, g.id, o.value)), "aria-current": o.active ? "true" : null, title: g.label },
           [o.label, el("span", { class: "el-chip-n", text: String(o.count) })]));
       });
     });
@@ -143,7 +144,7 @@
   }
 
   /* ------------------------------------------------------------ Suche */
-  var form = null, closeSearch = function () {};
+  var form = null, closeSearch = function () {}, form_focusout = null;
   document.addEventListener("click", function (ev) { if (form && !form.contains(ev.target)) closeSearch(); });
   function buildSearch(initialQ, autofocus) {
     var input = el("input", { id: "el-q", class: "el-input", type: "search", placeholder: "Aktie oder Kürzel suchen …", autocomplete: "off", autocapitalize: "off", spellcheck: "false", role: "combobox", "aria-expanded": "false", "aria-controls": "el-results", "aria-autocomplete": "list", "aria-label": "Aktie suchen", value: initialQ || "" });
@@ -187,6 +188,7 @@
         });
     }
     input.addEventListener("input", run);
+    form_focusout = function (ev) { if (form && !form.contains(ev.relatedTarget)) close(); };
     input.addEventListener("focus", function () { loadNames().catch(function () { /* beim Tippen erneut */ }); if (input.value.trim()) run(); });
     input.addEventListener("keydown", function (ev) {
       if (ev.key === "ArrowDown") { ev.preventDefault(); if (!list.hidden && hits.length) mark((active + 1) % hits.length); }
@@ -196,7 +198,7 @@
         ev.preventDefault();
         var pick = hits[active >= 0 ? active : 0], raw = input.value.trim().toUpperCase();
         if (pick) global.location.assign(M.detailHref(pick.s));
-        else if (/^[A-Z0-9.-]{1,12}$/.test(raw)) global.location.assign(M.detailHref(raw));   // Kuerzel ohne Liste: die Aktie zeigt selbst, ob sie abgedeckt ist
+        else if (/^[A-Z0-9.-]{1,12}$/.test(raw) && (!state.names || state.names.some(function (e) { return String(e.s).toUpperCase() === raw; }))) global.location.assign(M.detailHref(raw));   // Namensliste nicht geladen: Kuerzel direkt oeffnen; geladen: nur bekannte Kuerzel
       }
     });
     closeSearch = close;
@@ -205,6 +207,7 @@
       el("button", { class: "el-clear", type: "button", "aria-label": "Eingabe löschen", text: "×", onclick: function () { input.value = ""; hits = []; paint(""); input.focus(); } }),
       list, live
     ]);
+    form.addEventListener("focusout", form_focusout);
     if (autofocus) global.requestAnimationFrame(function () { input.focus(); });
     if (initialQ) run();
     return form;
@@ -264,6 +267,15 @@
     return host;
   }
 
+  /* Tastatur: nach einem Filterwechsel baut render() die Seite neu; der Fokus kehrt auf das gleiche Ziel zurueck. */
+  var focusHref = null;
+  document.addEventListener("click", function (ev) { var a = ev.target.closest && ev.target.closest(".el-chip, .el-stat, .el-all"); focusHref = a ? a.getAttribute("href") : null; });
+  function restoreFocus() {
+    if (!focusHref) return;
+    var target = [].filter.call(root.querySelectorAll(".el-chip, .el-stat, .el-all"), function (a) { return a.getAttribute("href") === focusHref; })[0] || root.querySelector(".el-row-title, .el-chip.is-on");
+    focusHref = null;
+    if (target) { if (!target.matches("a,button")) target.setAttribute("tabindex", "-1"); target.focus({ preventScroll: true }); }
+  }
   var lastKey = null;
   function render() {
     var s = M.parseHash(global.location.hash);
@@ -274,6 +286,7 @@
     root.setAttribute("aria-busy", "true");
     root.replaceChildren(hero(Object.assign({}, s, { q: q })), content(s));
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
+    restoreFocus();
     document.title = (M.isFiltered(s) ? M.filterTitle(s) + " · " : "") + "Elliott · Vision Universe®";
     root.setAttribute("aria-busy", "false"); root.dataset.ready = state.status === "loading" ? "false" : "true"; root.dataset.state = state.status;
     if (global.VUNavigation) global.VUNavigation.dock({});
