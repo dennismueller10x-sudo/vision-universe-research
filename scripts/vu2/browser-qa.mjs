@@ -152,7 +152,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(await page.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0||await page.locator(leiste).count()!==1)befund(view,width,'zwei Navigationen');
   {
    const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
-   if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
+   /* Elliott ist ein eigenes Produkt: die alten Technik-/Chartbild-Adressen enden auf #/elliott/<T> und tragen die Elliott-Leiste. */
+   const soll=['technik','elliott','chartbild'].includes(view)?['Elliott','Welle 3','Neu','Suche']:SOLL_BEREICHE;
+   if(bereiche.join('|')!==soll.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
     if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
   }

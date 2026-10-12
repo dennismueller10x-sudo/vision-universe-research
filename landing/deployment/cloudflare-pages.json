@@ -1,40 +1,23 @@
 {
-  "name": "vision-universe-landing",
+  "name": "vision-universe",
   "production_branch": "main",
   "source": {
     "type": "github",
     "config": {
       "owner": "dennismueller10x-sudo",
       "repo_name": "vision-universe-research",
-      "production_branch": "main",
-      "production_deployments_enabled": true,
-      "preview_deployment_setting": "custom",
-      "preview_branch_includes": ["feat/coming-soon-landing"],
-      "preview_branch_excludes": [],
-      "path_includes": ["landing/*"],
-      "path_excludes": [],
-      "pr_comments_enabled": false,
-      "deployments_enabled": true
+      "production_branch": "main"
     }
   },
   "build_config": {
     "root_dir": "landing",
     "build_command": "node scripts/build.mjs",
-    "destination_dir": "dist",
-    "web_analytics_tag": null,
-    "web_analytics_token": null
+    "destination_dir": "dist"
   },
   "deployment_configs": {
     "production": {
       "env_vars": {
-        "NODE_VERSION": {"type": "plain_text", "value": "22"},
-        "LANDING_PUBLICATION_MODE": {"type": "plain_text", "value": "production"}
-      }
-    },
-    "preview": {
-      "env_vars": {
-        "NODE_VERSION": {"type": "plain_text", "value": "22"},
-        "LANDING_PUBLICATION_MODE": {"type": "plain_text", "value": "preview"}
+        "NODE_VERSION": {"type": "plain_text", "value": "22"}
       }
     }
   }

@@ -230,6 +230,11 @@
   }
 
   async function home(main, ctx) {
+    /* GERUEST ZUERST. Hero, Tafel "Heute bei Quant" und die Platzhalter sind statisch; sie stehen, sobald das Woerterbuch
+       da ist. Namen und Evidenz-Ansicht laufen seit dem Routenstart (app.js) und werden dort abgewartet, wo
+       Daten gezeichnet werden. Wer Beobachtetes oder Zuletzt-Angesehenes hat, braucht die Namen schon beim Aufbau
+       ("Deine Aktien") - fuer ihn bleibt es beim Warten wie bisher. */
+    if (X.recent.list().length || X.watch.list().length) await ctx.loadNames();
     var page = el("div", { class: "q-home" });
     main.append(page);
     var productIcon = el("span", { class: "vu-product-icon vu-product-icon--hero", "aria-hidden": "true" });
@@ -293,13 +298,16 @@
         }))]));
     });
 
-    var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
+    var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
       /* Die Startseite liest nur die Radar-Projektion (Kennzahlen und
          erste Karten, ~3 KB); der ganze Radar (bis 211 KB, gemessen
          03.10.2026) bleibt der Radar-Seite. */
       null, ctx.api.getMarketRegime().catch(function () { return null; }),
       ctx.api.getStrategyProfiles().catch(function () { return null; }), screeningRows(ctx),
       ctx.api.getQuantRadarHome().catch(function () { return null; })]);
+    /* Die Abrufe laufen schon; abgewartet werden zuerst die Voraussetzungen des Zeichnens. */
+    await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]);
+    var r = await dataP;
     var setupIdx = r[0], stratIdx = r[1], regime = r[3], profiles = r[4], rowBy = r[5], radarState = r[6];
     var tiles = [], sections = [];
     var open = function (st) { return st && st.availability && st.availability.state === "AVAILABLE" && typeof st.count === "number"; };

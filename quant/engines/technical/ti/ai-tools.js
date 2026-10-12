@@ -22,6 +22,19 @@
     level: { HIGH: "Hoch", MODERATE: "Mittel", LOW: "Niedrig" }
   };
 
+  /* Datenstand-Richtlinie (ti/data-freshness.js, data-freshness-1.0.0): gleiche Worte wie im Chartbild; Test ti-freshness-texts prueft die Gleichheit */
+  function dateDe(d) { return d ? String(d).slice(8, 10) + "." + String(d).slice(5, 7) + "." + String(d).slice(0, 4) : "–"; }
+  function freshnessInfo(fr, row) {
+    if (!fr) return null;
+    var d = dateDe(fr.last || (row && row.asOf));
+    var t = fr.st === "DELAYED" ? { badge: "Kursdaten verzögert · letzter Stand " + d, title: null, text: null }
+          : fr.st === "STALE" ? { badge: "Zurückgehalten – Kursdaten veraltet", title: "Analyse zurückgehalten", text: "Die Kursreihe ist nicht aktuell genug für eine laufende technische These." }
+          : fr.st === "NON_TRADING" ? { badge: "Zurückgehalten – Titel nicht mehr gehandelt", title: "Analyse zurückgehalten", text: "Der Titel wird laut Wertpapierstamm nicht mehr gehandelt. Die Kursreihe beschreibt keine laufende Lage." }
+          : { badge: null, title: null, text: null };
+    return { state: fr.st, lastBar: fr.last || null, ageTradingDays: typeof fr.age === "number" ? fr.age : null, reference: fr.ref || null, reasonCode: fr.rc || null, badge: t.badge, title: t.title, text: t.text };
+  }
+  function isWithheld(row) { return !!(row && (row.withheld || (row.fr && (row.fr.st === "STALE" || row.fr.st === "NON_TRADING")))); }
+
   function definitions() {
     var sym = { symbol: { type: "string", required: true } };
     return [
@@ -56,6 +69,14 @@
       evidence: row && row.evidence || null, calibrated: false, isForecast: false, isProbability: false, isAdvice: false
     };
     if (!row) return { tool: "getChartbildLage", found: false, symbol: ctx.symbol || null, reason: "NOT_COVERED", status: status, disclaimer: DISCLAIMER };
+    /* Zurueckgehaltener Titel: keine laufende These, nur Zustand und Hinweis (die Analyse bleibt in der Historie, wird aber nicht als aktuell beschrieben) */
+    var fresh = freshnessInfo(row.fr, row);
+    if (isWithheld(row)) {
+      return { tool: "getChartbildLage", found: true, symbol: row.t, asOf: row.asOf || null, timeframe: row.tf || null, withheld: true, stale: true, freshness: fresh, close: num(row.close),
+               outlook: null, structure: null, confidence: null, primaryScenario: null,
+               elliott: { status: "EXPERIMENTAL", modelStatus: ew.status || "EXPERIMENTAL_STRUCTURE_MODEL", expertValidated: false, confluenceWeight: 0, engine: null, applicability: null, abstained: true, count: null, note: ELLIOTT_NOTE },
+               notice: fresh ? fresh.title + ". " + fresh.text + " Letzter Stand: " + dateDe(fresh.lastBar) + "." : "Analyse zurückgehalten.", status: status, rule: RULE, disclaimer: DISCLAIMER };
+    }
     var applicable = row.elliottApplicable === "HIGH" || row.elliottApplicable === "MODERATE" ? row.elliottApplicable : null;
     var a = row.alerts && row.alerts.levels || {};
     /* Plausibilitaet: Ein Kursniveau <= 0 oder mehr als Faktor 10 vom
@@ -72,7 +93,8 @@
     var maxAge = ctx.maxAgeDays || 28;
     var stale = !!(ctx.latestAsOf && row.asOf && (Date.parse(ctx.latestAsOf) - Date.parse(row.asOf)) > maxAge * 864e5);
     return {
-      tool: "getChartbildLage", found: true, symbol: row.t, asOf: row.asOf || null, timeframe: row.tf || null, stale: stale,
+      tool: "getChartbildLage", found: true, symbol: row.t, asOf: row.asOf || null, timeframe: row.tf || null, stale: stale || !!(fresh && fresh.state === "DELAYED"),
+      freshness: fresh, delayed: !!(fresh && fresh.state === "DELAYED"), notice: fresh && fresh.state === "DELAYED" ? fresh.badge : null,
       close: close,
       outlook: labeled(LABELS.outlook, row.outlook),
       structure: labeled(LABELS.structure, row.structure),
@@ -100,7 +122,18 @@
     var defs = {}; definitions().forEach(function (d) { defs[d.name] = d; });
     function withA(symbol, fn) {
       return Promise.resolve(access.getAnalysis(symbol)).then(function (r) {
-        return r && r.state === "AVAILABLE" ? fn(r.analysis) : { found: false, symbol: symbol, reason: (r && r.reason) || "NOT_AVAILABLE" };
+        if (r && r.state === "AVAILABLE" && r.analysis && r.analysis.withheld) {
+          var fz = r.analysis.freshness || {};
+          return { found: true, symbol: symbol, withheld: true, rule: RULE, asOf: r.analysis.asOf, freshness: { state: fz.state, lastBar: fz.lastBar, ageTradingDays: fz.ageTradingDays, reasonCode: fz.reason ? fz.reason.code : null },
+                   notice: (fz.title || "Analyse zurückgehalten") + ". " + (fz.text || "") + " Letzter Stand: " + dateDe(fz.lastBar) + ".", isProbability: false };
+        }
+        if (r && r.state === "AVAILABLE") {
+          var out = fn(r.analysis), dz = r.analysis.freshness;
+          /* verzoegerte Kursdaten: gleicher Hinweis wie im Chartbild */
+          if (out && out.found && dz && dz.state === "DELAYED") { out.freshness = { state: dz.state, lastBar: dz.lastBar, ageTradingDays: dz.ageTradingDays }; out.notice = dz.badge; }
+          return out;
+        }
+        return { found: false, symbol: symbol, reason: (r && r.reason) || "NOT_AVAILABLE" };
       });
     }
     registry.register(defs.getChartbild, function (a) {
@@ -123,7 +156,7 @@
     });
   }
 
-  var api = { VERSION: VERSION, RULE: RULE, DISCLAIMER: DISCLAIMER, ELLIOTT_NOTE: ELLIOTT_NOTE, LABELS: LABELS, definitions: definitions, register: register, situation: situation };
+  var api = { VERSION: VERSION, RULE: RULE, DISCLAIMER: DISCLAIMER, ELLIOTT_NOTE: ELLIOTT_NOTE, LABELS: LABELS, definitions: definitions, register: register, situation: situation, freshnessInfo: freshnessInfo };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.TIAITools = api; }
 })(typeof window !== "undefined" ? window : globalThis);

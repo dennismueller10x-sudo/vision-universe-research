@@ -3,6 +3,12 @@
   'use strict';
   const D=global.VUDiscover, el=global.QuantShell.el;
   function navigationAllowed(){return false;}
+  // Das Europa-Verzeichnis wird erst bei Bedarf geholt (Hash-Wechsel, eingefuegter Link, Verlauf): hier anstossen und abwarten.
+  async function ensureLoader(){
+    if(D.europePublicLoader)return;
+    for(let i=0;i<320&&!D.EuropeBootstrap;i++)await new Promise(r=>setTimeout(r,25));
+    if(D.EuropeBootstrap&&D.EuropeBootstrap.ensure){try{await D.EuropeBootstrap.ensure();}catch(_){}}
+  }
   function attachApp({ctx,route,isReady}) {
     D.App={configureEurope(options){
       if(!D.EuropeProduct)throw Error('EUROPE_PRODUCT_MODULE_REQUIRED');
@@ -10,7 +16,7 @@
       if(isReady()&&ctx.universeId==='EUROPE')route();
       return D.europeProduct;
     },async selectUniverse(universeId){
-      if(universeId==='EUROPE'&&!D.europeProduct&&D.europePublicLoader)await D.europePublicLoader.connect();
+      if(universeId==='EUROPE'&&!D.europeProduct){await ensureLoader();if(D.europePublicLoader)await D.europePublicLoader.connect();}
       if(!['US_REAL','EUROPE'].includes(universeId)||(universeId==='EUROPE'&&!D.europeProduct))throw Error('UNIVERSE_NOT_CONFIGURED');
       ctx.universeId=universeId;global.location.hash=universeId==='EUROPE'?'#/c/EUROPE/all':'#/';return route();
     },route};
@@ -33,7 +39,7 @@
     paint();root.prepend(button);
   }
   async function render(root,{parts,ctx,route,active,message}) {
-    if(!D.europeProduct&&D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}
+    if(!D.europeProduct){await ensureLoader();if(D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}}
     if(!active())return;
     const product=D.europeProduct;
     if(!product){message(root,'Europa noch nicht verfügbar','Dieses Universum ist noch nicht freigegeben.');return;}
@@ -49,6 +55,13 @@
       if(detail.freshness==='DELAYED'||detail.freshness==='STALE')states.append(el('p',{class:'dx-intraday-note',text:'Verzögerter Tagesschlusskurs vom '+detail.asOf+'. Kein Echtzeitkurs.'}));
       const analysis=root.querySelector('.dx-analyse');
       if(analysis)analysis.before(states);else root.append(states);
+      const facts=detail.cardFundamentals||{metrics:[]},basis=el('section',{class:'dx-chapter','aria-label':'Fundamentale Basisinformationen'},[el('h2',{text:'Fundamentale Basisinformationen'})]);
+      if(facts.metrics&&facts.metrics.length){
+        const labels={revenue:'Umsatz',netIncome:'Gewinn',operatingCashFlow:'Operativer Cashflow'};
+        facts.metrics.forEach(m=>{const row=el('p',{},[document.createTextNode(labels[m.metric]+' · Geschäftsjahr '+m.fiscalYear+' · '+new Intl.NumberFormat('de-DE',{style:'currency',currency:m.currency,notation:'compact',maximumFractionDigits:1}).format(m.value)+' · Konzernzahlen · '),el('a',{href:m.sourceDocument,text:m.source+'-Quelle',target:'_blank',rel:'noopener noreferrer'})]);basis.append(row);});
+        basis.append(el('p',{text:'Basisinformationen zum Unternehmen. Keine Bewertung oder Quant-Freigabe.'}));
+      }else basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));
+      states.after(basis);
       watchButton(root,id,product,detail.symbol);document.title=(detail.companyName||detail.symbol)+' — Discover';
     }else if(parts[0]==='watchlist'){
       document.title='Watchlist — Discover — Vision Universe®';

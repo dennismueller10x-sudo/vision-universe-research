@@ -4,29 +4,67 @@ name: Discover Im Blick (stuendlich waehrend der Sitzung)
 # Die Eingangsflaeche "Im Blick" kommt aus dem Abendlauf (Schlusskurse).
 # Waehrend der Sitzung schreibt der Intraday-Taktgeber alle fuenf Minuten
 # Kurse fuer die Titel auf Discover-Flaechen. Dieser Workflow rechnet daraus
-# stuendlich die Auswahl neu (scripts/discover/build-im-blick-live.mjs):
+# ungefaehr alle zwei Stunden die Auswahl neu
+# (scripts/discover/build-im-blick-live.mjs):
 #
 #   - keine Anbieteranfrage, kein Schluessel: gelesen werden nur committete
 #     Snapshots (quant/data/market/intraday) und die EOD-Basis
 #     (discover/data/im-blick/basis-US_REAL.json)
-#   - geschrieben wird genau eine Datei: discover/live/im-blick-US_REAL.json
+#   - geschrieben werden discover/live/im-blick-US_REAL.json (die Auswahl)
+#     und discover/live/monitor-US_REAL.json (Plan, Lauf, Erfolg, Alter)
 #   - intraday gibt es kein Schlusshoch, keinen Ausbruch und kein Volumen;
 #     die Karte sagt "im Tagesverlauf, Stand HH:MM, unbestaetigt"
 #   - nach dem Abendlauf gilt wieder die Schlusskurs-Auswahl (EOD_CURRENT)
 #
-# Zeitplan (UTC): stuendlich zur Minute 17 von 13 bis 21 Uhr, Mo-Fr. Das
-# deckt 09:30-16:00 New York in Sommer- und Winterzeit; ausserhalb der
-# Sitzung schreibt das Skript einen ehrlichen Zustand statt einer Auswahl.
+# DER LAUF IST EINE FRAGE, KEIN TAKT (seit 12.10.2026)
+#
+# Am 12.10.2026 legte GitHub fuer den frueheren Stundenplan dieses Workflows
+# keinen einzigen Lauf an (repo-weit 30 von 110 faelligen Zeitplan-Laeufen in
+# 39 Stunden, die angelegten bis zu 9 Stunden zu spaet; workflow_dispatch und
+# Push funktionierten). Deshalb haengt die Aktualisierung nicht mehr an einem
+# pünktlichen Ausloeser:
+#
+#   Slots (discover/engines/refresh-plan.js): Sitzungsbeginn + 90/210/330 Min.
+#   und Schluss + 20 Min., aus dem Boersenkalender (Ortszeit New York:
+#   11:00, 13:00, 15:00, 16:20; verkuerzte Tage 11:00 und Schluss + 20).
+#   Jeder Lauf ermittelt den zuletzt faelligen Slot und rechnet nur, wenn
+#   dessen Ergebnis noch nicht veroeffentlicht ist - sonst endet er in
+#   Sekunden ohne Aenderung. Ein verspaeteter, doppelter oder zu frueher
+#   Ausloeser ist damit harmlos, und jeder spaetere holt einen verpassten
+#   Termin nach.
+#
+#   Ausloeser (unabhaengig voneinander, alle gleichwertig):
+#     1. Cloudflare-Wecker (worker-waker/): alle 30 Minuten (Minute 5/35,
+#        15-21 UTC, Mo-Fr). Steht ausserhalb von GitHub, weckt auch den
+#        Intraday-Taktgeber zuverlaessig.
+#     2. GitHub-Zeitplan: Minute 27 von 15 bis 21 UTC, Mo-Fr. Deckt
+#        Sommer- (15/17/19/20:20 UTC) und Winterzeit (16/18/20/21:20 UTC)
+#        ab; die Zeit ausserhalb eines Slots ist ein Leerlauf. Nur noch
+#        Rueckfall - er kann ausfallen oder Stunden spaeter kommen.
+#     3. workflow_dispatch von Hand (force erzwingt eine Neuberechnung).
+#
+# KEINE ENDLOSSCHLEIFE, KEIN DAUERLAEUFER: ein Lauf dauert 30 bis 90 Sekunden.
 # =============================================================================
 
 on:
   schedule:
-    - cron: '17 13-21 * * 1-5'
+    - cron: '27 15-21 * * 1-5'
   workflow_dispatch:
+    inputs:
+      source:
+        description: 'Wer stoesst an (nur zur Beobachtung): cloudflare-waker | manual'
+        type: string
+        default: 'manual'
+      force:
+        description: 'Neuberechnung erzwingen, auch wenn der faellige Slot veroeffentlicht ist'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
+# Je Zweig eine Gruppe, nie abbrechen: ein laufender Lauf wird fertig, ein
+# wartender (hoechstens einer) rechnet danach gegen den dann aktuellen Stand.
 concurrency:
   group: discover-im-blick-live-${{ github.ref_name }}
   cancel-in-progress: false
@@ -43,10 +81,17 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Im Blick aus den 5-Minuten-Kursen neu rechnen
-        run: node scripts/discover/build-im-blick-live.mjs
+      - name: Im Blick neu rechnen, wenn der faellige Slot noch offen ist
+        env:
+          SOURCE: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.source }}
+          FORCE: ${{ inputs.force && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          args=(--source "${SOURCE:-unbekannt}")
+          if [ "${FORCE}" = "true" ]; then args+=(--force); fi
+          node scripts/discover/build-im-blick-live.mjs "${args[@]}"
 
-      - name: Commit und Push
+      - name: Commit und Push (nur bei Aenderung)
         run: |
           set -euo pipefail
           git config user.name "vision-universe-bot"
@@ -56,15 +101,13 @@ jobs:
             echo "Keine Aenderung."
             exit 0
           fi
-          status=$(node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+(l.asOfLocal||"")+" "+l.stocks.map(s=>s.symbol).join(","))')
+          status=$(node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+((l.slot&&l.slot.id)||"")+" "+(l.asOfLocal||"")+" "+l.stocks.map(s=>s.symbol).join(","))')
           git commit -m "Discover Im Blick live: ${status}"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
-      - name: Zusammenfassung
-        if: always()
-        run: |
-          {
-            echo '### Discover Im Blick (Intraday)'
-            echo ''
-            node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log("| Feld | Wert |\n|---|---|");for(const k of ["status","sessionDate","asOfLocal","eodAsOf","reason"])console.log("| "+k+" | "+(l[k]??"-")+" |");console.log("| Abdeckung | "+JSON.stringify(l.coverage)+" |");console.log("| Auswahl | "+l.stocks.map(s=>s.symbol+" "+s.imBlick.score.toFixed(0)).join(", ")+" |")' || echo 'Keine Ausgabe.'
-          } >> "$GITHUB_STEP_SUMMARY"
+      # Selbstpruefung am Ende: stimmt das Ergebnis jetzt mit dem faelligen Slot
+      # ueberein? Nur ein Hinweis (continue-on-error) - rot wird der Lauf nicht,
+      # den Alarm gibt der Freshness-Monitor, unabhaengig von diesem Workflow.
+      - name: Selbstpruefung
+        continue-on-error: true
+        run: node scripts/discover/check-im-blick-live.mjs --root .

@@ -1,12 +1,45 @@
 {
-  "checkedAt": "2026-10-09",
-  "targetHosting": "Cloudflare Pages, separate Git integration from same repository",
-  "projectCreated": false,
-  "pagesDevUrl": null,
-  "domainsAttached": [],
-  "dnsChanges": [],
+  "checkedAt": "2026-10-12",
+  "projectName": "vision-universe",
+  "projectCreatedBy": "manual owner setup; verified with read-only API",
+  "pagesDevUrl": "https://vision-universe.pages.dev",
+  "canonicalUrl": "https://www.visionuniverse.de/",
+  "domains": {
+    "www.visionuniverse.de": {
+      "ownerReportedStatus": "Active",
+      "pagesInventoryIncludesDomain": true,
+      "httpsStatus": 200
+    },
+    "visionuniverse.de": {
+      "httpsStatus": 301,
+      "redirectTarget": "https://www.visionuniverse.de/",
+      "pathAndQueryVerified": true,
+      "pagesInventoryIncludesDomain": false
+    }
+  },
+  "git": {
+    "owner": "dennismueller10x-sudo",
+    "repository": "vision-universe-research",
+    "productionBranch": "main",
+    "rootDirectory": "landing",
+    "buildCommand": "node scripts/build.mjs",
+    "outputDirectory": "dist",
+    "nodeVersion": {
+      "value": "22",
+      "evidence": "Read-only Cloudflare project/environment audit on 2026-10-12, major 22 confirmed"
+    },
+    "successfulPagesCheckCommit": "f688d8cc4a9a08735fd35e5def9eb1ba2ba1f76f",
+    "successfulPagesCheckId": 114236632634
+  },
+  "changesByAgent": {
+    "projectsCreated": 0,
+    "providerConfigurationChanges": 0,
+    "dnsChanges": [],
+    "brevoChanges": 0,
+    "shopifySubscriptionChanges": 0
+  },
   "accessAudit": {
-    "run": 37958646123,
+    "run": 38060753594,
     "pagesRead": "PASS",
     "zoneRead": "PASS",
     "activeZoneInSameAccount": true,
@@ -14,30 +47,87 @@
       "status": 403,
       "code": 10000
     },
-    "completeDnsBaseline": false
-  },
-  "projectAttempt": {
-    "run": 37959370219,
-    "status": 401,
-    "code": 8000011,
-    "githubAuthorization": "NOT_CONFIRMED",
-    "pagesWrite": "NOT_CONFIRMED"
+    "completeDnsBaseline": false,
+    "pagesDnsRedirectWritePermissions": "NOT_TESTED; manual setup does not prove API write permission"
   },
   "research": {
+    "hosting": "GitHub Pages",
     "githubPagesCname": "research.visionuniverse.de",
-    "workflow": "pages-release.yml unchanged",
-    "httpsStatus": 200
+    "httpsStatus": 200,
+    "accessGatePresent": true,
+    "homeResponseSha256": "b57a0f8056d35c09ab832675978a668271e397939e074b6d188828afce0a500d"
   },
-  "newsletter": "BLOCKED, no forms/lists/submission or Brevo mutation",
-  "publicationGate": "Production blocked until the concrete Cloudflare privacy text is verified and approved",
-  "coreBaseline": {
-    "mainCommit": "5d6aa260558fdd0422d07b26038cc383142c86ee",
-    "newsTest": "REPRODUCED_ON_MAIN",
-    "errors": [
-      "SPCX / TMUS / VZ / T: NOT_IN_COMPANY_MASTER",
-      "DVN / CRGY: NOT_IN_COMPANY_MASTER",
-      "SLYG: NOT_IN_COMPANY_MASTER"
-    ],
-    "gatesChanged": false
+  "protectedPublicDnsSample": {
+    "queries": 14,
+    "unchangedDuringRelease": 14,
+    "completeZoneExport": false
+  },
+  "newsletter": "BLOCKED; no action, disabled controls, no test submission or Brevo mutation",
+  "publication": {
+    "publiclyReachable": true,
+    "observedBuildOutputMode": "preview",
+    "metaRobots": "noindex, nofollow",
+    "headerRobots": "noindex, nofollow",
+    "robotsTxt": "Disallow: /",
+    "approvedPrivacyLive": false,
+    "privacyLiveTitle": "Datenschutz – Vision Universe · Entwurf Coming soon",
+    "providerPublicationModeVariable": "Absent in both environments; default preview output confirmed",
+    "productionGate": "Still enforced only when production mode is selected; not a domain publication guard"
+  },
+  "browser": {
+    "desktopHeight": 1191,
+    "iphoneHeight": 1684,
+    "horizontalOverflow": false,
+    "axeViolations": 0,
+    "researchStyleGroupsMatching": 17,
+    "networkErrorsPresent": false,
+    "networkFindings": [],
+    "device": "Chromium iPhone viewport, not physical Safari"
+  },
+  "openPoints": [
+    "Verify account-specific Cloudflare/mail privacy details before final production/indexing approval",
+    "Subscription rules and app/payment infrastructure pending owner details",
+    "DNS-read permission still required for complete authenticated zone/mail inventory",
+    "Build watch paths and preview branch policy remain unverified"
+  ],
+  "evidenceDirectory": "release-2026-10-12",
+  "legalCopyUpdate": {
+    "date": "2026-10-12",
+    "originalSources": "All five legal texts received and preserved; attachment bytes unchanged",
+    "ownerClarification": "Future app/web app with free and paid subscription variants; old PDF shop text requires adaptation",
+    "imprint": "Adapted coming-soon draft; original full HTML and uploaded text preserved",
+    "privacy": "Full original received; adapted Cloudflare/coming-soon draft with 16 sections; account-specific details still unconfirmed",
+    "futureAppTerms": "AGB, withdrawal and access drafts outside public build; subscription/payment decisions pending",
+    "currentLegalDraftsMarked": true,
+    "publishedByThisUpdate": true,
+    "source": "../legal-source/source.json",
+    "review": "../legal-drafts/README.md"
+  },
+  "ownerReleaseAuthorization": {
+    "date": "2026-10-12",
+    "scope": "Merge and publish prepared coming-soon revision through existing Git integration",
+    "releaseMode": "Public preview; noindex and legal draft markers retained",
+    "subscriptionTerms": "Not published; commercial details pending",
+    "newsletter": "BLOCKED",
+    "providerOrDnsMutations": false,
+    "finalDeploymentVerification": "PASS: public HTTPS, redirects, browser layout/accessibility, protected public DNS sample"
+  },
+  "release": {
+    "commit": "f688d8cc4a9a08735fd35e5def9eb1ba2ba1f76f",
+    "pullRequest": 577,
+    "merged": true,
+    "live": true,
+    "verifiedUrl": "https://www.visionuniverse.de/",
+    "initialDirectDeploymentUrl": "https://aa273d54.vision-universe.pages.dev",
+    "successfulGitDeploymentUrl": "https://a39a1a90.vision-universe.pages.dev",
+    "gitDeploymentStatus": "success after retry",
+    "existingProjectGitSource": "github",
+    "automaticProductionEnabled": true,
+    "directDeploymentRun": 38256451609,
+    "gitConfigurationAndRetryRun": 38257898959,
+    "existingProjectSettingsChanged": false,
+    "dnsChanged": false,
+    "contentMode": "Public preview; noindex, legal drafts, disabled newsletter",
+    "evidenceDirectory": "release-2026-10-12"
   }
 }

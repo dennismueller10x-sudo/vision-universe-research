@@ -229,7 +229,7 @@
         ticker: l.ticker || s.ticker || null, providerSymbol: l.providerSymbol || null, mic: l.mic || null,
         exchange: l.exchange || null, country: (l.identityAdmission && l.identityAdmission.issuerCountry) || l.country || null,
         issuerCountry: l.identityAdmission && l.identityAdmission.issuerCountry || null, exchangeCountry:l.exchangeCountry || l.country || null, currency: l.currency || null,
-        isin: s.isin || null, aliases: clone(s.aliases || []), provenance: clone(l.provenance || {}), contract: CONTRACT_VERSION };
+        isin: s.isin || null, aliases: clone(s.aliases || []), cardFundamentals: clone(s.cardFundamentals || {status:'MISSING',metrics:[],marketCap:null}), homeCardQuality: clone(s.homeCardQuality || {}), provenance: clone(l.provenance || {}), contract: CONTRACT_VERSION };
     }
     function readHit(ref, scope) {
       if (!gate(scope)) return { error: unavailable("DISPLAY_RIGHTS_UNCONFIRMED", source) };
@@ -247,7 +247,7 @@
       if (!resolved) return unavailable("CANONICAL_ID_NOT_ACCEPTED", source);
       var r = { hit: resolved };
       var h = r.hit, state = readiness(h.security, h.listing, opts.rights, opts.now), o = seriesOptions || {};
-      if (state.CHART === "CHART_BLOCKED") return unavailable("CHART_BLOCKED", source);
+      if (state.CHART === "CHART_BLOCKED" && !(h.listing.discoverChart && discoverEligibility && discoverEligibility.chart(h.security,h.listing,opts.now,o.range||'1Y').ready)) return unavailable("CHART_BLOCKED", source);
       var range = o.range || "1Y", basis = o.basis || state.discoverPriceBasis || state.priceBasis;
       var chartProof = h.listing.discoverChart;
       if (chartProof && (!discoverEligibility || !discoverEligibility.chart(h.security,h.listing,opts.now,range).ready)) return unavailable("CHART_RANGE_NOT_VALIDATED",source);
@@ -296,13 +296,32 @@
         }
         if (!discoverEligibility.chart(h.security,h.listing,opts.now,range).ready) return unavailable("CLOSE_CHART_PROOF_EXPIRED_DURING_LOAD",source);
       }
+      var displayPolicy=h.listing.discoverDisplay,displayWindow=null,displaySegments=chartProof?chartProof.segments||s.segments:null;
+      if(displayPolicy){
+        var window=displayPolicy.ranges&&displayPolicy.ranges[range];
+        var continuityV2=displayPolicy.version==='vu-discover-display-policy-2';
+        if((!continuityV2&&displayPolicy.version!=='vu-discover-display-policy-1')||!window||window.version!==(continuityV2?'vu-discover-display-window-2':'vu-discover-display-window-1')||!chartProof||window.sourcePointsSha256!==chartProof.pointsSha256||window.sourceSegmentsSha256!==chartProof.segmentsSha256||window.calendarSha256!==chartProof.calendarSourceSha256||window.truncated!==(window.safeHistoryStart!==points[0][0])||!['CLEAN','MINOR_GAPS','MAJOR_GAPS','BROKEN'].includes(window.visualQualityStatus)||!validDate(window.safeHistoryStart)||!points.some(function(p){return p[0]===window.safeHistoryStart;}))return unavailable('DISPLAY_WINDOW_PROOF_MISMATCH',source);
+        displayWindow=clone(window);displayWindow.originalFirst=points[0][0];
+        points=points.filter(function(p){return p[0]>=window.safeHistoryStart;});
+        displaySegments=displaySegments.map(function(segment){return segment.filter(function(p){return p[0]>=window.safeHistoryStart;});}).filter(function(segment){return segment.length;});
+        if(continuityV2){
+          var starts=window.segmentStartDates;
+          if(!Array.isArray(starts)||!starts.length||starts[0]!==points[0][0]||starts.some(function(d,i){return !validDate(d)||i>0&&d<=starts[i-1]||!points.some(function(p){return p[0]===d;});})||!window.displaySegmentsSha256)return unavailable('DISPLAY_SEGMENT_PROOF_MISMATCH',source);
+          var boundaries=new Set(starts);displaySegments=[];
+          points.forEach(function(p){if(!displaySegments.length||boundaries.has(p[0]))displaySegments.push([]);displaySegments[displaySegments.length-1].push(p);});
+          var displayDigest=await globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(displaySegments)));
+          var displayHash=Array.from(new Uint8Array(displayDigest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+          if(displayHash!==window.displaySegmentsSha256)return unavailable('DISPLAY_SEGMENT_INTEGRITY_MISMATCH',source);
+        }
+        if(points.length<20||Date.parse(points[points.length-1][0])-Date.parse(points[0][0])<30*86400000)return unavailable('INSUFFICIENT_SAFE_DISPLAY_WINDOW',source);
+      }
       return available(source, points[points.length - 1][0], {
         securityId: request.securityId, listingId: request.listingId, ticker: h.listing.ticker || null,
         grain: s.grain || "daily", range: range, basis: basis, currency: s.currency, points: clone(points),
         from: points[0][0], to: points[points.length - 1][0], adjustmentStatus: state.adjustmentStatus,
         freshness: chartProof ? state.discoverFreshness : state.LATEST_EOD, sessionLag: chartProof ? state.sessionLag : null,
-        chartStatus: state.CHART, quoteUnit: chartProof ? chartProof.quoteUnit : s.currency,
-        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready;}) : [range], segments: chartProof ? clone(chartProof.segments || s.segments) : null,
+        chartStatus: chartProof ? discoverEligibility.chart(h.security,h.listing,opts.now,range).status : state.CHART, quoteUnit: chartProof ? chartProof.quoteUnit : s.currency,
+        availableRanges: h.listing.discoverChart && discoverEligibility ? ["1Y","3Y","5Y","10Y","MAX"].filter(function(r){var years={'1Y':366,'3Y':1096,'5Y':1827,'10Y':3653};return discoverEligibility.chart(h.security,h.listing,opts.now,r).ready&&(!displayWindow||r==='MAX'||Date.parse(points[points.length-1][0])-Date.parse(points[0][0])>=years[r]*86400000*.95);}) : [range], segments: displaySegments ? clone(displaySegments) : null, displayWindow:displayWindow,
         sessionContinuity: s.sessionContinuity || "UNKNOWN", provenance: clone(s.provenance)
       });
     }

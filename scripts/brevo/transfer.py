@@ -63,8 +63,10 @@ def encode(data):
 
 
 def decode(encoded):
-    if not encoded or len(encoded) > MAX_SECRET_BYTES:
-        raise Blocked("Temporäres Import-Secret fehlt oder ist zu groß.")
+    if not encoded:
+        raise Blocked("Temporäres Import-Secret fehlt.")
+    if len(encoded) > MAX_SECRET_BYTES:
+        raise Blocked("Temporäres Import-Secret überschreitet das Übergabelimit.")
     try:
         compressed = base64.b64decode(encoded, validate=True)
         with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:
@@ -91,11 +93,42 @@ def run(operation):
     if operation == "import-preview":
         return {**preflight(client, data), "contacts_imported": 0, "emails_sent": 0,
                 "automation_review_required": True}
+    if data.get("import_policy") != "subscribers_new_or_unchanged_v1" or any(
+            r["attributes"]["VU_EMAIL_CONSENT"] != "subscribed" for r in data["records"]):
+        raise Blocked("Aktueller Bestandsimport erlaubt nur bestätigte Newsletter-/Testkandidaten; andere Kontakte ausgeschlossen.")
     try:
-        review = json.loads(os.environ.pop("BREVO_IMPORT_REVIEW", ""))
+        raw_review = os.environ.pop("BREVO_IMPORT_REVIEW", "")
+        if raw_review:
+            review = json.loads(raw_review)
+        else:
+            review = reviewed_dispatch(data, lists)
+    except Blocked:
+        raise
     except Exception:
         raise Blocked("Temporärer privater Automationsprüfbericht fehlt.") from None
     return {**import_contacts(client, data, review, protected_actions=True), "emails_sent": 0}
+
+
+def reviewed_dispatch(data, lists):
+    """Explicit attestation from actual private evidence; never infer it from audit."""
+    from prepare import prepared_digest
+    import datetime as dt
+    if (os.environ.get("BREVO_AUTOMATIONS_CHECKED") != "true" or
+            os.environ.get("BREVO_IMPORT_TRIGGERS_EXCLUDED") != "true" or
+            os.environ.get("BREVO_REVIEW_PREPARED_SHA256") != prepared_digest(data) or
+            not re.fullmatch(r"[a-f0-9]{64}", os.environ.get("BREVO_AUTOMATION_EVIDENCE_SHA256", ""))):
+        raise Blocked("Tatsächlicher Automationsnachweis oder Bindung an private Importdaten fehlt.")
+    stamp = os.environ.get("BREVO_AUTOMATIONS_REVIEWED_AT", "")
+    try:
+        age = dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(stamp)
+        if not dt.timedelta(0) <= age <= dt.timedelta(hours=24): raise ValueError()
+    except Exception:
+        raise Blocked("Automationsnachweis muss tatsächlich geprüft und höchstens 24 Stunden alt sein.") from None
+    return {"reviewed_at":stamp, "source_sha256":data["source_sha256"],
+            "prepared_sha256":prepared_digest(data), "list_ids":lists,
+            "all_active_automations_checked":True,"no_contact_create_update_or_list_entry_triggers":True,
+            "reviewer":os.environ.get("GITHUB_ACTOR"),
+            "evidence_note":"private evidence SHA256: "+os.environ["BREVO_AUTOMATION_EVIDENCE_SHA256"]}
 
 
 def main():

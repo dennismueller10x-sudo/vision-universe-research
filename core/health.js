@@ -177,6 +177,21 @@
      vorliegen. Genau der Zustand vom 03.10.2026 (Verzeichnis stand auf
      14:25 New York, "laeuft", nach Schluss nie vervollstaendigt) war
      vorher nur im Freshness-Monitor sichtbar. */
+  /* Ist der Tagesverlauf nach Schluss unvollstaendig? Massgeblich ist
+     fetchedAfterClose (nach dem Schluss geholt, mit der Universumsschwelle
+     des Erzeugers, ingest-intraday.mjs): regularComplete verlangt von JEDEM
+     Titel einen Kurs im letzten Slot und bleibt fuer immer false, sobald ein
+     illiquider Titel dort nicht gehandelt hat (09.10.2026: 4.512 von 5.049,
+     nach Schluss geholt 5.045). Dieselbe Lesart wie freshness.js und
+     source-state.js; ohne das Feld (aeltere Verzeichnisse) gilt weiter
+     regularComplete. Fehlt der Schluss wirklich (fetchedAfterClose false),
+     bleibt es STALE. */
+  function sessionNotCompleted(ds) {
+    if (ds.fetchedAfterClose === true) return false;
+    if (ds.fetchedAfterClose === false) return true;
+    return ds.regularComplete === false;
+  }
+
   function assessIntraday(out, data, f, ctx) {
     var res = ctx.resolution || {};
     var ds = data.dataSession || null;
@@ -199,7 +214,7 @@
     out.lagSessions = lagSessions(ds.sessionDate, expected, ctx);
     if (expected && ds.sessionDate < expected) {
       out.status = worse(out.status, "STALE"); out.reason = "BEHIND_" + out.lagSessions + "_SESSIONS";
-    } else if (f.closedRequireComplete && ds.sessionDate === expected && ds.regularComplete === false) {
+    } else if (f.closedRequireComplete && ds.sessionDate === expected && sessionNotCompleted(ds)) {
       out.status = worse(out.status, "STALE"); out.reason = "SESSION_NOT_COMPLETED";
       out.warnings.push("Tagesverlauf " + ds.sessionDate + " endet " + (ds.asOfLocal || "?") + " New York - Schluss fehlt.");
     }

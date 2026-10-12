@@ -35,7 +35,7 @@ import {
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
-  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName
+  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName, nativeEuropeLogoMembers
 } from "./company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -229,6 +229,8 @@ const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
   .map((e) => ({ symbol: e.s, name: e.n || e.s, cik: cikOf.get(e.s) || null }));
+const nativeMembers=nativeEuropeLogoMembers(readJson(join(root,'discover/data/europe/catalog.json'),{}));
+for(const member of nativeMembers)if(!universe.some(x=>x.symbol===member.symbol)&&!exclusions[member.symbol]&&(!ONLY||ONLY.has(member.symbol)))universe.push(member);
 console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen)`);
 
 /* ------------------------------------------------ Wichtige Indizes */
@@ -623,6 +625,7 @@ for (const c of Object.values(credits)) if (!c.wide) delete c.wide;
    Oberflaeche (index.json) kennt sie noch nicht. So erscheint kein
    ungesehenes Bild neben einer Aktie (Unterschriften, Partnerlogos, Fotos). */
 const FREIGABE = readJson(join(root, "discover", "config", "logo-reviewed.json"), { symbols: {} }).symbols || {};
+for(const member of nativeMembers)if(credits[member.symbol]&&credits[member.symbol].source==='WEBSITE')credits[member.symbol].nativeIssuerBinding=member.nativeIssuerBinding;
 const wartend = [];
 for (const [sym, c] of Object.entries(credits)) {
   if (files[sym] && FREIGABE[sym] !== c.sha1) {

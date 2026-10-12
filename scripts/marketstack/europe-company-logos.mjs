@@ -37,7 +37,7 @@ export function readCentralLogoRegistry(root = repositoryRoot) {
   }
   return { ...documents, sources, root };
 }
-function inspectAsset(registry, key) {
+export function inspectAsset(registry, key) {
   const path = registry.index.files?.[key], credit = registry.credits.credits?.[key];
   if (registry.exclusions.symbols?.[key]) return { reason: 'CENTRAL_LOGO_EXCLUDED' };
   if (!path || !credit) return { reason: 'CENTRAL_ASSET_NOT_PUBLISHED' };

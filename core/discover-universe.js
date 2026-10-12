@@ -13,5 +13,16 @@
  function eligible(doc,authority,now){if(doc.region!=='EUROPE')return true;if(!authority||authority.catalogSha256!==doc.catalogSha256||!authority.allowed)return false;var c=authority.calendar&&authority.calendar.calendars[doc.mic],ms=Date.parse(now||new Date().toISOString());if(!Number.isFinite(ms))return false;var today=new Date(ms).toISOString().slice(0,10);if(!c||c.mic!==doc.mic||c.coverageFrom>today||c.coverageTo<today||!Array.isArray(c.sessions))return false;var state=sessionState(c,ms);if(!state.dates.has(doc.asOf)||!state.completed.length||!Number.isFinite(state.until)||state.completed[state.completed.length-1]<doc.asOf)return false;if(!state.lags.has(doc.asOf))state.lags.set(doc.asOf,state.completed.filter(function(d){return d>doc.asOf;}).length);return state.lags.get(doc.asOf)<=3;}
 
  function search(index,query,options){var o=options||{},q=normalize(query),seen=new Set(),hits=[];if(!q)return[];(index.entries||[]).forEach(function(d){if(!d.securityId||!d.listingId||seen.has(d.securityId)||!eligible(d,o.authority,o.now))return;var rank=score(d,q);if(rank===null)return;seen.add(d.securityId);hits.push({doc:d,rank:rank});});hits.sort(function(a,b){return a.rank-b.rank||Number(!!b.doc.homePrimary)-Number(!!a.doc.homePrimary)||a.doc.n.localeCompare(b.doc.n,'de')||a.doc.securityId.localeCompare(b.doc.securityId);});return hits.slice(0,o.limit||14).map(function(h){return h.doc;});}
- return {normalize:normalize,companyKey:companyKey,search:search,eligible:eligible};
+ function homeCardQuality(c){var hard=[],limited=[],p=c.price&&c.price.value,series=c.priceSeries||{},points=series.points||[],visual=c.visualQualityStatus||c.homeCardQuality&&c.homeCardQuality.visualQualityStatus;
+  if(!c.companyName||!c.symbol||!c.securityId)hard.push('IDENTITY_REQUIRED');
+  if(!(typeof p==='number'&&Number.isFinite(p)&&p>0)||!c.asOf)hard.push('LATEST_PRICE_REQUIRED');
+  if(['MAJOR_GAPS','BROKEN'].includes(visual))hard.push('CHART_CONTINUITY_BLOCKED');
+  if(c.region==='EUROPE'&&!['CLEAN','MINOR_GAPS'].includes(visual))hard.push('CHART_CONTINUITY_EVIDENCE_REQUIRED');
+  if(!points.length&&!series.path)hard.push('REAL_CHART_REQUIRED');
+  if(c.logoQuality==='LOGO_SUSPECT'||c.logoQuality==='LOGO_MISSING')limited.push('SAFE_LOGO_OR_FALLBACK_REQUIRED');
+  if(!c.plain?.zahl&&!Number.isFinite(c.metrics?.return12m?.value)&&!(points.length>1&&c.performanceComparable===true))limited.push('MEANINGFUL_PERFORMANCE_REQUIRED');
+  if(!c.was&&!c.sector&&!c.plain?.story&&!c.cardFundamentals?.metrics?.length)limited.push('ADDITIONAL_CONTENT_REQUIRED');
+  return {status:hard.length?'HOME_CARD_BLOCKED':limited.length?'HOME_CARD_LIMITED':'HOME_CARD_READY',reasonCodes:hard.concat(limited),visualQualityStatus:visual||'EXISTING_US_CANONICAL_CHART'};
+ }
+ return {normalize:normalize,companyKey:companyKey,search:search,eligible:eligible,homeCardQuality:homeCardQuality};
 });

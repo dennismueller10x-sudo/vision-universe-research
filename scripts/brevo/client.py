@@ -132,10 +132,23 @@ def audit(client):
         raise Blocked("Kontaktinventar enthält keinen verlässlichen Zählwert.")
     domain_configs = [client.call("GET", "/senders/domains/" + urllib.parse.quote(d["domain_name"], safe=""))
                       for d in domains if isinstance(d.get("domain_name"), str)]
+    lists = structures(client)
+    list_counts = {}
+    for name, list_id in lists.items():
+        offset = 0
+        while True:
+            page = client.call("GET", "/contacts/lists/%d/contacts?limit=500&offset=%d" % (list_id, offset))
+            contacts = page.get("contacts")
+            if not isinstance(contacts, list):
+                raise Blocked("Listen-Kontaktzählung ist unvollständig.")
+            offset += len(contacts)
+            if len(contacts) < 500:
+                break
+        list_counts[name] = offset
     # Only allowlisted aggregate information may enter public Actions logs.
     plans = {p.get("type") for p in account.get("plan", [])}
     return {"plan_types": sorted(p if p in ("free", "payAsYouGo", "subscription", "sms") else "unknown" for p in plans),
-            "vu_lists": structures(client), "segments_count": len(segments),
+            "vu_lists": lists, "vu_list_contact_counts": list_counts, "segments_count": len(segments),
             "existing_contacts_count": count,
             "vu_attributes_present": sum(any(a.get("name") == n for a in attrs) for n in ATTRS),
             "vu_attribute_conflicts": sum(any(a.get("name") == n and (a.get("type") != t or a.get("category") != "normal") for a in attrs) for n, t in ATTRS.items()),

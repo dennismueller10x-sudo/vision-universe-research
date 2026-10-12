@@ -60,7 +60,7 @@
     var events = [], skipped = 0;
     next.rows.forEach(function (r) {
       var p0 = byT[r.t];
-      if (!p0) return;                                   // neuer oder wieder aufgenommener Titel: Ausgangszustand, kein Ereignis
+      if (!p0 || p0.withheld || r.withheld) return;      // neuer, wieder aufgenommener oder zurueckgehaltener Titel (Datenstand-Richtlinie): Ausgangszustand, kein Ereignis
       if (p0.asOf && r.asOf && p0.asOf === r.asOf) { skipped++; return; }
       diff(p0 ? p0.alerts : null, r.alerts, { symbol: r.t, asOf: r.asOf }).forEach(function (e) { events.push(e); });
     });

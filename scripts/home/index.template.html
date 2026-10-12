@@ -65,7 +65,7 @@
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z" opacity=".7"/></symbol>
 %%HUD_SYMBOLS%%
-  <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
+  <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient><radialGradient id="dot-glow"><stop offset="0" stop-color="#c8f531" stop-opacity=".95"/><stop offset=".35" stop-color="#c8f531" stop-opacity=".45"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></radialGradient></defs>
   <!-- NVIDIA: Tageskurse der letzten 270 Handelstage, SMA 50/200, Elliott-Zählung, Setup-Zonen -->
   <symbol id="chart-nvda" viewBox="0 -14 690 298">
     %%CHART_BODY%%
@@ -162,7 +162,7 @@
 </section>
 
 <!-- ============ APP-MODULE + SCHAUBILD ============ -->
-<section class="section" id="app-module">
+<section class="section" id="app-module" data-cv>
   <div class="shell">
     <div class="section-head">
       <div>
@@ -201,7 +201,7 @@
         <a class="module" data-mod="quant" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
         <a class="module" data-mod="screener" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
         <a class="module" data-mod="super" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
-        <a class="module" data-mod="elliott" href="/quant/#/aktie/NVDA/chartbild?ansicht=profi"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></a>
+        <a class="module" data-mod="elliott" href="/elliott/"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></a>
         <a class="module" data-mod="technik" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
         <a class="module" data-mod="fundamental" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
         <a class="module" data-mod="atlas" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
@@ -212,7 +212,7 @@
 </section>
 
 <!-- ============ EINE AKTIE, JEDE PERSPEKTIVE ============ -->
-<section class="section dark-band" id="analyse">
+<section class="section dark-band" id="analyse" data-cv>
   <div class="shell">
     <div class="feature">
       <div class="feature-copy">
@@ -224,7 +224,7 @@
           <li><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Details</b><span>Trend, Momentum, gleitende Durchschnitte, Unterstützungen, Widerstände und Fibonacci.</span></div></li>
           <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></li>
         </ul>
-        <a class="btn btn-app" href="/quant/#/aktie/NVDA/chartbild?ansicht=profi">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-app" href="/elliott/">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
       </div>
       <div class="visual visual-dark" aria-hidden="true">
         <div class="panel panel-wide">
@@ -244,7 +244,7 @@
 </section>
 
 <!-- ============ UNTERNEHMENSENTWICKLUNG (aus Discover) ============ -->
-<section class="section" id="entwicklung">
+<section class="section" id="entwicklung" data-cv>
   <div class="shell">
     <div class="feature flip">
       <div class="feature-copy">
@@ -275,7 +275,7 @@
 </section>
 
 <!-- ============ DISCOVER: SWIPE-FEED & THEMENWELTEN ============ -->
-<section class="section swipe-sec" id="swipe">
+<section class="section swipe-sec" id="swipe" data-cv>
   <div class="shell">
     <div class="section-head">
       <div><span class="kicker">Discover · Swipe-Feed &amp; Themenwelten</span><h2 class="h2">Swipen statt suchen.</h2></div>
@@ -304,7 +304,7 @@
   <div class="shell">
 
     <!-- Discover -->
-    <div class="feature flip" id="discover">
+    <div class="feature flip" id="discover" data-cv>
       <div class="feature-copy">
         <span class="kicker">Discover</span>
         <h2 class="h2">Entdecke Aktien, wie du Musik entdeckst.</h2>
@@ -333,7 +333,7 @@
     </div>
 
     <!-- Screener -->
-    <div class="feature" id="screener">
+    <div class="feature" id="screener" data-cv>
       <div class="feature-copy">
         <span class="kicker">Screener</span>
         <h2 class="h2">Dein Universum. Deine Kriterien.</h2>
@@ -360,7 +360,7 @@
     </div>
 
     <!-- Supertrader -->
-    <div class="feature flip" id="supertrader">
+    <div class="feature flip" id="supertrader" data-cv>
       <div class="feature-copy">
         <span class="kicker">Supertrader</span>
         <h2 class="h2">Methoden. Setups. Klare Regeln.</h2>
@@ -384,7 +384,7 @@
     </div>
 
     <!-- Quant -->
-    <div class="feature" id="quant">
+    <div class="feature" id="quant" data-cv>
       <div class="feature-copy">
         <span class="kicker">Quant</span>
         <h2 class="h2">Von der Frage zur Entscheidung.</h2>
@@ -409,7 +409,7 @@
 
 
     <!-- Vorsorge -->
-    <div class="feature flip" id="vorsorge">
+    <div class="feature flip" id="vorsorge" data-cv>
       <div class="feature-copy">
         <span class="kicker">Altersvorsorge</span>
         <h2 class="h2">Deine Vorsorge. Klar geplant.</h2>
@@ -450,7 +450,7 @@
 </section>
 
 <!-- ============ ATLAS ============ -->
-<section class="section" style="padding-top:0">
+<section class="section" style="padding-top:0" data-cv>
   <div class="shell">
     <div class="atlas-band">
       <div>
@@ -470,7 +470,7 @@
 </section>
 
 <!-- ============ SO FUNKTIONIERT'S ============ -->
-<section class="section" style="background:var(--bg-soft);border-block:1px solid var(--line)">
+<section class="section" style="background:var(--bg-soft);border-block:1px solid var(--line)" data-cv>
   <div class="shell">
     <div class="section-head">
       <div><span class="kicker">So einfach geht's</span><h2 class="h2">In drei Schritten zur klaren Einordnung.</h2></div>
@@ -484,7 +484,7 @@
 </section>
 
 <!-- ============ APP-EINSTIEG ============ -->
-<section class="section" id="app">
+<section class="section" id="app" data-cv>
   <div class="shell">
     <div class="appcta">
       <div class="appcta-copy">
@@ -529,7 +529,7 @@
 </section>
 
 <!-- ============ PRINZIPIEN ============ -->
-<section class="section" style="padding-top:20px">
+<section class="section" style="padding-top:20px" data-cv>
   <div class="shell">
     <div class="section-head">
       <div><span class="kicker">Worauf du dich verlassen kannst</span><h2 class="h2">Research mit Haltung.</h2></div>
@@ -545,7 +545,7 @@
 </section>
 
 <!-- ============ FAQ ============ -->
-<section class="section" style="padding-top:20px" id="faq">
+<section class="section" style="padding-top:20px" id="faq" data-cv>
   <div class="shell faq-grid">
     <div><span class="kicker">FAQ</span><h2 class="h2">Häufige Fragen</h2><p class="lead">Noch etwas unklar? Frag einfach AI Atlas.</p></div>
     <div class="faq">
@@ -561,7 +561,7 @@
 </section>
 
 <!-- ============ SCHLUSS ============ -->
-<section class="final">
+<section class="final" data-cv>
   <div class="shell">
     <span class="kicker">Entdecken. Verstehen. Investieren.</span>
     <h2 class="h2">Sieh den Markt mit anderen Augen.</h2>
@@ -582,7 +582,7 @@
 </div>
 
 <!-- ============ IMAGEFILM ============ -->
-<section class="film" id="film" aria-label="Vision Universe Imagefilm">
+<section class="film" id="film" aria-label="Vision Universe Imagefilm" data-cv>
   <div class="shell film-grid">
     <div class="film-copy">
       <span class="kicker">Der Film</span>
@@ -604,7 +604,7 @@
 </section>
 
 <!-- ============ NEWSLETTER (Shopify-Kundenformular von visionuniverse.de) ============ -->
-<section class="newsletter" id="newsletter" aria-labelledby="nl-title">
+<section class="newsletter" id="newsletter" aria-labelledby="nl-title" data-cv>
   <div class="shell nl-box">
     <div class="nl-copy">
       <span class="hud"><svg><use href="#h-spark"/></svg></span>
@@ -622,7 +622,7 @@
 </section>
 
 <!-- ============ SOCIAL ============ -->
-<section class="social-bar" aria-label="Vision Universe in sozialen Netzwerken">
+<section class="social-bar" aria-label="Vision Universe in sozialen Netzwerken" data-cv>
   <div class="shell social-row">
     <div><span class="kicker">Folge Vision Universe</span><p>Analysen, Reports und Einblicke – jeden Tag auf deinen Kanälen.</p></div>
     <div class="social-links">
@@ -635,11 +635,11 @@
   </div>
 </section>
 
-<footer class="footer">
+<footer class="footer" data-cv>
   <div class="shell">
     <div class="footer-grid">
       <div><img class="footer-logo" src="/assets/vision-universe-logo-web.png" width="1086" height="362" alt="Vision Universe®"><p>Unabhängiges Aktien-Research: entdecken, verstehen, investieren.</p></div>
-      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/quant/#/aktie/NVDA/chartbild?ansicht=profi">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
+      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/elliott/">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
       <div><h4>Märkte &amp; Research</h4><ul><li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li></ul></div>
       <div><h4>Rechtliches</h4><ul>
         <li><a href="https://www.visionuniverse.de/policies/legal-notice">Impressum</a></li>

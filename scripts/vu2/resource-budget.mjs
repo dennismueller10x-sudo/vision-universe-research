@@ -115,9 +115,23 @@
 // Bild ist). Vermieden statt angehoben wurde: die 1,7 MB grosse Logo-
 // Lizenzliste (erst in Sichtweite geladen) und vierzig Einzel-Logos in
 // Trefferlisten (Buchstaben-Marke) - screener misst wieder 21 Anfragen.
+// NEU BEMESSEN AM 12.10.2026 (STUECKWEISE LADEN STATT GANZER DATEIEN) - DIE GRENZE DER AKTIENSEITE GEHT RUNTER.
+//
+// Die Aktienseite lud fuer EINEN Titel den Scherben der technischen Auswertung (15 Titel, 4,3 MB
+// JSON), die ganze Liste (763 KB) und die volle Tagesdatei (1,05 MB, 18 Felder je Kerze). Der
+// Release-Build schreibt dafuer jetzt Ausschnitte je Titel (scripts/vu2/build-release.mjs,
+// quant/tests/stock-page-payload.test.mjs belegt, dass die Seite dasselbe liefert). Gemessen am
+// gebauten Release, NVDA, 1440 px, dieselbe QA:
+//
+//   Ansicht   vorher      nachher     Anfr.
+//   stock     4.306.262   2.642.886   40 -> 40
+//   home      1.694.524   1.648.643   23 -> 23
+//
+// stock wird deshalb von 5.700.000 auf 3.300.000 gesenkt (gemessen plus rund 0,4 MB fuer die
+// Schriften, die in CI dazukommen). Wer sie wieder anhebt, hat den Ausschnitt abgeschaltet.
 export const budgets=Object.freeze({
  home:{decodedBytes:1820000,requests:45,history:false},
- stock:{decodedBytes:5700000,requests:45,history:true},
+ stock:{decodedBytes:3300000,requests:45,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:30500000,requests:30,history:false},

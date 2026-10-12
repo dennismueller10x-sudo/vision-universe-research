@@ -482,10 +482,22 @@
     return { zones: z, invalidations: inv, projectedPaths: [] };
   }
 
-  async function chartbild(main, ctx, ticker, params) {
+  /** Elliott-Kopf: ELLIOTT › Name (Ticker), Rueckweg zur Elliott-Startseite, Sprung zur Quant-Aktienseite, Frage an VU. Nur im Produktkontext /elliott/. */
+  function elliottBar(ctx, ticker) {
+    var name = (ctx && ctx.names && ctx.names[ticker]) || ticker;
+    return el("nav", { class: "cb-crumbs", "aria-label": "Elliott" }, [
+      el("a", { class: "cb-crumb-home", href: "/elliott/", text: "← Elliott" }),
+      el("span", { class: "cb-crumb-now", text: name + (name !== ticker ? " (" + ticker + ")" : "") }),
+      el("a", { class: "cb-crumb-link", href: X.routes.stock(ticker), text: "Aktie in Quant" }),
+      el("a", { class: "cb-crumb-link", href: "/ask/?q=" + encodeURIComponent("Erkläre die aktuelle Elliott-Lesart von " + ticker + " mit ihrer Invalidierung"), text: "Frag VU zu dieser Lesart" })
+    ]);
+  }
+
+  async function chartbild(main, ctx, ticker, params, opts) {
+    var inElliott = !!(opts && opts.product === "elliott");
     var view = params && params.get("ansicht") === "profi" ? "pro" : readView();
     var layout = params && /^[abcd]$/.test(params.get("layout") || "") ? params.get("layout") : "d";
-    main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }));
+    main.append(inElliott ? elliottBar(ctx, ticker) : el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }));
     var host = el("div", { class: "cb cb-layout-" + layout }, [X.loading("Chartbild wird geladen …")]);
     main.append(host);
     var res = await TI.getAnalysis(ticker);
@@ -504,6 +516,21 @@
         el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
       return;
     }
+    /* Datenstand-Richtlinie (data-freshness-1.0.0): zurueckgehaltene Titel zeigen keine laufende These – nur Zustand, Hinweis und im Profi-Modus die Belege. */
+    var fz = a.freshness || null;
+    if (a.withheld && fz) {
+      var ageTxt = fz.ageTradingDays == null ? "–" : fz.ageTradingDays + (fz.ageTradingDays === 1 ? " Handelstag" : " Handelstage");
+      host.append.apply(host, [el("p", { class: "v2-eyebrow", text: "Chartbild · " + ticker }), el("h1", { class: "qx-h1", text: fz.title || "Analyse zurückgehalten" }),
+        X.notice(fz.badge || "Zurückgehalten", fz.text || "Die Kursreihe ist nicht aktuell genug für eine laufende technische These."),
+        el("p", { class: "cb-small cb-dim", text: "Letzter Stand der Kursreihe: " + X.dateDe(fz.lastBar) + "." }),
+        view === "pro" ? el("dl", { class: "cb-facts" }, [
+          el("dt", { text: "Letzte Bar" }), el("dd", { class: "num", text: X.dateDe(fz.lastBar) }),
+          el("dt", { text: "Alter" }), el("dd", { class: "num", text: ageTxt + " (Bezug " + X.dateDe(fz.reference) + ")" }),
+          el("dt", { text: "Einstufung" }), el("dd", { text: fz.state + " · Richtlinie " + fz.version }),
+          el("dt", { text: "Grund" }), el("dd", { text: fz.reason ? fz.reason.text + (fz.reason.known ? "" : " (nicht belegt)") : "–" })]) : null,
+        el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")])].filter(Boolean));   // null-Kinder wuerden als Text "null" erscheinen
+      return;
+    }
     var rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
     var tfLabel = a.timeframe === "1W" ? "Wochenchart" : "Tageschart";
     var scen = a.scenarios || [], kinds = scen.map(function (s) { return s.kind; });
@@ -517,6 +544,7 @@
     var outlook = a.outlook.label, tone = TONE[outlook] || "flat";
     var hero = el("header", { class: "cb-hero cb-tone-" + tone }, [
       el("p", { class: "cb-eyebrow", text: ticker + " · " + tfLabel + " · Stand " + X.dateDe(a.asOf) }),
+      fz && fz.state === "DELAYED" ? el("p", { class: "cb-small cb-delayed", role: "status", text: fz.line + (view === "pro" && fz.ageTradingDays != null ? " · " + fz.ageTradingDays + " Handelstage alt" : "") }) : null,
       el("p", { class: "cb-kicker", text: "Technischer Ausblick" }),
       el("h1", { class: "cb-outlook" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.OUTLOOK[outlook]) || outlook })]),
       el("p", { class: "cb-structure", text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || a.outlook.structure }),
@@ -723,6 +751,16 @@
        beschrifteten Zonen schon im ersten Bildschirm steht; Kacheln und Szenario-Satz darunter. a/b/c bleiben zum Vergleich. */
     var tabsBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs]), textBlock = el("div", { class: "cb-sc-after" }, [scText, scenarioDifference(scenarioOf("PRIMARY"), scenarioOf("ALTERNATIVE"))]);
     var order = { a: [hero, chartCard, levels, tabsBlock, textBlock, pjCard, ewCard], b: [hero, levels, chartCard, tabsBlock, textBlock, pjCard, ewCard], c: [hero, tabsBlock, textBlock, levels, chartCard, pjCard, ewCard], d: [hero, tabsBlock, chartCard, levels, textBlock, pjCard, ewCard] }[layout];
+    /* Elliott-Produkt: ohne gezeigte Lesart bleibt die Aktie sichtbar, mit ehrlicher Aussage statt Umleitung (Enthaltung, Datenlage). */
+    if (inElliott) {
+      var shown = pjSel && (pjSel.p.consumerVisible || pjSel.motive || (pjSel.exploreH || []).length);
+      if (!shown) host.append(el("section", { class: "cb-nothesis", "aria-label": "Keine Elliott-Lesart" }, [
+        el("h2", { class: "cb-nothesis-h", text: "Keine belastbare Elliott-Lesart" }),
+        el("p", { text: "Für " + ticker + " zeigt Vision Universe derzeit keine Elliott-Projektion. Die Engine enthält sich, wenn keine Zählung verlässlich genug ist – lieber keine Aussage als eine geratene." }),
+        pjSel && pjSel.p && pjSel.p.reason ? el("p", { class: "cb-small cb-dim", text: (view === "pro" ? "Grund (Fachansicht): " : "") + pjSel.p.reason }) : null,
+        el("p", { class: "cb-small cb-dim" }, [el("span", { text: "Die übrige technische Analyse unten bleibt verfügbar. " }), el("a", { href: "/elliott/", text: "Aktuelle Elliott-Lesarten ansehen" })])
+      ].filter(Boolean)));
+    }
     host.append(el("div", { class: "cb-viewswitch" }, [viewSeg]));
     order.forEach(function (n) { if (n) host.append(n); });
     [why, evidence, replay, tfs].forEach(function (n) { if (n) host.append(n); });
@@ -1050,7 +1088,7 @@
     var byT = {}; idx.rows.forEach(function (r) { byT[r.t] = r; });
     function tile(t) {
       var r = byT[t] || {};
-      return el("a", { class: "cb-tile cb-tone-" + (TONE[r.outlook] || "flat"), href: "#/aktie/" + encodeURIComponent(t) + "/chartbild" }, [
+      return el("a", { class: "cb-tile cb-tone-" + (TONE[r.outlook] || "flat"), href: X.routes.elliott(t) }, [
         el("span", { class: "cb-tile-t", text: t }), el("span", { class: "cb-tile-o", text: ((Ex && Ex.STRUCTURE[r.structure]) || "") }),
         r.entry ? el("span", { class: "cb-tile-z num", text: "Zone " + fmt(r.entry[0]) + "–" + fmt(r.entry[1]) }) : null,
         el("span", { class: "cb-tile-m", text: (r.tf === "1W" ? "Woche" : "Tag") + " · Struktur " + (CLARITY[r.clarity] || "–").toLowerCase() })]);

@@ -3,6 +3,7 @@ import datetime as dt
 import fcntl
 import hashlib
 import html
+import hmac
 import json
 import os
 from pathlib import Path
@@ -102,10 +103,22 @@ def audience_check(client, config, lists):
 
 
 class Process:
-    def __init__(self, client, config, state_file):
-        if os.environ.get("GITHUB_ACTIONS"):
+    def __init__(self, client, config, state_file=None, ledger=None):
+        if os.environ.get("GITHUB_ACTIONS") and ledger is None:
             raise Blocked("Versand benötigt dauerhaften privaten Zustand; in Actions gesperrt.")
         self.client, self.config = client, config
+        self.ledger, self.lock = ledger, None
+        if ledger is not None:
+            from newsletter_actions import trusted_newsletter
+            if not trusted_newsletter() or len(config.get("ledger_hmac_key", "")) != 64:
+                raise Blocked("Geschützter Newsletter-Ausführungsweg oder private Zustandsbindung fehlt.")
+            try:
+                if len(bytes.fromhex(config["ledger_hmac_key"])) != 32:
+                    raise ValueError()
+            except ValueError:
+                raise Blocked("Private Zustandsbindung ungültig.") from None
+            self.state = ledger.load()
+            return
         self.path = private_path(state_file)
         self.path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
         if self.path.exists() and self.path.stat().st_mode & 0o077:
@@ -121,9 +134,13 @@ class Process:
         self.state = json.loads(self.path.read_text()) if self.path.exists() else {"drafts": {}, "campaigns": {}}
 
     def close(self):
-        os.close(self.lock)
+        if self.lock is not None:
+            os.close(self.lock)
 
     def save(self):
+        if self.ledger is not None:
+            self.ledger.save(self.state)
+            return
         # Atomic private write; state is persisted BEFORE every irreversible call.
         temp = self.path.with_name(self.path.name + ".tmp")
         private_write(temp, json.dumps(self.state, ensure_ascii=False, indent=2))
@@ -135,6 +152,15 @@ class Process:
             os.fsync(fd)
         finally:
             os.close(fd)
+
+    def test_identity(self, addresses):
+        if self.ledger is None:
+            return digest(addresses)  # Existing private filesystem runtime.
+        try:
+            key = bytes.fromhex(self.config["ledger_hmac_key"])
+        except Exception:
+            raise Blocked("Private Zustandsbindung ungültig.") from None
+        return hmac.new(key, json.dumps(addresses, sort_keys=True).encode(), hashlib.sha256).hexdigest()
 
     def draft(self, content):
         client, cfg = self.client, self.config
@@ -203,7 +229,7 @@ class Process:
         attempts = state.setdefault("tests", {})
         if fingerprint in attempts:
             raise Blocked("Vorabtest dieser Version bereits aufgerufen; keine doppelte Sendung.")
-        attempts[fingerprint] = {"state": "pending", "test_identity": digest(addresses)}
+        attempts[fingerprint] = {"state": "pending", "test_identity": self.test_identity(addresses)}
         self.save()
         self.client.call("POST", "/emailCampaigns/%d/sendTest" % campaign_id, {"emailTo": addresses})
         # A failed/ambiguous call leaves pending and permanently blocks automatic retries/release.
@@ -218,7 +244,7 @@ class Process:
     def check(self, campaign_id):
         state, fingerprint, addresses = self.current(campaign_id)
         attempt = state.get("tests", {}).get(fingerprint, {})
-        if attempt.get("state") != "api_accepted" or attempt.get("test_identity") != digest(addresses):
+        if attempt.get("state") != "api_accepted" or attempt.get("test_identity") != self.test_identity(addresses):
             raise Blocked("Erfolgreich angenommener Vorabtest dieser Version für beide Testempfänger fehlt.")
         return {"campaign_id": campaign_id, "version": fingerprint, "requires_owner_approval": True}
 

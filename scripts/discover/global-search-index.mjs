@@ -4,7 +4,7 @@ import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),Admission=require('../../core/europe-discover-eligibility.js'),Identity=require('../../core/identity.js');
+const require=createRequire(import.meta.url),Admission=require('../../core/europe-discover-eligibility.js'),Identity=require('../../core/identity.js'),Quality=require('../../core/discover-universe.js');
 const read=async p=>JSON.parse(await readFile(p,'utf8'));
 export async function produceGlobal(root){
  const us=await read(join(root,'discover/data/search/US_REAL.json')),manifest=await read(join(root,'discover/data/europe/manifest.json')),eu=await read(join(root,'discover/data/europe/catalog.json'));
@@ -15,9 +15,10 @@ export async function produceGlobal(root){
  if(new Set(entries.map(e=>e.securityId)).size!==entries.length)throw Error('DUPLICATE_CANONICAL_SEARCH_SECURITY');
  const index={schema:'vu-canonical-discover-search-1',universeId:'GLOBAL',universeLabel:'Alle Aktien',count:entries.length,counts:{US:us.entries.length,EUROPE:eu.securities.length},entries};
  await writeFile(join(root,'discover/data/search/GLOBAL.json'),JSON.stringify(index)+'\n');
- const picks=['NVDA','ref_ALV_DE_XETR','TSLA','ref_ASML_AS_XAMS','PLTR','ref_SAP_DE_XETR','AAPL','ref_MC_PA_XPAR','MSFT','ref_2GB_DE_XETR','ref_RHM_DE_XETR','ref_ADN1_DE_XETR','ref_HFG_DE_XETR'],cards=[];
- for(const id of picks){const d=entries.find(e=>e.s===id);if(!d)continue;if(d.region==='US'){try{const detail=await read(join(root,'discover/data/stocks/US_REAL',id+'.json'));cards.push({...Object.fromEntries(['symbol','companyName','securityId','instrumentId','currency','dataMode','price','priceSeries','asOf','world','sector','was','plain','signals','metrics'].map(k=>[k,detail[k]])),href:d.href,region:'US',scores:{},ranks:{}});}catch(_){continue;}}
- else{const s=eu.securities.find(s=>s.securityId===d.securityId),binding=manifest.series[d.securityId],series=await read(join(root,binding.url.slice(1))),points=series.points.filter((p,i,all)=>i%5===4||i===0||i===all.length-1),last=series.points.at(-1);cards.push({symbol:d.ticker,companyName:d.n,securityId:d.securityId,instrumentId:d.i,companyId:d.companyId,listingId:d.listingId,universeId:'EUROPE',region:'EUROPE',country:d.country,mic:d.mic,currency:d.currency,logoKey:d.logoKey,href:d.href,asOf:d.asOf,catalogSha256:d.catalogSha256,homePrimary:true,dataMode:'real',scores:{},ranks:{},metrics:{},signals:{},price:{value:last[1],status:'CALCULATED'},priceSeries:{status:'CALCULATED',source:'vu-canonical-display',priceSeriesType:'RAW_UNADJUSTED',points,segments:series.segments.map(seg=>seg.filter(p=>points.some(a=>a[0]===p[0]))).filter(seg=>seg.length),asOf:d.asOf,range:'1J'},chartStatus:'CHART_LIMITED',quantAvailable:false,technicalAvailable:false,basisLabel:'unbereinigt'});}}
+ // Home is a projection of the existing event/relevance selection, never a
+ // fixed list of tickers or a regional quota. Global search stays independent.
+ const curated=(await read(join(root,'discover/data/home/US_REAL.json'))).surfaces.filter(s=>s.type==='hero').flatMap(s=>s.cards||[]),cards=[];
+ for(const selected of curated){const d=entries.find(e=>e.s===selected.symbol&&e.region==='US');if(!d)continue;const card={...selected,securityId:d.securityId,companyName:d.n,href:d.href,region:'US'};card.homeCardQuality=Quality.homeCardQuality(card);if(card.homeCardQuality.status==='HOME_CARD_READY')cards.push(card);}
  await mkdir(join(root,'discover/data/global'),{recursive:true});await writeFile(join(root,'discover/data/global/home.json'),JSON.stringify({schema:'vu-canonical-discover-home-1',cards})+'\n');
  return {total:entries.length,europe:eu.securities.length,homeCards:cards.length};
 }

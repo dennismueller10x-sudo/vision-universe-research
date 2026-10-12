@@ -28,6 +28,8 @@ test("Startseite: Elliott fuer NVDA und die Beobachtungsliste kommt aus dem Char
   }
   /* Kein V1-Wortlaut und kein Link mehr auf die abgeloeste Technikseite */
   assert.doesNotMatch(html, /regelbasiert · Beta|Method Fit|technik\?elliott=1/);
-  assert.match(html, /chartbild\?ansicht=profi/);
+  /* Elliott ist ein Produkt: die Startseite fuehrt auf /elliott/, nicht auf eine feste Aktie. */
+  assert.match(html, /href="\/elliott\/"/);
+  assert.doesNotMatch(html, /aktie\/NVDA\/chartbild/);
   assert.match(html, /experimentell/);
 });

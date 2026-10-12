@@ -115,7 +115,7 @@
   }
 
   function loadSeries(detail) {
-var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref,{range:'MAX'}).then(function(result){return result.state==='AVAILABLE'?result:D.europeProduct.series(series.ref);}).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, priceSeriesType: data.basis }; }); }
+var series = detail.series || {}; if (detail.region === "EUROPE" && series.source === "vu-core-europe") { if (!D.europeProduct) return Promise.resolve(null); return D.europeProduct.series(series.ref,{range:'MAX'}).then(function(result){return result.state==='AVAILABLE'?result:D.europeProduct.series(series.ref);}).then(function (result) { if (result.state !== "AVAILABLE") return null; var data = result.data; return { bars: punkteAlsBars(data.points), dailyPoints: data.points, weeklyPoints: null, weeklyBars: null, bundle: null, closeOnly: true, asOf: data.to, segments: data.segments, displayWindow: data.displayWindow, priceSeriesType: data.basis }; }); }
     if (series.source === "technical-instrument" && series.path) {
       return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
         var payload = teile[0], lang = teile[1];
@@ -284,7 +284,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         state.bars = loaded.bars;
         state.weeklyBars = loaded.weeklyBars || null;
         state.bundle = loaded.bundle;
-        state.dailyPoints = loaded.dailyPoints || null; state.europeSegments = loaded.segments || null;
+        state.dailyPoints = loaded.dailyPoints || null; state.europeSegments = loaded.segments || null; state.displayWindow=loaded.displayWindow||null;
         state.weeklyPoints = loaded.weeklyPoints || null;
         state.seriesAsOf = loaded.asOf || null;
         state.closeOnly = !!loaded.closeOnly;
@@ -420,7 +420,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
           /* Logo und Name: am Desktop uebereinander, am Handy in einer Zeile,
              damit der Kurs weit oben bleibt. */
           el("div", { class: "dx-dhero-title" }, [
-            D.Logos ? D.Logos.mark(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
+            D.Logos ? D.Logos.mark(detail.region === "EUROPE" ? (detail.logoKey || "") : detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: detail.region !== "EUROPE", wide: true }) : null,
             el("h1", { text: detail.companyName || detail.symbol })
           ]),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
@@ -1101,7 +1101,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
           (z.quelle === "weekly" && state.weeklyPoints ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
-          (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") }),
+          (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
+          (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
         frischeTages(state)
       ])
     ]);

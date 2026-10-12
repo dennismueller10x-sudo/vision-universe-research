@@ -513,7 +513,11 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
        (ADR-002, dieselbe Definition wie core/client.js#getLatestPrice):
        vorher hatten die Golden-Five-Titel ungerundete Kurse aus den
        Rohbars. Gemessen bitgleich auf allen 5.980 Titeln; die Golden-Reihe
-       bleibt nur Rueckfall ohne kompakte Reihe. */
+       bleibt nur Rueckfall ohne kompakte Reihe.
+       Gerundet wird mit DERSELBEN Regel wie in der Reihe
+       (PublishedClose.roundClose, ADR-002). Die frueheren vier
+       Nachkommastellen machten aus 0,000001 $ (GROM) eine 0 und liessen
+       DQ-PX-5 auf main rot werden. */
     const kursCloses = (kompaktDated ? kompaktDated.map((b) => b.close) : null) || goldenCloses;
 
     const stock = Contract.normalizeStock({
@@ -543,7 +547,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
          kompakten Reihe - beide sind freigegeben (Eigentuemerentscheidung
          2026-09-13). Ohne Reihe bleibt das Feld leer und sagt warum. */
       price: kursCloses
-        ? Contract.field(round(kursCloses[kursCloses.length - 1], 4))
+        ? Contract.field(PublishedClose.roundClose(kursCloses[kursCloses.length - 1]))
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
       changePercent: kursCloses && kursCloses.length > 1
         ? Contract.field(round((kursCloses[kursCloses.length - 1] / kursCloses[kursCloses.length - 2] - 1) * 100, 4))

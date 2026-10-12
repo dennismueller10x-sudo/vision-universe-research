@@ -138,23 +138,26 @@
     return D.Featured.compact(card, ctx, a, stage);
   }
   var T = function () { return V.Themes; };
-  function themeVisual(theme, cls) {
+  function themeVisual(theme, cls, later) {
     var art = node('div', cls || 'v2-theme-art');
     art.style.setProperty('--tone', theme.tone);
     if (theme.photo) {
-      var img = el('img', { src: theme.photo, alt: '', loading: 'lazy', decoding: 'async', width: '1672', height: '941' });
+      /* later: Startseite - die acht Bilder (je 60-105 KB) liegen unter dem ersten Bildschirm und laden erst, wenn die Seite zur Ruhe gekommen ist. */
+      later = later && D.Lazy;
+      var img = el('img', later ? { alt: '', loading: 'lazy', decoding: 'async', width: '1672', height: '941' } : { src: theme.photo, alt: '', loading: 'lazy', decoding: 'async', width: '1672', height: '941' });
+      if (later) D.Lazy.image(img, theme.photo);
       img.addEventListener('error', function () { img.remove(); art.classList.add('is-empty'); });
       art.appendChild(img);
     } else art.classList.add('is-empty');
     art.setAttribute('aria-hidden', 'true');
     return art;
   }
-  function themeTile(theme, ctx) {
+  function themeTile(theme, ctx, later) {
     var count = T().count(theme, ctx.meta, ctx.universeId);
     var a = link('', T().href(theme), 'v2-theme-tile');
     a.dataset.group = theme.group; a.dataset.theme = theme.slug;
     a.style.setProperty('--tone', theme.tone);
-    a.appendChild(themeVisual(theme));
+    a.appendChild(themeVisual(theme, null, later));
     var copy = node('div', 'v2-theme-tile-copy');
     copy.appendChild(node('h3', '', theme.title));
     copy.appendChild(node('p', '', theme.line));
@@ -188,7 +191,7 @@
     section.appendChild(header);
     var track = el('div', { class: 'v2-track v2-theme-track', role: 'list', 'aria-label': 'Themenwelten' });
     var featured = ['kuenstliche-intelligenz','halbleiter-chips','erneuerbare-energien','biotechnologie','robotik-automation','cybersecurity','reisen-tourismus','luxus-premium'];
-    featured.map(T().bySlug).filter(Boolean).forEach(function (theme) { var item = node('div', 'v2-track-item v2-theme-item'); item.setAttribute('role', 'listitem'); item.dataset.group = theme.group; item.appendChild(themeTile(theme, ctx)); track.appendChild(item); });
+    featured.map(T().bySlug).filter(Boolean).forEach(function (theme) { var item = node('div', 'v2-track-item v2-theme-item'); item.setAttribute('role', 'listitem'); item.dataset.group = theme.group; item.appendChild(themeTile(theme, ctx, true)); track.appendChild(item); });
     section.appendChild(D.Cards.withRailNav(track, { label: 'Themenwelten', universeId: ctx.universeId }));
     return section;
   }
@@ -280,8 +283,9 @@
   }
   async function render(root, ctx) {
     ctx = Object.assign({}, ctx, { artworkDisposers: [] });
-    var page = node('div', 'v2-home'); root.appendChild(page);
-    var intro = el('header', { class: 'v2-intro vu-product-hero vu-hero-fidelity', 'data-product': 'discover' });
+    var intro = ctx.intro, page = intro ? intro.parentNode : node('div', 'v2-home'); // Kopf aus index.html (gleiches Markup) bzw. vom vorigen Zeichnen: bleibt stehen
+    if (intro) { if (intro.hasAttribute('data-static')) { intro.removeAttribute('data-static'); intro.querySelector('.v2-search-prompt').addEventListener('click', ctx.openSearch); if (global.__vuSearchTap) { global.__vuSearchTap = 0; ctx.openSearch(); } } ctx.intro = null; } else {
+    intro = el('header', { class: 'v2-intro vu-product-hero vu-hero-fidelity', 'data-product': 'discover' });
     intro.appendChild(el('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }));
     var introCopy = node('div', 'v2-intro-copy vu-product-hero__copy');
     var icon = node('span', 'vu-product-icon vu-product-icon--hero'); icon.setAttribute('aria-hidden', 'true');
@@ -305,9 +309,10 @@
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
     introCopy.appendChild(actions);
     intro.appendChild(introCopy);
-    page.appendChild(intro);
+    }
+    if (page.parentNode !== root) root.appendChild(page); if (intro.parentNode !== page) page.appendChild(intro);
     var body = node('div', 'v2-journey'); page.appendChild(body);
-    body.appendChild(D.HomeMarket.today(ctx)); D.GlobalView.home(body,ctx);
+    body.appendChild(D.HomeMarket.today(ctx));
     if (T()) body.appendChild(themesRail(ctx));
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
@@ -367,7 +372,7 @@
     try {
       // Karten entscheiden synchron ueber den Tagesverlauf (cards.js): erst zeichnen, wenn auch das Intraday-Verzeichnis da ist. Beide laden parallel.
       var first = (await Promise.all([S.loadJSON(home.chunks[0]), ctx.liveIndex, Promise.race([ctx.fxReady, new Promise(function (r) { setTimeout(r, 2500); })])]))[0]; if (!active()) return;
-      seen.add(home.chunks[0]); loading.remove(); drawChunk(first.surfaces);
+      seen.add(home.chunks[0]); loading.remove(); drawChunk(first.surfaces); document.dispatchEvent(new Event('vu-home-drawn'));
       if (first.next) next(first.next); else finish();
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
     return function () { if (observer) observer.disconnect(); ctx.artworkDisposers.forEach(function (dispose) { dispose(); }); ctx.artworkDisposers.length = 0; };

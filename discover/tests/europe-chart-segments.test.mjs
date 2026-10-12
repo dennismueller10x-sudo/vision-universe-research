@@ -40,3 +40,14 @@ test('selected viewport preserves source segment split without inventing missing
 test('foreign segment tuple cannot authorize a drawn price',()=>{
   assert.equal(load(draft).renderRange(points,{...options,segments:[points.map(p=>[p[0],p[1]+1])]}),null);
 });
+test('a short MAX window labels distinct months instead of repeating the same year',()=>{
+  const real=[['2026-06-03',67],['2026-07-09',60],['2026-08-10',54],['2026-09-08',59],['2026-10-09',57.75]];
+  const svg=load(draft).renderRange(real,{...options,range:'MAX'}),labels=svg.children.filter(x=>x.attrs.class==='dx-range-date').map(x=>x.textContent);
+  assert.deepEqual(labels,['Jun 26','Jul 26','Aug 26','Sep 26','Okt 26']);
+  assert.equal(svg.__punkte.length,real.length);
+});
+test('long MAX histories keep the existing annual labels',()=>{
+  const real=[['2010-01-04',10],['2014-01-03',15],['2018-01-03',20],['2022-01-03',25],['2026-10-09',30]];
+  const svg=load(draft).renderRange(real,{...options,range:'MAX'}),labels=svg.children.filter(x=>x.attrs.class==='dx-range-date').map(x=>x.textContent);
+  assert.deepEqual(labels,['2010','2014','2018','2022','2026']);
+});

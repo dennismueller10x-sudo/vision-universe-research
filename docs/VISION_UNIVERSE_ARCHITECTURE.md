@@ -14,7 +14,7 @@ Bei Widersprüchen gilt: **Code und Tests vor Prosa**. Der aktuelle Datenstand s
 
 ```
  PRODUKTE (statische Seiten, GitHub Pages: research.visionuniverse.de)
- Discover · Quant · Markets · Screener · Supertrader · Technical · News
+ Discover · Quant · Elliott · Markets · Screener · Supertrader · Technical · News
  Company Pages (Discover-Aktienseite, Quant #/aktie) · Status (/status/)
                 │                 (künftig: Portfolio, Retirement, App)
                 ▼
@@ -39,6 +39,8 @@ Bei Widersprüchen gilt: **Code und Tests vor Prosa**. Der aktuelle Datenstand s
    Registry        core/registry/domains.json  ← Source of Truth je Datenart
 ```
 
+Elliott ist ein eigenes Produkt (`/elliott/`, Aktienbild unter `#/elliott/<T>`): [ELLIOTT_PRODUCT_ARCHITECTURE.md](ELLIOTT_PRODUCT_ARCHITECTURE.md).
+
 Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/`):
 
 | ADR | Entscheidung |
@@ -57,6 +59,11 @@ Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/
   Engines sind UMD-Module (`globalThis` + `module.exports`) und laufen gleich in Browser, Node und Web Worker.
 - **GitHub Pages** liefert das Repository über `pages-release.yml` aus. Was ausgeliefert wird, entscheidet `build-release.mjs#permitted`:
   `scripts/`, `docs/`, `providers/`, Tests sowie `quant/data/sec` und `quant/data/fundamentals` werden **nicht** ausgeliefert.
+- **Release-Ausschnitte (nur in der Auslieferung, nie committet).** Damit eine Aktienseite nicht Dateien für das ganze Universum lädt, schreibt
+  `build-release.mjs` aus den committeten Erzeugerdateien kleinere Ansichten: `universe/capability-shards/`, `market/factors/product-shards/`,
+  `product/technical-signals-v1/by-ticker/` (ersetzt dort die Zwei-Zeichen-Scherben), `product/universe-list-shards/`, `product/universe-names-v1.json.gz`
+  und `market/golden-preview/daily/<id>.chart.json`. Sie tragen die Quellobjekte unverändert; fehlt eine Ansicht (lokal, älterer Stand), liest die Seite die
+  volle Datei. Beleg: `quant/tests/stock-page-shards.test.mjs`, `quant/tests/stock-page-payload.test.mjs`. Ein Erzeuger wird dafür nicht angefasst.
 - **Vercel** hostet nur die Funktionen unter `api/` (`vercel.json`). Die Daten liest es zur Laufzeit von der Pages-Auslieferung oder aus R2.
 - **Cloudflare Workers** sind getrennte Deployments: `worker/` (vu-live, Realtime-WebSocket), `workers/vu-ask` (AI Atlas),
   `workers/vision-universe-social`, `worker-waker/`.

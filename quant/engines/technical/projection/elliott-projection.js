@@ -643,7 +643,7 @@
                        versions: meta.versions || null });
   }
   var STATE_DE = { CREATED: "Neu", DEVELOPING: "Im Aufbau", CONFIRMED: "Bestätigt", BASE_PROJECTION_REACHED: "Basis-Projektion erreicht", EXTENDED_PROJECTION_REACHED: "Erweiterte Projektion erreicht",
-                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", ROLE_CHANGED: "Rolle gewechselt", WITHHELD: "Derzeit nicht angezeigt", SHOWN_AGAIN: "Wieder angezeigt", NOT_PROMOTED: "Nicht mehr als Highlight gezeigt" };
+                   EXTREME_PROJECTION_REACHED: "Extreme Projektion erreicht", INVALIDATED: "Ungültig geworden", RELABELLED: "Neu gezählt", ARCHIVED: "Archiviert", REVISED: "Neue Revision", ROLE_CHANGED: "Rolle gewechselt", WITHHELD: "Derzeit nicht angezeigt", WITHHELD_STALE_DATA: "Zurückgehalten – Kursdaten veraltet", VISIBILITY_RESTORED: "Wieder angezeigt – Kursdaten aktuell", SHOWN_AGAIN: "Wieder angezeigt", NOT_PROMOTED: "Nicht mehr als Highlight gezeigt" };
 
   var api = { VERSION: VERSION, SCHEMA: SCHEMA, RELATIONSHIPS: RELATIONSHIPS, LADDERS: LADDERS, PRESENTATION: PRESENTATION, TIER_DE: TIER_DE, TYPE_DE: TYPE_DE, STATE_DE: STATE_DE,
               GATE_DE: GATE_DE, EXPLORE_VERSION: EXPLORE_VERSION, EXPLORE_CANDIDATES_VERSION: EXPLORE_CANDIDATES_VERSION, build: build, geometry: geometry, higherGeometry: higherGeometry, ladder: ladder, sig3: sig3, context: context, advanceLifecycle: advanceLifecycle, MAX_MULTIPLE: MAX_MULTIPLE };

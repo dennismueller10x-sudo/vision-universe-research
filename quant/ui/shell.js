@@ -73,8 +73,14 @@
     if (cache[path]) return cache[path];
     var attempts = options.attempts === undefined ? 3 : options.attempts;
 
+    /* Ein im Kopf der Seite frueh gestarteter Abruf (quant/index.html) gilt fuer den ERSTEN Versuch; jede
+       Wiederholung laeuft wie bisher. */
+    var early = global.__vuEarly && global.__vuEarly[path] || null;
+    if (early) delete global.__vuEarly[path];
     function attempt(remaining, delay) {
-      return fetch(path, { cache: "no-cache" }).then(function (res) {
+      var request = early || fetch(path, { cache: "no-cache" });
+      early = null;
+      return request.then(function (res) {
         if (!res.ok) {
           var err = new Error("Konnte " + path + " nicht laden (HTTP " + res.status + ")");
           err.status = res.status;

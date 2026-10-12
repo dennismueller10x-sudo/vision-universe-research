@@ -11,8 +11,9 @@
      #/strategien/<id>       eine Strategie
      #/aktien                Aktien (Suche, zuletzt, gemerkt)
      #/aktie/<TICKER>        Aktienanalyse
-     #/aktie/<T>/technik     Kursstruktur, Technik & Elliott
-     #/aktie/<T>/chartbild   Chartbild: Ausblick, Zonen, Szenarien, Evidenz
+     #/elliott/<T>           Elliott-Aktienbild (Chartbild: Ausblick, Zonen, Szenarien, Evidenz); Produkt: /elliott/
+     #/aktie/<T>/technik     ALT, wird zu #/elliott/<T> (?elliott=1 -> ansicht=profi)
+     #/aktie/<T>/chartbild   ALT, wird zu #/elliott/<T>
      #/chartlagen            Technische Lagen im Ueberblick
      #/aktie/<T>/zahlen      Unternehmenszahlen ueber die Jahre
      #/vergleich/<A,B,...>   Vergleich
@@ -37,7 +38,7 @@
       home: "#/", stock: okT ? "#/aktie/" + t : "#/aktien", quant: okT ? "#/aktie/" + t : "#/aktien",
       aktien: "#/aktien", stocks: "#/aktien", screener: "#/screener", strategies: "#/strategien", strategien: "#/strategien",
       explain: "#/methodik", methodik: "#/methodik", methodology: "#/methodik",
-      technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "#/aktie/" + t + "/technik?elliott=1" : "#/aktien",
+      technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "#/elliott/" + t + "?ansicht=profi" : "#/elliott",
       fundamentals: okT ? "#/aktie/" + t + "/zahlen" : "#/aktien",
       compare: "#/vergleich" + (p.get("tickers") ? "/" + p.get("tickers") : okT ? "/" + t : ""),
       watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", backtest: "#/backtest", backtesting: "#/backtest", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
@@ -50,6 +51,15 @@
     return target;
   }
 
+  /* #/aktie/<T>/technik[?elliott=1] und #/aktie/<T>/chartbild -> #/elliott/<T> (Mission IV: die Technikseite zeigt ohnehin das Chartbild). */
+  function canonicalElliott(r) {
+    var q = new URLSearchParams(r.params.toString());
+    if (q.get("elliott") === "1") { q.set("ansicht", "profi"); }
+    q.delete("elliott");
+    var qs = q.toString();
+    return "#/elliott/" + encodeURIComponent(r.ticker) + (qs ? "?" + qs : "");
+  }
+
   function parse(hash) {
     var h = String(hash || "").replace(/^#/, "");
     if (!h || h === "/") return { view: "home", params: new URLSearchParams() };
@@ -60,6 +70,10 @@
       case "screener": r.view = "screener"; r.pro = parts[1] === "profi"; break;
       case "strategien": r.view = "strategien"; r.id = parts[1] || null; break;
       case "aktien": r.view = "aktien"; break;
+      case "elliott":
+        r.ticker = String(parts[1] || "").toUpperCase();
+        r.view = !parts[1] ? "elliottHome" : /^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "elliott" : "notfound";
+        break;
       case "radar": r.view = "radar"; break;
       case "chartlagen": r.view = "chartlagen"; break;
       case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
@@ -73,8 +87,8 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
@@ -98,6 +112,7 @@
   global.QXLoadChartbild = loadChartbild;
   global.QXChartbildCss = chartbildCss;
 
+  var NAMES_VIEW = "/quant/data/product/universe-names-v1.json.gz";
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
@@ -130,8 +145,26 @@
     /* Stammaktien zuerst - Vorzugsaktien und Anleihen bleiben gezaehlt, stehen aber hinten. */
     commonFirst: function (list) { return (list || []).slice().sort(function (a, b) { return (ctx.types[a] === "COMMON_STOCK" ? 0 : 1) - (ctx.types[b] === "COMMON_STOCK" ? 0 : 1); }); },
     openSearch: function () { search.open(); },
-    loadNames: function () {
-      if (!namesPromise) namesPromise = S.loadCompressedJSON("/quant/data/product/universe-list-v1.json.gz").then(function (d) {
+    /* Aktienseite: die Daten des Titels starten, sobald die Route feststeht - parallel zu Sprache und
+       Evidenz-Skript, nicht erst danach. Derselbe Aufruf wie bisher; page-stock.js uebernimmt das
+       Versprechen (takePrefetched) statt ihn zu wiederholen. Verteilung, Musterworte und Echtzeit-Hub
+       sind ohnehin geteilte, einmal geladene Versprechen. */
+    prefetchStock: function (ticker) {
+      ctx.prefetched = { ticker: ticker, brief: api.getIntelligenceBrief(ticker).catch(function () { return null; }) };
+      ctx.distribution().catch(function () { return null; }); ctx.patternWords().catch(function () { return {}; }); ctx.hubReady().catch(function () { return false; });
+    },
+    takePrefetched: function (ticker) { var p = ctx.prefetched; ctx.prefetched = null; return p && p.ticker === ticker ? p.brief : null; },
+    prefetched: null,
+    /* Im Release liegt neben der Liste eine Namensansicht (s, n, t, il; 78 statt 126 KB gzip, scripts/vu2/build-release.mjs,
+       universeListViews) - dieselben Namen und Arten. Lokal und in aelteren Staenden: die volle Liste. ctx.entries traegt aus
+       der Ansicht nur s, n, t, il; den ganzen Eintrag eines Titels liefert api.getUniverseEntry.
+       full = true: die Ansicht braucht die ganze Liste ohnehin (Screener: getUniverse). Dann gilt sie auch hier - ueber
+       denselben Ladepfad, damit der Dienst sie nicht ein zweites Mal abruft. */
+    loadNames: function (full) {
+      if (!namesPromise) namesPromise = (full ? Promise.reject(new Error("FULL_LIST_WANTED")) : S.loadCompressedJSON(NAMES_VIEW).then(function (d) {
+        if (!d || d.schemaVersion !== "universe-names-1.0.0" || !Array.isArray(d.entries)) throw new Error("NAMES_VIEW_CONTRACT");
+        return d;
+      })).catch(function () { return S.loadCompressedJSON("/quant/data/product/universe-list-v1.json.gz"); }).then(function (d) {
         (d.entries || []).forEach(function (e) { if (!e || !e.s) return; if (e.n && e.n !== e.s) ctx.names[e.s] = e.n; if (e.t) ctx.types[e.s] = e.t; ctx.entries[e.s] = e; });
         return ctx.names;
       }).catch(function () { return ctx.names; });
@@ -200,7 +233,7 @@
   }
   /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
      sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
-  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: null };
+  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: null, elliott: null };
   function markNav(section) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: Object.prototype.hasOwnProperty.call(DOCK, section) ? DOCK[section] : null });
   }
@@ -277,6 +310,9 @@
     var gen = ++generation;
     if (dispose) { try { dispose(); } catch (e) { /* bereits beendet */ } dispose = null; }
     var r = parse(location.hash);
+    /* Alte Chartbild-/Technik-Adressen und der Elliott-Hauptlink: eine Adresse, ohne Verlaufseintrag (location.replace loest hashchange aus). */
+    if (r.view === "chartbild" || r.view === "technik") { global.location.replace(canonicalElliott(r)); return; }
+    if (r.view === "elliottHome") { global.location.replace("/elliott/"); return; }
     search.close();
     markNav(SECTION[r.view] || null);
     document.title = (TITLE[r.view] || "Quant") + " · Vision Universe®";
@@ -288,11 +324,20 @@
     main.className = "qx-main";
     global.scrollTo(0, 0);
     try {
+      /* Die Voraussetzungen der Ansicht starten ZUSAMMEN (vorher nacheinander: Sprache, dann Namen, dann Skript - je ein
+         Umlauf mit 150 ms und ihrer eigenen Wartezeit). Dieselben Dateien, dieselben Versprechen, nur ohne Warteschlange.
+         Das Woerterbuch gilt weiter vor jeder Seite. */
+      if (r.view === "home") { ctx.loadNames(); ctx.loadBacktestView(); }
+      else {
+        if (/^(radar|screener|strategien|aktien)$/.test(r.view)) ctx.loadNames(r.view === "screener");
+        if (r.view === "radar" || r.view === "aktie") ctx.loadBacktestView();
+        if (r.view === "aktie" && /^[A-Z0-9.-]{1,12}$/.test(r.ticker)) ctx.prefetchStock(r.ticker);
+      }
       await ctx.language();
       if (gen !== generation) return;
-      if (/^(home|screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
+      if (/^(screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
       switch (r.view) {
-        case "home": await ctx.loadBacktestView(); await global.QXPages.home(main, ctx); break;
+        case "home": await global.QXPages.home(main, ctx); break;
         case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
         case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
@@ -301,8 +346,7 @@
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
-        case "technik": { var tp = new URLSearchParams(r.params.toString()); if (tp.get("elliott") === "1") tp.set("ansicht", "profi"); await (await loadChartbild()).chartbild(main, ctx, r.ticker, tp); break; }
-        case "chartbild": await (await loadChartbild()).chartbild(main, ctx, r.ticker, r.params); break;
+        case "elliott": await ctx.loadNames(); await (await loadChartbild()).chartbild(main, ctx, r.ticker, r.params, { product: "elliott" }); break;
         case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
@@ -344,6 +388,6 @@
     global.addEventListener("hashchange", route);
     route();
   }
-  global.QXApp = { parse: parse, legacyRoute: legacyRoute, ctx: ctx, route: route };
+  global.QXApp = { parse: parse, canonicalElliott: canonicalElliott, legacyRoute: legacyRoute, ctx: ctx, route: route };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(window);

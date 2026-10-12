@@ -1,0 +1,8005 @@
+{
+ "schemaVersion": "emerging-leaders-study-1.0.0",
+ "codeSha256": {
+  "quant/engines/emerging-leaders.js": "b926b130d8ba07a2909e34217ab4c45afd8c9828e08e42fe299685cf94a64f61",
+  "scripts/quant/build-emerging-leaders-study.mjs": "d09de5d1eeefec200ce021fdbd165748709dc0c6806dae78c65bb9264bf3cfc5",
+  "scripts/quant/lib/emerging-leaders-inputs.mjs": "3848280a81d0416a206682061f9f8eb4bc187960f7bfc76e0b00718a26461e31",
+  "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+  "quant/engines/survivorship-control.js": "ec13a50662c99828a077db4c218461ee5960786148a8ea394edc02918411aa88",
+  "quant/engines/pit-fundamental-history.js": "45971386207fb16432df0a278a26accc6c96955d3f47dedcce8bb5b9775a5499",
+  "discover/engines/scoring.js": "9184dfa041a7995fd824738abfbfc390bfde24cd37264067f12a7f3f31ee05e0",
+  "discover/methodology/discover-v1.json": "f899be12ab505c1c50c7b569635d3e9617f5c092e9ccef8a19fda2f0b085efad",
+  "quant/methodology/emerging-leaders-v1.json": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939"
+ },
+ "gitSha": "ba3c5d323fd53a1dac71b8b2f86d3c5ba2502bf5",
+ "runs": [
+  {
+   "at": "2026-10-12T10:37:49.848Z",
+   "status": "COMPLETE",
+   "gitSha": "ba3c5d323fd53a1dac71b8b2f86d3c5ba2502bf5",
+   "codeSha256": {
+    "quant/engines/emerging-leaders.js": "b926b130d8ba07a2909e34217ab4c45afd8c9828e08e42fe299685cf94a64f61",
+    "scripts/quant/build-emerging-leaders-study.mjs": "d09de5d1eeefec200ce021fdbd165748709dc0c6806dae78c65bb9264bf3cfc5",
+    "scripts/quant/lib/emerging-leaders-inputs.mjs": "3848280a81d0416a206682061f9f8eb4bc187960f7bfc76e0b00718a26461e31",
+    "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+    "quant/engines/survivorship-control.js": "ec13a50662c99828a077db4c218461ee5960786148a8ea394edc02918411aa88",
+    "quant/engines/pit-fundamental-history.js": "45971386207fb16432df0a278a26accc6c96955d3f47dedcce8bb5b9775a5499",
+    "discover/engines/scoring.js": "9184dfa041a7995fd824738abfbfc390bfde24cd37264067f12a7f3f31ee05e0",
+    "discover/methodology/discover-v1.json": "f899be12ab505c1c50c7b569635d3e9617f5c092e9ccef8a19fda2f0b085efad",
+    "quant/methodology/emerging-leaders-v1.json": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939"
+   },
+   "evidenceStatus": "EXPERIMENTAL",
+   "selected": null,
+   "holdoutEvaluated": true
+  }
+ ],
+ "holdoutEvaluations": 1,
+ "methodologyVersion": "emerging-leaders-1.0.0",
+ "engineVersion": "emerging-leaders-1.0.0",
+ "methodologySha256": "6eb1b2c7185d6774762e04b3394d5c3dd8bfb9f2aa57ae433a9fd701bf8d0939",
+ "generatedAt": "2026-10-12T10:37:49.848Z",
+ "status": "COMPLETE",
+ "evidenceStatus": "EXPERIMENTAL",
+ "label": "Experimentell - keine belastbare Ueberlegenheit nachgewiesen",
+ "aggregatesOnly": true,
+ "noProbabilities": true,
+ "dataSources": {
+  "active": {
+   "available": true,
+   "listings": 6549,
+   "listingsWithObservations": 3963,
+   "withFundamentals": 5365,
+   "endedInactive": 0,
+   "staleActive": 3,
+   "copiesOfDelisted": 39
+  },
+  "delisted": {
+   "available": true,
+   "asOf": "2026-10-01",
+   "manifestUpdatedAt": "2026-10-01T17:42:44.431Z",
+   "counts": {
+    "entries": 7892,
+    "skippedClass": 3916,
+    "notUsable": {
+     "D": 178,
+     "C": 79
+    },
+    "ended": 3471,
+    "survivors": 0
+   },
+   "listingsRead": 3471,
+   "readFailures": 0,
+   "seriesMissing": 0,
+   "listingsWithObservations": 1464
+  },
+  "holdout": {
+   "available": true,
+   "manifestUpdatedAt": "2026-10-04T03:46:20.251Z",
+   "counts": {
+    "entries": 6424,
+    "skippedClass": 846,
+    "notUsable": {
+     "C": 132,
+     "D": 172
+    },
+    "ended": 714,
+    "survivors": 4560
+   },
+   "listingsRead": 5274,
+   "readFailures": 0,
+   "seriesMissing": 0,
+   "listingsWithObservations": 3163
+  },
+  "r2Operations": {
+   "classA": 0,
+   "classB": 8750
+  },
+  "tickerChangeDuplicatesDropped": 208
+ },
+ "coverage": {
+  "DEVELOPMENT": {
+   "dates": 60,
+   "avgEligible": 2082,
+   "avgEmerging": 1293,
+   "fundamentalShare": 0.395,
+   "avgBreadth": 0.5762
+  },
+  "VALIDATION": {
+   "dates": 30,
+   "avgEligible": 2406,
+   "avgEmerging": 1518,
+   "fundamentalShare": 0.7364,
+   "avgBreadth": 0.5
+  },
+  "HOLDOUT_RECENT": {
+   "dates": 39,
+   "avgEligible": 2484,
+   "avgEmerging": 1611,
+   "fundamentalShare": 0.8271,
+   "avgBreadth": 0.5465
+  },
+  "HOLDOUT_EARLY": {
+   "dates": 96,
+   "avgEligible": 1653,
+   "avgEmerging": 1034,
+   "fundamentalShare": 0,
+   "avgBreadth": 0.5654
+  }
+ },
+ "calendar": {
+  "from": "1993-01-29",
+  "to": "2026-10-09",
+  "monthEnds": 405,
+  "observations": 454393,
+  "listings": 15294,
+  "listingsUsed": 8517
+ },
+ "development": {
+  "merge": [],
+  "m3Weights": {
+   "A": 0,
+   "B": 0.1026,
+   "C": 0.1237,
+   "D": 0.0946,
+   "E": 0.6792
+  },
+  "groupCorrelation": {
+   "AB": 0.5203,
+   "AC": 0.3576,
+   "AD": 0.1031,
+   "BC": 0.4248,
+   "BD": 0.2094,
+   "CD": -0.0552,
+   "AE": -0.011,
+   "BE": -0.003,
+   "CE": 0.0023,
+   "DE": 0.0081
+  },
+  "breadthTerciles": [
+   0.5496,
+   0.6621
+  ]
+ },
+ "groupIc": {
+  "DEVELOPMENT": {
+   "A": {
+    "mean": -0.0054,
+    "t": -0.41,
+    "dates": 57
+   },
+   "B": {
+    "mean": 0.0069,
+    "t": 0.43,
+    "dates": 57
+   },
+   "C": {
+    "mean": 0.0083,
+    "t": 0.73,
+    "dates": 57
+   },
+   "D": {
+    "mean": 0.0063,
+    "t": 0.49,
+    "dates": 57
+   },
+   "E": {
+    "mean": 0.0454,
+    "t": 0.91,
+    "dates": 53
+   }
+  },
+  "VALIDATION": {
+   "A": {
+    "mean": -0.0149,
+    "t": -0.88,
+    "dates": 26
+   },
+   "B": {
+    "mean": 0.0006,
+    "t": 0.03,
+    "dates": 26
+   },
+   "C": {
+    "mean": -0.0243,
+    "t": -1.44,
+    "dates": 26
+   },
+   "D": {
+    "mean": 0.0406,
+    "t": 1.72,
+    "dates": 26
+   },
+   "E": {
+    "mean": 0.004,
+    "t": 0.24,
+    "dates": 26
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "A": {
+    "mean": -0.0334,
+    "t": -1.87,
+    "dates": 36
+   },
+   "B": {
+    "mean": -0.0247,
+    "t": -1.24,
+    "dates": 36
+   },
+   "C": {
+    "mean": -0.018,
+    "t": -1.38,
+    "dates": 36
+   },
+   "D": {
+    "mean": 0.0134,
+    "t": 1.17,
+    "dates": 36
+   },
+   "E": {
+    "mean": -0.0098,
+    "t": -0.7,
+    "dates": 36
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "A": {
+    "mean": -0.0004,
+    "t": -0.03,
+    "dates": 93
+   },
+   "B": {
+    "mean": -0.0121,
+    "t": -0.91,
+    "dates": 93
+   },
+   "C": {
+    "mean": -0.0098,
+    "t": -1.4,
+    "dates": 93
+   },
+   "D": {
+    "mean": 0.0057,
+    "t": 0.56,
+    "dates": 93
+   },
+   "E": {
+    "mean": null,
+    "t": null,
+    "dates": 0
+   }
+  }
+ },
+ "results": {
+  "DEVELOPMENT": {
+   "M1_TECH_EQUAL": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12290,
+     "meanExcessGross": 0.0001,
+     "tNW": 0.04,
+     "meanExcessNet": {
+      "LOW": -0.0009,
+      "BASE": -0.0029,
+      "HIGH": -0.0059
+     },
+     "tNWNetBase": -0.87,
+     "medianExcess": -0.0047,
+     "hitRate": 0.4747,
+     "meanMAE": -0.0621,
+     "spreadVsUniverse": {
+      "mean": -0.0003,
+      "t": -0.12,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0012,
+      "t": -0.47,
+      "dates": 59
+     },
+     "ic": {
+      "mean": -0.0126,
+      "t": -0.88,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0072,
+      "excludedMean": 0.0002,
+      "minus100Mean": -0.0071
+     },
+     "worstDate": -0.0451,
+     "shareOfPositiveDates": 0.5254
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11855,
+     "meanExcessGross": 0.0025,
+     "tNW": 0.32,
+     "meanExcessNet": {
+      "LOW": 0.0015,
+      "BASE": -0.0005,
+      "HIGH": -0.0035
+     },
+     "tNWNetBase": -0.07,
+     "medianExcess": -0.0105,
+     "hitRate": 0.4682,
+     "meanMAE": -0.1155,
+     "spreadVsUniverse": {
+      "mean": 0.0044,
+      "t": 0.83,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0004,
+      "t": 0.1,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0037,
+      "t": 0.22,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0208,
+      "excludedMean": 0.0031,
+      "minus100Mean": -0.0185
+     },
+     "worstDate": -0.1258,
+     "shareOfPositiveDates": 0.4561
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11209,
+     "meanExcessGross": -0.0034,
+     "tNW": -0.24,
+     "meanExcessNet": {
+      "LOW": -0.0044,
+      "BASE": -0.0064,
+      "HIGH": -0.0094
+     },
+     "tNWNetBase": -0.46,
+     "medianExcess": -0.032,
+     "hitRate": 0.4374,
+     "meanMAE": -0.1687,
+     "spreadVsUniverse": {
+      "mean": 0.0074,
+      "t": 1.09,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0025,
+      "t": -0.55,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0104,
+      "t": 0.87,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.0373,
+      "excludedMean": -0.0031,
+      "minus100Mean": -0.0423
+     },
+     "worstDate": -0.1488,
+     "shareOfPositiveDates": 0.3704
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9928,
+     "meanExcessGross": -0.0294,
+     "tNW": -2.03,
+     "meanExcessNet": {
+      "LOW": -0.0304,
+      "BASE": -0.0324,
+      "HIGH": -0.0354
+     },
+     "tNWNetBase": -2.24,
+     "medianExcess": -0.0799,
+     "hitRate": 0.3902,
+     "meanMAE": -0.2341,
+     "spreadVsUniverse": {
+      "mean": 0.0076,
+      "t": 0.82,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0032,
+      "t": -0.47,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0102,
+      "t": 0.8,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.067,
+      "excludedMean": -0.0315,
+      "minus100Mean": -0.1034
+     },
+     "worstDate": -0.1213,
+     "shareOfPositiveDates": 0.3125
+    }
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12290,
+     "meanExcessGross": 0.0011,
+     "tNW": 0.33,
+     "meanExcessNet": {
+      "LOW": 0.0001,
+      "BASE": -0.0019,
+      "HIGH": -0.0049
+     },
+     "tNWNetBase": -0.56,
+     "medianExcess": -0.0035,
+     "hitRate": 0.4804,
+     "meanMAE": -0.0619,
+     "spreadVsUniverse": {
+      "mean": 0.0006,
+      "t": 0.23,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0002,
+      "t": 0.09,
+      "dates": 59
+     },
+     "ic": {
+      "mean": -0.009,
+      "t": -0.64,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0091,
+      "excludedMean": 0.0013,
+      "minus100Mean": -0.0079
+     },
+     "worstDate": -0.043,
+     "shareOfPositiveDates": 0.4915
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11855,
+     "meanExcessGross": 0.0014,
+     "tNW": 0.19,
+     "meanExcessNet": {
+      "LOW": 0.0004,
+      "BASE": -0.0016,
+      "HIGH": -0.0046
+     },
+     "tNWNetBase": -0.22,
+     "medianExcess": -0.0115,
+     "hitRate": 0.4659,
+     "meanMAE": -0.115,
+     "spreadVsUniverse": {
+      "mean": 0.0033,
+      "t": 0.68,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0004,
+      "t": -0.11,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0091,
+      "t": 0.55,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0249,
+      "excludedMean": 0.0023,
+      "minus100Mean": -0.0235
+     },
+     "worstDate": -0.1163,
+     "shareOfPositiveDates": 0.4912
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11209,
+     "meanExcessGross": -0.002,
+     "tNW": -0.15,
+     "meanExcessNet": {
+      "LOW": -0.003,
+      "BASE": -0.005,
+      "HIGH": -0.008
+     },
+     "tNWNetBase": -0.37,
+     "medianExcess": -0.0302,
+     "hitRate": 0.44,
+     "meanMAE": -0.168,
+     "spreadVsUniverse": {
+      "mean": 0.0088,
+      "t": 1.43,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0017,
+      "t": -0.41,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0176,
+      "t": 1.43,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.0429,
+      "excludedMean": -0.0015,
+      "minus100Mean": -0.0465
+     },
+     "worstDate": -0.1445,
+     "shareOfPositiveDates": 0.4074
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9928,
+     "meanExcessGross": -0.0287,
+     "tNW": -2.19,
+     "meanExcessNet": {
+      "LOW": -0.0297,
+      "BASE": -0.0317,
+      "HIGH": -0.0347
+     },
+     "tNWNetBase": -2.41,
+     "medianExcess": -0.0812,
+     "hitRate": 0.3904,
+     "meanMAE": -0.2312,
+     "spreadVsUniverse": {
+      "mean": 0.0083,
+      "t": 0.84,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0032,
+      "t": -0.44,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0188,
+      "t": 1.19,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.0746,
+      "excludedMean": -0.0312,
+      "minus100Mean": -0.111
+     },
+     "worstDate": -0.1185,
+     "shareOfPositiveDates": 0.2917
+    }
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12290,
+     "meanExcessGross": 0,
+     "tNW": 0,
+     "meanExcessNet": {
+      "LOW": -0.001,
+      "BASE": -0.003,
+      "HIGH": -0.006
+     },
+     "tNWNetBase": -1,
+     "medianExcess": -0.0034,
+     "hitRate": 0.481,
+     "meanMAE": -0.0609,
+     "spreadVsUniverse": {
+      "mean": -0.0005,
+      "t": -0.24,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0002,
+      "t": -0.09,
+      "dates": 59
+     },
+     "ic": {
+      "mean": 0.0055,
+      "t": 0.46,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0111,
+      "excludedMean": 0.0001,
+      "minus100Mean": -0.0111
+     },
+     "worstDate": -0.0593,
+     "shareOfPositiveDates": 0.5085
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11855,
+     "meanExcessGross": 0.0014,
+     "tNW": 0.22,
+     "meanExcessNet": {
+      "LOW": 0.0004,
+      "BASE": -0.0016,
+      "HIGH": -0.0046
+     },
+     "tNWNetBase": -0.25,
+     "medianExcess": -0.0101,
+     "hitRate": 0.4677,
+     "meanMAE": -0.1115,
+     "spreadVsUniverse": {
+      "mean": 0.0033,
+      "t": 0.87,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0026,
+      "t": 0.67,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0245,
+      "t": 1.54,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0295,
+      "excludedMean": 0.0025,
+      "minus100Mean": -0.0283
+     },
+     "worstDate": -0.0701,
+     "shareOfPositiveDates": 0.5263
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11209,
+     "meanExcessGross": -0.0055,
+     "tNW": -0.6,
+     "meanExcessNet": {
+      "LOW": -0.0065,
+      "BASE": -0.0085,
+      "HIGH": -0.0115
+     },
+     "tNWNetBase": -0.92,
+     "medianExcess": -0.0273,
+     "hitRate": 0.4415,
+     "meanMAE": -0.1601,
+     "spreadVsUniverse": {
+      "mean": 0.0053,
+      "t": 1.19,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0001,
+      "t": 0.03,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0371,
+      "t": 2.39,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.049,
+      "excludedMean": -0.0044,
+      "minus100Mean": -0.0558
+     },
+     "worstDate": -0.1268,
+     "shareOfPositiveDates": 0.3889
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9928,
+     "meanExcessGross": -0.0251,
+     "tNW": -2.43,
+     "meanExcessNet": {
+      "LOW": -0.0261,
+      "BASE": -0.0281,
+      "HIGH": -0.0311
+     },
+     "tNWNetBase": -2.72,
+     "medianExcess": -0.0744,
+     "hitRate": 0.3962,
+     "meanMAE": -0.2176,
+     "spreadVsUniverse": {
+      "mean": 0.012,
+      "t": 0.9,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0053,
+      "t": 0.51,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0398,
+      "t": 1.51,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.0791,
+      "excludedMean": -0.024,
+      "minus100Mean": -0.1095
+     },
+     "worstDate": -0.1191,
+     "shareOfPositiveDates": 0.2708
+    }
+   },
+   "M4_EMERGING_TECH": {
+    "21": {
+     "dates": 56,
+     "avgNames": 136,
+     "observations": 7640,
+     "meanExcessGross": -0.0021,
+     "tNW": -0.72,
+     "meanExcessNet": {
+      "LOW": -0.0031,
+      "BASE": -0.0051,
+      "HIGH": -0.0081
+     },
+     "tNWNetBase": -1.74,
+     "medianExcess": -0.0049,
+     "hitRate": 0.4733,
+     "meanMAE": -0.0579,
+     "spreadVsUniverse": {
+      "mean": -0.0015,
+      "t": -0.6,
+      "dates": 56
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": -0.02,
+      "dates": 56
+     },
+     "ic": {
+      "mean": -0.002,
+      "t": -0.13,
+      "dates": 56
+     },
+     "delisting": {
+      "share": 0.0039,
+      "excludedMean": -0.0021,
+      "minus100Mean": -0.006
+     },
+     "worstDate": -0.0387,
+     "shareOfPositiveDates": 0.5
+    },
+    "63": {
+     "dates": 54,
+     "avgNames": 136,
+     "observations": 7359,
+     "meanExcessGross": -0.0024,
+     "tNW": -0.32,
+     "meanExcessNet": {
+      "LOW": -0.0034,
+      "BASE": -0.0054,
+      "HIGH": -0.0084
+     },
+     "tNWNetBase": -0.73,
+     "medianExcess": -0.009,
+     "hitRate": 0.4707,
+     "meanMAE": -0.1092,
+     "spreadVsUniverse": {
+      "mean": 0.0014,
+      "t": 0.32,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0034,
+      "t": 0.79,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0201,
+      "t": 1.08,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.016,
+      "excludedMean": -0.002,
+      "minus100Mean": -0.0185
+     },
+     "worstDate": -0.1225,
+     "shareOfPositiveDates": 0.3889
+    },
+    "126": {
+     "dates": 51,
+     "avgNames": 136,
+     "observations": 6946,
+     "meanExcessGross": -0.0103,
+     "tNW": -0.82,
+     "meanExcessNet": {
+      "LOW": -0.0113,
+      "BASE": -0.0133,
+      "HIGH": -0.0163
+     },
+     "tNWNetBase": -1.05,
+     "medianExcess": -0.0315,
+     "hitRate": 0.4387,
+     "meanMAE": -0.1637,
+     "spreadVsUniverse": {
+      "mean": 0.0042,
+      "t": 0.78,
+      "dates": 51
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0027,
+      "t": 0.59,
+      "dates": 51
+     },
+     "ic": {
+      "mean": 0.0252,
+      "t": 1.77,
+      "dates": 51
+     },
+     "delisting": {
+      "share": 0.0314,
+      "excludedMean": -0.0096,
+      "minus100Mean": -0.0423
+     },
+     "worstDate": -0.1707,
+     "shareOfPositiveDates": 0.3333
+    },
+    "252": {
+     "dates": 45,
+     "avgNames": 136,
+     "observations": 6118,
+     "meanExcessGross": -0.0348,
+     "tNW": -2.37,
+     "meanExcessNet": {
+      "LOW": -0.0358,
+      "BASE": -0.0378,
+      "HIGH": -0.0408
+     },
+     "tNWNetBase": -2.58,
+     "medianExcess": -0.0724,
+     "hitRate": 0.397,
+     "meanMAE": -0.2298,
+     "spreadVsUniverse": {
+      "mean": 0.009,
+      "t": 1.36,
+      "dates": 45
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0071,
+      "t": 1.24,
+      "dates": 45
+     },
+     "ic": {
+      "mean": 0.0303,
+      "t": 2.02,
+      "dates": 45
+     },
+     "delisting": {
+      "share": 0.0605,
+      "excludedMean": -0.0378,
+      "minus100Mean": -0.1021
+     },
+     "worstDate": -0.1518,
+     "shareOfPositiveDates": 0.2889
+    }
+   },
+   "MOM_12_1": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12288,
+     "meanExcessGross": 0.0051,
+     "tNW": 1.07,
+     "meanExcessNet": {
+      "LOW": 0.0041,
+      "BASE": 0.0021,
+      "HIGH": -0.0009
+     },
+     "tNWNetBase": 0.44,
+     "medianExcess": -0.003,
+     "hitRate": 0.4871,
+     "meanMAE": -0.0813,
+     "spreadVsUniverse": {
+      "mean": 0.0046,
+      "t": 1.22,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0004,
+      "t": 0.13,
+      "dates": 59
+     },
+     "ic": {
+      "mean": -0.0037,
+      "t": -0.19,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0082,
+      "excludedMean": 0.0052,
+      "minus100Mean": -0.0031
+     },
+     "worstDate": -0.0739,
+     "shareOfPositiveDates": 0.5932
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11853,
+     "meanExcessGross": 0.015,
+     "tNW": 1.36,
+     "meanExcessNet": {
+      "LOW": 0.014,
+      "BASE": 0.012,
+      "HIGH": 0.009
+     },
+     "tNWNetBase": 1.08,
+     "medianExcess": -0.0121,
+     "hitRate": 0.4741,
+     "meanMAE": -0.1425,
+     "spreadVsUniverse": {
+      "mean": 0.0169,
+      "t": 1.79,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0045,
+      "t": 0.47,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0064,
+      "t": 0.24,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0196,
+      "excludedMean": 0.0148,
+      "minus100Mean": -0.0057
+     },
+     "worstDate": -0.1174,
+     "shareOfPositiveDates": 0.5965
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11207,
+     "meanExcessGross": 0.0257,
+     "tNW": 1.35,
+     "meanExcessNet": {
+      "LOW": 0.0247,
+      "BASE": 0.0227,
+      "HIGH": 0.0197
+     },
+     "tNWNetBase": 1.19,
+     "medianExcess": -0.0278,
+     "hitRate": 0.4576,
+     "meanMAE": -0.1962,
+     "spreadVsUniverse": {
+      "mean": 0.0365,
+      "t": 1.92,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0103,
+      "t": 0.55,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0245,
+      "t": 0.7,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.0328,
+      "excludedMean": 0.0249,
+      "minus100Mean": -0.0107
+     },
+     "worstDate": -0.1034,
+     "shareOfPositiveDates": 0.537
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9926,
+     "meanExcessGross": 0.035,
+     "tNW": 1.1,
+     "meanExcessNet": {
+      "LOW": 0.034,
+      "BASE": 0.032,
+      "HIGH": 0.029
+     },
+     "tNWNetBase": 1.01,
+     "medianExcess": -0.0593,
+     "hitRate": 0.4414,
+     "meanMAE": -0.2638,
+     "spreadVsUniverse": {
+      "mean": 0.0721,
+      "t": 1.76,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0216,
+      "t": 0.56,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0524,
+      "t": 1.32,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.0522,
+      "excludedMean": 0.0343,
+      "minus100Mean": -0.0253
+     },
+     "worstDate": -0.1706,
+     "shareOfPositiveDates": 0.5833
+    }
+   },
+   "RS_6M": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12288,
+     "meanExcessGross": 0.0033,
+     "tNW": 0.69,
+     "meanExcessNet": {
+      "LOW": 0.0023,
+      "BASE": 0.0003,
+      "HIGH": -0.0027
+     },
+     "tNWNetBase": 0.06,
+     "medianExcess": -0.0053,
+     "hitRate": 0.4749,
+     "meanMAE": -0.0798,
+     "spreadVsUniverse": {
+      "mean": 0.0028,
+      "t": 0.77,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0005,
+      "t": -0.16,
+      "dates": 59
+     },
+     "ic": {
+      "mean": -0.0038,
+      "t": -0.21,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0103,
+      "excludedMean": 0.0033,
+      "minus100Mean": -0.0069
+     },
+     "worstDate": -0.0664,
+     "shareOfPositiveDates": 0.5593
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11853,
+     "meanExcessGross": 0.0162,
+     "tNW": 1.55,
+     "meanExcessNet": {
+      "LOW": 0.0152,
+      "BASE": 0.0132,
+      "HIGH": 0.0102
+     },
+     "tNWNetBase": 1.26,
+     "medianExcess": -0.0145,
+     "hitRate": 0.468,
+     "meanMAE": -0.1406,
+     "spreadVsUniverse": {
+      "mean": 0.0181,
+      "t": 2.23,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.001,
+      "t": 0.14,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0138,
+      "t": 0.7,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0283,
+      "excludedMean": 0.0162,
+      "minus100Mean": -0.0132
+     },
+     "worstDate": -0.1135,
+     "shareOfPositiveDates": 0.614
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11207,
+     "meanExcessGross": 0.0292,
+     "tNW": 1.75,
+     "meanExcessNet": {
+      "LOW": 0.0282,
+      "BASE": 0.0262,
+      "HIGH": 0.0232
+     },
+     "tNWNetBase": 1.57,
+     "medianExcess": -0.0257,
+     "hitRate": 0.4587,
+     "meanMAE": -0.1936,
+     "spreadVsUniverse": {
+      "mean": 0.0401,
+      "t": 2.92,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0067,
+      "t": 0.59,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.038,
+      "t": 1.63,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.0478,
+      "excludedMean": 0.0295,
+      "minus100Mean": -0.0225
+     },
+     "worstDate": -0.088,
+     "shareOfPositiveDates": 0.6667
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9926,
+     "meanExcessGross": 0.031,
+     "tNW": 1.16,
+     "meanExcessNet": {
+      "LOW": 0.03,
+      "BASE": 0.028,
+      "HIGH": 0.025
+     },
+     "tNWNetBase": 1.04,
+     "medianExcess": -0.0718,
+     "hitRate": 0.4297,
+     "meanMAE": -0.2605,
+     "spreadVsUniverse": {
+      "mean": 0.0681,
+      "t": 2.03,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0118,
+      "t": 0.43,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0447,
+      "t": 1.21,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.0727,
+      "excludedMean": 0.0313,
+      "minus100Mean": -0.0524
+     },
+     "worstDate": -0.1727,
+     "shareOfPositiveDates": 0.5833
+    }
+   },
+   "LEADERSHIP_VU": {
+    "21": {
+     "dates": 59,
+     "avgNames": 208,
+     "observations": 12289,
+     "meanExcessGross": 0.0029,
+     "tNW": 0.78,
+     "meanExcessNet": {
+      "LOW": 0.0019,
+      "BASE": -0.0001,
+      "HIGH": -0.0031
+     },
+     "tNWNetBase": -0.02,
+     "medianExcess": -0.0048,
+     "hitRate": 0.4753,
+     "meanMAE": -0.0668,
+     "spreadVsUniverse": {
+      "mean": 0.0025,
+      "t": 0.66,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0006,
+      "t": -0.2,
+      "dates": 59
+     },
+     "ic": {
+      "mean": -0.0046,
+      "t": -0.22,
+      "dates": 59
+     },
+     "delisting": {
+      "share": 0.0111,
+      "excludedMean": 0.0031,
+      "minus100Mean": -0.0081
+     },
+     "worstDate": -0.0682,
+     "shareOfPositiveDates": 0.5424
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 208,
+     "observations": 11854,
+     "meanExcessGross": 0.01,
+     "tNW": 1.09,
+     "meanExcessNet": {
+      "LOW": 0.009,
+      "BASE": 0.007,
+      "HIGH": 0.004
+     },
+     "tNWNetBase": 0.77,
+     "medianExcess": -0.0118,
+     "hitRate": 0.4689,
+     "meanMAE": -0.1199,
+     "spreadVsUniverse": {
+      "mean": 0.0119,
+      "t": 1.41,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0027,
+      "t": 0.34,
+      "dates": 57
+     },
+     "ic": {
+      "mean": 0.0164,
+      "t": 0.64,
+      "dates": 57
+     },
+     "delisting": {
+      "share": 0.0272,
+      "excludedMean": 0.0107,
+      "minus100Mean": -0.0178
+     },
+     "worstDate": -0.1025,
+     "shareOfPositiveDates": 0.614
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 208,
+     "observations": 11208,
+     "meanExcessGross": 0.0194,
+     "tNW": 1.32,
+     "meanExcessNet": {
+      "LOW": 0.0184,
+      "BASE": 0.0164,
+      "HIGH": 0.0134
+     },
+     "tNWNetBase": 1.11,
+     "medianExcess": -0.023,
+     "hitRate": 0.4561,
+     "meanMAE": -0.1695,
+     "spreadVsUniverse": {
+      "mean": 0.0302,
+      "t": 2.25,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0113,
+      "t": 0.93,
+      "dates": 54
+     },
+     "ic": {
+      "mean": 0.0398,
+      "t": 1.38,
+      "dates": 54
+     },
+     "delisting": {
+      "share": 0.0443,
+      "excludedMean": 0.0205,
+      "minus100Mean": -0.0278
+     },
+     "worstDate": -0.0967,
+     "shareOfPositiveDates": 0.5926
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 207,
+     "observations": 9927,
+     "meanExcessGross": 0.0203,
+     "tNW": 0.99,
+     "meanExcessNet": {
+      "LOW": 0.0193,
+      "BASE": 0.0173,
+      "HIGH": 0.0143
+     },
+     "tNWNetBase": 0.84,
+     "medianExcess": -0.0553,
+     "hitRate": 0.4343,
+     "meanMAE": -0.2313,
+     "spreadVsUniverse": {
+      "mean": 0.0574,
+      "t": 2.1,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0283,
+      "t": 1.15,
+      "dates": 48
+     },
+     "ic": {
+      "mean": 0.0572,
+      "t": 1.5,
+      "dates": 48
+     },
+     "delisting": {
+      "share": 0.0641,
+      "excludedMean": 0.0216,
+      "minus100Mean": -0.0512
+     },
+     "worstDate": -0.1158,
+     "shareOfPositiveDates": 0.5208
+    }
+   },
+   "TREND_TEMPLATE": {
+    "21": {
+     "dates": 59,
+     "avgNames": 332,
+     "observations": 19585,
+     "meanExcessGross": -0.0002,
+     "tNW": -0.06,
+     "meanExcessNet": {
+      "LOW": -0.0012,
+      "BASE": -0.0032,
+      "HIGH": -0.0062
+     },
+     "tNWNetBase": -1.07,
+     "medianExcess": -0.0043,
+     "hitRate": 0.4756,
+     "meanMAE": -0.0576,
+     "spreadVsUniverse": {
+      "mean": -0.0006,
+      "t": -0.19,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0019,
+      "t": -0.62,
+      "dates": 59
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0086,
+      "excludedMean": 0,
+      "minus100Mean": -0.0107
+     },
+     "worstDate": -0.0496,
+     "shareOfPositiveDates": 0.4746
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 330,
+     "observations": 18826,
+     "meanExcessGross": 0.0038,
+     "tNW": 0.54,
+     "meanExcessNet": {
+      "LOW": 0.0028,
+      "BASE": 0.0008,
+      "HIGH": -0.0022
+     },
+     "tNWNetBase": 0.12,
+     "medianExcess": -0.0138,
+     "hitRate": 0.4584,
+     "meanMAE": -0.1119,
+     "spreadVsUniverse": {
+      "mean": 0.0057,
+      "t": 0.81,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0002,
+      "t": 0.03,
+      "dates": 57
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0211,
+      "excludedMean": 0.0045,
+      "minus100Mean": -0.0228
+     },
+     "worstDate": -0.0753,
+     "shareOfPositiveDates": 0.5439
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 331,
+     "observations": 17861,
+     "meanExcessGross": 0.007,
+     "tNW": 0.57,
+     "meanExcessNet": {
+      "LOW": 0.006,
+      "BASE": 0.004,
+      "HIGH": 0.001
+     },
+     "tNWNetBase": 0.32,
+     "medianExcess": -0.0241,
+     "hitRate": 0.4495,
+     "meanMAE": -0.1623,
+     "spreadVsUniverse": {
+      "mean": 0.0178,
+      "t": 1.53,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0103,
+      "t": 0.89,
+      "dates": 54
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0349,
+      "excludedMean": 0.0087,
+      "minus100Mean": -0.0388
+     },
+     "worstDate": -0.0753,
+     "shareOfPositiveDates": 0.5
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 345,
+     "observations": 16543,
+     "meanExcessGross": -0.0048,
+     "tNW": -0.33,
+     "meanExcessNet": {
+      "LOW": -0.0058,
+      "BASE": -0.0078,
+      "HIGH": -0.0108
+     },
+     "tNWNetBase": -0.54,
+     "medianExcess": -0.0539,
+     "hitRate": 0.4257,
+     "meanMAE": -0.2228,
+     "spreadVsUniverse": {
+      "mean": 0.0323,
+      "t": 1.64,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0219,
+      "t": 1.2,
+      "dates": 48
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0508,
+      "excludedMean": -0.0023,
+      "minus100Mean": -0.0681
+     },
+     "worstDate": -0.1127,
+     "shareOfPositiveDates": 0.4583
+    }
+   },
+   "UNIVERSE": {
+    "21": {
+     "dates": 59,
+     "avgNames": 2077,
+     "observations": 122564,
+     "meanExcessGross": 0.0005,
+     "tNW": 0.16,
+     "meanExcessNet": {
+      "LOW": -0.0005,
+      "BASE": -0.0025,
+      "HIGH": -0.0055
+     },
+     "tNWNetBase": -0.86,
+     "medianExcess": -0.0029,
+     "hitRate": 0.4829,
+     "meanMAE": -0.0618,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 59
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 59
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0039,
+      "excludedMean": 0.0005,
+      "minus100Mean": -0.0034
+     },
+     "worstDate": -0.0863,
+     "shareOfPositiveDates": 0.5085
+    },
+    "63": {
+     "dates": 57,
+     "avgNames": 2074,
+     "observations": 118224,
+     "meanExcessGross": -0.0019,
+     "tNW": -0.27,
+     "meanExcessNet": {
+      "LOW": -0.0029,
+      "BASE": -0.0049,
+      "HIGH": -0.0079
+     },
+     "tNWNetBase": -0.69,
+     "medianExcess": -0.0115,
+     "hitRate": 0.4643,
+     "meanMAE": -0.1145,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 57
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 57
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0105,
+      "excludedMean": -0.0018,
+      "minus100Mean": -0.0126
+     },
+     "worstDate": -0.1179,
+     "shareOfPositiveDates": 0.4737
+    },
+    "126": {
+     "dates": 54,
+     "avgNames": 2070,
+     "observations": 111784,
+     "meanExcessGross": -0.0108,
+     "tNW": -0.93,
+     "meanExcessNet": {
+      "LOW": -0.0118,
+      "BASE": -0.0138,
+      "HIGH": -0.0168
+     },
+     "tNWNetBase": -1.19,
+     "medianExcess": -0.0289,
+     "hitRate": 0.439,
+     "meanMAE": -0.1652,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 54
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 54
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0201,
+      "excludedMean": -0.0113,
+      "minus100Mean": -0.0321
+     },
+     "worstDate": -0.1125,
+     "shareOfPositiveDates": 0.3519
+    },
+    "252": {
+     "dates": 48,
+     "avgNames": 2063,
+     "observations": 99002,
+     "meanExcessGross": -0.0371,
+     "tNW": -1.81,
+     "meanExcessNet": {
+      "LOW": -0.0381,
+      "BASE": -0.0401,
+      "HIGH": -0.0431
+     },
+     "tNWNetBase": -1.96,
+     "medianExcess": -0.0741,
+     "hitRate": 0.3969,
+     "meanMAE": -0.2315,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 48
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 48
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0389,
+      "excludedMean": -0.039,
+      "minus100Mean": -0.0805
+     },
+     "worstDate": -0.1476,
+     "shareOfPositiveDates": 0.2708
+    }
+   }
+  },
+  "VALIDATION": {
+   "M1_TECH_EQUAL": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6754,
+     "meanExcessGross": -0.0153,
+     "tNW": -2.69,
+     "meanExcessNet": {
+      "LOW": -0.0163,
+      "BASE": -0.0183,
+      "HIGH": -0.0213
+     },
+     "tNWNetBase": -3.22,
+     "medianExcess": -0.0156,
+     "hitRate": 0.4282,
+     "meanMAE": -0.0857,
+     "spreadVsUniverse": {
+      "mean": -0.0067,
+      "t": -1.72,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0077,
+      "t": -2.01,
+      "dates": 28
+     },
+     "ic": {
+      "mean": -0.0094,
+      "t": -0.5,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0074,
+      "excludedMean": -0.0152,
+      "minus100Mean": -0.0227
+     },
+     "worstDate": -0.0888,
+     "shareOfPositiveDates": 0.2857
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6279,
+     "meanExcessGross": -0.033,
+     "tNW": -2.9,
+     "meanExcessNet": {
+      "LOW": -0.034,
+      "BASE": -0.036,
+      "HIGH": -0.039
+     },
+     "tNWNetBase": -3.17,
+     "medianExcess": -0.0386,
+     "hitRate": 0.4083,
+     "meanMAE": -0.1529,
+     "spreadVsUniverse": {
+      "mean": -0.0066,
+      "t": -0.8,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0106,
+      "t": -1.27,
+      "dates": 26
+     },
+     "ic": {
+      "mean": -0.0026,
+      "t": -0.13,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0226,
+      "excludedMean": -0.0337,
+      "minus100Mean": -0.0561
+     },
+     "worstDate": -0.1245,
+     "shareOfPositiveDates": 0.2308
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5566,
+     "meanExcessGross": -0.0489,
+     "tNW": -1.8,
+     "meanExcessNet": {
+      "LOW": -0.0499,
+      "BASE": -0.0519,
+      "HIGH": -0.0549
+     },
+     "tNWNetBase": -1.91,
+     "medianExcess": -0.0589,
+     "hitRate": 0.401,
+     "meanMAE": -0.2174,
+     "spreadVsUniverse": {
+      "mean": -0.0076,
+      "t": -0.71,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0145,
+      "t": -1.17,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.006,
+      "t": 0.27,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0402,
+      "excludedMean": -0.0519,
+      "minus100Mean": -0.0911
+     },
+     "worstDate": -0.2012,
+     "shareOfPositiveDates": 0.3913
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.0486,
+     "tNW": -1.56,
+     "meanExcessNet": {
+      "LOW": -0.0496,
+      "BASE": -0.0516,
+      "HIGH": -0.0546
+     },
+     "tNWNetBase": -1.66,
+     "medianExcess": -0.0457,
+     "hitRate": 0.4405,
+     "meanMAE": -0.3028,
+     "spreadVsUniverse": {
+      "mean": 0.0108,
+      "t": 1.32,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0017,
+      "t": 0.18,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.0642,
+      "t": 3.48,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0592,
+      "excludedMean": -0.0584,
+      "minus100Mean": -0.1124
+     },
+     "worstDate": -0.2776,
+     "shareOfPositiveDates": 0.2353
+    }
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6754,
+     "meanExcessGross": -0.015,
+     "tNW": -2.45,
+     "meanExcessNet": {
+      "LOW": -0.016,
+      "BASE": -0.018,
+      "HIGH": -0.021
+     },
+     "tNWNetBase": -2.94,
+     "medianExcess": -0.0157,
+     "hitRate": 0.4307,
+     "meanMAE": -0.086,
+     "spreadVsUniverse": {
+      "mean": -0.0064,
+      "t": -1.78,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0082,
+      "t": -2.13,
+      "dates": 28
+     },
+     "ic": {
+      "mean": -0.0075,
+      "t": -0.4,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0093,
+      "excludedMean": -0.0149,
+      "minus100Mean": -0.0243
+     },
+     "worstDate": -0.0919,
+     "shareOfPositiveDates": 0.3214
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6279,
+     "meanExcessGross": -0.034,
+     "tNW": -2.96,
+     "meanExcessNet": {
+      "LOW": -0.035,
+      "BASE": -0.037,
+      "HIGH": -0.04
+     },
+     "tNWNetBase": -3.22,
+     "medianExcess": -0.0364,
+     "hitRate": 0.4114,
+     "meanMAE": -0.1531,
+     "spreadVsUniverse": {
+      "mean": -0.0077,
+      "t": -0.96,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0083,
+      "t": -0.99,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0003,
+      "t": 0.02,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0276,
+      "excludedMean": -0.0351,
+      "minus100Mean": -0.0622
+     },
+     "worstDate": -0.1343,
+     "shareOfPositiveDates": 0.2692
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5566,
+     "meanExcessGross": -0.0514,
+     "tNW": -1.83,
+     "meanExcessNet": {
+      "LOW": -0.0524,
+      "BASE": -0.0544,
+      "HIGH": -0.0574
+     },
+     "tNWNetBase": -1.93,
+     "medianExcess": -0.0585,
+     "hitRate": 0.3989,
+     "meanMAE": -0.2174,
+     "spreadVsUniverse": {
+      "mean": -0.01,
+      "t": -0.91,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0123,
+      "t": -1.04,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0083,
+      "t": 0.38,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0499,
+      "excludedMean": -0.0559,
+      "minus100Mean": -0.1041
+     },
+     "worstDate": -0.2034,
+     "shareOfPositiveDates": 0.3913
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.0506,
+     "tNW": -1.51,
+     "meanExcessNet": {
+      "LOW": -0.0516,
+      "BASE": -0.0536,
+      "HIGH": -0.0566
+     },
+     "tNWNetBase": -1.6,
+     "medianExcess": -0.0477,
+     "hitRate": 0.4384,
+     "meanMAE": -0.3031,
+     "spreadVsUniverse": {
+      "mean": 0.0088,
+      "t": 1.09,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0038,
+      "t": 0.35,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.0647,
+      "t": 3.53,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0782,
+      "excludedMean": -0.0637,
+      "minus100Mean": -0.135
+     },
+     "worstDate": -0.253,
+     "shareOfPositiveDates": 0.2353
+    }
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6753,
+     "meanExcessGross": -0.0109,
+     "tNW": -1.63,
+     "meanExcessNet": {
+      "LOW": -0.0119,
+      "BASE": -0.0139,
+      "HIGH": -0.0169
+     },
+     "tNWNetBase": -2.08,
+     "medianExcess": -0.0134,
+     "hitRate": 0.4466,
+     "meanMAE": -0.0854,
+     "spreadVsUniverse": {
+      "mean": -0.0024,
+      "t": -0.7,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0035,
+      "t": -1.18,
+      "dates": 28
+     },
+     "ic": {
+      "mean": -0.0008,
+      "t": -0.06,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.012,
+      "excludedMean": -0.0108,
+      "minus100Mean": -0.0229
+     },
+     "worstDate": -0.0865,
+     "shareOfPositiveDates": 0.3929
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6278,
+     "meanExcessGross": -0.03,
+     "tNW": -2.64,
+     "meanExcessNet": {
+      "LOW": -0.031,
+      "BASE": -0.033,
+      "HIGH": -0.036
+     },
+     "tNWNetBase": -2.9,
+     "medianExcess": -0.0321,
+     "hitRate": 0.417,
+     "meanMAE": -0.152,
+     "spreadVsUniverse": {
+      "mean": -0.0037,
+      "t": -0.54,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0052,
+      "t": -0.67,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0089,
+      "t": 0.51,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0335,
+      "excludedMean": -0.031,
+      "minus100Mean": -0.064
+     },
+     "worstDate": -0.1343,
+     "shareOfPositiveDates": 0.3077
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5565,
+     "meanExcessGross": -0.046,
+     "tNW": -1.8,
+     "meanExcessNet": {
+      "LOW": -0.047,
+      "BASE": -0.049,
+      "HIGH": -0.052
+     },
+     "tNWNetBase": -1.91,
+     "medianExcess": -0.0489,
+     "hitRate": 0.4088,
+     "meanMAE": -0.2145,
+     "spreadVsUniverse": {
+      "mean": -0.0046,
+      "t": -0.59,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0041,
+      "t": -0.48,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0113,
+      "t": 0.74,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0588,
+      "excludedMean": -0.0504,
+      "minus100Mean": -0.1072
+     },
+     "worstDate": -0.1839,
+     "shareOfPositiveDates": 0.3478
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.0497,
+     "tNW": -1.86,
+     "meanExcessNet": {
+      "LOW": -0.0507,
+      "BASE": -0.0527,
+      "HIGH": -0.0557
+     },
+     "tNWNetBase": -1.98,
+     "medianExcess": -0.0473,
+     "hitRate": 0.4338,
+     "meanMAE": -0.3029,
+     "spreadVsUniverse": {
+      "mean": 0.0097,
+      "t": 1.68,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0044,
+      "t": 0.79,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.0404,
+      "t": 4.37,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0881,
+      "excludedMean": -0.0637,
+      "minus100Mean": -0.1431
+     },
+     "worstDate": -0.2045,
+     "shareOfPositiveDates": 0.2353
+    }
+   },
+   "M4_EMERGING_TECH": {
+    "21": {
+     "dates": 28,
+     "avgNames": 152,
+     "observations": 4252,
+     "meanExcessGross": -0.0148,
+     "tNW": -2.9,
+     "meanExcessNet": {
+      "LOW": -0.0158,
+      "BASE": -0.0178,
+      "HIGH": -0.0208
+     },
+     "tNWNetBase": -3.49,
+     "medianExcess": -0.014,
+     "hitRate": 0.4349,
+     "meanMAE": -0.0776,
+     "spreadVsUniverse": {
+      "mean": -0.0062,
+      "t": -1.53,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0055,
+      "t": -1.44,
+      "dates": 28
+     },
+     "ic": {
+      "mean": -0.009,
+      "t": -0.44,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0047,
+      "excludedMean": -0.0148,
+      "minus100Mean": -0.0195
+     },
+     "worstDate": -0.0776,
+     "shareOfPositiveDates": 0.3214
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 152,
+     "observations": 3939,
+     "meanExcessGross": -0.0265,
+     "tNW": -2.59,
+     "meanExcessNet": {
+      "LOW": -0.0275,
+      "BASE": -0.0295,
+      "HIGH": -0.0325
+     },
+     "tNWNetBase": -2.88,
+     "medianExcess": -0.0279,
+     "hitRate": 0.4237,
+     "meanMAE": -0.138,
+     "spreadVsUniverse": {
+      "mean": -0.0002,
+      "t": -0.03,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0029,
+      "t": -0.47,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0093,
+      "t": 0.43,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0137,
+      "excludedMean": -0.0269,
+      "minus100Mean": -0.0403
+     },
+     "worstDate": -0.1244,
+     "shareOfPositiveDates": 0.2308
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 151,
+     "observations": 3468,
+     "meanExcessGross": -0.0392,
+     "tNW": -1.84,
+     "meanExcessNet": {
+      "LOW": -0.0402,
+      "BASE": -0.0422,
+      "HIGH": -0.0452
+     },
+     "tNWNetBase": -1.98,
+     "medianExcess": -0.0447,
+     "hitRate": 0.4129,
+     "meanMAE": -0.1972,
+     "spreadVsUniverse": {
+      "mean": 0.0022,
+      "t": 0.26,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0016,
+      "t": -0.21,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0115,
+      "t": 0.59,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0311,
+      "excludedMean": -0.0413,
+      "minus100Mean": -0.0714
+     },
+     "worstDate": -0.1367,
+     "shareOfPositiveDates": 0.3043
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 149,
+     "observations": 2537,
+     "meanExcessGross": -0.0224,
+     "tNW": -1.18,
+     "meanExcessNet": {
+      "LOW": -0.0234,
+      "BASE": -0.0254,
+      "HIGH": -0.0284
+     },
+     "tNWNetBase": -1.34,
+     "medianExcess": -0.0215,
+     "hitRate": 0.4691,
+     "meanMAE": -0.2715,
+     "spreadVsUniverse": {
+      "mean": 0.037,
+      "t": 2.9,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0322,
+      "t": 3.43,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.0613,
+      "t": 4.6,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0512,
+      "excludedMean": -0.0303,
+      "minus100Mean": -0.0773
+     },
+     "worstDate": -0.1591,
+     "shareOfPositiveDates": 0.3529
+    }
+   },
+   "MOM_12_1": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6747,
+     "meanExcessGross": -0.0173,
+     "tNW": -1.6,
+     "meanExcessNet": {
+      "LOW": -0.0183,
+      "BASE": -0.0203,
+      "HIGH": -0.0233
+     },
+     "tNWNetBase": -1.88,
+     "medianExcess": -0.0221,
+     "hitRate": 0.4255,
+     "meanMAE": -0.1164,
+     "spreadVsUniverse": {
+      "mean": -0.0087,
+      "t": -0.95,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0207,
+      "t": -2.02,
+      "dates": 28
+     },
+     "ic": {
+      "mean": 0.0025,
+      "t": 0.07,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0096,
+      "excludedMean": -0.0172,
+      "minus100Mean": -0.0268
+     },
+     "worstDate": -0.1557,
+     "shareOfPositiveDates": 0.4643
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6272,
+     "meanExcessGross": -0.045,
+     "tNW": -2.15,
+     "meanExcessNet": {
+      "LOW": -0.046,
+      "BASE": -0.048,
+      "HIGH": -0.051
+     },
+     "tNWNetBase": -2.29,
+     "medianExcess": -0.059,
+     "hitRate": 0.394,
+     "meanMAE": -0.2006,
+     "spreadVsUniverse": {
+      "mean": -0.0187,
+      "t": -1.13,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0394,
+      "t": -2.01,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0072,
+      "t": 0.17,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0231,
+      "excludedMean": -0.0469,
+      "minus100Mean": -0.0694
+     },
+     "worstDate": -0.2107,
+     "shareOfPositiveDates": 0.3077
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5559,
+     "meanExcessGross": -0.0666,
+     "tNW": -1.62,
+     "meanExcessNet": {
+      "LOW": -0.0676,
+      "BASE": -0.0696,
+      "HIGH": -0.0726
+     },
+     "tNWNetBase": -1.69,
+     "medianExcess": -0.0853,
+     "hitRate": 0.3848,
+     "meanMAE": -0.2763,
+     "spreadVsUniverse": {
+      "mean": -0.0252,
+      "t": -1.14,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0615,
+      "t": -2,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0191,
+      "t": 0.48,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0336,
+      "excludedMean": -0.0698,
+      "minus100Mean": -0.102
+     },
+     "worstDate": -0.272,
+     "shareOfPositiveDates": 0.3478
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.1505,
+     "tNW": -1.79,
+     "meanExcessNet": {
+      "LOW": -0.1515,
+      "BASE": -0.1535,
+      "HIGH": -0.1565
+     },
+     "tNWNetBase": -1.82,
+     "medianExcess": -0.1988,
+     "hitRate": 0.3312,
+     "meanMAE": -0.4253,
+     "spreadVsUniverse": {
+      "mean": -0.0911,
+      "t": -1.62,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.1738,
+      "t": -2.17,
+      "dates": 17
+     },
+     "ic": {
+      "mean": -0.048,
+      "t": -0.66,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0395,
+      "excludedMean": -0.1604,
+      "minus100Mean": -0.1934
+     },
+     "worstDate": -0.5517,
+     "shareOfPositiveDates": 0.1765
+    }
+   },
+   "RS_6M": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6747,
+     "meanExcessGross": -0.0159,
+     "tNW": -1.58,
+     "meanExcessNet": {
+      "LOW": -0.0169,
+      "BASE": -0.0189,
+      "HIGH": -0.0219
+     },
+     "tNWNetBase": -1.88,
+     "medianExcess": -0.0197,
+     "hitRate": 0.438,
+     "meanMAE": -0.1133,
+     "spreadVsUniverse": {
+      "mean": -0.0074,
+      "t": -0.94,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0164,
+      "t": -2.04,
+      "dates": 28
+     },
+     "ic": {
+      "mean": 0.018,
+      "t": 0.6,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0099,
+      "excludedMean": -0.0159,
+      "minus100Mean": -0.0258
+     },
+     "worstDate": -0.1221,
+     "shareOfPositiveDates": 0.4286
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6272,
+     "meanExcessGross": -0.0461,
+     "tNW": -2.52,
+     "meanExcessNet": {
+      "LOW": -0.0471,
+      "BASE": -0.0491,
+      "HIGH": -0.0521
+     },
+     "tNWNetBase": -2.68,
+     "medianExcess": -0.0579,
+     "hitRate": 0.3943,
+     "meanMAE": -0.1984,
+     "spreadVsUniverse": {
+      "mean": -0.0198,
+      "t": -1.35,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0345,
+      "t": -1.97,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0101,
+      "t": 0.27,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0311,
+      "excludedMean": -0.0479,
+      "minus100Mean": -0.0784
+     },
+     "worstDate": -0.1896,
+     "shareOfPositiveDates": 0.2308
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5559,
+     "meanExcessGross": -0.0725,
+     "tNW": -2.17,
+     "meanExcessNet": {
+      "LOW": -0.0735,
+      "BASE": -0.0755,
+      "HIGH": -0.0785
+     },
+     "tNWNetBase": -2.26,
+     "medianExcess": -0.0747,
+     "hitRate": 0.3882,
+     "meanMAE": -0.2717,
+     "spreadVsUniverse": {
+      "mean": -0.0312,
+      "t": -1.92,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0475,
+      "t": -1.88,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0364,
+      "t": 0.97,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0527,
+      "excludedMean": -0.0781,
+      "minus100Mean": -0.1282
+     },
+     "worstDate": -0.2668,
+     "shareOfPositiveDates": 0.2609
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.1103,
+     "tNW": -2.19,
+     "meanExcessNet": {
+      "LOW": -0.1113,
+      "BASE": -0.1133,
+      "HIGH": -0.1163
+     },
+     "tNWNetBase": -2.25,
+     "medianExcess": -0.1319,
+     "hitRate": 0.3584,
+     "meanMAE": -0.3892,
+     "spreadVsUniverse": {
+      "mean": -0.0509,
+      "t": -2.09,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.1182,
+      "t": -2.28,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.054,
+      "t": 1.6,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0652,
+      "excludedMean": -0.1232,
+      "minus100Mean": -0.179
+     },
+     "worstDate": -0.465,
+     "shareOfPositiveDates": 0.1765
+    }
+   },
+   "LEADERSHIP_VU": {
+    "21": {
+     "dates": 28,
+     "avgNames": 241,
+     "observations": 6745,
+     "meanExcessGross": -0.0094,
+     "tNW": -1.27,
+     "meanExcessNet": {
+      "LOW": -0.0104,
+      "BASE": -0.0124,
+      "HIGH": -0.0154
+     },
+     "tNWNetBase": -1.67,
+     "medianExcess": -0.0122,
+     "hitRate": 0.4489,
+     "meanMAE": -0.0837,
+     "spreadVsUniverse": {
+      "mean": -0.0009,
+      "t": -0.13,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0059,
+      "t": -0.94,
+      "dates": 28
+     },
+     "ic": {
+      "mean": 0.0258,
+      "t": 0.76,
+      "dates": 28
+     },
+     "delisting": {
+      "share": 0.0142,
+      "excludedMean": -0.0093,
+      "minus100Mean": -0.0237
+     },
+     "worstDate": -0.0697,
+     "shareOfPositiveDates": 0.4286
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 242,
+     "observations": 6270,
+     "meanExcessGross": -0.0287,
+     "tNW": -2.04,
+     "meanExcessNet": {
+      "LOW": -0.0297,
+      "BASE": -0.0317,
+      "HIGH": -0.0347
+     },
+     "tNWNetBase": -2.26,
+     "medianExcess": -0.0388,
+     "hitRate": 0.4061,
+     "meanMAE": -0.15,
+     "spreadVsUniverse": {
+      "mean": -0.0024,
+      "t": -0.19,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0114,
+      "t": -0.96,
+      "dates": 26
+     },
+     "ic": {
+      "mean": 0.0333,
+      "t": 0.76,
+      "dates": 26
+     },
+     "delisting": {
+      "share": 0.0354,
+      "excludedMean": -0.0296,
+      "minus100Mean": -0.0648
+     },
+     "worstDate": -0.121,
+     "shareOfPositiveDates": 0.2308
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 242,
+     "observations": 5557,
+     "meanExcessGross": -0.0373,
+     "tNW": -1.52,
+     "meanExcessNet": {
+      "LOW": -0.0383,
+      "BASE": -0.0403,
+      "HIGH": -0.0433
+     },
+     "tNWNetBase": -1.64,
+     "medianExcess": -0.0484,
+     "hitRate": 0.4022,
+     "meanMAE": -0.2082,
+     "spreadVsUniverse": {
+      "mean": 0.0041,
+      "t": 0.32,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0098,
+      "t": -0.72,
+      "dates": 23
+     },
+     "ic": {
+      "mean": 0.0635,
+      "t": 1.48,
+      "dates": 23
+     },
+     "delisting": {
+      "share": 0.0572,
+      "excludedMean": -0.0399,
+      "minus100Mean": -0.0964
+     },
+     "worstDate": -0.1781,
+     "shareOfPositiveDates": 0.3043
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 244,
+     "observations": 4154,
+     "meanExcessGross": -0.0551,
+     "tNW": -1.54,
+     "meanExcessNet": {
+      "LOW": -0.0561,
+      "BASE": -0.0581,
+      "HIGH": -0.0611
+     },
+     "tNWNetBase": -1.62,
+     "medianExcess": -0.0809,
+     "hitRate": 0.3914,
+     "meanMAE": -0.3049,
+     "spreadVsUniverse": {
+      "mean": 0.0043,
+      "t": 0.37,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0326,
+      "t": -2.28,
+      "dates": 17
+     },
+     "ic": {
+      "mean": 0.0778,
+      "t": 2.43,
+      "dates": 17
+     },
+     "delisting": {
+      "share": 0.0705,
+      "excludedMean": -0.0658,
+      "minus100Mean": -0.1292
+     },
+     "worstDate": -0.393,
+     "shareOfPositiveDates": 0.2941
+    }
+   },
+   "TREND_TEMPLATE": {
+    "21": {
+     "dates": 28,
+     "avgNames": 304,
+     "observations": 8505,
+     "meanExcessGross": -0.0098,
+     "tNW": -1.31,
+     "meanExcessNet": {
+      "LOW": -0.0108,
+      "BASE": -0.0128,
+      "HIGH": -0.0158
+     },
+     "tNWNetBase": -1.72,
+     "medianExcess": -0.0166,
+     "hitRate": 0.4282,
+     "meanMAE": -0.0875,
+     "spreadVsUniverse": {
+      "mean": -0.0013,
+      "t": -0.19,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.007,
+      "t": -1.03,
+      "dates": 28
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0099,
+      "excludedMean": -0.0097,
+      "minus100Mean": -0.0225
+     },
+     "worstDate": -0.0752,
+     "shareOfPositiveDates": 0.3929
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 302,
+     "observations": 7834,
+     "meanExcessGross": -0.0279,
+     "tNW": -2.12,
+     "meanExcessNet": {
+      "LOW": -0.0289,
+      "BASE": -0.0309,
+      "HIGH": -0.0339
+     },
+     "tNWNetBase": -2.34,
+     "medianExcess": -0.0497,
+     "hitRate": 0.3837,
+     "meanMAE": -0.1538,
+     "spreadVsUniverse": {
+      "mean": -0.0016,
+      "t": -0.13,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0109,
+      "t": -0.91,
+      "dates": 26
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0253,
+      "excludedMean": -0.0289,
+      "minus100Mean": -0.0623
+     },
+     "worstDate": -0.1208,
+     "shareOfPositiveDates": 0.1923
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 303,
+     "observations": 6956,
+     "meanExcessGross": -0.0374,
+     "tNW": -1.48,
+     "meanExcessNet": {
+      "LOW": -0.0384,
+      "BASE": -0.0404,
+      "HIGH": -0.0434
+     },
+     "tNWNetBase": -1.6,
+     "medianExcess": -0.0617,
+     "hitRate": 0.3848,
+     "meanMAE": -0.2134,
+     "spreadVsUniverse": {
+      "mean": 0.004,
+      "t": 0.29,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0086,
+      "t": -0.67,
+      "dates": 23
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0394,
+      "excludedMean": -0.0396,
+      "minus100Mean": -0.0913
+     },
+     "worstDate": -0.1585,
+     "shareOfPositiveDates": 0.2609
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 349,
+     "observations": 5926,
+     "meanExcessGross": -0.0576,
+     "tNW": -1.37,
+     "meanExcessNet": {
+      "LOW": -0.0586,
+      "BASE": -0.0606,
+      "HIGH": -0.0636
+     },
+     "tNWNetBase": -1.44,
+     "medianExcess": -0.093,
+     "hitRate": 0.3787,
+     "meanMAE": -0.3137,
+     "spreadVsUniverse": {
+      "mean": 0.0018,
+      "t": 0.12,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0306,
+      "t": -1.49,
+      "dates": 17
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0503,
+      "excludedMean": -0.0663,
+      "minus100Mean": -0.1155
+     },
+     "worstDate": -0.3559,
+     "shareOfPositiveDates": 0.3529
+    }
+   },
+   "UNIVERSE": {
+    "21": {
+     "dates": 28,
+     "avgNames": 2407,
+     "observations": 67381,
+     "meanExcessGross": -0.0086,
+     "tNW": -1.65,
+     "meanExcessNet": {
+      "LOW": -0.0096,
+      "BASE": -0.0116,
+      "HIGH": -0.0146
+     },
+     "tNWNetBase": -2.23,
+     "medianExcess": -0.0099,
+     "hitRate": 0.4552,
+     "meanMAE": -0.0842,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 28
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 28
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0034,
+      "excludedMean": -0.0086,
+      "minus100Mean": -0.012
+     },
+     "worstDate": -0.0667,
+     "shareOfPositiveDates": 0.3929
+    },
+    "63": {
+     "dates": 26,
+     "avgNames": 2410,
+     "observations": 62647,
+     "meanExcessGross": -0.0263,
+     "tNW": -2.34,
+     "meanExcessNet": {
+      "LOW": -0.0273,
+      "BASE": -0.0293,
+      "HIGH": -0.0323
+     },
+     "tNWNetBase": -2.6,
+     "medianExcess": -0.0288,
+     "hitRate": 0.4252,
+     "meanMAE": -0.1488,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 26
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 26
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0096,
+      "excludedMean": -0.0268,
+      "minus100Mean": -0.0363
+     },
+     "worstDate": -0.1166,
+     "shareOfPositiveDates": 0.3462
+    },
+    "126": {
+     "dates": 23,
+     "avgNames": 2415,
+     "observations": 55525,
+     "meanExcessGross": -0.0413,
+     "tNW": -1.95,
+     "meanExcessNet": {
+      "LOW": -0.0423,
+      "BASE": -0.0443,
+      "HIGH": -0.0473
+     },
+     "tNWNetBase": -2.09,
+     "medianExcess": -0.0446,
+     "hitRate": 0.4138,
+     "meanMAE": -0.2091,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 23
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 23
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0178,
+      "excludedMean": -0.0434,
+      "minus100Mean": -0.0607
+     },
+     "worstDate": -0.1297,
+     "shareOfPositiveDates": 0.2174
+    },
+    "252": {
+     "dates": 17,
+     "avgNames": 2438,
+     "observations": 41447,
+     "meanExcessGross": -0.0594,
+     "tNW": -2.12,
+     "meanExcessNet": {
+      "LOW": -0.0604,
+      "BASE": -0.0624,
+      "HIGH": -0.0654
+     },
+     "tNWNetBase": -2.23,
+     "medianExcess": -0.0595,
+     "hitRate": 0.4164,
+     "meanMAE": -0.3079,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 17
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 17
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0336,
+      "excludedMean": -0.0678,
+      "minus100Mean": -0.0977
+     },
+     "worstDate": -0.1551,
+     "shareOfPositiveDates": 0.2353
+    }
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "M1_TECH_EQUAL": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9441,
+     "meanExcessGross": -0.0001,
+     "tNW": -0.02,
+     "meanExcessNet": {
+      "LOW": -0.0011,
+      "BASE": -0.0031,
+      "HIGH": -0.0061
+     },
+     "tNWNetBase": -0.58,
+     "medianExcess": -0.01,
+     "hitRate": 0.4515,
+     "meanMAE": -0.0756,
+     "spreadVsUniverse": {
+      "mean": 0.0055,
+      "t": 1.31,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0017,
+      "t": 0.54,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0158,
+      "t": 0.95,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0064,
+      "excludedMean": 0,
+      "minus100Mean": -0.0065
+     },
+     "worstDate": -0.0734,
+     "shareOfPositiveDates": 0.5
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8908,
+     "meanExcessGross": -0.0213,
+     "tNW": -1.57,
+     "meanExcessNet": {
+      "LOW": -0.0223,
+      "BASE": -0.0243,
+      "HIGH": -0.0273
+     },
+     "tNWNetBase": -1.79,
+     "medianExcess": -0.0464,
+     "hitRate": 0.3992,
+     "meanMAE": -0.1359,
+     "spreadVsUniverse": {
+      "mean": -0.0093,
+      "t": -0.86,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0132,
+      "t": -1.89,
+      "dates": 36
+     },
+     "ic": {
+      "mean": -0.0247,
+      "t": -1.29,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0231,
+      "excludedMean": -0.021,
+      "minus100Mean": -0.045
+     },
+     "worstDate": -0.1186,
+     "shareOfPositiveDates": 0.3056
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8096,
+     "meanExcessGross": -0.0237,
+     "tNW": -0.9,
+     "meanExcessNet": {
+      "LOW": -0.0247,
+      "BASE": -0.0267,
+      "HIGH": -0.0297
+     },
+     "tNWNetBase": -1.01,
+     "medianExcess": -0.0695,
+     "hitRate": 0.3875,
+     "meanMAE": -0.1759,
+     "spreadVsUniverse": {
+      "mean": 0.0023,
+      "t": 0.16,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0047,
+      "t": -0.59,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0062,
+      "t": 0.34,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.038,
+      "excludedMean": -0.0236,
+      "minus100Mean": -0.0648
+     },
+     "worstDate": -0.167,
+     "shareOfPositiveDates": 0.2727
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6523,
+     "meanExcessGross": -0.0201,
+     "tNW": -0.41,
+     "meanExcessNet": {
+      "LOW": -0.0211,
+      "BASE": -0.0231,
+      "HIGH": -0.0261
+     },
+     "tNWNetBase": -0.47,
+     "medianExcess": -0.1318,
+     "hitRate": 0.3669,
+     "meanMAE": -0.2305,
+     "spreadVsUniverse": {
+      "mean": 0.0252,
+      "t": 1.06,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0027,
+      "t": -0.21,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.016,
+      "t": 1.31,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0523,
+      "excludedMean": -0.0186,
+      "minus100Mean": -0.0799
+     },
+     "worstDate": -0.1642,
+     "shareOfPositiveDates": 0.3704
+    }
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9441,
+     "meanExcessGross": -0.0015,
+     "tNW": -0.3,
+     "meanExcessNet": {
+      "LOW": -0.0025,
+      "BASE": -0.0045,
+      "HIGH": -0.0075
+     },
+     "tNWNetBase": -0.9,
+     "medianExcess": -0.0106,
+     "hitRate": 0.4456,
+     "meanMAE": -0.0755,
+     "spreadVsUniverse": {
+      "mean": 0.0041,
+      "t": 1.19,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0006,
+      "t": 0.21,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.017,
+      "t": 1.09,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0085,
+      "excludedMean": -0.0013,
+      "minus100Mean": -0.01
+     },
+     "worstDate": -0.0677,
+     "shareOfPositiveDates": 0.4737
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8908,
+     "meanExcessGross": -0.0206,
+     "tNW": -1.62,
+     "meanExcessNet": {
+      "LOW": -0.0216,
+      "BASE": -0.0236,
+      "HIGH": -0.0266
+     },
+     "tNWNetBase": -1.86,
+     "medianExcess": -0.0447,
+     "hitRate": 0.4001,
+     "meanMAE": -0.135,
+     "spreadVsUniverse": {
+      "mean": -0.0086,
+      "t": -0.96,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0124,
+      "t": -2.07,
+      "dates": 36
+     },
+     "ic": {
+      "mean": -0.0249,
+      "t": -1.38,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0295,
+      "excludedMean": -0.0204,
+      "minus100Mean": -0.051
+     },
+     "worstDate": -0.1238,
+     "shareOfPositiveDates": 0.3333
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8096,
+     "meanExcessGross": -0.0298,
+     "tNW": -1.1,
+     "meanExcessNet": {
+      "LOW": -0.0308,
+      "BASE": -0.0328,
+      "HIGH": -0.0358
+     },
+     "tNWNetBase": -1.21,
+     "medianExcess": -0.0727,
+     "hitRate": 0.382,
+     "meanMAE": -0.1764,
+     "spreadVsUniverse": {
+      "mean": -0.0038,
+      "t": -0.26,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0062,
+      "t": -0.68,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0034,
+      "t": 0.18,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0494,
+      "excludedMean": -0.0304,
+      "minus100Mean": -0.0836
+     },
+     "worstDate": -0.1827,
+     "shareOfPositiveDates": 0.303
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6523,
+     "meanExcessGross": -0.0254,
+     "tNW": -0.52,
+     "meanExcessNet": {
+      "LOW": -0.0264,
+      "BASE": -0.0284,
+      "HIGH": -0.0314
+     },
+     "tNWNetBase": -0.58,
+     "medianExcess": -0.1301,
+     "hitRate": 0.3655,
+     "meanMAE": -0.2304,
+     "spreadVsUniverse": {
+      "mean": 0.0199,
+      "t": 0.82,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0027,
+      "t": 0.18,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.0132,
+      "t": 0.87,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0713,
+      "excludedMean": -0.0257,
+      "minus100Mean": -0.1087
+     },
+     "worstDate": -0.1623,
+     "shareOfPositiveDates": 0.3704
+    }
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9441,
+     "meanExcessGross": -0.0009,
+     "tNW": -0.2,
+     "meanExcessNet": {
+      "LOW": -0.0019,
+      "BASE": -0.0039,
+      "HIGH": -0.0069
+     },
+     "tNWNetBase": -0.86,
+     "medianExcess": -0.0113,
+     "hitRate": 0.447,
+     "meanMAE": -0.0722,
+     "spreadVsUniverse": {
+      "mean": 0.0047,
+      "t": 1.83,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0014,
+      "t": 0.7,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0128,
+      "t": 1.6,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0121,
+      "excludedMean": -0.0007,
+      "minus100Mean": -0.013
+     },
+     "worstDate": -0.0539,
+     "shareOfPositiveDates": 0.5
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8909,
+     "meanExcessGross": -0.0125,
+     "tNW": -1.01,
+     "meanExcessNet": {
+      "LOW": -0.0135,
+      "BASE": -0.0155,
+      "HIGH": -0.0185
+     },
+     "tNWNetBase": -1.25,
+     "medianExcess": -0.039,
+     "hitRate": 0.4084,
+     "meanMAE": -0.128,
+     "spreadVsUniverse": {
+      "mean": -0.0005,
+      "t": -0.07,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0083,
+      "t": -1.48,
+      "dates": 36
+     },
+     "ic": {
+      "mean": -0.0128,
+      "t": -1.11,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.033,
+      "excludedMean": -0.0116,
+      "minus100Mean": -0.046
+     },
+     "worstDate": -0.1089,
+     "shareOfPositiveDates": 0.3889
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8096,
+     "meanExcessGross": -0.0212,
+     "tNW": -0.85,
+     "meanExcessNet": {
+      "LOW": -0.0222,
+      "BASE": -0.0242,
+      "HIGH": -0.0272
+     },
+     "tNWNetBase": -0.97,
+     "medianExcess": -0.0653,
+     "hitRate": 0.3948,
+     "meanMAE": -0.1671,
+     "spreadVsUniverse": {
+      "mean": 0.0048,
+      "t": 0.39,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.002,
+      "t": 0.14,
+      "dates": 33
+     },
+     "ic": {
+      "mean": -0.0028,
+      "t": -0.17,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0485,
+      "excludedMean": -0.0208,
+      "minus100Mean": -0.0737
+     },
+     "worstDate": -0.1297,
+     "shareOfPositiveDates": 0.3636
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6523,
+     "meanExcessGross": -0.0294,
+     "tNW": -0.67,
+     "meanExcessNet": {
+      "LOW": -0.0304,
+      "BASE": -0.0324,
+      "HIGH": -0.0354
+     },
+     "tNWNetBase": -0.74,
+     "medianExcess": -0.1208,
+     "hitRate": 0.3701,
+     "meanMAE": -0.2212,
+     "spreadVsUniverse": {
+      "mean": 0.0159,
+      "t": 0.91,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0102,
+      "t": 0.46,
+      "dates": 27
+     },
+     "ic": {
+      "mean": -0.0026,
+      "t": -0.14,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0613,
+      "excludedMean": -0.026,
+      "minus100Mean": -0.0981
+     },
+     "worstDate": -0.1347,
+     "shareOfPositiveDates": 0.2963
+    }
+   },
+   "M4_EMERGING_TECH": {
+    "21": {
+     "dates": 38,
+     "avgNames": 161,
+     "observations": 6126,
+     "meanExcessGross": -0.0039,
+     "tNW": -0.73,
+     "meanExcessNet": {
+      "LOW": -0.0049,
+      "BASE": -0.0069,
+      "HIGH": -0.0099
+     },
+     "tNWNetBase": -1.29,
+     "medianExcess": -0.0103,
+     "hitRate": 0.4474,
+     "meanMAE": -0.0654,
+     "spreadVsUniverse": {
+      "mean": 0.0017,
+      "t": 0.43,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0027,
+      "t": 0.88,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0258,
+      "t": 1.59,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0046,
+      "excludedMean": -0.0038,
+      "minus100Mean": -0.0085
+     },
+     "worstDate": -0.0772,
+     "shareOfPositiveDates": 0.4474
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 161,
+     "observations": 5778,
+     "meanExcessGross": -0.0224,
+     "tNW": -1.86,
+     "meanExcessNet": {
+      "LOW": -0.0234,
+      "BASE": -0.0254,
+      "HIGH": -0.0284
+     },
+     "tNWNetBase": -2.1,
+     "medianExcess": -0.044,
+     "hitRate": 0.3984,
+     "meanMAE": -0.1199,
+     "spreadVsUniverse": {
+      "mean": -0.0104,
+      "t": -1.11,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0125,
+      "t": -1.74,
+      "dates": 36
+     },
+     "ic": {
+      "mean": -0.0132,
+      "t": -0.71,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0202,
+      "excludedMean": -0.0219,
+      "minus100Mean": -0.0429
+     },
+     "worstDate": -0.1234,
+     "shareOfPositiveDates": 0.3056
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 160,
+     "observations": 5267,
+     "meanExcessGross": -0.0317,
+     "tNW": -1.33,
+     "meanExcessNet": {
+      "LOW": -0.0327,
+      "BASE": -0.0347,
+      "HIGH": -0.0377
+     },
+     "tNWNetBase": -1.46,
+     "medianExcess": -0.0718,
+     "hitRate": 0.3763,
+     "meanMAE": -0.1612,
+     "spreadVsUniverse": {
+      "mean": -0.0057,
+      "t": -0.47,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0078,
+      "t": -1,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0143,
+      "t": 0.79,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0355,
+      "excludedMean": -0.0314,
+      "minus100Mean": -0.0696
+     },
+     "worstDate": -0.1869,
+     "shareOfPositiveDates": 0.2424
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 157,
+     "observations": 4243,
+     "meanExcessGross": -0.0292,
+     "tNW": -0.62,
+     "meanExcessNet": {
+      "LOW": -0.0302,
+      "BASE": -0.0322,
+      "HIGH": -0.0352
+     },
+     "tNWNetBase": -0.69,
+     "medianExcess": -0.1304,
+     "hitRate": 0.3549,
+     "meanMAE": -0.2111,
+     "spreadVsUniverse": {
+      "mean": 0.0161,
+      "t": 0.7,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0053,
+      "t": -0.4,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.026,
+      "t": 2.45,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0488,
+      "excludedMean": -0.0286,
+      "minus100Mean": -0.0856
+     },
+     "worstDate": -0.1666,
+     "shareOfPositiveDates": 0.3333
+    }
+   },
+   "MOM_12_1": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9440,
+     "meanExcessGross": 0.0033,
+     "tNW": 0.42,
+     "meanExcessNet": {
+      "LOW": 0.0023,
+      "BASE": 0.0003,
+      "HIGH": -0.0027
+     },
+     "tNWNetBase": 0.04,
+     "medianExcess": -0.0159,
+     "hitRate": 0.4541,
+     "meanMAE": -0.1044,
+     "spreadVsUniverse": {
+      "mean": 0.0089,
+      "t": 1.23,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0022,
+      "t": -0.33,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0296,
+      "t": 1.43,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0055,
+      "excludedMean": 0.0034,
+      "minus100Mean": -0.0022
+     },
+     "worstDate": -0.1362,
+     "shareOfPositiveDates": 0.6053
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8907,
+     "meanExcessGross": 0.0092,
+     "tNW": 0.52,
+     "meanExcessNet": {
+      "LOW": 0.0082,
+      "BASE": 0.0062,
+      "HIGH": 0.0032
+     },
+     "tNWNetBase": 0.35,
+     "medianExcess": -0.0344,
+     "hitRate": 0.4467,
+     "meanMAE": -0.1802,
+     "spreadVsUniverse": {
+      "mean": 0.0212,
+      "t": 1.4,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0024,
+      "t": -0.17,
+      "dates": 36
+     },
+     "ic": {
+      "mean": 0.0371,
+      "t": 1.84,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0138,
+      "excludedMean": 0.009,
+      "minus100Mean": -0.0054
+     },
+     "worstDate": -0.1471,
+     "shareOfPositiveDates": 0.5833
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8096,
+     "meanExcessGross": 0.0346,
+     "tNW": 1.78,
+     "meanExcessNet": {
+      "LOW": 0.0336,
+      "BASE": 0.0316,
+      "HIGH": 0.0286
+     },
+     "tNWNetBase": 1.63,
+     "medianExcess": -0.0584,
+     "hitRate": 0.4405,
+     "meanMAE": -0.2304,
+     "spreadVsUniverse": {
+      "mean": 0.0607,
+      "t": 3.48,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0115,
+      "t": 0.62,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0685,
+      "t": 2.8,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0215,
+      "excludedMean": 0.0328,
+      "minus100Mean": 0.0087
+     },
+     "worstDate": -0.1046,
+     "shareOfPositiveDates": 0.5455
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6523,
+     "meanExcessGross": 0.0634,
+     "tNW": 2.35,
+     "meanExcessNet": {
+      "LOW": 0.0624,
+      "BASE": 0.0604,
+      "HIGH": 0.0574
+     },
+     "tNWNetBase": 2.24,
+     "medianExcess": -0.1032,
+     "hitRate": 0.434,
+     "meanMAE": -0.2911,
+     "spreadVsUniverse": {
+      "mean": 0.1087,
+      "t": 3.34,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0273,
+      "t": 1.13,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.0691,
+      "t": 1.99,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.03,
+      "excludedMean": 0.0613,
+      "minus100Mean": 0.0236
+     },
+     "worstDate": -0.1345,
+     "shareOfPositiveDates": 0.6667
+    }
+   },
+   "RS_6M": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9439,
+     "meanExcessGross": 0.0008,
+     "tNW": 0.1,
+     "meanExcessNet": {
+      "LOW": -0.0002,
+      "BASE": -0.0022,
+      "HIGH": -0.0052
+     },
+     "tNWNetBase": -0.28,
+     "medianExcess": -0.017,
+     "hitRate": 0.444,
+     "meanMAE": -0.1076,
+     "spreadVsUniverse": {
+      "mean": 0.0064,
+      "t": 0.88,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.006,
+      "t": -0.9,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0138,
+      "t": 0.68,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0088,
+      "excludedMean": 0.0011,
+      "minus100Mean": -0.008
+     },
+     "worstDate": -0.1506,
+     "shareOfPositiveDates": 0.5526
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8908,
+     "meanExcessGross": -0.0022,
+     "tNW": -0.12,
+     "meanExcessNet": {
+      "LOW": -0.0032,
+      "BASE": -0.0052,
+      "HIGH": -0.0082
+     },
+     "tNWNetBase": -0.27,
+     "medianExcess": -0.0483,
+     "hitRate": 0.4221,
+     "meanMAE": -0.1841,
+     "spreadVsUniverse": {
+      "mean": 0.0097,
+      "t": 0.61,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0165,
+      "t": -1.14,
+      "dates": 36
+     },
+     "ic": {
+      "mean": 0.017,
+      "t": 0.77,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0238,
+      "excludedMean": -0.0014,
+      "minus100Mean": -0.0271
+     },
+     "worstDate": -0.1633,
+     "shareOfPositiveDates": 0.5556
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8095,
+     "meanExcessGross": 0.0299,
+     "tNW": 1.2,
+     "meanExcessNet": {
+      "LOW": 0.0289,
+      "BASE": 0.0269,
+      "HIGH": 0.0239
+     },
+     "tNWNetBase": 1.08,
+     "medianExcess": -0.0623,
+     "hitRate": 0.4316,
+     "meanMAE": -0.2288,
+     "spreadVsUniverse": {
+      "mean": 0.0559,
+      "t": 4.34,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0083,
+      "t": 0.96,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0653,
+      "t": 3.63,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0382,
+      "excludedMean": 0.029,
+      "minus100Mean": -0.0151
+     },
+     "worstDate": -0.1243,
+     "shareOfPositiveDates": 0.5758
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6523,
+     "meanExcessGross": 0.0368,
+     "tNW": 1.41,
+     "meanExcessNet": {
+      "LOW": 0.0358,
+      "BASE": 0.0338,
+      "HIGH": 0.0308
+     },
+     "tNWNetBase": 1.29,
+     "medianExcess": -0.1319,
+     "hitRate": 0.4035,
+     "meanMAE": -0.2939,
+     "spreadVsUniverse": {
+      "mean": 0.0822,
+      "t": 4.42,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0032,
+      "t": -0.25,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.0442,
+      "t": 1.54,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0521,
+      "excludedMean": 0.0365,
+      "minus100Mean": -0.0281
+     },
+     "worstDate": -0.1627,
+     "shareOfPositiveDates": 0.6296
+    }
+   },
+   "LEADERSHIP_VU": {
+    "21": {
+     "dates": 38,
+     "avgNames": 248,
+     "observations": 9440,
+     "meanExcessGross": -0.0005,
+     "tNW": -0.09,
+     "meanExcessNet": {
+      "LOW": -0.0015,
+      "BASE": -0.0035,
+      "HIGH": -0.0065
+     },
+     "tNWNetBase": -0.61,
+     "medianExcess": -0.012,
+     "hitRate": 0.4484,
+     "meanMAE": -0.0832,
+     "spreadVsUniverse": {
+      "mean": 0.0051,
+      "t": 0.93,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0003,
+      "t": -0.06,
+      "dates": 38
+     },
+     "ic": {
+      "mean": 0.0267,
+      "t": 1.21,
+      "dates": 38
+     },
+     "delisting": {
+      "share": 0.0083,
+      "excludedMean": -0.0004,
+      "minus100Mean": -0.0089
+     },
+     "worstDate": -0.1135,
+     "shareOfPositiveDates": 0.4737
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 247,
+     "observations": 8909,
+     "meanExcessGross": -0.0095,
+     "tNW": -0.6,
+     "meanExcessNet": {
+      "LOW": -0.0105,
+      "BASE": -0.0125,
+      "HIGH": -0.0155
+     },
+     "tNWNetBase": -0.79,
+     "medianExcess": -0.0385,
+     "hitRate": 0.4262,
+     "meanMAE": -0.1451,
+     "spreadVsUniverse": {
+      "mean": 0.0025,
+      "t": 0.19,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0064,
+      "t": -0.51,
+      "dates": 36
+     },
+     "ic": {
+      "mean": 0.0236,
+      "t": 0.96,
+      "dates": 36
+     },
+     "delisting": {
+      "share": 0.0223,
+      "excludedMean": -0.0089,
+      "minus100Mean": -0.0327
+     },
+     "worstDate": -0.1399,
+     "shareOfPositiveDates": 0.4444
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 245,
+     "observations": 8097,
+     "meanExcessGross": 0.0187,
+     "tNW": 0.8,
+     "meanExcessNet": {
+      "LOW": 0.0177,
+      "BASE": 0.0157,
+      "HIGH": 0.0127
+     },
+     "tNWNetBase": 0.67,
+     "medianExcess": -0.0415,
+     "hitRate": 0.4415,
+     "meanMAE": -0.1816,
+     "spreadVsUniverse": {
+      "mean": 0.0447,
+      "t": 3.05,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0298,
+      "t": 2.59,
+      "dates": 33
+     },
+     "ic": {
+      "mean": 0.0749,
+      "t": 3.28,
+      "dates": 33
+     },
+     "delisting": {
+      "share": 0.0336,
+      "excludedMean": 0.0193,
+      "minus100Mean": -0.0192
+     },
+     "worstDate": -0.098,
+     "shareOfPositiveDates": 0.4848
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 242,
+     "observations": 6524,
+     "meanExcessGross": 0.0274,
+     "tNW": 2.36,
+     "meanExcessNet": {
+      "LOW": 0.0264,
+      "BASE": 0.0244,
+      "HIGH": 0.0214
+     },
+     "tNWNetBase": 2.11,
+     "medianExcess": -0.0923,
+     "hitRate": 0.4212,
+     "meanMAE": -0.2343,
+     "spreadVsUniverse": {
+      "mean": 0.0727,
+      "t": 3.12,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0305,
+      "t": 2.7,
+      "dates": 27
+     },
+     "ic": {
+      "mean": 0.0659,
+      "t": 1.8,
+      "dates": 27
+     },
+     "delisting": {
+      "share": 0.0425,
+      "excludedMean": 0.0301,
+      "minus100Mean": -0.0229
+     },
+     "worstDate": -0.1184,
+     "shareOfPositiveDates": 0.6296
+    }
+   },
+   "TREND_TEMPLATE": {
+    "21": {
+     "dates": 38,
+     "avgNames": 417,
+     "observations": 15850,
+     "meanExcessGross": -0.0018,
+     "tNW": -0.39,
+     "meanExcessNet": {
+      "LOW": -0.0028,
+      "BASE": -0.0048,
+      "HIGH": -0.0078
+     },
+     "tNWNetBase": -1.06,
+     "medianExcess": -0.0101,
+     "hitRate": 0.4534,
+     "meanMAE": -0.0758,
+     "spreadVsUniverse": {
+      "mean": 0.0038,
+      "t": 0.91,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0027,
+      "t": 0.74,
+      "dates": 38
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0073,
+      "excludedMean": -0.0016,
+      "minus100Mean": -0.0103
+     },
+     "worstDate": -0.0795,
+     "shareOfPositiveDates": 0.4474
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 421,
+     "observations": 15157,
+     "meanExcessGross": -0.0114,
+     "tNW": -0.98,
+     "meanExcessNet": {
+      "LOW": -0.0124,
+      "BASE": -0.0144,
+      "HIGH": -0.0174
+     },
+     "tNWNetBase": -1.23,
+     "medianExcess": -0.0281,
+     "hitRate": 0.4352,
+     "meanMAE": -0.132,
+     "spreadVsUniverse": {
+      "mean": 0.0006,
+      "t": 0.07,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0006,
+      "t": -0.08,
+      "dates": 36
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0178,
+      "excludedMean": -0.011,
+      "minus100Mean": -0.0319
+     },
+     "worstDate": -0.1171,
+     "shareOfPositiveDates": 0.3889
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 415,
+     "observations": 13683,
+     "meanExcessGross": 0.0034,
+     "tNW": 0.22,
+     "meanExcessNet": {
+      "LOW": 0.0024,
+      "BASE": 0.0004,
+      "HIGH": -0.0026
+     },
+     "tNWNetBase": 0.03,
+     "medianExcess": -0.0386,
+     "hitRate": 0.4372,
+     "meanMAE": -0.1687,
+     "spreadVsUniverse": {
+      "mean": 0.0294,
+      "t": 2.68,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0252,
+      "t": 3.09,
+      "dates": 33
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0283,
+      "excludedMean": 0.0035,
+      "minus100Mean": -0.0313
+     },
+     "worstDate": -0.0785,
+     "shareOfPositiveDates": 0.3939
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 400,
+     "observations": 10800,
+     "meanExcessGross": 0.001,
+     "tNW": 0.18,
+     "meanExcessNet": {
+      "LOW": 0,
+      "BASE": -0.002,
+      "HIGH": -0.005
+     },
+     "tNWNetBase": -0.34,
+     "medianExcess": -0.0842,
+     "hitRate": 0.4113,
+     "meanMAE": -0.2162,
+     "spreadVsUniverse": {
+      "mean": 0.0463,
+      "t": 1.62,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0.0393,
+      "t": 3.33,
+      "dates": 27
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0392,
+      "excludedMean": 0.0025,
+      "minus100Mean": -0.0492
+     },
+     "worstDate": -0.1556,
+     "shareOfPositiveDates": 0.5926
+    }
+   },
+   "UNIVERSE": {
+    "21": {
+     "dates": 38,
+     "avgNames": 2480,
+     "observations": 94215,
+     "meanExcessGross": -0.0056,
+     "tNW": -1.32,
+     "meanExcessNet": {
+      "LOW": -0.0066,
+      "BASE": -0.0086,
+      "HIGH": -0.0116
+     },
+     "tNWNetBase": -2.03,
+     "medianExcess": -0.0134,
+     "hitRate": 0.439,
+     "meanMAE": -0.0714,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 38
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 38
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0033,
+      "excludedMean": -0.0056,
+      "minus100Mean": -0.0089
+     },
+     "worstDate": -0.0596,
+     "shareOfPositiveDates": 0.3421
+    },
+    "63": {
+     "dates": 36,
+     "avgNames": 2469,
+     "observations": 88889,
+     "meanExcessGross": -0.012,
+     "tNW": -1.78,
+     "meanExcessNet": {
+      "LOW": -0.013,
+      "BASE": -0.015,
+      "HIGH": -0.018
+     },
+     "tNWNetBase": -2.23,
+     "medianExcess": -0.03,
+     "hitRate": 0.4265,
+     "meanMAE": -0.1262,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 36
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 36
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0091,
+      "excludedMean": -0.0121,
+      "minus100Mean": -0.0214
+     },
+     "worstDate": -0.0875,
+     "shareOfPositiveDates": 0.3333
+    },
+    "126": {
+     "dates": 33,
+     "avgNames": 2448,
+     "observations": 80780,
+     "meanExcessGross": -0.026,
+     "tNW": -1.94,
+     "meanExcessNet": {
+      "LOW": -0.027,
+      "BASE": -0.029,
+      "HIGH": -0.032
+     },
+     "tNWNetBase": -2.16,
+     "medianExcess": -0.0643,
+     "hitRate": 0.391,
+     "meanMAE": -0.168,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 33
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 33
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0168,
+      "excludedMean": -0.027,
+      "minus100Mean": -0.045
+     },
+     "worstDate": -0.1571,
+     "shareOfPositiveDates": 0.3333
+    },
+    "252": {
+     "dates": 27,
+     "avgNames": 2411,
+     "observations": 65093,
+     "meanExcessGross": -0.0453,
+     "tNW": -1.66,
+     "meanExcessNet": {
+      "LOW": -0.0463,
+      "BASE": -0.0483,
+      "HIGH": -0.0513
+     },
+     "tNWNetBase": -1.77,
+     "medianExcess": -0.1251,
+     "hitRate": 0.3609,
+     "meanMAE": -0.223,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 27
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 27
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0309,
+      "excludedMean": -0.0478,
+      "minus100Mean": -0.0833
+     },
+     "worstDate": -0.1448,
+     "shareOfPositiveDates": 0.2222
+    }
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "M1_TECH_EQUAL": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15710,
+     "meanExcessGross": -0.0028,
+     "tNW": -1.17,
+     "meanExcessNet": {
+      "LOW": -0.0038,
+      "BASE": -0.0058,
+      "HIGH": -0.0088
+     },
+     "tNWNetBase": -2.43,
+     "medianExcess": -0.0053,
+     "hitRate": 0.4704,
+     "meanMAE": -0.0679,
+     "spreadVsUniverse": {
+      "mean": -0.0038,
+      "t": -1.97,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0047,
+      "t": -2.42,
+      "dates": 95
+     },
+     "ic": {
+      "mean": -0.0139,
+      "t": -1.12,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0032,
+      "excludedMean": -0.0028,
+      "minus100Mean": -0.0058
+     },
+     "worstDate": -0.0753,
+     "shareOfPositiveDates": 0.4526
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15315,
+     "meanExcessGross": 0.0009,
+     "tNW": 0.16,
+     "meanExcessNet": {
+      "LOW": -0.0001,
+      "BASE": -0.0021,
+      "HIGH": -0.0051
+     },
+     "tNWNetBase": -0.36,
+     "medianExcess": -0.0065,
+     "hitRate": 0.4808,
+     "meanMAE": -0.1211,
+     "spreadVsUniverse": {
+      "mean": -0.0032,
+      "t": -0.98,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0038,
+      "t": -1.18,
+      "dates": 93
+     },
+     "ic": {
+      "mean": -0.0058,
+      "t": -0.46,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0093,
+      "excludedMean": 0.001,
+      "minus100Mean": -0.0075
+     },
+     "worstDate": -0.129,
+     "shareOfPositiveDates": 0.4839
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14724,
+     "meanExcessGross": -0.0022,
+     "tNW": -0.19,
+     "meanExcessNet": {
+      "LOW": -0.0032,
+      "BASE": -0.0052,
+      "HIGH": -0.0082
+     },
+     "tNWNetBase": -0.46,
+     "medianExcess": -0.0219,
+     "hitRate": 0.4526,
+     "meanMAE": -0.175,
+     "spreadVsUniverse": {
+      "mean": -0.0104,
+      "t": -1.85,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0128,
+      "t": -2.86,
+      "dates": 90
+     },
+     "ic": {
+      "mean": -0.012,
+      "t": -0.96,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0142,
+      "excludedMean": -0.0026,
+      "minus100Mean": -0.0156
+     },
+     "worstDate": -0.1917,
+     "shareOfPositiveDates": 0.4667
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13333,
+     "meanExcessGross": 0.0107,
+     "tNW": 0.52,
+     "meanExcessNet": {
+      "LOW": 0.0097,
+      "BASE": 0.0077,
+      "HIGH": 0.0047
+     },
+     "tNWNetBase": 0.38,
+     "medianExcess": -0.0301,
+     "hitRate": 0.4525,
+     "meanMAE": -0.2261,
+     "spreadVsUniverse": {
+      "mean": -0.0075,
+      "t": -0.81,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0126,
+      "t": -1.61,
+      "dates": 83
+     },
+     "ic": {
+      "mean": 0.0002,
+      "t": 0.01,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0195,
+      "excludedMean": 0.0093,
+      "minus100Mean": -0.0101
+     },
+     "worstDate": -0.1677,
+     "shareOfPositiveDates": 0.5422
+    }
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15710,
+     "meanExcessGross": -0.0028,
+     "tNW": -1.17,
+     "meanExcessNet": {
+      "LOW": -0.0038,
+      "BASE": -0.0058,
+      "HIGH": -0.0088
+     },
+     "tNWNetBase": -2.43,
+     "medianExcess": -0.0053,
+     "hitRate": 0.4704,
+     "meanMAE": -0.0679,
+     "spreadVsUniverse": {
+      "mean": -0.0038,
+      "t": -1.97,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0047,
+      "t": -2.42,
+      "dates": 95
+     },
+     "ic": {
+      "mean": -0.0139,
+      "t": -1.12,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0032,
+      "excludedMean": -0.0028,
+      "minus100Mean": -0.0058
+     },
+     "worstDate": -0.0753,
+     "shareOfPositiveDates": 0.4526
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15315,
+     "meanExcessGross": 0.0009,
+     "tNW": 0.16,
+     "meanExcessNet": {
+      "LOW": -0.0001,
+      "BASE": -0.0021,
+      "HIGH": -0.0051
+     },
+     "tNWNetBase": -0.36,
+     "medianExcess": -0.0065,
+     "hitRate": 0.4808,
+     "meanMAE": -0.1211,
+     "spreadVsUniverse": {
+      "mean": -0.0032,
+      "t": -0.98,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0038,
+      "t": -1.18,
+      "dates": 93
+     },
+     "ic": {
+      "mean": -0.0058,
+      "t": -0.46,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0093,
+      "excludedMean": 0.001,
+      "minus100Mean": -0.0075
+     },
+     "worstDate": -0.129,
+     "shareOfPositiveDates": 0.4839
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14724,
+     "meanExcessGross": -0.0022,
+     "tNW": -0.19,
+     "meanExcessNet": {
+      "LOW": -0.0032,
+      "BASE": -0.0052,
+      "HIGH": -0.0082
+     },
+     "tNWNetBase": -0.46,
+     "medianExcess": -0.0219,
+     "hitRate": 0.4526,
+     "meanMAE": -0.175,
+     "spreadVsUniverse": {
+      "mean": -0.0104,
+      "t": -1.85,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0128,
+      "t": -2.86,
+      "dates": 90
+     },
+     "ic": {
+      "mean": -0.012,
+      "t": -0.96,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0142,
+      "excludedMean": -0.0026,
+      "minus100Mean": -0.0156
+     },
+     "worstDate": -0.1917,
+     "shareOfPositiveDates": 0.4667
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13333,
+     "meanExcessGross": 0.0107,
+     "tNW": 0.52,
+     "meanExcessNet": {
+      "LOW": 0.0097,
+      "BASE": 0.0077,
+      "HIGH": 0.0047
+     },
+     "tNWNetBase": 0.38,
+     "medianExcess": -0.0301,
+     "hitRate": 0.4525,
+     "meanMAE": -0.2261,
+     "spreadVsUniverse": {
+      "mean": -0.0075,
+      "t": -0.81,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0126,
+      "t": -1.61,
+      "dates": 83
+     },
+     "ic": {
+      "mean": 0.0002,
+      "t": 0.01,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0195,
+      "excludedMean": 0.0093,
+      "minus100Mean": -0.0101
+     },
+     "worstDate": -0.1677,
+     "shareOfPositiveDates": 0.5422
+    }
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15710,
+     "meanExcessGross": -0.001,
+     "tNW": -0.47,
+     "meanExcessNet": {
+      "LOW": -0.002,
+      "BASE": -0.004,
+      "HIGH": -0.007
+     },
+     "tNWNetBase": -1.81,
+     "medianExcess": -0.0034,
+     "hitRate": 0.4806,
+     "meanMAE": -0.0661,
+     "spreadVsUniverse": {
+      "mean": -0.0021,
+      "t": -0.97,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0025,
+      "t": -1.3,
+      "dates": 95
+     },
+     "ic": {
+      "mean": -0.0119,
+      "t": -0.98,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0038,
+      "excludedMean": -0.001,
+      "minus100Mean": -0.0045
+     },
+     "worstDate": -0.059,
+     "shareOfPositiveDates": 0.5053
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15315,
+     "meanExcessGross": 0.0012,
+     "tNW": 0.24,
+     "meanExcessNet": {
+      "LOW": 0.0002,
+      "BASE": -0.0018,
+      "HIGH": -0.0048
+     },
+     "tNWNetBase": -0.35,
+     "medianExcess": -0.006,
+     "hitRate": 0.4816,
+     "meanMAE": -0.1185,
+     "spreadVsUniverse": {
+      "mean": -0.003,
+      "t": -0.79,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0045,
+      "t": -1.48,
+      "dates": 93
+     },
+     "ic": {
+      "mean": -0.0087,
+      "t": -0.72,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0114,
+      "excludedMean": 0.0013,
+      "minus100Mean": -0.009
+     },
+     "worstDate": -0.113,
+     "shareOfPositiveDates": 0.4946
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14724,
+     "meanExcessGross": -0.0038,
+     "tNW": -0.4,
+     "meanExcessNet": {
+      "LOW": -0.0048,
+      "BASE": -0.0068,
+      "HIGH": -0.0098
+     },
+     "tNWNetBase": -0.7,
+     "medianExcess": -0.0202,
+     "hitRate": 0.4559,
+     "meanMAE": -0.1706,
+     "spreadVsUniverse": {
+      "mean": -0.0121,
+      "t": -1.5,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0137,
+      "t": -2.13,
+      "dates": 90
+     },
+     "ic": {
+      "mean": -0.0108,
+      "t": -0.78,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0168,
+      "excludedMean": -0.0043,
+      "minus100Mean": -0.0198
+     },
+     "worstDate": -0.1465,
+     "shareOfPositiveDates": 0.4556
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13333,
+     "meanExcessGross": 0.0047,
+     "tNW": 0.29,
+     "meanExcessNet": {
+      "LOW": 0.0037,
+      "BASE": 0.0017,
+      "HIGH": -0.0013
+     },
+     "tNWNetBase": 0.1,
+     "medianExcess": -0.0296,
+     "hitRate": 0.4534,
+     "meanMAE": -0.2213,
+     "spreadVsUniverse": {
+      "mean": -0.0135,
+      "t": -0.9,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0164,
+      "t": -1.47,
+      "dates": 83
+     },
+     "ic": {
+      "mean": 0.0006,
+      "t": 0.03,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0221,
+      "excludedMean": 0.003,
+      "minus100Mean": -0.019
+     },
+     "worstDate": -0.162,
+     "shareOfPositiveDates": 0.5663
+    }
+   },
+   "M4_EMERGING_TECH": {
+    "21": {
+     "dates": 92,
+     "avgNames": 107,
+     "observations": 9833,
+     "meanExcessGross": -0.0034,
+     "tNW": -1.41,
+     "meanExcessNet": {
+      "LOW": -0.0044,
+      "BASE": -0.0064,
+      "HIGH": -0.0094
+     },
+     "tNWNetBase": -2.67,
+     "medianExcess": -0.0048,
+     "hitRate": 0.4707,
+     "meanMAE": -0.0628,
+     "spreadVsUniverse": {
+      "mean": -0.0044,
+      "t": -2.11,
+      "dates": 92
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0031,
+      "t": -1.56,
+      "dates": 92
+     },
+     "ic": {
+      "mean": -0.014,
+      "t": -1.07,
+      "dates": 92
+     },
+     "delisting": {
+      "share": 0.0019,
+      "excludedMean": -0.0033,
+      "minus100Mean": -0.0051
+     },
+     "worstDate": -0.0801,
+     "shareOfPositiveDates": 0.4457
+    },
+    "63": {
+     "dates": 90,
+     "avgNames": 106,
+     "observations": 9573,
+     "meanExcessGross": -0.0003,
+     "tNW": -0.05,
+     "meanExcessNet": {
+      "LOW": -0.0013,
+      "BASE": -0.0033,
+      "HIGH": -0.0063
+     },
+     "tNWNetBase": -0.52,
+     "medianExcess": -0.0052,
+     "hitRate": 0.4832,
+     "meanMAE": -0.1121,
+     "spreadVsUniverse": {
+      "mean": -0.0042,
+      "t": -1.07,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0009,
+      "t": -0.23,
+      "dates": 90
+     },
+     "ic": {
+      "mean": -0.0016,
+      "t": -0.11,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0062,
+      "excludedMean": -0.0002,
+      "minus100Mean": -0.0057
+     },
+     "worstDate": -0.1438,
+     "shareOfPositiveDates": 0.4556
+    },
+    "126": {
+     "dates": 87,
+     "avgNames": 106,
+     "observations": 9182,
+     "meanExcessGross": -0.0072,
+     "tNW": -0.63,
+     "meanExcessNet": {
+      "LOW": -0.0082,
+      "BASE": -0.0102,
+      "HIGH": -0.0132
+     },
+     "tNWNetBase": -0.89,
+     "medianExcess": -0.0222,
+     "hitRate": 0.4475,
+     "meanMAE": -0.1635,
+     "spreadVsUniverse": {
+      "mean": -0.0147,
+      "t": -2.81,
+      "dates": 87
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0093,
+      "t": -1.52,
+      "dates": 87
+     },
+     "ic": {
+      "mean": -0.0126,
+      "t": -0.84,
+      "dates": 87
+     },
+     "delisting": {
+      "share": 0.0114,
+      "excludedMean": -0.0077,
+      "minus100Mean": -0.0179
+     },
+     "worstDate": -0.2094,
+     "shareOfPositiveDates": 0.4368
+    },
+    "252": {
+     "dates": 80,
+     "avgNames": 103,
+     "observations": 8277,
+     "meanExcessGross": 0.0076,
+     "tNW": 0.39,
+     "meanExcessNet": {
+      "LOW": 0.0066,
+      "BASE": 0.0046,
+      "HIGH": 0.0016
+     },
+     "tNWNetBase": 0.23,
+     "medianExcess": -0.0273,
+     "hitRate": 0.4551,
+     "meanMAE": -0.2005,
+     "spreadVsUniverse": {
+      "mean": -0.0119,
+      "t": -1.48,
+      "dates": 80
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.009,
+      "t": -1.1,
+      "dates": 80
+     },
+     "ic": {
+      "mean": -0.0018,
+      "t": -0.09,
+      "dates": 80
+     },
+     "delisting": {
+      "share": 0.0151,
+      "excludedMean": 0.0066,
+      "minus100Mean": -0.0079
+     },
+     "worstDate": -0.1789,
+     "shareOfPositiveDates": 0.5
+    }
+   },
+   "MOM_12_1": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15712,
+     "meanExcessGross": -0.0002,
+     "tNW": -0.04,
+     "meanExcessNet": {
+      "LOW": -0.0012,
+      "BASE": -0.0032,
+      "HIGH": -0.0062
+     },
+     "tNWNetBase": -0.72,
+     "medianExcess": -0.0015,
+     "hitRate": 0.4931,
+     "meanMAE": -0.0864,
+     "spreadVsUniverse": {
+      "mean": -0.0012,
+      "t": -0.33,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.003,
+      "t": -0.85,
+      "dates": 95
+     },
+     "ic": {
+      "mean": 0.0189,
+      "t": 1.08,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0038,
+      "excludedMean": -0.0001,
+      "minus100Mean": -0.0036
+     },
+     "worstDate": -0.0987,
+     "shareOfPositiveDates": 0.4947
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15316,
+     "meanExcessGross": -0.0023,
+     "tNW": -0.22,
+     "meanExcessNet": {
+      "LOW": -0.0033,
+      "BASE": -0.0053,
+      "HIGH": -0.0083
+     },
+     "tNWNetBase": -0.5,
+     "medianExcess": -0.0121,
+     "hitRate": 0.4711,
+     "meanMAE": -0.154,
+     "spreadVsUniverse": {
+      "mean": -0.0065,
+      "t": -0.65,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0139,
+      "t": -1.43,
+      "dates": 93
+     },
+     "ic": {
+      "mean": 0.0095,
+      "t": 0.37,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0099,
+      "excludedMean": -0.0024,
+      "minus100Mean": -0.0118
+     },
+     "worstDate": -0.2149,
+     "shareOfPositiveDates": 0.5161
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14725,
+     "meanExcessGross": -0.0067,
+     "tNW": -0.37,
+     "meanExcessNet": {
+      "LOW": -0.0077,
+      "BASE": -0.0097,
+      "HIGH": -0.0127
+     },
+     "tNWNetBase": -0.54,
+     "medianExcess": -0.0344,
+     "hitRate": 0.4473,
+     "meanMAE": -0.2131,
+     "spreadVsUniverse": {
+      "mean": -0.015,
+      "t": -0.78,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0273,
+      "t": -1.66,
+      "dates": 90
+     },
+     "ic": {
+      "mean": 0.0051,
+      "t": 0.13,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0153,
+      "excludedMean": -0.0075,
+      "minus100Mean": -0.0223
+     },
+     "worstDate": -0.2363,
+     "shareOfPositiveDates": 0.4889
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13334,
+     "meanExcessGross": 0.0005,
+     "tNW": 0.02,
+     "meanExcessNet": {
+      "LOW": -0.0005,
+      "BASE": -0.0025,
+      "HIGH": -0.0055
+     },
+     "tNWNetBase": -0.09,
+     "medianExcess": -0.0512,
+     "hitRate": 0.4386,
+     "meanMAE": -0.2754,
+     "spreadVsUniverse": {
+      "mean": -0.0177,
+      "t": -0.55,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0336,
+      "t": -1.29,
+      "dates": 83
+     },
+     "ic": {
+      "mean": 0.0137,
+      "t": 0.27,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0235,
+      "excludedMean": -0.0019,
+      "minus100Mean": -0.0263
+     },
+     "worstDate": -0.2047,
+     "shareOfPositiveDates": 0.4819
+    }
+   },
+   "RS_6M": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15710,
+     "meanExcessGross": -0.0006,
+     "tNW": -0.17,
+     "meanExcessNet": {
+      "LOW": -0.0016,
+      "BASE": -0.0036,
+      "HIGH": -0.0066
+     },
+     "tNWNetBase": -0.97,
+     "medianExcess": -0.0031,
+     "hitRate": 0.4866,
+     "meanMAE": -0.0825,
+     "spreadVsUniverse": {
+      "mean": -0.0017,
+      "t": -0.49,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0037,
+      "t": -1.25,
+      "dates": 95
+     },
+     "ic": {
+      "mean": -0.0076,
+      "t": -0.45,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0067,
+      "excludedMean": -0.0006,
+      "minus100Mean": -0.0066
+     },
+     "worstDate": -0.0802,
+     "shareOfPositiveDates": 0.4947
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15315,
+     "meanExcessGross": -0.0043,
+     "tNW": -0.44,
+     "meanExcessNet": {
+      "LOW": -0.0053,
+      "BASE": -0.0073,
+      "HIGH": -0.0103
+     },
+     "tNWNetBase": -0.75,
+     "medianExcess": -0.0148,
+     "hitRate": 0.4666,
+     "meanMAE": -0.15,
+     "spreadVsUniverse": {
+      "mean": -0.0085,
+      "t": -0.89,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0162,
+      "t": -1.92,
+      "dates": 93
+     },
+     "ic": {
+      "mean": -0.0187,
+      "t": -0.82,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0172,
+      "excludedMean": -0.0044,
+      "minus100Mean": -0.0203
+     },
+     "worstDate": -0.182,
+     "shareOfPositiveDates": 0.4839
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14724,
+     "meanExcessGross": -0.0032,
+     "tNW": -0.17,
+     "meanExcessNet": {
+      "LOW": -0.0042,
+      "BASE": -0.0062,
+      "HIGH": -0.0092
+     },
+     "tNWNetBase": -0.32,
+     "medianExcess": -0.0329,
+     "hitRate": 0.45,
+     "meanMAE": -0.2096,
+     "spreadVsUniverse": {
+      "mean": -0.0114,
+      "t": -0.59,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0263,
+      "t": -1.55,
+      "dates": 90
+     },
+     "ic": {
+      "mean": -0.0118,
+      "t": -0.33,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0258,
+      "excludedMean": -0.0041,
+      "minus100Mean": -0.0282
+     },
+     "worstDate": -0.2554,
+     "shareOfPositiveDates": 0.4778
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13333,
+     "meanExcessGross": -0.0039,
+     "tNW": -0.12,
+     "meanExcessNet": {
+      "LOW": -0.0049,
+      "BASE": -0.0069,
+      "HIGH": -0.0099
+     },
+     "tNWNetBase": -0.22,
+     "medianExcess": -0.0581,
+     "hitRate": 0.4295,
+     "meanMAE": -0.2723,
+     "spreadVsUniverse": {
+      "mean": -0.0221,
+      "t": -0.67,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0438,
+      "t": -1.66,
+      "dates": 83
+     },
+     "ic": {
+      "mean": -0.0049,
+      "t": -0.1,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0323,
+      "excludedMean": -0.0064,
+      "minus100Mean": -0.0384
+     },
+     "worstDate": -0.3179,
+     "shareOfPositiveDates": 0.4699
+    }
+   },
+   "LEADERSHIP_VU": {
+    "21": {
+     "dates": 95,
+     "avgNames": 165,
+     "observations": 15711,
+     "meanExcessGross": 0.0001,
+     "tNW": 0.03,
+     "meanExcessNet": {
+      "LOW": -0.0009,
+      "BASE": -0.0029,
+      "HIGH": -0.0059
+     },
+     "tNWNetBase": -0.88,
+     "medianExcess": -0.0014,
+     "hitRate": 0.4931,
+     "meanMAE": -0.071,
+     "spreadVsUniverse": {
+      "mean": -0.0009,
+      "t": -0.27,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0018,
+      "t": -0.55,
+      "dates": 95
+     },
+     "ic": {
+      "mean": 0.0044,
+      "t": 0.25,
+      "dates": 95
+     },
+     "delisting": {
+      "share": 0.0059,
+      "excludedMean": 0.0001,
+      "minus100Mean": -0.0052
+     },
+     "worstDate": -0.0933,
+     "shareOfPositiveDates": 0.5158
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 165,
+     "observations": 15316,
+     "meanExcessGross": -0.0039,
+     "tNW": -0.47,
+     "meanExcessNet": {
+      "LOW": -0.0049,
+      "BASE": -0.0069,
+      "HIGH": -0.0099
+     },
+     "tNWNetBase": -0.83,
+     "medianExcess": -0.0082,
+     "hitRate": 0.4777,
+     "meanMAE": -0.1301,
+     "spreadVsUniverse": {
+      "mean": -0.008,
+      "t": -0.89,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0104,
+      "t": -1.36,
+      "dates": 93
+     },
+     "ic": {
+      "mean": -0.0001,
+      "t": -0.01,
+      "dates": 93
+     },
+     "delisting": {
+      "share": 0.0158,
+      "excludedMean": -0.0039,
+      "minus100Mean": -0.0187
+     },
+     "worstDate": -0.2114,
+     "shareOfPositiveDates": 0.5161
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 164,
+     "observations": 14725,
+     "meanExcessGross": -0.0054,
+     "tNW": -0.32,
+     "meanExcessNet": {
+      "LOW": -0.0064,
+      "BASE": -0.0084,
+      "HIGH": -0.0114
+     },
+     "tNWNetBase": -0.5,
+     "medianExcess": -0.0224,
+     "hitRate": 0.4594,
+     "meanMAE": -0.1855,
+     "spreadVsUniverse": {
+      "mean": -0.0136,
+      "t": -0.72,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0222,
+      "t": -1.4,
+      "dates": 90
+     },
+     "ic": {
+      "mean": 0.0045,
+      "t": 0.13,
+      "dates": 90
+     },
+     "delisting": {
+      "share": 0.0228,
+      "excludedMean": -0.0058,
+      "minus100Mean": -0.0276
+     },
+     "worstDate": -0.2286,
+     "shareOfPositiveDates": 0.5111
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 161,
+     "observations": 13334,
+     "meanExcessGross": 0.0046,
+     "tNW": 0.15,
+     "meanExcessNet": {
+      "LOW": 0.0036,
+      "BASE": 0.0016,
+      "HIGH": -0.0014
+     },
+     "tNWNetBase": 0.05,
+     "medianExcess": -0.0374,
+     "hitRate": 0.4494,
+     "meanMAE": -0.2426,
+     "spreadVsUniverse": {
+      "mean": -0.0136,
+      "t": -0.39,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0198,
+      "t": -0.73,
+      "dates": 83
+     },
+     "ic": {
+      "mean": 0.0186,
+      "t": 0.37,
+      "dates": 83
+     },
+     "delisting": {
+      "share": 0.0289,
+      "excludedMean": 0.0032,
+      "minus100Mean": -0.0266
+     },
+     "worstDate": -0.2953,
+     "shareOfPositiveDates": 0.494
+    }
+   },
+   "TREND_TEMPLATE": {
+    "21": {
+     "dates": 93,
+     "avgNames": 266,
+     "observations": 24725,
+     "meanExcessGross": -0.0009,
+     "tNW": -0.28,
+     "meanExcessNet": {
+      "LOW": -0.0019,
+      "BASE": -0.0039,
+      "HIGH": -0.0069
+     },
+     "tNWNetBase": -1.25,
+     "medianExcess": -0.0004,
+     "hitRate": 0.4976,
+     "meanMAE": -0.0612,
+     "spreadVsUniverse": {
+      "mean": -0.0017,
+      "t": -0.48,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0024,
+      "t": -0.76,
+      "dates": 93
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0044,
+      "excludedMean": -0.0009,
+      "minus100Mean": -0.0055
+     },
+     "worstDate": -0.0869,
+     "shareOfPositiveDates": 0.5269
+    },
+    "63": {
+     "dates": 91,
+     "avgNames": 266,
+     "observations": 24232,
+     "meanExcessGross": -0.0023,
+     "tNW": -0.31,
+     "meanExcessNet": {
+      "LOW": -0.0033,
+      "BASE": -0.0053,
+      "HIGH": -0.0083
+     },
+     "tNWNetBase": -0.71,
+     "medianExcess": -0.0029,
+     "hitRate": 0.4913,
+     "meanMAE": -0.1117,
+     "spreadVsUniverse": {
+      "mean": -0.004,
+      "t": -0.56,
+      "dates": 91
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0064,
+      "t": -0.93,
+      "dates": 91
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.011,
+      "excludedMean": -0.0025,
+      "minus100Mean": -0.0139
+     },
+     "worstDate": -0.2103,
+     "shareOfPositiveDates": 0.5495
+    },
+    "126": {
+     "dates": 88,
+     "avgNames": 268,
+     "observations": 23602,
+     "meanExcessGross": -0.005,
+     "tNW": -0.33,
+     "meanExcessNet": {
+      "LOW": -0.006,
+      "BASE": -0.008,
+      "HIGH": -0.011
+     },
+     "tNWNetBase": -0.53,
+     "medianExcess": -0.0071,
+     "hitRate": 0.4833,
+     "meanMAE": -0.1605,
+     "spreadVsUniverse": {
+      "mean": -0.0101,
+      "t": -0.61,
+      "dates": 88
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0159,
+      "t": -1.14,
+      "dates": 88
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0169,
+      "excludedMean": -0.0053,
+      "minus100Mean": -0.0216
+     },
+     "worstDate": -0.2424,
+     "shareOfPositiveDates": 0.5455
+    },
+    "252": {
+     "dates": 81,
+     "avgNames": 260,
+     "observations": 21077,
+     "meanExcessGross": 0.0059,
+     "tNW": 0.22,
+     "meanExcessNet": {
+      "LOW": 0.0049,
+      "BASE": 0.0029,
+      "HIGH": -0.0001
+     },
+     "tNWNetBase": 0.11,
+     "medianExcess": -0.0143,
+     "hitRate": 0.4776,
+     "meanMAE": -0.2082,
+     "spreadVsUniverse": {
+      "mean": -0.0077,
+      "t": -0.24,
+      "dates": 81
+     },
+     "medianVsUniverseMedian": {
+      "mean": -0.0142,
+      "t": -0.57,
+      "dates": 81
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0222,
+      "excludedMean": 0.0048,
+      "minus100Mean": -0.0169
+     },
+     "worstDate": -0.3426,
+     "shareOfPositiveDates": 0.5679
+    }
+   },
+   "UNIVERSE": {
+    "21": {
+     "dates": 95,
+     "avgNames": 1650,
+     "observations": 156692,
+     "meanExcessGross": 0.001,
+     "tNW": 0.45,
+     "meanExcessNet": {
+      "LOW": 0,
+      "BASE": -0.002,
+      "HIGH": -0.005
+     },
+     "tNWNetBase": -0.86,
+     "medianExcess": -0.0009,
+     "hitRate": 0.4944,
+     "meanMAE": -0.0662,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 95
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 95
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0013,
+      "excludedMean": 0.001,
+      "minus100Mean": -0.0002
+     },
+     "worstDate": -0.0634,
+     "shareOfPositiveDates": 0.5263
+    },
+    "63": {
+     "dates": 93,
+     "avgNames": 1642,
+     "observations": 152738,
+     "meanExcessGross": 0.0042,
+     "tNW": 0.81,
+     "meanExcessNet": {
+      "LOW": 0.0032,
+      "BASE": 0.0012,
+      "HIGH": -0.0018
+     },
+     "tNWNetBase": 0.23,
+     "medianExcess": -0.0031,
+     "hitRate": 0.4899,
+     "meanMAE": -0.1168,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 93
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 93
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0037,
+      "excludedMean": 0.0041,
+      "minus100Mean": 0.0007
+     },
+     "worstDate": -0.0784,
+     "shareOfPositiveDates": 0.5484
+    },
+    "126": {
+     "dates": 90,
+     "avgNames": 1632,
+     "observations": 146848,
+     "meanExcessGross": 0.0082,
+     "tNW": 0.82,
+     "meanExcessNet": {
+      "LOW": 0.0072,
+      "BASE": 0.0052,
+      "HIGH": 0.0022
+     },
+     "tNWNetBase": 0.52,
+     "medianExcess": -0.0085,
+     "hitRate": 0.4805,
+     "meanMAE": -0.1639,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 90
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 90
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0067,
+      "excludedMean": 0.0077,
+      "minus100Mean": 0.0017
+     },
+     "worstDate": -0.0842,
+     "shareOfPositiveDates": 0.5556
+    },
+    "252": {
+     "dates": 83,
+     "avgNames": 1602,
+     "observations": 132964,
+     "meanExcessGross": 0.0182,
+     "tNW": 0.86,
+     "meanExcessNet": {
+      "LOW": 0.0172,
+      "BASE": 0.0152,
+      "HIGH": 0.0122
+     },
+     "tNWNetBase": 0.72,
+     "medianExcess": -0.0164,
+     "hitRate": 0.4737,
+     "meanMAE": -0.2131,
+     "spreadVsUniverse": {
+      "mean": 0,
+      "t": 0,
+      "dates": 83
+     },
+     "medianVsUniverseMedian": {
+      "mean": 0,
+      "t": 0,
+      "dates": 83
+     },
+     "ic": null,
+     "delisting": {
+      "share": 0.0115,
+      "excludedMean": 0.0166,
+      "minus100Mean": 0.0055
+     },
+     "worstDate": -0.0841,
+     "shareOfPositiveDates": 0.5301
+    }
+   }
+  }
+ },
+ "random": {
+  "DEVELOPMENT": {
+   "21": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 59,
+    "mean": 0.0005,
+    "p025": -0.0014,
+    "p975": 0.0024
+   },
+   "63": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 57,
+    "mean": -0.0019,
+    "p025": -0.0055,
+    "p975": 0.0011
+   },
+   "126": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 54,
+    "mean": -0.0107,
+    "p025": -0.0152,
+    "p975": -0.0057
+   },
+   "252": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 48,
+    "mean": -0.0369,
+    "p025": -0.0435,
+    "p975": -0.0299
+   }
+  },
+  "VALIDATION": {
+   "21": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 28,
+    "mean": -0.0087,
+    "p025": -0.0119,
+    "p975": -0.0053
+   },
+   "63": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 26,
+    "mean": -0.0264,
+    "p025": -0.0314,
+    "p975": -0.022
+   },
+   "126": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 23,
+    "mean": -0.0418,
+    "p025": -0.0491,
+    "p975": -0.0348
+   },
+   "252": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 17,
+    "mean": -0.0587,
+    "p025": -0.0691,
+    "p975": -0.0472
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "21": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 38,
+    "mean": -0.0053,
+    "p025": -0.0077,
+    "p975": -0.0026
+   },
+   "63": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 36,
+    "mean": -0.012,
+    "p025": -0.0157,
+    "p975": -0.0078
+   },
+   "126": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 33,
+    "mean": -0.0257,
+    "p025": -0.0329,
+    "p975": -0.0184
+   },
+   "252": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 27,
+    "mean": -0.0444,
+    "p025": -0.0552,
+    "p975": -0.032
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "21": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 95,
+    "mean": 0.0011,
+    "p025": -0.0006,
+    "p975": 0.0026
+   },
+   "63": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 93,
+    "mean": 0.0041,
+    "p025": 0.0016,
+    "p975": 0.0068
+   },
+   "126": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 90,
+    "mean": 0.0082,
+    "p025": 0.0041,
+    "p975": 0.0115
+   },
+   "252": {
+    "reps": 200,
+    "seed": 20261012,
+    "dates": 83,
+    "mean": 0.0182,
+    "p025": 0.0118,
+    "p975": 0.0246
+   }
+  }
+ },
+ "famaMacBeth": {
+  "DEVELOPMENT": {
+   "M1_TECH_EQUAL": {
+    "mean": -0.0226,
+    "t": -1.49,
+    "dates": 57
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "mean": -0.0112,
+    "t": -0.79,
+    "dates": 57
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "mean": 0.0166,
+    "t": 1.46,
+    "dates": 57
+   },
+   "M4_EMERGING_TECH": {
+    "mean": -0.0084,
+    "t": -0.51,
+    "dates": 54
+   }
+  },
+  "VALIDATION": {
+   "M1_TECH_EQUAL": {
+    "mean": -0.0222,
+    "t": -0.97,
+    "dates": 26
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "mean": -0.0153,
+    "t": -0.66,
+    "dates": 26
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "mean": -0.0003,
+    "t": -0.02,
+    "dates": 26
+   },
+   "M4_EMERGING_TECH": {
+    "mean": -0.0047,
+    "t": -0.21,
+    "dates": 26
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "M1_TECH_EQUAL": {
+    "mean": -0.0353,
+    "t": -2.28,
+    "dates": 36
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "mean": -0.0321,
+    "t": -2.44,
+    "dates": 36
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "mean": -0.0117,
+    "t": -1.04,
+    "dates": 36
+   },
+   "M4_EMERGING_TECH": {
+    "mean": -0.0268,
+    "t": -1.56,
+    "dates": 36
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "M1_TECH_EQUAL": {
+    "mean": 0.0034,
+    "t": 0.24,
+    "dates": 93
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "mean": 0.0034,
+    "t": 0.24,
+    "dates": 93
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "mean": -0.0051,
+    "t": -0.47,
+    "dates": 93
+   },
+   "M4_EMERGING_TECH": {
+    "mean": 0.009,
+    "t": 0.61,
+    "dates": 90
+   }
+  }
+ },
+ "overlap": {
+  "DEVELOPMENT": {
+   "M1_TECH_EQUAL": {
+    "MOM_12_1": 0.0936,
+    "RS_6M": 0.1789,
+    "LEADERSHIP_VU": 0.2258
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "MOM_12_1": 0.0982,
+    "RS_6M": 0.1842,
+    "LEADERSHIP_VU": 0.2278
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "MOM_12_1": 0.1361,
+    "RS_6M": 0.2324,
+    "LEADERSHIP_VU": 0.258
+   },
+   "M4_EMERGING_TECH": {
+    "MOM_12_1": 0.0224,
+    "RS_6M": 0.0929,
+    "LEADERSHIP_VU": 0.1272
+   }
+  },
+  "VALIDATION": {
+   "M1_TECH_EQUAL": {
+    "MOM_12_1": 0.0983,
+    "RS_6M": 0.198,
+    "LEADERSHIP_VU": 0.2733
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "MOM_12_1": 0.0969,
+    "RS_6M": 0.1979,
+    "LEADERSHIP_VU": 0.2639
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "MOM_12_1": 0.1274,
+    "RS_6M": 0.2195,
+    "LEADERSHIP_VU": 0.2391
+   },
+   "M4_EMERGING_TECH": {
+    "MOM_12_1": 0.0136,
+    "RS_6M": 0.1052,
+    "LEADERSHIP_VU": 0.1436
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "M1_TECH_EQUAL": {
+    "MOM_12_1": 0.0869,
+    "RS_6M": 0.1729,
+    "LEADERSHIP_VU": 0.2313
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "MOM_12_1": 0.0911,
+    "RS_6M": 0.172,
+    "LEADERSHIP_VU": 0.2259
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "MOM_12_1": 0.1148,
+    "RS_6M": 0.1739,
+    "LEADERSHIP_VU": 0.1863
+   },
+   "M4_EMERGING_TECH": {
+    "MOM_12_1": 0.0095,
+    "RS_6M": 0.0757,
+    "LEADERSHIP_VU": 0.1216
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "M1_TECH_EQUAL": {
+    "MOM_12_1": 0.0932,
+    "RS_6M": 0.1836,
+    "LEADERSHIP_VU": 0.2373
+   },
+   "M2_TECH_FUND_EQUAL": {
+    "MOM_12_1": 0.0932,
+    "RS_6M": 0.1836,
+    "LEADERSHIP_VU": 0.2373
+   },
+   "M3_DEV_IC_WEIGHTED": {
+    "MOM_12_1": 0.1396,
+    "RS_6M": 0.2702,
+    "LEADERSHIP_VU": 0.3078
+   },
+   "M4_EMERGING_TECH": {
+    "MOM_12_1": 0.0206,
+    "RS_6M": 0.0912,
+    "LEADERSHIP_VU": 0.1268
+   }
+  }
+ },
+ "turnover": {
+  "M1_TECH_EQUAL": 0.7659,
+  "M2_TECH_FUND_EQUAL": 0.7507,
+  "M3_DEV_IC_WEIGHTED": 0.6305,
+  "M4_EMERGING_TECH": 0.7808,
+  "MOM_12_1": 0.3033,
+  "RS_6M": 0.4134,
+  "LEADERSHIP_VU": 0.4647,
+  "TREND_TEMPLATE": 0.4327
+ },
+ "splits": {
+  "DEVELOPMENT": {
+   "M1_TECH_EQUAL": {
+    "regime": {
+     "RISK_ON": {
+      "mean": 0.0054,
+      "t": 0.96,
+      "dates": 47
+     },
+     "RISK_OFF": {
+      "mean": -0.0004,
+      "t": -0.02,
+      "dates": 10
+     }
+    },
+    "breadth": {
+     "LOW": {
+      "mean": 0.002,
+      "t": 0.21,
+      "dates": 19
+     },
+     "MID": {
+      "mean": 0.0044,
+      "t": 0.93,
+      "dates": 20
+     },
+     "HIGH": {
+      "mean": 0.0067,
+      "t": 0.77,
+      "dates": 18
+     }
+    },
+    "size": {
+     "SMALL": {
+      "mean": 0.002,
+      "t": 0.35,
+      "dates": 57
+     },
+     "MID": {
+      "mean": 0.0039,
+      "t": 0.75,
+      "dates": 57
+     },
+     "LARGE": {
+      "mean": 0.0055,
+      "t": 0.81,
+      "dates": 57
+     }
+    },
+    "measure": "Topdezil minus Universum desselben Stichtags (Groesse: minus Terzil), h=63, brutto"
+   }
+  },
+  "VALIDATION": {
+   "M1_TECH_EQUAL": {
+    "regime": {
+     "RISK_ON": {
+      "mean": -0.001,
+      "t": -0.18,
+      "dates": 17
+     },
+     "RISK_OFF": {
+      "mean": -0.0173,
+      "t": -0.92,
+      "dates": 9
+     }
+    },
+    "breadth": {
+     "LOW": {
+      "mean": -0.0034,
+      "t": -0.26,
+      "dates": 14
+     },
+     "MID": {
+      "mean": -0.0128,
+      "t": -0.75,
+      "dates": 9
+     },
+     "HIGH": {
+      "mean": -0.0031,
+      "t": -3.51,
+      "dates": 3
+     }
+    },
+    "size": {
+     "SMALL": {
+      "mean": -0.0073,
+      "t": -1.12,
+      "dates": 26
+     },
+     "MID": {
+      "mean": -0.0054,
+      "t": -0.65,
+      "dates": 26
+     },
+     "LARGE": {
+      "mean": -0.0079,
+      "t": -0.68,
+      "dates": 26
+     }
+    },
+    "measure": "Topdezil minus Universum desselben Stichtags (Groesse: minus Terzil), h=63, brutto"
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "M1_TECH_EQUAL": {
+    "regime": {
+     "RISK_ON": {
+      "mean": -0.0004,
+      "t": -0.04,
+      "dates": 32
+     },
+     "RISK_OFF": {
+      "mean": -0.0806,
+      "t": -14.69,
+      "dates": 4
+     }
+    },
+    "breadth": {
+     "LOW": {
+      "mean": -0.0205,
+      "t": -1.81,
+      "dates": 15
+     },
+     "MID": {
+      "mean": -0.0133,
+      "t": -1.19,
+      "dates": 10
+     },
+     "HIGH": {
+      "mean": 0.0095,
+      "t": 0.45,
+      "dates": 11
+     }
+    },
+    "size": {
+     "SMALL": {
+      "mean": -0.0067,
+      "t": -0.81,
+      "dates": 36
+     },
+     "MID": {
+      "mean": -0.0057,
+      "t": -0.51,
+      "dates": 36
+     },
+     "LARGE": {
+      "mean": -0.0171,
+      "t": -1.22,
+      "dates": 36
+     }
+    },
+    "measure": "Topdezil minus Universum desselben Stichtags (Groesse: minus Terzil), h=63, brutto"
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "M1_TECH_EQUAL": {
+    "regime": {
+     "RISK_ON": {
+      "mean": -0.0029,
+      "t": -0.74,
+      "dates": 65
+     },
+     "RISK_OFF": {
+      "mean": -0.004,
+      "t": -0.65,
+      "dates": 28
+     }
+    },
+    "breadth": {
+     "LOW": {
+      "mean": -0.0122,
+      "t": -2.37,
+      "dates": 36
+     },
+     "MID": {
+      "mean": 0.0045,
+      "t": 0.84,
+      "dates": 16
+     },
+     "HIGH": {
+      "mean": 0.0016,
+      "t": 0.42,
+      "dates": 41
+     }
+    },
+    "size": {
+     "SMALL": {
+      "mean": -0.0047,
+      "t": -1.23,
+      "dates": 93
+     },
+     "MID": {
+      "mean": -0.006,
+      "t": -1.5,
+      "dates": 93
+     },
+     "LARGE": {
+      "mean": 0.0017,
+      "t": 0.39,
+      "dates": 93
+     }
+    },
+    "measure": "Topdezil minus Universum desselben Stichtags (Groesse: minus Terzil), h=63, brutto"
+   }
+  }
+ },
+ "states": {
+  "DEVELOPMENT": {
+   "perState": {
+    "S0_NONE": {
+     "21": {
+      "dates": 59,
+      "meanExcess": {
+       "mean": 0.0004,
+       "t": 0.13,
+       "dates": 59
+      },
+      "medianExcess": -0.0018,
+      "hitRate": 0.4893
+     },
+     "63": {
+      "dates": 57,
+      "meanExcess": {
+       "mean": -0.0044,
+       "t": -0.55,
+       "dates": 57
+      },
+      "medianExcess": -0.0116,
+      "hitRate": 0.4657
+     },
+     "126": {
+      "dates": 54,
+      "meanExcess": {
+       "mean": -0.0159,
+       "t": -1.23,
+       "dates": 54
+      },
+      "medianExcess": -0.0328,
+      "hitRate": 0.433
+     },
+     "observations": 78154,
+     "avgPerDate": 1302.5667
+    },
+    "S1_EARLY_ACCUMULATION": {
+     "21": {
+      "dates": 57,
+      "meanExcess": {
+       "mean": 0.0006,
+       "t": 0.24,
+       "dates": 57
+      },
+      "medianExcess": -0.001,
+      "hitRate": 0.4933
+     },
+     "63": {
+      "dates": 55,
+      "meanExcess": {
+       "mean": -0.0018,
+       "t": -0.22,
+       "dates": 55
+      },
+      "medianExcess": -0.0104,
+      "hitRate": 0.4602
+     },
+     "126": {
+      "dates": 52,
+      "meanExcess": {
+       "mean": -0.0173,
+       "t": -1.17,
+       "dates": 52
+      },
+      "medianExcess": -0.0265,
+      "hitRate": 0.4452
+     },
+     "observations": 3698,
+     "avgPerDate": 61.6333
+    },
+    "S2_MOMENTUM_EMERGING": {
+     "21": {
+      "dates": 56,
+      "meanExcess": {
+       "mean": -0.0019,
+       "t": -0.57,
+       "dates": 56
+      },
+      "medianExcess": -0.0042,
+      "hitRate": 0.4745
+     },
+     "63": {
+      "dates": 54,
+      "meanExcess": {
+       "mean": -0.0019,
+       "t": -0.24,
+       "dates": 54
+      },
+      "medianExcess": -0.0122,
+      "hitRate": 0.4626
+     },
+     "126": {
+      "dates": 51,
+      "meanExcess": {
+       "mean": -0.0097,
+       "t": -0.73,
+       "dates": 51
+      },
+      "medianExcess": -0.032,
+      "hitRate": 0.4425
+     },
+     "observations": 9018,
+     "avgPerDate": 150.3
+    },
+    "S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "dates": 58,
+      "meanExcess": {
+       "mean": -0.0001,
+       "t": -0.03,
+       "dates": 58
+      },
+      "medianExcess": -0.0043,
+      "hitRate": 0.4697
+     },
+     "63": {
+      "dates": 56,
+      "meanExcess": {
+       "mean": -0.0035,
+       "t": -0.56,
+       "dates": 56
+      },
+      "medianExcess": -0.0092,
+      "hitRate": 0.4654
+     },
+     "126": {
+      "dates": 53,
+      "meanExcess": {
+       "mean": -0.0115,
+       "t": -1.32,
+       "dates": 53
+      },
+      "medianExcess": -0.02,
+      "hitRate": 0.4505
+     },
+     "observations": 21739,
+     "avgPerDate": 362.3167
+    },
+    "S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "dates": 57,
+      "meanExcess": {
+       "mean": -0.0035,
+       "t": -1.12,
+       "dates": 57
+      },
+      "medianExcess": -0.0046,
+      "hitRate": 0.4693
+     },
+     "63": {
+      "dates": 55,
+      "meanExcess": {
+       "mean": 0.005,
+       "t": 0.49,
+       "dates": 55
+      },
+      "medianExcess": -0.0123,
+      "hitRate": 0.4535
+     },
+     "126": {
+      "dates": 52,
+      "meanExcess": {
+       "mean": 0.0151,
+       "t": 0.79,
+       "dates": 52
+      },
+      "medianExcess": -0.0215,
+      "hitRate": 0.4467
+     },
+     "observations": 4885,
+     "avgPerDate": 81.4167
+    },
+    "S5_ESTABLISHED_LEADER": {
+     "21": {
+      "dates": 59,
+      "meanExcess": {
+       "mean": 0.0001,
+       "t": 0.02,
+       "dates": 59
+      },
+      "medianExcess": -0.0066,
+      "hitRate": 0.4678
+     },
+     "63": {
+      "dates": 57,
+      "meanExcess": {
+       "mean": 0.0067,
+       "t": 0.75,
+       "dates": 57
+      },
+      "medianExcess": -0.0185,
+      "hitRate": 0.4567
+     },
+     "126": {
+      "dates": 54,
+      "meanExcess": {
+       "mean": 0.016,
+       "t": 1.17,
+       "dates": 54
+      },
+      "medianExcess": -0.0241,
+      "hitRate": 0.4561
+     },
+     "observations": 7418,
+     "avgPerDate": 123.6333
+    }
+   },
+   "separation": {
+    "S1_EARLY_ACCUMULATION_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0017,
+      "t": 0.52,
+      "dates": 57
+     },
+     "63": {
+      "mean": 0.0051,
+      "t": 0.95,
+      "dates": 55
+     },
+     "126": {
+      "mean": 0.0007,
+      "t": 0.12,
+      "dates": 52
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0003,
+      "t": 0.07,
+      "dates": 58
+     },
+     "63": {
+      "mean": 0.0027,
+      "t": 0.43,
+      "dates": 56
+     },
+     "126": {
+      "mean": 0.0063,
+      "t": 0.92,
+      "dates": 53
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "mean": -0.004,
+      "t": -1.59,
+      "dates": 57
+     },
+     "63": {
+      "mean": 0.0065,
+      "t": 0.69,
+      "dates": 55
+     },
+     "126": {
+      "mean": 0.0242,
+      "t": 1.36,
+      "dates": 52
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0025,
+      "t": -0.58,
+      "dates": 57
+     },
+     "63": {
+      "mean": 0.0118,
+      "t": 0.97,
+      "dates": 55
+     },
+     "126": {
+      "mean": 0.0332,
+      "t": 1.79,
+      "dates": 52
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "mean": 0.0049,
+      "t": 1.34,
+      "dates": 57
+     },
+     "63": {
+      "mean": 0.0032,
+      "t": 0.42,
+      "dates": 55
+     },
+     "126": {
+      "mean": 0.0036,
+      "t": 0.29,
+      "dates": 52
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0004,
+      "t": -0.07,
+      "dates": 59
+     },
+     "63": {
+      "mean": 0.011,
+      "t": 1.31,
+      "dates": 57
+     },
+     "126": {
+      "mean": 0.0319,
+      "t": 2.35,
+      "dates": 54
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S1_EARLY_ACCUMULATION": {
+     "21": {
+      "mean": -0.0003,
+      "t": -0.1,
+      "dates": 54
+     },
+     "63": {
+      "mean": 0.0002,
+      "t": 0.05,
+      "dates": 52
+     },
+     "126": {
+      "mean": 0.0096,
+      "t": 0.97,
+      "dates": 49
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0009,
+      "t": -0.23,
+      "dates": 56
+     },
+     "63": {
+      "mean": 0.0048,
+      "t": 0.94,
+      "dates": 54
+     },
+     "126": {
+      "mean": 0.0108,
+      "t": 1.55,
+      "dates": 51
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S2_MOMENTUM_EMERGING": {
+     "21": {
+      "mean": -0.0001,
+      "t": -0.04,
+      "dates": 55
+     },
+     "63": {
+      "mean": -0.0017,
+      "t": -0.32,
+      "dates": 53
+     },
+     "126": {
+      "mean": -0.0036,
+      "t": -0.4,
+      "dates": 50
+     }
+    }
+   },
+   "persistence": {
+    "S0_NONE": 0.7411,
+    "S1_EARLY_ACCUMULATION": 0.0934,
+    "S2_MOMENTUM_EMERGING": 0.1964,
+    "S3_BREAKOUT_CANDIDATE": 0.3252,
+    "S4_BREAKOUT_CONFIRMED": 0.0442,
+    "S5_ESTABLISHED_LEADER": 0.5347
+   },
+   "transitions": {
+    "order": [
+     "S0_NONE",
+     "S1_EARLY_ACCUMULATION",
+     "S2_MOMENTUM_EMERGING",
+     "S3_BREAKOUT_CANDIDATE",
+     "S4_BREAKOUT_CONFIRMED",
+     "S5_ESTABLISHED_LEADER"
+    ],
+    "counts": [
+     [
+      54269,
+      2131,
+      3944,
+      9042,
+      2271,
+      1574
+     ],
+     [
+      1611,
+      313,
+      342,
+      906,
+      168,
+      12
+     ],
+     [
+      3689,
+      171,
+      1684,
+      2314,
+      358,
+      360
+     ],
+     [
+      9044,
+      597,
+      1939,
+      6590,
+      1247,
+      845
+     ],
+     [
+      1457,
+      123,
+      717,
+      1852,
+      204,
+      266
+     ],
+     [
+      2457,
+      17,
+      176,
+      492,
+      59,
+      3679
+     ]
+    ]
+   }
+  },
+  "VALIDATION": {
+   "perState": {
+    "S0_NONE": {
+     "21": {
+      "dates": 28,
+      "meanExcess": {
+       "mean": -0.0083,
+       "t": -1.37,
+       "dates": 28
+      },
+      "medianExcess": -0.0088,
+      "hitRate": 0.4606
+     },
+     "63": {
+      "dates": 26,
+      "meanExcess": {
+       "mean": -0.0289,
+       "t": -2.24,
+       "dates": 26
+      },
+      "medianExcess": -0.0249,
+      "hitRate": 0.4348
+     },
+     "126": {
+      "dates": 23,
+      "meanExcess": {
+       "mean": -0.0449,
+       "t": -1.92,
+       "dates": 23
+      },
+      "medianExcess": -0.0417,
+      "hitRate": 0.421
+     },
+     "observations": 51322,
+     "avgPerDate": 1710.7333
+    },
+    "S1_EARLY_ACCUMULATION": {
+     "21": {
+      "dates": 27,
+      "meanExcess": {
+       "mean": -0.0012,
+       "t": -0.15,
+       "dates": 27
+      },
+      "medianExcess": -0.0076,
+      "hitRate": 0.4597
+     },
+     "63": {
+      "dates": 25,
+      "meanExcess": {
+       "mean": -0.0142,
+       "t": -0.79,
+       "dates": 25
+      },
+      "medianExcess": -0.0302,
+      "hitRate": 0.4099
+     },
+     "126": {
+      "dates": 22,
+      "meanExcess": {
+       "mean": -0.01,
+       "t": -0.26,
+       "dates": 22
+      },
+      "medianExcess": -0.04,
+      "hitRate": 0.4184
+     },
+     "observations": 1489,
+     "avgPerDate": 49.6333
+    },
+    "S2_MOMENTUM_EMERGING": {
+     "21": {
+      "dates": 28,
+      "meanExcess": {
+       "mean": -0.0116,
+       "t": -1.92,
+       "dates": 28
+      },
+      "medianExcess": -0.012,
+      "hitRate": 0.4405
+     },
+     "63": {
+      "dates": 26,
+      "meanExcess": {
+       "mean": -0.0326,
+       "t": -3.83,
+       "dates": 26
+      },
+      "medianExcess": -0.0366,
+      "hitRate": 0.4163
+     },
+     "126": {
+      "dates": 23,
+      "meanExcess": {
+       "mean": -0.0551,
+       "t": -2.34,
+       "dates": 23
+      },
+      "medianExcess": -0.051,
+      "hitRate": 0.4012
+     },
+     "observations": 5810,
+     "avgPerDate": 193.6667
+    },
+    "S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "dates": 28,
+      "meanExcess": {
+       "mean": -0.0098,
+       "t": -1.93,
+       "dates": 28
+      },
+      "medianExcess": -0.0129,
+      "hitRate": 0.4256
+     },
+     "63": {
+      "dates": 26,
+      "meanExcess": {
+       "mean": -0.0182,
+       "t": -1.68,
+       "dates": 26
+      },
+      "medianExcess": -0.0393,
+      "hitRate": 0.3814
+     },
+     "126": {
+      "dates": 23,
+      "meanExcess": {
+       "mean": -0.0313,
+       "t": -1.6,
+       "dates": 23
+      },
+      "medianExcess": -0.0531,
+      "hitRate": 0.3772
+     },
+     "observations": 7839,
+     "avgPerDate": 261.3
+    },
+    "S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "dates": 28,
+      "meanExcess": {
+       "mean": -0.0204,
+       "t": -3.23,
+       "dates": 28
+      },
+      "medianExcess": -0.0092,
+      "hitRate": 0.4607
+     },
+     "63": {
+      "dates": 26,
+      "meanExcess": {
+       "mean": -0.0359,
+       "t": -3.21,
+       "dates": 26
+      },
+      "medianExcess": -0.0393,
+      "hitRate": 0.396
+     },
+     "126": {
+      "dates": 23,
+      "meanExcess": {
+       "mean": -0.0504,
+       "t": -2.34,
+       "dates": 23
+      },
+      "medianExcess": -0.067,
+      "hitRate": 0.3635
+     },
+     "observations": 2088,
+     "avgPerDate": 69.6
+    },
+    "S5_ESTABLISHED_LEADER": {
+     "21": {
+      "dates": 28,
+      "meanExcess": {
+       "mean": -0.0062,
+       "t": -0.68,
+       "dates": 28
+      },
+      "medianExcess": -0.0115,
+      "hitRate": 0.4591
+     },
+     "63": {
+      "dates": 26,
+      "meanExcess": {
+       "mean": -0.0209,
+       "t": -1.22,
+       "dates": 26
+      },
+      "medianExcess": -0.0365,
+      "hitRate": 0.419
+     },
+     "126": {
+      "dates": 23,
+      "meanExcess": {
+       "mean": -0.03,
+       "t": -1.33,
+       "dates": 23
+      },
+      "medianExcess": -0.0401,
+      "hitRate": 0.4246
+     },
+     "observations": 3635,
+     "avgPerDate": 121.1667
+    }
+   },
+   "separation": {
+    "S1_EARLY_ACCUMULATION_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0081,
+      "t": 1.08,
+      "dates": 27
+     },
+     "63": {
+      "mean": 0.0163,
+      "t": 1.16,
+      "dates": 25
+     },
+     "126": {
+      "mean": 0.0358,
+      "t": 1.82,
+      "dates": 22
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S1_EARLY_ACCUMULATION": {
+     "21": {
+      "mean": -0.0103,
+      "t": -1.54,
+      "dates": 27
+     },
+     "63": {
+      "mean": -0.0181,
+      "t": -1.41,
+      "dates": 25
+     },
+     "126": {
+      "mean": -0.0452,
+      "t": -2.79,
+      "dates": 22
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0034,
+      "t": -0.8,
+      "dates": 28
+     },
+     "63": {
+      "mean": -0.0038,
+      "t": -0.4,
+      "dates": 26
+     },
+     "126": {
+      "mean": -0.0102,
+      "t": -0.76,
+      "dates": 23
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S2_MOMENTUM_EMERGING": {
+     "21": {
+      "mean": 0.0018,
+      "t": 0.38,
+      "dates": 28
+     },
+     "63": {
+      "mean": 0.0144,
+      "t": 2.64,
+      "dates": 26
+     },
+     "126": {
+      "mean": 0.0238,
+      "t": 2.42,
+      "dates": 23
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0015,
+      "t": -0.24,
+      "dates": 28
+     },
+     "63": {
+      "mean": 0.0107,
+      "t": 0.97,
+      "dates": 26
+     },
+     "126": {
+      "mean": 0.0136,
+      "t": 0.71,
+      "dates": 23
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "mean": -0.0106,
+      "t": -1.43,
+      "dates": 28
+     },
+     "63": {
+      "mean": -0.0177,
+      "t": -3.6,
+      "dates": 26
+     },
+     "126": {
+      "mean": -0.0191,
+      "t": -1.75,
+      "dates": 23
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0121,
+      "t": -1.41,
+      "dates": 28
+     },
+     "63": {
+      "mean": -0.007,
+      "t": -0.58,
+      "dates": 26
+     },
+     "126": {
+      "mean": -0.0055,
+      "t": -0.41,
+      "dates": 23
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "mean": 0.0142,
+      "t": 1.5,
+      "dates": 28
+     },
+     "63": {
+      "mean": 0.015,
+      "t": 1.53,
+      "dates": 26
+     },
+     "126": {
+      "mean": 0.0204,
+      "t": 2.64,
+      "dates": 23
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0021,
+      "t": 0.24,
+      "dates": 28
+     },
+     "63": {
+      "mean": 0.008,
+      "t": 0.5,
+      "dates": 26
+     },
+     "126": {
+      "mean": 0.0149,
+      "t": 0.83,
+      "dates": 23
+     }
+    }
+   },
+   "persistence": {
+    "S0_NONE": 0.7969,
+    "S1_EARLY_ACCUMULATION": 0.0853,
+    "S2_MOMENTUM_EMERGING": 0.2005,
+    "S3_BREAKOUT_CANDIDATE": 0.2577,
+    "S4_BREAKOUT_CONFIRMED": 0.0293,
+    "S5_ESTABLISHED_LEADER": 0.4816
+   },
+   "transitions": {
+    "order": [
+     "S0_NONE",
+     "S1_EARLY_ACCUMULATION",
+     "S2_MOMENTUM_EMERGING",
+     "S3_BREAKOUT_CANDIDATE",
+     "S4_BREAKOUT_CONFIRMED",
+     "S5_ESTABLISHED_LEADER"
+    ],
+    "counts": [
+     [
+      38422,
+      904,
+      2979,
+      3715,
+      1188,
+      1007
+     ],
+     [
+      800,
+      119,
+      164,
+      256,
+      51,
+      5
+     ],
+     [
+      3130,
+      80,
+      1151,
+      979,
+      198,
+      204
+     ],
+     [
+      4210,
+      176,
+      848,
+      2037,
+      306,
+      327
+     ],
+     [
+      778,
+      50,
+      398,
+      510,
+      57,
+      154
+     ],
+     [
+      1500,
+      5,
+      123,
+      139,
+      18,
+      1658
+     ]
+    ]
+   }
+  },
+  "HOLDOUT_RECENT": {
+   "perState": {
+    "S0_NONE": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": -0.0071,
+       "t": -1.54,
+       "dates": 38
+      },
+      "medianExcess": -0.0139,
+      "hitRate": 0.4395
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.012,
+       "t": -1.73,
+       "dates": 36
+      },
+      "medianExcess": -0.0268,
+      "hitRate": 0.436
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": -0.0322,
+       "t": -2.64,
+       "dates": 33
+      },
+      "medianExcess": -0.0695,
+      "hitRate": 0.3848
+     },
+     "observations": 64141,
+     "avgPerDate": 1644.641
+    },
+    "S1_EARLY_ACCUMULATION": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": -0.0049,
+       "t": -0.85,
+       "dates": 38
+      },
+      "medianExcess": -0.0115,
+      "hitRate": 0.4326
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.0126,
+       "t": -1.91,
+       "dates": 36
+      },
+      "medianExcess": -0.0357,
+      "hitRate": 0.398
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": -0.0347,
+       "t": -2.58,
+       "dates": 33
+      },
+      "medianExcess": -0.0598,
+      "hitRate": 0.3766
+     },
+     "observations": 2737,
+     "avgPerDate": 70.1795
+    },
+    "S2_MOMENTUM_EMERGING": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": -0.002,
+       "t": -0.37,
+       "dates": 38
+      },
+      "medianExcess": -0.0143,
+      "hitRate": 0.435
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.0146,
+       "t": -1.11,
+       "dates": 36
+      },
+      "medianExcess": -0.0407,
+      "hitRate": 0.4094
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": -0.0261,
+       "t": -0.99,
+       "dates": 33
+      },
+      "medianExcess": -0.0766,
+      "hitRate": 0.3779
+     },
+     "observations": 9175,
+     "avgPerDate": 235.2564
+    },
+    "S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": -0.0081,
+       "t": -1.5,
+       "dates": 38
+      },
+      "medianExcess": -0.0126,
+      "hitRate": 0.4338
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.0255,
+       "t": -2.64,
+       "dates": 36
+      },
+      "medianExcess": -0.0291,
+      "hitRate": 0.4096
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": -0.0402,
+       "t": -2.59,
+       "dates": 33
+      },
+      "medianExcess": -0.0453,
+      "hitRate": 0.4081
+     },
+     "observations": 11668,
+     "avgPerDate": 299.1795
+    },
+    "S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": -0.011,
+       "t": -1.71,
+       "dates": 38
+      },
+      "medianExcess": -0.0102,
+      "hitRate": 0.4444
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.0251,
+       "t": -2.3,
+       "dates": 36
+      },
+      "medianExcess": -0.0409,
+      "hitRate": 0.3889
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": -0.0304,
+       "t": -1.26,
+       "dates": 33
+      },
+      "medianExcess": -0.0566,
+      "hitRate": 0.3946
+     },
+     "observations": 4028,
+     "avgPerDate": 103.2821
+    },
+    "S5_ESTABLISHED_LEADER": {
+     "21": {
+      "dates": 38,
+      "meanExcess": {
+       "mean": 0.0012,
+       "t": 0.2,
+       "dates": 38
+      },
+      "medianExcess": -0.0126,
+      "hitRate": 0.4499
+     },
+     "63": {
+      "dates": 36,
+      "meanExcess": {
+       "mean": -0.0067,
+       "t": -0.39,
+       "dates": 36
+      },
+      "medianExcess": -0.0411,
+      "hitRate": 0.4243
+     },
+     "126": {
+      "dates": 33,
+      "meanExcess": {
+       "mean": 0.0359,
+       "t": 1.4,
+       "dates": 33
+      },
+      "medianExcess": -0.0345,
+      "hitRate": 0.4534
+     },
+     "observations": 5143,
+     "avgPerDate": 131.8718
+    }
+   },
+   "separation": {
+    "S1_EARLY_ACCUMULATION_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0022,
+      "t": 0.66,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.0007,
+      "t": -0.12,
+      "dates": 36
+     },
+     "126": {
+      "mean": -0.0025,
+      "t": -0.36,
+      "dates": 33
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S1_EARLY_ACCUMULATION": {
+     "21": {
+      "mean": 0.0029,
+      "t": 0.61,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.002,
+      "t": -0.19,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0085,
+      "t": 0.59,
+      "dates": 33
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0051,
+      "t": 1.28,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.0026,
+      "t": -0.24,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0061,
+      "t": 0.36,
+      "dates": 33
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S2_MOMENTUM_EMERGING": {
+     "21": {
+      "mean": -0.0061,
+      "t": -1.48,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.0109,
+      "t": -1.03,
+      "dates": 36
+     },
+     "126": {
+      "mean": -0.0141,
+      "t": -0.74,
+      "dates": 33
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S0_NONE": {
+     "21": {
+      "mean": -0.001,
+      "t": -0.23,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.0136,
+      "t": -1.37,
+      "dates": 36
+     },
+     "126": {
+      "mean": -0.008,
+      "t": -0.51,
+      "dates": 33
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "mean": -0.0029,
+      "t": -0.37,
+      "dates": 38
+     },
+     "63": {
+      "mean": 0.0004,
+      "t": 0.04,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0099,
+      "t": 0.82,
+      "dates": 33
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0038,
+      "t": -0.53,
+      "dates": 38
+     },
+     "63": {
+      "mean": -0.0132,
+      "t": -1.15,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0018,
+      "t": 0.09,
+      "dates": 33
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "mean": 0.0122,
+      "t": 1.28,
+      "dates": 38
+     },
+     "63": {
+      "mean": 0.0184,
+      "t": 1.32,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0663,
+      "t": 4.46,
+      "dates": 33
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S0_NONE": {
+     "21": {
+      "mean": 0.0084,
+      "t": 1.21,
+      "dates": 38
+     },
+     "63": {
+      "mean": 0.0053,
+      "t": 0.31,
+      "dates": 36
+     },
+     "126": {
+      "mean": 0.0681,
+      "t": 3.19,
+      "dates": 33
+     }
+    }
+   },
+   "persistence": {
+    "S0_NONE": 0.77,
+    "S1_EARLY_ACCUMULATION": 0.1086,
+    "S2_MOMENTUM_EMERGING": 0.2424,
+    "S3_BREAKOUT_CANDIDATE": 0.2654,
+    "S4_BREAKOUT_CONFIRMED": 0.056,
+    "S5_ESTABLISHED_LEADER": 0.4998
+   },
+   "transitions": {
+    "order": [
+     "S0_NONE",
+     "S1_EARLY_ACCUMULATION",
+     "S2_MOMENTUM_EMERGING",
+     "S3_BREAKOUT_CANDIDATE",
+     "S4_BREAKOUT_CONFIRMED",
+     "S5_ESTABLISHED_LEADER"
+    ],
+    "counts": [
+     [
+      46423,
+      1610,
+      3969,
+      4999,
+      1973,
+      1316
+     ],
+     [
+      1364,
+      283,
+      339,
+      476,
+      130,
+      13
+     ],
+     [
+      4299,
+      150,
+      2189,
+      1635,
+      415,
+      343
+     ],
+     [
+      5698,
+      328,
+      1411,
+      3106,
+      750,
+      412
+     ],
+     [
+      1401,
+      121,
+      908,
+      966,
+      216,
+      245
+     ],
+     [
+      2007,
+      13,
+      164,
+      233,
+      47,
+      2462
+     ]
+    ]
+   }
+  },
+  "HOLDOUT_EARLY": {
+   "perState": {
+    "S0_NONE": {
+     "21": {
+      "dates": 95,
+      "meanExcess": {
+       "mean": 0.0012,
+       "t": 0.47,
+       "dates": 95
+      },
+      "medianExcess": -0.0005,
+      "hitRate": 0.4969
+     },
+     "63": {
+      "dates": 93,
+      "meanExcess": {
+       "mean": 0.0048,
+       "t": 0.81,
+       "dates": 93
+      },
+      "medianExcess": -0.003,
+      "hitRate": 0.4908
+     },
+     "126": {
+      "dates": 90,
+      "meanExcess": {
+       "mean": 0.0081,
+       "t": 0.72,
+       "dates": 90
+      },
+      "medianExcess": -0.0068,
+      "hitRate": 0.4848
+     },
+     "observations": 100640,
+     "avgPerDate": 1048.3333
+    },
+    "S1_EARLY_ACCUMULATION": {
+     "21": {
+      "dates": 88,
+      "meanExcess": {
+       "mean": -0.0014,
+       "t": -0.55,
+       "dates": 88
+      },
+      "medianExcess": -0.0016,
+      "hitRate": 0.4884
+     },
+     "63": {
+      "dates": 86,
+      "meanExcess": {
+       "mean": 0.0044,
+       "t": 1.14,
+       "dates": 86
+      },
+      "medianExcess": -0.0004,
+      "hitRate": 0.4986
+     },
+     "126": {
+      "dates": 83,
+      "meanExcess": {
+       "mean": 0.0026,
+       "t": 0.38,
+       "dates": 83
+      },
+      "medianExcess": -0.0079,
+      "hitRate": 0.4756
+     },
+     "observations": 3904,
+     "avgPerDate": 40.6667
+    },
+    "S2_MOMENTUM_EMERGING": {
+     "21": {
+      "dates": 92,
+      "meanExcess": {
+       "mean": -0.0014,
+       "t": -0.52,
+       "dates": 92
+      },
+      "medianExcess": -0.0007,
+      "hitRate": 0.4954
+     },
+     "63": {
+      "dates": 90,
+      "meanExcess": {
+       "mean": -0.0027,
+       "t": -0.42,
+       "dates": 90
+      },
+      "medianExcess": -0.0029,
+      "hitRate": 0.489
+     },
+     "126": {
+      "dates": 87,
+      "meanExcess": {
+       "mean": -0.0126,
+       "t": -0.98,
+       "dates": 87
+      },
+      "medianExcess": -0.0224,
+      "hitRate": 0.4485
+     },
+     "observations": 11645,
+     "avgPerDate": 121.3021
+    },
+    "S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "dates": 92,
+      "meanExcess": {
+       "mean": -0.0001,
+       "t": -0.03,
+       "dates": 92
+      },
+      "medianExcess": -0.0019,
+      "hitRate": 0.4866
+     },
+     "63": {
+      "dates": 90,
+      "meanExcess": {
+       "mean": -0.0029,
+       "t": -0.71,
+       "dates": 90
+      },
+      "medianExcess": -0.0029,
+      "hitRate": 0.49
+     },
+     "126": {
+      "dates": 87,
+      "meanExcess": {
+       "mean": -0.0024,
+       "t": -0.39,
+       "dates": 87
+      },
+      "medianExcess": -0.0055,
+      "hitRate": 0.4852
+     },
+     "observations": 26535,
+     "avgPerDate": 276.4063
+    },
+    "S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "dates": 90,
+      "meanExcess": {
+       "mean": -0.0014,
+       "t": -0.53,
+       "dates": 90
+      },
+      "medianExcess": -0.0013,
+      "hitRate": 0.4906
+     },
+     "63": {
+      "dates": 88,
+      "meanExcess": {
+       "mean": -0.002,
+       "t": -0.37,
+       "dates": 88
+      },
+      "medianExcess": -0.0033,
+      "hitRate": 0.487
+     },
+     "126": {
+      "dates": 85,
+      "meanExcess": {
+       "mean": 0.0023,
+       "t": 0.27,
+       "dates": 85
+      },
+      "medianExcess": -0.0097,
+      "hitRate": 0.4781
+     },
+     "observations": 5986,
+     "avgPerDate": 62.3542
+    },
+    "S5_ESTABLISHED_LEADER": {
+     "21": {
+      "dates": 94,
+      "meanExcess": {
+       "mean": 0,
+       "t": 0.01,
+       "dates": 94
+      },
+      "medianExcess": -0.0014,
+      "hitRate": 0.4933
+     },
+     "63": {
+      "dates": 92,
+      "meanExcess": {
+       "mean": -0.004,
+       "t": -0.41,
+       "dates": 92
+      },
+      "medianExcess": -0.0082,
+      "hitRate": 0.4795
+     },
+     "126": {
+      "dates": 89,
+      "meanExcess": {
+       "mean": -0.0063,
+       "t": -0.33,
+       "dates": 89
+      },
+      "medianExcess": -0.0199,
+      "hitRate": 0.4656
+     },
+     "observations": 9964,
+     "avgPerDate": 103.7917
+    }
+   },
+   "separation": {
+    "S1_EARLY_ACCUMULATION_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0007,
+      "t": -0.32,
+      "dates": 88
+     },
+     "63": {
+      "mean": 0.0047,
+      "t": 1.15,
+      "dates": 86
+     },
+     "126": {
+      "mean": 0.0047,
+      "t": 0.98,
+      "dates": 83
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0015,
+      "t": -0.47,
+      "dates": 92
+     },
+     "63": {
+      "mean": -0.0075,
+      "t": -1.11,
+      "dates": 90
+     },
+     "126": {
+      "mean": -0.0078,
+      "t": -0.77,
+      "dates": 87
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S3_BREAKOUT_CANDIDATE": {
+     "21": {
+      "mean": -0.0026,
+      "t": -0.85,
+      "dates": 89
+     },
+     "63": {
+      "mean": 0.0018,
+      "t": 0.36,
+      "dates": 87
+     },
+     "126": {
+      "mean": 0.004,
+      "t": 0.65,
+      "dates": 84
+     }
+    },
+    "S4_BREAKOUT_CONFIRMED_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0022,
+      "t": -0.72,
+      "dates": 90
+     },
+     "63": {
+      "mean": -0.0061,
+      "t": -0.95,
+      "dates": 88
+     },
+     "126": {
+      "mean": -0.0018,
+      "t": -0.19,
+      "dates": 85
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S4_BREAKOUT_CONFIRMED": {
+     "21": {
+      "mean": 0.0025,
+      "t": 0.57,
+      "dates": 89
+     },
+     "63": {
+      "mean": -0.0019,
+      "t": -0.24,
+      "dates": 87
+     },
+     "126": {
+      "mean": -0.0046,
+      "t": -0.28,
+      "dates": 84
+     }
+    },
+    "S5_ESTABLISHED_LEADER_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0009,
+      "t": -0.17,
+      "dates": 94
+     },
+     "63": {
+      "mean": -0.0073,
+      "t": -0.7,
+      "dates": 92
+     },
+     "126": {
+      "mean": -0.0124,
+      "t": -0.56,
+      "dates": 89
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S1_EARLY_ACCUMULATION": {
+     "21": {
+      "mean": -0.0016,
+      "t": -0.7,
+      "dates": 85
+     },
+     "63": {
+      "mean": -0.008,
+      "t": -1.7,
+      "dates": 83
+     },
+     "126": {
+      "mean": -0.0114,
+      "t": -1.51,
+      "dates": 80
+     }
+    },
+    "S2_MOMENTUM_EMERGING_vs_S0_NONE": {
+     "21": {
+      "mean": -0.0026,
+      "t": -0.94,
+      "dates": 92
+     },
+     "63": {
+      "mean": -0.0074,
+      "t": -1.61,
+      "dates": 90
+     },
+     "126": {
+      "mean": -0.02,
+      "t": -2,
+      "dates": 87
+     }
+    },
+    "S3_BREAKOUT_CANDIDATE_vs_S2_MOMENTUM_EMERGING": {
+     "21": {
+      "mean": -0.0008,
+      "t": -0.31,
+      "dates": 89
+     },
+     "63": {
+      "mean": -0.0015,
+      "t": -0.26,
+      "dates": 87
+     },
+     "126": {
+      "mean": 0.003,
+      "t": 0.29,
+      "dates": 84
+     }
+    }
+   },
+   "persistence": {
+    "S0_NONE": 0.754,
+    "S1_EARLY_ACCUMULATION": 0.0876,
+    "S2_MOMENTUM_EMERGING": 0.1911,
+    "S3_BREAKOUT_CANDIDATE": 0.3205,
+    "S4_BREAKOUT_CONFIRMED": 0.0434,
+    "S5_ESTABLISHED_LEADER": 0.5494
+   },
+   "transitions": {
+    "order": [
+     "S0_NONE",
+     "S1_EARLY_ACCUMULATION",
+     "S2_MOMENTUM_EMERGING",
+     "S3_BREAKOUT_CANDIDATE",
+     "S4_BREAKOUT_CONFIRMED",
+     "S5_ESTABLISHED_LEADER"
+    ],
+    "counts": [
+     [
+      70515,
+      2084,
+      5011,
+      11067,
+      2767,
+      2073
+     ],
+     [
+      1794,
+      314,
+      389,
+      911,
+      159,
+      17
+     ],
+     [
+      5104,
+      171,
+      2150,
+      2866,
+      457,
+      501
+     ],
+     [
+      11644,
+      699,
+      2623,
+      8180,
+      1459,
+      920
+     ],
+     [
+      1863,
+      193,
+      943,
+      2028,
+      245,
+      373
+     ],
+     [
+      3272,
+      20,
+      212,
+      603,
+      74,
+      5098
+     ]
+    ]
+   }
+  }
+ },
+ "selection": {
+  "candidates": [
+   {
+    "model": "M1_TECH_EQUAL",
+    "net": -0.036,
+    "icT": -0.13
+   },
+   {
+    "model": "M2_TECH_FUND_EQUAL",
+    "net": -0.037,
+    "icT": 0.02
+   },
+   {
+    "model": "M3_DEV_IC_WEIGHTED",
+    "net": -0.033,
+    "icT": 0.51
+   },
+   {
+    "model": "M4_EMERGING_TECH",
+    "net": -0.0295,
+    "icT": 0.43
+   }
+  ],
+  "chosen": null,
+  "rule": "hoechste mittlere Netto-Ueberrendite (BASE-Kosten) des Topdezils bei h=63 unter M1-M4, sofern der mittlere IC (h=63) Newey-West-t >= 2,0 hat",
+  "sha256": "efe7e0c51f9565c0fcd0d30f97b2624b9d2f2204622b20d93edcc42808e3e2a2",
+  "basedOn": "VALIDATION"
+ },
+ "gate": {
+  "evidenceStatus": "EXPERIMENTAL",
+  "reason": "NO_MODEL_QUALIFIED_ON_VALIDATION"
+ },
+ "limitations": [
+  "Renditebasis: split-bereinigte Kursrendite ohne Dividenden fuer Titel und SPY.",
+  "Keine Point-in-Time-Sektorzuordnung: keine Sektor-Auswertung.",
+  "Groesse ueber Dollarumsatz genaehert (keine historische Marktkapitalisierung).",
+  "Fundamentaldaten (Gruppe E) nur fuer heute gelistete Titel; Jahreswerte mit spaeter Sichtbarkeit. Weil nur Ueberlebende Gruppe E tragen, haengt die Topdezil-Auswahl von M2/M3 teilweise am spaeteren Ueberleben: M2/M3 sind fuer 2016-2026 nach oben verzerrt und nur zusammen mit M1/M4 zu lesen.",
+  "Der maximale Rueckgang im Fenster ist durch die Maximum Adverse Excursion (tiefster Schluss gegen Einstieg) ersetzt; ein Rueckgang von einem Zwischenhoch wird nicht berichtet.",
+  "Alt-Listings spaeter neu vergebener Kuerzel (Klasse D) sind nicht abrufbar und fehlen.",
+  "Europa: keine Tagesreihen mit Volumen - nicht Teil der Studie.",
+  "Beobachtungen ueberlappen bei h > 21 (monatliches Raster); Standardfehler nach Newey-West."
+ ],
+ "notes": {
+  "holdoutUse": "Die Holdouts werden im selben Lauf gerechnet, die Modellwahl liest aber nur die eingefrorene VALIDATION-Kopie; Holdout-Zahlen der nicht gewaehlten Modelle sind beschreibend.",
+  "metrics": "meanExcess*: Mittel der Stichtags-Portfolios (Einzelwerte auf [-95 %, +500 %] begrenzt); medianExcess, hitRate: ueber alle Titelbeobachtungen; t nach Newey-West mit Lag ceil(h/21)-1."
+ }
+}

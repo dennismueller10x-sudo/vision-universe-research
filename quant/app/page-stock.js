@@ -569,7 +569,7 @@
     var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
     page.append(heroHost, bodyHost);
 
-    var brief = await api.getIntelligenceBrief(ticker).catch(function () { return null; });
+    var brief = await (ctx.takePrefetched && ctx.takePrefetched(ticker) || api.getIntelligenceBrief(ticker).catch(function () { return null; }));
     var src = (brief && brief.sources) || {};
     var s = src.stock || await api.getStockIntelligence(ticker).catch(function () { return null; });
     if (!s) { X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
@@ -610,8 +610,9 @@
     } else {
       quote.replaceChildren(el("b", { class: "qx-quote-none", text: priceAllowed ? "Kein Kurs veröffentlicht" : "Kurs nicht freigegeben" }), el("small", { text: priceAllowed ? "Für diesen Titel liegt kein veröffentlichter Kurs vor." : VM.reasonText("DISPLAY_NOT_PERMITTED") }));
     }
-    await ctx.loadNames().catch(function () { return null; });
-    var entry = ctx.entries[ticker] || {};
+    /* Art und Gattungszahl aus dem Eintrag DIESES Titels (Ausschnitt der Liste, bereits fuer den Dienst geladen) -
+       nicht aus der ganzen Liste (126 KB), die diese Seite sonst nur dafuer lud. */
+    var entry = (await api.getUniverseEntry(ticker)) || {};
     var kind = s.securityType || entry.t || null;
     var KIND = { ETF: "ETF", PREFERRED: "Vorzugsaktie", ADR: "ADR (Hinterlegungsschein)" };
     var tags = [kind && kind !== "COMMON_STOCK" ? el("span", { class: "dx-index-badge qx-tag", text: KIND[kind] || "keine Stammaktie" }) : null,
@@ -729,6 +730,14 @@
         if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
         if (global.QXChartbildCss) global.QXChartbildCss();   // Stile der Teaser-Karte (lazy, siehe app.js)
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
+        /* Datenstand-Richtlinie: zurueckgehaltene Titel zeigen statt des Ausblicks nur den Hinweis */
+        if (a.withheld) {
+          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chartbild(ticker) }, [
+            el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
+            el("b", { class: "cb-teaser-o" }, [el("span", { text: (a.freshness && a.freshness.title) || "Analyse zurückgehalten" })]),
+            el("span", { class: "cb-small cb-dim", text: (a.freshness && a.freshness.text) || "" })]));
+          return;
+        }
         /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
         var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
         var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;
@@ -740,7 +749,8 @@
             p && p.invalidation ? el("span", {}, [el("small", { text: p.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: Ex.fmt(p.invalidation.price) })]) : null,
             cl ? el("span", {}, [el("small", { text: "Struktur" }), el("strong", { text: cl })]) : null
           ]),
-          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })]));
+          a.freshness && a.freshness.state === "DELAYED" ? el("span", { class: "cb-small cb-dim", role: "status", text: a.freshness.line }) : null,
+          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })].filter(Boolean)));
       }).catch(function () { return null; }); };
       if (!global.IntersectionObserver) cbLoad();
       else {
