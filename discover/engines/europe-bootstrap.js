@@ -3,7 +3,12 @@
   'use strict';
   const api=factory(root);
   if(typeof module==='object'&&module.exports)module.exports=api;
-  else {root.VUDiscover.EuropeBootstrap=api;api.start().catch(()=>{});}
+  else {
+    root.VUDiscover.EuropeBootstrap=api;
+    // Europa-Verzeichnis (Registry, Manifest 52 KB gz, Kalender, Rechtenachweis) erst, wenn jemand es braucht:
+    // Suche, Alle-Aktien-Liste, Watchlist oder eine Europa-Route. Die Startseite wartet nicht darauf.
+    if(/#\/(?:s|c|u|watchlist)\/EUROPE(?:\/|$)/.test(root.location.hash))api.ensure();
+  }
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
   const BASE='/discover/data/europe/',scripts=new Map();
@@ -81,5 +86,11 @@
     if(/#\/(?:s|c|u|watchlist)\/EUROPE(?:\/|$)/.test(root.location.hash))await loader.connect();
     return loader;
   }
-  return {start,create,read,localURL,validRights,boundRights,validateCatalog};
+  // Ein gemeinsamer Start fuer alle Nutzer, solange er gelingt; Fehler und ein leeres Ergebnis (HTTP-Fehler, nicht registriert) werden nicht festgehalten (naechster Aufruf versucht es erneut).
+  let started=null;
+  function ensure(){
+    if(!started)started=start().then(loader=>{if(!loader)started=null;return loader;},()=>{started=null;return null;});
+    return started;
+  }
+  return {start,ensure,create,read,localURL,validRights,boundRights,validateCatalog};
 });

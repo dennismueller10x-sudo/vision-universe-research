@@ -364,6 +364,25 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
  await ctx.close();
 }
+// Direktlinks auf Routen mit nachgeladenen Skriptgruppen: jeder frische Aufruf muss zeichnen (kein "Gerade nicht erreichbar", keine Seitenfehler).
+// WebKit zeigte hier einmal ein Zufallsrennen zwischen Parser und Start; deshalb dort 25 frische Aufrufe je Link.
+await check('direct links to lazy-loaded routes render on every fresh load',async()=>{
+ const loads=engine==='webkit'?25:4,device=engine==='webkit'?playwright.devices['iPhone 13']:{viewport:{width:390,height:844},isMobile:true,hasTouch:true};
+ const {defaultBrowserType,...options}=device,failures=[];
+ for(const hash of ['#/daten','#/maerkte','#/s/US_REAL/NVDA','#/s/EUROPE/ref_RHM_DE_XETR','#/einzeln/NVDA']){
+  for(let i=0;i<loads;i++){
+   const context=await browser.newContext(options),page=await context.newPage(),pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));
+   try{
+    await page.goto(base+'/discover/'+hash,{waitUntil:'load'});
+    await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
+    const heading=await page.evaluate(()=>(document.querySelector('#v2-main h1')||{}).textContent||'');
+    if(/erreichbar/.test(heading)||pageErrors.length)failures.push(hash+' #'+i+': '+heading+' '+pageErrors.slice(0,1).join());
+   }catch(e){failures.push(hash+' #'+i+': '+e.message.split('\n')[0]);}
+   await context.close();
+  }
+ }
+ assert.deepEqual(failures,[]);
+});
 await check('no uncaught page errors',async()=>assert.deepEqual(errors,[]));
 }catch(e){checks.push({name:'browser suite completion',pass:false,error:e.stack||e.message});}finally{await browser.close();}
 const report={status:checks.every(x=>x.pass)?'PASS':'FAIL',checks,errors,shots,performance,designEvidence,limitations:['Five-second check is an automated content heuristic, not an independent human usability test.','Premium feel still requires the documented screenshot critique; material and composition checks only provide objective evidence.','A closed-market run cannot prove receipt of a new regular-session realtime tick.','Automated structural checks are not a WCAG certification.','Local resource measurements are not a production latency SLA.']};

@@ -56,8 +56,12 @@
       el('p',{},[el('a',{href:'#/maerkte',text:'Märkte'}),document.createTextNode(' · '),el('a',{href:'#/daten',text:'Daten & Quellen'})])
     ]);
   }
+  let keepIntro=null;
   function shell() {
-    const host=document.getElementById('v2-shell'); S.clear(host);
+    const host=document.getElementById('v2-shell'),keep=keepIntro,kept=keep&&keep.closest('main');keepIntro=null;
+    // Der Kopf der Startseite (vorgerendert oder frueher gezeichnet) bleibt im DOM: kein neuer Paint, kein neuer LCP-Kandidat.
+    if(kept){Array.from(host.children).forEach(n=>{if(n!==kept)n.remove();});Array.from(keep.parentNode.children).forEach(n=>{if(n!==keep)n.remove();});host.append(footer());return kept;}
+    S.clear(host);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
     host.append(main,footer()); return main;
   }
@@ -107,12 +111,12 @@
     if(D.EuropeView.bindRoute(parts,ctx))return;
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
-    const root=shell();root.setAttribute('aria-busy','true');
+    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>.v2-intro'):null,root=shell();root.setAttribute('aria-busy','true');
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
-      const index=D.EuropeView.loadIndex(ctx),home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(parts[0]||'');
-      if(!home){await Promise.all([index,parts[0]==='maerkte'&&D.Markets.ensureStyles()]);if(!active())return;}
+      const index=D.EuropeView.loadIndex(ctx);
+      if(!home){await Promise.all([index,D.Lazy&&D.Lazy.forRoute(parts),parts[0]==='maerkte'&&D.Markets.ensureStyles()]);if(!active())return;}
       if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
       else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
@@ -243,7 +247,7 @@
       } else if(parts[0]==='daten'){
         root.append(D.Daten.render({meta,universe:meta.universes.find(u=>u.universeId===ctx.universeId),calendar}));
       } else {
-        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active,liveIndex:index,fxReady}));
+        const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active,liveIndex:index,fxReady,intro}));
         if(typeof result==='function')homeDispose=result;
       }
       if(active()){
