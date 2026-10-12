@@ -75,6 +75,7 @@ class DNS(unittest.TestCase):
         root="/zones/"+cf.zone+"/dns_records"
         for method,path,body in (("DELETE",root+"/"+"b"*32,None),
                  ("PATCH",root+"/"+"b"*32,{"content":"wrong"}),
+                 ("PATCH",root+"/"+"b"*32,{"proxied":False}),
                  ("POST",root,{"type":"MX","name":DOMAIN,"content":"wrong"})):
             with self.assertRaises(Blocked):cf.call(method,path,body)
 

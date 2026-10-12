@@ -111,12 +111,15 @@ class Cloudflare:
         self.name,self.key,self.global_email = name,key,global_email
         self.zone = None
         self.expected = []
+        self.allowed_updates = set()
     def call(self, method, path, body=None):
         allowed_read = method == "GET" and (path.startswith("/zones?") or path=="/user/tokens/verify" or
             (self.zone and re.fullmatch(r"/zones/"+self.zone+r"/dns_records(?:\?.*)?(?:/[a-f0-9]{32})?",path)))
         allowed_write = self.zone and ((method == "POST" and path == "/zones/"+self.zone+"/dns_records") or
             (method == "PATCH" and re.fullmatch(r"/zones/"+self.zone+r"/dns_records/[a-f0-9]{32}",path) and body=={"proxied":False}))
         if not (allowed_read or allowed_write): raise Blocked("Cloudflare-Aufruf außerhalb des DNS-Umfangs.")
+        if method == "PATCH" and path.rsplit("/",1)[-1] not in self.allowed_updates:
+            raise Blocked("Nur zuvor passend geprüfte DKIM-CNAMEs dürfen auf DNS only wechseln.")
         if method == "POST" and (not isinstance(body,dict) or set(body)-{"name","type","content","ttl","proxied"}
                 or not any(equivalent(body,r) for r in self.expected)
                 or body.get("proxied",False) is not False):
@@ -184,6 +187,7 @@ def run(operation, authorized=False):
             continue
         changes=plan(records,expected)
         cf.expected=expected
+        cf.allowed_updates={c["record_id"] for c in changes if c["action"]=="dns_only"}
         report.update(cloudflare_secret=cf.name,existing_dns_records=len(records),
             missing_brevo_records=sum(c["action"]=="create" for c in changes),
             proxied_dkim_to_fix=sum(c["action"]=="dns_only" for c in changes))
