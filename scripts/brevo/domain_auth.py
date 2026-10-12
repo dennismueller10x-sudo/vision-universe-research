@@ -114,8 +114,10 @@ class Cloudflare:
         self.zone = None
         self.expected = []
         self.allowed_updates = set()
+        self.account = None
     def call(self, method, path, body=None):
         allowed_read = method == "GET" and (path.startswith("/zones?") or path=="/user/tokens/verify" or
+            (self.account and path == "/accounts/"+self.account+"/tokens/verify") or
             (self.zone and re.fullmatch(r"/zones/"+self.zone+r"/dns_records(?:\?.*)?(?:/[a-f0-9]{32})?",path)))
         allowed_write = self.zone and ((method == "POST" and path == "/zones/"+self.zone+"/dns_records") or
             (method == "PATCH" and re.fullmatch(r"/zones/"+self.zone+r"/dns_records/[a-f0-9]{32}",path) and body=={"proxied":False}))
@@ -174,13 +176,24 @@ def run(operation, authorized=False):
     for cf in clients:
         check={"secret":cf.name,"zone_read":False,"dns_read":False}
         report["cloudflare_candidates"].append(check)
-        stage="token_verify"
+        account=os.environ.get("CLOUDFLARE_ACCOUNT_ID","")
+        if not account:
+            match=re.fullmatch(r"https://([a-fA-F0-9]{32})\.(?:[a-z]+\.)?r2\.cloudflarestorage\.com/?",os.environ.get("VU_HISTORY_S3_ENDPOINT",""))
+            account=match[1].lower() if match else ""
+        if re.fullmatch(r"[a-f0-9]{32}",account):cf.account=account
+        if not cf.global_email:
+            # Account-owned tokens use a different verification endpoint; actual
+            # zone/DNS access is the authority, not a user-token-only diagnostic.
+            for endpoint,kind in [("/user/tokens/verify","user")]+(
+                    [("/accounts/"+cf.account+"/tokens/verify","account")] if cf.account else []):
+                try:
+                    active=cf.call("GET",endpoint).get("result",{}).get("status")=="active"
+                    check["token_active"]=active
+                    if active:check["token_type"]=kind;break
+                except APIError as error:
+                    check[kind+"_verify_http"]=error.status;check[kind+"_verify_codes"]=error.codes
+        stage="zone_read"
         try:
-            if not cf.global_email:
-                check["token_active"]=cf.call("GET","/user/tokens/verify").get("result",{}).get("status")=="active"
-                if check["token_active"] is not True:
-                    check["needed"]="Active API token / allowed runner IP";continue
-            stage="zone_read"
             zones=cf.call("GET","/zones?name="+DOMAIN+"&per_page=50")["result"]
             zones=[z for z in zones if canonical(z.get("name",""))==DOMAIN]
             if len(zones)!=1:
@@ -192,7 +205,7 @@ def run(operation, authorized=False):
             records=cf.records();check["dns_read"]=True
         except APIError as error:
             check.update(http=error.status,codes=error.codes,stage=stage,
-                needed="API token authentication / IP policy" if stage=="token_verify" else
+                needed="Valid Cloudflare token / appropriate token type / IP policy" if error.status==401 else
                        "Zone / DNS / Edit" if check["zone_read"] else "Zone / Zone / Read and authorized zone resource")
             continue
         changes=plan(records,expected)
