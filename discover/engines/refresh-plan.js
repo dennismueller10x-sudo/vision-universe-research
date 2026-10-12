@@ -94,7 +94,7 @@
       else if (!next) next = s;
     });
     return {
-      now: iso(nowMs), marketState: r.marketState,
+      now: iso(nowMs), marketState: r.marketState, calendarCoverage: r.calendarCoverage !== false,
       sessionDate: r.displaySession ? r.displaySession.sessionDate : null,
       due: due, next: next,
       dueAgeMin: due ? Math.round((nowMs - Date.parse(due.dueAt)) / 60000) : null
@@ -124,16 +124,38 @@
     ctx = ctx || {};
     if (ctx.force) return { action: "COMPUTE", reason: "FORCED" };
     if (!plan || !plan.due) return { action: "COMPUTE", reason: "NO_PLAN" };
-    if (!published || !published.slot) return { action: "COMPUTE", reason: "NO_PUBLISHED" };
+    /* Die Boerse ist offen, aber der erste Slot des Tages noch nicht faellig
+       (Winterzeit: Tick um 10:05 New York, erster Slot 11:00): "faellig" ist
+       dann noch der Schlussslot des Vortags. Nichts rechnen - sonst entstuende
+       eine LIVE-Auswahl aus 35 Handelsminuten unter dem Slot von gestern. */
+    if (plan.marketState === "OPEN" && plan.sessionDate && plan.due.sessionDate !== plan.sessionDate) {
+      return { action: "SKIP", reason: "BEFORE_FIRST_SLOT" };
+    }
+    if (!published || !published.slot) return throttle(plan, ctx, { action: "COMPUTE", reason: "NO_PUBLISHED" });
     if (ctx.schemaVersion && published.schemaVersion !== ctx.schemaVersion) return { action: "COMPUTE", reason: "SCHEMA_CHANGED" };
     var ps = published.slot.dueAt, ds = plan.due.dueAt;
     if (ps > ds) return { action: "SKIP", reason: "PUBLISHED_NEWER" };
     if (ps === ds && published.eodAsOf === ctx.basisAsOf) {
       if (CONCLUSIVE[published.status]) return { action: "SKIP", reason: "UP_TO_DATE" };
+      /* Ein Alter, das nicht zu berechnen oder negativ ist (kaputte oder in
+         der Zukunft liegende generatedAt), blockiert den Neuversuch nie. */
       var age = (ctx.nowMs - Date.parse(published.generatedAt)) / 60000;
-      return age >= CONFIG.retryMin ? { action: "COMPUTE", reason: "RETRY" } : { action: "SKIP", reason: "RETRY_LATER" };
+      return !(age >= 0) || age >= CONFIG.retryMin ? { action: "COMPUTE", reason: "RETRY" } : { action: "SKIP", reason: "RETRY_LATER" };
     }
-    return { action: "COMPUTE", reason: ps === ds ? "BASIS_CHANGED" : "SLOT_DUE" };
+    return throttle(plan, ctx, { action: "COMPUTE", reason: ps === ds ? "BASIS_CHANGED" : "SLOT_DUE" });
+  }
+
+  /* Ein Fehlversuch fuer diesen Slot (letzte Rechnung nicht schluessig oder
+     ohne Ersetzung) wird nicht bei jedem Ausloeser wiederholt: fruehestens nach
+     retryMin. Ohne diese Bremse schriebe ein dauerhafter Anbieterausfall alle
+     30 Minuten eine neue Monitor-Datei und damit einen Commit samt Auslieferung. */
+  function throttle(plan, ctx, entscheidung) {
+    var lr = ctx.lastRun;
+    if (lr && plan.due && lr.slotId === plan.due.id && lr.result && lr.result !== "PUBLISHED" && lr.finishedAt) {
+      var ago = (ctx.nowMs - Date.parse(lr.finishedAt)) / 60000;
+      if (ago >= 0 && ago < CONFIG.retryMin) return { action: "SKIP", reason: "RETRY_LATER" };
+    }
+    return entscheidung;
   }
 
   /**
@@ -190,25 +212,34 @@
     function add(level, code, text) { findings.push({ level: level, code: code, text: text }); }
     var pub = monitor && monitor.published ? monitor.published : null;
     var pubSlot = pub && pub.slot ? pub.slot.dueAt : null;
+    var err = monitor && monitor.error && monitor.error.code ? monitor.error : null;
+    /* Eine nicht schluessige Rechnung ist ein Datenproblem (Kurse alt) oder ein
+       Rechenfehler - nie "der Lauf wurde nicht gestartet". */
+    var errCode = err ? (err.code === "INTRADAY_STALE" ? "DATA_STALE" : "COMPUTE_ERROR") : null;
+    var errText = err ? err.code + (err.message ? " - " + err.message : "") : "";
+    var inWindow = plan.dueAgeMin !== null && plan.dueAgeMin <= CONFIG.alarmWindowMin;
+
     /* Dieselben Schwellen mit und ohne Monitor-Datei: ein frischer Rollout
        (noch keine Datei) darf nicht schon in der Toleranz alarmieren. */
     if (plan.due && (!pubSlot || pubSlot < plan.due.dueAt)) {
       var covered = ctx.eodAsOf && ctx.eodAsOf >= plan.due.sessionDate;
       var wo = pub ? "nicht veröffentlicht" : "keine veröffentlichte Live-Auswahl";
-      if (!covered && plan.dueAgeMin <= CONFIG.alarmWindowMin) {
-        if (plan.dueAgeMin > CONFIG.overdueFailMin) add("FAIL", "RECOMPUTE_OVERDUE", "Slot " + plan.due.id + " ist seit " + plan.dueAgeMin + " Min. fällig, " + wo + " - der Lauf wurde nicht gestartet oder ist gescheitert.");
+      var gelaufen = monitor && monitor.lastRun && monitor.lastRun.slotId === plan.due.id;
+      if (!covered && inWindow) {
+        if (gelaufen && errCode) {
+          /* Der Lauf fand statt; sein Ergebnis war nicht schluessig. */
+          if (plan.dueAgeMin > CONFIG.toleranceMin) add("WARN", errCode, "Slot " + plan.due.id + ": der Lauf fand statt, das Ergebnis war nicht schlüssig (" + errText + ") - Taktgeber/Anbieter, nicht die Neuberechnung.");
+        } else if (plan.dueAgeMin > CONFIG.overdueFailMin) add("FAIL", "RECOMPUTE_OVERDUE", "Slot " + plan.due.id + " ist seit " + plan.dueAgeMin + " Min. fällig, " + wo + " - der Lauf wurde nicht gestartet oder ist gescheitert.");
         else if (plan.dueAgeMin > CONFIG.toleranceMin) add("WARN", "RECOMPUTE_LATE", "Slot " + plan.due.id + " ist seit " + plan.dueAgeMin + " Min. fällig, " + wo + ".");
       }
     }
-    if (!monitor || !monitor.published) {
-      return { level: findings.some(function (f) { return f.level === "FAIL"; }) ? "FAIL" : findings.length ? "WARN" : "OK", plan: plan, findings: findings };
+    if (errCode && inWindow && !findings.some(function (f) { return f.code === errCode; })) {
+      add("WARN", errCode, "Letzte Rechnung: " + errText);
     }
-    var ls = monitor.lastSuccess;
-    if (ls && typeof ls.dataAgeMinutes === "number" && ls.dataState && ls.dataState.stale) {
-      add("WARN", "DATA_STALE", "Bei der letzten Rechnung waren die Kursdaten veraltet (" + ls.dataState.reason + ", " + ls.dataAgeMinutes + " Min.) - Taktgeber oder Anbieter, nicht die Neuberechnung.");
-    }
-    if (monitor.error && monitor.error.code && plan.dueAgeMin !== null && plan.dueAgeMin <= CONFIG.alarmWindowMin) {
-      add("WARN", "COMPUTE_ERROR", "Letzte Rechnung: " + monitor.error.code + (monitor.error.message ? " - " + monitor.error.message : ""));
+    /* Ausserhalb der Kalenderabdeckung sind Feiertage unbekannt: nie FAIL. */
+    if (plan.calendarCoverage === false) {
+      findings.forEach(function (f) { if (f.level === "FAIL") f.level = "WARN"; });
+      add("WARN", "CALENDAR_OUT_OF_RANGE", "Der Börsenkalender deckt diesen Tag nicht ab (market-calendar.json); Slots und Feiertage sind nicht gesichert.");
     }
     var level = findings.some(function (f) { return f.level === "FAIL"; }) ? "FAIL" : findings.length ? "WARN" : "OK";
     return { level: level, plan: plan, findings: findings };

@@ -161,15 +161,22 @@
     var until=l.validUntil?Date.parse(l.validUntil):Date.parse(l.generatedAt)+3*3600000;
     return isFinite(until)&&now<=until;
   }
+  /* "intraday" nur, solange die Boerse offen ist: eine LIVE-Auswahl, die nach
+     dem Schluss noch gueltig ist (der Schlussslot kam nicht), heisst danach
+     unbestaetigt - nie "live" ausserhalb der Handelszeit. */
+  function liveLabel(l,now){
+    var close=l&&l.sessionClose?Date.parse(l.sessionClose):NaN;
+    return l&&l.status==='LIVE'&&(!isFinite(close)||now<=close)?'intraday':'close-unconfirmed';
+  }
   function live(surface,ctx,render){
     var view=render(surface,ctx),cards=surface.cards||[],asOf=cards[0]&&cards[0].asOf;
     fetchLive('/discover/live/im-blick-'+ctx.universeId+'.json').then(function(l){
       if(!liveUsable(l,asOf,Date.now())||!view.isConnected)return;
       var next=render(Object.assign({},surface,{cards:l.stocks,live:true}),ctx);
       next.className=view.className;Object.keys(view.dataset).forEach(function(k){next.dataset[k]=view.dataset[k];});
-      next.dataset.basis=l.status==='LIVE'?'intraday':'close-unconfirmed';view.replaceWith(next);
+      next.dataset.basis=liveLabel(l,Date.now());view.replaceWith(next);
     }).catch(function(){});
     return view;
   }
-  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links,live:live,liveUsable:liveUsable};
+  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links,live:live,liveUsable:liveUsable,liveLabel:liveLabel};
 })(window);

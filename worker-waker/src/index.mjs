@@ -146,7 +146,9 @@ async function stosseAn(env, kopf, workflow, inputs) {
  */
 async function sorgeFuerImBlick(env, kopf, scheduledTime) {
   if (!imBlickTick(scheduledTime)) return { ok: true, grund: "nichtFaellig" };
-  const lage = await laeuftSchon(env, kopf, IMBLICK, ["in_progress", "queued"]);
+  /* Auch wartende Laeufe zaehlen: einer, der auf die Concurrency-Gruppe wartet,
+     steht je nach Lage als queued, waiting oder pending in der Liste. */
+  const lage = await laeuftSchon(env, kopf, IMBLICK, ["in_progress", "queued", "waiting", "pending"]);
   if (!lage.bekannt) {
     notiere("imBlickLageUnbekannt", { grund: lage.grund });
   } else if (lage.laeuft) {

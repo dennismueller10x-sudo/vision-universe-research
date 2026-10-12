@@ -586,7 +586,7 @@ test("WK-25 Takt faellig und kein Lauf unterwegs: Im Blick wird mit Herkunft ang
 });
 
 test("WK-26 Gegenprobe: laeuft oder wartet schon ein Im-Blick-Lauf, wird nicht angestossen", async () => {
-  for (const zustand of ["in_progress", "queued"]) {
+  for (const zustand of ["in_progress", "queued", "waiting", "pending"]) {
     const p = protokoll();
     const n = netz(appAntworten([
       { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },

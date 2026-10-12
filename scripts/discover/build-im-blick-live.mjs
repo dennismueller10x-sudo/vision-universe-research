@@ -73,16 +73,20 @@ const DATA = arg("data-root", root);
 const U = arg("universe", "US_REAL");
 const OUT = arg("out", join(root, "discover", "live", "im-blick-" + U + ".json"));
 const NOW = arg("now", null) ? new Date(arg("now")) : new Date();
+if (Number.isNaN(NOW.getTime())) { console.error("Ungueltiges --now: " + arg("now") + " (erwartet ISO 8601, z. B. 2026-10-14T15:35:00Z)"); process.exit(2); }
 const MON = arg("monitor-out", join(dirname(OUT), "monitor-" + U + ".json"));
 const FORCE = argv.includes("--force");
 /* Wer hat diesen Lauf angestossen? Nur zur Beobachtung, nie zur Entscheidung. */
 const TRIGGER = { event: arg("event", process.env.GITHUB_EVENT_NAME || "local"), source: arg("source", "unbekannt"), runId: process.env.GITHUB_RUN_ID || null };
-const STARTED = new Date();
+const WALL0 = Date.now();                       /* Start/Ende aus derselben Zeitbasis wie NOW (auch bei --now) */
 const SCHEMA = "discover-im-blick-live-1.1.0";
 const MONITOR_SCHEMA = "discover-im-blick-monitor-1.0.0";
 /* Ein Snapshot, der mehr als 45 Minuten hinter dem juengsten der Sitzung
    liegt, ist kein Stand dieser Stunde. */
 const MAX_LAG_MS = 45 * 60000;
+/* LIVE braucht diesen Anteil aktueller Snapshots an allen der Sitzung. */
+const MIN_FRESH_SHARE = 0.5;
+const MIN_SAMPLE = 10;                            /* darunter sagt ein Anteil nichts */
 
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const lies = (p) => { try { return JSON.parse(readFileSync(p, "utf8")); } catch { return null; } };
@@ -107,7 +111,9 @@ const basisDatei = join(DATA, "discover", "data", "im-blick", "basis-" + U + ".j
 const basis = lies(basisDatei);
 const plan = RefreshPlan.planAt(NOW, CALENDAR);
 const published = lies(OUT);
-const decision = RefreshPlan.decide(plan, published, { nowMs: NOW.getTime(), basisAsOf: basis ? basis.asOf : null, schemaVersion: SCHEMA, force: FORCE });
+const vorherMon = lies(MON) || {};
+const decision = RefreshPlan.decide(plan, published, { nowMs: NOW.getTime(), basisAsOf: basis ? basis.asOf : null, schemaVersion: SCHEMA, force: FORCE,
+  lastRun: vorherMon.lastRun || null });
 
 /* Zusammenfassung fuer den Lauf (GitHub Step Summary, sonst Konsole). */
 function zusammenfassung(zeilen) {
@@ -134,6 +140,7 @@ function berechne() {
     basis: "INTRADAY", generatedAt: NOW.toISOString(), marketState: lage.marketState,
     slot: plan.due ? { id: plan.due.id, kind: plan.due.kind, sessionDate: plan.due.sessionDate, dueAt: plan.due.dueAt } : null,
     validUntil: RefreshPlan.validUntil(plan), computedAt: NOW.toISOString(), dataState: null,
+    sessionClose: lage.displaySession ? lage.displaySession.close : null,
     eodAsOf: basis ? basis.asOf : null, sessionDate: null, asOf: null, asOfLocal: null,
     rule: "Neu gerechnet aus 5-Minuten-Kursen (Tiingo IEX, verzoegert) gegen die Basis vom Schluss der Vorsitzung. " +
           "Intraday kein Schlusshoch, kein Ausbruch, kein Volumen; unbestaetigt bis zum Handelsschluss. " +
@@ -160,7 +167,8 @@ function berechne() {
     try { id = Identity.securityIdForTicker(b.s); } catch { kopf.coverage.missing++; continue; }
     const snap = lies(join(dir, id + ".json"));
     if (!snap || snap.sessionDate !== session || !Array.isArray(snap.points) || !snap.points.length) { kopf.coverage.missing++; continue; }
-    const preise = snap.points.map((p) => p[1]).filter(isNum);
+    /* Ein kaputter Punkt (null, kein Paar) macht eine Datei unbrauchbar, nicht den Lauf. */
+    const preise = snap.points.map((p) => (Array.isArray(p) ? p[1] : NaN)).filter(isNum);
     if (!preise.length) { kopf.coverage.missing++; continue; }
     staende.push({ b, snap, live: { price: preise[preise.length - 1], dayHigh: Math.max(...preise), previousClose: snap.previousClose },
                    asOfMs: Date.parse(snap.asOf) });
@@ -182,7 +190,15 @@ function berechne() {
   kopf.dataState = RefreshPlan.dataState(plan, kopf.asOf, NOW.getTime(), lage.displaySession);
   if (kopf.dataState.stale) {
     return Object.assign(kopf, { status: "INTRADAY_STALE",
-      reason: "Kursstand " + (kopf.asOf || "unbekannt") + " ist fuer die Boersenlage " + lage.marketState + " zu alt (" + kopf.dataState.reason + ", " + kopf.dataState.ageMin + " Min.)." });
+      reason: kopf.asOf
+        ? "Kursstand " + kopf.asOf + " ist fuer die Boersenlage " + lage.marketState + " zu alt (" + kopf.dataState.reason + ", " + kopf.dataState.ageMin + " Min.)."
+        : "Kein aktueller Kursstand: von " + staende.length + " Snapshots der Sitzung ist keiner verwendbar (" + kopf.dataState.reason + ")." });
+  }
+  /* Ein einzelner frischer Titel unter lauter alten ist kein Stand der Stunde:
+     LIVE braucht, dass mindestens die Haelfte der Snapshots aktuell ist. */
+  if (staende.length >= MIN_SAMPLE && frisch.length / staende.length < MIN_FRESH_SHARE) {
+    return Object.assign(kopf, { status: "INTRADAY_STALE", dataState: Object.assign({}, kopf.dataState, { stale: true, reason: "FEW_FRESH" }),
+      reason: "Nur " + frisch.length + " von " + staende.length + " Snapshots sind aktuell (mindestens " + Math.round(MIN_FRESH_SHARE * 100) + " % noetig)." });
   }
 
   const cfg = Object.assign({}, METHODOLOGY.imBlick || {});
@@ -227,7 +243,7 @@ const fehler = schluessig ? null : { code: ergebnis.status, message: ergebnis.re
 /* Monitor: Plan, dieser Lauf, letzter Erfolg, was gerade veroeffentlicht ist. */
 const vorher = lies(MON) || {};
 const lauf = {
-  startedAt: STARTED.toISOString(), finishedAt: new Date().toISOString(), event: TRIGGER.event, source: TRIGGER.source, runId: TRIGGER.runId,
+  startedAt: NOW.toISOString(), finishedAt: new Date(NOW.getTime() + (Date.now() - WALL0)).toISOString(), event: TRIGGER.event, source: TRIGGER.source, runId: TRIGGER.runId,
   slotId: plan.due ? plan.due.id : null, decision: decision.reason, result: regel.ok ? (schluessig ? "PUBLISHED" : "PUBLISHED_INCONCLUSIVE") : regel.reason,
   status: ergebnis.status, stocks: ergebnis.stocks.length, asOf: ergebnis.asOf, dataAgeMinutes: ergebnis.dataState ? ergebnis.dataState.ageMin : null
 };
@@ -245,7 +261,14 @@ const monitor = {
   error: fehler,
   history: [lauf].concat(Array.isArray(vorher.history) ? vorher.history : []).slice(0, 20)
 };
-schreibeAtomar(MON, monitor);
+/* Ein Fehlversuch mit demselben Ergebnis wie zuvor (gleicher Slot, gleiches
+   Ergebnis, gleicher Fehler, nichts ersetzt) schreibt nichts: sonst entstuende
+   bei einem dauerhaften Anbieterausfall alle 20 Minuten ein Commit samt
+   Auslieferung. Hoechstens drei Stunden lang; danach wird die Datei erneuert. */
+const kern = (m) => JSON.stringify({ s: m.plan && m.plan.lastDueSlot && m.plan.lastDueSlot.id, r: m.lastRun && [m.lastRun.slotId, m.lastRun.result, m.lastRun.status, m.lastRun.stocks],
+  e: m.error && m.error.code, p: m.published && [m.published.status, m.published.slot && m.published.slot.id, m.published.asOf, m.published.selected] });
+const unveraendert = !regel.ok && vorherMon.updatedAt && kern(vorherMon) === kern(monitor) && NOW.getTime() - Date.parse(vorherMon.updatedAt) < 3 * 3600000;
+if (!unveraendert) schreibeAtomar(MON, monitor);
 
 const kurz = ergebnis.status + (ergebnis.stocks.length ? " · " + ergebnis.stocks.map((c) => c.symbol).join(", ") : "") + (ergebnis.reason ? " · " + ergebnis.reason : "");
 console.log(`Im Blick live (${U}): ${kurz}`);
@@ -260,4 +283,5 @@ zusammenfassung(["### Discover Im Blick (Intraday)", "",
   "| Kursstand | " + (ergebnis.asOf || "-") + " (Alter " + (lauf.dataAgeMinutes === null ? "-" : lauf.dataAgeMinutes + " Min.") + ") |",
   "| Ausgewaehlt | " + ergebnis.stocks.map((c) => c.symbol).join(", ") + " |",
   "| Abdeckung | " + JSON.stringify(ergebnis.coverage) + " |",
-  "| Fehler | " + (fehler ? fehler.code + ": " + fehler.message : "-") + " |"]);
+  "| Fehler | " + (fehler ? fehler.code + ": " + fehler.message : "-") + " |",
+  "| Monitor | " + (unveraendert ? "unveraendert (nicht neu geschrieben)" : "geschrieben") + " |"]);

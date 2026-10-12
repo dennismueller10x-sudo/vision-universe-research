@@ -23,6 +23,11 @@
    RF12  Schlusskurs-Uebergang nach Handelsschluss
    RF13  Monitor: jedes verlangte Feld, Ueberwachung ohne Fehlalarm
    RF14  Workflow und Wecker: Vertrag (ADR-005, Namen, Kosten)
+   RF15  Ueberwachung: jeder ausgefallene Slot wird an jedem Handelstag des
+         Jahres von mindestens einem Pruefzeitpunkt gesehen, ohne Fehlalarm
+   RF16  Befunde der unabhaengigen Reviews (12.10.2026): Vor dem ersten Slot,
+         Drosselung, kein LIVE nach dem Schluss, DATA_STALE statt
+         'nicht gestartet', Mindestabdeckung, kaputte Eingaben, Kalenderende
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -430,8 +435,10 @@ test("RF14 · Workflow und Wecker: ADR-005, Namen, Kosten, Isolation", () => {
   const pages = readFileSync(join(ROOT, ".github", "workflows", "pages-release.yml"), "utf8");
   assert.ok(pages.includes('- "' + wf.match(/^name:\s*(.+)$/m)[1] + '"'), "Name unveraendert: die Auslieferung haengt daran");
   const fm = readFileSync(join(ROOT, ".github", "workflows", "freshness-monitor.yml"), "utf8");
+  assert.match(fm, /\n  imblick:\n/, "eigener Job fuer die Im-Blick-Pruefung");
   assert.match(fm, /check-im-blick-live\.mjs --strict/);
-  assert.match(fm, /cron: '40 19 \* \* 1-5'/);
+  assert.match(fm, /cron: '45 16-19 \* \* 1-5'/);
+  assert.match(fm, /cron: '55 22 \* \* 1-5'/);
   /* Wecker: Im Blick getrennt vom Takt, Ausnahmen bleiben im Zweig, kein neues Recht. */
   const src = readFileSync(join(ROOT, "worker-waker", "src", "index.mjs"), "utf8");
   assert.match(src, /try \{ imBlick = await sorgeFuerImBlick/);
@@ -445,4 +452,179 @@ test("RF14 · Workflow und Wecker: ADR-005, Namen, Kosten, Isolation", () => {
   assert.doesNotMatch(sk, /\bfetch\(|https?:\/\/|process\.env\.(TIINGO|MARKETSTACK)/i);
   /* Isolation: nur discover/live. */
   assert.ok(statSync(join(ROOT, "discover", "engines", "refresh-plan.js")).isFile());
+});
+
+
+/* ---------------------------------------------------------------- RF15 */
+function cronFeld(f, lo, hi) {
+  const out = new Set();
+  for (const teil of f.split(",")) {
+    if (teil === "*") { for (let i = lo; i <= hi; i++) out.add(i); continue; }
+    const m = /^(\d+)(?:-(\d+))?$/.exec(teil);
+    if (!m) throw new Error("Cron-Feld nicht verstanden: " + f);
+    for (let i = Number(m[1]); i <= Number(m[2] === undefined ? m[1] : m[2]); i++) out.add(i);
+  }
+  return out;
+}
+/** Pruefzeitpunkte (Minuten ab 00:00 UTC) je Wochentag (0=So) aus den Cron-Zeilen des Freshness-Monitors. */
+function pruefzeiten() {
+  const yml = readFileSync(join(ROOT, ".github", "workflows", "freshness-monitor.yml"), "utf8");
+  const crons = [...yml.matchAll(/^\s*-\s*cron:\s*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
+  const proTag = new Map([0, 1, 2, 3, 4, 5, 6].map((d) => [d, []]));
+  for (const c of crons) {
+    const [mi, st, , , dow] = c.split(/\s+/);
+    for (const d of cronFeld(dow.replace("7", "0"), 0, 6)) for (const h of cronFeld(st, 0, 23)) for (const m of cronFeld(mi, 0, 59)) proTag.get(d).push(h * 60 + m);
+  }
+  return { crons, proTag };
+}
+const handelstage = (von, bis) => {
+  const out = [];
+  for (let t = Date.parse(von + "T00:00:00Z"); t <= Date.parse(bis + "T00:00:00Z"); t += 86400000) {
+    const tag = new Date(t).toISOString().slice(0, 10), wd = new Date(t).getUTCDay();
+    if (wd === 0 || wd === 6 || CAL.exchanges.XNYS.holidays.some((h) => (h.date || h) === tag)) continue;
+    out.push({ tag, t, wd });
+  }
+  return out;
+};
+
+test("RF15 · Ueberwachung: jeder ausgefallene Slot wird an jedem Handelstag von mindestens einem Pruefzeitpunkt gesehen - und ohne Ausfall schlaegt keiner an", () => {
+  const { crons, proTag } = pruefzeiten();
+  assert.ok(crons.includes("45 16-19 * * 1-5") && crons.includes("55 22 * * 1-5"));
+  let tage = 0;
+  for (const { tag, t, wd } of handelstage("2026-01-02", "2027-12-30")) {
+    const slots = Plan.slotsOf(Plan.sessionByDate(tag, CAL));
+    const vorSitzung = Plan.planAt(t, CAL).due.sessionDate;                 /* der Abendlauf von gestern ist durch */
+    const zeiten = proTag.get(wd).map((m) => t + m * 60000);
+    /* 1. Ab jedem Slot k fehlt alles: ein Pruefzeitpunkt muss FAIL melden. */
+    slots.forEach((slot, k) => {
+      const vorher = k === 0 ? null : slots[k - 1];
+      const monitor = vorher ? { published: { status: "LIVE", slot: { dueAt: vorher.dueAt } }, lastRun: null, error: null } : null;
+      const sieht = zeiten.some((z) => Plan.assess(monitor, CAL, { nowMs: z, eodAsOf: vorSitzung }).level === "FAIL");
+      assert.ok(sieht, tag + ": fehlt alles ab " + slot.id + ", und kein Pruefzeitpunkt schlaegt an (" + zeiten.map((z) => new Date(z).toISOString().slice(11, 16)).join(",") + ")");
+    });
+    /* 2. Alles veroeffentlicht, was faellig ist: nie ein Alarm - auch nicht in der Toleranz. */
+    for (const z of zeiten) {
+      const p = Plan.planAt(z, CAL);
+      const monitor = p.due ? { published: { status: "LIVE", slot: { dueAt: p.due.dueAt } }, lastRun: null, error: null } : null;
+      const a = Plan.assess(monitor, CAL, { nowMs: z, eodAsOf: vorSitzung });
+      assert.equal(a.level, "OK", tag + " " + new Date(z).toISOString().slice(11, 16) + " " + JSON.stringify(a.findings));
+    }
+    tage++;
+  }
+  assert.ok(tage > 480, "zwei Jahre Handelstage: " + tage);
+  /* Wochenende und Feiertag: auch ohne alles still. */
+  for (const z of ["2026-10-17T19:45:00Z", "2026-10-18T22:55:00Z", "2026-11-26T18:45:00Z", "2026-11-26T22:55:00Z", "2026-12-25T17:45:00Z"]) {
+    const p = Plan.planAt(z, CAL);
+    assert.equal(Plan.assess(null, CAL, { nowMs: Date.parse(z), eodAsOf: p.due ? p.due.sessionDate : null }).level, "OK", z);
+  }
+  /* Gegenprobe zum frueheren Termin 19:40: im Sommer sah er den Slot nur 40 Minuten nach dem Slot. */
+  assert.equal(Plan.assess({ published: { status: "LIVE", slot: { dueAt: "2026-10-14T15:00:00.000Z" } } }, CAL, { nowMs: Date.parse("2026-10-14T19:40:00Z"), eodAsOf: "2026-10-13" }).level, "OK", "19:40 war im Sommer blind");
+  assert.equal(Plan.assess({ published: { status: "LIVE", slot: { dueAt: "2026-10-14T15:00:00.000Z" } } }, CAL, { nowMs: Date.parse("2026-10-14T18:45:00Z"), eodAsOf: "2026-10-13" }).level, "FAIL", "18:45 sieht es");
+});
+
+/* ---------------------------------------------------------------- RF16 */
+test("RF16a · vor dem ersten Slot (Winterzeit, 10:35 New York) wird nichts als LIVE unter dem Slot von gestern veroeffentlicht", () => {
+  const W = "2026-11-03", V = "2026-11-02";                        /* EST: I1 um 16:00 UTC */
+  const dir = fixture({ session: W, basisAsOf: V, asOf: W + "T15:20:00.000Z", asOfLocal: "10:20" });
+  try {
+    const frueh = lauf(dir, W + "T15:35:00Z");
+    assert.match(frueh.out, /BEFORE_FIRST_SLOT/);
+    assert.equal(frueh.live, null, "nichts geschrieben");
+    setzeSnapshots(dir, W, W + "T16:05:00.000Z", "11:05");
+    const spaeter = lauf(dir, W + "T16:10:00Z");
+    assert.equal(spaeter.live.slot.id, W + "@I1");
+    assert.equal(spaeter.live.status, "LIVE");
+  } finally { weg(dir); }
+});
+
+test("RF16b · Anbieterausfall: Fehlversuche werden gebremst, ein gleicher Fehlversuch schreibt nichts, und die Ueberwachung sagt DATA_STALE statt 'nicht gestartet'", () => {
+  const dir = fixture({ asOf: TAG + "T15:20:00.000Z" });
+  try {
+    lauf(dir, TAG + "T15:35:00Z");                                  /* I1 LIVE */
+    setzeSnapshots(dir, TAG, TAG + "T15:20:00.000Z", "11:20");        /* die Snapshots bleiben stehen */
+    const a = lauf(dir, TAG + "T17:05:00Z");
+    assert.equal(a.mon.lastRun.result, "KEEP_LAST_VALID");
+    assert.equal(a.mon.error.code, "INTRADAY_STALE");
+    const nachA = readFileSync(MONFILE(dir), "utf8");
+    const b = lauf(dir, TAG + "T17:15:00Z");                         /* 10 Min. spaeter: gebremst */
+    assert.match(b.out, /RETRY_LATER/);
+    assert.equal(readFileSync(MONFILE(dir), "utf8"), nachA);
+    const c = lauf(dir, TAG + "T17:35:00Z");                         /* 30 Min. spaeter: neuer Versuch, gleiches Ergebnis */
+    assert.match(c.out, /unveraendert \(nicht neu geschrieben\)/);
+    assert.equal(readFileSync(MONFILE(dir), "utf8"), nachA, "kein Commit fuer einen Fehlversuch mit demselben Ergebnis");
+    /* Ueberwachung: der Lauf fand statt - Datenproblem, nicht 'nicht gestartet', kein FAIL. */
+    spiegleFuerPruefer(dir);
+    const p = pruefe(dir, TAG + "T18:45:00Z");
+    assert.equal(p.status, 0, p.stdout);
+    assert.match(p.stdout, /DATA_STALE/);
+    assert.doesNotMatch(p.stdout, /RECOMPUTE_OVERDUE|nicht gestartet/);
+    /* Gegenprobe: ohne jeden Lauf fuer diesen Slot ist es FAIL. */
+    const ohne = Plan.assess({ published: a.mon.published, lastRun: { slotId: TAG + "@I1" }, error: null }, CAL, { nowMs: Date.parse(TAG + "T18:45:00Z"), eodAsOf: VORTAG });
+    assert.equal(ohne.level, "FAIL");
+  } finally { weg(dir); }
+});
+
+test("RF16c · nach dem Schluss wird eine noch gueltige LIVE-Auswahl nie als 'intraday' gekennzeichnet", () => {
+  const dir = fixture({ asOf: TAG + "T19:55:00.000Z", asOfLocal: "15:55" });
+  try {
+    const r = lauf(dir, TAG + "T19:58:00Z");
+    assert.equal(r.live.status, "LIVE");
+    assert.equal(r.live.sessionClose, TAG + "T20:00:00.000Z");
+    const D = {}; vm.runInNewContext(readFileSync(join(ROOT, "discover", "ui", "featured.js"), "utf8"), { window: { VUDiscover: D, QuantShell: { el() { return {}; } } }, Date, Math, fetch() {} });
+    assert.equal(D.Featured.liveLabel(r.live, Date.parse(TAG + "T19:59:00Z")), "intraday");
+    assert.equal(D.Featured.liveLabel(r.live, Date.parse(TAG + "T20:30:00Z")), "close-unconfirmed", "der Schlussslot kam nicht: unbestaetigt statt live");
+    assert.equal(D.Featured.liveLabel({ status: "SESSION_CLOSED" }, 0), "close-unconfirmed");
+  } finally { weg(dir); }
+});
+
+test("RF16d · LIVE braucht mindestens die Haelfte aktueller Snapshots (ab zehn Snapshots)", () => {
+  const dir = fixture({ asOf: TAG + "T15:20:00.000Z" });
+  try {
+    /* Zwoelf weitere Titel; der juengste Snapshot ist frisch, elf davon eine Stunde aelter. */
+    const extra = [...Array(12)].map((_, i) => "X" + String(i).padStart(2, "0"));
+    const basisDatei = join(dir, "discover", "data", "im-blick", "basis-US_REAL.json");
+    const basis = JSON.parse(readFileSync(basisDatei, "utf8"));
+    basis.stocks.push(...extra.map((n, i) => E(n, { sec: "S" + i })));
+    writeFileSync(basisDatei, JSON.stringify(basis));
+    const d = join(dir, "quant", "data", "market", "intraday", TAG);
+    extra.forEach((n, i) => {
+      writeFileSync(join(dir, "discover", "data", "stocks", "US_REAL", n + ".json"), JSON.stringify(detail(n)));
+      writeFileSync(join(d, Identity.securityIdForTicker(n) + ".json"), JSON.stringify(snapshot(n, TAG, i === 0 ? TAG + "T15:20:00.000Z" : TAG + "T14:10:00.000Z", i === 0 ? "11:20" : "10:10")));
+    });
+    for (const n of NAMES) writeFileSync(join(d, Identity.securityIdForTicker(n) + ".json"), JSON.stringify(snapshot(n, TAG, TAG + "T14:10:00.000Z", "10:10")));
+    const r = lauf(dir, TAG + "T15:35:00Z");
+    assert.equal(r.live.status, "INTRADAY_STALE");
+    assert.equal(r.live.dataState.reason, "FEW_FRESH");
+    assert.match(r.live.reason, /Nur 1 von 16/);
+  } finally { weg(dir); }
+});
+
+test("RF16e · kaputte Eingaben: Punkt null, ungueltiges --now, kaputte generatedAt, Kalenderende", () => {
+  const dir = fixture({ asOf: TAG + "T15:20:00.000Z" });
+  try {
+    const f = join(dir, "quant", "data", "market", "intraday", TAG, Identity.securityIdForTicker("AAA") + ".json");
+    const sn = JSON.parse(readFileSync(f, "utf8")); sn.points = [null, ["10:30", 106], 7]; writeFileSync(f, JSON.stringify(sn));
+    const r = lauf(dir, TAG + "T15:35:00Z");
+    assert.equal(r.code, 0, r.out);
+    assert.equal(r.live.status, "LIVE");
+    /* ungueltiges --now */
+    for (const wert of ["garbage", "2026-13-45"]) {
+      const x = spawnSync(process.execPath, [SCRIPT, "--now", wert, "--data-root", dir, "--out", OUTFILE(dir)], { encoding: "utf8" });
+      assert.equal(x.status, 2, wert); assert.match(x.stderr, /Ungueltiges --now/);
+      const y = spawnSync(process.execPath, [CHECK, "--now=" + wert], { encoding: "utf8" });
+      assert.equal(y.status, 2, wert);
+    }
+  } finally { weg(dir); }
+  /* kaputte oder zukuenftige generatedAt blockiert den Neuversuch nie */
+  const plan = Plan.planAt(TAG + "T17:30:00Z", CAL);
+  for (const g of ["2026-10-20T00:00:00.000Z", null, "kein Datum"]) {
+    const d = Plan.decide(plan, { schemaVersion: "x", slot: { dueAt: plan.due.dueAt }, status: "NO_INTRADAY", generatedAt: g, eodAsOf: VORTAG }, { nowMs: Date.parse(TAG + "T17:30:00Z"), basisAsOf: VORTAG, schemaVersion: "x" });
+    assert.equal(d.reason, "RETRY", String(g));
+  }
+  /* Kalenderende (2027-12-31): Feiertage sind unbekannt, die Ueberwachung stuft herab statt rot zu werden */
+  const a = Plan.assess(null, CAL, { nowMs: Date.parse("2028-01-17T19:50:00Z"), eodAsOf: "2028-01-14" });
+  assert.equal(a.level, "WARN");
+  assert.ok(a.findings.some((x) => x.code === "CALENDAR_OUT_OF_RANGE"));
+  assert.ok(!a.findings.some((x) => x.level === "FAIL"));
+  assert.equal(Plan.assess(null, CAL, { nowMs: Date.parse("2027-01-18T19:50:00Z"), eodAsOf: "2027-01-15" }).level, "OK", "Gegenprobe: im Abdeckungszeitraum bleibt der Feiertag still");
 });

@@ -31,11 +31,16 @@ on:
     - cron: '5 14 * * 1-5'
     - cron: '15 15 * * 1-5'
     - cron: '15 23 * * 1-5'
-    # Im Blick (Intraday): 19:40 UTC liegt 100 Minuten nach dem zweiten und
-    # 40 nach dem dritten Slot des Winters (18:00/20:00) bzw. 160/40 des
-    # Sommers (17:00/19:00) - ein nicht gestarteter Lauf faellt hier auf
-    # (check-im-blick-live.mjs). Ausserhalb des Laufzeitfensters der Kette.
-    - cron: '40 19 * * 1-5'
+    # Im Blick (Intraday): eigener Job `imblick`. Die Termine sind so gelegt,
+    # dass jeder Slot in BEIDEN Lagen (Sommer 15/17/19/20:20 UTC, Winter
+    # 16/18/20/21:20 UTC) irgendwann mindestens 90 Minuten alt ist, bevor der
+    # naechste faellig wird: :45 von 16 bis 19 Uhr sieht I1 (Sommer 16:45,
+    # Winter 17:45) und I2 (Sommer 18:45, Winter 19:45); 22:55 sieht den
+    # Schlussslot (Sommer +155, Winter +95 Min.). Der Test
+    # im-blick-refresh.test.mjs (RF15) rechnet das fuer jeden Handelstag des
+    # Jahres nach. Die beiden anderen Jobs nehmen diese Termine nicht an.
+    - cron: '45 16-19 * * 1-5'
+    - cron: '55 22 * * 1-5'
   push:
     branches:
       - 'claude/**'
@@ -49,7 +54,7 @@ jobs:
     timeout-minutes: 10
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'schedule' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -67,18 +72,6 @@ jobs:
           set -o pipefail
           SITE="$IN_SITE"
           node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
-
-      # Im Blick (Intraday): wurde zum faelligen Termin neu gerechnet? Ein nicht
-      # gestarteter Workflow meldet keinen Fehler - deshalb fragt dieser Schritt
-      # das Ergebnis, nicht den Workflow (discover/engines/refresh-plan.js).
-      - name: Im Blick - zum faelligen Termin neu gerechnet?
-        id: imblick
-        continue-on-error: true
-        env:
-          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
-        run: |
-          set -o pipefail
-          node scripts/discover/check-im-blick-live.mjs --strict --site="$IN_SITE" | tee freshness-imblick.txt
 
       - name: Freshness des Repository-Stands (zur Einordnung)
         run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
@@ -109,12 +102,6 @@ jobs:
         if: steps.live.outcome == 'failure'
         run: |
           echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."
-          exit 1
-
-      - name: Ergebnis Im Blick
-        if: steps.imblick.outcome == 'failure'
-        run: |
-          echo "::error::Im Blick wurde zum faelligen Termin nicht neu gerechnet (siehe Zusammenfassung)."
           exit 1
 
   # ===================================================================
@@ -166,7 +153,7 @@ jobs:
     timeout-minutes: 10
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5') ||
+      (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -254,3 +241,37 @@ jobs:
           RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
           ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-live.txt
         run: node scripts/ci/pipeline-alarm.mjs
+
+  # ===================================================================
+  # IM BLICK (INTRADAY): WURDE ZUM FAELLIGEN TERMIN NEU GERECHNET?
+  #
+  # Ein nicht gestarteter Workflow meldet keinen Fehler - es laeuft ja nichts,
+  # das ihn melden koennte (12.10.2026: GitHub legte den Stundenplan von
+  # `discover-im-blick-live.yml` nicht an). Dieser Job fragt deshalb das
+  # ERGEBNIS: er liest discover/live/monitor-US_REAL.json von der
+  # veroeffentlichten Seite und vergleicht den zuletzt faelligen Slot (aus dem
+  # Boersenkalender) mit dem veroeffentlichten
+  # (scripts/discover/check-im-blick-live.mjs, discover/engines/refresh-plan.js).
+  # FAIL macht den Lauf rot, und GitHub benachrichtigt. Stumm bleibt er am
+  # Wochenende, an Feiertagen, vor dem ersten Slot und nach dem Abendlauf.
+  # Gleiche Verfahrensgrenze wie jeder Zeitplan: faellt dieser Termin aus,
+  # faellt er aus - die Heilung liegt beim Wecker (worker-waker/), nicht hier.
+  # ===================================================================
+  imblick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Im Blick - zum faelligen Termin neu gerechnet?
+        env:
+          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
+        run: |
+          set -o pipefail
+          node scripts/discover/check-im-blick-live.mjs --strict --site="$IN_SITE"

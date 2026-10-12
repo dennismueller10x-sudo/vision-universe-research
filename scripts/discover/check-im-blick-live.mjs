@@ -11,10 +11,12 @@
    Boersenkalender, welcher Slot zuletzt faellig war, und vergleicht
    (discover/engines/refresh-plan.js, assess):
 
-     RECOMPUTE_OVERDUE  faelliger Slot nicht veroeffentlicht  -> FAIL
+     RECOMPUTE_OVERDUE  faelliger Slot nicht veroeffentlicht,
+                        und fuer den Slot lief KEIN Lauf      -> FAIL
      RECOMPUTE_LATE     faellig, noch nicht lange             -> WARN
-     DATA_STALE         Rechnung lief, Kurse waren alt        -> WARN
-     COMPUTE_ERROR      letzte Rechnung meldet einen Fehler   -> WARN
+     DATA_STALE         der Lauf fand statt, Kurse waren alt  -> WARN
+     COMPUTE_ERROR      der Lauf fand statt, Fehler           -> WARN
+     CALENDAR_OUT_OF_RANGE  Kalender deckt den Tag nicht ab   -> WARN (nie FAIL)
 
    Ausserhalb der Handelszeiten, an Feiertagen und nach dem Abendlauf bleibt
    es still: dort ist ein "ueberfaelliger" Slot nicht mehr aufholbar oder
@@ -44,6 +46,7 @@ const DATA = arg("root", ROOT);
 const U = arg("universe", "US_REAL");
 const NOW = arg("now", null) ? new Date(arg("now")) : new Date();
 const STRICT = argv.includes("--strict");
+if (Number.isNaN(NOW.getTime())) { console.error("Ungueltiges --now (erwartet ISO 8601)."); process.exit(2); }
 
 async function hole(pfad) {
   if (SITE) {
