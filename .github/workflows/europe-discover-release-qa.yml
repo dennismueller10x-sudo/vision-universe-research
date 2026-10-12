@@ -8,6 +8,7 @@ on:
       - 'discover/data/europe/manifest.json'
       - 'scripts/discover/europe-public-live-qa.mjs'
       - 'scripts/discover/global-live-qa.mjs'
+      - 'scripts/discover/europe-continuity-live-qa.mjs'
       - '.github/workflows/europe-discover-release-qa.yml'
 permissions:
   contents: read
@@ -17,7 +18,7 @@ concurrency:
 jobs:
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,4 +61,20 @@ jobs:
         with:
           name: global-discover-live-${{ github.sha }}
           path: ${{ runner.temp }}/global-discover-live-qa/
+          if-no-files-found: error
+      - name: Verify all 449 full histories and available ranges on desktop and iPhone WebKit
+        if: ${{ !cancelled() }}
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+          QA_OUT: ${{ runner.temp }}/europe-continuity-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/europe-continuity-live-qa.mjs
+      - name: Upload all-449 continuity receipts and MIC screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: europe-continuity-449-live-${{ github.sha }}
+          path: ${{ runner.temp }}/europe-continuity-live-qa/
           if-no-files-found: error
