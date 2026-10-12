@@ -83,6 +83,19 @@
     if(compact){box.append(tabs,market);}else{box.append(market,tabs);}
     visible(box,ensure);
   }
+  /* Warum heute (im-blick.js): die Ueberschrift des Ereignisses und bis zu
+     drei belegte Gruende. Intraday-Karten sagen, dass sie unbestaetigt sind. */
+  function why(card){
+    var box=node('div','v2-focus-why'),h=card.headline||{},ev=card.imBlick||{};
+    var kicker=h.kicker||'';
+    if(ev.basis==='INTRADAY')kicker=(kicker?kicker+' · ':'')+'IM TAGESVERLAUF'+(ev.asOfLocal?' · STAND '+ev.asOfLocal:'');
+    if(kicker)box.appendChild(node('p','v2-focus-kicker',kicker));
+    var list=el('ul',{class:'v2-focus-reasons','aria-label':'Warum diese Aktie im Blick ist'});
+    (card.reasons||[]).slice(0,3).forEach(function(r){if(!r||!r.value)return;var li=el('li',{});if(r.label)li.appendChild(node('span','',r.label));li.appendChild(node('strong','',r.value));list.appendChild(li);});
+    if(list.childNodes.length)box.appendChild(list);
+    if(ev.basis==='INTRADAY')box.appendChild(node('p','v2-focus-note','Unbestätigt bis zum Handelsschluss. Grundlage: 5-Minuten-Kurse, ohne Volumen.'));
+    return box;
+  }
   function spotlightCard(card,ctx){
     var href='#/s/'+ctx.universeId+'/'+encodeURIComponent(card.symbol);
     var plain=D.Cards.klartext(card)||card.plain||{};
@@ -91,6 +104,7 @@
     var identity=node('div','');identity.append(node('span','v2-eyebrow',card.symbol+(card.was?' · '+card.was:'')),node('h3','',card.companyName||card.symbol));
     if(D.Logos)identity.prepend(D.Logos.mark(card.symbol,{name:card.companyName,size:'md'}));
     top.append(identity,link('Unternehmensprofil ↗',href,'v2-focus-link'));box.appendChild(top);
+    box.appendChild(why(card));
     if(plain.zahl){var performance=node('div','v2-focus-performance');performance.append(node('strong',plain.zahl.ton||'',plain.zahl.wert),node('span','',plain.zahl.label));box.appendChild(performance);}
     var stage=node('div','v2-focus-stage');box.appendChild(stage);
     function chart(){
@@ -115,5 +129,11 @@
     function chart(){stage.append.apply(stage,content);}
     controller(card,ctx,box,stage,chart,true);
   }
-  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard};
+  /* Kopf der Eingangsflaeche: die ganze Ereignis-Rangliste und das Vollbild. */
+  function links(ctx){
+    var box=node('div','v2-world-links');
+    box.append(link('Alle Ereignisse →','#/c/'+ctx.universeId+'/im-blick','v2-world-more'),link('Vollbild entdecken →','#/einzeln/'+ctx.universeId,'v2-world-more v2-feed-entry'));
+    return box;
+  }
+  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard,links:links};
 })(window);
