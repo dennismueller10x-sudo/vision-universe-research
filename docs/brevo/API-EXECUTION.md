@@ -1,6 +1,8 @@
 # Brevo API-Betrieb mit privater Übergabe und Versionsfreigabe
 
-Stand 12. Oktober 2026: Code vorbereitet, neuer Newsletter-Workflow noch nicht auf main aktiviert. **Import vorbereitet, noch nicht durchgeführt.** Keine E-Mails, DNS-Änderungen oder Buchungen. Die Sichtbarkeit der Listen ist durch den Owner bestätigt.
+Stand 12. Oktober 2026: PR 620 gemergt; Newsletter-Workflow auf main verfügbar, noch nicht ausgeführt. **137 Kontakte tatsächlich importiert und unabhängig zurückgeprüft.** Keine E-Mails, DNS-Änderungen oder Buchungen. Die Sichtbarkeit der Listen ist durch den Owner bestätigt.
+
+[Import 38269245067](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38269245067) erfolgreich: 137 neu, 0 aktualisiert, 0 zurückgestellt. [Audit 38270000127](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38270000127) bestätigt Liste 4 mit 135 Kontakten, Liste 6 mit zwei, Liste 5 leer und insgesamt 138 Kontakte. Käuferstatus bei fünf Importkontakten separat erhalten; 13 Nicht-Abonnenten ausgeschlossen. Kein weiterer Import-/Export-Schritt nötig.
 
 ## Einmalige Importübergabe
 
@@ -24,7 +26,7 @@ Nach erfolgreicher Rückprüfung den temporären Import-Secret entfernen; ein er
 
 Kein Newsletter-Inhalt, Test oder Hauptversand ist derzeit freigegeben. Domain `verified=false`/`authenticated=false`; keine Versandbereitschaft. Tatsächliche DNS-Werte bleiben in der privaten Übergabe, kein DNS- oder Bestätigungsaufruf.
 
-Der separate `brevo-newsletter.yml` wird ausschließlich manuell auf dem Standardbranch ausgeführt. `brevo-admin` und die alte Actions-CLI bleiben ohne Versandendpunkte. Nach Code-Merge ist für Newsletter einmalig folgendes Betreiber-Setup nötig, weil der aktuelle Zugang für Environment-Schreiboperationen HTTP 403 erhält:
+Der separate `brevo-newsletter.yml` ist auf main verfügbar und kann ausschließlich manuell auf dem Standardbranch ausgeführt werden; bisher kein Newsletter-Lauf. `brevo-admin` und die alte Actions-CLI bleiben ohne Versandendpunkte. Nach Code-Merge ist für Newsletter einmalig folgendes Betreiber-Setup nötig, weil der aktuelle Zugang für Environment-Schreiboperationen HTTP 403 erhält:
 
 - Settings → Environments → New environment → **brevo-newsletter-review**. **Required reviewers** aktivieren und ausschließlich den Owner als einzelnen Benutzer auswählen; keine Team-Freigabe. Self review darf zugelassen werden, falls der Owner selbst dispatcht. Eine konkrete Review-Bestätigung ist trotzdem immer erforderlich. Die API prüft sowohl verpflichtende Reviewer als auch die tatsächliche Freigabe genau dieses Runs. Ein ungeschütztes oder automatisch erzeugtes Environment blockiert Versand im Code.
 - Kleine private Konfiguration mit den zwei eindeutigen Testadressen, `test_addresses_confirmed=true` und stabiler zufälliger `ledger_hmac_key` als Repository-Secret **BREVO_NEWSLETTER_CONFIG** hinterlegen. Die vorbereitete Konfiguration enthält keinen API-Key und keinen allgemeinen Kontaktbestand. HMAC-Schlüssel später nicht rotieren, ohne die bestehenden Reservationsbindungen ausdrücklich zu berücksichtigen.
