@@ -64,6 +64,18 @@ def date_of(row):
     return (row.get('publishedAt') or row.get('publishedDate') or row.get('date') or '')[:10]
 
 
+def within_days(row, days, now):
+    # A known publication clock uses elapsed time. Date-only evidence keeps a
+    # calendar-day boundary; it never gains an invented midnight clock.
+    instant = timestamp(row.get('publishedAt'))
+    reference = datetime.fromisoformat(now.replace('Z', '+00:00'))
+    if instant:
+        published = datetime.fromisoformat(instant.replace('Z', '+00:00'))
+        return reference - timedelta(days=days) <= published <= reference
+    date = date_of(row)
+    return valid_date(date) and (reference - timedelta(days=days)).date().isoformat() <= date <= reference.date().isoformat()
+
+
 def valid_row(row, cid):
     if not isinstance(row, dict) or row.get('companyId') != cid:
         return False
@@ -147,11 +159,11 @@ def evaluate(raw, sources, mapping_ok=True, disabled=False):
     p = project(safe)
     p['state'] = 'AVAILABLE'
     profile = p.get('companyProfile')
-    if profile and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b\d+[\d.,]*\s+(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
+    if profile and profile.get('editorialStatus') != 'WITHHELD_CONSUMER' and profile.get('language') == 'de' and public_profile(profile, cid, now) and not profile.get('stale') and not re.search(r'\b\d+[\d.,]*\s+(Mitarbeiter|Beschäftigte|Angestellte)\b', profile['description'], re.I):
         row['modules']['profile'] = True
     else:
         p.pop('companyProfile', None)
-        row['moduleReasons']['profile'] = 'STALE_OR_WEAK_PROFILE' if profile and profile.get('stale') else 'NO_APPROVED_GERMAN_COPY' if raw.get('companyProfile') else 'NO_SAFE_PROFILE_SOURCE'
+        row['moduleReasons']['profile'] = 'PROFILE_REVIEW_WITHHELD' if profile and profile.get('editorialStatus') == 'WITHHELD_CONSUMER' else 'STALE_OR_WEAK_PROFILE' if profile and profile.get('stale') else 'NO_APPROVED_GERMAN_COPY' if raw.get('companyProfile') else 'NO_SAFE_PROFILE_SOURCE'
     for key in ('news', 'earnings', 'events', 'calls', 'materials', 'presentations', 'materialEvents', 'filings', 'timeline'):
         before = p.get(key, [])
         p[key] = [e for e in before if valid_row(e, cid)]
@@ -159,12 +171,12 @@ def evaluate(raw, sources, mapping_ok=True, disabled=False):
             row['moduleReasons'][key] = 'INVALID_ROWS_REMOVED'
     # Actual publication date is required for current intelligence; observedAt
     # alone does not make undated announcements current.
-    p['news'] = [e for e in p['news'] if e.get('headline') and safe_link(e.get('canonicalUrl') or e.get('sourceUrl')) and valid_date(date_of(e)) and cut(180) <= date_of(e) <= today]
+    p['news'] = [e for e in p['news'] if e.get('headline') and safe_link(e.get('canonicalUrl') or e.get('sourceUrl')) and within_days(e, 180, now)]
     p['earnings'] = [e for e in p['earnings'] if valid_date(date_of(e)) and date_of(e) <= today and e.get('eventType') in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and not e.get('isAmendment')]
-    p['materialEvents'] = [e for e in p['materialEvents'] if e.get('importance') in ('HIGH', 'CRITICAL') and valid_date(date_of(e)) and cut(90) <= date_of(e) <= today]
-    current = [e for e in p['news'] + p['earnings'] + p['materialEvents'] if cut(90) <= date_of(e) <= today]
+    p['materialEvents'] = [e for e in p['materialEvents'] if e.get('importance') in ('HIGH', 'CRITICAL') and within_days(e, 90, now)]
+    current = [e for e in p['news'] + p['earnings'] + p['materialEvents'] if within_days(e, 90, now)]
     row['modules']['aktuelles'] = bool(current)
-    row['news'] = {'retained180': len(p['news']), 'days30': sum(date_of(e) >= cut(30) for e in p['news']), 'days90': sum(date_of(e) >= cut(90) for e in p['news']), 'currentIntelligence90': len(current)}
+    row['news'] = {'retained180': len(p['news']), 'days30': sum(within_days(e, 30, now) for e in p['news']), 'days90': sum(within_days(e, 90, now) for e in p['news']), 'currentIntelligence90': len(current)}
     def upcoming(e):
         if e.get('eventStatus') in ('CANCELLED', 'CANCELED', 'WITHDRAWN', 'POSTPONED') or e.get('status') in ('CANCELLED', 'CANCELED', 'WITHDRAWN'):
             return False
@@ -266,6 +278,8 @@ def generate(store, companies, output, now, current_companies=None):
         issuer_sources = by_source[cid]
         if official.get('status') in ('CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS'):
             issuer_sources = []
+            if any(s.get('type') == 'FIRST_PARTY_WEB' for s in (raw.get('companyProfile') or {}).get('sources', [])):
+                raw['companyProfile'] = {**raw['companyProfile'], 'editorialStatus': 'WITHHELD_CONSUMER'}
         try:
             row, value = evaluate(raw, issuer_sources, mapping_ok, cid in disabled)
         except (ValueError, TypeError, KeyError, AttributeError, OverflowError):

@@ -17,6 +17,10 @@ on:
         description: 'Run representative real Discover candidate QA after read-only full-universe audit'
         type: boolean
         default: false
+      profile_source_upgrade:
+        description: 'Isolated full-state acceptance of reviewed German copy plus one bounded native source batch'
+        type: boolean
+        default: false
       production_release:
         description: 'Approved exact cohort: validate or publish consumer only; fresh accepted R2 restore, no crawl or polling'
         type: choice
@@ -114,6 +118,13 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/company_intelligence/universe-audit.mjs --temporary "$RUNNER_TEMP/universe-audit" --identity-root .accepted-identities
+      - name: Read-only private profile and first-party source funnel
+        run: |
+          python3 scripts/company_intelligence/profile_source_audit.py \
+            --state "$RUNNER_TEMP/universe-audit/first-state" \
+            --identity-root .accepted-identities \
+            --eligibility "$RUNNER_TEMP/universe-audit/first/eligibility.json" \
+            --out "$RUNNER_TEMP/universe-audit/evidence/profile-source-audit.json"
       - name: Representative protected real Discover candidate browser review
         if: inputs.universe_browser
         env:
@@ -175,13 +186,23 @@ jobs:
   continuous-verify:
     # Isolated namespace acceptance has no production side effects. Full product
     # regression validation runs independently and still gates publication/merge.
-    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify'
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify' && !inputs.profile_source_upgrade
     permissions:
       contents: read
       actions: write
     uses: ./.github/workflows/company-intelligence-refresh.yml
     with:
       verification: true
+    secrets: inherit
+  profile-source-verify:
+    if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify' && inputs.profile_source_upgrade
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/company-intelligence-profile-source.yml
+    with:
+      publish: false
+      sources: true
     secrets: inherit
   production-numeric:
     if: github.event_name == 'workflow_dispatch' && inputs.production_release == 'numeric' && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')

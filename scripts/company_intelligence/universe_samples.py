@@ -15,7 +15,7 @@ from .universe_eligibility import DISPLAY_METRICS
 ROOT=Path(__file__).resolve().parents[2]
 SEED='vision-universe-eligibility-20261010'
 TOP=['AAPL','MSFT','NVDA','TSLA','META','GOOG','GOOGL','PLTR','XPEV']
-def samples(consumer,decisions,output):
+def samples(consumer,decisions,output,group_limit=10,include_all_size_evidence=False):
     consumer=Path(consumer);m=json.loads((consumer/'manifest.json').read_text());rows=decisions['issuers']
     groups=defaultdict(list);metadata={};eligible=[];ineligible=[]
     order=lambda cid:hashlib.sha256((SEED+':'+cid).encode()).hexdigest()
@@ -43,7 +43,7 @@ def samples(consumer,decisions,output):
                 cap=price*shares['value'];band='LARGE_CAP' if cap>=10e9 else 'MID_CAP' if cap>=2e9 else 'SMALL_CAP' if cap>=300e6 else 'MICRO_CAP' if cap>=50e6 else 'NANO_CAP'
                 groups[band].append(ticker);metadata[ticker]={'companyId':cid,'sizeBand':band,'marketCapEstimateUSD':cap,'priceUSD':price,'priceAsOf':asof,'shares':shares['value'],'sharesAsOf':shares['periodEnd'],'shareAccession':shares.get('filingId'),'basis':'DATED_EXISTING_USD_CLOSE_TIMES_REPORTED_COMMON_SHARES','notIntradayMarketCap':True}
     groups['RANDOM_ELIGIBLE']=eligible[:10];groups['INELIGIBLE']=ineligible[:20];groups['HIGH_PROFILE']=[t for t in TOP if any(t in r['tickers'] for r in rows.values())]
-    for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','NANO_CAP','INTERNATIONAL_ADR','SPARSE','MASTER_DETAIL'):groups[key]=groups[key][:10]
+    for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','NANO_CAP','INTERNATIONAL_ADR','SPARSE','MASTER_DETAIL'):groups[key]=groups[key][:group_limit]
     for key in ('LARGE_CAP','MID_CAP','SMALL_CAP','MICRO_CAP','INTERNATIONAL_ADR','SPARSE','RANDOM_ELIGIBLE'):
         if len(groups[key])<10:raise ValueError('REQUIRED_SAMPLE_GROUP_INCOMPLETE:'+key)
     if len(groups['INELIGIBLE'])<20:raise ValueError('REQUIRED_INELIGIBLE_SAMPLE_INCOMPLETE')
@@ -57,6 +57,7 @@ def samples(consumer,decisions,output):
         if t:groups['MODULE_COMBINATIONS'].append(t)
     result={'schema':1,'generation':m['generation'],'seed':SEED,'method':'SHA256_SEED_AND_ISSUER_ORDER','groups':dict(groups),
             'stocks':sorted({t for key,ts in groups.items() if key!='INELIGIBLE' for t in ts}), 'ineligible':groups['INELIGIBLE'],
-            'numericSizeEvidence':{t:metadata[t] for ts in groups.values() for t in ts if t in metadata},
+            'numericSizeEvidence':metadata if include_all_size_evidence else {t:metadata[t] for ts in groups.values() for t in ts if t in metadata},
+            'numericSizeEvidenceScope':'FULL_ELIGIBLE_STRUCTURAL_INVENTORY' if include_all_size_evidence else 'SELECTED_BROWSER_SAMPLE',
             'sizeLimitations':'Dated close and reported shares have distinct timestamps. Single-listing common-stock estimates only; no ADR conversion or summed class shares. No current-price/provider claim.'}
     atomic_json(output,result);return result

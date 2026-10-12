@@ -54,12 +54,12 @@ class PublicHTTP:
         self.opener = opener or urllib.request.build_opener(NoRedirect()).open
         self.sleep, self.clock, self.validator = sleep, clock, validator
         self.requests = 0
-        self.stats = {'memoHits': 0, 'cacheHits': 0, 'notModified': 0, 'retries': 0, 'bytesDownloaded': 0}
+        self.stats = {'memoHits': 0, 'cacheHits': 0, 'notModified': 0, 'retries': 0, 'bytesDownloaded': 0, 'robotsFailureMemoHits': 0}
         self.deadline = clock() + max_seconds
         self.host_delay = {}
         self.last_request = 0
         self.host_last = {}
-        self.memo, self.robots = {}, {}
+        self.memo, self.robots, self.robots_failures = {}, {}, {}
         self.user_agent = 'VisionUniverseResearch/CompanyIntelligence (+https://visionuniverse.de; info@visionuniverse.de)'
 
     def _paths(self, url):
@@ -98,6 +98,11 @@ class PublicHTTP:
     def robots_allowed(self, url):
         parts = urlsplit(url)
         origin = parts.scheme + '://' + parts.netloc
+        if origin in self.robots_failures:
+            self.stats['robotsFailureMemoHits'] += 1
+            # One failed origin-policy read per run, not one retry storm per
+            # Q4/news/events/material endpoint. This never authorizes a fetch.
+            raise SourceError(self.robots_failures[origin])
         if origin not in self.robots:
             try:
                 r = self.get(origin + '/robots.txt', robots=False, ttl=86400)
@@ -112,7 +117,8 @@ class PublicHTTP:
                     parser.parse([])
                     self.robots[origin] = parser
                 else:
-                    raise SourceError('ROBOTS_UNAVAILABLE:' + str(exc)) from exc
+                    self.robots_failures[origin] = 'ROBOTS_UNAVAILABLE:' + str(exc)
+                    raise SourceError(self.robots_failures[origin]) from exc
         parser = self.robots[origin]
         if not parser.can_fetch(self.user_agent, url):
             raise SourceError('ROBOTS_DISALLOWED')
@@ -122,12 +128,12 @@ class PublicHTTP:
             raise SourceError('CRAWL_DELAY_REQUIRES_DEFERRED_SCHEDULING')
         return True
 
-    def get(self, url, robots=True, ttl=0, persist=True):
+    def get(self, url, robots=True, ttl=0, persist=True, fresh=False):
         if self.clock() >= self.deadline:
             raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
         url = self.validator(url)
         key = (url, robots)
-        if not persist:
+        if not persist or fresh:
             self.memo.pop(key, None)
         if persist and key in self.memo:
             self.stats['memoHits'] += 1
@@ -135,13 +141,13 @@ class PublicHTTP:
         if robots:
             self.robots_allowed(url)
         cached, body = self._cached(url)
-        if body is not None and self.clock() - cached.get('checked', 0) < ttl:
+        if not fresh and body is not None and self.clock() - cached.get('checked', 0) < ttl:
             self.stats['cacheHits'] += 1
             result = {**cached, 'body': body, 'cached': True}
             if persist:self.memo[key] = result
             return result
         headers = {'User-Agent': self.user_agent, 'Accept': 'application/rss+xml,application/atom+xml,application/json,text/html,text/plain;q=0.8', 'Accept-Encoding': 'identity'}
-        if body is not None:
+        if body is not None and not fresh:
             if cached.get('etag'):
                 headers['If-None-Match'] = cached['etag']
             if cached.get('lastModified'):

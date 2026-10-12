@@ -10,6 +10,7 @@ import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
 import {readLiveAsset} from './live-asset-read.mjs';
+import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
@@ -45,10 +46,19 @@ try{
   try{
    await routes(page);await page.addInitScript(({key,state,theme})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1',theme);},{key:STORAGE_KEY,state,theme});
    page.on('pageerror',e=>errors.push(String(e.stack||e.message).slice(0,500)));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,status:r.status()});if(r.request().resourceType()==='script'&&r.status()>=400)scriptFailures.push({path:new URL(r.url()).pathname,status:r.status()});});page.on('requestfailed',r=>{if(r.resourceType()==='script')scriptFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});});
+   const navigationStarted=Date.now();
    await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});
    await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:expected.generatedAt},{timeout:30000});
+   // Price/screener hydration can replace the chapter after its first ready
+   // marker. Inspect the settled real page, preserving every content assertion.
+   await waitForHydratedConsumer(page,{companyId:cid,generatedAt:expected.generatedAt,timeout:30000});
+   const consumerReadyMilliseconds=Date.now()-navigationStarted;
    const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
    assert.equal(await chapter.locator('.ci-profile[lang=de]').count()>0,flags.profile,ticker+':profile');
+   if(flags.profile){
+    const rendered=(await chapter.locator('.ci-profile,.ci-profile-more').allTextContents()).join(' ').replace(/\s+/g,' ').trim();
+    assert.equal(rendered,expected.companyProfile.description.replace(/\s+/g,' ').trim(),ticker+':exact-reviewed-profile');
+   }
    assert.equal(await chapter.locator('.ci-kpi').count()>0,flags.financials,ticker+':financials');
    assert.equal(await chapter.locator('.ci-change').count()>0,flags.whatChanged,ticker+':changes');
    assert.equal(await chapter.locator('.ci-story[data-intelligence-type]:visible').count()>0,flags.aktuelles,ticker+':aktuelles');
@@ -61,7 +71,18 @@ try{
    assert(!text.includes('keine Meldungen enthalten'));assert(!text.includes('Kein bestätigter kommender Termin'));
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(l=>l.height>0).every(l=>l.height>=44&&l.url.startsWith('https:')));
    if(width===390&&theme==='dark'||matrices.includes(ticker)&&[430,1440].includes(width)&&theme==='dark')await chapter.screenshot({path:out+'-'+ticker+'-'+width+'-'+theme+'.png'});
-   cases.push({ticker,cid,width,theme,status:'PASS',modules:flags});
+   // Element captures can reposition fixed navigation within a tall image.
+   // Also retain the actual viewport, including the existing header and nav,
+   // for the high-profile mobile/desktop light and dark manual review.
+   if(sample.groups.HIGH_PROFILE.includes(ticker)&&[390,430,1440].includes(width)){
+    await chapter.evaluate(e=>window.scrollTo({top:window.scrollY+e.getBoundingClientRect().top-88,behavior:'instant'}));
+    await page.screenshot({path:out+'-viewport-'+ticker+'-'+width+'-'+theme+'.png'});
+   }
+   cases.push({ticker,cid,width,theme,status:'PASS',modules:flags,consumerNews:expected.news.length,
+    visibleIntelligenceItems:await chapter.locator('.ci-story[data-intelligence-type]:visible').count(),profileTextHash:expected.companyProfile?.profileTextHash||null,
+    consumerReadyMilliseconds,issuerPayloadBytes:m.assets[`snapshots/${m.generation}/${cid}.json`].bytes,
+    profileObjectBytes:expected.companyProfile?Buffer.byteLength(JSON.stringify(expected.companyProfile)):0,
+    uniqueConsumerRequestedBytes:[...new Set(requests.map(r=>r.path.split('/company-intelligence/data/')[1]))].reduce((sum,path)=>sum+(m.assets[path]?.bytes||0),0)});
   }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500)};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
  },1);
  for(const ticker of sample.ineligible){

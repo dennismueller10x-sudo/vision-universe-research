@@ -36,7 +36,7 @@ const bases={PREVIOUS_QUARTER_YOY_GROWTH:'Wachstumsrate des Vorquartals',PREVIOU
 function pill(text){return node('span',text,'ci-pill');}
 function freshness(value,now){
  const date=value&&Date.parse(value);if(!Number.isFinite(date))return 'UNDATED';if(date>now)return 'FUTURE';
- const age=now-date;return new Date(date).toISOString().slice(0,10)===new Date(now).toISOString().slice(0,10)?'TODAY':age<=7*86400000?'7_DAYS':age<=30*86400000?'30_DAYS':age<=90*86400000?'90_DAYS':'OLDER';
+ const age=/^\d{4}-\d{2}-\d{2}$/.test(value)?Date.parse(new Date(now).toISOString().slice(0,10))-date:now-date;return new Date(date).toISOString().slice(0,10)===new Date(now).toISOString().slice(0,10)?'TODAY':age<=7*86400000?'7_DAYS':age<=30*86400000?'30_DAYS':age<=90*86400000?'90_DAYS':'OLDER';
 }
 function storyType(item){return item.eventType==='MATERIAL_SEC_EVENT'?'SEC / Regulatorisch':['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(item.eventType)?'Geschäftszahlen':(item.categories||[]).map(k=>newsTypes[k]).find(Boolean)||'Unternehmensmeldung';}
 function storyUrl(item){return item.canonicalUrl||item.earningsReleaseUrl||item.sourceUrl;}

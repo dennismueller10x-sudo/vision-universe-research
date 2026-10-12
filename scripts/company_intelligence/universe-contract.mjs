@@ -10,13 +10,15 @@ import {eligibilityValid,moduleNames} from './universe-approval.mjs';
 const require=createRequire(import.meta.url),api=require('../../company-intelligence/api/contract.js');
 const sandbox={VUCompanyIntelligence:api};runInNewContext(readFileSync(new URL('../../company-intelligence/ui/stock-section.js',import.meta.url),'utf8'),sandbox);
 export async function universeContracts(directory){
+ let currentIssuer=null;
+ try {
  const m=validateManifest(JSON.parse(readFileSync(join(directory,'manifest.json'))));assert(eligibilityValid(m));
  const values=new Map();
  for(const [path,meta] of Object.entries(m.assets)){
   const b=readFileSync(join(directory,path));assert.equal(b.length,meta.bytes,path);assert.equal(createHash('sha256').update(b).digest('hex'),meta.sha256,path);
   const p=JSON.parse(b);values.set(path,p);
   if(path==='index.json'||path.includes('/lookup/'))continue;
-  const r=m.eligibility[p.companyId];assert(r,p.companyId);assert.deepEqual(p.eligibility.modules,r.modules);assert.equal(p.sourceUsagePolicy,undefined); // provenance policy lives in generation manifest
+  currentIssuer=p.companyId;const r=m.eligibility[p.companyId];assert(r,p.companyId);assert.deepEqual(p.eligibility.modules,r.modules);assert.equal(p.sourceUsagePolicy,undefined); // provenance policy lives in generation manifest
   const vm=sandbox.VUCompanyIntelligenceStock.viewModel(p,Date.parse(m.generatedAt));
   assert.equal(Boolean(p.companyProfile),r.modules.profile,p.companyId+':profile');
   assert.equal(p.latestFinancials.state==='AVAILABLE'&&vm.metrics.length>0,r.modules.financials,p.companyId+':financials');
@@ -29,7 +31,7 @@ export async function universeContracts(directory){
    if(!v||typeof v!=='object')return;
    for(const [key,value] of Object.entries(v)){
     assert(!['body','articleBody','fullText','html','checkpoint','checkpoints','sourceHealth','discoveryCheckpoint','backfillCursor'].includes(key),p.companyId+':private:'+key);
-    if(/(?:Url|url)$/.test(key)&&value)assert(api.safeLink(value)&&value.startsWith('https:'),p.companyId+':link');
+    if(/(?:Url|url)$/.test(key)&&value)assert(api.safeLink(value)&&value.startsWith('https:'),p.companyId+':link:'+key);
     publicRows(value,profile||key==='companyProfile');
    }
   }
@@ -37,9 +39,14 @@ export async function universeContracts(directory){
  }
  const fetch=async path=>({ok:values.has(path.slice(1)),status:values.has(path.slice(1))?200:404,json:async()=>values.get(path.slice(1))});
  for(const [cid,r] of Object.entries(m.eligibility))for(const ticker of r.tickers){
-  const p=await api.load(ticker,{enabled:true,expectedGeneration:m.generation,base:'/',fetch,now:m.generatedAt});
+  currentIssuer=cid;const p=await api.load(ticker,{enabled:true,expectedGeneration:m.generation,base:'/',fetch,now:m.generatedAt});
   assert.equal(p.state,'AVAILABLE',ticker+':'+p.reason);assert.equal(p.companyId,cid,ticker);
  }
  return {status:'PASS',generation:m.generation,issuers:Object.keys(m.eligibility).length,listings:m.tickers.length,verifiedAssets:values.size,
   modules:Object.fromEntries(moduleNames.map(k=>[k,Object.values(m.eligibility).filter(r=>r.modules[k]).length]))};
+ }catch(error){
+  const match=String(error.message||'').match(/iss_cik_\d{10}:(profile|financials|whatChanged|aktuelles|nextEvent|link|private)(?::([A-Za-z][A-Za-z0-9]*))?/);
+  const diagnostic={companyId:/^iss_cik_\d{10}$/.test(currentIssuer||'')?currentIssuer:null,check:match?.[1]||'STRUCTURAL_CONTRACT',field:match?.[2]||null};
+  const failure=Error('CONSUMER_CONTRACT_REJECTED');failure.consumerDiagnostic=diagnostic;throw failure;
+ }
 }

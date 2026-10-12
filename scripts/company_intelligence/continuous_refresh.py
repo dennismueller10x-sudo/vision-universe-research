@@ -128,10 +128,14 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         selected={cid:c for cid,c in current.items() if c['names']} if universe else cohort(companies)
         cids=sorted(selected)
         before=outside_proof(store.db,cids); prior=store.state('continuousRefresh',{})
+        from company_intelligence.reviewed_profiles import apply as apply_reviewed_profiles
+        profile_import = apply_reviewed_profiles(store, selected, now)
+        from company_intelligence.reviewed_source_urls import apply as apply_reviewed_source_urls
+        source_url_review=apply_reviewed_source_urls(store,selected,now)
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
         prior_events=store.db.execute('SELECT count(*) FROM events').fetchone()[0]
         http=http or CheckedHTTP(state/'http',budget=config['publicRequestBudget'],max_seconds=config['publicMaxSeconds'])
-        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set()
+        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set(profile_import['updatedIssuerIds'])|set(source_url_review['updatedIssuerIds'])
         all_sources=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         sources=[s for s in all_sources if s.get('companyId') in selected]
         eligible=[s for s in sources if s.get('active') and first_party(s,s['companyId']) and not publisher(s['url'])]
@@ -141,7 +145,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         scheduler={}
         if universe:
             from company_intelligence.universe_scheduler import source_queue
-            eligible,scheduler=source_queue(sources,selected,now)
+            blocked={cid for cid in {s.get('companyId') for s in sources} if store.state('officialSite:'+cid,{}).get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')}
+            eligible,scheduler=source_queue(sources,selected,now,blocked_issuers=blocked)
         for s in eligible:
             if not network: break
             hours=s.get('intervalHours') if universe else config['newsHours'] if s['type']=='IR_FEED' else config['eventsHours'] if s['type']=='IR_EVENTS' else config['materialsHours']
@@ -219,6 +224,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             health['lastSuccessfulFinancialProjection']=now
         store.set_state('continuousRefresh',health)
         if outside_proof(store.db,cids)!=before: raise ValueError('NON_COHORT_PRIVATE_CONTENT_CHANGED')
+        from company_intelligence.reviewed_profiles import flag_reviews
+        profile_import['reviewFlags'] = flag_reviews(store, selected, now)
         exported=store.export(companies,state/'public/company-intelligence/data',now)
         if exported['exportedCompanies']<config['minimumPrivateCompanies']: raise ValueError('FULL_PRIVATE_UNIVERSE_SHRINK')
         if universe:
@@ -247,7 +254,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
-                'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,
+                'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,'profileImport':profile_import,'sourceUrlReview':source_url_review,
                 'publicRequests':http.requests,'secRequests':getattr(sec,'_sec_client',None).stats['requests'] if getattr(sec,'_sec_client',None) else 0,
                 'httpStats':http.stats,'run':pipeline.run,'privateIntegrity':proof,'inventory':inventory,'health':health,'runtimeSeconds':round(time.monotonic()-started,3),'privateOperationalRowsIncluded':False}
         atomic_json(state/'latest-run.json',report); atomic_json(evidence,report)

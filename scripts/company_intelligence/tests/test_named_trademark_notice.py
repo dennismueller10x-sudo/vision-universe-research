@@ -29,6 +29,18 @@ class NamedTrademarkNoticeTests(unittest.TestCase):
         with self.assertRaisesRegex(SourceError, 'CONFLICTING_COPYRIGHT_OWNER'):
             self.verify('AbbVie Inc.', 'Other Holdings LLC.', 'AbbVie Inc.')
 
+    def test_exact_self_copyright_repeat_is_not_a_different_legal_owner(self):
+        notice='All website design, text, graphics, the selection and arrangement thereof, and all software are copyright by '
+        def verify(owner, repeated):
+            body='<title>Devon Energy</title><footer>© 2026 Copyright '+owner+'. '+notice+repeated+'. ALL RIGHTS RESERVED.</footer>'
+            return validate_candidate(company('Devon Energy Corp', 'DVN'), {'url':URL,'evidence':'candidate'},HTTP({URL:body}),NOW)
+        self.assertEqual(verify('Devon Energy Corporation','Devon Energy Corporation')['status'],'VALIDATED')
+        for owner,repeated in [('Devon Energy Corporation Japan LLC','Devon Energy Corporation'),
+                               ('Devon Energy Corporation','Devon Energy Corporation Japan LLC'),
+                               ('Other Holdings LLC','Devon Energy Corporation')]:
+            with self.subTest(owner=owner,repeated=repeated), self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+                verify(owner,repeated)
+
 
 if __name__ == '__main__':
     unittest.main()

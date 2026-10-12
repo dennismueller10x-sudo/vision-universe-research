@@ -66,9 +66,9 @@ export function validateChanges(directory,previous){
  }
  return {status:'PASS',profiles,news,newsIssuers:issuers,expiredNews:expired};
 }
-export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false}={}){
+export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,approvedUniverseRecovery=false,beforeBuild,validateContent}={}){
  const start=Date.now(),root=resolve(temporary);mkdirSync(root,{recursive:true});
- if(!verification)universe=await universeActive(driver);
+ if(!verification)universe=await universeActive(driver)||approvedUniverseRecovery;
  const namespace=verification?(universe?'verify-universe-'+runId:'verify-continuous-top46'):refreshConfig.stateNamespace;
  const consumerNamespace=verification?(universe?'verify-eligible-'+runId:'verify-continuous-discover-top46'):universe?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;
  const restoreNamespace=universe?refreshConfig.stateNamespace:namespace;
@@ -90,15 +90,18 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   py('checkpoint.py',['restore','--state',state,'--snapshot',snapshot]);
   const prior=json(join(state,'latest-run.json'));report.restoredGeneration=prior.sourceGeneration||prior.export?.generation||refreshConfig.baselineGeneration;
   if(good){await downloadGood(driver,{namespace:consumerNamespace,output:old});if(universe)save(join(old,'manifest.json'),good.manifest);}
-  else if(universe){const baseline=await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});if(!baseline)throw Error('PREVIOUS_VERIFIED_GOOD_REQUIRED');save(join(old,'manifest.json'),baseline.good.manifest);}
+  else if(universe){const comparisonNamespace=await activeNamespace(driver);const baseline=await downloadGood(driver,{namespace:comparisonNamespace,output:old});if(!baseline)throw Error('PREVIOUS_VERIFIED_GOOD_REQUIRED');save(join(old,'manifest.json'),baseline.good.manifest);report.comparisonNamespace=comparisonNamespace;report.comparisonGeneration=baseline.good.generation;}
   else await download(driver,{namespace:approval.namespace,output:old});
+  if(beforeBuild){stage='BOUNDED_CONTENT_PREPARATION';report.contentPreparation=await beforeBuild({state,temporary:root,identityRoot});}
   stage='POLL_BUILD';
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
   if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
-  report.consumerContracts=await consumerContracts(consumer);
-  const checks=validateChanges(consumer,old);report.consumerChecks=checks;
+  stage='CONSUMER_CONTRACT';report.consumerContracts=await consumerContracts(consumer);
+  if(universe){report.cohortStocks=report.consumerContracts.listings;report.cohortIssuers=report.consumerContracts.issuers;}
+  stage='GENERATION_REGRESSION';const checks=validateChanges(consumer,old);report.consumerChecks=checks;
   save(join(root,'delta-qa.json'),checks);
+  if(validateContent){stage='CONTENT_ACCEPTANCE';report.contentAcceptance=await validateContent({state,consumer,temporary:root,identityRoot});}
   stage='PRIVATE_CHECKPOINT';
   const packed=join(root,'candidate.tar.gz');py('checkpoint.py',['pack','--state',state,'--snapshot',packed]);
   if(!Buffer.from(await driver.get(pointerKey)||'').equals(Buffer.from(initial||'')))throw Error('CONCURRENT_PRIVATE_GENERATION_ADVANCE');
@@ -140,6 +143,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   await commitGood(driver,{namespace:consumerNamespace,payloadNamespace:result.payloadNamespace,manifest:result.manifest,health,inventory,expectedGood:good});
   report.published=true;report.retainedLastGood=false;report.publication={generation:result.generation,status:result.status,uploadedObjects:result.uploadedObjects,uploadedBytes:result.uploadedBytes,unchangedObjects:result.unchangedObjects};report.status='SUCCESS';report.failureStage=null;
  }catch(error){report.status='PIPELINE_FAILURE';report.failureStage=stage;report.failureCode=/^[A-Z0-9_:-]+$/.test(error.message)?error.message:'REFRESH_STAGE_FAILED';
+  if(error.consumerDiagnostic)report.consumerDiagnostic=error.consumerDiagnostic;
   if(stage==='CANDIDATE_QA'&&existsSync(join(root,'candidate-qa.json')))report.candidateQA=json(join(root,'candidate-qa.json'));
  }
  const observed=await driver.get(prefixFor(consumerNamespace)+'observed.json').catch(()=>null);
