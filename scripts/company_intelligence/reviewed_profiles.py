@@ -20,7 +20,7 @@ SCHEMA = 'reviewed-static-german-profiles-1'
 METHODS = {'MODEL_ASSISTED_STATIC_PARAPHRASE', 'SOURCE_REVIEWED_STATIC_PARAPHRASE'}
 PROMOTION = re.compile(r'\b(?:führend(?:e[rsnm]?)?|Weltmarktführer|revolutionär\w*|innovativ\w*|einzigartig\w*|erstklassig\w*|unterbewertet|Kaufempfehlung|Kursziel|Aktienkurs|renditestark)\b', re.I)
 STAFF_COUNT = re.compile(r'\b(?:\d[\d., ]*|tausend\w*|million\w*)\s+(?:Mitarbeiter\w*|Beschäftigte\w*|Angestellte\w*)\b|Mitarbeiterzahl', re.I)
-GERMAN_ACTIVITY = re.compile(r'\b(?:ist|sind|entwickelt|betreibt|bietet|liefert|produziert|fertigt|stellt|vertreibt|verkauft|bündelt|vermietet|vermittelt|verwaltet|erbringt|forscht|konzentriert|gehört|umfasst|befinden|verarbeitet|fördert|finanziert|versichert|handelt|beschafft|transportiert|verbindet|unterstützt|gestaltet|vermarktet|führt|investiert)\b', re.I)
+GERMAN_ACTIVITY = re.compile(r'\b(?:ist|sind|entwickelt|betreibt|bietet|liefert|produziert|fertigt|stellt|vertreibt|verkauft|bündelt|vermietet|vermittelt|verwaltet|erbringt|forscht|konzentriert|gehört|umfasst|befinden|verarbeitet|fördert|finanziert|versichert|handelt|beschafft|transportiert|verbindet|unterstützt|gestaltet|vermarktet|führt|investiert|baut)\b', re.I)
 
 def digest(value):
     return hashlib.sha256(value.encode()).hexdigest()
