@@ -37,6 +37,7 @@ vorsorge/
     monitor.js                        What changed (Produkt/Markt/Daten/Plan/Portfolio/Regeln), Ampel, Riester
   data/
     etf-index.json                    spaltenförmiger Index aller Listings (Screener, Suche)
+    etf-index-home.json               Startseiten-Auszug: Zähler, Stand, Zeilen der Kern-ETFs (unverändert kopiert)
     etf/<slug>.json                   Detail je Listing: Taxonomie, Metriken, DNA, Provenienz
     series/<SYM>.json                 kompakte Kursreihen (Kurs- und ggf. Gesamtrendite)
     ingest/                           Ergebnis des Tiingo-Ingests (universe, catalog-stats, report, failed)
@@ -137,6 +138,9 @@ Recycelte Ticker: Kurslücke > 120 Tage trennt Vorgänger ab; Anbieter-Startdatu
 
 Auslieferung: `etf-index.json` enthält nur PUBLIC_ANALYSIS + COMPLEX (≈ 475 KB gzip), `etf-index-extra.json`
 Archiv und Prüfschicht; der Browser lädt den Zusatzteil erst bei Bedarf (Schalter „inaktive“, Detail, Watchlist).
+Die Startseite lädt nur `etf-index-home.json` (Zähler + Kern-ETFs URTH, SPY, EEM, QQQ, FEZ, IWM, ≈ 4 KB) und
+`holdings/feed.json` (Feed + Quartale ohne `bySymbol`); `etf-index.json` folgt erst bei Suche, bei eigenen ETFs
+außerhalb des Auszugs oder in jeder anderen Ansicht. Fehlt ein Auszug, gilt die volle Datei (gleiche Werte).
 
 ### Gemessener Stand (Tiingo-Vollingest, Datenstand 02.10.2026)
 | Größe | Wert |
@@ -235,7 +239,7 @@ Quellenmatrix und Nutzungsbedingungen: `docs/ETF_PRIMARY_SOURCE_MATRIX.md`.
 | Marker | Skript | Quelle | Ausgabe (Git) |
 |---|---|---|---|
 | `[vorsorge-etf-probe]` | `probe-etf-sources.mjs` | Nutzungsbedingungen, robots.txt, Form offener Quellen | `data/sources/etf-source-probe.json` |
-| `[vorsorge-nport]` | `ingest-sec-nport.mjs` → `fetch-sec-sic.mjs` → `build-etf-intelligence.mjs` | SEC N-PORT (4 Quartale), SEC submissions (SIC) | `data/holdings/<SERIE>.json`, `data/holdings/index.json`, `data/sources/sec-sic.json`, `data/sources/nport-manifest.json` |
+| `[vorsorge-nport]` | `ingest-sec-nport.mjs` → `fetch-sec-sic.mjs` → `build-etf-intelligence.mjs` | SEC N-PORT (4 Quartale), SEC submissions (SIC) | `data/holdings/<SERIE>.json`, `data/holdings/index.json`, `data/holdings/feed.json`, `data/sources/sec-sic.json`, `data/sources/nport-manifest.json` |
 | `[vorsorge-fundamentals]` | `ingest-sec-rr.mjs`, `ingest-esma-firds.mjs` | SEC Risk/Return (Prospekt-XBRL), ESMA FIRDS, GLEIF | `data/sources/sec-rr-costs.json`, `data/eu/etf-eu-index.json` |
 
 Beide Datenjobs bauen anschließend den ETF-Stamm (`build-etf-data.mjs`) neu und prüfen ihn mit
