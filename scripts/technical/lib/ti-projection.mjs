@@ -27,6 +27,7 @@ const require = createRequire(import.meta.url);
 export const Projection = require(join(ROOT, "quant/engines/technical/projection/elliott-projection.js"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const Patterns = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
+const Curation = require(join(ROOT, "quant/engines/technical/projection/explore-curation.js"));
 const CorporateActions = require(join(ROOT, "quant/engines/corporate-action-evidence.js"));
 export const PROJECTION_VERSION = Projection.VERSION;
 export const STORE_SCHEMA = "vu-elliott-projection-theses-1.0.0";
@@ -176,7 +177,7 @@ export function dataIntegrity(series, out, splitRes) {
 }
 
 /* =========================================================================
-   EXPLORE ELLIOTT 1.0.0 — Auswahl (deterministisch, vor jeder Auswertung festgelegt, nicht an Einzeltiteln eingestellt)
+   EXPLORE-POOL (explore-pool-1.0.0) — Kandidaten, nicht Auswahl. Die Kuratierung (explore-curation.js) entscheidet, was Highlight wird.
      Kandidat:  Lesart aus dem unveraenderten Pool, nicht abgeschlossen, letzte Welle laeuft, Muster mit Projektionsformel
                 (Impuls/Diagonale Welle 2-5, Zigzag/Flat/W-X-Y Welle B-C, Doppel-/Dreifach-Zigzag), nicht schon angezeigt
                 (Primaer, Alternativen, Motiv-Alternative), ALLE Regeln erfuellt (Doppelpruefung), kein Schluss jenseits
@@ -184,20 +185,20 @@ export function dataIntegrity(series, out, splitRes) {
                 Produkt-Leitplanke G2-G5 verfehlt (eine Lesart ohne verfehlte Leitplanke gehoert nicht in Explore).
      Titel:     nur Wochenanalyse; Wertpapierart EQUITY_COMMON/ELIGIBLE (G6 sperrt den Titel, ist kein Explore-Grund);
                 Datenintegritaet sauber (dataIntegrity).
-     Rang:      nur Lesarten in der besseren Haelfte des Pools (Rang <= 50 %, fuer jeden Platz) — Lesarten vom Ende des
-                Pools sind Rauschen der Kandidatensuche, keine Lesart fuer Kunden (Anti-Spam; Rang wird angezeigt).
-     Auswahl:   Platz 1 = bestplatzierte Motiv-Lesart (These Welle 3), gibt es keine, der bestplatzierte Kandidat.
-                Platz 2 = bestplatzierte Lesart mit der GEGENRICHTUNG zu Platz 1 (materiell anderes Szenario).
-                Platz 3 = bestplatzierte Lesart mit einem anderen Thesentyp als beide, nur im oberen Viertel des Pools.
-                Hoechstens 3; lieber eine als drei aehnliche. (Vor der Freigabe verschaerft: Die erste Fassung — Platz
-                2/3 bei jeder anderen Kombination aus Typ und Richtung — fuellte auf 1.184 Titeln alle drei Plaetze,
-                ueberwiegend mit Flat-C-Lesarten; Produktgesundheit, nicht Ergebnis.)
-     Leiter:    nahezu gleiche Projektionsleitern werden in der Projection Engine (Anzeige) zusaetzlich verworfen.
+     Rang:      nur Lesarten in der besseren Haelfte des Pools (Rang <= 50 %).
+     Alt:       exploreLegacyPick ist die Drei-Plaetze-Auswahl von Explore Elliott 1.0.0 und dient nur noch dem Vorher-Vergleich im Audit.
    ========================================================================= */
-export const EXPLORE = Object.freeze({ version: "explore-elliott-1.0.0", max: 3, rankHalf: 0.5, rankThird: 0.25, gates: ["G2", "G3", "G4", "G5"] });
+export const EXPLORE = Object.freeze({ version: "explore-pool-1.0.0", rankHalf: 0.5, gates: ["G2", "G3", "G4", "G5"] });
+/* Explore Elliott 1.0.0 (bis zur Kuratierung): die alte Drei-Plaetze-Auswahl. Nur noch fuer den Vorher-Vergleich im Audit. */
+const LEGACY_EXPLORE = Object.freeze({ max: 3, rankThird: 0.25 });
 const EXPLORE_TYPES = { IMPULSE: [2, 3, 4, 5], LEADING_DIAGONAL: [2, 3, 4, 5], ENDING_DIAGONAL: [2, 3, 4, 5], ZIGZAG: [2, 3], FLAT: [2, 3], WXY: [2, 3], DOUBLE_ZIGZAG: [2, 3, 6, 7], TRIPLE_ZIGZAG: [2, 3, 4, 5] };
-export function exploreCandidatesFor(series, out, meth, pool, motive, integrity) {
-  const res = { version: EXPLORE.version, reason: null, pool: 0, eligible: 0, items: [] };
+/**
+ * Alle zulaessigen Explore-Kandidaten eines Titels (Filter unveraendert gegenueber Explore Elliott 1.0.0), in Rangfolge des Pools.
+ * Keine Auswahl: ob und wie ein Kandidat dem Kunden gezeigt wird, entscheidet allein die Kuratierung (explore-curation.js).
+ * Jeder Kandidat traegt eine kompakte Zusammenfassung `sum` (Wellentyp, Richtung, Rang, Leitplanken, Leiter) fuer Kuratierung und Audit.
+ */
+export function exploreCandidateList(series, out, meth, pool, motive, integrity) {
+  const res = { version: EXPLORE.version, reason: null, pool: 0, eligible: 0, items: [], cands: [] };
   if (series.timeframe !== MOTIVE_GATES.timeframe) return Object.assign(res, { reason: "NOT_WEEKLY" });
   const Q = pool || candidatePool(series, out, meth);
   if (Q.reason) return Object.assign(res, { reason: Q.reason });
@@ -207,7 +208,6 @@ export function exploreCandidatesFor(series, out, meth, pool, motive, integrity)
   const close = series.close[series.length - 1], mKey = motive && motive.count ? shownKey(motive.count.pattern, motive.count.waves) : null;
   const E = out.res.methods.elliott, dirOf = (c) => (c.waves[0].toPrice >= c.waves[0].fromPrice ? "UP" : "DOWN");
   const thesisKeys = new Set([E.primary].concat(E.alternatives || []).concat(motive && motive.count ? [motive.count] : []).map((c) => c.pattern + "|" + c.waves[0].fromTime + "|" + dirOf(c)));
-  /* 1) alle zulaessigen Kandidaten in Rangfolge */
   const cands = [];
   Q.all.forEach((x, ix) => {
     if ((ix + 1) / Q.all.length > EXPLORE.rankHalf) return;                            // Rangqualitaet (jeder Platz)
@@ -225,17 +225,62 @@ export function exploreCandidatesFor(series, out, meth, pool, motive, integrity)
     const geo = Projection.geometry(r.count); if (!geo) return;
     const lad = Projection.ladder(geo, close);
     if (!lad.zones.length || lad.zones.every((z) => z.state === "PASSED")) return;   // nichts mehr offen → kein Nutzen
-    cands.push({ kind: geo.type + "|" + r.count.direction, type: geo.type, item: { count: r.count, rank: ix, pool: Q.all.length, gates, failed } });
+    const sum = { rank: ix, pool: Q.all.length, type: geo.type, pattern: r.count.pattern, variant: r.count.variant || null, direction: r.count.direction, wave: r.count.currentWave.wave,
+                  w1Weeks: waves[0].duration, failed: failed.slice(), gates: Object.fromEntries(EXPLORE.gates.map((g) => [g, gates[g].value])),
+                  invalidation: r.count.invalidation.price, zones: lad.zones.map((z) => ({ tier: z.tier, low: z.low, high: z.high, state: z.state })), close };
+    cands.push({ kind: geo.type + "|" + r.count.direction, type: geo.type, item: { count: r.count, rank: ix, pool: Q.all.length, gates, failed, sum } });
   });
-  res.eligible = cands.length;
-  if (!cands.length) return Object.assign(res, { reason: "NONE_IN_POOL" });
-  /* 2) Platz 1, dann strukturell verschiedene in Rangfolge */
+  res.eligible = cands.length; res.cands = cands;
+  if (!cands.length) res.reason = "NONE_IN_POOL";
+  return res;
+}
+/**
+ * AUDIT (nur Messung, kein Produktpfad): alle laufenden, regelkonformen Welle-3-Lesarten des Pools — unabhaengig von Rang,
+ * Leitplanken und davon, ob sie schon angezeigt werden. Veraendert nichts; liest denselben Pool wie Motiv-Alternative und Explore.
+ */
+export function wave3PoolAudit(series, out, pool, meth) {
+  const Q = pool || candidatePool(series, out, meth), res = [];
+  if (Q.reason) return res;
+  const close = series.close[series.length - 1];
+  Q.all.forEach((x, ix) => {
+    if (x.complete || !(x.type === "IMPULSE" || x.type === "LEADING_DIAGONAL")) return;
+    const n = x.pts.length - 1; if (n !== 2 && n !== 3) return;
+    if (!x.subs.length || x.subs[x.subs.length - 1].st !== "DEVELOPING") return;
+    const waves = wavesOf(x, series), r = countOf(x, waves, series, Q.all, ix, Q.atr); if (r.invalid) return;
+    const geo = Projection.geometry(r.count); if (!geo || geo.type !== "WAVE_3") return;
+    const g = gateResults(x, waves, Q.atr), lad = Projection.ladder(geo, close);
+    res.push({ rank: ix, pool: Q.all.length, pattern: r.count.pattern, direction: r.count.direction, wave: n, w1Weeks: waves[0].duration, shown: Q.shown.has(shownKey(x.type, waves)),
+               failed: EXPLORE.gates.filter((k) => !g[k].passed), gates: Object.fromEntries(EXPLORE.gates.map((k) => [k, g[k].value])),
+               invalidation: r.count.invalidation ? r.count.invalidation.price : null, zones: lad.zones.map((z) => ({ tier: z.tier, low: z.low, high: z.high, state: z.state })), close });
+  });
+  return res;
+}
+/** Explore Elliott 1.0.0 (bis zur Kuratierung): Auswahl von hoechstens drei Plaetzen aus der Kandidatenliste. Nur fuer den Vorher-Vergleich im Audit. */
+export function exploreLegacyPick(cands, poolSize) {
+  if (!cands.length) return [];
   const first = cands.find((c) => c.type === "WAVE_3") || cands[0], picked = [first];
   const second = cands.find((c) => c !== first && c.item.count.direction !== first.item.count.direction);
   if (second) picked.push(second);
-  const third = cands.find((c) => !picked.includes(c) && picked.every((p) => p.type !== c.type) && (c.item.rank + 1) / Q.all.length <= EXPLORE.rankThird);
-  if (third && picked.length < EXPLORE.max) picked.push(third);
-  res.items = picked.map((p, k) => Object.assign(p.item, { slot: k + 1 }));
+  const third = cands.find((c) => !picked.includes(c) && picked.every((p) => p.type !== c.type) && (c.item.rank + 1) / poolSize <= LEGACY_EXPLORE.rankThird);
+  if (third && picked.length < LEGACY_EXPLORE.max) picked.push(third);
+  return picked;
+}
+/**
+ * Nur die fuer Highlights geeigneten Kandidaten (Leitplanken-Menge und Rang laut Richtlinie). Die Registry speichert nur diese in ihren Schnappschuessen:
+ * die Highlight-Auswahl haengt von nicht geeigneten Kandidaten nie ab (siehe Projection.build), das Ergebnis ist identisch zur Produktrechnung,
+ * der Schnappschuss aber um Groessenordnungen kleiner als der ganze Pool.
+ */
+export function highlightEligibleItems(items) {
+  return (items || []).filter((it) => { const geo = Projection.geometry(it.count); return !!geo && Curation.highlightEligibility({ type: geo.type, failed: it.failed, rank: it.rank, pool: it.pool }).eligible; });
+}
+/**
+ * Explore-Pool eines Titels fuer die Projection Engine: ALLE zulaessigen Kandidaten in Rangfolge (Filter unveraendert).
+ * Ob ein Kandidat Highlight, Candidate-Explorer-Eintrag oder gar nicht gezeigt wird, entscheidet die Kuratierung
+ * (explore-curation.js, aufgerufen in Projection.build) — nicht diese Funktion.
+ */
+export function exploreCandidatesFor(series, out, meth, pool, motive, integrity) {
+  const res = exploreCandidateList(series, out, meth, pool, motive, integrity);
+  res.items = res.cands.map((c) => { const { sum, ...item } = c.item; return item; });
   return res;
 }
 
@@ -315,8 +360,9 @@ export function displayedTheses(proj) {
   }
   /* 1.1.0: Motiv-Alternative ist eigenstaendig sichtbar (auch bei Enthaltung fuer die Hauptzaehlung) */
   if (proj.motiveAlternative) out.push(["MOTIVE_ALTERNATIVE", proj.motiveAlternative]);
-  /* 1.2.0: Explore Elliott (eingeklappt, explorativ) — eigene Rolle, dieselbe Thesenkennung wie in jeder anderen Rolle */
-  (proj.explore || []).forEach((th) => out.push(["EXPLORE", th]));
+  /* 1.3.0: Explore Highlights (kuratiert, hoechstens 2, explorativ) — eigene Rolle, dieselbe Thesenkennung wie in jeder anderen Rolle.
+     Der Candidate Explorer (technisch, nachrangig) ist KEINE angezeigte These im Sinn des Produkts und wird nicht verfolgt. */
+  (proj.exploreHighlights || []).forEach((th) => out.push(["EXPLORE_HIGHLIGHT", th]));
   return out;
 }
 
@@ -334,12 +380,17 @@ export function advanceStore(prev, items, versions) {
     const cur = displayedTheses(it.proj), matched = new Set();
     /* Vorübergehend nicht angezeigt (nicht umgedeutet): Hauptthesen bei Enthaltung/Datenproblem; Motiv-Alternativen nur bei Datenproblem */
     const blocked = !it.proj || it.proj.status === "DATA_INVALID" || it.proj.status === "UNAVAILABLE";
-    const withheldFor = (e) => blocked || (e.role === "EXPLORE" && !!it.proj.exploreWithheld) || (e.role !== "MOTIVE_ALTERNATIVE" && e.role !== "EXPLORE" && !it.proj.consumerVisible);
+    const isExplore = (r) => r === "EXPLORE" || r === "EXPLORE_HIGHLIGHT";
+    const withheldFor = (e) => blocked || (isExplore(e.role) && !!it.proj.exploreWithheld) || (e.role !== "MOTIVE_ALTERNATIVE" && !isExplore(e.role) && !it.proj.consumerVisible);
+    /* Kandidaten des Titels: die gezeigten Eintraege des Candidate Explorer UND alle uebrigen verschiedenen Kandidaten (exploreKeys): besteht die Zaehlung weiter, ist es eine Herabstufung, kein Verschwinden */
+    const candidateKeys = new Set(((it.proj && it.proj.exploreCandidates) || []).map((c) => c.key).concat((it.proj && it.proj.exploreKeys) || []));
     const active = Object.keys(theses).filter((id) => theses[id].symbol === it.symbol && theses[id].timeframe === it.tf && theses[id].state !== "ARCHIVED");
     for (const id of active) {
       const e = theses[id], hit = cur.find(([, th]) => th.key === e.key);
       if (hit) matched.add(hit[1].key);
-      const next = Projection.advanceLifecycle(e, hit ? hit[1] : null, it.bars, it.asOf, { id, symbol: it.symbol, timeframe: it.tf, role: hit ? hit[0] : e.role, versions, withheld: !hit && withheldFor(e) });
+      /* war Explore (Highlight oder die breite Fassung 1.2.0), ist jetzt nur noch Candidate Explorer: Rollenwechsel + Archivierung, kein "Zaehlung verschwunden" */
+      const demotedTo = !hit && isExplore(e.role) && candidateKeys.has(e.key) ? "EXPLORE_CANDIDATE" : undefined;
+      const next = Projection.advanceLifecycle(e, hit ? hit[1] : null, it.bars, it.asOf, { id, symbol: it.symbol, timeframe: it.tf, role: hit ? hit[0] : e.role, versions, withheld: !hit && !demotedTo && withheldFor(e), demotedTo });
       events += next.events.length - e.events.length; theses[id] = next;
     }
     for (const [role, th] of cur) {
