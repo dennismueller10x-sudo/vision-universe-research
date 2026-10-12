@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-12T03:39:22.943Z",
+ "generatedAt": "2026-10-12T12:53:35.058Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,15 +43,16 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 2531,
+ "runtimeSec": 3328,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4442,
-   "DATA_INVALID": 451,
+   "ABSTAIN": 4397,
+   "DATA_INVALID": 445,
    "NO_PROJECTION": 106,
-   "AVAILABLE": 41
+   "AVAILABLE": 41,
+   "WITHHELD": 51
   },
   "consumerVisible": 41,
   "types": {
@@ -65,111 +66,209 @@
   "weeklyForDaily": 5,
   "explore": {
    "highlights": {
-    "securities": 109,
-    "theses": 111,
+    "securities": 104,
+    "theses": 105,
     "perSecurity": {
-     "1": 107,
-     "2": 2
+     "1": 103,
+     "2": 1
     },
     "direction": {
-     "DOWN": 61,
-     "UP": 50
+     "DOWN": 60,
+     "UP": 45
     },
     "type": {
-     "WAVE_C": 85,
-     "WAVE_3": 25,
-     "WAVE_5": 1
+     "WAVE_C": 83,
+     "WAVE_3": 22
     },
     "pattern": {
-     "ZIGZAG": 60,
-     "FLAT": 24,
-     "IMPULSE": 25,
-     "ENDING_DIAGONAL": 1,
+     "ZIGZAG": 59,
+     "FLAT": 23,
+     "IMPULSE": 22,
      "DOUBLE_ZIGZAG": 1
     },
     "failedSet": {
-     "G5": 67,
-     "G2": 44
+     "G5": 66,
+     "G2": 39
     },
     "rankPct": {
-     "0-10": 88,
-     "10-25": 23,
+     "0-10": 86,
+     "10-25": 19,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
-     "0": 44,
-     "1": 41,
-     "2": 26
+     "0": 42,
+     "1": 40,
+     "2": 23
     },
     "extendedMove": {
      "DOWN <50%": 16,
      "UP 100-250%": 18,
-     "UP 50-100%": 10,
+     "UP 50-100%": 8,
      "UP 500-1000%": 2,
-     "DOWN 50-100%": 7,
+     "DOWN 50-100%": 6,
      "DOWN 100-250%": 1,
-     "UP <50%": 10,
      "UP 250-500%": 8,
-     "UP >1000%": 2
+     "UP >1000%": 2,
+     "UP <50%": 7
     },
     "extremeMove": {
      "UP 250-500%": 9,
-     "UP 100-250%": 15,
+     "UP 100-250%": 14,
      "UP 500-1000%": 7,
      "DOWN <50%": 1,
-     "UP 50-100%": 4,
      "DOWN 50-100%": 2,
      "UP >1000%": 3,
+     "UP 50-100%": 1,
      "UP <50%": 1
     }
    },
    "candidates": {
-    "securities": 3777,
-    "entries": 13395,
+    "securities": 3747,
+    "entries": 13294,
     "perSecurity": {
-     "1": 482,
-     "2": 717,
-     "3": 688,
-     "4": 693,
-     "5": 539,
-     "6": 658
+     "1": 477,
+     "2": 710,
+     "3": 685,
+     "4": 688,
+     "5": 532,
+     "6": 655
     },
     "direction": {
-     "DOWN": 6870,
-     "UP": 6525
+     "DOWN": 6827,
+     "UP": 6467
     },
     "type": {
-     "WAVE_C": 9973,
-     "WAVE_3": 3010,
-     "WAVE_5": 412
+     "WAVE_C": 9904,
+     "WAVE_3": 2980,
+     "WAVE_5": 410
     },
     "failedSet": {
-     "G3+G4": 1939,
-     "G3+G4+G5": 584,
-     "G2+G3+G4": 3114,
-     "G2+G3+G4+G5": 1470,
-     "G2+G3": 1518,
-     "G3": 783,
-     "G3+G5": 484,
-     "G2+G4": 764,
-     "G2+G3+G5": 920,
-     "G2+G5": 203,
-     "G4+G5": 261,
-     "G2+G4+G5": 515,
-     "G4": 521,
-     "G2": 203,
-     "G5": 116
+     "G3+G4": 1930,
+     "G3+G4+G5": 581,
+     "G2+G3+G4": 3093,
+     "G2+G3+G4+G5": 1457,
+     "G2+G3": 1511,
+     "G3": 777,
+     "G3+G5": 480,
+     "G2+G4": 759,
+     "G2+G5": 199,
+     "G4+G5": 258,
+     "G2+G4+G5": 512,
+     "G2+G3+G5": 913,
+     "G4": 514,
+     "G2": 197,
+     "G5": 113
     }
    }
   },
-  "splitResolved": 203,
+  "splitResolved": 202,
   "normalAlternative": 39,
   "motiveAlternative": 33,
   "motiveDOWN": 29,
   "motiveUP": 4,
   "motiveHighUpside": 1,
-  "lifecycleEvents": 48,
+  "freshness": {
+   "version": "data-freshness-1.0.0",
+   "policy": {
+    "version": "data-freshness-1.0.0",
+    "freshMaxTradingDays": 1,
+    "delayedMaxTradingDays": 5,
+    "sessionCompleteUtcHour": 22,
+    "calendar": "US_EQUITY"
+   },
+   "reference": "2026-10-09",
+   "titles": 5035,
+   "states": {
+    "FRESH": 4979,
+    "STALE": 48,
+    "NON_TRADING": 3,
+    "DELAYED": 5
+   },
+   "reasons": {
+    "REFRESH_STOPPED": 26,
+    "NO_NEWER_BARS": 27,
+    "SECURITY_INACTIVE": 3
+   },
+   "reasonsKnown": 3,
+   "delayedWithNotice": 5,
+   "affected": {
+    "titles": 51,
+    "primary": 45,
+    "alternative": 43,
+    "motiveAlternative": 0,
+    "exploreHighlights": 6,
+    "exploreCandidates": 101,
+    "consumerVisibleProjections": 0
+   },
+   "ageBuckets": {
+    "0-3": 4980,
+    "6-10": 14,
+    "21-40": 28,
+    "11-20": 5,
+    "4-5": 7,
+    ">40": 1
+   },
+   "withheldTitles": [
+    "AIXC",
+    "APGE",
+    "ANY",
+    "AREN",
+    "ATAI",
+    "AVB",
+    "BTOG",
+    "CSAN",
+    "CRNX",
+    "DBRG",
+    "DBRG-P-I",
+    "DBRG-P-H",
+    "DBRG-P-J",
+    "DOMO",
+    "FBRX",
+    "FGNX",
+    "FGNXP",
+    "FSEA",
+    "GBTG",
+    "HLX",
+    "IWML",
+    "IWFL",
+    "JUPGF",
+    "LBRDK",
+    "LBRDA",
+    "LBRDP",
+    "LEG",
+    "MAA-P-I",
+    "MDV",
+    "MDV-P-A",
+    "MTUL",
+    "NCSM",
+    "NLY-P-I",
+    "NSTS",
+    "NTZ",
+    "PHGE",
+    "QULL",
+    "RMAX",
+    "SAT",
+    "SCDL",
+    "SNYR",
+    "TALK",
+    "TWO-P-A",
+    "TWO-P-C",
+    "TWO",
+    "TWO-P-B",
+    "VRME",
+    "WBS",
+    "WBS-P-F",
+    "WBS-P-G",
+    "ZTEK"
+   ],
+   "systemic": {
+    "share": 0.0101,
+    "maxShare": 0.2,
+    "systemic": false
+   }
+  },
+  "lifecycleEvents": 58,
   "tracked": 6990
  }
 }
