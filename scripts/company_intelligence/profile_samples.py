@@ -19,7 +19,7 @@ TARGETS = {'US':50, 'EUROPE':25, 'ADR_GLOBAL':25, 'SMALL_MICRO':25, 'BIOTECH_HEA
 def create(state, consumer, decisions, output):
     state,consumer,output=map(Path,(state,consumer,output))
     rows=json.loads(Path(decisions).read_text())['issuers'];m=json.loads((consumer/'manifest.json').read_text())
-    base=universe_samples(consumer,{'issuers':rows},output.with_suffix('.size-sample.json'),group_limit=25)
+    base=universe_samples(consumer,{'issuers':rows},output.with_suffix('.size-sample.json'),group_limit=25,include_all_size_evidence=True)
     size={t for t,e in base['numericSizeEvidence'].items() if e['sizeBand'] in ('SMALL_CAP','MICRO_CAP')}
     store=Store(state/'state.sqlite');groups=defaultdict(list);evidence={};profile_total=0
     order=lambda cid:hashlib.sha256((SEED+':'+cid).encode()).hexdigest()
@@ -61,7 +61,7 @@ def create(state, consumer, decisions, output):
                 'availableGroupCounts':{k:len(groups[k])for k in TARGETS},'groupShortfalls':{k:TARGETS[k]-len(selected[k])for k in TARGETS if len(selected[k])<TARGETS[k]},
                 'mandatoryNotEligible':[t for t in TOP if t not in available], 'approvedProfileUniverseCount':profile_total,
                 'evidence':{t:evidence[t]for t in chosen if t in evidence},'publicMetadataInventory':evidence,
-                'profileQualityGroupsRequireApprovedGermanCopy':True,'privateOperationalRowsIncluded':False}
+                'profileQualityGroupsRequireApprovedGermanCopy':True,'numericSizeEvidenceScope':base['numericSizeEvidenceScope'],'privateOperationalRowsIncluded':False}
         atomic_json(output,result);return result
     finally:store.close()
 
