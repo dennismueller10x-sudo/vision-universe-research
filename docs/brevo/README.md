@@ -1,6 +1,6 @@
 # Vision Universe: eigenständiges Brevo-System
 
-Diese Integration verwaltet ausschließlich Newsletter und Kontakte in Brevo. Sie ändert keine Website, Landingpage, DNS-Zone, Shopify-Verbindung, Research-Funktion oder bestehende Automationen. Python 3, Standardbibliothek, offizielle Brevo-v3-REST-Schnittstellen; keine neue Plattform, KI-API oder kostenpflichtige Funktion.
+Diese Integration verwaltet Newsletter und Kontakte in Brevo. Für die ausdrücklich beauftragte Domainauthentifizierung gibt es einen [isolierten Brevo-DNS-Betriebsweg](DOMAIN-AUTHENTICATION.md), der ausschließlich Brevo-Code/DKIM für visionuniverse.de ergänzt beziehungsweise passende DKIM-CNAMEs auf DNS only setzt. Website, Landingpage, Shopify-Verbindung, Research-Funktion und bestehende Automationen bleiben unverändert. Python 3, Standardbibliothek, offizielle Brevo-v3-REST-Schnittstellen; keine neue Plattform, KI-API oder kostenpflichtige Funktion.
 
 Der [Merge-Prüfbericht](MERGE-REVIEW.md) dokumentiert die Prüfung vor dem Merge. Der [Live-Status](LIVE-STATUS.md) enthält den belegten aktuellen Kontostand, Setup-/Lese-Nachweise und die Grenzen des Oberflächenabgleichs. Ein Merge startet keinen Brevo-Lauf.
 
