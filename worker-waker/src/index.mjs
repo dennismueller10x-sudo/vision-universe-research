@@ -59,6 +59,34 @@ import { holeZugang } from "./github-app.mjs";
 
 const WORKFLOW = "intraday-pacemaker.yml";
 const PAGES = "pages-release.yml";
+const IMBLICK = "discover-im-blick-live.yml";
+
+/* IM BLICK: ein zweiter, unabhaengiger Ausloeser (12.10.2026)
+   ---------------------------------------------------------
+   Der GitHub-Zeitplan dieses Workflows legte am 12.10.2026 bis zum
+   Nachmittag keinen einzigen Lauf an; repo-weit entstanden in 39 Stunden
+   30 von 110 faelligen Zeitplan-Laeufen, die angelegten mit Stunden
+   Verspaetung. Dieser Wecker steht ausserhalb von GitHub und stoesst den
+   Workflow alle 30 Minuten waehrend des breiten Sitzungsfensters an
+   (Minute 5 und 35, 15-21 Uhr UTC, Mo-Fr: Sommer- und Winterzeit).
+
+   Er entscheidet NICHT, ob etwas faellig ist. Das tut der Lauf selbst
+   (discover/engines/refresh-plan.js): ist der faellige Slot schon
+   veroeffentlicht, endet er in Sekunden ohne Aenderung. Der Wecker
+   braucht deshalb keinen Kalender und kann ihn nicht falsch haben - er
+   sorgt nur dafuer, dass ein verspaeteter oder ausgefallener Termin
+   spaetestens 30 Minuten spaeter nachgeholt wird. */
+const IMBLICK_MINUTEN = [5, 35];
+const IMBLICK_STUNDEN = [15, 16, 17, 18, 19, 20, 21];
+
+function imBlickTick(scheduledTime) {
+  if (scheduledTime === undefined || scheduledTime === null) return false;
+  const d = new Date(scheduledTime);
+  if (Number.isNaN(d.getTime())) return false;
+  const tag = d.getUTCDay();
+  return tag >= 1 && tag <= 5 &&
+         IMBLICK_STUNDEN.includes(d.getUTCHours()) && IMBLICK_MINUTEN.includes(d.getUTCMinutes());
+}
 
 function notiere(ereignis, felder) {
   /* Nur Anzahlen, Gruende und Zustaende - nie ein Schluessel, nie ein
@@ -95,16 +123,45 @@ async function laeuftSchon(env, kopf, workflow, zustaende) {
  * workflow_dispatch, nicht repository_dispatch - siehe die Begruendung
  * in wecke(). Der Ref muss mitkommen; ohne ihn antwortet GitHub mit 422.
  */
-async function stosseAn(env, kopf, workflow) {
+async function stosseAn(env, kopf, workflow, inputs) {
+  const koerper = { ref: env.GITHUB_BRANCH || "main" };
+  if (inputs) koerper.inputs = inputs;
   return fetch(
     "https://api.github.com/repos/" + env.GITHUB_REPO +
       "/actions/workflows/" + workflow + "/dispatches",
     {
       method: "POST",
       headers: Object.assign({ "content-type": "application/json" }, kopf),
-      body: JSON.stringify({ ref: env.GITHUB_BRANCH || "main" })
+      body: JSON.stringify(koerper)
     }
   );
+}
+
+/**
+ * "Im Blick" anstossen - nur zu den Takten, nur wenn nicht schon einer
+ * laeuft oder wartet (sonst entstuende eine Warteschlange aus Laeufen, die
+ * alle dasselbe pruefen). Unbekannte Lage heisst anstossen: ein
+ * ueberfluessiger Lauf endet in Sekunden, ein ausgefallener kostet zwei
+ * Stunden Stand.
+ */
+async function sorgeFuerImBlick(env, kopf, scheduledTime) {
+  if (!imBlickTick(scheduledTime)) return { ok: true, grund: "nichtFaellig" };
+  /* Auch wartende Laeufe zaehlen: einer, der auf die Concurrency-Gruppe wartet,
+     steht je nach Lage als queued, waiting oder pending in der Liste. */
+  const lage = await laeuftSchon(env, kopf, IMBLICK, ["in_progress", "queued", "waiting", "pending"]);
+  if (!lage.bekannt) {
+    notiere("imBlickLageUnbekannt", { grund: lage.grund });
+  } else if (lage.laeuft) {
+    notiere("imBlickLaeuft", { zustand: lage.zustand });
+    return { ok: true, grund: "imBlickLaeuft" };
+  }
+  const r = await stosseAn(env, kopf, IMBLICK, { source: "cloudflare-waker" });
+  if (!r.ok) {
+    notiere("imBlickFehlgeschlagen", { status: r.status });
+    return { ok: false, grund: "http" + r.status };
+  }
+  notiere("imBlickAngestossen", {});
+  return { ok: true, grund: "imBlickAngestossen" };
 }
 
 /**
@@ -157,7 +214,7 @@ async function sorgeFuerAuslieferung(env, kopf) {
   return { ok: true, grund: "ausgeliefert" };
 }
 
-async function wecke(env, optionen) {
+async function wecke(env, optionen, tick) {
   if (!env.GITHUB_REPO) {
     notiere("keinRepo", { hinweis: "GITHUB_REPO ist nicht gesetzt." });
     return { ok: false, grund: "keinRepo" };
@@ -224,7 +281,17 @@ async function wecke(env, optionen) {
      fehlschlug: es kann ein frisch geschriebener Stand dastehen, der
      nur noch ausgeliefert werden muss. */
   const auslieferung = await sorgeFuerAuslieferung(env, kopf);
-  return Object.assign({}, takt, { auslieferung: auslieferung.grund });
+
+  /* Im Blick laeuft NACH dem Takt und der Auslieferung und kann beide nicht
+     beeinflussen: jede Ausnahme bleibt hier. Die zentrale Marktdatenversorgung
+     haengt nie an einem Produktausloeser. */
+  let imBlick;
+  try { imBlick = await sorgeFuerImBlick(env, kopf, tick); }
+  catch (e) {
+    notiere("imBlickAusnahme", { fehler: String(e && e.message || e).slice(0, 120) });
+    imBlick = { ok: false, grund: "ausnahme" };
+  }
+  return Object.assign({}, takt, { auslieferung: auslieferung.grund }, imBlick.grund === "nichtFaellig" ? {} : { imBlick: imBlick.grund });
 }
 
 const HINWEISE = {
@@ -239,7 +306,7 @@ const HINWEISE = {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(wecke(env));
+    ctx.waitUntil(wecke(env, undefined, event.scheduledTime));
   },
 
   /* Ein Zustandspunkt zum Nachsehen. Er weckt nicht und spricht mit
@@ -257,7 +324,7 @@ export default {
     }
     return Response.json({
       dienst: "vu-intraday-waker",
-      rolle: "Wecker fuer " + WORKFLOW + " und " + PAGES + " - holt keine Daten",
+      rolle: "Wecker fuer " + WORKFLOW + ", " + PAGES + " und " + IMBLICK + " - holt keine Daten",
       ausweis: "github-app",
       appIdHinterlegt: !!env.GITHUB_APP_ID,
       schluesselHinterlegt: !!env.GITHUB_APP_PRIVATE_KEY,
@@ -267,4 +334,4 @@ export default {
   }
 };
 
-export { wecke, laeuftSchon, sorgeFuerAuslieferung };
+export { wecke, laeuftSchon, sorgeFuerAuslieferung, sorgeFuerImBlick, imBlickTick };

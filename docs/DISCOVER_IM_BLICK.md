@@ -107,23 +107,87 @@ Einordnung:
 
 ° = ohne frisches Ereignis an diesem Tag.
 
-## Intraday (stündlich während der Sitzung)
+## Intraday (ca. alle zwei Stunden während der Sitzung)
 
-Erzeuger ist `scripts/discover/build-im-blick-live.mjs`. Der Workflow `discover-im-blick-live.yml` läuft Mo–Fr stündlich um :17 von 13 bis 21 Uhr UTC und schreibt das Artefakt `discover/live/im-blick-US_REAL.json`.
+Erzeuger ist `scripts/discover/build-im-blick-live.mjs`, die Terminlogik steht in `discover/engines/refresh-plan.js`. Der Workflow `discover-im-blick-live.yml` schreibt `discover/live/im-blick-US_REAL.json` (die Auswahl) und `discover/live/monitor-US_REAL.json` (Plan, Lauf, Erfolg, Alter, Fehler).
 
-- **Daten:**
-  - die 5-Minuten-Kurse, die der Intraday-Taktgeber ohnehin für alle Titel auf Discover-Flächen committet (`quant/data/market/intraday/<sitzung>/`)
-  - die EOD-Basis vom Schluss der Vorsitzung (`discover/data/im-blick/basis-US_REAL.json`)
-  - **keine Anbieteranfrage, kein API-Budget**
-- **Getrennt von den Schlusskurs-Signalen:**
-  - Intraday gibt es kein Schlusshoch. „Über dem bisherigen 52-Wochen-Schlusshoch“ zählt wie ein Hoch im Tagesverlauf (12).
-  - Kein Ausbruch und kein Volumen: Die Intraday-Quelle führt nur IEX-Volumen, das nicht mit dem Tagesvolumen vergleichbar ist.
-  - Die Karte sagt „IM TAGESVERLAUF · STAND HH:MM“ und „Unbestätigt bis zum Handelsschluss“.
-- **Kein Look-ahead:**
-  - Die Basis gilt zum Schluss der Vorsitzung, der Kurs zum Stand des Snapshots.
-  - Snapshots, die mehr als 45 Minuten hinter dem jüngsten liegen, fallen heraus. Ebenso Snapshots, deren Vortagesschluss nicht zur Basis passt.
-  - Liegt die Basis nicht genau eine Sitzung zurück, bleibt die Fläche bei der EOD-Auswahl (`EOD_STALE`).
-- **Vorrang:**
-  - Der Client ersetzt die Abendauswahl nur bei `LIVE`, gleicher Basis, mindestens drei Titeln und einem Stand unter drei Stunden.
-  - Nach dem Abendlauf gilt wieder die bestätigte Schlusskurs-Auswahl (`EOD_CURRENT`).
-- **Europa** ist nicht enthalten. Der Europa-Katalog führt nur manuell veröffentlichte Schlusskurse (`MANUAL_ONLY`) ohne Intraday-Quelle und ohne Rangfreigabe („visibility never grants analytics or rank admission“, `core/registry/domains.json`). Sobald es dafür eine laufende Quelle gibt, ist die Engine marktunabhängig nutzbar.
+### Warum nicht mehr „stündlich per Zeitplan“ (Stand 12.10.2026, belegt)
+
+Der erste Stundenplan (`17 13-21 * * 1-5`) erzeugte am 12.10. keinen einzigen Lauf. Gemessen an der Actions-API (`event=schedule`, 11.10. 00:00 UTC bis 12.10. 15:30 UTC, alle Workflows mit Zeitplan):
+
+| Befund | Wert |
+|---|---|
+| fällige Zeitplan-Läufe laut Cron | 110 |
+| von GitHub angelegt | 30 (27 %) |
+| Verspätung der angelegten Läufe | 29 von 30 über 30 Minuten; tägliche Jobs 6,5–9 Stunden zu spät |
+| Fenster-Crons 13–21 UTC (Pages-Brücke, Zustellungs-Wächter, Taktgeber, Im Blick, Freshness) | 0 von 47 |
+| `workflow_dispatch` / Push im selben Zeitraum | normal (109 Taktgeber-Läufe des Weckers, alle erfolgreich) |
+
+- **Belegt:** GitHub legt Zeitplan-Ereignisse für dieses Repository verspätet oder gar nicht an, am stärksten im Fenster 13–21 UTC. Kein Konfigurationsfehler gefunden: Default-Branch `main`, Workflow aktiv, Cron gültig, Berechtigungen im Workflow gesetzt, Repository öffentlich und aktiv.
+- **Nicht belegt:** *warum*. GitHub nennt für ein nicht angelegtes Ereignis keinen Grund; dokumentiert ist, dass Ereignisse unter hoher Actions-Last verzögert oder verworfen werden. Dass die hohe Last dieses Repositories (an diesem Nachmittag rund 300 Läufe in vier Stunden) die Ursache ist, ist eine gut gestützte Vermutung, kein Nachweis.
+- **Folge:** Die Aktualisierung darf an keinem pünktlichen Zeitplan hängen. Der Cloudflare-Wecker (`worker-waker/`, GitHub App) steht außerhalb von GitHub und weckt den Taktgeber nachweislich zuverlässig.
+
+### Architektur: der Lauf ist eine Frage, kein Takt
+
+Ein Slot ist eine **Fälligkeit**, kein Auslöser. Jeder Lauf ermittelt aus dem Börsenkalender den zuletzt fälligen Slot und rechnet nur, wenn dessen Ergebnis noch nicht veröffentlicht ist.
+
+| Slot | Regel | Normaltag (New York) | UTC im Sommer (EDT) | UTC im Winter (EST) |
+|---|---|---|---|---|
+| I1 | Sitzungsbeginn + 90 Min. | 11:00 | 15:00 | 16:00 |
+| I2 | + 210 Min. | 13:00 | 17:00 | 18:00 |
+| I3 | + 330 Min. | 15:00 | 19:00 | 20:00 |
+| C | Schluss + 20 Min. | 16:20 | 20:20 | 21:20 |
+
+- Intraday-Slots nur, wenn sie mindestens 30 Minuten vor dem Schluss liegen: verkürzte Tage (13:00) ergeben 11:00 und 13:20; Feiertage und Wochenenden keinen Slot.
+- Sommer-/Winterzeit steckt im Kalender (`quant/config/market-calendar.json`). USA und Europa stellen an verschiedenen Wochenenden um (Europa 29.3. / 25.10., USA 8.3. / 1.11.2026); entscheidend ist allein die New Yorker Zeit. Die Zeitfenster der Auslöser (15–21 UTC) decken beide Lagen ab.
+- **Erwartet: vier Aktualisierungen je regulärem Handelstag** (zwei bis drei Stunden Abstand, dazu die Auswahl nach Schluss), zwei an verkürzten Tagen.
+
+**Auslöser (gleichwertig, unabhängig, jeder harmlos, wenn er zu früh, doppelt oder zu spät kommt):**
+
+1. Cloudflare-Wecker, alle 30 Minuten (Minute 5/35, 15–21 UTC, Mo–Fr), dedupliziert gegen laufende und wartende Läufe. Ein verpasster Slot wird spätestens 30 Minuten später nachgeholt.
+2. GitHub-Zeitplan `27 15-21 * * 1-5` (Rückfall; kann ausfallen oder Stunden später kommen).
+3. Manuell (`workflow_dispatch`, `force` erzwingt eine Neuberechnung).
+
+**Garantien:**
+
+- **Idempotent:** zweiter Lauf zum selben Slot = `UP_TO_DATE`, keine Datei berührt, kein Commit.
+- **Nie rückwärts:** ein älterer Slot oder älterer Kursstand ersetzt nie eine neuere Veröffentlichung (`PUBLISHED_NEWER`, `OLDER_DATA`).
+- **Fehler lassen die letzte gültige Auswahl stehen** (`KEEP_LAST_VALID`); der Fehler steht im Monitor.
+- **Atomar:** Datei in eine Nachbardatei, dann Umbenennen.
+- **Ehrliche Zustände:** `LIVE` nur bei offener Börse; nach dem Schluss `SESSION_CLOSED` („unbestätigt bis zum Abendlauf“); zu alte Kurse `INTRADAY_STALE` (keine Auswahl statt einer alten).
+- **Keine Endlosschleife, kein Dauerläufer:** ein Lauf dauert 30–90 Sekunden (`timeout-minutes: 10`).
+
+### Kosten (0 € zusätzlich)
+
+- Repository öffentlich: Standard-Runner sind kostenlos und unbegrenzt.
+- Mehr Läufe: höchstens 14 Wecker-Dispatches + 7 Zeitplan-Ereignisse je Handelstag; die meisten enden im Leerlauf (~30–90 Sekunden). Rund 20 Minuten Runner-Zeit am Tag.
+- **Anbieteranfragen: null.** Im Blick liest nur committete Snapshots und die EOD-Basis. Tiingo wird weiterhin nur vom Taktgeber abgefragt (rund 1.430 Anfragen je Intraday-Zyklus, unverändert); Marketstack betrifft nur Europa-Ingestion und kommt im Intraday-Pfad nicht vor.
+- Cloudflare: 14 zusätzliche Aufrufe je Handelstag auf dem Free-Plan (100.000/Tag).
+
+### Überwachung
+
+`discover/live/monitor-US_REAL.json` führt: letzte geplante Ausführung (`plan.lastDueSlot`, `nextSlot`), letzte gestartete Ausführung (`lastRun`: Zeit, Auslöser, Herkunft, Lauf-ID, Ergebnis), letzte erfolgreiche Berechnung (`lastSuccess`), veröffentlichter Datenstand (`published`), Datenalter, Marktstatus, Anzahl der Titel und `error` (Code und Ursache).
+
+`scripts/discover/check-im-blick-live.mjs` prüft das **Ergebnis**, nicht den Workflow. Ein nicht gestarteter Workflow kann keinen Fehler melden; deshalb vergleicht die Prüfung den fälligen Slot (aus dem Kalender) mit dem veröffentlichten:
+
+| Befund | Stufe | Bedeutung |
+|---|---|---|
+| `RECOMPUTE_LATE` | WARN | Slot seit > 45 Min. fällig |
+| `RECOMPUTE_OVERDUE` | FAIL | seit > 90 Min. fällig: Lauf nicht gestartet oder gescheitert |
+| `DATA_STALE` | WARN | die Rechnung lief, die Kurse waren alt (Taktgeber/Anbieter) |
+| `COMPUTE_ERROR` | WARN | letzte Rechnung meldet einen Fehler |
+
+Still bleibt es am Wochenende, an Feiertagen, vor dem ersten Slot, nach dem Abendlauf (der die Sitzung abdeckt) und für Slots, die älter als sechs Stunden sind (nicht mehr aufholbar). Die Prüfung läuft im Freshness-Monitor (Mo–Fr 19:40 UTC zusätzlich zu den bestehenden Terminen); bei FAIL wird der Lauf rot und GitHub benachrichtigt.
+
+**Ehrlich offen:** Sind Cloudflare-Wecker *und* GitHub-Zeitplan *und* der Freshness-Monitor-Zeitplan zugleich still, bleibt der Ausfall unbemerkt, bis jemand die Seite oder den Monitor liest. Der Monitor ist öffentlich unter `/discover/live/monitor-US_REAL.json`.
+
+### Datenalter und Anzeige
+
+- **Basis:** Abendlauf vom Schluss der Vorsitzung; **Kurs:** Snapshots der Sitzung. Snapshots, die mehr als 45 Minuten hinter dem jüngsten liegen, fallen heraus.
+- **Veraltet** ist der Kursstand bei offener Börse ab 60 Minuten, nach dem Schluss, wenn er nicht aus den letzten 30 Minuten vor Schluss stammt.
+- **Startseite:** zeigt `LIVE` und `SESSION_CLOSED` nur bei gleicher Basis, mindestens drei Titeln und innerhalb von `validUntil` (nächster Slot + 90 Minuten); `SESSION_CLOSED` nie als „live“ gekennzeichnet. Eigener Abruf (`no-cache`, Fünf-Minuten-Parameter): der Zwischenspeicher von `QuantShell.loadJSON` hält eine Antwort bis zum Neuladen; GitHub Pages liefert bis zu zehn Minuten aus dem CDN; der Service Worker cached keine Daten.
+- **Vorrang:** nach dem Abendlauf gilt wieder die bestätigte Schlusskurs-Auswahl (`EOD_CURRENT`).
+- **Getrennt von den Schlusskurs-Signalen:** Intraday gibt es kein Schlusshoch und kein Ausbruchsignal, und das IEX-Volumen ist nicht mit dem Tagesvolumen vergleichbar. Die Karte sagt „IM TAGESVERLAUF · STAND HH:MM“ und „Unbestätigt bis zum Handelsschluss“.
+- **Europa** ist nicht enthalten (nur manuell veröffentlichte Schlusskurse, keine Intraday-Quelle, keine Rangfreigabe, `core/registry/domains.json`).
+
+Wiederholen: Actions → Workflow → „Run workflow“ auf `main` (idempotent; `force` nur bei Bedarf).

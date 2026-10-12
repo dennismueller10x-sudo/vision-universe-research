@@ -547,3 +547,120 @@ test("WK-23 die Auslieferung braucht kein neues Recht", () => {
   }
   assert.ok(quelle.includes("pages-release.yml"), "die bestehende Auslieferung, kein neuer Weg");
 });
+
+/* --- Im Blick: ein zweiter, unabhaengiger Ausloeser (12.10.2026) ---------- */
+const { imBlickTick, sorgeFuerImBlick } = await import(join(root, "worker-waker", "src", "index.mjs"));
+const DI = (iso) => Date.parse(iso);
+
+test("WK-24 Im Blick wird nur zu den Takten angestossen: Minute 5/35, 15-21 UTC, Mo-Fr", () => {
+  assert.equal(imBlickTick(DI("2026-10-14T17:05:00Z")), true);
+  assert.equal(imBlickTick(DI("2026-10-14T21:35:00Z")), true);
+  assert.equal(imBlickTick(DI("2026-10-14T15:05:00Z")), true);
+  for (const nein of ["2026-10-14T17:00:00Z", "2026-10-14T17:10:00Z", "2026-10-14T14:35:00Z", "2026-10-14T22:05:00Z",
+                      "2026-10-17T17:05:00Z", "2026-10-18T17:05:00Z"]) {
+    assert.equal(imBlickTick(DI(nein)), false, nein);
+  }
+  assert.equal(imBlickTick(undefined), false, "ohne Zeitangabe nie");
+  assert.equal(imBlickTick("kein Datum"), false);
+});
+
+test("WK-25 Takt faellig und kein Lauf unterwegs: Im Blick wird mit Herkunft angestossen", async () => {
+  const p = protokoll();
+  const n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "discover-im-blick-live.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "discover-im-blick-live.yml/dispatches", json: {} }
+  ]));
+  try {
+    const r = await wecke(umgebung(), undefined, DI("2026-10-14T17:05:00Z"));
+    assert.equal(r.imBlick, "imBlickAngestossen");
+    const d = n.gerufen.find((g) => g.url.includes("discover-im-blick-live.yml/dispatches"));
+    assert.ok(d, "Dispatch fehlt");
+    assert.equal(d.method, "POST");
+    const body = JSON.parse(d.body);
+    assert.equal(body.ref, "main");
+    assert.deepEqual(body.inputs, { source: "cloudflare-waker" }, "die Herkunft steht im Lauf");
+    assert.ok(p.zeilen.some((z) => /imBlickAngestossen/.test(z)));
+  } finally { n.zurueck(); p.zurueck(); }
+});
+
+test("WK-26 Gegenprobe: laeuft oder wartet schon ein Im-Blick-Lauf, wird nicht angestossen", async () => {
+  for (const zustand of ["in_progress", "queued", "waiting", "pending"]) {
+    const p = protokoll();
+    const n = netz(appAntworten([
+      { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+      { enthaelt: "pages-release.yml/runs", json: { total_count: 1 } },
+      { enthaelt: "discover-im-blick-live.yml/runs?status=" + zustand, json: { total_count: 1 } },
+      { enthaelt: "discover-im-blick-live.yml/runs", json: { total_count: 0 } }
+    ]));
+    try {
+      const r = await wecke(umgebung(), undefined, DI("2026-10-14T17:35:00Z"));
+      assert.equal(r.imBlick, "imBlickLaeuft", zustand);
+      assert.ok(!n.gerufen.some((g) => g.url.includes("discover-im-blick-live.yml/dispatches")), "kein Stau (" + zustand + ")");
+    } finally { n.zurueck(); p.zurueck(); }
+  }
+});
+
+test("WK-27 ausserhalb der Takte entsteht kein einziger Aufruf fuer Im Blick (die Tests ohne Zeitangabe bleiben gueltig)", async () => {
+  const p = protokoll();
+  const n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 1 } }
+  ]));
+  try {
+    for (const zeit of [undefined, DI("2026-10-14T17:10:00Z"), DI("2026-10-17T17:05:00Z")]) {
+      const r = await wecke(umgebung(), undefined, zeit);
+      assert.equal(r.imBlick, undefined, "kein Befund, wo nichts zu tun war");
+    }
+    assert.ok(!n.gerufen.some((g) => g.url.includes("discover-im-blick-live")));
+  } finally { n.zurueck(); p.zurueck(); }
+});
+
+test("WK-28 ein Fehler bei Im Blick beruehrt Takt und Auslieferung nicht - die Marktdatenversorgung haengt nie an einem Produktausloeser", async () => {
+  /* a) Dispatch scheitert */
+  let p = protokoll();
+  let n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "pages-release.yml/dispatches", json: {} },
+    { enthaelt: "discover-im-blick-live.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "discover-im-blick-live.yml/dispatches", ok: false, status: 422 }
+  ]));
+  try {
+    const r = await wecke(umgebung(), undefined, DI("2026-10-14T17:05:00Z"));
+    assert.equal(r.ok, true, "der Takt wurde geweckt");
+    assert.equal(r.grund, "geweckt");
+    assert.equal(r.auslieferung, "ausgeliefert");
+    assert.equal(r.imBlick, "http422");
+    assert.ok(p.zeilen.some((z) => /imBlickFehlgeschlagen/.test(z)));
+  } finally { n.zurueck(); p.zurueck(); }
+  /* b) das Netz wirft beim Im-Blick-Aufruf */
+  p = protokoll();
+  const original = globalThis.fetch;
+  n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 1 } }
+  ]));
+  const inner = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => { if (String(url).includes("discover-im-blick-live")) throw new Error("Netz weg"); return inner(url, opts); };
+  try {
+    const r = await wecke(umgebung(), undefined, DI("2026-10-14T17:35:00Z"));
+    assert.equal(r.grund, "bereitsWach", "der Takt ist unberuehrt");
+    assert.equal(r.imBlick, "ausnahme");
+    assert.ok(p.zeilen.some((z) => /imBlickAusnahme/.test(z)));
+  } finally { globalThis.fetch = original; n.zurueck(); p.zurueck(); }
+  /* c) die Lage von Im Blick ist unbekannt: anstossen ist die sichere Richtung */
+  p = protokoll();
+  n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "discover-im-blick-live.yml/runs", ok: false, status: 502 },
+    { enthaelt: "discover-im-blick-live.yml/dispatches", json: {} }
+  ]));
+  try {
+    const r = await wecke(umgebung(), undefined, DI("2026-10-14T17:35:00Z"));
+    assert.equal(r.imBlick, "imBlickAngestossen");
+  } finally { n.zurueck(); p.zurueck(); }
+});

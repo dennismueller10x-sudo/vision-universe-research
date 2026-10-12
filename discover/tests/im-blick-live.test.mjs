@@ -132,8 +132,9 @@ test("LV4 · Client: ersetzt die EOD-Auswahl nur bei LIVE, gleicher Basis, >= 3 
     const D = {};
     let ersetzt = null;
     const view = { isConnected: true, className: "v2-spotlight", dataset: { surface: "hero" }, replaceWith(n) { ersetzt = n; } };
-    const window = { VUDiscover: D, QuantShell: { el() { return {}; }, loadJSON() { return Promise.resolve(live); } } };
-    vm.runInNewContext(readFileSync(join(ROOT, "discover", "ui", "featured.js"), "utf8"), { window, Date });
+    const window = { VUDiscover: D, QuantShell: { el() { return {}; } } };
+    const fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(live) });
+    vm.runInNewContext(readFileSync(join(ROOT, "discover", "ui", "featured.js"), "utf8"), { window, Date, fetch, Math });
     let gerendert = 0;
     const render = (surface) => { gerendert++; return gerendert === 1 ? view : { dataset: {}, className: "", cards: surface.cards }; };
     D.Featured.live({ cards: [{ symbol: "EOD", asOf: cardsAsOf }] }, { universeId: "US_REAL" }, render);
@@ -144,6 +145,9 @@ test("LV4 · Client: ersetzt die EOD-Auswahl nur bei LIVE, gleicher Basis, >= 3 
   const drei = [{ symbol: "A" }, { symbol: "B" }, { symbol: "C" }];
   const ok = await lauf({ status: "LIVE", eodAsOf: VORHER, generatedAt: frisch, stocks: drei });
   assert.ok(ok && ok.cards.length === 3 && ok.dataset.basis === "intraday" && ok.dataset.surface === "hero");
+  /* Die beendete Sitzung wird gezeigt, aber nie als "intraday" gekennzeichnet. */
+  const zu = await lauf({ status: "SESSION_CLOSED", eodAsOf: VORHER, generatedAt: frisch, stocks: drei });
+  assert.ok(zu && zu.dataset.basis === "close-unconfirmed");
   assert.equal(await lauf({ status: "EOD_CURRENT", eodAsOf: VORHER, generatedAt: frisch, stocks: drei }), null);
   assert.equal(await lauf({ status: "LIVE", eodAsOf: "2026-10-12", generatedAt: frisch, stocks: drei }), null, "andere Basis");
   assert.equal(await lauf({ status: "LIVE", eodAsOf: VORHER, generatedAt: frisch, stocks: drei.slice(0, 2) }), null, "zu wenige");
@@ -155,7 +159,10 @@ test("LV5 · Workflow nach ADR-005, Auslieferung ueber Pages, Eintrag im Registe
   assert.match(wf, /ref: \$\{\{ github\.ref \}\}/);
   assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
   assert.match(wf, /group: discover-im-blick-live-\$\{\{ github\.ref_name \}\}/);
-  assert.doesNotMatch(wf, /\$\{\{\s*inputs\./);
+  /* ADR-005: Workflow-Eingaben nur ueber env:, nie im Shell-Text. */
+  for (const z of wf.split("\n").filter((l) => /\$\{\{[^}]*inputs\./.test(l) && !/^\s*#/.test(l))) {
+    assert.match(z, /^\s+[A-Z_]+: \$\{\{/, "inputs ausserhalb einer env-Zeile: " + z.trim());
+  }
   assert.match(wf, /git add discover\/live\n/, "schreibt nur discover/live");
   assert.doesNotMatch(wf, /TIINGO|secrets\./, "keine Anbieteranfrage, kein Schluessel");
   const name = wf.match(/^name:\s*(.+)$/m)[1];
