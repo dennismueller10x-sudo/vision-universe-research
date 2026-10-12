@@ -69,5 +69,12 @@ jobs:
       - name: Validate fetch script syntax
         run: python3 -m py_compile scripts/hedgefonds/fetch_edgar_data.py scripts/hedgefonds/fund_meta.py
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow (Porträt-Tests)
+        run: python -m pip install "Pillow==12.3.0"
+
       - name: Run fetch-script logic unit tests (no network)
         run: python3 -m unittest scripts/hedgefonds/test_fetch_edgar_data.py -v

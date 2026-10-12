@@ -39,6 +39,7 @@ import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
+import { pruneStaleShards } from "./lib/ti-shards.mjs";
 import { cpus } from "node:os";
 import { createHash } from "node:crypto";
 
@@ -352,6 +353,8 @@ async function main() {
   // ---- schreiben
   mkdirSync(join(OUT, "shards"), { recursive: true });
   Object.entries(shards).forEach(([k, inst]) => gz(join(OUT, "shards", k + ".json.gz"), { schemaVersion: API_VERSION, shard: k, instruments: inst }));
+  /* Verwaiste Shards entfernen (Titel, die aus dem Produkt gefallen sind). Nur nach einem vollstaendigen Lauf: --limit/--only schreiben absichtlich nur einen Teil. */
+  if (!limit && !only) { const gone = pruneStaleShards(OUT, Object.keys(shards)); if (gone.length) console.log("[ti] verwaiste Shards entfernt: " + gone.join(", ")); }
   gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), methodologyKey, rows });
   writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: Patterns.RULE_SET_VERSION, rules: RULES }, null, 1));
   writeFileSync(join(OUT, "discover-rows.json"), JSON.stringify(discoverRows(rows), null, 1));

@@ -65,6 +65,14 @@ FUND_DIR = DATA_DIR / "funds"
 CUSIP_MAP_PATH = DATA_DIR / "cusip-map.json"
 PHOTO_MANIFEST_PATH = DATA_DIR / "manager-photos.json"
 PHOTO_DIR = HF_DIR / "img" / "managers"
+# Porträts erscheinen als Kreis (object-fit: cover) mit höchstens 118
+# CSS-Pixeln (Hero-Gesicht); 360 px auf der kürzeren Seite reichen damit für
+# dreifache Pixeldichte. Abgerufen wird die Commons-Vorschau in 360 px
+# Breite; jedes Foto wird als progressives JPEG ohne Metadaten (EXIF/XMP/ICC)
+# neu kodiert. Die Zielgröße steht im Manifest (photoSize); weicht sie ab,
+# wird das Foto beim nächsten Lauf neu aufbereitet.
+PHOTO_SIZE = 360
+PHOTO_QUALITY = 82
 DISCOVER_STOCKS = ROOT / "discover" / "data" / "stocks" / "US_REAL"
 DISCOVER_LOGOS = ROOT / "discover" / "logos" / "files"
 
@@ -1171,6 +1179,65 @@ def linked_photo_candidates(wiki, person=None):
     return files, set(files) if trusted else set()
 
 
+def encode_photo(data):
+    """Verkleinert ein Porträt, bis die kürzere Seite höchstens PHOTO_SIZE
+    Pixel misst (Seitenverhältnis bleibt; Hochformat = 360 px Breite,
+    Querformat behält genug Höhe für den Kreisausschnitt), und kodiert es
+    als progressives JPEG (Qualität PHOTO_QUALITY) ohne Metadaten. Ein eingebettetes Farbprofil
+    (z. B. Adobe RGB) wird vorher nach sRGB umgerechnet, damit die Farben
+    ohne Profil gleich bleiben; die EXIF-Ausrichtung wird angewendet."""
+    from PIL import Image, ImageCms, ImageOps  # nur im Datenlauf nötig (Pillow)
+    im = Image.open(io.BytesIO(data))
+    im.load()
+    icc = im.info.get("icc_profile")
+    im = ImageOps.exif_transpose(im)
+    if im.mode in ("RGBA", "LA", "P", "PA"):
+        im = im.convert("RGBA")
+        bg = Image.new("RGB", im.size, (255, 255, 255))
+        bg.paste(im, mask=im.getchannel("A"))
+        im = bg
+    elif im.mode not in ("RGB", "L"):
+        im = im.convert("RGB")
+    if icc and im.mode == "RGB":
+        try:
+            src = ImageCms.ImageCmsProfile(io.BytesIO(icc))
+            im = ImageCms.profileToProfile(im, src, ImageCms.createProfile("sRGB"), outputMode="RGB")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Farbprofil nicht umrechenbar: {exc}", file=sys.stderr)
+    scale = PHOTO_SIZE / min(im.width, im.height)
+    if scale < 1:
+        im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+    out = io.BytesIO()
+    im.save(out, "JPEG", quality=PHOTO_QUALITY, progressive=True, optimize=True)
+    return out.getvalue()
+
+
+def reencode_cached_photo(slug, entry):
+    """Bereitet ein bereits gespeichertes Porträt ohne Netzabruf neu auf,
+    wenn es mit einer anderen Zielgröße entstanden ist. Lizenz- und
+    Urheberangaben bleiben unverändert. Gibt den (ggf. ergänzten) Eintrag
+    zurück."""
+    if entry.get("photoSize") == PHOTO_SIZE:
+        return entry
+    src = PHOTO_DIR / entry["file"]
+    out_name = slug + ".jpg"
+    (PHOTO_DIR / out_name).write_bytes(encode_photo(src.read_bytes()))
+    if src.name != out_name:
+        src.unlink()
+    return {**entry, "file": out_name, "photoSize": PHOTO_SIZE}
+
+
+def reencode_photos():
+    """Nur die Porträt-Aufbereitung: alle Fotos im Manifest, deren
+    Zielgröße abweicht, neu kodieren (kein Netzabruf)."""
+    manifest = load_json(PHOTO_MANIFEST_PATH, {})
+    for slug, entry in manifest.items():
+        if (PHOTO_DIR / entry["file"]).exists():
+            manifest[slug] = reencode_cached_photo(slug, entry)
+    write_json_if_changed(PHOTO_MANIFEST_PATH, manifest, indent=1)
+    return manifest
+
+
 def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
     """Holt ein frei lizenziertes Commons-Porträt (mit Urheber und Lizenz).
     Gibt Manifest-Eintrag oder None zurück.
@@ -1184,11 +1251,11 @@ def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
     cached = manifest.get(slug)
     if cached and cached.get("wiki") in (wiki, key) and (PHOTO_DIR / cached["file"]).exists() \
             and (not str(cached.get("wiki")).startswith("search:") or cached.get("verified")):
-        return cached
+        return reencode_cached_photo(slug, cached)
     candidates, linked = photo_candidates(wiki, person)
     for filename in candidates:
         api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
-               "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
+               "&iiprop=url|extmetadata&iiurlwidth=" + str(PHOTO_SIZE) + "&titles=" + urllib.parse.quote("File:" + filename))
         pages = http_get_json(api).get("query", {}).get("pages", {})
         info = (next(iter(pages.values()), {}).get("imageinfo") or [{}])[0]
         meta = info.get("extmetadata", {})
@@ -1204,12 +1271,11 @@ def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
         thumb = info.get("thumburl") or info.get("url")
         if not thumb:
             continue
-        ext = ".png" if thumb.lower().endswith(".png") else ".jpg"
         PHOTO_DIR.mkdir(parents=True, exist_ok=True)
-        out_name = slug + ext
-        (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
+        out_name = slug + ".jpg"
+        (PHOTO_DIR / out_name).write_bytes(encode_photo(http_get(thumb)))
         artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
-        return {"wiki": key, "file": out_name, "license": license_short, "verified": True,
+        return {"wiki": key, "file": out_name, "photoSize": PHOTO_SIZE, "license": license_short, "verified": True,
                 "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
                 "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
     return None
@@ -1472,6 +1538,15 @@ def write_json_if_changed(path, obj, indent=None, ignore=("generatedAt",)):
     seps = (",", ":") if indent is None else None
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=indent, separators=seps), encoding="utf-8")
     return True
+
+
+def hedgefonds_count(summaries, universe_lite):
+    """Zahl der Hedgefonds in der Datenbank, genau wie hfCount() in
+    hedgefonds/app.js: Star-Investoren plus Fonds aus universe.json mit
+    Stil „Hedgefonds". Steht in hedgefonds.json, damit die Startseite
+    universe.json nicht vor dem ersten Bild laden muss."""
+    db = [s for s in summaries if s.get("category") == "Investoren"] + list(universe_lite)
+    return sum(1 for f in db if f.get("category") == "Investoren" or f.get("style") == "Hedgefonds")
 
 
 def top_with_change(pos, trades, total, n):
@@ -1984,6 +2059,7 @@ def main():
         "source": "SEC EDGAR Form 13F-HR (data.sec.gov / www.sec.gov), OpenFIGI, Wikimedia Commons",
         "universeCount": len(universe_lite),
         "dachCount": sum(1 for f in universe_lite if f.get("region")) + sum(1 for s in summaries if s.get("region")),
+        "hedgefondsCount": hedgefonds_count(summaries, universe_lite),
         "funds": summaries, "aggregates": aggregates, "aggregatesAll": aggregates_all,
         "notFiling": not_filing, "errors": errors,
     }
@@ -1998,4 +2074,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--reencode-photos" in sys.argv[1:]:
+        reencode_photos()
+    else:
+        main()

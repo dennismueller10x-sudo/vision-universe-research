@@ -35,11 +35,13 @@
     [/was ist|erklär|erklaer|lernen|wissen/i, "#/wissen", "Wissen: Begriffe einfach erklärt"]
   ];
 
+  /** master: Index-Objekt oder Funktion, die ein Promise darauf liefert (Startseite: erst bei Fokus/Eingabe laden). */
   function attachSearch(root, master) {
     var input = root.querySelector("#vs-q"), box = root.querySelector("#vs-suggest");
     if (!input) return;
+    var get = typeof master === "function" ? master : function () { return Promise.resolve(master); };
     var timer = null;
-    function show() {
+    function show(master) {
       var q = input.value.trim();
       if (!q) { box.innerHTML = ""; return; }
       var items = [];
@@ -53,13 +55,15 @@
       clearTimeout(timer);
       timer = setTimeout(function () { VS.analytics.track("etf_search", { query: q.slice(0, 40) }); }, 800);
     }
-    input.addEventListener("input", show);
+    input.addEventListener("focus", function () { get().catch(function () { /* Fehler zeigt die Eingabe */ }); });
+    input.addEventListener("input", function () { get().then(show, function () { /* ETF-Verzeichnis nicht erreichbar */ }); });
     root.querySelector("#vs-search-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
       var q = input.value.trim(); if (!q) return;
       var hint = ROUTE_HINTS.filter(function (h) { return h[0].test(q); })[0];
-      var exact = master.find(q);
-      VS.go(exact ? VS.etfHref(exact) : hint ? hint[1] : "#/etfs?q=" + encodeURIComponent(q));
+      get().then(function (m) { return m.find(q); }, function () { return null; }).then(function (exact) {
+        VS.go(exact ? VS.etfHref(exact) : hint ? hint[1] : "#/etfs?q=" + encodeURIComponent(q));
+      });
     });
     document.addEventListener("click", function (ev) { if (!box.contains(ev.target) && ev.target !== input) box.innerHTML = ""; });
   }
@@ -107,16 +111,19 @@
         return '<div class="' + (s.id === "basis" ? "base" : "") + '"><p class="vs-label">' + esc(s.label) + ' · ' + F.pct(s.annualReturn, 0) + ' p.a.</p><p class="vs-kpi small">' + F.eurK(s.real) + '</p><p class="vs-fine">heutige Kaufkraft · Ziel ' + F.pct(s.goalAttainment, 0) + '</p></div>';
       }).join("") + '</div><p class="vs-fine" style="margin-top:12px">' + (VS.state.planDone ? "" : "Beispiel mit Standardannahmen – noch nicht deine Zahlen. ") + 'Annahmen, keine Vorhersage. Renditen nach Kosten von ' + F.pct(p.input.cost, 2) + ' und Inflation von ' + F.pct(p.input.inflation, 1) + '.</p></div></section>'
     );
-    VS.master().then(function (m) {
-      attachSearch(root, m);
+    // Volles ETF-Verzeichnis erst bei Bedarf (Suche, eigene ETFs ausserhalb des Startseiten-Auszugs).
+    attachSearch(root, VS.master);
+    var CORE = ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM"];
+    var mineKeys = VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; }));
+    VS.masterFor(CORE).then(function (m) {
       var world = root.querySelector("#vs-home-world");
-      var core = ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM"].map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
+      var core = CORE.map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
       world.innerHTML = '<span class="vs-num-badge">2</span><p class="vs-label">Deine ETF-Welt</p><p class="vs-kpi small" style="margin-top:6px">' + m.counts.publicAnalysis.toLocaleString("de-DE") + ' Standard-ETFs</p>' +
         '<p class="vs-sub" style="margin:6px 0 10px">' + m.counts.listings.toLocaleString("de-DE") + ' Listings insgesamt · ' + m.counts.withHistory3Y.toLocaleString("de-DE") + ' mit ≥ 3 Jahren Kurshistorie · ' + m.counts.complex.toLocaleString("de-DE") + ' komplexe Produkte separat · Stand ' + F.date(m.asOf) + '</p>' +
         core.map(function (e) { return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
         '<div class="vs-tabs"><a class="vs-pill small primary" href="#/etfs">Alle ETFs</a><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
     }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", "Die ETF-Daten konnten nicht geladen werden. Planer und Rechner funktionieren weiter."); });
-    Promise.all([VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; }), VS.master().catch(function () { return null; })]).then(function (res) {
+    Promise.all([VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }), VS.holdingsFeed().catch(function () { return null; }), VS.masterFor(mineKeys).catch(function () { return null; })]).then(function (res) {
       var c = res[0], hi = res[1], m = res[2];
       var plan = VS.state.snapshot ? V.Monitor.diffPlan(VS.state.snapshot, V.Monitor.snapshotPlan(p, VS.state.portfolio)) : [];
       var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mine[e.symbol] = e; });
@@ -301,7 +308,7 @@
         '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + (V.Monitor.UNMONITORED || c.unmonitored).map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
         '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
-    Promise.all([VS.master(), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; })]).then(function (res) {
+    Promise.all([VS.master(), VS.holdingsFeed().catch(function () { return null; })]).then(function (res) {
       var m = res[0], hi = res[1], seen = {}, mine = [];
       VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m.find(s); if (e && !seen[e.symbol]) { seen[e.symbol] = 1; mine.push(e); } });
       var feed = hi ? hi.feed : [];

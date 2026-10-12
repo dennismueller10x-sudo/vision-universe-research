@@ -132,3 +132,19 @@ node scripts/technical/explore-curation-audit.mjs DUMP.jsonl --out AUSGABE --tit
 ## Identitätsprüfung
 
 `node scripts/technical/compare-identity.mjs --new <Build-Ausgabe>` vergleicht einen vollständigen Build mit den veröffentlichten Shards. Erlaubt verschieden sind nur `projection.explore*`, `exploreCandidates`, `projection.lifecycle`, `projection.relations` und `projection.version`. Alle übrigen Felder (Primär, Alternativen, Motiv-Alternative, Hochpotenzial, Formeln, Leitplanken, Kontext, Nachweise, `pro.elliott`) müssen byte-gleich sein; jede Abweichung beendet das Skript mit Fehlercode. Das Ergebnis des Laufs mit dem endgültigen Code steht im PR.
+
+## Bekannte Eigenschaft: RS26-Rang driftet um eine Stufe
+
+Zwischen zwei Builds weicht `context.rs.rank` bei einzelnen Titeln um genau eine Rangstufe ab (1/5.033 ≈ 0,0002; gesehen bei STHO, TSHA, UPXI und RLJ-P-A, dort auch `rankPrev`). Die Ursache liegt in `rsRanks` (`scripts/technical/lib/ti-projection.mjs`): Der Rang ist die Position nach einer Sortierung allein nach dem 26-Wochen-Ergebnis. Bei gleichem Ergebnis entscheidet die Eingabereihenfolge (stabile Sortierung), und die hängt davon ab, in welcher Reihenfolge die Worker die Titel abliefern, sowie von Kursaktualisierungen zwischen zwei Läufen. Per Titel ist das nicht nachgerechnet, weil die Eingänge nicht veröffentlicht werden.
+
+Auswirkung: keine auf die Auswahl. Die Relative Stärke geht nicht in die Kuratierung ein (nur Anzeige und VU-Bestätigung), Primär, Alternativen und Motiv-Alternative lesen sie nicht. Sichtbar wird eine Stufe nur als vierte Nachkommastelle oder an der Grenze von „obere/untere 20 %“. Die RS-Logik wurde deshalb nicht verändert; ein Gleichstand-Schlüssel (z. B. nach Ticker) wäre eine eigene, kleine Änderung, wenn bitgleiche Läufe verlangt werden.
+
+## Export der Welle-3-Highlights
+
+`node scripts/technical/export-explore-highlights.mjs` schreibt `data/wave3-explore-highlights.csv` und `.json` aus den veröffentlichten Produktdaten (nur lesend, keine Auswahländerung). Sortierung: aufwärts vor abwärts, dann Pool-Rang aufsteigend, dann Rang-Anteil, dann Ticker. Das Feld „Grad“ ist der Analyse-Grad der Projektion (`ANALYSIS`); die Engine vergibt für Explore-Lesarten keinen feineren Wellengrad.
+
+## Shard-Hygiene
+
+Der Build schrieb nur die Shard-Schlüssel des aktuellen Laufs und räumte nie auf. Wertpapiere, die aus dem Produkt fielen (UZD, UZE, UZF: als Anleihen ausgeschlossen), ließen ihre Datei `shards/UZ.json.gz` zurück. Der Build entfernt jetzt nach einem vollständigen Lauf (ohne `--limit`/`--only`) Shards ohne Schlüssel (`scripts/technical/lib/ti-shards.mjs`); `quant/tests/ti-shard-hygiene.test.mjs` prüft, dass das veröffentlichte Verzeichnis weder verwaiste Dateien noch Titel ohne Index-Zeile enthält.
+
+Beobachtung im Export (Stand 2026-10-09, keine Auswahländerung): 24 der 25 Lesarten haben noch mindestens die Basis-Zone offen oder in Reichweite; BUR (abwärts) hat Basis- und erweiterte Zone bereits durchlaufen, nur die Extrem-Zone ist offen. Der Zustand je Zone steht im Export (`[OPEN|INSIDE|PASSED]`).

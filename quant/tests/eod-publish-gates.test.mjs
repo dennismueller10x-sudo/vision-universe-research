@@ -26,14 +26,19 @@ const manifest = JSON.parse(readFileSync(join(ROOT, "quant", "config", "eod-publ
 const workflow = readFileSync(join(ROOT, ".github", "workflows", "market-data-refresh.yml"), "utf8");
 const list = (phase) => spawnSync(process.execPath, [RUNNER, "--list=" + phase], { encoding: "utf8" }).stdout.trim().split("\n").filter(Boolean);
 
-test("EG1 · A umfasst beide Suiten vollstaendig; B ist Teil davon; C ist der Rest - nichts faellt heraus", () => {
+test("EG1 · A ist der Code des Marktlaufs; B und C decken zusammen beide Suiten vollstaendig ab - nichts faellt heraus", () => {
   const alle = ["quant/tests", "discover/tests"].flatMap((d) => readdirSync(join(ROOT, d)).filter((n) => n.endsWith(".test.mjs")).map((n) => d + "/" + n)).sort();
   const pre = list("pre"), integrity = list("integrity"), obs = list("observability");
-  assert.deepEqual(pre.slice().sort(), alle);
-  for (const f of integrity) { assert.ok(existsSync(join(ROOT, f)), f); assert.ok(pre.includes(f), f); }
+  for (const f of pre) assert.ok(alle.includes(f), f);
+  for (const f of integrity) { assert.ok(existsSync(join(ROOT, f)), f); assert.ok(!pre.includes(f), "B gehoert nicht in A: " + f); }
   assert.deepEqual([...integrity, ...obs].sort(), alle);
   assert.equal(integrity.filter((f) => obs.includes(f)).length, 0);
   assert.ok(integrity.length >= 10, "B darf nicht leer gemacht werden");
+  /* A ist nicht leer und nicht die ganze Suite: der Erzeuger-Code bleibt geschuetzt. */
+  assert.ok(pre.length >= 30 && pre.length < alle.length / 2, "A: " + pre.length);
+  for (const f of ["quant/tests/tiingo.test.mjs", "discover/tests/scoring.test.mjs", "discover/tests/high52w.test.mjs"]) assert.ok(pre.includes(f), f);
+  /* Jede A-Datei laeuft auch in C - A ist eine zusaetzliche Sperre, kein Ersatz. */
+  for (const f of pre) assert.ok(obs.includes(f), f);
 });
 
 test("EG2 · Die Vorfall-Tests sind Beobachtung, die Datenvertraege bleiben blockierend", () => {
@@ -79,17 +84,26 @@ function fixture() {
   const daten = (v) => writeFileSync(join(dir, "data", "bestand.json"), JSON.stringify(v));
   const t = (name, body) => writeFileSync(join(dir, "t", name), 'import test from "node:test";import assert from "node:assert/strict";import {readFileSync} from "node:fs";\n' +
     'const d=()=>JSON.parse(readFileSync(new URL("../data/bestand.json",import.meta.url)));\n' + body + "\n");
-  /* Code-Test ohne Daten. */
-  t("code.test.mjs", 'test("rechnet",()=>assert.equal(1+1,2));');
+  /* Der Erzeuger-Code und sein Code-Test (Fixture, keine Daten). */
+  mkdirSync(join(dir, "src"), { recursive: true });
+  const quelle = (code) => writeFileSync(join(dir, "src", "erzeuger.cjs"), code);
+  quelle("module.exports = { summe: (a, b) => a + b };");
+  writeFileSync(join(dir, "src", "lauf.mjs"), 'import { createRequire } from "node:module";const require=createRequire(import.meta.url);require("./erzeuger.cjs");\n');
+  /* Ohne den Datenkopf von t(): ein reiner Code-Test liest keinen Bestand. */
+  writeFileSync(join(dir, "t", "code.test.mjs"), 'import test from "node:test";import assert from "node:assert/strict";import { createRequire } from "node:module";\n' +
+    'const require=createRequire(import.meta.url);const E=require("../src/erzeuger.cjs");test("rechnet",()=>assert.equal(E.summe(1,1),2));\n');
   /* Wie market-signal-contract vor dem Fix: zaehlt am Bestand. */
   t("signale.test.mjs", 'test("vier Ereignisse",()=>assert.equal(d().ereignisse.length,4));');
   /* Datenvertrag: kein Datum in der Zukunft, keine Rohbars. */
   t("vertrag.test.mjs", 'test("Datenvertrag",()=>{const b=d();assert.ok(b.asOf<="2026-09-23");assert.equal(b.rohbars,0);});');
-  const man = { suites: ["t/*.test.mjs"], classes: { POST_FETCH_DATA_INTEGRITY: { files: ["t/vertrag.test.mjs"] } } };
+  /* Die Wert-Tests importieren den Erzeuger ebenfalls - sie lesen aber den erzeugten Bestand. */
+  const man = { suites: ["t/*.test.mjs"], classes: {
+    PRE_FETCH_CODE_REGRESSION: { files: "PIPELINE_CODE", pipeline: { entrypoints: ["src/lauf.mjs"] } },
+    POST_FETCH_DATA_INTEGRITY: { files: ["t/vertrag.test.mjs"] } } };
   writeFileSync(join(dir, "gates.json"), JSON.stringify(man));
   const lauf = (phase) => spawnSync(process.execPath, [RUNNER, "--phase=" + phase, "--root=" + dir, "--manifest=" + join(dir, "gates.json")],
                                     { encoding: "utf8", env: Object.assign({}, process.env, { GITHUB_STEP_SUMMARY: "" }) });
-  return { dir, daten, t, lauf };
+  return { dir, daten, t, lauf, quelle };
 }
 
 test("EG4 · Der Vorfall: gruen vor dem Abruf, ein wertgebundener Test rot danach -> veroeffentlicht und gemeldet", () => {
@@ -125,21 +139,52 @@ test("EG5 · Gegenprobe: neue Daten verletzen den Datenvertrag -> Gate B rot, ke
   } finally { rmSync(f.dir, { recursive: true, force: true }); }
 });
 
-test("EG6 · Gegenprobe: ein Code-Fehler ist vor dem Abruf rot -> keine Anfrage", () => {
+test("EG6 · Gegenprobe: ein Code-Fehler im Erzeuger ist vor dem Abruf rot -> keine Anfrage", () => {
   const f = fixture();
   try {
     f.daten({ asOf: "2026-09-18", rohbars: 0, ereignisse: [1, 2, 3, 4] });
-    f.t("code.test.mjs", 'test("rechnet",()=>assert.equal(1+1,3));');
+    f.quelle("module.exports = { summe: (a, b) => a - b };");
     const a = f.lauf("pre");
     assert.equal(a.status, 1);
     assert.match(a.stdout, /PRE_FETCH_CODE_REGRESSION rot: kein Provider-Abruf/);
-    /* Und ein B-Test ist Teil von A: auch er haelt den Abruf an, wenn der Code ihn bricht. */
-    const f2 = fixture();
-    try {
-      f2.daten({ asOf: "2026-09-18", rohbars: 3, ereignisse: [1, 2, 3, 4] });
-      assert.equal(f2.lauf("pre").status, 1);
-    } finally { rmSync(f2.dir, { recursive: true, force: true }); }
+    assert.match(a.stdout, /::error title=PRE_FETCH_CODE_REGRESSION rot,file=t\/code\.test\.mjs/);
   } finally { rmSync(f.dir, { recursive: true, force: true }); }
+});
+
+test("EG7 · Der Oktober-Vorfall: ein Test am erzeugten Datenstand und ein fremder Produkttest sind rot -> A gruen, Abruf laeuft, C meldet", () => {
+  const f = fixture();
+  try {
+    /* Der Vorabend hat Daten geschrieben, an denen ein wertgebundener Test scheitert. */
+    f.daten({ asOf: "2026-09-22", rohbars: 0, ereignisse: [1, 2, 3, 4, 5] });
+    /* Ein fremdes Produkt (kein Import aus dem Marktlauf) ist auf main rot. */
+    f.t("fremd.test.mjs", 'test("anderes Produkt",()=>assert.equal(1,2));');
+    const a = f.lauf("pre");
+    assert.equal(a.status, 0, "Gate A darf daran nicht haengen\n" + a.stdout);
+    assert.doesNotMatch(a.stdout, /signale|fremd/);
+    assert.equal(f.lauf("integrity").status, 0);
+    const c = f.lauf("observability");
+    assert.equal(c.status, 0);
+    assert.match(c.stdout, /file=t\/signale\.test\.mjs/);
+    assert.match(c.stdout, /file=t\/fremd\.test\.mjs/);
+    /* Gegenprobe: die alte Einteilung (A = ganze Suite) waere rot gewesen. */
+    const env = Object.assign({}, process.env); delete env.NODE_TEST_CONTEXT;
+    const alt = spawnSync(process.execPath, ["--test", "t/code.test.mjs", "t/signale.test.mjs", "t/vertrag.test.mjs", "t/fremd.test.mjs"], { cwd: f.dir, env, encoding: "utf8" });
+    assert.notEqual(alt.status, 0);
+  } finally { rmSync(f.dir, { recursive: true, force: true }); }
+});
+
+test("EG8 · Die Einteilung ist abgeleitet: Einstiegspunkte aus dem Job, die Vorfall-Dateien liegen nicht in A, B-Skripte stehen im Workflow", () => {
+  const r = spawnSync(process.execPath, [RUNNER, "--explain"], { encoding: "utf8" });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /Einstiegspunkte des Marktlaufs: \d+, Importhuelle: \d+ Dateien/);
+  const pre = list("pre");
+  for (const f of ["quant/tests/return-series.test.mjs", "quant/tests/scale-gate.test.mjs", "quant/tests/ti-ui.test.mjs",
+                   "quant/tests/total-return-verification.test.mjs", "quant/tests/canonical-total-return.test.mjs",
+                   "quant/tests/market-signal-contract.test.mjs", "quant/tests/product-services.test.mjs"]) {
+    assert.ok(!pre.includes(f), "Vorfall-Datei blockiert wieder den Abruf: " + f);
+  }
+  assert.equal(manifest.classes.PRE_FETCH_CODE_REGRESSION.files, "PIPELINE_CODE");
+  assert.equal(manifest.classes.PRE_FETCH_CODE_REGRESSION.pipeline.job, "refresh");
 });
 
 test("EG-CACHE · die Arbeitsablage wird nur gesichert, wenn sie zurueckgeholt wurde (kein leerer Cache nach Gate A)", () => {

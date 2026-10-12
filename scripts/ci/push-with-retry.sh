@@ -80,10 +80,33 @@ ERZEUGT=(
   "quant/data/market/intraday/pacemaker-ledger.json"
 )
 
+# SECHSTENS (Laeufe 37085599297, 37120824516, 38063088760, Okt. 2026):
+# der Marktdaten-Refresh verwarf nach 70 Minuten Abruf und gruenen Gates
+# dreimal alles an Konflikten in Dateien, deren eingetragener Erzeuger er
+# selbst ist (core/registry/domains.json: discover/data, quant/data/technical,
+# Faktoren, Kursreihen) - mitgebracht von Feature-PRs oder einem parallelen
+# Handlauf. Ein Aufrufer darf deshalb SEINE Erzeugerpfade nennen:
+#
+#   PUSH_OWNED_PATHS="discover/data/ quant/data/technical/ !discover/data/europe/"
+#
+# Praefixe, durch Leerraum getrennt; "!" schliesst einen Unterpfad aus.
+# Diese Pfade loest NUR dieser Aufruf nach eigenem Stand auf; die Liste
+# oben bleibt fuer alle anderen Aufrufer unveraendert. Welcher Workflow
+# welchen Pfad nennen darf, prueft quant/tests/push-with-retry.test.mjs
+# gegen das Erzeugerregister.
+read -r -a EIGENE <<< "${PUSH_OWNED_PATHS:-}"
+
 eigener_stand() {
   local datei="$1"
   local p
   for p in "${ERZEUGT[@]}"; do
+    case "$datei" in "$p"*) return 0 ;; esac
+  done
+  for p in "${EIGENE[@]}"; do
+    case "$p" in "!"*) case "$datei" in "${p#!}"*) return 1 ;; esac ;; esac
+  done
+  for p in "${EIGENE[@]}"; do
+    case "$p" in "!"*) continue ;; esac
     case "$datei" in "$p"*) return 0 ;; esac
   done
   return 1
@@ -99,8 +122,15 @@ konflikte_aufloesen() {
     if eigener_stand "$datei"; then
       # Im Rebase ist --theirs der Commit, der gerade aufgespielt wird,
       # also der eigene. Die Benennung ist verwirrend, die Wirkung nicht.
-      git checkout --theirs -- "$datei"
-      git add -- "$datei"
+      # Fehlt Stufe 3, hat der eigene Lauf die Datei geloescht
+      # (modify/delete, Lauf 38063088760): dann gilt die Loeschung.
+      if git ls-files -u -- "$datei" | awk '{print $3}' | grep -qx 3; then
+        git checkout --theirs -- "$datei"
+        git add -- "$datei"
+      else
+        git rm -q --cached -- "$datei" >/dev/null 2>&1 || true
+        rm -f -- "$datei"
+      fi
       echo "  Konflikt nach Erzeugerhoheit aufgeloest (eigener Stand): $datei"
     else
       echo "  Konflikt ausserhalb erzeugter Artefakte: $datei" >&2

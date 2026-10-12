@@ -287,6 +287,9 @@ test("SEC-N-PORT-Pipeline: Quartale -> Snapshots -> Holdings-Datei mit Exposures
   assert.ok(Math.abs(f.exposures.countries.find((c) => c.key === "US").weight - 0.934) < 1e-9);
   const idx = JSON.parse(readFileSync(join(out, "index.json"), "utf8"));
   assert.equal(idx.bySymbol.IVV[0], "S000004310"); assert.ok(!idx.bySymbol.NOTINDEX);
+  // Schlanker Auszug fuer Startseite/Monitor: dieselben Quartale und derselbe Feed, ohne bySymbol
+  const feed = JSON.parse(readFileSync(join(out, "feed.json"), "utf8"));
+  assert.deepEqual(feed.quarters, idx.quarters); assert.deepEqual(feed.feed, idx.feed); assert.equal(feed.bySymbol, undefined);
   // Deterministisch: zweiter Build byte-gleich
   const out2 = join(dir, "out2");
   execFileSync("node", [join(root, "scripts/vorsorge/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out2], { stdio: "pipe" });

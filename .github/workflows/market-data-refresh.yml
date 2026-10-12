@@ -66,8 +66,15 @@ jobs:
       #   A PRE_FETCH_CODE_REGRESSION   hier, vor jeder Anfrage - rot = kein Abruf
       #   B POST_FETCH_DATA_INTEGRITY   nach dem Bau, vor dem Commit - rot = kein Commit
       #   C NON_BLOCKING_OBSERVABILITY  nach dem Commit - rot = ::error, Lauf bleibt gruen
+      #
+      # Seit 10/2026 umfasst A nur den Code des Marktlaufs (Importhuelle des
+      # Jobs `refresh`, ohne Tests am erzeugten Datenstand). 13 von 19
+      # geplanten Laeufen 15.09.-12.10. scheiterten an Tests fremder
+      # Produkte oder am Datenstand des Vorabends. Alles andere laeuft in B
+      # (blockierend, auf den neuen Daten) oder C (gemeldet).
+      #   node scripts/market/run-eod-publish-gates.mjs --explain
       - name: 'Gate A: Code-Regression vor dem Abruf (rot = keine Provider-Anfrage)'
-        run: node scripts/market/run-eod-publish-gates.mjs --phase=pre
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=pre --report "$RUNNER_TEMP/gate-pre.json"
 
       - name: Ist ein Zugang hinterlegt?
         env:
@@ -272,7 +279,7 @@ jobs:
       # messen. Die uebrigen Testdateien liefen in Gate A auf demselben Code
       # gruen; sie laufen nach dem Commit als Gate C erneut.
       - name: 'Gate B: Data-Integrity der neuen Daten (rot = keine Veroeffentlichung)'
-        run: node scripts/market/run-eod-publish-gates.mjs --phase=integrity
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=integrity --report "$RUNNER_TEMP/gate-integrity.json"
 
       - name: Ist ein Zugang zur dauerhaften Ablage hinterlegt?
         id: history_store
@@ -381,6 +388,14 @@ jobs:
           key: discover-market-cache-${{ github.run_id }}
 
       - name: Commit und Push
+        # Erzeugerpfade dieses Laufs (core/registry/domains.json, Erzeuger
+        # market-data-refresh.yml): ein Konflikt darin wird nach eigenem
+        # Stand aufgeloest, statt 70 Minuten Abruf zu verwerfen (Laeufe
+        # 37085599297, 37120824516, 38063088760). Europa hat einen eigenen
+        # Erzeuger und bleibt ausgenommen. quant/tests/push-with-retry.test.mjs
+        # (PR11) prueft die Liste gegen das Register.
+        env:
+          PUSH_OWNED_PATHS: "discover/data/ !discover/data/europe/ quant/data/technical/ quant/data/market/factors/ quant/data/market/discover-series/ quant/data/market/golden-preview/ quant/data/market/listing-continuity-v1.json"
         # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
         # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
         # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um
@@ -430,7 +445,18 @@ jobs:
       # weil pages-release nur bei conclusion == success ausliefert.
       - name: 'Gate C: Beobachtung - uebrige Regressionstests mit den neuen Daten (nicht blockierend)'
         continue-on-error: true
-        run: node scripts/market/run-eod-publish-gates.mjs --phase=observability
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=observability --report "$RUNNER_TEMP/gate-observability.json"
+
+      # Die Gate-Berichte gehen an den Pipeline-Alarm (Job `alarm`).
+      - name: Gate-Berichte fuer den Alarm sichern
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: eod-gate-reports
+          path: ${{ runner.temp }}/gate-*.json
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Zusammenfassung
         if: always()
@@ -547,3 +573,47 @@ jobs:
         run: |
           echo "::error::P0_DATA_PIPELINE_FROZEN - der Marktlauf war gruen, der Produktstand ist es nicht."
           exit 1
+
+  # ===================================================================
+  # PIPELINE-ALARM: EIN ROTER LAUF BLEIBT NICHT UNBEMERKT.
+  #
+  # 15.09.-12.10.2026 scheiterten 13 von 19 geplanten Laeufen; gemeldet
+  # hat das nur die rote Farbe in der Actions-Liste. Dieser Job oeffnet
+  # (oder ergaenzt) ein Issue mit dem Label `pipeline-alarm`: welcher
+  # Schritt, welche Tests, welcher Lauf. Ein gruener Lauf schliesst es
+  # wieder. Gate-C-Befunde (nicht blockierend) erscheinen als Hinweis im
+  # selben Issue, ohne es zu oeffnen.
+  # ===================================================================
+  alarm:
+    needs: [refresh, materialize, freshness-contract]
+    if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: eod-gate-reports
+          path: ${{ runner.temp }}/gates
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht
+        # den Lauf nicht rot (pages-release verlangt conclusion == success).
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: market-data-refresh
+          RESULT_REFRESH: ${{ needs.refresh.result }}
+          RESULT_MATERIALIZE: ${{ needs.materialize.result }}
+          RESULT_FRESHNESS: ${{ needs.freshness-contract.result }}
+          GATE_DIR: ${{ runner.temp }}/gates
+        run: node scripts/ci/pipeline-alarm.mjs
