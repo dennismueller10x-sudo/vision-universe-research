@@ -26,7 +26,7 @@ def create(state, consumer, decisions, output):
     try:
         for cid in sorted(m['eligibility'],key=order):
             r=m['eligibility'][cid];ticker=r['tickers'][0]
-            raw=store.state('sec-submissions:'+cid,{})
+            raw={**store.state('profileQaIssuerMetadata:'+cid,{}),**store.state('sec-submissions:'+cid,{})}
             business=raw.get('addresses',{}).get('business',{})
             country=str(business.get('stateOrCountryDescription') or '').upper()
             state_code=business.get('stateOrCountry')
@@ -40,7 +40,10 @@ def create(state, consumer, decisions, output):
             if country and country not in {'UNITED STATES','USA','U.S.A.'} or listing_foreign or rows[cid].get('foreignIssuerEvidence'):kinds.append('ADR_GLOBAL')
             if ticker in size:kinds.append('SMALL_MICRO')
             if sic is not None:
-                if 2830<=sic<=2839 or 3840<=sic<=3859 or 8000<=sic<=8099:kinds.append('BIOTECH_HEALTH')
+                source=store.state('profileReviewSource:'+cid,{}) or store.state('companyProfile:'+cid,{})
+                import re
+                life_science=sic==8731 and bool(re.search(r'biopharma|biotech|clinical|klinisch|Wirkstoff',source.get('description',''),re.I))
+                if 2830<=sic<=2839 or 3840<=sic<=3859 or 8000<=sic<=8099 or life_science:kinds.append('BIOTECH_HEALTH')
                 if 6000<=sic<=6799:kinds.append('FINANCIAL')
                 if (2000<=sic<=3999 or 5000<=sic<=5999) and 'BIOTECH_HEALTH'not in kinds:kinds.append('INDUSTRIAL_CONSUMER')
             profile_total+=r['modules']['profile']

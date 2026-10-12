@@ -122,12 +122,12 @@ class PublicHTTP:
             raise SourceError('CRAWL_DELAY_REQUIRES_DEFERRED_SCHEDULING')
         return True
 
-    def get(self, url, robots=True, ttl=0, persist=True):
+    def get(self, url, robots=True, ttl=0, persist=True, fresh=False):
         if self.clock() >= self.deadline:
             raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
         url = self.validator(url)
         key = (url, robots)
-        if not persist:
+        if not persist or fresh:
             self.memo.pop(key, None)
         if persist and key in self.memo:
             self.stats['memoHits'] += 1
@@ -135,13 +135,13 @@ class PublicHTTP:
         if robots:
             self.robots_allowed(url)
         cached, body = self._cached(url)
-        if body is not None and self.clock() - cached.get('checked', 0) < ttl:
+        if not fresh and body is not None and self.clock() - cached.get('checked', 0) < ttl:
             self.stats['cacheHits'] += 1
             result = {**cached, 'body': body, 'cached': True}
             if persist:self.memo[key] = result
             return result
         headers = {'User-Agent': self.user_agent, 'Accept': 'application/rss+xml,application/atom+xml,application/json,text/html,text/plain;q=0.8', 'Accept-Encoding': 'identity'}
-        if body is not None:
+        if body is not None and not fresh:
             if cached.get('etag'):
                 headers['If-None-Match'] = cached['etag']
             if cached.get('lastModified'):

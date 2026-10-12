@@ -16,7 +16,8 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from company_intelligence.consumer_usage import first_party, publisher, host, filter_for_preview
 from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.profiles import public_profile
-from company_intelligence.store import Store, atomic_json
+from company_intelligence.store import Store, atomic_json, item_time
+from company_intelligence.model import normalize
 from company_intelligence.top46_content import identities
 
 NON_BUSINESS = re.compile(r'\b(?:makes it a priority|have come a long way|has come a long way|first company to|our mission|was founded|is incorporated|reincorporated|traded on|registered office)\b', re.I)
@@ -111,10 +112,26 @@ def audit(state, identity_root, eligibility_path, out, now=None):
                 if official.get('status') in ('CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS'):
                     policy_sources = []
                 safe_payload, usage = filter_for_preview(raw, policy_sources)
+                repair = Counter()
+                for item in raw['news']:
+                    if not item.get('canonicalUrl','').startswith('http://'):
+                        continue
+                    target = 'https://' + item['canonicalUrl'][7:]
+                    refs = [ref for ref in item.get('provenance',[]) if ref.get('originalUrl') == target]
+                    if not refs:repair['NO_EXACT_HTTPS_SIGHTING'] += 1;continue
+                    exact = [ref for ref in refs if normalize(ref.get('headline','')) == normalize(item['headline'])]
+                    if not exact:repair['HEADLINE_MISMATCH'] += 1;continue
+                    dated = [ref for ref in exact if item_time(ref) == item_time(item)]
+                    if not dated:repair['PUBLICATION_PRECISION_OR_TIME_MISMATCH'] += 1;continue
+                    if not any('VERIFIED_FIRST_PARTY_SOURCE' in ref.get('match',{}).get('evidence',[]) for ref in dated):repair['NO_EXPLICIT_OWNED_SOURCE_MATCH'] += 1
+                    else:repair['EXACT_OWNED_HTTPS_NOT_PROMOTED'] += 1
+                onboard = store.state('sourceOnboarding:german-profile-source-20261012:'+cid,{})
                 mandatory[cid] = {**rows[cid], 'companyName': raw['companyName'], 'tickers': row.get('tickers', []),
                     'sourceProfile': public_profile(p, cid, stamp), 'ledgerNewsCount': len(raw['news']),
                     'ledgerNewsLatestPublishedAt': max((e.get('publishedAt') or e.get('publishedDate') or '' for e in raw['news']), default=None),
                     'ledgerPrimaryUrlSchemes': dict(Counter((e.get('canonicalUrl') or '').split(':', 1)[0] for e in raw['news'])),
+                    'httpsRepairClasses':dict(repair), 'currentOnboardingStatus':onboard.get('status'),'currentOnboardingReasonCode':onboard.get('reasonCode'),
+                    'currentOfficialRootStatus':official.get('status'),
                     'policyAllowedNews': len(safe_payload['news']), 'policyExcludedNews': usage['excluded']['news'],
                     'officialRootPolicyWithheld': not policy_sources and bool(issuer_sources),
                     'approvedRegisteredSources': len(approved), 'provenPollableSources': len(proven),

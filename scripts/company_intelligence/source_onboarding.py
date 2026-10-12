@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from company_intelligence.consumer_usage import first_party, publisher
 from company_intelligence.discovery import validate_discovery_candidate
 from company_intelligence.feeds import discover_ir
-from company_intelligence.model import load_universe
+from company_intelligence.model import load_universe, within_domain
 from company_intelligence.pipeline import Pipeline, advance
 from company_intelligence.store import Store, atomic_json
 from company_intelligence.transport import PublicHTTP, BudgetExhausted, SourceError
@@ -102,12 +102,19 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 store.set_state('officialSite:' + cid, proof)
                 store.audit(stamp, cid, 'SOURCE_ROOT_OWNER_REVERIFIED', priorStatus=official.get('status'), contentHash=proof['contentHash'])
                 discovered, configs = discover_ir(companies[cid], proof['url'], http, stamp)
-                allowed = [s for s in discovered if first_party(s, cid) and not publisher(s.get('url'))]
+                registered = [s for s in sources if s.get('companyId') == cid and s.get('type') == 'IR_FEED' and first_party(s, cid)
+                    and not publisher(s.get('url')) and any(within_domain(site, proof['url']) for site in s.get('allowedSites', []))]
+                allowed = list({s['sourceId']:s for s in registered + discovered if first_party(s, cid) and not publisher(s.get('url'))}.values())
                 accepted_sources = []
                 for source in allowed:
                     previous = next((s for s in sources if s['sourceId'] == source['sourceId']), None)
                     if previous and previous.get('failureCount') and previous.get('nextCheck', '') > stamp:
                         continue
+                    if row['kind'] == 'EXACT_HTTPS_RECONFIRMATION' and source.get('type') == 'IR_FEED':
+                        # A stale conditional RSS body cannot confirm an HTTPS
+                        # correction. Force one real read while retaining robots,
+                        # request limits, timeout and provider cooldowns.
+                        http.get(source['url'], fresh=True)
                     pipeline.ingest_source(source)
                     saved = store.db.execute('SELECT payload FROM sources WHERE id=?', (source['sourceId'],)).fetchone()
                     actual = json.loads(saved[0]) if saved else {}
@@ -138,7 +145,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                         'lastVerified': stamp, 'ownershipEvidence': proof, 'url': row['url']})
                     code = 'CURRENT_OWNER_CONFLICT_WITHHELD'
                 outcomes[code] += 1
-                store.set_state(key + cid, {'status': code, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
+                store.set_state(key + cid, {'status': code, 'reasonCode': reason if re.fullmatch(r'[A-Z0-9_]+',reason) else type(error).__name__, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
             except Exception as error:
                 # Programming errors cannot masquerade as upstream outages.
                 raise ValueError('SOURCE_ONBOARDING_IMPLEMENTATION_ERROR') from error

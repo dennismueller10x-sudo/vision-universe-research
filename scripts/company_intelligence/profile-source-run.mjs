@@ -13,7 +13,8 @@ if(!verification&&!await universeActive(driver))throw Error('CURRENT_FULL_ELIGIB
 const sourceBatch=args.includes('--sources');
 const beforeBuild=async({state,temporary,identityRoot})=>{
  execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
- if(!sourceBatch)return {sourceRequests:0,universeDiscovery:false};
+ let preparation={sourceRequests:0,universeDiscovery:false};
+ if(sourceBatch){
  const out=join(temporary,'source-onboarding.json');
  try{
   execFileSync('python3',['scripts/company_intelligence/source_onboarding.py','--state',state,'--out',out,
@@ -25,7 +26,11 @@ const beforeBuild=async({state,temporary,identityRoot})=>{
   const line=[...text.matchAll(/File "[^\n]*\/(source_onboarding\.py|current_state_acceptance\.py)", line (\d+)/g)].at(-1);
   throw Error(code||'ONBOARDING_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
  }
- return JSON.parse(readFileSync(out));
+ preparation=JSON.parse(readFileSync(out));
+ }
+ const metadata=join(temporary,'profile-qa-metadata.json');
+ execFileSync('python3',['scripts/company_intelligence/profile_qa_metadata.py','--state',state,'--out',metadata],{stdio:['ignore','ignore','pipe'],timeout:720000});
+ return {...preparation,qaMetadata:JSON.parse(readFileSync(metadata))};
 };
 const validateContent=async({state,consumer,temporary,identityRoot})=>{
  const audit=join(temporary,'profile-source-funnel.json'),sample=join(temporary,'profile-sample.json');
