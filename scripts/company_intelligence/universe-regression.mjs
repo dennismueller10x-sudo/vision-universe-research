@@ -1,23 +1,49 @@
 /* Scope reduction is permitted per issuer; systemic collapses are refused. */
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 const read=p=>JSON.parse(readFileSync(p));
 const digest=p=>createHash('sha256').update(JSON.stringify(p)).digest('hex');
-export function universeChanges(directory,previous){
+function masterInstruments(){
+ const root=fileURLToPath(new URL('../../quant/data/universe/instruments/',import.meta.url));
+ return readdirSync(root).filter(p=>p.endsWith('.json')).flatMap(p=>read(join(root,p)).instruments);
+}
+export function approvedNonEquityPrune(cid,before,after,master){
+ // Only a strict subset of unchanged identities can be a pruning operation.
+ // Additions, ticker/issuer moves, unexplained disappearance and ID changes
+ // retain the original fail-closed guard. Consume the Master; never edit it.
+ const key=l=>JSON.stringify([l.symbol,l.instrumentId]),old=new Set(before.map(key)),current=new Set(after.map(key));
+ if(!after.length||old.size!==before.length||current.size!==after.length||after.some(l=>!old.has(key(l))))return false;
+ const removed=before.filter(l=>!current.has(key(l)));
+ if(!removed.length)return false;
+ return removed.every(l=>{
+  const matches=master.filter(r=>r.instrumentId===l.instrumentId||r.symbol===l.symbol);
+  return matches.length===1&&matches[0].instrumentId===l.instrumentId&&matches[0].symbol===l.symbol
+   &&matches[0].issuerId===cid&&cid==='iss_cik_'+matches[0].cik
+   &&['DEBT','ETN','RIGHT','WARRANT'].includes(matches[0].securityClass)
+   &&matches[0].productEligibility==='EXCLUDED'
+   &&matches[0].productEligibilityReason==='CONFIRMED_NON_EQUITY:'+matches[0].securityClass;
+ });
+}
+export function universeChanges(directory,previous,{masterRows}={}){
  const m=read(join(directory,'manifest.json')),prior=read(join(previous,'index.json'));
  const oldPaths={};
  // An initial universe release compares every preserved existing cohort issuer.
  const oldManifestPath=join(previous,'manifest.json');
  let oldManifest;try{oldManifest=read(oldManifestPath);}catch{throw Error('PREVIOUS_VERIFIED_MANIFEST_REQUIRED');}
  for(const path of Object.keys(oldManifest.assets))if(path!=='index.json'&&!path.includes('/lookup/'))oldPaths[path.split('/').at(-1).replace(/\.json$/,'')]=path;
- const counts={profiles:0,news:0,financials:0},oldCounts={profiles:0,news:0,financials:0},changed=[],removed=[],remapped=[];
+ const counts={profiles:0,news:0,financials:0},oldCounts={profiles:0,news:0,financials:0},changed=[],removed=[],remapped=[],approvedPrunes=[];
  for(const [cid,path] of Object.entries(oldPaths)){
   const p=read(join(previous,path));oldCounts.profiles+=Boolean(p.companyProfile);oldCounts.news+=p.news.length;oldCounts.financials+=p.latestFinancials.state==='AVAILABLE';
   const current=m.eligibility[cid];if(!current){removed.push(cid);continue;}
   const q=read(join(directory,`snapshots/${m.generation}/${cid}.json`));
   const identities=v=>v.listings.map(l=>[l.symbol,l.instrumentId]).sort();
-  if(JSON.stringify(identities(p))!==JSON.stringify(identities(q)))remapped.push(cid);
+  if(JSON.stringify(identities(p))!==JSON.stringify(identities(q))){
+   masterRows??=masterInstruments();
+   if(approvedNonEquityPrune(cid,p.listings,q.listings,masterRows))approvedPrunes.push({issuer:cid,removedListings:p.listings.length-q.listings.length});
+   else remapped.push(cid);
+  }
   if(p.latestFinancials.state==='AVAILABLE'&&q.latestFinancials.state==='AVAILABLE'&&(q.latestFinancials.reportingPeriod||'')<(p.latestFinancials.reportingPeriod||''))throw Error('FINANCIAL_PERIOD_REGRESSION');
  }
  if(remapped.length)throw Error('UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING');
@@ -28,5 +54,6 @@ export function universeChanges(directory,previous){
  if(removed.length>Math.max(10,Math.floor(Object.keys(oldPaths).length*0.02)))throw Error('ELIGIBLE_ISSUER_COLLAPSE_REFUSED');
  for(const key of Object.keys(counts))if(oldCounts[key]-counts[key]>Math.max(key==='news'?100:5,oldCounts[key]*0.1))throw Error('MODULE_COVERAGE_COLLAPSE_REFUSED');
  return {status:'PASS',...counts,newsIssuers:Object.keys(m.eligibility).filter(cid=>read(join(directory,`snapshots/${m.generation}/${cid}.json`)).news.length>0).length,
-  changedIssuers:changed,removedIssuers:removed,identityRemappings:remapped.length,previousGeneration:prior.generation};
+  changedIssuers:changed,removedIssuers:removed,identityRemappings:remapped.length,
+  approvedNonEquityPrunes:approvedPrunes,previousGeneration:prior.generation};
 }
