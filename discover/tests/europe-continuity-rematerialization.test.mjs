@@ -2,6 +2,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
 import '../../scripts/discover/tests/europe-chart-continuity.test.mjs';
 import '../../scripts/discover/tests/europe-continuity-live-qa.test.mjs';
+import '../../scripts/discover/tests/resolve-europe-live-release.test.mjs';
 const require=createRequire(import.meta.url),Ranges=require('../../core/chart-history.js'),root=new URL('../../',import.meta.url),read=async p=>JSON.parse(await readFile(new URL(p,root),'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 test('all 449 rematerialized histories preserve every original approved Close and hash-bound segment',async()=>{
  const catalog=await read('discover/data/europe/catalog.json'),manifest=await read('discover/data/europe/manifest.json'),report=await read('docs/reports/europe-continuity-449-20261012/europe_449_safe_history.json'),quality=await read('docs/reports/europe-continuity-449-20261012/europe_449_chart_quality.json');
