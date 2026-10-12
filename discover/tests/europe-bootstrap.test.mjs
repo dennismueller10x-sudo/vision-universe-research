@@ -70,7 +70,7 @@ function browserContext(fetch, hash = '') {
   vm.runInNewContext(source, context);
   return context;
 }
-test('Start der Seite holt das Europa-Verzeichnis nicht; erst ensure() (Suche, Alle-Aktien-Liste, Watchlist) tut es - und nur einmal', async () => {
+test('Start der Seite holt das Europa-Verzeichnis nicht; erst ensure() (Suche, Alle-Aktien-Liste, Watchlist) tut es - gleichzeitige Aufrufe teilen sich einen Start', async () => {
   const requests = [];
   const context = browserContext(async url => { requests.push(url); return {ok: false}; });
   await new Promise(resolve => setTimeout(resolve, 10));
@@ -81,7 +81,7 @@ test('Start der Seite holt das Europa-Verzeichnis nicht; erst ensure() (Suche, A
   assert.equal(await a, null);
   assert.deepEqual(requests, ['/core/registry/domains.json']);
   await api.ensure();
-  assert.equal(requests.length, 1);
+  assert.equal(requests.length, 2, 'ein leeres Ergebnis wird nicht festgehalten');
 });
 test('ein Netzfehler beim Start wird nicht festgehalten: der naechste ensure()-Aufruf versucht es erneut', async () => {
   let calls = 0;
@@ -96,4 +96,12 @@ test('direkter Aufruf einer Europa-Route stoesst den Start sofort an', async () 
   browserContext(async url => { requests.push(url); return {ok: false}; }, '#/s/EUROPE/ref_ALV_DE_XETR');
   await new Promise(resolve => setTimeout(resolve, 10));
   assert.deepEqual(requests, ['/core/registry/domains.json']);
+});
+
+test('ein leeres Ergebnis (HTTP-Fehler) wird nicht festgehalten: der naechste ensure()-Aufruf versucht es erneut', async () => {
+  let calls = 0;
+  const context = browserContext(async () => { calls++; return {ok: false}; });
+  const api = context.VUDiscover.EuropeBootstrap;
+  await api.ensure(); await api.ensure();
+  assert.equal(calls, 2);
 });

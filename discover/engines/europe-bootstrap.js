@@ -86,10 +86,10 @@
     if(/#\/(?:s|c|u|watchlist)\/EUROPE(?:\/|$)/.test(root.location.hash))await loader.connect();
     return loader;
   }
-  // Ein gemeinsamer Start fuer alle Nutzer; ein Netzfehler wird nicht festgehalten (naechster Aufruf versucht es erneut).
+  // Ein gemeinsamer Start fuer alle Nutzer, solange er gelingt; Fehler und ein leeres Ergebnis (HTTP-Fehler, nicht registriert) werden nicht festgehalten (naechster Aufruf versucht es erneut).
   let started=null;
   function ensure(){
-    if(!started)started=start().catch(()=>{started=null;return null;});
+    if(!started)started=start().then(loader=>{if(!loader)started=null;return loader;},()=>{started=null;return null;});
     return started;
   }
   return {start,ensure,create,read,localURL,validRights,boundRights,validateCatalog};

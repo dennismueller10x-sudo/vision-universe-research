@@ -3,6 +3,12 @@
   'use strict';
   const D=global.VUDiscover, el=global.QuantShell.el;
   function navigationAllowed(){return false;}
+  // Das Europa-Verzeichnis wird erst bei Bedarf geholt (Hash-Wechsel, eingefuegter Link, Verlauf): hier anstossen und abwarten.
+  async function ensureLoader(){
+    if(D.europePublicLoader)return;
+    for(let i=0;i<320&&!D.EuropeBootstrap;i++)await new Promise(r=>setTimeout(r,25));
+    if(D.EuropeBootstrap&&D.EuropeBootstrap.ensure){try{await D.EuropeBootstrap.ensure();}catch(_){}}
+  }
   function attachApp({ctx,route,isReady}) {
     D.App={configureEurope(options){
       if(!D.EuropeProduct)throw Error('EUROPE_PRODUCT_MODULE_REQUIRED');
@@ -10,7 +16,7 @@
       if(isReady()&&ctx.universeId==='EUROPE')route();
       return D.europeProduct;
     },async selectUniverse(universeId){
-      if(universeId==='EUROPE'&&!D.europeProduct&&D.europePublicLoader)await D.europePublicLoader.connect();
+      if(universeId==='EUROPE'&&!D.europeProduct){await ensureLoader();if(D.europePublicLoader)await D.europePublicLoader.connect();}
       if(!['US_REAL','EUROPE'].includes(universeId)||(universeId==='EUROPE'&&!D.europeProduct))throw Error('UNIVERSE_NOT_CONFIGURED');
       ctx.universeId=universeId;global.location.hash=universeId==='EUROPE'?'#/c/EUROPE/all':'#/';return route();
     },route};
@@ -33,7 +39,7 @@
     paint();root.prepend(button);
   }
   async function render(root,{parts,ctx,route,active,message}) {
-    if(!D.europeProduct&&D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}
+    if(!D.europeProduct){await ensureLoader();if(D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}}
     if(!active())return;
     const product=D.europeProduct;
     if(!product){message(root,'Europa noch nicht verfügbar','Dieses Universum ist noch nicht freigegeben.');return;}

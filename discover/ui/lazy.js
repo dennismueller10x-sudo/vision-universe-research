@@ -53,8 +53,36 @@
     return Array.prototype.map.call(scope.querySelectorAll('script[src]'), function (s) { return s.getAttribute('src'); });
   }
 
+  /**
+   * Build-Stempel der Release-Pipeline: version-consumer-assets.mjs haengt ?v=<Hash> an detail.js (und Company-Intelligence).
+   * Derselbe Stempel geht an die uebrigen nachgeladenen Skripte, damit ein Release sie unter neuer Adresse anbietet statt aus dem
+   * 10-Minuten-Cache. Ohne Pipeline (Quelltext, Tests) gibt es keinen Stempel.
+   */
+  var stampValue;
+  function stamp() {
+    if (stampValue !== undefined) return stampValue;
+    stampValue = '';
+    try {
+      var template = doc().getElementById('dx-lazy-detail');
+      var all = template ? Array.prototype.map.call((template.content || template).querySelectorAll('script[src]'), function (s) { return s.getAttribute('src'); }) : [];
+      var hit = all.filter(function (src) { return /\/ui\/detail\.js\?v=([0-9a-f]+)/.test(src); })[0];
+      if (hit) stampValue = hit.split('?v=')[1];
+    } catch (_) { /* ohne Stempel */ }
+    return stampValue;
+  }
+  /** Ein Ladefehler einer Gruppe (z. B. Skript nach einem Deploy nicht mehr da) laedt die Seite einmal neu - dann passen alle Teile zusammen. */
+  function reloadOnce() {
+    try {
+      if (!root.location || !root.location.reload || !root.sessionStorage) return;
+      if (root.sessionStorage.getItem('vu-lazy-reload')) return;
+      root.sessionStorage.setItem('vu-lazy-reload', '1');
+      root.location.reload();
+    } catch (_) { /* ohne Speicher keine Schleife riskieren */ }
+  }
+
   function script(src) {
     var key = src.split('?')[0];
+    if (src.indexOf('?') < 0 && stamp()) src += '?v=' + stamp();
     if (scripts[key]) return scripts[key];
     scripts[key] = new Promise(function (resolve, reject) {
       var node = doc().createElement('script');
@@ -73,7 +101,7 @@
     var promise;
     try { promise = Promise.all(sources(name).map(script)).then(function () {}); }
     catch (error) { return Promise.reject(error); }
-    groups[name] = promise.catch(function (error) { delete groups[name]; throw error; });
+    groups[name] = promise.catch(function (error) { delete groups[name]; reloadOnce(); throw error; });
     return groups[name];
   }
 
@@ -171,5 +199,5 @@
     if (doc().readyState === 'complete') afterLoad(); else root.addEventListener('load', afterLoad, { once: true });
   }
 
-  return { ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
+  return { stamp: stamp, ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
 });

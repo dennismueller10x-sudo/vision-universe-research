@@ -385,3 +385,24 @@ test('Lazy.watch: Vorladen im Leerlauf nur auf der Startseite', async () => {
     assert.deepEqual(document.appended.map(n => n.src), expected, hash || 'Startseite');
   }
 });
+
+test('Lazy: Release-Stempel (?v= von detail.js) geht an die uebrigen Skripte; ohne Stempel bleiben Adressen unveraendert', async () => {
+  const stamped = instance({ detail: ['/q/charts.js', '/discover/ui/detail.js?v=abc123def4567890'], markets: ['/m.js', '/x.js?v=keep'] });
+  await stamped.api.load('detail'); await stamped.api.load('markets');
+  assert.deepEqual(stamped.document.appended.map(n => n.src), ['/q/charts.js?v=abc123def4567890', '/discover/ui/detail.js?v=abc123def4567890', '/m.js?v=abc123def4567890', '/x.js?v=keep']);
+  const plain = instance({ detail: ['/q/charts.js'] });
+  await plain.api.load('detail');
+  assert.deepEqual(plain.document.appended.map(n => n.src), ['/q/charts.js']);
+});
+
+test('Lazy: Ladefehler laedt die Seite genau einmal neu', async () => {
+  const store = {}; let reloads = 0;
+  const document = fakeDocument({ a: ['/x.js'] }, { fail: () => true });
+  const context = { document, location: { hash: '', reload() { reloads++; } }, sessionStorage: { getItem: k => store[k] || null, setItem: (k, v) => { store[k] = v; } },
+    setTimeout, clearTimeout, module: { exports: {} }, navigator: {}, addEventListener() {}, removeEventListener() {} };
+  context.globalThis = context;
+  vm.runInNewContext(read('discover/ui/lazy.js'), context);
+  await assert.rejects(context.module.exports.load('a'), /LAZY_SCRIPT_FAILED/);
+  await assert.rejects(context.module.exports.load('a'), /LAZY_SCRIPT_FAILED/);
+  assert.equal(reloads, 1);
+});
