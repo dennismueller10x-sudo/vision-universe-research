@@ -6,7 +6,8 @@
    DEL2  Keine Kursniveaus im Artefakt (Weitergabe-Regel)
    DEL3  Reproduzierbar: zwei Laeufe auf denselben Eingaben sind gleich
          (ausser generatedAt) - die Signalhistorie braucht kein Gedaechtnis
-   DEL4  Zustaende und Signalhistorie sind in sich stimmig
+   DEL4  Zustaende und Signalhistorie sind in sich stimmig; neue Signale sind
+         nur Aufstiege
    DEL5  Oberflaeche nennt den Evidenzstatus und verspricht keine Prognose
    ========================================================================= */
 import test from "node:test";
@@ -58,7 +59,9 @@ test("DEL4 · Zustaende und Historie stimmig", () => {
     if (x.previous) assert.notEqual(x.previous, x.state);
   }
   for (let i = 1; i < A.stocks.length; i++) assert.ok(A.stocks[i - 1].score >= A.stocks[i].score);
-  for (const t of A.history.transitions) { assert.notEqual(t.from, t.to); assert.ok(A.history.dates.includes(t.date)); }
+  /* Neue Signale sind nur Aufstiege, nie Abstiege */
+  for (const t of A.history.transitions) { assert.ok(states.indexOf(t.to) > states.indexOf(t.from), JSON.stringify(t)); assert.ok(A.history.dates.includes(t.date)); }
+  for (const x of A.stocks) assert.ok(x.stability.sessionsInState >= 1 && x.stability.sessionsInState <= x.stability.sessionsObserved);
   const sum = Object.values(A.states.counts).reduce((a, b) => a + b, 0);
   assert.equal(sum, A.universe.eligibleToday);
 });

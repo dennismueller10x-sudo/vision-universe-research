@@ -40,7 +40,7 @@ html[data-theme=dark] .dv2 .el-root{--el-ok:#3ccf8e;--el-mid:#e2b33b;--el-exp:#f
 .dv2 .el-badge{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:var(--v2-muted)}
 .dv2 .el-badge[data-tone="1"]{background:var(--el-t1)}.dv2 .el-badge[data-tone="2"]{background:var(--el-t2)}.dv2 .el-badge[data-tone="3"]{background:var(--el-t3)}.dv2 .el-badge[data-tone="4"]{background:var(--el-t4)}.dv2 .el-badge[data-tone="5"]{background:var(--el-t5);color:var(--v2-bg)}
 .dv2 .el-chip[data-tone="1"]:not([aria-pressed=true]){box-shadow:inset 3px 0 0 var(--el-t1)}.dv2 .el-chip[data-tone="2"]:not([aria-pressed=true]){box-shadow:inset 3px 0 0 var(--el-t2)}.dv2 .el-chip[data-tone="3"]:not([aria-pressed=true]){box-shadow:inset 3px 0 0 var(--el-t3)}.dv2 .el-chip[data-tone="4"]:not([aria-pressed=true]){box-shadow:inset 3px 0 0 var(--el-t4)}.dv2 .el-chip[data-tone="5"]:not([aria-pressed=true]){box-shadow:inset 3px 0 0 var(--el-t5)}
-.dv2 .el-since{font-size:12px;color:var(--v2-muted)}
+.dv2 .el-since,.dv2 .el-stability{font-size:12px;color:var(--v2-muted)}.dv2 .el-stability.is-wechselhaft{color:var(--el-exp);font-weight:600}
 .dv2 .el-score-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
 .dv2 .el-score{height:6px;border-radius:6px;background:var(--v2-panel);overflow:hidden}
 .dv2 .el-score-fill{display:block;height:100%;border-radius:6px;background:var(--v2-ink)}
@@ -48,7 +48,7 @@ html[data-theme=dark] .dv2 .el-root{--el-ok:#3ccf8e;--el-mid:#e2b33b;--el-exp:#f
 .dv2 .el-metric{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:12px;background:var(--v2-panel);min-width:0}
 .dv2 .el-metric strong{font-size:16px;font-variant-numeric:tabular-nums}
 .dv2 .el-metric-label{font-size:11px;color:var(--v2-muted);text-transform:uppercase;letter-spacing:.05em}
-.dv2 .el-metric-sub{font-size:11px;color:var(--v2-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv2 .el-metric-sub{font-size:11px;line-height:1.3;color:var(--v2-muted)}
 .dv2 .el-reasons{margin:0;padding:0 0 0 18px;font-size:13px;line-height:1.45}
 .dv2 .el-reasons li+li{margin-top:2px}
 .dv2 .el-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:8px;border-top:1px solid var(--v2-line);font-size:12px;color:var(--v2-muted)}

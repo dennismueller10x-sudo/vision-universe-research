@@ -93,9 +93,13 @@ function detailSymbols() {
 function studyStatus() {
   if (!existsSync(STUDY)) return { evidenceStatus: "EXPERIMENTAL", reason: "STUDY_NOT_RUN", label: "Experimentell – historische Prüfung steht noch aus", model: "M1_TECH_EQUAL" };
   const s = JSON.parse(readFileSync(STUDY, "utf8"));
+  /* Nur eine vollstaendige Studie derselben Methodik und Engine bestimmt Modell
+     und Gewichte; sonst M1 ohne Zusammenlegung, Status EXPERIMENTAL. */
+  const usable = s.status === "COMPLETE" && s.methodologyVersion === PREREG.methodologyVersion && s.engineVersion === EL.VERSION;
+  if (!usable) return { evidenceStatus: "EXPERIMENTAL", reason: "STUDY_NOT_USABLE_" + (s.status || "UNKNOWN"), label: "Experimentell – historische Prüfung unvollständig", model: "M1_TECH_EQUAL", modelChosenOnValidation: false, merge: [], m3Weights: null, studyStatus: s.status || null, studyGeneratedAt: s.generatedAt || null };
   const model = s.selection && s.selection.chosen ? s.selection.chosen : "M1_TECH_EQUAL";
   const pick = (p, m) => { const x = s.results && s.results[p] && s.results[p][m] && s.results[p][m][63]; return x && x.dates ? { netBase: x.meanExcessNet.BASE, t: x.tNWNetBase, dates: x.dates, spreadVsUniverse: x.spreadVsUniverse.mean } : null; };
-  const label = s.evidenceStatus === "VALIDATED" ? "Historisch validiert (Point-in-Time, beide Holdouts)"
+  const label = s.evidenceStatus === "VALIDATED" ? (s.label || "Historisch validiert (Point-in-Time)")
     : s.evidenceStatus === "PARTIAL" ? "Teilweise belegt – nicht in allen Prüfzeiträumen"
     : "Experimentell – keine belastbare Überlegenheit nachgewiesen";
   return {
@@ -127,7 +131,7 @@ export function build() {
     if (inp.common && !inp.common.has(id)) continue;
     let p; try { p = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
     if (!p.ticker) continue;
-    raw.push({ id, file, ticker: p.ticker, exchange: p.exchange || null });
+    raw.push({ id, file, ticker: p.ticker, exchange: p.exchange || null });     /* Schluessel: securityId (ADR-001) */
     tickers.add(p.ticker);
   }
   const fund = loadFundamentals(tickers);
@@ -148,7 +152,7 @@ export function build() {
       const f = EL.seriesFeatures(s, i, { minHistory: PREREG.observationGrid.minimumHistoryBars });
       if (!f || !(f.rawClose >= PREREG.universe.minRawClose && f.dollarVolume20 >= PREREG.universe.minAvgDollarVolume20d)) continue;
       const fu = fundamentalsAt(fund.get(t.ticker), d);
-      byDay.get(d).push({ id: t.ticker, exchange: t.exchange, f, fund: [fu.revenueAccel, fu.revenueGrowthYoy, fu.netMarginChange, fu.fcfMargin].some(isNum) ? fu : null,
+      byDay.get(d).push({ id: t.id, ticker: t.ticker, exchange: t.exchange, f, fund: [fu.revenueAccel, fu.revenueGrowthYoy, fu.netMarginChange, fu.fcfMargin].some(isNum) ? fu : null,
         leadershipScore: leadershipScore(f) });
     }
   }
@@ -161,7 +165,8 @@ export function build() {
     const d = spy.dates[k], rows = byDay.get(d) || [];
     if (rows.length) { EL.crossSection(rows, opts); priorOf.set(d, new Map(rows.map((x) => [x.id, { pRS_60: x.p.pRS_60, pRS_120: x.p.pRS_120 }]))); }
   }
-  const timeline = new Map();          /* ticker -> [{date, state}] */
+  const timeline = new Map();          /* securityId -> [{date, state}] */
+  const tickerOf = new Map(raw.map((t) => [t.id, t.ticker]));
   let today = null;
   for (let k = last - SESSIONS + 1; k <= last; k++) {
     const d = spy.dates[k], pd = spy.dates[k - PRIOR_LAG], prior = priorOf.get(pd) || null;
@@ -190,16 +195,32 @@ export function build() {
     while (j > 0 && tl[j - 1].state === tl[tl.length - 1].state) j--;
     if (tl.length) { since = tl[j].date; prev = j > 0 ? tl[j - 1].state : null; }
     const full = j === 0 && tl.length === SESSIONS;      /* ganzes Fenster im selben Zustand */
-    let lastSignal = null;
-    for (let q = 1; q < tl.length; q++) if (tl[q].state !== tl[q - 1].state && tl[q].state !== "S0_NONE") lastSignal = tl[q].date;
-    return { since, sinceAtLeast: full, previous: prev, lastSignal };
+    let lastSignal = null, changes = 0;
+    for (let q = 1; q < tl.length; q++) {
+      if (tl[q].state === tl[q - 1].state) continue;
+      changes++;
+      if (isSignal(tl, q)) lastSignal = tl[q].date;
+    }
+    const cur = tl.length ? tl[tl.length - 1].state : null;
+    return { since, sinceAtLeast: full, previous: prev, lastSignal, sessionsInState: tl.filter((z) => z.state === cur).length, sessionsObserved: tl.length, changes };
+  }
+  /* Ein Signal ist ein Aufstieg in einen hoeheren Zustand, der nicht nur die
+     Rueckkehr zu einem Zustand der letzten zwei Sitzungen ist (Hin und Her).
+     Abstiege sind keine neuen Signale. Die Zustandsdefinitionen selbst
+     bleiben unveraendert (Vorregistrierung). */
+  function isSignal(tl, q) {
+    const to = STATES.indexOf(tl[q].state), from = STATES.indexOf(tl[q - 1].state);
+    if (!(to > from) || tl[q].state === "S0_NONE") return false;
+    for (let z = Math.max(0, q - 3); z < q - 1; z++) if (tl[z].state === tl[q].state) return false;
+    return true;
   }
   const pick = today.rows.filter((x) => x.state !== "S0_NONE" || (isNum(x.score) && x.score >= 0.9));
   const list = pick.sort((a, b) => (b.score || 0) - (a.score || 0) || (a.id < b.id ? -1 : 1)).slice(0, MAX_LIST).map((x) => {
     const h = history(x.id), f = x.f;
     return {
-      s: x.id, n: nameOf.get(x.id) || null, market: "US", exchange: x.exchange, state: x.state,
+      s: x.ticker, n: nameOf.get(x.ticker) || null, market: "US", exchange: x.exchange, state: x.state,
       since: h.since, sinceAtLeast: h.sinceAtLeast, previous: h.previous, lastSignal: h.lastSignal,
+      stability: { sessionsInState: h.sessionsInState, sessionsObserved: h.sessionsObserved, changes: h.changes },
       score: r(x.score * 100, 1), rank: x.rank || null,
       emerging: x.emerging,
       rs: { p20: r(x.p.pRS_20, 0), p60: r(x.p.pRS_60, 0), p120: r(x.p.pRS_120, 0), improve: r(x.feat.rsImprove, 0), accel: r(x.feat.rsAccel, 0) },
@@ -208,11 +229,11 @@ export function build() {
       compression: { volRatio: r(f.volRatio, 2), nearPivot: r(f.nearPivot) },
       groups: Object.fromEntries(Object.entries(x.groups).map(([g, v]) => [g, r(v * 100, 0)])),
       reasons: EL.reasons(x).map((z) => z.text),
-      href: details.has(x.id) ? "#/s/US_REAL/" + encodeURIComponent(x.id) : null
+      href: details.has(x.ticker) ? "#/s/US_REAL/" + encodeURIComponent(x.ticker) : null
     };
   });
-  for (const [id, tl] of timeline) for (let q = 1; q < tl.length; q++) if (tl[q].state !== tl[q - 1].state) transitions.push({ s: id, date: tl[q].date, from: tl[q - 1].state, to: tl[q].state });
-  const recent = transitions.filter((t) => t.to !== "S0_NONE").sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.s < b.s ? -1 : 1)).slice(0, 200);
+  for (const [id, tl] of timeline) for (let q = 1; q < tl.length; q++) if (isSignal(tl, q)) transitions.push({ s: tickerOf.get(id), date: tl[q].date, from: tl[q - 1].state, to: tl[q].state });
+  const recent = transitions.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.s < b.s ? -1 : 1)).slice(0, 200);
 
   return {
     schemaVersion: "discover-emerging-leaders-1.0.0",
@@ -226,7 +247,7 @@ export function build() {
     model: { id: model, chosenOnValidation: evidence.modelChosenOnValidation, scale: "Perzentil im heutigen Querschnitt (0–100)" },
     universe: { titlesRead: read, withVolume, eligibleToday: today.rows.length, filter: { minRawClose: PREREG.universe.minRawClose, minAvgDollarVolume20d: PREREG.universe.minAvgDollarVolume20d } },
     europe: { status: "NOT_COVERED", reason: "Für europäische Titel liegen keine Tagesreihen mit Volumen vor; ohne Volumen sind Akkumulation und Ausbruch nicht bestimmbar." },
-    states: { order: STATES, counts, definitions: Object.fromEntries(STATES.map((s) => [s, PREREG.states[s]])) },
+    states: { order: STATES, counts, listed: Object.fromEntries(STATES.map((z) => [z, list.filter((x) => x.state === z).length])), listLimit: MAX_LIST, definitions: Object.fromEntries(STATES.map((s) => [s, PREREG.states[s]])) },
     history: { sessions: SESSIONS, from: spy.dates[last - SESSIONS + 1], to: today.date, dates: spy.dates.slice(last - SESSIONS + 1, last + 1), transitions: recent },
     count: list.length, stocks: list
   };
