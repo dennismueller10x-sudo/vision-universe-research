@@ -264,7 +264,7 @@ function create(options){
  }
  function workspaces(t){const q=encodeURIComponent(t);return [
   ['Full Chart','/quant/#/aktie/'+q],['Technical','/quant/#/aktie/'+q+'/technik'],
-  ['Elliott Wave','/quant/#/aktie/'+q+'/technik?elliott=1'],
+  ['Elliott','/quant/#/elliott/'+q+'?ansicht=profi'],
   ['Historische Fundamentals','/quant/#/aktie/'+q+'/zahlen'],['Quant','/quant/#/aktie/'+q],
   ['Vergleichen','/quant/#/vergleich/'+q],['Strategie definieren','/quant/#/strategien']
  ].map(([label,href])=>({label,href}));}
@@ -1062,7 +1062,7 @@ function create(options){
      volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
      elliott:status(b.elliott?.status,{OK:'Validierte Zählung',LOW_CONFIDENCE:'Niedriger Method Fit',AMBIGUOUS:'Mehrere mögliche Zählungen',VALID:'Gültige Zählung',INSUFFICIENT_DATA:'Historie reicht nicht aus',NO_VALID_COUNT:'Keine gültige Zählung'}),
      elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,
-     workspace:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik',elliottWorkspace:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik?elliott=1'};
+     workspace:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik',elliottWorkspace:'/quant/#/elliott/'+encodeURIComponent(ticker)+'?ansicht=profi'};
    }catch{
     /* Kein veroeffentlichtes Bundle - HIER entscheidet die Vormerkung wie
      * bisher, samt Grund je Titel. Ohne diese Zeile wuerde ein Titel, den
@@ -1216,7 +1216,7 @@ function create(options){
    selected.forEach((ticker,index)=>{const signal=signalIndex.get(ticker),workspace=technical[index],elliottAvailable=workspace?.state==='AVAILABLE'&&!['UNAVAILABLE','INSUFFICIENT_DATA'].includes(workspace.elliott?.status);capabilities[ticker]={
     signals:signal?{state:signal.state,reason:signal.reason||null,asOf:signal.asOf||null,from:signal.from||null,lookback:signal.lookback||60,events:Array.isArray(signal.events)?signal.events:[]}:{state:'UNAVAILABLE',reason:'SIGNAL_EVIDENCE_NOT_PUBLISHED',events:[]},
     technical:workspace?.state==='AVAILABLE'?{state:'AVAILABLE',asOf:workspace.asOf,methodology:workspace.methodology,workspace:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik'}:{state:'UNAVAILABLE',reason:workspace?.reason||'TECHNICAL_BUNDLE_NOT_PUBLISHED'},
-    elliott:elliottAvailable?{state:'AVAILABLE',status:workspace.elliott.status,workspace:'/quant/#/aktie/'+encodeURIComponent(ticker)+'/technik?elliott=1'}:{state:'UNAVAILABLE',reason:workspace?.state==='AVAILABLE'?'ELLIOTT_COUNT_NOT_VALIDATED':workspace?.reason||'ELLIOTT_BUNDLE_NOT_PUBLISHED'}
+    elliott:elliottAvailable?{state:'AVAILABLE',status:workspace.elliott.status,workspace:'/quant/#/elliott/'+encodeURIComponent(ticker)+'?ansicht=profi'}:{state:'UNAVAILABLE',reason:workspace?.state==='AVAILABLE'?'ELLIOTT_COUNT_NOT_VALIDATED':workspace?.reason||'ELLIOTT_BUNDLE_NOT_PUBLISHED'}
    };});
    const coverage={selectable:universe.productUniverseSize||universe.stocks.length,signalsCapable:signals.coverage?.available||0,technicalCapable:summary?.counts?.technicalFullBundles||0,elliottCapable:summary?.counts?.elliottCapable||0};
    return WatchlistWorkspace.build(selected,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,price:{value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'}})},{capabilities,coverage});

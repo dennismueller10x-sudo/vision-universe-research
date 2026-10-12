@@ -163,6 +163,15 @@ export async function buildRelease({root,output}){
    await writeFile(resolve(output,target),gzipSync(Buffer.from(JSON.stringify(doc)),{level:9}));
   }
  }
+ /* Elliott Home (elliott-home-1.0.0): kompakte Entdeckungsansicht der veroeffentlichten Technical-Intelligence-Shards, nur in der Auslieferung
+    (wie die Ausschnitte oben, nie committet). Faellt sie aus, zeigt /elliott/ den Zustand "nicht verfuegbar"; die Website bleibt ausgeliefert. */
+ if(paths.includes('quant/data/technical-intelligence/v3/index.json.gz')){
+  try{
+   const {buildHomeFromDir,HOME_PATH}=await import('../technical/elliott-home/home.mjs');
+   await mkdir(dirname(resolve(output,HOME_PATH)),{recursive:true});
+   await writeFile(resolve(output,HOME_PATH),JSON.stringify(buildHomeFromDir(root)));
+  }catch(e){console.warn('ELLIOTT_HOME_SKIPPED',String(e&&e.message||e).slice(0,200));}
+ }
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
   await mkdir(resolve(output,UNIVERSE_SHARD_DIR),{recursive:true});

@@ -14,7 +14,7 @@ Bei Widersprüchen gilt: **Code und Tests vor Prosa**. Der aktuelle Datenstand s
 
 ```
  PRODUKTE (statische Seiten, GitHub Pages: research.visionuniverse.de)
- Discover · Quant · Markets · Screener · Supertrader · Technical · News
+ Discover · Quant · Elliott · Markets · Screener · Supertrader · Technical · News
  Company Pages (Discover-Aktienseite, Quant #/aktie) · Status (/status/)
                 │                 (künftig: Portfolio, Retirement, App)
                 ▼
@@ -38,6 +38,8 @@ Bei Widersprüchen gilt: **Code und Tests vor Prosa**. Der aktuelle Datenstand s
    Jobs            72 GitHub-Actions-Workflows (docs/pipelines/PIPELINES.md)
    Registry        core/registry/domains.json  ← Source of Truth je Datenart
 ```
+
+Elliott ist ein eigenes Produkt (`/elliott/`, Aktienbild unter `#/elliott/<T>`): [ELLIOTT_PRODUCT_ARCHITECTURE.md](ELLIOTT_PRODUCT_ARCHITECTURE.md).
 
 Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/`):
 
