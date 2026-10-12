@@ -96,12 +96,15 @@
   }
 
   /** Laedt eine Gruppe (einmal). Bei einem Fehler wird die Gruppe beim naechsten Aufruf erneut versucht. */
+  function parsed() {
+    if (!doc() || doc().readyState !== 'loading') return Promise.resolve();
+    return new Promise(function (resolve) { doc().addEventListener('DOMContentLoaded', function () { resolve(); }, { once: true }); });
+  }
   function load(name) {
     if (groups[name]) return groups[name];
-    var promise;
-    try { promise = Promise.all(sources(name).map(script)).then(function () {}); }
-    catch (error) { return Promise.reject(error); }
-    groups[name] = promise.catch(function (error) { delete groups[name]; reloadOnce(); throw error; });
+    // Die Templates stehen am Dokumentende: vor dem Ende des Parsens kann eine Gruppe unvollstaendig sein.
+    groups[name] = parsed().then(function () { return Promise.all(sources(name).map(script)); }).then(function () {})
+      .catch(function (error) { delete groups[name]; reloadOnce(); throw error; });
     return groups[name];
   }
 

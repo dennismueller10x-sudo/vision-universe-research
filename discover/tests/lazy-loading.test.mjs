@@ -406,3 +406,24 @@ test('Lazy: Ladefehler laedt die Seite genau einmal neu', async () => {
   await assert.rejects(context.module.exports.load('a'), /LAZY_SCRIPT_FAILED/);
   assert.equal(reloads, 1);
 });
+
+test('Lazy.load waehrend des Parsens (readyState loading) wartet auf DOMContentLoaded und liest die Gruppe vollstaendig', async () => {
+  const templates = { detail: ['/d1.js'] };
+  const { api, document } = instance(templates);
+  document.readyState = 'loading';
+  const done = api.load('detail');
+  await new Promise(resolve => setTimeout(resolve, 20));
+  assert.equal(document.appended.length, 0, 'vor DOMContentLoaded darf nichts gelesen werden');
+  templates.detail.push('/d2.js');          // der Parser liefert den Rest der Gruppe nach
+  document.readyState = 'interactive';
+  document.handlers.DOMContentLoaded();
+  await done;
+  assert.deepEqual(document.appended.map(n => n.src), ['/d1.js', '/d2.js']);
+});
+
+test('index.html: __vuParsed() steht hinter allen Templates, am Dokumentende', () => {
+  const call = html.indexOf('window.__vuParsed&&window.__vuParsed()');
+  for (const name of ['dx-start', 'dx-lazy-detail', 'dx-lazy-markets', 'dx-lazy-daten', 'dx-lazy-feed']) assert.ok(html.indexOf('<template id="' + name + '">') < call, name);
+  assert.ok(call > html.lastIndexOf('</template>'));
+  assert.equal(html.split('window.__vuParsed&&').length, 2);
+});

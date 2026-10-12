@@ -123,7 +123,6 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <script src="/discover/app.js"></script>
 <script src="/discover/engines/europe-bootstrap.js"></script>
 </template>
-<script>window.__vuParsed&&window.__vuParsed();</script>
 
 <!-- Bedarfsgerecht nachgeladene Skriptgruppen (discover/ui/lazy.js). Inerte Templates: nichts wird beim Start abgerufen.
      Die Adressen stehen hier im Klartext, damit die Release-Pipeline (version-consumer-assets) ihre ?v=-Schluessel setzt. -->
@@ -170,5 +169,7 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <template id="dx-lazy-feed">
 <script src="/discover/ui/feed.js"></script>
 </template>
+<!-- Ganz am Ende: erst jetzt sind dx-start UND alle dx-lazy-Templates geparst; der Start darf frueher nicht laufen (Direktlinks auf Routen mit Lazy-Gruppen). -->
+<script>window.__vuParsed&&window.__vuParsed();</script>
 </body>
 </html>
