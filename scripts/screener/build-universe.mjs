@@ -107,20 +107,23 @@ export function indicators(points) {
 
 // ---- Spalten --------------------------------------------------------------
 // Reihenfolge = Reihenfolge im Artefakt. Text- und Listen-Spalten stehen vorn.
+// Nur Spalten, die Feld-Registry (screener/engine/fields.js) oder Oberflaeche
+// lesen: jede Spalte laedt jedes Telefon mit (SIC-Division und RS 12M las
+// niemand und sind entfallen).
 export const COLUMNS = [
-  's', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'idx', 'was',
+  's', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'idx', 'was',
   'price', 'chg1d', 'mcap', 'ev', 'avgVol', 'dollarVol', 'beta', 'relVol',
   'revGrowth', 'revCagr3', 'revCagr10', 'epsGrowth', 'epsCagr3', 'niGrowthTtm', 'fcfGrowth', 'marginExp3y',
   'grossMargin', 'opMargin', 'netMargin', 'fcfMargin', 'roe', 'roa', 'roic', 'cashConversion',
   'debtToEquity', 'netDebtEbitda', 'cash', 'totalDebt', 'netCash', 'revenue', 'fcf', 'eps',
   'pe', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield',
-  'perf1w', 'perf1m', 'perf3m', 'perf6m', 'perfYtd', 'perf1y', 'rs6m', 'rs12m', 'rsPct', 'momPct',
+  'perf1w', 'perf1m', 'perf3m', 'perf6m', 'perfYtd', 'perf1y', 'rs6m', 'rsPct', 'momPct',
   'distSma20', 'distSma50', 'distSma100', 'distSma200', 'sma50vs200', 'distEma21', 'dist52wH', 'dist52wL', 'newHigh',
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
   'tiOut', 'tiStr', 'tiEw'
 ];
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw']);
 
 // CHARTBILD (Technical Intelligence)
 // Nur Zustaende aus dem veroeffentlichten Index, keine eigene Berechnung. Ein
@@ -271,7 +274,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const pe = num(m.f_pe);
     const row = {
       s: d.symbol, n: d.companyName || d.symbol, ex: d.exchange || inst.exchange || null, co: inst.country || null,
-      cls: inst.securityClass || null, sec: sic4 ? sectorFromSic(sic4) : null, sic2: sic4 ? sic4.slice(0, 2) : null, div: sic?.div || null,
+      cls: inst.securityClass || null, sec: sic4 ? sectorFromSic(sic4) : null, sic2: sic4 ? sic4.slice(0, 2) : null,
       ipo: inst.firstTradeDate || null,
       idx: Array.isArray(d.indexMemberships) && d.indexMemberships.length ? d.indexMemberships.map((x) => x.indexId).filter(Boolean) : null,
       was: recognition.businessDescriptions?.[d.symbol] || recognition.companies?.[d.symbol]?.was || null,
@@ -296,7 +299,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       evEbitda: ev !== null && ebitda && ebitda > 0 ? ev / ebitda : null,
       pFcf: mcap && fcfTtm && fcfTtm > 0 ? mcap / fcfTtm : null, fcfYield: num(m.f_fcfYield),
       perf1w: ind.perf1w, perf1m: num(m.return1M), perf3m: num(m.return3M), perf6m: num(m.return6M), perfYtd: ind.perfYtd, perf1y: num(m.return12M),
-      rs6m: num(m.relativeStrength6M), rs12m: num(m.relativeStrength12M), rsPct: num(m.relativeStrengthPercentile), momPct: num(m.momentumPercentile),
+      rs6m: num(m.relativeStrength6M), rsPct: num(m.relativeStrengthPercentile), momPct: num(m.momentumPercentile),
       distSma20: num(rv.distanceToSMA20), distSma50: num(rv.distanceToSMA50), distSma100: num(rv.distanceToSMA100), distSma200: num(rv.distanceToSMA200),
       sma50vs200: ind.sma50vs200, distEma21: ind.distEma21, dist52wH: num(m.distanceTo52wHigh), dist52wL: num(m.distanceTo52wLow),
       newHigh: typeof rv.newHigh52w === 'boolean' ? (rv.newHigh52w ? 1 : 0) : null,
@@ -335,14 +338,26 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
   };
 }
 
+/** Das Artefakt ohne Spalten - Inhalt der Kopfdatei universe-<id>.meta.json. */
+export function universeMeta(data) {
+  const { cols, ...meta } = data;
+  void cols;
+  return meta;
+}
+
 export async function writeUniverse({ root = process.cwd(), out, log = console.log } = {}) {
   const data = await buildUniverse({ root, log });
   const target = resolve(out || join(root, 'screener/data'));
   await mkdir(target, { recursive: true });
   const bytes = Buffer.from(JSON.stringify(data));
   await writeFile(join(target, 'universe-' + UNIVERSE + '.json'), bytes);
-  log(`geschrieben: ${join(target, 'universe-' + UNIVERSE + '.json')} (${(bytes.length / 1048576).toFixed(2)} MiB)`);
-  return { count: data.count, bytes: bytes.length, asOf: data.asOf };
+  // Kopfdatei fuer den ersten Bildaufbau der Startansicht: dasselbe Artefakt
+  // ohne `cols`, also dieselben Metadaten (Anzahl, Datenstand, Quellen) in
+  // wenigen KB. Die Oberflaeche laedt das ganze Universum trotzdem sofort.
+  const meta = Buffer.from(JSON.stringify(universeMeta(data)));
+  await writeFile(join(target, 'universe-' + UNIVERSE + '.meta.json'), meta);
+  log(`geschrieben: ${join(target, 'universe-' + UNIVERSE + '.json')} (${(bytes.length / 1048576).toFixed(2)} MiB) + .meta.json (${(meta.length / 1024).toFixed(1)} KiB)`);
+  return { count: data.count, bytes: bytes.length, metaBytes: meta.length, asOf: data.asOf };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

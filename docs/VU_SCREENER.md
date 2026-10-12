@@ -34,6 +34,12 @@ Engines sind DOM-frei (UMD) und laufen in Browser, Worker und Node. Die Oberflä
 Ein Server-Adapter (`RemoteScreenerAdapter`) nimmt dieselbe Query als JSON entgegen (`POST /screen {query, offset, limit}`),
 damit Screening später serverseitig mit Index, Pagination und Cache laufen kann, ohne die Oberfläche zu ändern.
 
+Erster Bildaufbau: Neben dem Universum schreibt derselbe Erzeuger `screener/data/universe-US_REAL.meta.json`
+(dasselbe Artefakt ohne `cols`, wenige KB). Ohne Link-Zustand (`/screener/` ohne `?…`) lädt die Seite zuerst diese
+Kopfdatei und zeigt die Startansicht sofort (`adapter.loadMeta()`); das volle Universum lädt unmittelbar parallel
+weiter. Jede Ansicht und Aktion, die Spalten braucht (Filterbibliothek, Universum-Info, Build, Treffer, Aktie,
+Deep Links), wartet wie bisher auf `adapter.load()`. Fehlt die Kopfdatei, bleibt es beim Platzhalter bis zum Universum.
+
 ## Filter-Datenmodell
 
 ```json

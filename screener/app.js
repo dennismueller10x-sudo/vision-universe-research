@@ -27,7 +27,7 @@
   }
 
   var PAGE = 30;
-  var state = { query: Q.empty(), view: 'start', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, invalidLink: null, targetGroup: null };
+  var state = { query: Q.empty(), view: 'start', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, preview: null, invalidLink: null, targetGroup: null };
   var cache = { key: null, result: null };
   var mqDesk = window.matchMedia('(min-width:1024px)');
   var root = document.getElementById('sc-root');
@@ -84,7 +84,23 @@
   }
   function signCls(v) { return v > 0 ? 'sc-up' : v < 0 ? 'sc-down' : 'sc-muted'; }
   function ds() { return adapter.dataset(); }
-  function info() { return adapter.info(); }
+  /* Vor dem vollen Universum traegt state.preview die Kopfdaten (adapter.loadMeta),
+     damit die Startansicht sofort steht. Danach gilt allein adapter.info(). */
+  function info() { return adapter.info() || state.preview; }
+  /** Erste Bildansicht ohne Spalten: nur die Startansicht ohne Link-Zustand. */
+  function previewing() { return !state.loaded && !!state.preview && state.view === 'start' && !state.stock && !state.invalidLink; }
+  /** Aktionen, die Spalten brauchen, warten in der Vorschau auf das Universum
+      (wie bisher: ohne Daten ist nichts davon bedienbar). Nur die letzte
+      wartende Aktion laeuft. */
+  var pendingAction = null;
+  function needsData(fn) {
+    return function () {
+      if (ds()) return fn.apply(this, arguments);
+      var self = this, args = arguments, act = function () { fn.apply(self, args); };
+      pendingAction = act;
+      adapter.load().then(function () { if (pendingAction === act) { pendingAction = null; if (ds() && !state.error) act(); } }, function () { if (pendingAction === act) pendingAction = null; });
+    };
+  }
   function fieldName(id) { var f = F.field(id); return f ? f.short || f.label : id; }
 
   // ------------------------------------------------------------ URL-Zustand
@@ -266,7 +282,7 @@
     var y = window.scrollY;
     var main = h('main', { id: 'sc-main', class: 'sc-app', tabindex: '-1' });
     var frag = [main];
-    if (!state.loaded) { main.append(loadingView()); root.replaceChildren.apply(root, frag); return; }
+    if (!state.loaded && !previewing()) { main.append(loadingView()); root.replaceChildren.apply(root, frag); return; }
     if (state.error) { main.append(errorView()); root.replaceChildren.apply(root, frag); return; }
     document.title = ({ start: 'Screener', build: 'Screen bauen', results: 'Treffer', saved: 'Gespeicherte Screens', changes: 'Veränderungen', compare: 'Vergleich', watchlist: 'Watchlist' })[state.view] + ' — Vision Universe® Screener';
     var views = { start: viewStart, build: viewBuild, results: viewResults, saved: viewSaved, changes: viewChanges, compare: viewCompare, watchlist: viewWatchlist };
@@ -343,7 +359,7 @@
       + '<circle cx="20" cy="126" r="4" fill="var(--sc-accent)"/><circle cx="218" cy="74" r="5" fill="var(--sc-accent)"/><circle cx="176" cy="150" r="3" fill="var(--sc-accent)" opacity=".6"/><circle cx="64" cy="58" r="2.5" fill="var(--sc-accent)" opacity=".6"/></svg>';
     return w;
   }
-  function openUniverseInfo() {
+  var openUniverseInfo = needsData(function () {
     var i = info(), m = ds().meta, s = openSheet({ title: 'Das Universum' });
     var withheld = (m.sanitized && (m.sanitized.FOREIGN_FILER || 0) + (m.sanitized.NON_USD_REPORTING || 0) + (m.sanitized.IMPLAUSIBLE_SHARE_BASIS || 0)) || 0;
     s.body.append(h('p', { class: 'sc-field-desc', text: nf(i.count) + ' US-Stammaktien an ihrer Primärbörse. ETFs, separate Aktiengattungen und Titel in Prüfung sind nicht enthalten.' }),
@@ -351,7 +367,7 @@
       h('p', { class: 'sc-label', text: 'Plausibilitätsprüfung' }),
       h('p', { class: 'sc-note', text: 'Bei ' + nf(withheld) + ' Aktien werden Marktkapitalisierung und Bewertungskennzahlen nicht gezeigt, weil die gemeldete Aktienzahl oder Währung nicht zum gehandelten Papier passt (z. B. ADRs ausländischer Unternehmen). Margen und Wachstum bleiben filterbar.' }),
       h('p', { class: 'sc-note', text: 'Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Der Filter-Impact zeigt, wie viele Aktien dadurch herausfallen.' }));
-  }
+  });
   function openSettings() {
     var s = openSheet({ title: 'Einstellungen' }), q = state.query;
     function row(title, sub, control) { return h('div', { class: 'sc-toggle' }, [h('span', {}, [title, sub ? h('small', { text: sub }) : null]), control]); }
@@ -750,7 +766,7 @@
   }
 
   // ------------------------------------------------------------ LIBRARY
-  function openLibrary(opts) {
+  var openLibrary = needsData(function (opts) {
     opts = opts || {};
     state.targetGroup = opts.target || null;
     var mode = state.query.mode;
@@ -812,7 +828,7 @@
     }
     input.addEventListener('input', debounce(paint, 80));
     paint();
-  }
+  });
   /** Zeichnet die Seite hinter einem Sheet neu und aktualisiert die URL (ohne Sheets zu schliessen). */
   function refreshBehind() {
     var url = buildURL();
@@ -1351,8 +1367,17 @@
 
   // ------------------------------------------------------------ Start
   function boot() {
-    state.error = null; state.loaded = false; readURL(); render();
-    adapter.load().then(function () { state.loaded = true; readURL(); history.replaceState({ sc: 1 }, '', location.href); render(); })
+    state.error = null; state.loaded = false; state.preview = null; readURL(); render();
+    /* Startansicht ohne Link-Zustand: zuerst die Kopfdatei (wenige KB) zeichnen.
+       Das volle Universum laedt unmittelbar parallel weiter; jede Ansicht und
+       Aktion, die Spalten braucht, wartet darauf wie bisher. Fehlt die
+       Kopfdatei, bleibt es beim Platzhalter bis zum vollen Universum. */
+    if (!location.search && adapter.loadMeta) adapter.loadMeta().then(function (i) {
+      if (!i || state.loaded || state.preview) return;
+      state.preview = i;
+      if (previewing()) render();
+    });
+    adapter.load().then(function () { var keep = previewing(); state.loaded = true; readURL(); history.replaceState({ sc: 1 }, '', location.href); render({ keepScroll: keep }); })
       .catch(function (e) { state.loaded = true; state.error = String(e && e.message || e); render(); });
   }
   boot();
