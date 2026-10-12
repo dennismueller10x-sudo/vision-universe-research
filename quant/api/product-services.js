@@ -32,17 +32,6 @@ const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engi
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
 const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
-const Identity=typeof module!=='undefined'&&module.exports?require('../../core/identity.js'):(g.VUCore&&g.VUCore.Identity);
-/* Scherbe der Technik-Produktdaten (technical-signals-v1/<key>.json.gz). */
-function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
-/* Ausschnitt EINES Titels aus seinem Technik-Shard (Release-Build,
- * build-release.mjs): dieselbe Form wie der Shard, nur mit diesem Titel.
- * Der Schluessel ist die kanonische securityId (core/identity.js, ADR-001).
- * Ohne Identitaetsmodul oder bei ungueltigem Ticker gibt es keinen Pfad. */
-function technicalTickerPath(ticker){
- if(!Identity)return null;let id;try{id=Identity.securityIdForTicker(ticker);}catch{return null;}
- return Identity.isSecurityId(id)?'/quant/data/product/technical-signals-v1/ticker/'+id+'.json.gz':null;
-}
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -55,7 +44,7 @@ function create(options){
      !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      path!=='/quant/data/product/strategy-index-v1.json.gz'&&
-     !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60)|ticker\/ref_[A-Z0-9_]{1,24})\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
+     !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
   if(input[0]!==31||input[1]!==139){if(response.headers.get('content-encoding')==='gzip')return JSON.parse(new TextDecoder().decode(input));throw Error('INVALID_COMPRESSION');}
@@ -279,6 +268,7 @@ function create(options){
   ['Historische Fundamentals','/quant/#/aktie/'+q+'/zahlen'],['Quant','/quant/#/aktie/'+q],
   ['Vergleichen','/quant/#/vergleich/'+q],['Strategie definieren','/quant/#/strategien']
  ].map(([label,href])=>({label,href}));}
+ function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
  /* Factor DNA and What-Changed for one title. The artifact carries a
   * withheld composite by construction; this reader refuses anything that
   * claims otherwise rather than rendering a score the gate forbids. */
@@ -773,18 +763,9 @@ function create(options){
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  async function materializedTechnical(ticker,securityId){
-  const key=technicalShard(ticker),shard=await technicalShardFor(ticker,key),source=shard?.instruments?.[ticker];
+  const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
   if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!==securityId)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
   return source;
- }
- /* Erst der Ausschnitt dieses Titels (Release-Build, wenige KB statt des
-  * ganzen Shards), sonst der Shard. Der Ausschnitt gilt nur, wenn er
-  * ausdruecklich diesen Titel und diesen Shard nennt; alles andere - fehlt,
-  * kaputt, fremd - liest den Shard wie bisher. */
- async function technicalShardFor(ticker,key){
-  const path=technicalTickerPath(ticker);
-  if(path){const own=await compressedJSON(path).catch(()=>null);if(own&&own.ticker===ticker&&own.shard===key)return own;}
-  return compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
  }
  async function technicalSource(ticker,securityId){try{return await materializedTechnical(ticker,securityId);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
  /* WARUM DIESER TITEL KEINE KURSSTRUKTUR HAT.
@@ -834,7 +815,7 @@ function create(options){
   * auch eine Fassung, die es noch nicht gibt. */
  const TECHNICAL_UNAVAILABLE_SCHEMAS=['technical-unavailable-1.0.0','technical-unavailable-1.1.0'];
  async function technicalUnavailability(ticker){
-  try{const key=technicalShard(ticker),shard=await technicalShardFor(ticker,key);
+  try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
    if(!shard||shard.shard!==key||TECHNICAL_UNAVAILABLE_SCHEMAS.indexOf(shard.unavailableSchemaVersion)<0)return null;
    const entry=shard.unavailable&&shard.unavailable[ticker];
    if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
@@ -1397,5 +1378,5 @@ function create(options){
  }
  return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
-const api={create,technicalShard,technicalTickerPath};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
+const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

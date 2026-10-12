@@ -4,9 +4,9 @@ import {resolve,dirname,sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {gzipSync,gunzipSync} from 'node:zlib';
+import {gzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js'),Services=require('../../quant/api/product-services.js');
+const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -36,29 +36,6 @@ export function capabilityShards(capability){
   const key=Master.shardKey(member.s);
   if(!out[key]){out[key]={};for(const h of Object.keys(capability))if(h!=='members')out[key][h]=capability[h];out[key].shard=key;out[key].members=[];}
   out[key].members.push(member);
- }
- return out;
-}
-/* Der Ausschnitt EINES Titels aus seinem Technik-Shard: alle Kopffelder,
-   dazu nur sein Eintrag in instruments und unavailable (product-services.js
-   #technicalShardFor). Geschrieben wird nur, wo der Leser genau diesen Shard
-   fuer den Titel laedt, und nie fuer zwei Titel unter einer securityId
-   ("BRK.B"/"BRK-B"): dann bleibt es beim Shard. */
-export function technicalTickerSlices(shard,key){
- if(!shard||shard.shard!==key||typeof shard.schemaVersion!=='string')return {};
- const header={};for(const h of Object.keys(shard))if(h!=='instruments'&&h!=='unavailable')header[h]=shard[h];
- const tickers=new Set([...Object.keys(shard.instruments||{}),...Object.keys(shard.unavailable||{})]),byPath=new Map();
- for(const ticker of tickers){
-  if(Services.technicalShard(ticker)!==key)continue;
-  const path=Services.technicalTickerPath(ticker);if(!path)continue;
-  if(!byPath.has(path))byPath.set(path,[]);byPath.get(path).push(ticker);
- }
- const out={};
- for(const [path,list] of byPath){
-  if(list.length!==1)continue;const ticker=list[0],slice={...header,ticker};
-  if(Object.hasOwn(shard,'instruments'))slice.instruments=Object.hasOwn(shard.instruments||{},ticker)?{[ticker]:shard.instruments[ticker]}:{};
-  if(Object.hasOwn(shard,'unavailable'))slice.unavailable=Object.hasOwn(shard.unavailable||{},ticker)?{[ticker]:shard.unavailable[ticker]}:{};
-  out[path.slice(1)]=slice;
  }
  return out;
 }
@@ -107,14 +84,6 @@ export async function buildRelease({root,output}){
    const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET)throw Error('CAPABILITY_SHARD_BUDGET_EXCEEDED');
    await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
   }
- }
- /* Ebenso der Technik-Shard (bis 4 MB entpackt fuer 15 Titel): je Titel
-    ein Ausschnitt, gzip wie der Shard. Der Shard bleibt daneben. */
- const technicalShardPaths=paths.filter(p=>/^quant\/data\/product\/technical-signals-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(p));
- if(technicalShardPaths.length)await mkdir(resolve(output,'quant/data/product/technical-signals-v1/ticker'),{recursive:true});
- for(const p of technicalShardPaths){
-  const key=p.slice(-10,-8),shard=JSON.parse(gunzipSync(await readFile(resolve(root,p))).toString('utf8'));
-  for(const [target,slice] of Object.entries(technicalTickerSlices(shard,key)))await writeFile(resolve(output,target),gzipSync(Buffer.from(JSON.stringify(slice)),{level:9}));
  }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
