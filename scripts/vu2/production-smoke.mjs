@@ -98,7 +98,7 @@ const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant
  '/quant/#/aktie/GOOG','/quant/#/aktie/GOOGL','/quant/#/aktie/T','/quant/#/aktie/SO','/quant/#/aktie/AAAC',
  '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO',
  '/quant/#/aktie/ZZZZZ',
- '/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
+ '/quant/#/elliott/NVDA','/quant/#/elliott/AAPL?ansicht=profi','/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
  '/quant/#/vergleich/NVDA,MSFT','/quant/#/vergleich/AAPL,MSFT,GOOGL',
  '/quant/#/methodik',
  '/quant/#/methodik/daten','/quant/#/methodik/faktoren','/quant/#/methodik/gewichtung','/quant/#/methodik/branchen',
@@ -121,7 +121,12 @@ const LEGACY={
  '/quant/?view=screener':'/quant/#/screener',
  '/quant/?view=screener&faktoren=momentum':'/quant/#/screener?frage=momentum',
  '/Quant/?view=explain':'/quant/#/methodik',
- '/vu2/?view=fundamentals&ticker=NVDA':'/quant/#/aktie/NVDA/zahlen?kennzahl=revenue&periode=annual'
+ '/vu2/?view=fundamentals&ticker=NVDA':'/quant/#/aktie/NVDA/zahlen?kennzahl=revenue&periode=annual',
+ /* Elliott ist ein eigenes Produkt (/elliott/): alte Technik- und Chartbild-Adressen enden auf #/elliott/<T>. */
+ '/quant/#/aktie/NVDA/technik':'/quant/#/elliott/NVDA',
+ '/quant/#/aktie/NVDA/technik?elliott=1':'/quant/#/elliott/NVDA?ansicht=profi',
+ '/quant/#/aktie/NVDA/chartbild':'/quant/#/elliott/NVDA',
+ '/quant/#/aktie/AAPL/chartbild?ansicht=profi':'/quant/#/elliott/AAPL?ansicht=profi'
 };
 /* Absichtliche Absagen: die Seite IST die Auskunft "gibt es nicht". Sie
    tragen ihre eigene Ueberschrift und einen Weg zurueck; der Inhaltsboden

@@ -531,3 +531,13 @@
 .qd .cb-pj-gates{margin:6px 0 14px}
 .qd .cb-pj-gate-ok b{color:var(--cb-up)} .qd .cb-pj-gate-bad b{color:var(--cb-mixed)}
 .qd .cb-pj-gates .cb-table{min-width:460px}.qd .cb-pj-gates .cb-table-wrap{overflow-x:auto}
+
+/* Elliott-Produktkontext (#/elliott/<T>): Kopfzeile und ehrliche Leere */
+.cb-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:0 16px;margin:0 0 10px;font-size:14px}
+.cb-crumbs a{color:inherit;text-decoration:none;font-weight:700;min-height:44px;display:inline-flex;align-items:center}
+.cb-crumbs a:hover{text-decoration:underline;text-underline-offset:4px}
+.cb-crumb-now{font-weight:800;letter-spacing:-.01em}
+.cb-crumb-link{opacity:.75;font-weight:600!important}
+.cb-nothesis{margin:0 0 18px;padding:16px 18px;border:1px solid var(--vu-line,rgba(127,127,127,.25));border-radius:18px}
+.cb-nothesis-h{margin:0 0 6px;font-size:18px;letter-spacing:-.01em}
+.cb-nothesis p{margin:0 0 6px}
