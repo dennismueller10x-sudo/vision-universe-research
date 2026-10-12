@@ -130,7 +130,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
                     'sourceProfile': public_profile(p, cid, stamp), 'ledgerNewsCount': len(raw['news']),
                     'ledgerNewsLatestPublishedAt': max((e.get('publishedAt') or e.get('publishedDate') or '' for e in raw['news']), default=None),
                     'ledgerPrimaryUrlSchemes': dict(Counter((e.get('canonicalUrl') or '').split(':', 1)[0] for e in raw['news'])),
-                    'httpsRepairClasses':dict(repair), 'currentOnboardingStatus':onboard.get('status'),'currentOnboardingReasonCode':onboard.get('reasonCode'),
+                    'httpsRepairClasses':dict(repair), 'currentOnboardingStatus':onboard.get('status'),'currentOnboardingReasonCode':onboard.get('reasonCode'),'currentOnboardingTransportReasonCode':onboard.get('transportReasonCode'),
                     'currentOfficialRootStatus':official.get('status'),
                     'policyAllowedNews': len(safe_payload['news']), 'policyExcludedNews': usage['excluded']['news'],
                     'officialRootPolicyWithheld': not policy_sources and bool(issuer_sources),

@@ -27,6 +27,12 @@ from company_intelligence.current_state_acceptance import database_proof
 
 MANDATORY = ('iss_cik_0001633917', 'iss_cik_0001652130')
 
+def safe_failure_detail(error):
+    # Retain only an explicit transport classification, never provider text,
+    # URLs, query strings or response bodies in public-safe evidence.
+    parts = str(error).split(':')
+    return parts[1] if len(parts) == 2 and parts[0] == 'ROBOTS_UNAVAILABLE' and re.fullmatch(r'(?:HTTP_\d{3}|[A-Z_]+)', parts[1]) else None
+
 def proven(sources, cid):
     return [s for s in sources if s.get('companyId') == cid and s.get('active') and first_party(s, cid)
             and not publisher(s.get('url')) and s.get('lastSuccess') and not s.get('unsupported')]
@@ -145,7 +151,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                         'lastVerified': stamp, 'ownershipEvidence': proof, 'url': row['url']})
                     code = 'CURRENT_OWNER_CONFLICT_WITHHELD'
                 outcomes[code] += 1
-                store.set_state(key + cid, {'status': code, 'reasonCode': reason if re.fullmatch(r'[A-Z0-9_]+',reason) else type(error).__name__, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
+                store.set_state(key + cid, {'status': code, 'reasonCode': reason if re.fullmatch(r'[A-Z0-9_]+',reason) else type(error).__name__, 'transportReasonCode': safe_failure_detail(error), 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
             except Exception as error:
                 # Programming errors cannot masquerade as upstream outages.
                 raise ValueError('SOURCE_ONBOARDING_IMPLEMENTATION_ERROR') from error

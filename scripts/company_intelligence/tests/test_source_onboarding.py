@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from company_intelligence.source_onboarding import candidate_inventory, proven, onboard
+from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail
 from company_intelligence.store import Store
 from company_intelligence.top46_content import matching_resolver
 
@@ -17,6 +17,11 @@ class SourceOnboardingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             resolver = matching_resolver(companies, Path(directory))
         self.assertEqual(set(resolver.companies), set(companies))
+    def test_safe_robots_diagnostics_never_expose_provider_text(self):
+        self.assertEqual(safe_failure_detail(ValueError('ROBOTS_UNAVAILABLE:HTTP_403')), 'HTTP_403')
+        self.assertEqual(safe_failure_detail(ValueError('ROBOTS_UNAVAILABLE:NETWORK_ERROR')), 'NETWORK_ERROR')
+        for message in ['ROBOTS_UNAVAILABLE:https://secret.example/token', 'ROBOTS_UNAVAILABLE:HTTP_403:body', 'HTTP_403']:
+            self.assertIsNone(safe_failure_detail(ValueError(message)))
     def test_registered_urls_are_not_polling_proof(self):
         self.assertEqual(proven([SOURCE], CID), [])
         self.assertEqual(len(proven([{**SOURCE, 'lastSuccess': '2026-10-05T10:00:00Z'}], CID)), 1)
