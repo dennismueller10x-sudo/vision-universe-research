@@ -252,6 +252,8 @@
     node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxr" + lauf + ")",
       d: segmentDates ? fills : d + "L" + x(p[p.length - 1][0]).toFixed(1) + " " + (h - padBottom) + " L" + x(p[0][0]).toFixed(1) + " " + (h - padBottom) + " Z" }));
     node.appendChild(svg("path", { class: "dx-art-line dx-range-line", d: d.trim(), "vector-effect": "non-scaling-stroke" }));
+    // A vetted isolated observation is a point, never an invented price path.
+    if (segmentDates) groups.filter(function(g){return g.points.length===1;}).forEach(function(g){var pt=g.points[0];node.appendChild(svg('circle',{class:'dx-art-node dx-range-observation','data-date':pt[0],cx:x(pt[0]).toFixed(1),cy:y(pt[1]).toFixed(1),r:2.2}));});
     var lx = x(p[p.length - 1][0]), ly = y(closes[closes.length - 1]);
     node.appendChild(svg("circle", { class: "dx-art-node", cx: lx.toFixed(1), cy: ly.toFixed(1), r: 3.4 }));
     /* Kursachse rechts: Hoch, zwei Zwischenwerte, Tief, letzter Kurs. */
@@ -281,7 +283,7 @@
       var iso = new Date(tt).toISOString().slice(0, 10);
       var anchor = i === 0 ? "start" : i === ticks ? "end" : "middle";
       node.appendChild(svg("text", { class: "dx-range-date", x: x(iso).toFixed(1), y: h - 8, "text-anchor": anchor,
-        text: opt.range === "1W" || opt.range === "1M" ? datum(iso) : (opt.range === "6M" || opt.range === "1Y" || opt.range === "MAX" && tspan < 366 * 86400000 ? monat(iso) : iso.slice(0, 4)) }));
+        text: opt.range === "1W" || opt.range === "1M" ? datum(iso) : (opt.range === "6M" || opt.range === "1Y" || opt.segments && opt.range === '3M' || opt.range === "MAX" && tspan < 366 * 86400000 ? monat(iso) : iso.slice(0, 4)) }));
     }
     return node;
   }
