@@ -46,7 +46,15 @@
     if (!q || q.mic!==l.mic || q.providerSymbol!==l.providerSymbol || q.currency!==l.currency || q.quoteUnit!==p.quoteUnit || (s.isin&&q.isin!==s.isin) || !['OFFICIAL_LISTING_QUOTE_REFERENCE','PROVIDER_DOCUMENTED_QUOTE_CONTRACT','PROVIDER_EXPLICIT_QUOTE_CURRENCY'].includes(q.kind) || p.quoteUnit!==p.currency || (q.kind==='PROVIDER_EXPLICIT_QUOTE_CURRENCY'&&(!hash(q.providerCurrencyObservationSha256)||!hash(q.contractSchemaSha256))) || (p.currency==='GBP'&&(q.kind!=='PROVIDER_DOCUMENTED_QUOTE_CONTRACT'||!hash(q.unitContractSha256)))) reasons.push('QUOTE_BASIS_NOT_BOUND');
     if (!p || !Array.isArray(p.criticalIssues) || p.criticalIssues.length || !Array.isArray(p.reasonCodes) || p.reasonCodes.length) reasons.push('CRITICAL_CLOSE_QUALITY_ISSUES');
     if (!p || !['CHART_READY','CHART_LIMITED'].includes(p.chartStatus)) reasons.push('CHART_BLOCKED');
-    var ready=reasons.length===0, status=ready?(p.sessionLag>=2?'CHART_LIMITED':p.chartStatus):'CHART_BLOCKED';
+    var display=l.discoverDisplay, window=display&&display.ranges&&display.ranges[range||'1Y'], chartStatus=p&&p.chartStatus;
+    // Close display quality is independent of adjusted OHLCV certification.
+    // The source Close, identity, currency and freshness gates above still apply.
+    if(display&&display.version==='vu-discover-display-policy-2'){
+      if(!window||window.version!=='vu-discover-display-window-2'||!p||window.sourcePointsSha256!==p.pointsSha256||window.sourceSegmentsSha256!==p.segmentsSha256||window.calendarSha256!==p.calendarSourceSha256||!hash(window.displaySegmentsSha256)||!['CHART_READY','CHART_LIMITED','CHART_BLOCKED'].includes(window.chartStatus))reasons.push('DISPLAY_CONTINUITY_PROOF_NOT_BOUND');
+      else chartStatus=window.chartStatus;
+      if(chartStatus==='CHART_BLOCKED')reasons.push('UNSAFE_DISPLAY_CONTINUITY');
+    }
+    var ready=reasons.length===0, status=ready?(p.sessionLag>=2?'CHART_LIMITED':chartStatus):'CHART_BLOCKED';
     return {status:status,ready:ready,reasonCodes:reasons,sessionLag:p&&p.sessionLag!==undefined?p.sessionLag:null,
       freshness:p&&Number.isInteger(p.sessionLag)?p.sessionLag===0?'CURRENT_LAST_SESSION':p.sessionLag<=3?'DELAYED':'STALE':'UNKNOWN',
       evidence:p||null};
