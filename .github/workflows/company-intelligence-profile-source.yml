@@ -138,5 +138,7 @@ jobs:
             ${{ runner.temp }}/ci-profile-source/profile-sample.json
             ${{ runner.temp }}/ci-profile-source/profile-browser-qa.json
             ${{ runner.temp }}/ci-profile-source/profile-live-browser-qa.json
-            ${{ runner.temp }}/ci-profile-source/profile-*-browser-qa.json-*.png
+            ${{ runner.temp }}/ci-profile-source/profile-browser-qa.json-*.png
+            ${{ runner.temp }}/ci-profile-source/profile-live-browser-qa.json-*.png
+            ${{ runner.temp }}/ci-profile-source/candidate-qa.json-*.png
           retention-days: 14
