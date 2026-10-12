@@ -154,5 +154,13 @@
     "p95": 1220,
     "maximum": 2138
   },
-  "pagesPackageBytes": 665776174
+  "pagesPackageBytes": 665776174,
+  "finalNodeTests": 124,
+  "gateReadbackScalingCorrection": {
+    "existingPinnedBatch": true,
+    "maximumConcurrency": 12,
+    "allAssetHashesRequired": true,
+    "unchangedGoodRequiredBeforeGateWrite": true,
+    "productionDurationAfterCorrection": "NOT_YET_MEASURED_NO_UNNECESSARY_GATE_TOGGLE"
+  }
 }

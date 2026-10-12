@@ -520,3 +520,31 @@ Manual acceptance and this read-only dispatch are not claimed as scheduled
 persistence proof. Thus the German-profile/live-product release is verified,
 while the separate next-scheduled-refresh acceptance remains open. The source
 backlog and PayPal/Intellia GHA robots outages remain genuine limitations.
+
+
+### Final gate-readback scaling correction
+
+The production publication logged its completed private/consumer acceptance at
+22:18:30, but reached Pages dispatch only at 22:43:40: the final gate-enable
+check took approximately 25 additional minutes. It used the single-asset reader
+for every full-universe object, repeatedly parsing and validating the complete
+manifest, with serial R2 reads. This was separate from the network source lane.
+
+The rolling GOOD gate now reuses the existing pinned `download-public.mjs`
+consumer batch: validate the full manifest once, bounded 12-object I/O, hash and
+length check **every** listed asset, unchanged seven-day/future-clock expiry,
+fresh temporary consumer-only directory removed in `finally`, then confirm the
+selected namespace and complete GOOD pointer are still unchanged. The sole
+gate write happens only after all proof succeeds. Legacy exact-approved fallback
+and immediate gate disable behavior remain unchanged. No poll cadence or source
+request budget increases. This is a scaling correction to the existing mechanism,
+not a new publication/storage architecture or a data-generation replacement.
+
+Three additional Node regressions prove a 5,120-issuer gate checks all 5,121
+assets before its sole write with maximum concurrency 12, corrupt bytes produce
+zero gate writes, and a changed GOOD pointer produces zero gate writes.
+The final Company Intelligence Node suite now contains **124 tests**; the
+746-test Python engine suite is unchanged. The reduced real R2 gate duration
+will be measured on the next necessary enable operation; a synthetic test is
+not presented as that production benchmark. It does not reopen or rewrite the
+currently healthy gate merely to manufacture a timing measurement.
