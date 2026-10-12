@@ -6,7 +6,29 @@ import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {constants as bufferConstants} from 'node:buffer';
 import {assertFreezeV2} from './freeze-v2.mjs';
-import {FINAL_QUESTIONS} from '../tournament/publish-report.mjs';
+export const CERTIFICATION_QUESTION_VERSION = 'CERTIFICATION_RERUN_20_V1';
+export const CERTIFICATION_FINAL_QUESTIONS = Object.freeze([
+  'Welche vorher blockierten Methoden sind jetzt messbar?',
+  'Welche bleiben blockiert?',
+  'Welche Datenverträge fehlen noch?',
+  'Welche Execution-Probleme wurden gefunden?',
+  'Hat der Momentum-Lookahead die frühere Bewertung verändert?',
+  'Welche Methoden zeigen jetzt positive Signal-Evidenz?',
+  'Welche schlagen SPY auf Portfolioebene?',
+  'Welche haben besseres Drawdown-/Risk-Profil?',
+  'Welche systematischen Methoden sind jetzt am stärksten?',
+  'Welche Legendary-Methoden sind jetzt am stärksten?',
+  'Welche Methoden waren vorher nur wegen schlechter Daten benachteiligt?',
+  'Welche bleiben trotz besserer Daten schwach?',
+  'Gibt es Tier A?',
+  'Gibt es Tier B?',
+  'Welche aktuellen Aktien erfüllen die stärksten Methoden?',
+  'Gibt es Multi-Method-Consensus?',
+  'Welche Methoden sollen Forward-Ledgers erhalten?',
+  'Welche Deep Dives sind jetzt wirklich gerechtfertigt?',
+  'Welche Methoden sollten nur educational bleiben?',
+  'Was ist der nächste konkrete Produkt-/Research-Schritt?',
+]);
 
 export const RERUN_PUBLIC_NAMES = Object.freeze([
   'SUPERTRADER-TOURNAMENT-RERUN.json', 'SUPERTRADER-SIGNAL-QUALITY-RERUN.json',
@@ -28,6 +50,8 @@ const PORTFOLIO = ['ABOVE', 'SIMILAR', 'BELOW', 'UNAVAILABLE'];
 const RISK = ['SHALLOWER', 'SIMILAR', 'DEEPER', 'UNAVAILABLE'];
 const ANSWER = ['RESOLVED', 'PRIVATE_ENCRYPTED', 'BLOCKED_DATA', 'NOT_IDENTIFIED', 'RESEARCH_ONLY', 'NONE_QUALIFIED'];
 const REGIMES = ['BULL', 'BEAR', 'SIDEWAYS', 'UNKNOWN', 'HIGH_VOL', 'LOW_VOL', 'MID_VOL', 'EARLY', 'LATE'];
+const CONTROL_CONDITION = 'SAME_NEW_CANONICAL_SOURCE_ORIGINAL_EXECUTION_BEFORE_TERMINAL_OVERLAY';
+const BASELINE_ROLES = {baseline589InputSha256: 'BASELINE_589_CONSOLIDATED_PRIVATE_PAYLOAD', baseline589ManifestSha256: 'BASELINE_589_PRIVATE_INPUT_MANIFEST'};
 const SHA = /^[a-f0-9]{64}$/;
 const array = value => Array.isArray(value) ? value : [];
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -50,11 +74,18 @@ export function loadRerunPublicMetadata(outRoot = ROOT) {
     baselineTiering: json(base('SUPERTRADER-TIERING-FINAL.json'))};
 }
 
+export function baseline589Bindings(freeze) {
+  return Object.fromEntries(Object.entries(BASELINE_ROLES).map(([key, role]) => {
+    const rows = array(freeze?.inputReceipts).filter(row => row.role === role);
+    if (rows.length !== 1 || !SHA.test(rows[0].sha256 ?? '')) throw new Error('EXACT_FROZEN_BASELINE_RECEIPTS_REQUIRED');
+    return [key, rows[0].sha256];
+  }));
+}
 function reviewGate(review, bindings) {
   if (review?.status !== 'PASSED' || review.finalized !== true || review.reviewScope !== 'FULL_SIX_METHODS' ||
       review.fullSixMethodReviewComplete !== true || review.fullFifteenPairReviewComplete !== true ||
-      review.controlReviewComplete !== true || review.currentRunReviewed !== true) throw new Error('FINAL_FULL_NUMERIC_AND_REDTEAM_REVIEW_REQUIRED');
-  for (const name of ['historicalInputSha256', 'controlInputSha256', 'currentInputSha256', 'certificationFreezeHash', 'eligibilityFileSha256']) {
+      review.controlReviewComplete !== true || review.currentRunReviewed !== true || review.sensitivityRawArithmeticComplete !== true) throw new Error('FINAL_FULL_NUMERIC_AND_REDTEAM_REVIEW_REQUIRED');
+  for (const name of ['historicalInputSha256', 'controlInputSha256', 'currentInputSha256', 'certificationFreezeHash', 'eligibilityFileSha256', 'baseline589InputSha256', 'baseline589ManifestSha256']) {
     if (!SHA.test(bindings?.[name] ?? '') || review[name] !== bindings[name]) throw new Error('REVIEW_INPUT_BINDING_MISMATCH');
   }
 }
@@ -69,14 +100,20 @@ export function validateRerunPublication({historical, control, current, numericR
   if (!historical.dataFingerprint || historical.dataFingerprint !== control.dataFingerprint ||
       !isDeepStrictEqual(historical.freeze, metadata.originalFreeze) || !isDeepStrictEqual(historical.certificationFreeze?.eligibility, eligibility) ||
       !isDeepStrictEqual(current?.freeze, historical.certificationFreeze)) throw new Error('ACTUAL_SOURCE_FREEZE_ELIGIBILITY_BINDING_MISMATCH');
+  for (const [key, value] of Object.entries(baseline589Bindings(historical.certificationFreeze))) if (bindings?.[key] !== value) throw new Error('BASELINE_589_FROZEN_RECEIPT_MISMATCH');
+  if (!isDeepStrictEqual(control.freeze, historical.freeze) || !isDeepStrictEqual(control.certificationFreeze, historical.certificationFreeze) ||
+      !isDeepStrictEqual(control.protocol, historical.protocol) || !historical.controlFingerprint || control.controlFingerprint !== historical.controlFingerprint ||
+      control.condition !== CONTROL_CONDITION || control.fullRawRunsPreserved !== true || control.noClaimMatchingOld589SourceSnapshot !== true ||
+      control.results.some(r => r.condition !== CONTROL_CONDITION || r.controlOnly !== true || r.sourceDataFingerprint !== historical.dataFingerprint || r.controlFingerprint !== historical.controlFingerprint)) throw new Error('EXACT_SAME_SOURCE_ORIGINAL_BASELINE_CONTROL_REQUIRED');
   if (hash(JSON.stringify(historical.certificationFreeze)) !== bindings?.certificationFreezeHash) throw new Error('CERTIFICATION_FREEZE_HASH_MISMATCH');
   (verifyFreeze ?? assertFreezeV2)(historical.certificationFreeze);
   reviewGate(numericReview, bindings); reviewGate(redTeamReview, bindings);
   if (finalReview?.status !== 'PASSED' || finalReview.finalized !== true || finalReview.publicationAuthorized !== true) throw new Error('FINAL_OWNER_PUBLICATION_REVIEW_REQUIRED');
   if (finalReview.numericReviewSha256 !== hash(JSON.stringify(numericReview)) || finalReview.redTeamReviewSha256 !== hash(JSON.stringify(redTeamReview))) throw new Error('OWNER_REVIEW_BINDING_REQUIRED');
+  if (finalReview.questionVersion !== CERTIFICATION_QUESTION_VERSION) throw new Error('LATEST_CERTIFICATION_QUESTIONS_REQUIRED');
   const answers = array(finalReview.finalAnswers);
   if (answers.length !== 20 || new Set(answers.map(a => a.questionId)).size !== 20 ||
-      answers.some(a => !Number.isInteger(a.questionId) || a.questionId < 1 || a.questionId > 20 || !ANSWER.includes(a.status))) throw new Error('TWENTY_FINAL_ANSWERS_REQUIRED');
+      answers.some((a, i) => a.questionId !== i + 1 || !Number.isInteger(a.questionId) || a.questionId < 1 || a.questionId > 20 || !ANSWER.includes(a.status))) throw new Error('TWENTY_FINAL_ANSWERS_REQUIRED');
   for (const r of historical.results) {
     if (r.run?.reconciliation?.pass !== true || r.dataQuality?.pitListings !== false || r.ranking?.score !== null ||
         r.ranking?.components?.dataQuality !== null || r.ranking.confidence !== 'LOW' || !['C', 'D'].includes(r.ranking.tier) ||
@@ -89,7 +126,9 @@ export function validateRerunPublication({historical, control, current, numericR
   for (const s of current.currentScans) {
     const admission = eligibility.methods.find(r => r.id === s.id);
     enumOnly(s.status, SCAN);
-    if (s.fullyCertified !== false || s.eligibility !== admission.eligibility || admission.eligibility === 'BLOCKED' && (s.eligibility !== 'BLOCKED' || s.numberMatches !== null || array(s.candidates).length)) throw new Error('CURRENT_BLOCKED_OR_PARTIAL_ADMISSION_MISMATCH');
+    const runtimeBlocked = current.status === 'CURRENT_BLOCKED_DATA';
+    if (s.fullyCertified !== false || s.eligibility !== (runtimeBlocked ? 'BLOCKED' : admission.eligibility) ||
+        (runtimeBlocked || admission.eligibility === 'BLOCKED') && (s.status !== 'BLOCKED_DATA' || s.numberMatches !== null || array(s.candidates).length)) throw new Error('CURRENT_BLOCKED_OR_PARTIAL_ADMISSION_MISMATCH');
   }
   if (array(current.consensus?.qualifiedEligible).length || array(current.consensus?.qualifiedEligibleMethodIds).length ||
       array(current.consensus?.strongMethods).length || array(current.consensus?.eligibleStrongMethods).length) throw new Error('NO_QUALIFIED_CONSENSUS_MUST_BE_PRESERVED');
@@ -147,7 +186,7 @@ export function buildRerunPublicArtifacts(inputs) {
     baseline_legacy_unmeasured_dossiers: 3, baseline_source_educational_and_legacy_total: 27};
   if (sourceBlocked.length !== 2) throw new Error('TWO_UNIMPLEMENTED_BLOCKED_SOURCE_CANDIDATES_REQUIRED');
   const envelope = fields => ({schema: 'supertrader-public-rerun-2-0-0', status: 'FINAL_REVIEWED_RERUN_PROJECTION', ...fields});
-  const scans = current.currentScans.map(s => ({method_id: s.id, eligibility: s.eligibility, status: s.status,
+  const scans = current.currentScans.map(s => ({method_id: s.id, eligibility: s.eligibility, immutable_source_eligibility: ctx.eligibility.methods.find(r => r.id === s.id).eligibility, status: s.status,
     match_count: READY.includes(s.status) ? count(s.numberMatches ?? array(s.candidates).length) : null,
     portfolio_admitted_match_count: READY.includes(s.status) ? count(s.portfolioAdmittedMatches) : null,
     identifiers: 'PRIVATE_OWNER_ENCRYPTED', confidence: 'LOW', investment_recommendation: false}));
@@ -171,12 +210,23 @@ export function buildRerunPublicArtifacts(inputs) {
   });
   if (overlap.length !== 15 || new Set(overlap.map(r => [r.method_a, r.method_b].sort().join('|'))).size !== 15) throw new Error('FULL_REVIEWED_FIFTEEN_PAIR_OVERLAP_REQUIRED');
   const questions = ctx.answers.map(a => ({question_id: a.questionId, status: a.status, method_ids: idsOnly(a.methodIds),
-    confidential_detail: [10, 11].includes(a.questionId) ? 'PRIVATE_OWNER_ENCRYPTED' : 'PRIVATE_FINAL_REVIEW'}));
+    confidential_detail: [15, 16].includes(a.questionId) ? 'PRIVATE_OWNER_ENCRYPTED' : 'PRIVATE_FINAL_REVIEW'}));
   const priorities = idsOnly(finalReview.researchPriorityMethodIds);
+  const relativeLeaders = Object.fromEntries(['systematicMethodIds', 'legendaryMethodIds', 'signalMethodIds', 'portfolioMethodIds', 'riskMethodIds', 'currentMethodIds', 'consensusMethodIds'].map(key => [key, idsOnly(finalReview.reviewedRelativeLeaders?.[key])]));
+  for (const [key, values] of Object.entries(relativeLeaders)) {
+    if (values.some(id => !SIX.includes(id))) throw new Error('RELATIVE_LEADERS_MUST_BE_ACTUALLY_MEASURED');
+    if (key === 'systematicMethodIds' && values.some(id => !SIX.slice(0, 3).includes(id)) || key === 'legendaryMethodIds' && values.some(id => !SIX.slice(3).includes(id))) throw new Error('RELATIVE_LEADER_FAMILY_MISMATCH');
+  }
+  const executive = {previously_measured_methods: 6, previously_data_blocked_methods: 6, newly_fully_certified_methods: 0, newly_measurable_previously_blocked_methods: 0, still_blocked_methods: 6, tournament_participants_after_certification: 6,
+    execution_bugs_found: ['LEGACY_MOMENTUM_LOOKAHEAD_OUTSIDE_SIX', 'PIOTROSKI_FISCAL_PERIOD_RESOLUTION_STANDALONE_INACTIVE'],
+    data_bugs_found: ['TERMINAL_HINT_KNOWLEDGE_TIME_FILTER', 'UNSUPPORTED_NOMINAL_PIT_LISTING_FLAG', 'SEC_ACCEPTANCE_CLOCK_CONFLICT'],
+    actual_measured_tiers: {A: counts.measured_tier_A, B: counts.measured_tier_B, C: counts.measured_tier_C, D: counts.measured_tier_D},
+    reviewer_approved_relative_leaders: relativeLeaders, relative_leaders_are_fully_qualified_winners: false, fully_qualified_winner_status: 'NONE_QUALIFIED', current_stock_identities: 'PRIVATE_OWNER_ENCRYPTED', qualified_consensus_status: 'NONE_QUALIFIED'};
   const out = {
-    'SUPERTRADER-TOURNAMENT-RERUN.json': envelope({counts, methods: [...measured, ...blocked], blocked_source_candidates: sourceBlocked,
+    'SUPERTRADER-TOURNAMENT-RERUN.json': envelope({executive_summary: executive, question_version: CERTIFICATION_QUESTION_VERSION, counts, methods: [...measured, ...blocked], blocked_source_candidates: sourceBlocked,
+      terminal_input_certification: {actual_terminal_bar_classification_corrections: count(historical.terminalClassificationPITOverlay?.counts?.stripped), actual_terminal_proceeds_certified: count(historical.terminalClassificationPITOverlay?.actualProceedsCertified), separate_listing_end_diagnostic_is_actual_correction_count: false},
       comparisons, comparison_conditions: ['ORIGINAL_589', 'SAME_NEW_SOURCE_ORIGINAL_EXECUTION_CONTROL', 'CERTIFIED_RECEIVER_V2'],
-      old_results_relabelled: false, current_status: current.status, final_questions: questions}),
+      old_results_relabelled: false, current_status: current.status, sensitivity_raw_arithmetic: {reviewed_replay_count: 18, complete: true, frozen_scenarios_unchanged: true, parameters_tuned_after_performance: false}, final_questions: questions}),
     'SUPERTRADER-SIGNAL-QUALITY-RERUN.json': envelope({methods: measured.map(r => ({method_id: r.method_id, signal: r.signal,
       signal_count: r.signal_count, signal_census_basis: r.signal_census_basis, signal_census_status_counts: r.signal_census_status_counts,
       portfolio_formation_status_counts: r.portfolio_formation_status_counts, inference: 'DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA', independent_trades: false}))}),
@@ -211,30 +261,38 @@ export function buildRerunMarkdown(inputs, artifacts = buildRerunPublicArtifacts
   const positive = methods.filter(r => r.signal === 'POSITIVE').map(r => r.method_id), above = methods.filter(r => r.portfolio === 'ABOVE').map(r => r.method_id);
   const shallow = methods.filter(r => r.risk === 'SHALLOWER').map(r => r.method_id);
   const priorities = artifacts['SUPERTRADER-TOP-CANDIDATES-RERUN.json'].research_hypothesis_method_ids;
+  const executive = table.executive_summary, leaders = executive.reviewer_approved_relative_leaders;
+  const answerMethods = id => list(table.final_questions.find(row => row.question_id === id).method_ids);
+  const blocked = table.methods.filter(r => !r.measured).map(r => r.method_id).concat(table.blocked_source_candidates.map(r => r.method_id));
   const answers = [
-    `Keine vollständig qualifizierte Methode. Beobachtete Portfolio-Richtung ABOVE: ${list(above)}. Gesamt-Confidence LOW.`,
-    `POSITIVE explorative Signal-Richtung: ${list(positive)}. Das ist kein bewiesenes Alpha und kein unabhängiger Holdout.`,
-    'Cash-/Exposure-Matched-Diagnostik liegt privat vor. Selection, Sizing und Exits sind damit nicht kausal isoliert.',
-    `SHALLOWER Drawdown-Richtung im beobachteten Panel: ${list(shallow)}. Exakte Risikometriken bleiben privat; Terminal-Outcomes sind unzertifiziert.`,
-    'Die geprüfte Regime-Matrix enthält Richtungen und unzureichend belegte Segmente. Bedingte Gruppen sind keine zusammenhängende CAGR-Reihe.',
-    'Die drei Legendary-Engines sind VU-Adaptionen mit LOW Source-Fidelity; keine vollständige Original-Replikation wird behauptet.',
-    'Die unveränderten Source-Dossiers behalten ihren educational-/diskretionären Kontext. Source-Rollen sind getrennt von gemessenen Tier-Counts.',
-    'Die systematischen Methoden können Forschungsansätze liefern. Fehlende PIT-/Execution-Zertifizierung verhindert vollständig qualifizierte Gewinner.',
-    'Die unabhängige Prüfung deckt alle fünfzehn Methodenpaare ab. Überschneidung und Korrelation beweisen keine unabhängigen Trading-Edges.',
-    'Kein vollständig qualifiziertes Current-Methodenset. Tatsächliche PARTIAL-Matches und Source-Flags stehen ausschließlich im privaten Owner-Paket.',
-    'Qualified und Strong Consensus sind leer. PARTIAL-Consensus bleibt eine getrennte Diagnostik mit privaten Aktienidentitäten.',
-    `Research-Prioritäten ohne Gewinnerbehauptung: ${list(priorities)}. Eine erzwungene Drei-bis-sieben-Auswahl findet nicht statt.`,
-    'Keine Methode wird aufgrund dieses unvollständig zertifizierten Reruns als voll qualifizierter Produktgewinner hervorgehoben.',
-    'Eine sekundäre Research-Darstellung muss PARTIAL, LOW Confidence und die belegten Source-/Execution-Grenzen zeigen.',
-    'Der alte Source-Bereich umfasst vierundzwanzig educational Dossiers und drei ungemessene Legacy-Dossiers; zusammen siebenundzwanzig, getrennt von den tatsächlichen gemessenen Tiers.',
-    'Die Ledger sind vorbereitet. Frühere geschlossene Source-Snapshots werden nicht zu echten Post-freeze-Forward-Signalen erklärt.',
-    'Historische Security-/Issuer-/Full-Class-Bindung, PIT-Marktpopulation, exakte Market Equity, breite Jahresoperanden und tatsächliche Terminal-Proceeds bleiben offen. Industry-Membership/Source-Taxonomie und die Residual-Holding-Variante fehlen.',
-    'Alle gemessenen Ergebnisse sind SEEN_HISTORY und hypothesengenerierend. Neue Varianten oder Schwellen dürfen nicht aus denselben Ergebnissen ausgewählt und anschließend als ungesehener Test bezeichnet werden.',
-    'Der nächste Auftrag muss die offenen Source-/Data-/Execution-Verträge schließen und echte Forward-Beobachtungen sammeln. Methodendefinitionen und eingefrorene Score-Gewichte bleiben unverändert.',
-    'Kein Ausbau blockierter Engines oder Varianten ohne die benannten Verträge; kein erneuter Minervini-Optimierungstrack und keine künstlich erzwungene Gewinnerliste.',
+    'Keine der sechs zuvor blockierten Methoden ist jetzt vollständig zertifiziert oder neu messbar. Ein einzelner geprüfter Source-Kontextpunkt ist keine vollständige Methodenzulassung.',
+    `Weiterhin blockiert: ${list(blocked)}. Vier vorhandene Engines bleiben ungemessen; zwei Kandidaten haben keine Engine.`,
+    'Es fehlen breite historische Security-/Issuer-/Full-Class-Bindung, PIT-Marktpopulation, zertifizierte Market Equity und vollständige Jahresoperanden. Industry-Membership/Source-Taxonomie und die vorab gewählte Residual-Holding-Variante fehlen ebenfalls.',
+    'Der Legacy-Momentum-Day-Low-Lookahead liegt außerhalb der sechs historischen Teilnehmer. Der standalone Piotroski-FY-Resolver wurde source-/unit-geprüft, bleibt im tatsächlichen Dispatch inaktiv. Next-open-/Settlement-Zeit und unbekannte Terminal-Proceeds begrenzen die Execution-Zertifizierung weiterhin.',
+    'Eine veränderte frühere Bewertung durch den Legacy-Momentum-Lookahead wird nicht behauptet: Dieser Legacy-Pfad ist keine der sechs gemessenen Tournament-Methoden. Der Kullamägi-Daily-Pfad verwendet den vorher geschlossenen Signal-Day-Low und Next-open. Drei Vergleichsbedingungen trennen Source-Snapshot und Certification-Overlay.',
+    `POSITIVE beobachtete Signal-Richtung: ${list(positive)}. Keine bewiesene Alpha-Aussage oder ungesehene Validierung. Relative Review-Priorität: ${list(leaders.signalMethodIds)}.`,
+    `ABOVE Portfolio-Richtung gegenüber SPY im beobachteten Panel: ${list(above)}. Relative Review-Priorität: ${list(leaders.portfolioMethodIds)}; keine vollständig qualifizierten Gewinner.`,
+    `SHALLOWER beobachtete Drawdown-Richtung: ${list(shallow)}. Relative Risk-Priorität: ${list(leaders.riskMethodIds)}. Terminal-Outcomes sind nicht abschließend zertifiziert.`,
+    `Vom tatsächlichen Review benannte relative systematische Methoden: ${list(leaders.systematicMethodIds)}. Leere Auswahl bedeutet keine Auswahl; Daten-Confidence MEDIUM und Execution-Confidence LOW begrenzen die Evidenz.`,
+    `Vom tatsächlichen Review benannte relative Legendary-Methoden: ${list(leaders.legendaryMethodIds)}. Die drei Engines sind VU-Adaptionen mit LOW Source-Fidelity; keine vollständige Original-Replikation.`,
+    `Review-belegte Methoden: ${answerMethods(11)}. Ohne diese Attribution wird keine Benachteiligung allein durch schlechte Daten behauptet. Source-Snapshot- und Certification-Overlay-Delta werden getrennt gezeigt.`,
+    `Vom Review als weiterhin schwach benannte Methoden: ${answerMethods(12)}. Datenblockierung oder eine fehlende Score-Komponente allein beweisen keine schlechte Performance.`,
+    `Gemessene Tier-A-Methoden: ${table.counts.measured_tier_A}. Keine vollständig qualifizierte Methode; fehlende Score-Komponenten bleiben NULL.`,
+    `Gemessene Tier-B-Methoden: ${table.counts.measured_tier_B}. Die tatsächlichen Tiers folgen dem unveränderten Algorithmus; Gewichte werden nicht umverteilt.`,
+    `Aktuelle Aktienidentitäten, Preise und Signal-Details stehen ausschließlich im Owner-Paket. Relative Current-Methoden aus dem Review: ${list(leaders.currentMethodIds)}. PARTIAL-Matches sind keine qualifizierten Kaufsignale.`,
+    `Qualified/Strong Consensus ist leer. Die tatsächliche PARTIAL-Diagnostik ist getrennt und ihre Aktienidentitäten bleiben privat. Relative Consensus-Methoden: ${list(leaders.consensusMethodIds)}; kein unabhängiger Trading-Score.`,
+    `Research-Forward-Watch: ${list(artifacts['SUPERTRADER-FORWARD-LEDGER-RERUN.json'].research_watch_method_ids)}. Ledger vorbereitet, keine echten Post-freeze-Records; geschlossene Baseline-Snapshots sind keine Forward-Signale.`,
+    `Review-begründete Research-Deep-Dives: ${list(priorities)}. Keine erzwungene Auswahl und keine Gewinnerbehauptung; SEEN_HISTORY verlangt spätere unabhängige Prüfung.`,
+    `Review-benannte educational Methoden: ${answerMethods(19)}. Die alten vierundzwanzig educational und drei ungemessenen Legacy-Dossiers bleiben getrennt von den tatsächlichen sechs gemessenen Tiers.`,
+    'Die konkreten offenen Daten-/Execution-Verträge schließen und echte Forward-Beobachtungen sammeln. Relative Research-Darstellung muss PARTIAL/LOW und Source-Limits zeigen. Keine neue Variante aus derselben Historie als ungesehen testen; kein neuer Minervini-Optimierungstrack.',
   ];
   const lines = ['# Supertrader: vollständiger Tournament-Rerun', '',
-    'Die tatsächlichen historischen Läufe, der Source-Control und der frische Current-Lauf wurden unabhängig numerisch und im Red Team geprüft. Dieser Report veröffentlicht nur Counts, Enums und Richtungen. Alle Provider-Metriken und Aktienidentitäten bleiben im Owner-Paket.', '',
+    '## Executive Summary', '',
+    `Previously measured methods: ${executive.previously_measured_methods}; Previously data-blocked methods: ${executive.previously_data_blocked_methods}; Newly certified methods: ${executive.newly_fully_certified_methods}; Still blocked methods: ${executive.still_blocked_methods}.`, '',
+    `Execution bugs found: ${list(executive.execution_bugs_found)}. Data bugs found: ${list(executive.data_bugs_found)}. Tournament participants after certification: ${executive.tournament_participants_after_certification}.`, '',
+    `Tier A/B/C/D: ${table.counts.measured_tier_A}/${table.counts.measured_tier_B}/${table.counts.measured_tier_C}/${table.counts.measured_tier_D}. Best systematic: ${list(leaders.systematicMethodIds)}; Best legendary: ${list(leaders.legendaryMethodIds)}.`, '',
+    `Strongest signal evidence: ${list(leaders.signalMethodIds)}; Best portfolio evidence: ${list(leaders.portfolioMethodIds)}; Best risk profile: ${list(leaders.riskMethodIds)}. Current strongest matches: Aktienidentitäten privat; relative Methoden ${list(leaders.currentMethodIds)}. Multi-method consensus: kein qualifizierter Consensus; PARTIAL-Diagnostik getrennt. Relative Best-IDs stammen aus dem Review und sind keine qualifizierten Gewinner.`, '',
+    'Die tatsächlichen historischen Läufe, der Source-Control, alle achtzehn exakten eingefrorenen Sensitivitäts-Replays mit privaten Rohkurven/Trades und der frische Current-Lauf wurden unabhängig numerisch und im Red Team geprüft. Die Replays ändern keine Strategieregeln und dienen keiner nachträglichen Parameterwahl. Dieser Report veröffentlicht nur Counts, Enums und Richtungen. Alle Provider-Metriken und Aktienidentitäten bleiben im Owner-Paket.', '',
     'Zehn Engines; sechs PARTIAL historische Teilnehmer und dieselben sechs im Source-Control; vier datenblockierte Engines. Zwei weitere Source-/Regelkandidaten bleiben ohne Engine gesperrt. Vollständig zertifizierte Methoden und qualifizierte Gewinner: null.', '',
     'Alle sechs tatsächlichen Rerun-Scores sind NULL: der korrigierte `pitListings:false`-Input lässt die Data-Quality-Komponente im unveränderten festen Algorithmus fehlen. Fehlende Komponenten werden nicht auf null gesetzt, imputiert oder mit umverteilten Gewichten ersetzt. Die tatsächlichen Raw Tiers des unveränderten Algorithmus werden erhalten; die vorab bestimmte Qualifizierungsobergrenze ist C. Overall Confidence LOW.', '',
     `Die siebenundzwanzig alten educational-/Legacy-Dossierrollen sind kein measured Tier D. Gemessene Tiers: A ${table.counts.measured_tier_A}, B ${table.counts.measured_tier_B}, C ${table.counts.measured_tier_C}, D ${table.counts.measured_tier_D}. Blockierte Methoden bleiben ungerankt.`, '',
@@ -244,11 +302,12 @@ export function buildRerunMarkdown(inputs, artifacts = buildRerunPublicArtifacts
     'Original #589 → gleiche neue Source-Daten mit originaler Execution misst eine deskriptive Source-Snapshot-Differenz. Source-Control → V2 vergleicht denselben neuen Canonical-Source mit den vorab registrierten Zertifizierungs-/Execution-Overlays. Original #589 → V2 enthält beide Änderungen und ist kein rein kausaler Certification-Effekt. Alte Ergebnisse werden nicht nachträglich umetikettiert.', '',
     '| Methode | Source-Snapshot-Delta: Portfolio / Signal / Risiko | Certification-Overlay-Delta | Kombiniertes Delta |', '|---|---|---|---|',
     ...table.comparisons.map(r => {const f = x => `${x.portfolio} / ${x.signal} / ${x.risk}`; return `| ${r.method_id} | ${f(r.old_589_to_same_new_source_original_execution)} | ${f(r.same_new_source_original_execution_to_v2)} | ${f(r.old_589_to_v2)} |`;}), '',
+    `Tatsächliche am Terminal-Bar-Cutoff korrigierte Klassifikationen: ${table.terminal_input_certification.actual_terminal_bar_classification_corrections ?? 'nicht belegt'}. Ein separater Listing-End-Diagnostikcount ist damit nicht gleichzusetzen. Zertifizierte tatsächliche Terminal-Proceeds: ${table.terminal_input_certification.actual_terminal_proceeds_certified ?? 'nicht belegt'}.`, '',
     'Predeclared Overlays filtern post-terminal/undatierte Klassenhinweise und bewahren echte Zeitgrenzen. Bekannte Cash-Entitlements wären von spendbarer Settlement-Cash getrennt; ein vollständiges tatsächliches Ledger wurde nicht hergestellt. Unbekannte Terminal-Proceeds und Quarantäne bleiben Szenarien, keine realisierten Outcomes.', '',
-    'Die separate Legacy-Execution-Day-Low-Bugfix gilt nicht pauschal für den Kullamägi-Daily-Signal-Day-Low/Next-open-Pfad. Der Piotroski-FY-Link-Resolver ist eine isolierte Implementierungsbugfix-Version ohne neue Formel, Rankings oder synthetisch umbenannte Perioden; die Engine bleibt mangels kompletter Daten blockiert.', '',
+    'Die separate Legacy-Execution-Day-Low-Bugfix gilt nicht pauschal für den Kullamägi-Daily-Signal-Day-Low/Next-open-Pfad. Der standalone Piotroski-FY-Link-Resolver wurde als isolierte Implementierungsbugfix-Version ohne neue Formel, Rankings oder synthetisch umbenannte Perioden source-/unit-geprüft. Alle vier Fundamental-Engines bleiben blockiert; dieser Fix wurde im tatsächlichen historischen oder Current-Dispatch nicht aktiviert und hat keine gemessenen F-Score-Ergebnisse erzeugt.', '',
     '## Current, Consensus und Forward', '',
     'Der tatsächliche Current-Lauf behandelt alle zehn Engines. Vier bleiben BLOCKED; PARTIAL-Diagnostik darf nicht zum ELIGIBLE-Set werden. Qualified/Strong Consensus und vollständig qualifizierte aktuelle Kandidaten bleiben leer. Die privaten Matches sind keine Kaufempfehlung.', '',
-    '## Zwanzig Abschlussfragen', '', ...FINAL_QUESTIONS.flatMap((q, i) => [`### ${i + 1}. ${q}`, '', answers[i], '']),
+    '## Zwanzig Abschlussfragen', '', ...CERTIFICATION_FINAL_QUESTIONS.flatMap((q, i) => [`### ${i + 1}. ${q}`, '', answers[i], '']),
     '## Grenzen und Quellen', '',
     'Beobachtetes Panel, unzertifizierter historischer Markt-Nenner, keine breite historische Full-Class-Bindung, keine abschließende Terminal-Cash-Zertifizierung und kein ungesehener Holdout begrenzen jede Schlussfolgerung. Ein Source-Pilot oder eine bedingt freigegebene Accounting-Normalisierung stellt kein vollständiges PIT-Universum her.', '',
     'Offizielle SEC-Quellen: [API-Vertrag](https://www.sec.gov/search-filings/edgar-application-programming-interfaces), [Companyfacts](https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip), [Submissions](https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip). Der Residual-Faktor-Snapshot ist [revidiertes French-Research-Material](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html), kein historischer as-known-Vintage.', '',
@@ -284,7 +343,7 @@ export async function publishRerunFiles(options) {
   const finalReview = boundedJson(options.finalReviewPath, 64 * 1024 * 1024).value, metadata = loadRerunPublicMetadata(options.outRoot);
   const bindings = {historicalInputSha256: historical.sha256, controlInputSha256: control.sha256, currentInputSha256: current.sha256,
     certificationFreezeHash: hash(JSON.stringify(historical.value.certificationFreeze)),
-    eligibilityFileSha256: hash(fs.readFileSync(path.join(options.outRoot, PUBLIC_DIR, 'SUPERTRADER-METHOD-ELIGIBILITY.json')))};
+    eligibilityFileSha256: hash(fs.readFileSync(path.join(options.outRoot, PUBLIC_DIR, 'SUPERTRADER-METHOD-ELIGIBILITY.json'))), ...baseline589Bindings(historical.value.certificationFreeze)};
   return publishRerunPayload({...options, historical: historical.value, control: control.value, current: current.value,
     numericReview, redTeamReview, finalReview, metadata, bindings, verifyFreeze: assertFreezeV2});
 }
