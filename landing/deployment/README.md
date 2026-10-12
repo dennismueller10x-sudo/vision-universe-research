@@ -27,7 +27,7 @@ Der ausschließlich lesende [API-Audit 38060753594](https://github.com/dennismue
 | Root directory | `landing` | API |
 | Build command | `node scripts/build.mjs` | API |
 | Build output | `dist` | API |
-| Node | `NODE_VERSION=22` | Owner-Angabe; Provider-Umgebung nicht unabhängig ausgelesen |
+| Node | `NODE_VERSION=22` | Am 12.10. zusätzlich per lesender API in beiden Umgebungen bestätigt |
 
 GitHub-App `cloudflare-workers-and-pages`: **Cloudflare Pages / success** für Commit [dc454c7d8982cc5a36545c1d9013bf7d0d827fd1](https://github.com/dennismueller10x-sudo/vision-universe-research/commit/dc454c7d8982cc5a36545c1d9013bf7d0d827fd1), abgeschlossen 10.10.2026, 14:34:46 UTC. Das belegt die aktive Git-Integration und den Build dieses Commits, keine dauerhafte Aktualität des jeweils neuesten ausgelieferten Commits. [API-Inventar](verification-2026-10-10/api.json) · [GitHub-Check](verification-2026-10-10/github.json).
 
