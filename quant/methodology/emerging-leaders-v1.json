@@ -1,0 +1,224 @@
+{
+  "methodologyVersion": "emerging-leaders-1.0.0",
+  "status": "PREREGISTERED",
+  "registeredAt": "2026-10-12",
+  "question": "Zeigen Aktien, die heute erstmals Eigenschaften spaeterer Marktfuehrer aufweisen (beschleunigende relative Staerke, Trendwende, Akkumulation, Volatilitaetskompression, fundamentale Beschleunigung), in den folgenden 21/63/126/252 Handelstagen eine messbar hoehere Ueberrendite als einfache Momentum-, RS- und Zufalls-Baselines - und liefern sie Information ueber die vorhandenen Vision-Universe-Modelle hinaus?",
+  "rule": "Alle Schwellen, Gewichte, Perioden, Kosten und Entscheidungsregeln stehen in dieser Datei, bevor ein Ergebnis gerechnet wird. Der Holdout wird genau einmal ausgewertet, mit dem auf der Validierung gewaehlten Modell. Eine Aenderung an dieser Datei ist eine neue Version (methodologyVersion) und macht alle Ergebnisse dieser Version ungueltig. Die Studie speichert den SHA-256 dieser Datei.",
+  "evidenceClasses": {
+    "SCIENTIFIC": "In begutachteter Forschung wiederholt belegt (z. B. Querschnitts-Momentum, Jegadeesh/Titman 1993; Carhart 1997; Asness/Moskowitz/Pedersen 2013; 52-Wochen-Hoch-Naehe, George/Hwang 2004; Post-Earnings-Announcement-Drift, Bernard/Thomas 1989).",
+    "PRACTITIONER": "Handelsmethoden ohne systematische Belege fuer die Gesamtregel (Minervini Trend Template/VCP, O'Neil CAN SLIM, Darvas-Boxen, Wyckoff-Akkumulation). Einzelne Bausteine ueberschneiden sich mit belegten Effekten.",
+    "VU_HYPOTHESIS": "Eigene Vision-Universe-Hypothese, in dieser Studie erstmals geprueft."
+  },
+  "data": {
+    "prices": "Kanonische Tageshistorie (R2, Namensraum tiingo; runner-privat), split-bereinigt ueber return-series.js#splitFactors (ADR-002). Ergebnisbasis fuer Titel UND SPY einheitlich: split-bereinigte Kursrendite (ohne Dividenden). Grund: fuer viele delistete Reihen ist keine kanonische Gesamtrendite bestaetigt; eine Mischbasis ist ausgeschlossen. Folge: Ueberrenditen dividendenstarker Titel sind leicht unterschaetzt, die des SPY-Vergleichs um dessen Dividende (~1,5-2 %/Jahr) beguenstigt - fuer ein Momentum-Modell eine konservative Verzerrung.",
+    "delisted": "2016-2026: beendete Listings aus tiingo-delisted (Reihen ab 2015). 2008-2015: das vollstaendige Universum (Ueberlebende und beendete Listings) aus tiingo-holdout (Reihen ab 2007). Identitaet ueber das Listing-Fenster (survivorship-control.js classifyFetchedListing, Klassen A/B). Doppelhistorien (letzte Kerze Datum|Schluss|Volumen eines beendeten Listings findet sich bei einem anderen Listing) werden verworfen. Alt-Listings spaeter neu vergebener Kuerzel (Klasse D) sind nicht abrufbar und fehlen - gezaehlt und berichtet.",
+    "benchmark": "SPY (kanonische Tageshistorie), split-bereinigte Kursrendite wie die Titel.",
+    "fundamentals": "SEC-Consumer-Buendel (quant/data/sec/consumer), sichtbar nur mit filed <= t (pit-fundamental-history.js). Die Buendel fuehren je Periode die juengste Einreichung (as_of_latest): Sichtbarkeit ist dadurch SPAETER als tatsaechlich, nie frueher. Quartalswerte reichen nur ~8 Quartale zurueck; geprueft werden deshalb nur Jahreswerte. Fundamentaldaten gibt es nur fuer heute gelistete Titel (Zuordnung ueber das heutige Kuerzel); fuer delistete und Holdout-2008-2015-Listings bleibt Gruppe E leer (kein Kuerzel-Join ueber Listing-Grenzen).",
+    "notAvailable": [
+      "historische Sektor-/Branchenzuordnung (nur heutige SIC)",
+      "Analystenschaetzungen und Ergebnisueberraschungen",
+      "historische Marktkapitalisierung (Groesse wird ueber Dollarumsatz-Terzile genaehert)",
+      "Point-in-Time-Indexmitgliedschaften",
+      "Europa: nur manuell veroeffentlichte Schlusskurse ohne Volumen"
+    ]
+  },
+  "observationGrid": {
+    "frequency": "MONTH_END",
+    "calendar": "SPY-Handelstage; Beobachtung am letzten Handelstag eines Monats",
+    "minimumHistoryBars": 252,
+    "entry": "Schlusskurs des naechsten Handelstags (t+1)",
+    "horizonsTradingDays": [
+      21,
+      63,
+      126,
+      252
+    ],
+    "primaryHorizon": 63
+  },
+  "universe": {
+    "instrumentClasses": [
+      "EQUITY_COMMON",
+      "ADR",
+      "REIT"
+    ],
+    "minRawClose": 5,
+    "minAvgDollarVolume20d": 5000000,
+    "note": "Filter auf Rohkurs und Rohumsatz am Tag t (keine Rueckrechnung spaeterer Splits)."
+  },
+  "periods": {
+    "DEVELOPMENT": {
+      "from": "2016-01-01",
+      "to": "2020-12-31",
+      "purge": "Beobachtung nur, wenn das Ausstiegsdatum des jeweiligen Horizonts <= to liegt"
+    },
+    "VALIDATION": {
+      "from": "2021-01-01",
+      "to": "2023-06-30",
+      "purge": "wie DEVELOPMENT"
+    },
+    "HOLDOUT_RECENT": {
+      "from": "2023-07-01",
+      "to": "2026-09-30",
+      "purge": "keine Grenze danach; nur vorhandene Ausstiege"
+    },
+    "HOLDOUT_EARLY": {
+      "from": "2008-01-01",
+      "to": "2015-12-31",
+      "purge": "Ausstieg <= to (kein Ueberlapp mit DEVELOPMENT)",
+      "source": "Delistings aus tiingo-holdout"
+    },
+    "embargo": "Durch den Purge endet jedes Beobachtungsfenster vor Beginn der naechsten Periode; ein zusaetzliches Embargo ist nicht noetig."
+  },
+  "outcome": {
+    "primary": "Ueberrendite gegen SPY (split-bereinigte Kursrendite beider Seiten), Eintritt Schluss t+1, Ausstieg Schluss am SPY-Handelstag t+1+h",
+    "secondary": [
+      "Ueberrendite gegen den Median aller zulaessigen Titel desselben Stichtags",
+      "Trefferquote (Ueberrendite > 0)",
+      "Median und Mittel",
+      "Maximum Adverse Excursion (tiefster Schluss im Fenster gegen Einstieg)",
+      "maximaler Rueckgang im Fenster"
+    ],
+    "delisting": "Endet die Reihe eines BEENDETEN Listings vor dem Ausstieg: primaer letzter verfuegbarer Wert (als Barmittel gehalten); Sensitivitaet: (a) ausgeschlossen, (b) -100 % (Untergrenze). Endet eine Reihe nur am Datenende, ist das Ergebnis nicht verfuegbar und zaehlt nicht.",
+    "costsBpsRoundTrip": {
+      "LOW": 10,
+      "BASE": 30,
+      "HIGH": 60
+    },
+    "winsorize": "Einzelergebnisse fuer Mittelwerte auf [-95 %, +500 %] begrenzt; Mediane unbegrenzt"
+  },
+  "features": {
+    "A_RELATIVE_STRENGTH": {
+      "evidence": "SCIENTIFIC (Momentum/RS) + VU_HYPOTHESIS (Beschleunigung, Verbesserung aus schwachem Rang)",
+      "items": {
+        "rs_k": "ln(C_t/C_t-k) - ln(SPY_t/SPY_t-k), k in {5,20,60,120}; Querschnittsperzentil pRS_k",
+        "rsAccel": "pRS_20 - pRS_120",
+        "rsImprove": "pRS_60(t) - pRS_60 am Stichtag drei Monatsenden zuvor (~63 Handelstage); fehlt der Titel dort, ist rsImprove leer"
+      },
+      "score": [
+        "rsAccel",
+        "rsImprove",
+        "pRS_20"
+      ]
+    },
+    "B_MOMENTUM_INFLECTION": {
+      "evidence": "PRACTITIONER (Stage-2-Uebergang, Weinstein/Minervini) + VU_HYPOTHESIS",
+      "items": {
+        "slope50": "SMA50_t/SMA50_t-10 - 1",
+        "inflect": "slope50(t) - slope50(t-30)",
+        "trendStart": "Anteil der letzten 20 Tage mit C > SMA200 minus Anteil der Tage t-80..t-21",
+        "sma20over50": "SMA20/SMA50 - 1"
+      },
+      "score": [
+        "inflect",
+        "trendStart",
+        "sma20over50"
+      ]
+    },
+    "C_VOLUME": {
+      "evidence": "PRACTITIONER (Wyckoff, O'Neil Akkumulation); Volumen-Momentum-Interaktion: Lee/Swaminathan 2000 (gemischt)",
+      "items": {
+        "relVol": "mittleres Volumen 20 / mittleres Volumen 120",
+        "udv50": "ln(Volumen an Aufwaertstagen / Volumen an Abwaertstagen, 50 Tage)",
+        "accDays": "Akkumulationstage minus Distributionstage der letzten 25 Tage (Volumen > Schnitt 50)"
+      },
+      "score": [
+        "udv50",
+        "accDays",
+        "relVol"
+      ]
+    },
+    "D_VOLATILITY_COMPRESSION": {
+      "evidence": "PRACTITIONER (VCP, Darvas-Box, Bollinger Squeeze); Naehe zum Hoch: SCIENTIFIC (George/Hwang 2004)",
+      "items": {
+        "volRatio": "sd(Tagesrendite,20)/sd(Tagesrendite,120), kleiner = enger",
+        "bbwPct": "Perzentil der Bollinger-Bandbreite (20) in den eigenen letzten 252 Tagen",
+        "rangeRatio": "(Hoch20 - Tief20)/(Hoch120 - Tief120)",
+        "nearPivot": "C_t / hoechstes Hoch der letzten 60 Tage - 1"
+      },
+      "score": [
+        "-volRatio",
+        "-bbwPct",
+        "-rangeRatio",
+        "nearPivot"
+      ]
+    },
+    "E_FUNDAMENTAL_ACCELERATION": {
+      "evidence": "SCIENTIFIC (Gewinnwachstum/PEAD, Profitabilitaet: Novy-Marx 2013) mit eingeschraenkter Datenbasis (nur Jahreswerte, spaete Sichtbarkeit)",
+      "items": {
+        "revenueGrowthYoy": "Umsatzwachstum des juengsten sichtbaren Geschaeftsjahrs",
+        "revenueAccel": "Wachstum juengstes Jahr minus Wachstum Vorjahr",
+        "netMarginChange": "Nettomarge juengstes Jahr minus Vorjahr",
+        "fcfMargin": "Free-Cashflow-Marge juengstes Jahr"
+      },
+      "score": [
+        "revenueAccel",
+        "revenueGrowthYoy",
+        "netMarginChange",
+        "fcfMargin"
+      ],
+      "minItems": 2
+    },
+    "F_MARKET_CONTEXT": {
+      "evidence": "Bedingungsvariable, nicht Teil eines Scores",
+      "items": {
+        "regime": "SPY ueber SMA200 am Tag t (RISK_ON) oder darunter (RISK_OFF)",
+        "breadth": "Anteil zulaessiger Titel ueber SMA50 am Tag t; Terzile ueber die Entwicklungsperiode festgelegt",
+        "size": "Dollarumsatz-20-Tage-Terzil je Stichtag (Naeherung fuer Groesse; keine historische Marktkapitalisierung)",
+        "sector": "nicht auswertbar: keine Point-in-Time-Sektorzuordnung; berichtet als Luecke"
+      }
+    },
+    "combination": "Jedes Merkmal wird je Stichtag in ein Querschnittsperzentil (0..1) umgerechnet; ein Gruppenwert ist das Mittel seiner vorhandenen Merkmale (mindestens die Haelfte vorhanden). Korrelationskontrolle: Gruppen mit |Spearman| > 0,7 in DEVELOPMENT werden fuer M1-M4 zu einer Gruppe gemittelt (dokumentiert, nicht nachtraeglich geaendert)."
+  },
+  "emergingPopulation": {
+    "rule": "Rendite 252 Tage < +100 % UND pRS_120 am Stichtag drei Monatsenden zuvor (~t-63) <= 70",
+    "why": "Nicht die Gewinner von gestern: wer bereits verdoppelt hat oder vor drei Monaten schon zu den staerksten 30 % gehoerte, ist nicht 'emerging'."
+  },
+  "models": {
+    "M1_TECH_EQUAL": "Mittel der Gruppen A, B, C, D (gleichgewichtet)",
+    "M2_TECH_FUND_EQUAL": "Mittel der Gruppen A, B, C, D, E (E nur wenn vorhanden)",
+    "M3_DEV_IC_WEIGHTED": "Gewichte je Gruppe A-E proportional zum positiven Teil des mittleren Rang-IC (63 Tage) in DEVELOPMENT; danach eingefroren",
+    "M4_EMERGING_TECH": "M1, nur innerhalb der Emerging-Population"
+  },
+  "baselines": {
+    "MOM_12_1": "Rendite t-252 bis t-21 (Jegadeesh/Titman)",
+    "RS_6M": "pRS_120",
+    "LEADERSHIP_VU": "Discover-Leadership-Score (discover-v1.json leadershipScore) aus denselben Bars nachgebildet",
+    "TREND_TEMPLATE": "Minervini-Trend-Template wie Supertrader (C > SMA50 > SMA150 > SMA200, SMA200 steigend 21 Tage, C >= 1,3 x Tief52, C >= 0,75 x Hoch52, pRS_252 >= 70); binaer, Auswahl = alle Treffer",
+    "RANDOM": "Gleich viele Titel je Stichtag zufaellig (fester Startwert 20261012), 200 Wiederholungen",
+    "UNIVERSE": "alle zulaessigen Titel gleichgewichtet"
+  },
+  "portfolio": {
+    "selection": "je Stichtag das oberste Dezil des Modellwerts (mindestens 20 Titel, sonst Stichtag ausgelassen), gleichgewichtet",
+    "statistic": "Mittel der Stichtags-Portfolios; Standardfehler nach Newey-West mit Lag = ceil(h/21) - 1 Monate",
+    "ic": "Spearman-Rang-IC je Stichtag zwischen Modellwert und Ueberrendite; Mittel und Newey-West-t"
+  },
+  "incrementalInformation": {
+    "method": "Fama-MacBeth: je Stichtag Querschnittsregression der Rang-Ueberrendite (63 Tage) auf die Raenge von Modell, MOM_12_1 und LEADERSHIP_VU; Mittel der Modellkoeffizienten mit Newey-West-t",
+    "overlap": "Anteil der Modell-Topdezil-Titel, die zugleich im Topdezil von MOM_12_1, RS_6M oder LEADERSHIP_VU stehen"
+  },
+  "selectionRule": {
+    "on": "VALIDATION",
+    "criterion": "hoechste mittlere Netto-Ueberrendite (BASE-Kosten) des Topdezils bei h=63 unter M1-M4, sofern der mittlere IC (h=63) Newey-West-t >= 2,0 hat",
+    "noQualifier": "Erfuellt kein Modell die Bedingung, wird keines gewaehlt; der Holdout wird dann nur deskriptiv fuer M1 berichtet und die Engine bleibt EXPERIMENTAL."
+  },
+  "validationGate": {
+    "VALIDATED": "Gewaehltes Modell in BEIDEN Holdouts (sofern verfuegbar): Netto-Ueberrendite Topdezil h=63 > 0 mit t >= 2,0 UND groesser als RS_6M und MOM_12_1 UND Fama-MacBeth-t des Modells >= 2,0.",
+    "PARTIAL": "Bedingungen in genau einem Holdout erfuellt, im anderen Vorzeichen positiv.",
+    "EXPERIMENTAL": "sonst. Die Oberflaeche zeigt dann 'Experimentell - keine belastbare Ueberlegenheit nachgewiesen'."
+  },
+  "states": {
+    "order": "Pruefung von 5 nach 1; der erste zutreffende Zustand gilt",
+    "S5_ESTABLISHED_LEADER": "pRS_120 >= 90 UND C >= 0,85 x Hoch252 UND SMA50 > SMA200 an allen der letzten 60 Tage",
+    "S4_BREAKOUT_CONFIRMED": "in den letzten 5 Sitzungen ein Schluss ueber dem hoechsten Hoch der 60 Sitzungen davor, an diesem Tag Volumen >= 1,5 x Schnitt 50, und C_t >= 0,97 x dieses Pivot",
+    "S3_BREAKOUT_CANDIDATE": "(volRatio <= 0,8 ODER bbwPct <= 0,25) UND C >= 0,94 x Hoch60 UND C > SMA50 UND slope50 > 0",
+    "S2_MOMENTUM_EMERGING": "rsImprove >= 20 UND pRS_60 >= 60 UND C > SMA50 UND slope50 > 0",
+    "S1_EARLY_ACCUMULATION": "udv50 >= ln(1,25) UND accDays >= 2 UND C >= 0,95 x SMA200 UND pRS_120 <= 70",
+    "S0_NONE": "keiner der Zustaende",
+    "evaluation": "Haeufigkeit, Ueberrendite je Zustand (21/63/126), Persistenz (gleicher Zustand einen Monat spaeter), Uebergangsmatrix, Trennung benachbarter Zustaende (Differenz mit Newey-West-t)."
+  },
+  "publication": {
+    "aggregatesOnly": "Kein Kurs, keine Bar und keine titelgenaue Rendite im Artefakt; nur Aggregate je Modell/Periode/Horizont/Zustand.",
+    "noProbabilities": "Keine Wahrscheinlichkeiten, Kursziele oder Prognosen je Titel.",
+    "labelRule": "Der Status (VALIDATED/PARTIAL/EXPERIMENTAL) wird in jedem ausgelieferten Artefakt und auf jeder Oberflaeche genannt."
+  }
+}
