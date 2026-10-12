@@ -56,6 +56,7 @@ const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"))
 const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"));
 const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 const DiscoveryEligibility = require(join(root, "discover", "engines", "discovery-eligibility.js"));
+const ImBlick = require(join(root, "discover", "engines", "im-blick.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -133,6 +134,7 @@ let bytesWritten = 0, filesWritten = 0;
 /* V4.1 §19: Feed-Quellen in der Reihenfolge, in der sie reihum gezogen
    werden, mit dem Namen, der auf dem Bildschirm steht. */
 const FEED_SOURCES = [
+  ["im-blick", "Heute im Blick"],
   ["market-leaders", "Die stärksten Aktien"], ["bekannte-namen", "Bekannte Namen in Bewegung"],
   ["new-52-week-highs", "Neue Jahreshochs"], ["umsatz-waechst-stark", "Umsatz wächst stark"],
   ["momentum-leaders", "Seit Monaten im Aufwind"], ["cashflow-maschinen", "Cashflow-Maschinen"],
@@ -570,6 +572,13 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     stock.scoreDetail = scores;
     stock.rawValues = values;
     stock.seriesPath = seriesPath;
+    /* Im Blick (discover/engines/im-blick.js): Gattung und das bestaetigte
+       52-Wochen-SCHLUSSHOCH aus der veroeffentlichten Tagesreihe - die
+       Faktorzeile kennt nur "Schluss >= hoechstes Tageshoch". */
+    stock.instrumentType = ref.instrumentType || null;
+    const schluesse = kompakt ? kompakt.points : (goldenDated ? goldenDated.map((b) => [b.date, b.close]) : null);
+    stock.closingHigh52w = schluesse ? ImBlick.closingHigh(schluesse, sec.asOf) === true : false;
+    stock.eventAge = schluesse ? ImBlick.eventAge(schluesse, sec.asOf) : null;
     /* Laenge der Kurshistorie beim Anbieter (Faktorzeile) - fuer die
        Qualifikation "staerkste Aktien" (>= 250 Handelstage). */
     stock.bars = isNum(sec.bars) ? sec.bars : null;
@@ -1200,7 +1209,7 @@ function buildRow(universe, config) {
   /* Die Uebersetzung kennt die ganze Reihe, nicht nur die einzelne Karte -
      sonst steht derselbe wahre Satz zwoelfmal untereinander. */
   const texte = Klartext.reihe(auswahl, config.id);
-  const scoreKey = { leadershipScore: "leadership", momentumScore: "momentum", relativeStrengthScore: "rs", breakoutScore: "breakout" }[config.sort] || null;
+  const scoreKey = { leadershipScore: "leadership", momentumScore: "momentum", relativeStrengthScore: "rs", breakoutScore: "breakout", imBlickScore: "imBlick" }[config.sort] || null;
   const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), {
     plain: texte[i],
     /* Der Verweis auf die Reihe, nicht die Reihe: geladen wird, was
@@ -1404,41 +1413,46 @@ function buildSimilar(universe, stock, anzahl) {
    eine grosse Flaeche besser als einer ohne. Hoechstens zwei je Sektor,
    damit die Eingangsflaeche nicht dreimal denselben Markt zeigt. */
 function buildFeatured(universe, anzahl) {
-  const kandidaten = universe.stocks.filter((s) =>
-    s.discoveryEligible !== false &&
-    (s.signals.new52WeekHigh || s.signals.marketLeader || s.signals.breakout) &&
-    isNum(s.metrics.leadershipPercentile));
+  /* Seit discover-v4.1.0: Ereignisse vor Dauerstaerke (im-blick.js). Die
+     Auswahl rechnet die Engine; hier wird sie nur zur Karte. */
+  const bewertet = universe.stocks.filter((s) => s.imBlick && s.imBlick.admissible).map((s) => s.imBlick);
+  const auswahl = ImBlick.select(bewertet, { config: Object.assign({}, METHODOLOGY.imBlick || {}, { count: anzahl || 5 }) });
+  const bySymbol = new Map(universe.stocks.map((s) => [s.symbol, s]));
+  return auswahl.map((e) => {
+    const s = bySymbol.get(e.inputs.symbol);
+    return Object.assign(Contract.toCard(s), {
+      plain: Klartext.karte(s, {}),
+      headline: ImBlick.headline(e),
+      reasons: ImBlick.reasons(e).map((r) => ({ id: r.id, label: r.label, value: r.value, hint: null })),
+      imBlick: ImBlick.evidence(e, "EOD_CLOSE"),
+      hasPriceSeries: s.hasPriceSeries,
+      seriesPath: s.hasPriceSeries ? "/quant/data/technical/instruments/" + s.symbol + ".json" : null,
+      leadershipPercentile: s.metrics.leadershipPercentile,
+      sectorRank: s.sectorRank || null
+    });
+  });
+}
 
-  const bewertet = kandidaten.map((s) => {
-    let rang = s.metrics.leadershipPercentile;
-    if (s.hasPriceSeries) rang += 12;          // traegt eine grosse Flaeche
-    if (s.companyName) rang += 6;              // ein Name wirkt anders als ein Kuerzel
-    if (s.recognitionTier === 1) rang += 10;   // ein Name, den man kennt (V3)
-    else if (s.recognitionTier === 2) rang += 5;
-    if (s.signals.new52WeekHigh) rang += 4;
-    if (s.signals.breakout) rang += 3;
-    return { stock: s, rang };
-  }).sort((a, b) => b.rang - a.rang || (a.stock.symbol < b.stock.symbol ? -1 : 1));
-
-  const proSektor = new Map();
-  const auswahl = [];
-  for (const eintrag of bewertet) {
-    const sektor = eintrag.stock.sector || "?";
-    const bisher = proSektor.get(sektor) || 0;
-    if (bisher >= 2) continue;
-    proSektor.set(sektor, bisher + 1);
-    auswahl.push(eintrag.stock);
-    if (auswahl.length >= (anzahl || 5)) break;
+/* Im Blick: jeden Titel bewerten (Ereignis vor Dauerstaerke) und den Wert
+   als Kennzahl imBlickScore fuehren - die Reihe "im-blick" sortiert danach
+   mit derselben Maschine wie jede andere Reihe. Das Ereignisalter kommt
+   aus der Tagesreihe (buildRealUniverse), nicht aus frueheren Anzeigen. */
+function applyImBlick(universe) {
+  const cfg = METHODOLOGY.imBlick || {};
+  const bewertet = ImBlick.rate(universe.stocks, { config: cfg });
+  for (const s of universe.stocks) {
+    const e = bewertet.get(s.symbol);
+    s.imBlick = e || null;
+    const zaehlt = !!(e && e.admissible && e.result.score >= (isNum(cfg.rowMinScore) ? cfg.rowMinScore : 0));
+    s.metrics.imBlickScore = zaehlt ? e.result.score : null;
+    s.metricStatus.imBlickScore = zaehlt ? "CALCULATED" : "NOT_ADMISSIBLE";
+    s.scoreDetail.imBlick = e ? {
+      score: e.result.score, coverage: 1, status: "SCORED", engineVersion: ImBlick.ENGINE_VERSION,
+      contributions: e.result.components.map((c) => ({ id: c.id, label: c.label, value: c.value, normalized: null,
+                                                      weight: null, contribution: Math.round(c.points * 1e6) / 1e6 }))
+    } : null;
   }
-  return auswahl.map((s) => Object.assign(Contract.toCard(s), {
-    plain: Klartext.karte(s, {}),
-    headline: heroHeadline(s),
-    reasons: heroReasons(s),
-    hasPriceSeries: s.hasPriceSeries,
-    seriesPath: s.hasPriceSeries ? "/quant/data/technical/instruments/" + s.symbol + ".json" : null,
-    leadershipPercentile: s.metrics.leadershipPercentile,
-    sectorRank: s.sectorRank || null
-  }));
+  return universe;
 }
 
 /* Welche Farbwelt trägt ein Titel? Die seines stärksten belegten Signals -
@@ -1451,44 +1465,6 @@ function heroWorld(stock) {
     if (stock.signals[signal] && zuordnung[signal]) return zuordnung[signal];
   }
   return "leadership";
-}
-
-/** Die eine Zeile ueber der Aktie. Aus dem staerksten belegten Signal. */
-function heroHeadline(stock) {
-  if (stock.signals.new52WeekHigh && stock.signals.marketLeader) {
-    return { kicker: "AM JAHRESHOCH UND UNTER DEN STÄRKSTEN", line: "" };
-  }
-  if (stock.signals.new52WeekHigh) return { kicker: "NEUES JAHRESHOCH", line: "" };
-  if (stock.signals.breakout) return { kicker: "GERADE IN BEWEGUNG", line: "" };
-  if (stock.signals.momentumLeader) return { kicker: "SEIT MONATEN IM AUFWIND", line: "" };
-  return { kicker: "UNTER DEN STÄRKSTEN AKTIEN", line: "" };
-}
-
-/** Drei Belege, alle aus gerechneten Kennzahlen. */
-/* Drei Belege unter der grossen Zahl.
-
-   Sie hiessen frueher "Leadership 96", "RS 100", "Perzentil 100" - drei
-   Werte, die man kennen muss, um sie zu lesen. Es sind dieselben Zahlen;
-   nur heissen sie jetzt so, wie man sie erklaeren wuerde. Wo eine Zahl
-   ohne Vorwissen nichts aussagt (ein Score von 96 auf einer Skala, die
-   niemand kennt), steht stattdessen ihre Bedeutung. */
-function heroReasons(stock) {
-  const m = stock.metrics;
-  const out = [];
-  if (isNum(m.return6M)) {
-    out.push({ label: "in 6 Monaten", value: Klartext.prozent(m.return6M), hint: null });
-  }
-  if (isNum(m.leadershipPercentile)) {
-    out.push({ label: "der Aktien im Universum", value: "stärker als " +
-               Math.min(99, Math.round(m.leadershipPercentile)) + " %", hint: null });
-  }
-  if (isNum(m.distanceTo52wHigh)) {
-    out.push(m.distanceTo52wHigh >= -0.005
-      ? { label: "", value: "am Jahreshoch", hint: null }
-      : { label: "unter dem Jahreshoch", hint: null,
-          value: Klartext.prozent(Math.abs(m.distanceTo52wHigh), false) });
-  }
-  return out.slice(0, 3);
 }
 
 /* ============================================================ Startseite
@@ -1951,7 +1927,7 @@ const FUNDAMENTALS = consumerFundamentalsIndex();
 console.log(`     Fundamentals (SEC Consumer): ${FUNDAMENTALS.size} Titel`);
 const goldenBars = loadGoldenPreviewBars();
 const compact = discoverSeriesIndex();
-const real = applyQualification(attachIndexMembership(applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact)))));
+const real = applyImBlick(applyQualification(attachIndexMembership(applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact))))));
 console.log(`     Qualifikation "staerkste Aktien": ${real.qualificationSummary.qualified} von ${real.qualificationSummary.of} Titeln`);
 console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
             `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
@@ -2060,10 +2036,14 @@ for (const universe of universes) {
     universeId: universe.universeId, universeLabel: universe.label,
     universeKind: universe.kind, asOf: universe.asOf, generatedAt: universe.generatedAt,
     methodologyVersion: METHODOLOGY.methodologyVersion,
-    selection: "Signal (Jahreshoch, Führerschaft oder bestätigter Ausbruch), dann " +
-               "Leadership-Perzentil, dann Darstellbarkeit. Höchstens zwei je Sektor.",
+    selection: "Im Blick (" + ImBlick.ENGINE_VERSION + "): 70 % belegte Ereignisse des letzten Handelstags " +
+               "(Schlusshoch, Ausbruch, Volumen, Bewegung im Trend, kurzfristige Stärke), 30 % Führerschaft über " +
+               "12 Monate; ohne neues Ereignis Abzug je Sitzung seit dem letzten Ereignis. Höchstens zwei je Sektor, " +
+               "Vielfalt der Signalprofile, keine Auffüllung unter der Mindestschwelle.",
+    basis: "EOD_CLOSE",
     count: featured.length, stocks: featured
   });
+
 
   rowIndex.push({ universeId: universe.universeId, rows });
 
@@ -2279,7 +2259,7 @@ function realtimeMeta() {
 }
 const meta = {
   module: "discover",
-  moduleVersion: "discover-4.0.0",
+  moduleVersion: "discover-4.1.0",
   contractVersion: Contract.CONTRACT_VERSION,
   methodologyVersion: METHODOLOGY.methodologyVersion,
   visualLanguage: METHODOLOGY.visualLanguage,

@@ -52,7 +52,9 @@
     }
     gate.hidden = true;
     try {
-      var response = await fetch(loader.getAttribute('data-content'), {cache: 'no-cache'});
+      // Die Inhalts-URL traegt den Inhalts-Hash (?v=...): ein neuer Stand ist eine neue URL.
+      // Ohne no-cache kommt ein wiederholter Aufruf aus dem Browser-Cache statt per Roundtrip.
+      var response = await fetch(loader.getAttribute('data-content'));
       if (!response.ok) throw Error('Page unavailable');
       var html = await response.text();
       // Keep the original URL, query, hash, relative asset URLs and script order.

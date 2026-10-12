@@ -220,8 +220,8 @@
   }
   function spotlight(surface,ctx) {
     var cards=surface.cards||[],section=node('section','v2-spotlight v2-world');section.dataset.archetype='featured';
-    var head=node('div','v2-world-head'),intro=node('div','');intro.append(node('h2','','Im Blick'),node('p','v2-world-subtitle','Ein Unternehmen zuerst. Danach weitere Aktien zum Entdecken.'));
-    head.append(intro,link('Vollbild entdecken →','#/einzeln/'+ctx.universeId,'v2-world-more v2-feed-entry'));section.appendChild(head);
+    var head=node('div','v2-world-head'),intro=node('div','');intro.append(node('h2','','Im Blick'),node('p','v2-world-subtitle','Neue Jahreshochs, Ausbrüche und Stärke im Trend.'));
+    head.append(intro,D.Featured.links(ctx));section.appendChild(head);
     if(!cards.length)return section;
     var featured=node('div','v2-spotlight-featured');featured.appendChild(D.Featured.card(cards[0],ctx));section.appendChild(featured);
     if(cards.length>1){var track=el('div',{class:'v2-hero-track v2-track',role:'list','aria-label':'Weitere Aktien im Blick'});
