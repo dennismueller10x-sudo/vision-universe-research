@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail
+from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail, registered_repair_sources
 from company_intelligence.store import Store
 from company_intelligence.top46_content import matching_resolver
 
@@ -17,6 +17,15 @@ class SourceOnboardingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             resolver = matching_resolver(companies, Path(directory))
         self.assertEqual(set(resolver.companies), set(companies))
+    def test_existing_owned_feed_repair_never_grants_new_ownership(self):
+        official = {'status': 'VALIDATED', 'url': 'https://www.intelliatx.com/'}
+        source = {**SOURCE, 'allowedSites': ['https://www.intelliatx.com/', 'https://ir.intelliatx.com/']}
+        self.assertEqual(registered_repair_sources([source], CID, official), [source])
+        for change in [{'verified': False}, {'active': False}, {'companyId': 'other'}, {'type': 'IR_EVENTS'},
+                       {'url': 'https://publisher.example/news'}, {'allowedSites': ['https://other.example/']}]:
+            self.assertEqual(registered_repair_sources([{**source, **change}], CID, official), [])
+        for status in ['REJECTED', 'CONFLICTING_OWNER', 'WRONG_COMPANY', 'AMBIGUOUS']:
+            self.assertEqual(registered_repair_sources([source], CID, {**official, 'status': status}), [])
     def test_safe_robots_diagnostics_never_expose_provider_text(self):
         self.assertEqual(safe_failure_detail(ValueError('ROBOTS_UNAVAILABLE:HTTP_403')), 'HTTP_403')
         self.assertEqual(safe_failure_detail(ValueError('ROBOTS_UNAVAILABLE:NETWORK_ERROR')), 'NETWORK_ERROR')

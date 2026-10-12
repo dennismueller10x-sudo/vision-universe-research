@@ -1,6 +1,7 @@
 """Bounded, resumable repair/discovery on an existing full restored ledger.
 
-Current native ownership verification and existing IR adapters remain mandatory.
+New sources require current native ownership verification. Already registered
+owned feeds retain the existing routine-poll contract and IR adapters.
 Source registration is not polling proof. Never polls publishers or rediscovers
 the whole universe in routine refresh. The existing runner preserves each batch.
 """
@@ -36,6 +37,16 @@ def safe_failure_detail(error):
 def proven(sources, cid):
     return [s for s in sources if s.get('companyId') == cid and s.get('active') and first_party(s, cid)
             and not publisher(s.get('url')) and s.get('lastSuccess') and not s.get('unsupported')]
+
+def registered_repair_sources(sources, cid, official):
+    # A corporate About-page outage must not suppress an ordinary poll of an
+    # already accepted IR feed. This grants no new domain/source ownership.
+    if official.get('status') != 'VALIDATED' or not official.get('url'):
+        return []
+    return [s for s in sources if s.get('companyId') == cid and s.get('type') == 'IR_FEED'
+            and s.get('active') and first_party(s, cid) and not publisher(s.get('url'))
+            and any(within_domain(site, official['url']) for site in s.get('allowedSites', []))
+            and any(within_domain(s.get('url', ''), site) for site in s.get('allowedSites', []))]
 
 def candidate_inventory(companies, store, sources, reviewed):
     seeds = json.loads((ROOT / 'company-intelligence/config/official-sites.json').read_text())
@@ -102,6 +113,22 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 continue
             selected.append(cid)
             try:
+                repair_sources = registered_repair_sources(sources, cid, official) if row['kind'] == 'EXACT_HTTPS_RECONFIRMATION' else []
+                if repair_sources:
+                    checked = 0
+                    for source in repair_sources:
+                        if source.get('failureCount') and source.get('nextCheck', '') > stamp:
+                            continue
+                        http.get(source['url'], fresh=True)  # Own IR robots/budget/redirect checks remain mandatory.
+                        pipeline.ingest_source(source)
+                        actual = json.loads(store.db.execute('SELECT payload FROM sources WHERE id=?', (source['sourceId'],)).fetchone()[0])
+                        if actual.get('lastSuccess') == stamp and actual.get('active'):
+                            checked += 1; succeeded += 1
+                    status = 'SUCCESS' if checked else 'REGISTERED_NOT_POLLING_PROVEN'
+                    store.set_state(key + cid, {'status': status, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24),
+                        'newProvenSources': 0, 'method': 'EXISTING_VERIFIED_IR_ROUTINE_POLL_EXACT_HTTPS_RECONFIRMATION'})
+                    outcomes[status] += 1
+                    continue
                 proof = validate_discovery_candidate(companies[cid], {'url': row['url'], 'evidence': 'EXISTING_RECORDED_ROOT_CANDIDATE'}, http, stamp)
                 if proof.get('status') != 'VALIDATED':
                     raise ValueError('CURRENT_NATIVE_OWNER_PROOF_REQUIRED')
