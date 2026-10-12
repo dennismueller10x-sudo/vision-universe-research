@@ -4,9 +4,9 @@ import {resolve,dirname,sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {gzipSync} from 'node:zlib';
+import {gzipSync,gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
+const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js'),Services=require('../../quant/api/product-services.js');
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -24,7 +24,44 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
-export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
+export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024,CAPABILITY_SHARD_BUDGET=64*1024;
+/* Je Master.shardKey die unveraenderten Mitgliedsobjekte der
+   Kapazitaetsdatei, in ihrer Reihenfolge, mit den Kopffeldern
+   (product-services.js#memberFor). Kein zweiter Schluessel (ADR-001). */
+export function capabilityShards(capability){
+ if(!capability||!Array.isArray(capability.members))throw Error('INVALID_CAPABILITY_SOURCE');
+ const out={};
+ for(const member of capability.members){
+  if(!member||typeof member.s!=='string')continue;
+  const key=Master.shardKey(member.s);
+  if(!out[key]){out[key]={};for(const h of Object.keys(capability))if(h!=='members')out[key][h]=capability[h];out[key].shard=key;out[key].members=[];}
+  out[key].members.push(member);
+ }
+ return out;
+}
+/* Der Ausschnitt EINES Titels aus seinem Technik-Shard: alle Kopffelder,
+   dazu nur sein Eintrag in instruments und unavailable (product-services.js
+   #technicalShardFor). Geschrieben wird nur, wo der Leser genau diesen Shard
+   fuer den Titel laedt, und nie fuer zwei Titel unter einer securityId
+   ("BRK.B"/"BRK-B"): dann bleibt es beim Shard. */
+export function technicalTickerSlices(shard,key){
+ if(!shard||shard.shard!==key||typeof shard.schemaVersion!=='string')return {};
+ const header={};for(const h of Object.keys(shard))if(h!=='instruments'&&h!=='unavailable')header[h]=shard[h];
+ const tickers=new Set([...Object.keys(shard.instruments||{}),...Object.keys(shard.unavailable||{})]),byPath=new Map();
+ for(const ticker of tickers){
+  if(Services.technicalShard(ticker)!==key)continue;
+  const path=Services.technicalTickerPath(ticker);if(!path)continue;
+  if(!byPath.has(path))byPath.set(path,[]);byPath.get(path).push(ticker);
+ }
+ const out={};
+ for(const [path,list] of byPath){
+  if(list.length!==1)continue;const ticker=list[0],slice={...header,ticker};
+  if(Object.hasOwn(shard,'instruments'))slice.instruments=Object.hasOwn(shard.instruments||{},ticker)?{[ticker]:shard.instruments[ticker]}:{};
+  if(Object.hasOwn(shard,'unavailable'))slice.unavailable=Object.hasOwn(shard.unavailable||{},ticker)?{[ticker]:shard.unavailable[ticker]}:{};
+  out[path.slice(1)]=slice;
+ }
+ return out;
+}
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -59,6 +96,25 @@ export async function buildRelease({root,output}){
    const b=Buffer.from(JSON.stringify(part));if(b.length>FACTOR_SHARD_BUDGET)throw Error('FACTOR_SHARD_BUDGET_EXCEEDED');
    await writeFile(resolve(output,'quant/data/market/factors/product-shards/'+key+'.json'),b);
   }
+ }
+ /* Die Aktienseite braucht ein Mitglied der Kapazitaetsdatei (1,2 MB),
+    nicht alle: je shardKey ein Ausschnitt. Die volle Datei bleibt daneben
+    (Uebersicht, Signale). */
+ if(paths.includes('quant/data/universe/market-capability.json')){
+  await mkdir(resolve(output,'quant/data/universe/capability-shards'),{recursive:true});
+  for(const [key,part] of Object.entries(capabilityShards(await load('quant/data/universe/market-capability.json')))){
+   if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('CAPABILITY_SHARD_KEY_INVALID');
+   const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET)throw Error('CAPABILITY_SHARD_BUDGET_EXCEEDED');
+   await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
+  }
+ }
+ /* Ebenso der Technik-Shard (bis 4 MB entpackt fuer 15 Titel): je Titel
+    ein Ausschnitt, gzip wie der Shard. Der Shard bleibt daneben. */
+ const technicalShardPaths=paths.filter(p=>/^quant\/data\/product\/technical-signals-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(p));
+ if(technicalShardPaths.length)await mkdir(resolve(output,'quant/data/product/technical-signals-v1/ticker'),{recursive:true});
+ for(const p of technicalShardPaths){
+  const key=p.slice(-10,-8),shard=JSON.parse(gunzipSync(await readFile(resolve(root,p))).toString('utf8'));
+  for(const [target,slice] of Object.entries(technicalTickerSlices(shard,key)))await writeFile(resolve(output,target),gzipSync(Buffer.from(JSON.stringify(slice)),{level:9}));
  }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
