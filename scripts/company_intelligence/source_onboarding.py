@@ -21,7 +21,7 @@ from company_intelligence.feeds import discover_ir
 from company_intelligence.model import load_universe
 from company_intelligence.pipeline import Pipeline, advance
 from company_intelligence.store import Store, atomic_json
-from company_intelligence.transport import PublicHTTP, BudgetExhausted
+from company_intelligence.transport import PublicHTTP, BudgetExhausted, SourceError
 from company_intelligence.top46_content import matching_resolver
 from company_intelligence.current_state_acceptance import database_proof
 
@@ -126,10 +126,13 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 outcomes['BUDGET_DEFERRED'] += 1
                 store.set_state(key + cid, {'status': 'BUDGET_DEFERRED', 'checkedAt': stamp})
                 break
-            except Exception as error:
+            except (ValueError, SourceError) as error:
                 code = 'OWNER_OR_ENDPOINT_WITHHELD' if isinstance(error, ValueError) else 'TEMPORARY_SOURCE_FAILURE'
                 outcomes[code] += 1
                 store.set_state(key + cid, {'status': code, 'checkedAt': stamp, 'retryAfter': advance(stamp, 24)})
+            except Exception as error:
+                # Programming errors cannot masquerade as upstream outages.
+                raise ValueError('SOURCE_ONBOARDING_IMPLEMENTATION_ERROR') from error
         if succeeded:
             prior = store.state('continuousRefresh', {})
             store.set_state('continuousRefresh', {**prior, 'lastSuccessfulRefresh': stamp, 'lastSuccessfulNewsRefresh': stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')})

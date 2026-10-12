@@ -66,7 +66,7 @@ export function validateChanges(directory,previous){
  }
  return {status:'PASS',profiles,news,newsIssuers:issuers,expiredNews:expired};
 }
-export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,beforeBuild}={}){
+export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,beforeBuild,validateContent}={}){
  const start=Date.now(),root=resolve(temporary);mkdirSync(root,{recursive:true});
  if(!verification)universe=await universeActive(driver);
  const namespace=verification?(universe?'verify-universe-'+runId:'verify-continuous-top46'):refreshConfig.stateNamespace;
@@ -101,6 +101,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(universe){report.cohortStocks=report.consumerContracts.listings;report.cohortIssuers=report.consumerContracts.issuers;}
   const checks=validateChanges(consumer,old);report.consumerChecks=checks;
   save(join(root,'delta-qa.json'),checks);
+  if(validateContent){stage='CONTENT_ACCEPTANCE';report.contentAcceptance=await validateContent({state,consumer,temporary:root,identityRoot});}
   stage='PRIVATE_CHECKPOINT';
   const packed=join(root,'candidate.tar.gz');py('checkpoint.py',['pack','--state',state,'--snapshot',packed]);
   if(!Buffer.from(await driver.get(pointerKey)||'').equals(Buffer.from(initial||'')))throw Error('CONCURRENT_PRIVATE_GENERATION_ADVANCE');

@@ -108,6 +108,7 @@ jobs:
           if(!served)throw Error('PROFILE_SOURCE_GENERATION_NOT_SERVED');
           NODE
           node scripts/company_intelligence/refresh-qa.mjs --live --delta "$RUNNER_TEMP/ci-profile-source/delta-qa.json" --out "$RUNNER_TEMP/ci-profile-source/live-qa.json"
+          node scripts/company_intelligence/universe-browser-qa.mjs --live --consumer "$RUNNER_TEMP/ci-profile-source/consumer" --sample "$RUNNER_TEMP/ci-profile-source/profile-sample.json" --out "$RUNNER_TEMP/ci-profile-source/profile-live-browser-qa.json"
           node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-profile-source/health.json"
       - name: Fail closed on a material production regression
         if: failure() && steps.live.outcome == 'failure' && inputs.publish
@@ -131,4 +132,9 @@ jobs:
             ${{ runner.temp }}/ci-profile-source/source-onboarding.json
             ${{ runner.temp }}/ci-profile-source/candidate-qa.json
             ${{ runner.temp }}/ci-profile-source/live-qa.json
+            ${{ runner.temp }}/ci-profile-source/profile-source-funnel.json
+            ${{ runner.temp }}/ci-profile-source/profile-sample.json
+            ${{ runner.temp }}/ci-profile-source/profile-browser-qa.json
+            ${{ runner.temp }}/ci-profile-source/profile-live-browser-qa.json
+            ${{ runner.temp }}/ci-profile-source/profile-*-browser-qa.json-*.png
           retention-days: 14
