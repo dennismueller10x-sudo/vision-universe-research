@@ -1,5 +1,6 @@
 import unittest
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 from unittest.mock import patch
@@ -22,6 +23,7 @@ class ProfileSourceAuditTests(unittest.TestCase):
             config = root / 'company-intelligence/config'; config.mkdir(parents=True)
             (config / 'company-profiles.json').write_text(json.dumps({'profiles': {CID: profile()}}))
             (config / 'sources.json').write_text('[]')
+            (config / 'profile-reviewed-de.json').write_text(json.dumps({'profiles': {}, 'withheld': {}}))
             decisions = root / 'eligibility.json'
             decisions.write_text(json.dumps({'issuers': {CID: {'hasPrivatePayload': True, 'status': 'ELIGIBLE_PARTIAL', 'modules': {'profile': False}}}}))
             store = Store(state / 'state.sqlite'); store.set_state('companyProfile:' + CID, profile()); store.close()
@@ -33,6 +35,13 @@ class ProfileSourceAuditTests(unittest.TestCase):
             self.assertEqual(report['privateIssuers'], 1)
             self.assertEqual(report['stages']['matchedCommittedEnglishInputs'], 1)
             self.assertEqual(report['remoteWrites'], 0)
+            pinned = hashlib.sha256(profile()['description'].encode()).hexdigest()
+            for source_hash, expected in [(pinned, 'SOURCE_AVAILABLE_WEAK'), ('b' * 64, 'SOURCE_AVAILABLE_NO_DE_COPY')]:
+                (config / 'profile-reviewed-de.json').write_text(json.dumps({'profiles': {}, 'withheld': {CID: {'sourceDescriptionHash': source_hash, 'reason': 'REVIEWED_FRAGMENT'}}}))
+                with patch('company_intelligence.profile_source_audit.ROOT', root), patch('company_intelligence.profile_source_audit.identities', side_effect=identity):
+                    checked = audit(str(state), str(root), str(decisions), str(root / 'audit.json'), now=NOW)
+                self.assertEqual(checked['issuers'][CID]['profileStatus'], expected)
+                self.assertEqual(checked['remoteWrites'], 0)
     def test_missing_translation_is_not_missing_source(self):
         self.assertEqual(source_profile_status(profile(), CID, NOW), 'SOURCE_AVAILABLE_NO_DE_COPY')
         self.assertEqual(source_profile_status(None, CID, NOW), 'NO_PROFILE_SOURCE')

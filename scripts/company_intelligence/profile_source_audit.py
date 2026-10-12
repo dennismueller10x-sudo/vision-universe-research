@@ -57,6 +57,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
     decisions = json.loads(Path(eligibility_path).read_text())['issuers'] if eligibility_path else None
     catalogue = json.loads((ROOT / 'company-intelligence/config/company-profiles.json').read_text())['profiles']
     configured = json.loads((ROOT / 'company-intelligence/config/sources.json').read_text())
+    reviewed = json.loads((ROOT / 'company-intelligence/config/profile-reviewed-de.json').read_text())
     store = Store(state / 'state.sqlite')
     profiles, source_flags, by_issuer, source_ids = Counter(), Counter(), defaultdict(list), set()
     rows, mandatory, matched, available, safe, raw_de = {}, {}, 0, 0, 0, 0
@@ -88,6 +89,9 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             mapping_ok = row['status'] != 'INELIGIBLE_MAPPING'
             conflict = official.get('status') == 'CONFLICTING_OWNER' or 'CONFLICTING' in official.get('reason', '')
             status = source_profile_status(p, cid, stamp, mapping_ok, web_owned, conflict)
+            withheld = reviewed.get('withheld', {}).get(cid, {})
+            if status == 'SOURCE_AVAILABLE_NO_DE_COPY' and withheld.get('sourceDescriptionHash') == hashlib.sha256(p.get('description','').encode()).hexdigest():
+                status = 'SOURCE_AVAILABLE_WEAK'
             if row.get('modules', {}).get('profile') and mapping_ok:
                 status = 'PROFILE_APPROVED_DE'
             profiles[status] += 1
