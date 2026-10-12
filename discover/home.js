@@ -307,7 +307,7 @@
     intro.appendChild(introCopy);
     page.appendChild(intro);
     var body = node('div', 'v2-journey'); page.appendChild(body);
-    body.appendChild(D.HomeMarket.today(ctx)); D.GlobalView.home(body,ctx);
+    body.appendChild(D.HomeMarket.today(ctx));
     if (T()) body.appendChild(themesRail(ctx));
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
