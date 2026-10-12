@@ -4,7 +4,7 @@ import {resolve,dirname,sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {gzipSync} from 'node:zlib';
+import {gzipSync,gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
@@ -39,6 +39,70 @@ export function capabilityShards(capability){
  }
  return out;
 }
+/* AUSLIEFERUNGSANSICHTEN FUER DIE AKTIENSEITE (Payload-Audit 12.10.2026, Teil 2).
+   Der Release schreibt aus denselben Quelldateien kleinere Ausschnitte; die
+   Quelldateien und ihre Erzeuger bleiben unberuehrt, und jeder Ausschnitt
+   traegt die Quellobjekte UNVERAENDERT (Beleg: quant/tests/stock-page-payload.test.mjs).
+   Fehlt ein Ausschnitt (lokal, aelterer Stand), liest die Seite wie bisher
+   die volle Datei. */
+
+/* Technische Auswertung: ein Scherben (zwei Zeichen, im Mittel 15 Titel,
+   bis 1 MB) je Aufruf, gebraucht wird ein Titel. Je Ticker ein Dokument im
+   Aufbau des Scherbens - Kopffelder, `instruments` und `unavailable` auf
+   diesen Titel beschnitten -, damit der Leser (materializedTechnical,
+   technicalUnavailability) dieselben Pruefungen durchlaeuft. */
+export const TECHNICAL_TICKER_DIR='quant/data/product/technical-signals-v1/by-ticker/';
+export const TECHNICAL_SHARD_PATH=/^quant\/data\/product\/technical-signals-v1\/[A-Z0-9._-]{2}\.json\.gz$/;
+export function technicalTickerDocs(shard){
+ if(!shard||typeof shard.shard!=='string'||!shard.instruments||typeof shard.instruments!=='object')throw Error('INVALID_TECHNICAL_SHARD');
+ const head={};for(const k of Object.keys(shard))if(k!=='instruments'&&k!=='unavailable')head[k]=shard[k];
+ const hasUnavailable=Object.hasOwn(shard,'unavailable'),unavailable=shard.unavailable||{};
+ const out={};
+ for(const ticker of new Set([...Object.keys(shard.instruments),...Object.keys(unavailable)])){
+  /* Was der Leser nie anfragt (getTechnicalIntelligence prueft dieselbe Form), wird nicht ausgeliefert. */
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))continue;
+  const doc={...head,instruments:Object.hasOwn(shard.instruments,ticker)?{[ticker]:shard.instruments[ticker]}:{}};
+  if(hasUnavailable)doc.unavailable=Object.hasOwn(unavailable,ticker)?{[ticker]:unavailable[ticker]}:{};
+  out[ticker]=doc;
+ }
+ return out;
+}
+/* Verzeichnis der Liste (universe-list-v1.json.gz, 126 KB gzip): die
+   Aktienseite braucht den Eintrag EINES Titels (mitVerzeichnis), die
+   Namenslisten (Start, Aktien, Screener, Strategien, Radar) nur Name, Art
+   und Zahl der Gattungen. Je Master.shardKey die unveraenderten Eintraege;
+   daneben eine Namensansicht mit s, n, t, il. */
+export const UNIVERSE_SHARD_DIR='quant/data/product/universe-list-shards/';
+export const UNIVERSE_NAMES_PATH='quant/data/product/universe-names-v1.json.gz';
+export const UNIVERSE_NAMES_SCHEMA='universe-names-1.0.0';
+export function universeListViews(list){
+ if(!list||!Array.isArray(list.entries)||typeof list.schemaVersion!=='string')throw Error('INVALID_UNIVERSE_LIST_SOURCE');
+ const head={};for(const k of Object.keys(list))if(k!=='entries')head[k]=list[k];
+ const shards={},names=[];
+ for(const entry of list.entries){
+  if(!entry||typeof entry.s!=='string')continue;
+  const key=Master.shardKey(entry.s);
+  if(!shards[key])shards[key]={...head,shard:key,entries:[]};
+  shards[key].entries.push(entry);
+  const slim={s:entry.s};for(const k of ['n','t','il'])if(Object.hasOwn(entry,k))slim[k]=entry[k];
+  names.push(slim);
+ }
+ return {shards,names:{schemaVersion:UNIVERSE_NAMES_SCHEMA,sourceSchemaVersion:list.schemaVersion,generatedAt:list.generatedAt,entries:names}};
+}
+/* Kursverlauf der Aktienseite fuer die Titel mit voller Historie
+   (golden-preview/daily/<id>.json, rund 1 MB, 176 KB gzip): die Seite liest je Kerze
+   Datum, Schluss und Splitfaktor (product-services.js#getStockIntelligence).
+   Kopffelder unveraendert, Kerzen auf diese drei Felder beschnitten. Die
+   volle Datei bleibt daneben (Signale, Erzeuger, Technical Intelligence). */
+export const GOLDEN_CHART_VIEW='golden-chart-view-1.0.0';
+export const GOLDEN_FILE=/^quant\/data\/market\/golden-preview\/daily\/ref_[A-Za-z0-9_-]+\.json$/;
+export function goldenChartView(payload){
+ if(!payload||!Array.isArray(payload.bars)||typeof payload.securityId!=='string')throw Error('INVALID_GOLDEN_SOURCE');
+ const view={};for(const k of Object.keys(payload))if(k!=='bars')view[k]=payload[k];
+ view.chartView=GOLDEN_CHART_VIEW;
+ view.bars=payload.bars.map(b=>{const o={};for(const k of ['date','close','splitFactor'])if(b&&Object.hasOwn(b,k))o[k]=b[k];return o;});
+ return view;
+}
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -54,7 +118,10 @@ export async function buildRelease({root,output}){
  const emitted=[];await mkdir(output,{recursive:true});
  // Refuse reuse: stale files must not survive a release projection.
  const {readdir}=await import('node:fs/promises');if((await readdir(output)).length)throw Error('OUTPUT_NOT_EMPTY');
- for(const p of paths.filter(permitted)){const from=resolve(root,p);if(!(await lstat(from)).isFile())throw Error('NON_FILE_INPUT');await mkdir(dirname(resolve(output,p)),{recursive:true});await copyFile(from,resolve(output,p));}
+ /* Die Scherben der technischen Auswertung werden durch Ausschnitte je Ticker ersetzt (gleiche Datenmenge, ein Titel je Abruf). */
+ const technicalShards=paths.filter(p=>TECHNICAL_SHARD_PATH.test(p));
+ const replaced=new Set(technicalShards);
+ for(const p of paths.filter(p=>permitted(p)&&!replaced.has(p))){const from=resolve(root,p);if(!(await lstat(from)).isFile())throw Error('NON_FILE_INPUT');await mkdir(dirname(resolve(output,p)),{recursive:true});await copyFile(from,resolve(output,p));}
  async function json(path,value){const bytes=Buffer.from(JSON.stringify(value));await mkdir(dirname(resolve(output,path)),{recursive:true});await writeFile(resolve(output,path),bytes);emitted.push({path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
  const load=async p=>JSON.parse(await readFile(resolve(root,p),'utf8'));
  /* Produktprojektion der Faktordatei (factor-product-projection.js): die
@@ -84,6 +151,29 @@ export async function buildRelease({root,output}){
    const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET)throw Error('CAPABILITY_SHARD_BUDGET_EXCEEDED');
    await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
   }
+ }
+ /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
+    nur Quelldateien des Repositories und schreibt nur in den Release. */
+ for(const p of technicalShards){
+  const shard=JSON.parse(gunzipSync(await readFile(resolve(root,p))));
+  if(shard.shard!==p.slice(p.lastIndexOf('/')+1,-8))throw Error('TECHNICAL_SHARD_KEY_MISMATCH');
+  for(const [ticker,doc] of Object.entries(technicalTickerDocs(shard))){
+   const target=TECHNICAL_TICKER_DIR+ticker+'.json.gz';
+   await mkdir(dirname(resolve(output,target)),{recursive:true});
+   await writeFile(resolve(output,target),gzipSync(Buffer.from(JSON.stringify(doc)),{level:9}));
+  }
+ }
+ if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
+  const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
+  await mkdir(resolve(output,UNIVERSE_SHARD_DIR),{recursive:true});
+  for(const [key,part] of Object.entries(views.shards)){
+   if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('UNIVERSE_SHARD_KEY_INVALID');
+   await writeFile(resolve(output,UNIVERSE_SHARD_DIR+key+'.json'),JSON.stringify(part));
+  }
+  await writeFile(resolve(output,UNIVERSE_NAMES_PATH),gzipSync(Buffer.from(JSON.stringify(views.names)),{level:9}));
+ }
+ for(const p of paths.filter(p=>GOLDEN_FILE.test(p))){
+  await writeFile(resolve(output,p.replace(/\.json$/,'.chart.json')),JSON.stringify(goldenChartView(await load(p))));
  }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);

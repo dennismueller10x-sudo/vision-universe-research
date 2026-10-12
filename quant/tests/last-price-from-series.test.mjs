@@ -260,11 +260,11 @@ async function kopfDerAktienseite(stock) {
   lade("quant/ui/shell.js", "quant/engines/plain-verdict.js", "quant/app/view-model.js", "quant/app/ui.js", "quant/app/page-stock.js");
   const main = document.createElement("main");
   const offen = () => new Promise(() => {});
-  const api = new Proxy({ getIntelligenceBrief: async () => null, getStockIntelligence: async () => stock },
+  const api = new Proxy({ getIntelligenceBrief: async () => null, getStockIntelligence: async () => stock, getUniverseEntry: async () => null },
     { get: (t, k) => (k in t ? t[k] : offen) });
   /* Namensverzeichnis leer und sofort da: der Kopf nennt dann, was der
      Dienst fuer DIESEN Titel liefert. Alles andere bleibt offen. */
-  const ctx = new Proxy({ api, names: {}, types: {}, entries: {}, loadNames: async () => ({}) },
+  const ctx = new Proxy({ api, names: {}, types: {}, entries: {}, loadNames: async () => ({}), takePrefetched: () => null },
     { get: (t, k) => (k in t ? t[k] : offen) });
   win.QXStock.render(main, stock.ticker, ctx);
   for (let i = 0; i < 10; i++) await new Promise((r) => setImmediate(r));

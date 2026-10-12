@@ -98,6 +98,7 @@
   global.QXLoadChartbild = loadChartbild;
   global.QXChartbildCss = chartbildCss;
 
+  var NAMES_VIEW = "/quant/data/product/universe-names-v1.json.gz";
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
@@ -130,8 +131,26 @@
     /* Stammaktien zuerst - Vorzugsaktien und Anleihen bleiben gezaehlt, stehen aber hinten. */
     commonFirst: function (list) { return (list || []).slice().sort(function (a, b) { return (ctx.types[a] === "COMMON_STOCK" ? 0 : 1) - (ctx.types[b] === "COMMON_STOCK" ? 0 : 1); }); },
     openSearch: function () { search.open(); },
-    loadNames: function () {
-      if (!namesPromise) namesPromise = S.loadCompressedJSON("/quant/data/product/universe-list-v1.json.gz").then(function (d) {
+    /* Aktienseite: die Daten des Titels starten, sobald die Route feststeht - parallel zu Sprache und
+       Evidenz-Skript, nicht erst danach. Derselbe Aufruf wie bisher; page-stock.js uebernimmt das
+       Versprechen (takePrefetched) statt ihn zu wiederholen. Verteilung, Musterworte und Echtzeit-Hub
+       sind ohnehin geteilte, einmal geladene Versprechen. */
+    prefetchStock: function (ticker) {
+      ctx.prefetched = { ticker: ticker, brief: api.getIntelligenceBrief(ticker).catch(function () { return null; }) };
+      ctx.distribution().catch(function () { return null; }); ctx.patternWords().catch(function () { return {}; }); ctx.hubReady().catch(function () { return false; });
+    },
+    takePrefetched: function (ticker) { var p = ctx.prefetched; ctx.prefetched = null; return p && p.ticker === ticker ? p.brief : null; },
+    prefetched: null,
+    /* Im Release liegt neben der Liste eine Namensansicht (s, n, t, il; 78 statt 126 KB gzip, scripts/vu2/build-release.mjs,
+       universeListViews) - dieselben Namen und Arten. Lokal und in aelteren Staenden: die volle Liste. ctx.entries traegt aus
+       der Ansicht nur s, n, t, il; den ganzen Eintrag eines Titels liefert api.getUniverseEntry.
+       full = true: die Ansicht braucht die ganze Liste ohnehin (Screener: getUniverse). Dann gilt sie auch hier - ueber
+       denselben Ladepfad, damit der Dienst sie nicht ein zweites Mal abruft. */
+    loadNames: function (full) {
+      if (!namesPromise) namesPromise = (full ? Promise.reject(new Error("FULL_LIST_WANTED")) : S.loadCompressedJSON(NAMES_VIEW).then(function (d) {
+        if (!d || d.schemaVersion !== "universe-names-1.0.0" || !Array.isArray(d.entries)) throw new Error("NAMES_VIEW_CONTRACT");
+        return d;
+      })).catch(function () { return S.loadCompressedJSON("/quant/data/product/universe-list-v1.json.gz"); }).then(function (d) {
         (d.entries || []).forEach(function (e) { if (!e || !e.s) return; if (e.n && e.n !== e.s) ctx.names[e.s] = e.n; if (e.t) ctx.types[e.s] = e.t; ctx.entries[e.s] = e; });
         return ctx.names;
       }).catch(function () { return ctx.names; });
@@ -288,11 +307,20 @@
     main.className = "qx-main";
     global.scrollTo(0, 0);
     try {
+      /* Die Voraussetzungen der Ansicht starten ZUSAMMEN (vorher nacheinander: Sprache, dann Namen, dann Skript - je ein
+         Umlauf mit 150 ms und ihrer eigenen Wartezeit). Dieselben Dateien, dieselben Versprechen, nur ohne Warteschlange.
+         Das Woerterbuch gilt weiter vor jeder Seite. */
+      if (r.view === "home") { ctx.loadNames(); ctx.loadBacktestView(); }
+      else {
+        if (/^(radar|screener|strategien|aktien)$/.test(r.view)) ctx.loadNames(r.view === "screener");
+        if (r.view === "radar" || r.view === "aktie") ctx.loadBacktestView();
+        if (r.view === "aktie" && /^[A-Z0-9.-]{1,12}$/.test(r.ticker)) ctx.prefetchStock(r.ticker);
+      }
       await ctx.language();
       if (gen !== generation) return;
-      if (/^(home|screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
+      if (/^(screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
       switch (r.view) {
-        case "home": await ctx.loadBacktestView(); await global.QXPages.home(main, ctx); break;
+        case "home": await global.QXPages.home(main, ctx); break;
         case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
         case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
