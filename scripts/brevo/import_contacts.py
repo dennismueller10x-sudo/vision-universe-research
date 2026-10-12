@@ -45,6 +45,39 @@ def merge_attributes(incoming, existing):
     return attrs
 
 
+def attribute_matches(actual, name, expected):
+    # Brevo may omit unset text attributes; an empty tag has no consent meaning.
+    if ATTRS.get(name) == "text" and expected == "":
+        return actual.get(name) in (None, "")
+    return actual.get(name) == expected
+
+
+def held_existing(prepared, record, existing, lists=None):
+    """Current stock import: never interpret missing status as renewed consent."""
+    if prepared.get("import_policy") != "subscribers_new_or_unchanged_v1" or existing is None:
+        return False
+    try:
+        validate_existing(existing)
+    except Blocked:
+        return True
+    attrs = existing["attributes"]
+    if existing["emailBlacklisted"] or attrs.get("VU_EMAIL_CONSENT") != "subscribed":
+        return True
+    if any(not attribute_matches(attrs, k, v) for k, v in record["attributes"].items()):
+        return True
+    if existing.get("listUnsubscribed"):
+        return True
+    if lists is not None:
+        internal = record["attributes"]["VU_INTERNAL_TEST"]
+        desired = lists[LISTS[2] if internal else LISTS[0]]
+        if (desired not in existing["listIds"] or lists[LISTS[1]] in existing["listIds"]
+                or (internal and lists[LISTS[0]] in existing["listIds"])):
+            return True
+    # An exact previous integration result may be reused without ANY update.
+    # New membership or missing/contradictory consent is not permitted by this policy.
+    return False
+
+
 def import_contacts(client, prepared, review, protected_actions=False):
     from transfer import trusted_dispatch, validate_prepared
     if os.environ.get("GITHUB_ACTIONS") and not (protected_actions and trusted_dispatch()):
@@ -64,10 +97,14 @@ def import_contacts(client, prepared, review, protected_actions=False):
         raise Blocked("Beide Testadressen müssen eindeutig bestätigt sein.")
     # Check every existing contact before the first mutation; do not guess missing blacklist fields.
     preflight(client, prepared)
-    result = {"created": 0, "updated": 0, "unchanged": 0, "newsletter": 0, "blocked_or_unclear": 0}
+    result = {"created": 0, "updated": 0, "unchanged": 0, "newsletter": 0, "blocked_or_unclear": 0,
+              "held_existing": 0}
     for record in prepared["records"]:
         email = record["email"]
         existing = client.contact(email)
+        if held_existing(prepared, record, existing, lists):
+            result["held_existing"] += 1
+            continue
         validate_existing(existing)
         attrs = merge_attributes(record["attributes"], existing)
         eligible = attrs["VU_EMAIL_CONSENT"] == "subscribed" and not attrs["VU_INTERNAL_TEST"]
@@ -77,6 +114,13 @@ def import_contacts(client, prepared, review, protected_actions=False):
         if attrs["VU_INTERNAL_TEST"]:
             desired.append(lists[LISTS[2]])
         membership = set(existing.get("listIds", [])) if existing else set()
+        if prepared.get("import_policy") == "subscribers_new_or_unchanged_v1" and existing:
+            if not set(desired).issubset(membership) or (not eligible and lists[LISTS[0]] in membership):
+                result["held_existing"] += 1
+                continue
+            result["unchanged"] += 1
+            result["newsletter"] += eligible
+            continue
         body = {"attributes": attrs}
         if set(desired) - membership:
             body["listIds"] = sorted(set(desired) - membership)
@@ -96,12 +140,14 @@ def import_contacts(client, prepared, review, protected_actions=False):
             result["created"] += 1
         # Read back every upsert without logging contact data; abort on a mismatch.
         actual = client.contact(email)
-        if not actual or any(actual.get("attributes", {}).get(k) != v for k, v in attrs.items()):
+        if not actual or any(not attribute_matches(actual.get("attributes", {}), k, v) for k, v in attrs.items()):
             raise Blocked("Import-Rückprüfung fehlgeschlagen; privaten Zustand prüfen.")
         if eligible != (lists[LISTS[0]] in actual.get("listIds", [])):
             raise Blocked("Newsletter-Zuordnung stimmt nicht mit Einwilligung überein.")
         if attrs["VU_INTERNAL_TEST"] and lists[LISTS[2]] not in actual.get("listIds", []):
             raise Blocked("Testlisten-Zuordnung fehlt.")
+        if prepared.get("import_policy") == "subscribers_new_or_unchanged_v1" and lists[LISTS[1]] in actual.get("listIds", []):
+            raise Blocked("Bestandskontakt wurde unerwartet in die App-Warteliste aufgenommen.")
         if existing and existing.get("emailBlacklisted") and not actual.get("emailBlacklisted"):
             raise Blocked("Bestehende Sperre wurde verändert; Import anhalten.")
         result["newsletter"] += eligible
@@ -120,10 +166,19 @@ def validate_existing(contact):
 def preflight(client, prepared):
     from transfer import validate_prepared
     validate_prepared(prepared)
+    lists = structures(client) if prepared.get("import_policy") == "subscribers_new_or_unchanged_v1" else None
+    if lists is not None and prepared.get("expected_list_ids") != lists:
+        raise Blocked("Private Ziel-Listen-IDs passen nicht zum tatsächlichen Brevo-Konto.")
     counts = {"contacts_checked": 0, "existing": 0, "new": 0, "existing_email_blocks": 0,
-              "regular_subscribers_eligible": 0, "internal_tests": 0, "non_subscribers": 0, "buyers": 0}
+              "regular_subscribers_eligible": 0, "internal_tests": 0, "non_subscribers": 0, "buyers": 0,
+              "held_existing": 0}
     for record in prepared["records"]:
         existing = client.contact(record["email"])
+        if held_existing(prepared, record, existing, lists):
+            counts["contacts_checked"] += 1
+            counts["existing"] += 1
+            counts["held_existing"] += 1
+            continue
         validate_existing(existing)
         attrs = merge_attributes(record["attributes"], existing)
         counts["contacts_checked"] += 1

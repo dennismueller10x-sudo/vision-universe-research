@@ -42,14 +42,19 @@ class Fake:
             return {"plan": [{"type": "free"}]}
         if path == "/senders":
             return {"senders": [{"id": 1, "active": True, "email": "sender@example.invalid"}]}
+        if path == "/senders/domains":
+            return {"domains": [{"domain_name": "example.invalid"}]}
         if path.startswith("/senders/domains/"):
             return {"verified": True, "authenticated": True}
         if path == "/contacts/attributes":
             return {"attributes": [{"name": n, "type": t, "category": "normal"} for n, t in ATTRS.items()]}
+        if path == "/contacts?limit=1&offset=0":
+            return {"count": len(self.contacts), "contacts": []}
         if method == "GET" and ("/contacts?" in path or "/contacts/lists/" in path):
             query = parse_qs(urlsplit(path).query)
             offset = int(query.get("offset", [0])[0])
-            return {"contacts": [copy.deepcopy(c) for c in self.contacts.values() if 1 in c.get("listIds", [])][offset:offset+500]}
+            list_id = int(path.split("/")[3]) if path.startswith("/contacts/lists/") else 1
+            return {"contacts": [copy.deepcopy(c) for c in self.contacts.values() if list_id in c.get("listIds", [])][offset:offset+500]}
         if path == "/contacts" and method == "POST":
             if body["email"] in self.contacts:
                 raise Blocked("Duplicate")
