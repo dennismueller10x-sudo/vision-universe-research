@@ -281,7 +281,7 @@
       var iso = new Date(tt).toISOString().slice(0, 10);
       var anchor = i === 0 ? "start" : i === ticks ? "end" : "middle";
       node.appendChild(svg("text", { class: "dx-range-date", x: x(iso).toFixed(1), y: h - 8, "text-anchor": anchor,
-        text: opt.range === "1W" || opt.range === "1M" ? datum(iso) : (opt.range === "6M" || opt.range === "1Y" ? monat(iso) : iso.slice(0, 4)) }));
+        text: opt.range === "1W" || opt.range === "1M" ? datum(iso) : (opt.range === "6M" || opt.range === "1Y" || opt.range === "MAX" && tspan < 366 * 86400000 ? monat(iso) : iso.slice(0, 4)) }));
     }
     return node;
   }
