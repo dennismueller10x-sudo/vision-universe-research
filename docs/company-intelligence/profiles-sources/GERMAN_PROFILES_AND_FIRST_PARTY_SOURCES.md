@@ -548,3 +548,13 @@ The final Company Intelligence Node suite now contains **124 tests**; the
 will be measured on the next necessary enable operation; a synthetic test is
 not presented as that production benchmark. It does not reopen or rewrite the
 currently healthy gate merely to manufacture a timing measurement.
+
+
+Actual public profile-object size audit of the same immutable served generation
+hash-checked all **2,873** profile-enabled issuer JSON files, then reconfirmed the
+served generation. Serialized public profile objects total **5,025,859 bytes**;
+their German description strings total **757,176 UTF-8 bytes**. Their containing
+issuer payloads total 65,127,121 bytes; that is not the profile-only byte count.
+This was a bounded consumer-asset readback (eight concurrent reads), with zero
+private objects and zero source discovery requests. The preparation catalogue
+and its 745,742 reviewed-copy text bytes are separate counts.
