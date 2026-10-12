@@ -39,6 +39,8 @@ def expected_records(config):
         if normalized == "brevocode": role = "brevo_code"
         elif re.fullmatch(r"dkim[12]?record", normalized): role = normalized
         else: continue  # DMARC, SPF and all unrelated records are out of scope.
+        # Current API retains an empty legacy TXT DKIM slot alongside CNAME slots.
+        if record is None and role != "brevo_code": continue
         if not isinstance(record, dict): raise Blocked("Unvollständige Brevo-DNS-Antwort.")
         name = canonical(record.get("host_name", ""))
         if name in ("", "@", DOMAIN): name = DOMAIN
@@ -172,7 +174,13 @@ def run(operation, authorized=False):
     for cf in clients:
         check={"secret":cf.name,"zone_read":False,"dns_read":False}
         report["cloudflare_candidates"].append(check)
+        stage="token_verify"
         try:
+            if not cf.global_email:
+                check["token_active"]=cf.call("GET","/user/tokens/verify").get("result",{}).get("status")=="active"
+                if check["token_active"] is not True:
+                    check["needed"]="Active API token / allowed runner IP";continue
+            stage="zone_read"
             zones=cf.call("GET","/zones?name="+DOMAIN+"&per_page=50")["result"]
             zones=[z for z in zones if canonical(z.get("name",""))==DOMAIN]
             if len(zones)!=1:
@@ -180,10 +188,12 @@ def run(operation, authorized=False):
             cf.zone=zones[0]["id"]
             if not re.fullmatch(r"[a-f0-9]{32}",cf.zone):raise Blocked("Ungültige Zone-ID.")
             check["zone_read"]=True
+            stage="dns_read"
             records=cf.records();check["dns_read"]=True
         except APIError as error:
-            check.update(http=error.status,codes=error.codes,
-                needed="Zone / DNS / Edit" if check["zone_read"] else "Zone / Zone / Read and authorized zone resource")
+            check.update(http=error.status,codes=error.codes,stage=stage,
+                needed="API token authentication / IP policy" if stage=="token_verify" else
+                       "Zone / DNS / Edit" if check["zone_read"] else "Zone / Zone / Read and authorized zone resource")
             continue
         changes=plan(records,expected)
         cf.expected=expected

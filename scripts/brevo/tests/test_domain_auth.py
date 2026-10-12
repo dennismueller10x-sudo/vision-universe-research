@@ -20,7 +20,8 @@ def config():
 
 class DNS(unittest.TestCase):
     def test_only_brevo_code_and_dkim_are_extracted(self):
-        expected=expected_records(config())
+        c=config();c["dns_records"]["dkim_record"]=None
+        expected=expected_records(c)
         self.assertEqual(len(expected),3)
         self.assertTrue(all(r["name"]==DOMAIN or "._domainkey." in r["name"] for r in expected))
         self.assertFalse(any("_dmarc" in r["name"] for r in expected))
