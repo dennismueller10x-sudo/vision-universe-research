@@ -47,7 +47,8 @@ def create(state, consumer, decisions, output):
                 if 6000<=sic<=6799:kinds.append('FINANCIAL')
                 if (2000<=sic<=3999 or 5000<=sic<=5999) and 'BIOTECH_HEALTH'not in kinds:kinds.append('INDUSTRIAL_CONSUMER')
             profile_total+=r['modules']['profile']
-            for kind in kinds:groups[kind].append(ticker)
+            if r['modules']['profile']:
+                for kind in kinds:groups[kind].append(ticker)
             if kinds:evidence[ticker]={'companyId':cid,'businessCountry':country or None,'sic':sic,'profilePresent':r['modules']['profile']}
         selected={k:groups[k][:n]for k,n in TARGETS.items()}
         mandatory=[t for t in TOP if t in m['tickers']]
@@ -59,7 +60,8 @@ def create(state, consumer, decisions, output):
                 'stocks':chosen,'ineligible':base['ineligible'],'groups':selected,'groupTargets':TARGETS,
                 'availableGroupCounts':{k:len(groups[k])for k in TARGETS},'groupShortfalls':{k:TARGETS[k]-len(selected[k])for k in TARGETS if len(selected[k])<TARGETS[k]},
                 'mandatoryNotEligible':[t for t in TOP if t not in available], 'approvedProfileUniverseCount':profile_total,
-                'evidence':{t:evidence[t]for t in chosen if t in evidence},'privateOperationalRowsIncluded':False}
+                'evidence':{t:evidence[t]for t in chosen if t in evidence},'publicMetadataInventory':evidence,
+                'profileQualityGroupsRequireApprovedGermanCopy':True,'privateOperationalRowsIncluded':False}
         atomic_json(output,result);return result
     finally:store.close()
 

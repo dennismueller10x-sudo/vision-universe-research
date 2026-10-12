@@ -80,8 +80,10 @@ def complete(state,out,budget=250,max_seconds=600):
             except Exception:
                 outcomes['TEMPORARY_SEC_FAILURE']+=1
                 if outcomes['TEMPORARY_SEC_FAILURE']>=3:break
+        references={cid:store.state('profileQaIssuerMetadata:'+cid)for cid in queue if store.state('profileQaIssuerMetadata:'+cid)}
         report={'schema':1,'seed':SEED,'collectionCandidates':len(queue),'newMetadataRecords':completed,'requests':requests,
-            'providerRequestAttempts':client.stats['requests'],'runtimeSeconds':round(time.monotonic()-started,3),'outcomes':dict(outcomes),'newsDiscovery':False,'factorChanges':False,'privateOperationalRowsIncluded':False}
+            'providerRequestAttempts':client.stats['requests'],'runtimeSeconds':round(time.monotonic()-started,3),'outcomes':dict(outcomes),'newsDiscovery':False,'factorChanges':False,'privateOperationalRowsIncluded':False,
+            'publicQAReferences':references,'referencePolicy':'PUBLIC_SEC_COUNTRY_AND_SIC_ONLY_NO_ADDRESSES_NO_OPERATIONAL_STATE'}
         atomic_json(out,report);return report
     finally:store.close();lock.close()
 if __name__=='__main__':
