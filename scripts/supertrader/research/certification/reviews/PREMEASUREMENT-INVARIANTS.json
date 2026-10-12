@@ -1,0 +1,1069 @@
+{
+  "schema": "supertrader-premeasurement-invariants-1.0.0",
+  "reviewedAt": "2026-10-12T07:17:10.965587+00:00",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "measurementAuthorizedByThisReview": false,
+  "reviewScope": "DATA_EXECUTION_CERTIFICATION_BEFORE_V2_MEASUREMENT",
+  "noActualStrategyOutcomesRead": true,
+  "noOldPerformanceUsedForMappingChoice": true,
+  "noFrozenFileMutation": true,
+  "invariants": {
+    "baseline": {
+      "commit": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+      "originalCriticalCodeCommit": "e861166364205985c5befadff0e6f55e4d7819fa",
+      "originalFreezeSha256": "123f63f7cae86eafd0971a9181717cea12796e41e632d6168c9d3661aa7ab9f5",
+      "originalProtocolHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+      "assertOriginalFreeze": "PASSED",
+      "baselineFreezeExact": "PASSED",
+      "tenOriginalMethodRulebooks": "UNCHANGED"
+    },
+    "globalImmutableContract": {
+      "schema": "supertrader-tournament-protocol-1.0.0",
+      "registeredBeforePerformance": true,
+      "historyLabel": "SEEN_HISTORICAL_DATA",
+      "window": {
+        "warmupFrom": "2015-01-01",
+        "from": "2018-01-02",
+        "to": "2026-09-30"
+      },
+      "windowReason": "Common three-year warm-up for the preregistered low-volatility method; older available years remain warm-up, never called unseen.",
+      "universe": {
+        "id": "US_PIT_2016_A",
+        "priceFloorRaw": 5,
+        "dollarVolumeSessions": 20,
+        "dollarVolumeFloor": 1000000,
+        "maxSignalStalenessSessions": 0,
+        "nonEquityExcluded": true,
+        "tickerReuse": "reject ambiguous histories",
+        "capBands": "UNAVAILABLE_WITHOUT_PIT_SHARES"
+      },
+      "execution": {
+        "timing": "NEXT_SESSION_OPEN",
+        "initialCapital": 100000,
+        "slippageBpsPerSide": 10,
+        "commissionBpsPerSide": 1,
+        "costSensitivityMultiplier": 2,
+        "cashReturn": 0,
+        "fractionalShares": true,
+        "shorting": false,
+        "leverage": false
+      },
+      "benchmark": {
+        "primary": "SPY_CANONICAL_TOTAL_RETURN",
+        "context": [
+          "IWM",
+          "QQQ",
+          "IWV"
+        ],
+        "contextIfUnavailable": "MISSING_NOT_SUBSTITUTED",
+        "riskFreeForSharpe": 0
+      },
+      "delisting": {
+        "baseline": "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+        "sensitivity": [
+          "LAST_OBSERVED_PRICE",
+          "DISTRESS_ZERO_OTHER_MINUS_30"
+        ],
+        "knownAcquisition": "LAST_OBSERVED_PRICE_ONLY_WHEN_OFFICIAL_CLASSIFICATION_PRESENT",
+        "terminalProceedsAreScenarios": true
+      },
+      "signals": {
+        "horizonsSessions": [
+          21,
+          63,
+          126
+        ],
+        "excursionSessions": 126,
+        "rightTailQuantile": 0.95,
+        "leftTailQuantile": 0.05,
+        "signalBasis": "SPY_MATCHED_EXCESS",
+        "cluster": "formation calendar month; descriptive t and Newey-West monthly HAC with five lags; overlapping windows not independent",
+        "positiveScoreStatistic": "MONTHLY_HAC_T",
+        "hacMonthlyLags": 5,
+        "minSignals": 30,
+        "minClusters": 12
+      },
+      "cohortAccounting": {
+        "retentionMonths": 6,
+        "capitalFractionPerCohort": 0.16666666666666666,
+        "retainedSelections": "formation membership fixed until expiry",
+        "monthlyWeightConvention": "equal capital across active slices and fixed equal target weights within slice, reweighted at monthly next open",
+        "fidelity": "VU_FORMALIZATION of source overlapping cohorts; implementation does not assert exact unrebalanced source position accounting",
+        "initialUnformedSlices": "cash; startup cash effect reported"
+      },
+      "regimes": {
+        "trendSmaSessions": 200,
+        "sidewaysBand": 0.02,
+        "volatilitySessions": 21,
+        "highVolAnnualized": 0.25,
+        "lowVolAnnualized": 0.15,
+        "earlyEnd": "2021-12-31",
+        "definedFromLaggedBenchmarkOnly": true
+      },
+      "scoreWeights": {
+        "fidelityReproducibility": 0.15,
+        "signalEvidence": 0.2,
+        "portfolioEvidence": 0.2,
+        "robustness": 0.15,
+        "riskProfile": 0.1,
+        "dataQuality": 0.1,
+        "distinctivenessProduct": 0.1
+      },
+      "scoreRubric": {
+        "signal": "positive 63-session month-cluster HAC t>=2 and median excess>0:100; positive mean/median excess:65; neutral:40; negative:15; insufficient:0",
+        "portfolio": "CAGR vs SPY above 1pp and Sharpe above SPY:100; above CAGR only:75; similar within1pp:50; below:20",
+        "robustness": "fraction of sufficiently populated early/late/trend/vol signal segments with positive mean, scaled0..100",
+        "risk": "drawdown >=5pp shallower and Sharpe>=SPY:100; shallower only:70; similar within5pp:50; deeper:20",
+        "fidelity": "source-defined systematic long-sleeve adaptation:75; substantially formalized legendary daily-equity adaptation:45",
+        "data": "PIT listings and canonical prices with terminal scenario uncertainty:65; missing required PIT fundamentals:0",
+        "distinctiveness": "source universe preliminary assessment frozen per method; no performance-dependent changes"
+      },
+      "tierGate": {
+        "A": "score>=75, confidence>=MEDIUM, positive signal, portfolio ABOVE, early+late positive, terminal/cost sensitivities pass, adversarial review passes",
+        "B": "score>=55, confidence>=MEDIUM, neither signal nor portfolio materially negative; or source-defined risk specialist with positive risk evidence and adequate comparisons",
+        "C": "executable but experimental, incomplete fidelity, weak evidence or LOW confidence",
+        "D": "not mechanically admitted; educational or data blocked"
+      },
+      "dataRights": {
+        "public": "source metadata, rulebooks, enums and counts only",
+        "private": "all provider-derived prices, numerical performance/exposure metrics, current candidate identities and diagnostics",
+        "results": "RSA-OAEP-256+A256GCM+gzip encrypted for owner and ephemeral research session"
+      },
+      "noPostResultTuning": true,
+      "noLiveOrdersOrMerges": true
+    },
+    "methodImmutableRules": [
+      {
+        "id": "cross_sectional_momentum",
+        "originalRulebookHash": "562cae757872967ae5e3d09d04da3b2950d2b6d21f8cc7a4f4cc5c17e9c39c49",
+        "currentRulebookHash": "562cae757872967ae5e3d09d04da3b2950d2b6d21f8cc7a4f4cc5c17e9c39c49",
+        "unchanged": true,
+        "parameters": {
+          "formationMonths": 6,
+          "holdingMonths": 6,
+          "skipDays": 0,
+          "selectionFraction": 0.1,
+          "cohortEqualWeight": true,
+          "tieBreak": "STABLE_ID_ASCENDING",
+          "quantileRounding": "CEIL"
+        },
+        "portfolioSemantics": {
+          "rebalance": "MONTHLY_FORMATION",
+          "targetWeightScope": "NEW_COHORT",
+          "cohortMonths": 6,
+          "cohortCapitalFraction": 0.16666666666666666,
+          "capitalRampUp": "UNFORMED_COHORT_SLEEVES_REMAIN_CASH",
+          "retainedCohorts": "RUNNER_PRESERVES_PREVIOUS_SELECTIONS_UNTIL_EXPIRY_AND_EQUAL_WEIGHTS_WITHIN_EACH",
+          "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+          "stopLoss": null,
+          "leverage": 1,
+          "longOnly": true
+        },
+        "rules": [
+          {
+            "id": "JT_FORMATION_6M_NO_SKIP",
+            "provenance": "SOURCE_VARIANT",
+            "description": "Six-month total return; representative 6/6 no-skip paper variant."
+          },
+          {
+            "id": "JT_TOP_DECILE",
+            "provenance": "SOURCE",
+            "description": "Highest prior-return decile."
+          },
+          {
+            "id": "COHORT_EQUAL_WEIGHT",
+            "provenance": "SOURCE_LONG_SLEEVE",
+            "description": "Equal weights within each monthly cohort; cohort expires after six months."
+          }
+        ],
+        "sourceMap": [
+          {
+            "id": "jt1993",
+            "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
+            "locator": "Section I, printed pp.68\u201369; representative 6/6 no-skip variant."
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "52_week_high_effect",
+        "originalRulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
+        "currentRulebookHash": "d68c2830efce8d0d18556b58bda3ca2060742e357f9a4e77bb91b7b60d06dbb0",
+        "unchanged": true,
+        "parameters": {
+          "formationMonths": 12,
+          "holdingMonths": 6,
+          "selectionFraction": 0.3,
+          "priceField": "close",
+          "cohortEqualWeight": true,
+          "tieBreak": "STABLE_ID_ASCENDING",
+          "quantileRounding": "CEIL"
+        },
+        "portfolioSemantics": {
+          "rebalance": "MONTHLY_FORMATION",
+          "targetWeightScope": "NEW_COHORT",
+          "cohortMonths": 6,
+          "cohortCapitalFraction": 0.16666666666666666,
+          "capitalRampUp": "UNFORMED_COHORT_SLEEVES_REMAIN_CASH",
+          "retainedCohorts": "RUNNER_PRESERVES_PREVIOUS_SELECTIONS_UNTIL_EXPIRY_AND_EQUAL_WEIGHTS_WITHIN_EACH",
+          "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+          "stopLoss": null,
+          "leverage": 1,
+          "longOnly": true
+        },
+        "rules": [
+          {
+            "id": "GH_52W_PROXIMITY",
+            "provenance": "SOURCE_WITH_PRICE_CONVENTION",
+            "description": "Latest split-adjusted close divided by maximum split-adjusted close over trailing twelve calendar months."
+          },
+          {
+            "id": "GH_TOP_30_PERCENT",
+            "provenance": "SOURCE",
+            "description": "Highest 30 percent price-proximity ranks, no breakout trigger."
+          },
+          {
+            "id": "COHORT_EQUAL_WEIGHT",
+            "provenance": "SOURCE_LONG_SLEEVE",
+            "description": "Monthly equal-weight cohorts retained for six months."
+          }
+        ],
+        "sourceMap": [
+          {
+            "id": "gh2004",
+            "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
+            "locator": "Tables I\u2013III, printed pp.2148\u20132152."
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "LOW_VOLATILITY",
+        "originalRulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
+        "currentRulebookHash": "f23e7a20aca1c5c87fb3d7c3c8b655e7faa1faa3018b3888a5c627167bac8e10",
+        "unchanged": true,
+        "parameters": {
+          "lookbackMonths": 36,
+          "weeklySampling": "LAST_OBSERVED_SESSION_OF_ISO_WEEK_INCLUDING_ASOF_PARTIAL_WEEK",
+          "returns": "LOG_TOTAL_RETURN",
+          "riskFreeSubtraction": false,
+          "volatilityDdof": 1,
+          "selectionFraction": 0.1,
+          "annualizeScore": false,
+          "tieBreak": "STABLE_ID_ASCENDING",
+          "quantileRounding": "CEIL"
+        },
+        "portfolioSemantics": {
+          "rebalance": "MONTHLY",
+          "targetWeightScope": "FULL_PORTFOLIO",
+          "cohortMonths": 1,
+          "cohortCapitalFraction": 1,
+          "execution": "NEXT_SESSION_OPEN_BY_RUNNER",
+          "stopLoss": null,
+          "leverage": 1,
+          "longOnly": true
+        },
+        "rules": [
+          {
+            "id": "LV_3Y_WEEKLY_VOLATILITY",
+            "provenance": "SOURCE_WITH_EXPLICIT_ADAPTATIONS",
+            "description": "Three-calendar-year sample volatility of weekly log total returns; risk-free subtraction omitted explicitly."
+          },
+          {
+            "id": "LV_BOTTOM_VOLATILITY_DECILE",
+            "provenance": "SOURCE",
+            "description": "Lowest volatility decile; equal weights refreshed monthly."
+          },
+          {
+            "id": "COHORT_EQUAL_WEIGHT",
+            "provenance": "SOURCE",
+            "description": "Full-portfolio equal weight monthly."
+          }
+        ],
+        "sourceMap": [
+          {
+            "id": "LV-PAPER",
+            "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
+            "locator": "II Data and methodology, printed pp.3\u20134; April 2007 inner version."
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "gross_profitability_novy_marx",
+        "originalRulebookHash": "f9c5200be3553ef3ed3ad39bcd698ba8877203a7910da8780f59079c751bb41a",
+        "currentRulebookHash": "f9c5200be3553ef3ed3ad39bcd698ba8877203a7910da8780f59079c751bb41a",
+        "unchanged": true,
+        "parameters": {
+          "formula": "(revenue - cogs) / assets",
+          "quantile": 0.8,
+          "weighting": "PIT market equity",
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "annualPolicy": "Prior-calendar-year fiscal statements; original vintage available at signal time",
+          "adaptations": [
+            "VU reference-universe quintiles replace NYSE breakpoints",
+            "US equities long sleeve only"
+          ],
+          "sources": [
+            "eq_gp_2012"
+          ]
+        },
+        "portfolioSemantics": {
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "signalAt": "ASOF_CLOSE",
+          "execution": "NEXT_SESSION_OR_LATER",
+          "longOnly": true,
+          "leverage": 1,
+          "noPriceStopsInvented": true,
+          "unconditionalSnapshot": true,
+          "runnerEnforcesCalendar": true
+        },
+        "rules": {
+          "formula": "(revenue - cogs) / assets",
+          "quantile": 0.8,
+          "weighting": "PIT market equity",
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "annualPolicy": "Prior-calendar-year fiscal statements; original vintage available at signal time",
+          "adaptations": [
+            "VU reference-universe quintiles replace NYSE breakpoints",
+            "US equities long sleeve only"
+          ],
+          "sources": [
+            "eq_gp_2012"
+          ]
+        },
+        "sourceMap": [
+          {
+            "id": "eq_gp_2012",
+            "url": "https://mysimon.rochester.edu/novy-marx/research/OSoV.pdf",
+            "locator": "June 2012 manuscript, section 2 / table 2"
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "piotroski_value_fscore",
+        "originalRulebookHash": "210b41245cee93be30c1cedf8a4e6f248a5d1918dfd37955d96af377f1d399f3",
+        "currentRulebookHash": "210b41245cee93be30c1cedf8a4e6f248a5d1918dfd37955d96af377f1d399f3",
+        "unchanged": true,
+        "parameters": {
+          "bookToMarketQuantile": 0.8,
+          "minimumFScore": 8,
+          "weighting": "EQUAL_DOLLAR",
+          "turnoverDenominator": "BEGINNING_ASSETS",
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "adaptations": [
+            "June batch replaces issuer fifth-month annual cohorts",
+            "VU reference universe",
+            "US equities long sleeve only",
+            "Source body beginning-assets turnover chosen over conflicting table"
+          ],
+          "sources": [
+            "eq_piotroski_paper",
+            "eq_piotroski_review"
+          ]
+        },
+        "portfolioSemantics": {
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "signalAt": "ASOF_CLOSE",
+          "execution": "NEXT_SESSION_OR_LATER",
+          "longOnly": true,
+          "leverage": 1,
+          "noPriceStopsInvented": true,
+          "unconditionalSnapshot": true,
+          "runnerEnforcesCalendar": true
+        },
+        "rules": {
+          "bookToMarketQuantile": 0.8,
+          "minimumFScore": 8,
+          "weighting": "EQUAL_DOLLAR",
+          "turnoverDenominator": "BEGINNING_ASSETS",
+          "rebalance": "ANNUAL_JUNE",
+          "holdMonths": 12,
+          "adaptations": [
+            "June batch replaces issuer fifth-month annual cohorts",
+            "VU reference universe",
+            "US equities long sleeve only",
+            "Source body beginning-assets turnover chosen over conflicting table"
+          ],
+          "sources": [
+            "eq_piotroski_paper",
+            "eq_piotroski_review"
+          ]
+        },
+        "sourceMap": [
+          {
+            "id": "eq_piotroski_paper",
+            "url": "https://www.chicagobooth.edu/~/media/FE874EE65F624AAEBD0166B1974FD74D",
+            "locator": "Selected Paper 84, sections 2.3 and 3; body turnover definition"
+          },
+          {
+            "id": "eq_piotroski_review",
+            "url": "https://www.chicagobooth.edu/review/separating-winners-losers",
+            "locator": "Original high-book-to-market conditioning"
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "greenblatt_magic_formula",
+        "originalRulebookHash": "1aad3bec6df3d5031a68fe07397ca7c8500452273e8354abc164ca9efdb34631",
+        "currentRulebookHash": "1aad3bec6df3d5031a68fe07397ca7c8500452273e8354abc164ca9efdb34631",
+        "unchanged": true,
+        "parameters": {
+          "minimumPositions": 20,
+          "maximumPositions": 30,
+          "weighting": "EQUAL_DOLLAR",
+          "earningsYield": "EBIT / (market equity + total interest-bearing debt - cash)",
+          "returnOnCapital": "EBIT / (current assets - cash - current liabilities + current debt + net PPE)",
+          "rebalance": "ANNUAL_BATCH",
+          "holdMonths": 12,
+          "adaptations": [
+            "Explicit VU accounting normalization; unread original appendix prevents exact replication",
+            "Annual batch; no discretionary name removal or tax optimization",
+            "No quarterly Formula Investing cohort inheritance"
+          ],
+          "sources": [
+            "eq_magic_faq",
+            "eq_magic_work",
+            "eq_magic_interview"
+          ]
+        },
+        "portfolioSemantics": {
+          "rebalance": "ANNUAL_BATCH",
+          "holdMonths": 12,
+          "signalAt": "ASOF_CLOSE",
+          "execution": "NEXT_SESSION_OR_LATER",
+          "longOnly": true,
+          "leverage": 1,
+          "noPriceStopsInvented": true,
+          "unconditionalSnapshot": true,
+          "runnerEnforcesCalendar": true
+        },
+        "rules": {
+          "minimumPositions": 20,
+          "maximumPositions": 30,
+          "weighting": "EQUAL_DOLLAR",
+          "earningsYield": "EBIT / (market equity + total interest-bearing debt - cash)",
+          "returnOnCapital": "EBIT / (current assets - cash - current liabilities + current debt + net PPE)",
+          "rebalance": "ANNUAL_BATCH",
+          "holdMonths": 12,
+          "adaptations": [
+            "Explicit VU accounting normalization; unread original appendix prevents exact replication",
+            "Annual batch; no discretionary name removal or tax optimization",
+            "No quarterly Formula Investing cohort inheritance"
+          ],
+          "sources": [
+            "eq_magic_faq",
+            "eq_magic_work",
+            "eq_magic_interview"
+          ]
+        },
+        "sourceMap": [
+          {
+            "id": "eq_magic_faq",
+            "url": "https://www.magicformulainvesting.com/Home/Faqs",
+            "locator": "Equal dollars; annual holding; financial/utility exclusions"
+          },
+          {
+            "id": "eq_magic_work",
+            "url": "https://www.magicformulainvesting.com/Home/HowItWorks",
+            "locator": "Diversification, annual replacement"
+          },
+          {
+            "id": "eq_magic_interview",
+            "url": "https://images.forbes.com/media/pdfs/2010/04/Joel_Greenblatt_Briefing_Book.pdf",
+            "locator": "January 22, 2010 interview, pp. 3\u20136; combined rank"
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "value_plus_momentum",
+        "originalRulebookHash": "967a16fe08c4532436ce765e7065e8fd663365a5a155af7f3661ecbee74be0fc",
+        "currentRulebookHash": "967a16fe08c4532436ce765e7065e8fd663365a5a155af7f3661ecbee74be0fc",
+        "unchanged": true,
+        "parameters": {
+          "bookLagMonths": 6,
+          "momentum": "MOM2\u201312_TOTAL_RETURN",
+          "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
+          "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
+          "rebalance": "MONTHLY",
+          "holdMonths": 1,
+          "adaptations": [
+            "VU PIT universe replaces original large/liquid universe",
+            "Two positive long sleeves; no short legs or factor-return inheritance"
+          ],
+          "sources": [
+            "vm2013"
+          ]
+        },
+        "portfolioSemantics": {
+          "rebalance": "MONTHLY",
+          "holdMonths": 1,
+          "signalAt": "ASOF_CLOSE",
+          "execution": "NEXT_SESSION_OR_LATER",
+          "longOnly": true,
+          "leverage": 1,
+          "noPriceStopsInvented": true,
+          "unconditionalSnapshot": true,
+          "runnerEnforcesCalendar": true
+        },
+        "rules": {
+          "bookLagMonths": 6,
+          "momentum": "MOM2\u201312_TOTAL_RETURN",
+          "weighting": "0.5 VALUE_LONG + 0.5 MOMENTUM_LONG",
+          "rankWeighting": "Positive part of cross-sectional rank minus mean rank; each sleeve normalized independently",
+          "rebalance": "MONTHLY",
+          "holdMonths": 1,
+          "adaptations": [
+            "VU PIT universe replaces original large/liquid universe",
+            "Two positive long sleeves; no short legs or factor-return inheritance"
+          ],
+          "sources": [
+            "vm2013"
+          ]
+        },
+        "sourceMap": [
+          {
+            "id": "vm2013",
+            "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
+            "locator": "Journal of Finance 68 (2013), sections I.B and I.D, equations 1\u20133"
+          }
+        ],
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "TURTLE_S2_EQUITY_DAILY",
+        "originalRulebookHash": "4cf9612a1992665e0857e44778bd3c813589c37af7526943d22d1ac4bcfffc02",
+        "currentRulebookHash": "4cf9612a1992665e0857e44778bd3c813589c37af7526943d22d1ac4bcfffc02",
+        "unchanged": true,
+        "parameters": {
+          "entrySessions": 55,
+          "exitSessions": 20,
+          "nSessions": 20,
+          "riskUnitFraction": 0.01,
+          "initialStopN": 2,
+          "maxPositions": 10,
+          "maxWeight": 0.1,
+          "maxExposure": 1
+        },
+        "portfolioSemantics": {
+          "mode": "STATEFUL_DAILY",
+          "execution": "NEXT_SESSION_OPEN",
+          "maxPositions": 10,
+          "maxWeight": 0.1,
+          "maxWeightAppliesAt": "ENTRY_ONLY",
+          "maxExposure": 1,
+          "leverage": false,
+          "shorts": false,
+          "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+          "tieBreak": "SECURITY_ID_ASCENDING",
+          "provenance": "VU_FORMALIZATION"
+        },
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "WEINSTEIN_STAGE_DAILY",
+        "originalRulebookHash": "4da4079440dfd5527ee1393e9d1d9be36535f50a27288c929efeca33baf21771",
+        "currentRulebookHash": "4da4079440dfd5527ee1393e9d1d9be36535f50a27288c929efeca33baf21771",
+        "unchanged": true,
+        "parameters": {
+          "averageSessions": 150,
+          "slopeSessions": 20,
+          "entrySessions": 50,
+          "maxBaseWidth": 0.3,
+          "volumeSessions": 20,
+          "volumeMultiple": 1.5,
+          "relativeStrengthSessions": 63,
+          "stopBuffer": 0.01,
+          "fixedWeight": 0.1,
+          "maxPositions": 10,
+          "maxWeight": 0.1,
+          "maxExposure": 1
+        },
+        "portfolioSemantics": {
+          "mode": "STATEFUL_DAILY",
+          "execution": "NEXT_SESSION_OPEN",
+          "maxPositions": 10,
+          "maxWeight": 0.1,
+          "maxWeightAppliesAt": "ENTRY_ONLY",
+          "maxExposure": 1,
+          "leverage": false,
+          "shorts": false,
+          "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT",
+          "tieBreak": "SECURITY_ID_ASCENDING",
+          "provenance": "VU_FORMALIZATION"
+        },
+        "replicationClaimAllowed": false
+      },
+      {
+        "id": "KULLAMAGI_DAILY_ADAPTATION",
+        "originalRulebookHash": "9c0c6338195a843f327bef604529965b96f271199dd404d2dc72ad15eeca8d95",
+        "currentRulebookHash": "9c0c6338195a843f327bef604529965b96f271199dd404d2dc72ad15eeca8d95",
+        "unchanged": true,
+        "parameters": {
+          "momentumSessions": [
+            21,
+            63,
+            126
+          ],
+          "leaderFraction": 0.02,
+          "baseSessions": 20,
+          "impulseSessions": 63,
+          "minimumImpulse": 0.3,
+          "maximumBaseWidth": 0.15,
+          "tighteningSessions": 5,
+          "maximumRangeRatio": 0.8,
+          "averageSessions": 10,
+          "trendSessions": 20,
+          "slopeSessions": 5,
+          "atrSessions": 20,
+          "partialAfterSessions": 4,
+          "sellFraction": 0.3333333333333333,
+          "riskFraction": 0.005,
+          "maxWeight": 0.1,
+          "maxPositions": 10,
+          "maxExposure": 1
+        },
+        "portfolioSemantics": {
+          "rebalance": "DAILY",
+          "mode": "STATEFUL_DAILY",
+          "targetWeightScope": "STATEFUL",
+          "execution": "NEXT_SESSION_OPEN",
+          "maxPositions": 10,
+          "maxWeight": 0.1,
+          "maxWeightAppliesAt": "ENTRY_ONLY",
+          "maxExposure": 1,
+          "leverage": false,
+          "shorts": false,
+          "rebalancing": "HOLD_CURRENT_WEIGHTS_UNTIL_EXIT_OR_PARTIAL",
+          "stopExecution": "CLOSE_SIGNAL_NEXT_OPEN",
+          "marketFilter": "NONE",
+          "partialStateUpdate": "ONLY_AFTER_SUCCESSFUL_EXECUTION",
+          "tieBreak": "SCORE_DESC_SECURITY_ID_ASC",
+          "initialStopBasis": "KNOWN_SIGNAL_DAY_LOW",
+          "entryFillValidation": "validateKullamagiEntryFill",
+          "provenance": "VU_FORMALIZATION"
+        },
+        "rules": [
+          {
+            "id": "KK-S-LEADER",
+            "classification": "SOURCE_PRINCIPLE",
+            "description": "Recent 1/3/6-month leaders, prior impulse, orderly tighter consolidation, then breakout.",
+            "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Breakouts"
+          },
+          {
+            "id": "KK-S-DAILY",
+            "classification": "SOURCE_DEFINED_OPTION",
+            "description": "Author expressly permits daily-chart entry instead of an intraday chart.",
+            "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ How do you trade this setup? item2"
+          },
+          {
+            "id": "KK-S-STOP",
+            "classification": "SOURCE_PRINCIPLE",
+            "description": "Day-low stop and distance bounded by ATR or ADR; source intraday behavior is not reproduced.",
+            "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item3"
+          },
+          {
+            "id": "KK-S-SELL",
+            "classification": "SOURCE_DEFINED_RANGE",
+            "description": "Sell 1/3\u20131/2 after3\u20135days, move stop to breakeven and trail remainder with10/20-day close.",
+            "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ item4"
+          },
+          {
+            "id": "KK-S-RISK",
+            "classification": "SOURCE_DEFINED_RANGE",
+            "description": "Most trade risk0.25\u20131%, most positions10\u201320%; smaller-account era differs.",
+            "source": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ Position sizing and risk"
+          },
+          {
+            "id": "KK-V-LEADER",
+            "classification": "VU_FORMALIZATION",
+            "description": "Prior completed21/63/126-session close returns; topceil(2%*eligible cross-section) on any window, positive return; ties by security id.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-BASE",
+            "classification": "VU_FORMALIZATION",
+            "description": "Prior20-session high/low width<=15%; last5 mean daily ranges<=0.8*first5; last5 minimum low>first5 minimum low; prior MA10 rising over5 sessions, last prior close>=MA20.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-IMPULSE",
+            "classification": "VU_FORMALIZATION",
+            "description": "The63-session close return ending immediately before the20-session base must be>=30%.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-EXECUTION",
+            "classification": "VU_FORMALIZATION",
+            "description": "Signal close strictly above prior base high; next-session open only. Initial stop is known SIGNAL-day low, never future execution-day low. Reject actual fill<=stop or fill-stop>prior ATR20.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-ATR",
+            "classification": "VU_FORMALIZATION",
+            "description": "Simple mean of prior20 true ranges, excluding signal day; choose ATR instead of ADR.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-SELL",
+            "classification": "VU_FORMALIZATION",
+            "description": "Partial after heldSessions>=4: sell1/3 at next open; executor then marks partialDone and raises stop to entryPrice. After successful partial, close below SMA10 triggers next-open full exit. Known-stop close exit takes precedence.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          },
+          {
+            "id": "KK-V-PORTFOLIO",
+            "classification": "VU_FORMALIZATION",
+            "description": "0.5% planned trade risk, entry10% weight cap, ten positions,100% total, unlevered long only; actual fill risk sizing uses fixed known stop. Hold current weights; no hidden market filter, pyramiding or anticipation.",
+            "source": "Explicit frozen VU tournament specification, not attributed to trader"
+          }
+        ],
+        "sourceMap": [
+          {
+            "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
+            "author": "Kristjan Kullam\u00e4gi",
+            "era": "January/April2021 public article",
+            "accessStatus": "PRIMARY_BODY_INSPECTED",
+            "accessedDate": "2026-10-11"
+          }
+        ],
+        "replicationClaimAllowed": false
+      }
+    ],
+    "immutableFileHashes": {
+      "accounting.mjs": "e2a8b535989254b7bc4cb8ce073aa6e114aa1ee236d5892f31255a6069fb833b",
+      "data.mjs": "a37d0856249105bc921674b713fa1c658b4ef67ea42c0abc655f8d167b70fada",
+      "runner.mjs": "5fe0bfb65ac9d2fea54348ad98e162e7b9036c892a5346eb41b6e257a74ac9ed",
+      "metrics.mjs": "655a5d89d6de204e65c30d37d0d45a8ece780d60447049dbbccd539ebc823ca5",
+      "methods.mjs": "4517b2996d870cd4fc738d14e2f2f6ed4397b293a2a1b0fed6a1e819a6171f7c",
+      "run.mjs": "38244cb5cafaf420cf3d341eff83a7e6f5c6f40c48d0226872962a53ea49952e",
+      "assemble.mjs": "00ef05e7aaf16bb8b640c7ccad668ad647a51e5aedd40b82692203480abdc442",
+      "regression-run.mjs": "c64745820b1fee4554cd94403f2bc304a9cc9a5e6730c2120d895692aab4af53",
+      "protocol.json": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+      "freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
+      "session-public-key.pem": "9408414a70dcc55073e0fdc7e5995ac595c7a1c8db2534a58ff4f52adacf57c0",
+      "engines/academic.mjs": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
+      "engines/fundamental.mjs": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
+      "engines/kullamagi.mjs": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+      "engines/legendary.mjs": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5"
+    },
+    "immutableDependencies": {
+      "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+      "quant/engines/canonical-total-return.js": "b569e63bef67604d96f1f7fba1f3ee9e7033564e0b9b0af08f81769c4d0e2b2c",
+      "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+      "quant/engines/history-store.js": "755804a9939a1f19e586feea6694c6831c6bf4d8d693876ac2a23cca22522493",
+      "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+      "quant/engines/zero-cost-guard.js": "3a3942e50d9605d9fd09127a5446371ebe77dfed09f64d32291cebcc0b26bac9",
+      "quant/engines/us-security-master.js": "cde6827d4112bb8f55bb818bd39322c580e25a6e721b3e3ddc9d05513fc287d9",
+      "quant/engines/instrument-classification.js": "86fd46b650400a1763a77dd8e04e23ad8618ab38577af5b928bf25ba3bedf817",
+      "scripts/market/storage/s3-driver.mjs": "4ed3315cfd325c376b57067631b9b14c370e2aea8bd3690be14a4a4b2e17269a",
+      "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c",
+      "scripts/supertrader/validation/results-public-key.pem": "b399ed9049aaf89e4ba62b6dc93c1831946af8d1fff32f299e0fb3dd82a61a7f",
+      "scripts/supertrader/tests/tournament-academic.test.mjs": "03a1cbc51c154631d39b3c854a69bc960066fa21b60bd5dcd26abc6cecb0be5d",
+      "scripts/supertrader/tests/tournament-accounting.test.mjs": "1eb0d87c6572eba7091a5c3c4b563ee193a4d2213a2307b0cbab7f4002f4aa45",
+      "scripts/supertrader/tests/tournament-assemble.test.mjs": "ba7aecbaaf02c75649b19977fdadf02b86b5e929f61fd26081815a3580e57a8f",
+      "scripts/supertrader/tests/tournament-data.test.mjs": "fbf64ecd0e8360dcaa61d88cfd755605dfa0e859bfea0859a94916e59ebb90c4",
+      "scripts/supertrader/tests/tournament-datecache.test.mjs": "eb43cb9c930e55f9b9cf360f9cce42303d0b37f1068f3ac2c883b3173d5c7212",
+      "scripts/supertrader/tests/tournament-freeze.test.mjs": "0eebd174856cd6d36fabdbb273af34356204719981f00c600cd0c0c68d130318",
+      "scripts/supertrader/tests/tournament-fundamental.test.mjs": "4837d02ec5382d9ec55e6470fa9ccf9e7091b14c81cb0dca26fd728bcec55a4f",
+      "scripts/supertrader/tests/tournament-kullamagi.test.mjs": "a71315a43744aaf04699ef74966ed86435167b9378ba7ddb4d8942b3c7a845b4",
+      "scripts/supertrader/tests/tournament-legendary.test.mjs": "9566e318a0ac506c24e95030d033e14579d18837f108aac87df4eb6ded67d270",
+      "scripts/supertrader/tests/tournament-metrics.test.mjs": "a744043479e91b8240b3e6e3bfb18f68e897a78274e6d0c6358e5c2e473a7d60",
+      "scripts/supertrader/tests/tournament-runner.test.mjs": "b59f09df120fb8e768954bed84627f1b13167b757fcf7ca836ce1a750ca1b374",
+      "scripts/supertrader/tests/tournament-sharding.test.mjs": "26f668e30e73063ca4b957d258cc9b77815f4503b6cecad8a7e56631d2a8d6ff"
+    }
+  },
+  "permittedChanges": [
+    "Source retrieval, denomination/concept normalization, exact PIT acceptance/cutoff guards, original-accession and fiscal-context evidence, issuer/listing/share-class identity validation and explicit missing/conflict/certification statuses.",
+    "Canonical observed data contract, split/share-price basis reconciliation, complete action prefix and dated security-master audit with expanded coverage/reason counts; no changed common price/liquidity thresholds.",
+    "Execution rejection metadata, certified next-session open availability and method fill-validator enforcement without changing fill timing, stop logic, target weights, risk fractions, costs or partial-exit policy.",
+    "Explicitly versioned isolated correctness bug fix with synthetic source-semantic tests, unchanged original source rules/parameters and separate implementation hash; never silently overwrite original frozen code.",
+    "Certification/admissibility enums alongside unchanged fixed performance scorecard; preserve separate performance/data/fidelity/execution dimensions and reasons.",
+    "Factor final ex-post data can be separately labeled PARTIAL_RESEARCH_DATA with PIT_NOT_CERTIFIED; no claim the realized revision vintage was known at historic formation."
+  ],
+  "forbiddenChanges": [
+    "No alteration to original thresholds, selection fractions, ranking directions, tie/quantile conventions, holding durations, schedules, cohort accounting, weights, stops, ATR/N lookbacks, sell fractions, partial timing, cap rules, cash yield, costs, leverage/shorting, benchmark, regimes, signal windows/HAC/minimums, score weights, tier gates or distinctiveness values.",
+    "No replacing missing source concepts with convenient economic proxies: WAVG EPS shares, currentlatest/restated latest, issuer aggregate shares times single-class price, ADR guesses, PE/EPS/book substitutes, EBIT silently equal to unrelated operating income, total debt copied from only one maturity, SIC from current sector labels or factor/industry ETF proxies.",
+    "No amendment/restatement or later comparative backdated to earlier report acceptance; no FY based solely on comparative companyfacts filing fy/fp.",
+    "No price carry-forward fabricated next-open fill, intraday stop substitution, retry at a different advantageous session, future execution-day low, known terminal proceeds invented, or reinterpretation of DATA_QUARANTINE as official delisting.",
+    "No automatic HIGH PIT confidence from canonical observed prefixes, truthy sec/delist objects, current metadata or scheduled-loader counts.",
+    "No frozen-source files/Core481 migration, branch merge/live change/new paid provider, old performance-driven mappings or invented residual-momentum holding variant."
+  ],
+  "mandatoryV2VersionBinding": {
+    "version": "DATA_EXECUTION_V2_SEPARATE_IMPLEMENTATION_MANIFEST_REQUIRED",
+    "beforeMeasurement": true,
+    "requiredHashes": [
+      "All V2 adapter/execution/runner/orchestrator/helper code and meaningful tests",
+      "All reused exact Core/main dependency paths and source snapshots",
+      "Original protocol and ten original rulebook hashes",
+      "Source manifests and data-contract versions; actual input/data fingerprints before outcome consumers"
+    ],
+    "originalRulesHashPolicy": "EXACT_TEN_HASH_EQUALITY_REQUIRED",
+    "isolatedBugfixPolicy": "OWN_VERSION_HASH_WITH_SOURCE_RULE_EQUALITY_AND_EXPLICIT_OLD_VS_FIXED_SYNTHETIC_CASES",
+    "currentState": "FINAL_ROOT_HASH_FREEZE_REQUIRED_BEFORE_MEASUREMENT"
+  },
+  "certificationScorecardSeparation": {
+    "frozenScorecard": "UNCHANGED_NO_WEIGHT_THRESHOLD_OR_RANK_REWRITE",
+    "newDimensions": [
+      "dataContractStatus",
+      "executionContractStatus",
+      "sourceFidelityStatus",
+      "pitVintageStatus",
+      "methodAdmissibilityStatus"
+    ],
+    "newLabels": "EXPLICIT_HYPOTHESIS_AND_ADMISSIBILITY_ENUMS_NOT_NEW_PERFORMANCE_WEIGHTS",
+    "certificationNotPerformanceTier": true,
+    "seenHistoryOnly": true,
+    "noProvenAlphaOrUnseenHoldout": true
+  },
+  "currentConsensusSemantics": {
+    "certifiedConsensus": "Explicit certified method set based on source/data/execution admissibility; may include Tier C, does not imply strong edge.",
+    "strongConsensus": "Separate unchanged final Tier A/B set; never silently broaden to certified Tier C.",
+    "invariants": [
+      "Only common eligible source-qualified closed-session setups",
+      "Portfolio-independent stateful raw census and portfolio-admission metadata stay separate",
+      "No stale/blocked/rejected or uncertified candidates in certified consensus",
+      "Same snapshot date and listing identity; issuer/ADR/class conflicts explicit",
+      "No historical/current snapshot reclassified as post-freeze forward observation"
+    ]
+  },
+  "fundamentalContracts": {
+    "timestamps": "Explicit UTC formation cutoff and original acceptanceUTC; date-only release cannot admit same-day close. Frozen selector date-only day-end semantics require adapter prefilter.",
+    "vintages": "Original accession/context observation retained; later amendment/comparative only known on its actual acceptance and as-of policy declared.",
+    "conceptUnits": "Exact economic concept certification and normalized USD/CODE/BOOLEAN/SHARES; explicit duration/instant/source units and fiscal period consistency.",
+    "annualPeriodLinks": "Real original current annual DEI report focus/context lineage; previous FY semantic period, not subtract-year synthetic month/day; no future learned fiscal metadata.",
+    "marketEquity": "Direct certified derived datum only with documented actual PIT share count, compatible raw/split basis, class/issuer identity, genuine price date and data availability; derived/approximate status explicit.",
+    "missingFacts": "Fail closed method-specific reason; no activation merely because a tuple exists.",
+    "core481": "BLOCKED_TRACK_UNCHANGED; current-main read-only primitives may be reused only with exact provenance/hash and independently validated contract; no migration/merging or unsupported special-case inheritance."
+  },
+  "academicPrerequisiteGates": {
+    "residual_momentum": "BLOCKED_RULE_VARIANT_UNSELECTED_WHILE_ORIGINAL_HOLDING_VARIANT_NOT_FROZEN",
+    "industry_momentum": "EXACT_ORIGINAL_GROUPED_20_SIC2_MAPPING_6_MONTH_SIGNAL_6_MONTH_HOLD_3_WINNING_INDUSTRIES_EQUAL_SLEEVES_WITH_PIT_SIC_AND_ME; NO_SIMPLE_20_BINS_OR_ETF_PROXY",
+    "factors": "FREE_OFFICIAL_FINAL_SERIES_EX_POST_RESEARCH_ONLY_UNLESS_ACTUAL_DATED_VINTAGE_EVIDENCE_PRESENT; NO_FABRICATED_MONTHLY_RELEASE_HISTORY"
+  },
+  "reproducedFindings": [
+    {
+      "id": "FUNDAMENTAL_DATE_ONLY_ASOF_DAY_END",
+      "severity": "BLOCKS_UNFILTERED_V2_INTRADAY_ADMISSION",
+      "evidencePaths": [
+        "scripts/supertrader/research/tournament/engines/fundamental.mjs",
+        "scripts/supertrader/research/tournament/runner.mjs"
+      ],
+      "syntheticVerification": "Date-only cutoff admits after-close same-day synthetic acceptance; explicit UTC cutoff rejects. Original runner lexical filter excludes same-day facts separately.",
+      "requiredDisposition": "EXPLICIT_UTC_CUTOFF_AND_CONSERVATIVE_DATE_ONLY_NEXT_SIGNAL_ELIGIBILITY_BEFORE_FROZEN_SELECTION; NO_FAKE_ACCEPTANCE"
+    },
+    {
+      "id": "PIOTROSKI_CALENDAR_DATE_PREVIOUS_FY_DEFECT",
+      "severity": "BLOCKS_AFFECTED_PERIODS_WITHOUT_VERIFIED_BUGFIX_VERSION",
+      "evidencePaths": [
+        "scripts/supertrader/research/tournament/engines/fundamental.mjs"
+      ],
+      "syntheticVerification": "Regular-year-end control selected complete FScore; identical accounting values with moving 52/53-week or leap fiscal-year ends block due calendar-subtracted date lookup.",
+      "requiredDisposition": "SOURCE_CERTIFIED_PREVIOUS_FY_LINKS_IN_ISOLATED_BUGFIX_VERSION_OR_BLOCKED_FISCAL_PERIOD_LINK_UNSUPPORTED",
+      "rootAuthorization": "ISOLATED_BUGFIX_VERSION_APPROVED_PRE_OUTCOME; ORIGINAL_RULEBOOK_UNCHANGED"
+    },
+    {
+      "id": "OFFICIAL_SEC_CLOCK_CONFLICT",
+      "severity": "REQUIRES_EXPLICIT_PARTIAL_TIMESTAMP_POLICY",
+      "disposition": "ROOT_APPROVED_HEADER_IANA_ADAPTATION_WITH_API_CONFLICT_MEDIUM_PARTIAL",
+      "independentEvidence": "Matching archival/API accession and conflicting time axes independently checked in private source-only evidence; no source identity/clock values included publicly."
+    },
+    {
+      "id": "INDUSTRY_ISSUER_ME_AND_MONTH_END_BINDING",
+      "severity": "REMEDIATED_PREMEASUREMENT",
+      "disposition": "EXACT_SOURCE_BOUND_ISSUER_SECURITY_LISTING_AND_CERTIFIED_PRIOR_MONTH_LAST_SESSION"
+    },
+    {
+      "id": "UNIVERSE_FALSE_COMPLETE_CALENDAR_RISK",
+      "severity": "REMEDIATED_PREMEASUREMENT",
+      "disposition": "SEPARATE_REVIEWED_OFFICIAL_CALENDAR_EXACT_MATCH_REQUIRED"
+    },
+    {
+      "id": "ME_IMPLICIT_DATE_ONLY_FORMATION_CUTOFF",
+      "severity": "REMEDIATED_PREMEASUREMENT",
+      "disposition": "EXPLICIT_UTC_FORMATION_CUTOFF_REQUIRED"
+    },
+    {
+      "id": "LEGACY_ENTRY_FUTURE_CLOSE_FLAG",
+      "severity": "REMEDIATED_PREMEASUREMENT",
+      "disposition": "ENTRY_PRIMITIVE_AND_LATER_CERTIFIED_CLOSE_PHASE_SEPARATED"
+    },
+    {
+      "id": "CASH_ACTION_CONFLICT_OVERFLOW_AND_UNKNOWN_SETTLEMENT",
+      "severity": "REMEDIATED_PRIMITIVE_ROOT_INTEGRATION_PENDING",
+      "disposition": "ATOMIC_IDENTITY_BOUND_EVENT_LEDGER_FINITE_PAYOUT_TWO_STAGE_NONSPENDABLE_CLAIM"
+    }
+  ],
+  "validation": {
+    "originalFreezeAssert": "PASS",
+    "tenRulebookHashChecks": 10,
+    "syntheticCausalityAndFiscalPeriodReproductionCases": 5,
+    "allSyntheticAssertionsPassed": true,
+    "v2AdapterTests": "INDEPENDENT_CERTIFICATION_GLOB_PASS",
+    "performanceTests": "NOT_RUN",
+    "latestVerifiedAdapterTestCounts": {
+      "factorIndustry": 18,
+      "marketEquity": 27,
+      "universeInventory": 14,
+      "execution": 16,
+      "fiscalPeriodLinks": 8,
+      "annual": 24,
+      "fundamentalV2": 11,
+      "runnerV2": 5,
+      "filingIdentity": 26,
+      "currentOrchestration": 6,
+      "freezeV2": 10,
+      "canonicalInput": 6,
+      "currentSourceReceipts": 2
+    },
+    "latestVerifiedUniqueAdapterTests": 173,
+    "latestVerifiedUniqueAdapterFailures": 0,
+    "originalFundamentalParityTests": {
+      "passed": 20,
+      "failed": 0,
+      "includedInCertificationGlob": false
+    },
+    "latestCombinedUniqueTestsWithOriginalFundamental": 193,
+    "orchestrationSyntheticAssertions": 60,
+    "orchestrationMethodOrBenchmarkEvaluations": 0,
+    "allPassed": true
+  },
+  "blockingItemsBeforeMeasurement": [
+    "Root must create/assert immutable V2 full dependency/source/contract/test freeze binding exact reviewed code and ten original rulebooks/protocol before measurement.",
+    "Only six declared PARTIAL observed-panel methods are admitted; four Fundamental engines and two unimplemented candidates remain blocked.",
+    "Nonempty certified cash events remain hard-blocked until shared signal/portfolio outcome integration is independently certified."
+  ],
+  "privateInputValuesInPublicReport": false,
+  "updatedAt": "2026-10-12T07:20:31.109232+00:00",
+  "reviewedAdapterContracts": {
+    "factorIndustry": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "testsPassed": 18,
+      "testsFailed": 0,
+      "sourceAlphaFormula": "OLS_INTERCEPT_ESTIMATED_NOT_SUBTRACTED_FROM_SCORE_RESIDUAL_RETURN",
+      "factorPIT": "EX_POST_SCIENTIFIC_PARTIAL_NO_HISTORICAL_MONTHLY_VINTAGE",
+      "residualEngine": "BLOCKED_RULE_VARIANT_UNSELECTED",
+      "industryEngine": "BLOCKED_BROAD_MEMBERSHIP_AND_MARKET_EQUITY",
+      "identityAndMonthEndBinding": "CHECKED",
+      "officialClockConflict": "EXPLICIT_HEADER_IANA_ROOT_AUTHORIZED_PARTIAL_MEDIUM_NO_COMPLETE_PIT_CLAIM"
+    },
+    "marketEquity": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "testsPassed": 27,
+      "testsFailed": 0,
+      "dualAxes": "HISTORICAL_VALUATION_AND_LATER_PUBLICATION_SEPARATE",
+      "formationCutoff": "EXPLICIT_UTC_REQUIRED",
+      "dateOnlyIdentity": "EXPLICIT_CONSERVATIVE_DAY_BOUND_NOT_ACTUAL_TIMESTAMP",
+      "instrumentBasis": "ACTUAL_INSTANT_SHARES_AND_COMPATIBLE_RAW_SPLIT_BASIS",
+      "ADRAndMultiClass": "BLOCKED_WITHOUT_SEPARATE_CONTRACT",
+      "quality": "DERIVED_MEDIUM_NOT_HIGH",
+      "rawShareObservationBasis": "EXPLICIT_ORIGINAL_BODY_DISCLOSURE_PROOF_REQUIRED_NOT_IMPLIED_BY_INSTANT_OR_AS_REPORTED"
+    },
+    "universeInventory": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "testsPassed": 14,
+      "testsFailed": 0,
+      "observedMarketDenominator": "NOT_INFERRED",
+      "formationCalendar": "INDEPENDENT_SOURCE_REVIEW_AND_EXACT_UNIQUE_ORDERED_CALENDAR_REQUIRED_FOR_PIT_COMPLETE",
+      "activeProviderEndpoints": "OBSERVED_DATA_ENDPOINT_NOT_DELISTING",
+      "historicalClassRoster": "ALL_ISSUER_COMMON_EQUITY_CLASSES_REVIEW_SCOPE_REQUIRED",
+      "canonicalReadProvenance": "ACTUAL_SOURCE_READ_RECEIPTS_BOUND_NOT_FABRICATED_LABEL",
+      "actualPopulation": "NOT_CERTIFIED"
+    },
+    "execution": {
+      "status": "PASS_PRIMITIVES_WITH_SOURCE_AND_INTEGRATION_LIMITS",
+      "testsPassed": 16,
+      "testsFailed": 0,
+      "ordinaryOrders": "NO_CERTIFICATE_PARITY_PRESERVED",
+      "legalCashClaim": "EXACT_SOURCE_LEGAL_ENTITLEMENT_RECOGNITION_WITHOUT_INVENTED_PAYMENT_DATE",
+      "actualCashSettlement": "SEPARATE_VISIBLE_SOURCE_AND_ECONOMIC_IDENTITY_REQUIRED",
+      "receivables": "VALUED_BUT_NOT_SPENDABLE_UNTIL_VISIBLE_ACTUAL_SETTLEMENT",
+      "duplicateConflicts": "ATOMIC_PREFLIGHT_AND_CROSS_CALL_BINDING",
+      "legacyEntry": "INSTANT_EVIDENCE_ONLY_FUTURE_DAY_CLOSE_HIGH_LOW_VOLUME_EXCLUDED",
+      "legacyClose": "SEPARATE_CERTIFIED_EXCHANGE_CLOSE_PHASE",
+      "terminalClassHints": "PIT_DATED_FILTER_UNCERTIFIED_OUTCOMES_REMAIN_SCENARIOS",
+      "sourceAuthentication": "EXTERNAL_ACTUAL_BODY_IDENTITY_REVIEW_REQUIRED_NOT_IMPLIED_BY_LABELS",
+      "rootRunnerIntegration": "PASS_WITH_DATA_LIMITS_NONEMPTY_CERTIFIED_CASH_LEDGER_BLOCKED"
+    },
+    "fiscalPeriodLinks": {
+      "status": "IMPLEMENTED_AND_TESTED_AUTHOR_IS_THIS_REVIEWER_SECOND_REVIEW_EQ_COMPLETED",
+      "testsPassed": 8,
+      "testsFailed": 0,
+      "sourceBinding": "SEC_ARCHIVE_ISSUER_ACCESSION_URL_AND_SHA_CONTEXT_LOCATOR",
+      "timeCausality": "EXPLICIT_UTC_CUTOFF_AND_FUTURE_CONFLICT_MARKER_VISIBILITY",
+      "unknownStubAndConflicts": "BLOCKED_NO_SYNTHETIC_PERIOD_END_DATE",
+      "consumerIntegration": "VERSIONED_FUNDAMENTAL_V2_REVIEW_PASS_WITH_DATA_LIMITS"
+    },
+    "annualFacts": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "actualOutcomeRead": false,
+      "sourceReview": "ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json",
+      "sourceNormalizationsApproved": 3,
+      "unsupportedNormalizationsRemainDisabled": 2,
+      "previousBlockers": "ALL_RESOLVED_AND_REGRESSION_TESTED",
+      "actualSourcePilotPairs": 6,
+      "broadSourcePopulation": "NOT_CERTIFIED"
+    },
+    "filingIdentity": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "testsPassed": 26,
+      "testsFailed": 0,
+      "actualFullRosterSourceCases": 1,
+      "actualFiscalContextPoints": 1,
+      "fullOriginalCharterBodiesRead": 3,
+      "sourceGraphIdentityHashesAndExactAnnualIncorporation": "PASS",
+      "broadHistoricalLinksCertified": 0,
+      "marketEquityInputsCertified": false
+    },
+    "canonicalInput": {
+      "status": "PASS_WITH_DATA_LIMITS",
+      "sourceIdentityGenerationBinding": "EXACT_SOURCE_SECURITY_LISTING_TICKER_START_END_ACTIVE_REUSE_AND_SEGMENT_GUARDS",
+      "sourceMetadata": "EXPLICIT_PREDECLARED_BYTE_SHA_REQUIRED_BEFORE_PARSING",
+      "physicalReceipts": "EXACT_ACTUAL_PHYSICAL_GET_KEYS_AND_SHAS_NOT_FABRICATED_PROVIDER_LABELS",
+      "basePriceDataFingerprint": "UNCHANGED_NEW_SOURCE_DIFFERS_FROM_OLD589"
+    }
+  },
+  "v2CodeSnapshotAtReview": {
+    "status": "REVIEW_SNAPSHOT_NOT_FINAL_PREMEASUREMENT_FREEZE",
+    "files": {
+      "current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+      "execution-audit.mjs": "22610695cda1d5024d49425cdd4a332a439d6b8b61f2d437c8e5c6df089f246f",
+      "universe-certification.mjs": "04bb41caf15fb70b7068ccab54df0146823b5be5b88e3a747e4af655314bcf8f",
+      "factor-contract.mjs": "79acd7bb448299fdd3f92888b894c6ccc57dea28ba743410712e44b99b16d36e",
+      "run-rerun.mjs": "fd213207451c52abf5243521a936df56071bd142a6b9b4da14d3239ac131b5b1",
+      "annual-facts.mjs": "841a3f9f9d6e3c21e37b674b5f5d6f98c47d2ba494554780d4e197617613019c",
+      "freeze-v2.mjs": "3860caac55e72b735ae94d01375f60c6517824ec20124d2d2a61ce36b317e142",
+      "data-inventory.mjs": "c54fb198bbff5fbccddf3e0782ec82076ef7abe7e30aaf9945920bf8153d8751",
+      "fundamental-v2.mjs": "8103b5b93adeb45fc3beee8492503f0e5bbd7485bf9b7968952318aa2e373ceb",
+      "execution-audit-accounting.mjs": "919215c83df18dad85a0ffd7cb624126cf58b7e05efbc7bb5d06275c192fb996",
+      "fiscal-period-links.mjs": "e46af08840f0bfaea6d9df07fdd68529b125fa166c528008eafc1c4a8f5ec435",
+      "market-equity.mjs": "568b070d3ef5e228c2a1c1fd619f9b2ff5382c56c4c401eedffeefff65bcc0e4",
+      "filing-identity.mjs": "aff30b541b13658c64370c7e0ae67f78eb881520da4672722172c888f9e05683",
+      "legacy-momentum-execution.mjs": "45ae04c87dbe259293ef25cbd287b0ac8e4c8ecb96b3d61b69ef3b68d4a60ea4",
+      "industry-contract.mjs": "8cc0393c31874e3280d316f0db43b6a54ebca81f619b25b6b612c6949a6e69f4",
+      "current-source-receipts.mjs": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501",
+      "runner-v2.mjs": "9b2ae889295476d79c617d61c166d8293cbd468b0fe5eec03d1b3cde64644e67",
+      "canonical-input.mjs": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71"
+    },
+    "measurementMayProceedOnSnapshotAlone": false
+  },
+  "finalAdapterReviewDisposition": {
+    "annual": "PASS_WITH_DATA_LIMITS",
+    "fundamentalV2": "PASS_WITH_DATA_LIMITS",
+    "runnerV2": "PASS_WITH_DATA_LIMITS",
+    "marketEquity": "PASS_WITH_DATA_LIMITS",
+    "universe": "PASS_WITH_DATA_LIMITS",
+    "factorIndustry": "PASS_WITH_DATA_LIMITS",
+    "execution": "PASS_WITH_DATA_LIMITS",
+    "filingIdentity": "PASS_WITH_DATA_LIMITS_ONE_GENUINELY_REVIEWED_SOURCE_POINT_NOT_BROAD_ADMISSION",
+    "currentOrchestration": "PASS_WITH_DATA_LIMITS"
+  },
+  "finalPremeasurementReview": "PREMEASUREMENT-CERTIFICATION-REVIEW.json"
+}

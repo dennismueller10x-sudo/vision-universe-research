@@ -1,0 +1,49 @@
+{
+  "schema": "supertrader-premeasurement-annual-derivation-approvals-1.0.0",
+  "registeredBeforeRerunPerformance": true,
+  "approvalRecords": [
+    {
+      "id": "US_GAAP_ASU2015_01_NET_INCOME_PARENT_NO_EXTRAORDINARY",
+      "status": "APPROVED_BEFORE_MEASUREMENT",
+      "reviewer": "independent_review",
+      "reviewArtifactSha256": "c71445cd254da0c5f07051811e7b8add39bba16d5b49b377e83b1454e6936912",
+      "reviewArtifact": "reviews/ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json",
+      "primarySources": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+        "https://storage.fasb.org/ASU%202015-01.pdf"
+      ],
+      "normalizationScope": "VU_SOURCE_DEFINED_INPUT_NORMALIZATION_NOT_ORIGINAL_METHOD_REPLICATION",
+      "overallDatasetUpgradeAllowed": false
+    },
+    {
+      "id": "COMMON_EQUITY_PARENT_WITH_ZERO_PREFERRED_OUTSTANDING",
+      "status": "APPROVED_BEFORE_MEASUREMENT",
+      "reviewer": "independent_review",
+      "reviewArtifactSha256": "c71445cd254da0c5f07051811e7b8add39bba16d5b49b377e83b1454e6936912",
+      "reviewArtifact": "reviews/ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json",
+      "primarySources": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+      ],
+      "normalizationScope": "VU_SOURCE_DEFINED_INPUT_NORMALIZATION_NOT_ORIGINAL_METHOD_REPLICATION",
+      "overallDatasetUpgradeAllowed": false
+    },
+    {
+      "id": "TOTAL_DEBT_CURRENT_PLUS_NONCURRENT_WITH_EXPLICIT_FINANCE_LEASE_COVERAGE",
+      "status": "APPROVED_BEFORE_MEASUREMENT",
+      "reviewer": "independent_review",
+      "reviewArtifactSha256": "c71445cd254da0c5f07051811e7b8add39bba16d5b49b377e83b1454e6936912",
+      "reviewArtifact": "reviews/ANNUAL-SOURCE-POLICY-INDEPENDENT-REVIEW.json",
+      "primarySources": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+      ],
+      "normalizationScope": "VU_SOURCE_DEFINED_INPUT_NORMALIZATION_NOT_ORIGINAL_METHOD_REPLICATION",
+      "overallDatasetUpgradeAllowed": false,
+      "debtDefinition": "DEBT_EXCLUDING_OPERATING_LEASES_INCLUDING_FINANCE_LEASES"
+    }
+  ],
+  "disabled": [
+    "EBIT_PBT_PLUS_GROSS_INTEREST_SOURCE_COMPATIBLE",
+    "COMMON_EQUITY_PARENT_MINUS_VERIFIED_PREFERRED_CARRYING"
+  ],
+  "noPerformanceDependentMappingSelection": true
+}

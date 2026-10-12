@@ -1,0 +1,65 @@
+{
+  "schema": "supertrader-current-orchestration-premeasurement-review-2.0.0",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "scope": "STATIC_ORCHESTRATION_AND_SYNTHETIC_CURRENT_EXPORT_ONLY",
+  "reviewer": "INDEPENDENT_REVIEW_AGENT",
+  "performanceInspected": false,
+  "actualCurrentDataLoaded": false,
+  "historicalCalculationRun": false,
+  "frozenMethodDefinitionsChanged": false,
+  "files": {
+    "scripts/supertrader/research/certification/current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+    "scripts/supertrader/research/certification/current-source-receipts.mjs": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501",
+    "scripts/supertrader/tests/certification-current-rerun.test.mjs": "53643f93d94c1907a403023b2b686778f0d1f868d7348ec81688c417e572c5f3"
+  },
+  "syntheticVerification": {
+    "latestAuthorTestCount": 6,
+    "latestAuthorPassed": 6,
+    "latestAuthorFailed": 0,
+    "independentEarlierTestCount": 5,
+    "independentEarlierPassed": 5,
+    "latestIndependentSixthTestStatus": "PASS",
+    "independentVerification": {
+      "currentTests": 6,
+      "freezeTests": 10,
+      "uniqueTotal": 16,
+      "passed": 16,
+      "failed": 0
+    }
+  },
+  "staticChecks": {
+    "freezeBeforeSourceLoad": "PASS",
+    "suppliedEligibilityEqualsFrozenDocument": "PASS",
+    "suppliedEligibilityBytesEqualFrozenContractHash": "PASS",
+    "actualRawSourceReceiptWrapper": "PASS_GET_ONLY_WITH_BUDGET",
+    "exactCurrentClosedSession": "PASS",
+    "allFrozenMethodsRepresented": "PASS",
+    "blockedCandidatesRemoved": "PASS",
+    "partialConsensusDiagnosticOnly": "PASS",
+    "qualifiedConsensusEligibleOnly": "PASS",
+    "strongMethodsRequireFinalReview": "PASS",
+    "noHistoricalCalculation": "PASS",
+    "noImportExecutionSideEffects": "PASS",
+    "encryptedOwnerAndSessionReports": "PASS",
+    "boundedSeparatePrivateSourceInputChunks": "PASS"
+  },
+  "methodCounts": {
+    "total": 10,
+    "eligible": 0,
+    "partial": 6,
+    "blocked": 4
+  },
+  "limits": [
+    "CURRENT_OBJECT_RECEIPTS_DO_NOT_CERTIFY_HISTORICAL_ISSUER_IDENTITY",
+    "PRICE_PUBLICATION_CLOCK_NOT_ESTABLISHED",
+    "CURRENCY_CERTIFICATION_NOT_ESTABLISHED_BY_RETRIEVAL",
+    "PIT_UNIVERSE_DENOMINATOR_NOT_CERTIFIED",
+    "FRESH_ACTUAL_CURRENT_RUN_AND_INDEPENDENT_NUMERIC_REPLAY_NOT_YET_PERFORMED",
+    "CURRENT_AND_RECEIPT_MODULES_REQUIRE_V2_FREEZE_HASH_BINDING"
+  ],
+  "unresolvedImplementationBlockers": [],
+  "codeHashes": {
+    "current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+    "current-source-receipts.mjs": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501"
+  }
+}

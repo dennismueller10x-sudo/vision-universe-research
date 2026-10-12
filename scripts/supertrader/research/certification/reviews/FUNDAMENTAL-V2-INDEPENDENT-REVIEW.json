@@ -1,0 +1,48 @@
+{
+  "schema": "supertrader-independent-premeasurement-review-2.0.0",
+  "reviewedAt": "2026-10-12T07:17:10.965587+00:00",
+  "reviewer": "independent_review",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "performanceInspected": false,
+  "oldPerformanceUsedForMappingChoice": false,
+  "privateInputValuesIncluded": false,
+  "scope": "ISOLATED_EVALUATOR_BUGFIX_FISCAL_LINEAGE_V2",
+  "codeHashes": {
+    "fundamental-v2.mjs": "8103b5b93adeb45fc3beee8492503f0e5bbd7485bf9b7968952318aa2e373ceb",
+    "fiscal-period-links.mjs": "e46af08840f0bfaea6d9df07fdd68529b125fa166c528008eafc1c4a8f5ec435"
+  },
+  "sourceDefinition": "ORIGINAL_PREVIOUS_FISCAL_YEAR_NOT_SAME_CALENDAR_MONTH_DAY",
+  "originalModuleSha256": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
+  "fourRulebooksParametersSourceMapsPortfolioAndFidelity": "EXACT_ORIGINAL_EQUALITY",
+  "rulebookAggregateSha256": "8d5cd06d1ae9d5326c6ed198720ae8a62e862ca8c755f1dc426161c831c19c66",
+  "allowedDiffs": [
+    "HELPER_IMPORT_EXTERNAL_VERSION_METADATA",
+    "REMOVE_CALENDAR_YEAR_SUBTRACTION",
+    "PIOTROSKI_LOOKUPS_CERTIFIED_STEPS_ONE_AND_TWO",
+    "EXPLICIT_CONSERVATIVE_FORMATION_CUTOFF",
+    "SPECIFIC_BLOCK_REASON_DIAGNOSTIC"
+  ],
+  "syntheticTests": {
+    "unique": 39,
+    "passed": 39,
+    "failed": 0,
+    "suites": [
+      "certification-fundamental-v2.test.mjs",
+      "certification-fiscal-period-links.test.mjs",
+      "tournament-fundamental.test.mjs"
+    ]
+  },
+  "meaningfulCases": [
+    "REGULAR_YEAR_COMPLETE_RESULT_PARITY",
+    "VARIABLE_52_WEEK_ACTUAL_ENDS",
+    "ACTUAL_371_DAY_53_WEEK_YEAR_LINK",
+    "LEAP_YEAR_ACTUAL_ENDS",
+    "TWO_STEP_ACCESSION_SOURCE_CHAIN",
+    "UNKNOWN_STUB_AMENDMENT_AND_FUTURE_CONFLICT_FAIL_CLOSED"
+  ],
+  "limitations": [
+    "NO_SOURCE_PERIOD_RENAMING_OR_NEAREST_DATE_FALLBACK",
+    "NO_FIELD_SCOPE_OR_BROAD_SECURITY_POPULATION_CERTIFICATION",
+    "DATASET_ADMISSION_REMAINS_SEPARATE"
+  ]
+}

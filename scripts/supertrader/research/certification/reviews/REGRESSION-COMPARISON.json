@@ -1,0 +1,25 @@
+{
+  "schema": "supertrader-certification-regression-comparison-2.0.0",
+  "status": "PASS_WITH_PREEXISTING_BASELINE_FAILURE",
+  "baseline_commit": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
+  "full_regression_commit": "44ae2c57d",
+  "publication_regression_commit": "bfc92c3fd",
+  "new_regression_failures": 0,
+  "complete_fixture_worktrees_used": true,
+  "shared_sparse_checkout_missing_fixture_failures_are_final_results": false,
+  "suites": {
+    "core": {"passed": 121, "failed": 1, "baseline_failed": 1, "same_failure_reproduced": true},
+    "quant": {"passed": 2617, "failed": 0},
+    "products": {"passed": 996, "skipped": 8, "failed": 0},
+    "python": {"passed": 491, "failed": 0},
+    "isolation": {"status": "PASS"},
+    "certification_tournament_publication": {"passed": 320, "failed": 0},
+    "repack_python": {"passed": 3, "failed": 0},
+    "current_transport_python": {"passed": 3, "failed": 0}
+  },
+  "v2_freeze_before_and_after": "PASS",
+  "original_tournament_core_quant_discover_live_files_changed": false,
+  "historical_current_and_numeric_reviews": "OUTSIDE_THIS_REGRESSION_REVIEW_SCOPE",
+  "this_artifact_certifies": "REGRESSION_SCOPE_ONLY_NOT_FINAL_PERFORMANCE_OR_DATA_QUALIFICATION",
+  "detailed_logs": "PRIVATE_OWNER_SESSION_ENCRYPTED"
+}

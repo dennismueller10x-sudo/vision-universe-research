@@ -1,0 +1,50 @@
+{
+  "schema": "supertrader-current-transport-independent-review-1.1.0",
+  "status": "PASSED",
+  "reviewScope": "STATIC_DELIVERY_AND_SYNTHETIC_TESTS_ONLY",
+  "classification": "DELIVERY_ONLY",
+  "finalized": true,
+  "performanceInspected": false,
+  "currentScanExecutedByReview": false,
+  "strategyDefinitionsChanged": false,
+  "rulebookParametersChanged": false,
+  "frozenV2FilesChanged": false,
+  "originalAssertFreezeV2": "PASSED",
+  "transportFreezePath": "scripts/supertrader/research/certification/SUPERTRADER-CURRENT-TRANSPORT-FREEZE.json",
+  "transportFreezeSha256": "d0e992787fa2ebce4c26c9556d05f963c3c22c96ba73e4f62eb7b940d47dcb6e",
+  "reviewedComponentHashes": {
+    "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+    "scripts/supertrader/research/certification/repack-artifact.py": "7bbba18f6fae5fe31901c47ef8b7c6aeb2dfcbb17a2dcf3c4aed3dcfd912acdf",
+    "scripts/supertrader/research/certification/current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+    "scripts/supertrader/research/certification/run-rerun.mjs": "fd213207451c52abf5243521a936df56071bd142a6b9b4da14d3239ac131b5b1",
+    "scripts/supertrader/research/certification/freeze-v2.mjs": "4f7136bb597f67f48d6be74245b74d53c6577715fc806d7debcf0a8341a7e06c",
+    "scripts/supertrader/research/certification/repack-current-artifact.py": "616ef38438e7b2fffff8ce40ee655de296c9ba193e7610dc9a85f70b0c80047b",
+    "scripts/supertrader/tests/test_certification_current_repack.py": "e1fa15f9a53181806e7538c41c685f6fc750c77a1b46c6523ad83d845d1c266e",
+    ".github/workflows/supertrader-certification.yml": "5ac0df37f25645c78cef3df6ad1ef8dd0091757319aa38d912285c18c3b80658"
+  },
+  "syntheticTests": {
+    "newTransport": 3,
+    "originalRepack": 3,
+    "totalUnique": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "verified": [
+    "EXACTLY_ONE_OPTIONAL_OUTER_JSON_STRING_LAYER",
+    "INNER_EXACT_SCHEMA_ALGORITHM_AND_BASE64_FIELDS",
+    "DUPLICATE_EXTRA_NESTED_PLAINTEXT_ARRAY_ENVELOPES_REJECTED",
+    "UNAPPROVED_PATHS_AND_SOURCE_SYMLINKS_REJECTED",
+    "ORIGINAL_SOURCE_AND_ZIP_EXTRACTION_BYTES_AND_HASHES_PRESERVED",
+    "ORIGINAL_BOUNDED_ZIP_COPIER_REUSED_WITHOUT_SOURCE_MUTATION",
+    "ONLY_CURRENT_WORKFLOW_REPACK_COMMAND_CHANGED",
+    "ORIGINAL_CURRENT_REPACK_RUN_AND_V2_BYTES_MATCH_FROZEN_COMMIT"
+  ],
+  "limits": [
+    "ENVELOPE_VALIDATION_DOES_NOT_DECRYPT_OR_AUTHENTICATE_PAYLOAD",
+    "ANY_DELIVERY_WORKFLOW_OR_AS_OF_ARGUMENT_EDIT_REQUIRES_REFRESHED_TRANSPORT_HASH_BINDING",
+    "THIS_DELIVERY_REVIEW_DOES_NOT_FINALIZE_NUMERIC_ADVERSARIAL_OR_OWNER_PUBLICATION_GATES"
+  ],
+  "providerReads": 0,
+  "decryptedByTransport": false,
+  "performanceCalculatedByTransport": false
+}

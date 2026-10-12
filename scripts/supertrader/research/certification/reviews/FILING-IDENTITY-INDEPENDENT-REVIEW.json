@@ -1,0 +1,55 @@
+{
+  "schema": "supertrader-independent-premeasurement-review-2.0.0",
+  "reviewedAt": "2026-10-12T07:26:07.380318+00:00",
+  "reviewer": "independent_review",
+  "status": "PASS_WITH_DATA_LIMITS",
+  "performanceInspected": false,
+  "oldPerformanceUsedForMappingChoice": false,
+  "privateInputValuesIncluded": false,
+  "scope": "ORIGINAL_FILING_SOURCE_GRAPH_AND_CONTEXT_POINT",
+  "codeSha256": "aff30b541b13658c64370c7e0ae67f78eb881520da4672722172c888f9e05683",
+  "syntheticTests": {
+    "unique": 26,
+    "passed": 26,
+    "failed": 0
+  },
+  "resolvedBlockers": [
+    "PER_ELEMENT_UNIT_AND_INLINE_QNAME_SCOPE",
+    "UNIQUE_NONEMPTY_CONTEXT_UNIT_IDS_AND_DECLARED_REFERENCES",
+    "CANONICAL_LISTING_INTERVAL_PRESERVED_AND_FISCAL_POINT_WITHIN_GENERATION",
+    "AGGREGATE_CAPITAL_SENTENCE_REQUIRES_GENUINE_HASH_ISSUER_BOUND_FULL_ROSTER_REVIEW"
+  ],
+  "historicalIdentityCompleteness": "NOT_ESTABLISHED",
+  "rawDisclosuresStillAvailable": true,
+  "sourceReceiptArchive": "PRIVATE_SOURCE_ONLY_NO_PERFORMANCE",
+  "limits": [
+    "FILING_SNAPSHOT_NOT_CONTINUOUS_ISSUER_SECURITY_ADMISSION",
+    "COMMON_CLASS_COUNT_NOT_INFERRED_FROM_SINGLE_REGISTERED_SECURITY",
+    "PIT_PARTIAL_CONTEXT_POINT_NOT_BROAD_MARKET_POPULATION"
+  ],
+  "initialGuardReplay": {
+    "attempts": 1,
+    "acceptedFullCommonClassRoster": 0,
+    "acceptedFiscalContextPoints": 0,
+    "reason": "INDEPENDENT_FULL_COMMON_CLASS_ROSTER_REVIEW_REQUIRED",
+    "sourceSummary": "AUTHORITATIVE_SECURITIES_DESCRIPTION_IS_EXPLICITLY_INCOMPLETE_AND_QUALIFIED_BY_UNREVIEWED_CHARTER",
+    "reviewAssertionMinted": false
+  },
+  "actualHistoricalReplay": {
+    "attempts": 1,
+    "acceptedFullCommonClassRoster": 1,
+    "acceptedFiscalContextPoints": 1,
+    "fullCharterBodiesIndependentlyRead": 3,
+    "sourceGraph": "ORIGINAL_HISTORICAL_ANNUAL_EXACTLY_INCORPORATES_FULL_RESTATED_CHARTER_AND_TWO_COMPLETE_ARTICLE_IV_AMENDMENTS",
+    "issuerHashAndFullBodyBinding": "PASS",
+    "completeCommonClassRoster": "EXHAUSTIVE_AUTHORIZED_COMMON_STOCK_AND_PREFERRED_STOCK_SOURCE_DEFINITION",
+    "reviewAssertionMinted": true,
+    "claimScope": "ONE_AS_REPORTED_SOURCE_FISCAL_POINT_MEDIUM_PIT_PARTIAL",
+    "sourceSummaryAloneSufficient": false,
+    "marketEquityInputCertified": false,
+    "marketPopulationCertified": false,
+    "newOfficialRequests": 0,
+    "performanceInspected": false
+  },
+  "privateContentReviewSha256": "029a8888b0f506db8e5a2fae245b18580034ff4a08ce6c394b252dce44589307"
+}

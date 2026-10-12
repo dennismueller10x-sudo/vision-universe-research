@@ -1,0 +1,310 @@
+{
+  "schema": "supertrader-public-rerun-2-0-0",
+  "status": "FINAL_REVIEWED_RERUN_PROJECTION",
+  "counts": {
+    "implemented_engines": 10,
+    "historical_method_participants": 6,
+    "control_method_participants": 6,
+    "control_conditions_are_additional_strategies": false,
+    "measured_tier_A": 0,
+    "measured_tier_B": 0,
+    "measured_tier_C": 6,
+    "measured_tier_D": 0,
+    "partial_methods": 6,
+    "blocked_engines": 4,
+    "blocked_unimplemented_candidates": 2,
+    "blocked_candidates_total": 6,
+    "fully_certified_methods": 0,
+    "qualified_winners": 0,
+    "baseline_source_educational_dossiers": 24,
+    "baseline_legacy_unmeasured_dossiers": 3,
+    "baseline_source_educational_and_legacy_total": 27
+  },
+  "methods": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "performance_assessment": "PERFORMANCE_FAIL",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 30931,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "performance_assessment": "PERFORMANCE_FAIL",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 90331,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED"
+      ],
+      "performance_assessment": "PERFORMANCE_FAIL",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 27429,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "DEEPER",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "performance_assessment": "PERFORMANCE_FAIL",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 266283,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2124,
+        "DATA_GAP": 74
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "SIMILAR",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "performance_assessment": "COMPONENT_MIXED_OR_UNAVAILABLE",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 22945,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2045,
+        "DATA_GAP": 153
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "implemented": true,
+      "measured": true,
+      "eligibility": "PARTIAL",
+      "raw_fixed_rubric_tier": "C",
+      "qualified_tier": "C",
+      "qualified_ceiling": "C",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "actual_data_quality_component": null,
+      "score_status": "UNAVAILABLE_MISSING_RUBRIC_COMPONENT_NOT_ZERO",
+      "signal": "NEGATIVE",
+      "portfolio": "BELOW",
+      "risk": "SHALLOWER",
+      "data_confidence": "MEDIUM",
+      "execution_confidence": "LOW",
+      "source_limitation_reason_codes": [
+        "DATA_LIMITED",
+        "EXECUTION_LIMITED",
+        "FIDELITY_LIMITED"
+      ],
+      "performance_assessment": "COMPONENT_MIXED_OR_UNAVAILABLE",
+      "performance_assessment_scope": "DESCRIPTIVE_THREE_ADVERSE_DIRECTIONS_NOT_SCORE_OR_TIER_GATE",
+      "signal_count": 141,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2191,
+        "DATA_GAP": 7
+      },
+      "causal_alpha_proven": false,
+      "historical_label": "SEEN_HISTORICAL_DATA_OBSERVED_PANEL"
+    },
+    {
+      "method_id": "gross_profitability_novy_marx",
+      "implemented": true,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "failure_categories": [
+        "DATA_BLOCKED"
+      ],
+      "performance_assessment": "UNMEASURED_NOT_PERFORMANCE_FAIL",
+      "qualified_tier": "UNRANKED_DATA_BLOCKED",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "score_status": "UNMEASURED_DATA_BLOCKED_NOT_ZERO",
+      "source_fidelity_confidence": "MEDIUM"
+    },
+    {
+      "method_id": "piotroski_value_fscore",
+      "implemented": true,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "failure_categories": [
+        "DATA_BLOCKED"
+      ],
+      "performance_assessment": "UNMEASURED_NOT_PERFORMANCE_FAIL",
+      "qualified_tier": "UNRANKED_DATA_BLOCKED",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "score_status": "UNMEASURED_DATA_BLOCKED_NOT_ZERO",
+      "source_fidelity_confidence": "MEDIUM"
+    },
+    {
+      "method_id": "greenblatt_magic_formula",
+      "implemented": true,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "failure_categories": [
+        "DATA_BLOCKED"
+      ],
+      "performance_assessment": "UNMEASURED_NOT_PERFORMANCE_FAIL",
+      "qualified_tier": "UNRANKED_DATA_BLOCKED",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "score_status": "UNMEASURED_DATA_BLOCKED_NOT_ZERO",
+      "source_fidelity_confidence": "LOW"
+    },
+    {
+      "method_id": "value_plus_momentum",
+      "implemented": true,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "failure_categories": [
+        "DATA_BLOCKED"
+      ],
+      "performance_assessment": "UNMEASURED_NOT_PERFORMANCE_FAIL",
+      "qualified_tier": "UNRANKED_DATA_BLOCKED",
+      "overall_confidence": "LOW",
+      "actual_total_score": null,
+      "score_status": "UNMEASURED_DATA_BLOCKED_NOT_ZERO",
+      "source_fidelity_confidence": "MEDIUM"
+    }
+  ],
+  "blocked_source_candidates": [
+    {
+      "method_id": "industry_momentum",
+      "implemented": false,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "blocking_status": "BLOCKED_HISTORICAL_MEMBERSHIP_TAXONOMY_AND_MARKET_EQUITY"
+    },
+    {
+      "method_id": "residual_momentum",
+      "implemented": false,
+      "measured": false,
+      "eligibility": "BLOCKED",
+      "blocking_status": "BLOCKED_RULE_VARIANT_UNSELECTED"
+    }
+  ],
+  "source_educational_scope": "BASELINE_DOSSIER_ROLES_SEPARATE_FROM_MEASURED_TIERS",
+  "source_educational_count": 27,
+  "fully_certified_eligible_method_ids": [],
+  "missing_component_imputation": false,
+  "score_weights_redistributed": false
+}

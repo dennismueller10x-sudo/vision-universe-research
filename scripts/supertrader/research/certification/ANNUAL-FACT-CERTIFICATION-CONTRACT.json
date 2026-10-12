@@ -1,0 +1,248 @@
+{
+  "schema": "supertrader-annual-fact-certification-contract-1.0.0",
+  "status": "SOURCE_ADAPTER_IMPLEMENTED_DERIVATIONS_REQUIRE_PRE_MEASUREMENT_REVIEW",
+  "scope": "ISOLATED_RESEARCH_NO_CORE_MIGRATION_NO_MAIN_MERGE",
+  "adapter": "annual-facts.mjs",
+  "input_contract": {
+    "security_identity": "HISTORICAL_SECURITY_TO_ISSUER_CIK_CERTIFIED_SEPARATELY",
+    "companyfacts": "OPTIONAL_RAW_SEC_ACCESSION_PERIOD_UNIT_VALUE_CROSS_CHECK_NOT_LATEST_BUNDLE",
+    "submissions": "RAW_CURRENT_AND_HISTORICAL_SHARDS_ACCESSION_REPORTDATE_FORM_API_CLOCK_DIAGNOSTIC",
+    "filing_documents": "ORIGINAL_XBRL_TEXT_SEC_ARCHIVES_ISSUER_ACCESSION_URL_RECEIVED_BYTES_SHA256",
+    "filing_headers": "ORIGINAL_SGML_ACCEPTANCE_HEADER_SEC_ARCHIVES_ISSUER_ACCESSION_URL_RECEIVED_BYTES_SHA256",
+    "header_range": "EXPLICIT_RECEIVED_ORIGINAL_BYTE_RANGE_ALLOWED_HASH_SCOPE_RETAINED",
+    "fiscal_year": "CURRENT_REPORT_DEI_DOCUMENT_FISCAL_YEAR_FOCUS_ONLY",
+    "signal_sessions": "EXPLICIT_SESSION_DATE_AND_UTC_FORMATION_CUTOFF",
+    "derivation_approvals": "APPROVED_BEFORE_MEASUREMENT_REVIEWER_REVIEW_ARTIFACT_SHA256_PRIMARY_SOURCES_EXACT_MAPPING_ID"
+  },
+  "clock_contract": {
+    "authoritative_source": "ORIGINAL_ARCHIVAL_ACCEPTANCE_DATETIME",
+    "source_timezone": "America/New_York",
+    "normalization": "IANA_TIMEZONE_DST_VALIDATED_UTC_MILLISECONDS",
+    "ambiguous_or_nonexistent_local_clock": "BLOCKED_DATA",
+    "api_clock": "DIAGNOSTIC_ONLY_NEVER_BLINDLY_CERTIFIED",
+    "header_api_conflict": "AUTHORITATIVE_HEADER_ACTUAL_TIME_WITH_MEDIUM_PIT_PARTIAL_CONFLICT_FLAG",
+    "missing_header": "BLOCKED_EXACT_ACCEPTANCE_CONTRACT",
+    "availability": "ACTUAL_HEADER_ACCEPTANCE_NO_COMPARATIVE_OR_AMENDMENT_BACKDATING",
+    "date_only_formation_cutoff": "BLOCKED_BY_ADAPTER_SELECTION_HELPER",
+    "original_selector_date_only_semantics": "UTC_DAY_END_REQUIRES_EXTERNAL_FORMATION_ELIGIBILITY_FILTER"
+  },
+  "period_contract": {
+    "annual_forms": [
+      "10-K",
+      "10-K/A"
+    ],
+    "original_lineage_form": "10-K",
+    "fiscal_focus": "DEI_CURRENT_REPORT_FOCUS_FY_AND_DOCUMENT_PERIOD_END_EQUALS_ARCHIVAL_REPORT_DATE",
+    "duration": "FULL_REPORTED_ANNUAL_XBRL_CONTEXT_330_TO_390_DAYS",
+    "instant_facts": "EXACT_ORIGINAL_ANNUAL_PERIOD_END_NO_WEIGHTED_SHARES_OR_QUARTER_SUBSTITUTION",
+    "comparative_companyfacts_fy_fp": "NOT_USED_TO_LABEL_THE_HISTORICAL_FACT_PERIOD",
+    "comparative_period": "REQUIRES_PREVIOUS_ORIGINAL_REPORT_FY_AND_ANNUAL_CONTEXT_LINEAGE",
+    "original_conflicts": "TIMESTAMPED_CONFLICT_MARKER_BLOCKS_ONLY_ON_OR_AFTER_KNOWN_FROM",
+    "stub_transition": "BLOCKED_WITHOUT_CERTIFIED_FULL_YEAR",
+    "previous_fiscal_period": "SOURCE_CONSECUTIVE_FY_ACTUAL_BOUNDARIES_CONTINUOUS_CONTEXT_START_NO_DATE_RELABELING",
+    "original_engine": "BLOCKED_FISCAL_PERIOD_LINK_UNSUPPORTED",
+    "versioned_bugfix": "SEPARATE_REVIEWED_FISCAL_PERIOD_LINK_RESOLVER_REQUIRED"
+  },
+  "scope_unit_contract": {
+    "source_namespaces": "ACTUAL_SEC_US_GAAP_AND_DEI_NAMESPACE_URI_NOT_PREFIX_LABEL",
+    "entity": "SEC_CIK_CONTEXT_IDENTIFIER_EQUALS_BOUND_ISSUER",
+    "dimensions": "SEGMENT_SCENARIO_EXPLICIT_OR_TYPED_DIMENSIONS_REJECTED",
+    "currency": "ACTUAL_SINGLE_USD_UNIT_MEASURE_NO_UNIT_REFERENCE_OR_DECIMALS_SCALE_GUESS",
+    "unsupported_currency_or_divide_unit": "BLOCKED_DATA",
+    "ifrs": "NO_AUTOMATIC_US_GAAP_SEMANTIC_MAPPING",
+    "equal_time_conflicts": "BLOCKED_NO_HIDDEN_TAG_PRIORITY",
+    "xml_ids": "UNIQUE_NONEMPTY_CONTEXT_AND_UNIT_IDS_DECLARED_REFERENCES_NO_OVERWRITE_OR_NONE_KEY",
+    "namespace_resolution": "QNAME_MEASURE_NAMESPACE_SCOPE_AT_ACTUAL_ELEMENT_NOT_GLOBAL_LAST_PREFIX"
+  },
+  "direct_source_concepts": {
+    "revenue": [
+      "us-gaap:Revenues",
+      "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "us-gaap:SalesRevenueNet"
+    ],
+    "cogs": [
+      "us-gaap:CostOfGoodsAndServicesSold",
+      "us-gaap:CostOfRevenue"
+    ],
+    "assets": [
+      "us-gaap:Assets"
+    ],
+    "operatingCashFlow": [
+      "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+    ],
+    "currentAssets": [
+      "us-gaap:AssetsCurrent"
+    ],
+    "currentLiabilities": [
+      "us-gaap:LiabilitiesCurrent"
+    ],
+    "longTermDebt": [
+      "us-gaap:LongTermDebtNoncurrent"
+    ],
+    "cash": [
+      "us-gaap:CashAndCashEquivalentsAtCarryingValue"
+    ],
+    "currentDebt": [
+      "us-gaap:DebtCurrent"
+    ],
+    "totalDebt": [
+      "us-gaap:DebtLongtermAndShorttermCombinedAmount"
+    ],
+    "netPPE": [
+      "us-gaap:PropertyPlantAndEquipmentNet"
+    ],
+    "sic": [
+      "ORIGINAL_ACCESSION_SGML_STANDARD_INDUSTRIAL_CLASSIFICATION"
+    ]
+  },
+  "conditional_derivations": [
+    {
+      "id": "COMMON_EQUITY_PARENT_WITH_ZERO_PREFERRED_OUTSTANDING",
+      "field": "bookEquity",
+      "status": "REVIEW_REQUIRED",
+      "operands": [
+        "us-gaap:StockholdersEquity",
+        "us-gaap:PreferredStockSharesOutstanding"
+      ],
+      "condition": "EXPLICIT_ZERO_PREFERRED_SHARES_PARENT_EQUITY_EXCLUDES_NONCONTROLLING_INTEREST"
+    },
+    {
+      "id": "COMMON_EQUITY_PARENT_MINUS_VERIFIED_PREFERRED_CARRYING",
+      "field": "bookEquity",
+      "status": "REVIEW_REQUIRED",
+      "operands": [
+        "us-gaap:StockholdersEquity",
+        "us-gaap:PreferredStockCarryingValue"
+      ],
+      "condition": "EXACT_COMPLETE_PREFERRED_CARRYING_VALUE_NOT_PAR_OR_MISSING_AS_ZERO"
+    },
+    {
+      "id": "US_GAAP_ASU2015_01_NET_INCOME_PARENT_NO_EXTRAORDINARY",
+      "field": "incomeBeforeExtraordinaryItems",
+      "status": "REVIEW_REQUIRED",
+      "operands": [
+        "us-gaap:NetIncomeLoss"
+      ],
+      "condition": "US_GAAP_PARENT_SCOPE_ANNUAL_PERIOD_BEGINNING_AFTER_2015_12_15_NOT_FY_LABEL_ONLY_NO_IFRS_NO_EARLY_ADOPTION_GUESS"
+    },
+    {
+      "id": "EBIT_PBT_PLUS_GROSS_INTEREST_SOURCE_COMPATIBLE",
+      "field": "ebit",
+      "status": "REVIEW_REQUIRED",
+      "operands": [
+        "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+        "us-gaap:InterestAndDebtExpense"
+      ],
+      "condition": "SOURCE_APPROVED_TOTAL_PRETAX_EARNINGS_BEFORE_GROSS_INTEREST_DEFINITION_REQUIRED_OPERATING_EBIT_COMPATIBILITY_NOT_ASSUMED"
+    },
+    {
+      "id": "TOTAL_DEBT_CURRENT_PLUS_NONCURRENT_WITH_EXPLICIT_FINANCE_LEASE_COVERAGE",
+      "field": "totalDebt",
+      "status": "REVIEW_REQUIRED",
+      "operands": [
+        "us-gaap:DebtCurrent",
+        "us-gaap:LongTermDebtNoncurrent",
+        "us-gaap:FinanceLeaseLiabilityNoncurrent",
+        "us-gaap:CapitalLeaseObligationsNoncurrent"
+      ],
+      "condition": "NONOVERLAPPING_CURRENT_DEBT_PLUS_NONCURRENT_DEBT_PLUS_EXPLICIT_NONCURRENT_FINANCE_LEASE_AMOUNT_OPERATING_LEASE_EXCLUSION_REVIEWED_MISSING_NOT_ZERO"
+    }
+  ],
+  "issuance_contract": {
+    "positive_source_concepts": [
+      "us-gaap:ProceedsFromIssuanceOfCommonStock",
+      "us-gaap:ProceedsFromStockOptionsExercised"
+    ],
+    "supported_inference": "POSITIVE_COMMON_CASH_ISSUANCE_PROVES_NO_COMMON_ISSUANCE_FALSE_ONLY",
+    "zero_or_absent_proceeds": "DOES_NOT_PROVE_NO_ISSUANCE_TRUE",
+    "gross_total": "BLOCKED_UNTIL_COMPLETE_CASH_AND_NONCASH_COMMON_EQUITY_ISSUANCE_SCOPE_PROVEN",
+    "net_buybacks": "NOT_A_SUBSTITUTE_FOR_GROSS_ISSUANCE"
+  },
+  "output_contract": {
+    "fundamentals": "CANONICAL_FROZEN_SELECTOR_KEYS_WITH_ACTUAL_ACCEPTANCE_SOURCE_CONCEPT_UNIT_PERIOD_FY_FULL_OPERAND_PROVENANCE",
+    "fiscalPeriodLinks": "CURRENT_PREVIOUS_PERIOD_FY_ORIGINAL_ACCESSIONS_ACCEPTANCES_KNOWNFROM_SOURCE_SHA_SCOPE_AND_TIMED_CONFLICT_MARKERS",
+    "public": "SCHEMA_ENUMS_COUNTS_CONCEPTS_OFFICIAL_SOURCE_URLS_ONLY",
+    "private": "ALL_ACTUAL_FACT_VALUES_ISSUER_SECURITY_IDS_PRIVATE_CERTIFICATION_STORAGE_ONLY",
+    "engine_admission": "FACT_KEY_PRESENCE_NOT_SUFFICIENT_IDENTITY_MARKET_EQUITY_CLOCK_SCOPE_AND_FULL_METHOD_FIELDS_REQUIRED",
+    "factConflicts": "DATED_KEY_PERIOD_MARKERS_REQUIRE_MANDATORY_PREFILTER_NO_OLDER_VALUE_FALLBACK_AFTER_VISIBLE_CONFLICT"
+  },
+  "research_pr_audit": [
+    {
+      "number": 481,
+      "state": "OPEN",
+      "migration": "BLOCKED",
+      "inspected_commit": "b2731ed30189900e53ea5206331198c9e99dcaef",
+      "reuse": "PRIMARY_XBRL_AUDIT_DESIGN_AND_EXACT_SOURCE_CONCEPT_REVIEW_ONLY_NO_CORE_MIGRATION"
+    },
+    {
+      "number": 504,
+      "state": "OPEN",
+      "reuse": "ANNUAL_VS_TTM_LABEL_SEPARATION_NOT_A_HISTORICAL_FACT_SOURCE"
+    },
+    {
+      "number": 505,
+      "state": "OPEN",
+      "inspected_commit": "12e261a65563ff4d38b343d4d4dd2dac2cd63319",
+      "reuse": "AS_REPORTED_VERSION_DESIGN_ONLY_FILING_DAY_AND_LIMITED_METRIC_SCOPE_INSUFFICIENT_FOR_THIS_EXACT_CONTRACT"
+    },
+    {
+      "number": 510,
+      "state": "OPEN",
+      "reuse": "REVENUE_PRIMARY_EVIDENCE_STAGE_DESIGN_ONLY_EXISTING_SOURCE_DECISIONS_NEED_EXACT_BUILD_AND_ACCESSION_BINDING"
+    }
+  ],
+  "official_sources": [
+    {
+      "id": "SEC_API_CONTRACT",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "access": "INSPECTED_PRIMARY"
+    },
+    {
+      "id": "SEC_COMPANYFACTS_BULK",
+      "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+      "access": "HTTP_200_OFFICIAL_BULK_ENDPOINT"
+    },
+    {
+      "id": "SEC_SUBMISSIONS_BULK",
+      "url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+      "access": "HTTP_200_OFFICIAL_BULK_ENDPOINT"
+    },
+    {
+      "id": "FASB_ASU2015_01",
+      "url": "https://storage.fasb.org/ASU%202015-01.pdf",
+      "access": "INSPECTED_PRIMARY_PDF_EFFECTIVE_DATE_AND_EXTRAORDINARY_CATEGORY_ELIMINATION"
+    }
+  ],
+  "measurement": "NO_PERFORMANCE_VIEW_OR_NEW_BACKTEST_IN_THIS_SOURCE_CERTIFICATION_TASK",
+  "historical_coverage": "ONE_PRIMARY_FILING_AUDIT_NOT_FULL_PIT_UNIVERSE_CERTIFICATION",
+  "source_modes": {
+    "PRIMARY_XBRL_ARCHIVAL_HEADER": {
+      "scope": "ACTUAL_RECEIVED_PRIMARY_BYTES_CONTEXT_UNIT_DEI_AND_HEADER_PROOF",
+      "clock_agreement": "HIGH_SOURCE_KNOWLEDGE_CONFIDENCE_ONLY_NOT_FULL_PIT_UNIVERSE",
+      "clock_conflict": "MEDIUM_PIT_PARTIAL_ACTUAL_HEADER_TIME_RETAINED"
+    },
+    "COMPANYFACTS_ACCESSION_BOUND_CURRENT_ANNUAL": {
+      "scope": "OFFICIAL_API_OR_HASH_BOUND_BULK_ENTRY_CURRENT_REPORT_10K_ONLY",
+      "confidence": "MEDIUM",
+      "pit_state": "PIT_PARTIAL",
+      "original_primary_context_verified": false,
+      "fiscal_year_certified": false,
+      "fiscal_period_links": "NONE_WITHOUT_DEI_ORIGINAL_REPORT_PROOF",
+      "actual_acceptance_certified": false,
+      "availability": "EXPLICIT_CONSERVATIVE_FIRST_NEW_YORK_MIDNIGHT_AFTER_OFFICIAL_FILED_DAY_NOT_ACTUAL_ACCEPTANCE",
+      "first_known_at": "UNKNOWN_EXPLICIT_CONSERVATIVE_BOUND_ONLY",
+      "raw_fiscal_year": "REPORTED_CURRENT_FILING_CLAIM_ONLY_NO_COMPARATIVE_LABEL_INFERENCE",
+      "amendments": "DATED_INVALIDATION_UNTIL_PRIMARY_REPLACEMENT_SCOPE_CERTIFIED",
+      "comparative_value_changes": "DATED_KEY_PERIOD_INVALIDATION_NEVER_BACKDATED_SUBSTITUTION",
+      "current_api_sic": "NOT_USED",
+      "optional_original_sic_header": "ACTUAL_ORIGINAL_HEADER_INDUSTRY_CODE_ONLY_NO_CURRENT_INDUSTRY_BACKFILL",
+      "formation_filter": "MANDATORY_UTC_CUTOFF_SESSION_AND_ALL_VISIBLE_CONFLICT_INVALIDATION_FILTER"
+    }
+  },
+  "validation_counts": {
+    "source_filings_compared": 2,
+    "revenue_cogs_assets_value_unit_period_comparisons": 6,
+    "comparisons_passed": 6,
+    "performance_values_viewed": 0
+  }
+}
