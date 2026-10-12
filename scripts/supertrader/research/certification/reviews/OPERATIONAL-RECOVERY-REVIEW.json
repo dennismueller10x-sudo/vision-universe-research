@@ -1,8 +1,8 @@
 {
   "schema": "supertrader-operational-recovery-review-2.0.0",
-  "status": "RECOVERY_AND_FULL_FINAL_FRAME_VALIDATED",
+  "status": "RECOVERY_AND_FULL_AUTONOMOUS_COMPLETION_VERIFIED",
   "scope": "OPERATIONAL_RECOVERY_WITH_ACTUAL_FINAL_FRAME_REVIEWS_NOT_FULL_PIT_QUALIFICATION",
-  "observed_at": "2026-10-12T19:38:25.492619Z",
+  "observed_at": "2026-10-12T20:00:03.833640Z",
   "branch": "research/supertrader-data-execution-certification-20261012",
   "remote_head_sha": "051f1e24732c69d6134b72475205254a45eaca0f",
   "baseline_pr": {
@@ -12,7 +12,7 @@
     "head_sha": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
     "unchanged": true
   },
-  "new_draft_pr_opened": false,
+  "new_draft_pr_opened": true,
   "workflow_audit": [
     {
       "id": 38272517992,
@@ -189,7 +189,7 @@
   "original_tournament_core_quant_discover_and_live_files_changed": false,
   "current_scan_started": true,
   "sensitivity_raw_replays_started": true,
-  "finalization": false,
+  "finalization": true,
   "independent_operational_review": {
     "status": "PASSED_OPERATIONAL_WITH_FINAL_FRAME_GATE",
     "private_review_sha256": "17777a33a960eabdcb470f4146428352c943fd937633d05f795f00e520d78297",
@@ -239,8 +239,19 @@
     "agent_model_capacity_error_occurred": true,
     "actual_compute_failed_due_to_agent_capacity": false
   },
-  "finalization_scope": "RESEARCH_REPORTS_OWNER_DELIVERY_COMPLETE_NEW_DRAFT_PR_PENDING",
+  "finalization_scope": "CERTIFICATION_RERUN_CURRENT_CONSENSUS_REVIEWS_REPORTS_ENCRYPTED_OWNER_DELIVERY_AND_DRAFT_PR_COMPLETE",
   "owner_delivery_completed": true,
   "owner_delivery_independent_review": "PASSED",
-  "final_public_artifact_checks": "PASSED"
+  "final_public_artifact_checks": "PASSED",
+  "new_draft_pr": {
+    "number": 632,
+    "state": "OPEN",
+    "draft": true,
+    "base_branch": "research/supertrader-full-tournament-20261011",
+    "head_branch": "research/supertrader-data-execution-certification-20261012",
+    "verified_initial_head_sha": "4a3216e27214b2bebce05b6f4660d55a16a3c62a",
+    "final_head_reference": "CURRENT_PR_HEAD",
+    "merged": false
+  },
+  "draft_pr_create_response_transport_timeout_recovered_by_read": true
 }

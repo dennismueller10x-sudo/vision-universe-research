@@ -1,11 +1,20 @@
 {
   "schema": "supertrader-certification-final-completion-review-2.0.0",
-  "status": "RESEARCH_COMPLETE_DRAFT_PR_PENDING",
-  "checked_at": "2026-10-12T19:55:56.973267Z",
+  "status": "COMPLETE_DRAFT_PR_OPEN",
+  "checked_at": "2026-10-12T20:00:03.833640Z",
   "baseline_pr": 589,
   "baseline_head_sha": "e5ce07ce0e7ab8d4b9370ff9ca8254773ba3a60b",
   "baseline_unchanged": true,
-  "new_draft_pr": null,
+  "new_draft_pr": {
+    "number": 632,
+    "state": "OPEN",
+    "draft": true,
+    "base_branch": "research/supertrader-full-tournament-20261011",
+    "head_branch": "research/supertrader-data-execution-certification-20261012",
+    "verified_initial_head_sha": "4a3216e27214b2bebce05b6f4660d55a16a3c62a",
+    "final_head_reference": "CURRENT_PR_HEAD",
+    "merged": false
+  },
   "data_certification": "COMPLETE_WITH_BLOCKED_CANDIDATES",
   "execution_certification": "COMPLETE_WITH_LIMITS",
   "counts": {
@@ -68,5 +77,10 @@
     "FINAL_PUBLIC_ARTIFACT_CHECKS": "8d8ed86c0f2cf44de1af02070fc10c7c265206447b1465c1b7355bb010c9d9d7",
     "ACTUAL_COMPACT_CRYPTO": "15a2020d2a5cebc213d29c8cb43cd7e71dfb5dcf519b598689a6cd23f83399db",
     "ACTUAL_ARCHIVE_COMPACT_BINDING": "1af5d1c7409ed4c5e1e569fd1461e507b75d4da7b57048a86a66d43c69cd9fb1"
+  },
+  "draft_pr_transport_recovery": {
+    "create_response_timed_out": true,
+    "server_side_creation_verified_by_read": true,
+    "duplicate_create_attempts": 0
   }
 }
