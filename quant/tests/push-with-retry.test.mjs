@@ -183,3 +183,92 @@ test("PR7 · Ein Tagesverlauf im Sitzungsordner steht nie unter Erzeugerhoheit",
     assert.equal(w.lies("quant/data/market/intraday/2026-10-02/ref_AAPL.json"), "intraday");
   } finally { aufraeumen(w.root); }
 });
+
+/* PR8-PR11 · ERZEUGERPFADE JE AUFRUFER (Okt. 2026)
+   Laeufe 37085599297, 37120824516, 38063088760: der Refresh verwarf nach
+   70 Minuten Abruf alles an Konflikten in discover/data, quant/data/technical
+   und den Faktoren - Dateien, deren eingetragener Erzeuger er selbst ist.
+   Ein Aufrufer nennt seine Erzeugerpfade in PUSH_OWNED_PATHS; die globale
+   Liste (PR3) bleibt unveraendert. */
+const KARTE = "discover/data/stocks/US_REAL/AAPL.json";
+const EUROPA = "discover/data/europe/manifest.json";
+function wettlaufMit(datei, env, { eigenLoeschen = false } = {}) {
+  const root = mkdtempSync(join(tmpdir(), "vu-push3-"));
+  const remote = join(root, "remote.git");
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed");
+  git(root, "clone", "-q", remote, seed);
+  schreibe(seed, datei, { stand: "basis" });
+  git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const refresh = join(root, "refresh"), pr = join(root, "pr");
+  git(root, "clone", "-q", remote, refresh); git(root, "clone", "-q", remote, pr);
+  schreibe(pr, datei, { stand: "feature-pr" });
+  git(pr, "add", "-A"); git(pr, "commit", "-q", "-m", "feature-pr"); git(pr, "push", "-q", "origin", "HEAD:main");
+  if (eigenLoeschen) git(refresh, "rm", "-q", datei); else schreibe(refresh, datei, { stand: "refresh" });
+  git(refresh, "add", "-A"); git(refresh, "commit", "-q", "-m", "refresh");
+  const r = spawnSync("bash", [SCRIPT, "main", "2"], { cwd: refresh, env: Object.assign({}, ENV, env || {}), encoding: "utf8" });
+  const pruef = join(root, "pruef");
+  git(root, "clone", "-q", remote, pruef);
+  const lies = (f) => existsSync(join(pruef, f)) ? JSON.parse(readFileSync(join(pruef, f), "utf8")).stand : null;
+  return { root, r, lies, head: git(pruef, "log", "-1", "--format=%s") };
+}
+const EIGEN = { PUSH_OWNED_PATHS: "discover/data/ quant/data/technical/ !discover/data/europe/" };
+
+test("PR8 · Erzeugerpfad des Aufrufers im Konflikt mit einem Feature-PR: eigener Stand, Push gelingt; ohne Angabe Abbruch wie bisher", () => {
+  const mit = wettlaufMit(KARTE, EIGEN);
+  try {
+    assert.equal(mit.r.status, 0, mit.r.stdout + mit.r.stderr);
+    assert.match(mit.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): discover\/data\/stocks\/US_REAL\/AAPL\.json/);
+    assert.equal(mit.head, "refresh");
+    assert.equal(mit.lies(KARTE), "refresh");
+  } finally { aufraeumen(mit.root); }
+  const ohne = wettlaufMit(KARTE, {});
+  try {
+    assert.equal(ohne.r.status, 1);
+    assert.equal(ohne.head, "feature-pr");
+  } finally { aufraeumen(ohne.root); }
+});
+
+test("PR9 · modify/delete: der eigene Lauf hat die Datei geloescht -> die Loeschung gilt", () => {
+  const w = wettlaufMit("quant/data/technical/snapshots/ref_X.json", EIGEN, { eigenLoeschen: true });
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.equal(w.head, "refresh");
+    assert.equal(w.lies("quant/data/technical/snapshots/ref_X.json"), null);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR10 · Ausgeschlossener Unterpfad (!discover/data/europe/) bleibt fremder Erzeuger: Abbruch", () => {
+  const w = wettlaufMit(EUROPA, EIGEN);
+  try {
+    assert.equal(w.r.status, 1);
+    assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: discover\/data\/europe\/manifest\.json/);
+    assert.equal(w.lies(EUROPA), "feature-pr");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR11 · Der Refresh nennt nur Pfade, die er committet und deren eingetragener Erzeuger er ist", () => {
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const wf = readFileSync(join(ROOT, ".github/workflows/market-data-refresh.yml"), "utf8");
+  const m = wf.match(/PUSH_OWNED_PATHS:\s*"([^"]+)"/);
+  assert.ok(m, "Refresh nennt keine Erzeugerpfade");
+  const eigene = m[1].trim().split(/\s+/).filter((p) => !p.startsWith("!"));
+  const ausgeschlossen = m[1].trim().split(/\s+/).filter((p) => p.startsWith("!")).map((p) => p.slice(1));
+  const committet = [...wf.match(/for pfad in ([\s\S]*?); do/)[1].matchAll(/((?:quant|discover)\/[\w./-]+)/g)].map((x) => x[1]);
+  const reg = JSON.parse(readFileSync(join(ROOT, "core/registry/domains.json"), "utf8"));
+  const domains = (Array.isArray(reg.domains) ? reg.domains : Object.values(reg.domains || {})).filter(Boolean);
+  for (const p of eigene) {
+    assert.ok(committet.some((c) => (c + "/").startsWith(p) || c === p.replace(/\/$/, "")), "nicht im Commit des Refresh: " + p);
+    const name = p.replace(/\/$/, "").split("/").pop();
+    const dom = domains.find((d) => /market-data-refresh\.yml/.test(String(d.workflow)) && d.artifact &&
+      (d.artifact.startsWith("/" + p) || ("/" + p).startsWith(d.artifact) || String(d.role || "").includes(name)));
+    assert.ok(dom, "kein Registereintrag mit dem Refresh als Erzeuger fuer " + p);
+  }
+  /* Fremde Erzeuger unter discover/data sind ausgeschlossen. */
+  for (const d of domains) {
+    if (!d.artifact || !d.artifact.startsWith("/discover/data/") || /market-data-refresh\.yml/.test(String(d.workflow))) continue;
+    if (/build-discover-data|global-search-index/.test(String(d.producer))) continue;
+    const pfad = d.artifact.slice(1);
+    assert.ok(ausgeschlossen.some((x) => pfad.startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
+  }
+});
