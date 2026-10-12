@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,Blink
 a{color:inherit}
 img{display:block;max-width:100%}
 .shell{width:min(var(--max),calc(100% - 64px));margin-inline:auto}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* ---------- Bausteine ---------- */
 .kicker{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--lime-ink)}
@@ -362,32 +362,34 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
 }
 
 /* ---------- HUD-Icons: dunkle Kachel, Neon-Kontur, Raster, Eckmarken ---------- */
-.hud{--s:58px;position:relative;width:var(--s);height:var(--s);flex:none;display:grid;place-items:center;border-radius:16px;isolation:isolate;
-  background:
-    radial-gradient(120% 120% at 0% 0%,rgba(200,245,49,.32),transparent 55%),
+.hud{--s:58px;
+  --hud-fill:radial-gradient(120% 120% at 0% 0%,rgba(200,245,49,.32),transparent 55%),
     repeating-linear-gradient(0deg,rgba(200,245,49,.07) 0 1px,transparent 1px 8px),
     repeating-linear-gradient(90deg,rgba(200,245,49,.07) 0 1px,transparent 1px 8px),
     #07090b;
-  box-shadow:0 0 0 1px rgba(200,245,49,.28),0 10px 30px -10px rgba(200,245,49,.45),inset 0 0 18px rgba(200,245,49,.12)}
-.hud::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;z-index:-1;
-  background:conic-gradient(from var(--a,0deg),#c8f531,transparent 30%,transparent 55%,#c8f531 75%,transparent 90%,#c8f531);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:hudspin 6s linear infinite}
-.hud::after{content:"";position:absolute;inset:5px;border-radius:10px;pointer-events:none;
-  background:
-    linear-gradient(#c8f531,#c8f531) left top/9px 1.5px,linear-gradient(#c8f531,#c8f531) left top/1.5px 9px,
-    linear-gradient(#c8f531,#c8f531) right top/9px 1.5px,linear-gradient(#c8f531,#c8f531) right top/1.5px 9px,
-    linear-gradient(#c8f531,#c8f531) left bottom/9px 1.5px,linear-gradient(#c8f531,#c8f531) left bottom/1.5px 9px,
-    linear-gradient(#c8f531,#c8f531) right bottom/9px 1.5px,linear-gradient(#c8f531,#c8f531) right bottom/1.5px 9px;
-  background-repeat:no-repeat;opacity:.85}
-.hud svg{width:56%;height:56%;fill:none;stroke:#c8f531;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(200,245,49,.85)) drop-shadow(0 0 12px rgba(200,245,49,.35))}
+  position:relative;width:var(--s);height:var(--s);flex:none;display:grid;place-items:center;border-radius:16px;isolation:isolate;overflow:hidden;
+  background:var(--hud-fill);
+  --hud-in:inset 0 0 18px rgba(200,245,49,.12);
+  box-shadow:0 0 0 1px rgba(200,245,49,.28),0 10px 30px -10px rgba(200,245,49,.45)}
+/* Kontur: ein Farbverlauf-Quadrat dreht sich per transform (Compositor, kein Neuzeichnen
+   auf dem Main-Thread); die innere Kachel (::after) deckt es bis auf 1 px Rand ab. */
+.hud::before{content:"";position:absolute;inset:-25%;z-index:-1;
+  background:conic-gradient(#c8f531,transparent 30%,transparent 55%,#c8f531 75%,transparent 90%,#c8f531);
+  animation:hudspin 6s linear infinite}
+/* Innere Kachel: deckt das drehende Quadrat bis auf 1 px Rand ab. Die Eckmarken des frueheren ::after
+   (inset 5px, radius 10px) lagen komplett im Rundungs-Zuschnitt und waren praktisch unsichtbar; das Bild
+   bleibt deshalb ohne sie unveraendert. */
+.hud::after{content:"";position:absolute;inset:1px;border-radius:inherit;pointer-events:none;background:var(--hud-fill);box-shadow:var(--hud-in)}
+.hud svg{position:relative;z-index:1;width:56%;height:56%;fill:none;stroke:#c8f531;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(200,245,49,.85)) drop-shadow(0 0 12px rgba(200,245,49,.35))}
 .hud svg .fill{fill:#c8f531;stroke:none}
 .hud svg .dim{opacity:.45}
 .hud-sm{--s:46px;border-radius:13px}
-.hud-sm::after{inset:4px;border-radius:8px}
 .hud-lg{--s:72px;border-radius:20px}
-@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
-@keyframes hudspin{to{--a:360deg}}
-a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 40px -8px rgba(200,245,49,.7),inset 0 0 22px rgba(200,245,49,.2)}
+@keyframes hudspin{to{transform:rotate(360deg)}}
+/* Kontur dreht nur, solange die Kachel im Bild ist (home-motion.js setzt .on); der Hero dreht von Anfang an */
+.hud:not(.on)::before{animation-play-state:paused}
+.hero .hud::before{animation-play-state:running}
+a:hover .hud,.module:hover .hud{--hud-in:inset 0 0 22px rgba(200,245,49,.2);box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 40px -8px rgba(200,245,49,.7)}
 
 /* ---------- Neue Bausteine (App als Plattform) ---------- */
 .up{color:#3fd07f}
@@ -424,6 +426,8 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 .hub::before{content:"";position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.22),transparent 68%);filter:blur(6px)}
 .hub-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .hub-lines g[stroke]{stroke-dasharray:2 1.5;animation:flow 3s linear infinite}
+/* stroke-dashoffset laeuft auf dem Main-Thread: nur animieren, solange der Kreis im Bild ist (home-motion.js setzt .on) */
+.hub:not(.on) .hub-lines g[stroke]{animation-play-state:paused}
 @keyframes flow{to{stroke-dashoffset:-14}}
 .hub-core{position:absolute;left:50%;top:50%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;align-content:center;gap:6px;
   background:radial-gradient(circle at 35% 30%,#1a1f16,#07090b 70%);box-shadow:0 0 0 1px rgba(200,245,49,.45),0 0 0 10px rgba(200,245,49,.06),0 0 60px rgba(200,245,49,.35),inset 0 0 30px rgba(200,245,49,.15)}
@@ -491,8 +495,9 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 
 /* ---------- Live-Kennzeichnung statt Datum ---------- */
 .live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#c8f531}
-.live i{width:7px;height:7px;border-radius:50%;background:#c8f531;box-shadow:0 0 0 0 rgba(200,245,49,.6);animation:livepulse 1.8s ease-out infinite}
-@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(200,245,49,.6)}100%{box-shadow:0 0 0 8px rgba(200,245,49,0)}}
+.live i{position:relative;width:7px;height:7px;border-radius:50%;background:#c8f531}
+.live i::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(200,245,49,.6);animation:livepulse 1.8s ease-out infinite}
+@keyframes livepulse{from{transform:scale(1);opacity:1}to{transform:scale(3.3);opacity:0}}
 .down{color:#f0675c}
 
 /* ---------- Vorsorge ---------- */
@@ -519,7 +524,6 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 .sticky-cta.on{transform:none;opacity:1}
 .sticky-inner{pointer-events:auto;display:flex;align-items:center;gap:14px;padding:8px 8px 8px 10px;border-radius:999px;background:rgba(10,12,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#f4f5f1;box-shadow:0 0 0 1px rgba(200,245,49,.35),0 20px 50px -12px rgba(0,0,0,.6),0 0 40px -10px rgba(200,245,49,.45)}
 .sticky-inner .hud{--s:42px;border-radius:50%}
-.sticky-inner .hud::after{display:none}
 .sticky-copy b{display:block;font-size:14px;line-height:1.2;white-space:nowrap}
 .sticky-copy span{display:block;font-size:12px;color:#9aa0a8}
 .sticky-inner .btn{min-height:46px;padding:0 22px}
@@ -555,7 +559,8 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 .orbit{position:absolute;inset:0;pointer-events:none}
 .orb{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity}
 .hero .phone{z-index:3}
-.c-dot{fill:#f4ffc4;filter:drop-shadow(0 0 6px #c8f531) drop-shadow(0 0 14px #c8f531);opacity:0}
+.c-dot{fill:#f4ffc4;opacity:0}
+.c-halo{fill:url(#dot-glow);opacity:0}
 .hero .btn-app{position:relative}
 .stage{transition:transform .25s ease-out;transform-style:preserve-3d}
 
@@ -571,17 +576,17 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 @keyframes hx-fade{from{opacity:0}to{opacity:1}}
 @keyframes hx-pop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
 @keyframes hx-card{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:none}}
-@keyframes hx-pulse{0%,100%{box-shadow:0 0 0 1px rgba(200,245,49,.4),0 14px 36px -10px rgba(200,245,49,.65),0 0 0 0 rgba(200,245,49,.45)}50%{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 18px 44px -8px rgba(200,245,49,.85),0 0 0 14px rgba(200,245,49,0)}}
+@keyframes hx-pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06,1.28);opacity:0}}
 
 html.intro .hero-grid-fx{animation:hx-gridr 1.6s cubic-bezier(.3,.7,.2,1) both}
 html.intro .hero-scan{animation:hx-scan 1.5s .15s cubic-bezier(.5,0,.3,1) both}
 html.intro .hero-logo img{animation:hx-logo 1s .25s cubic-bezier(.6,0,.2,1) both}
-html.intro .hero-badge{animation:hx-up .6s .55s both}
-html.intro .hero h1{animation:hx-up .9s .7s cubic-bezier(.2,.7,.2,1) both}
-html.intro .hero h1 em{animation:hx-em 1.4s 1.4s ease-in-out both}
-html.intro .hero .lead{animation:hx-up .7s 1s both}
-html.intro .hero .hero-cta{animation:hx-up .7s 1.2s both}
-html.intro .hero .hero-checks{animation:hx-up .7s 1.35s both}
+html.intro .hero-badge{animation:hx-up .45s 0s both}
+html.intro .hero h1{animation:hx-up .45s 0s cubic-bezier(.2,.7,.2,1) both}
+html.intro .hero h1 em{animation:hx-em 1.4s .5s ease-in-out both}
+html.intro .hero .lead{animation:hx-up .5s .15s both}
+html.intro .hero .hero-cta{animation:hx-up .5s .3s both}
+html.intro .hero .hero-checks{animation:hx-up .5s .4s both}
 html.intro .hero .browser{animation:hx-browser 1.1s .6s cubic-bezier(.2,.8,.2,1) both}
 html.intro .intro-chart .c-s200{animation:hx-draw 1.8s 1.2s ease-in-out both}
 html.intro .intro-chart .c-s50{animation:hx-draw 1.8s 1.3s ease-in-out both}
@@ -594,7 +599,8 @@ html.intro .intro-chart .wn{animation:hx-pop .5s calc(2.9s + var(--i) * .2s) cub
 html.intro .hero .phone{animation:hx-phone 1.1s 2.2s cubic-bezier(.2,.9,.25,1) both}
 html.intro .hero .fc-1{animation:hx-card .6s 4.1s both,bob 6s ease-in-out 4.8s infinite}
 html.intro .hero .fc-2{animation:hx-card .6s 4.4s both,bob 7s ease-in-out 5s infinite}
-html.intro .hero .hero-cta .btn-app{animation:hx-pulse 2.4s 2.2s ease-in-out infinite}
+.hero .hero-cta .btn-app{isolation:isolate}
+html.intro .hero .hero-cta .btn-app::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:rgba(200,245,49,.45);opacity:0;animation:hx-pulse 2.4s 2.2s ease-in-out infinite}
 
 @media (max-width:760px){
   .hero-grid-fx{-webkit-mask:radial-gradient(circle at 50% 70%,#000 0,transparent 75%);mask:radial-gradient(circle at 50% 70%,#000 0,transparent 75%)}
@@ -614,7 +620,7 @@ html.intro .stage.late .fc-2{animation-delay:1.8s,2.5s!important}
 .hub-ring .node .hud{transition:transform .7s cubic-bezier(.34,1.7,.5,1),box-shadow .5s}
 .hub-ring .node em{transition:transform .6s cubic-bezier(.34,1.6,.5,1),color .3s,background .3s;display:inline-block}
 .hub-ring .node.front{z-index:4}
-.hub-ring .node.front .hud{transform:scale(1.6) translateY(-6px);box-shadow:0 0 0 1px rgba(200,245,49,.8),0 22px 50px -10px rgba(200,245,49,.85),0 0 60px rgba(200,245,49,.45),inset 0 0 22px rgba(200,245,49,.25)}
+.hub-ring .node.front .hud{--hud-in:inset 0 0 22px rgba(200,245,49,.25);transform:scale(1.6) translateY(-6px);box-shadow:0 0 0 1px rgba(200,245,49,.8),0 22px 50px -10px rgba(200,245,49,.85),0 0 60px rgba(200,245,49,.45)}
 .hub-ring .node.front em{transform:translateY(16px) scale(1.15);background:var(--lime);color:var(--on-lime)}
 .hub-core b{transition:opacity .3s}
 .hub-active{display:block;font-size:clamp(11px,1.6vw,15px);font-weight:900;color:#f4f5f1;letter-spacing:.02em;margin-top:2px;min-height:1.2em}
@@ -777,15 +783,16 @@ html.intro .journey-bars:not(.grow) .jbar i{height:0;transition:none}
 .film-poster{display:block;width:100%;height:100%;padding:0;border:0;background:none;cursor:pointer;position:relative}
 .film-poster img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.8,.2,1),filter .4s}
 .film-poster:hover img{transform:scale(1.03);filter:brightness(.85)}
-.film-play{position:absolute;left:24px;bottom:22px;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#c8f531;box-shadow:0 0 0 10px rgba(200,245,49,.18),0 0 50px rgba(200,245,49,.7);animation:filmpulse 2.2s ease-in-out infinite;transition:transform .2s}
+.film-play{position:absolute;left:24px;bottom:22px;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#c8f531;box-shadow:0 0 50px rgba(200,245,49,.7);isolation:isolate;transition:transform .2s}
+.film-play::after{content:"";position:absolute;inset:0;border-radius:50%;z-index:-1;background:rgba(200,245,49,.18);animation:filmpulse 2.2s ease-in-out infinite}
 .film-poster:hover .film-play{transform:scale(1.08)}
 .film-play svg{width:30px;height:30px;fill:#101318;margin-left:5px}
-@keyframes filmpulse{0%,100%{box-shadow:0 0 0 10px rgba(200,245,49,.18),0 0 50px rgba(200,245,49,.7)}50%{box-shadow:0 0 0 22px rgba(200,245,49,0),0 0 70px rgba(200,245,49,.9)}}
+@keyframes filmpulse{0%,100%{transform:scale(1.28);opacity:1}50%{transform:scale(1.61);opacity:0}}
 .film-len{position:absolute;right:16px;bottom:14px;font-size:13px;font-weight:800;color:#f4f5f1;background:rgba(0,0,0,.6);border-radius:8px;padding:4px 9px}
 .film-video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
 @media (max-width:980px){.film-grid{grid-template-columns:1fr;gap:36px}}
 @media (max-width:760px){.film{padding:72px 0 60px}.film-frame{aspect-ratio:9/16;max-width:420px;margin-inline:auto;width:100%}.film-play{left:50%;bottom:auto;top:62%;margin-left:-36px}}
-@media (prefers-reduced-motion:reduce){.film-play{animation:none}}
+@media (prefers-reduced-motion:reduce){.film-play::after{animation:none;transform:scale(1.28)}}
 
 /* =====================================================================
    NEWSLETTER
@@ -807,3 +814,95 @@ html.intro .journey-bars:not(.grow) .jbar i{height:0;transition:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:900px){.nl-box{grid-template-columns:1fr;padding:28px}}
 @media (max-width:520px){.nl-form{grid-template-columns:1fr}.nl-copy .hud{display:none}}
+
+/* =====================================================================
+   RENDER-KOSTEN: Abschnitte unterhalb des ersten Bildschirms werden erst
+   gestaltet, wenn man sich ihnen naehert (content-visibility:auto). Das
+   spart beim Laden Style-, Layout- und Paint-Arbeit fuer rund 85 % der Seite.
+   contain-intrinsic-block-size haelt die Seitenhoehe (Scrollleiste, Anker)
+   nahe an der echten Hoehe (Inhaltshoehe ohne Padding, gemessen bei 1440 /
+   980 / 412 px Breite); "auto" merkt sich nach dem ersten Rendern den
+   tatsaechlichen Wert. Find-in-Page, Anker und Screenreader sehen den
+   Inhalt unveraendert.
+   ===================================================================== */
+#app-module,
+#analyse,
+#entwicklung,
+#swipe,
+#discover,
+#screener,
+#supertrader,
+#quant,
+#vorsorge,
+main > section:nth-of-type(8),
+main > section:nth-of-type(9),
+#app,
+main > section:nth-of-type(11),
+#faq,
+.final,
+.film,
+.newsletter,
+.social-bar,
+.footer{content-visibility:auto}
+.cv-on{content-visibility:visible!important}
+#app-module{contain-intrinsic-block-size:auto 908px}
+#analyse{contain-intrinsic-block-size:auto 611px}
+#entwicklung{contain-intrinsic-block-size:auto 598px}
+#swipe{contain-intrinsic-block-size:auto 814px}
+#discover{contain-intrinsic-block-size:auto 513px}
+#screener{contain-intrinsic-block-size:auto 539px}
+#supertrader{contain-intrinsic-block-size:auto 539px}
+#quant{contain-intrinsic-block-size:auto 539px}
+#vorsorge{contain-intrinsic-block-size:auto 611px}
+main > section:nth-of-type(8){contain-intrinsic-block-size:auto 611px}
+main > section:nth-of-type(9){contain-intrinsic-block-size:auto 387px}
+#app{contain-intrinsic-block-size:auto 538px}
+main > section:nth-of-type(11){contain-intrinsic-block-size:auto 390px}
+#faq{contain-intrinsic-block-size:auto 646px}
+.final{contain-intrinsic-block-size:auto 291px}
+.film{contain-intrinsic-block-size:auto 400px}
+.newsletter{contain-intrinsic-block-size:auto 257px}
+.social-bar{contain-intrinsic-block-size:auto 57px}
+.footer{contain-intrinsic-block-size:auto 377px}
+@media (max-width:1100px){
+#app-module{contain-intrinsic-block-size:auto 1425px}
+#analyse{contain-intrinsic-block-size:auto 1188px}
+#entwicklung{contain-intrinsic-block-size:auto 997px}
+#swipe{contain-intrinsic-block-size:auto 1439px}
+#discover{contain-intrinsic-block-size:auto 983px}
+#screener{contain-intrinsic-block-size:auto 966px}
+#supertrader{contain-intrinsic-block-size:auto 966px}
+#quant{contain-intrinsic-block-size:auto 991px}
+#vorsorge{contain-intrinsic-block-size:auto 986px}
+main > section:nth-of-type(8){contain-intrinsic-block-size:auto 716px}
+main > section:nth-of-type(9){contain-intrinsic-block-size:auto 396px}
+#app{contain-intrinsic-block-size:auto 903px}
+main > section:nth-of-type(11){contain-intrinsic-block-size:auto 633px}
+#faq{contain-intrinsic-block-size:auto 800px}
+.final{contain-intrinsic-block-size:auto 265px}
+.film{contain-intrinsic-block-size:auto 804px}
+.newsletter{contain-intrinsic-block-size:auto 263px}
+.social-bar{contain-intrinsic-block-size:auto 57px}
+.footer{contain-intrinsic-block-size:auto 620px}
+}
+@media (max-width:760px){
+#app-module{contain-intrinsic-block-size:auto 1878px}
+#analyse{contain-intrinsic-block-size:auto 1098px}
+#entwicklung{contain-intrinsic-block-size:auto 1043px}
+#swipe{contain-intrinsic-block-size:auto 1362px}
+#discover{contain-intrinsic-block-size:auto 1131px}
+#screener{contain-intrinsic-block-size:auto 1167px}
+#supertrader{contain-intrinsic-block-size:auto 1147px}
+#quant{contain-intrinsic-block-size:auto 1039px}
+#vorsorge{contain-intrinsic-block-size:auto 1127px}
+main > section:nth-of-type(8){contain-intrinsic-block-size:auto 919px}
+main > section:nth-of-type(9){contain-intrinsic-block-size:auto 934px}
+#app{contain-intrinsic-block-size:auto 1057px}
+main > section:nth-of-type(11){contain-intrinsic-block-size:auto 1105px}
+#faq{contain-intrinsic-block-size:auto 885px}
+.final{contain-intrinsic-block-size:auto 277px}
+.film{contain-intrinsic-block-size:auto 1094px}
+.newsletter{contain-intrinsic-block-size:auto 446px}
+.social-bar{contain-intrinsic-block-size:auto 161px}
+.footer{contain-intrinsic-block-size:auto 1064px}
+}
