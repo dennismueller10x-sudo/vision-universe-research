@@ -156,7 +156,7 @@
     var label = f.manager || f.name;
     if (f.photo && f.photo.src) {
       return '<span class="' + cls + '"' + style + '><img src="/hedgefonds/' + esc(f.photo.src) + '" alt="' + esc(label) +
-        '" loading="lazy" decoding="async" onerror="this.parentNode.textContent=\'' + esc(initials(label)) + '\'"></span>';
+        '" width="96" height="96" loading="lazy" decoding="async" onerror="this.parentNode.textContent=\'' + esc(initials(label)) + '\'"></span>';
     }
     return '<span class="' + cls + '"' + style + ' aria-hidden="true">' + esc(initials(label)) + "</span>";
   }
@@ -202,14 +202,30 @@
       return r.json();
     });
   }
+  /* universe.json (~900 KB, alle weiteren Hedgefonds) lädt erst, wenn eine
+     Ansicht es braucht: Suche, „Alle Hedgefonds", jede Seite außer der
+     Startseite. Die Startseite braucht daraus nur die Zahl der Hedgefonds,
+     die hedgefonds.json als hedgefondsCount mitliefert. Fehlt das Feld
+     (ältere Daten), lädt universe.json wie bisher vor dem ersten Bild. */
+  function ensureUniverse() {
+    if (!S.uniP) {
+      S.uniP = getJSON(BASE + "universe.json").catch(function () { return { funds: [] }; }).then(function (u) {
+        S.universe = u.funds || [];
+        S.universe.forEach(function (f) { S.bySlug[f.slug] = f; });
+        S.uniReady = true;
+      });
+    }
+    return S.uniP;
+  }
   function load() {
-    var uni = getJSON(BASE + "universe.json").catch(function () { return { funds: [] }; });
-    return Promise.all([getJSON(DATA_URL), uni]).then(function (res) {
-      var d = res[0];
+    // Direkter Einstieg auf eine Unterseite: universe.json gleich parallel holen
+    if (!/^#\/?(\?|$)/.test(location.hash || "#/")) ensureUniverse();
+    return getJSON(DATA_URL).then(function (d) {
       if (!d.schema || d.schema.indexOf("hedgefonds-2") !== 0) throw new Error("Datenformat veraltet");
       S.data = d;
-      S.universe = res[1].funds || [];
+      // Reihenfolge wie bisher: universe.json überschreibt gleichnamige Slugs
       d.funds.concat(S.universe).forEach(function (f) { S.bySlug[f.slug] = f; });
+      if (typeof d.hedgefondsCount !== "number") return ensureUniverse();
     });
   }
   function loadFund(slug) {
@@ -278,7 +294,7 @@
   function institutions() { return S.data.funds.filter(function (f) { return f.category === "Institutionen"; }); }
   function dbAll() { return investors().concat(S.universe); }
   function isHF(f) { return f.category === "Investoren" || f.style === "Hedgefonds"; }
-  function hfCount() { return dbAll().filter(isHF).length; }
+  function hfCount() { return S.uniReady ? dbAll().filter(isHF).length : S.data.hedgefondsCount; }
 
   /* ----------------------------------------------------- Meldefristen */
   function nextDeadline() {
@@ -410,9 +426,14 @@
       items.forEach(function (it, i) { it.classList.toggle("on", i === active); });
       items[active].scrollIntoView({ block: "nearest" });
     }
-    input.addEventListener("input", render);
+    function renderWithUniverse() {
+      if (S.uniReady || opts.stocksOnly) { render(); return; }
+      ensureUniverse().then(function () { if (document.activeElement === input || input.value.trim()) render(); });
+    }
+    input.addEventListener("input", renderWithUniverse);
     input.addEventListener("focus", function () {
       loadStockIndex().then(function () { if (document.activeElement === input) render(); });
+      if (!opts.stocksOnly) ensureUniverse();
       render();
     });
     input.addEventListener("keydown", function (e) {
@@ -659,6 +680,10 @@
     });
   }
   function renderAgg() {
+    if (S.aggMode === "all" && S.data.aggregatesAll && !S.uniReady) {
+      ensureUniverse().then(function () { if (document.getElementById("hf-buys")) renderAgg(); });
+      return;
+    }
     var all = S.aggMode === "all" && S.data.aggregatesAll;
     var agg = (all ? S.data.aggregatesAll : S.data.aggregates) || {};
     var n = (agg.funds || []).length;
@@ -1258,6 +1283,8 @@
     var path = h.slice(2).split("?")[0], params = {};
     (h.split("?")[1] || "").split("&").forEach(function (kv) { var p = kv.split("="); if (p[0]) params[p[0]] = decodeURIComponent(p[1] || ""); });
     var parts = path.split("/").filter(Boolean), page = parts[0] || "start";
+    // Jede Ansicht außer der Startseite arbeitet mit allen Fonds (universe.json)
+    if (!S.uniReady && page !== "start") { ensureUniverse().then(route); return; }
     if (lastPath !== null) scrollMemo[lastPath] = window.scrollY;
     var changed = lastPath !== path;
     lastPath = path;

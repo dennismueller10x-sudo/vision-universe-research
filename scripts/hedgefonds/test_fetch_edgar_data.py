@@ -1,6 +1,8 @@
 """Offline-Tests der 13F-Logik (kein Netzwerk). Aufruf:
 python3 -m unittest scripts/hedgefonds/test_fetch_edgar_data.py"""
+import io
 import sys
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
@@ -254,3 +256,65 @@ class Counts(unittest.TestCase):
     def test_real_new_holdings_amendment_is_merged(self):
         self.assertFalse(m.is_full_resubmission(self.rows(30), self.rows(25, start=30)))
         self.assertFalse(m.is_full_resubmission(self.rows(300), self.rows(30)))
+
+
+class HedgefondsCount(unittest.TestCase):
+    def test_matches_frontend_hfcount(self):
+        summaries = [{"category": "Investoren", "style": "Value"}, {"category": "Institutionen", "style": "Hedgefonds"}]
+        universe = [{"category": "Hedgefonds", "style": "Hedgefonds"}, {"category": "Hedgefonds", "style": "Vermögensverwaltung"}]
+        # Institutionen zählen im Frontend nicht (dbAll = Investoren + universe)
+        self.assertEqual(m.hedgefonds_count(summaries, universe), 2)
+
+
+try:
+    import PIL  # noqa: F401
+    HAVE_PIL = True
+except ImportError:
+    HAVE_PIL = False
+
+
+@unittest.skipUnless(HAVE_PIL, "Pillow nicht installiert")
+class Photos(unittest.TestCase):
+    def jpeg(self, size, mode="RGB", **kw):
+        from PIL import Image
+        out = io.BytesIO()
+        Image.new(mode, size, 128).save(out, "JPEG", **kw)
+        return out.getvalue()
+
+    def test_downscaled_progressive_without_metadata(self):
+        from PIL import Image
+        from PIL.ImageCms import ImageCmsProfile, createProfile
+        icc = ImageCmsProfile(createProfile("sRGB")).tobytes()
+        exif = Image.Exif()
+        exif[0x010E] = "Beschreibung"
+        data = m.encode_photo(self.jpeg((500, 700), icc_profile=icc, exif=exif.tobytes()))
+        im = Image.open(io.BytesIO(data))
+        self.assertEqual(im.size, (360, 504))
+        self.assertTrue(im.info.get("progressive"))
+        self.assertNotIn("icc_profile", im.info)
+        self.assertNotIn("exif", im.info)
+
+    def test_landscape_keeps_short_side(self):
+        from PIL import Image
+        im = Image.open(io.BytesIO(m.encode_photo(self.jpeg((800, 400)))))
+        self.assertEqual(im.size, (720, 360))
+
+    def test_small_photo_not_upscaled_grayscale_kept(self):
+        from PIL import Image
+        im = Image.open(io.BytesIO(m.encode_photo(self.jpeg((300, 400), mode="L"))))
+        self.assertEqual((im.size, im.mode), ((300, 400), "L"))
+
+    def test_cached_photo_reencoded_once(self):
+        old = m.PHOTO_DIR
+        with tempfile.TemporaryDirectory() as tmp:
+            m.PHOTO_DIR = Path(tmp)
+            try:
+                (m.PHOTO_DIR / "x.jpg").write_bytes(self.jpeg((500, 500)))
+                entry = {"wiki": "X", "file": "x.jpg", "license": "CC0", "artist": "A"}
+                new = m.reencode_cached_photo("x", entry)
+                self.assertEqual(new, {**entry, "photoSize": m.PHOTO_SIZE})
+                before = (m.PHOTO_DIR / "x.jpg").read_bytes()
+                self.assertIs(m.reencode_cached_photo("x", new), new)
+                self.assertEqual((m.PHOTO_DIR / "x.jpg").read_bytes(), before)
+            finally:
+                m.PHOTO_DIR = old
