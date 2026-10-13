@@ -239,7 +239,7 @@
       "role": "Neuberechnung der Eingangsflaeche 'Im Blick' ca. alle zwei Stunden aus den 5-Minuten-Kursen gegen die EOD-Basis (discover/data/im-blick); daneben discover/live/monitor-US_REAL.json (faelliger Slot, letzter Lauf, letzter Erfolg, Datenalter, Fehler). Keine Anbieteranfrage; intraday kein Schlusshoch, kein Ausbruch, kein Volumen. Nach dem Schluss SESSION_CLOSED (nie LIVE), danach gilt die Schlusskurs-Auswahl.",
       "producer": "scripts/discover/build-im-blick-live.mjs",
       "workflow": "discover-im-blick-live.yml",
-      "schedule": "Slots aus dem Boersenkalender (11:00, 13:00, 15:00, 16:20 New York; verkuerzte Tage 11:00 + Schluss+20). Ausloeser: Cloudflare-Wecker alle 30 Min. (Min. 5/35, 15-21 UTC, Mo-Fr) und GitHub-Zeitplan Min. 27, 15-21 UTC (Rueckfall); der Lauf rechnet nur, wenn der faellige Slot offen ist",
+      "schedule": "Slots aus dem Boersenkalender (11:00, 13:00, 15:00, 16:20 New York; verkuerzte Tage 11:00 + Schluss+20). Ausloeser: Cloudflare-Wecker alle 30 Min. (Min. 5/35, 15-21 UTC, Mo-Fr) und GitHub-Zeitplan Min. 27, 15-21 UTC (Rueckfall); der Lauf rechnet nur, wenn der faellige Slot offen ist. Zusaetzlich einmal je Nachtlauf: Job imblick in market-data-refresh.yml (erst nach refresh + materialize + freshness-contract, build-im-blick-live.mjs --nachtlauf) rechnet auf der neuen Abendlauf-Basis",
       "freshness": { "kind": "none" },
       "consumers": ["Discover Startseite (Im Blick, ui/featured.js)", "Freshness-Monitor (scripts/discover/check-im-blick-live.mjs)"]
     },

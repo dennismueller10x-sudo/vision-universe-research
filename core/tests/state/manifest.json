@@ -1,0 +1,28 @@
+{
+  "schema": "core-state-tests-1.0.0",
+  "purpose": "Querverträge über ERZEUGTE Daten zweier Produkte. Sie sind verbindlich, blockieren aber einen PR nur, wenn der PR einen ihrer Eingänge berührt (scripts/ci/state-gate.mjs). Auf main, im Zeitplan und per Dispatch sind sie immer streng.",
+  "tests": [
+    {
+      "file": "supertrader-discover.test.mjs",
+      "title": "Supertrader-Signale gegen Discover-Universum und Kursstand",
+      "producers": [
+        "supertrader/data -> supertrader-signals.yml",
+        "discover/data/stock-index, quant/data/market/factors -> market-data-refresh.yml"
+      ],
+      "remedy": "Den Erzeuger der veralteten Seite laufen lassen (meist supertrader-signals.yml nach dem Nachtlauf); der Build weist entfallene Titel als discoverAvailability.unavailable aus.",
+      "blockingWhenPrTouches": [
+        "supertrader/**",
+        "scripts/supertrader/**",
+        ".github/workflows/supertrader-*.yml",
+        "docs/SUPERTRADER_*.md",
+        "discover/data/stock-index/**",
+        "quant/data/market/factors/**",
+        "quant/data/market/discover-series/**",
+        "core/*.js",
+        "core/tests/state/**",
+        "scripts/ci/state-gate.mjs",
+        ".github/workflows/core-ci.yml"
+      ]
+    }
+  ]
+}
