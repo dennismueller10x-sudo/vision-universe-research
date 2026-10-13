@@ -4,6 +4,8 @@ Diese Integration verwaltet Newsletter und Kontakte in Brevo. Für die ausdrück
 
 Der [Merge-Prüfbericht](MERGE-REVIEW.md) dokumentiert die Prüfung vor dem Merge. Der [Live-Status](LIVE-STATUS.md) enthält den belegten aktuellen Kontostand, Setup-/Lese-Nachweise und die Grenzen des Oberflächenabgleichs. Ein Merge startet keinen Brevo-Lauf.
 
+**Domainstatus am 13. Oktober 2026:** visionuniverse.de ist per API bestätigt und authentifiziert. Genau drei fehlende Brevo-DNS-Einträge wurden über das separate Secret `BREVO_CLOUDFLARE_DNS_TOKEN` ergänzt; übriges DNS blieb unverändert. [Laufnachweise und DNS-Betrieb](DOMAIN-AUTHENTICATION.md). Keine E-Mails versendet.
+
 ## Tatsächlicher Stand am 12. Oktober 2026
 
 **Import vorbereitet, noch nicht durchgeführt.** PR 544 und [PR 545](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/545) sind gemergt. Der explizite `User-Agent: VisionUniverse-Brevo/1.0` ist auf `main` wirksam. Der [reguläre Audit vom 12. Oktober](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38233376781) bestätigt den kostenlosen Tarif, einen bestehenden Kontakt, zehn kompatible VU-Merkmale, einen aktiven Absender, eine noch unbestätigte/nicht authentifizierte Domain und keine Segmente.
