@@ -1,4 +1,4 @@
-// Native POST to Brevo: the provider alone reports acceptance or rejection.
+// Same-origin POST to the gated Pages DOI endpoint, never to a contact-creation API.
 // No client-side persistence, contact API, analytics or optimistic success.
 (() => {
   const form = document.querySelector('#newsletter-form');
@@ -27,13 +27,14 @@
     form.removeAttribute('aria-busy');
   };
   window.addEventListener('pageshow', reset);
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     if (form.dataset.ready !== 'true' || !form.hasAttribute('action')) {
       event.preventDefault();
       status.textContent = 'Die Anmeldung ist noch nicht freigeschaltet. Deine E-Mail-Adresse wurde nicht übermittelt.';
       return;
     }
     if (submitting) { event.preventDefault(); return; }
+    event.preventDefault();
     if (!navigator.onLine) {
       event.preventDefault();
       status.textContent = 'Du bist gerade offline. Deine Anfrage wurde nicht übermittelt. Prüfe deine Verbindung und versuche es erneut.';
@@ -59,10 +60,20 @@
     button.disabled = true;
     button.textContent = 'Wird gesendet …';
     status.textContent = 'Deine Anfrage wird an Brevo übermittelt. Warte auf die Rückmeldung und bestätige anschließend deine E-Mail-Adresse.';
-    // A failed navigation must never be presented as a saved subscription.
+    const controller = new AbortController();
     timer = setTimeout(() => {
+      controller.abort();
       reset();
       status.textContent = 'Wir haben noch keine Rückmeldung erhalten. Eine Anmeldung ist nicht bestätigt. Prüfe dein Postfach oder versuche es später erneut.';
     }, 20000);
+    try {
+      const response=await fetch(form.getAttribute('action'),{method:'POST',credentials:'same-origin',
+        headers:{'Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'},
+        body:new URLSearchParams(new FormData(form)),signal:controller.signal});
+      const result=await response.json();
+      reset();
+      status.textContent=result.message || 'Die Anfrage wurde nicht bestätigt.';
+      if(response.status===202){form.reset();window.location.assign('/warteliste/bestaetigen/');}
+    } catch {reset();status.textContent='Die Anfrage wurde nicht bestätigt. Prüfe dein Postfach; bitte nicht mehrfach absenden.';}
   });
 })();

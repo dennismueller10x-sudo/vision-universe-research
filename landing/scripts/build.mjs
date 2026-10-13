@@ -8,8 +8,7 @@ export function validateConfig(config = {}) {
   const keys = ['actionUrl','doubleOptInVerified','privacyReviewed','sourceAttribute','privacyHtmlPath'];
   if (Object.keys(config).some(k => !keys.includes(k))) throw new Error('Unbekanntes Konfigurationsfeld. Keine API-Schlüssel verwenden.');
   if (config.actionUrl) {
-    const url = new URL(config.actionUrl);
-    if (url.protocol !== 'https:' || !/^[a-z0-9-]+\.sibforms\.com$/.test(url.hostname) || !/^\/serve\/[A-Za-z0-9_-]+$/.test(url.pathname) || url.username || url.password || url.port || url.search || url.hash) throw new Error('Nur die HTTPS-Formularaktion aus dem einfachen Brevo-HTML-Export ist erlaubt.');
+    if (config.actionUrl !== '/api/waitlist/signup') throw new Error('Nur der eigene serverseitige DOI-Endpunkt ist erlaubt.');
     if (config.doubleOptInVerified !== true) throw new Error('Double-Opt-in ist noch nicht geprüft.');
     if (config.privacyReviewed !== true || !config.privacyHtmlPath) throw new Error('Freigegebene Datenschutzhinweise fehlen.');
     if (!/^[A-Z][A-Z0-9_]{0,49}$/.test(config.sourceAttribute || '') || ['EMAIL','OPT_IN','LOCALE'].includes(config.sourceAttribute)) throw new Error('Brevo-Textattribut für die Quelle fehlt oder ist ungültig.');
@@ -27,9 +26,14 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','waitlist-pages.js','impressum/index.html','datenschutz/index.html','warteliste/bestaetigen/index.html','warteliste/bestaetigt/index.html','warteliste/abmelden/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
+    if(path.endsWith('.html')){
+      const content=await readFile(resolve(output,path),'utf8');
+      await writeFile(resolve(output,path),content.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','')
+        .replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>',''));
+    }
   }
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
   if (config.privacyHtmlPath) {
@@ -43,17 +47,32 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html = html.replace('data-ready="false"',`data-ready="true" action="${esc(config.actionUrl)}"`).replace('<fieldset disabled>','<fieldset>')
       .replace('<input type="hidden" name="locale" value="de">',`<input type="hidden" name="locale" value="de"><input type="hidden" name="${esc(config.sourceAttribute)}" value="Coming-soon-Landingpage">`)
       .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden erhältst du eine E-Mail. Bestätige darin deine Anmeldung.')
-      .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Du wirst nach dem Absenden zum Anmeldeformular weitergeleitet. Bestätige anschließend deine E-Mail-Adresse.')
+      .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden erhältst du eine Bestätigungsmail. Erst mit deinem Klick ist die Anmeldung bestätigt.')
       .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
     // Native validity remains available without JavaScript. JS adds German inline messages.
   }
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
-  const formOrigin = ready ? new URL(config.actionUrl).origin : "'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action ${formOrigin}; base-uri 'none'; object-src 'none'`;
+  const formOrigin = ready ? "'self'" : "'none'";
+  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formOrigin}; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   await writeFile(resolve(output,'index.html'),html);
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
+  // Single self-contained Pages advanced-mode Worker, no env values or secret interpolation.
+  const runtime=await readFile(resolve(root,'server/waitlist.mjs'),'utf8');
+  await writeFile(resolve(output,'_worker.js'),runtime+`\nexport default {async fetch(request,env){
+    const path=new URL(request.url).pathname;
+    if(path.startsWith('/_worker')||path.startsWith('/server/'))return new Response('Not found',{status:404});
+    const response=await handleWaitlist(request,env);
+    if(!response)return env.ASSETS.fetch(request);
+    if((request.headers.get('Accept')||'').includes('text/html')){
+      if(response.status===202)return new Response(null,{status:303,headers:{Location:'/warteliste/bestaetigen/','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
+      const message=(await response.json()).message;
+      return new Response(message,{status:response.status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
+    }
+    return response;
+  }};\n`);
+  await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/waitlist/*','/_worker*','/server/*'],exclude:[]}));
   // Pages handles apex -> www in custom-domain settings, not _redirects.
   // Static aliases keep the existing Research legal links working later.
   for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
@@ -65,7 +84,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
   if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
   const files = await readdir(output);
-  return {newsletter:ready?'Brevo-POST vorbereitet; Live-DOI noch separat prüfen':'BLOCKIERT: kein Brevo-Formular konfiguriert',mode:production?'production':'preview',output,entries:files.length};
+  return {newsletter:ready?'Server-DOI vorbereitet; zusätzliche Runtime-Freigaben erforderlich':'BLOCKIERT: DOI/Datenschutz nicht freigegeben',mode:production?'production':'preview',output,entries:files.length};
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);

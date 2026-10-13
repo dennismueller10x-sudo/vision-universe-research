@@ -36,29 +36,13 @@ node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 
 Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
-## Brevo: Schnittstelle erhalten, Einrichtung ausschließlich in PR #544
+## Brevo: eigenständige App-Warteliste mit serverseitigem DOI
 
-[PR #544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) verwaltet Brevo separat. **Keine zusätzliche Liste, kein zusätzliches Formular, kein API-Aufruf, Import oder Versand durch diesen PR.** Wiederverwendet werden seine geplante Liste **`VU | App-Warteliste`** und das Textattribut **`VU_SOURCE`**. Die Landingpage sendet künftig die Quelle **`Coming-soon-Landingpage`**. IDs und Accountzustand sind noch live ungeprüft; Bestandskontakte werden nicht automatisch Wartelistenkontakte.
+Der aktuelle Ablauf verwendet ausschließlich die bestehende **VU | App-Warteliste, ID 5**. Deutsche DOI-Vorlage ID 1, Anmeldebestätigung mit persönlichem Abmeldelink ID 2 und separate App-Merkmale sind in Brevo eingerichtet. Die beiden Runtime-Schlüssel sind verschlüsselt im bestehenden Cloudflare-Pages-Projekt hinterlegt. Liste 4 (135 Kontakte) und Liste 6 (zwei interne Testkontakte) bleiben unverändert; 13 Nicht-Abonnenten werden nicht importiert.
 
-Die vorhandene Schnittstelle bleibt ein nativer HTTPS-POST an den einfachen Brevo-HTML-Formularexport, ohne Backend und privaten API-Schlüssel. Aktuell ist das Fieldset deaktiviert und es gibt keine Formularaktion, auch ohne JavaScript. Keine Adresse wird entgegengenommen oder gespeichert, keine erfolgreiche Anmeldung erfunden.
+Der Formularexport nach sibforms ist durch einen eigenen Cloudflare-Pages-DOI-Endpunkt ersetzt. Keine normale Kontaktanlage als DOI-Ersatz, kein Key im Browser/HTML/Build, kein Bestandskontakt erneut angemeldet. D1-Reservierungen schützen gegen parallele/repetitive Mails, der private Rückvergleich prüft Brevos tatsächliche Bestätigung; die Abmeldung entfernt ausschließlich Liste 5. Vorlagen, Seiten und 20 synthetische Tests sind vorbereitet.
 
-Vom bestehenden Brevo-Prozess noch zu liefern:
-
-1. Den tatsächlich eingerichteten einfachen Formular-Export und dessen vollständige `action`-URL `https://<anbieter>.sibforms.com/serve/<signierter-pfad>`. Eine Formular-ID allein genügt nicht. **Ein vorhandenes für diese App-Anmeldung geeignetes Formular verwenden; kein paralleles Formular anlegen.**
-2. Zuordnung zur aus PR #544 vorhandenen `VU | App-Warteliste`, `EMAIL`, anfangs leere verpflichtende Einwilligung `OPT_IN` und vom Formular akzeptiertes `VU_SOURCE`. Abweichende Export-Feldnamen konkret prüfen, statt zu raten. Der vorhandene Brevo-Honeypot `email_address_check` bleibt erhalten; ein accountseitig nötiges CAPTCHA nicht entfernen.
-3. Verifiziertes Double-Opt-in, deutsche DOI-Mail, Abmeldelink und tatsächliche Anbieterbestätigung: zunächst zur E-Mail-Bestätigung auffordern. Vor DOI keinen bestätigten Status setzen. Die Einwilligungsattribute aus PR #544 erst nach echtem Nachweis setzen; bestehende Abmeldungen/Sperren berücksichtigen. Keine automatische Übernahme von Shopify-Bestandskontakten.
-4. Neue kontrollierte Adresse live testen: Validierung/Einwilligung, Empfang der DOI-Mail, unbestätigter Status vor dem Klick, richtige Liste/Quelle nach dem Klick, erneute Anmeldung, Abmeldung, Anbieterfehler. Keine Testadressen oder DOI-Daten in Git, Logs oder Artefakten.
-5. Passende geprüfte Datenschutzhinweise für das tatsächlich freigegebene Hosting und Brevo bereitstellen. Der vorhandene Shopify-/Shopify-Email-Text genügt hierfür nicht; die Vorschau ist ausdrücklich vorläufig. Die vollständigen Original-Rechtstexte wurden am 12.10.2026 vom Owner bereitgestellt und [unverändert archiviert](legal-source/README.md). Für App/Web-App-Abos werden [gesonderte Entwürfe](legal-drafts/README.md) vorbereitet; der aktuelle Landing-Datenschutz beschreibt weiterhin den Coming-soon-Betrieb mit gesperrtem Newsletter.
-
-`newsletter.config.example.json` nach `newsletter.config.json` kopieren (ignoriert), die tatsächliche Formularaktion eintragen, `doubleOptInVerified` erst nach Live-Test und `privacyReviewed` erst mit passendem geprüftem Rechtstext setzen. `sourceAttribute` ist standardmäßig `VU_SOURCE`; `privacyHtmlPath` verweist auf ein vollständiges deutsches freigegebenes HTML-Dokument. Ein mit `data-policy-status="draft"` markierter Text wird abgelehnt.
-
-```sh
-node scripts/build.mjs --config=newsletter.config.json
-# Erst für die spätere freigegebene öffentliche Veröffentlichung:
-node scripts/build.mjs --config=newsletter.config.json --production
-```
-
-Alternativ **öffentliche** Build-Variablen: `BREVO_FORM_ACTION`, `BREVO_DOUBLE_OPT_IN_VERIFIED=true`, `BREVO_SOURCE_ATTRIBUTE=VU_SOURCE`, `LANDING_PRIVACY_REVIEWED=true`, `LANDING_PRIVACY_HTML_PATH`. Kein `BREVO_API_KEY` in dieser Anwendung. Unbekannte Konfigurationsfelder werden abgelehnt. Ohne freigegebene Datenschutzhinweise blockiert der Produktionsbuild; Vorbereitungsbuilds bleiben `noindex`.
+**Öffentlich weiterhin gesperrt, echter Postfach-/Klicktest nicht durchgeführt.** D1-Rechte am vorhandenen Zugang fehlen; kontrollierte neue Testadresse/Postfach und Datenschutzfreigabe fehlen ebenfalls. [Belege, exakte Token-/Secret-Einrichtung, Serverkonfiguration und Abnahmeschritte](WAITLIST.md). Ein Merge aktiviert das Formular nicht. `newsletter.config.example.json` bleibt gesperrt; Konfiguration und Runtime-Freigaben erst nach echter Abnahme setzen.
 
 ## Historische GitHub-Pages-Vorbereitung
 

@@ -18,6 +18,7 @@
 .button .arrow{transform:rotate(-45deg)}.preview-copy{min-width:0;overflow-wrap:anywhere}.form-row .button{white-space:normal}.consent{min-height:44px}
 /* Long German legal terms must reflow when text is enlarged. */
 .legal{overflow-wrap:anywhere}
+.legal [hidden]{display:none!important}
 @media(max-width:760px){.hero{padding-top:28px}.product-shot{max-width:128px}.newsletter{padding-block:30px}.preview-copy p{font-size:1rem}.preview-stage{padding-top:14px}.glass-note{bottom:23px}}
 h1,h2{overflow-wrap:anywhere}.header-link{flex-wrap:wrap;justify-content:flex-end;min-width:0}.preview-top{flex-wrap:wrap}
 .consent,.form-status,.form-note,.hero-note,.footer,figcaption{font-size:.75rem}.footer p span,.eyebrow,.preview-tag{font-size:.6875rem}form label:not(.consent){font-size:.875rem}
