@@ -39,6 +39,7 @@ test('isolated full-universe verification emits before/after source audit withou
  assert.match(workflow,/VERIFICATION: \$\{\{ inputs\.verification \}\}/);
  assert.match(runner,/currentRefresh:a\.currentRefresh/);
  assert.match(runner,/restoredGeneration:r\.restoredGeneration,newPrivateGeneration:r\.newPrivateGeneration,freshRestoreVerified:r\.freshRestoreVerified/);
+ assert.match(runner,/checkpointSha256:r\.certifiedBootstrap\?\.sha256,privateCompanies:r\.certifiedBootstrap\?\.privateCompanies/);
  assert.match(runner,/runtimeSeconds:r\.durationSeconds,sourcesChecked:r\.sourcesChecked,publicRequests:r\.publicRequests,secRequests:r\.secRequests/);
 });
 test('metadata reconciliation preserves previous GOOD and all consumer bytes, and compensates failed readback',async()=>{

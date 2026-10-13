@@ -235,6 +235,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
    console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,
     restoredGeneration:r.restoredGeneration,newPrivateGeneration:r.newPrivateGeneration,freshRestoreVerified:r.freshRestoreVerified,
+    checkpointSha256:r.certifiedBootstrap?.sha256,privateCompanies:r.certifiedBootstrap?.privateCompanies,
     runtimeSeconds:r.durationSeconds,sourcesChecked:r.sourcesChecked,publicRequests:r.publicRequests,secRequests:r.secRequests,
     httpStats:r.httpStats,sourceOutcomes:r.sourceOutcomes,scheduler:r.scheduler}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
