@@ -10,8 +10,11 @@ Stand: 13. Oktober 2026. **Vorbereitet und teilweise eingerichtet; öffentlicher
 | Einrichtung | [38427920720](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38427920720): DOI-Vorlage ID 1, drei App-Textattribute; Brevo-Key und Token-Schlüssel als secret_text in beiden Umgebungen des bestehenden Pages-Projekts hinterlegt, Freigaben false; bestehende Variablen erhalten |
 | Ergänzung und Leseabgleich | [38430030211](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38430030211): aktive Anmeldebestätigung ID 2 mit persönlichem Abmeldelink, Projekt/Git-/Build-Konfiguration unverändert, Listen 135/0/2 unverändert |
 | Unabhängiger Audit | [38430882539](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38430882539): beide Vorlagen gelesen; DOI-HTML stimmt nach Leerraum-Normalisierung überein; Cloudflare-Secrets verschlüsselt, D1-Zugriff HTTP 401 / Code 10000, keine kontrollierte Testadresse hinterlegt |
+| Abschließende Freigabeprüfung | [38433536389](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38433536389): Preview/Production jeweils alle drei Freigaben false, D1-Bindung fehlt, Listen unverändert, live_e2e_performed=false |
 
 Ein erfolgreicher **Prüf-/Setup-Job bedeutet keine Versandbereitschaft**. Er kann eingerichtete Vorlagen/Secrets und zugleich fehlende D1-Rechte melden. Es gibt noch keine D1-Datenbank/-Bindung. Die drei aktuellen Freigabeschalter sind false. UI und Runtime bleiben gesperrt.
+
+Die [Pages-Vorschau](https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev/) ist tatsächlich erreichbar: HTTPS 200 mit deaktiviertem Formular, GET auf `/api/waitlist/signup` liefert 405, `/_worker.js` liefert 404. Das beweist den bereitgestellten Worker und den Methodenschutz, **nicht** D1-/DOI-/Mailfunktion. Die öffentliche www-Seite wurde separat mit HTTPS 200 und deaktiviertem Formular gelesen; die aktuelle Datenschutzseite ist weiterhin als draft markiert.
 
 ## Ausführungsweg und Sicherheit
 
