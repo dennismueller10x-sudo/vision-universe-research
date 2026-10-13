@@ -84,7 +84,7 @@ jobs:
         run: |
           options=()
           if [ "$VERIFICATION" = true ]; then options+=(--verification); fi
-          if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe); fi
+          if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe --source-audit); fi
           if [ $((10#$(date -u +%H) % 8)) = 0 ] || [ "$GITHUB_EVENT_NAME" != schedule ]; then options+=(--financial); fi
           node scripts/company_intelligence/refresh-run.mjs --temporary "$RUNNER_TEMP/ci-refresh" --identity-root .accepted-identities "${options[@]}"
       - name: Deploy existing Pages pipeline and verify actual production generation

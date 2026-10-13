@@ -127,6 +127,15 @@ class Pipeline:
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
+            # A conditional response or byte-identical source is a successful
+            # source check, not new content. Avoid reparsing/re-ingesting the
+            # cached feed, documents or event calendar.
+            if response.get('notModified') or response.get('unchangedBody'):
+                source.update(lastChecked=self.now,lastSuccess=self.now,failureCount=0,lastError=None,
+                              nextCheck=advance(self.now,source.get('intervalHours',6)))
+                self.store.source(source)
+                self.run['unchanged'] = self.run.get('unchanged',0)+1
+                return
             if source.get('format') in ('HTML_MATERIALS','Q4_PRESENTATIONS'):
                 cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
                 if source['format']=='HTML_MATERIALS':
@@ -363,11 +372,15 @@ class Pipeline:
         except BudgetExhausted:
             raise
         except Exception as exc:
-            failure = source.get('failureCount', 0) + 1
+            failure_count = source.get('failureCount', 0) + 1
             # Failure to retrieve robots (DNS/proxy/503) is temporary. Only an
             # actual access denial/disallowance receives the slow blocked retry.
-            delay = 7 * 24 if any(code in str(exc) for code in ('403', '401', '404', 'ROBOTS_DISALLOWED')) else min(72, 2 ** min(failure, 6))
-            source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure, lastError=(type(exc).__name__ + ':' + str(exc))[:250], nextCheck=advance(self.now, delay))
+            error_text=str(exc)
+            if 'ROBOTS_UNAVAILABLE' in error_text or ('HTTP_403' in error_text and 'ROBOTS_DISALLOWED' not in error_text):
+                delay = min(72, 2 ** min(failure_count, 6))
+            else:
+                delay = 7 * 24 if any(code in error_text for code in ('HTTP_401', 'HTTP_404', 'HTTP_410', 'ROBOTS_DISALLOWED')) else min(72, 2 ** min(failure_count, 6))
+            source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure_count, lastError=(type(exc).__name__ + ':' + error_text)[:250], nextCheck=advance(self.now, delay))
             self.store.source(source)
             self.store.audit(self.now, sid, 'SOURCE_FAILURE', errorType=type(exc).__name__, reason=str(exc)[:250])
             self.run['sourceFailures'] += 1

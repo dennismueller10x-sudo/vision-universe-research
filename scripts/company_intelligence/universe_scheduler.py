@@ -17,6 +17,23 @@ from urllib.parse import urlsplit
 
 CANARIES = {'iss_cik_0001318605','iss_cik_0000320193','iss_cik_0001045810','iss_cik_0001321655','iss_cik_0001788882','iss_cik_0000789019','iss_cik_0001652044'}
 
+def effective_interval_hours(source, now):
+    cid=source.get('companyId');kind=source.get('type');unchanged=int(source.get('consecutiveUnchanged') or 0)
+    if kind=='IR_FEED':
+        if cid in CANARIES:return 4,'NEWS_4H'
+        if source.get('latestContentAt') and source['latestContentAt'][:10]<advance(now,-90*24)[:10]:return 120,'DORMANT_NEWS_5D'
+        if unchanged>=12:return 120,'LOW_CHANGE_NEWS_5D'
+        if unchanged>=6:return 72,'LOW_CHANGE_NEWS_72H'
+        if unchanged>=2:return 24,'LOW_CHANGE_NEWS_24H'
+        return 4,'NEWS_4H'
+    if kind=='IR_EVENTS':
+        return (24,'LOW_CHANGE_EVENTS_24H') if unchanged>=3 else (8,'EVENTS_8H')
+    if kind=='IR_MATERIALS':
+        if unchanged>=8:return 120,'LOW_CHANGE_MATERIALS_5D'
+        if unchanged>=3:return 72,'LOW_CHANGE_MATERIALS_72H'
+        return 24,'MATERIALS_24H'
+    return 24,'MATERIALS_24H'
+
 def sec_feed_entries(body, companies):
     if len(body)>2*1024*1024:raise ValueError('SEC_FEED_TOO_LARGE')
     root=ET.fromstring(body);ns={'a':'http://www.w3.org/2005/Atom'}
@@ -73,7 +90,7 @@ def source_queue(sources, companies, now, blocked_issuers=()):
     for s in sources:
         if s.get('companyId') in companies and first_party(s,s['companyId']):
             owners[canonical_url(s.get('url'))].add(s['companyId'])
-    queued=[];excluded=Counter();tiers=Counter();due=Counter();ages=[];never_proven=0
+    queued=[];excluded=Counter();tiers=Counter();due=Counter();ages=[];never_proven=0;source_tiers={}
     for s in sources:
         cid=s.get('companyId')
         if cid in blocked_issuers:
@@ -84,11 +101,8 @@ def source_queue(sources, companies, now, blocked_issuers=()):
             excluded['ENDPOINT_MULTI_OWNER_CONFLICT']+=1;continue
         # Dormant news feeds and unsupported index failures are repair lanes,
         # not a 4-hour full archive crawl. No domain/source discovery here.
-        hours=4 if s['type']=='IR_FEED' else 8 if s['type']=='IR_EVENTS' else 24
-        tier='NEWS_4H' if s['type']=='IR_FEED' else 'EVENTS_8H' if s['type']=='IR_EVENTS' else 'MATERIALS_24H'
-        if s['type']=='IR_FEED' and s.get('latestContentAt') and s['latestContentAt'][:10]<advance(now,-90*24)[:10]:
-            hours=24;tier='DORMANT_NEWS_24H'
-        tiers[tier]+=1
+        hours,tier=effective_interval_hours(s,now)
+        tiers[tier]+=1;source_tiers[s['sourceId']]=tier
         checked=timestamp(s.get('lastSuccess'))
         if checked:
             ages.append(max(0, (datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(checked.replace('Z','+00:00'))).total_seconds()/3600))
@@ -104,7 +118,18 @@ def source_queue(sources, companies, now, blocked_issuers=()):
     for s in queued:buckets[s['refreshTier']].append(s)
     for values in buckets.values():
         values.sort(key=lambda s:(s['companyId'] not in CANARIES,s['dueAt'],s.get('lastChecked') or '',s['sourceId']))
-    pattern=['NEWS_4H']*8+['EVENTS_8H']*2+['MATERIALS_24H','DORMANT_NEWS_24H']
+    due_over_7d=sum(1 for s in queued if timestamp(s.get('dueAt')) and
+        (datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(s['dueAt'].replace('Z','+00:00'))).total_seconds()/3600>168)
+    backlog_mode=due_over_7d>=100
+    steady_pattern=(['NEWS_4H']*8+['EVENTS_8H']*3+['LOW_CHANGE_NEWS_24H']*4+
+                    ['LOW_CHANGE_EVENTS_24H']*2+['LOW_CHANGE_NEWS_72H']*3+['LOW_CHANGE_MATERIALS_72H']*2+
+                    ['LOW_CHANGE_NEWS_5D']*3+['DORMANT_NEWS_5D']*2+['LOW_CHANGE_MATERIALS_5D']*2+
+                    ['MATERIALS_24H'])
+    drain_pattern=(['NEWS_4H']*8+['EVENTS_8H']*3+['LOW_CHANGE_NEWS_24H']*4+
+                   ['LOW_CHANGE_EVENTS_24H']*2+['LOW_CHANGE_NEWS_72H']*5+['LOW_CHANGE_MATERIALS_72H']*4+
+                   ['LOW_CHANGE_NEWS_5D']*6+['DORMANT_NEWS_5D']*4+['LOW_CHANGE_MATERIALS_5D']*4+
+                   ['MATERIALS_24H'])
+    pattern=drain_pattern if backlog_mode else steady_pattern
     queued=[];positions=defaultdict(int)
     while any(positions[k]<len(v) for k,v in buckets.items()):
         for k in pattern:
@@ -112,14 +137,28 @@ def source_queue(sources, companies, now, blocked_issuers=()):
             if i<len(buckets[k]):queued.append(buckets[k][i]);positions[k]+=1
     ages.sort()
     overdue=[max(0,(datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(s['dueAt'].replace('Z','+00:00'))).total_seconds()/3600) for s in queued if timestamp(s.get('dueAt'))]
+    def percentile(values,p):
+        return round(values[max(0,ceil(p*len(values))-1)],2) if values else None
+    overdue_buckets={str(h)+'h':sum(v>h for v in overdue) for h in (4,8,24,72,168)}
+    age_by_tier={}
+    for tier in tiers:
+        values=[]
+        for s in sources:
+            if source_tiers.get(s.get('sourceId'))==tier and s.get('lastSuccess'):
+                values.append(max(0,(datetime.fromisoformat(now.replace('Z','+00:00'))-datetime.fromisoformat(s['lastSuccess'].replace('Z','+00:00'))).total_seconds()/3600))
+        values.sort()
+        age_by_tier[tier]={'sources':len(values),'p50Hours':percentile(values,.50),'p90Hours':percentile(values,.90),
+                           'p95Hours':percentile(values,.95),'p99Hours':percentile(values,.99),'maxHours':round(max(values),2) if values else None}
     age_summary={'provenActiveSources':len(ages),'neverProvenActiveSources':never_proven,
                  'medianLastSuccessAgeHours':round(median(ages),2) if ages else None,
-                 'p95LastSuccessAgeHours':round(ages[ceil(.95*len(ages))-1],2) if ages else None,
+                 'p90LastSuccessAgeHours':percentile(ages,.90),'p95LastSuccessAgeHours':percentile(ages,.95),
+                 'p99LastSuccessAgeHours':percentile(ages,.99),
                  'maximumLastSuccessAgeHours':round(max(ages),2) if ages else None,
                  'lastSuccessOlderThanSevenDays':sum(a>168 for a in ages),
                  'maximumKnownOverdueHours':round(max(overdue),2) if overdue else None,
+                 'overdueBuckets':overdue_buckets,'ageByLane':age_by_tier,
                  'dueSourcesWithoutKnownDueTime':sum(not timestamp(s.get('dueAt')) for s in queued)}
-    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded),'fairQueuePattern':pattern,'sourceAge':age_summary}
+    return queued, {'registeredSources':len(sources),'activeApprovedSources':sum(tiers.values()),'tiers':dict(tiers),'dueSources':len(queued),'dueByTier':dict(due),'excluded':dict(excluded),'mode':'BACKLOG_DRAIN' if backlog_mode else 'STEADY_STATE','dueOverSevenDays':due_over_7d,'fairQueuePattern':pattern,'sourceAge':age_summary}
 
 def sec_queue(store, companies, now, limit=80):
     """Bounded metadata repair queue with permanent canaries; cursor is private.

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance_financial_filing
+from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance,advance_financial_filing
 from company_intelligence.transport import PublicHTTP,SourceError
 from company_intelligence.pipeline import Pipeline
 from company_intelligence.store import Store
@@ -60,13 +60,73 @@ class ContinuousRefreshTests(unittest.TestCase):
         self.assertEqual(source_result({'lastError':'HTTP_503'},now),'TEMPORARY_FAILURE')
         self.assertEqual(source_result({'lastSuccess':now},now,True),'NO_CHANGE')
         self.assertEqual(source_result({'lastError':'HTTP_429'},now),'RATE_LIMITED')
-        self.assertEqual(source_result({'lastError':'ROBOTS_DISALLOWED'},now),'POLICY_REJECTED')
+        self.assertEqual(source_result({'lastError':'ROBOTS_DISALLOWED'},now),'ROBOTS_BLOCKED')
+        self.assertEqual(source_result({'lastError':'HTTP_401'},now),'AUTH_REQUIRED')
+        self.assertEqual(source_result({'lastError':'HTTP_403'},now),'HTTP_403_UNCLASSIFIED')
+        self.assertEqual(source_result({'lastError':'ROBOTS_UNAVAILABLE:HTTP_503'},now),'ROBOTS_TEMPORARY_FAILURE')
+        self.assertEqual(source_result({'lastError':'HTTP_410'},now),'SOURCE_REMOVED')
         self.assertEqual(source_result({'lastError':'PARSE_INVALID_XML'},now),'PARSE_FAILURE')
+
+    def test_unchanged_conditional_source_skips_parser_and_records_success(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            c=company();s=source(c);s.update(lastSuccess='2026-10-01T00:00:00Z',failureCount=2)
+            store=Store(Path(tmp)/'state.sqlite')
+            class NotModifiedHTTP:
+                def get(self,url,**kw):return {'body':b'', 'finalUrl':url, 'notModified':True}
+            try:
+                store.source(s)
+                pipeline=Pipeline(Path(tmp),{c['companyId']:c},store,NotModifiedHTTP(),'2026-10-09T12:00:00Z')
+                before=store.db.execute('select count(*) from items').fetchone()[0]
+                pipeline.ingest_source(s)
+                after=store.db.execute('select count(*) from items').fetchone()[0]
+                updated={r['sourceId']:r for r in store.sources()}[s['sourceId']]
+                self.assertEqual(after,before)
+                self.assertEqual(pipeline.run['unchanged'],1)
+                self.assertEqual(updated['lastSuccess'],'2026-10-09T12:00:00Z')
+                self.assertEqual(updated['failureCount'],0)
+            finally:store.close()
+
+    def test_robots_unavailable_403_uses_exponential_cooldown_not_blocked_or_four_hour_retry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            c=company();s=source(c);store=Store(Path(tmp)/'state.sqlite')
+            class RobotsHTTP:
+                def get(self,url,**kw):raise SourceError('ROBOTS_UNAVAILABLE:HTTP_403')
+            try:
+                pipeline=Pipeline(Path(tmp),{c['companyId']:c},store,RobotsHTTP(),NOW)
+                pipeline.ingest_source(s)
+                saved={r['sourceId']:r for r in store.sources()}[s['sourceId']]
+                self.assertEqual(saved['nextCheck'],advance(NOW,2))
+                self.assertEqual(source_result(saved,NOW),'ROBOTS_TEMPORARY_FAILURE')
+            finally:store.close()
+    def test_unclassified_http_403_uses_bounded_backoff_until_cause_is_known(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            c=company();s=source(c);store=Store(Path(tmp)/'state.sqlite')
+            class Unclassified403:
+                def get(self,url,**kw):raise SourceError('HTTP_403')
+            try:
+                pipeline=Pipeline(Path(tmp),{c['companyId']:c},store,Unclassified403(),NOW)
+                pipeline.ingest_source(s)
+                saved={r['sourceId']:r for r in store.sources()}[s['sourceId']]
+                self.assertEqual(saved['failureCount'],1)
+                self.assertEqual(saved['nextCheck'],advance(NOW,2))
+                self.assertEqual(source_result(saved,NOW),'HTTP_403_UNCLASSIFIED')
+            finally:store.close()
     def test_html_error_page_must_not_be_successful_empty_rss(self):
         with tempfile.TemporaryDirectory() as tmp:
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/feed','type':'IR_FEED','format':'RSS'}
             with patch.object(PublicHTTP,'get',return_value={'body':b'<html><body>Unavailable</body></html>'}):
                 with self.assertRaisesRegex(SourceError,'PARSE_INVALID_FEED'):http.get(http.current_source['url'])
+
+    def test_byte_identical_cached_body_skips_repeat_validation_and_processing(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as tmp:
+            body=b'<rss><channel><item><title>unchanged</title></item></channel></rss>'
+            http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/feed','type':'IR_FEED','format':'RSS'}
+            http.expected_body_sha=hashlib.sha256(body).hexdigest()
+            with patch.object(PublicHTTP,'get',return_value={'body':body,'finalUrl':http.current_source['url']}):
+                response=http.get(http.current_source['url'])
+            self.assertTrue(response['unchangedBody'])
+            self.assertEqual(http.last_body_sha,http.expected_body_sha)
     def test_existing_json_feed_support_is_not_rejected_as_non_xml(self):
         with tempfile.TemporaryDirectory() as tmp:
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/feed','type':'IR_FEED'}

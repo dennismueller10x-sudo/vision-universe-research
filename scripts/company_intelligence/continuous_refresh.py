@@ -90,7 +90,12 @@ def source_result(source,now,unchanged=False):
     if source.get('lastSuccess')==now: return 'NO_CHANGE' if unchanged else 'SUCCESS'
     error=source.get('lastError') or ''
     if '429' in error or 'RATE_LIMIT' in error: return 'RATE_LIMITED'
-    if any(c in error for c in ['ROBOTS_DISALLOWED','HTTP_401','HTTP_403']): return 'POLICY_REJECTED'
+    if 'ROBOTS_DISALLOWED' in error: return 'ROBOTS_BLOCKED'
+    if 'ROBOTS_UNAVAILABLE' in error: return 'ROBOTS_TEMPORARY_FAILURE'
+    if 'HTTP_401' in error: return 'AUTH_REQUIRED'
+    # An HTTP 403 does not identify whether the cause is robots, WAF, user
+    # agent, network origin or temporary policy. Keep it explicitly unknown.
+    if 'HTTP_403' in error: return 'HTTP_403_UNCLASSIFIED'
     if 'HTTP_404' in error or 'HTTP_410' in error: return 'SOURCE_REMOVED'
     if any(code in error for code in ('PARSE_','ParseError','JSONDecodeError','MALFORMED','NOT_FEED','NOT_JSON_FEED','INVALID_Q4','Q4_SCHEMA')): return 'PARSE_FAILURE'
     return 'TEMPORARY_FAILURE'
@@ -98,11 +103,19 @@ def source_result(source,now,unchanged=False):
 class CheckedHTTP(PublicHTTP):
     current_source=None
     last_body_sha=None
+    expected_body_sha=None
+    last_response=None
+    unchanged_body=False
     def get(self,url,*a,**kw):
         response=super().get(url,*a,**kw)
         s=self.current_source
         if s and url==s['url']:
             body=response['body']; self.last_body_sha=hashlib.sha256(body).hexdigest()
+            self.last_response=response
+            self.unchanged_body=bool(response.get('notModified') or (self.expected_body_sha and self.last_body_sha==self.expected_body_sha))
+            if self.unchanged_body:
+                response['unchangedBody']=True
+                return response
             fmt=s.get('format')
             if fmt in ('RSS','RSS_EVENTS','RSS_MATERIALS') or (s['type']=='IR_FEED' and not fmt):
                 try: parse_feed(body,url)
@@ -154,20 +167,53 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             # Preserve error cooldowns; successful old 6/12-hour cadence becomes 4/8.
             due_at=s.get('nextCheck') if s.get('failureCount') else advance(s['lastSuccess'],hours) if s.get('lastSuccess') else ''
             if due_at and due_at>now: continue
-            http.current_source=s; http.last_body_sha=None; prior_new=pipeline.run['new']
+            http.current_source=s; http.last_body_sha=None; http.expected_body_sha=old.get('bodySha256')
+            http.last_response=None; http.unchanged_body=False
+            prior_new=pipeline.run['new']; request_start=http.requests; stats_before=dict(http.stats); source_started=time.monotonic()
             old_ir=deepcopy(store.state('ir:'+s['companyId'],{}))
             try: pipeline.ingest_source({**s,'intervalHours':hours})
             except BudgetExhausted: deferred+=1; break
             current_source=next(x for x in store.sources() if x['sourceId']==s['sourceId'])
+            elapsed_ms=round((time.monotonic()-source_started)*1000,2)
+            request_count=http.requests-request_start
+            stats_delta={key:http.stats.get(key,0)-stats_before.get(key,0) for key in http.stats}
             if s['type']=='IR_MATERIALS' and current_source.get('lastSuccess')==now and not current_source.get('lastItemCount'):
                 store.set_state('ir:'+s['companyId'],old_ir)
-            outcome=source_result(current_source,now,unchanged=http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
+            unchanged=http.unchanged_body or (http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
+            outcome=source_result(current_source,now,unchanged=unchanged)
             checked+=1; outcomes[outcome]+=1
             if outcome in ('SUCCESS','NO_CHANGE'):
                 lane_success[s['type']]+=1
-                store.set_state('refreshSource:'+s['sourceId'],{'status':outcome,'lastSuccess':now,'bodySha256':http.last_body_sha,'health':'healthy'})
+                unchanged_count=old.get('unchangedChecks',0)+1 if unchanged else 0
+                response=http.last_response or {}
+                pollability=current_source.get('pollabilityStatus')
+                first=old.get('lastSuccess') or ''
+                if pollability=='PROVISIONAL' and first and first<now:
+                    current_source.update(pollabilityStatus='POLLABLE_APPROVED',repeatProofAt=now)
+                elif not pollability:
+                    # Existing active records predate the explicit status field;
+                    # a fresh successful poll is their repeat proof.
+                    current_source.update(pollabilityStatus='POLLABLE_APPROVED',repeatProofAt=now)
+                current_source.update(consecutiveUnchanged=unchanged_count,sourceLastLatencyMs=elapsed_ms,
+                    lastChangedAt=now if not unchanged else old.get('lastChangedAt'),
+                    sourceLastRequestCount=request_count,sourceLastBytes=stats_delta.get('bytesDownloaded',0),
+                    sourceLastNotModified=stats_delta.get('notModified',0)>0,
+                    sourceHasETag=bool(response.get('etag')),sourceHasLastModified=bool(response.get('lastModified')))
+                store.source(current_source)
+                store.set_state('refreshSource:'+s['sourceId'],{'status':outcome,'lastSuccess':now,
+                    'lastChangedAt':now if not unchanged else old.get('lastChangedAt'),'unchangedChecks':unchanged_count,
+                    'bodySha256':http.last_body_sha,'latencyMs':elapsed_ms,'requestCount':request_count,
+                    'bytesDownloaded':stats_delta.get('bytesDownloaded',0),'notModified':stats_delta.get('notModified',0),
+                    'cacheHits':stats_delta.get('cacheHits',0),'etagAvailable':bool(response.get('etag')),
+                    'lastModifiedAvailable':bool(response.get('lastModified')),'health':'healthy'})
             else:
-                store.set_state('refreshSource:'+s['sourceId'],{**old,'status':outcome,'lastFailure':now,'health':'disabled_policy' if outcome=='POLICY_REJECTED' else 'temporarily_failed'})
+                current_source.update(sourceLastLatencyMs=elapsed_ms,sourceLastRequestCount=request_count,
+                    sourceLastBytes=stats_delta.get('bytesDownloaded',0),sourceLastNotModified=stats_delta.get('notModified',0)>0)
+                store.source(current_source)
+                store.set_state('refreshSource:'+s['sourceId'],{**old,'status':outcome,'lastFailure':now,
+                    'latencyMs':elapsed_ms,'requestCount':request_count,'bytesDownloaded':stats_delta.get('bytesDownloaded',0),
+                    'notModified':stats_delta.get('notModified',0),'cacheHits':stats_delta.get('cacheHits',0),
+                    'health':'blocked' if outcome in ('ROBOTS_BLOCKED','AUTH_REQUIRED','HTTP_403_UNCLASSIFIED','SOURCE_REMOVED') else 'temporarily_failed'})
             if pipeline.run['new']>prior_new: updated.add(s['companyId'])
         # SEC is an independent budget/deadline. Preserve successful first-party work
         # even during a regulator outage. No history fetch or universe stream.

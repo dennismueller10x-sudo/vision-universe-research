@@ -2,7 +2,7 @@ import {productionObservation} from './production-observation.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
-import {join,resolve} from 'node:path';
+import {join,resolve,dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
@@ -66,7 +66,7 @@ export function validateChanges(directory,previous){
  }
  return {status:'PASS',profiles,news,newsIssuers:issuers,expiredNews:expired};
 }
-export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,approvedUniverseRecovery=false,beforeBuild,validateContent}={}){
+export async function runRefresh(driver,{temporary,identityRoot,verification=false,network=true,financial=false,runId='local',universe=false,sourceAudit=false,approvedUniverseRecovery=false,beforeBuild,validateContent}={}){
  const start=Date.now(),root=resolve(temporary);mkdirSync(root,{recursive:true});
  if(!verification)universe=await universeActive(driver)||approvedUniverseRecovery;
  const namespace=verification?(universe?'verify-universe-'+runId:'verify-continuous-top46'):refreshConfig.stateNamespace;
@@ -92,11 +92,38 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(good){await downloadGood(driver,{namespace:consumerNamespace,output:old});if(universe)save(join(old,'manifest.json'),good.manifest);}
   else if(universe){const comparisonNamespace=await activeNamespace(driver);const baseline=await downloadGood(driver,{namespace:comparisonNamespace,output:old});if(!baseline)throw Error('PREVIOUS_VERIFIED_GOOD_REQUIRED');save(join(old,'manifest.json'),baseline.good.manifest);report.comparisonNamespace=comparisonNamespace;report.comparisonGeneration=baseline.good.generation;}
   else await download(driver,{namespace:approval.namespace,output:old});
+  if(universe&&sourceAudit){
+   stage='SOURCE_REGISTRY_BEFORE';
+   const auditBeforePath=join(root,'source-registry-before.json');
+   execFileSync('python3',['scripts/company_intelligence/source_registry_audit.py','--state',state,'--identity-root',identityRoot,
+    '--out',auditBeforePath,'--registry-only'],{encoding:'utf8',timeout:600000,maxBuffer:2*1024*1024});
+   report.sourceRegistryBefore=json(auditBeforePath);
+  }
   if(beforeBuild){stage='BOUNDED_CONTENT_PREPARATION';report.contentPreparation=await beforeBuild({state,temporary:root,identityRoot});}
   stage='POLL_BUILD';
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
   if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args);
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
+  if(universe&&sourceAudit){
+   stage='SOURCE_REGISTRY_AUDIT';
+   const auditPath=join(root,'source-registry-audit.json');
+   execFileSync('python3',['scripts/company_intelligence/source_registry_audit.py','--state',state,'--identity-root',identityRoot,
+    '--eligibility',join(dirname(consumer),'eligibility-decisions.json'),'--out',auditPath],{encoding:'utf8',timeout:600000,maxBuffer:2*1024*1024});
+   report.sourceRegistryAudit=json(auditPath);
+   const a=report.sourceRegistryAudit;
+   a.currentRefresh={sourcesChecked:engine.sourcesChecked,publicRequests:engine.publicRequests,secRequests:engine.secRequests,
+    httpStats:engine.httpStats,sourceOutcomes:engine.sourceOutcomes,runtimeSeconds:engine.runtimeSeconds,scheduler:engine.scheduler};
+   const b=report.sourceRegistryBefore||{};
+   console.log(JSON.stringify({sourceRegistryBefore:{asOf:b.asOf,sourceRegistryRows:b.sourceRegistryRows,activeSourceRows:b.activeSourceRows,
+    activeApprovedSources:b.activeApprovedSources,provenPollableSources:b.provenPollableSources,dueSources:b.dueSources,
+    statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,scheduler:b.scheduler},sourceRegistryAudit:{asOf:a.asOf,sourceRegistryRows:a.sourceRegistryRows,activeSourceRows:a.activeSourceRows,
+    privateIssuers:a.privateIssuers,publicEligibleIssuers:a.publicEligibleIssuers,publicEligibleIssuersWithoutProvenPollableSource:a.publicEligibleIssuersWithoutProvenPollableSource,
+    activeApprovedSources:a.activeApprovedSources,provenPollableSources:a.provenPollableSources,provisionalFirstFetchSources:a.provisionalFirstFetchSources,
+    dueSources:a.dueSources,statusCounts:a.statusCounts,ownershipEvidenceStates:a.ownershipEvidenceStates,pollabilityStates:a.pollabilityStates,
+    sourceAgeHours:a.sourceAgeHours,requestAndLatency:a.requestAndLatency,bySourceType:a.bySourceType,byProviderFamily:a.byProviderFamily,
+    sourceRowsByMarketCapBucket:a.sourceRowsByMarketCapBucket,sourceRowsByIssuerRegion:a.sourceRowsByIssuerRegion,
+    mandatoryCases:a.mandatoryCases,scheduler:a.scheduler}}));
+  }
   stage='CONSUMER_CONTRACT';report.consumerContracts=await consumerContracts(consumer);
   if(universe){report.cohortStocks=report.consumerContracts.listings;report.cohortIssuers=report.consumerContracts.issuers;}
   stage='GENERATION_REGRESSION';const checks=validateChanges(consumer,old);report.consumerChecks=checks;
@@ -150,7 +177,13 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  report.lastSuccessfulProductionPublication=observed?JSON.parse(observed).lastSuccessfulProductionPublication:null;
  report.refreshSLO=freshness(report.health?.lastSuccessfulRefresh);report.publicationSLO=freshness(report.lastSuccessfulProductionPublication);
  report.finishedAt=new Date().toISOString();report.durationSeconds=Math.round((Date.now()-start)/1000);save(join(root,'health.json'),report);
- if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\nSources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n`);
+ if(process.env.GITHUB_STEP_SUMMARY){
+  let sourceSummary='';
+  if(report.sourceRegistryBefore){const b=report.sourceRegistryBefore;sourceSummary+=`\nSource registry before (aggregate): ${JSON.stringify({asOf:b.asOf,rows:b.sourceRegistryRows,active:b.activeSourceRows,approved:b.activeApprovedSources,pollable:b.provenPollableSources,due:b.dueSources,statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,scheduler:b.scheduler})}\n`;}
+  if(report.sourceRegistryAudit){const a=report.sourceRegistryAudit;sourceSummary+=`\nSource registry after (aggregate): ${JSON.stringify({asOf:a.asOf,rows:a.sourceRegistryRows,active:a.activeSourceRows,approved:a.activeApprovedSources,pollable:a.provenPollableSources,due:a.dueSources,statusCounts:a.statusCounts,sourceAgeHours:a.sourceAgeHours,requestAndLatency:a.requestAndLatency,providers:a.byProviderFamily,marketCapBuckets:a.sourceRowsByMarketCapBucket,issuerRegions:a.sourceRowsByIssuerRegion,mandatory:a.mandatoryCases,currentRefresh:a.currentRefresh})}\n`;}
+  if(report.sourceOnboarding)sourceSummary+=`\nSource discovery (aggregate): ${JSON.stringify(report.sourceOnboarding)}\n`;
+  writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\nSources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n${sourceSummary}`);
+ }
  return report;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -198,7 +231,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    }
    console.log(JSON.stringify({status:'PASS',generation:d.generation}));
   }else{
-   const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
+   const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
    console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
  }catch{console.error('CONTINUOUS_REFRESH_FAILED');process.exitCode=1;}

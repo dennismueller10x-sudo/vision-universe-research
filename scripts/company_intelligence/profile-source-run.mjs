@@ -20,9 +20,11 @@ const beforeBuild=async({state,temporary,identityRoot})=>{
  let preparation={sourceRequests:0,universeDiscovery:false};
  if(sourceBatch){
  const out=join(temporary,'source-onboarding.json');
+ const sourceRunId=arg('--source-run-id')||`daily-${new Date().toISOString().slice(0,10).replaceAll('-','')}`;
+ const sourceLimit=Number(arg('--source-limit')||16);
  try{
   execFileSync('python3',['scripts/company_intelligence/source_onboarding.py','--state',state,'--out',out,
-   '--run-id','german-profile-source-20261012','--limit','16','--request-budget','200','--max-seconds','600'],
+   '--run-id',sourceRunId,'--limit',String(sourceLimit),'--request-budget','200','--max-seconds','600'],
    {stdio:['ignore','ignore','pipe'],timeout:720000,maxBuffer:1024*1024});
  }catch(error){
   const text=String(error.stderr||'');
@@ -56,7 +58,7 @@ const validateContent=async({state,consumer,temporary,identityRoot})=>{
  return {status:'PASS',mandatory,sample:sampling.availableGroupCounts};
 };
 const report=await runRefresh(driver,{temporary:resolve(arg('--temporary')),identityRoot:arg('--identity-root'),
- verification,universe:true,approvedUniverseRecovery:!!recovery,network:true,financial:false,runId:process.env.GITHUB_RUN_ID||'profile-source-verification',beforeBuild,validateContent});
+ verification,universe:true,sourceAudit:true,approvedUniverseRecovery:!!recovery,network:true,financial:false,runId:process.env.GITHUB_RUN_ID||'profile-source-verification',beforeBuild,validateContent});
 if(recovery&&report.status==='SUCCESS')console.log(JSON.stringify(await finishProfileRecovery(driver,recovery,report)));
 console.log(JSON.stringify(report));
 if(report.status!=='SUCCESS')process.exitCode=1;

@@ -205,7 +205,7 @@ class PublicHTTP:
                     self.stats['notModified'] += 1
                     cached['checked'] = self.clock()
                     if persist:atomic_json(self._paths(url)[0], cached)
-                    result = {**cached, 'body': body, 'cached': True}
+                    result = {**cached, 'body': body, 'cached': True, 'notModified': True}
                     if persist:self.memo[key] = result
                     return result
                 if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
