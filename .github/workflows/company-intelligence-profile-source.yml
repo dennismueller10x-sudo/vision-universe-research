@@ -1,5 +1,7 @@
 name: Company Intelligence Reviewed Profiles and Source Onboarding
 on:
+  schedule:
+    - cron: '47 3 * * *'
   workflow_call:
     inputs:
       publish:
@@ -30,11 +32,11 @@ permissions:
   contents: read
   actions: write
 concurrency:
-  group: company-intelligence-continuous-${{ inputs.publish && 'production' || 'profile-source-verification' }}
+  group: company-intelligence-continuous-${{ (inputs.publish || github.event_name == 'schedule') && 'production' || 'profile-source-verification' }}
   cancel-in-progress: false
 jobs:
   upgrade:
-    if: ${{ !inputs.live_review_only && (!inputs.publish || github.ref == 'refs/heads/main') }}
+    if: ${{ !inputs.live_review_only && ((!inputs.publish && github.event_name != 'schedule') || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -89,9 +91,10 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           options=()
-          if [ "$PUBLISH" = true ]; then options+=(--publish); fi
+          if [ "$PUBLISH" = true ] || [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--publish); fi
           if [ "$SOURCES" = true ]; then options+=(--sources); fi
           if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--sources --source-limit 100); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
       - name: Existing Pages deployment and real consumer verification
         id: live
@@ -140,6 +143,8 @@ jobs:
           path: |
             ${{ runner.temp }}/ci-profile-source/health.json
             ${{ runner.temp }}/ci-profile-source/source-onboarding.json
+            ${{ runner.temp }}/ci-profile-source/source-registry-before.json
+            ${{ runner.temp }}/ci-profile-source/source-registry-audit.json
             ${{ runner.temp }}/ci-profile-source/candidate-qa.json
             ${{ runner.temp }}/ci-profile-source/live-qa.json
             ${{ runner.temp }}/ci-profile-source/profile-source-funnel.json

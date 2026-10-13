@@ -50,6 +50,8 @@ class SourceOnboardingTests(unittest.TestCase):
     def test_registered_urls_are_not_polling_proof(self):
         self.assertEqual(proven([SOURCE], CID), [])
         self.assertEqual(len(proven([{**SOURCE, 'lastSuccess': '2026-10-05T10:00:00Z'}], CID)), 1)
+        self.assertEqual(proven([{**SOURCE, 'lastSuccess': '2026-10-05T10:00:00Z', 'pollabilityStatus':'PROVISIONAL'}], CID), [])
+        self.assertEqual(len(proven([{**SOURCE, 'lastSuccess':'2026-10-05T10:00:00Z','pollabilityStatus':'POLLABLE_APPROVED'}], CID)), 1)
         for alteration in [{'verified': False}, {'active': False}, {'unsupported': True}, {'url': 'https://globenewswire.com/feed'}, {'companyId': 'other'}]:
             self.assertEqual(proven([{**SOURCE, 'lastSuccess': '2026-10-05T10:00:00Z', **alteration}], CID), [])
     def test_reviewed_root_is_a_candidate_and_never_unconditional_ownership(self):
@@ -64,6 +66,15 @@ class SourceOnboardingTests(unittest.TestCase):
                     self.assertEqual(candidate_inventory({CID: {'cik': '0001652130'}}, store, [], {'candidates': {CID: {'url': 'https://globenewswire.com/news'}}}), [])
                 self.assertIsNone(store.state('officialSite:' + CID))
             finally: store.close()
+    def test_provisional_source_awaiting_repeat_is_not_rediscovered(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);config=root/'company-intelligence/config';config.mkdir(parents=True)
+            (config/'official-sites.json').write_text('{}')
+            store=Store(root/'state.sqlite');store.set_state('financials:'+CID,{'state':'AVAILABLE'})
+            try:
+                pending={**SOURCE,'lastSuccess':'2026-10-12T10:00:00Z','pollabilityStatus':'PROVISIONAL'}
+                self.assertEqual(candidate_inventory({CID:{'cik':'0001652130'}},store,[pending],{'candidates':{CID:{'url':'https://www.intelliatx.com/'}}}),[])
+            finally:store.close()
     def test_absent_or_smaller_private_state_is_never_initialized(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

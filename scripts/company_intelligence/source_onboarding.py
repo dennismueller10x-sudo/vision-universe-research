@@ -37,7 +37,8 @@ def safe_failure_detail(error):
 
 def proven(sources, cid):
     return [s for s in sources if s.get('companyId') == cid and s.get('active') and first_party(s, cid)
-            and not publisher(s.get('url')) and s.get('lastSuccess') and not s.get('unsupported')]
+            and not publisher(s.get('url')) and s.get('lastSuccess') and not s.get('unsupported')
+            and s.get('pollabilityStatus') != 'PROVISIONAL']
 
 def registered_repair_sources(sources, cid, official):
     # A corporate About-page outage must not suppress an ordinary poll of an
@@ -55,6 +56,10 @@ def candidate_inventory(companies, store, sources, reviewed):
     rows = []
     for cid, c in companies.items():
         approved = proven(sources, cid)
+        pending_repeat = any(s.get('companyId')==cid and s.get('active') and first_party(s,cid)
+                             and not publisher(s.get('url')) and s.get('pollabilityStatus')=='PROVISIONAL' for s in sources)
+        if pending_repeat:
+            continue
         if approved and cid not in insecure and cid not in MANDATORY:
             continue
         if not store.state('companyProfile:' + cid) and not store.state('financials:' + cid) and not store.db.execute('SELECT 1 FROM items WHERE company=? LIMIT 1', (cid,)).fetchone():
@@ -82,7 +87,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
         raise ValueError('FULL_PRIVATE_UNIVERSE_REQUIRED')
     if not latest.get('privateIntegrity') or any(database_proof(state / name) != proof for name, proof in latest['privateIntegrity'].items()):
         raise ValueError('CURRENT_AUTHORITATIVE_TABLE_PROOF_MISMATCH')
-    if not re.fullmatch(r'[a-z0-9-]{1,48}', run_id) or not 1 <= limit <= 25 or not 1 <= request_budget <= 200 or not 30 <= max_seconds <= 600:
+    if not re.fullmatch(r'[a-z0-9-]{1,48}', run_id) or not 1 <= limit <= 100 or not 1 <= request_budget <= 200 or not 30 <= max_seconds <= 600:
         raise ValueError('INVALID_ONBOARDING_BOUNDS')
     stamp = now or datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
     reviewed = json.loads((ROOT / 'company-intelligence/config/source-onboarding-review.json').read_text())
@@ -159,6 +164,12 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                     saved = store.db.execute('SELECT payload FROM sources WHERE id=?', (source['sourceId'],)).fetchone()
                     actual = json.loads(saved[0]) if saved else {}
                     if actual.get('lastSuccess') == stamp and actual.get('active'):
+                        if source['sourceId'] not in before:
+                            actual.update(pollabilityStatus='PROVISIONAL',firstSuccessfulFetchAt=stamp)
+                            store.source(actual)
+                            meta,_=http._cached(source['url'])
+                            store.set_state('refreshSource:'+source['sourceId'],{'status':'FIRST_FETCH','lastSuccess':stamp,
+                                'bodySha256':meta.get('sha256'),'unchangedChecks':0,'health':'awaiting_repeat_proof'})
                         accepted_sources.append(actual); succeeded += 1
                         if source['sourceId'] not in before:
                             new_ids.append(source['sourceId']); imported += 1
@@ -193,7 +204,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
             prior = store.state('continuousRefresh', {})
             store.set_state('continuousRefresh', {**prior, 'lastSuccessfulRefresh': stamp, 'lastSuccessfulNewsRefresh': stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')})
         result = {'schema': 1, 'runId': run_id, 'candidateIssuers': len(inventory), 'attemptedIssuers': len(selected), 'requests': http.requests,
-                  'sourcePollingSuccesses': succeeded, 'newProvenSources': imported, 'outcomes': dict(outcomes), 'sourcePolicy': reviewed['sourceUsagePolicy'],
+                  'sourcePollingSuccesses': succeeded, 'newRegisteredSources': imported, 'newProvenSources': 0, 'outcomes': dict(outcomes), 'sourcePolicy': reviewed['sourceUsagePolicy'],
                   'privateOperationalRowsIncluded': False, 'universeDiscovery': False}
         store.set_state(key + 'lastBatch', result)
         atomic_json(out, result)

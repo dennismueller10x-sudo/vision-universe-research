@@ -41,8 +41,17 @@
     return p;
   }
 
+  // Wie Quant (product-services.js#technicalDoc): Ausschnitt je Ticker zuerst, die
+  // 2-Zeichen-Scherbe nur als Rueckfall (das Release liefert sie seit #616 nicht mehr aus).
+  var TECH_DIR = '/quant/data/product/technical-signals-v1/';
+  function loadTechnicalDoc(shard, symbol) {
+    var shardPath = TECH_DIR + shard + '.json.gz';
+    if (!/^[A-Z0-9.-]{1,12}$/.test(String(symbol))) return loadGz(shardPath);
+    return loadGz(TECH_DIR + 'by-ticker/' + symbol + '.json.gz').catch(function () { return loadGz(shardPath); });
+  }
+
   function loadBars(shard, symbol) {
-    return loadGz('/quant/data/product/technical-signals-v1/' + shard + '.json.gz').then(function (j) {
+    return loadTechnicalDoc(shard, symbol).then(function (j) {
       var inst = j.instruments && j.instruments[symbol];
       if (!inst) throw new Error('NO_BARS');
       var b = inst.bars;

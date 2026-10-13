@@ -1058,7 +1058,7 @@ function create(options){
     return {state:'AVAILABLE',ticker,asOf:b.dataCutoff,methodology:b.methodologyVersion,evidenceLevel:'FULL_WORKSPACE',fullWorkspace:true,
      lag:await analysisLag(b.dataCutoff,await publishedPriceAsOf(member.m)),
      trend:status(b.trend?.direction,{BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}),
-     momentum:status(b.momentum?.state,{POSITIVE:'Positiv',NEGATIVE:'Negativ',NEUTRAL:'Neutral'}),
+     momentum:status(b.momentum?.state,{STRONG_POSITIVE:'Stark positiv',POSITIVE:'Positiv',NEUTRAL:'Neutral',NEGATIVE:'Negativ',STRONG_NEGATIVE:'Stark negativ'}),
      volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
      elliott:status(b.elliott?.status,{OK:'Validierte Zählung',LOW_CONFIDENCE:'Niedriger Method Fit',AMBIGUOUS:'Mehrere mögliche Zählungen',VALID:'Gültige Zählung',INSUFFICIENT_DATA:'Historie reicht nicht aus',NO_VALID_COUNT:'Keine gültige Zählung'}),
      elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,

@@ -100,7 +100,7 @@ def audit(state, identity_root, eligibility_path, out, now=None):
             owner_withheld = official.get('status') in ('CONFLICTING_OWNER','WRONG_COMPANY','AMBIGUOUS')
             if owner_withheld:
                 approved = []
-            proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported')]
+            proven = [s for s in approved if s.get('lastSuccess') and not s.get('unsupported') and s.get('pollabilityStatus')!='PROVISIONAL']
             news = [s for s in proven if s['type'] == 'IR_FEED']
             registry_counts['approvedActiveFirstPartyRowsForPrivateIssuers'] += len(approved)
             registry_counts['provenPollableFirstPartyRowsForPrivateIssuers'] += len(proven)

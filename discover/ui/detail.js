@@ -1011,15 +1011,13 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var result = vuFormat("formatPrice", v, currency, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
     return result || v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + " " + currency;
   }
-  function alsAngezeigt(v, currency) {
-    if (currency) return nativePrice(v, currency);
-    if (!isNum(v)) return "–";
-    var FX = (typeof VUFx !== "undefined") ? VUFx : null;
-    var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
-    if (FX && FX.Format && typeof FX.Format.formatPrice === "function") {
-      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
-    }
-    return C().money(v);
+  /* Formatiert in der Waehrung, in der der Wert TATSAECHLICH vorliegt.
+     Vorher nahm diese Stelle die gewaehlte Anzeigewaehrung an. Fehlte der
+     Wechselkurs des Tages, blieben die Werte in Dollar und standen mit
+     Euro-Zeichen da (PLTR 13.10.2026: "209,01 €" fuer 209,01 $). Die
+     Waehrung kommt deshalb von der Umrechnung, nicht von der Vorliebe. */
+  function alsAngezeigt(v, waehrung) {
+    return nativePrice(v, waehrung || "USD");
   }
 
   /* Derselbe Schnappschuss, in der Anzeigewaehrung.
@@ -1028,35 +1026,39 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      und eine Oberflaeche aendert ihn nicht (§3). Umgerechnet wird eine
      Kopie: die Punkte des Tages und der Vortagesschluss, mit dem sie
      verglichen werden. */
+  /* Liefert { snap, waehrung }: die Waehrung, in der die Punkte des
+     Ergebnisses stehen - "USD", wenn nicht umgerechnet werden konnte. */
   function inAnzeigewaehrungSnapshot(snap) {
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
-    if (!L || !snap || !Array.isArray(snap.points) || !snap.points.length) return snap;
+    var unveraendert = { snap: snap, waehrung: "USD" };
+    if (!L || !snap || !Array.isArray(snap.points) || !snap.points.length) return unveraendert;
     var tag = snap.sessionDate || null;
     var probe = L.money(snap.points[snap.points.length - 1][1], "USD", tag, tag ? "MARKET_PRICE" : "CURRENT_VALUE");
-    if (!probe || !probe.conversionAvailable || probe.display.currency === probe.native.currency) return snap;
+    if (!probe || !probe.conversionAvailable || probe.display.currency === probe.native.currency) return unveraendert;
     var kurs = probe.fx && isNum(probe.fx.rate) ? probe.fx.rate : null;
-    if (!isNum(kurs)) return snap;
+    if (!isNum(kurs)) return unveraendert;
     var kopie = {};
     Object.keys(snap).forEach(function (k) { kopie[k] = snap[k]; });
     kopie.points = snap.points.map(function (pt) {
       return Array.isArray(pt) ? [pt[0], pt[1] * kurs] : pt;
     });
     if (isNum(snap.previousClose)) kopie.previousClose = snap.previousClose * kurs;
-    return kopie;
+    return { snap: kopie, waehrung: probe.display.currency };
   }
 
   function inAnzeigewaehrung(punkte, currency) {
     // Europe retains its explicit native listing currency until an audited
     // FX contract covers it; never treat European prices as US dollars.
-    if (currency) return { punkte: punkte || [], gekuerzt: false };
+    if (currency) return { punkte: punkte || [], gekuerzt: false, waehrung: currency };
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
-    if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false };
+    if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false, waehrung: "USD" };
     var r = L.series(punkte, "USD");
-    if (!r || !r.available || r.displayCurrency === r.nativeCurrency) return { punkte: punkte, gekuerzt: false };
-    if (!r.points || r.points.length < 2) return { punkte: punkte, gekuerzt: false };
+    if (!r || !r.available || r.displayCurrency === r.nativeCurrency) return { punkte: punkte, gekuerzt: false, waehrung: "USD" };
+    if (!r.points || r.points.length < 2) return { punkte: punkte, gekuerzt: false, waehrung: "USD" };
     return {
       punkte: r.points.map(function (p) { return [p.date, p.display]; }),
-      gekuerzt: r.points.length < punkte.length
+      gekuerzt: r.points.length < punkte.length,
+      waehrung: r.displayCurrency
     };
   }
 
@@ -1083,6 +1085,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        (§41). */
     var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
     var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
+    var waehrung = anzeige.punkte.length >= 2 ? anzeige.waehrung : (nativeCurrency || "USD");
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
                                             complete: sel.complete && !anzeige.gekuerzt };
@@ -1094,7 +1097,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: alsAngezeigt(letzter, nativeCurrency) }),
+        el("b", { class: "num", text: alsAngezeigt(letzter, waehrung) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
@@ -1123,7 +1126,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return alsAngezeigt(pt.close, nativeCurrency); },
+      preis: function (pt) { return alsAngezeigt(pt.close, waehrung); },
       delta: function (pt) { return erster > 0 && vergleichbar ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
@@ -1227,7 +1230,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        erste Fassung rechnete nur die Achse um, und der Vergleich gegen
        den Vortagesschluss stand dann mit einem Euro-Zaehler und einem
        Dollar-Nenner da - eine Zahl, die nichts bedeutet. */
-    var snap = inAnzeigewaehrungSnapshot(snapNativ);
+    var umgerechnet = inAnzeigewaehrungSnapshot(snapNativ);
+    var snap = umgerechnet.snap, waehrung = umgerechnet.waehrung;
     /* Kopf wie beim Zeitraum-Chart: letzter Kurs, Veraenderung gegen den
        Vortagesschluss, das Wort dazu - eine Sprache fuer alle Zeitraeume. */
     var punkte = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
@@ -1256,12 +1260,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
 
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs) : "" }),
+        el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: eingefroren ? "am " + C().dateShort(snap.sessionDate) : "heute" })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
-        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + alsAngezeigt(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
+        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + alsAngezeigt(snap.previousClose, waehrung) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
         C().liveLabel(etikett, snap)
       ])
     ]);
@@ -1294,7 +1298,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     beruehrung(svgNode, kopf, {
       /* Die Punkte dieses Charts sind bereits umgerechnet (siehe
          inAnzeigewaehrungSnapshot) - hier wird nur noch formatiert. */
-      preis: function (pt) { return alsAngezeigt(pt.close); },
+      preis: function (pt) { return alsAngezeigt(pt.close, waehrung); },
       delta: function (pt) { return isNum(basis) && basis > 0 ? (pt.close / basis - 1) * 100 : null; },
       wann: function (pt) { return pt.time + " New York"; },
       wort: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute"

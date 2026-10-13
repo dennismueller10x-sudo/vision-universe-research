@@ -529,6 +529,7 @@ class HttpTests(unittest.TestCase):
         first = self.client(opener).get('https://example.com/feed', robots=False)
         second = self.client(opener).get('https://example.com/feed', robots=False)
         self.assertEqual(first['body'], second['body'])
+        self.assertTrue(second['notModified'])
         self.assertIn('If-none-match', self.calls[1])
         self.assertEqual('"v1"', self.calls[1]['If-none-match'])
 
