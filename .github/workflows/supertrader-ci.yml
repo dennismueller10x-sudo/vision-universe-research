@@ -30,8 +30,8 @@ jobs:
       - name: Gate A — nur Supertrader-Pfade veraendert (Discovery und Quant 2.0 unberuehrt)
         if: github.event_name == 'pull_request'
         run: node scripts/supertrader/guard-protected-paths.mjs --base="origin/${{ github.base_ref }}"
-      - name: Privates Scratch-Verzeichnis fuer unveraenderte synthetische Freeze-Tests
-        run: sudo install -d -m 0700 -o "$(id -u)" -g "$(id -g)" /workspace/private/certification
+      - name: Private Scratch-Verzeichnisse fuer synthetische Freeze- und Calibration-Tests
+        run: sudo install -d -m 0700 -o "$(id -u)" -g "$(id -g)" /workspace/private /workspace/private/certification /workspace/private/calibration
       - name: Gate B/D/E — Engine, Registry, Source Ledger, Artefakte
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       - name: Build auf den aktuellen kanonischen Artefakten (frisches Protokoll, temporaer)
