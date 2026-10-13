@@ -154,6 +154,12 @@ function pruefeNacht() {
 }
 
 if (decision.action === "SKIP") {
+  /* Nachtlauf: ein Fehlversuch, der noch in der Bremszeit liegt, ist kein Erfolg -
+     sonst schloesse ein gruener Lauf den Alarm, obwohl nichts repariert wurde. */
+  if (NIGHT && decision.reason === "RETRY_LATER") {
+    console.log("::error title=Im Blick RETRY_LATER::Der letzte Versuch fuer diesen Slot ist nicht schluessig gelaufen und liegt in der Bremszeit; nichts veroeffentlicht.");
+    process.exitCode = 1;
+  }
   /* Idempotent: nichts schreiben, nichts committen. */
   zusammenfassung(["### Discover Im Blick (Intraday) - nichts zu tun", "",
     "| Feld | Wert |", "|---|---|",
@@ -162,7 +168,7 @@ if (decision.action === "SKIP") {
     "| Faelliger Slot | " + (plan.due ? plan.due.id + " (" + plan.due.dueAt + ")" : "-") + " |",
     "| Veroeffentlicht | " + (published ? (published.status + " · Slot " + (published.slot ? published.slot.id : "-") + " · Stand " + (published.asOf || "-")) : "-") + " |",
     "| Marktstatus | " + plan.marketState + " |"]);
-  process.exit(0);
+  process.exit(process.exitCode || 0);
 }
 
 function berechne(nachtFehler) {
@@ -272,7 +278,8 @@ let regel = RefreshPlan.mayReplace(published, ergebnis);
 if (NIGHT && !schluessig) regel = { ok: false, reason: "NIGHT_NOT_CONCLUSIVE" };
 let veroeffentlicht = published;
 if (regel.ok) { schreibeAtomar(OUT, ergebnis); veroeffentlicht = ergebnis; }
-const fehler = schluessig ? null : { code: ergebnis.status, message: ergebnis.reason };
+const fehler = schluessig ? null : { code: ergebnis.status, message: ergebnis.reason +
+  (NIGHT && lage.marketState === "OPEN" ? " [Nachtlauf in laufender Sitzung: die Kursdaten pruefen, nicht den Nachtlauf]" : "") };
 
 /* Monitor: Plan, dieser Lauf, letzter Erfolg, was gerade veroeffentlicht ist. */
 const vorher = lies(MON) || {};

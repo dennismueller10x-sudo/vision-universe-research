@@ -20,6 +20,10 @@
      NL7  Darstellung: die Startseite zeigt nie eine Datei zu einer anderen
           Basis; EOD_CURRENT ist nie "live"
      NL8  Isolation: keine Quant-/Screener-/Supertrader-/Emerging-Pfade
+     NL9  Feiertag / Tag ohne neue Sitzung: kein Fehlalarm, nichts doppelt
+     NL10 Winterzeit: Schluss 21:00Z, Nachtlauf 22:35Z
+     NL11 Bremszeit nach einem Fehlversuch bleibt im Nachtlauf ein Fehler
+     NL12 Alarm-Zuordnung: Jobfehler, Zeitablauf und Skriptfehler sind rot, alles andere nicht
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -297,30 +301,36 @@ test("NL5 · Workflow: Stufe nach allen Pruefungen, kein roter Nachtlauf, gleich
   for (const n of ["refresh", "materialize", "freshness-contract"]) assert.match(job, new RegExp("needs\\." + n + "\\.result == 'success'"), n);
   assert.match(job, /github\.ref == 'refs\/heads\/main'/);
   assert.match(job, /github\.event_name != 'push'/);
-  /* gleiche Gruppe wie discover-im-blick-live.yml, nie abbrechen */
-  const gruppe = (t) => t.match(/group: (discover-im-blick-live-\$\{\{ github\.ref_name \}\})/)[1];
-  assert.equal(gruppe(job), gruppe(live));
-  assert.match(job, /cancel-in-progress: false/);
+  /* KEINE Job-Concurrency: ein wartender Job wuerde verdraengt (cancelled) und der Nachtlauf damit nicht "success" */
+  assert.doesNotMatch(job, /\n    concurrency:/);
+  assert.match(job, /BEWUSST KEINE Job-Concurrency/);
   /* ADR-005 */
   assert.match(job, /ref: \$\{\{ github\.ref \}\}/);
   assert.match(job, /scripts\/ci\/push-with-retry\.sh/);
   assert.match(job, /set -euo pipefail/);
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
-  /* Rechnen und Push duerfen den Nachtlauf nicht rot machen (pages-release verlangt success) */
-  for (const id of ["rechnen", "push"]) assert.match(teil(job, "id: " + id, "\n      - "), /continue-on-error: true/, id);
+  /* Jeder Schritt (auch Checkout und Node) darf den Nachtlauf nicht rot machen (pages-release verlangt success)
+     und hat ein eigenes Zeitlimit, damit ein Zeitablauf ein Schrittfehler ist und kein roter Job */
+  const schritte = job.split("\n      - ").slice(1);
+  assert.equal(schritte.length, 5);
+  for (const sch of schritte) {
+    assert.match(sch, /continue-on-error: true/, sch.split("\n")[0]);
+    assert.match(sch, /timeout-minutes: \d+/, sch.split("\n")[0]);
+  }
+  assert.match(job, /timeout-minutes: 25/);
   assert.match(job, /--nachtlauf --source nachtlauf/);
   /* nur der Alarm haengt an dieser Stufe */
   const andere = wf.replace(job, "");
   const mitNeeds = andere.split("\n").filter((z) => /needs:/.test(z) && /imblick/.test(z));
   assert.equal(mitNeeds.length, 1, "nur der Alarm-Job wartet auf imblick");
   assert.match(teil(wf, "\n  alarm:\n"), /needs: \[refresh, materialize, freshness-contract, imblick\]/);
-  assert.match(wf, /RESULT_IMBLICK: \$\{\{ needs\.imblick\.outputs\.ergebnis == 'failure' && 'failure'/);
+  assert.match(wf, /RESULT_IMBLICK: \$\{\{ needs\.imblick\.result == 'failure' && 'failure' \|\| needs\.imblick\.outputs\.ergebnis == 'failure'/);
   assert.match(wf, /ALARM_DETAIL_FILE/);
   /* keine Anbieteranfrage in der Stufe und im Baustein */
   assert.doesNotMatch(job, /TIINGO|MARKETSTACK|curl |fetch\(/i);
   assert.doesNotMatch(readFileSync(SCRIPT, "utf8"), /process\.env\.(TIINGO|MARKETSTACK)|fetch\(|https?:\/\//);
   /* Berechtigung: nur contents: write fuer die Stufe */
-  assert.match(teil(job, "permissions:", "concurrency:"), /contents: write\s*$/);
+  assert.match(teil(job, "permissions:", "# BEWUSST"), /contents: write\s*$/);
 });
 
 /* ----------------------------------------------------------------- NL6 */
@@ -379,5 +389,104 @@ test("NL8 · Isolation: kein Fachmodell, keine Produkte, keine geschuetzten Pfad
   const i = wf.indexOf("\n  imblick:\n");
   const job = wf.slice(i, wf.indexOf("\n  # ===", i + 10));
   assert.doesNotMatch(job, /quant\/data|supertrader|screener|emerging/i, "die Stufe schreibt nur discover/live");
-  assert.match(job, /git add discover\/live\n/);
+  assert.match(job, /git add -- discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
+  assert.doesNotMatch(job, /git add discover\/live\s/, "keine Sammelaufnahme (verwaiste tmp-Dateien)");
+});
+
+/* ----------------------------------------------------------------- NL9 */
+test("NL9 · Feiertag (Thanksgiving 26.11.2026): der Nachtlauf ohne neue Sitzung ist kein Fehler und ein zweiter aendert nichts", () => {
+  const dir = neu();
+  try {
+    setzeBasis(dir, "2026-11-25");
+    const a = lauf(dir, "2026-11-26T04:30:00Z", { nacht: true });
+    assert.equal(a.code, 0, a.text);
+    assert.equal(a.live.status, "EOD_CURRENT");
+    assert.equal(a.live.eodAsOf, "2026-11-25");
+    const stand = [roh(OUTFILE(dir)), roh(MONFILE(dir))];
+    const b = lauf(dir, "2026-11-26T22:30:00Z", { nacht: true });        /* Feiertag: der Nachtlauf laeuft, die Basis bleibt */
+    assert.equal(b.code, 0, b.text);
+    assert.match(b.text, /UP_TO_DATE/);
+    assert.deepEqual([roh(OUTFILE(dir)), roh(MONFILE(dir))], stand);
+  } finally { weg(dir); }
+  /* Wochenende: Basis vom Freitag, Nachtlauf am Samstag und Sonntag - kein Fehler, nichts doppelt */
+  const we = neu();
+  try {
+    setzeBasis(we, FR);
+    const sa = lauf(we, "2026-10-10T22:30:00Z", { nacht: true });
+    assert.equal(sa.code, 0, sa.text);
+    assert.equal(sa.live.eodAsOf, FR);
+    const stand = roh(OUTFILE(we));
+    const so = lauf(we, "2026-10-11T22:30:00Z", { nacht: true });
+    assert.equal(so.code, 0, so.text);
+    assert.equal(roh(OUTFILE(we)), stand);
+  } finally { weg(we); }
+});
+
+/* ---------------------------------------------------------------- NL10 */
+test("NL10 · Winterzeit (1.12.2026, Schluss 21:00Z): Schlussslot 21:20Z, Nachtlauf 22:35Z ersetzt ihn durch die bestaetigte Auswahl", () => {
+  const dir = neu();
+  try {
+    setzeBasis(dir, "2026-11-30");
+    setzeSnapshots(dir, "2026-12-01", "2026-12-01T20:55:00.000Z");
+    const c = lauf(dir, "2026-12-01T21:36:00Z");
+    assert.equal(c.live.status, "SESSION_CLOSED");
+    assert.equal(c.live.slot.id, "2026-12-01@C");
+    assert.equal(c.live.slot.dueAt, "2026-12-01T21:20:00.000Z");
+    setzeBasis(dir, "2026-12-01");
+    const n = lauf(dir, "2026-12-01T22:35:00Z", { nacht: true });
+    assert.equal(n.code, 0, n.text);
+    assert.equal(n.live.status, "EOD_CURRENT");
+    assert.equal(n.live.eodAsOf, "2026-12-01");
+    assert.equal(n.live.sessionDate, "2026-12-01");
+  } finally { weg(dir); }
+});
+
+/* ---------------------------------------------------------------- NL11 */
+test("NL11 · nach einem Fehlversuch bleibt auch ein Wiederholungslauf in der Bremszeit ein Fehler (der Alarm wird nicht gruen), danach heilt er", () => {
+  const dir = abendDesMontags();
+  try {
+    setzeBasis(dir, MO, { meta: FR });
+    assert.equal(lauf(dir, DI + "T04:30:00Z", { nacht: true }).code, 1);
+    const wieder = lauf(dir, DI + "T04:40:00Z", { nacht: true });
+    assert.equal(wieder.code, 1, wieder.text);
+    assert.match(wieder.text, /RETRY_LATER/);
+    setzeBasis(dir, MO);                                           /* behoben */
+    const heil = lauf(dir, DI + "T04:55:00Z", { nacht: true });
+    assert.equal(heil.code, 0, heil.text);
+    assert.equal(heil.live.status, "EOD_CURRENT");
+    assert.equal(heil.mon.error, null);
+  } finally { weg(dir); }
+  /* Nachtlauf in laufender Sitzung mit alten Kursen: der Text nennt die Kursdaten, nicht den Nachtlauf */
+  const d2 = abendDesMontags();
+  try {
+    setzeBasis(d2, MO);
+    setzeSnapshots(d2, DI, DI + "T13:35:00.000Z");
+    const r = lauf(d2, DI + "T16:20:00Z", { nacht: true });
+    assert.equal(r.code, 1, r.text);
+    assert.match(r.mon.error.message, /Kursdaten pruefen, nicht den Nachtlauf/);
+  } finally { weg(d2); }
+});
+
+/* ---------------------------------------------------------------- NL12 */
+test("NL12 · Alarm-Zuordnung: RESULT_IMBLICK aus dem echten Workflow-Ausdruck; rot bei Jobfehler, Zeitablauf und Skriptfehler, sonst nicht", async () => {
+  const wf = readFileSync(join(ROOT, ".github", "workflows", "market-data-refresh.yml"), "utf8");
+  const ausdruck = wf.match(/RESULT_IMBLICK: \$\{\{ (.+) \}\}/)[1];
+  const bewerte = (result, ergebnis) => new Function("needs", "return (" + ausdruck + ");")({ imblick: { result, outputs: { ergebnis } } });
+  const { auswertung } = { auswertung: null };
+  const { auswerten } = await import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs"));
+  const zustand = (r) => auswerten({ RESULT_REFRESH: "success", RESULT_MATERIALIZE: "success", RESULT_FRESHNESS: "success", RESULT_IMBLICK: r }).zustand;
+  const faelle = [
+    ["success", "success", "success", "gruen"],
+    ["success", "failure", "failure", "rot"],      /* Skript/Push gescheitert (continue-on-error im Schritt) */
+    ["failure", "success", "failure", "rot"],      /* Job selbst: Zeitablauf, Runner, Fehler in nicht abgesicherten Teilen */
+    ["failure", "", "failure", "rot"],
+    ["skipped", "", "skipped", "gruen"],           /* Vorstufe rot: die anderen Jobs zeigen es */
+    ["cancelled", "", "skipped", "gruen"]
+  ];
+  for (const [result, ergebnis, erwartet, rot] of faelle) {
+    assert.equal(bewerte(result, ergebnis), erwartet, result + "/" + ergebnis);
+    assert.equal(zustand(erwartet), rot, result + "/" + ergebnis);
+  }
+  /* Ein roter Job oeffnet nicht das Gleiche wie ein gruener Lauf: der Detailtext reist mit */
+  assert.match(wf, /ALARM_DETAIL_FILE="\$RUNNER_TEMP\/imblick-detail\.txt"/);
 });
