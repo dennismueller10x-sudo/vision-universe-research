@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-12T20:02:13.551Z",
+  "generatedAt": "2026-10-13T03:47:42.422Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -23,8 +23,8 @@
     "marketDataFetched": 6686,
     "historicalAvailable": 5740,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 1374,
-    "liveCapable": 1374,
+    "intradayAvailable": 5063,
+    "liveCapable": 1376,
     "factorEligible": 6587,
     "fundamentals": 5215,
     "fundamentals10y": 2210,
@@ -36,7 +36,8 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 5253,
+    "NOT_IN_LIVE_SCOPE": 3687,
+    "NO_IEX_BARS": 1622,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
     "INSUFFICIENT_HISTORY": 928,
     "NO_STOCK_PAGE": 555,
@@ -45,7 +46,6 @@
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 125,
     "NO_FACTOR_ROW:FAIL": 94,
     "NO_DISCOVER_CARD": 86,
-    "NO_IEX_BARS": 59,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
     "NO_COMPACT_SERIES": 16,
@@ -54,7 +54,8 @@
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
-    "QUALITY_REJECTED:too_few_bars": 2
+    "QUALITY_REJECTED:too_few_bars": 2,
+    "NO_INTRADAY_SNAPSHOT": 1
   },
   "spotCheck": [
     {
