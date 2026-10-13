@@ -232,6 +232,12 @@ jobs:
         env:
           ESBUILD_PATH: /tmp/vu2-release/node_modules/esbuild
         run: node scripts/vu2/minify-release.mjs "$RUNNER_TEMP/site"
+      # Code-Kennung je Produkt (Quant, Discover): Meta-Tag in der Seite und /release-id.json. Ein Tab, der vor
+      # diesem Release geoeffnet wurde, vergleicht beide, bevor er Code nachlaedt oder nach einem 404 "nicht
+      # verfuegbar" zeigt, und laedt dann kontrolliert neu (quant/ui/release-guard.js). Nach dem Verkleinern (der Hash
+      # gilt den ausgelieferten Bytes) und vor der Passwortsperre (sie kopiert die Seiten samt Meta-Tag).
+      - name: Stamp code identity per product
+        run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/site"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
       # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
       # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und
@@ -250,6 +256,12 @@ jobs:
           # Repositories: unbedingt installieren, mit der gepinnten CLI.
           node scripts/company_intelligence/install-browser-deps.mjs /tmp/vu2-smoke/node_modules/.bin/playwright
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
+      # Ein Tab, der vor einem Release geoeffnet wurde, bleibt nach dem Wechsel benutzbar (Daten weg, Nachlade-Skript
+      # getauscht, Eingabe laeuft, kein sessionStorage, veralteter Cache). Echter Code, echte Sperre, kleine Releases.
+      - name: Deployment switch with an open tab (browser)
+        env:
+          NODE_PATH: /tmp/vu2-smoke/node_modules
+        run: node scripts/vu2/deploy-switch-qa.mjs --engine chromium
 
       - name: Enforce delivery contract
         id: delivery_contract
@@ -306,6 +318,10 @@ jobs:
           # /quant/ ist das kanonische Produkt (gebuendelt), /vu2/ und /Quant/
           # sind genau EIN Sprung dorthin - keine Umleitungskette.
           grep -F '/quant/release-bundle.js?v=' "$SITE_ROOT/quant/index.html"
+          # Code-Kennung je Produkt: Meta-Tag in der Seite und /release-id.json (quant/ui/release-guard.js vergleicht beide)
+          grep -F 'name="vu-release" data-product="quant"' "$SITE_ROOT/quant/index.html"
+          grep -F 'name="vu-release" data-product="discover"' "$SITE_ROOT/discover/index.html"
+          test -s "$SITE_ROOT/release-id.json"
           ! grep -F 'location.replace' "$SITE_ROOT/quant/index.html"
           grep -F 'location.replace("/quant/"+location.search+location.hash)' "$SITE_ROOT/vu2/index.html"
           cmp "$SITE_ROOT/vu2/index.html" "$SITE_ROOT/Quant/index.html"
