@@ -36,7 +36,7 @@ def api(origin, path, key, method="GET", body=None):
 def run():
     operation=os.environ.get("WAITLIST_OPERATION","audit")
     if operation not in ("audit","setup"):raise ValueError("Invalid operation")
-    report = {"operation": operation, "emails_sent": 0, "contacts_changed": 0}
+    report = {"operation": operation, "emails_sent": 0, "contacts_changed": 0, "live_e2e_performed":False}
     key = os.environ.get("BREVO_API_KEY", "")
     def brevo(path):
         status, value = api("https://api.brevo.com/v3", path, key)
@@ -131,6 +131,8 @@ def run():
         check["existing_project_matches"] = project.get("name") == "vision-universe" and source.get("repo_name") == "vision-universe-research" and source.get("owner") == "dennismueller10x-sudo" and project.get("build_config", {}).get("root_dir") == "landing"
         if not check["existing_project_matches"]:break
         check["runtime_bindings"] = {stage: {n: variables.get(n, {}).get("type") for n in ("BREVO_API_KEY", "WAITLIST_TOKEN_KEY", "WAITLIST_DB", "WAITLIST_PUBLIC_ENABLED", "WAITLIST_PRIVACY_APPROVED", "WAITLIST_E2E_VERIFIED")} for stage, config in project.get("deployment_configs", {}).items() for variables in [config.get("env_vars", {})]}
+        check["release_gates"]={stage:{n:config.get("env_vars",{}).get(n,{}).get("value")=="true" for n in ("WAITLIST_PUBLIC_ENABLED","WAITLIST_PRIVACY_APPROVED","WAITLIST_E2E_VERIFIED")} for stage,config in project.get("deployment_configs",{}).items()}
+        check["d1_binding_present"]={stage:bool(config.get("d1_databases",{}).get("WAITLIST_DB")) for stage,config in project.get("deployment_configs",{}).items()}
         status, data = api("https://api.cloudflare.com/client/v4", "/accounts/" + account_id + "/d1/database?per_page=100", token)
         check["d1_read_http"] = status
         check["d1_error_codes"]=data.get("safe_codes",[])
