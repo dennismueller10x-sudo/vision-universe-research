@@ -13,7 +13,8 @@
       "afterVoiceSamples": 14.72,
       "afterOffSamples": 14.67,
       "afterPlateTest": 14.42,
-      "afterTheRoomProduction": 13.92
+      "afterTheRoomProduction": 13.92,
+      "afterTheFuture": 12.67
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -328,5 +329,69 @@
       "claimTtsChargedUsd": 0.01
     },
     "final": "brand-media/video/trailer/the_room/final/vision_universe_the_room_20s_1080x1920.mp4"
+  },
+  "theFuture": {
+    "status": "REVIEW",
+    "producedAt": "2026-10-13",
+    "budgetUsd": 4.0,
+    "chargedUsd": 1.25,
+    "clips": [
+      {
+        "id": "s12",
+        "videoId": "214ad59fc9bf4af5996459c21f3b4387",
+        "mode": "text_to_video",
+        "sec": 10,
+        "seed": 6112,
+        "usd": 0.15,
+        "verdict": "NOT USED (Personen zu klein)"
+      },
+      {
+        "id": "s123_a",
+        "mode": "text_to_video",
+        "sec": 15,
+        "seed": 6121,
+        "usd": 0.24,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "s123_b",
+        "mode": "text_to_video",
+        "sec": 15,
+        "seed": 6122,
+        "usd": 0.23,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "s123_c",
+        "mode": "text_to_video",
+        "sec": 15,
+        "seed": 6123,
+        "usd": 0.23,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "s123_d",
+        "mode": "text_to_video",
+        "sec": 15,
+        "seed": 6124,
+        "usd": 0.24,
+        "verdict": "USED (0-3.9, 8.7-13.8 s)"
+      },
+      {
+        "id": "s3c",
+        "mode": "image_to_video (Frame 13,8 s aus s123_d)",
+        "sec": 6,
+        "seed": 6131,
+        "usd": 0.1,
+        "verdict": "USED"
+      }
+    ],
+    "voice": {
+      "name": "Wolf Spencer",
+      "voiceId": "ad9c4386ea934832b2de3ae2934005e9",
+      "lines": 4,
+      "usd": 0.04
+    },
+    "final": "brand-media/video/trailer/the_future_clean/final/vision_universe_the_future_20s_1080x1920.mp4"
   }
 }
