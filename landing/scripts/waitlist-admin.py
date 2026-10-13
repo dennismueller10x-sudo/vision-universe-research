@@ -4,6 +4,8 @@ import os
 import re
 import urllib.error
 import urllib.request
+import secrets
+from pathlib import Path
 
 TEMPLATE = "VU | App-Warteliste | DOI | v1"
 ATTRIBUTES = ("VU_APP_REQUEST_ID", "VU_APP_PURPOSE", "VU_APP_CONSENT_VERSION")
@@ -25,11 +27,15 @@ def api(origin, path, key, method="GET", body=None):
             value = json.loads(raw) if raw else {}
             return response.status, value
     except urllib.error.HTTPError as error:
-        return error.code, {}  # No headers, credentials, bodies or sensitive URLs.
+        try: value=json.loads(error.read(65536))
+        except Exception: value={}
+        return error.code, {"safe_codes":[x.get("code") for x in value.get("errors",[]) if type(x.get("code")) is int]}
 
 
 def run():
-    report = {"operation": "audit", "emails_sent": 0, "contacts_changed": 0}
+    operation=os.environ.get("WAITLIST_OPERATION","audit")
+    if operation not in ("audit","setup"):raise ValueError("Invalid operation")
+    report = {"operation": operation, "emails_sent": 0, "contacts_changed": 0}
     key = os.environ.get("BREVO_API_KEY", "")
     def brevo(path):
         status, value = api("https://api.brevo.com/v3", path, key)
@@ -55,6 +61,28 @@ def run():
     report["transactional_templates_readable"] = True
     attributes = brevo("/contacts/attributes").get("attributes", [])
     report["app_attribute_types"] = {name: next((a.get("type") for a in attributes if a.get("name") == name), None) for name in ATTRIBUTES}
+    if operation=="setup":
+        if not report["brevo_free"] or not report["domain_verified"] or not report["domain_authenticated"] or len(report["eligible_sender_ids"])!=1 or len(matches)>1:
+            raise ValueError("Brevo prerequisites inconsistent")
+        if any(t not in (None,"text") for t in report["app_attribute_types"].values()):raise ValueError("Attribute type conflict")
+        for name,kind in report["app_attribute_types"].items():
+            if kind is None:
+                status,_=api("https://api.brevo.com/v3","/contacts/attributes/normal/"+name,key,"POST",{"type":"text"})
+                if status not in (200,201,204):raise ValueError("Attribute setup failed")
+        if not matches:
+            html=Path(__file__).resolve().parents[1].joinpath("mail/app-doi.html").read_text()
+            if '{{ params.DOIurl }}' not in html:raise ValueError("DOI placeholder missing")
+            status,value=api("https://api.brevo.com/v3","/smtp/templates",key,"POST",{
+                "templateName":TEMPLATE,"subject":"Bestätige deine Anmeldung zur App-Warteliste",
+                "sender":{"id":report["eligible_sender_ids"][0],"name":"Vision Universe"},
+                "htmlContent":html,"isActive":True,"tag":"optin"})
+            if status not in (200,201) or type(value.get("id")) is not int:raise ValueError("Template setup failed")
+            report["doi_template_ids"]=[value["id"]]
+        template=brevo("/smtp/templates/"+str(report["doi_template_ids"][0]))
+        report["doi_template_active"]=template.get("isActive") is True
+        report["doi_template_contains_api_link"]='{{ params.DOIurl }}' in template.get("htmlContent","")
+        if not report["doi_template_active"] or not report["doi_template_contains_api_link"]:raise ValueError("Template not suitable")
+        report["app_attribute_types"]={name:next((a.get("type") for a in brevo("/contacts/attributes")["attributes"] if a.get("name")==name),None) for name in ATTRIBUTES}
     report["controlled_test_address_secret_set"] = bool(os.environ.get("BREVO_DOI_TEST_EMAIL"))
     account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
     if not re.fullmatch(r"[a-f0-9]{32}", account_id):
@@ -73,11 +101,60 @@ def run():
         project = data["result"]
         source = project.get("source", {}).get("config", {})
         check["existing_project_matches"] = project.get("name") == "vision-universe" and source.get("repo_name") == "vision-universe-research" and source.get("owner") == "dennismueller10x-sudo" and project.get("build_config", {}).get("root_dir") == "landing"
+        if not check["existing_project_matches"]:break
         check["runtime_bindings"] = {stage: {n: variables.get(n, {}).get("type") for n in ("BREVO_API_KEY", "WAITLIST_TOKEN_KEY", "WAITLIST_DB", "WAITLIST_PUBLIC_ENABLED", "WAITLIST_PRIVACY_APPROVED", "WAITLIST_E2E_VERIFIED")} for stage, config in project.get("deployment_configs", {}).items() for variables in [config.get("env_vars", {})]}
         status, data = api("https://api.cloudflare.com/client/v4", "/accounts/" + account_id + "/d1/database?per_page=100", token)
         check["d1_read_http"] = status
+        check["d1_error_codes"]=data.get("safe_codes",[])
         if status == 200 and data.get("success") is True:
-            check["waitlist_databases"] = sum(d.get("name") == "vu-app-waitlist" for d in data.get("result", []))
+            databases=[d for d in data.get("result",[]) if d.get("name")=="vu-app-waitlist"]
+            check["waitlist_databases"] = len(databases)
+            if operation=="setup" and len(databases)<=1:
+                if not databases:
+                    status,created=api("https://api.cloudflare.com/client/v4","/accounts/"+account_id+"/d1/database",token,"POST",{"name":"vu-app-waitlist","jurisdiction":"eu"})
+                    check["d1_create_http"]=status
+                    if status in (200,201) and created.get("success") is True:databases=[created["result"]]
+                if databases:
+                    database_id=databases[0].get("uuid")
+                    if not isinstance(database_id,str) or not re.fullmatch(r"[a-f0-9-]{36}",database_id):raise ValueError("Invalid D1 identifier")
+                    schema=Path(__file__).resolve().parents[1].joinpath("server/schema.sql").read_text()
+                    for statement in schema.split(';'):
+                        if statement.strip():
+                            status,result=api("https://api.cloudflare.com/client/v4","/accounts/"+account_id+"/d1/database/"+database_id+"/query",token,"POST",{"sql":statement})
+                            if status!=200 or result.get("success") is not True:raise ValueError("D1 schema setup blocked")
+                    check["d1_schema_ready"]=True
+                    check["_database_id"]=database_id
+        if operation=="setup":
+            # Do not re-submit opaque existing secrets or overwrite unrelated bindings.
+            configs=project.get("deployment_configs",{})
+            safe=all(c.get("env_vars",{}).get(n,{}).get("type") in (None,"secret_text") for c in configs.values() for n in ("BREVO_API_KEY","WAITLIST_TOKEN_KEY"))
+            check["safe_runtime_secret_setup"]=safe
+            if safe:
+                token_key=secrets.token_hex(32)
+                # PATCH merges supplied keys; omitted existing keys are retained.
+                changes={stage:{"env_vars":{
+                    "WAITLIST_DOI_TEMPLATE_ID":{"type":"plain_text","value":str(report["doi_template_ids"][0])},
+                    "WAITLIST_PUBLIC_ENABLED":{"type":"plain_text","value":"false"},
+                    "WAITLIST_PRIVACY_APPROVED":{"type":"plain_text","value":"false"},
+                    "WAITLIST_E2E_VERIFIED":{"type":"plain_text","value":"false"}}} for stage,config in configs.items()}
+                for stage,config in configs.items():
+                    for secret_name,secret_value in (("BREVO_API_KEY",key),("WAITLIST_TOKEN_KEY",token_key)):
+                        if secret_name not in config.get("env_vars",{}):changes[stage]["env_vars"][secret_name]={"type":"secret_text","value":secret_value}
+                    if check.get("d1_schema_ready"):
+                        existing=config.get("d1_databases",{}).get("WAITLIST_DB")
+                        if existing and existing.get("id")!=check["_database_id"]:raise ValueError("Existing D1 binding conflict")
+                        changes[stage]["d1_databases"]={**config.get("d1_databases",{}),"WAITLIST_DB":{"id":check["_database_id"]}}
+                status,value=api("https://api.cloudflare.com/client/v4","/accounts/"+account_id+"/pages/projects/vision-universe",token,"PATCH",{"deployment_configs":changes})
+                check["runtime_setup_http"]=status
+                check["runtime_setup_error_codes"]=value.get("safe_codes",[])
+                if status==200 and value.get("success") is True:
+                    status,value=api("https://api.cloudflare.com/client/v4","/accounts/"+account_id+"/pages/projects/vision-universe",token)
+                    check["secret_types_verified"]=status==200 and all(c.get("env_vars",{}).get(n,{}).get("type")=="secret_text" for c in value.get("result",{}).get("deployment_configs",{}).values() for n in ("BREVO_API_KEY","WAITLIST_TOKEN_KEY"))
+                    before={s:{n:v for n,v in c.get("env_vars",{}).items() if n not in changes[s]["env_vars"]} for s,c in configs.items()}
+                    check["other_env_unchanged"]=status==200 and all(value["result"]["deployment_configs"][s]["env_vars"].get(n)==v for s,variables in before.items() for n,v in variables.items())
+            check.pop("_database_id",None)
+        report["lists_after"]=[{"id":n,"count":brevo("/contacts/lists/"+str(n)).get("totalSubscribers")} for n in (4,5,6)]
+        report["list_counts_unchanged"]=report["lists"]==report["lists_after"]
         break
     return report
 
