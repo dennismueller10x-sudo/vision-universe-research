@@ -86,3 +86,10 @@ test('index.html: der Waechter steht im Start vor shell.js (shell.js fragt ihn b
   assert.ok(order.indexOf('/quant/ui/release-guard.js') >= 0, 'release-guard.js fehlt im Start');
   assert.ok(order.indexOf('/quant/ui/release-guard.js') < order.indexOf('/quant/ui/shell.js'));
 });
+
+test('europe-bootstrap: Core-Skripte laufen ueber den Waechter und tragen die Kennung als Stempel; ohne Waechter unveraendert', () => {
+  const code = readFileSync(join(root, 'discover/engines/europe-bootstrap.js'), 'utf8');
+  assert.ok(code.includes('guard.beforeLoad()'));
+  assert.ok(code.includes("script.src=path+(guard?'?v='+guard.identity().id:'')"));
+  assert.ok(code.includes('if(!guard)return insert();'), 'ohne Waechter sofort, wie bisher');
+});
