@@ -105,7 +105,39 @@ class DomainBrevo(Client):
         if (method,path) not in (("GET","/account"),("GET","/senders/domains/"+DOMAIN),
                 ("PUT","/senders/domains/"+DOMAIN+"/authenticate")):
             raise Blocked("Nur Domain-Lesen und DNS-Authentifizierung erlaubt; kein E-Mail-Endpunkt.")
+        if method == "PUT":
+            if body is not None:
+                raise Blocked("Domain-Authentifizierung hat keinen Request-Body.")
+            return self.authenticate()
         return super().call(method,path,body,missing)
+
+    def authenticate(self):
+        # Match the official bodyless PUT example: an empty request is not JSON.
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self,*args,**kwargs): return None
+        request=urllib.request.Request("https://api.brevo.com/v3/senders/domains/"+DOMAIN+"/authenticate",
+            method="PUT",headers={"api-key":self._key,"Accept":"application/json",
+                "User-Agent":"VisionUniverse-Brevo/1.0"})
+        try:
+            with urllib.request.build_opener(NoRedirect).open(request,timeout=30) as response:
+                response.read()  # Do not publish response bodies.
+                return {"http":response.status}
+        except urllib.error.HTTPError as error:
+            try: data=json.loads(error.read(65536))
+            except Exception: data={}
+            result={"http":error.code}
+            code=data.get("code")
+            if isinstance(code,str) and re.fullmatch(r"[a-z_]{1,64}",code):result["error_code"]=code
+            message=data.get("message")
+            if isinstance(message,str) and len(message)<=400:
+                message=message.replace(self._key,"[redacted]")
+                message=re.sub(r"[^\s<>@]+@[^\s<>@]+","[redacted]",message)
+                message=re.sub(r"[A-Za-z0-9_-]{24,}","[redacted]",message)
+                # Only plain error text from this fixed domain endpoint is allowed.
+                if re.fullmatch(r"[A-Za-z0-9 .,:;()'!?/_\[\]-]+",message):result["error_message"]=message
+            return result
+        except (OSError,ValueError):
+            return {"outcome_unknown":True}
 
 
 class Cloudflare:
@@ -243,9 +275,10 @@ def run(operation, authorized=False):
         elif any(c["action"]!="unchanged" for c in changes):
             report.update(blocked=True,verification_waits_for_correct_dns=True);return report
         # DNS-only verification API, never sender confirmation or email.
-        brevo.call("PUT","/senders/domains/"+DOMAIN+"/authenticate")
+        authentication=brevo.call("PUT","/senders/domains/"+DOMAIN+"/authenticate")
         current=brevo.call("GET","/senders/domains/"+DOMAIN)
-        report.update(verified=current.get("verified") is True,authenticated=current.get("authenticated") is True)
+        report.update(verified=current.get("verified") is True,authenticated=current.get("authenticated") is True,
+            authentication_api=authentication)
         return report
     report.update(blocked=True,missing_usable_cloudflare_access=True)
     return report

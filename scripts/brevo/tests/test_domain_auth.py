@@ -104,5 +104,23 @@ class DNS(unittest.TestCase):
             self.assertTrue(result["blocked"])
             cloudflare.assert_called_once_with("BREVO_CLOUDFLARE_DNS_TOKEN","dedicated-synthetic")
 
+    def test_authentication_is_bodyless_and_keeps_safe_failure_details(self):
+        import io
+        import urllib.error
+        key="synthetic-secret-only"
+        error=urllib.error.HTTPError("https://api.brevo.com",400,"synthetic",{},
+            io.BytesIO(('{'+'"code":"invalid_parameter","message":"DNS not found '+key+'"}').encode()))
+        with patch.dict(os.environ,{"BREVO_API_KEY":key}), \
+                patch("domain_auth.urllib.request.build_opener") as opener:
+            opener.return_value.open.side_effect=error
+            result=DomainBrevo().call("PUT","/senders/domains/"+DOMAIN+"/authenticate")
+            request=opener.return_value.open.call_args.args[0]
+            self.assertIsNone(request.data)
+            self.assertFalse(request.has_header("Content-type"))
+            self.assertEqual(request.method,"PUT")
+            self.assertEqual(result["http"],400)
+            self.assertEqual(result["error_code"],"invalid_parameter")
+            self.assertNotIn(key,str(result))
+
 
 if __name__=="__main__":unittest.main()
