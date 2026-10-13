@@ -1786,7 +1786,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         text: "Ausblick, Zonen, Szenarien und die experimentelle Elliott-Strukturdeutung stehen im Chartbild. " +
               "Für die meisten Titel gibt es dort bewusst keine verlässliche Wellenzählung." }),
       detail.symbol ? el("p", { style: "margin:10px 0 0;font-size:13px" }, [
-        el("a", { href: "/quant/#/aktie/" + encodeURIComponent(detail.symbol) + "/chartbild", text: "Chartbild öffnen" })
+        el("a", { href: "/elliott/#/" + encodeURIComponent(detail.symbol), text: "Chartbild öffnen" })
       ]) : null
     ].filter(Boolean);
 
