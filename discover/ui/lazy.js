@@ -25,6 +25,13 @@
    Reihenfolge: dynamisch eingefuegte Skripte mit async=false laufen in
    Einfuegereihenfolge; gleiche Adressen (ohne Query) werden nur einmal
    geladen, auch wenn zwei Gruppen sie nennen.
+
+   DEPLOYMENT-WECHSEL MIT OFFENEM TAB
+   Ein Tab, der vor einem Release geoeffnet wurde, hat das alte app.js im Speicher; die Gruppen kaemen aus dem neuen Release
+   und passten nicht dazu (ein altes ?v= bekommt vom Server trotzdem die neue Datei). Deshalb fragt load() vor jeder Gruppe
+   den Release-Waechter (quant/ui/release-guard.js): ist inzwischen ein neuer Code-Stand ausgeliefert, laedt die Seite
+   einmal neu - kontrolliert, mit Route und Eingaben - statt neuen neben alten Code zu setzen. Ohne Waechter oder ohne
+   Kennung (Quelltext, Tests) bleibt es beim bisherigen Verhalten: ein Ladefehler laedt einmal neu.
    ========================================================================= */
 (function (root, factory) {
   'use strict';
@@ -70,7 +77,15 @@
     } catch (_) { /* ohne Stempel */ }
     return stampValue;
   }
-  /** Ein Ladefehler einer Gruppe (z. B. Skript nach einem Deploy nicht mehr da) laedt die Seite einmal neu - dann passen alle Teile zusammen. */
+  /** Release-Waechter mit Kennung dieses Tabs (Pipeline-Release), sonst null. */
+  function guard() {
+    var g = root.VUReleaseGuard;
+    return g && typeof g.known === 'function' && g.known() ? g : null;
+  }
+  /**
+   * Ein Ladefehler einer Gruppe (z. B. Skript nach einem Deploy nicht mehr da) laedt die Seite einmal neu - dann passen alle Teile zusammen.
+   * Mit Waechter entscheidet dieser, ob ein neuer Release der Grund ist (sonst waere es ein Netzfehler und das Neuladen wertlos).
+   */
   function reloadOnce() {
     try {
       if (!root.location || !root.location.reload || !root.sessionStorage) return;
@@ -103,8 +118,15 @@
   function load(name) {
     if (groups[name]) return groups[name];
     // Die Templates stehen am Dokumentende: vor dem Ende des Parsens kann eine Gruppe unvollstaendig sein.
-    groups[name] = parsed().then(function () { return Promise.all(sources(name).map(script)); }).then(function () {})
-      .catch(function (error) { delete groups[name]; reloadOnce(); throw error; });
+    groups[name] = parsed().then(function () { var g = guard(); return g ? g.beforeLoad() : undefined; })
+      .then(function () { return Promise.all(sources(name).map(script)); }).then(function () {})
+      .catch(function (error) {
+        delete groups[name];
+        var g = guard();
+        if (!g) { reloadOnce(); throw error; }
+        // Neuer Release -> der Waechter laedt neu (Aufruf bleibt offen); sonst gilt der Fehler. RELEASE_STALE kommt vom Waechter selbst.
+        return (error && error.message === 'RELEASE_STALE' ? Promise.resolve() : g.onMissing()).then(function () { throw error; });
+      });
     return groups[name];
   }
 

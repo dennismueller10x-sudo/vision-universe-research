@@ -29,7 +29,11 @@
   }
   function loadScript(path){
     if(path==='/core/identity.js'&&root.VUCore&&root.VUCore.Identity||path==='/core/client.js'&&root.VUCore&&root.VUCore.Client)return Promise.resolve();
-    if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const script=root.document.createElement('script');script.src=path;script.onload=resolve;script.onerror=()=>reject(Error('EUROPE_CORE_UNAVAILABLE'));root.document.head.append(script);}));
+    /* Release-Waechter (quant/ui/release-guard.js): ein Tab von vor einem Deployment laedt keinen neuen Core-Code neben sein altes Discover;
+       die Kennung gilt als Stempel. Ohne Waechter oder Kennung unveraendert. */
+    const guard=root.VUReleaseGuard&&root.VUReleaseGuard.known&&root.VUReleaseGuard.known()?root.VUReleaseGuard:null;
+    if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const insert=()=>{const script=root.document.createElement('script');script.src=path+(guard?'?v='+guard.identity().id:'');script.onload=resolve;script.onerror=()=>reject(Error('EUROPE_CORE_UNAVAILABLE'));root.document.head.append(script);};
+      if(!guard)return insert();guard.beforeLoad().then(insert,()=>reject(Error('EUROPE_CORE_UNAVAILABLE')));}).catch(error=>{scripts.delete(path);throw error;}));
     return scripts.get(path);
   }
   function validRights(rights){return !!rights&&rights.display===true&&rights.commercial===true&&typeof rights.evidenceRef==='string'&&rights.evidenceRef.length>0&&Array.isArray(rights.dataPaths)&&rights.dataPaths.includes('IDENTITY')&&rights.dataPaths.includes('RAW_EOD')&&rights.dataPaths.every(v=>['IDENTITY','RAW_EOD'].includes(v));}
