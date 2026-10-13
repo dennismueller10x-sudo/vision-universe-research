@@ -1,0 +1,140 @@
+{
+  "schema": "supertrader-calibration-preregistered-protocol-1.0.0",
+  "registeredBeforePerformance": true,
+  "registeredAt": "2026-10-13T09:08:51.202656+00:00",
+  "tournamentProtocolFile": "scripts/supertrader/research/tournament/protocol.json",
+  "tournamentProtocolSha256": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "tournamentStrategyDefinitionsChanged": false,
+  "sourceCalibrationIsSeparateDefinitionNotTournamentAmendment": true,
+  "calibrationWindow": {
+    "from": "2018-01-02",
+    "to": "2026-09-30"
+  },
+  "referenceArithmeticOverlapWindow": {
+    "from": "2018-01",
+    "to": "2026-08",
+    "reason": "PRE_OUTCOME_OFFICIAL_REFERENCE_AVAILABILITY_NOT_RETURN_SELECTION"
+  },
+  "lowVolRfDiagnosticWindow": {
+    "from": "2018-02-01",
+    "to": "2026-08-31",
+    "reason": "STRICT36_CALENDAR_MONTH_PRICE_HISTORY_WITH_2015_WARMUP: FIRST_VALID_FORMATION2018JAN31_NEXTOPENFEB1; RF_EXACT_COVERAGE_ENDSAUG31; NO_RETURN_BASED_SELECTION"
+  },
+  "sourceGrossAndCommonNetSeparate": true,
+  "cohortWarmstartMonths": [
+    "2017-07",
+    "2017-08",
+    "2017-09",
+    "2017-10",
+    "2017-11",
+    "2017-12"
+  ],
+  "actualPaperStockOracle": "MISSING_CRSP_OR_FTSE_ORIGINAL_PANEL",
+  "paperEffectComparability": "DIFFERENT_UNIVERSE_OR_PERIOD_IS_NONCOMPARABLE_NOT_INFRASTRUCTURE_FAIL",
+  "overallVerdictDefinitions": {
+    "CERTIFIED": "At least3 independent stock-level reference constructions PASS, including EW control and at least2 economically distinct factor families, with matched-primary-source scope for the factor passes, audited applicable direction/magnitude and no unresolved general critical failure. Momentum and52-high alone are related, not2 independent economic families. Aggregate supplied returns and synthetic cases do not count as published stock strategy passes.",
+    "PARTIALLY_CERTIFIED": "At least1 real stock-level control/reference construction PASS plus independently validated relevant operator/reference arithmetic evidence, and no unresolved general critical bug, but remaining reference strategies are blocked, unmatched or partial. Explicitly restrict certification to the passed measurement slices; not an OriginalPaper or population certificate.",
+    "NOT_CERTIFIED": "No qualifying real stock construction PASS, or an unresolved critical general invariant failure prevents trusted measurement. Reason must distinguish INSUFFICIENT_REFERENCE_DATA from PROVEN_GENERAL_ENGINE_FAILURE; missing original datasets is not proof of a broken machine.",
+    "overallIsMeasurementNotMethodClaimCertification": true,
+    "continueAssignmentAfterAnyVerdict": true,
+    "notAllowed": "Return-series copy/parity alone cannot make CERTIFIED or promote a stock-level method."
+  },
+  "calibrationVerdictDefinitions": {
+    "executionStatus": [
+      "COMPLETED",
+      "BLOCKED_DATA",
+      "BLOCKED_SOURCE",
+      "BLOCKED_RULE",
+      "NOT_STARTED"
+    ],
+    "unexecutedOrBlockedCalibrationVerdict": null,
+    "PASS": "A comparable stock-level source strategy, all material construction invariants and independently audited direction/magnitude/portfolio metrics reproduce within preregistered source tolerances; no unresolved critical infrastructure discrepancy. An EW control can PASS only its declared control scope, not a published factor premium.",
+    "PARTIAL": "Actually executed relevant stock construction has independently validated material mechanics but some source data, sample comparability or noncritical metric remains incomplete. State which direction is validated by the stock oracle and which original-study effect is NOT_ASSESSED. Arithmetic-only and blocked screens cannot be mislabeled stock-construction PARTIAL.",
+    "FAIL": "For a genuinely comparable tested scope, a material source/implementation invariant or eligible direction/magnitude criterion fails. Wrong sample/estimand is NONCOMPARABLE; missing data is BLOCKED, neither is automatic strategy performance FAIL.",
+    "criticalInfrastructureFailure": "Causal lookahead, nonfinite uncensored returns, loss/double-count of dividends or split/delist wealth, unequal benchmark clock, accounting nonreconciliation, hidden admission/cost/weight rule, or proved universe/identity misuse. Source-to-code fixture/counterexample required."
+  },
+  "comparisonTolerances": {
+    "exactStockOperatorOracle": {
+      "relativeNumericTolerance": 1e-10,
+      "absoluteReturnOrWeightTolerance": 1e-10,
+      "datesMembershipRebalanceEvents": "EXACT_UNLESS_SOURCE_DECLARED_TIE_POLICY",
+      "unknownOrMissingInputs": "FAIL_CLOSED_AND_COUNTED_NOT_ZERO_FILLED"
+    },
+    "publishedApproximateSameScopeOnly": {
+      "sourceRounding": "At least half the declared source reporting precision, converted to decimal return units.",
+      "meanPeriodicEffect": "Predeclare source-frequency compatible absolute floor and relative tolerance in each source spec; default monthly floor0.0025 or25percent of reported effect, greater of these, plus stated rounding. Not an annual CAGR tolerance.",
+      "drawdownMagnitude": "Default absolute5percentage-point comparison band where original drawdown is actually reported on the same sample.",
+      "turnoverMagnitude": "Default relative25percent or10percentage-point periodic floor, greater of these, with identical turnover definition.",
+      "portfolioSizeMagnitude": "Default relative10percent only where original universe and reported bucket count match. Structural bucket/tie rule must also match exactly.",
+      "grossExposure": "Source-specified identities exact within numeric tolerance; no exposures inferred from aggregate return series.",
+      "missingPublishedMetric": "UNAVAILABLE_NO_IMPUTATION_AND_NO_CLAIM_OF_COMPARISON",
+      "scopeMismatch": "TOLERANCES_NOT_APPLICABLE; BLOCKED_OR_PARTIAL_SEPARATE_STOCK_OPERATOR_SCOPE",
+      "amendment": "Any source-specific departure must be recorded with primary-source reason before that calibration outcome, never widened afterward."
+    }
+  },
+  "scorecard": {
+    "status": "ACCEPTED_PREREGISTERED_BY_LEAD_BEFORE_NEW_OUTCOMES",
+    "legacySevenWeightsUnchanged": {
+      "fidelityReproducibility": 0.15,
+      "signalEvidence": 0.2,
+      "portfolioEvidence": 0.2,
+      "robustness": 0.15,
+      "riskProfile": 0.1,
+      "dataQuality": 0.1,
+      "distinctivenessProduct": 0.1
+    },
+    "missingNumericComponents": "NULL_NOT_ZERO_IMPUTATION_NEVER_REWEIGHT_AVAILABLE_COMPONENTS",
+    "dimensions": [
+      "calibrationConfidence",
+      "fidelity",
+      "signalEvidence",
+      "portfolioEvidence",
+      "robustness",
+      "risk",
+      "dataQuality",
+      "executionQuality",
+      "distinctiveness",
+      "productPotential"
+    ],
+    "compatibility": "Existing7-component score retained with explicit original distinctivenessProduct joint weight. Distinctiveness/productPotential separated as source ratings and narratives without fabricating new split numeric values. Calibration and execution are explicit confidence/eligibility dimensions and caps, not new performance-weight bonuses.",
+    "calibrationConfidence": "MEDIUM only with applicable stock-construction validation and no unresolved general bug; supplied arithmetic alone LOW or NONE. HIGH requires matched primary stock replication and audited independent coverage, never a famous factor label.",
+    "finalConfidence": "Minimum of applicable calibration, inherited source fidelity, data and execution confidence. UNKNOWN caps to LOW; inherited Legendary/Greenblatt source fidelity is not automatically upgraded by a systematic bucket.",
+    "OBSERVED_ONLY": "Data confidence LOW, score staysNULL when required inputs unavailable, no A/B or CLAIM_READY, even if reference-return arithmetic is exact.",
+    "robustness": "Original fixed regimes/early-late/minSignals/minClusters/HAC rules preserved. Same-seen calibration/tournament periods are not unseen holdout, and many overlapping tests remain uncorrected multiplicity.",
+    "newDimensionUnknown": "ReportUNKNOWN orNULL. Do not infer turnover/exposure from supplied reference returns or invent missing stock-level effect scores.",
+    "leadMayChooseAlternativeExAnteScorecard": "Only explicit dated amendment and exact frozen mapping/weights before new calibration or tournament outcomes; preserve legacy comparison score separately."
+  },
+  "sourceDiscrepancyCategories": [
+    "UNIVERSE",
+    "DATA",
+    "PIT",
+    "RANKING",
+    "FORMATION_WINDOW",
+    "HOLDING_PERIOD",
+    "REBALANCING",
+    "WEIGHTING",
+    "EXECUTION",
+    "COSTS",
+    "CORPORATE_ACTIONS",
+    "MARKET_CAP",
+    "DELISTINGS",
+    "PORTFOLIO_CONSTRUCTION",
+    "ESTIMAND_MISMATCH",
+    "REFERENCE_METRIC_UNAVAILABLE",
+    "OTHER"
+  ],
+  "publicRights": [
+    "COUNTS",
+    "CLASSIFICATIONS",
+    "DIRECTIONS",
+    "HASHES"
+  ],
+  "privateRights": [
+    "EXACT_PROVIDER_METRICS",
+    "SECURITY_IDENTITIES",
+    "FULL_RAW_RETURNS"
+  ],
+  "currentConsensus": "ELIGIBLE_AND_CERTIFIED_ONLY; PARTIAL_DIAGNOSTICS_SEPARATE",
+  "forwardLedgers": "PREPARED_ZERO_RECORDS_NO_AUTOMATIC_LIVE_START",
+  "noPostResultTuning": true
+}

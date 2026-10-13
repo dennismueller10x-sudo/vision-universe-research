@@ -1,0 +1,32 @@
+{
+  "schema": "supertrader-calibration-current-capture-contract-1.0.0",
+  "registeredAt": "2026-10-13T09:06:54.758180+00:00",
+  "requestedAsOf": "2026-10-12",
+  "sessionPolicy": "LATEST_COMPLETE_NYSE_SESSION_AT_CAPTURE_REGISTRATION; ACTUAL_SOURCE_FRESHNESS_REQUIRED",
+  "phase": "PARALLEL_SOURCE_CAPTURE_AND_PRELIMINARY_FROZEN_DIAGNOSTICS; FINAL_REPLAY_ONLY_AFTER_HISTORICAL_RERUN",
+  "baselinePR": 632,
+  "baselineHead": "600b682298400ea8028b16f4fe923ffe1841845d",
+  "originalFilesChanged": false,
+  "historicalPerformanceCalculated": false,
+  "strategyDefinitionsChanged": false,
+  "finalConsensusRequiresPostCalibrationEligibility": true,
+  "qualifiedOnlyConsensus": true,
+  "current10SourceDefinitionsPreserved": true,
+  "publicOutputPolicy": [
+    "COUNTS",
+    "ENUMS",
+    "HASHES"
+  ],
+  "sourceAndStockIdentityDelivery": "OWNER_AND_SESSION_ENCRYPTED_ONLY",
+  "files": {
+    ".github/workflows/supertrader-calibration.yml": "98a0f626abfec0c6b453a84b62eb6185641be35a05e250adbbd3d9e678904c1a",
+    "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+    "scripts/supertrader/research/certification/SUPERTRADER-METHOD-ELIGIBILITY.json": "614ededfcfd32a43cdcb8135f44e3ffbceedea85f4d43fb1865e3114dab243b3",
+    "scripts/supertrader/research/certification/current-rerun.mjs": "229c13c5507141e6de454e46d38263a8b5220424cd83c7d33956a0550ee3d49f",
+    "scripts/supertrader/research/certification/current-source-receipts.mjs": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501",
+    "scripts/supertrader/research/certification/runner-v2.mjs": "9b2ae889295476d79c617d61c166d8293cbd468b0fe5eec03d1b3cde64644e67",
+    "scripts/supertrader/research/certification/repack-current-artifact.py": "616ef38438e7b2fffff8ce40ee655de296c9ba193e7610dc9a85f70b0c80047b",
+    "scripts/supertrader/validation/results-public-key.pem": "b399ed9049aaf89e4ba62b6dc93c1831946af8d1fff32f299e0fb3dd82a61a7f",
+    "scripts/supertrader/research/tournament/session-public-key.pem": "9408414a70dcc55073e0fdc7e5995ac595c7a1c8db2534a58ff4f52adacf57c0"
+  }
+}

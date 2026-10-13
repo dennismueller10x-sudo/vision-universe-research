@@ -1,0 +1,170 @@
+{
+  "schema": "supertrader-calibration-premeasurement-freeze-1.0.0",
+  "frozenAt": "2026-10-13T09:28:23.235113+00:00",
+  "registeredBeforePerformance": true,
+  "frozenBeforePerformance": true,
+  "strategyDefinitionsChanged": false,
+  "baselineFreeze": {
+    "path": "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json",
+    "sha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+  },
+  "baselineHead": "600b682298400ea8028b16f4fe923ffe1841845d",
+  "codeCommit": "d4ecb010a90f57ee7b03b67e435abec8dee0db7e",
+  "protocolHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "files": {
+    "scripts/supertrader/research/calibration/portfolio-calibration.mjs": "17b1be6a32366525e024d1a9afee9fead3882a7999d387993aa51f63f88797da",
+    "scripts/supertrader/research/calibration/reference-engines.mjs": "c6ffdafec698de14a8444670a8dfb0db712d7edd981ceb720a26327f5c54539f",
+    "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs": "aee19e6f4d8d135c40aeb64d0ab918fbe15739bf2270ecff7f38a2f1499e2abc",
+    "scripts/supertrader/research/calibration/run-calibration.mjs": "f0a4a79e15d7875a415d8e06c18ff21e9c90f4a762efb7727090bf8638cbe5fd",
+    "scripts/supertrader/research/calibration/run-post-calibration.mjs": "9fce0770fc5c17e5a1b021c9d17a8db1276f6f18d13c949e7703f9174ce7a512",
+    "scripts/supertrader/research/calibration/runner-certified.mjs": "88f16d09c26be08debc86fe84b1c11595ee2a751ef04e6f9bfdb84312ef40f9c",
+    "scripts/supertrader/tests/calibration-entry-open-guard.test.mjs": "925b250e985305037176f396bc8251c869fd31e6bd887487ce09d93b3ad405d0",
+    "scripts/supertrader/tests/calibration-orchestration-frame.test.mjs": "6dbaaa12a8cd12284b3f9dac91abf3651ff1bf225999343cbb7bb755fcbe4aad",
+    "scripts/supertrader/tests/calibration-portfolio.test.mjs": "c6146834f6d30ba8ac81cf1ddc2885be9ad0d48a8b0ac1cc3be6b61e22cb75e8",
+    "scripts/supertrader/tests/calibration-post-calibration-orchestration.test.mjs": "51f943fefd164301f4aa7d83e922211381a07eef3b6d170d50c6bb97a7de3a3d",
+    "scripts/supertrader/tests/calibration-reference-engines.test.mjs": "13e9f4ef6db8364f96965e77c8e3eb243b68cf635c9d74fd069271935c92c3cb",
+    "scripts/supertrader/tests/calibration-reference-return-arithmetic.test.mjs": "d5724623e860b9bd6cac9edf003ddcbdc8c9e34bf527a9ae209231a295bb0fc8",
+    "scripts/supertrader/research/calibration/protocol.json": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-METHODS.json": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "scripts/supertrader/research/calibration/CURRENT-CAPTURE-CONTRACT.json": "b702652f236f5c272facd151eef1ef6c8802fd1985e0d8dbc13969e52f4f8a66"
+  },
+  "inputReceipts": [
+    {
+      "role": "CANONICAL_LOADER_MODULE",
+      "sha256": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+      "bytes": 7879
+    },
+    {
+      "role": "CANONICAL_LOADER_PRIVATE_WRAPPER",
+      "sha256": "2827c91e11aad0e3fc8c8d2ff1dcccf5b47ffed6f6ec53d25b0b0957d848fb4e",
+      "bytes": 4859
+    },
+    {
+      "role": "CANONICAL_MANIFEST_PLAINTEXT",
+      "sha256": "083f8fc53fc7799813c612cd729e509a9ea23414bde7537c034407ee5a207f38",
+      "bytes": 939301
+    },
+    {
+      "role": "CANONICAL_SOURCE_PROVENANCE_INPUTS",
+      "sha256": "a0e2273c96b35444a8a080d02c13cbe3a20767f91c62533c51c1b77a212242a1",
+      "bytes": 92560315
+    },
+    {
+      "role": "CANONICAL_REPACK_MANIFEST",
+      "sha256": "511a62158c66e3da7f54296affe8a5d8aa111131c9200faaf4af82153ec1db01",
+      "bytes": 292993
+    },
+    {
+      "role": "CANONICAL_SOURCE_OVERLAY_PROOF",
+      "sha256": "4480a531fac32a0fe539145f03480c07c373da69e3e48ce910ce1efaf07549b0",
+      "bytes": 800
+    },
+    {
+      "role": "CURRENT_SOURCE_RECEIPTS_MODULE",
+      "sha256": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501",
+      "bytes": 4562
+    },
+    {
+      "role": "BASELINE_589_CONSOLIDATED_PRIVATE_PAYLOAD",
+      "sha256": "b7277a8728b26e276c890c389b700b56f1785adb5d2b7578ca5b86c39dbf491d",
+      "sourceDataFingerprint": "b2327e62fb563ecea1fe99b65472628d0bb6ffc73b3aed1440a900ad548afa49"
+    },
+    {
+      "role": "BASELINE_589_PRIVATE_INPUT_MANIFEST",
+      "sha256": "f9165dbd405c533c45a7b4d18f55d0e4972b4fe39a38359b6a06678a3c230f57",
+      "sourceDataFingerprint": "b2327e62fb563ecea1fe99b65472628d0bb6ffc73b3aed1440a900ad548afa49"
+    }
+  ],
+  "referenceArithmetic": {
+    "codeSha256": "aee19e6f4d8d135c40aeb64d0ab918fbe15739bf2270ecff7f38a2f1499e2abc",
+    "sourcePlanSha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0",
+    "inputReceipts": [
+      {
+        "id": "FRENCH_MOM10",
+        "sha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f"
+      },
+      {
+        "id": "FRENCH_VAR",
+        "sha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943"
+      },
+      {
+        "id": "FRENCH_DAILY_RF",
+        "sha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247"
+      }
+    ],
+    "window": {
+      "from": "2018-01",
+      "to": "2026-08"
+    },
+    "noPostResultTuning": true
+  },
+  "sourceContractReceipts": [
+    {
+      "role": "reference-price-source-plan.json",
+      "sha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0"
+    },
+    {
+      "role": "reference-fundamental-source-plan.json",
+      "sha256": "68d8ea82e41a315e0c214edf05c7ee9de7e36d040a75271aa06c29b3516d2be0"
+    },
+    {
+      "role": "premeasurement-adversarial-plan.json",
+      "sha256": "3af3ae4515f14f2cf1657940f112f989e912ed7235f9b0a39c975851499f10d9"
+    },
+    {
+      "role": "baseline-portfolio-construction-audit.json",
+      "sha256": "e6e1008a196ea09faa4f997d7055487ca9be33d3c4ef963c1fec19691dc0fc00"
+    },
+    {
+      "role": "canonical-entry-open-source-census.json",
+      "sha256": "03ee05eee86125540d3532423afb80dbe853d7fac61e96fda20439e35328d122"
+    },
+    {
+      "role": "old632-entry-open-impact-census.json",
+      "sha256": "cd34ccc137d182e177d66b1f67aa80afc68e901e0545240f196fdf3b27742970"
+    },
+    {
+      "role": "source-spec-independent-review.json",
+      "sha256": "0f4ad9a0ff8849cae956273ca4d9b3909aafc3cc54d67db132621b8b9127f53a"
+    },
+    {
+      "role": "entry-open-guard-independent-review.json",
+      "sha256": "f2e43b06c1fc8d8f6e459f03822a7135d8df9adc337a7bf57d75f02bbede2439"
+    },
+    {
+      "role": "reference-construction-independent-review-amendment.json",
+      "sha256": "45c62a58531ec090fa7d4c63d13b39701e52df7325ef6869c1b81c581b6e084d"
+    },
+    {
+      "role": "premeasurement-independent-review.json",
+      "sha256": "69b0453157a2e73d35afbfa9154e0a16e6325208302b5937718f89f538323b4f"
+    },
+    {
+      "role": "reference-return-arithmetic-independent-review.json",
+      "sha256": "399ce5eba8c70a32901d3783b4fd55cc7264747d0452310311d12ca45243bed0"
+    },
+    {
+      "role": "streaming-current-source-independent-review.json",
+      "sha256": "08c6e79399d679f7db831d7436e569107c23419188f81b30d5a1ae76baf5fb96"
+    }
+  ],
+  "sourceValidationCodeReceipts": [
+    {
+      "role": "current-artifact-review-streaming.mjs",
+      "sha256": "05d77f705955f69b6f864e4f4f8fb2b4bfbec5ba8ebd518631d83779d4290251"
+    },
+    {
+      "role": "current-frozen-scanner-replay.mjs",
+      "sha256": "5ed7796a125ea208d73a97f51d8404f692f89a03e1260ea4daf00c0c490fc77f"
+    },
+    {
+      "role": "current-artifact-review-streaming.test.mjs",
+      "sha256": "9bf7e76a6ce7114445b25351cb8a4e5b4d1c3c8b9371006bf0019c010d5538e7"
+    }
+  ],
+  "calibrationComparisonScope": "ORIGINAL_PAPER_FORMULAS_TRANSFERRED_TO_OBSERVED_PANEL; MATCHED_ORIGINAL_STOCK_ORACLES_MISSING",
+  "measuredOriginalEffectVerdictMustBeNullWhenBlocked": true,
+  "allSixTournamentRulesAndCostsPreserved": true,
+  "finalTournamentLaunchRequiresSeparateReviewedCalibrationCompletionReceipt": true,
+  "postResultTuningAllowed": false
+}

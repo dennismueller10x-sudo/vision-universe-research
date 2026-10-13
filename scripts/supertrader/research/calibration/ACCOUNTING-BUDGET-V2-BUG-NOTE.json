@@ -1,0 +1,103 @@
+{
+  "schema": "supertrader-accounting-budget-bug-version-note-2.0.0",
+  "status": "PASSED_BASE_PRIMITIVE_DIAGNOSTIC_HASH_AMENDMENT_PENDING",
+  "bug_version": "BINARY64_BUDGET_ROUNDOFF_V2",
+  "original_accounting": {
+    "path": "scripts/supertrader/research/certification/execution-audit-accounting.mjs",
+    "sha256": "919215c83df18dad85a0ffd7cb624126cf58b7e05efbc7bb5d06275c192fb996",
+    "unchanged": true
+  },
+  "overlay": {
+    "path": "scripts/supertrader/research/calibration/accounting-budget-v2.mjs",
+    "sha256": "248bacbb4d22e2955102aff83b1f9749623ee8270aa751b40476c145377ec655"
+  },
+  "tests": {
+    "path": "scripts/supertrader/tests/calibration-budget-v2.test.mjs",
+    "sha256": "b0db96a92c08b1ed33dc7d9a312a302debd3000710c9a35bcfd4d8da46e9da6a",
+    "unique_tests_passed": 13
+  },
+  "classification": "PROVEN_NUMERICAL_INFRASTRUCTURE_DEFECT",
+  "causality": [
+    "Positive request demand accumulation rounds before proportional cash scale is formed.",
+    "The rounded scale can cause a marginal represented-cost excess; repeated cash subtraction adds a distinct rounding residual.",
+    "The prior absolute cash guard can reject a fully allocated large book even with unchanged valid weights and costs."
+  ],
+  "repair": {
+    "unchanged": [
+      "request_formula",
+      "proportional_scale_formula",
+      "target_weights",
+      "request_order",
+      "sell_before_buy",
+      "fills",
+      "shares",
+      "commission",
+      "slippage",
+      "execution_clock",
+      "source_parameters",
+      "terminal_scenarios"
+    ],
+    "changed": [
+      "ex_ante_arithmetic_domain_validation",
+      "derived_roundoff_cash_guard",
+      "private_numeric_correction_diagnostic"
+    ],
+    "absolute_compatibility_floor": 1e-06,
+    "effective_bound": "max(original_absolute_floor, outward_rounded_analytic_bound)",
+    "bound_formula": "gamma_m * (C + scale * D_float) + m * Number.MIN_VALUE; m=12*n+16; gamma_m=m*u/(1-m*u); u=2^-53",
+    "bound_inputs": "Available cash after sells, original positive request costs, original computed demand and scale, request count, exact original share/price/fee operands; computed before any purchase.",
+    "observed_residual_used_to_form_bound": false
+  },
+  "operator_chain": {
+    "premises": [
+      "Each positive request cost must equal the original binary64 desired*fill*(1+commission_bps/10000).",
+      "Demand must equal the original ordered binary64 sum of those costs.",
+      "All cash, costs, scale and purchase products must be finite supported normal operands or legitimate exact zero.",
+      "The unchanged fee path gross*commission_bps/10000 is checked, including its intermediate product.",
+      "Overflow, positive underflowed share/fee products, and unsupported subnormals fail closed.",
+      "Scale must exactly equal original min(1,max(0,C)/D_float), or 1 when D_float is zero."
+    ],
+    "domination": [
+      "For n positive requests, ordered demand summation contributes at most n rounding factors.",
+      "Cost construction, division and its scale clamp, share/gross/fee products and additions contribute a fixed conservative envelope of factors per request.",
+      "Relating actual expenses to scale*D_float composes these multiplicative errors; gamma factors compose by gamma_a+gamma_b+gamma_a*gamma_b <= gamma_(a+b).",
+      "Final sequential cash subtraction contributes at most n additional factors times the positive magnitude C+scale*D_float.",
+      "12*n+16 exceeds the combined positive-demand, reciprocal-scale, cost-versus-expense, and cash-subtraction operator chain; m*Number.MIN_VALUE covers gradual-underflow residual arithmetic.",
+      "The magnitude sum, gamma calculation and final bound are rounded upward; no observed residual magnitude or performance quantity sets acceptance.",
+      "Independent positive-chain derivation bounds each expense relative to the scaled represented request by gamma_13 (cost four versus expense five operations plus inverse error).",
+      "The inverse positive demand sum contributes at most gamma_(2*n), the scale division contributes at most u*C, and sequential cash subtraction contributes gamma_n.",
+      "Their composed conservative gamma_(3*n+14)*(C+exact(scale*D_float)) envelope is dominated by gamma_(12*n+16) for every n>=0."
+    ]
+  },
+  "validation": {
+    "actual_isolated_call": "PASSED_12_BIT_PARITY_AND_BOUND_CHECKS",
+    "actual_source_reload": false,
+    "synthetic_old_guard_failure": "REPRODUCED",
+    "ordinary_gross_and_net": "BIT_IDENTICAL",
+    "rebalance": "BIT_IDENTICAL",
+    "true_shortfall_outside_bound": "REJECTED",
+    "invalid_domain_and_overflow": "REJECTED",
+    "original_sub_micro_residual_acceptance": "PRESERVED"
+  },
+  "measurement_status": "NO_NEW_CALIBRATION_OR_TOURNAMENT_PERFORMANCE_RUN",
+  "original_failed_freeze_preserved": true,
+  "required_next_step": "Common V2 import overlays and new premeasurement freeze before rerun.",
+  "independent_review": {
+    "status": "PASSED",
+    "receipt_sha256": "56c6c79320c199fdef78b752b2b326db8d39f95001e2ca23f7d99cea94d6c5f4",
+    "synthetic_cases": 12,
+    "actual_single_call_checks": 13,
+    "byte_reversed_original_accounting_body": "EXACT_MATCH",
+    "new_performance_run": false
+  },
+  "diagnostic_metadata_amendment": {
+    "status": "TARGETED_TEST_PASSED_INDEPENDENT_HASH_AMENDMENT_PENDING",
+    "fields": [
+      "availableCash",
+      "demand",
+      "scale"
+    ],
+    "math_changed": false,
+    "trading_changed": false
+  }
+}
