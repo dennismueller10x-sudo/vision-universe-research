@@ -259,6 +259,9 @@ jobs:
       # Ein Tab, der vor einem Release geoeffnet wurde, bleibt nach dem Wechsel benutzbar (Daten weg, Nachlade-Skript
       # getauscht, Eingabe laeuft, kein sessionStorage, veralteter Cache). Echter Code, echte Sperre, kleine Releases.
       - name: Deployment switch with an open tab (browser)
+        # Nur bei Code-Aenderungen im PR blockierend: Datenlaeufe (workflow_run, schedule, dispatch) aendern die Code-Kennung
+        # nicht und duerfen durch einen flaky Browserlauf nicht an der Auslieferung frischer Daten gehindert werden.
+        if: github.event_name == 'pull_request'
         env:
           NODE_PATH: /tmp/vu2-smoke/node_modules
         run: node scripts/vu2/deploy-switch-qa.mjs --engine chromium

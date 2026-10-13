@@ -23,6 +23,7 @@ async function site(){
  await put(dir,'discover/ui/detail.js','var detail=1;');
  await put(dir,'discover/ui/tests/skip.test.js','ignored');
  await put(dir,'discover/data/meta.json','{"d":1}');
+ await put(dir,'core/europe-market-data.js','var core=1;');   // von europe-bootstrap.js zur Laufzeit nachgeladen
  return dir;
 }
 
@@ -60,6 +61,8 @@ test('Kennung bleibt bei Daten gleich und aendert sich mit verlinktem und nachge
   await put(dir,'discover/ui/detail.js','var detail=2;');
   const detail=await stampRelease(dir);
   assert.notEqual(detail.products.discover,lazy.products.discover,'Skript einer Discover-Gruppe im <template>');
+  await put(dir,'core/europe-market-data.js','var core=2;');
+  assert.notEqual((await stampRelease(dir)).products.discover,detail.products.discover,'core/ gehoert zur Discover-Kennung (Laufzeit-Skripte)');
   await put(dir,'quant/release-bundle.js','var bundle=2;');
   assert.notEqual((await stampRelease(dir)).products.quant,detail.products.quant,'verlinktes Buendel');
   await put(dir,'discover/ui/tests/skip.test.js','geaendert');

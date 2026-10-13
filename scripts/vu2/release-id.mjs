@@ -28,7 +28,8 @@ export const META_NAME='vu-release';
    lazy.js); top: JS/CSS-Dateien direkt in einem Verzeichnis (Discover: app.js, home.js ...). */
 export const PRODUCTS={
  quant:{page:'quant/index.html',dirs:['quant/app','quant/ui','quant/engines','quant/api'],top:[]},
- discover:{page:'discover/index.html',dirs:['discover/ui','discover/engines'],top:['discover']}
+ // core/: europe-bootstrap.js laedt core/europe-*.js zur Laufzeit nach (ohne Stempel, ohne Waechter) - gehoert zum Code des Tabs.
+ discover:{page:'discover/index.html',dirs:['discover/ui','discover/engines','core'],top:['discover']}
 };
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const CODE=/\.(?:js|css)$/;
