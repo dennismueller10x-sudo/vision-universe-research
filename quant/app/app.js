@@ -98,7 +98,7 @@
   var CB_CSS = "/quant/app/chartbild.css", cbCss = null;
   function chartbildCss() {
     if (!cbCss) cbCss = new Promise(function (ok) {
-      var l = document.createElement("link"); l.rel = "stylesheet"; l.href = CB_CSS;
+      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = CB_CSS + (own ? "?v=" + own.id : "");
       l.onload = function () { ok(true); }; l.onerror = function () { cbCss = null; ok(false); };
       document.head.appendChild(l);
     });
@@ -122,11 +122,17 @@
   function loadScript(src) {
     if (!lazy[src]) lazy[src] = new Promise(function (resolve) {
       var bundle = document.querySelector('script[src*="release-bundle.js"]'), v = bundle ? (bundle.getAttribute("src").split("?v=")[1] || "") : "";
+      /* Kennung der Pipeline (release-guard.js): gilt dem ganzen Produktcode, also auch dem Nachlade-Skript, das das Buendel nicht enthaelt. */
+      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity();
+      if (own) v = own.id;
       var s = document.createElement("script");
       s.src = src + (v ? "?v=" + v : ""); s.async = false;
       s.onload = function () { resolve(true); };
       s.onerror = function () { delete lazy[src]; resolve(false); };
-      document.head.appendChild(s);
+      /* Nachgeladener Code muss zum Buendel dieses Tabs passen: ist seit dem Laden ein neuer Release ausgeliefert, laedt der
+         Waechter die Seite neu (oder lehnt ab), statt ein neues Skript neben das alte Buendel zu setzen. */
+      var guard = global.VUReleaseGuard;
+      (guard ? guard.beforeLoad() : Promise.resolve()).then(function () { document.head.appendChild(s); }, function () { delete lazy[src]; resolve(false); });
     });
     return lazy[src];
   }
