@@ -7,6 +7,25 @@ concurrency:
   group: landing-cloudflare-prepare-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
+  waitlist_audit:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/brevo-app-waitlist-doi'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ae5ba8b09871581949a9b25a5acd94ca832e5530
+          persist-credentials: false
+          sparse-checkout: landing
+      - name: Private DOI prerequisites, no email or contact mutations
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
+          LANDING_CLOUDFLARE_API_TOKEN: ${{ secrets.LANDING_CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: python3 landing/scripts/waitlist-admin.py
   prepare:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
