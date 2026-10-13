@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: a076f313da422e00dd8d7c9d4f020a1f9d3090a3
+          ref: ad3cc7d776f49535183e87236b93e37677b576cb
           persist-credentials: false
           sparse-checkout: landing
       - name: Private DOI prerequisites, no email or contact mutations
