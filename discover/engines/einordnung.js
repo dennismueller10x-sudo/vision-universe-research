@@ -137,7 +137,9 @@
       : { id: "bewertung", label: "Bewertung", wert: null, ton: null,
           fehlt: g.kgvStatus === "WITHHELD_REDISTRIBUTION"
             ? "Ohne ausgelieferten Kurs lässt sich die Bewertung nicht berechnen."
-            : "Für diesen Titel liegen keine Gewinnzahlen vor." });
+            : g.kgvStatus === "NON_USD_REPORTING"
+              ? "Das Unternehmen meldet seine Gewinne in " + (g.berichtswaehrung || "einer anderen Währung") + "; gegen den Dollarkurs wird daraus kein Kurs-Gewinn-Verhältnis gebildet."
+              : "Für diesen Titel liegen keine Gewinnzahlen vor." });
 
     /* Trend - liegt fuer jeden Titel vor, der eine Kursreihe hat */
     var t = trendStufe(m);
