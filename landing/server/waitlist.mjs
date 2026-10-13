@@ -91,7 +91,7 @@ async function brevo(env, method, path, body, fetcher) {
     method==='PUT' && /^\/contacts\/\d+$/.test(path);
   if(!permitted)throw Error('Denied');
   const response=await fetcher(API+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),
-    headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json',...(body?{'Content-Type':'application/json'}:{})},
+    headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json','User-Agent':'VisionUniverse-Waitlist/1.0',...(body?{'Content-Type':'application/json'}:{})},
     ...(body?{body:JSON.stringify(body)}:{})});
   if(method==='GET' && response.status===404)return null;
   if(!response.ok)throw Error('Provider rejected');

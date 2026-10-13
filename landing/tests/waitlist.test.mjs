@@ -14,6 +14,7 @@ function fixture(){
     WAITLIST_DOI_TEMPLATE_ID:'1',WAITLIST_CONFIRMATION_TEMPLATE_ID:'2',WAITLIST_PUBLIC_ENABLED:'true',WAITLIST_PRIVACY_APPROVED:'true',WAITLIST_E2E_VERIFIED:'true'};
   let contact=null;const calls=[];let failure=false;
   const fetcher=async(url,options)=>{
+    assert.equal(options.headers['User-Agent'],'VisionUniverse-Waitlist/1.0');
     const path=new URL(url).pathname;const body=options.body?JSON.parse(options.body):null;
     calls.push({path,method:options.method,body});
     if(failure)throw Error('synthetic-provider-key recipient@example.test');
@@ -54,6 +55,9 @@ test('Only official DOI adds list 5 after provider click; callback cannot fabric
   assert.equal(f.contact,null);assert.equal((await f.run('confirmed',{token})).status,409);
   f.setContact({id:99,emailBlacklisted:false,listIds:[5],attributes:doi.body.attributes});
   assert.equal((await f.run('confirmed',{token})).status,200);
+  assert.equal((await f.run('confirmed',{token})).status,200);
+  const notices=f.calls.filter(c=>c.path==='/v3/smtp/email');assert.equal(notices.length,1);
+  assert.equal(new URLSearchParams(new URL(notices[0].body.params.unsubscribe_url).hash.slice(1)).get('t'),token);
   const row=f.sqlite.prepare('SELECT * FROM waitlist_requests').get();assert.equal(row.state,'confirmed');assert.equal(row.request_id,payload.requestId);
   assert.equal(eligibleAppRecipient(f.contact,row),true);
 });
