@@ -27,7 +27,7 @@ permissions:
 jobs:
   experience:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,8 +37,8 @@ jobs:
         run: node --test scripts/vu2/resource-budget.test.mjs
       - name: Install isolated browser test dependency
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
-      - name: Install Chromium
-        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Install Chromium and WebKit
+        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Build the exact static release artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
       - name: Compact delivery script without changing identifiers or removing code
@@ -51,6 +51,19 @@ jobs:
         run: |
           cd "$RUNNER_TEMP/quant2-site"
           node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+      # PR #619 (Discover): ein WebKit-Race trat nur ueber die Zugangsmaske auf (document.write-Pfad). Das Skript verpackt die
+      # HTML-Seiten des Release wie pages-release.yml (protectRelease, Einmalpasswort) und laedt jede Quant-Route durch die
+      # Maske, auch unter langsamer Verbindung und parallel. Leere Seiten gelten nicht als bestanden.
+      - name: Direct links through the active access gate, slow networks and parallel loads
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+        run: |
+          mkdir -p /tmp/vu2-direct
+          chromium_status=0
+          webkit_status=0
+          node scripts/vu2/browser-qa-direct.mjs --release "$RUNNER_TEMP/quant2-site" --engine chromium --out /tmp/vu2-direct || chromium_status=$?
+          node scripts/vu2/browser-qa-direct.mjs --release "$RUNNER_TEMP/quant2-site" --engine webkit --out /tmp/vu2-direct || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       # Die sechs Saetze, an denen am 25.09.2026 eine falsche Auskunft stand,
       # je an einem Titel, an dem der Fall wirklich auftritt. Laeuft gegen
       # dasselbe ausgelieferte Verzeichnis wie die Reise-QA darueber.
@@ -64,6 +77,13 @@ jobs:
           name: quant2-release-candidate
           path: ${{ runner.temp }}/quant2-site
           include-hidden-files: true
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vu2-direct-links
+          path: /tmp/vu2-direct
+          if-no-files-found: ignore
           retention-days: 14
       - uses: actions/upload-artifact@v4
         if: always()
