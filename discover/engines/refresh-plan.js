@@ -44,6 +44,7 @@
     maxDataAgeOpenMin: 60,                /* Kursdaten älter als das gelten bei offener Börse als veraltet */
     maxDataAgeCloseMin: 30,               /* beim Schlussslot muss der Stand aus den letzten 30 Min. vor Schluss stammen */
     retryMin: 20,                         /* ein nicht schlüssiges Ergebnis wird frühestens so oft neu versucht */
+    basisPublishMin: 120,                 /* so lange darf eine neue Abendlauf-Basis unveröffentlicht bleiben, bevor die Überwachung hinweist */
     validGraceMin: 90                     /* Anzeige gilt bis zum nächsten Slot + dieser Spanne */
   };
   /* Zustände, deren Veröffentlichung einen Slot erledigt. */
@@ -133,6 +134,9 @@
     }
     if (!published || !published.slot) return throttle(plan, ctx, { action: "COMPUTE", reason: "NO_PUBLISHED" });
     if (ctx.schemaVersion && published.schemaVersion !== ctx.schemaVersion) return { action: "COMPUTE", reason: "SCHEMA_CHANGED" };
+    /* Ein verspaeteter Nachtlauf mit einer aelteren Basis, als schon veroeffentlicht ist,
+       rechnet nichts: die Basis geht nie rueckwaerts (ISO-Daten sind ordnungstreu). */
+    if (published.eodAsOf && ctx.basisAsOf && published.eodAsOf > ctx.basisAsOf) return { action: "SKIP", reason: "BASIS_OLDER" };
     var ps = published.slot.dueAt, ds = plan.due.dueAt;
     if (ps > ds) return { action: "SKIP", reason: "PUBLISHED_NEWER" };
     if (ps === ds && published.eodAsOf === ctx.basisAsOf) {
@@ -166,6 +170,7 @@
    */
   function mayReplace(published, fresh) {
     if (!published) return { ok: true, reason: "NOTHING_PUBLISHED" };
+    if (published.eodAsOf && fresh.eodAsOf && fresh.eodAsOf < published.eodAsOf) return { ok: false, reason: "OLDER_BASIS" };
     var sameSession = published.sessionDate === fresh.sessionDate && published.eodAsOf === fresh.eodAsOf;
     if (!sameSession) return { ok: true, reason: "OTHER_SESSION" };
     var pubConclusive = !!CONCLUSIVE[published.status], freshConclusive = !!CONCLUSIVE[fresh.status];
@@ -205,7 +210,7 @@
    * bleibt es still.
    *
    * monitor  Inhalt von discover/live/monitor-<U>.json (oder null)
-   * ctx      {nowMs, eodAsOf}  eodAsOf: Stand des Abendlaufs (Basis)
+   * ctx      {nowMs, eodAsOf, eodGeneratedAt}  eodAsOf: Stand des Abendlaufs (Basis)
    */
   function assess(monitor, calendar, ctx) {
     var nowMs = ctx.nowMs, plan = planAt(nowMs, calendar), findings = [];
@@ -235,6 +240,15 @@
     }
     if (errCode && inWindow && !findings.some(function (f) { return f.code === errCode; })) {
       add("WARN", errCode, "Letzte Rechnung: " + errText);
+    }
+    /* Der Abendlauf hat eine neuere Basis geliefert, als die Veroeffentlichung kennt, und
+       die Nachtlauf-Stufe hat sie auch nach zwei Stunden nicht uebernommen (Stufe nicht
+       gelaufen oder gescheitert). Nur ein Hinweis: der naechste Slot rechnet ohnehin neu,
+       und die Startseite waehlt die Schlusskurs-Auswahl nach der Basis, nicht nach dieser Datei. */
+    var basisAlterMin = ctx.eodGeneratedAt ? Math.round((nowMs - Date.parse(ctx.eodGeneratedAt)) / 60000) : null;
+    if (pub && pub.eodAsOf && ctx.eodAsOf && ctx.eodAsOf > pub.eodAsOf && plan.marketState !== "OPEN" &&
+        basisAlterMin !== null && basisAlterMin > CONFIG.basisPublishMin) {
+      add("WARN", "BASIS_NOT_PUBLISHED", "Neue Basis " + ctx.eodAsOf + " (seit " + basisAlterMin + " Min.), veroeffentlicht ist noch " + pub.eodAsOf + " - die Nachtlauf-Stufe 'imblick' ist nicht gelaufen oder gescheitert.");
     }
     /* Ausserhalb der Kalenderabdeckung sind Feiertage unbekannt: nie FAIL. */
     if (plan.calendarCoverage === false) {

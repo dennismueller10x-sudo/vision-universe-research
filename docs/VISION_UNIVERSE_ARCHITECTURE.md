@@ -158,6 +158,7 @@ Das Betriebshandbuch mit konkreten Reparaturschritten steht in [docs/operations/
 | Suite | Befehl | Umfang (03.10.2026) |
 |---|---|---|
 | Core | `node --test "core/tests/*.test.mjs"` | 52 Tests: Identität, Health, Datenqualität, Diagnose, Contracts, Golden Paths |
+| Core, Zustandstests | `node scripts/ci/state-gate.mjs --strict` | Querverträge über erzeugte Daten zweier Produkte (`core/tests/state/`); im PR nur blockierend, wenn der PR einen Eingang berührt, sonst streng (main, Zeitplan) |
 | Quant und Plattform | `node --test "quant/tests/*.test.mjs"` | 2.315 Tests |
 | Discover, Supertrader, Screener | `node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"` | 494 Tests |
 | Social | `node --test "social/tests/*.test.mjs" "workers/vision-universe-social/tests/*.test.mjs"` | 2.319 Tests |
