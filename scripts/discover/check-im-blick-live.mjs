@@ -16,6 +16,8 @@
      RECOMPUTE_LATE     faellig, noch nicht lange             -> WARN
      DATA_STALE         der Lauf fand statt, Kurse waren alt  -> WARN
      COMPUTE_ERROR      der Lauf fand statt, Fehler           -> WARN
+     BASIS_NOT_PUBLISHED  neue Abendlauf-Basis, seit 2 h nicht
+                        uebernommen (Nachtlauf-Stufe fehlt)   -> WARN
      CALENDAR_OUT_OF_RANGE  Kalender deckt den Tag nicht ab   -> WARN (nie FAIL)
 
    Ausserhalb der Handelszeiten, an Feiertagen und nach dem Abendlauf bleibt
@@ -64,6 +66,7 @@ let monitor = null, meta = null, lesefehler = null;
 try { monitor = await hole("/discover/live/monitor-" + U + ".json"); } catch (e) { lesefehler = String(e.message || e); }
 try { meta = await hole("/discover/data/meta.json"); } catch (e) { lesefehler = lesefehler || String(e.message || e); }
 const eodAsOf = meta && Array.isArray(meta.universes) && meta.universes[0] ? meta.universes[0].asOf : null;
+const eodGeneratedAt = meta && Array.isArray(meta.universes) && meta.universes[0] ? meta.universes[0].generatedAt || null : null;
 
 const zeilen = [];
 let level = "OK";
@@ -78,7 +81,7 @@ if (lesefehler && !monitor) {
     process.exit(0);
   }
 }
-const r = RefreshPlan.assess(monitor, CALENDAR, { nowMs: NOW.getTime(), eodAsOf });
+const r = RefreshPlan.assess(monitor, CALENDAR, { nowMs: NOW.getTime(), eodAsOf, eodGeneratedAt });
 level = r.level;
 zeilen.unshift("Im Blick live (" + U + "): " + level + " · Marktstatus " + r.plan.marketState +
   " · faelliger Slot " + (r.plan.due ? r.plan.due.id + " (vor " + r.plan.dueAgeMin + " Min.)" : "-") +

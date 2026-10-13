@@ -127,6 +127,23 @@ Der erste Stundenplan (`17 13-21 * * 1-5`) erzeugte am 12.10. keinen einzigen La
 - **Nicht belegt:** *warum*. GitHub nennt für ein nicht angelegtes Ereignis keinen Grund; dokumentiert ist, dass Ereignisse unter hoher Actions-Last verzögert oder verworfen werden. Dass die hohe Last dieses Repositories (an diesem Nachmittag rund 300 Läufe in vier Stunden) die Ursache ist, ist eine gut gestützte Vermutung, kein Nachweis.
 - **Folge:** Die Aktualisierung darf an keinem pünktlichen Zeitplan hängen. Der Cloudflare-Wecker (`worker-waker/`, GitHub App) steht außerhalb von GitHub und weckt den Taktgeber nachweislich zuverlässig.
 
+### Nach dem Nachtlauf (ereignisgesteuert, seit 13.10.2026)
+
+Die Schlusskurs-Basis (`discover/data/im-blick/basis-US_REAL.json`) kommt erst mit dem Marktdaten-Refresh. Damit die Veröffentlichung nicht bis zum ersten Slot des Tages (15:00/16:00 UTC) auf der alten Basis stehen bleibt, ist „Im Blick“ die **letzte Stufe** von `market-data-refresh.yml` (Job `imblick`).
+
+- **Wann:** erst wenn `refresh` (Kurse, Faktoren, Discover-Daten, Gates), `materialize` und `freshness-contract` alle `success` sind. Kein `workflow_run` (nachweislich auf `main` nie gefeuert, siehe Kommentar im Workflow), sondern `needs` in derselben Orchestrierung. Kein Rohdaten-Commit als Auslöser: die Stufe wartet, bis die nachgelagerte Verarbeitung durch ist.
+- **Was:** derselbe Baustein, derselbe Algorithmus und dieselbe Frage („was ist fällig, was ist veröffentlicht?“) mit `--nachtlauf`. Das Scoring ändert sich nicht. Nach dem Nachtlauf ist die jüngste Sitzung abgeschlossen: Ergebnis ist `EOD_CURRENT` (bestätigte Schlusskurse); die Startseite zeigt dann die Schlusskurs-Auswahl und nie eine „intraday“-Karte.
+- **Datenintegrität (strenger als bei Wecker-Läufen):**
+  - Datenversion: `basis.asOf` == `discover/data/meta.json` (Universum `US_REAL`).
+  - Handelsdatum: `basis.asOf` ist die letzte abgeschlossene Sitzung des Börsenkalenders.
+  - Basis nicht leer, Datum gültig; das Ergebnis muss schlüssig sein.
+  - Die Basis geht nie rückwärts: ein verspäteter Lauf mit älterer Basis ist ein `SKIP (BASIS_OLDER)`; erzwungen verweigert `mayReplace` (`OLDER_BASIS`).
+  - Ein Fehler ersetzt **nichts**: die letzte gültige Auswahl bleibt, `monitor-US_REAL.json` hält `error.code = NIGHT_CHECK_FAILED` fest (`lastRun.result = NIGHT_NOT_CONCLUSIVE`), der Schritt endet mit Exit 1.
+- **Idempotent und ohne Wettlauf:** gleiche Concurrency-Gruppe wie `discover-im-blick-live.yml` (`discover-im-blick-live-<branch>`), nie abbrechen. Kommt der Wecker zuerst, ist der Nachtlauf bei gleicher Basis ein `UP_TO_DATE`; kommt der Nachtlauf zuerst, ersetzt der nächste Slot die `EOD_CURRENT`-Datei durch die neuere Intraday-Auswahl (andere Sitzung). Ein sehr später Nachtlauf, solange der fällige Slot noch fehlt, rechnet diesen Slot selbst.
+- **Der Nachtlauf bleibt grün:** `pages-release` verlangt `conclusion == success` des Marktlaufs. Rechnen und Push sind `continue-on-error`; ein Fehler geht über die Job-Ausgabe an den bestehenden Job `alarm` (Issue `[market-data-refresh]`, Label `pipeline-alarm`, mit Fehlertext), der Lauf und die Auslieferung der Nachtdaten bleiben unberührt.
+- **Überwachung:** zusätzlich zum Slot-Befund meldet `check-im-blick-live.mjs` `BASIS_NOT_PUBLISHED` (nur Warnung), wenn eine neue Basis seit mehr als zwei Stunden nicht übernommen ist und die Börse nicht offen ist.
+- **Kosten:** 0 €. Eine Stufe von etwa einer Minute je Nachtlauf, keine Anbieteranfrage, keine neue Infrastruktur. Wecker und Zwei-Stunden-Takt bleiben unverändert.
+
 ### Architektur: der Lauf ist eine Frage, kein Takt
 
 Ein Slot ist eine **Fälligkeit**, kein Auslöser. Jeder Lauf ermittelt aus dem Börsenkalender den zuletzt fälligen Slot und rechnet nur, wenn dessen Ergebnis noch nicht veröffentlicht ist.
