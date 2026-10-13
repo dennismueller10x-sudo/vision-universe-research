@@ -1,0 +1,95 @@
+name: Supertrader calibration fresh current capture (private)
+on:
+  push:
+    branches: ['research/supertrader-calibration-rerun-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: supertrader-calibration-current-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  current-rerun:
+    if: contains(github.event.head_commit.message, '[supertrader-calibration:current]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen current research scan; encrypted results only
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: >-
+          node scripts/supertrader/research/certification/current-rerun.mjs
+          --out "$RUNNER_TEMP/current-v2"
+          --freeze scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json
+          --eligibility scripts/supertrader/research/certification/SUPERTRADER-METHOD-ELIGIBILITY.json
+          --as-of 2026-10-12
+      - name: Preserve encrypted current results and safe counts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-calibration-current-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/current-v2/safe-status.json
+            ${{ runner.temp }}/current-v2/*.sealed.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Bound encrypted current source inputs without provider rereads
+        run: python3 scripts/supertrader/research/certification/repack-current-artifact.py --input "$RUNNER_TEMP/current-v2/inputs" --out "$RUNNER_TEMP/current-input-bundles"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-calibration-current-input-manifest-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/current-input-bundles/repack-manifest.json
+            ${{ runner.temp }}/current-input-bundles/repack-status.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload each bounded encrypted current input package
+        uses: actions/github-script@v7
+        env:
+          REPACK_DIRECTORY: ${{ runner.temp }}/current-input-bundles
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const {spawnSync} = require('child_process');
+            const dir = process.env.REPACK_DIRECTORY;
+            const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'repack-manifest.json'), 'utf8'));
+            const actionRoot = path.resolve(process.env.GITHUB_WORKSPACE, '../../_actions/actions/upload-artifact/v4');
+            const client = ['dist/upload/index.js', 'dist/index.js'].map(f => path.join(actionRoot, f)).find(f => fs.existsSync(f));
+            if (!client) throw new Error('OFFICIAL_ARTIFACT_CLIENT_UNAVAILABLE');
+            for (const item of manifest.bundles) {
+              if (!/^canonical-bundle-\d{4}\.zip$/.test(item.file)) throw new Error('INVALID_BUNDLE_NAME');
+              const uploaded = spawnSync(process.execPath, [client], {
+                env: {...process.env, INPUT_NAME: `supertrader-calibration-current-input-${context.runId}-${item.file.replace('.zip', '')}`,
+                  INPUT_PATH: path.join(dir, item.file), 'INPUT_RETENTION-DAYS': '30',
+                  'INPUT_IF-NO-FILES-FOUND': 'error', 'INPUT_COMPRESSION-LEVEL': '0', INPUT_OVERWRITE: 'false', 'INPUT_INCLUDE-HIDDEN-FILES': 'false'},
+                stdio: 'inherit'
+              });
+              if (uploaded.status !== 0) throw new Error('BOUNDED_ARTIFACT_UPLOAD_FAILED');
+            }
+            core.info(JSON.stringify({status: 'ENCRYPTED_BUNDLES_PRESERVED', bundles: manifest.bundles.length, providerReads: 0, performanceCalculated: false}));
