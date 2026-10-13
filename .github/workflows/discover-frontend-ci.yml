@@ -22,7 +22,7 @@ concurrency:
 jobs:
   frontend:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,6 +52,18 @@ jobs:
           webkit_status=0
           node scripts/discover/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence || chromium_status=$?
           node scripts/discover/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Direct links through the active access gate, slow networks and parallel loads
+        # PR #619: ein WebKit-Race trat nur ueber die Zugangsmaske auf (document.write-Pfad). Das Skript verpackt die HTML-Seiten
+        # des Release wie pages-release.yml (protectRelease, Einmalpasswort) und laedt jede Route durch die Maske.
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+        run: |
+          mkdir -p /tmp/discover-evidence/direct
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover/browser-qa-direct.mjs --release "$RUNNER_TEMP/discover-release" --engine chromium --out /tmp/discover-evidence/direct || chromium_status=$?
+          node scripts/discover/browser-qa-direct.mjs --release "$RUNNER_TEMP/discover-release" --engine webkit --out /tmp/discover-evidence/direct || webkit_status=$?
           test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       - name: Preserve screenshot and test evidence
         if: always()
