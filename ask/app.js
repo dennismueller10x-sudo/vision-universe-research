@@ -602,7 +602,7 @@
       if (!x.found) { box.appendChild(h('p', { text: x.symbol + ': Für diesen Titel liegt kein Chartbild vor.' })); return; }
       if (x.withheld) {
         box.appendChild(h('p', { text: x.symbol + ': ' + (x.notice || 'Analyse zurückgehalten.') }));
-        box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/quant/#/elliott/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
+        box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/elliott/#/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
         return;
       }
       var p = x.primaryScenario || {};
@@ -617,7 +617,7 @@
         h('tbody', {}, rows.map(function (rw) { return h('tr', {}, [h('td', { text: rw[0] }), h('td', { text: rw[1] || '–' })]); }))
       ])]));
       if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-atlas-hint', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Linie', confirmation: 'Bestätigung', target1: 'Zielzone 1' }[k] || k; }).join(', ') + '.' }));
-      box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/quant/#/elliott/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
+      box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/elliott/#/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
     });
     var first = res.stocks.filter(function (x) { return x.disclaimer; })[0];
     box.appendChild(h('ul', { class: 'ak-notes' }, [

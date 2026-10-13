@@ -24,8 +24,8 @@ import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { displayedTheses } from "../lib/ti-projection.mjs";
 
-export const HOME_VERSION = "elliott-home-1.0.0";
-export const HOME_SCHEMA = "vu-elliott-home-1.0.0";
+export const HOME_VERSION = "elliott-home-1.1.0";
+export const HOME_SCHEMA = "vu-elliott-home-1.1.0";
 export const HOME_PATH = "quant/data/technical-intelligence/v3/elliott-home.json";
 
 /** Rollen in Anzeigereihenfolge (klein = vorn). Rolle und Kennzeichnung bleiben im Kartenfeld role. */
@@ -126,15 +126,41 @@ function compareRecent(a, b) {
   return (a.chg.d < b.chg.d ? 1 : a.chg.d > b.chg.d ? -1 : 0) || RECENT_PRIORITY[a.chg.k] - RECENT_PRIORITY[b.chg.k] || compareCards(a, b);
 }
 
-/** Reihen. Nur Reihen mit mindestens MIN_ROW Karten; Titel und Regel sind Teil des Vertrags (die Seite erfindet nichts). */
+/** Praesentationsreihenfolge der Premium-Reihen (deterministisch, erklaerbar, ohne Punktwert und ohne Projektionsgroesse):
+    1 bestaetigt vor im Aufbau, 2 mehr Kontext in Thesenrichtung (Trend und Marktstruktur: 0-2), 3 besserer Rang im Kandidatenpool
+    (Highlights und Motiv-Alternativen; ohne Rang zuletzt), 4 staerkere Relative Staerke (26 Wochen), 5 Kuerzel. Kein neuer Score:
+    jeder Schritt ist ein Feld, das das Produkt schon fuehrt. */
+export function compareFlagship(a, b) {
+  const rank = (c) => (c.pool ? c.pool.pos / c.pool.size : 2);
+  const rs = (c) => (c.ctx && typeof c.ctx.rs === "number" ? c.ctx.rs : -1);
+  return (a.st === "CONFIRMED" ? 0 : 1) - (b.st === "CONFIRMED" ? 0 : 1)
+    || b.agree - a.agree
+    || rank(a) - rank(b)
+    || rs(b) - rs(a)
+    || (a.t < b.t ? -1 : a.t > b.t ? 1 : 0)
+    || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+}
+
+/** Trend in Thesenrichtung (Dow-Trend des Produkts). */
+export const trendAligned = (c) => !!(c.ctx && ((c.dir === "UP" && c.ctx.trend === "POSITIVE") || (c.dir === "DOWN" && c.ctx.trend === "NEGATIVE")));
+export const UPSIDE_MIN = 2;   // Obergrenze der erweiterten (sonst extremen, sonst Basis-)Stufe in Bruchteilen des Kurses: +200 %
+const bigSpan = (c) => { const t = c.tiers.ext || c.tiers.xtr || c.tiers.base; return t ? t[1] : 0; };
+export const RS_STRONG = 0.8;  // "Top 20 %" der Relativen Staerke: die Schwelle, die das Produkt selbst als TOP20 fuehrt
+
+/** Reihen in Anzeigereihenfolge. Titel und Regel sind Teil des Vertrags (die Seite erfindet nichts); nur Reihen mit mindestens MIN_ROW Karten.
+    kind: "flagship" (gross dargestellt), "primary", "secondary" (zurueckhaltend). cap = Karten auf der Startseite; ids = ALLE Karten der Reihe in Reihenfolge. */
 export const ROW_DEFS = [
-  { id: "wave3", title: "Welle-3-Lesarten", rule: "Lesarten, in denen eine Welle 3 laufen könnte", pick: (c) => c.wave === "3" },
-  { id: "wave5", title: "Welle-5-Lesarten", rule: "Lesarten, in denen eine Welle 5 laufen könnte", pick: (c) => c.wave === "5" },
-  { id: "waveC", title: "Welle-C-Lesarten", rule: "Lesarten, in denen eine Welle C laufen könnte", pick: (c) => c.wave === "C" },
-  { id: "recent", title: "Neu und verändert", rule: "Lesarten mit neuem Ereignis in den letzten " + RECENT_DAYS + " Tagen: neu, bestätigt, überarbeitet, Rolle gewechselt, Zone erreicht", pick: (c) => !!c.chg, sort: compareRecent },
-  { id: "bullish", title: "Aufwärts", rule: "Lesarten mit Aufwärtsrichtung", pick: (c) => c.dir === "UP" },
-  { id: "bearish", title: "Abwärts", rule: "Lesarten mit Abwärtsrichtung", pick: (c) => c.dir === "DOWN" },
-  { id: "engine", title: "Bevorzugte Lesart der Engine", rule: "Primäre Lesart und reguläre Alternative", pick: (c) => c.role === "PRIMARY" || c.role === "ALTERNATIVE" || c.role === "HIGH_UPSIDE" }
+  { id: "wave3", kind: "flagship", cap: 12, title: "Top Welle 3", rule: "Lesarten mit laufender Welle 3 · frische Daten · bestätigt vor im Aufbau, dann Kontext, Rang und Relative Stärke – nie nach Projektionsgröße", pick: (c) => c.wave === "3" && c.fr === "FRESH", sort: compareFlagship },
+  { id: "confirmed", kind: "primary", cap: ROW_CAP, title: "Neu bestätigt", rule: "Lesarten, die in den letzten " + RECENT_DAYS + " Tagen den Status „Bestätigt“ erreicht haben", pick: (c) => !!c.chg && c.chg.k === "CONFIRMED", sort: compareRecent },
+  { id: "recent", kind: "primary", cap: ROW_CAP, title: "Neu und verändert", rule: "Neue, überarbeitete und in der Rolle gewechselte Lesarten sowie erreichte Zonen der letzten " + RECENT_DAYS + " Tage", pick: (c) => !!c.chg && c.chg.k !== "CONFIRMED", sort: compareRecent },
+  { id: "trend", kind: "primary", cap: 12, title: "Im Einklang mit dem Trend", rule: "Der übergeordnete Trend läuft in Richtung der Lesart", pick: (c) => c.fr === "FRESH" && trendAligned(c), sort: compareFlagship },
+  { id: "strength", kind: "primary", cap: 12, title: "Starke Relative Stärke", rule: "Aufwärtslesarten von Aktien im obersten Fünftel der 26-Wochen-Relativen-Stärke", pick: (c) => c.fr === "FRESH" && c.dir === "UP" && !!c.ctx && typeof c.ctx.rs === "number" && c.ctx.rs >= RS_STRONG, sort: compareFlagship },
+  { id: "bullHighlights", kind: "primary", cap: 12, title: "Aufwärts-Highlights", rule: "Explore Highlights mit Aufwärtsrichtung", pick: (c) => c.role === "EXPLORE_HIGHLIGHT" && c.dir === "UP", sort: compareFlagship },
+  { id: "bearHighlights", kind: "primary", cap: 12, title: "Abwärts-Highlights", rule: "Explore Highlights mit Abwärtsrichtung", pick: (c) => c.role === "EXPLORE_HIGHLIGHT" && c.dir === "DOWN", sort: compareFlagship },
+  { id: "wave5", kind: "primary", cap: ROW_CAP, title: "Welle 5", rule: "Lesarten, in denen eine Welle 5 laufen könnte", pick: (c) => c.wave === "5" },
+  { id: "waveC", kind: "primary", cap: 12, title: "Welle C", rule: "Lesarten, in denen eine Welle C laufen könnte", pick: (c) => c.wave === "C", sort: compareFlagship },
+  { id: "engine", kind: "primary", cap: 12, title: "Bevorzugte Lesart der Engine", rule: "Primäre Lesart und reguläre Alternative", pick: (c) => c.role === "PRIMARY" || c.role === "ALTERNATIVE" || c.role === "HIGH_UPSIDE", sort: compareFlagship },
+  { id: "span", kind: "secondary", cap: 12, title: "Große Projektionsspanne", rule: "Aufwärtslesarten mit frischen Daten, deren erweiterte Zone mindestens +" + Math.round(UPSIDE_MIN * 100) + " % reicht. Rechnerische Spannen, keine Erwartung; die Reihenfolge richtet sich nicht nach der Größe.", pick: (c) => c.fr === "FRESH" && c.dir === "UP" && bigSpan(c) >= UPSIDE_MIN, sort: compareFlagship }
 ];
 
 /** Alle Karten eines Shard-Dokuments (ein Titel). Projektion Woche vor Tag, gleiche These nur einmal. */
@@ -175,7 +201,7 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf }) {
     const all = sorted.filter(def.pick);
     if (all.length < MIN_ROW) continue;
     const ordered = def.sort ? all.slice().sort(def.sort) : all;
-    rows.push({ id: def.id, title: def.title, rule: def.rule, total: all.length, ids: ordered.slice(0, ROW_CAP).map((c) => c.id) });
+    rows.push({ id: def.id, kind: def.kind, title: def.title, rule: def.rule, cap: def.cap, total: all.length, ids: ordered.map((c) => c.id) });
   }
   const symbols = new Set(sorted.map((c) => c.t));
   const proj = (meta && meta.projection) || {};
@@ -190,6 +216,7 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf }) {
       bullish: filters.dir.UP || 0, bearish: filters.dir.DOWN || 0,
       confirmed: filters.st.CONFIRMED || 0, developing: filters.st.DEVELOPING || 0,
       wave3: filters.wave["3"] || 0, wave5: filters.wave["5"] || 0, waveC: filters.wave.C || 0,
+      highlights: sorted.filter((c) => c.role === "EXPLORE_HIGHLIGHT").length, newlyConfirmed: sorted.filter((c) => c.chg && c.chg.k === "CONFIRMED").length,
       delayed: sorted.filter((c) => c.fr === "DELAYED").length, recent: sorted.filter((c) => c.chg).length
     },
     filters,

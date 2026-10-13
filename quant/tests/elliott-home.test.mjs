@@ -101,7 +101,7 @@ test("EH-7 · rows are derived from the data, small groups form no row, and no t
   for (let i = 0; i < 5; i++) cards.push({ id: "W3" + i, t: "W3" + i, role: "EXPLORE_HIGHLIGHT", wave: "3", dir: "UP", st: "CONFIRMED", pool: null, agree: 0, tiers: {}, fr: "FRESH" });
   cards.push({ id: "W5", t: "W5", role: "EXPLORE_HIGHLIGHT", wave: "5", dir: "DOWN", st: "DEVELOPING", pool: null, agree: 0, tiers: {}, fr: "FRESH" });
   const home = H.assembleHome({ cards, meta: {}, dataAsOf: "2026-10-09" });
-  assert.deepEqual(home.rows.map((r) => r.id), ["wave3", "bullish"].filter((id) => home.rows.some((r) => r.id === id)));
+  assert.ok(home.rows.some((r) => r.id === "wave3"));
   assert.ok(home.rows.find((r) => r.id === "wave3").total === 5);
   assert.ok(!home.rows.some((r) => r.id === "wave5"), "eine einzelne Karte bildet keine Reihe");
   assert.equal(home.filters.wave["5"], 1, "bleibt aber ueber den Filter erreichbar");
@@ -116,8 +116,8 @@ test("EH-7 · rows are derived from the data, small groups form no row, and no t
 test("EH-8 · build is deterministic and the index is compact", { skip: !HAVE_DATA && "v3-Daten fehlen" }, () => {
   const a = H.buildHomeFromDir(ROOT), b = H.buildHomeFromDir(ROOT);
   assert.equal(JSON.stringify(a), JSON.stringify(b));
-  assert.equal(a.schemaVersion, "vu-elliott-home-1.0.0");
-  assert.equal(a.version, "elliott-home-1.0.0");
+  assert.equal(a.schemaVersion, "vu-elliott-home-1.1.0");
+  assert.equal(a.version, "elliott-home-1.1.0");
   assert.equal(M.validate(a).ok, true);
   const bytes = gunzipSync ? Buffer.byteLength(JSON.stringify(a)) : 0;
   assert.ok(bytes < 400 * 1024, "kompakter Index: " + bytes + " B");
@@ -139,7 +139,7 @@ test("EH-9 · against the published data: nothing withheld, only product titles,
     assert.ok(c.n && c.n !== "", "Name fehlt: " + c.t);
   }
   for (const r of home.rows) {
-    assert.ok(r.ids.length > 0 && r.ids.length <= H.ROW_CAP);
+    assert.ok(r.ids.length > 0 && r.ids.length === r.total && r.cap <= H.ROW_CAP);
     for (const id of r.ids) assert.ok(byId.has(id), r.id + " verweist auf unbekannte Karte " + id);
     const def = H.ROW_DEFS.find((d) => d.id === r.id);
     assert.equal(r.total, home.cards.filter(def.pick).length, r.id + ": Anzahl entspricht den Karten");
@@ -163,7 +163,7 @@ test("EH-9 · against the published data: nothing withheld, only product titles,
   const list = new Map(gz(join(ROOT, "quant/data/product/universe-list-v1.json.gz")).entries.map((e) => [e.s, e]));
   for (const c of home.cards) { const e = list.get(c.t); assert.equal(e.t, "COMMON_STOCK", c.t + " ist keine Stammaktie"); assert.ok(!e.ic, c.t + " hat einen Identitaetskonflikt"); assert.ok(["CONFIRMED", "DEVELOPING"].includes(c.st)); }
   /* "Alle N" einer Reihe oeffnet genau N Karten */
-  for (const r of home.rows) { const f = M.rowFilter(r.id); if (f) assert.equal(M.filterCards(home.cards, Object.assign(M.parseHash("#/"), f)).length, r.total, r.id + ": Alle-Link und Reihe stimmen ueberein"); }
+  for (const r of home.rows) assert.equal(M.filterCards(home.cards, M.parseHash(M.rowHref(r)), home.rows).length, r.total, r.id + ": Alle-Link und Reihe stimmen ueberein");
 });
 
 /* ---------------------------------------------------------------- 2 Darstellung: Zahlen und Worte */
@@ -206,7 +206,7 @@ test("EH-11 · labels and price are correct", () => {
 /* ---------------------------------------------------------------- 3 Filter, Adresse, Suche */
 test("EH-12 · URL state round-trips, unknown values are dropped, a ticker is an alias to the detail", () => {
   const s = M.parseHash("#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
-  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, suche: false, q: "", ticker: null });
+  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, q: "", ticker: null, detailQuery: "" });
   assert.equal(M.buildHash(s), "#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
   assert.equal(M.buildHash(M.parseHash("#/")), "#/");
   assert.equal(M.parseHash("#/?welle=9&richtung=x&rolle=nix").welle, null, "Tippfehler ergeben keine leere Liste");
@@ -215,8 +215,11 @@ test("EH-12 · URL state round-trips, unknown values are dropped, a ticker is an
   assert.equal(M.parseHash("#/").ticker, null);
   assert.equal(M.parseHash("").ticker, null);
   assert.equal(M.parseHash("#/?suche=1").suche, true);
-  assert.equal(M.detailHref("nvda"), "/quant/#/elliott/NVDA");
-  assert.equal(M.detailHref("BRK-B"), "/quant/#/elliott/BRK-B");
+  assert.equal(M.detailHref("nvda"), "/elliott/#/NVDA");
+  assert.equal(M.detailHref("BRK-B"), "/elliott/#/BRK-B");
+  assert.equal(M.parseHash("#/NVDA?ansicht=profi").detailQuery, "ansicht=profi");
+  assert.equal(M.parseHash("#/?reihe=trend").reihe, "trend");
+  assert.equal(M.parseHash("#/?reihe=../x").reihe, null);
 });
 
 test("EH-13 · filters combine, chips hide empty groups, tapping again clears, empty states are honest", () => {
@@ -246,6 +249,8 @@ test("EH-13 · filters combine, chips hide empty groups, tapping again clears, e
   assert.equal(M.validate({ schemaVersion: "x" }).ok, false);
   assert.equal(M.validate(null).ok, false);
   assert.equal(M.validate({ schemaVersion: "vu-elliott-home-1.0.0", version: "elliott-home-9.9.9", cards: [], rows: [] }).ok, false, "fremde Version wird nicht angezeigt");
+  assert.equal(M.validate({ schemaVersion: "vu-elliott-home-1.1.0", version: "elliott-home-1.1.0", cards: [], rows: [] }).ok, true);
+  assert.equal(M.validate({ schemaVersion: "vu-elliott-home-1.0.0", version: "elliott-home-1.0.0", cards: [], rows: [] }).ok, true, "der alte Vertrag bleibt lesbar");
 });
 
 test("EH-14 · search ranks exact ticker, then ticker prefix, then name; stock search works without an Elliott card", () => {
@@ -268,10 +273,15 @@ test("EH-15 · the page never scans shards, never defaults to a stock, loads one
   const app = read("elliott/app.js"), model = read("elliott/engine/home-model.js"), html = read("elliott/index.html");
   assert.doesNotMatch(app + model, /\/shards\/|technical-intelligence\/v3\/(index|shards)|index\.json\.gz/, "kein Shard- und kein Voll-Index-Abruf");
   assert.match(model, /INDEX_PATH = "\/quant\/data\/technical-intelligence\/v3\/elliott-home\.json"/);
-  assert.match(html, /rel="preload"[^>]*elliott-home\.json/);
+  assert.match(html, /elliott-home\.json/, "Vorladen des Index");
+  assert.match(html, /test\(location\.hash\)\)\{[^]*?\}var l=document\.createElement/, "ein Aktien-Deep-Link laedt den Index nicht vor ...");
+  assert.match(html, /fetch\("\/quant\/index\.html"[^]*?rel="preload";l\.as="script"/, "... sondern fordert den Quant-Stack (Chartbild) sofort an, parallel zu app.js");
+  assert.ok(html.indexOf('fetch("/quant/index.html"') < html.indexOf('l.href="/quant/data/technical-intelligence/v3/elliott-home.json"'), "Stack-Vorladen nur im Deep-Link-Zweig");
   assert.doesNotMatch(app + model + html, /NVDA|NVIDIA/, "kein fest verdrahteter Titel");
+  assert.doesNotMatch(app + model, /\/quant\/#\/elliott|\/quant\/#\/aktie\/[^"]*chartbild/, "keine Quant-Adresse fuer Elliott");
   assert.match(html, /\/assets\/site-navigation\.js/);
   assert.ok(!/quant\/release-bundle|quant\/app\/|quant\/ui\//.test(html), "kein Quant-Buendel auf der Elliott-Startseite");
+  assert.match(app, /"\/quant\/index\.html"/, "das Buendel kommt erst beim Aktienbild, aus der einen Liste in quant/index.html");
   /* Start ohne Zustand zeigt die Startseite, nie eine Aktie */
   assert.equal(M.parseHash("#/").ticker, null);
   assert.equal(M.parseHash("").ticker, null);
@@ -297,7 +307,7 @@ test("EH-16 · accessibility basics of the page", () => {
 });
 
 /* ---------------------------------------------------------------- 5 Routen */
-test("EH-17 · routes: Quant hosts #/elliott/<T>, old Technik/Chartbild links are redirected, Quant no longer owns Elliott", () => {
+test("EH-17 · routes: /elliott/#/<T> is the native route; Quant only redirects (old Technik/Chartbild/#/elliott links)", () => {
   const app = read("quant/app/app.js"), ui = read("quant/app/ui.js");
   const from = app.indexOf("function legacyRoute("), to = app.indexOf("var SECTION");
   const { parse, legacyRoute, canonicalElliott } = new Function(app.slice(from, to) + "; return { legacyRoute, parse, canonicalElliott };")();
@@ -306,30 +316,42 @@ test("EH-17 · routes: Quant hosts #/elliott/<T>, old Technik/Chartbild links ar
   assert.equal(parse("#/elliott/BRK-B").ticker, "BRK-B");
   assert.equal(parse("#/elliott").view, "elliottHome", "ohne Aktie: zur Elliott-Startseite");
   assert.equal(parse("#/elliott/%%%").view, "notfound");
-  assert.equal(canonicalElliott(parse("#/aktie/NVDA/technik?elliott=1")), "#/elliott/NVDA?ansicht=profi");
-  assert.equal(canonicalElliott(parse("#/aktie/NVDA/technik")), "#/elliott/NVDA");
-  assert.equal(canonicalElliott(parse("#/aktie/SE/chartbild?ansicht=profi")), "#/elliott/SE?ansicht=profi");
-  assert.equal(canonicalElliott(parse("#/aktie/SE/chartbild")), "#/elliott/SE");
-  assert.equal(legacyRoute("?view=elliott&ticker=NVDA"), "#/elliott/NVDA?ansicht=profi");
-  assert.equal(legacyRoute("?view=elliott"), "#/elliott");
-  assert.equal(parse(legacyRoute("?view=elliott")).view, "elliottHome");
-  /* der Router: Umleitung per location.replace (kein Verlaufseintrag), Aktienbild im Produktkontext */
-  assert.match(app, /global\.location\.replace\(canonicalElliott\(r\)\)/);
-  assert.match(app, /chartbild\(main, ctx, r\.ticker, r\.params, \{ product: "elliott" \}\)/);
-  assert.match(app, /elliott: null/, "Aktienbild markiert keinen Quant-Eintrag der Leiste");
-  /* Linkbauer: Chartbild-Links der Quant-Seiten fuehren in das Elliott-Produkt */
+  /* alle alten Adressen enden auf der nativen Adresse */
+  assert.equal(canonicalElliott(parse("#/aktie/NVDA/technik?elliott=1")), "/elliott/#/NVDA?ansicht=profi");
+  assert.equal(canonicalElliott(parse("#/aktie/NVDA/technik")), "/elliott/#/NVDA");
+  assert.equal(canonicalElliott(parse("#/aktie/SE/chartbild?ansicht=profi")), "/elliott/#/SE?ansicht=profi");
+  assert.equal(canonicalElliott(parse("#/aktie/SE/chartbild")), "/elliott/#/SE");
+  assert.equal(canonicalElliott(parse("#/elliott/SE?ansicht=profi")), "/elliott/#/SE?ansicht=profi", "/quant/#/elliott/<T> -> nativ, Zustand bleibt");
+  assert.equal(legacyRoute("?view=elliott&ticker=NVDA"), "/elliott/#/NVDA?ansicht=profi");
+  assert.equal(legacyRoute("?view=elliott"), "/elliott/");
+  /* der Router leitet ALLE drei Ansichten per location.replace um (kein Verlaufseintrag) und rendert das Aktienbild nicht selbst */
+  assert.match(app, /r\.view === "chartbild" \|\| r\.view === "technik" \|\| r\.view === "elliott"\) \{ global\.location\.replace\(canonicalElliott\(r\)\)/);
+  assert.doesNotMatch(app.slice(app.indexOf("async function route(")), /case "elliott":/, "Quant rendert kein eigenes Elliott-Aktienbild mehr (parse kennt die Route nur zum Umleiten)");
+  /* Gast-Betrieb: window.QX_HOST, kein eigener Router, kein "/"-Kuerzel, ein <main> je Aufruf, Quant-Links zeigen auf /quant/ */
+  assert.match(app, /var HOSTED = !!global\.QX_HOST/);
+  assert.match(app, /if \(HOSTED\) \{ \/\* kein eigener Router \*\/ \}/);
+  assert.match(app, /if \(HOSTED\) return;\s+\/\/ im Elliott-Produkt/);
+  assert.match(app, /mountElliott: mountElliott/);
+  assert.match(app, /"\/quant\/" \+ h/);
+  /* Linkbauer: Chartbild-Links der Quant-Seiten fuehren in das Elliott-Produkt (absolut) */
   const routes = new Function(ui.match(/var routes = \{[\s\S]*?\n  \};/)[0] + "\nreturn routes;")();
-  assert.equal(routes.chartbild("nvda"), "#/elliott/NVDA");
-  assert.equal(routes.elliott("SE", "ansicht=profi"), "#/elliott/SE?ansicht=profi");
-  /* VU Ask und Landingpage zeigen auf das Produkt, nicht auf eine feste Aktie */
-  assert.match(read("quant/api/product-services.js"), /\['Elliott','\/quant\/#\/elliott\/'\+q\+'\?ansicht=profi'\]/);
-  assert.doesNotMatch(read("scripts/home/index.template.html"), /aktie\/NVDA\/chartbild/);
+  assert.equal(routes.chartbild("nvda"), "/elliott/#/NVDA");
+  assert.equal(routes.elliott("SE", "ansicht=profi"), "/elliott/#/SE?ansicht=profi");
+  /* VU Ask, Watchlist-Faehigkeiten, Technik-Vertrag und Landingpage: native Adresse, keine feste Aktie */
+  const ps = read("quant/api/product-services.js");
+  assert.match(ps, /\['Elliott','\/elliott\/#\/'\+q\+'\?ansicht=profi'\]/);
+  assert.doesNotMatch(ps, /\/quant\/#\/elliott|\/quant\/#\/aktie\/'\+[^;]{0,60}\/(technik|chartbild)/, "product-services fuehrt kein Elliott ueber /quant/");
+  assert.doesNotMatch(read("quant/api/technical-workspace-contract.js"), /\/technik'/);
+  assert.match(read("ask/app.js"), /href: '\/elliott\/#\/' \+ encodeURIComponent\(x\.symbol\)/);
+  assert.doesNotMatch(read("ask/app.js"), /quant\/#\/elliott/);
+  assert.doesNotMatch(read("scripts/home/index.template.html"), /aktie\/NVDA\/(chartbild|technik)/);
+  assert.match(read("scripts/home/index.template.html"), /data-mod="technik" href="\/elliott\/#\/NVDA"/, "Startseite fuehrt ueber die native Elliott-Route");
 });
 
 test("EH-18 · Elliott detail context: breadcrumb back to Elliott, honest abstention instead of a redirect", () => {
   const cb = read("quant/app/page-chartbild.js");
   assert.match(cb, /function elliottBar\(/);
-  assert.match(cb, /href: "\/elliott\/", text: "← Elliott"/);
+  assert.match(cb, /href: "\/elliott\/#\/", text: "← Elliott"/);
   assert.match(cb, /Keine belastbare Elliott-Lesart/);
   assert.match(cb, /Frag VU zu dieser Lesart/);
   assert.match(cb, /"\/ask\/\?q=" \+ encodeURIComponent\(/, "VU Ask bekommt nur eine Frage; die Antwort kommt aus den strukturierten Technical-Intelligence-Daten");
@@ -353,4 +375,67 @@ test("EH-20 · the product page is a delivered, tracked entry", async () => {
   const { permitted } = await import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url));
   for (const p of ["elliott/index.html", "elliott/app.js", "elliott/elliott.css", "elliott/engine/home-model.js"]) assert.ok(permitted(p), p + " wird ausgeliefert");
   assert.ok(!permitted("elliott/tests/x.test.mjs"));
+});
+
+/* ---------------------------------------------------------------- 6 Premium-Reihen und native Links */
+const pc = (id, over = {}) => Object.assign({ id, t: id, n: id, role: "EXPLORE_HIGHLIGHT", wave: "3", type: "WAVE_3", dir: "UP", st: "CONFIRMED", pool: null, agree: 0, fr: "FRESH",
+  tiers: { ext: [0.2, 0.6] }, ctx: { trend: "POSITIVE", rs: 0.5, ms: 0 }, chg: null }, over);
+
+test("EH-21 · flagship Wave 3 order: confirmed, context, pool rank, relative strength — never projection size", () => {
+  const cards = [
+    pc("HUGE", { st: "DEVELOPING", agree: 0, tiers: { ext: [1, 90] } }),
+    pc("MID", { agree: 1, ctx: { trend: "POSITIVE", rs: 0.4, ms: 0 } }),
+    pc("TOP", { agree: 2, ctx: { trend: "POSITIVE", rs: 0.9, ms: 1 } }),
+    pc("RS", { agree: 2, ctx: { trend: "POSITIVE", rs: 0.95, ms: 1 } }),
+    pc("RANKED", { agree: 2, pool: { pos: 1, size: 10 }, ctx: { trend: "POSITIVE", rs: 0.1, ms: 1 } })
+  ];
+  const row = H.assembleHome({ cards, meta: {}, dataAsOf: "2026-10-09" }).rows.find((r) => r.id === "wave3");
+  assert.deepEqual(row.ids, ["RANKED", "RS", "TOP", "MID", "HUGE"], "Rang im Pool vor Relativer Staerke, bestaetigt vor im Aufbau, Projektion ohne Einfluss");
+  const scaled = cards.map((c) => Object.assign({}, c, { tiers: { ext: [5, 5000] } }));
+  assert.deepEqual(H.assembleHome({ cards: scaled, meta: {}, dataAsOf: "x" }).rows.find((r) => r.id === "wave3").ids, row.ids, "Projektionsgroesse aendert die Reihenfolge nie");
+  assert.deepEqual(H.assembleHome({ cards: cards.slice().reverse(), meta: {}, dataAsOf: "x" }).rows.find((r) => r.id === "wave3").ids, row.ids, "unabhaengig von der Eingabereihenfolge");
+  for (const def of H.ROW_DEFS) assert.doesNotMatch(String(def.sort || ""), /tiers|bigSpan/, def.id + ": keine Sortierung nach Projektion");
+});
+
+test("EH-22 · premium rows: freshness, span threshold, secondary status, and DELAYED keeps its flag", () => {
+  const cards = [
+    pc("A", { fr: "FRESH", tiers: { ext: [1, 4] } }), pc("B", { fr: "FRESH", tiers: { ext: [1, 3] } }), pc("C", { fr: "FRESH", tiers: { ext: [1, 2.5] } }),
+    pc("D", { fr: "DELAYED", tiers: { ext: [1, 9] } }), pc("E", { fr: "FRESH", dir: "DOWN", tiers: { ext: [1, 9] } }), pc("F", { fr: "FRESH", tiers: { ext: [0.1, 0.5] } })
+  ];
+  const home = H.assembleHome({ cards, meta: {}, dataAsOf: "2026-10-09" });
+  const span = home.rows.find((r) => r.id === "span");
+  assert.ok(span, "Spannen-Reihe entsteht aus den Daten");
+  assert.equal(span.kind, "secondary", "nur zurueckhaltend dargestellt");
+  assert.deepEqual(span.ids.slice().sort(), ["A", "B", "C"], "nur frische Aufwaertslesarten mit grosser Spanne; DELAYED, Abwaerts und kleine Spannen nie");
+  assert.match(span.rule, /Spannen|rechnerisch/i, "Reihe sagt, dass es Projektionen sind");
+  assert.ok(H.ROW_DEFS.findIndex((d) => d.id === "span") === H.ROW_DEFS.length - 1, "zuletzt, nicht ueber den Kern-Reihen");
+  assert.equal(home.rows[0].id, "wave3", "Flaggschiff-Reihe steht zuerst");
+  assert.equal(home.rows[0].kind, "flagship");
+  assert.equal(home.cards.find((c) => c.id === "D").fr, "DELAYED", "DELAYED bleibt als Hinweis auf der Karte");
+  for (const id of ["trend", "strength"]) { const r = home.rows.find((x) => x.id === id); if (r) assert.ok(!r.ids.includes("D"), id + ": DELAYED kommt nicht in Premium-Reihen"); }
+});
+
+test("EH-23 · no customer-facing Elliott link points into /quant/", () => {
+  const files = ["elliott/app.js", "elliott/engine/home-model.js", "elliott/index.html", "ask/app.js", "quant/app/ui.js", "quant/app/page-chartbild.js", "quant/api/product-services.js", "quant/api/technical-workspace-contract.js"];
+  for (const f of files) assert.doesNotMatch(read(f).replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, ""), /["'`]\/quant\/#\/(elliott|aktie\/[^"'`]*(chartbild|technik))/, f + ": Elliott-Link fuehrt ueber /quant/");
+  assert.match(read("quant/app/ui.js"), /"\/elliott\/#\/"/);
+  assert.match(read("elliott/app.js"), /\/elliott\/#\//);
+});
+
+test("EH-24 · hosted mode survives the release bundle: the shell registers itself only once, the stack loader skips only the shell", () => {
+  const nav = read("assets/site-navigation.js");
+  assert.match(nav, /if \(customElements\.get && customElements\.get\('vu-navigation'\)\) return;/, "zweite Ausfuehrung im Release-Buendel bricht nicht ab");
+  assert.ok(nav.indexOf("customElements.get('vu-navigation')") < nav.indexOf("customElements.define('vu-navigation'"));
+  const app = read("elliott/app.js");
+  assert.match(app, /site-navigation\\?\.js|site-navigation\\\.js/, "Lader laesst die Shell aus");
+  assert.match(app, /fetchRes\("\/quant\/index\.html"\)/, "Skriptliste kommt aus quant/index.html (Entwicklung und Release)");
+});
+
+test("EH-25 · hosted lifecycle: absolute legacy targets leave /quant/, Quant styles stay off the home page, no touch warm-up", () => {
+  const q = read("quant/app/app.js"), app = read("elliott/app.js");
+  assert.match(q, /legacy\.charAt\(0\) === "\/"\) \{ global\.location\.replace\(legacy\)/, "/quant/?view=elliott -> /elliott/#/<T>, nicht /quant//elliott/");
+  assert.match(app, /media: "not all"/, "Quant-Stylesheets wirken erst im Aktienbild");
+  assert.match(app, /l\.media = on \? "all" : "not all"/);
+  assert.doesNotMatch(app, /addEventListener\("touchstart", function \(ev\) \{ if \(ev\.target\.closest/, "Wischen waermt das Quant-Buendel nicht auf");
+  assert.match(app, /a\.el-skip/, "Sprunglink funktioniert auch im Aktienbild");
 });
