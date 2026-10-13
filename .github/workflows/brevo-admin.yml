@@ -31,7 +31,7 @@ on:
       dns_operation:
         description: Isolierter Domain-Betrieb; keine Kontakte oder E-Mails
         type: choice
-        options: [audit, apply, verify]
+        options: [audit, apply, verify, token-identify]
         default: audit
       dns_authorize:
         description: Ausschließlich beauftragte Brevo-DNS-Ergänzung/Authentifizierung freigegeben
@@ -43,8 +43,24 @@ concurrency:
   group: brevo-admin
   cancel-in-progress: false
 jobs:
+  token_identity:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/brevo-domain-authentication' && inputs.operation == 'audit' && inputs.dns_operation == 'token-identify'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: 59b96771cf8dcca0446ced816267caab415257e5
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - name: Ausschließlich Cloudflare-Token-ID und optional Name lesen
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: python3 scripts/brevo/identify_cf_token.py
   domain_dns:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/brevo-domain-authentication' && inputs.operation == 'audit'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/brevo-domain-authentication' && inputs.operation == 'audit' && inputs.dns_operation != 'token-identify'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
