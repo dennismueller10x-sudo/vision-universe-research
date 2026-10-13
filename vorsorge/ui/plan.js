@@ -76,17 +76,21 @@
     var fee = M.feeImpact({ start: VS.state.plan.start, monthly: VS.state.plan.monthly, years: p.years, annualReturn: VS.state.plan.returns.basis, costA: 0.002, costB: 0.015 });
     var root = VS.render(
       '<section class="vs-hero vs-product-hero vu-product-hero vu-hero-fidelity" data-product="vorsorge" aria-labelledby="vs-product-title"><div class="vu-hero-scene" aria-hidden="true"></div><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"></use></svg></span>' +
-      '<p class="vu-hero-name">Vorsorge</p><h1 class="vu-hero-headline" id="vs-product-title">Plane deine Zukunft.<br>Verstehe deine ETFs.</h1>' +
-      '<p class="vu-hero-description">ETFs verstehen. Dein Portfolio durchleuchten. Veränderungen erkennen. Mit amtlichen Daten, offener Datenabdeckung und ohne Produktverkauf.</p>' +
+      '<p class="vu-hero-name">Vorsorge</p><h1 class="vu-hero-headline" id="vs-product-title">Was wird aus<br>deiner Rente?</h1>' +
+      '<p class="vu-hero-description">Fünf Fragen, dann siehst du, was der Staat dazulegt und was daraus werden kann. Mit amtlichen Regeln, offenen Annahmen und ohne Produktverkauf.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><svg class="vs-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><input id="vs-q" autocomplete="off" placeholder="ETF, Ziel oder Frage eingeben …" aria-label="ETF, Ziel oder Frage eingeben"><button type="submit">Suchen</button></form>' +
       '<div class="vs-suggest" id="vs-suggest"></div>' +
-      '<nav class="vs-tabs vs-hero-actions" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a></nav>' +
-      '<p class="vs-hero-more"><a href="#/vergleichen">Vergleichen</a><a href="#/foerderung">Förderung</a><a href="#/monitor">Veränderungen</a><a href="#/wissen">Wissen</a></p></section>' +
+      '<nav class="vs-tabs vs-hero-actions" aria-label="Einstieg"><a class="vs-pill primary" href="#/rechner">Altersvorsorge berechnen</a><a class="vs-pill" href="#/plan">Eigenen Plan erstellen</a></nav></section>' +
 
-      '<section class="vs-section" aria-label="So gehst du vor"><div class="vs-steps">' + [["#/plan", "Planen"], ["#/etfs", "ETFs entdecken"], ["#/etf/VT", "ETF verstehen"], ["#/portfolio", "Portfolio durchleuchten"], ["#/monitor", "Veränderungen erkennen"]].map(function (x, i) {
-        return '<a class="vs-step" href="' + x[0] + '"><b>' + (i + 1) + '</b><span>' + x[1] + '</span></a>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Nichts davon ist Pflicht. Jeder Schritt funktioniert für sich.</p></section>' +
+      '<section class="vs-section" aria-label="Bereiche"><div class="vs-grid g3">' + [
+        ["Berechnen", "Wie viel Rente, wie viel sparen?", [["#/rechner", "Altersvorsorge-Rechner"], ["#/plan", "Vorsorgeplaner"], ["#/plan/luecke", "Vorsorgelücke"], ["#/kosten", "Kosten"]]],
+        ["Fördern & vergleichen", "Was legt der Staat dazu?", [["#/foerderung", "Förderrechner"], ["#/fruehstart", "Frühstart / Kinder"], ["#/riester", "Riester-Analyse"], ["#/anbieter", "Anbieter"]]],
+        ["ETFs & Portfolio", "Verstehen, was drinsteckt.", [["#/etfs", "ETFs entdecken"], ["#/portfolio", "Portfolio durchleuchten"], ["#/watchlist", "Watchlist"], ["#/monitor", "Veränderungen"]]]
+      ].map(function (g) {
+        return '<div class="vs-card vs-area"><p class="vs-label">' + g[0] + '</p><h2>' + g[1] + '</h2><ul>' + g[2].map(function (l) { return '<li><a href="' + l[0] + '">' + l[1] + '</a></li>'; }).join("") + '</ul></div>'; }).join("") +
+      '</div></section>' +
       '<section class="vs-section"><div class="vs-grid g2">' +
-      '<a class="vs-card app link" href="#/plan"><span class="vs-num-badge">1</span><p class="vs-label">Dein Plan</p>' +
+      '<a class="vs-card app link" href="#/plan"><p class="vs-label">Dein Plan</p>' +
       (VS.state.planDone ? '<p class="vs-light ' + track.state + '" style="margin-top:8px"><i></i>' + esc(track.label) + '</p>' +
         '<div class="vs-progress" aria-label="Zielerreichung"><i style="width:' + Math.min(100, base.goalAttainment * 100).toFixed(0) + '%"></i></div>' +
         '<p class="vs-sub" style="margin-top:10px">Zielerreichung im Basisszenario: <b style="color:var(--app-ink)">' + F.pct(base.goalAttainment, 0) + '</b> · Vermögen mit ' + p.input.targetAge + ' in heutiger Kaufkraft: <b style="color:var(--app-ink)">' + F.eurK(base.real) + '</b></p>'
@@ -95,18 +99,18 @@
           '<p class="vs-fine" style="margin-top:10px">Beispielrechnung mit Standardannahmen (' + p.input.age + ' Jahre, ' + F.eur(p.input.monthly) + ' im Monat, Ziel ' + F.eur(p.input.desiredIncome) + ' Einkommen): Zielerreichung ' + F.pct(base.goalAttainment, 0) + '.</p>' +
           '<span class="vs-pill lime" style="margin-top:16px">Eigenen Plan erstellen →</span>') +
       '</a>' +
-      '<div class="vs-card" id="vs-home-world"><span class="vs-num-badge">2</span><p class="vs-label">Deine ETF-Welt</p><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>' +
+      '<div class="vs-card" id="vs-home-world"><p class="vs-label">Deine ETF-Welt</p><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>' +
       '</div></section>' +
 
       '<section class="vs-section"><div class="vs-grid g3">' +
-      '<div class="vs-card" id="vs-home-changes"><span class="vs-num-badge">3</span><p class="vs-label">Was hat sich verändert?</p><div class="vs-loading">…</div></div>' +
-      '<a class="vs-card link" href="#/plan"><span class="vs-num-badge">4</span><p class="vs-label">Nächster Schritt</p><p class="vs-kpi small" style="margin-top:6px">' + esc(lever.label) + '</p>' +
+      '<div class="vs-card" id="vs-home-changes"><p class="vs-label">Was hat sich verändert?</p><div class="vs-loading">…</div></div>' +
+      '<a class="vs-card link" href="#/plan"><p class="vs-label">Nächster Schritt</p><p class="vs-kpi small" style="margin-top:6px">' + esc(lever.label) + '</p>' +
       '<p class="vs-sub" style="margin-top:8px">Größter Hebel in deinem Plan: Zielerreichung ' + F.spct(lever.delta, 0) + '-Punkte. Gerechnet im Basisszenario, keine Empfehlung.</p></a>' +
-      '<a class="vs-card link" href="#/kosten"><span class="vs-num-badge">5</span><p class="vs-label">Kosten</p><p class="vs-kpi small" style="margin-top:6px">' + F.eurK(fee.a.endValue - fee.b.endValue) + '</p>' +
+      '<a class="vs-card link" href="#/kosten"><p class="vs-label">Kosten</p><p class="vs-kpi small" style="margin-top:6px">' + F.eurK(fee.a.endValue - fee.b.endValue) + '</p>' +
       '<p class="vs-sub" style="margin-top:8px">So viel Unterschied machen 0,2 % statt 1,5 % laufende Kosten bei deinem Plan über ' + p.years + ' Jahre.</p></a>' +
       '</div></section>' +
 
-      '<section class="vs-section"><div class="vs-card app"><span class="vs-num-badge">6</span><div class="vs-section-head"><div><p class="vs-label">Zielerreichung' + (VS.state.planDone ? "" : " · Beispielrechnung") + '</p><h2 style="margin-top:6px">Drei Szenarien statt einer Prognose</h2></div><a class="vs-pill lime" href="#/plan">Plan anpassen</a></div>' +
+      '<section class="vs-section"><div class="vs-card app"><div class="vs-section-head"><div><p class="vs-label">Zielerreichung' + (VS.state.planDone ? "" : " · Beispielrechnung") + '</p><h2 style="margin-top:6px">Drei Szenarien statt einer Prognose</h2></div><a class="vs-pill lime" href="#/plan">Plan anpassen</a></div>' +
       '<div class="vs-scen">' + p.scenarios.map(function (s) {
         return '<div class="' + (s.id === "basis" ? "base" : "") + '"><p class="vs-label">' + esc(s.label) + ' · ' + F.pct(s.annualReturn, 0) + ' p.a.</p><p class="vs-kpi small">' + F.eurK(s.real) + '</p><p class="vs-fine">heutige Kaufkraft · Ziel ' + F.pct(s.goalAttainment, 0) + '</p></div>';
       }).join("") + '</div><p class="vs-fine" style="margin-top:12px">' + (VS.state.planDone ? "" : "Beispiel mit Standardannahmen – noch nicht deine Zahlen. ") + 'Annahmen, keine Vorhersage. Renditen nach Kosten von ' + F.pct(p.input.cost, 2) + ' und Inflation von ' + F.pct(p.input.inflation, 1) + '.</p></div></section>'
@@ -118,7 +122,7 @@
     VS.masterFor(CORE).then(function (m) {
       var world = root.querySelector("#vs-home-world");
       var core = CORE.map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
-      world.innerHTML = '<span class="vs-num-badge">2</span><p class="vs-label">Deine ETF-Welt</p><p class="vs-kpi small" style="margin-top:6px">' + m.counts.publicAnalysis.toLocaleString("de-DE") + ' Standard-ETFs</p>' +
+      world.innerHTML = '<p class="vs-label">Deine ETF-Welt</p><p class="vs-kpi small" style="margin-top:6px">' + m.counts.publicAnalysis.toLocaleString("de-DE") + ' Standard-ETFs</p>' +
         '<p class="vs-sub" style="margin:6px 0 10px">' + m.counts.listings.toLocaleString("de-DE") + ' Listings insgesamt · ' + m.counts.withHistory3Y.toLocaleString("de-DE") + ' mit ≥ 3 Jahren Kurshistorie · ' + m.counts.complex.toLocaleString("de-DE") + ' komplexe Produkte separat · Stand ' + F.date(m.asOf) + '</p>' +
         core.map(function (e) { return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
         '<div class="vs-tabs"><a class="vs-pill small primary" href="#/etfs">Alle ETFs</a><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
@@ -136,7 +140,7 @@
       (feedMine.length ? feedMine : feed).slice(0, mineList.length ? 2 : 3).forEach(function (f) { lines.push('<a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text)); });
       // Produkt- und Kostenmeldungen nur zu eigenen ETFs - keine zufaelligen Exoten auf der Startseite
       c.events.filter(function (x) { return x.symbol && mine[x.symbol]; }).slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
-      root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich in deiner ETF-Welt geändert?</p>' +
+      root.querySelector("#vs-home-changes").innerHTML = '<p class="vs-label">Was hat sich in deiner ETF-Welt geändert?</p>' +
         (lines.length ? lines.slice(0, 6).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + t + '</span></div>'; }).join("")
           : '<p class="vs-sub" style="margin-top:8px">Keine Änderungen seit dem letzten Datenstand.</p>') +
         '<p class="vs-fine" style="margin-top:6px">Bestände: SEC N-PORT, Stand ' + (hi ? esc(hi.quarters.join(", ")) : "–") + ' · Kurse: Tiingo ' + F.date(c.asOf) + '</p>' +
@@ -151,7 +155,7 @@
     var pl = VS.state.plan;
     var root = VS.render(
       '<section class="vs-hero"><p class="vs-eyebrow">Vorsorgeplaner</p><h1>Wie viel muss ich sparen?</h1><p class="vs-lead">Gib ein, wo du stehst und was du willst. Wir rechnen drei Szenarien – nominal und in heutiger Kaufkraft.</p>' +
-      '<div class="vs-tabs"><a class="vs-pill' + (tab === "planer" ? " primary" : "") + '" href="#/plan">Planer</a><a class="vs-pill' + (tab === "luecke" ? " primary" : "") + '" href="#/plan/luecke">Vorsorgelücke</a><a class="vs-pill" href="#/kosten">Kosten</a><a class="vs-pill" href="#/portfolio/szenarien">Szenarien</a></div></section>' +
+      '<div class="vs-tabs"><a class="vs-pill lime" href="#/rechner">Geführter Rechner</a><a class="vs-pill' + (tab === "planer" ? " primary" : "") + '" href="#/plan">Planer</a><a class="vs-pill' + (tab === "luecke" ? " primary" : "") + '" href="#/plan/luecke">Vorsorgelücke</a><a class="vs-pill" href="#/kosten">Kosten</a><a class="vs-pill" href="#/portfolio/szenarien">Szenarien</a></div></section>' +
       '<section class="vs-section"><div class="vs-grid side"><form class="vs-card app" id="vs-plan-form" novalidate><p class="vs-label">Deine Angaben</p><div class="vs-form" style="margin-top:12px">' +
       VS.field("age", "Aktuelles Alter", pl.age, { min: 0, max: 90, unit: "Jahre" }) + VS.field("targetAge", "Zielalter", pl.targetAge, { min: 1, max: 100, unit: "Rentenbeginn" }) +
       VS.field("start", "Startvermögen", pl.start, { min: 0, unit: "€" }) + VS.field("lumpSum", "Einmalanlage", pl.lumpSum, { min: 0, unit: "€ heute" }) +

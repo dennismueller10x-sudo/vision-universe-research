@@ -336,7 +336,7 @@
      stehen am Ende jeder Ansicht (#vs-more) und im globalen Menue. */
   var DOCK = { home: "vorsorge", plan: "plan", etfs: "etfs", portfolio: "portfolio" };
   var MORE = [["vergleichen", "#/vergleichen", "Vergleichen"], ["foerderung", "#/foerderung", "Förderung"], ["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]];
-  VS.SECTION_OF = { home: "home", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
+  VS.SECTION_OF = { home: "home", rechner: "plan", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
     vergleich: "vergleichen", vergleichen: "vergleichen", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
     fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen" };
 
@@ -365,7 +365,7 @@
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
     if (!r.query.keepScroll) global.scrollTo(0, 0);
-    var t = { home: "Vorsorge", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
+    var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
       vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Vorsorge-Monitor", wissen: "Wissen", europa: "Europäische ETFs" }[r.name] || "Vorsorge";
     document.title = t + " — Vision Universe®";
   }
