@@ -575,6 +575,98 @@ jobs:
           exit 1
 
   # ===================================================================
+  # IM BLICK NACH DEM NACHTLAUF
+  #
+  # Discover -> "Im Blick" wird waehrend der Sitzung ca. alle zwei Stunden
+  # neu gerechnet (discover-im-blick-live.yml, Cloudflare-Wecker). Die
+  # Schlusskurs-Basis kommt aber erst hier. Statt bis zum ersten Slot des
+  # Tages (15:00/16:00 UTC) zu warten, rechnet diese Stufe sofort auf der
+  # neuen Basis - erst wenn ALLES durch ist, was Discover braucht:
+  #
+  #   refresh (Kurse, Faktoren, Discover-Daten, Gates) + materialize
+  #   + freshness-contract: alle drei muessen "success" sein.
+  #
+  # Kein workflow_run (auf main nachweislich nie gefeuert, siehe oben),
+  # kein zweiter Workflow: `needs` in derselben Orchestrierung.
+  #
+  # Dieselbe Frage wie bei jedem anderen Ausloeser, nur strenger
+  # (build-im-blick-live.mjs --nachtlauf): Datenversion (Basis = meta.json),
+  # Handelsdatum (= letzte abgeschlossene Sitzung), schluessiges Ergebnis;
+  # eine aeltere Basis ersetzt nie eine neuere; bei jedem Fehler bleibt die
+  # letzte gueltige Auswahl stehen. Keine Anbieteranfrage.
+  #
+  # DARF DEN NACHTLAUF NICHT ROT FAERBEN: pages-release verlangt
+  # conclusion == success des Marktlaufs. Die Schritte sind
+  # continue-on-error; ein Fehler geht ueber die Job-Ausgabe an den
+  # Pipeline-Alarm (Job `alarm`: Issue mit Label pipeline-alarm), der Lauf
+  # und die Auslieferung der Nachtdaten bleiben davon unberuehrt.
+  #
+  # Gleiche Concurrency-Gruppe wie discover-im-blick-live.yml: nie zwei
+  # Schreiber gleichzeitig, ein verspaeteter Nachtlauf rechnet gegen den
+  # dann aktuellen Stand und ueberschreibt keine neuere Intraday-Auswahl.
+  # ===================================================================
+  imblick:
+    needs: [refresh, materialize, freshness-contract]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && github.event_name != 'push' &&
+      needs.refresh.result == 'success' && needs.materialize.result == 'success' &&
+      needs.freshness-contract.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: discover-im-blick-live-${{ github.ref_name }}
+      cancel-in-progress: false
+    outputs:
+      ergebnis: ${{ (steps.rechnen.outcome == 'failure' || steps.push.outcome == 'failure') && 'failure' || 'success' }}
+      detail: ${{ steps.detail.outputs.detail }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Im Blick auf der neuen Basis rechnen
+        id: rechnen
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node scripts/discover/build-im-blick-live.mjs --nachtlauf --source nachtlauf
+
+      - name: Fehlerbild fuer den Alarm festhalten
+        id: detail
+        if: always() && steps.rechnen.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          node -e '
+            try {
+              const m = require("./discover/live/monitor-US_REAL.json");
+              const e = m && m.error;
+              if (e && e.code) console.log("detail=" + (e.code + ": " + (e.message || "")).replace(/[\r\n]+/g, " ").slice(0, 500));
+            } catch (x) { console.log("detail=Monitor nicht lesbar"); }
+          ' >> "$GITHUB_OUTPUT"
+
+      - name: Commit und Push (nur bei Aenderung)
+        id: push
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add discover/live
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          status=$(node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+((l.slot&&l.slot.id)||"")+" "+(l.eodAsOf||"")+" "+l.stocks.map(s=>s.symbol).join(","))')
+          git commit -m "Discover Im Blick live (nach Nachtlauf): ${status}"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # ===================================================================
   # PIPELINE-ALARM: EIN ROTER LAUF BLEIBT NICHT UNBEMERKT.
   #
   # 15.09.-12.10.2026 scheiterten 13 von 19 geplanten Laeufen; gemeldet
@@ -585,7 +677,7 @@ jobs:
   # selben Issue, ohne es zu oeffnen.
   # ===================================================================
   alarm:
-    needs: [refresh, materialize, freshness-contract]
+    needs: [refresh, materialize, freshness-contract, imblick]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -615,5 +707,15 @@ jobs:
           RESULT_REFRESH: ${{ needs.refresh.result }}
           RESULT_MATERIALIZE: ${{ needs.materialize.result }}
           RESULT_FRESHNESS: ${{ needs.freshness-contract.result }}
+          # Im Blick nach dem Nachtlauf: ein Fehler macht den Lauf nicht rot (siehe Job
+          # `imblick`), erscheint hier aber als roter Job im Alarm. Abgebrochen/uebersprungen
+          # zaehlt nicht: der naechste Slot rechnet ohnehin neu.
+          RESULT_IMBLICK: ${{ needs.imblick.outputs.ergebnis == 'failure' && 'failure' || needs.imblick.result == 'success' && 'success' || 'skipped' }}
+          IMBLICK_DETAIL: ${{ needs.imblick.outputs.detail }}
           GATE_DIR: ${{ runner.temp }}/gates
-        run: node scripts/ci/pipeline-alarm.mjs
+        run: |
+          if [ -n "${IMBLICK_DETAIL:-}" ]; then
+            printf 'Im Blick (Nachtlauf-Stufe): %s\n' "$IMBLICK_DETAIL" > "$RUNNER_TEMP/imblick-detail.txt"
+            export ALARM_DETAIL_FILE="$RUNNER_TEMP/imblick-detail.txt"
+          fi
+          node scripts/ci/pipeline-alarm.mjs
