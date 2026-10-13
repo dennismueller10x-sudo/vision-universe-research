@@ -66,21 +66,15 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: 450561b3a1697c54e29b4ccd7f0a8e577bd95218
+          ref: 01ca956a125d86678b50a83954b3a93eb393a8b5
           persist-credentials: false
           sparse-checkout: scripts/brevo
       - name: Isolierte Brevo-Domain und Cloudflare-DNS-Prüfung
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_CLOUDFLARE_DNS_TOKEN: ${{ secrets.BREVO_CLOUDFLARE_DNS_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
-          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
-          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
           BREVO_DNS_OPERATION: ${{ inputs.dns_operation }}
           BREVO_DNS_AUTHORIZE: ${{ inputs.dns_authorize }}
         run: python3 scripts/brevo/domain_auth.py
