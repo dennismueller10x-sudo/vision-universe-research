@@ -1,0 +1,1032 @@
+{
+  "schema": "supertrader-calibration-methods-1.0.0",
+  "registeredAt": "2026-10-13T09:08:51.200864+00:00",
+  "priorBaselinePRs": [
+    588,
+    589,
+    632
+  ],
+  "referenceScreens": [
+    {
+      "id": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "tournamentMethodId": "cross_sectional_momentum",
+      "kind": "PRICE_FACTOR",
+      "primarySourceIds": [
+        "JT1993"
+      ],
+      "sourceDefinition": {
+        "sample": {
+          "returnStart": "1965-01",
+          "returnEnd": "1989-12",
+          "rawDailyDataStart": "1962-07",
+          "rawDailyDataEnd": "1989-12"
+        },
+        "universe": "CRSP NYSE and AMEX stocks with available returns throughout formation; not a current surviving-stock list",
+        "additionalShareCodeOrPriceExclusions": "UNKNOWN_NOT_SPECIFIED_IN_CITED_METHOD_PASSAGE",
+        "formationMonths": 6,
+        "rank": "Compounded stock total return over the six immediately preceding calendar months",
+        "skip": "NONE; Table I Panel A",
+        "buckets": "Ten equal-count rank deciles; winner highest, loser lowest",
+        "weighting": "Equal stock weights; published series rebalances retained portfolios monthly to equal weights",
+        "holdingMonths": 6,
+        "cohorts": "Six overlapping monthly portfolios; same weight 1/6 in each cohort; close the expiring cohort",
+        "rebalance": "Monthly formation AND monthly equal-weight restoration; retain cohort membership until six-month expiry",
+        "sourceInitialExposure": "Fully populated six-cohort monthly return series; initialize from preceding formations, do not insert unformed cash sleeves into reference comparison",
+        "costs": "Table I uses gross CRSP returns; no transaction cost/borrow fee deduction supplied",
+        "stops": null,
+        "positionCap": null,
+        "riskSizing": null,
+        "capitalAccountForSelfFinancingSpread": "NOT_SPECIFIED; spread measured per dollar long, not equity CAGR",
+        "benchmark": "Loser decile for winner-minus-loser; no SPY reference"
+      },
+      "calibrationLocalConstruction": {
+        "window": "2018-01-02..2026-09-30 unchanged tournament window",
+        "membership": "Use audited historical eligibility; current observed listing generations remain OBSERVED_ONLY if no historical identity certification",
+        "warmup": "Six complete premeasurement cohorts from prior monthly formations; at least11months needed for6/6 before a fully populated first observation",
+        "rankData": "Canonical total returns; terminal return handling must be explicit",
+        "roundingAndTies": "Source does not specify finite-bucket rounding/ties; any deterministic convention is a declared calibration operational convention",
+        "withinCohortReweight": "Monthly equal weight, not buy-and-hold drift",
+        "comparisonStatus": "SOURCE_RECIPE_TRANSFER; NOT_ORIGINAL_SAMPLE_REPLICATION",
+        "maximumInterpretiveGrade": "PARTIAL; absent matched source sample/oracle is BLOCKED/NONCOMPARABLE, not performance FAIL",
+        "costDiagnostics": {
+          "grossSourceConstruction": {
+            "commissionBpsPerSide": 0,
+            "slippageBpsPerSide": 0,
+            "role": "ORIGINAL_GROSS_SOURCE_CONSTRUCTION_DIAGNOSTIC_ONLY"
+          },
+          "sameTournamentNet": {
+            "commissionBpsPerSide": 1,
+            "slippageBpsPerSide": 10,
+            "combinedNominalBpsPerSide": 11,
+            "mechanics": "Use exact unchanged baseline implementation, not a substituted flat rounded cost",
+            "role": "SEPARATE_PREDECLARED_SAME_COST_DIAGNOSTIC"
+          },
+          "frozenTournamentCostChanged": false
+        },
+        "preexistingFormationMonths": [
+          "2017-07",
+          "2017-08",
+          "2017-09",
+          "2017-10",
+          "2017-11",
+          "2017-12"
+        ],
+        "cashRampComparison": "DECLARED_ADAPTATION: source-calibration preexisting6cohorts versus unchanged632baseline unformed cash sleeves. Difference is not an infrastructure bug."
+      },
+      "estimands": [
+        {
+          "id": "WINNER_LONG",
+          "kind": "EQUAL_WEIGHT_STOCK_PORTFOLIO_MONTHLY_RETURN"
+        },
+        {
+          "id": "LOSER_LONG_COUNTERFACTUAL",
+          "kind": "EQUAL_WEIGHT_STOCK_PORTFOLIO_MONTHLY_RETURN"
+        },
+        {
+          "id": "WINNER_MINUS_LOSER",
+          "kind": "SELF_FINANCING_SPREAD_PER_DOLLAR_LONG",
+          "grossLongExposure": 1,
+          "grossShortExposure": 1,
+          "CAGR": "UNDEFINED_WITHOUT_DECLARED_COLLATERAL_ACCOUNT"
+        }
+      ],
+      "comparability": {
+        "stockLevelMatchedOracle": "MISSING",
+        "originalSamplePricePanel": "MISSING_CRSP_LICENSED_DATA",
+        "sameWindowAuthenticJT6_6PortfolioHistory": "NOT_FOUND_IN_INSPECTED_OFFICIAL_SOURCES",
+        "publishedMagnitudeTransfer": "NOT_IDENTIFIED_WITH_DIFFERENT_UNIVERSE_OR_ERA",
+        "directionDisagreementIsBugProof": false,
+        "disallowedComparison": "Published spread versus signal63excessSPY or long-only CAGR"
+      },
+      "blockingReasons": [
+        "ORIGINAL_CRSP_PANEL_AND_RETURN_VINTAGE_UNAVAILABLE",
+        "ORIGINAL_VS_LOCAL_SAMPLE_MISMATCH",
+        "PIT_MEMBERSHIP_AND_DELIST_RETURN_LIMITS",
+        "NO_AUTHENTIC_JT6_6_SAME_WINDOW_PUBLIC_STOCK_ORACLE"
+      ],
+      "stockMatchedOriginalVerdict": null,
+      "originalEffectStatus": "NOT_ASSESSED_BEFORE_PERFORMANCE",
+      "publishedMetricValuesDelivery": "PRIVATE_SOURCE_PLAN"
+    },
+    {
+      "id": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "tournamentMethodId": "52_week_high_effect",
+      "kind": "PRICE_FACTOR",
+      "primarySourceIds": [
+        "GH2004"
+      ],
+      "sourceDefinition": {
+        "sample": {
+          "inputStart": "1963",
+          "inputEnd": "2001",
+          "reportedReturnStart": "1963-07",
+          "reportedReturnEnd": "2001-12"
+        },
+        "universe": "All stocks on CRSP with required inputs; CRSP historical population, not present-day membership",
+        "formationMonths": 12,
+        "rank": "P at end of month t−1 divided by highest stock price during the12months ending on that date",
+        "priceConvention": "Historical CRSP price measure; paper does not explicitly establish an intraday-high or split-adjustment implementation convention",
+        "skip": "NONE for descriptive Tables I–IV; regression tests separately skip one month",
+        "buckets": "Highest30% winners, lowest30% losers, middle40% reference bucket",
+        "weighting": "Equally weighted stock portfolios; monthly strategy return is equal average of six preceding cohort portfolio returns",
+        "holdingMonths": 6,
+        "cohorts": "Six equally weighted monthly formation cohorts; same winner/loser cohort construction",
+        "rebalance": "Monthly formation; monthly equal cohort-return averaging. Paper inherits JT equal-weight portfolio approach, but intra-cohort mechanical reweight detail is less explicit than JT p68",
+        "costs": "Gross research portfolio returns; no executable cost/short borrow policy supplied",
+        "minimumListingHistoryAndTiePolicy": "NOT_FULLY_SPECIFIED_IN_CITED_PASSAGE",
+        "stops": null,
+        "positionCap": null,
+        "riskSizing": null,
+        "benchmark": "Winner-minus-loser and comparator momentum spreads; not SPY"
+      },
+      "calibrationLocalConstruction": {
+        "window": "2018-01-02..2026-09-30 unchanged tournament window",
+        "warmup": "Preform all six monthly cohorts before measured start; trailing12month rank for each formation",
+        "priceConvention": "Split-adjusted daily close maximum is an explicit local convention, not intraday high and not total-return-index high",
+        "dataEligibility": "Source-unstated minimum listing/history/coverage guards must be declared separately; do not silently call VU full-lookback guard an original trading filter",
+        "skip": "No skip for chosen descriptive Table I comparator; do not import the regression skip",
+        "weighting": "Monthly equal stock weight within cohorts adopted from referenced JT; convention identified rather than claimed uniquely explicit in GH",
+        "comparisonStatus": "SOURCE_RECIPE_TRANSFER; NOT_ORIGINAL_SAMPLE_REPLICATION",
+        "maximumInterpretiveGrade": "PARTIAL; absent matched source sample/oracle is BLOCKED/NONCOMPARABLE, not performance FAIL",
+        "costDiagnostics": {
+          "grossSourceConstruction": {
+            "commissionBpsPerSide": 0,
+            "slippageBpsPerSide": 0,
+            "role": "ORIGINAL_GROSS_SOURCE_CONSTRUCTION_DIAGNOSTIC_ONLY"
+          },
+          "sameTournamentNet": {
+            "commissionBpsPerSide": 1,
+            "slippageBpsPerSide": 10,
+            "combinedNominalBpsPerSide": 11,
+            "mechanics": "Use exact unchanged baseline implementation, not a substituted flat rounded cost",
+            "role": "SEPARATE_PREDECLARED_SAME_COST_DIAGNOSTIC"
+          },
+          "frozenTournamentCostChanged": false
+        },
+        "preexistingFormationMonths": [
+          "2017-07",
+          "2017-08",
+          "2017-09",
+          "2017-10",
+          "2017-11",
+          "2017-12"
+        ],
+        "cashRampComparison": "DECLARED_ADAPTATION: source-calibration preexisting6cohorts versus unchanged632baseline unformed cash sleeves. Difference is not an infrastructure bug."
+      },
+      "estimands": [
+        {
+          "id": "PROXIMITY_WINNER_LONG",
+          "kind": "EQUAL_WEIGHT_STOCK_PORTFOLIO_MONTHLY_RETURN"
+        },
+        {
+          "id": "PROXIMITY_LOSER_LONG_COUNTERFACTUAL",
+          "kind": "EQUAL_WEIGHT_STOCK_PORTFOLIO_MONTHLY_RETURN"
+        },
+        {
+          "id": "PROXIMITY_WINNER_MINUS_LOSER",
+          "kind": "SELF_FINANCING_SPREAD_PER_DOLLAR_LONG",
+          "CAGR": "UNDEFINED_WITHOUT_DECLARED_COLLATERAL_ACCOUNT"
+        }
+      ],
+      "comparability": {
+        "stockLevelMatchedOracle": "MISSING",
+        "originalSamplePricePanel": "MISSING_CRSP_LICENSED_DATA",
+        "sameWindowAuthentic52WHPortfolioHistory": "NOT_FOUND_IN_INSPECTED_OFFICIAL_SOURCES",
+        "publishedMagnitudeTransfer": "NOT_IDENTIFIED_WITH_DIFFERENT_UNIVERSE_OR_ERA",
+        "directionDisagreementIsBugProof": false,
+        "disallowedComparison": "No-January Table II premium as full-sample target; regression skip mixed with Table I; 63day SPY excess treated as six-cohort spread"
+      },
+      "blockingReasons": [
+        "ORIGINAL_CRSP_PANEL_AND_RETURN_VINTAGE_UNAVAILABLE",
+        "ORIGINAL_VS_LOCAL_SAMPLE_MISMATCH",
+        "PIT_MEMBERSHIP_AND_CORPORATE_ACTION_LIMITS",
+        "PRICE_ADJUSTMENT_AND_MINIMUM_HISTORY_CONVENTIONS_NOT_UNIQUE",
+        "NO_AUTHENTIC_SAME_WINDOW_PUBLIC_52WH_STOCK_ORACLE"
+      ],
+      "stockMatchedOriginalVerdict": null,
+      "originalEffectStatus": "NOT_ASSESSED_BEFORE_PERFORMANCE",
+      "publishedMetricValuesDelivery": "PRIVATE_SOURCE_PLAN"
+    },
+    {
+      "id": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "tournamentMethodId": "LOW_VOLATILITY",
+      "kind": "PRICE_FACTOR",
+      "primarySourceIds": [
+        "LV2007"
+      ],
+      "sourceDefinition": {
+        "era": "April2007 manuscript, first draftDecember2006",
+        "sample": {
+          "textFormationStart": "1985-12",
+          "textFormationEnd": "2006-01",
+          "table2ReturnStart": "1986-01",
+          "table2ReturnEnd": "2006-01",
+          "endpointStatus": "SOURCE_ONE_MONTH_ENDPOINT_CONFLICT; next-month return wording with January2006 final formation suggests February while table endsJanuary; do not resolve silently"
+        },
+        "universe": "Historical monthly FTSE World Developed constituents; US region subset for Table3A",
+        "globalUniverseApproximateSize": {
+          "average": 2000,
+          "range": [
+            1500,
+            2400
+          ]
+        },
+        "usUniverseSize": null,
+        "data": "Factset constituents/returns; local short-term risk-free rates from Thomson Financial Datastream",
+        "lookbackMonths": 36,
+        "sampling": "Weekly stock returns; source does not fix weekday/partial-week convention or sample denominator",
+        "rank": "Standard deviation of local log returns in excess of local risk-free return; lowest volatility ranks preferred",
+        "buckets": "Equal-count deciles; D1 lowestvolatility, D10 highestvolatility",
+        "weighting": "Equally weighted stocks",
+        "rebalance": "Monthly full reconstitution/equal weighting; no overlapping six-month cohorts",
+        "holdingMonths": 1,
+        "regionalRestrictions": "Global sorts unrestricted by country/sector; source separate US region sorts for regional evidence",
+        "costs": "Transaction costs explicitly ignored throughout",
+        "benchmark": "Source Univ equally weighted source-constituent universe; not SPY and not necessarily FTSE cap-weighted index",
+        "exposure": "Fully invested long decile by portfolio construction; no source cash ramp, stop or slot limit",
+        "stops": null,
+        "positionCap": null,
+        "riskSizing": null
+      },
+      "calibrationLocalConstruction": {
+        "window": "2018-01-02..2026-09-30 unchanged tournament window",
+        "universe": "US observed/PIT-partial panel is not historical FTSE large-cap membership",
+        "riskFree": "Original-equivalent weekly local risk-free series not certified; monthly French RF or zeroRF is not silently equivalent",
+        "weeklyConvention": "If implemented, predeclare weekday/partial-week/ddof separately; source does not choose these mechanically",
+        "scoreOriginalVsTournament": "Original excess log-return std versus frozen tournament log total-return std without risk-free subtraction; explicitly separate formulations, no tournament rule change",
+        "benchmark": "Build same-eligible-universe EW control for local risk-character diagnostics; keep SPY comparison a separate contextual result",
+        "measurement": "Compare log-excess means and risk/Sharpe with source definitions, not source annualized mean against equity CAGR",
+        "comparisonStatus": "SOURCE_RECIPE_TRANSFER_WITH_RF_AND_MEMBERSHIP_LIMITS; NOT_ORIGINAL_SAMPLE_REPLICATION",
+        "maximumInterpretiveGrade": "PARTIAL; absent matched source sample/oracle is BLOCKED/NONCOMPARABLE, not performance FAIL",
+        "costDiagnostics": {
+          "grossSourceConstruction": {
+            "commissionBpsPerSide": 0,
+            "slippageBpsPerSide": 0,
+            "role": "ORIGINAL_GROSS_SOURCE_CONSTRUCTION_DIAGNOSTIC_ONLY"
+          },
+          "sameTournamentNet": {
+            "commissionBpsPerSide": 1,
+            "slippageBpsPerSide": 10,
+            "combinedNominalBpsPerSide": 11,
+            "mechanics": "Use exact unchanged baseline implementation, not a substituted flat rounded cost",
+            "role": "SEPARATE_PREDECLARED_SAME_COST_DIAGNOSTIC"
+          },
+          "frozenTournamentCostChanged": false
+        },
+        "optionalObservedRFDiagnostic": {
+          "status": "RECOMMENDED_SOURCE_CONVENTION_FOR_LEAD_FREEZE; NOT_MEASURED",
+          "identity": "US_OBSERVED_36MONTH_WEEKLY_FRENCH_RF_LOG_EXCESS_DIAGNOSTIC",
+          "rfSourceId": "FRENCH_DAILY_RF",
+          "rfAvailability": "1926-07-01..2026-08-31; September2026missing",
+          "sourceMatch": "FREE_OFFICIAL_EX_POST_RF_AVAILABLE; ORIGINAL_DATASTREAM_RF_EQUIVALENCE_UNCERTIFIED",
+          "units": "RF source percent per trading-session return; convert percent to decimal exactly once",
+          "recommendedLogExcessConvention": "log(TR_current/TR_previous) − sum(log1p(RF_daily_decimal)) over identical endpoint-exclusive/start to endpoint-inclusive/end interval",
+          "conventionProvenance": "Explicit financial log-relative-return formalization before outcomes; paper does not supply an unambiguous computational formula, weekday, partial-week or ddof",
+          "weeklyConvention": "Use existing frozen ISO-week-last-session/partial-week endpoint and ddof1 as declared calibration operational conventions, no tuned weekday",
+          "coverageRule": "Require all corresponding officialRFsessions; missingSeptember means affectedobservations UNAVAILABLE, not zero or carry-forward",
+          "calendarRule": "No RF after formation cutoff; exact dates aligned to same stock return intervals",
+          "annualReferenceMetric": "Annualized monthly log-excess arithmetic mean/volatility/Sharpe, not equity CAGR",
+          "publication": "RESEARCH_ONLY/OBSERVED_ONLY; no original-data certification"
+        }
+      },
+      "estimands": [
+        {
+          "id": "US_LOWVOL_LONG_RISK_CHARACTER",
+          "kind": "EXCESS_LOG_RETURN_VOLATILITY_SHARPE_BETA_RELATIVE_TO_SOURCE_US_UNIVERSE"
+        },
+        {
+          "id": "US_LOW_MINUS_HIGH",
+          "kind": "ANNUALIZED_LOG_EXCESS_RETURN_SPREAD"
+        },
+        {
+          "id": "US_CAPM_ALPHA_SPREAD",
+          "kind": "REGRESSION_ALPHA_DIFFERENCE_NOT_CAGR"
+        },
+        {
+          "id": "GLOBAL_PANEL_CONTEXT",
+          "kind": "SEPARATE_UNIVERSE_NOT_US_ORACLE"
+        }
+      ],
+      "comparability": {
+        "stockLevelMatchedOracle": "MISSING",
+        "originalMonthlyConstituents": "MISSING_FTSE_FACTSET_LICENSED_HISTORY",
+        "sameWindowAuthentic36MWeeklyLowVolHistory": "NOT_FOUND_IN_INSPECTED_OFFICIAL_SOURCES",
+        "directionDisagreementIsBugProof": false,
+        "disallowedComparison": "Global alpha12% as US raw/CAGR target; French60dayvariance as original3yearweeklyvolatility; expected SPY long outperformance"
+      },
+      "blockingReasons": [
+        "HISTORICAL_FTSE_US_MEMBERSHIP_NOT_CERTIFIED",
+        "ORIGINAL_VS_LOCAL_SAMPLE_MISMATCH",
+        "ORIGINAL_WEEKLY_DATASTREAM_RF_EQUIVALENCE_NOT_CERTIFIED",
+        "SOURCE_WEEKDAY_DDOF_NOT_SPECIFIED",
+        "SOURCE_ENDPOINT_CONFLICT",
+        "NO_AUTHENTIC_SAME_WINDOW_PUBLIC_36MONTH_WEEKLY_STOCK_ORACLE",
+        "OFFICIAL_FRENCH_RF_MISSING_SEPTEMBER2026"
+      ],
+      "stockMatchedOriginalVerdict": null,
+      "originalEffectStatus": "NOT_ASSESSED_BEFORE_PERFORMANCE",
+      "publishedMetricValuesDelivery": "PRIVATE_SOURCE_PLAN"
+    },
+    {
+      "id": "CALIB_EQUAL_WEIGHT",
+      "kind": "CONTROL",
+      "sourceDefinition": {
+        "universe": "SAME_OBSERVED_CANONICAL_PANEL_AT_FORMATION_WITH_VALID_REQUIRED_PRICE_HISTORY",
+        "weighting": "EQUAL_WEIGHT_ALL_ELIGIBLE_SECURITIES",
+        "rebalance": "MONTHLY",
+        "cap": null,
+        "stops": null,
+        "execution": "NEXT_SESSION_OPEN",
+        "benchmark": "INDEPENDENT_PER_STOCK_TARGET_AND_RETURN_CONTRIBUTION_ORACLE_ON_EXACT_SAME_INPUT"
+      },
+      "comparability": {
+        "scope": "LOCAL_INDEPENDENT_ACCOUNTING_AND_CONSTRUCTION_CONTROL",
+        "isSP500EqualWeightIndexReplication": false,
+        "originalIndexMembership": "UNAVAILABLE"
+      },
+      "stockMatchedOriginalVerdict": null
+    },
+    {
+      "id": "gross_profitability_novy_marx",
+      "kind": "FUNDAMENTAL_OR_EVENT",
+      "status": "BLOCKED_DATA",
+      "primarySourceIds": [
+        "gp_author_paper",
+        "gp_author_research"
+      ],
+      "sourceDefinition": {
+        "signal": "(annual REVT−annual COGS)/sameFiscalYearEnd AT",
+        "profitability_denominator": "CURRENT_YEAR_END_TOTAL_ASSETS_NOT_BEGINNING_ASSETS",
+        "universe": "US accounting-data sample; NYSE breakpoint universe; exclude oneDigitSIC6 financials",
+        "universe_precision_limit": "Complete return-universe security/share-class codes are not specified in the inspected core text; require author/source dataset alignment, do not silently assert codes10/11",
+        "formation": "End ofJune year t using fiscalYear ending in calendar t−1",
+        "knowledge_policy_in_paper": "Previous source fiscal-year accounting becomes usable at endJune of following calendar year; roughlysixmonthminimum forDecemberFY, not an invented exactsixmonth rule for everyissuer. Exact sourcefiscal-year alignment must be preserved.",
+        "knowledge_policy_required": "Actual original acceptance must precede signal UTC; amendment only after true firstKnown; lag alone cannot certify later filings",
+        "ranking": "GP/Assets quintiles using NYSE breakpoints",
+        "weighting": "Market-cap valueweighted quintiles",
+        "rebalance": "Annual June; holdJuly t–June t+1 with source-compatible weightdrift, not daily equalweight reset",
+        "holding": "Annual sortportfolio, not stops/slot exits; exact monthly weighting implementation requires source-portfolio lineage",
+        "portfolio_outputs": [
+          "All5 long quintiles",
+          "High−Low spread distinctzero-costreturn"
+        ],
+        "costs": "Published Table2 gross portfolio evidence, no verified netcost series; do not lower VUcosts to match",
+        "benchmark": "Excess returns/riskfactor regressions; longshortspread not a longonlySPY-outperformance claim",
+        "paper_return_sample": {
+          "from": "1963-07",
+          "to": "2010-12"
+        },
+        "source_annual_data_starts": "1962"
+      },
+      "blockingReasons": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "HISTORICAL_ORIGINAL_SIC_AND_FINANCIAL_EXCLUSIONS",
+        "NYSE_GP_QUINTILE_BREAKPOINT_DENOMINATOR",
+        "SOURCE_EXACT_REVT_AND_COGS_SCOPE",
+        "SOURCE_FISCAL_YEAR_TO_JUNE_ALIGNMENT"
+      ],
+      "referenceChannel": {
+        "published_formula_and_table": "AVAILABLE",
+        "exact_monthly_GP_portfolio_dataset": "NOT_VERIFIED_AVAILABLE",
+        "French_OP_substitute": "PROHIBITED_DISTINCT_STRATEGY",
+        "aggregate_paper_check": "CAN_PREDECLARE_PUBLISHED_DIRECTION_AND_ROUNDED_MOMENTS_ONLY",
+        "supplied_return_arithmetic": "BLOCKED_REFERENCE_SERIES_FOR_EXACT_GP"
+      },
+      "stockMatchedOriginalVerdict": null
+    },
+    {
+      "id": "piotroski_value_fscore",
+      "kind": "FUNDAMENTAL_OR_EVENT",
+      "status": "BLOCKED_DATA",
+      "primarySourceIds": [
+        "piotroski_original"
+      ],
+      "sourceDefinition": {
+        "universe": "All Compustat firms with fiscal-end stockprice/book equity; retained topBMquintile with9 signals",
+        "value_signal": "Fiscal-year-end book equity/market equity",
+        "value_cutoffs": "PRIOR fiscal-report-year allfirmBM distribution; currentFY observations grouped byfinancialreportyear, not arbitraryJune marketuniverse",
+        "sizing": "Original headline test averages individual eligible firm1/2yr buy-and-hold returns, effectively equalweighted case means; not a fully specified daily self-financing commonJune portfolio",
+        "formation": "Beginning of FIFTH month after EACH issuer fiscalYearEnd",
+        "holding": "1year and2year percase, stopping at earliest terminal traded return",
+        "nine_signals": [
+          "NI_before_extraordinary/beginningAT>0",
+          "CFO/beginningAT>0",
+          "CurrentROA>priorROA",
+          "CFO>NI_before_extraordinary",
+          "LongTermDebt/averageAT falls",
+          "CurrentAssets/CurrentLiabilities rises",
+          "No COMMON EQUITY issuance duringpriorFY",
+          "(Sales−COGS)/Sales rises",
+          "DeltaTURN improves; exact denominator UNSELECTED due within-primary-source conflict (Section2.3.3 beginningAT vsTable1 averageAT)"
+        ],
+        "score_groups": "High8/9 versusLow0/1 WITHIN topBMquintile; compare alsoallhighBM",
+        "original_terminal_assumption": "Ifdelisted, delistingreturn assumed0; source-matching assumption is distinct from economic true-proceeds certification",
+        "benchmark": "Per-case valueweightedmarket buy-and-hold sameexacthorizon; not dailySPY or universalfixedannualSPYcomparison",
+        "sample_fiscal_years": {
+          "from": "1976",
+          "to": "1996"
+        },
+        "source_costs": "OriginalBHRcase evidence, no originalverified transactioncost ledger; moderncosts separate",
+        "PIT_scope": "Paperfixed5thmonth lag notactualacceptance-vintage certification; extra correctness constraints disclosedseparately"
+      },
+      "blockingReasons": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "PRIOR_FISCAL_REPORT_YEAR_VALUE_CROSSSECTION",
+        "THREE_CERTIFIED_TRUE_ANNUAL_PERIODS_AND_FISCAL_LINKS",
+        "PRE_ASU_SOURCE_IB_AND_COMMON_EQUITY_ISSUANCE_COVERAGE",
+        "FISCAL_YEAR_END_ME_KNOWN_AT_ACTUAL_FORMATION",
+        "VALUEWEIGHTED_MARKET_SAME_CASE_HORIZON",
+        "PREDECLARED_TURN_DENOMINATOR_SOURCE_CONFLICT_RESOLUTION"
+      ],
+      "referenceChannel": {
+        "published_method_and_aggregate_tests": "AVAILABLE",
+        "authentic_original_stock_case_panel": "MISSING",
+        "French_BE_ME_series": "OPTIONAL_DISTINCT_VALUE_SORT_REFERENCE_CONTROL_NOT_FSCORE",
+        "French_Fscore_equivalence": "PROHIBITED"
+      },
+      "stockMatchedOriginalVerdict": null,
+      "sourceConflict": "SOURCE_PROSE_BEGINNING_ASSETS_VS_TABLE1_AVERAGE_ASSETS_FOR_DELTA_TURN; UNSELECTED_VARIANT_BLOCKED"
+    },
+    {
+      "id": "value_plus_momentum",
+      "kind": "FUNDAMENTAL_OR_EVENT",
+      "status": "BLOCKED_DATA",
+      "primarySourceIds": [
+        "value_momentum_original",
+        "value_momentum_aqr_data",
+        "value_momentum_original_workbook"
+      ],
+      "sourceDefinition": {
+        "calibration_variant": "US_EQUITY_ORIGINAL_RANK_WEIGHTED_COMBO_FACTOR_EQ1_3",
+        "universe": "CRSPUScommonstock sharecodes10/11; previousbook data and12mreturnhistory; excludeADRs/REITs/financials/closedfunds/foreignshares; priorbeginMonthprice>=USD1; stocks covering cumulative90%wholemarketME aftereligibility exclusions",
+        "universe_cap_selection": "DescendingbeginningMonthME cumulative90%, not largest90%ofnames or alreadyobservedVUcrosssection",
+        "book_value_lag": "6months",
+        "market_equity": "Mostrecentasofformation, sourceexactsecurity capitalizations",
+        "momentum": "Past2–12month cumulativeRAW/TOTAL stockreturn; skipmostrecentmonth",
+        "P1_P2_P3": "MonthlythreeequalCOUNTgroups independently forvalue/momentum; USstocklongtercile returnsVWbybeginMonthME",
+        "factor_Eq1": "Weight_i=ct*(crosssection_rank_i−meanRank), sums0; normalize +1long/−1short",
+        "COMBO_Eq3": "0.5VALUEfactorReturn+0.5MOMfactorReturn; coefficientsourcefixed, notoptimized",
+        "rebalance": "Monthly",
+        "sample": {
+          "from": "1972-01",
+          "to": "2011-07"
+        },
+        "baseCurrency": "USD",
+        "costs": "Primarymainresults gross; no borrowed#632cost reductions orriskStops",
+        "benchmark": "USmarket/index benchmark onlyunderproper originaldefinition; longshortfactor/excesscashnot a longonlySPYportfolio",
+        "longonly_combo_caution": "0.5VAL3US+0.5MOM3US would be a specificallylabeled longonly-derived diagnostic, NOT paperEq3factor replication",
+        "market_cap_denominator_precision": "The paper says cumulative90% of the entire stock market after describing its exclusions. Exact eligible denominator membership requires author/source stockpanel; do not silently normalize to observedVU names or invent inclusion ordering."
+      },
+      "blockingReasons": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "SOURCE_FULL_MARKET_90PCT_ME_DENOMINATOR",
+        "SOURCE_PREFERRED_AND_BOOK_EQUITY_SCOPE",
+        "ACTUAL_HISTORICAL_EXCLUSION_TYPE_AND_US_COMMON_CLASS",
+        "SOURCE_SHORTABLE_FACTOR_PORTFOLIO_COST_FINANCING_IF_STOCK_FACTOR_SIMULATION"
+      ],
+      "referenceChannel": {
+        "status": "OFFICIAL_ORIGINAL_RETURN_SERIES_AVAILABLE_ARITHMETIC_ONLY",
+        "longonly_sheet": "VME Portfolios",
+        "US_total_return_columns": [
+          "VAL1US",
+          "VAL2US",
+          "VAL3US",
+          "MOM1US",
+          "MOM2US",
+          "MOM3US"
+        ],
+        "factor_sheet": "VME Factors",
+        "US_excess_factor_columns": [
+          "VAL^US",
+          "MOM^US"
+        ],
+        "allowed_reference_arithmetic": "Verify monthly0.5VAL^US+0.5MOM^US/roundedoriginalpublishedmonthlymoments andsourceidentity; no stock-levelenginePASS",
+        "source_unit": "XLSX underlyingDECIMAL_FRACTION verifiednumFmt10=0.00%",
+        "actual_dataset_window": {
+          "from": "1972-01-31",
+          "to": "2011-07-31"
+        },
+        "cap_weights_or_stock_constituents_supplied": false,
+        "reference_factor_collateral_wealth": "NOT_SPECIFIED_DO_NOT_FABRICATE_GROSS_CAGR_OR_SPY_CURVE",
+        "return_sheets_separate": "USstockP1/P2/P3 totalreturns; factors monthlycash-excess; nonstockfutures portfolios separatecash-excesslabels",
+        "disclosures": "Private research-only, authorcopyright preserved; inspectdisclosures before any datasetredistribution"
+      },
+      "stockMatchedOriginalVerdict": null
+    },
+    {
+      "id": "buyback_announcement_event",
+      "kind": "FUNDAMENTAL_OR_EVENT",
+      "status": "BLOCKED_DATA",
+      "primarySourceIds": [
+        "buyback_crossref_record"
+      ],
+      "sourceDefinition": {
+        "original_study": "Ikenberry/Lakonishok/Vermaelen1995 MarketUnderreactiontoOpenMarketShareRepurchases",
+        "source_access": "OfficialCrossrefpublishermetadata inspected; Elsevierarticleaccessfailed, fullmethodnotinspectedinthisscreen",
+        "event_definition": "AuthenticissueropenmarketrepurchaseANNOUNCEMENT; exactoriginaleventeligibility pendingfullpaper",
+        "sample_dates": null,
+        "formation": null,
+        "holding": null,
+        "weighting": null,
+        "benchmark": null,
+        "exclusions": null,
+        "transaction_costs": null,
+        "unknownfields": "Notinvented fromsecondarysummaries"
+      },
+      "blockingReasons": [
+        "COMPLETE_AUTHENTIC_ORIGINAL_HISTORICAL_REPURCHASE_ANNOUNCEMENT_PANEL",
+        "ANNOUNCEMENT_FIRST_PUBLIC_UTC_AND_SECURITY_IDENTITY",
+        "SOURCE_ORIGINAL_PAPER_EVENT_MATCH_SAMPLE_HOLDING_BENCHMARK",
+        "CANCELLATIONS_AND_EVENT_DUPLICATE_RULES"
+      ],
+      "referenceChannel": {},
+      "stockMatchedOriginalVerdict": null
+    }
+  ],
+  "referenceScreenCount": 8,
+  "sourceMaps": [
+    {
+      "id": "JT1993",
+      "url": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
+      "resolvedUrl": "https://www.bauer.uh.edu/rsusmel/phd/jegadeesh-titman93.pdf",
+      "sha256": "ed02251ff8152b78cf52d4285cd344eb42b1b19a4d64fd9bf01d24eba1a34155",
+      "bytes": 622934,
+      "publicHeaders": {
+        "content-type": "application/pdf",
+        "last-modified": "Wed, 10 Sep 2008 23:29:50 GMT",
+        "etag": "\"bcf3b81e9d13c91:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "622934"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.793361+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "GH2004",
+      "url": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
+      "resolvedUrl": "https://www.bauer.uh.edu/TGeorge/papers/gh4-paper.pdf",
+      "sha256": "b6e80dd8a7355d29358240fe2df60a0fa2f47eac45b5de4b51a1a8e5380becaf",
+      "bytes": 171737,
+      "publicHeaders": {
+        "content-type": "application/pdf",
+        "last-modified": "Fri, 27 Aug 2004 14:15:12 GMT",
+        "etag": "\"c1598644408cc41:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "171737"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.592601+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "LV2007",
+      "url": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
+      "resolvedUrl": "https://repub.eur.nl/pub/10460/ERS-2007-044-F%26A.pdf",
+      "sha256": "3e6dba1ec56c90fc751558a692e5d3cc5de8ceb22607abd34c80620d471a1938",
+      "bytes": 260892,
+      "publicHeaders": {
+        "date": "Tue, 13 Oct 2026 08:50:46 GMT",
+        "content-type": "application/pdf",
+        "content-length": "260892",
+        "last-modified": "Thu, 10 Mar 2016 13:12:07 GMT"
+      },
+      "retrievedAt": "2026-10-13T08:50:47.325033+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_LIBRARY",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "sha256": "9af7df28fb25d32d7ab81e1b6eaddebb167f57cc013cb437c85c154727ce9065",
+      "bytes": 245732,
+      "publicHeaders": {
+        "content-type": "text/html",
+        "last-modified": "Fri, 25 Sep 2026 21:35:05 GMT",
+        "etag": "\"027d9ba354ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "245732"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.711769+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_MOM10_DETAILS",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_10_port_form_pr_12_2.html",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_10_port_form_pr_12_2.html",
+      "sha256": "eb3f21f64ca94454fc1c3692ad4f385f84ccf4087cb50190a11b4402de1761dd",
+      "bytes": 12178,
+      "publicHeaders": {
+        "content-type": "text/html",
+        "last-modified": "Fri, 25 Sep 2026 21:37:00 GMT",
+        "etag": "\"ad6273ff354ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "12178"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.554179+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_VAR_DETAILS",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_port_form_VAR.html",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_port_form_VAR.html",
+      "sha256": "9fc63a834c86d7cf69438587fa8edd5c5c99f370dd8a7d379ae21542ec184035",
+      "bytes": 12699,
+      "publicHeaders": {
+        "content-type": "text/html",
+        "last-modified": "Fri, 25 Sep 2026 21:37:12 GMT",
+        "etag": "\"6652746364ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "12699"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.728070+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_MOM_FACTOR_DETAILS",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_mom_factor.html",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_mom_factor.html",
+      "sha256": "f4bd0c1765eed8648a5ca8332afd4cf3e7e6176c8af137461703d8dce18f4a10",
+      "bytes": 13126,
+      "publicHeaders": {
+        "content-type": "text/html",
+        "last-modified": "Fri, 25 Sep 2026 21:37:15 GMT",
+        "etag": "\"82d888364ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "13126"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.851377+00:00",
+      "status": "FETCHED",
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_MOM10",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "sha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "bytes": 119089,
+      "publicHeaders": {
+        "content-type": "application/x-zip-compressed",
+        "last-modified": "Fri, 25 Sep 2026 21:55:47 GMT",
+        "etag": "\"7aec539f384ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "119089"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.821731+00:00",
+      "status": "FETCHED",
+      "members": [
+        {
+          "member": "10_Portfolios_Prior_12_2.csv",
+          "sha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+          "bytes": 484135,
+          "preamble": [
+            "This file was created using the 202608 CRSP database.",
+            "It contains value- and equal-weighted returns for  10 prior-return portfolios.",
+            "The portfolios are constructed monthly. PRIOR_RET is from -12 to - 2.",
+            "",
+            "Annual returns are from January to December.",
+            "",
+            "Missing data are indicated by -99.99 or -999.",
+            "",
+            "",
+            "  Value Weight Returns -- Monthly",
+            ",Lo PRIOR,PRIOR 2,PRIOR 3,PRIOR 4,PRIOR 5,PRIOR 6,PRIOR 7,PRIOR 8,PRIOR 9,Hi PRIOR"
+          ],
+          "firstMonth": "192701",
+          "lastMonth": "202608",
+          "datedRowsAcrossBlocks": 4784,
+          "returnsValuesInspected": false
+        }
+      ],
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_VAR",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "sha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "bytes": 147521,
+      "publicHeaders": {
+        "content-type": "application/x-zip-compressed",
+        "last-modified": "Fri, 25 Sep 2026 21:54:52 GMT",
+        "etag": "\"efe5a07e384ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "147521"
+      },
+      "retrievedAt": "2026-10-13T08:50:46.134109+00:00",
+      "status": "FETCHED",
+      "members": [
+        {
+          "member": "Portfolios_Formed_on_VAR.csv",
+          "sha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+          "bytes": 584013,
+          "preamble": [
+            "This file was created using the 202608 CRSP database.",
+            "It contains value- and equal-weighted returns for portfolios formed on VAR.",
+            "",
+            "The portfolios are constructed at the end of each month.",
+            "",
+            "The total return variance is measured over 60 days up to formation month-end requiring at least 20 non-missing daily returns.  ",
+            "Annual returns are from January to December.",
+            "",
+            "Missing data are indicated by -99.99 or -999.",
+            "",
+            "The break points include utilities and include financials.",
+            "",
+            "The  portfolios  include utilities and include financials.",
+            "",
+            "",
+            "  Value Weighted Returns -- Monthly",
+            ",Lo 20,Qnt 2,Qnt 3,Qnt 4,Hi 20,Lo 10,Dec 2,Dec 3,Dec 4,Dec 5,Dec 6,Dec 7,Dec 8,Dec 9,Hi 10"
+          ],
+          "firstMonth": "196307",
+          "lastMonth": "202608",
+          "datedRowsAcrossBlocks": 3790,
+          "returnsValuesInspected": false
+        }
+      ],
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_MOM_FACTOR",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Momentum_Factor_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Momentum_Factor_CSV.zip",
+      "sha256": "c06d1c2e9a5e4f6985879722f23c6bb585f46b34eaf3fcb681d4de887e353f3e",
+      "bytes": 5600,
+      "publicHeaders": {
+        "content-type": "application/x-zip-compressed",
+        "last-modified": "Fri, 25 Sep 2026 21:55:02 GMT",
+        "etag": "\"b01ba584384ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:50:45 GMT",
+        "content-length": "5600"
+      },
+      "retrievedAt": "2026-10-13T08:50:45.994477+00:00",
+      "status": "FETCHED",
+      "members": [
+        {
+          "member": "F-F_Momentum_Factor.csv",
+          "sha256": "613b628c5ffa8b957e03ad3a4ccd891d3aa6daafc1801dffb7db7376f2017bdc",
+          "bytes": 21640,
+          "preamble": [
+            "This file was created using the 202608 CRSP database.  It",
+            "contains a momentum factor, constructed from six value-weight portfolios formed",
+            "using independent sorts on size and prior return of NYSE, AMEX, and NASDAQ stocks",
+            "Mom    is the average of the returns on two (big and small) high prior return portfolios",
+            "minus the average of the returns on two low prior return portfolios.  The portfolios",
+            "are constructed monthly.  Big means a firm is above the median market cap on the NYSE",
+            "at the end of the previous month; small firms are below the median NYSE market cap.",
+            "Prior return is measured from month -12 to - 2.  Firms in the low prior return",
+            "portfolio are below the 30th NYSE percentile.  Those in the high portfolio are above",
+            "the 70th NYSE percentile.",
+            "",
+            "Missing data are indicated by -99.99 or -999.",
+            "",
+            ",Mom"
+          ],
+          "firstMonth": "192701",
+          "lastMonth": "202608",
+          "datedRowsAcrossBlocks": 1196,
+          "returnsValuesInspected": false
+        }
+      ],
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      }
+    },
+    {
+      "id": "FRENCH_DAILY_RF",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+      "sha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+      "publicHeaders": {
+        "content-type": "application/x-zip-compressed",
+        "last-modified": "Fri, 25 Sep 2026 21:55:02 GMT",
+        "etag": "\"f8351d84384ddd1:0\"",
+        "date": "Tue, 13 Oct 2026 08:57:07 GMT",
+        "content-length": "178184"
+      },
+      "retrievedAt": "2026-10-13T08:57:09.082385+00:00",
+      "status": "FETCHED",
+      "member": "F-F_Research_Data_Factors_daily.csv",
+      "csvSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+      "preamble": [
+        "This file was created by using the 202608 CRSP database.",
+        "The Tbill return is the simple daily rate that, over the number of trading days",
+        "compounds to 1-month TBill rate. The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index.",
+        "",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "firstDate": "19260701",
+      "lastDate": "20260831",
+      "dailyRows": 26317,
+      "numericReturnsInspected": false,
+      "rights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH_ONLY"
+      }
+    },
+    {
+      "id": "gp_author_paper",
+      "title": "The Other Side of Value: The Gross Profitability Premium",
+      "source_kind": "PRIMARY_AUTHOR_MANUSCRIPT",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://mysimon.rochester.edu/novy-marx/research/OSoV.pdf",
+      "resolved_url": "https://mysimon.rochester.edu/novy-marx/research/OSoV.pdf",
+      "sha256": "edcc990fefd4c4270bfc603cd9b0c61f36aaa97e14c2fd1c3d047494418856b1",
+      "accessed_date": "2026-10-13",
+      "locator": "June2012; Sections2.1/2.2,Table2, footnote2; JFE2013author-linked publishedrecord distinct"
+    },
+    {
+      "id": "gp_author_research",
+      "title": "Robert Novy-Marx official author page",
+      "source_kind": "OFFICIAL_AUTHOR_RESEARCH_PAGE",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://rnm.simon.rochester.edu/research.html",
+      "resolved_url": "https://mysimon.rochester.edu/novy-marx/",
+      "sha256": "f48428378eb80fceec13bdd2996ae7503a6416a50733f7c22112f7cc0435d926",
+      "accessed_date": "2026-10-13",
+      "locator": "Paperlink to JFE2013; no author gross-profitability monthly return file verified"
+    },
+    {
+      "id": "piotroski_original",
+      "title": "Value Investing: Historical Financial Statement Information",
+      "source_kind": "PRIMARY_AUTHOR_UNIVERSITY_REPRINT",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://www.chicagobooth.edu/~/media/FE874EE65F624AAEBD0166B1974FD74D",
+      "resolved_url": "https://www.chicagobooth.edu/~/media/FE874EE65F624AAEBD0166B1974FD74D",
+      "sha256": "670a994c641312fb184335c3cba9a7aa4f03679be480600f417dab6b62802682",
+      "accessed_date": "2026-10-13",
+      "locator": "Chicago SelectedPaper84 Jan2002 reprint of2000; Sections2.3/3.1/3.2/3.3"
+    },
+    {
+      "id": "value_momentum_original",
+      "title": "Value and Momentum Everywhere",
+      "source_kind": "PRIMARY_AUTHOR_LINKED_PUBLICATION",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
+      "resolved_url": "https://spinup-000d1a-wp-offload-media.s3.amazonaws.com/faculty/wp-content/uploads/sites/3/2019/09/ValueandMomentumEverywhere.pdf",
+      "sha256": "400da98388d426c97172ddbff80630de6fcee6d54510243a139504486d317393",
+      "accessed_date": "2026-10-13",
+      "locator": "Asness/Moskowitz/Pedersen2013 JF68; SectionsI.A.1,I.B,I.C,I.D; Eq1–3,TableI"
+    },
+    {
+      "id": "value_momentum_aqr_data",
+      "title": "Value and Momentum Everywhere Original Paper Data",
+      "source_kind": "OFFICIAL_AUTHOR_DATASET_PAGE",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://www.aqr.com/Insights/Datasets/Value-and-Momentum-Everywhere-Original-Paper-Data",
+      "resolved_url": "https://www.aqr.com/Insights/Datasets/Value-and-Momentum-Everywhere-Original-Paper-Data",
+      "sha256": "c32b82b66d1cbd7ebf3d0b2f9940d589d08b29e54ae8a1296d6646c89252a27b",
+      "accessed_date": "2026-10-13",
+      "locator": "Original PaperData download, separate monthly factors and portfolios"
+    },
+    {
+      "id": "value_momentum_original_workbook",
+      "title": "VME original monthly portfolios and factors",
+      "source_kind": "OFFICIAL_AUTHOR_RESEARCH_RETURN_DATASET",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://www.aqr.com/-/media/AQR/Documents/Insights/Data-Sets/Value-and-Momentum-Everywhere-Original-Paper-Data.xlsx",
+      "resolved_url": "https://www.aqr.com/-/media/AQR/Documents/Insights/Data-Sets/Value-and-Momentum-Everywhere-Original-Paper-Data.xlsx",
+      "sha256": "242e77b204776bd3de60d7aed3a41acfc940b2c63fdade4266cbb168b1fcba6b",
+      "accessed_date": "2026-10-13",
+      "locator": "VME Portfolios/VME Factors/Disclosures; original1972-01–2011-07, US TotalReturns vs rank-factor excess"
+    },
+    {
+      "id": "french_bookmarket_exact_definition",
+      "title": "Portfolios Formed on Book-to-Market details",
+      "source_kind": "OFFICIAL_ACADEMIC_DATA_DEFINITION",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_form_btm.html",
+      "resolved_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_form_btm.html",
+      "sha256": "bab0e9923c2f51cad983234230da202792db3cfe47d88a7942a78953839dc648",
+      "accessed_date": "2026-10-13",
+      "locator": "JuneNYSEbreakpoints, previousFYbook/previousDecemberME; this is not Piotroski"
+    },
+    {
+      "id": "french_bookmarket_reference",
+      "title": "Portfolios Formed on Book-to-Market monthly data",
+      "source_kind": "OFFICIAL_ACADEMIC_RETURN_DATASET",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_BE-ME_CSV.zip",
+      "resolved_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_BE-ME_CSV.zip",
+      "sha256": "9a701c046c81aea43627fda7dcc4a6a516ccccbf80593da25572f4dc0b5e7b5d",
+      "accessed_date": "2026-10-13",
+      "locator": "Monthly percent-return EW/VW sections, author-revised FIZ/CIZ history"
+    },
+    {
+      "id": "french_operatingprofit_definition",
+      "title": "Portfolios Formed on Operating Profitability details",
+      "source_kind": "OFFICIAL_ACADEMIC_DATA_DEFINITION",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_port_form_op.html",
+      "resolved_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_port_form_op.html",
+      "sha256": "a773acec6102841d361fda2ab7ab56da8ce2ce8465fc9c62bd792fa41174f939",
+      "accessed_date": "2026-10-13",
+      "locator": "Construction/Stocks; OP=(Revenue−COGS−Interest−SGA)/BookEquity; notGP/Assets"
+    },
+    {
+      "id": "french_library",
+      "title": "French DataLibrary",
+      "source_kind": "OFFICIAL_ACADEMIC_DATA_INDEX",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "resolved_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "sha256": "9af7df28fb25d32d7ab81e1b6eaddebb167f57cc013cb437c85c154727ce9065",
+      "accessed_date": "2026-10-13",
+      "locator": "FIZ→CIZ returnreinvestment changes and source links; no pureGrossProfitability series verified"
+    },
+    {
+      "id": "buyback_crossref_record",
+      "title": "Market Underreaction to Open Market Share Repurchases",
+      "source_kind": "OFFICIAL_PUBLICATION_METADATA",
+      "access_status": "INSPECTED_PRIMARY_SOURCE",
+      "url": "https://api.crossref.org/works/10.1016/0304-405X(95)00826-Z",
+      "resolved_url": "https://api.crossref.org/works/10.1016/0304-405X(95)00826-Z",
+      "sha256": "de319dae976e6088752926eecfaab0360d6a660662f83929b245787e788b0915",
+      "accessed_date": "2026-10-13",
+      "locator": "Ikenberry/Lakonishok/Vermaelen1995 JFE; DOI10.1016/0304-405x(95)00826-z; fullpaper notinspected"
+    }
+  ],
+  "blockedVerdict": null,
+  "dataPolicy": "NO_PROXIES_NO_MIGRATION_NO_PAID_PROVIDER",
+  "strategyDefinitionsChanged": false,
+  "sourcePlans": [
+    {
+      "role": "reference-price-source-plan.json",
+      "sha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0"
+    },
+    {
+      "role": "reference-fundamental-source-plan.json",
+      "sha256": "68d8ea82e41a315e0c214edf05c7ee9de7e36d040a75271aa06c29b3516d2be0"
+    },
+    {
+      "role": "premeasurement-adversarial-plan.json",
+      "sha256": "3af3ae4515f14f2cf1657940f112f989e912ed7235f9b0a39c975851499f10d9"
+    }
+  ]
+}
