@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {releaseHealth,updateAcceptedHealth,acceptedHealthServed} from '../release-health.mjs';
 import {goodKey} from '../refresh-storage.mjs';
 const source={sourceGeneration:'private-current',privateCompanies:5120,health:{lastSuccessfulRefresh:'2026-10-10T14:36:59Z',lastSuccessfulMaterialRefresh:'2026-10-09T15:47:18Z'}};
@@ -17,6 +19,28 @@ test('unchanged consumer generation cannot certify stale production health metad
 test('full release uses actual private refresh and historical accepted build, not rollback or repair time',()=>{
  const h=releaseHealth(source,options);assert.equal(h.lastSuccessfulRefresh,source.health.lastSuccessfulRefresh);assert.equal(h.lastSuccessfulConsumerBuild,'2026-10-10T17:12:00.000Z');assert.equal(h.lastSuccessfulMaterialRefresh,source.health.lastSuccessfulMaterialRefresh);
  for(const bad of [{privateGeneration:'wrong'},{expectedCheckpointSha256:'b'.repeat(64)},{builtAt:'2026-10-11T00:00:00Z'},{builtAt:'2026-10-10T15:00:00Z'}])assert.throws(()=>releaseHealth(source,{...options,...bad}));
+});
+test('sparse health checkout includes the renderer source required by full-universe validation',()=>{
+ const workflow=readFileSync(resolve('.github/workflows/company-intelligence-health.yml'),'utf8');
+ assert.match(workflow,/company-intelligence\/ui/);
+ assert.match(workflow,/company-intelligence\/api/);
+});
+test('bounded daily onboarding shares the production writer lock and uses a bounded candidate batch',()=>{
+ const workflow=readFileSync(resolve('.github/workflows/company-intelligence-profile-source.yml'),'utf8');
+ assert.match(workflow,/cron: '47 3 \* \* \*'/);
+ assert.match(workflow,/\(inputs\.publish \|\| github\.event_name == 'schedule'\) && 'production'/);
+ assert.match(workflow,/GITHUB_EVENT_NAME" = schedule.*--sources --source-limit 100/);
+ assert.match(workflow,/source-onboarding\.json/);
+});
+test('isolated full-universe verification emits before/after source audit without production writes',()=>{
+ const workflow=readFileSync(resolve('.github/workflows/company-intelligence-refresh.yml'),'utf8');
+ const runner=readFileSync(resolve('scripts/company_intelligence/refresh-run.mjs'),'utf8');
+ assert.match(workflow,/UNIVERSE" = true.*VERIFICATION" = true.*--universe --source-audit/);
+ assert.match(workflow,/VERIFICATION: \$\{\{ inputs\.verification \}\}/);
+ assert.match(runner,/currentRefresh:a\.currentRefresh/);
+ assert.match(runner,/restoredGeneration:r\.restoredGeneration,newPrivateGeneration:r\.newPrivateGeneration,freshRestoreVerified:r\.freshRestoreVerified/);
+ assert.match(runner,/checkpointSha256:r\.certifiedBootstrap\?\.sha256,privateCompanies:r\.certifiedBootstrap\?\.privateCompanies/);
+ assert.match(runner,/runtimeSeconds:r\.durationSeconds,sourcesChecked:r\.sourcesChecked,publicRequests:r\.publicRequests,secRequests:r\.secRequests/);
 });
 test('metadata reconciliation preserves previous GOOD and all consumer bytes, and compensates failed readback',async()=>{
  const expected={schema:1,generation:'accepted',payloadNamespace:'eligible-a',manifest:{scope:'PER_ISSUER_ELIGIBILITY',assets:{'index.json':{sha256:'verified'}}},inventory:{company:{tickers:['TEST']}},health:{lastSuccessfulRefresh:'old'},previous:{generation:'previous',payloadNamespace:'eligible-b'}};
