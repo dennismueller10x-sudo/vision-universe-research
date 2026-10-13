@@ -111,7 +111,7 @@ test('coalesced action windows bind all 47 distinct strong cases; bounded policy
 
 test('hard cap cannot exceed 16000 before requests and missing credentials cannot fall back to local provider calls', async () => {
   const f = fixture(); let calls = 0;
-  for (const options of [{maxCredits: 16001, apiKey: 'unit-test-token'}, {apiKey: ''}]) {
+  for (const options of [{maxCredits: 16001, apiKey: 'TESTKEY-europe-live'}, {apiKey: ''}]) {
     await assert.rejects(collectLiveRevalidation({...f, out: '/tmp/vu-uncreated-live-output', ...options,
       fetchImpl: async () => {calls++;}, log: () => {}}));
   }
@@ -125,7 +125,7 @@ test('private collector queries all 449, adaptively recovers a missing date and 
   const calls = [], logs = [];
   const fetchImpl = async rawUrl => {
     const url = new URL(rawUrl); calls.push(url.pathname + '?' + [...url.searchParams].filter(([k]) => k !== 'access_key').map(([k,v]) => k+'='+v).join('&'));
-    assert.equal(url.searchParams.get('access_key'), 'unit-test-token');
+    assert.equal(url.searchParams.get('access_key'), 'TESTKEY-europe-live');
     let body;
     if (url.pathname.includes('/tickers/')) {
       const ticker = decodeURIComponent(url.pathname.split('/').at(-1)); const listing = f.plan.listings.find(row => row.symbol === ticker);
@@ -135,7 +135,7 @@ test('private collector queries all 449, adaptively recovers a missing date and 
     return {status: 200, headers: new Headers(), text: async () => JSON.stringify(body)};
   };
   try {
-    const summary = await collectLiveRevalidation({...f, out, apiKey: 'unit-test-token', fetchImpl, log: x => logs.push(x)});
+    const summary = await collectLiveRevalidation({...f, out, apiKey: 'TESTKEY-europe-live', fetchImpl, log: x => logs.push(x)});
     assert.equal(summary.all449Included, true); assert.equal(summary.listings.length, 449);
     assert.equal(summary.listings.filter(row => row.metadataMatched).length, 449);
     assert.equal(summary.budget.requests, 545); assert.equal(summary.transport.retries, 0);
@@ -148,8 +148,8 @@ test('private collector queries all 449, adaptively recovers a missing date and 
     for (const meta of manifests) {
       const compressed = readFileSync(join(out, meta.path)), bytes = gunzipSync(compressed);
       assert.equal(hash(compressed), meta.compressedSha256); assert.equal(hash(bytes), meta.sha256);
-      assert.equal(JSON.stringify(meta).includes('unit-test-token'), false);
-      assert.equal(bytes.toString().includes('unit-test-token'), false);
+      assert.equal(JSON.stringify(meta).includes('TESTKEY-europe-live'), false);
+      assert.equal(bytes.toString().includes('TESTKEY-europe-live'), false);
     }
     const last = summary.results.at(-1), compressed = readFileSync(join(out, last.resultPath));
     assert.equal(hash(compressed), last.normalizedCompressedSha256);
@@ -165,7 +165,7 @@ test('HTTP auth failure stops requests globally while every canonical listing re
   const f = fixture(), out = mkdtempSync(join(tmpdir(), 'vu-live-auth-'));
   let count = 0;
   try {
-    const summary = await collectLiveRevalidation({...f, out, apiKey: 'unit-test-token', log: () => {},
+    const summary = await collectLiveRevalidation({...f, out, apiKey: 'TESTKEY-europe-live', log: () => {},
       fetchImpl: async () => {count++; return {status: 401, text: async () => JSON.stringify({error: {type: 'invalid_access_key'}})};}});
     assert.equal(count, 1); assert.equal(summary.budget.requests, 1); assert.equal(summary.terminalReason, 'authError');
     assert.equal(summary.listings.length, 449); assert.equal(summary.results.filter(row => row.skipped).length, 542);
@@ -178,7 +178,7 @@ test('quarantine-only windows really dispatch broader probes for absent or inval
     f.plan.listings[0].windows = [{windowId: 'q-only', from: '2026-01-05', to: '2026-01-06', maxPages: 1,
       targetDates: [{date: '2026-01-05', kind: 'QUARANTINE', reasonCode: 'INVALID_CURRENT_CLOSE'}]}];
     try {
-      const summary = await collectLiveRevalidation({...f, out, apiKey: 'unit-test-token', log: () => {},
+      const summary = await collectLiveRevalidation({...f, out, apiKey: 'TESTKEY-europe-live', log: () => {},
         fetchImpl: async rawUrl => {
           const url = new URL(rawUrl); let body;
           if (url.pathname.includes('/tickers/')) body = {data: {symbol: url.pathname.split('/').at(-1),
