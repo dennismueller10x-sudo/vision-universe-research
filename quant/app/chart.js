@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.0.0)
+   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.1.0)
 
    EIN CHART. ALLE ZEITRAEUME. DERSELBE WIE IN DISCOVER.
 
@@ -31,13 +31,21 @@
    der letzten Handelstage und sagt das in der Bildunterschrift.
 
    Historische Zeitraeume: die kanonische, splitbereinigte Tagesreihe der
-   Product Services (Return Contract: SPLIT_ADJUSTED_PRICE). Fuer 10J und
-   Max wird, wo vorhanden, die lange Wochenreihe vorangestellt.
+   Product Services (Return Contract: SPLIT_ADJUSTED_PRICE). Fuer 3J, 5J,
+   10J und Max wird, wo vorhanden, die lange Wochenreihe vorangestellt.
+
+   Ein Zeitraum gilt nur, wenn die Reihe ihn abdeckt (VUCore.ChartHistory,
+   dieselbe 95-%-Regel wie Discover). Vorher reichte "zwei Punkte im
+   Fenster": 3J lud nur die 1-Jahres-Tagesreihe, und PLTR zeigte am
+   13.10.2026 "+22,75 % in 3 Jahren" ueber 16.09.2025 - 12.10.2026 statt
+   rund +1.104 % ueber drei Jahre. Ein Zeitraum, den die Reihe nicht
+   abdeckt, wird abgeschaltet und nennt keine Rendite; waehrend die lange
+   Reihe laedt, steht nicht die kurze unter dem langen Etikett.
    ========================================================================= */
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-chart-1.0.0";
+  var VERSION = "quant-chart-1.1.0";
   var RANGES = [
     { id: "1D", label: "1T", word: "heute" },
     { id: "5D", label: "5T", days: 7, word: "in 5 Tagen" },
@@ -46,7 +54,7 @@
     { id: "6M", label: "6M", days: 183, word: "in 6 Monaten" },
     { id: "YTD", label: "YTD", ytd: true, word: "seit Jahresbeginn" },
     { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
-    { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren" },
+    { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
     { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
     { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true },
     { id: "MAX", label: "Max", all: true, word: "seit Beginn der Reihe", long: true }
@@ -75,6 +83,22 @@
     if (r.all) return points.slice();
     var from = r.ytd ? to.slice(0, 4) + "-01-01" : minusDays(to, r.days);
     return points.filter(function (p) { return p[0] >= from && p[0] <= to; });
+  }
+  /* Deckt die Reihe den ganzen Zeitraum ab? Fuer die gemeinsamen Zeitraeume
+     entscheidet VUCore.ChartHistory (Discover nutzt dieselbe Regel); 5T und
+     YTD kennt sie nicht und bekommen dieselbe 95-%-Spanne. Max ist die
+     Reihe selbst. */
+  function spanDays(points) {
+    return (Date.parse(points[points.length - 1][0]) - Date.parse(points[0][0])) / 86400000;
+  }
+  function covered(points, r) {
+    if (!points || points.length < 2) return false;
+    if (r.all) return true;
+    var CH = global.VUCore && global.VUCore.ChartHistory;
+    if (CH && CH.days && Object.prototype.hasOwnProperty.call(CH.days, r.id)) return CH.available(points, r.id);
+    var to = points[points.length - 1][0];
+    var need = r.ytd ? (Date.parse(to) - Date.parse(to.slice(0, 4) + "-01-01")) / 86400000 : r.days;
+    return spanDays(points) >= need * 0.95;
   }
   function ortszeit(ms, zone) {
     try {
@@ -125,7 +149,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { range: null, intraday: null, long: null, longLoading: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
+    var st = { range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
     /* Dieselbe Gliederung wie Discovers Chart (discover/ui/detail.js
        chartSection): Zeitraum-Leiste (dx-tf), Kopf mit Kurs, Veraenderung
@@ -156,12 +180,20 @@
     function available(id) {
       if (id === "1D") return !!(st.intraday && st.intraday.snapshot && Array.isArray(st.intraday.snapshot.points) && st.intraday.snapshot.points.length >= 2);
       var r = RANGES.filter(function (x) { return x.id === id; })[0];
-      var pts = r.long && st.long ? st.long : eod;
-      return slice(pts, r).length >= 2;
+      var pts = source(r);
+      return slice(pts, r).length >= 2 && covered(pts, r);
     }
+    /* Deckt die Tagesreihe den Zeitraum schon ab (die Golden-Titel haben
+       Tageskurse seit 2015), bleibt es bei Tageskursen - die zusammengesetzte
+       lange Reihe ist Wochenraster. Sonst, und fuer Max immer, die lange. */
+    function needsLong(r) { return !!r.long && (r.all || !covered(eod, r)); }
+    function source(r) { return needsLong(r) && st.long ? st.long : eod; }
+    /* Die lange Reihe ist angekuendigt, aber noch nicht geladen: der Knopf
+       bleibt bedienbar, bis sie da ist oder ihr Laden scheitert. */
+    function longPending(r) { return !!(needsLong(r) && !st.long && o.longPath && o.loadJSON && !st.longDone && !st.longFailed); }
     function syncButtons() {
       RANGES.forEach(function (r) {
-        var ok = available(r.id) || (r.long && !st.long && o.longPath && !st.longFailed);
+        var ok = available(r.id) || longPending(r);
         buttons[r.id].disabled = !ok;
         buttons[r.id].title = ok ? "" : (r.id === "1D" ? "Für diesen Titel liegt kein Tagesverlauf vor." : "Die Kursreihe reicht nicht so weit zurück.");
         buttons[r.id].setAttribute("aria-pressed", r.id === st.range ? "true" : "false");
@@ -268,12 +300,22 @@
     }
 
     function drawRange(r) {
-      var source = r.long && st.long ? st.long : eod;
-      var pts = slice(source, r);
-      if (pts.length < 2) { empty("Zeitraum nicht verfügbar", "Die Kursreihe reicht nicht so weit zurück."); note.textContent = ""; return; }
+      var src = source(r);
+      var pts = slice(src, r);
+      if (pts.length < 2 || !covered(src, r)) {
+        /* Keine Rendite ueber einen gekuerzten Zeitraum: der Kopf zeigt den
+           letzten Kurs ohne Veraenderung und sagt, wo die Reihe beginnt. */
+        head(eod.length ? eod[eod.length - 1][1] : null, null, "", src.length ? "Kursreihe ab " + dateDe(src[0][0]) : "");
+        empty("Zeitraum nicht verfügbar", "Die Kursreihe reicht nicht so weit zurück" + (src.length ? " (sie beginnt am " + dateDe(src[0][0]) + ")." : "."));
+        delete plot.dataset.range; delete plot.dataset.grain;
+        note.textContent = ""; return;
+      }
       var first = pts[0][1], last = pts[pts.length - 1][1];
       var delta = first > 0 ? (last / first - 1) * 100 : null;
-      var weekly = r.long && st.long && source === st.long && pts.length && pts[0][0] < eod[0][0];
+      /* Die zusammengesetzte lange Reihe ist durchgehend Wochenraster
+         (SeriesSampling.mergeWeeklyWithDaily), nur ihr letzter Punkt ist der
+         juengste Tagesschluss. */
+      var weekly = src === st.long;
       head(last, delta, r.word, dateDe(pts[0][0]) + " – " + dateDe(pts[pts.length - 1][0]));
       var svg = MC.renderRange(pts, { width: width(), height: height(), symbol: o.ticker, range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
       if (!svg) { empty("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum."); return; }
@@ -285,7 +327,7 @@
       scrub(svg, first, function (pt) { return dateDe(pt.date); });
       var capt = [];
       capt.push(r.id === "5D" ? "Tagesschlusskurse der letzten Handelstage (5-Minuten-Kurse werden nur für den aktuellen Tag aufbewahrt)"
-        : weekly ? "Wochenschlusskurse vor " + dateDe(eod[0][0]) + ", danach Tagesschlusskurse" : "Tagesschlusskurse");
+        : weekly ? "Wochenschlusskurse, letzter Punkt Tagesschluss vom " + dateDe(pts[pts.length - 1][0]) : "Tagesschlusskurse");
       capt.push(o.adjusted ? "splitbereinigt" + (o.splitEvents ? " (" + o.splitEvents + (o.splitEvents === 1 ? " Split" : " Splits") + " herausgerechnet)" : "") : "nicht splitbereinigt – Splits können als Kurssprung erscheinen");
       capt.push(o.currency || "USD");
       if (svg.getAttribute("data-scale") === "log") capt.push("logarithmische Kursachse");
@@ -293,15 +335,20 @@
       note.textContent = capt.join(" · ") + ".";
     }
 
+    /* Ein Ladevorgang, auf den jeder wartet: wer waehrend des Ladens einen
+       anderen langen Zeitraum waehlt, zeichnet, sobald die Reihe da ist. */
     function loadLong() {
-      if (st.long || st.longLoading || !o.longPath || !o.loadJSON) return Promise.resolve();
+      if (st.longPromise) return st.longPromise;
+      if (st.long || !o.longPath || !o.loadJSON) return Promise.resolve();
       st.longLoading = true;
-      return o.loadJSON(o.longPath).then(function (payload) {
+      st.longPromise = o.loadJSON(o.longPath).then(function (payload) {
         var weekly = (payload && payload.points) || [];
         var SSmp = global.VUQuant && global.VUQuant.SeriesSampling;
         st.long = SSmp && SSmp.mergeWeeklyWithDaily ? SSmp.mergeWeeklyWithDaily(weekly, eod) : eod;
         if (!st.long.length || st.long[0][0] >= eod[0][0]) st.long = null;
+        st.longDone = true;
       }).catch(function () { st.longFailed = true; }).then(function () { st.longLoading = false; syncButtons(); });
+      return st.longPromise;
     }
 
     function draw(id) {
@@ -315,14 +362,26 @@
         if (!available("1D")) { empty("Kein Tagesverlauf", "Für diesen Titel liegt kein veröffentlichter Tagesverlauf vor."); note.textContent = ""; return; }
         drawIntraday(); return;
       }
-      if (r.long && !st.long && o.longPath && !st.longFailed) {
-        drawRange(r);
+      if (longPending(r)) {
+        /* Nicht die kurze Reihe unter dem langen Etikett zeichnen. */
+        head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
+        empty("Lange Kursreihe wird geladen", "");
+        delete plot.dataset.range; delete plot.dataset.grain;
+        note.textContent = "";
         loadLong().then(function () { if (st.range === r.id) drawRange(r); });
         return;
       }
       drawRange(r);
     }
 
+    /* Ohne Tagesverlauf beginnt der Chart bei 1J. Reicht die Reihe dafuer
+       nicht (junge Titel), beim laengsten abgedeckten kuerzeren Zeitraum,
+       sonst bei der ganzen Reihe. */
+    function startRange() {
+      var order = ["1Y", "6M", "3M", "1M"];
+      for (var i = 0; i < order.length; i++) if (available(order[i])) return order[i];
+      return "MAX";
+    }
     /* Start: 1T, wenn es einen Tagesverlauf gibt, sonst 1J. Der Hub
        antwortet sofort aus dem Cache oder nach einem Abruf; wer nicht
        antwortet, haelt den Chart nicht auf. */
@@ -336,11 +395,11 @@
         st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
           if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
-          if (first) { first = false; if (!st.touched) draw(available("1D") ? "1D" : "1Y"); return; }
+          if (first) { first = false; if (!st.touched) draw(available("1D") ? "1D" : startRange()); return; }
           if (st.range === "1D") draw("1D"); else syncButtons();
         });
-        global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw("1Y"); } }, 3000);
-      } else draw("1Y");
+        global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw(startRange()); } }, 3000);
+      } else draw(startRange());
     }
 
     /* Live nur bei offener Boerse und laufendem Tag, eine Verbindung je
@@ -386,5 +445,5 @@
     };
   }
 
-  global.VUQuantChart = { VERSION: VERSION, RANGES: RANGES, create: create, withLive: withLive, slice: slice };
+  global.VUQuantChart = { VERSION: VERSION, RANGES: RANGES, create: create, withLive: withLive, slice: slice, covered: covered };
 })(window);
