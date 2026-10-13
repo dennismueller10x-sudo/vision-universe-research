@@ -377,7 +377,10 @@ function renderSummary(){
   set("#summaryGrid",
     '<div class="sum-card"><div class="sum-card-label">Abgedeckte Aktien</div><div class="sum-card-value">' + covered.length + ' / ' + S.order.length + '</div><div class="sum-card-sub">von Analysten bewertet</div></div>' +
     '<div class="sum-card"><div class="sum-card-label">Häufigste Einstufung</div><div class="sum-card-value">' + esc(CONSENSUS_META[topLabel].label) + '</div><div class="sum-card-sub">' + labelCounts[topLabel] + ' von ' + covered.length + ' Aktien</div></div>' +
-    '<div class="sum-card"><div class="sum-card-label">Ø Kurspotenzial</div><div class="sum-card-value ' + (avgUpside>=0?"pos":"neg") + '">' + fmtPct(avgUpside) + '</div><div class="sum-card-sub">Kursziel vs. aktueller Kurs</div></div>' +
+    /* Ohne Kurs gibt es kein Kurspotenzial - und keine Farbe. null >= 0 ist
+       in JavaScript wahr: vorher stand der Strich gruen da, fehlende Daten
+       sahen aus wie ein positives Signal. */
+    '<div class="sum-card"><div class="sum-card-label">Ø Kurspotenzial</div><div class="sum-card-value ' + (avgUpside == null ? "" : (avgUpside >= 0 ? "pos" : "neg")) + '">' + fmtPct(avgUpside) + '</div><div class="sum-card-sub">' + (avgUpside == null ? "kein aktueller Kurs hinterlegt" : "Kursziel vs. aktueller Kurs") + '</div></div>' +
     '<div class="sum-card"><div class="sum-card-label">Nächstes Update</div><div class="sum-card-value">So.</div><div class="sum-card-sub">wöchentlicher Finnhub-Abruf</div></div>'
   );
 }
