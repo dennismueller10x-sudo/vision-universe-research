@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-11T06:04:10.000Z",
- "asOf": "2026-10-09",
+ "generatedAt": "2026-10-13T04:51:50.000Z",
+ "asOf": "2026-10-12",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -327,21 +327,21 @@
  "observed": 5631,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4373,
-  "WATCH": 714,
-  "SETUP_FORMING": 530,
-  "CONFIRMED": 14,
+  "NO_SETUP": 4363,
+  "WATCH": 695,
+  "SETUP_FORMING": 555,
+  "CONFIRMED": 18,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 530,
-  "setup.none.fallback": 4373,
-  "setup.watch.bullish-trend": 432,
-  "setup.watch.confirmed-structure-near-high": 282,
-  "setup.confirmed.structure-trend-volume": 14
+  "setup.forming.complete-setup-awaiting-trigger": 555,
+  "setup.none.fallback": 4363,
+  "setup.watch.bullish-trend": 406,
+  "setup.watch.confirmed-structure-near-high": 289,
+  "setup.confirmed.structure-trend-volume": 18
  },
  "pathTier": {
   "states": [
@@ -369,7 +369,8 @@
    "2026-10-02",
    "2026-10-05",
    "2026-10-06",
-   "2026-10-09"
+   "2026-10-09",
+   "2026-10-12"
   ],
   "minimumRequired": 2
  },
@@ -1015,21 +1016,10 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-10-09",
-  "publishedHash": "76c46e473af1a646691334074ca3791e",
-  "recomputedHash": "e2ade886f772194ead7d98be996d6e13",
-  "rowsPublished": 5705,
-  "rowsToday": 5569,
-  "rowsAdded": 0,
-  "rowsChanged": 136,
-  "addedOnly": false,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- },
+ "observationDrift": null,
  "staleBundles": {
-  "count": 62,
-  "cutoff": "2026-10-09",
+  "count": 63,
+  "cutoff": "2026-10-12",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-09-29": 5,
@@ -1053,6 +1043,7 @@
    "2026-08-26": 1,
    "2026-09-08": 1,
    "2026-08-21": 3,
+   "2026-10-09": 1,
    "2026-08-19": 1,
    "2026-08-12": 1,
    "2026-09-09": 1,
@@ -1193,6 +1184,10 @@
     "dataCutoff": "2026-08-27"
    },
    {
+    "ticker": "LESL",
+    "dataCutoff": "2026-10-09"
+   },
+   {
     "ticker": "MAA-P-I",
     "dataCutoff": "2026-10-01"
    },
@@ -1259,10 +1254,6 @@
    {
     "ticker": "SNYR",
     "dataCutoff": "2026-09-18"
-   },
-   {
-    "ticker": "TALK",
-    "dataCutoff": "2026-08-17"
    }
   ]
  }

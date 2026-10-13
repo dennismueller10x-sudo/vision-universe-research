@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-11T06:25:34.181Z",
+ "generatedAt": "2026-10-13T05:09:03.569Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -37,20 +37,20 @@
    "coverage": {
     "universe": 5631,
     "covered": 5290,
-    "available": 4481,
+    "available": 4470,
     "sufficient": {
-     "m1": 2153,
-     "m3": 2076,
-     "m6": 1997,
-     "m12": 1886
+     "m1": 2136,
+     "m3": 2063,
+     "m6": 1987,
+     "m12": 1881
     },
     "broad": {
-     "m6": 672
+     "m6": 663
     },
     "reasons": {
      "NOT_COVERED": 341,
-     "NO_PRICE_CONDITION_TODAY": 753,
-     "NO_COMPARABLE_CASE": 56
+     "NO_PRICE_CONDITION_TODAY": 754,
+     "NO_COMPARABLE_CASE": 66
     }
    }
   },
@@ -81,7 +81,7 @@
     "sample": 950397,
     "period": [
      "1992-01-31",
-     "2026-10-06"
+     "2026-10-09"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "201 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "193 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "10 von 10 geprüft",
+     "measured": "11 von 11 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "10",
+     "measured": "11",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "29 Tage",
+     "measured": "32 Tage",
      "state": "FAIL"
     },
     {
@@ -339,20 +339,20 @@
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5631,
    "covered": 5290,
-   "available": 4481,
+   "available": 4470,
    "sufficient": {
-    "m1": 2153,
-    "m3": 2076,
-    "m6": 1997,
-    "m12": 1886
+    "m1": 2136,
+    "m3": 2063,
+    "m6": 1987,
+    "m12": 1881
    },
    "broad": {
-    "m6": 672
+    "m6": 663
    },
    "reasons": {
     "NOT_COVERED": 341,
-    "NO_PRICE_CONDITION_TODAY": 753,
-    "NO_COMPARABLE_CASE": 56
+    "NO_PRICE_CONDITION_TODAY": 754,
+    "NO_COMPARABLE_CASE": 66
    }
   }
  }

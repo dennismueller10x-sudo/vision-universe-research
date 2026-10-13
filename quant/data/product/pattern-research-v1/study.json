@@ -1,7 +1,7 @@
 {
  "schemaVersion": "pattern-research-study-1.0.0",
  "methodologyVersion": "pattern-research-1.1.0",
- "generatedAt": "2026-10-11T06:11:32.000Z",
+ "generatedAt": "2026-10-13T04:57:54.000Z",
  "backtest": "NOT_CERTIFIED",
  "publication": {
   "predictionAllowed": false,
@@ -30,15 +30,15 @@
    "seriesWithDailyBars": 5050,
    "seriesWithoutDailyBars": 0,
    "observations": 950397,
-   "observationsWithAnyVolumeFeature": 948129,
+   "observationsWithAnyVolumeFeature": 948127,
    "perFeature": {
-    "udv50": 946978,
-    "acc63": 948129,
-    "dryUp10over50": 947889
+    "udv50": 946977,
+    "acc63": 948127,
+    "dryUp10over50": 947888
    }
   },
   "firstDate": "1992-01-31",
-  "lastDate": "2026-10-06"
+  "lastDate": "2026-10-09"
  },
  "survivorship": {
   "state": "PRESENT_AND_UNQUANTIFIED_IN_PART",
@@ -9630,8 +9630,8 @@
    "winnerThreshold": "W100",
    "minReturn": 1,
    "usableObservations": 884724,
-   "winners": 49898,
-   "baseRate": 0.0564,
+   "winners": 49897,
+   "baseRate": 0.056398,
    "outcomeUnavailable": 65673
   },
   {
@@ -9670,8 +9670,8 @@
    "winnerThreshold": "W200",
    "minReturn": 2,
    "usableObservations": 825286,
-   "winners": 32361,
-   "baseRate": 0.039212,
+   "winners": 32360,
+   "baseRate": 0.039211,
    "outcomeUnavailable": 125111
   },
   {
@@ -9749,9 +9749,9 @@
   {
    "horizon": "H12",
    "horizonMonths": 12,
-   "baseRate": 0.0564,
+   "baseRate": 0.056398,
    "usableObservations": 884724,
-   "winners": 49898,
+   "winners": 49897,
    "findings": [
     {
      "patternId": "quiet-range+six-month-thrust",
@@ -9774,14 +9774,14 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.5,
-     "lift": 8.8653,
+     "lift": 8.8655,
      "wilsonInterval": [
       0.094529,
       0.905471
      ],
-     "pValue": 0.00653982,
+     "pValue": 0.00653918,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 0,
@@ -9819,7 +9819,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.192529,
      "lift": 3.4137,
      "wilsonInterval": [
@@ -9844,15 +9844,15 @@
       "winners": 3728
      },
      "outOfSample": {
-      "lift": 3.4099,
+      "lift": 3.41,
       "support": 8642,
       "winners": 1616
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 3.4137,
-      "minLift": 2.9571,
-      "maxLift": 3.9789,
+      "minLift": 2.9572,
+      "maxLift": 3.979,
       "relativeSpread": 0.2993
      },
      "verdict": "ROBUST"
@@ -9878,9 +9878,9 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.178687,
-     "lift": 3.1748,
+     "lift": 3.1749,
      "wilsonInterval": [
       0.171019,
       0.186622
@@ -9903,15 +9903,15 @@
       "winners": 3762
      },
      "outOfSample": {
-      "lift": 3.1899,
+      "lift": 3.19,
       "support": 6811,
       "winners": 1189
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 3.1748,
+      "medianLift": 3.1749,
       "minLift": 2.624,
-      "maxLift": 3.6805,
+      "maxLift": 3.6806,
       "relativeSpread": 0.3328
      },
      "verdict": "ROBUST"
@@ -9937,9 +9937,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.178703,
-     "lift": 3.1685,
+     "lift": 3.1686,
      "wilsonInterval": [
       0.176189,
       0.181244
@@ -9962,15 +9962,15 @@
       "winners": 28587
      },
      "outOfSample": {
-      "lift": 3.1208,
+      "lift": 3.1209,
       "support": 76802,
       "winners": 13144
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 3.1685,
-      "minLift": 2.9056,
-      "maxLift": 3.3888,
+      "medianLift": 3.1686,
+      "minLift": 2.9057,
+      "maxLift": 3.3889,
       "relativeSpread": 0.1525
      },
      "verdict": "ROBUST"
@@ -9992,16 +9992,16 @@
       }
      ],
      "support": 108910,
-     "winners": 19326,
+     "winners": 19325,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.177449,
-     "lift": 3.1463,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.17744,
+     "lift": 3.1462,
      "wilsonInterval": [
-      0.175192,
-      0.17973
+      0.175182,
+      0.17972
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -10010,7 +10010,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.243568,
      "lossLift": 3.1972,
-     "asymmetry": 0.9841,
+     "asymmetry": 0.984,
      "medianForwardReturn": -0.0673,
      "medianForwardReturnNetOfFrictions": -0.0701,
      "medianForwardReturnPopulation": 0.042,
@@ -10021,16 +10021,16 @@
       "winners": 33525
      },
      "outOfSample": {
-      "lift": 3.0896,
+      "lift": 3.0895,
       "support": 95815,
-      "winners": 16234
+      "winners": 16233
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 3.1463,
-      "minLift": 2.8166,
+      "medianLift": 3.1462,
+      "minLift": 2.8165,
       "maxLift": 3.3676,
-      "relativeSpread": 0.1751
+      "relativeSpread": 0.1752
      },
      "verdict": "ROBUST"
     },
@@ -10055,9 +10055,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.175144,
-     "lift": 3.1054,
+     "lift": 3.1055,
      "wilsonInterval": [
       0.172788,
       0.177526
@@ -10080,13 +10080,13 @@
       "winners": 31297
      },
      "outOfSample": {
-      "lift": 3.0679,
+      "lift": 3.068,
       "support": 84962,
       "winners": 14294
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 3.1054,
+      "medianLift": 3.1055,
       "minLift": 2.675,
       "maxLift": 3.4774,
       "relativeSpread": 0.2584
@@ -10114,7 +10114,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.17421,
      "lift": 3.0889,
      "wilsonInterval": [
@@ -10146,8 +10146,8 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 3.0889,
-      "minLift": 2.806,
-      "maxLift": 3.3428,
+      "minLift": 2.8061,
+      "maxLift": 3.3429,
       "relativeSpread": 0.1738
      },
      "verdict": "ROBUST"
@@ -10173,9 +10173,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.173775,
-     "lift": 3.0811,
+     "lift": 3.0812,
      "wilsonInterval": [
       0.171732,
       0.175836
@@ -10198,15 +10198,15 @@
       "winners": 39307
      },
      "outOfSample": {
-      "lift": 3.0092,
+      "lift": 3.0093,
       "support": 114295,
       "winners": 18861
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 3.0811,
+      "medianLift": 3.0812,
       "minLift": 2.6423,
-      "maxLift": 3.3844,
+      "maxLift": 3.3845,
       "relativeSpread": 0.2409
      },
      "verdict": "ROBUST"
@@ -10232,7 +10232,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.173127,
      "lift": 3.0697,
      "wilsonInterval": [
@@ -10246,7 +10246,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.246068,
      "lossLift": 3.23,
-     "asymmetry": 0.9503,
+     "asymmetry": 0.9504,
      "medianForwardReturn": -0.0563,
      "medianForwardReturnNetOfFrictions": -0.0591,
      "medianForwardReturnPopulation": 0.042,
@@ -10291,7 +10291,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.166529,
      "lift": 2.9527,
      "wilsonInterval": [
@@ -10316,7 +10316,7 @@
       "winners": 32394
      },
      "outOfSample": {
-      "lift": 2.8856,
+      "lift": 2.8857,
       "support": 100642,
       "winners": 15926
      },
@@ -10350,9 +10350,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.16647,
-     "lift": 2.9516,
+     "lift": 2.9517,
      "wilsonInterval": [
       0.156481,
       0.176963
@@ -10375,13 +10375,13 @@
       "winners": 1571
      },
      "outOfSample": {
-      "lift": 2.9213,
+      "lift": 2.9214,
       "support": 4382,
       "winners": 702
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.9516,
+      "medianLift": 2.9517,
       "minLift": 2.6921,
       "maxLift": 3.4359,
       "relativeSpread": 0.252
@@ -10409,7 +10409,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.162971,
      "lift": 2.8896,
      "wilsonInterval": [
@@ -10434,7 +10434,7 @@
       "winners": 39819
      },
      "outOfSample": {
-      "lift": 2.8765,
+      "lift": 2.8766,
       "support": 115117,
       "winners": 18159
      },
@@ -10468,9 +10468,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.162493,
-     "lift": 2.8811,
+     "lift": 2.8812,
      "wilsonInterval": [
       0.154053,
       0.171302
@@ -10493,15 +10493,15 @@
       "winners": 2284
      },
      "outOfSample": {
-      "lift": 2.6777,
+      "lift": 2.6778,
       "support": 6163,
       "winners": 905
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.8811,
+      "medianLift": 2.8812,
       "minLift": 2.6229,
-      "maxLift": 3.204,
+      "maxLift": 3.2041,
       "relativeSpread": 0.2017
      },
      "verdict": "ROBUST"
@@ -10523,16 +10523,16 @@
       }
      ],
      "support": 29951,
-     "winners": 4865,
+     "winners": 4864,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.162432,
-     "lift": 2.88,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.162399,
+     "lift": 2.8795,
      "wilsonInterval": [
-      0.158298,
-      0.166653
+      0.158265,
+      0.166619
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -10541,7 +10541,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.18557,
      "lossLift": 2.4359,
-     "asymmetry": 1.1823,
+     "asymmetry": 1.1821,
      "medianForwardReturn": -0.0101,
      "medianForwardReturnNetOfFrictions": -0.013,
      "medianForwardReturnPopulation": 0.042,
@@ -10552,16 +10552,16 @@
       "winners": 8503
      },
      "outOfSample": {
-      "lift": 2.7937,
+      "lift": 2.7931,
       "support": 26305,
-      "winners": 4030
+      "winners": 4029
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.88,
-      "minLift": 2.4756,
-      "maxLift": 3.2075,
-      "relativeSpread": 0.2541
+      "medianLift": 2.8795,
+      "minLift": 2.4753,
+      "maxLift": 3.2076,
+      "relativeSpread": 0.2543
      },
      "verdict": "ROBUST"
     },
@@ -10586,7 +10586,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.159664,
      "lift": 2.831,
      "wilsonInterval": [
@@ -10618,8 +10618,8 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.831,
-      "minLift": 2.4384,
-      "maxLift": 3.2354,
+      "minLift": 2.4385,
+      "maxLift": 3.2355,
       "relativeSpread": 0.2815
      },
      "verdict": "ROBUST"
@@ -10645,7 +10645,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.159259,
      "lift": 2.8238,
      "wilsonInterval": [
@@ -10670,15 +10670,15 @@
       "winners": 5375
      },
      "outOfSample": {
-      "lift": 2.7512,
+      "lift": 2.7513,
       "support": 15072,
       "winners": 2274
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.8238,
-      "minLift": 2.5318,
-      "maxLift": 3.0911,
+      "minLift": 2.5319,
+      "maxLift": 3.0912,
       "relativeSpread": 0.1981
      },
      "verdict": "ROBUST"
@@ -10704,7 +10704,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.158683,
      "lift": 2.8194,
      "wilsonInterval": [
@@ -10729,16 +10729,16 @@
       "winners": 7456
      },
      "outOfSample": {
-      "lift": 2.7602,
+      "lift": 2.7603,
       "support": 14789,
       "winners": 2234
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.8194,
-      "minLift": 2.3839,
+      "minLift": 2.3835,
       "maxLift": 3.293,
-      "relativeSpread": 0.3224
+      "relativeSpread": 0.3226
      },
      "verdict": "ROBUST"
     },
@@ -10763,7 +10763,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.157388,
      "lift": 2.7964,
      "wilsonInterval": [
@@ -10795,9 +10795,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.7964,
-      "minLift": 2.4944,
+      "minLift": 2.4939,
       "maxLift": 3.1934,
-      "relativeSpread": 0.2499
+      "relativeSpread": 0.2502
      },
      "verdict": "ROBUST"
     },
@@ -10813,16 +10813,16 @@
       }
      ],
      "support": 162617,
-     "winners": 24617,
+     "winners": 24616,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.15138,
-     "lift": 2.6841,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.151374,
+     "lift": 2.684,
      "wilsonInterval": [
-      0.149646,
-      0.153131
+      0.14964,
+      0.153124
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -10844,14 +10844,14 @@
      "outOfSample": {
       "lift": 2.6775,
       "support": 136140,
-      "winners": 19990
+      "winners": 19989
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.6841,
+      "medianLift": 2.684,
       "minLift": 2.4639,
-      "maxLift": 2.8574,
-      "relativeSpread": 0.1466
+      "maxLift": 2.8575,
+      "relativeSpread": 0.1467
      },
      "verdict": "ROBUST"
     },
@@ -10872,16 +10872,16 @@
       }
      ],
      "support": 23878,
-     "winners": 3609,
+     "winners": 3608,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.151143,
-     "lift": 2.6799,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.151101,
+     "lift": 2.6792,
      "wilsonInterval": [
-      0.146656,
-      0.155743
+      0.146615,
+      0.1557
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -10890,7 +10890,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.183558,
      "lossLift": 2.4095,
-     "asymmetry": 1.1122,
+     "asymmetry": 1.1119,
      "medianForwardReturn": -0.0246,
      "medianForwardReturnNetOfFrictions": -0.0275,
      "medianForwardReturnPopulation": 0.042,
@@ -10901,16 +10901,16 @@
       "winners": 6233
      },
      "outOfSample": {
-      "lift": 2.6015,
+      "lift": 2.6007,
       "support": 20895,
-      "winners": 2981
+      "winners": 2980
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.6799,
-      "minLift": 2.3413,
-      "maxLift": 3.0032,
-      "relativeSpread": 0.247
+      "medianLift": 2.6792,
+      "minLift": 2.3409,
+      "maxLift": 3.0015,
+      "relativeSpread": 0.2466
      },
      "verdict": "ROBUST"
     },
@@ -10935,9 +10935,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.150538,
-     "lift": 2.6691,
+     "lift": 2.6692,
      "wilsonInterval": [
       0.120905,
       0.185897
@@ -10966,8 +10966,8 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.4202,
-      "minLift": 1.9566,
+      "medianLift": 2.4203,
+      "minLift": 1.9567,
       "maxLift": 3.3149,
       "relativeSpread": 0.5612
      },
@@ -10994,9 +10994,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.149842,
-     "lift": 2.6568,
+     "lift": 2.6569,
      "wilsonInterval": [
       0.146469,
       0.15328
@@ -11019,16 +11019,16 @@
       "winners": 11634
      },
      "outOfSample": {
-      "lift": 2.6228,
+      "lift": 2.6229,
       "support": 34568,
       "winners": 4972
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.6568,
-      "minLift": 2.3335,
-      "maxLift": 2.9248,
-      "relativeSpread": 0.2226
+      "medianLift": 2.6569,
+      "minLift": 2.3333,
+      "maxLift": 2.9249,
+      "relativeSpread": 0.2227
      },
      "verdict": "ROBUST"
     },
@@ -11053,9 +11053,9 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.149242,
-     "lift": 2.6516,
+     "lift": 2.6517,
      "wilsonInterval": [
       0.144416,
       0.1542
@@ -11067,7 +11067,7 @@
      "baseLossRate": 0.076105,
      "conditionalLossRate": 0.157877,
      "lossLift": 2.0745,
-     "asymmetry": 1.2782,
+     "asymmetry": 1.2783,
      "medianForwardReturn": 0.0149,
      "medianForwardReturnNetOfFrictions": 0.0118,
      "medianForwardReturnPopulation": 0.042,
@@ -11084,10 +11084,10 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.6516,
-      "minLift": 2.1693,
-      "maxLift": 3.3026,
-      "relativeSpread": 0.4274
+      "medianLift": 2.6517,
+      "minLift": 2.1689,
+      "maxLift": 3.3027,
+      "relativeSpread": 0.4276
      },
      "verdict": "ROBUST"
     },
@@ -11107,7 +11107,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.149328,
      "lift": 2.6477,
      "wilsonInterval": [
@@ -11132,7 +11132,7 @@
       "winners": 52985
      },
      "outOfSample": {
-      "lift": 2.6278,
+      "lift": 2.6279,
       "support": 163920,
       "winners": 23622
      },
@@ -11141,7 +11141,7 @@
       "medianLift": 2.6477,
       "minLift": 2.2724,
       "maxLift": 2.9578,
-      "relativeSpread": 0.2588
+      "relativeSpread": 0.2589
      },
      "verdict": "ROBUST"
     },
@@ -11166,7 +11166,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.148285,
      "lift": 2.6292,
      "wilsonInterval": [
@@ -11225,9 +11225,9 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.146785,
-     "lift": 2.6153,
+     "lift": 2.6154,
      "wilsonInterval": [
       0.14263,
       0.151041
@@ -11239,7 +11239,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.300518,
      "lossLift": 3.9558,
-     "asymmetry": 0.6611,
+     "asymmetry": 0.6612,
      "medianForwardReturn": -0.1679,
      "medianForwardReturnNetOfFrictions": -0.1704,
      "medianForwardReturnPopulation": 0.042,
@@ -11250,15 +11250,15 @@
       "winners": 6927
      },
      "outOfSample": {
-      "lift": 2.5263,
+      "lift": 2.5264,
       "support": 23611,
       "winners": 3256
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.6153,
+      "medianLift": 2.6154,
       "minLift": 2.3452,
-      "maxLift": 2.6389,
+      "maxLift": 2.639,
       "relativeSpread": 0.1123
      },
      "verdict": "ROBUST"
@@ -11280,16 +11280,16 @@
       }
      ],
      "support": 38921,
-     "winners": 5652,
+     "winners": 5651,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.145217,
-     "lift": 2.5748,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.145192,
+     "lift": 2.5744,
      "wilsonInterval": [
-      0.141752,
-      0.148753
+      0.141727,
+      0.148727
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -11298,7 +11298,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.189589,
      "lossLift": 2.4887,
-     "asymmetry": 1.0346,
+     "asymmetry": 1.0344,
      "medianForwardReturn": -0.0232,
      "medianForwardReturnNetOfFrictions": -0.0262,
      "medianForwardReturnPopulation": 0.042,
@@ -11309,16 +11309,16 @@
       "winners": 10555
      },
      "outOfSample": {
-      "lift": 2.566,
+      "lift": 2.5655,
       "support": 31545,
-      "winners": 4439
+      "winners": 4438
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.5748,
-      "minLift": 2.3717,
-      "maxLift": 2.7437,
-      "relativeSpread": 0.1445
+      "medianLift": 2.5744,
+      "minLift": 2.3714,
+      "maxLift": 2.7438,
+      "relativeSpread": 0.1446
      },
      "verdict": "ROBUST"
     },
@@ -11343,7 +11343,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.144145,
      "lift": 2.5558,
      "wilsonInterval": [
@@ -11368,14 +11368,14 @@
       "winners": 3880
      },
      "outOfSample": {
-      "lift": 2.5022,
+      "lift": 2.5023,
       "support": 12622,
       "winners": 1732
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.5558,
-      "minLift": 2.2796,
+      "minLift": 2.2797,
       "maxLift": 2.8867,
       "relativeSpread": 0.2375
      },
@@ -11397,7 +11397,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.142181,
      "lift": 2.521,
      "wilsonInterval": [
@@ -11422,15 +11422,15 @@
       "winners": 39452
      },
      "outOfSample": {
-      "lift": 2.5191,
+      "lift": 2.5192,
       "support": 134342,
       "winners": 18559
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.521,
-      "minLift": 2.1798,
-      "maxLift": 2.9588,
+      "minLift": 2.1799,
+      "maxLift": 2.9589,
       "relativeSpread": 0.309
      },
      "verdict": "ROBUST"
@@ -11456,9 +11456,9 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.14116,
-     "lift": 2.5151,
+     "lift": 2.5152,
      "wilsonInterval": [
       0.13833,
       0.144039
@@ -11487,10 +11487,10 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.5151,
-      "minLift": 2.2158,
+      "medianLift": 2.5152,
+      "minLift": 2.2157,
       "maxLift": 2.621,
-      "relativeSpread": 0.1611
+      "relativeSpread": 0.1612
      },
      "verdict": "ROBUST"
     },
@@ -11515,9 +11515,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.140345,
-     "lift": 2.4884,
+     "lift": 2.4885,
      "wilsonInterval": [
       0.134231,
       0.146691
@@ -11529,7 +11529,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.218389,
      "lossLift": 2.8667,
-     "asymmetry": 0.868,
+     "asymmetry": 0.8681,
      "medianForwardReturn": -0.0419,
      "medianForwardReturnNetOfFrictions": -0.0448,
      "medianForwardReturnPopulation": 0.042,
@@ -11546,9 +11546,9 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.4884,
-      "minLift": 2.2371,
-      "maxLift": 2.8803,
+      "medianLift": 2.4885,
+      "minLift": 2.2372,
+      "maxLift": 2.8804,
       "relativeSpread": 0.2585
      },
      "verdict": "ROBUST"
@@ -11570,16 +11570,16 @@
       }
      ],
      "support": 47998,
-     "winners": 6684,
+     "winners": 6683,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.139256,
-     "lift": 2.4812,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.139235,
+     "lift": 2.4809,
      "wilsonInterval": [
-      0.136187,
-      0.142382
+      0.136167,
+      0.142361
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -11588,7 +11588,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.247427,
      "lossLift": 3.2569,
-     "asymmetry": 0.7618,
+     "asymmetry": 0.7617,
      "medianForwardReturn": -0.1106,
      "medianForwardReturnNetOfFrictions": -0.1133,
      "medianForwardReturnPopulation": 0.042,
@@ -11599,15 +11599,15 @@
       "winners": 12093
      },
      "outOfSample": {
-      "lift": 2.4147,
+      "lift": 2.4143,
       "support": 39815,
-      "winners": 5248
+      "winners": 5247
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.4812,
-      "minLift": 2.3388,
-      "maxLift": 2.5136,
+      "medianLift": 2.4809,
+      "minLift": 2.3387,
+      "maxLift": 2.5137,
       "relativeSpread": 0.0705
      },
      "verdict": "ROBUST"
@@ -11633,7 +11633,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.135703,
      "lift": 2.4111,
      "wilsonInterval": [
@@ -11658,7 +11658,7 @@
       "winners": 4337
      },
      "outOfSample": {
-      "lift": 2.4289,
+      "lift": 2.429,
       "support": 9637,
       "winners": 1281
      },
@@ -11666,7 +11666,7 @@
       "state": "MEASURED",
       "medianLift": 2.4111,
       "minLift": 2.0817,
-      "maxLift": 2.8441,
+      "maxLift": 2.8442,
       "relativeSpread": 0.3162
      },
      "verdict": "ROBUST"
@@ -11688,16 +11688,16 @@
       }
      ],
      "support": 55565,
-     "winners": 7439,
+     "winners": 7438,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.133879,
-     "lift": 2.3854,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.133861,
+     "lift": 2.3851,
      "wilsonInterval": [
-      0.131073,
-      0.136736
+      0.131055,
+      0.136718
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -11706,7 +11706,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.216341,
      "lossLift": 2.8477,
-     "asymmetry": 0.8376,
+     "asymmetry": 0.8375,
      "medianForwardReturn": -0.064,
      "medianForwardReturnNetOfFrictions": -0.0669,
      "medianForwardReturnPopulation": 0.042,
@@ -11717,16 +11717,16 @@
       "winners": 12714
      },
      "outOfSample": {
-      "lift": 2.2633,
+      "lift": 2.263,
       "support": 49198,
-      "winners": 6078
+      "winners": 6077
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.3854,
-      "minLift": 2.0386,
+      "medianLift": 2.3851,
+      "minLift": 2.0385,
       "maxLift": 2.5307,
-      "relativeSpread": 0.2063
+      "relativeSpread": 0.2064
      },
      "verdict": "ROBUST"
     },
@@ -11751,9 +11751,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.132274,
-     "lift": 2.3453,
+     "lift": 2.3454,
      "wilsonInterval": [
       0.128925,
       0.135697
@@ -11765,7 +11765,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.187373,
      "lossLift": 2.4596,
-     "asymmetry": 0.9535,
+     "asymmetry": 0.9536,
      "medianForwardReturn": -0.0386,
      "medianForwardReturnNetOfFrictions": -0.0415,
      "medianForwardReturnPopulation": 0.042,
@@ -11776,16 +11776,16 @@
       "winners": 9360
      },
      "outOfSample": {
-      "lift": 2.2922,
+      "lift": 2.2923,
       "support": 31391,
       "winners": 3946
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.3453,
-      "minLift": 2.1311,
+      "medianLift": 2.3454,
+      "minLift": 2.1308,
       "maxLift": 2.598,
-      "relativeSpread": 0.1991
+      "relativeSpread": 0.1992
      },
      "verdict": "ROBUST"
     },
@@ -11801,16 +11801,16 @@
       }
      ],
      "support": 228212,
-     "winners": 30182,
+     "winners": 30181,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.132254,
-     "lift": 2.345,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.13225,
+     "lift": 2.3449,
      "wilsonInterval": [
-      0.13087,
-      0.13365
+      0.130866,
+      0.133646
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -11832,11 +11832,11 @@
      "outOfSample": {
       "lift": 2.2612,
       "support": 203611,
-      "winners": 25248
+      "winners": 25247
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.345,
+      "medianLift": 2.3449,
       "minLift": 1.9975,
       "maxLift": 2.761,
       "relativeSpread": 0.3256
@@ -11864,9 +11864,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.129054,
-     "lift": 2.2882,
+     "lift": 2.2883,
      "wilsonInterval": [
       0.112929,
       0.1471
@@ -11889,15 +11889,15 @@
       "winners": 313
      },
      "outOfSample": {
-      "lift": 2.222,
+      "lift": 2.2221,
       "support": 1231,
       "winners": 150
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.2882,
+      "medianLift": 2.2883,
       "minLift": 1.9798,
-      "maxLift": 2.5257,
+      "maxLift": 2.5258,
       "relativeSpread": 0.2386
      },
      "verdict": "ROBUST"
@@ -11923,9 +11923,9 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.126171,
-     "lift": 2.248,
+     "lift": 2.2481,
      "wilsonInterval": [
       0.122911,
       0.129505
@@ -11948,15 +11948,15 @@
       "winners": 8756
      },
      "outOfSample": {
-      "lift": 2.1985,
+      "lift": 2.1986,
       "support": 32706,
       "winners": 3925
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.248,
-      "minLift": 1.9632,
-      "maxLift": 2.4481,
+      "medianLift": 2.2481,
+      "minLift": 1.9633,
+      "maxLift": 2.4482,
       "relativeSpread": 0.2157
      },
      "verdict": "ROBUST"
@@ -11982,9 +11982,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.126431,
-     "lift": 2.2417,
+     "lift": 2.2418,
      "wilsonInterval": [
       0.12112,
       0.13194
@@ -12013,9 +12013,9 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.2133,
-      "minLift": 2.0672,
-      "maxLift": 2.3115,
+      "medianLift": 2.2134,
+      "minLift": 2.0673,
+      "maxLift": 2.3116,
       "relativeSpread": 0.1104
      },
      "verdict": "ROBUST"
@@ -12037,16 +12037,16 @@
       }
      ],
      "support": 40923,
-     "winners": 5148,
+     "winners": 5147,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.125797,
-     "lift": 2.2305,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.125773,
+     "lift": 2.2301,
      "wilsonInterval": [
-      0.122619,
-      0.129045
+      0.122595,
+      0.129021
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12055,7 +12055,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.17748,
      "lossLift": 2.3297,
-     "asymmetry": 0.9574,
+     "asymmetry": 0.9572,
      "medianForwardReturn": -0.0333,
      "medianForwardReturnNetOfFrictions": -0.0362,
      "medianForwardReturnPopulation": 0.042,
@@ -12066,16 +12066,16 @@
       "winners": 9604
      },
      "outOfSample": {
-      "lift": 2.2004,
+      "lift": 2.1999,
       "support": 32710,
-      "winners": 3947
+      "winners": 3946
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.2305,
-      "minLift": 2.0882,
+      "medianLift": 2.2301,
+      "minLift": 2.088,
       "maxLift": 2.3524,
-      "relativeSpread": 0.1184
+      "relativeSpread": 0.1186
      },
      "verdict": "ROBUST"
     },
@@ -12100,7 +12100,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.124316,
      "lift": 2.2042,
      "wilsonInterval": [
@@ -12125,15 +12125,15 @@
       "winners": 18873
      },
      "outOfSample": {
-      "lift": 2.145,
+      "lift": 2.1451,
       "support": 66870,
       "winners": 7866
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.2042,
-      "minLift": 1.9124,
-      "maxLift": 2.4698,
+      "minLift": 1.9123,
+      "maxLift": 2.4699,
       "relativeSpread": 0.2529
      },
      "verdict": "ROBUST"
@@ -12159,7 +12159,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.12427,
      "lift": 2.2034,
      "wilsonInterval": [
@@ -12173,7 +12173,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.162818,
      "lossLift": 2.1373,
-     "asymmetry": 1.0309,
+     "asymmetry": 1.031,
      "medianForwardReturn": 0,
      "medianForwardReturnNetOfFrictions": -0.003,
      "medianForwardReturnPopulation": 0.042,
@@ -12184,16 +12184,16 @@
       "winners": 18950
      },
      "outOfSample": {
-      "lift": 2.134,
+      "lift": 2.1341,
       "support": 66932,
       "winners": 7833
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.2034,
-      "minLift": 1.9098,
-      "maxLift": 2.4677,
-      "relativeSpread": 0.2532
+      "minLift": 1.9097,
+      "maxLift": 2.4678,
+      "relativeSpread": 0.2533
      },
      "verdict": "ROBUST"
     },
@@ -12225,7 +12225,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.12063,
      "lift": 2.1441,
      "wilsonInterval": [
@@ -12258,7 +12258,7 @@
       "state": "MEASURED",
       "medianLift": 2.1441,
       "minLift": 1.863,
-      "maxLift": 2.3837,
+      "maxLift": 2.3838,
       "relativeSpread": 0.2429
      },
      "verdict": "ROBUST"
@@ -12280,16 +12280,16 @@
       }
      ],
      "support": 68889,
-     "winners": 8301,
+     "winners": 8300,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.120498,
-     "lift": 2.1365,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.120484,
+     "lift": 2.1363,
      "wilsonInterval": [
-      0.118088,
-      0.12295
+      0.118074,
+      0.122936
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12298,7 +12298,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.164482,
      "lossLift": 2.1591,
-     "asymmetry": 0.9895,
+     "asymmetry": 0.9894,
      "medianForwardReturn": -0.0151,
      "medianForwardReturnNetOfFrictions": -0.0181,
      "medianForwardReturnPopulation": 0.042,
@@ -12309,16 +12309,16 @@
       "winners": 15648
      },
      "outOfSample": {
-      "lift": 2.0822,
+      "lift": 2.0819,
       "support": 55603,
-      "winners": 6349
+      "winners": 6348
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.1365,
-      "minLift": 1.9841,
-      "maxLift": 2.258,
-      "relativeSpread": 0.1282
+      "medianLift": 2.1363,
+      "minLift": 1.984,
+      "maxLift": 2.2581,
+      "relativeSpread": 0.1283
      },
      "verdict": "ROBUST"
     },
@@ -12339,16 +12339,16 @@
       }
      ],
      "support": 69221,
-     "winners": 8311,
+     "winners": 8310,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.120065,
-     "lift": 2.1288,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.12005,
+     "lift": 2.1286,
      "wilsonInterval": [
-      0.117664,
-      0.122507
+      0.11765,
+      0.122493
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12357,7 +12357,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.1669,
      "lossLift": 2.1908,
-     "asymmetry": 0.9717,
+     "asymmetry": 0.9716,
      "medianForwardReturn": -0.022,
      "medianForwardReturnNetOfFrictions": -0.0249,
      "medianForwardReturnPopulation": 0.042,
@@ -12368,16 +12368,16 @@
       "winners": 15566
      },
      "outOfSample": {
-      "lift": 2.0849,
+      "lift": 2.0846,
       "support": 55715,
-      "winners": 6370
+      "winners": 6369
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.1288,
-      "minLift": 1.9812,
-      "maxLift": 2.2436,
-      "relativeSpread": 0.1233
+      "medianLift": 2.1286,
+      "minLift": 1.981,
+      "maxLift": 2.2437,
+      "relativeSpread": 0.1234
      },
      "verdict": "ROBUST"
     },
@@ -12402,7 +12402,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.117134,
      "lift": 2.0769,
      "wilsonInterval": [
@@ -12434,9 +12434,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.0769,
-      "minLift": 1.7931,
+      "minLift": 1.7925,
       "maxLift": 2.4077,
-      "relativeSpread": 0.2959
+      "relativeSpread": 0.2962
      },
      "verdict": "ROBUST"
     },
@@ -12457,16 +12457,16 @@
       }
      ],
      "support": 36950,
-     "winners": 4320,
+     "winners": 4319,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.116915,
-     "lift": 2.073,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.116888,
+     "lift": 2.0725,
      "wilsonInterval": [
-      0.113678,
-      0.120231
+      0.113651,
+      0.120204
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12475,7 +12475,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.146333,
      "lossLift": 1.9209,
-     "asymmetry": 1.0792,
+     "asymmetry": 1.079,
      "medianForwardReturn": -0.0038,
      "medianForwardReturnNetOfFrictions": -0.0068,
      "medianForwardReturnPopulation": 0.042,
@@ -12486,16 +12486,16 @@
       "winners": 8226
      },
      "outOfSample": {
-      "lift": 2.0409,
+      "lift": 2.0403,
       "support": 28904,
-      "winners": 3235
+      "winners": 3234
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.073,
-      "minLift": 1.845,
+      "medianLift": 2.0725,
+      "minLift": 1.8447,
       "maxLift": 2.2479,
-      "relativeSpread": 0.1944
+      "relativeSpread": 0.1946
      },
      "verdict": "ROBUST"
     },
@@ -12520,7 +12520,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.116279,
      "lift": 2.0617,
      "wilsonInterval": [
@@ -12545,16 +12545,16 @@
       "winners": 11256
      },
      "outOfSample": {
-      "lift": 2.0667,
+      "lift": 2.0668,
       "support": 42554,
       "winners": 4823
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.0617,
-      "minLift": 1.8642,
-      "maxLift": 2.2308,
-      "relativeSpread": 0.1778
+      "minLift": 1.864,
+      "maxLift": 2.2309,
+      "relativeSpread": 0.1779
      },
      "verdict": "ROBUST"
     },
@@ -12579,7 +12579,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.11613,
      "lift": 2.0591,
      "wilsonInterval": [
@@ -12604,7 +12604,7 @@
       "winners": 2158
      },
      "outOfSample": {
-      "lift": 2.0988,
+      "lift": 2.0989,
       "support": 9227,
       "winners": 1062
      },
@@ -12634,16 +12634,16 @@
       }
      ],
      "support": 77736,
-     "winners": 8884,
+     "winners": 8883,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.114284,
-     "lift": 2.0263,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.114271,
+     "lift": 2.0261,
      "wilsonInterval": [
-      0.112067,
-      0.11654
+      0.112054,
+      0.116527
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12652,7 +12652,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.127534,
      "lossLift": 1.6741,
-     "asymmetry": 1.2104,
+     "asymmetry": 1.2103,
      "medianForwardReturn": 0.0182,
      "medianForwardReturnNetOfFrictions": 0.0151,
      "medianForwardReturnPopulation": 0.042,
@@ -12663,16 +12663,16 @@
       "winners": 15202
      },
      "outOfSample": {
-      "lift": 1.9284,
+      "lift": 1.9282,
       "support": 69352,
-      "winners": 7334
+      "winners": 7333
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.0263,
-      "minLift": 1.7,
-      "maxLift": 2.4323,
-      "relativeSpread": 0.3614
+      "medianLift": 2.0261,
+      "minLift": 1.6999,
+      "maxLift": 2.4318,
+      "relativeSpread": 0.3612
      },
      "verdict": "ROBUST"
     },
@@ -12697,7 +12697,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.11366,
      "lift": 2.0153,
      "wilsonInterval": [
@@ -12729,7 +12729,7 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.0153,
-      "minLift": 1.8753,
+      "minLift": 1.8754,
       "maxLift": 2.1279,
       "relativeSpread": 0.1253
      },
@@ -12752,16 +12752,16 @@
       }
      ],
      "support": 78545,
-     "winners": 8910,
+     "winners": 8909,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.113438,
-     "lift": 2.0113,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.113425,
+     "lift": 2.0111,
      "wilsonInterval": [
-      0.111239,
-      0.115675
+      0.111227,
+      0.115662
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -12770,7 +12770,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.128691,
      "lossLift": 1.6893,
-     "asymmetry": 1.1906,
+     "asymmetry": 1.1905,
      "medianForwardReturn": 0.0159,
      "medianForwardReturnNetOfFrictions": 0.0128,
      "medianForwardReturnPopulation": 0.042,
@@ -12781,16 +12781,16 @@
       "winners": 15082
      },
      "outOfSample": {
-      "lift": 1.9233,
+      "lift": 1.9231,
       "support": 70048,
-      "winners": 7388
+      "winners": 7387
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.0113,
-      "minLift": 1.6938,
-      "maxLift": 2.4164,
-      "relativeSpread": 0.3593
+      "medianLift": 2.0111,
+      "minLift": 1.6937,
+      "maxLift": 2.416,
+      "relativeSpread": 0.3592
      },
      "verdict": "ROBUST"
     },
@@ -12815,7 +12815,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.113059,
      "lift": 2.0088,
      "wilsonInterval": [
@@ -12847,9 +12847,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 2.0088,
-      "minLift": 1.7155,
+      "minLift": 1.7148,
       "maxLift": 2.3886,
-      "relativeSpread": 0.3351
+      "relativeSpread": 0.3354
      },
      "verdict": "ROBUST"
     },
@@ -12869,9 +12869,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.112987,
-     "lift": 2.0033,
+     "lift": 2.0034,
      "wilsonInterval": [
       0.111618,
       0.114371
@@ -12900,7 +12900,7 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 2.0033,
+      "medianLift": 2.0034,
       "minLift": 1.8528,
       "maxLift": 2.203,
       "relativeSpread": 0.1748
@@ -12928,7 +12928,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.112728,
      "lift": 2.0029,
      "wilsonInterval": [
@@ -12953,7 +12953,7 @@
       "winners": 1609
      },
      "outOfSample": {
-      "lift": 2.1408,
+      "lift": 2.1409,
       "support": 4097,
       "winners": 480
      },
@@ -12961,7 +12961,7 @@
       "state": "MEASURED",
       "medianLift": 2.0029,
       "minLift": 1.8183,
-      "maxLift": 2.2547,
+      "maxLift": 2.2548,
       "relativeSpread": 0.2179
      },
      "verdict": "ROBUST"
@@ -12983,16 +12983,16 @@
       }
      ],
      "support": 47554,
-     "winners": 5323,
+     "winners": 5322,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.111936,
-     "lift": 1.9944,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.111915,
+     "lift": 1.9941,
      "wilsonInterval": [
-      0.109133,
-      0.114801
+      0.109113,
+      0.11478
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13001,7 +13001,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.137675,
      "lossLift": 1.8122,
-     "asymmetry": 1.1005,
+     "asymmetry": 1.1003,
      "medianForwardReturn": 0.01,
      "medianForwardReturnNetOfFrictions": 0.007,
      "medianForwardReturnPopulation": 0.042,
@@ -13012,16 +13012,16 @@
       "winners": 10101
      },
      "outOfSample": {
-      "lift": 1.9761,
+      "lift": 1.9756,
       "support": 36926,
-      "winners": 3983
+      "winners": 3982
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9944,
-      "minLift": 1.7292,
+      "medianLift": 1.9941,
+      "minLift": 1.729,
       "maxLift": 2.2436,
-      "relativeSpread": 0.2579
+      "relativeSpread": 0.2581
      },
      "verdict": "ROBUST"
     },
@@ -13053,7 +13053,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.111818,
      "lift": 1.9875,
      "wilsonInterval": [
@@ -13078,7 +13078,7 @@
       "winners": 2257
      },
      "outOfSample": {
-      "lift": 1.9488,
+      "lift": 1.9489,
       "support": 7767,
       "winners": 828
      },
@@ -13103,16 +13103,16 @@
       }
      ],
      "support": 77300,
-     "winners": 8649,
+     "winners": 8648,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.111889,
-     "lift": 1.9839,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.111876,
+     "lift": 1.9837,
      "wilsonInterval": [
-      0.109686,
-      0.11413
+      0.109673,
+      0.114117
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13121,7 +13121,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.130647,
      "lossLift": 1.715,
-     "asymmetry": 1.1568,
+     "asymmetry": 1.1567,
      "medianForwardReturn": 0.0252,
      "medianForwardReturnNetOfFrictions": 0.0221,
      "medianForwardReturnPopulation": 0.042,
@@ -13132,16 +13132,16 @@
       "winners": 16288
      },
      "outOfSample": {
-      "lift": 1.9763,
+      "lift": 1.9761,
       "support": 60915,
-      "winners": 6602
+      "winners": 6601
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9839,
-      "minLift": 1.7481,
+      "medianLift": 1.9837,
+      "minLift": 1.7479,
       "maxLift": 2.2229,
-      "relativeSpread": 0.2393
+      "relativeSpread": 0.2395
      },
      "verdict": "ROBUST"
     },
@@ -13162,16 +13162,16 @@
       }
      ],
      "support": 40715,
-     "winners": 4550,
+     "winners": 4549,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.111752,
-     "lift": 1.9814,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.111728,
+     "lift": 1.981,
      "wilsonInterval": [
-      0.108729,
-      0.11485
+      0.108704,
+      0.114825
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13180,7 +13180,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.159327,
      "lossLift": 2.0914,
-     "asymmetry": 0.9474,
+     "asymmetry": 0.9472,
      "medianForwardReturn": -0.0259,
      "medianForwardReturnNetOfFrictions": -0.0288,
      "medianForwardReturnPopulation": 0.042,
@@ -13191,16 +13191,16 @@
       "winners": 7328
      },
      "outOfSample": {
-      "lift": 1.9602,
+      "lift": 1.9598,
       "support": 35787,
-      "winners": 3847
+      "winners": 3846
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9814,
-      "minLift": 1.7505,
-      "maxLift": 2.186,
-      "relativeSpread": 0.2198
+      "medianLift": 1.981,
+      "minLift": 1.7502,
+      "maxLift": 2.185,
+      "relativeSpread": 0.2195
      },
      "verdict": "ROBUST"
     },
@@ -13225,9 +13225,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.111097,
-     "lift": 1.9698,
+     "lift": 1.9699,
      "wilsonInterval": [
       0.106305,
       0.116077
@@ -13250,14 +13250,14 @@
       "winners": 3238
      },
      "outOfSample": {
-      "lift": 2.0435,
+      "lift": 2.0436,
       "support": 11886,
       "winners": 1332
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9698,
-      "minLift": 1.7933,
+      "medianLift": 1.9699,
+      "minLift": 1.7934,
       "maxLift": 2.0392,
       "relativeSpread": 0.1248
      },
@@ -13284,7 +13284,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.109372,
      "lift": 1.9433,
      "wilsonInterval": [
@@ -13309,16 +13309,16 @@
       "winners": 4506
      },
      "outOfSample": {
-      "lift": 1.8948,
+      "lift": 1.8949,
       "support": 12392,
       "winners": 1285
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.9433,
-      "minLift": 1.6446,
-      "maxLift": 2.3037,
-      "relativeSpread": 0.3392
+      "minLift": 1.6441,
+      "maxLift": 2.3038,
+      "relativeSpread": 0.3395
      },
      "verdict": "ROBUST"
     },
@@ -13339,16 +13339,16 @@
       }
      ],
      "support": 33178,
-     "winners": 3583,
+     "winners": 3582,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.107993,
-     "lift": 1.9242,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.107963,
+     "lift": 1.9237,
      "wilsonInterval": [
-      0.104699,
-      0.111378
+      0.104669,
+      0.111348
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13357,7 +13357,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.140846,
      "lossLift": 1.854,
-     "asymmetry": 1.0379,
+     "asymmetry": 1.0376,
      "medianForwardReturn": -0.001,
      "medianForwardReturnNetOfFrictions": -0.004,
      "medianForwardReturnPopulation": 0.042,
@@ -13368,16 +13368,16 @@
       "winners": 7016
      },
      "outOfSample": {
-      "lift": 1.8839,
+      "lift": 1.8832,
       "support": 25371,
-      "winners": 2609
+      "winners": 2608
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9242,
-      "minLift": 1.68,
-      "maxLift": 2.1934,
-      "relativeSpread": 0.2669
+      "medianLift": 1.9237,
+      "minLift": 1.6797,
+      "maxLift": 2.1935,
+      "relativeSpread": 0.2671
      },
      "verdict": "ROBUST"
     },
@@ -13398,16 +13398,16 @@
       }
      ],
      "support": 56685,
-     "winners": 6122,
+     "winners": 6121,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.108,
-     "lift": 1.9149,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.107983,
+     "lift": 1.9146,
      "wilsonInterval": [
-      0.105472,
-      0.110582
+      0.105454,
+      0.110564
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13416,7 +13416,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.185269,
      "lossLift": 2.432,
-     "asymmetry": 0.7874,
+     "asymmetry": 0.7873,
      "medianForwardReturn": -0.0757,
      "medianForwardReturnNetOfFrictions": -0.0785,
      "medianForwardReturnPopulation": 0.042,
@@ -13427,16 +13427,16 @@
       "winners": 11253
      },
      "outOfSample": {
-      "lift": 1.9178,
+      "lift": 1.9174,
       "support": 44386,
-      "winners": 4668
+      "winners": 4667
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9149,
-      "minLift": 1.804,
-      "maxLift": 1.9875,
-      "relativeSpread": 0.0958
+      "medianLift": 1.9146,
+      "minLift": 1.8038,
+      "maxLift": 1.9876,
+      "relativeSpread": 0.096
      },
      "verdict": "ROBUST"
     },
@@ -13457,16 +13457,16 @@
       }
      ],
      "support": 18069,
-     "winners": 1938,
+     "winners": 1937,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.107256,
-     "lift": 1.9017,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.1072,
+     "lift": 1.9008,
      "wilsonInterval": [
-      0.102827,
-      0.111851
+      0.102772,
+      0.111795
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13475,7 +13475,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.1362,
      "lossLift": 1.7879,
-     "asymmetry": 1.0637,
+     "asymmetry": 1.0632,
      "medianForwardReturn": 0,
      "medianForwardReturnNetOfFrictions": -0.003,
      "medianForwardReturnPopulation": 0.042,
@@ -13486,16 +13486,16 @@
       "winners": 3610
      },
      "outOfSample": {
-      "lift": 1.8656,
+      "lift": 1.8643,
       "support": 14046,
-      "winners": 1437
+      "winners": 1436
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.9017,
-      "minLift": 1.7271,
+      "medianLift": 1.9008,
+      "minLift": 1.7264,
       "maxLift": 2.0937,
-      "relativeSpread": 0.1927
+      "relativeSpread": 0.1932
      },
      "verdict": "ROBUST"
     },
@@ -13520,7 +13520,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.106519,
      "lift": 1.8887,
      "wilsonInterval": [
@@ -13545,7 +13545,7 @@
       "winners": 874
      },
      "outOfSample": {
-      "lift": 1.9917,
+      "lift": 1.9918,
       "support": 4120,
       "winners": 450
      },
@@ -13570,16 +13570,16 @@
       }
      ],
      "support": 67549,
-     "winners": 7112,
+     "winners": 7111,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.105287,
-     "lift": 1.8668,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.105272,
+     "lift": 1.8666,
      "wilsonInterval": [
-      0.102994,
-      0.107624
+      0.10298,
+      0.107609
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13588,7 +13588,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.132585,
      "lossLift": 1.7404,
-     "asymmetry": 1.0726,
+     "asymmetry": 1.0725,
      "medianForwardReturn": 0.0088,
      "medianForwardReturnNetOfFrictions": 0.0058,
      "medianForwardReturnPopulation": 0.042,
@@ -13599,16 +13599,16 @@
       "winners": 13504
      },
      "outOfSample": {
-      "lift": 1.8396,
+      "lift": 1.8393,
       "support": 53052,
-      "winners": 5352
+      "winners": 5351
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8668,
-      "minLift": 1.6746,
-      "maxLift": 2.064,
-      "relativeSpread": 0.2086
+      "medianLift": 1.8666,
+      "minLift": 1.6745,
+      "maxLift": 2.0637,
+      "relativeSpread": 0.2085
      },
      "verdict": "ROBUST"
     },
@@ -13633,9 +13633,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.105102,
-     "lift": 1.8635,
+     "lift": 1.8636,
      "wilsonInterval": [
       0.101418,
       0.108904
@@ -13664,7 +13664,7 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8635,
+      "medianLift": 1.8636,
       "minLift": 1.6873,
       "maxLift": 2.0568,
       "relativeSpread": 0.1983
@@ -13688,16 +13688,16 @@
       }
      ],
      "support": 71306,
-     "winners": 7418,
+     "winners": 7417,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.104031,
-     "lift": 1.8445,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.104016,
+     "lift": 1.8443,
      "wilsonInterval": [
-      0.101811,
-      0.106293
+      0.101797,
+      0.106279
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13706,7 +13706,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.123692,
      "lossLift": 1.6237,
-     "asymmetry": 1.136,
+     "asymmetry": 1.1359,
      "medianForwardReturn": 0.0223,
      "medianForwardReturnNetOfFrictions": 0.0192,
      "medianForwardReturnPopulation": 0.042,
@@ -13717,16 +13717,16 @@
       "winners": 13983
      },
      "outOfSample": {
-      "lift": 1.8155,
+      "lift": 1.8152,
       "support": 55856,
-      "winners": 5561
+      "winners": 5560
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8445,
-      "minLift": 1.6113,
+      "medianLift": 1.8443,
+      "minLift": 1.6112,
       "maxLift": 2.0834,
-      "relativeSpread": 0.2559
+      "relativeSpread": 0.256
      },
      "verdict": "ROBUST"
     },
@@ -13747,16 +13747,16 @@
       }
      ],
      "support": 66499,
-     "winners": 6897,
+     "winners": 6896,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.103716,
-     "lift": 1.8389,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.103701,
+     "lift": 1.8387,
      "wilsonInterval": [
-      0.101421,
-      0.106056
+      0.101406,
+      0.106041
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13765,7 +13765,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.130333,
      "lossLift": 1.7108,
-     "asymmetry": 1.0749,
+     "asymmetry": 1.0748,
      "medianForwardReturn": 0.0096,
      "medianForwardReturnNetOfFrictions": 0.0065,
      "medianForwardReturnPopulation": 0.042,
@@ -13776,15 +13776,15 @@
       "winners": 13165
      },
      "outOfSample": {
-      "lift": 1.8052,
+      "lift": 1.8049,
       "support": 52153,
-      "winners": 5163
+      "winners": 5162
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8389,
-      "minLift": 1.6423,
-      "maxLift": 2.0383,
+      "medianLift": 1.8387,
+      "minLift": 1.6422,
+      "maxLift": 2.038,
       "relativeSpread": 0.2153
      },
      "verdict": "ROBUST"
@@ -13810,9 +13810,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.102908,
-     "lift": 1.8246,
+     "lift": 1.8247,
      "wilsonInterval": [
       0.09907,
       0.106876
@@ -13835,15 +13835,15 @@
       "winners": 4427
      },
      "outOfSample": {
-      "lift": 1.8626,
+      "lift": 1.8627,
       "support": 17622,
       "winners": 1800
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8246,
+      "medianLift": 1.8247,
       "minLift": 1.6865,
-      "maxLift": 1.9454,
+      "maxLift": 1.9455,
       "relativeSpread": 0.1419
      },
      "verdict": "ROBUST"
@@ -13865,16 +13865,16 @@
       }
      ],
      "support": 66048,
-     "winners": 6795,
+     "winners": 6794,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.10288,
-     "lift": 1.8241,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.102865,
+     "lift": 1.8239,
      "wilsonInterval": [
-      0.100586,
-      0.10522
+      0.100571,
+      0.105205
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -13883,7 +13883,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.129754,
      "lossLift": 1.7032,
-     "asymmetry": 1.071,
+     "asymmetry": 1.0708,
      "medianForwardReturn": 0.0095,
      "medianForwardReturnNetOfFrictions": 0.0065,
      "medianForwardReturnPopulation": 0.042,
@@ -13894,15 +13894,15 @@
       "winners": 12937
      },
      "outOfSample": {
-      "lift": 1.7905,
+      "lift": 1.7902,
       "support": 51758,
-      "winners": 5082
+      "winners": 5081
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.8241,
-      "minLift": 1.6264,
-      "maxLift": 2.0256,
+      "medianLift": 1.8239,
+      "minLift": 1.6263,
+      "maxLift": 2.0253,
       "relativeSpread": 0.2188
      },
      "verdict": "ROBUST"
@@ -13928,7 +13928,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.102061,
      "lift": 1.8096,
      "wilsonInterval": [
@@ -13953,14 +13953,14 @@
       "winners": 7020
      },
      "outOfSample": {
-      "lift": 1.8376,
+      "lift": 1.8377,
       "support": 28549,
       "winners": 2877
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.8096,
-      "minLift": 1.7118,
+      "minLift": 1.7119,
       "maxLift": 1.9052,
       "relativeSpread": 0.1069
      },
@@ -13983,16 +13983,16 @@
       }
      ],
      "support": 64340,
-     "winners": 6525,
+     "winners": 6524,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.101414,
-     "lift": 1.7981,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.101399,
+     "lift": 1.7979,
      "wilsonInterval": [
-      0.099105,
-      0.103771
+      0.09909,
+      0.103755
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14001,7 +14001,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.119925,
      "lossLift": 1.5742,
-     "asymmetry": 1.1422,
+     "asymmetry": 1.1421,
      "medianForwardReturn": 0.0222,
      "medianForwardReturnNetOfFrictions": 0.0191,
      "medianForwardReturnPopulation": 0.042,
@@ -14012,16 +14012,16 @@
       "winners": 12325
      },
      "outOfSample": {
-      "lift": 1.7698,
+      "lift": 1.7695,
       "support": 50148,
-      "winners": 4867
+      "winners": 4866
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.7981,
-      "minLift": 1.567,
-      "maxLift": 2.0315,
-      "relativeSpread": 0.2583
+      "medianLift": 1.7979,
+      "minLift": 1.5668,
+      "maxLift": 2.0316,
+      "relativeSpread": 0.2585
      },
      "verdict": "ROBUST"
     },
@@ -14046,7 +14046,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.099357,
      "lift": 1.7703,
      "wilsonInterval": [
@@ -14060,7 +14060,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.184242,
      "lossLift": 2.4252,
-     "asymmetry": 0.7299,
+     "asymmetry": 0.73,
      "medianForwardReturn": -0.0871,
      "medianForwardReturnNetOfFrictions": -0.0898,
      "medianForwardReturnPopulation": 0.042,
@@ -14105,9 +14105,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.098018,
-     "lift": 1.7379,
+     "lift": 1.738,
      "wilsonInterval": [
       0.088768,
       0.108117
@@ -14136,8 +14136,8 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.7379,
-      "minLift": 1.4679,
+      "medianLift": 1.738,
+      "minLift": 1.468,
       "maxLift": 1.7537,
       "relativeSpread": 0.1644
      },
@@ -14164,7 +14164,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.097868,
      "lift": 1.7353,
      "wilsonInterval": [
@@ -14189,14 +14189,14 @@
       "winners": 6866
      },
      "outOfSample": {
-      "lift": 1.637,
+      "lift": 1.6371,
       "support": 30343,
       "winners": 2724
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.7353,
-      "minLift": 1.5734,
+      "minLift": 1.5735,
       "maxLift": 1.9337,
       "relativeSpread": 0.2076
      },
@@ -14219,16 +14219,16 @@
       }
      ],
      "support": 36851,
-     "winners": 3591,
+     "winners": 3590,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.097446,
-     "lift": 1.7278,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.097419,
+     "lift": 1.7273,
      "wilsonInterval": [
-      0.09446,
-      0.100517
+      0.094434,
+      0.100489
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14237,7 +14237,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.135329,
      "lossLift": 1.7764,
-     "asymmetry": 0.9726,
+     "asymmetry": 0.9724,
      "medianForwardReturn": -0.013,
      "medianForwardReturnNetOfFrictions": -0.0159,
      "medianForwardReturnPopulation": 0.042,
@@ -14248,16 +14248,16 @@
       "winners": 6796
      },
      "outOfSample": {
-      "lift": 1.7474,
+      "lift": 1.7468,
       "support": 27664,
-      "winners": 2651
+      "winners": 2650
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.7278,
-      "minLift": 1.5192,
-      "maxLift": 1.9211,
-      "relativeSpread": 0.2326
+      "medianLift": 1.7273,
+      "minLift": 1.5189,
+      "maxLift": 1.9212,
+      "relativeSpread": 0.2329
      },
      "verdict": "ROBUST"
     },
@@ -14289,9 +14289,9 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.095208,
-     "lift": 1.6922,
+     "lift": 1.6923,
      "wilsonInterval": [
       0.090474,
       0.100162
@@ -14314,13 +14314,13 @@
       "winners": 2730
      },
      "outOfSample": {
-      "lift": 1.642,
+      "lift": 1.6421,
       "support": 10554,
       "winners": 948
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6922,
+      "medianLift": 1.6923,
       "minLift": 1.5468,
       "maxLift": 1.8171,
       "relativeSpread": 0.1597
@@ -14343,7 +14343,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.095064,
      "lift": 1.6856,
      "wilsonInterval": [
@@ -14409,7 +14409,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.094422,
      "lift": 1.6783,
      "wilsonInterval": [
@@ -14423,7 +14423,7 @@
      "baseLossRate": 0.076087,
      "conditionalLossRate": 0.102704,
      "lossLift": 1.3498,
-     "asymmetry": 1.2433,
+     "asymmetry": 1.2434,
      "medianForwardReturn": 0.0219,
      "medianForwardReturnNetOfFrictions": 0.0188,
      "medianForwardReturnPopulation": 0.042,
@@ -14442,7 +14442,7 @@
       "state": "MEASURED",
       "medianLift": 1.6783,
       "minLift": 1.5801,
-      "maxLift": 1.8424,
+      "maxLift": 1.8425,
       "relativeSpread": 0.1563
      },
      "verdict": "ROBUST"
@@ -14468,7 +14468,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.094645,
      "lift": 1.6781,
      "wilsonInterval": [
@@ -14493,14 +14493,14 @@
       "winners": 7358
      },
      "outOfSample": {
-      "lift": 1.7058,
+      "lift": 1.7059,
       "support": 31343,
       "winners": 2932
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.6781,
-      "minLift": 1.5441,
+      "minLift": 1.5442,
       "maxLift": 1.78,
       "relativeSpread": 0.1406
      },
@@ -14523,16 +14523,16 @@
       }
      ],
      "support": 46192,
-     "winners": 4366,
+     "winners": 4365,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.094519,
-     "lift": 1.6759,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.094497,
+     "lift": 1.6755,
      "wilsonInterval": [
-      0.091884,
-      0.09722
+      0.091863,
+      0.097198
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14541,7 +14541,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.136387,
      "lossLift": 1.7903,
-     "asymmetry": 0.9361,
+     "asymmetry": 0.9359,
      "medianForwardReturn": -0.0148,
      "medianForwardReturnNetOfFrictions": -0.0177,
      "medianForwardReturnPopulation": 0.042,
@@ -14552,16 +14552,16 @@
       "winners": 8211
      },
      "outOfSample": {
-      "lift": 1.6818,
+      "lift": 1.6813,
       "support": 35174,
-      "winners": 3244
+      "winners": 3243
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6759,
-      "minLift": 1.5056,
-      "maxLift": 1.8489,
-      "relativeSpread": 0.2048
+      "medianLift": 1.6755,
+      "minLift": 1.5054,
+      "maxLift": 1.8484,
+      "relativeSpread": 0.2047
      },
      "verdict": "ROBUST"
     },
@@ -14586,9 +14586,9 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.093952,
-     "lift": 1.6658,
+     "lift": 1.6659,
      "wilsonInterval": [
       0.091088,
       0.096897
@@ -14611,13 +14611,13 @@
       "winners": 6876
      },
      "outOfSample": {
-      "lift": 1.6895,
+      "lift": 1.6896,
       "support": 29519,
       "winners": 2735
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6658,
+      "medianLift": 1.6659,
       "minLift": 1.5282,
       "maxLift": 1.7812,
       "relativeSpread": 0.1519
@@ -14652,9 +14652,9 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.093503,
-     "lift": 1.6619,
+     "lift": 1.662,
      "wilsonInterval": [
       0.087441,
       0.099939
@@ -14677,13 +14677,13 @@
       "winners": 1638
      },
      "outOfSample": {
-      "lift": 1.6695,
+      "lift": 1.6696,
       "support": 6088,
       "winners": 556
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6619,
+      "medianLift": 1.662,
       "minLift": 1.5948,
       "maxLift": 1.7545,
       "relativeSpread": 0.0961
@@ -14707,16 +14707,16 @@
       }
      ],
      "support": 18906,
-     "winners": 1771,
+     "winners": 1770,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.093674,
-     "lift": 1.6609,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.093621,
+     "lift": 1.66,
      "wilsonInterval": [
-      0.089603,
-      0.09791
+      0.089551,
+      0.097856
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14725,7 +14725,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.089919,
      "lossLift": 1.1803,
-     "asymmetry": 1.4071,
+     "asymmetry": 1.4064,
      "medianForwardReturn": 0.0401,
      "medianForwardReturnNetOfFrictions": 0.0369,
      "medianForwardReturnPopulation": 0.042,
@@ -14736,16 +14736,16 @@
       "winners": 3048
      },
      "outOfSample": {
-      "lift": 1.5855,
+      "lift": 1.5845,
       "support": 17022,
-      "winners": 1480
+      "winners": 1479
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6609,
-      "minLift": 1.3569,
-      "maxLift": 2.0326,
-      "relativeSpread": 0.4068
+      "medianLift": 1.66,
+      "minLift": 1.3563,
+      "maxLift": 2.0305,
+      "relativeSpread": 0.4062
      },
      "verdict": "ROBUST"
     },
@@ -14777,9 +14777,9 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.091247,
-     "lift": 1.6218,
+     "lift": 1.6219,
      "wilsonInterval": [
       0.086542,
       0.09618
@@ -14808,7 +14808,7 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.6218,
+      "medianLift": 1.6219,
       "minLift": 1.4871,
       "maxLift": 1.8618,
       "relativeSpread": 0.231
@@ -14836,7 +14836,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.088644,
      "lift": 1.5717,
      "wilsonInterval": [
@@ -14861,7 +14861,7 @@
       "winners": 1184
      },
      "outOfSample": {
-      "lift": 1.4957,
+      "lift": 1.4958,
       "support": 4267,
       "winners": 350
      },
@@ -14891,16 +14891,16 @@
       }
      ],
      "support": 32519,
-     "winners": 2849,
+     "winners": 2848,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.08761,
-     "lift": 1.5534,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.08758,
+     "lift": 1.5529,
      "wilsonInterval": [
-      0.084586,
-      0.090732
+      0.084556,
+      0.090701
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14909,7 +14909,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.095636,
      "lossLift": 1.2554,
-     "asymmetry": 1.2374,
+     "asymmetry": 1.237,
      "medianForwardReturn": 0.0337,
      "medianForwardReturnNetOfFrictions": 0.0306,
      "medianForwardReturnPopulation": 0.042,
@@ -14920,16 +14920,16 @@
       "winners": 5494
      },
      "outOfSample": {
-      "lift": 1.5137,
+      "lift": 1.513,
       "support": 24816,
-      "winners": 2060
+      "winners": 2059
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.5534,
-      "minLift": 1.3079,
-      "maxLift": 1.785,
-      "relativeSpread": 0.3071
+      "medianLift": 1.5529,
+      "minLift": 1.3075,
+      "maxLift": 1.7843,
+      "relativeSpread": 0.307
      },
      "verdict": "ROBUST"
     },
@@ -14950,16 +14950,16 @@
       }
      ],
      "support": 35724,
-     "winners": 3111,
+     "winners": 3110,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.087084,
-     "lift": 1.5441,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.087056,
+     "lift": 1.5436,
      "wilsonInterval": [
-      0.084205,
-      0.090053
+      0.084177,
+      0.090024
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -14968,7 +14968,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.092067,
      "lossLift": 1.2085,
-     "asymmetry": 1.2776,
+     "asymmetry": 1.2772,
      "medianForwardReturn": 0.0369,
      "medianForwardReturnNetOfFrictions": 0.0338,
      "medianForwardReturnPopulation": 0.042,
@@ -14979,16 +14979,16 @@
       "winners": 5986
      },
      "outOfSample": {
-      "lift": 1.5182,
+      "lift": 1.5176,
       "support": 26916,
-      "winners": 2241
+      "winners": 2240
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.5441,
-      "minLift": 1.2733,
+      "medianLift": 1.5436,
+      "minLift": 1.273,
       "maxLift": 1.8293,
-      "relativeSpread": 0.3601
+      "relativeSpread": 0.3604
      },
      "verdict": "ROBUST"
     },
@@ -15013,7 +15013,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.086915,
      "lift": 1.5411,
      "wilsonInterval": [
@@ -15079,21 +15079,21 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.080153,
      "lift": 1.4247,
      "wilsonInterval": [
       0.066647,
       0.096114
      ],
-     "pValue": 0.00017304,
+     "pValue": 0.00017289,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 122,
      "baseLossRate": 0.076087,
      "conditionalLossRate": 0.09313,
      "lossLift": 1.224,
-     "asymmetry": 1.1639,
+     "asymmetry": 1.164,
      "medianForwardReturn": 0.0418,
      "medianForwardReturnNetOfFrictions": 0.0387,
      "medianForwardReturnPopulation": 0.042,
@@ -15138,7 +15138,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.070883,
      "lift": 1.2594,
      "wilsonInterval": [
@@ -15163,16 +15163,16 @@
       "winners": 4428
      },
      "outOfSample": {
-      "lift": 1.3102,
+      "lift": 1.3103,
       "support": 15759,
       "winners": 1130
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.2594,
-      "minLift": 1.0966,
-      "maxLift": 1.4988,
-      "relativeSpread": 0.3194
+      "minLift": 1.0963,
+      "maxLift": 1.4989,
+      "relativeSpread": 0.3197
      },
      "verdict": "ROBUST"
     },
@@ -15197,7 +15197,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.06981,
      "lift": 1.2378,
      "wilsonInterval": [
@@ -15211,7 +15211,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.123902,
      "lossLift": 1.6264,
-     "asymmetry": 0.761,
+     "asymmetry": 0.7611,
      "medianForwardReturn": -0.0447,
      "medianForwardReturnNetOfFrictions": -0.0476,
      "medianForwardReturnPopulation": 0.042,
@@ -15256,7 +15256,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.068923,
      "lift": 1.228,
      "wilsonInterval": [
@@ -15288,9 +15288,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.228,
-      "minLift": 1.0557,
-      "maxLift": 1.3892,
-      "relativeSpread": 0.2716
+      "minLift": 1.0555,
+      "maxLift": 1.3893,
+      "relativeSpread": 0.2718
      },
      "verdict": "ROBUST"
     },
@@ -15306,16 +15306,16 @@
       }
      ],
      "support": 190541,
-     "winners": 12670,
+     "winners": 12669,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.066495,
-     "lift": 1.1848,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.06649,
+     "lift": 1.1847,
      "wilsonInterval": [
-      0.065385,
-      0.067622
+      0.06538,
+      0.067617
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -15324,7 +15324,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.09641,
      "lossLift": 1.2691,
-     "asymmetry": 0.9336,
+     "asymmetry": 0.9335,
      "medianForwardReturn": 0.0301,
      "medianForwardReturnNetOfFrictions": 0.027,
      "medianForwardReturnPopulation": 0.042,
@@ -15335,14 +15335,14 @@
       "winners": 24701
      },
      "outOfSample": {
-      "lift": 1.1815,
+      "lift": 1.1814,
       "support": 144756,
-      "winners": 9336
+      "winners": 9335
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.1848,
-      "minLift": 1.0444,
+      "medianLift": 1.1847,
+      "minLift": 1.0443,
       "maxLift": 1.3891,
       "relativeSpread": 0.291
      },
@@ -15369,7 +15369,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.066563,
      "lift": 1.1802,
      "wilsonInterval": [
@@ -15383,7 +15383,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.088109,
      "lossLift": 1.1566,
-     "asymmetry": 1.0204,
+     "asymmetry": 1.0205,
      "medianForwardReturn": 0.0349,
      "medianForwardReturnNetOfFrictions": 0.0318,
      "medianForwardReturnPopulation": 0.042,
@@ -15424,16 +15424,16 @@
       }
      ],
      "support": 58703,
-     "winners": 3863,
+     "winners": 3862,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.065806,
-     "lift": 1.1725,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.065789,
+     "lift": 1.1722,
      "wilsonInterval": [
-      0.063828,
-      0.06784
+      0.063812,
+      0.067823
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -15442,7 +15442,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.092278,
      "lossLift": 1.2147,
-     "asymmetry": 0.9653,
+     "asymmetry": 0.965,
      "medianForwardReturn": 0.0267,
      "medianForwardReturnNetOfFrictions": 0.0236,
      "medianForwardReturnPopulation": 0.042,
@@ -15453,16 +15453,16 @@
       "winners": 7877
      },
      "outOfSample": {
-      "lift": 1.1827,
+      "lift": 1.1823,
       "support": 42333,
-      "winners": 2733
+      "winners": 2732
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.1725,
-      "minLift": 1.0046,
-      "maxLift": 1.4053,
-      "relativeSpread": 0.3418
+      "medianLift": 1.1722,
+      "minLift": 1.0045,
+      "maxLift": 1.4054,
+      "relativeSpread": 0.342
      },
      "verdict": "ROBUST"
     },
@@ -15487,7 +15487,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.066038,
      "lift": 1.1709,
      "wilsonInterval": [
@@ -15501,7 +15501,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.089002,
      "lossLift": 1.1683,
-     "asymmetry": 1.0022,
+     "asymmetry": 1.0023,
      "medianForwardReturn": 0.0241,
      "medianForwardReturnNetOfFrictions": 0.021,
      "medianForwardReturnPopulation": 0.042,
@@ -15541,7 +15541,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.063843,
      "lift": 1.1343,
      "wilsonInterval": [
@@ -15566,16 +15566,16 @@
       "winners": 13092
      },
      "outOfSample": {
-      "lift": 1.1528,
+      "lift": 1.1529,
       "support": 54937,
       "winners": 3466
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 1.1343,
-      "minLift": 1.039,
+      "minLift": 1.0389,
       "maxLift": 1.2676,
-      "relativeSpread": 0.2015
+      "relativeSpread": 0.2016
      },
      "verdict": "ROBUST"
     },
@@ -15591,25 +15591,25 @@
       }
      ],
      "support": 207594,
-     "winners": 12073,
+     "winners": 12072,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.058157,
-     "lift": 1.0312,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.058152,
+     "lift": 1.0311,
      "wilsonInterval": [
-      0.057158,
-      0.059172
+      0.057153,
+      0.059167
      ],
-     "pValue": 0.00007276,
+     "pValue": 0.00007533,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 16678,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.08034,
      "lossLift": 1.0546,
-     "asymmetry": 0.9778,
+     "asymmetry": 0.9777,
      "medianForwardReturn": 0.0379,
      "medianForwardReturnNetOfFrictions": 0.0348,
      "medianForwardReturnPopulation": 0.042,
@@ -15622,13 +15622,13 @@
      "outOfSample": {
       "lift": 1.037,
       "support": 157498,
-      "winners": 8957
+      "winners": 8956
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.0312,
-      "minLift": 0.9528,
-      "maxLift": 1.1244,
+      "medianLift": 1.0311,
+      "minLift": 0.9527,
+      "maxLift": 1.1243,
       "relativeSpread": 0.1664
      },
      "verdict": "ROBUST"
@@ -15650,25 +15650,25 @@
       }
      ],
      "support": 147379,
-     "winners": 8423,
+     "winners": 8422,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.057152,
-     "lift": 1.0183,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.057145,
+     "lift": 1.0182,
      "wilsonInterval": [
-      0.055978,
-      0.058349
+      0.055972,
+      0.058342
      ],
-     "pValue": 0.0604987,
+     "pValue": 0.06192531,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 10076,
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.068368,
      "lossLift": 0.8999,
-     "asymmetry": 1.1315,
+     "asymmetry": 1.1314,
      "medianForwardReturn": 0.0446,
      "medianForwardReturnNetOfFrictions": 0.0414,
      "medianForwardReturnPopulation": 0.042,
@@ -15679,16 +15679,16 @@
       "winners": 17168
      },
      "outOfSample": {
-      "lift": 0.9931,
+      "lift": 0.993,
       "support": 110236,
-      "winners": 5976
+      "winners": 5975
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 1.0183,
+      "medianLift": 1.0182,
       "minLift": 0.8753,
       "maxLift": 1.2351,
-      "relativeSpread": 0.3534
+      "relativeSpread": 0.3535
      },
      "verdict": "NOT_SIGNIFICANT"
     },
@@ -15709,25 +15709,25 @@
       }
      ],
      "support": 132475,
-     "winners": 7381,
+     "winners": 7380,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.055716,
-     "lift": 0.9927,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.055709,
+     "lift": 0.9926,
      "wilsonInterval": [
-      0.054494,
-      0.056964
+      0.054486,
+      0.056957
      ],
-     "pValue": 0.4832938,
+     "pValue": 0.47644866,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 8780,
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.066277,
      "lossLift": 0.8724,
-     "asymmetry": 1.1379,
+     "asymmetry": 1.1378,
      "medianForwardReturn": 0.0448,
      "medianForwardReturnNetOfFrictions": 0.0416,
      "medianForwardReturnPopulation": 0.042,
@@ -15738,16 +15738,16 @@
       "winners": 15202
      },
      "outOfSample": {
-      "lift": 0.9682,
+      "lift": 0.9681,
       "support": 98428,
-      "winners": 5202
+      "winners": 5201
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.9927,
+      "medianLift": 0.9926,
       "minLift": 0.8639,
-      "maxLift": 1.1953,
-      "relativeSpread": 0.3338
+      "maxLift": 1.1954,
+      "relativeSpread": 0.334
      },
      "verdict": "NOT_SIGNIFICANT"
     },
@@ -15768,25 +15768,25 @@
       }
      ],
      "support": 185310,
-     "winners": 10285,
+     "winners": 10284,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.055502,
-     "lift": 0.9841,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.055496,
+     "lift": 0.984,
      "wilsonInterval": [
-      0.054468,
-      0.056553
+      0.054463,
+      0.056548
      ],
-     "pValue": 0.05950021,
+     "pValue": 0.05829803,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 13228,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.071383,
      "lossLift": 0.937,
-     "asymmetry": 1.0502,
+     "asymmetry": 1.0501,
      "medianForwardReturn": 0.0451,
      "medianForwardReturnNetOfFrictions": 0.042,
      "medianForwardReturnPopulation": 0.042,
@@ -15797,15 +15797,15 @@
       "winners": 20088
      },
      "outOfSample": {
-      "lift": 0.9877,
+      "lift": 0.9876,
       "support": 139920,
-      "winners": 7579
+      "winners": 7578
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.9841,
-      "minLift": 0.9042,
-      "maxLift": 1.0792,
+      "medianLift": 0.984,
+      "minLift": 0.9041,
+      "maxLift": 1.0791,
       "relativeSpread": 0.1778
      },
      "verdict": "NOT_SIGNIFICANT"
@@ -15831,14 +15831,14 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.054664,
-     "lift": 0.9712,
+     "lift": 0.9713,
      "wilsonInterval": [
       0.052884,
       0.056499
      ],
-     "pValue": 0.07263915,
+     "pValue": 0.0728366,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 3254,
@@ -15856,16 +15856,16 @@
       "winners": 8136
      },
      "outOfSample": {
-      "lift": 0.963,
+      "lift": 0.9631,
       "support": 38916,
       "winners": 2051
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.9712,
-      "minLift": 0.8868,
-      "maxLift": 1.0845,
-      "relativeSpread": 0.2036
+      "medianLift": 0.9713,
+      "minLift": 0.8866,
+      "maxLift": 1.0846,
+      "relativeSpread": 0.2038
      },
      "verdict": "NOT_SIGNIFICANT"
     },
@@ -15886,25 +15886,25 @@
       }
      ],
      "support": 173964,
-     "winners": 9493,
+     "winners": 9492,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.054569,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.054563,
      "lift": 0.9675,
      "wilsonInterval": [
-      0.053511,
-      0.055646
+      0.053506,
+      0.05564
      ],
-     "pValue": 0.00022176,
+     "pValue": 0.00021375,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 12141,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.06979,
      "lossLift": 0.9161,
-     "asymmetry": 1.0561,
+     "asymmetry": 1.056,
      "medianForwardReturn": 0.0462,
      "medianForwardReturnNetOfFrictions": 0.043,
      "medianForwardReturnPopulation": 0.042,
@@ -15915,16 +15915,16 @@
       "winners": 18660
      },
      "outOfSample": {
-      "lift": 0.9697,
+      "lift": 0.9696,
       "support": 131221,
-      "winners": 6978
+      "winners": 6977
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 0.9675,
-      "minLift": 0.89,
-      "maxLift": 1.0628,
-      "relativeSpread": 0.1786
+      "minLift": 0.8899,
+      "maxLift": 1.0627,
+      "relativeSpread": 0.1785
      },
      "verdict": "IN_SAMPLE_ONLY"
     },
@@ -15949,21 +15949,21 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.054309,
      "lift": 0.9649,
      "wilsonInterval": [
       0.052572,
       0.056099
      ],
-     "pValue": 0.0251236,
+     "pValue": 0.02520581,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 3477,
      "baseLossRate": 0.076105,
      "conditionalLossRate": 0.054797,
      "lossLift": 0.72,
-     "asymmetry": 1.3401,
+     "asymmetry": 1.3402,
      "medianForwardReturn": 0.048,
      "medianForwardReturnNetOfFrictions": 0.0448,
      "medianForwardReturnPopulation": 0.042,
@@ -15981,9 +15981,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 0.9649,
-      "minLift": 0.8849,
+      "minLift": 0.8848,
       "maxLift": 1.0659,
-      "relativeSpread": 0.1876
+      "relativeSpread": 0.1878
      },
      "verdict": "IN_SAMPLE_ONLY"
     },
@@ -16015,7 +16015,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.049184,
      "lift": 0.8742,
      "wilsonInterval": [
@@ -16074,7 +16074,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.047966,
      "lift": 0.8505,
      "wilsonInterval": [
@@ -16133,21 +16133,21 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.046154,
-     "lift": 0.8183,
+     "lift": 0.8184,
      "wilsonInterval": [
       0.01582,
       0.127141
      ],
-     "pValue": 0.720283,
+     "pValue": 0.72031004,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 15,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.230769,
      "lossLift": 3.0292,
-     "asymmetry": 0.2701,
+     "asymmetry": 0.2702,
      "medianForwardReturn": -0.0484,
      "medianForwardReturnNetOfFrictions": -0.0513,
      "medianForwardReturnPopulation": 0.042,
@@ -16169,16 +16169,16 @@
       }
      ],
      "support": 476940,
-     "winners": 20548,
+     "winners": 20547,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.043083,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.043081,
      "lift": 0.7639,
      "wilsonInterval": [
-      0.04251,
-      0.043663
+      0.042508,
+      0.043661
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -16187,7 +16187,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.051587,
      "lossLift": 0.6772,
-     "asymmetry": 1.1281,
+     "asymmetry": 1.128,
      "medianForwardReturn": 0.0514,
      "medianForwardReturnNetOfFrictions": 0.0482,
      "medianForwardReturnPopulation": 0.042,
@@ -16198,9 +16198,9 @@
       "winners": 40281
      },
      "outOfSample": {
-      "lift": 0.7424,
+      "lift": 0.7423,
       "support": 372380,
-      "winners": 15160
+      "winners": 15159
      },
      "parameterStability": {
       "state": "NOT_APPLICABLE_NO_THRESHOLD",
@@ -16223,16 +16223,16 @@
       }
      ],
      "support": 475022,
-     "winners": 20432,
+     "winners": 20431,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.043013,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.043011,
      "lift": 0.7626,
      "wilsonInterval": [
-      0.042439,
-      0.043593
+      0.042437,
+      0.043591
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -16252,9 +16252,9 @@
       "winners": 40155
      },
      "outOfSample": {
-      "lift": 0.7396,
+      "lift": 0.7395,
       "support": 371209,
-      "winners": 15055
+      "winners": 15054
      },
      "parameterStability": {
       "state": "NOT_APPLICABLE_NO_THRESHOLD",
@@ -16282,16 +16282,16 @@
       }
      ],
      "support": 85773,
-     "winners": 3604,
+     "winners": 3603,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.042018,
-     "lift": 0.745,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.042006,
+     "lift": 0.7448,
      "wilsonInterval": [
-      0.040696,
-      0.043381
+      0.040684,
+      0.043369
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -16300,7 +16300,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.044548,
      "lossLift": 0.5848,
-     "asymmetry": 1.274,
+     "asymmetry": 1.2737,
      "medianForwardReturn": 0.0607,
      "medianForwardReturnNetOfFrictions": 0.0575,
      "medianForwardReturnPopulation": 0.042,
@@ -16311,15 +16311,15 @@
       "winners": 7309
      },
      "outOfSample": {
-      "lift": 0.7259,
+      "lift": 0.7256,
       "support": 64235,
-      "winners": 2557
+      "winners": 2556
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.745,
-      "minLift": 0.6763,
-      "maxLift": 0.8479,
+      "medianLift": 0.7448,
+      "minLift": 0.6761,
+      "maxLift": 0.8477,
       "relativeSpread": 0.2304
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -16341,16 +16341,16 @@
       }
      ],
      "support": 415013,
-     "winners": 17361,
+     "winners": 17360,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.041832,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.04183,
      "lift": 0.7417,
      "wilsonInterval": [
-      0.041228,
-      0.042446
+      0.041225,
+      0.042443
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -16359,7 +16359,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.049025,
      "lossLift": 0.6435,
-     "asymmetry": 1.1526,
+     "asymmetry": 1.1525,
      "medianForwardReturn": 0.0532,
      "medianForwardReturnNetOfFrictions": 0.05,
      "medianForwardReturnPopulation": 0.042,
@@ -16372,7 +16372,7 @@
      "outOfSample": {
       "lift": 0.7178,
       "support": 323012,
-      "winners": 12715
+      "winners": 12714
      },
      "parameterStability": {
       "state": "NOT_APPLICABLE_NO_THRESHOLD",
@@ -16411,7 +16411,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.041612,
      "lift": 0.7414,
      "wilsonInterval": [
@@ -16466,16 +16466,16 @@
       }
      ],
      "support": 85795,
-     "winners": 3441,
+     "winners": 3440,
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
-     "conditionalRate": 0.040107,
-     "lift": 0.7146,
+     "baseRate": 0.056124,
+     "conditionalRate": 0.040096,
+     "lift": 0.7144,
      "wilsonInterval": [
-      0.038815,
-      0.041441
+      0.038803,
+      0.041429
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -16484,7 +16484,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.041797,
      "lossLift": 0.5502,
-     "asymmetry": 1.2988,
+     "asymmetry": 1.2985,
      "medianForwardReturn": 0.0527,
      "medianForwardReturnNetOfFrictions": 0.0495,
      "medianForwardReturnPopulation": 0.042,
@@ -16495,16 +16495,16 @@
       "winners": 7144
      },
      "outOfSample": {
-      "lift": 0.6837,
+      "lift": 0.6834,
       "support": 63640,
-      "winners": 2375
+      "winners": 2374
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.7146,
-      "minLift": 0.5923,
+      "medianLift": 0.7144,
+      "minLift": 0.5922,
       "maxLift": 0.9132,
-      "relativeSpread": 0.449
+      "relativeSpread": 0.4493
      },
      "verdict": "IN_SAMPLE_ONLY"
     },
@@ -16536,7 +16536,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.03896,
      "lift": 0.6925,
      "wilsonInterval": [
@@ -16561,7 +16561,7 @@
       "winners": 1916
      },
      "outOfSample": {
-      "lift": 0.6912,
+      "lift": 0.6913,
       "support": 12509,
       "winners": 473
      },
@@ -16569,7 +16569,7 @@
       "state": "MEASURED",
       "medianLift": 0.6925,
       "minLift": 0.6651,
-      "maxLift": 0.736,
+      "maxLift": 0.7361,
       "relativeSpread": 0.1025
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -16595,7 +16595,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.038671,
      "lift": 0.6871,
      "wilsonInterval": [
@@ -16627,9 +16627,9 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 0.6871,
-      "minLift": 0.6292,
+      "minLift": 0.6289,
       "maxLift": 0.7547,
-      "relativeSpread": 0.1826
+      "relativeSpread": 0.1831
      },
      "verdict": "IN_SAMPLE_ONLY"
     },
@@ -16654,21 +16654,21 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.037975,
      "lift": 0.6733,
      "wilsonInterval": [
       0.026228,
       0.054688
      ],
-     "pValue": 0.03313044,
+     "pValue": 0.03313957,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 5,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.007032,
      "lossLift": 0.0923,
-     "asymmetry": 7.294,
+     "asymmetry": 7.2941,
      "medianForwardReturn": 0.052,
      "medianForwardReturnNetOfFrictions": 0.0489,
      "medianForwardReturnPopulation": 0.042,
@@ -16713,7 +16713,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.03357,
      "lift": 0.5952,
      "wilsonInterval": [
@@ -16727,7 +16727,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.03357,
      "lossLift": 0.4407,
-     "asymmetry": 1.3507,
+     "asymmetry": 1.3508,
      "medianForwardReturn": 0.0547,
      "medianForwardReturnNetOfFrictions": 0.0516,
      "medianForwardReturnPopulation": 0.042,
@@ -16779,7 +16779,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.03339,
      "lift": 0.5935,
      "wilsonInterval": [
@@ -16845,7 +16845,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.033034,
      "lift": 0.5872,
      "wilsonInterval": [
@@ -16904,7 +16904,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.029939,
      "lift": 0.5308,
      "wilsonInterval": [
@@ -16918,7 +16918,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.037981,
      "lossLift": 0.4986,
-     "asymmetry": 1.0647,
+     "asymmetry": 1.0648,
      "medianForwardReturn": 0.0643,
      "medianForwardReturnNetOfFrictions": 0.0611,
      "medianForwardReturnPopulation": 0.042,
@@ -16965,7 +16965,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.029581,
      "lift": 0.5258,
      "wilsonInterval": [
@@ -16990,7 +16990,7 @@
       "winners": 8198
      },
      "outOfSample": {
-      "lift": 0.501,
+      "lift": 0.5011,
       "support": 99059,
       "winners": 2715
      },
@@ -17024,21 +17024,21 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.028736,
      "lift": 0.5095,
      "wilsonInterval": [
       0.012335,
       0.065496
      ],
-     "pValue": 0.11365609,
+     "pValue": 0.11366745,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 1,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.005747,
      "lossLift": 0.0754,
-     "asymmetry": 6.7537,
+     "asymmetry": 6.7538,
      "medianForwardReturn": 0.0945,
      "medianForwardReturnNetOfFrictions": 0.0912,
      "medianForwardReturnPopulation": 0.042,
@@ -17065,16 +17065,16 @@
       }
      ],
      "support": 212551,
-     "winners": 5957,
+     "winners": 5956,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.028026,
-     "lift": 0.4969,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.028022,
+     "lift": 0.4968,
      "wilsonInterval": [
-      0.027333,
-      0.028736
+      0.027328,
+      0.028732
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -17083,7 +17083,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.030035,
      "lossLift": 0.3943,
-     "asymmetry": 1.2604,
+     "asymmetry": 1.2602,
      "medianForwardReturn": 0.0533,
      "medianForwardReturnNetOfFrictions": 0.0502,
      "medianForwardReturnPopulation": 0.042,
@@ -17094,15 +17094,15 @@
       "winners": 12221
      },
      "outOfSample": {
-      "lift": 0.4655,
+      "lift": 0.4654,
       "support": 164616,
-      "winners": 4202
+      "winners": 4201
      },
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 0.4974,
-      "minLift": 0.4969,
-      "maxLift": 0.5027,
+      "minLift": 0.4968,
+      "maxLift": 0.5026,
       "relativeSpread": 0.0116
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -17124,16 +17124,16 @@
       }
      ],
      "support": 220554,
-     "winners": 6152,
+     "winners": 6151,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.027893,
-     "lift": 0.4946,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.027889,
+     "lift": 0.4945,
      "wilsonInterval": [
-      0.027214,
-      0.028589
+      0.02721,
+      0.028584
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -17142,7 +17142,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.030124,
      "lossLift": 0.3954,
-     "asymmetry": 1.2507,
+     "asymmetry": 1.2505,
      "medianForwardReturn": 0.0533,
      "medianForwardReturnNetOfFrictions": 0.0501,
      "medianForwardReturnPopulation": 0.042,
@@ -17153,15 +17153,15 @@
       "winners": 12568
      },
      "outOfSample": {
-      "lift": 0.4638,
+      "lift": 0.4637,
       "support": 170941,
-      "winners": 4348
+      "winners": 4347
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.4947,
-      "minLift": 0.494,
-      "maxLift": 0.5017,
+      "medianLift": 0.4946,
+      "minLift": 0.4939,
+      "maxLift": 0.5016,
       "relativeSpread": 0.0155
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -17178,16 +17178,16 @@
       }
      ],
      "support": 224448,
-     "winners": 6204,
+     "winners": 6203,
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
-     "conditionalRate": 0.027641,
-     "lift": 0.4901,
+     "baseRate": 0.056398,
+     "conditionalRate": 0.027637,
+     "lift": 0.49,
      "wilsonInterval": [
-      0.026971,
-      0.028328
+      0.026967,
+      0.028323
      ],
      "pValue": 0,
      "significantAfterCorrection": true,
@@ -17196,7 +17196,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.029985,
      "lossLift": 0.3936,
-     "asymmetry": 1.2452,
+     "asymmetry": 1.245,
      "medianForwardReturn": 0.0494,
      "medianForwardReturnNetOfFrictions": 0.0463,
      "medianForwardReturnPopulation": 0.042,
@@ -17207,15 +17207,15 @@
       "winners": 12667
      },
      "outOfSample": {
-      "lift": 0.4588,
+      "lift": 0.4587,
       "support": 174596,
-      "winners": 4393
+      "winners": 4392
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.4901,
-      "minLift": 0.4856,
-      "maxLift": 0.4997,
+      "medianLift": 0.49,
+      "minLift": 0.4855,
+      "maxLift": 0.4996,
       "relativeSpread": 0.0287
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -17241,7 +17241,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.026311,
      "lift": 0.4688,
      "wilsonInterval": [
@@ -17300,7 +17300,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.024948,
      "lift": 0.4433,
      "wilsonInterval": [
@@ -17359,7 +17359,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.023405,
      "lift": 0.415,
      "wilsonInterval": [
@@ -17391,7 +17391,7 @@
      "parameterStability": {
       "state": "MEASURED",
       "medianLift": 0.415,
-      "minLift": 0.3797,
+      "minLift": 0.3798,
       "maxLift": 0.7127,
       "relativeSpread": 0.8023
      },
@@ -17418,21 +17418,21 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.023256,
      "lift": 0.4123,
      "wilsonInterval": [
       0.015919,
       0.033858
      ],
-     "pValue": 0.00000153,
+     "pValue": 0.00000154,
      "significantAfterCorrection": true,
      "lossThreshold": -0.5,
      "losses": 16,
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.014311,
      "lossLift": 0.1879,
-     "asymmetry": 2.1949,
+     "asymmetry": 2.195,
      "medianForwardReturn": 0.052,
      "medianForwardReturnNetOfFrictions": 0.0488,
      "medianForwardReturnPopulation": 0.042,
@@ -17451,7 +17451,7 @@
       "state": "MEASURED",
       "medianLift": 0.4123,
       "minLift": 0.2879,
-      "maxLift": 0.6138,
+      "maxLift": 0.6139,
       "relativeSpread": 0.7904
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -17477,7 +17477,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.018851,
      "lift": 0.3342,
      "wilsonInterval": [
@@ -17502,7 +17502,7 @@
       "winners": 4535
      },
      "outOfSample": {
-      "lift": 0.2791,
+      "lift": 0.2792,
       "support": 74536,
       "winners": 1141
      },
@@ -17536,7 +17536,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.018824,
      "lift": 0.3338,
      "wilsonInterval": [
@@ -17595,7 +17595,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.018724,
      "lift": 0.332,
      "wilsonInterval": [
@@ -17649,7 +17649,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.018501,
      "lift": 0.328,
      "wilsonInterval": [
@@ -17708,7 +17708,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.0185,
      "lift": 0.328,
      "wilsonInterval": [
@@ -17767,14 +17767,14 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.018116,
      "lift": 0.3212,
      "wilsonInterval": [
       0.007762,
       0.0417
      ],
-     "pValue": 0.00582606,
+     "pValue": 0.00582704,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 29,
@@ -17819,7 +17819,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.017917,
      "lift": 0.3185,
      "wilsonInterval": [
@@ -17878,7 +17878,7 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.015307,
      "lift": 0.272,
      "wilsonInterval": [
@@ -17903,7 +17903,7 @@
       "winners": 1434
      },
      "outOfSample": {
-      "lift": 0.233,
+      "lift": 0.2331,
       "support": 22111,
       "winners": 282
      },
@@ -17937,7 +17937,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.014429,
      "lift": 0.2571,
      "wilsonInterval": [
@@ -17970,7 +17970,7 @@
       "state": "MEASURED",
       "medianLift": 0.2571,
       "minLift": 0.1488,
-      "maxLift": 0.4286,
+      "maxLift": 0.4287,
       "relativeSpread": 1.0887
      },
      "verdict": "IN_SAMPLE_ONLY"
@@ -17996,7 +17996,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.011618,
      "lift": 0.206,
      "wilsonInterval": [
@@ -18050,7 +18050,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.011551,
      "lift": 0.2048,
      "wilsonInterval": [
@@ -18064,7 +18064,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.020384,
      "lossLift": 0.2676,
-     "asymmetry": 0.7654,
+     "asymmetry": 0.7655,
      "medianForwardReturn": 0.043,
      "medianForwardReturnNetOfFrictions": 0.0399,
      "medianForwardReturnPopulation": 0.042,
@@ -18109,7 +18109,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.010661,
      "lift": 0.189,
      "wilsonInterval": [
@@ -18168,7 +18168,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.010558,
      "lift": 0.1872,
      "wilsonInterval": [
@@ -18234,7 +18234,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.0097,
      "lift": 0.1724,
      "wilsonInterval": [
@@ -18293,7 +18293,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.008104,
      "lift": 0.1437,
      "wilsonInterval": [
@@ -18307,7 +18307,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.011905,
      "lossLift": 0.1563,
-     "asymmetry": 0.9194,
+     "asymmetry": 0.9195,
      "medianForwardReturn": 0.0423,
      "medianForwardReturnNetOfFrictions": 0.0392,
      "medianForwardReturnPopulation": 0.042,
@@ -18352,7 +18352,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.007027,
      "lift": 0.1246,
      "wilsonInterval": [
@@ -18411,7 +18411,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.005698,
      "lift": 0.101,
      "wilsonInterval": [
@@ -18470,9 +18470,9 @@
      "population": 883343,
      "notMeasurable": 1381,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056283,
+     "baseRate": 0.056282,
      "conditionalRate": 0.005462,
-     "lift": 0.097,
+     "lift": 0.0971,
      "wilsonInterval": [
       0.004605,
       0.006478
@@ -18501,7 +18501,7 @@
      },
      "parameterStability": {
       "state": "MEASURED",
-      "medianLift": 0.097,
+      "medianLift": 0.0971,
       "minLift": 0.0587,
       "maxLift": 0.1962,
       "relativeSpread": 1.4167
@@ -18529,7 +18529,7 @@
      "population": 882301,
      "notMeasurable": 2423,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056125,
+     "baseRate": 0.056124,
      "conditionalRate": 0.005123,
      "lift": 0.0913,
      "wilsonInterval": [
@@ -18543,7 +18543,7 @@
      "baseLossRate": 0.07597,
      "conditionalLossRate": 0.010269,
      "lossLift": 0.1352,
-     "asymmetry": 0.6752,
+     "asymmetry": 0.6753,
      "medianForwardReturn": 0.0441,
      "medianForwardReturnNetOfFrictions": 0.041,
      "medianForwardReturnPopulation": 0.042,
@@ -18588,7 +18588,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.00492,
      "lift": 0.0872,
      "wilsonInterval": [
@@ -18602,7 +18602,7 @@
      "baseLossRate": 0.076181,
      "conditionalLossRate": 0.011552,
      "lossLift": 0.1516,
-     "asymmetry": 0.5753,
+     "asymmetry": 0.5754,
      "medianForwardReturn": 0.0496,
      "medianForwardReturnNetOfFrictions": 0.0464,
      "medianForwardReturnPopulation": 0.042,
@@ -18647,7 +18647,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.004446,
      "lift": 0.0788,
      "wilsonInterval": [
@@ -18706,7 +18706,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.004107,
      "lift": 0.0728,
      "wilsonInterval": [
@@ -18765,7 +18765,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.004009,
      "lift": 0.0711,
      "wilsonInterval": [
@@ -18819,7 +18819,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.003845,
      "lift": 0.0682,
      "wilsonInterval": [
@@ -18878,7 +18878,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.003692,
      "lift": 0.0655,
      "wilsonInterval": [
@@ -18944,7 +18944,7 @@
      "population": 883201,
      "notMeasurable": 1523,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.056261,
+     "baseRate": 0.05626,
      "conditionalRate": 0.003489,
      "lift": 0.062,
      "wilsonInterval": [
@@ -19003,7 +19003,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0.003301,
      "lift": 0.0585,
      "wilsonInterval": [
@@ -19062,14 +19062,14 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0,
      "lift": 0,
      "wilsonInterval": [
       0,
       0.354339
      ],
-     "pValue": 0.51773783,
+     "pValue": 0.51774228,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 1,
@@ -19107,7 +19107,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": null,
      "lift": null,
      "wilsonInterval": null,
@@ -19149,7 +19149,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": null,
      "lift": null,
      "wilsonInterval": null,
@@ -19191,7 +19191,7 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": null,
      "lift": null,
      "wilsonInterval": null,
@@ -19233,14 +19233,14 @@
      "population": 884724,
      "notMeasurable": 0,
      "outcomeUnavailableInPattern": 0,
-     "baseRate": 0.0564,
+     "baseRate": 0.056398,
      "conditionalRate": 0,
      "lift": 0,
      "wilsonInterval": [
       0,
       0.184324
      ],
-     "pValue": 0.31344147,
+     "pValue": 0.3134466,
      "significantAfterCorrection": false,
      "lossThreshold": -0.5,
      "losses": 2,
@@ -47820,6 +47820,6 @@
    "verdict": "INSUFFICIENT_SUPPORT"
   }
  ],
- "runtimeMs": 442361,
- "contentHash": "b03e0c880a60562b"
+ "runtimeMs": 363954,
+ "contentHash": "32c261303fdbf787"
 }
