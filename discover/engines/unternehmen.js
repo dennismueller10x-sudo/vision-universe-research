@@ -45,7 +45,10 @@
     CALCULATED: "CALCULATED",
     SOURCE_MISSING: "SOURCE_MISSING",
     WITHHELD_REDISTRIBUTION: "WITHHELD_REDISTRIBUTION",
-    INSUFFICIENT_HISTORY: "INSUFFICIENT_HISTORY"
+    INSUFFICIENT_HISTORY: "INSUFFICIENT_HISTORY",
+    /* Gewinne und Dividenden in einer anderen Waehrung als der US-Kurs:
+       ein Verhaeltnis daraus waere eine Zahl ohne Bedeutung. */
+    NON_USD_REPORTING: "NON_USD_REPORTING"
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -175,6 +178,25 @@
    * @param {object} model  Fundamentals.fromBundle(bundle)
    * @param {object} [opt]  { preis, preisStatus }
    */
+  /* Waehrung einer Bundle-Einheit ("USD/shares" -> "USD"), sonst null. */
+  function waehrungVon(einheit) {
+    return einheit ? String(einheit).split("/")[0].toUpperCase() : null;
+  }
+  /* Die Waehrung, in der das Unternehmen Gewinn und Umsatz meldet. Nicht
+     die der EPS-Einheit: die ist bei manchen Filern falsch getaggt (VRNS
+     "AFN/shares" bei Gewinn und Umsatz in USD; SBS, VIPS, KB "USD/shares"
+     bei Gewinn in BRL, CNY, KRW). */
+  function berichtswaehrung(model) {
+    var u = (model && model.units) || {};
+    return waehrungVon(u.net_income) || waehrungVon(u.revenue);
+  }
+  /* Ein Verhaeltnis zum Dollarkurs nur, wenn Gewinn je Aktie, Gewinn und
+     Umsatz alle in USD stehen - jede Abweichung haelt es zurueck. */
+  function nurDollar(model) {
+    var u = (model && model.units) || {};
+    return [u.eps_diluted, u.net_income, u.revenue].every(function (e) { var w = waehrungVon(e); return w === null || w === "USD"; });
+  }
+
   function ausConsumerBundle(model, opt) {
     opt = opt || {};
     if (!model || !model.years || !model.years.length) {
@@ -223,19 +245,33 @@
     var gewinnJeAktie = (ttm.eps_diluted && isNum(ttm.eps_diluted.v)) ? ttm.eps_diluted.v
                       : (basis === "FY" && jahr("eps_diluted", latestFy)) ? jahr("eps_diluted", latestFy).v
                       : (isNum(aktien) && aktien > 0 ? gewinn / aktien : null);
+    /* Der Kurs ist ein US-Dollar-Kurs. Meldet das Unternehmen in einer
+       anderen Waehrung (20-F-Filer: ASML in EUR, ABEV in BRL), teilte das
+       KGV Dollar durch Euro oder Real - ASML stand am 13.10.2026 mit KGV
+       70,83 da, AKO-A mit 0,08. Dieselbe Regel wie die Bewertung im Build
+       (build-discover-data.mjs, shareBasis: NON_USD_REPORTING): zurueckhalten,
+       nicht umrechnen - ADR-Verhaeltnis und Wechselkurs der Periode liegen
+       hier nicht vor. */
+    var waehrung = berichtswaehrung(model);
+    var fremd = !nurDollar(model);
     var kgv = null, kgvStatus = STATUS.SOURCE_MISSING;
     if (!isNum(opt.preis)) {
       kgvStatus = opt.preisStatus === STATUS.WITHHELD_REDISTRIBUTION ? STATUS.WITHHELD_REDISTRIBUTION : STATUS.SOURCE_MISSING;
+    } else if (fremd) {
+      kgvStatus = STATUS.NON_USD_REPORTING;
     } else if (!isNum(gewinnJeAktie) || gewinnJeAktie <= 0) {
       kgvStatus = STATUS.SOURCE_MISSING;
     } else { kgv = opt.preis / gewinnJeAktie; kgvStatus = STATUS.CALCULATED; }
-    /* Dividendenrendite: gezahlte Dividende (FY) zu Marktwert (Kurs x Aktien). */
+    /* Dividendenrendite: gezahlte Dividende (FY) zu Marktwert (Kurs x Aktien).
+       Dieselbe Waehrungsregel wie beim KGV. */
     var divRow = jahr("dividends_paid", latestFy);
     var divRendite = null, divStatus = STATUS.SOURCE_MISSING;
-    if (divRow && isNum(opt.preis) && isNum(aktien) && aktien > 0 && opt.preis > 0) {
+    if (divRow && fremd) {
+      divStatus = STATUS.NON_USD_REPORTING;
+    } else if (divRow && isNum(opt.preis) && isNum(aktien) && aktien > 0 && opt.preis > 0) {
       divRendite = Math.abs(divRow.v) / (opt.preis * aktien); divStatus = STATUS.CALCULATED;
     }
-    return {
+    var ergebnis = {
       engineVersion: ENGINE_VERSION,
       quelle: "SEC_CONSUMER",
       status: STATUS.CALCULATED,
@@ -255,6 +291,10 @@
       asOf: model.asOf || null,
       message: null
     };
+    /* Nur wo sie den Grund traegt: Titel mit US-Berichten bleiben Byte fuer
+       Byte, wie sie waren. */
+    if (fremd && waehrung && waehrung !== "USD") ergebnis.berichtswaehrung = waehrung;
+    return ergebnis;
   }
 
   function leer(status, message) {
@@ -270,7 +310,7 @@
 
   var api = {
     ENGINE_VERSION: ENGINE_VERSION, STATUS: STATUS,
-    ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, leer: leer,
+    ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, leer: leer, berichtswaehrung: berichtswaehrung,
     zwoelfMonate: zwoelfMonate, wachstum: wachstum
   };
 
