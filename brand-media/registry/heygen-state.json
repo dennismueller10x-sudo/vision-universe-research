@@ -12,7 +12,8 @@
       "afterDavidAvatar": 14.88,
       "afterVoiceSamples": 14.72,
       "afterOffSamples": 14.67,
-      "afterPlateTest": 14.42
+      "afterPlateTest": 14.42,
+      "afterTheRoomProduction": 13.92
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -276,5 +277,56 @@
       "referenceAssetId": "8454ae22adbb47f1a8f94b6adc41ad2d",
       "requests": "pipeline/room_film/requests/"
     }
+  },
+  "theRoom": {
+    "status": "REVIEW",
+    "producedAt": "2026-10-13",
+    "engine": "heygen-video-1",
+    "budgetApprovedUsd": 4.0,
+    "chargedUsd": 0.5,
+    "wallet": {
+      "before": 14.42,
+      "after": 13.92
+    },
+    "clips": [
+      {
+        "id": "A",
+        "videoId": "cbf9f745dc064eb08dbda96e7238137e",
+        "mode": "reference_to_video",
+        "res": "768p",
+        "sec": 8,
+        "seed": 3011,
+        "chargedUsd": 0.25,
+        "verdict": "USED"
+      },
+      {
+        "id": "B1",
+        "videoId": "649d470e3d1a4ac8a503170beccdce12",
+        "mode": "image_to_video (Letztes Bild A)",
+        "res": "768p",
+        "sec": 7,
+        "seed": 3012,
+        "chargedUsd": 0.12,
+        "verdict": "REJECTED (Doppelung Personen/Tisch bei ca. 3 s)"
+      },
+      {
+        "id": "B2",
+        "videoId": "bd6bd146e40c42f3a5c0cbcdb28253db",
+        "mode": "image_to_video (Letztes Bild A)",
+        "res": "768p",
+        "sec": 7,
+        "seed": 3015,
+        "chargedUsd": 0.12,
+        "verdict": "USED"
+      }
+    ],
+    "lastFrameAssetId": "ac746a1c82364a568a3a3d2079ab87aa",
+    "voice": {
+      "name": "Wolf Spencer",
+      "voiceId": "ad9c4386ea934832b2de3ae2934005e9",
+      "engine": "orca",
+      "claimTtsChargedUsd": 0.01
+    },
+    "final": "brand-media/video/trailer/the_room/final/vision_universe_the_room_20s_1080x1920.mp4"
   }
 }
