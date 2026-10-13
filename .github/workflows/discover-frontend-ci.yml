@@ -36,6 +36,13 @@ jobs:
         run: |
           npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
           node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      # Offener Tab ueber ein Deployment (lazy.js + Release-Waechter, hinter der Sperre). Setzt den Quant-PR voraus
+      # (quant/ui/release-guard.js, scripts/vu2/deploy-switch-lib.mjs); davor uebersprungen.
+      - name: Deployment switch with an open tab
+        if: hashFiles('scripts/vu2/deploy-switch-lib.mjs') != ''
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+        run: node scripts/discover/deploy-switch-qa.mjs --engine chromium,webkit
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-release"
       - name: Browser, accessibility, performance and screenshot gates

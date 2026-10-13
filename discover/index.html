@@ -66,6 +66,8 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <script>if(/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)(\/|$)/.test(location.hash)){var n=document.querySelector("#v2-shell .v2-intro[data-static]");if(n)n.closest("main").remove();}</script>
 
 <template id="dx-start">
+<!-- Release-Waechter (quant/ui/release-guard.js): vergleicht die Code-Kennung dieses Tabs mit /release-id.json, bevor Skriptgruppen nachgeladen werden oder nach einem 404 "Gerade nicht erreichbar" erscheint (Deployment-Wechsel mit offenem Tab). Vor shell.js, das ihn bei 404 fragt. -->
+<script src="/quant/ui/release-guard.js"></script>
 <!-- Bestehende Vision-Universe-Infrastruktur (unveraendert wiederverwendet) -->
 <script src="/quant/ui/shell.js"></script>
 <script src="/quant/engines/realtime/market-hours.js"></script>
