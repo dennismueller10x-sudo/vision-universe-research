@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-12T15:24:21.880Z",
+  "generated_at_utc": "2026-10-13T14:17:40.754Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5326,
+    "withDeliveredStockPage": 5321,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -24496,17 +24496,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "GWH",
-      "name": "ESS Tech, Inc.",
-      "cik": "0001819438",
-      "instrumentId": "vu_eedcd0ec584d3b",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "GWRE",
       "name": "Guidewire Software, Inc.",
       "cik": "0001528396",
@@ -43976,17 +43965,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "PSKY",
-      "name": "Paramount Skydance Corp",
-      "cik": "0002041610",
-      "instrumentId": "vu_dd9ef162cc5f4a",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "PSMT",
       "name": "Pricesmart Inc",
       "cik": "0001041803",
@@ -44727,17 +44705,6 @@
       "name": "Quest Resource Holding Corp",
       "cik": "0001442236",
       "instrumentId": "vu_f9aa9cbdd5d126",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "QRVO",
-      "name": "Qorvo, Inc.",
-      "cik": "0001604778",
-      "instrumentId": "vu_f1aa018f680762",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -47617,6 +47584,17 @@
       "cik": "0001549966",
       "instrumentId": "vu_b48d1ebb27de08",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "SAMO",
+      "name": "Samos Energy Acquisition Corp",
+      "cik": "0002125567",
+      "instrumentId": "vu_c0be3b74e058e2",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -56192,17 +56170,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "VACI",
-      "name": "Viking Acquisition Corp I",
-      "cik": "0002080023",
-      "instrumentId": "vu_f13d79f9999feb",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "VAI",
       "name": "Senmiao Technology Ltd",
       "cik": "0001711012",
@@ -57458,17 +57425,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "VTAK",
-      "name": "Catheter Precision, Inc.",
-      "cik": "0001716621",
-      "instrumentId": "vu_95c9964022e6ae",
-      "exchange": "AMEX",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "VTEX",
       "name": "Vtex - Class A",
       "cik": "0001793663",
@@ -57736,20 +57692,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "WALD",
-      "name": "Waldencast plc",
-      "cik": "0001840199",
-      "instrumentId": "vu_7ce23ad35c64de",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "WALDW"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -61546,6 +61488,17 @@
       "role": "universe"
     },
     {
+      "ticker": "GWH",
+      "name": "ESS Tech, Inc.",
+      "cik": "0001819438",
+      "instrumentId": "vu_eedcd0ec584d3b",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "HCWC",
       "name": "Healthy Choice Wellness Corp.",
       "cik": "0001948864",
@@ -62059,11 +62012,33 @@
       "role": "universe"
     },
     {
+      "ticker": "PSKY",
+      "name": "Paramount Skydance Corp",
+      "cik": "0002041610",
+      "instrumentId": "vu_dd9ef162cc5f4a",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "PTA",
       "name": "Cohen & Steers Tax-Advantaged Preferred Securities & Income Fund",
       "cik": "0001793882",
       "instrumentId": "vu_6f293871336acf",
       "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "QRVO",
+      "name": "Qorvo, Inc.",
+      "cik": "0001604778",
+      "instrumentId": "vu_f1aa018f680762",
+      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -62108,17 +62083,6 @@
         "SAY",
         "SAZ"
       ],
-      "role": "universe"
-    },
-    {
-      "ticker": "SAMO",
-      "name": "Samos Energy Acquisition Corp",
-      "cik": "0002125567",
-      "instrumentId": "vu_c0be3b74e058e2",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -62347,6 +62311,17 @@
       "role": "universe"
     },
     {
+      "ticker": "VACI",
+      "name": "Viking Acquisition Corp I",
+      "cik": "0002080023",
+      "instrumentId": "vu_f13d79f9999feb",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "VLOSU",
       "name": "Velos Acquisition I Corp.",
       "cik": "0002016072",
@@ -62369,6 +62344,31 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "VTAK",
+      "name": "Catheter Precision, Inc.",
+      "cik": "0001716621",
+      "instrumentId": "vu_95c9964022e6ae",
+      "exchange": "AMEX",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "WALD",
+      "name": "Waldencast plc",
+      "cik": "0001840199",
+      "instrumentId": "vu_7ce23ad35c64de",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "WALDW"
+      ],
       "role": "universe"
     },
     {
