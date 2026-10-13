@@ -5,6 +5,7 @@
 import {createRequire} from 'node:module';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import {SPECS,waitRendered} from './direct-link-lib.mjs';
 const require=createRequire(import.meta.url);
 let playwright;
 try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
@@ -367,17 +368,19 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
 // Direktlinks auf Routen mit nachgeladenen Skriptgruppen: jeder frische Aufruf muss zeichnen (kein "Gerade nicht erreichbar", keine Seitenfehler).
 // WebKit zeigte hier einmal ein Zufallsrennen zwischen Parser und Start; deshalb dort 25 frische Aufrufe je Link.
 await check('direct links to lazy-loaded routes render on every fresh load',async()=>{
+ // Seit der Verschaerfung zaehlt nur eine Route als gerendert, die ihre Inhaltsmerkmale SICHTBAR zeigt (direct-link-lib.mjs):
+ // erwarteter h1, Kursblock, gezeichneter Chart, Mindesttext, keine Ladeanzeige. Die Seite durch die Zugangsmaske und
+ // unter langsamer Verbindung prueft browser-qa-direct.mjs.
  const loads=engine==='webkit'?25:4,device=engine==='webkit'?playwright.devices['iPhone 13']:{viewport:{width:390,height:844},isMobile:true,hasTouch:true};
  const {defaultBrowserType,...options}=device,failures=[];
- for(const hash of ['#/daten','#/maerkte','#/s/US_REAL/NVDA','#/s/EUROPE/ref_RHM_DE_XETR','#/einzeln/NVDA']){
+ for(const key of ['daten','maerkte','nvda','rheinmetall','einzeln']){
   for(let i=0;i<loads;i++){
    const context=await browser.newContext(options),page=await context.newPage(),pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));
    try{
-    await page.goto(base+'/discover/'+hash,{waitUntil:'load'});
-    await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
-    const heading=await page.evaluate(()=>(document.querySelector('#v2-main h1')||{}).textContent||'');
-    if(/erreichbar/.test(heading)||pageErrors.length)failures.push(hash+' #'+i+': '+heading+' '+pageErrors.slice(0,1).join());
-   }catch(e){failures.push(hash+' #'+i+': '+e.message.split('\n')[0]);}
+    await page.goto(base+SPECS[key].path,{waitUntil:'load'});
+    const rendered=await waitRendered(page,key,{timeout:30000});
+    if(!rendered.ok||pageErrors.length)failures.push(key+' #'+i+': '+rendered.problems.slice(0,3).join('; ')+' '+pageErrors.slice(0,1).join());
+   }catch(e){failures.push(key+' #'+i+': '+e.message.split('\n')[0]);}
    await context.close();
   }
  }

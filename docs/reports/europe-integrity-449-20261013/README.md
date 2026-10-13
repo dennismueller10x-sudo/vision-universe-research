@@ -1,5 +1,13 @@
 # Europe data integrity: all 449 securities
 
+This document retains the offline baseline audit. The subsequent authenticated
+revalidation ran successfully in [Actions run 38406637090](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38406637090):
+8,828 requests and 8,828 conservatively reserved credits across all 449 securities.
+Its licensed raw responses and per-security reports remain private. The later
+run does not release prices, quarantined observations or analytical capabilities.
+The historical NOT_CONFIGURED statement below describes the earlier offline
+runtime, rather than the authenticated Actions follow-up.
+
 Baseline: `af90e4b548585d45c527be1b2ffa583bd5dfa370`. The audit reconstructs existing authenticated evidence through RAW → NORMALIZED → QUARANTINE/ADMISSION → APPROVED CLOSE → private OHLC research candidates. It changes no display artifacts, prices, calendars, IDs, US/Tiingo data, analytical methods, product gates, Vorsorge or schedules. No analytical engine is invoked.
 
 ## Source scope and accounting

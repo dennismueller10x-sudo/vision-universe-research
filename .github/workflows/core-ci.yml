@@ -12,6 +12,10 @@ name: Core - Tests, Datenqualitaet, Systemzustand
 #                         STALE/FAILED macht rot). GitHub benachrichtigt den
 #                         Eigentuemer.
 #
+#                         Zustandstests (core/tests/state/): Querverträge über
+#                         erzeugte Daten zweier Produkte - im PR nur blockierend,
+#                         wenn der PR einen Eingang berührt; sonst Hinweis.
+#
 # Kein Anbieterabruf, kein Schluessel, kein Commit.
 
 on:
@@ -24,6 +28,7 @@ on:
       - 'core/**'
       - 'scripts/core/**'
       - 'status/**'
+      - 'scripts/ci/state-gate.mjs'
       - '.github/workflows/core-ci.yml'
   schedule:
     # Taeglich nach dem naechtlichen Refresh und der Materialisierung.
@@ -52,6 +57,20 @@ jobs:
 
       - name: Core-Tests
         run: node --test "core/tests/*.test.mjs" quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs
+
+      # Zustandstests: Querverträge über ERZEUGTE Daten zweier Produkte
+      # (core/tests/state/, z. B. jedes Supertrader-Signal hat eine Discover-
+      # Seite). Dieselben Tests, nichts gelockert - aber ein roter Datenbefund
+      # blockiert einen PR nur, wenn der PR einen Eingang des Tests berührt
+      # (core/tests/state/manifest.json). Auf main, im Zeitplan und per
+      # Dispatch sind sie immer streng (Job `live`). Gleicher Job wie die
+      # Code-Tests: ein Pflicht-Check `core`.
+      - name: Zustandstests (Querverträge über erzeugte Daten)
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/ci/state-gate.mjs --event="$EVENT" --base="$BASE_SHA" --head="$HEAD_SHA"
 
       - name: Systemzustand des Repository-Stands (Bericht)
         run: node scripts/core/system-health.mjs
@@ -95,12 +114,16 @@ jobs:
         id: dq
         continue-on-error: true
         run: node scripts/core/data-quality.mjs --strict
+      - name: Zustandstests der Querverträge (streng)
+        id: state
+        continue-on-error: true
+        run: node scripts/ci/state-gate.mjs --strict
       - name: Systemzustand der ausgelieferten Seite (streng)
         id: health
         continue-on-error: true
         run: node scripts/core/system-health.mjs --site=https://research.visionuniverse.de --strict
       - name: Ergebnis
-        if: steps.dq.outcome == 'failure' || steps.health.outcome == 'failure'
+        if: steps.dq.outcome == 'failure' || steps.state.outcome == 'failure' || steps.health.outcome == 'failure'
         run: |
-          echo "::error::Datenqualitaet: ${{ steps.dq.outcome }} · Systemzustand: ${{ steps.health.outcome }} - Details in der Zusammenfassung."
+          echo "::error::Datenqualitaet: ${{ steps.dq.outcome }} · Querverträge: ${{ steps.state.outcome }} · Systemzustand: ${{ steps.health.outcome }} - Details in der Zusammenfassung."
           exit 1

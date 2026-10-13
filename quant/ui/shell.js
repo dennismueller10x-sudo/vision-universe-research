@@ -61,6 +61,16 @@
 
   // ----------------------------------------------------------------- Laden
   /**
+   * Eine Datei fehlt (404): Ist inzwischen ein neuer Release ausgeliefert, kennt dieser Tab (alter Code) dessen Dateien nicht
+   * mehr - der Waechter (release-guard.js) laedt die Seite dann neu, statt "nicht verfuegbar" zu zeigen. Sonst, und ohne
+   * Waechter, gilt der Fehler wie bisher.
+   */
+  function missing(path, err) {
+    var guard = global.VUReleaseGuard;
+    if (!guard || !err || err.status !== 404) throw err;
+    return guard.onMissing(path).then(function () { throw err; });
+  }
+  /**
    * Laedt eine JSON-Datei und merkt sich das ERGEBNIS — niemals einen
    * Fehlschlag. Wuerde die abgelehnte Promise im Cache bleiben, waere eine
    * einzige verlorene Anfrage endgueltig: jeder weitere Aufruf bekaeme
@@ -99,7 +109,7 @@
 
     var pending = attempt(attempts, 400).catch(function (err) {
       delete cache[path];        // Fehlschlag nicht konservieren
-      throw err;
+      return missing(path, err);
     });
     cache[path] = pending;
     return pending;
@@ -118,7 +128,7 @@
     }).then(function (buffer) {
       if (typeof DecompressionStream !== "function") throw new Error("GZIP_DECOMPRESSION_UNSUPPORTED");
       return new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
-    }).then(JSON.parse).catch(function (err) { delete cache[path]; throw err; });
+    }).then(JSON.parse).catch(function (err) { delete cache[path]; return missing(path, err); });
     cache[path] = pending;
     return pending;
   }
