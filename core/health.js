@@ -57,6 +57,15 @@
     }
     return null;
   }
+  /** Juengster lesbarer Zeitstempel unter allen Pfaden (fuer Artefakte, die Nachbearbeiter mit eigenem Zeitstempel veraendern). */
+  function latest(obj, paths) {
+    var best = null;
+    for (var i = 0; i < (paths || []).length; i++) {
+      var v = at(obj, paths[i]), t = parseTime(v);
+      if (t !== null && (best === null || t > best.t)) best = { t: t, v: v };
+    }
+    return best ? best.v : null;
+  }
   /** Zahl der Datensaetze: Zahl, Arraylaenge oder Schluesselzahl. */
   function count(v) {
     if (typeof v === "number" && isFinite(v)) return v;
@@ -123,7 +132,7 @@
       out.status = "DISABLED"; out.reason = "DISABLED_BY_ARTIFACT";
       return out;
     }
-    var ts = first(data, domain.timestamp);
+    var ts = domain.timestampMode === "latest" ? latest(data, domain.timestamp) : first(data, domain.timestamp);
     var tsMs = parseTime(ts);
     out.lastUpdate = tsMs ? new Date(tsMs).toISOString() : null;
     out.asOf = isoDate(first(data, domain.asOf)) || (tsMs ? null : null);

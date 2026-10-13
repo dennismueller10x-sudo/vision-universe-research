@@ -20,6 +20,19 @@ const dom = (over) => Object.assign({ id: "x", label: "X", artifact: "/x.json", 
   freshness: { kind: "hours", warnAfter: 24, staleAfter: 72 } }, over);
 const run = (d, data, iso = SAT) => Health.evaluate({ domains: [d] }, { [d.artifact]: data === undefined ? { ok: false, error: "fehlt" } : { ok: true, data } }, ctx(iso)).domains[0];
 
+test("Zeitstempel latest · Nachbearbeiter mit eigenem Zeitstempel zaehlen, die Grenzen bleiben", () => {
+  const d = dom({ timestamp: ["generatedAt", "applied.at"], timestampMode: "latest", records: null });
+  // Erzeugerlauf 10 Tage alt, Nachbearbeitung 6 h alt: gemessen wird die Nachbearbeitung.
+  const neu = run(d, { generatedAt: "2026-09-23T12:00:00Z", applied: { at: "2026-10-03T06:00:00Z" } });
+  assert.equal(neu.ageHours, 6); assert.equal(neu.status, "OK");
+  // Ohne Nachbearbeitung bleibt es beim Erzeugerstempel, der Grenzwert greift unveraendert.
+  const alt = run(d, { generatedAt: "2026-09-23T12:00:00Z" });
+  assert.equal(alt.ageHours, 240); assert.equal(alt.status, "STALE");
+  // Ein aelterer Nachbearbeiter macht den Stand nicht juenger.
+  const aelter = run(d, { generatedAt: "2026-10-02T12:00:00Z", applied: { at: "2026-09-01T00:00:00Z" } });
+  assert.equal(aelter.ageHours, 24);
+});
+
 test("Register · jede Domaene ist vollstaendig beschrieben und eindeutig", () => {
   const ids = new Set();
   for (const d of registry.domains) {
