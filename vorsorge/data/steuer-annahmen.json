@@ -1,0 +1,13 @@
+{
+ "schemaVersion": "vu-tax-assumptions-1.0.0",
+ "assumptionId": "DE-GRENZSTEUERSATZ-NAEHERUNG",
+ "version": "2026.1",
+ "kind": "ANNAHME",
+ "note": "Näherung, kein Steuerbescheid. Grenzsteuersätze je Bruttojahreseinkommen-Spanne, abgeleitet aus dem Einkommensteuertarif (§ 32a EStG) bei etwa 15 % pauschalem Abzug für Werbungskosten und Sonderausgaben. Der tatsächliche Satz hängt von Steuerklasse, Kirchensteuer, Soli und weiteren Abzügen ab. Die Günstigerprüfung des Finanzamts ist nicht modelliert. Keine Steuerberatung.",
+ "bands": [
+  { "id": "bis25", "label": "Bis zu 25.000 €", "from": 0, "to": 25000, "marginalRate": 0.25 },
+  { "id": "25-50", "label": "25.000 € – 50.000 €", "from": 25000, "to": 50000, "marginalRate": 0.30 },
+  { "id": "50-75", "label": "50.000 € – 75.000 €", "from": 50000, "to": 75000, "marginalRate": 0.37 },
+  { "id": "ueber75", "label": "Über 75.000 €", "from": 75000, "to": null, "marginalRate": 0.42 }
+ ]
+}

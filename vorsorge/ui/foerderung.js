@@ -23,7 +23,7 @@
   /* ============================================================ FOERDERUNG */
   VS.views.foerderung = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Förderung</p><h1>Was legt der Staat dazu?</h1><p class="vs-lead">Zulagen für das geförderte Altersvorsorgedepot ab 2027 – gerechnet aus einem versionierten Regelwerk mit Quelle. Altersvorsorge-Angebote der Anbieter vergleichst du im Anbieter-Vergleich.</p>' +
-      '<div class="vs-tabs"><a class="vs-pill primary" href="#/foerderung">Förderrechner</a><a class="vs-pill" href="#/fruehstart">Frühstart / Kinder</a><a class="vs-pill" href="#/riester">Riester-Analyse</a><a class="vs-pill" href="#/anbieter">Anbieter-Vergleich</a></div></section>' +
+      '<div class="vs-tabs"><a class="vs-pill lime" href="#/rechner">Geführter Rechner</a><a class="vs-pill primary" href="#/foerderung">Förderrechner</a><a class="vs-pill" href="#/fruehstart">Frühstart / Kinder</a><a class="vs-pill" href="#/riester">Riester-Analyse</a><a class="vs-pill" href="#/anbieter">Anbieter-Vergleich</a></div></section>' +
       '<section class="vs-section" id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
     VS.rules().then(function (rules) {
       var today = new Date().toISOString().slice(0, 10);
