@@ -64,6 +64,15 @@ Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/
   `product/technical-signals-v1/by-ticker/` (ersetzt dort die Zwei-Zeichen-Scherben), `product/universe-list-shards/`, `product/universe-names-v1.json.gz`
   und `market/golden-preview/daily/<id>.chart.json`. Sie tragen die Quellobjekte unverändert; fehlt eine Ansicht (lokal, älterer Stand), liest die Seite die
   volle Datei. Beleg: `quant/tests/stock-page-shards.test.mjs`, `quant/tests/stock-page-payload.test.mjs`. Ein Erzeuger wird dafür nicht angefasst.
+- **Offene Tabs über ein Deployment hinweg.** Ein Tab behält den Code, mit dem er geöffnet wurde; GitHub Pages cached 10 Minuten (`max-age=600`). Entfernt oder
+  tauscht ein Release danach Dateien (Release-Ausschnitte, nachgeladene Skripte), zeigte der alte Code „nicht verfügbar“ oder lief mit gemischtem Code.
+  `scripts/vu2/release-id.mjs` (in `pages-release.yml` nach dem Verkleinern, vor der Passwortsperre) schreibt je Produkt (Quant, Discover) eine Code-Kennung
+  nach `<meta name="vu-release">` und `/release-id.json` und stempelt jedes verlinkte JS/CSS mit `?v=<Hash>`. `quant/ui/release-guard.js` vergleicht beide,
+  **bevor ein Tab Code nachlädt** (Quant `loadScript`, Discover `lazy.js`) und **nach einem 404** (`QuantShell.loadJSON`): ist ein neuer Code-Stand da, lädt er
+  einmal neu (Route, Merkliste in Adresse/localStorage, geänderte Formularfelder in sessionStorage gesichert); nie mitten in einer Eingabe, nie in einer Schleife,
+  ohne sessionStorage nur mit Hinweis. Reine Datenläufe ändern die Kennung nicht. **Folge für Autoren:** ein Release darf Dateipfade ändern oder entfernen, ohne
+  die alten parallel auszuliefern (die Scherben allein kosteten +230 MB im Pages-Artefakt, Limit 1 GB). Beleg: `quant/tests/release-guard.test.mjs`,
+  `quant/tests/release-id.test.mjs`, `scripts/vu2/deploy-switch-qa.mjs` (Browser, Chromium und WebKit, hinter der Sperre, mit Gegenprobe `--without-guard`).
 - **Vercel** hostet nur die Funktionen unter `api/` (`vercel.json`). Die Daten liest es zur Laufzeit von der Pages-Auslieferung oder aus R2.
 - **Cloudflare Workers** sind getrennte Deployments: `worker/` (vu-live, Realtime-WebSocket), `workers/vu-ask` (AI Atlas),
   `workers/vision-universe-social`, `worker-waker/`.
