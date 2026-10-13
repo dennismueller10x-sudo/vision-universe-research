@@ -1,0 +1,281 @@
+{
+  "schema": "supertrader-calibration-premeasurement-freeze-2.0.0",
+  "frozenAt": "2026-10-13T13:18:49.810244+00:00",
+  "registeredBeforePerformance": true,
+  "frozenBeforePerformance": true,
+  "strategyDefinitionsChanged": false,
+  "baselineFreeze": {
+    "path": "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json",
+    "sha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+  },
+  "baselineHead": "600b682298400ea8028b16f4fe923ffe1841845d",
+  "codeCommit": "2c60e62214a8df3711f34d1fa829a5436b7ad088",
+  "protocolHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "files": {
+    "scripts/supertrader/research/calibration/portfolio-calibration.mjs": "17b1be6a32366525e024d1a9afee9fead3882a7999d387993aa51f63f88797da",
+    "scripts/supertrader/research/calibration/reference-engines.mjs": "c6ffdafec698de14a8444670a8dfb0db712d7edd981ceb720a26327f5c54539f",
+    "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs": "aee19e6f4d8d135c40aeb64d0ab918fbe15739bf2270ecff7f38a2f1499e2abc",
+    "scripts/supertrader/research/calibration/run-calibration.mjs": "f0a4a79e15d7875a415d8e06c18ff21e9c90f4a762efb7727090bf8638cbe5fd",
+    "scripts/supertrader/research/calibration/run-post-calibration.mjs": "9fce0770fc5c17e5a1b021c9d17a8db1276f6f18d13c949e7703f9174ce7a512",
+    "scripts/supertrader/research/calibration/runner-certified.mjs": "88f16d09c26be08debc86fe84b1c11595ee2a751ef04e6f9bfdb84312ef40f9c",
+    "scripts/supertrader/tests/calibration-entry-open-guard.test.mjs": "925b250e985305037176f396bc8251c869fd31e6bd887487ce09d93b3ad405d0",
+    "scripts/supertrader/tests/calibration-orchestration-frame.test.mjs": "6dbaaa12a8cd12284b3f9dac91abf3651ff1bf225999343cbb7bb755fcbe4aad",
+    "scripts/supertrader/tests/calibration-portfolio.test.mjs": "c6146834f6d30ba8ac81cf1ddc2885be9ad0d48a8b0ac1cc3be6b61e22cb75e8",
+    "scripts/supertrader/tests/calibration-post-calibration-orchestration.test.mjs": "51f943fefd164301f4aa7d83e922211381a07eef3b6d170d50c6bb97a7de3a3d",
+    "scripts/supertrader/tests/calibration-reference-engines.test.mjs": "13e9f4ef6db8364f96965e77c8e3eb243b68cf635c9d74fd069271935c92c3cb",
+    "scripts/supertrader/tests/calibration-reference-return-arithmetic.test.mjs": "d5724623e860b9bd6cac9edf003ddcbdc8c9e34bf527a9ae209231a295bb0fc8",
+    "scripts/supertrader/research/calibration/protocol.json": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-METHODS.json": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "scripts/supertrader/research/calibration/CURRENT-CAPTURE-CONTRACT.json": "b702652f236f5c272facd151eef1ef6c8802fd1985e0d8dbc13969e52f4f8a66",
+    "scripts/supertrader/research/calibration/portfolio-calibration-v2.mjs": "15c4ffaff5b382c9b67930ecab7553fddd6df72725e3506ba16a2502168684c6",
+    "scripts/supertrader/research/calibration/run-calibration-v2.mjs": "5a79c1e3a61ebd9bd389653c3e3de81b81be77e5c732cb4ab37c0739613de828",
+    "scripts/supertrader/research/calibration/run-post-calibration-v2.mjs": "b8445bf2c7ca34167894950833d99b10ba2d889966feae43b2590a792a5dbe4e",
+    "scripts/supertrader/research/calibration/accounting-budget-v2.mjs": "248bacbb4d22e2955102aff83b1f9749623ee8270aa751b40476c145377ec655",
+    "scripts/supertrader/research/calibration/runner-certified-v2.mjs": "85ae9a2e3916f97b825e0ee8ace5e1d47e60b2ff48564f8d6b9c870b20476381",
+    "scripts/supertrader/tests/calibration-budget-v2.test.mjs": "b0db96a92c08b1ed33dc7d9a312a302debd3000710c9a35bcfd4d8da46e9da6a",
+    "scripts/supertrader/tests/calibration-infra-versioning-v2.test.mjs": "59a141fde596bdb72be44e9a2f11c808ad6437f21b444015670abdae0d61dab9",
+    "scripts/supertrader/research/calibration/ACCOUNTING-BUDGET-V2-BUG-NOTE.json": "84b5bc1d78b4e469698f49c98244db7b581b3d6678d2ef31a67ecdd3c1da7dc7"
+  },
+  "inputReceipts": [
+    {
+      "role": "CANONICAL_LOADER_MODULE",
+      "sha256": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+      "bytes": 7879
+    },
+    {
+      "role": "CANONICAL_LOADER_PRIVATE_WRAPPER",
+      "sha256": "2827c91e11aad0e3fc8c8d2ff1dcccf5b47ffed6f6ec53d25b0b0957d848fb4e",
+      "bytes": 4859
+    },
+    {
+      "role": "CANONICAL_MANIFEST_PLAINTEXT",
+      "sha256": "083f8fc53fc7799813c612cd729e509a9ea23414bde7537c034407ee5a207f38",
+      "bytes": 939301
+    },
+    {
+      "role": "CANONICAL_SOURCE_PROVENANCE_INPUTS",
+      "sha256": "a0e2273c96b35444a8a080d02c13cbe3a20767f91c62533c51c1b77a212242a1",
+      "bytes": 92560315
+    },
+    {
+      "role": "CANONICAL_REPACK_MANIFEST",
+      "sha256": "511a62158c66e3da7f54296affe8a5d8aa111131c9200faaf4af82153ec1db01",
+      "bytes": 292993
+    },
+    {
+      "role": "CANONICAL_SOURCE_OVERLAY_PROOF",
+      "sha256": "4480a531fac32a0fe539145f03480c07c373da69e3e48ce910ce1efaf07549b0",
+      "bytes": 800
+    },
+    {
+      "role": "CURRENT_SOURCE_RECEIPTS_MODULE",
+      "sha256": "8af5cf22f77e929282ed11664a623defeaf84bd083d8ccac0446cbefe2e93501",
+      "bytes": 4562
+    },
+    {
+      "role": "BASELINE_589_CONSOLIDATED_PRIVATE_PAYLOAD",
+      "sha256": "b7277a8728b26e276c890c389b700b56f1785adb5d2b7578ca5b86c39dbf491d",
+      "sourceDataFingerprint": "b2327e62fb563ecea1fe99b65472628d0bb6ffc73b3aed1440a900ad548afa49"
+    },
+    {
+      "role": "BASELINE_589_PRIVATE_INPUT_MANIFEST",
+      "sha256": "f9165dbd405c533c45a7b4d18f55d0e4972b4fe39a38359b6a06678a3c230f57",
+      "sourceDataFingerprint": "b2327e62fb563ecea1fe99b65472628d0bb6ffc73b3aed1440a900ad548afa49"
+    }
+  ],
+  "referenceArithmetic": {
+    "codeSha256": "aee19e6f4d8d135c40aeb64d0ab918fbe15739bf2270ecff7f38a2f1499e2abc",
+    "sourcePlanSha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0",
+    "inputReceipts": [
+      {
+        "id": "FRENCH_MOM10",
+        "sha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f"
+      },
+      {
+        "id": "FRENCH_VAR",
+        "sha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943"
+      },
+      {
+        "id": "FRENCH_DAILY_RF",
+        "sha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247"
+      }
+    ],
+    "window": {
+      "from": "2018-01",
+      "to": "2026-08"
+    },
+    "noPostResultTuning": true,
+    "reusedParsedFromFreezeSha256": "4aff8935e7564de492570a95f45ddf9a4f0c74f43ca83af16198deca12a4cea9",
+    "reusedParsedArtifactSha256": "30eb3d7ed43825554a24b661470282c933d7885dee6fadf2552c893fcee7a0f3"
+  },
+  "sourceContractReceipts": [
+    {
+      "role": "reference-price-source-plan.json",
+      "sha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0"
+    },
+    {
+      "role": "reference-fundamental-source-plan.json",
+      "sha256": "68d8ea82e41a315e0c214edf05c7ee9de7e36d040a75271aa06c29b3516d2be0"
+    },
+    {
+      "role": "premeasurement-adversarial-plan.json",
+      "sha256": "3af3ae4515f14f2cf1657940f112f989e912ed7235f9b0a39c975851499f10d9"
+    },
+    {
+      "role": "baseline-portfolio-construction-audit.json",
+      "sha256": "e6e1008a196ea09faa4f997d7055487ca9be33d3c4ef963c1fec19691dc0fc00"
+    },
+    {
+      "role": "canonical-entry-open-source-census.json",
+      "sha256": "03ee05eee86125540d3532423afb80dbe853d7fac61e96fda20439e35328d122"
+    },
+    {
+      "role": "old632-entry-open-impact-census.json",
+      "sha256": "cd34ccc137d182e177d66b1f67aa80afc68e901e0545240f196fdf3b27742970"
+    },
+    {
+      "role": "source-spec-independent-review.json",
+      "sha256": "0f4ad9a0ff8849cae956273ca4d9b3909aafc3cc54d67db132621b8b9127f53a"
+    },
+    {
+      "role": "entry-open-guard-independent-review.json",
+      "sha256": "f2e43b06c1fc8d8f6e459f03822a7135d8df9adc337a7bf57d75f02bbede2439"
+    },
+    {
+      "role": "reference-construction-independent-review-amendment.json",
+      "sha256": "45c62a58531ec090fa7d4c63d13b39701e52df7325ef6869c1b81c581b6e084d"
+    },
+    {
+      "role": "premeasurement-independent-review.json",
+      "sha256": "69b0453157a2e73d35afbfa9154e0a16e6325208302b5937718f89f538323b4f"
+    },
+    {
+      "role": "reference-return-arithmetic-independent-review.json",
+      "sha256": "399ce5eba8c70a32901d3783b4fd55cc7264747d0452310311d12ca45243bed0"
+    },
+    {
+      "role": "streaming-current-source-independent-review.json",
+      "sha256": "08c6e79399d679f7db831d7436e569107c23419188f81b30d5a1ae76baf5fb96"
+    }
+  ],
+  "sourceValidationCodeReceipts": [
+    {
+      "role": "current-artifact-review-streaming.mjs",
+      "sha256": "05d77f705955f69b6f864e4f4f8fb2b4bfbec5ba8ebd518631d83779d4290251"
+    },
+    {
+      "role": "current-frozen-scanner-replay.mjs",
+      "sha256": "5ed7796a125ea208d73a97f51d8404f692f89a03e1260ea4daf00c0c490fc77f"
+    },
+    {
+      "role": "current-artifact-review-streaming.test.mjs",
+      "sha256": "9bf7e76a6ce7114445b25351cb8a4e5b4d1c3c8b9371006bf0019c010d5538e7"
+    }
+  ],
+  "calibrationComparisonScope": "ORIGINAL_PAPER_FORMULAS_TRANSFERRED_TO_OBSERVED_PANEL; MATCHED_ORIGINAL_STOCK_ORACLES_MISSING",
+  "measuredOriginalEffectVerdictMustBeNullWhenBlocked": true,
+  "allSixTournamentRulesAndCostsPreserved": true,
+  "finalTournamentLaunchRequiresSeparateReviewedCalibrationCompletionReceipt": true,
+  "postResultTuningAllowed": false,
+  "parentFreezeSourceReceipt": {
+    "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE.json",
+    "sha256": "4aff8935e7564de492570a95f45ddf9a4f0c74f43ca83af16198deca12a4cea9"
+  },
+  "infrastructureRepair": {
+    "classification": "PROVEN_BINARY64_BUDGET_PRECISION_ERROR",
+    "originalAccountingChanged": false,
+    "initialV1FilesChanged": false,
+    "strategyDefinitionChanges": false,
+    "parameterChanges": false,
+    "costChanges": false,
+    "windowChanges": false,
+    "sourceDataChanges": false,
+    "completedReferenceArithmeticRepeated": false,
+    "failedStockConstructionDisposition": "PRESERVED_SEPARATELY_NOT_MIXED_WITH_V2_RESULTS",
+    "cashGuard": "ORIGINAL_ABSOLUTE_COMPATIBILITY_FLOOR_PLUS_ANALYTIC_OPERATOR_ERROR_BOUND"
+  },
+  "v2IndependentReviewReceipts": [
+    {
+      "role": "premeasurement-adversarial-plan.json",
+      "sha256": "3af3ae4515f14f2cf1657940f112f989e912ed7235f9b0a39c975851499f10d9"
+    },
+    {
+      "role": "source-spec-independent-review.json",
+      "sha256": "0f4ad9a0ff8849cae956273ca4d9b3909aafc3cc54d67db132621b8b9127f53a"
+    },
+    {
+      "role": "accounting-budget-v2-independent-review.json",
+      "sha256": "56c6c79320c199fdef78b752b2b326db8d39f95001e2ca23f7d99cea94d6c5f4"
+    },
+    {
+      "role": "accounting-budget-v2-independent-review-metadata-amendment.json",
+      "sha256": "fb55fb3bec8e72294e93b6a24b1c1051b56a260fcfdc1cee8bb14bb2ad5e94b4"
+    },
+    {
+      "role": "calibration-infra-versioning-v2-independent-review.json",
+      "sha256": "dfdaeaab908fe741f564339bb7ec7baef340b09ddabb576542d6d1b7d097164b"
+    },
+    {
+      "role": "calibration-stock-verifier-independent-source-review.json",
+      "sha256": "a63998c1a37ea6087f56da90706fafc94a08a427846151b98ca73381951bdbc3"
+    },
+    {
+      "role": "post-calibration-numeric-verifier-independent-source-review.json",
+      "sha256": "b522790293eb4cc145fad5d7071991a63fbf054fdf8bf6f95d825b40449afb1a"
+    },
+    {
+      "role": "post-calibration-adversarial-verifier-independent-source-review.json",
+      "sha256": "ce6059f269ecf8c1167511e2acb13f8c639010a23d9b21903b093a4f801c0435"
+    },
+    {
+      "role": "post-calibration-adversarial-verifier-independent-metadata-amendment.json",
+      "sha256": "49684c41e64f7094503b7bd78b99480b203515cd89ec69ff643c657ef6afb7d9"
+    },
+    {
+      "role": "streaming-current-source-independent-review.json",
+      "sha256": "08c6e79399d679f7db831d7436e569107c23419188f81b30d5a1ae76baf5fb96"
+    },
+    {
+      "role": "owner-pack-driver-independent-review.json",
+      "sha256": "50d0a58c02e700f1914499b3a2744ba834735a0e0c1fc2cfcb5df986ea7ef7d0"
+    }
+  ],
+  "v2VerificationCodeReceipts": [
+    {
+      "role": "calibration-stock-independent.mjs",
+      "sha256": "3af034ef007f45f4e8b01884f3958ba43749e255b2190e521c0f6c486030a697"
+    },
+    {
+      "role": "calibration-stock-independent.test.mjs",
+      "sha256": "42b1d876f093c23b3fa3d4ba70f14f2e675119fe3c637ba287546826eb11945b"
+    },
+    {
+      "role": "review-post-calibration.mjs",
+      "sha256": "09be96de9cadac4e96ef038bd12e9c76af52b5b6489ebf771edc1b600189fa8a"
+    },
+    {
+      "role": "post-calibration-independent-math.mjs",
+      "sha256": "a1af3eb78caac887fb342e0aa361fefb1a5a966e487c695b2d37d4468691a7df"
+    },
+    {
+      "role": "independent-reference-math.mjs",
+      "sha256": "125e33f5b3e73a493419bdb14f91ef73996184ac809cd61822bde2a2c4493763"
+    },
+    {
+      "role": "post-calibration-adversarial-review.mjs",
+      "sha256": "e1c57e04df1eb63c5f86c21b8fc352a1f3f5244224da4258220b7e2f43650e69"
+    },
+    {
+      "role": "post-calibration-redteam-reader.mjs",
+      "sha256": "81bfd5a75310e475082633d580af24f7df89592f4637bf849f7b57af573fe7b1"
+    },
+    {
+      "role": "owner-pack-driver.mjs",
+      "sha256": "c2b76e8d98222b79955d673547da33fdc1bd01ec05432a178d8429c19d0d40bf"
+    },
+    {
+      "role": "retained-envelope.mjs",
+      "sha256": "a21b46f0b53a21c19aac784213312dcfbd6abdfce69ddbd57626cc2de4e6da01"
+    }
+  ]
+}
