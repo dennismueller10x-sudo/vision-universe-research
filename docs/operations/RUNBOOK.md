@@ -81,3 +81,10 @@ Die Seite zeigt seit 03.10. selbst an, wenn der Feed älter ist als sein Maximal
 `pages-release.yml` baut immer vom Kopf von `main` und hat eine eigene Concurrency-Gruppe (`pages-production`).
 Ein Deployment mitten in einem Datenlauf liefert den letzten vollständig gepushten Stand. Teilstände gibt es nicht, weil der Push den Commit atomar setzt.
 Nach dem Datenlauf löst `workflow_run` das nächste Deployment aus.
+
+## 8. `core` ist rot, aber der PR hat nichts damit zu tun
+
+1. Welcher Test? Schritt „Zustandstests (Querverträge über erzeugte Daten)“ im Job `core`: steht dort „Datenbefund, nicht dieser PR“, ist es kein Fehler des PR (Warnung, Check bleibt grün). Rot ist der Check nur, wenn der PR einen Eingang des Tests berührt (`core/tests/state/manifest.json`, `blockingWhenPrTouches`).
+2. Zustandstests (`core/tests/state/`) prüfen nicht Code, sondern ob die **erzeugten Daten zweier Produkte** zueinander passen (z. B. jedes Supertrader-Signal hat eine Discover-Seite, sonst toter Link). Sie bleiben verbindlich: auf `main`, im täglichen Zeitplan und per Dispatch von `core-ci.yml` (Job `live`) sind sie immer streng.
+3. Abhilfe steht in der Warnung: den Erzeuger der veralteten Seite laufen lassen. Beispiel 13.10.2026: der Nachtlauf entfernte QRVO aus dem Discover-Universum, `supertrader-signals.yml` lief wegen der Zeitplan-Verspätung (323–428 Minuten, 15 von 15 Läufen) erst Stunden später. Vor einem manuellen Start prüfen: Nachtlauf und Materialisierung fertig, der Lauf schreibt nur `supertrader/`, die Integritätstests im Lauf bleiben bindend.
+4. Neue Zustandstests: Datei in `core/tests/state/` ablegen **und** im Manifest führen (Erzeuger, Abhilfe, berührte Pfade). Eine nicht geführte Datei ist immer streng. Code-Tests bleiben in `core/tests/*.test.mjs` und blockieren jeden PR.
