@@ -1,0 +1,56 @@
+name: Europe449 authenticated integrity revalidation (private, one-use)
+on:
+  push:
+    branches: [audit/europe-live-revalidation-449-20261013]
+    paths: [scripts/marketstack/europe-live-run-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: europe-live-revalidation-449-20261013
+  cancel-in-progress: false
+jobs:
+  revalidate:
+    if: github.repository == 'dennismueller10x-sudo/vision-universe-research' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Connector, accounting and integrity regressions
+        run: node --test providers/marketstack/tests/audit.test.mjs providers/marketstack/tests/europe-credits.test.mjs providers/marketstack/tests/europe-integrity-*.test.mjs providers/marketstack/tests/europe-live-*.test.mjs scripts/marketstack/tests/europe-live-*.test.mjs
+      - name: Verify reviewed source, complete449 plan and one-use credit lease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/europe-live-actions-guard.mjs
+      - name: Authenticated bounded targeted windows
+        timeout-minutes: 150
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/europe-live-revalidation.mjs --plan=scripts/marketstack/europe-live-request-plan.json --out="${RUNNER_TEMP}/vu-europe-live-private"
+      - name: Encrypt private responses and failed-run accounting
+        if: always()
+        run: |
+          if [ -d "${RUNNER_TEMP}/vu-europe-live-private" ]; then
+            TASK_PLAN_SHA=$(node -e 'const fs=require("node:fs"),c=require("node:crypto");process.stdout.write(c.createHash("sha256").update(fs.readFileSync("scripts/marketstack/europe-live-request-plan.json")).digest("hex"))')
+            node scripts/marketstack/europe-live-private-archive.mjs seal --sourceRoot "${RUNNER_TEMP}/vu-europe-live-private" --out "${RUNNER_TEMP}/vu-europe-live-sealed" --publicKeyPath scripts/marketstack/europe-live-recipient-public.pem --sourceCommit "${GITHUB_SHA}" --runId "${GITHUB_RUN_ID}" --planSha256 "${TASK_PLAN_SHA}"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-live-private-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-europe-live-sealed/
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0
+      - name: Verify all tracked product and data files unchanged
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Remove runner plaintext
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/vu-europe-live-private"
