@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from prepare import Blocked
-from domain_auth import DOMAIN, Cloudflare, DomainBrevo, expected_records, plan, protected_snapshot, run
+from domain_auth import DOMAIN, APIError, Cloudflare, DomainBrevo, expected_records, plan, protected_snapshot, run
 
 
 def config():
@@ -82,6 +82,27 @@ class DNS(unittest.TestCase):
 
     def test_apply_without_explicit_authorization_blocks_before_network(self):
         with self.assertRaises(Blocked):run("apply",False)
+
+    def test_old_cloudflare_credentials_never_used_as_fallback(self):
+        with patch.dict(os.environ, {"CLOUDFLARE_API_TOKEN":"old-synthetic",
+                "CLOUDFLARE_API_KEY":"old-global", "CLOUDFLARE_EMAIL":"synthetic"}, clear=True), \
+                patch("domain_auth.DomainBrevo") as brevo, patch("domain_auth.free_account"), \
+                patch("domain_auth.Cloudflare") as cloudflare:
+            brevo.return_value.call.return_value=config()
+            result=run("audit")
+            self.assertTrue(result["blocked"])
+            cloudflare.assert_not_called()
+
+    def test_only_dedicated_dns_secret_is_selected(self):
+        with patch.dict(os.environ, {"BREVO_CLOUDFLARE_DNS_TOKEN":"dedicated-synthetic",
+                "CLOUDFLARE_API_TOKEN":"old-synthetic"}, clear=True), \
+                patch("domain_auth.DomainBrevo") as brevo, patch("domain_auth.free_account"), \
+                patch("domain_auth.Cloudflare") as cloudflare:
+            brevo.return_value.call.return_value=config()
+            cloudflare.return_value.call.side_effect=APIError(403,[10000])
+            result=run("audit")
+            self.assertTrue(result["blocked"])
+            cloudflare.assert_called_once_with("BREVO_CLOUDFLARE_DNS_TOKEN","dedicated-synthetic")
 
 
 if __name__=="__main__":unittest.main()

@@ -12,7 +12,7 @@ from prepare import Blocked
 
 DOMAIN = "visionuniverse.de"
 OPS_BRANCH = "feat/brevo-domain-authentication"
-TOKEN_NAMES = ("BREVO_CLOUDFLARE_DNS_TOKEN", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_TOKEN", "CF_API_TOKEN", "CLOUDFLARE_API")
+TOKEN_NAMES = ("BREVO_CLOUDFLARE_DNS_TOKEN",)
 
 
 class APIError(Blocked):
@@ -171,8 +171,6 @@ def run(operation, authorized=False):
             "verified":config.get("verified") is True,"authenticated":config.get("authenticated") is True,
             "dns_created":0,"dns_only_updates":0,"emails_sent":0,"cloudflare_candidates":[]}
     clients=[Cloudflare(n,os.environ[n]) for n in TOKEN_NAMES if os.environ.get(n)]
-    if os.environ.get("CLOUDFLARE_API_KEY") and os.environ.get("CLOUDFLARE_EMAIL"):
-        clients.append(Cloudflare("CLOUDFLARE_API_KEY",os.environ["CLOUDFLARE_API_KEY"],os.environ["CLOUDFLARE_EMAIL"]))
     for cf in clients:
         check={"secret":cf.name,"zone_read":False,"dns_read":False}
         report["cloudflare_candidates"].append(check)
