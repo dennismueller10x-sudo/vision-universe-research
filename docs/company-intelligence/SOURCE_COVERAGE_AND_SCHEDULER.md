@@ -273,14 +273,15 @@ known per-source request measurements; those two time scopes are not conflated.
 
 ## Cost and known capacity limits
 
-A prior full source runner measured 28 rounded runner minutes before Pages wait
-and live QA. Six runs/day × 30 days is 5,040 source-runner minutes/month at that
-historical duration; Pages and live QA are separate. This is not an end-to-end
-monthly invoice or a projection for changed generations. The repository uses
-standard Linux GitHub-hosted runners; runner minutes are still tracked even if
-the plan's incremental charge is zero. R2 storage/operation billing and shared
-free-tier use are not visible from this workspace. There is no paid data or
-AI-service dependency.
+A prior full production source runner measured 28 rounded runner minutes before
+Pages wait and live QA: six runs/day × 30 days is 5,040 runner minutes/month at
+that historical duration. The latest isolated R2 verification used 34m28s end
+to end, including browser setup, restore, refresh, full consumer verification,
+and artifacts. It is not comparable to source-runner time and is not a monthly
+production projection. The new production schedule and onboarding runtime still
+need measurement. Runner minutes are tracked even if the plan's incremental
+charge is zero. R2 storage/operation billing and shared free-tier use are not
+visible from this workspace. There is no paid data or AI-service dependency.
 
 At current measured source throughput, the seven-day low-change age target may
 still be unreachable if too many sources remain registered and due. The next
