@@ -50,6 +50,22 @@ test("Berichtswaehrung USD: KGV und Dividendenrendite wie bisher", () => {
   assert.equal(g.dividendenRendite, Math.round(2.5e9 / (245 * 3.9e8) * 1e4) / 1e4);
 });
 
+test("uneinheitliche Einheiten: jede Abweichung von USD haelt das KGV zurueck", () => {
+  /* SBS, VIPS, KB: EPS als "USD/shares" getaggt, Gewinn in BRL, CNY, KRW. */
+  const sbs = modell("BRL"); sbs.units.eps_diluted = "USD/shares";
+  const a = U.ausConsumerBundle(sbs, { preis: 25, preisStatus: "CALCULATED" });
+  assert.equal(a.kgvStatus, "NON_USD_REPORTING");
+  assert.equal(a.berichtswaehrung, "BRL");
+  /* VRNS: EPS als "AFN/shares" getaggt, Gewinn und Umsatz in USD. ELE: EPS in CAD. */
+  const vrns = modell("USD"); vrns.units.eps_diluted = "AFN/shares";
+  const b = U.ausConsumerBundle(vrns, { preis: 25, preisStatus: "CALCULATED" });
+  assert.equal(b.kgvStatus, "NON_USD_REPORTING");
+  assert.equal("berichtswaehrung" in b, false, "die Seite behauptet keine Berichtswaehrung AFN");
+  const zeile = E.ueberblick({ metrics: {}, geschaeftszahlen: b }).zeilen.filter((z) => z.id === "bewertung")[0];
+  assert.match(zeile.fehlt, /uneinheitlich/);
+  assert.equal(/AFN/.test(zeile.fehlt), false);
+});
+
 test("ohne Kurs bleibt der bisherige Grund", () => {
   assert.equal(U.ausConsumerBundle(modell("EUR"), { preisStatus: "WITHHELD_REDISTRIBUTION" }).kgvStatus, "WITHHELD_REDISTRIBUTION");
   assert.equal(U.ausConsumerBundle(modell("USD"), {}).kgvStatus, "SOURCE_MISSING");
@@ -57,7 +73,8 @@ test("ohne Kurs bleibt der bisherige Grund", () => {
 
 test("die Berichtswaehrung kommt aus dem Bundle, nicht aus einer Annahme", () => {
   assert.equal(U.berichtswaehrung(modell("BRL")), "BRL");
-  assert.equal(U.berichtswaehrung({ units: { eps_diluted: "USD/shares" } }), "USD");
+  assert.equal(U.berichtswaehrung({ units: { eps_diluted: "AFN/shares", net_income: "USD" } }), "USD");
+  assert.equal(U.berichtswaehrung({ units: { revenue: "EUR" } }), "EUR");
   assert.equal(U.berichtswaehrung({ units: {} }), null);
 });
 
@@ -80,8 +97,8 @@ test("ausgelieferte Discover-Daten: kein KGV aus einer Fremdwaehrung", () => {
     const d = JSON.parse(readFileSync(new URL(f, dir), "utf8")), g = d.geschaeftszahlen;
     if (!g || g.quelle !== "SEC_CONSUMER") continue;
     const units = (d.fundamentals && d.fundamentals.units) || {};
-    const cur = String(units.eps_diluted || units.net_income || units.revenue || "USD").split("/")[0];
-    if (cur !== "USD" && (g.kgvStatus === "CALCULATED" || g.dividendenRenditeStatus === "CALCULATED")) falsch.push(f + " " + cur);
+    const fremd = [units.eps_diluted, units.net_income, units.revenue].map((e) => e ? String(e).split("/")[0] : "USD").filter((w) => w !== "USD");
+    if (fremd.length && (g.kgvStatus === "CALCULATED" || g.dividendenRenditeStatus === "CALCULATED")) falsch.push(f + " " + fremd.join("/"));
   }
   assert.deepEqual(falsch.slice(0, 10), [], falsch.length + " Titel mit Verhaeltnis aus Fremdwaehrung");
 });

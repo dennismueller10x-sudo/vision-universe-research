@@ -178,12 +178,23 @@
    * @param {object} model  Fundamentals.fromBundle(bundle)
    * @param {object} [opt]  { preis, preisStatus }
    */
-  /* Die Waehrung, in der das Bundle Gewinn je Aktie, Gewinn und Umsatz
-     meldet ("USD/shares" -> "USD"). null, wenn das Bundle keine nennt. */
+  /* Waehrung einer Bundle-Einheit ("USD/shares" -> "USD"), sonst null. */
+  function waehrungVon(einheit) {
+    return einheit ? String(einheit).split("/")[0].toUpperCase() : null;
+  }
+  /* Die Waehrung, in der das Unternehmen Gewinn und Umsatz meldet. Nicht
+     die der EPS-Einheit: die ist bei manchen Filern falsch getaggt (VRNS
+     "AFN/shares" bei Gewinn und Umsatz in USD; SBS, VIPS, KB "USD/shares"
+     bei Gewinn in BRL, CNY, KRW). */
   function berichtswaehrung(model) {
     var u = (model && model.units) || {};
-    var roh = u.eps_diluted || u.net_income || u.revenue || null;
-    return roh ? String(roh).split("/")[0].toUpperCase() : null;
+    return waehrungVon(u.net_income) || waehrungVon(u.revenue);
+  }
+  /* Ein Verhaeltnis zum Dollarkurs nur, wenn Gewinn je Aktie, Gewinn und
+     Umsatz alle in USD stehen - jede Abweichung haelt es zurueck. */
+  function nurDollar(model) {
+    var u = (model && model.units) || {};
+    return [u.eps_diluted, u.net_income, u.revenue].every(function (e) { var w = waehrungVon(e); return w === null || w === "USD"; });
   }
 
   function ausConsumerBundle(model, opt) {
@@ -242,7 +253,7 @@
        nicht umrechnen - ADR-Verhaeltnis und Wechselkurs der Periode liegen
        hier nicht vor. */
     var waehrung = berichtswaehrung(model);
-    var fremd = !!waehrung && waehrung !== "USD";
+    var fremd = !nurDollar(model);
     var kgv = null, kgvStatus = STATUS.SOURCE_MISSING;
     if (!isNum(opt.preis)) {
       kgvStatus = opt.preisStatus === STATUS.WITHHELD_REDISTRIBUTION ? STATUS.WITHHELD_REDISTRIBUTION : STATUS.SOURCE_MISSING;
@@ -282,7 +293,7 @@
     };
     /* Nur wo sie den Grund traegt: Titel mit US-Berichten bleiben Byte fuer
        Byte, wie sie waren. */
-    if (fremd) ergebnis.berichtswaehrung = waehrung;
+    if (fremd && waehrung && waehrung !== "USD") ergebnis.berichtswaehrung = waehrung;
     return ergebnis;
   }
 
