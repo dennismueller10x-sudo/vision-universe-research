@@ -30,6 +30,86 @@ older than seven days, 188 never-proven rows, median last-success age 174.29h,
 p95 197.63h, and maximum 204.29h. These are historical measurements and must
 not be added to the 10 October counts.
 
+The current full-state read on 13 October is isolated run
+[38415303054](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38415303054),
+on code SHA `6432608e9c01f414197cfa9d8ef243e29275866d`. It restored the
+authoritative R2 state, passed consumer/fresh-restore validation, and produced
+isolated consumer generation `c4437d18333f8b578c457eae`; it did not publish to
+production. Source audit time was 14:45:17Z before and 14:57:39Z after the
+bounded refresh. The full workflow took 34m28s. The aggregate-health artifact
+was uploaded but its download endpoint returned 403, so per-run engine request
+and runtime counters were not recoverable from this run. The log's source-level
+last-request aggregates are not tagged to this run and are not treated as its
+request count.
+
+| Measure | Before | After |
+|---|---:|---:|
+| Registry rows | 5,387 | 5,387 |
+| Active source rows | 5,365 | 5,365 |
+| Active approved sources | 5,357 | 5,357 |
+| Proven pollable sources | 5,181 | 5,184 |
+| Due sources | 5,092 | 5,019 |
+| Overdue >4h / >8h / >24h / >72h | 5,071 / 5,063 / 4,972 / 4,700 | 5,002 / 4,994 / 4,903 / 4,647 |
+| More than 7 days overdue | 4,000 | 3,954 |
+| Never successful | 176 | 173 |
+| Maximum last-success age | 221.36h | 221.57h |
+| p50 / p95 / p99 last-success age | 190.81 / 214.51 / 219.74h | 190.93 / 214.65 / 219.94h |
+
+This is a modest backlog reduction, not a freshness SLO pass: 3,954 sources
+remained more than seven days overdue and maximum age increased slightly while
+the run elapsed. The refresh stayed in `BACKLOG_DRAIN`. The accepted public
+eligibility snapshot had 4,940 issuers: 1,967 had at least one proven pollable
+source and 2,973 had none. The private identity catalog held 6,078 issuer
+records; this is not a consumer payload or security count.
+
+After-refresh source classes were 4,722 stale, 218 healthy pollable feeds, 35
+healthy events, 27 healthy materials, 183 robots-fetch temporary failures, 151
+other temporary failures, 17 registered-not-pollable, 7 policy-blocked, 2
+removed, 1 unclassified HTTP 403, 1 parse failure, 1 ownership unclear, and 22
+inactive. Counts are source rows, not issuers. The 127 requests and zero 304s
+shown in the persisted source-level last-request fields summarize the 73 rows
+with latency measurements; because the artifact was inaccessible and those
+fields do not prove a run timestamp, they are not reported as this run's exact
+request/304 totals. The following scheduled run will emit explicit run-scoped
+request, response, outcome, runtime, and generation counters in its job log.
+
+The after-refresh backlogs, grouped by the documented evidence rules, were:
+
+| Market-cap evidence bucket | Active / due source rows |
+|---|---:|
+| Large | 737 / 696 |
+| Mid | 1,179 / 1,108 |
+| Small | 1,282 / 1,212 |
+| Micro | 622 / 567 |
+| Nano | 309 / 290 |
+| Missing price or ambiguous size, multi-listing, or non-common stock | 1,230 / 1,146 |
+
+The region buckets were US-business-country 549 / 498, other non-US 43 / 39,
+Europe 21 / 21, and US-listing-country fallback 4,746 / 4,461 active/due
+source rows. These are not issuer counts, live market caps, or country claims;
+the last bucket explicitly means SEC business country was unavailable and the
+US listing was used as a proxy.
+
+Provider-family examples after the refresh: GCS had 1,477 stale rows and 180
+robots-fetch failures; Q4 had 2,258 stale rows, 70 healthy pollable feeds, 34
+healthy event sources, and 25 healthy material sources; StockPR had 457 stale
+and 41 healthy pollable rows; WordPress had 333 stale and 75 healthy pollable
+rows. These row counts explain why a healthy adapter does not imply a fresh
+issuer universe.
+
+PayPal resolved to issuer identity but had zero approved sources and zero news;
+its official-root status in this private snapshot is `REJECTED`, in conflict
+with the earlier source review that accepted `investor.pypl.com` as owner
+verified. The aggregate audit does not expose the rejection reason or endpoint,
+so the discrepancy remains unresolved; no safe pollable PayPal source was
+established. Intellia had ten accepted news
+records and two historically proven owned sources; the latest news was 2
+October and latest successful source check was 5 October. Those records remain
+useful historical content, but do not establish current pollability on this
+run. The source audit confirmed 4,940 eligible issuers, 2,973 without a proven
+pollable source, and the measured class counts above; it did not resolve the
+reason for each of the 183 robots-fetch failures beyond their recorded class.
+
 ## Source classes and source-safety boundary
 
 The poll queue accepts active sources only when issuer identity is resolved,

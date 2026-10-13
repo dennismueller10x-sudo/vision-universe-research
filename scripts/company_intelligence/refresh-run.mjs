@@ -116,13 +116,14 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
    const b=report.sourceRegistryBefore||{};
    console.log(JSON.stringify({sourceRegistryBefore:{asOf:b.asOf,sourceRegistryRows:b.sourceRegistryRows,activeSourceRows:b.activeSourceRows,
     activeApprovedSources:b.activeApprovedSources,provenPollableSources:b.provenPollableSources,dueSources:b.dueSources,
-    statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,scheduler:b.scheduler},sourceRegistryAudit:{asOf:a.asOf,sourceRegistryRows:a.sourceRegistryRows,activeSourceRows:a.activeSourceRows,
+    statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,bySourceType:b.bySourceType,byProviderFamily:b.byProviderFamily,
+    backlogBySourceType:b.backlogBySourceType,backlogByProviderFamily:b.backlogByProviderFamily,scheduler:b.scheduler},sourceRegistryAudit:{asOf:a.asOf,sourceRegistryRows:a.sourceRegistryRows,activeSourceRows:a.activeSourceRows,
     privateIssuers:a.privateIssuers,publicEligibleIssuers:a.publicEligibleIssuers,publicEligibleIssuersWithoutProvenPollableSource:a.publicEligibleIssuersWithoutProvenPollableSource,
     activeApprovedSources:a.activeApprovedSources,provenPollableSources:a.provenPollableSources,provisionalFirstFetchSources:a.provisionalFirstFetchSources,
     dueSources:a.dueSources,statusCounts:a.statusCounts,ownershipEvidenceStates:a.ownershipEvidenceStates,pollabilityStates:a.pollabilityStates,
     sourceAgeHours:a.sourceAgeHours,requestAndLatency:a.requestAndLatency,bySourceType:a.bySourceType,byProviderFamily:a.byProviderFamily,
     sourceRowsByMarketCapBucket:a.sourceRowsByMarketCapBucket,sourceRowsByIssuerRegion:a.sourceRowsByIssuerRegion,
-    mandatoryCases:a.mandatoryCases,scheduler:a.scheduler}}));
+    mandatoryCases:a.mandatoryCases,currentRefresh:a.currentRefresh,scheduler:a.scheduler}}));
   }
   stage='CONSUMER_CONTRACT';report.consumerContracts=await consumerContracts(consumer);
   if(universe){report.cohortStocks=report.consumerContracts.listings;report.cohortIssuers=report.consumerContracts.issuers;}
@@ -232,7 +233,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    console.log(JSON.stringify({status:'PASS',generation:d.generation}));
   }else{
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
-   console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode}));if(r.status!=='SUCCESS')process.exitCode=1;
+   console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,
+    restoredGeneration:r.restoredGeneration,newPrivateGeneration:r.newPrivateGeneration,freshRestoreVerified:r.freshRestoreVerified,
+    runtimeSeconds:r.durationSeconds,sourcesChecked:r.sourcesChecked,publicRequests:r.publicRequests,secRequests:r.secRequests,
+    httpStats:r.httpStats,sourceOutcomes:r.sourceOutcomes,scheduler:r.scheduler}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
  }catch{console.error('CONTINUOUS_REFRESH_FAILED');process.exitCode=1;}
 }

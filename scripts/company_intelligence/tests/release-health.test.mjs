@@ -34,8 +34,12 @@ test('bounded daily onboarding shares the production writer lock and uses a boun
 });
 test('isolated full-universe verification emits before/after source audit without production writes',()=>{
  const workflow=readFileSync(resolve('.github/workflows/company-intelligence-refresh.yml'),'utf8');
+ const runner=readFileSync(resolve('scripts/company_intelligence/refresh-run.mjs'),'utf8');
  assert.match(workflow,/UNIVERSE" = true.*VERIFICATION" = true.*--universe --source-audit/);
  assert.match(workflow,/VERIFICATION: \$\{\{ inputs\.verification \}\}/);
+ assert.match(runner,/currentRefresh:a\.currentRefresh/);
+ assert.match(runner,/restoredGeneration:r\.restoredGeneration,newPrivateGeneration:r\.newPrivateGeneration,freshRestoreVerified:r\.freshRestoreVerified/);
+ assert.match(runner,/runtimeSeconds:r\.durationSeconds,sourcesChecked:r\.sourcesChecked,publicRequests:r\.publicRequests,secRequests:r\.secRequests/);
 });
 test('metadata reconciliation preserves previous GOOD and all consumer bytes, and compensates failed readback',async()=>{
  const expected={schema:1,generation:'accepted',payloadNamespace:'eligible-a',manifest:{scope:'PER_ISSUER_ELIGIBILITY',assets:{'index.json':{sha256:'verified'}}},inventory:{company:{tickers:['TEST']}},health:{lastSuccessfulRefresh:'old'},previous:{generation:'previous',payloadNamespace:'eligible-b'}};
