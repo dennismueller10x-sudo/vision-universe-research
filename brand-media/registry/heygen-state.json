@@ -14,7 +14,8 @@
       "afterOffSamples": 14.67,
       "afterPlateTest": 14.42,
       "afterTheRoomProduction": 13.92,
-      "afterTheFuture": 12.67
+      "afterTheFuture": 12.67,
+      "afterTheArrival": 10.67
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -393,5 +394,89 @@
       "usd": 0.04
     },
     "final": "brand-media/video/trailer/the_future_clean/final/vision_universe_the_future_20s_1080x1920.mp4"
+  },
+  "theArrival": {
+    "status": "REVIEW",
+    "producedAt": "2026-10-13",
+    "budgetUsd": 4.0,
+    "walletBefore": 12.67,
+    "walletAfter": 10.67,
+    "chargedUsd": 2.0,
+    "model": "heygen-video-1",
+    "mode": "text_to_video",
+    "clips": [
+      {
+        "id": "a1",
+        "seed": 7101,
+        "res": "768p",
+        "sec": 15,
+        "usd": 0.24,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "a2",
+        "seed": 7102,
+        "res": "768p",
+        "sec": 15,
+        "usd": 0.23,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "a3",
+        "seed": 7103,
+        "res": "768p",
+        "sec": 15,
+        "usd": 0.23,
+        "verdict": "preview only"
+      },
+      {
+        "id": "a3_1080",
+        "seed": 7103,
+        "res": "1080p",
+        "sec": 15,
+        "usd": 0.68,
+        "verdict": "USED (0-3.2, 7.7-15.0 s)"
+      },
+      {
+        "id": "b1",
+        "seed": 7111,
+        "res": "768p",
+        "sec": 6,
+        "usd": 0.1,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "b2",
+        "seed": 7112,
+        "res": "768p",
+        "sec": 6,
+        "usd": 0.1,
+        "verdict": "NOT USED"
+      },
+      {
+        "id": "b3",
+        "seed": 7113,
+        "res": "768p",
+        "sec": 6,
+        "usd": 0.1,
+        "verdict": "preview only"
+      },
+      {
+        "id": "b3_1080",
+        "seed": 7113,
+        "res": "1080p",
+        "sec": 6,
+        "usd": 0.29,
+        "verdict": "USED (0.5-5.3 s)"
+      }
+    ],
+    "voice": {
+      "name": "Deep Dieter",
+      "voiceId": "118949676b0a46629d1ad52981c3ef84",
+      "speed": 1.08,
+      "note": "zwei Versuche (0,02 USD)"
+    },
+    "references": "keine (nur Text-to-Video, kein Startframe)",
+    "final": "brand-media/video/trailer/the_arrival_clean/final/vision_universe_the_arrival_20s_1920x1080.mp4"
   }
 }
