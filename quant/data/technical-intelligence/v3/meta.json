@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-12T12:53:35.058Z",
+ "generatedAt": "2026-10-13T13:41:03.537Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,16 +43,16 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 3328,
+ "runtimeSec": 2739,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4397,
+   "ABSTAIN": 4394,
    "DATA_INVALID": 445,
    "NO_PROJECTION": 106,
    "AVAILABLE": 41,
-   "WITHHELD": 51
+   "WITHHELD": 54
   },
   "consumerVisible": 41,
   "types": {
@@ -124,38 +124,38 @@
     }
    },
    "candidates": {
-    "securities": 3747,
-    "entries": 13294,
+    "securities": 3745,
+    "entries": 13288,
     "perSecurity": {
-     "1": 477,
+     "1": 476,
      "2": 710,
      "3": 685,
      "4": 688,
-     "5": 532,
+     "5": 531,
      "6": 655
     },
     "direction": {
-     "DOWN": 6827,
-     "UP": 6467
+     "DOWN": 6825,
+     "UP": 6463
     },
     "type": {
-     "WAVE_C": 9904,
-     "WAVE_3": 2980,
+     "WAVE_C": 9899,
+     "WAVE_3": 2979,
      "WAVE_5": 410
     },
     "failedSet": {
      "G3+G4": 1930,
      "G3+G4+G5": 581,
-     "G2+G3+G4": 3093,
-     "G2+G3+G4+G5": 1457,
+     "G2+G3+G4": 3092,
+     "G2+G3+G4+G5": 1456,
      "G2+G3": 1511,
      "G3": 777,
      "G3+G5": 480,
-     "G2+G4": 759,
+     "G2+G4": 757,
      "G2+G5": 199,
      "G4+G5": 258,
-     "G2+G4+G5": 512,
-     "G2+G3+G5": 913,
+     "G2+G4+G5": 511,
+     "G2+G3+G5": 912,
      "G4": 514,
      "G2": 197,
      "G5": 113
@@ -177,13 +177,13 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-09",
+   "reference": "2026-10-12",
    "titles": 5035,
    "states": {
     "FRESH": 4979,
-    "STALE": 48,
+    "STALE": 51,
     "NON_TRADING": 3,
-    "DELAYED": 5
+    "DELAYED": 2
    },
    "reasons": {
     "REFRESH_STOPPED": 26,
@@ -191,23 +191,23 @@
     "SECURITY_INACTIVE": 3
    },
    "reasonsKnown": 3,
-   "delayedWithNotice": 5,
+   "delayedWithNotice": 2,
    "affected": {
-    "titles": 51,
-    "primary": 45,
-    "alternative": 43,
+    "titles": 54,
+    "primary": 48,
+    "alternative": 45,
     "motiveAlternative": 0,
     "exploreHighlights": 6,
-    "exploreCandidates": 101,
+    "exploreCandidates": 107,
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
     "0-3": 4980,
-    "6-10": 14,
-    "21-40": 28,
-    "11-20": 5,
-    "4-5": 7,
-    ">40": 1
+    "6-10": 17,
+    "21-40": 29,
+    "11-20": 7,
+    ">40": 1,
+    "4-5": 1
    },
    "withheldTitles": [
     "AIXC",
@@ -220,8 +220,8 @@
     "CSAN",
     "CRNX",
     "DBRG",
-    "DBRG-P-I",
     "DBRG-P-H",
+    "DBRG-P-I",
     "DBRG-P-J",
     "DOMO",
     "FBRX",
@@ -229,13 +229,14 @@
     "FGNXP",
     "FSEA",
     "GBTG",
+    "GWH",
     "HLX",
     "IWML",
-    "IWFL",
     "JUPGF",
+    "IWFL",
     "LBRDK",
-    "LBRDA",
     "LBRDP",
+    "LBRDA",
     "LEG",
     "MAA-P-I",
     "MDV",
@@ -253,22 +254,24 @@
     "SNYR",
     "TALK",
     "TWO-P-A",
-    "TWO-P-C",
     "TWO",
     "TWO-P-B",
+    "TWO-P-C",
     "VRME",
     "WBS",
     "WBS-P-F",
+    "VTAK",
+    "WALD",
     "WBS-P-G",
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0101,
+    "share": 0.0107,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 58,
+  "lifecycleEvents": 3,
   "tracked": 6990
  }
 }
