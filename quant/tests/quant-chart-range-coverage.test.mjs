@@ -138,6 +138,23 @@ test("waehrend die lange Reihe laedt, steht nicht die kurze unter dem langen Eti
   c.dispose();
 });
 
+test("Wechsel des Zeitraums waehrend des Ladens zeichnet den zuletzt gewaehlten", async () => {
+  /* Unabhaengige Pruefung zu PR #649: 5J klicken, waehrend die lange Reihe
+     laedt 3J klicken - danach blieb "nicht verfuegbar" stehen. */
+  let gib, abrufe = 0;
+  const { c, gezeichnet } = await chart({ longPath: "/long.json", loadJSON: () => { abrufe++; return new Promise((r) => { gib = r; }); } });
+  c.draw("5Y");
+  c.draw("3Y");
+  assert.match(leer(c).textContent, /wird geladen/, "waehrend des Ladens kein Urteil ueber den Zeitraum");
+  gib({ points: WEEKLY });
+  await warte(); await warte();
+  assert.equal(abrufe, 1, "die lange Reihe wurde mehrfach geladen");
+  assert.equal(c.range(), "3Y");
+  assert.equal(leer(c), undefined, "nach dem Laden steht noch ein Leerzustand");
+  assert.ok(gezeichnet[gezeichnet.length - 1][0][0] <= "2023-10-20");
+  c.dispose();
+});
+
 test("scheitert das Laden, werden die langen Zeitraeume abgeschaltet", async () => {
   const { c, gezeichnet, start } = await chart({ longPath: "/long.json", loadJSON: () => Promise.reject(new Error("404")) });
   c.draw("10Y");

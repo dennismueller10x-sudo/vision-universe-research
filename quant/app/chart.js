@@ -149,7 +149,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { range: null, intraday: null, long: null, longLoading: false, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
+    var st = { range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
     /* Dieselbe Gliederung wie Discovers Chart (discover/ui/detail.js
        chartSection): Zeitraum-Leiste (dx-tf), Kopf mit Kurs, Veraenderung
@@ -335,16 +335,20 @@
       note.textContent = capt.join(" · ") + ".";
     }
 
+    /* Ein Ladevorgang, auf den jeder wartet: wer waehrend des Ladens einen
+       anderen langen Zeitraum waehlt, zeichnet, sobald die Reihe da ist. */
     function loadLong() {
-      if (st.long || st.longLoading || !o.longPath || !o.loadJSON) return Promise.resolve();
+      if (st.longPromise) return st.longPromise;
+      if (st.long || !o.longPath || !o.loadJSON) return Promise.resolve();
       st.longLoading = true;
-      return o.loadJSON(o.longPath).then(function (payload) {
+      st.longPromise = o.loadJSON(o.longPath).then(function (payload) {
         var weekly = (payload && payload.points) || [];
         var SSmp = global.VUQuant && global.VUQuant.SeriesSampling;
         st.long = SSmp && SSmp.mergeWeeklyWithDaily ? SSmp.mergeWeeklyWithDaily(weekly, eod) : eod;
         if (!st.long.length || st.long[0][0] >= eod[0][0]) st.long = null;
         st.longDone = true;
       }).catch(function () { st.longFailed = true; }).then(function () { st.longLoading = false; syncButtons(); });
+      return st.longPromise;
     }
 
     function draw(id) {
