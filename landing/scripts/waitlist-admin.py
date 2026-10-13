@@ -105,6 +105,13 @@ def run():
         report["confirmation_template_active"]=confirmation.get("isActive") is True
         report["confirmation_template_matches_repository"]=confirmation.get("htmlContent")==confirmation_html
     report["controlled_test_address_secret_set"] = bool(os.environ.get("BREVO_DOI_TEST_EMAIL"))
+    if report["doi_template_ids"]:
+        live_template=brevo("/smtp/templates/"+str(report["doi_template_ids"][0]))
+        source_html=Path(__file__).resolve().parents[1].joinpath("mail/app-doi.html").read_text()
+        live_html=live_template.get("htmlContent","")
+        report["doi_template_current_readback"]={"active":live_template.get("isActive") is True,
+            "bytes_match":live_html==source_html,"whitespace_normalized_match":''.join(live_html.split())==''.join(source_html.split()),
+            "confirmation_notice_copy_present":"Du erhältst ihn außerdem in einer kurzen Anmeldebestätigung" in live_html}
     account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
     if not re.fullmatch(r"[a-f0-9]{32}", account_id):
         match = re.fullmatch(r"https://([a-f0-9]{32})\.r2\.cloudflarestorage\.com/?", os.environ.get("VU_HISTORY_S3_ENDPOINT", ""))
