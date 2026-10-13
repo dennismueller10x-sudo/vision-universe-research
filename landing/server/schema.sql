@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS waitlist_requests (
   requested_at INTEGER NOT NULL,
   confirmed_at INTEGER,
   withdrawn_at INTEGER,
+  notice_state TEXT,
   consent_version TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS waitlist_limits (
