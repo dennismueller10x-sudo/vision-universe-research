@@ -49,8 +49,24 @@
    (core/registry/domains.json, europeDiscoverDisplay) - er ist nicht Teil
    dieser Rechnung.
 
+   NACH DEM NACHTLAUF (--nachtlauf)
+   Als letzte Stufe des Marktdaten-Refresh (market-data-refresh.yml, Job
+   `imblick`, erst nach refresh + materialize + freshness-contract) rechnet
+   derselbe Baustein auf der neuen Abendlauf-Basis neu, ohne den naechsten
+   Intraday-Slot abzuwarten. Dieselbe Frage wie bei jedem Ausloeser ("was ist
+   faellig, was ist veroeffentlicht?"), dazu strenger:
+     - Datenversion: Basis (basis-<U>.json) und discover/data/meta.json nennen
+       dasselbe Handelsdatum
+     - Handelsdatum: es ist die letzte abgeschlossene Sitzung des Kalenders
+     - das Ergebnis muss schluessig sein; sonst wird NICHTS ersetzt (die letzte
+       gueltige Auswahl bleibt), der Monitor haelt den Fehler fest und der
+       Lauf endet mit Exit 1 - der Job meldet es an den Pipeline-Alarm
+     - die Basis geht nie rueckwaerts (BASIS_OLDER / OLDER_BASIS)
+   Keine Anbieteranfrage, keine neuen Daten: gelesen wird nur, was der Nachtlauf
+   schon geprueft und committet hat.
+
    Aufruf: node scripts/discover/build-im-blick-live.mjs [--now <ISO>]
-             [--data-root <dir>] [--out <datei>]
+             [--data-root <dir>] [--out <datei>] [--nachtlauf]
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, appendFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -76,6 +92,7 @@ const NOW = arg("now", null) ? new Date(arg("now")) : new Date();
 if (Number.isNaN(NOW.getTime())) { console.error("Ungueltiges --now: " + arg("now") + " (erwartet ISO 8601, z. B. 2026-10-14T15:35:00Z)"); process.exit(2); }
 const MON = arg("monitor-out", join(dirname(OUT), "monitor-" + U + ".json"));
 const FORCE = argv.includes("--force");
+const NIGHT = argv.includes("--nachtlauf");     /* Stufe im Nachtlauf: strengere Pruefung, Fehler -> Exit 1 */
 /* Wer hat diesen Lauf angestossen? Nur zur Beobachtung, nie zur Entscheidung. */
 const TRIGGER = { event: arg("event", process.env.GITHUB_EVENT_NAME || "local"), source: arg("source", "unbekannt"), runId: process.env.GITHUB_RUN_ID || null };
 const WALL0 = Date.now();                       /* Start/Ende aus derselben Zeitbasis wie NOW (auch bei --now) */
@@ -122,7 +139,27 @@ function zusammenfassung(zeilen) {
   if (process.env.GITHUB_STEP_SUMMARY) { try { appendFileSync(process.env.GITHUB_STEP_SUMMARY, text); } catch { /* ohne Summary */ } }
 }
 
+/* Nachtlauf: Datenversion und Handelsdatum eindeutig pruefen, bevor irgendetwas
+   veroeffentlicht wird. Gibt null (in Ordnung) oder den Grund zurueck. */
+function pruefeNacht() {
+  if (!basis) return "Keine EOD-Basis (" + basisDatei.replace(DATA + "/", "") + ").";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(basis.asOf))) return "Basis ohne gueltiges Handelsdatum (asOf=" + basis.asOf + ").";
+  if (!Array.isArray(basis.stocks) || !basis.stocks.length) return "Basis " + basis.asOf + " enthaelt keine Titel.";
+  const meta = lies(join(DATA, "discover", "data", "meta.json"));
+  const mu = meta && Array.isArray(meta.universes) ? meta.universes.find((x) => x.universeId === U) : null;
+  if (!mu || mu.asOf !== basis.asOf) return "Datenversion: Basis " + basis.asOf + " stimmt nicht mit discover/data/meta.json (" + (mu ? mu.asOf : "fehlt") + ") ueberein.";
+  const letzte = lage.lastCompletedSession ? lage.lastCompletedSession.sessionDate : null;
+  if (letzte !== basis.asOf) return "Handelsdatum: Basis " + basis.asOf + " ist nicht die letzte abgeschlossene Sitzung (" + letzte + ").";
+  return null;
+}
+
 if (decision.action === "SKIP") {
+  /* Nachtlauf: ein Fehlversuch, der noch in der Bremszeit liegt, ist kein Erfolg -
+     sonst schloesse ein gruener Lauf den Alarm, obwohl nichts repariert wurde. */
+  if (NIGHT && decision.reason === "RETRY_LATER") {
+    console.log("::error title=Im Blick RETRY_LATER::Der letzte Versuch fuer diesen Slot ist nicht schluessig gelaufen und liegt in der Bremszeit; nichts veroeffentlicht.");
+    process.exitCode = 1;
+  }
   /* Idempotent: nichts schreiben, nichts committen. */
   zusammenfassung(["### Discover Im Blick (Intraday) - nichts zu tun", "",
     "| Feld | Wert |", "|---|---|",
@@ -131,10 +168,10 @@ if (decision.action === "SKIP") {
     "| Faelliger Slot | " + (plan.due ? plan.due.id + " (" + plan.due.dueAt + ")" : "-") + " |",
     "| Veroeffentlicht | " + (published ? (published.status + " · Slot " + (published.slot ? published.slot.id : "-") + " · Stand " + (published.asOf || "-")) : "-") + " |",
     "| Marktstatus | " + plan.marketState + " |"]);
-  process.exit(0);
+  process.exit(process.exitCode || 0);
 }
 
-function berechne() {
+function berechne(nachtFehler) {
   const kopf = {
     schemaVersion: SCHEMA, universeId: U, engineVersion: ImBlick.ENGINE_VERSION,
     basis: "INTRADAY", generatedAt: NOW.toISOString(), marketState: lage.marketState,
@@ -150,6 +187,7 @@ function berechne() {
   };
   const session = lage.displaySession ? lage.displaySession.sessionDate : null;
   kopf.sessionDate = session;
+  if (nachtFehler) return Object.assign(kopf, { status: "NIGHT_CHECK_FAILED", reason: nachtFehler });
   if (!basis) return Object.assign(kopf, { status: "EOD_STALE", reason: "Keine EOD-Basis (" + basisDatei.replace(DATA + "/", "") + ")." });
   if (!session || session <= basis.asOf) {
     return Object.assign(kopf, { status: "EOD_CURRENT", reason: "Der Abendlauf deckt die juengste Sitzung ab (" + basis.asOf + ")." });
@@ -230,15 +268,18 @@ function berechne() {
     stocks: karten });
 }
 
-const ergebnis = berechne();
-const regel = RefreshPlan.mayReplace(published, ergebnis);
-let veroeffentlicht = published;
-if (regel.ok) { schreibeAtomar(OUT, ergebnis); veroeffentlicht = ergebnis; }
-
+const ergebnis = berechne(NIGHT ? pruefeNacht() : null);
 /* Fehlerbild: nur ein NICHT schluessiges Ergebnis ist ein Fehler. Dass eine
    aeltere Rechnung ausser Kraft bleibt, ist kein Fehler, sondern der Schutz. */
 const schluessig = !!RefreshPlan.CONCLUSIVE[ergebnis.status];
-const fehler = schluessig ? null : { code: ergebnis.status, message: ergebnis.reason };
+let regel = RefreshPlan.mayReplace(published, ergebnis);
+/* Nachtlauf: ein nicht schluessiges Ergebnis ersetzt nie etwas - auch nicht die
+   Auswahl einer frueheren Sitzung (mayReplace erlaubt das beim Sitzungswechsel). */
+if (NIGHT && !schluessig) regel = { ok: false, reason: "NIGHT_NOT_CONCLUSIVE" };
+let veroeffentlicht = published;
+if (regel.ok) { schreibeAtomar(OUT, ergebnis); veroeffentlicht = ergebnis; }
+const fehler = schluessig ? null : { code: ergebnis.status, message: ergebnis.reason +
+  (NIGHT && lage.marketState === "OPEN" ? " [Nachtlauf in laufender Sitzung: die Kursdaten pruefen, nicht den Nachtlauf]" : "") };
 
 /* Monitor: Plan, dieser Lauf, letzter Erfolg, was gerade veroeffentlicht ist. */
 const vorher = lies(MON) || {};
@@ -272,7 +313,7 @@ if (!unveraendert) schreibeAtomar(MON, monitor);
 
 const kurz = ergebnis.status + (ergebnis.stocks.length ? " · " + ergebnis.stocks.map((c) => c.symbol).join(", ") : "") + (ergebnis.reason ? " · " + ergebnis.reason : "");
 console.log(`Im Blick live (${U}): ${kurz}`);
-if (fehler) console.log(`::warning title=Im Blick ${fehler.code}::${fehler.message}`);
+if (fehler) console.log(`::${NIGHT ? "error" : "warning"} title=Im Blick ${fehler.code}::${fehler.message}`);
 zusammenfassung(["### Discover Im Blick (Intraday)", "",
   "| Feld | Wert |", "|---|---|",
   "| Entscheidung | " + decision.reason + " |",
@@ -285,3 +326,6 @@ zusammenfassung(["### Discover Im Blick (Intraday)", "",
   "| Abdeckung | " + JSON.stringify(ergebnis.coverage) + " |",
   "| Fehler | " + (fehler ? fehler.code + ": " + fehler.message : "-") + " |",
   "| Monitor | " + (unveraendert ? "unveraendert (nicht neu geschrieben)" : "geschrieben") + " |"]);
+/* Nachtlauf-Stufe: ein Fehler macht den Schritt rot (der Job ist continue-on-error
+   und meldet an den Pipeline-Alarm); die letzte gueltige Auswahl bleibt unberuehrt. */
+if (NIGHT && fehler) process.exitCode = 1;
