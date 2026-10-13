@@ -1,0 +1,131 @@
+name: Europe449 native alias follow-up (private, one-use)
+on:
+  push:
+    branches: [audit/europe-live-revalidation-449-20261013]
+    paths: [scripts/marketstack/europe-native-run-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: europe-native-449-20261013
+  cancel-in-progress: false
+jobs:
+  native:
+    if: github.repository == 'dennismueller10x-sudo/vision-universe-research' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Native identity, cumulative budget and guard regressions
+        run: node --test providers/marketstack/tests/europe-native-*.test.mjs providers/marketstack/tests/europe-live-private-archive.test.mjs
+      - name: Verify reviewed source and previous authenticated credit anchor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/marketstack/europe-native-actions-guard.mjs
+      - name: Native lookup hypotheses, exact-identity-gated targeted history
+        timeout-minutes: 60
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/europe-native-alias-revalidation.mjs --plan=scripts/marketstack/europe-live-request-plan.json --anchor=scripts/marketstack/europe-native-prior-anchor.json --out="${RUNNER_TEMP}/vu-europe-native-private"
+      - name: Encrypt private native evidence and credit accounting
+        if: always()
+        run: |
+          if [ -d "${RUNNER_TEMP}/vu-europe-native-private" ]; then
+            node scripts/marketstack/europe-live-private-archive.mjs seal --sourceRoot "${RUNNER_TEMP}/vu-europe-native-private" --out "${RUNNER_TEMP}/vu-europe-native-sealed" --publicKeyPath scripts/marketstack/europe-live-recipient-public.pem --sourceCommit "${GITHUB_SHA}" --runId "${GITHUB_RUN_ID}" --planSha256 73b227e9a897c91a086f4983f6dd4d799c627d01acf8b1e3529473a53e97d522
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-envelope
+          path: ${{ runner.temp }}/vu-europe-native-sealed/envelope.json
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-000
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-000.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-001
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-001.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-002
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-002.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-003
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-003.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-004
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-004.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-005
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-005.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-006
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-006.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-007
+          path: ${{ runner.temp }}/vu-europe-native-sealed/cipher-007.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - name: Preserve complete encrypted archive, including any overflow pieces
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: europe449-native-private-${{ github.run_id }}-complete
+          path: |
+            ${{ runner.temp }}/vu-europe-native-sealed/envelope.json
+            ${{ runner.temp }}/vu-europe-native-sealed/cipher-*.bin
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 7
+      - name: Verify tracked products and data unchanged
+        if: always()
+        run: git diff --exit-code HEAD --
+      - name: Remove runner plaintext
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/vu-europe-native-private"
+
