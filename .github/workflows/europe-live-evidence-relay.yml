@@ -1,0 +1,91 @@
+name: Europe449 existing encrypted evidence relay (no provider IO)
+on:
+  push:
+    branches: [audit/europe-live-revalidation-449-20261013]
+    paths: [scripts/marketstack/europe-live-relay-trigger.json]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: europe449-encrypted-evidence-relay-20261013
+  cancel-in-progress: false
+jobs:
+  relay:
+    if: github.repository == 'dennismueller10x-sudo/vision-universe-research' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Retrieve exact completed-run encrypted artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/dennismueller10x-sudo/vision-universe-research/actions/artifacts/11823355879/zip > "${RUNNER_TEMP}/old-evidence.zip" 2> "${RUNNER_TEMP}/download-error.txt" || { echo "Encrypted artifact download failed"; exit 1; }
+      - name: Verify original ZIP and every encrypted piece before forwarding
+        run: |
+          python - <<'PY'
+          import os, hashlib, json, zipfile, pathlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          archive = root / 'old-evidence.zip'
+          assert archive.stat().st_size == 72018899
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == 'd22db6263a9d91ca84e843e0a86d4f327aa6eedcd1ff73e250d288cc2d8b5802'
+          out = root / 'evidence-relay'
+          out.mkdir(mode=0o700)
+          names = {'envelope.json', 'cipher-000.bin', 'cipher-001.bin', 'cipher-002.bin', 'cipher-003.bin'}
+          with zipfile.ZipFile(archive) as z:
+              assert set(z.namelist()) == names and len(z.namelist()) == 5
+              for i in z.infolist():
+                  assert i.file_size <= 20 * 1024 * 1024
+                  assert not i.is_dir() and (i.external_attr >> 16) & 0o170000 != 0o120000
+              envelope = z.read('envelope.json')
+              assert hashlib.sha256(envelope).hexdigest() == '1a896fd92fffb06c5849d97e5800563b87b37f34301f276d22128c6a87abf625'
+              e = json.loads(envelope)
+              assert e['schema'] == 'vu-europe-live-encrypted-evidence-1'
+              assert e['sourceCommit'] == '6251f8a61d2f53886943466c415658c31ffb26c7'
+              assert e['runId'] == '38406637090'
+              assert e['planSha256'] == '73b227e9a897c91a086f4983f6dd4d799c627d01acf8b1e3529473a53e97d522'
+              assert e['algorithm'] == 'AES-256-GCM+RSA-OAEP-SHA256'
+              assert len(e['pieces']) == 4
+              for n, p in enumerate(e['pieces']):
+                  assert p['name'] == f'cipher-{n:03d}.bin'
+                  b = z.read(p['name'])
+                  assert len(b) == p['bytes'] and hashlib.sha256(b).hexdigest() == p['sha256']
+                  (out / p['name']).write_bytes(b)
+              (out / 'envelope.json').write_bytes(envelope)
+          print(json.dumps({'sourceRun':38406637090,'encryptedPieces':4,'cipherHashesVerified':True,'providerRequests':0,'decryption':False}))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: europe449-encrypted-relay-envelope
+          path: ${{ runner.temp }}/evidence-relay/envelope.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: europe449-encrypted-relay-000
+          path: ${{ runner.temp }}/evidence-relay/cipher-000.bin
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: europe449-encrypted-relay-001
+          path: ${{ runner.temp }}/evidence-relay/cipher-001.bin
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: europe449-encrypted-relay-002
+          path: ${{ runner.temp }}/evidence-relay/cipher-002.bin
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: europe449-encrypted-relay-003
+          path: ${{ runner.temp }}/evidence-relay/cipher-003.bin
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
