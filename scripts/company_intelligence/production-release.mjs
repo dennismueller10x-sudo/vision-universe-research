@@ -1,6 +1,7 @@
 /* Existing R2 consumer bridge, with exact approved manifest and fail-closed Pages staging. */
-import {readFileSync,writeFileSync,readdirSync,unlinkSync,existsSync} from 'node:fs';
-import {resolve} from 'node:path';
+import {readFileSync,writeFileSync,readdirSync,unlinkSync,existsSync,mkdtempSync,rmSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {approval,approve,approvedForPublication} from './production-approval.mjs';
 import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
@@ -23,10 +24,15 @@ export async function publishProduction(driver,directory){
 export async function setProductionGate(driver,state){
  if(!['AVAILABLE','DISABLED','STAGED'].includes(state))throw Error('INVALID_PRODUCTION_GATE');
  if(state==='AVAILABLE'){
-  const good=await goodState(driver,await activeNamespace(driver));
+  const namespace=await activeNamespace(driver),good=await goodState(driver,namespace);
   if(good){
    const view=goodView(driver,good.payloadNamespace,good);
-   for(const asset of Object.keys(good.manifest.assets))await readAsset(view,{namespace:good.payloadNamespace,asset});
+   // The existing pinned batch reader validates the manifest once and hash-reads
+   // every consumer asset with bounded I/O. Never open the gate on partial proof.
+   const output=mkdtempSync(join(tmpdir(),'ci-gate-readback-'));
+   try{await download(view,{namespace:good.payloadNamespace,output});}
+   finally{rmSync(output,{recursive:true,force:true});}
+   if(await activeNamespace(driver)!==namespace||JSON.stringify(await goodState(driver,namespace))!==JSON.stringify(good))throw Error('PRODUCTION_GOOD_CHANGED_DURING_GATE_READBACK');
   }else{
    const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
    if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');

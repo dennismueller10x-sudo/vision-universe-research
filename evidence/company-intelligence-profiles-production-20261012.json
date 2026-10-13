@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "codeMergeSha": "37ae905c0e0ee3c024c5987c33f5146b5bdac0df",
+  "publicationRun": 38308985623,
+  "publicationWorkflowConclusion": "cancelled_timeout_after_published_and_134_live_passes",
+  "pagesRun": 38318291581,
+  "productionCodeSha": "fc42fcb19fcae1c07ad4e01b93cb02843d6f2ad9",
+  "consumerGeneration": "2cd2c4f227bdafe2bf1fec3f",
+  "privateGeneration": "fc20ce50e1615be2fe884ab6",
+  "checkpoint": {
+    "status": "PRESERVED",
+    "sha256": "5c2812f76058178ae181dbbfc87b52753ca4176e31cdcfabdfbbf15bde6999e1",
+    "bytes": 33035722,
+    "operations": 7
+  },
+  "freshRestoreVerified": true,
+  "privateIssuerCount": 5122,
+  "publicIssuers": 4938,
+  "publicStocks": 5091,
+  "moduleCounts": {
+    "aktuelles": 1723,
+    "calls": 562,
+    "documents": 1796,
+    "financials": 4704,
+    "nextEvent": 3276,
+    "profile": 2873,
+    "whatChanged": 3622
+  },
+  "before": {
+    "profileClassifications": {
+      "MAPPING_BLOCKED": 9,
+      "NO_PROFILE_SOURCE": 1382,
+      "PROFILE_APPROVED_DE": 45,
+      "SOURCE_AVAILABLE_NO_DE_COPY": 2470,
+      "SOURCE_AVAILABLE_WEAK": 1215,
+      "SOURCE_POLICY_BLOCKED": 1
+    },
+    "sourceClassifications": {
+      "NO_APPROVED_REGISTERED_SOURCE": 3108,
+      "POLLABLE_PROVEN": 1970,
+      "REGISTERED_NOT_POLLING_PROVEN": 44
+    },
+    "approvedNewsCoverage": {
+      "currentIntelligence90": 1720,
+      "days30": 1072,
+      "days90": 1712,
+      "retained180": 1747
+    },
+    "publicIssuersWithoutProvenPollableSource": 2818
+  },
+  "after": {
+    "profileClassifications": {
+      "MAPPING_BLOCKED": 9,
+      "NO_PROFILE_SOURCE": 1379,
+      "PROFILE_APPROVED_DE": 2873,
+      "SOURCE_AVAILABLE_WEAK": 861
+    },
+    "sourceClassifications": {
+      "NO_APPROVED_REGISTERED_SOURCE": 3107,
+      "POLLABLE_PROVEN": 1972,
+      "REGISTERED_NOT_POLLING_PROVEN": 42,
+      "SOURCE_POLICY_WITHHELD": 1
+    },
+    "approvedNewsCoverage": {
+      "currentIntelligence90": 1723,
+      "days30": 1078,
+      "days90": 1713,
+      "retained180": 1748
+    },
+    "publicIssuersWithoutProvenPollableSource": 2971,
+    "scheduler": {
+      "activeApprovedSources": 5357,
+      "dueByTier": {
+        "DORMANT_NEWS_24H": 70,
+        "EVENTS_8H": 1307,
+        "MATERIALS_24H": 1855,
+        "NEWS_4H": 1943
+      },
+      "dueSources": 5175,
+      "excluded": {
+        "CURRENT_OWNER_REVIEW_REQUIRED": 1,
+        "UNAPPROVED_OR_INACTIVE": 29
+      },
+      "fairQueuePattern": [
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "NEWS_4H",
+        "EVENTS_8H",
+        "EVENTS_8H",
+        "MATERIALS_24H",
+        "DORMANT_NEWS_24H"
+      ],
+      "registeredSources": 5387,
+      "sourceAge": {
+        "dueSourcesWithoutKnownDueTime": 35,
+        "lastSuccessOlderThanSevenDays": 3724,
+        "maximumKnownOverdueHours": 193.8,
+        "maximumLastSuccessAgeHours": 204.29,
+        "medianLastSuccessAgeHours": 174.29,
+        "neverProvenActiveSources": 188,
+        "p95LastSuccessAgeHours": 197.63,
+        "provenActiveSources": 5169
+      },
+      "tiers": {
+        "DORMANT_NEWS_24H": 79,
+        "EVENTS_8H": 1343,
+        "MATERIALS_24H": 1875,
+        "NEWS_4H": 2060
+      }
+    }
+  },
+  "mandatory": {
+    "iss_cik_0001633917": {
+      "ledgerNews": 0,
+      "policyAllowedNews": 0,
+      "policyExcludedNews": 0,
+      "consumerNews": 0,
+      "provenPollableSources": 0,
+      "profileVersion": "reviewed-de-df9946131c998ae3c7a100cc"
+    },
+    "iss_cik_0001652130": {
+      "ledgerNews": 10,
+      "policyAllowedNews": 10,
+      "policyExcludedNews": 0,
+      "consumerNews": 10,
+      "provenPollableSources": 2,
+      "profileVersion": "reviewed-de-d243ad76ccae9eb9133fae45"
+    }
+  },
+  "candidateBrowserCases": 434,
+  "actualProductionCases": 134,
+  "sourceRequests": {
+    "routinePublic": 140,
+    "routineSEC": 84,
+    "oneTimeOnboarding": 87
+  },
+  "browserProofArtifact": 11778352969,
+  "broaderReadOnlyReviewRun": 38320988201,
+  "broaderReadOnlyReviewStatus": "PASS_ACTUAL_PRODUCTION",
+  "nextActualScheduledRefresh": "NOT_YET_OBSERVED",
+  "privateOperationalRowsIncluded": false,
+  "actualBroadProductionCases": 434,
+  "verifiedLiveAssets": 5564,
+  "browserProofFinalArtifact": 11779516199,
+  "sampleEligibleStocks": 203,
+  "sampleIneligibleStocks": 21,
+  "actualBroadPerformanceMilliseconds": {
+    "median": 1043,
+    "p95": 1220,
+    "maximum": 2138
+  },
+  "pagesPackageBytes": 665776174,
+  "finalNodeTests": 124,
+  "gateReadbackScalingCorrection": {
+    "existingPinnedBatch": true,
+    "maximumConcurrency": 12,
+    "allAssetHashesRequired": true,
+    "unchangedGoodRequiredBeforeGateWrite": true,
+    "productionDurationAfterCorrection": "NOT_YET_MEASURED_NO_UNNECESSARY_GATE_TOGGLE"
+  },
+  "publicProfileSizeAudit": {
+    "generation": "2cd2c4f227bdafe2bf1fec3f",
+    "checkedProfiles": 2873,
+    "publicProfileObjectBytes": 5025859,
+    "publicGermanDescriptionBytes": 757176,
+    "containingIssuerPayloadBytes": 65127121,
+    "privateObjectsRead": 0,
+    "sourceDiscoveryRequests": 0
+  }
+}

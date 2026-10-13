@@ -51,3 +51,45 @@ test('batch still rejects tampered full-universe bytes before touching the relea
   assert.equal(readFileSync(join(f.out,'index.json'),'utf8'),'DISABLED');
  }finally{rmSync(f.out,{recursive:true,force:true});}
 });
+
+
+test('full-sized production gate hash-reads every asset before its sole gate write with bounded I/O',async()=>{
+ const {setProductionGate}=await import('../production-release.mjs');
+ const {activationKey,goodKey}=await import('../refresh-storage.mjs');
+ const {approval}=await import('../production-approval.mjs');
+ const f=fixture(5120);f.m.generatedAt=new Date().toISOString();
+ Object.assign(f.m,{productionApproval:universeConfig.approvalId,releaseState:'APPROVED_CONTROLLED_PRODUCTION',refreshValidation:{status:'PASS',structural:'PASS',privateCompanies:5122,checkpointSha256:'c'.repeat(64)}});
+ const ns=universeConfig.consumerNamespace,payload=ns+'-a',prefix=prefixFor(payload),gate=prefixFor(approval.namespace)+'gate.json';
+ const good={schema:1,state:'GOOD',generation:f.m.generation,payloadNamespace:payload,manifest:f.m};
+ const objects=new Map([[activationKey(),Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',approvalId:universeConfig.approvalId}))],[goodKey(ns),Buffer.from(JSON.stringify(good))]]);
+ let active=0,maximum=0,checked=0,writes=0;
+ const driver={get:async key=>{
+  if(!key.startsWith(prefix+'slot-0/'))return objects.get(key)||null;
+  active++;maximum=Math.max(maximum,active);await new Promise(r=>setTimeout(r,1));active--;checked++;return f.bytes;
+ },put:async(key,bytes)=>{assert.equal(key,gate);assert.equal(checked,5121);writes++;objects.set(key,Buffer.from(bytes));}};
+ try{await setProductionGate(driver,'AVAILABLE');assert.equal(writes,1);assert(maximum>1&&maximum<=12);assert.equal(JSON.parse(objects.get(gate)).state,'AVAILABLE');}
+ finally{rmSync(f.out,{recursive:true,force:true});}
+});
+test('a corrupt selected GOOD asset cannot open the production gate',async()=>{
+ const {setProductionGate}=await import('../production-release.mjs');
+ const {goodKey}=await import('../refresh-storage.mjs');
+ const {refreshConfig}=await import('../refresh-approval.mjs');
+ const f=fixture();f.m.generatedAt=new Date().toISOString();
+ Object.assign(f.m,{productionApproval:universeConfig.approvalId,releaseState:'APPROVED_CONTROLLED_PRODUCTION',refreshValidation:{status:'PASS',structural:'PASS',privateCompanies:5122,checkpointSha256:'c'.repeat(64)}});
+ const ns=refreshConfig.consumerNamespace,payload=ns+'-a',good={schema:1,state:'GOOD',generation:f.m.generation,payloadNamespace:payload,manifest:f.m};let writes=0;
+ const driver={get:async key=>key===goodKey(ns)?Buffer.from(JSON.stringify(good)):key.startsWith(prefixFor(payload)+'slot-0/')?Buffer.from('{"corrupt":true}'):null,put:async()=>writes++};
+ try{await assert.rejects(setProductionGate(driver,'AVAILABLE'),/CONSUMER_INTEGRITY_FAILED/);assert.equal(writes,0);}
+ finally{rmSync(f.out,{recursive:true,force:true});}
+});
+
+test('a GOOD pointer change during hash readback cannot open the production gate',async()=>{
+ const {setProductionGate}=await import('../production-release.mjs');
+ const {goodKey}=await import('../refresh-storage.mjs');
+ const {refreshConfig}=await import('../refresh-approval.mjs');
+ const f=fixture();f.m.generatedAt=new Date().toISOString();
+ Object.assign(f.m,{productionApproval:universeConfig.approvalId,releaseState:'APPROVED_CONTROLLED_PRODUCTION',refreshValidation:{status:'PASS',structural:'PASS',privateCompanies:5122,checkpointSha256:'c'.repeat(64)}});
+ const ns=refreshConfig.consumerNamespace,payload=ns+'-a',good={schema:1,state:'GOOD',generation:f.m.generation,payloadNamespace:payload,manifest:f.m,health:{}};let writes=0,assetSeen=false;
+ const driver={get:async key=>{if(key===goodKey(ns))return Buffer.from(JSON.stringify({...good,health:assetSeen?{changed:true}:{}}));if(key.startsWith(prefixFor(payload)+'slot-0/')){assetSeen=true;return f.bytes;}return null;},put:async()=>writes++};
+ try{await assert.rejects(setProductionGate(driver,'AVAILABLE'),/PRODUCTION_GOOD_CHANGED_DURING_GATE_READBACK/);assert.equal(writes,0);}
+ finally{rmSync(f.out,{recursive:true,force:true});}
+});
