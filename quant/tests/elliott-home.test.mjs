@@ -146,9 +146,13 @@ test("EH-9 · against the published data: nothing withheld, only product titles,
     for (const id of r.ids) assert.ok(def.pick(byId.get(id)), r.id + ": " + id + " gehoert nicht in die Reihe");
   }
   /* Die Welle-3-Reihe entsteht aus den Daten: jede kundensichtbare Welle-3-Lesart des Index steht in der Karten-Menge. */
-  const wave3Cards = home.cards.filter((c) => c.wave === "3");
+  /* Die Reihe verlangt FRESH (ROW_DEFS.wave3.pick). Sind alle Wochen-Titel DELAYED - Dienstag bis Donnerstag, solange die letzte Wochenbar
+     vom Freitag stammt -, bildet die Engine bewusst keine Reihe; der Test folgt derselben Regel statt aller Welle-3-Karten. */
+  const wave3Def = H.ROW_DEFS.find((d) => d.id === "wave3");
+  const wave3Cards = home.cards.filter(wave3Def.pick);
   const wave3Row = home.rows.find((r) => r.id === "wave3");
   if (wave3Cards.length >= H.MIN_ROW) assert.equal(wave3Row.total, wave3Cards.length);
+  else assert.equal(wave3Row, undefined, "unter MIN_ROW frischen Welle-3-Karten gibt es keine Reihe");
   /* Quelle der Wahrheit: Highlights im Shard (frische Titel) == Highlight-Karten */
   let fromShards = 0;
   for (const f of readdirSync(join(V3, "shards"))) {
