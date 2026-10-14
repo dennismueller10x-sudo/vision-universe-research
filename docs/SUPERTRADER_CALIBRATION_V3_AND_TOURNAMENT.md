@@ -10,7 +10,7 @@ No numeric calibration was run: freeze-bound canonical source data and reference
 
 ## Calibration reference sources
 
-The V2 freeze records three expected French-library inputs, but their source plan, captured bytes and parsed output are absent. See `CALIBRATION-V3-REFERENCE-MANIFEST.json`.
+Frozen #643 source-census metadata supplies the official French Library URLs, prior capture date, archive/member hashes, periods and rights notes for three reference inputs. The original source-plan bytes, reference payload bytes and parsed output are absent; the V3 manifest marks these inputs for capture, not measurement. See `CALIBRATION-V3-REFERENCE-MANIFEST.json`.
 
 ## 52W reconciliation result
 
