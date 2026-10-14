@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Discover, estimate, generate, one manually approved Wan I2V production, exactly three manually approved Wan T2V shots, or read-only status/download.
+        description: Discover, estimate, generate, one manually approved Wan I2V or single continuous T2V production, three Wan T2V shots, or read-only status/download.
         type: choice
         required: true
-        options: [discover, estimate, generate, produce, produce-three, status]
+        options: [discover, estimate, generate, produce, produce-three, produce-single-t2v, status]
       model_id:
         description: Exact model ID from brand-media/higgsfield/registry.json
         type: string
@@ -52,7 +52,7 @@ on:
         type: string
         required: false
       paid_approval:
-        description: Explicit approval phrase for the selected paid action; produce-three requires APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS.
+        description: Explicit approval phrase for the selected paid action; single T2V requires APPROVE-WAN-3.0-SINGLE-CONTINUOUS-T2V-NO-ESTIMATE.
         type: string
         required: false
       approved_estimate_usd:
@@ -100,8 +100,8 @@ jobs:
       - name: Show documentation-derived model registry
         if: inputs.action == 'discover'
         run: python -m json.tool brand-media/higgsfield/registry.json
-      - name: Prepare request; produce-three submits exactly three sequential manually approved Wan T2V jobs
-        if: inputs.action == 'estimate' || inputs.action == 'generate' || inputs.action == 'produce' || inputs.action == 'produce-three' || inputs.action == 'status'
+      - name: Prepare request; paid production actions submit only their explicitly approved Wan job count
+        if: inputs.action == 'estimate' || inputs.action == 'generate' || inputs.action == 'produce' || inputs.action == 'produce-three' || inputs.action == 'produce-single-t2v' || inputs.action == 'status'
         env:
           HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
           INPUT_ACTION: ${{ inputs.action }}
@@ -129,7 +129,7 @@ jobs:
           if [ -n "$INPUT_BUDGET_USD" ]; then
             args+=(--budget-usd "$INPUT_BUDGET_USD")
           fi
-          if [ "$INPUT_ACTION" = generate ] || [ "$INPUT_ACTION" = produce ] || [ "$INPUT_ACTION" = produce-three ]; then
+          if [ "$INPUT_ACTION" = generate ] || [ "$INPUT_ACTION" = produce ] || [ "$INPUT_ACTION" = produce-three ] || [ "$INPUT_ACTION" = produce-single-t2v ]; then
             args+=(--approval "$INPUT_APPROVAL")
           fi
           if [ "$INPUT_ACTION" = generate ]; then
@@ -186,7 +186,7 @@ jobs:
           ffmpeg -nostdin -y -i "${videos[0]}" -vf scale=540:960 -c:v libx264 -preset veryfast -crf 28 -c:a aac -b:a 96k -movflags +faststart "$preview"
 
       - name: Upload HyperFrames-ready output
-        if: always() && (inputs.action == 'generate' || inputs.action == 'produce' || inputs.action == 'produce-three' || inputs.action == 'status')
+        if: always() && (inputs.action == 'generate' || inputs.action == 'produce' || inputs.action == 'produce-three' || inputs.action == 'produce-single-t2v' || inputs.action == 'status')
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
         with:
           name: higgsfield-video-${{ github.run_id }}

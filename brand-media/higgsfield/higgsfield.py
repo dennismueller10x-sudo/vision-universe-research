@@ -22,6 +22,7 @@ TERMINAL = {"completed", "failed", "nsfw", "canceled"}
 APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
 WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-NO-ESTIMATE"
 WAN_THREE_SHOTS_APPROVAL_PHRASE = "APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS"
+WAN_SINGLE_T2V_APPROVAL_PHRASE = "APPROVE-WAN-3.0-SINGLE-CONTINUOUS-T2V-NO-ESTIMATE"
 
 
 class HiggsfieldError(RuntimeError):
@@ -330,11 +331,72 @@ def produce_three_text_shots(args):
                       "manifest": str(out / "three-shot-manifest.json")}))
 
 
+def produce_single_text_video(args):
+    """Submit and retrieve exactly one manually approved, reference-free Wan T2V job."""
+    if args.model != "alibaba/wan-3.0" or args.operation != "text_to_video":
+        raise HiggsfieldError("Single continuous production is restricted to Wan 3.0 text-to-video")
+    if (args.duration, args.resolution, args.aspect_ratio, args.native_audio) != (20, "1080p", "9:16", "true"):
+        raise HiggsfieldError("Single continuous production requires 20 seconds, 1080p, 9:16, and native audio")
+    if args.reference or args.asset_id:
+        raise HiggsfieldError("Text-to-video production does not accept references or asset IDs")
+    if args.approval != WAN_SINGLE_T2V_APPROVAL_PHRASE:
+        raise HiggsfieldError("Explicit approval for exactly one Wan text-to-video generation is required")
+    if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
+        raise HiggsfieldError("Single continuous production is single-attempt; workflow reruns are blocked")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not run_id:
+        raise HiggsfieldError("Single continuous production requires a unique GitHub Actions run ID")
+
+    model = get_model(args.model)
+    endpoint = validate(model, "text_to_video", args.prompt, 20, "1080p", "9:16")
+    params = build_params(model, "text_to_video", args.prompt, 20, "1080p", "9:16", True)
+    client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
+    out = Path(args.output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    manifest_path = out / "single-t2v-manifest.json"
+    print(json.dumps({"approval_gate": "passed", "model_id": args.model,
+                      "operation": "text_to_video", "reference_image": None,
+                      "price_estimate": "not_requested", "generation_submissions": 1,
+                      "submission_mode": "single_attempt_no_retry"}))
+    request_id = client.submit(endpoint, params, idempotency_key=f"vu-higgsfield-{run_id}-single-continuous-t2v")
+    item = {"request_id": request_id, "model_id": args.model, "operation": "text_to_video",
+            "prompt": args.prompt, "parameters": params, "reference_image": None,
+            "estimate": None, "actual_cost": None, "status": "submitted", "social_upload": False}
+    safe_metadata(item, secret=os.environ.get("HIGGSFIELD_API_KEY"))
+    manifest_path.write_text(json.dumps(item, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"request_id": request_id, "status": "submitted", "generation_submissions": 1}))
+
+    result = None
+    for delay in (2, 3, 5, 8, 10, 15, 20, 30):
+        result = client.status(request_id)
+        if result["status"] in TERMINAL:
+            break
+        time.sleep(delay)
+    if not result or result["status"] not in TERMINAL:
+        item["status"] = result["status"] if result else "submitted"
+        manifest_path.write_text(json.dumps(safe_metadata(item, secret=os.environ.get("HIGGSFIELD_API_KEY")), indent=2) + "\n", encoding="utf-8")
+        print(json.dumps({"request_id": request_id, "status": item["status"], "generation_submissions": 1}))
+        return
+    if result["status"] != "completed" or not isinstance(result.get("video"), dict) or not result["video"].get("url"):
+        item["status"] = result["status"]
+        manifest_path.write_text(json.dumps(safe_metadata(item, secret=os.environ.get("HIGGSFIELD_API_KEY")), indent=2) + "\n", encoding="utf-8")
+        raise HiggsfieldError(f"Generation ended with status {result['status']}; no retry submitted")
+
+    video_path = out / f"{request_id}.mp4"
+    client.download(result["video"]["url"], video_path)
+    item.update({"status": "completed", "result_file": str(video_path), "hyperframes_ready": True})
+    manifest_path.write_text(json.dumps(safe_metadata(item, secret=os.environ.get("HIGGSFIELD_API_KEY")), indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"request_id": request_id, "status": "completed", "video_file": str(video_path),
+                      "generation_submissions": 1, "actual_cost": None}))
+
+
 def run(args):
     if args.action == "status":
         return retrieve_completed_job(args)
     if args.action == "produce-three":
         return produce_three_text_shots(args)
+    if args.action == "produce-single-t2v":
+        return produce_single_text_video(args)
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
@@ -412,7 +474,7 @@ def run(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", choices=("estimate", "generate", "produce", "produce-three", "status"), required=True)
+    parser.add_argument("--action", choices=("estimate", "generate", "produce", "produce-three", "produce-single-t2v", "status"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--operation", choices=("text_to_video", "image_to_video", "reference_to_video"), required=True)
     parser.add_argument("--prompt", required=True)
