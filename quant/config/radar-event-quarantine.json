@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "radar-event-quarantine-1.0.0",
+  "note": "Einzeln benannte Radar-Ereignisse, die ein Rechenartefakt waren. Die Tagessnapshots unter quant/data/product/radar-history/events bleiben unveraendert; nur die Ereignis-Historie je Aktie liest sie durch den Filter quant/engines/radar-event-quarantine.js.",
+  "entries": [
+    { "ticker": "DFLI", "eventType": "TREND_UP", "occurredAt": "2026-10-12", "decidedAt": "2026-10-14",
+      "reason": "Reverse Split vom 12.10.2026 im Signalpfad nicht in die Kursspalte close eingerechnet: priceTo200dma sprang an der Split-Kante, kein Trendwechsel.",
+      "evidence": "Signalpfad rechnete priceTo200dma auf dem Rohschluss (-76,8 % -> +74,1 %); auf der bereinigten Reihe liegt der Abstand am 12.10. bei -78,1 %. Behoben in scripts/technical/materialize-product-intelligence.mjs (splitAdjustedSignalBars)." },
+    { "ticker": "MDCX", "eventType": "TREND_UP", "occurredAt": "2026-10-12", "decidedAt": "2026-10-14",
+      "reason": "Reverse Split vom 12.10.2026 im Signalpfad nicht in die Kursspalte close eingerechnet: priceTo200dma sprang an der Split-Kante, kein Trendwechsel.",
+      "evidence": "Signalpfad rechnete priceTo200dma auf dem Rohschluss (-83,8 % -> +519,5 %), Split-Faktor 50. Behoben in scripts/technical/materialize-product-intelligence.mjs (splitAdjustedSignalBars)." },
+    { "ticker": "NXGL", "eventType": "TREND_UP", "occurredAt": "2026-10-12", "decidedAt": "2026-10-14",
+      "reason": "Reverse Split vom 12.10.2026 im Signalpfad nicht in die Kursspalte close eingerechnet: priceTo200dma sprang an der Split-Kante, kein Trendwechsel.",
+      "evidence": "Signalpfad rechnete priceTo200dma auf dem Rohschluss (-72,7 % -> +411,9 %), Split-Faktor 20. Behoben in scripts/technical/materialize-product-intelligence.mjs (splitAdjustedSignalBars)." },
+    { "ticker": "POAS", "eventType": "TREND_UP", "occurredAt": "2026-10-12", "decidedAt": "2026-10-14",
+      "reason": "Reverse Split vom 12.10.2026 im Signalpfad nicht in die Kursspalte close eingerechnet: priceTo200dma sprang an der Split-Kante, kein Trendwechsel.",
+      "evidence": "Signalpfad rechnete priceTo200dma auf dem Rohschluss (-90,8 % -> +34,2 %). Behoben in scripts/technical/materialize-product-intelligence.mjs (splitAdjustedSignalBars)." },
+    { "ticker": "ZBAO", "eventType": "TREND_UP", "occurredAt": "2026-10-12", "decidedAt": "2026-10-14",
+      "reason": "Reverse Split vom 12.10.2026 im Signalpfad nicht in die Kursspalte close eingerechnet: priceTo200dma sprang an der Split-Kante, kein Trendwechsel.",
+      "evidence": "Signalpfad rechnete priceTo200dma auf dem Rohschluss (-90,3 % -> +302,1 %), Split-Faktor 50. Behoben in scripts/technical/materialize-product-intelligence.mjs (splitAdjustedSignalBars)." }
+  ]
+}
