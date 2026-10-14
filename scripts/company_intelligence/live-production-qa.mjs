@@ -6,7 +6,6 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
-const {manifest:reviewed,delivery:runtimeDelivery}=await runtimeCandidate();
 import {assertConsumerResponses} from './browser-delivery-proof.mjs';
 import {verifyPropagation,evaluateRelease,PropagationError,CAUSE,DEFAULTS,referenceDataSha256} from './propagation-proof.mjs';
 import {attachDiagnostics,collectFailure,bounded,redactor} from './browser-diagnostics.mjs';
@@ -69,7 +68,7 @@ try{
 try{
  const done=await evaluateRelease({
   budget,
-  prove:o=>verifyPropagation({origin,expectedSha,expectedDataSha256:localDataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)})),...o}),
+  prove:o=>verifyPropagation({origin,expectedSha,ci:'ON',expectedDataSha256:localDataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)})),...o}),
   runBrowser:phase
  });
  if(done.retried)console.log('::warning title=Live-QA erst im zweiten Versuch bestanden::'+redact(String(done.previousFailure?.message||'').replace(/[\r\n%]+/g,' ').slice(0,300))+' | Grund: '+(done.previousFailure?.decision?.reason||'?')+' | Kennung: '+(done.propagation?.fingerprint||'?'));
