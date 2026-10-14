@@ -275,3 +275,30 @@ jobs:
         run: |
           set -o pipefail
           node scripts/discover/check-im-blick-live.mjs --strict --site="$IN_SITE"
+
+  # Supertrader: steht er auf dem Stichtag der validierten Produktdaten, und
+  # zeigt kein Signal auf einen Titel ohne Discover-Seite? Der Nachtlauf
+  # stoesst ihn an (market-data-refresh.yml, Job `supertrader`); der Zeitplan in
+  # supertrader-signals.yml ist nur Rueckfall und kommt Stunden zu spaet. Dieser
+  # Job prueft das ERGEBNIS, nicht den Workflow (scripts/ci/supertrader-chain.mjs).
+  supertrader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Supertrader - aktuell und ohne tote Ticker-Verweise?
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ci/supertrader-chain.mjs check --strict
