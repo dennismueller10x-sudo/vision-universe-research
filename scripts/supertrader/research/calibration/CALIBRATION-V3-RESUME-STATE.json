@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "PARTIAL_METHOD_ASSESSMENT_CANONICAL_CAPTURE_PENDING",
+  "status": "DATA_CONTRACT_BLOCKERS_ASSESSED_CANONICAL_DIAGNOSTIC_RUNNING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -14,7 +14,7 @@
     "PR_AND_BRANCH_RECOVERY_INVENTORY",
     "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE"
   ],
-  "currentPhase": "CALIBRATION_METHOD_DATA_CONTRACT_ASSESSMENT",
+  "currentPhase": "CANONICAL_CAPTURE_DIAGNOSIS",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -134,6 +134,10 @@
       "headSha": "a51af763063cb197e451ec7c33e35dcc3fac4bb0",
       "status": "IN_PROGRESS",
       "purpose": "safe canonical diagnostic capture"
+    },
+    {
+      "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
+      "sha256": "5bbb0d0ef080f2d456878bad353811cfeb213c6c4c9a22e4eafab8bccff80191"
     }
   ],
   "blockers": [
@@ -146,10 +150,10 @@
     "No workflow in this branch creates the historical canonical source parts and binds them to the V3 source manifest.",
     "Capture diagnostic currently omits the symbolic loader reason and phase; safe allowlisted fields were added to data-inventory and a recapture is required."
   ],
-  "nextCommand": "Add allowlisted symbolic canonicalData.reason and privateDiagnostics.phase to the public safe status (never message/stack/provider values), rerun canonical inventory, then only freeze if a hash-bound canonical manifest with usable parts exists.",
+  "nextCommand": "gh run view 38553639552 --repo dennismueller10x-sudo/vision-universe-research",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Complete the safe canonical diagnostic capture; then attempt only remaining data-capable methods with a verified freeze.",
+  "nextStep": "Inspect safe canonicalDiagnostic.reason/phase from run 38553639552. If canonical data remains blocked, fix only the evidenced infrastructure/data-loader issue and recapture. Do not freeze or run numeric methods without complete hash-bound canonical/reference inputs.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
@@ -157,16 +161,12 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "workflowRunId": 38547641330,
-    "headSha": "110853d3b678d2dc88d2329f8e1d4459597b9bca",
+    "workflowRunId": 38553639552,
+    "headSha": "a51af763063cb197e451ec7c33e35dcc3fac4bb0",
     "mode": "canonical",
     "job": "data-probe",
-    "status": "completed",
-    "conclusion": "success",
-    "artifactId": 11885354425,
-    "artifactExpiresAt": "2026-11-13T10:25:51Z",
-    "artifactZipSha256": "30e13fdb4835159ba1e35b3352c7f343b3d81baff9c44120e1d4e0c898850438",
-    "canonicalStatus": "BLOCKED"
+    "status": "in_progress",
+    "purpose": "allowlisted symbolic canonical failure reason and loader phase"
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",

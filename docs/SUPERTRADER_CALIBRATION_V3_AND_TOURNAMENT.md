@@ -22,7 +22,7 @@ Binary64 budget/cash-rounding defect and isolated repair are proven/reviewed per
 
 ## Calibration verdicts
 
-Eight method receipts are initialized as `NOT_STARTED_INPUTS_REQUIRED`; no PASS/PARTIAL/FAIL verdict is asserted.
+Gross Profitability, Piotroski, Value+Momentum and Buyback are assessed `DATA_BLOCKED` from their frozen method contracts, each with a method checkpoint. JT Momentum, 52W-High, Low Volatility and Equal Weight remain numerically pending canonical/reference inputs. No PASS/PARTIAL/FAIL verdict is asserted.
 
 ## Overall certification
 
@@ -50,7 +50,7 @@ No methods are claim-ready from this V3 work.
 
 ## Remaining blockers
 
-Readable durable canonical historical dataset and reference source inputs; an independently linked 52W failed-book trace; scanner-safe parser source update and hash-bound premeasurement freeze; then per-method results/reviews, tournament, current replay, final numeric/adversarial review and owner delivery.
+Usable durable canonical historical data and reference source inputs; run 38547641330 completed but emitted zero canonical segments and no manifest/parts. Its sealed private diagnostic could not be read. Safe symbolic reason/phase reporting is being rerun in Actions run 38553639552. Then an independently linked 52W failed-book trace, hash-bound premeasurement freeze, remaining method assessments, tournament, current replay, final numeric/adversarial review and owner delivery are still pending.
 
 ## Durability verification
 
