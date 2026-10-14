@@ -42,11 +42,14 @@ try{
  writeFileSync(out+'/report.json',JSON.stringify({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,deliveryRetries,routine,protectedExistingAccessGate:true,noQueryOptIn:true,cases},null,2)+'\n');
  console.log(JSON.stringify({status:'PASS',sourceCommit:release.sourceCommit,generation:delivery.generation,assets:assetEntries.length,stocks:cases.length,routine}));
 }catch(error){
- const markers=activePage?await activePage.locator('.ci-company-intelligence').evaluateAll(es=>es.map(e=>({state:e.dataset.state,companyId:e.dataset.companyId,generatedAt:e.dataset.generatedAt,text:e.innerText.slice(0,1200)}))).catch(()=>[]):[];
- const pageText=activePage?await activePage.evaluate(()=>document.body.innerText.slice(0,400)).catch(()=>null):null;
- const accessGate=activePage?await activePage.locator('#research-access-gate').count().catch(()=>null):null;
- if(activePage)await activePage.screenshot({path:out+'/failure.png'}).catch(()=>{});
+ const bounded=(p,fallback)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(fallback),5000))]);
+ const markers=activePage?await bounded(activePage.locator('.ci-company-intelligence').evaluateAll(es=>es.map(e=>({state:e.dataset.state,companyId:e.dataset.companyId,generatedAt:e.dataset.generatedAt,text:e.innerText.slice(0,1200)}))).catch(()=>[]),[]):[];
+ const pageText=activePage?await bounded(activePage.evaluate(()=>document.body.innerText.slice(0,400)).catch(()=>null),null):null;
+ const accessGate=activePage?await bounded(activePage.locator('#research-access-gate').count().catch(()=>null),null):null;
+ if(activePage)await bounded(activePage.screenshot({path:out+'/failure.png'}).catch(()=>{}),null);
  const message=String(error.message).replaceAll(process.env.RESEARCH_ACCESS_PASSWORD||'__NO_SECRET__','[REDACTED]').slice(0,2000);
- writeFileSync(out+'/report.json',JSON.stringify({status:'FAIL',sourceCommit:release.sourceCommit,generation:delivery.generation,active,markers,accessGate,pageText,error:{name:error.name,message},completedCases:cases.length},null,2)+'\n');
+ const secrets=(()=>{try{const pw=process.env.RESEARCH_ACCESS_PASSWORD;return [pw,...Object.values(accessStateFor(pw)||{})].filter(v=>typeof v==='string'&&v.length>=8);}catch{return [];}})();
+ const redact=text=>secrets.reduce((t,v)=>t.split(v).join('[REDACTED]'),text);
+ writeFileSync(out+'/report.json',redact(JSON.stringify({status:'FAIL',sourceCommit:release.sourceCommit,generation:delivery.generation,active,markers,accessGate,pageText,error:{name:error.name,message},completedCases:cases.length},null,2))+'\n');
  throw error;
 }finally{await browser.close();}
