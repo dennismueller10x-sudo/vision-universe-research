@@ -3580,5 +3580,34 @@
     "mode": "READ_ONLY_COMPACT_INVENTORY",
     "canonicalLoaderInvoked": false,
     "classification": "INVALID_FOR_CANONICAL_REJECTION_ATTRIBUTION_WORKFLOW_CONDITION_MISBOUND"
+  },
+  "latestCanonicalDetailRun": {
+    "workflowRunId": 38570403846,
+    "workflowHead": "7784ab7295f55372c71f619890272f5a96420504",
+    "artifactId": 11897622647,
+    "artifactName": "supertrader-certification-status-38570403846",
+    "expiresAt": "2027-01-12T13:16:22Z",
+    "bytes": 702,
+    "githubDigest": "sha256:902599d798056078bd6ac8aa167be8671776f8f18952d4dfec6702b4f7ea84cb",
+    "localZipSha256": "902599d798056078bd6ac8aa167be8671776f8f18952d4dfec6702b4f7ea84cb",
+    "statusContentSha256": "63a51fc41dc363e3fa27107c75aa6da1b3275aed92f0929eedb843a88902296d",
+    "mode": "READ_ONLY_CANONICAL_INVENTORY",
+    "canonicalCounts": {
+      "inputSegments": 9410,
+      "usableSegments": 9408
+    },
+    "canonicalRejections": {
+      "reasons": {
+        "CORPORATE_ACTION_CONTRADICTED": 2
+      },
+      "unknownReasonCount": 0,
+      "details": {
+        "CORPORATE_ACTION_CONTRADICTED": {
+          "SPLIT_NOT_IN_RAW_PRICE": 2
+        }
+      },
+      "unknownDetailCount": 0
+    },
+    "privateValuesPublished": false
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-recovery-inventory-1.0.0",
   "capturedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_HASH_BOUND_REJECTION_CAUSE_PARTIAL",
+  "status": "CANONICAL_CAPTURE_AND_TWO_SEGMENT_CAUSE_PROVEN_FREEZE_READY",
   "repository": "dennismueller10x-sudo/vision-universe-research",
   "pr643": {
     "state": "OPEN",
@@ -373,7 +373,7 @@
     "requiresNewV3Freeze": true
   },
   "durableArtifactManifestPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
-  "durableArtifactManifestSha256": "0d1169d9236cb32dab5c152a7f8149cd394d042e3742927c4a6f2bdb583f8ba9",
+  "durableArtifactManifestSha256": "1fd12853f81c6930dfda125cb3eb4f599710c318aa937204ad91eca6e3080957",
   "executionAvailability": {
     "v3CalibrationRunner": "MISSING",
     "historicalSourceCaptureWorkflow": "RUNNING",
@@ -423,5 +423,19 @@
     "manifestPlaintextSha256": "34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713",
     "safeStatusArtifactZipSha256": "1ee5f772ebf8ad7b1c74ce67133ac9935cd2e475891b8215f9855295a41391d7",
     "encryptedInputArtifactSha256": "e334357b8f5d7c960d5da8e7bd80c1d36589e1a66bcbabb27cb2434ed25b6763"
+  },
+  "canonicalCause": {
+    "classification": "DATA_CONTRACT_CORPORATE_ACTION_CONFLICT",
+    "reason": "CORPORATE_ACTION_CONTRADICTED",
+    "detail": "SPLIT_NOT_IN_RAW_PRICE",
+    "count": 2,
+    "explanation": "For both rejected segments the canonical total-return engine observed that applying the source split factor made the split-adjusted raw-close movement farther from zero than the unadjusted movement. Prefix validation then left fewer than two usable bars, so the segments were rejected. This proves a source corporate-action/price inconsistency under the frozen arithmetic; it does not prove a runner bug.",
+    "securityIdentitiesPublished": false
+  },
+  "canonicalCauseEvidence": {
+    "runId": 38570403846,
+    "statusArtifactId": 11897622647,
+    "statusZipSha256": "902599d798056078bd6ac8aa167be8671776f8f18952d4dfec6702b4f7ea84cb",
+    "statusContentSha256": "63a51fc41dc363e3fa27107c75aa6da1b3275aed92f0929eedb843a88902296d"
   }
 }
