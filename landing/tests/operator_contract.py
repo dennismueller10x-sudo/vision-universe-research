@@ -87,6 +87,17 @@ class Contract(unittest.TestCase):
         self.assertTrue(all(m=='GET' for _,m,_ in p.calls))
 
 class ReleaseContract(unittest.TestCase):
+    def test_provider_errors_never_return_personalized_message_or_key(self):
+        for message in ('Failure for synthetic-person@example.invalid', 'SYNTHETIC_PRIVATE_API_KEY'):
+            class Opener:
+                def open(self,req,**kwargs):
+                    raise admin.urllib.error.HTTPError(req.full_url,400,'Bad Request',{},io.BytesIO(json.dumps({'code':'document_not_found','message':message}).encode()))
+            with patch.object(admin.urllib.request,'build_opener',return_value=Opener()):
+                status,result=admin.api(admin.BREVO,'/webhooks?type=marketing&sort=desc','SYNTHETIC_PRIVATE_API_KEY')
+            self.assertEqual(status,400)
+            self.assertEqual(result['brevo_code'],'document_not_found')
+            self.assertIsNone(result['safe_webhook_message'])
+            self.assertNotIn(message,json.dumps(result))
     def setUp(self):
         self.file=Path(__file__).resolve().parent/'output/operator-policy.html';self.file.parent.mkdir(parents=True,exist_ok=True)
         self.file.write_text('<html lang="de" data-policy-status="approved">Synthetic policy</html>')
