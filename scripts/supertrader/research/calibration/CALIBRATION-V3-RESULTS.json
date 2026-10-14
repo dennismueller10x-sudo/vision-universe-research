@@ -56,11 +56,24 @@
     },
     {
       "methodId": "piotroski_value_fscore",
-      "verdict": null,
-      "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
+      "verdict": "DATA_BLOCKED",
+      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
+      "status": "DATA_BLOCKED",
       "output": null,
-      "checkpoint": "CALIBRATION-V3-piotroski_value_fscore-CHECKPOINT.json"
+      "checkpoint": "CALIBRATION-V3-piotroski_value_fscore-CHECKPOINT.json",
+      "blockerRequirements": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "PRIOR_FISCAL_REPORT_YEAR_VALUE_CROSSSECTION",
+        "THREE_CERTIFIED_TRUE_ANNUAL_PERIODS_AND_FISCAL_LINKS",
+        "PRE_ASU_SOURCE_IB_AND_COMMON_EQUITY_ISSUANCE_COVERAGE",
+        "FISCAL_YEAR_END_ME_KNOWN_AT_ACTUAL_FORMATION",
+        "VALUEWEIGHTED_MARKET_SAME_CASE_HORIZON",
+        "PREDECLARED_TURN_DENOMINATOR_SOURCE_CONFLICT_RESOLUTION"
+      ]
     },
     {
       "methodId": "value_plus_momentum",

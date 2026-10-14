@@ -21,7 +21,6 @@
     "CAL_GH2004_52WH_30_6_NO_SKIP",
     "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
     "CALIB_EQUAL_WEIGHT",
-    "piotroski_value_fscore",
     "value_plus_momentum",
     "buyback_announcement_event"
   ],
@@ -152,7 +151,7 @@
   "nextCommand": "Add allowlisted symbolic canonicalData.reason and privateDiagnostics.phase to the public safe status (never message/stack/provider values), rerun canonical inventory, then only freeze if a hash-bound canonical manifest with usable parts exists.",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Complete the in-progress safe canonical diagnostic capture; do not start numeric methods until usable, hash-bound canonical data and reference inputs exist.",
+  "nextStep": "Complete the safe canonical diagnostic capture; then attempt only remaining data-capable methods with a verified freeze.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
@@ -176,6 +175,7 @@
     "safeDiagnosticTest": "aa0648931a81ebf328545477e63919356965d728c21788a2ef28bf9b02074bfb"
   },
   "dataBlockedMethods": [
-    "gross_profitability_novy_marx"
+    "gross_profitability_novy_marx",
+    "piotroski_value_fscore"
   ]
 }
