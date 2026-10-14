@@ -4,29 +4,20 @@ import {fileURLToPath} from 'node:url';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function providerUrl(value) {
-  const url = new URL(value);
-  if (url.protocol !== 'https:' || !/^[a-z0-9-]+\.sibforms\.com$/.test(url.hostname) || !/^\/serve\/[A-Za-z0-9_-]+$/.test(url.pathname) || url.username || url.password || url.port || url.search || url.hash) throw new Error('Nur die HTTPS-Adresse aus Brevos Iframe-Export ist erlaubt.');
-  return url;
-}
 export function validateConfig(config = {}) {
-  const keys = ['formUrl','unsubscribeFormUrl','liveFlowVerified','privacyReviewed','privacyHtmlPath','frameHeight'];
-  if (Object.keys(config).some(k => !keys.includes(k))) throw new Error('Unbekanntes Konfigurationsfeld. Keine API-Schlüssel verwenden.');
-  for (const name of ['liveFlowVerified','privacyReviewed']) if (config[name] !== undefined && typeof config[name] !== 'boolean') throw new Error('Freigaben müssen boolesch sein.');
-  if (config.frameHeight !== undefined && (!Number.isInteger(config.frameHeight) || config.frameHeight < 640 || config.frameHeight > 1600)) throw new Error('Formularhöhe muss zwischen 640 und 1600 liegen.');
-  if (config.unsubscribeFormUrl) providerUrl(config.unsubscribeFormUrl);
-  if (config.formUrl) {
-    providerUrl(config.formUrl); providerUrl(config.unsubscribeFormUrl);
-    if (config.formUrl === config.unsubscribeFormUrl) throw new Error('Anmelde- und Abmeldeformular müssen verschieden sein.');
-    if (config.liveFlowVerified !== true) throw new Error('Echter DOI-/Abmeldetest ist noch nicht geprüft.');
-    if (config.privacyReviewed !== true || !config.privacyHtmlPath) throw new Error('Freigegebene Datenschutzhinweise fehlen.');
-  }
-  if (config.privacyReviewed === true && !config.privacyHtmlPath) throw new Error('Pfad zu freigegebenen Datenschutzhinweisen fehlt.');
-  return Boolean(config.formUrl);
+  const keys=['mode','liveFlowVerified','privacyReviewed','privacyHtmlPath'];
+  if(Object.keys(config).some(k=>!keys.includes(k)))throw new Error('Unbekanntes Konfigurationsfeld. Keine Schlüssel oder fremden Formularaktionen verwenden.');
+  const mode=config.mode||'closed';
+  if(!['closed','test','public'].includes(mode))throw new Error('Unbekannter Formularmodus.');
+  for(const n of ['liveFlowVerified','privacyReviewed'])if(config[n]!==undefined&&typeof config[n]!=='boolean')throw new Error('Freigaben müssen boolesch sein.');
+  if(mode==='public'&&(config.liveFlowVerified!==true||config.privacyReviewed!==true||!config.privacyHtmlPath))throw new Error('Echter DOI-/Abmeldetest und freigegebener Datenschutz fehlen.');
+  if(config.privacyReviewed===true&&!config.privacyHtmlPath)throw new Error('Pfad zu freigegebenen Datenschutzhinweisen fehlt.');
+  return mode!=='closed';
 }
 
 export async function build({output = resolve(root,'dist'), config = {}, production = false} = {}) {
   const ready = validateConfig(config);
+  if (production && config.mode === 'test') throw new Error('Testmodus darf nicht öffentlich veröffentlicht werden.');
   if (production && config.privacyReviewed !== true) throw new Error('Öffentliche Veröffentlichung blockiert: Datenschutzhinweise für Hosting/Brevo fehlen.');
   output = resolve(output);
   const rel = relative(root,output);
@@ -34,7 +25,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -46,18 +37,11 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
   let html = await readFile(resolve(output,'index.html'),'utf8');
-  // Brevo owns all input fields, CAPTCHA, submission, DOI and unsubscribe state.
-  // No exported provider script is copied into our document and no local API exists.
-  if (ready) {
-    const frame = `<div class="brevo-form"><iframe title="Anmeldung zum Vision-Universe-Newsletter" src="${esc(config.formUrl)}" height="${config.frameHeight || 850}" loading="lazy" referrerpolicy="no-referrer"></iframe><p>Wird das Formular nicht angezeigt? <a href="${esc(config.formUrl)}" target="_blank" rel="noopener noreferrer">Brevo-Formular öffnen</a>.</p></div>`;
-    html = html.replace(/<form\b[^>]*id="newsletter-form"[\s\S]*?<\/form>/, frame);
-  }
-  // A native unsubscribe link remains available while public signup is blocked.
-  // This permits the private provider test without prematurely opening signup.
-  if (config.unsubscribeFormUrl) {
-    const confirmedPath = resolve(output,'newsletter/bestaetigt/index.html');
-    const confirmed = await readFile(confirmedPath,'utf8');
-    await writeFile(confirmedPath,confirmed.replace(/<div id="brevo-unsubscribe">[\s\S]*?<\/div>/,`<div id="brevo-unsubscribe"><p><a class="button" href="${esc(config.unsubscribeFormUrl)}" rel="noreferrer">Bei Brevo abmelden</a></p><p>Brevos Abmeldeformular kann E-Mail-Marketing kontoweit sperren. Es bestätigt die tatsächliche Abmeldung selbst.</p></div>`));
+  if(ready){
+    html=html.replace('data-ready="false"','data-ready="true" action="/api/newsletter/subscribe"').replace('<fieldset disabled>','<fieldset>')
+      .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden prüfen wir deine Anfrage. Erst der Klick in der Bestätigungsmail bestätigt deine neue Anmeldung.')
+      .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden prüfe dein Postfach und bestätige deine neue Anmeldung.')
+      .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
   }
   // Remove upstream Research-only navigation from the isolated static output.
   for (const path of ['index.html','impressum/index.html','datenschutz/index.html']) {
@@ -67,8 +51,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   }
 
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
-  const frameOrigin = ready ? new URL(config.formUrl).origin : "'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; frame-src ${frameOrigin}; base-uri 'none'; object-src 'none'`;
+  const formPolicy=ready?"'self'":"'none'";
+  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   await writeFile(resolve(output,'index.html'),html);
@@ -83,8 +67,11 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
   if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
+  // Advanced-mode source contains binding names, never credential values.
+  await cp(resolve(root,'server/newsletter.mjs'),resolve(output,'_worker.js'));
+  await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/*','/.newsletter-internal/*','/_worker*','/server/*'],exclude:[]}));
   const files = await readdir(output);
-  return {newsletter:ready?'Brevo-Iframe; DOI/Abmeldung ausschließlich beim Anbieter':'BLOCKIERT: kein Brevo-Formular konfiguriert',mode:production?'production':'preview',output,entries:files.length};
+  return {newsletter:ready?'Eigene Formularoberfläche; geschützte Brevo-DOI-API':'BLOCKIERT: Newsletter-Anmeldung geschlossen',mode:production?'production':'preview',output,entries:files.length};
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
@@ -93,14 +80,14 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const publicationMode=process.env.LANDING_PUBLICATION_MODE||'preview';
     if(!['preview','production'].includes(publicationMode))throw new Error('Ungültiger Veröffentlichungsmodus.');
-    const hasEnv = ['BREVO_FORM_URL','BREVO_UNSUBSCRIBE_FORM_URL','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
-    const config = configArg ? JSON.parse(await readFile(resolve(configArg),'utf8')) : hasEnv ? {
-      formUrl: process.env.BREVO_FORM_URL || '',
-      unsubscribeFormUrl: process.env.BREVO_UNSUBSCRIBE_FORM_URL || '',
-      liveFlowVerified: process.env.BREVO_FORM_LIVE_VERIFIED === 'true',
-      privacyReviewed: process.env.LANDING_PRIVACY_REVIEWED === 'true',
-      privacyHtmlPath: process.env.LANDING_PRIVACY_HTML_PATH || ''
-    } : {};
+    const hasEnv=['NEWSLETTER_FORM_MODE','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
+    const config=configArg?JSON.parse(await readFile(resolve(configArg),'utf8')):hasEnv?{
+      mode:process.env.NEWSLETTER_FORM_MODE||'closed',
+      liveFlowVerified:process.env.NEWSLETTER_LIVE_VERIFIED==='true',
+      privacyReviewed:process.env.LANDING_PRIVACY_REVIEWED==='true',
+      privacyHtmlPath:process.env.LANDING_PRIVACY_HTML_PATH||''
+    }:{};
+    if(config.mode==='test'&&process.env.CF_PAGES_BRANCH==='main')throw new Error('Testformular auf main gesperrt.');
     console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')||publicationMode==='production'})));
   } catch (error) { console.error(error instanceof SyntaxError ? 'Konfiguration ist kein gültiges JSON/keine gültige URL.' : error.message); process.exitCode=1; }
 }

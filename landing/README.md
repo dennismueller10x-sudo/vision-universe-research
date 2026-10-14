@@ -36,15 +36,15 @@ node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 
 Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
-## Brevo: dauerhafter Vision-Universe-Newsletter
+## Brevo: Newsletter mit eigener Oberfläche und offizieller DOI-API
 
-PR #659 bereitet ein **natives, von Brevo gehostetes Newsletter-Anmeldeformular** als Iframe vor. Es verwendet ausschließlich **VU | Newsletter (ID 4)**. Der Newsletter informiert über Vision Universe, neue Research-Inhalte und Produkte einschließlich des App-Starts. App-Themen ändern weder Namen noch Einwilligungszweck des Systems.
+Das E-Mail-Feld, die Einwilligung, der Button und Rückmeldungen bleiben im Vision-Universe-Design. Kein Brevo-Formular oder Iframe. Ein schlanker Cloudflare-Pages-Endpunkt prüft die Anfrage und ruft ausschließlich Brevos offizielle DOI-API mit **Liste 4 – VU | Newsletter** auf. Brevo übernimmt Mail, Linkbestätigung, Kontaktverwaltung und die spätere Standardabmeldung. Kein D1 und keine eigene Abmeldedatenbank.
 
-Die 135 vorhandenen Newsletter-Kontakte werden nicht erneut angemeldet, ihre Einwilligungen nicht umgedeutet und keine rückwirkenden DOI-Nachweise gesetzt. **VU | App-Warteliste (5)** und **VU | Newsletter-Test (6)** bleiben unverändert und werden vom Formular nicht verwendet; 13 Nicht-Abonnenten bleiben ausgeschlossen. Brevo übernimmt den neuen Anmelde-/DOI-/Abmeldeweg. Die Landingpage bleibt statisch, ohne D1, eigenen DOI-Endpunkt oder API-Schlüssel im Browser/Build.
+Jeder vorhandene Kontakt wird übersprungen – auch Abmeldungen, Sperren, interne Empfänger und ungeklärte Bestandswerte. Die 135 Altobjekte werden nicht verändert; Listen 5/6 und 13 Nicht-Abonnenten bleiben unberührt. Keine normalen Kontaktanlagen oder Entsperrungen als DOI-Ersatz. Neue deutsche [API-DOI-Vorlage](mail/newsletter-api-doi.html) mit **`{{ params.DOIurl }}`**; die native Formularvorlage 4 mit `{{ doubleoptin }}` wird unverändert erhalten und nicht dafür benutzt.
 
-Die bisherigen App-Vorlagen **1, 2 und 3** werden auf belegbare Nutzung geprüft und nicht überschrieben oder gelöscht. Die separate deutsche [Newsletter-DOI-Vorlage](mail/newsletter-doi.html), tatsächlich als **ID 4** angelegt und API-rückgelesen, verwendet `{{ doubleoptin }}`. API-Rücklesen beweist nicht ihre Auswahl im Formular oder einen funktionierenden Mail-Link. [Aktueller Nutzungsnachweis, exakter Brevo-Klickweg und Abnahme](NEWSLETTER.md).
+**Öffentlich geschlossen.** Drei Runtime-Gates und der Build-Gate verlangen echten DOI-/Marketing-Abmeldetest und Freigabe des konkreten Datenschutztextes. Der private Preview-Test akzeptiert ausschließlich eine ausdrücklich bereitgestellte, neue kontrollierte Adresse. Schlüssel liegen nur in verschlüsselten Runtime-Secrets und werden weder vom Build gelesen noch an Browser/Logs ausgegeben. [Zugriffsbelege, tatsächlicher Stand, genau ein nötiger Kontoschritt und Testablauf](NEWSLETTER.md).
 
-**Öffentlich weiterhin gesperrt:** tatsächliche Anmelde-/Abmelde-URLs, kontrollierter echter DOI-/Abmeldetest und Freigabe des konkreten Datenschutztextes fehlen. `newsletter.config.example.json` bleibt gesperrt; ein Merge öffnet die Anmeldung nicht. Keine weitere Cloudflare-D1- oder API-Token-Einrichtung.
+Missbrauchsschutz: gleiche Herkunft, Eingabe-/Größenprüfung, Honeypot, HMAC-Zähler und Reservierung im Edge-Cache, Brevo-Sperr-/Versandabgleich und anfängliches DOI-Budget. Die Cache-Sperren wirken pro Rechenzentrum und sind nicht global atomar; Brevo-Statistiken können verzögert sein. WAF-Regeln sind mit den vorhandenen Tokens nicht lesbar und werden nicht als eingerichtet behauptet. Keine zusätzliche WAF-/Turnstile-/D1-/Token-Einrichtung verlangt.
 
 ## Historische GitHub-Pages-Vorbereitung
 

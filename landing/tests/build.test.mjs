@@ -17,21 +17,16 @@ test('Ungültige oder unvollständige Konfiguration wird abgelehnt',()=>{
 test('Öffentlicher Build benötigt passende geprüfte Datenschutzhinweise',async()=>{
   await assert.rejects(build({production:true,output:resolve(root,'tests/output/production-blocked')}),/Datenschutzhinweise/);
 });
-test('Konfiguriertes Formular bettet Brevo ein; keine eigenen Eingaben oder POSTs',async()=>{
+test('Freigegebenes Formular behält eigene Oberfläche und sendet ausschließlich zur eigenen API',async()=>{
   await mkdir(resolve(root,'tests/output'),{recursive:true});
   await writeFile(resolve(root,'tests/output/privacy-fixture.html'),'<!doctype html><html lang="de"><head><title>Nur Testfixture</title></head><body>Kein freigegebener Rechtstext</body></html>');
   const output=resolve(root,'tests/output/ready');
-  await build({output,config:{formUrl:'https://test.sibforms.com/serve/SYNTHETIC_FORM',unsubscribeFormUrl:'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
+  await build({output,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
   const html=await readFile(resolve(output,'index.html'),'utf8');
-  assert.match(html,/iframe title="Anmeldung zum Vision-Universe-Newsletter"/);
-  assert.match(html,/src="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_FORM"/);
-  assert.match(html,/referrerpolicy="no-referrer"/);assert.match(html,/rel="noopener noreferrer"/);
-  assert.doesNotMatch(html,/<form\b|name="EMAIL"|name="OPT_IN"|\/api\/waitlist/);
-  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/connect-src 'none'; form-action 'none'; frame-src https:\/\/test.sibforms.com/);
-  const confirmed=await readFile(resolve(output,'newsletter/bestaetigt/index.html'),'utf8');
-  assert.match(confirmed,/href="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_UNSUBSCRIBE"/);
-  assert.match(confirmed,/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
-  assert.doesNotMatch(confirmed,/<script|params\.|token|\/api\//);
+  assert.match(html,/action="\/api\/newsletter\/subscribe"/);
+  assert.match(html,/name="EMAIL"/);assert.match(html,/name="OPT_IN"/);assert.doesNotMatch(html,/<iframe|sibforms|<fieldset disabled>|novalidate/);
+  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'; frame-src 'none'/);
+  const confirmed=await readFile(resolve(output,'newsletter/bestaetigt/index.html'),'utf8');assert.match(confirmed,/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.doesNotMatch(confirmed,/<script|token|\/api\//);
 
 });
 test('Build darf keine Research- oder beliebigen Verzeichnisse überschreiben',async()=>{

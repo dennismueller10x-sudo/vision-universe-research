@@ -12,7 +12,7 @@ await mkdir(output,{recursive:true});
 const privacyPath=resolve(root,'tests/output/privacy-fixture.html');
 await writeFile(privacyPath,'<!doctype html><html lang="de"><head><title>Testfixture</title></head><body>Nur für Integrationstests.</body></html>');
 await build({output:resolve(output,'blocked')});
-await build({output:resolve(output,'ready'),config:{formUrl:'https://test.sibforms.com/serve/SYNTHETIC_FORM',unsubscribeFormUrl:'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
+await build({output:resolve(output,'ready'),config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
   try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
@@ -53,35 +53,39 @@ try{
     });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();
   }
-  // Provider fixture proves iframe integration, never real DOI or mail delivery.
+  // All network responses below are synthetic; no real contacts or messages.
   for(const width of [1440,390,320]){
-    const page=await browser.newPage({viewport:{width,height:844}});
-    let providerLoads=0;
-    await page.route('https://test.sibforms.com/**',async route=>{
-      providerLoads++;
-      assert.equal(route.request().method(),'GET');
-      assert.equal(route.request().headers()['referer'],undefined);
-      await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:12px"><h1>Nur synthetisches Brevo-Formular</h1><label>E-Mail <input type="email" required></label><p>Diese Fixture meldet niemanden an.</p></body></html>'});
+    const context=await browser.newContext({viewport:{width,height:844}});const page=await context.newPage();const posts=[];
+    await page.route('**/api/newsletter/subscribe',async route=>{
+      posts.push({method:route.request().method(),data:JSON.parse(route.request().postData())});
+      await route.fulfill({status:202,contentType:'application/json',body:JSON.stringify({message:'Wenn eine neue Anmeldung möglich ist, erhältst du eine Bestätigungsmail. Bitte prüfe dein Postfach.'})});
     });
     await page.goto(base+'/ready/',{waitUntil:'networkidle'});
-    await page.locator('iframe').scrollIntoViewIfNeeded();
-    await page.frameLocator('iframe').locator('h1').waitFor();
-    assert.equal(providerLoads,1);
-    assert.equal(await page.locator('#newsletter-form,input[name=EMAIL]').count(),0);
+    assert.equal(await page.locator('iframe').count(),0);assert.equal(await page.locator('#email').isDisabled(),false);
+    await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/E-Mail-Adresse/);
+    await page.locator('#email').fill('bad');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);
+    await page.locator('#email').fill('qa+new@example.test');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
+    await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);
+    await page.locator('#email-address-check').fill('');await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/offline/);await page.context().setOffline(false);
+    await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));
+    assert.equal(posts.length,1);assert.deepEqual(posts[0],{method:'POST',data:{email:'qa+new@example.test',consent:true,consentVersion:'vu-newsletter-v1',honeypot:''}});
+    assert.equal(await page.locator('button[type=submit]').isDisabled(),true);assert.equal(new URL(page.url()).pathname,'/ready/');
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
-    assert.equal(await page.locator('iframe').getAttribute('title'),'Anmeldung zum Vision-Universe-Newsletter');
-    assert.ok(await page.locator('.brevo-form a').isVisible());
-    await page.goto(base+'/ready/newsletter/bestaetigt/');
-    assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
-    assert.equal(await page.locator('#brevo-unsubscribe a').getAttribute('href'),'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE');
-    assert.equal(await page.locator('main button,main input').count(),0);
-    await page.close();
+    const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>v.id),[]);
+    await page.goto(base+'/ready/newsletter/bestaetigt/');assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.equal(await page.locator('main button,main input').count(),0);
+    await context.close();
   }
-  const nojs=await browser.newContext({javaScriptEnabled:false});
-  const page=await nojs.newPage();await page.goto(base+'/blocked/');
-  assert.equal(await page.locator('#email').isDisabled(),true);
-  assert.equal(await page.locator('iframe').count(),0);
-  await nojs.close();
-  await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Brevo-Iframe mit abgefangener synthetischer Providerseite geprüft. Kein echter Brevo-Kontakt, Postfach- oder Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
-  console.log(JSON.stringify({metrics,formChecks:'blocked/no-JS, synthetic provider iframe at 1440/390/320, no parent POST, no referrer, static redirect notice, provider unsubscribe link',liveBrevo:'BLOCKED'},null,2));
+  const page=await browser.newPage();
+  await page.route('**/api/newsletter/subscribe',route=>route.abort());
+  await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
+  await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
+  const nojs=await browser.newContext({javaScriptEnabled:false});const native=await nojs.newPage();
+  await native.goto(base+'/blocked/');assert.equal(await native.locator('#email').isDisabled(),true);
+  await native.route('**/api/newsletter/subscribe',async route=>{
+    assert.equal(route.request().method(),'POST');const body=new URLSearchParams(route.request().postData());assert.equal(body.get('CONSENT_VERSION'),'vu-newsletter-v1');assert.equal(body.get('OPT_IN'),'1');
+    await route.fulfill({status:303,headers:{Location:'/ready/newsletter/bestaetigen/'}});
+  });
+  await native.goto(base+'/ready/');await native.locator('#email').fill('qa@example.test');await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('**/newsletter/bestaetigen/');assert.match(await native.locator('main').innerText(),/Bestätigungsmail/);await nojs.close();
+  await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Eigene Formularoberfläche und gleiche Herkunft mit synthetischen API-Antworten geprüft. Kein echter Postfach-/Klick-/Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
+  console.log(JSON.stringify({metrics,formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}
