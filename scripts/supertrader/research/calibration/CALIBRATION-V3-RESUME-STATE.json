@@ -237,9 +237,10 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "runId": null,
-    "status": "NOT_STARTED",
-    "purpose": "Repeat the low-output read-only run with canonical mode explicitly enabled, and status-only output; reject previous compact-mode status."
+    "runId": 38568980568,
+    "head": "38579ac8903fae79cd696e9ae01947f4f11d55aa",
+    "status": "IN_PROGRESS",
+    "purpose": "Corrected status-only canonical normalization now explicitly activates canonical mode and emits bounded rejection details without encrypted bulk recapture."
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
@@ -266,5 +267,5 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Trigger corrected status-only canonical diagnostic. Verify status.mode=READ_ONLY_CANONICAL_INVENTORY and exactly 2 allowlisted corporate-action detail counts before freezing."
+  "exactNextStep": "Verify run 38568980568 output has mode READ_ONLY_CANONICAL_INVENTORY and aggregate detail counts totaling two CORPORATE_ACTION_CONTRADICTED segments; hash the status Artifact. Then persist cause and create V3 freeze."
 }
