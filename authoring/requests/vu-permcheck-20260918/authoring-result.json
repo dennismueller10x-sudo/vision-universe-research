@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "vu-permcheck-brief-20260918",
+  "content_id": "vu-permcheck-20260918",
+  "fixture_type": "github_app_permission_unattended_write_check",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "curiosity-gap-system-proof-v2",
+    "hook_type": "curiosity_gap",
+    "instruction": "Formuliere neugierig machende Fragen zum automatischen Text-und-Bild-Roundtrip. Keine Marktbehauptung, keine Renditeaussage und keine alternative Hook-Strategie.",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:curiosity_gap:01",
+      "hook_type": "curiosity_gap",
+      "text": "Was passiert, wenn ein einziges PR-Ereignis selbstständig Text und ein echtes Bild bis zurück nach GitHub schreibt?",
+      "brief_revision": "97b580d41878d32fbb68eac4edcf09cf271ad6b9"
+    },
+    {
+      "hook_variant_id": "vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:curiosity_gap:02",
+      "hook_type": "curiosity_gap",
+      "text": "Kann ein Creative Agent aus einem strukturierten Brief vollautomatisch ein prüfbares Text-und-Bild-Ergebnis erzeugen?",
+      "brief_revision": "97b580d41878d32fbb68eac4edcf09cf271ad6b9"
+    },
+    {
+      "hook_variant_id": "vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:curiosity_gap:03",
+      "hook_type": "curiosity_gap",
+      "text": "Woran lässt sich erkennen, dass aus einem GitHub-Brief ohne manuellen Zwischenstopp ein echtes Bildasset wird?",
+      "brief_revision": "97b580d41878d32fbb68eac4edcf09cf271ad6b9"
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:curiosity_gap:01",
+    "recommendation_reason": "Die Variante benennt Ereignis, Text, reales Bild und den GitHub-Roundtrip in einer einzigen neugierig machenden Frage.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Dieser technische Proof prüft einen geschlossenen, unbeaufsichtigten Authoring-Pfad: Ein strukturiertes GitHub-Briefing löst innerhalb der vorgegebenen Hook- und Visual-Strategie mehrere Textvarianten, einen Visual Brief und ein reales Bildasset aus. Ergebnis und Binärdatei werden prüfbar auf den isolierten Request-Branch zurückgeschrieben. Testfixture – keine Marktbehauptung, keine Anlageberatung und keine Veröffentlichung.",
+  "visual_brief": {
+    "purpose": "Technischer Nachweis des unbeaufsichtigten Text-und-Bild-Roundtrips",
+    "visual_strategy": "FUTURE_TECH",
+    "motif": "Ein präzises, geschichtetes Datenmodul fließt durch einen leuchtenden Creative-Core und wird zu einem fertigen Bildpanel.",
+    "composition": "Quadratischer, horizontal zentrierter Transformationsfluss mit großzügigem Negativraum.",
+    "style": "Premium cinematic 3D technology visualization",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "lighting": "Kontrolliertes dramatisches Studiolicht mit subtiler volumetrischer Leuchtwirkung.",
+    "materials": [
+      "polished chrome",
+      "smoked glass",
+      "luminous energy",
+      "fine particles"
+    ],
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Aktienkurse",
+      "Keine Renditezahlen",
+      "Keine Marktprognose",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:visual:FUTURE_TECH:01",
+      "visual_strategy": "FUTURE_TECH",
+      "brief_revision": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+      "asset_path": "authoring/requests/vu-permcheck-20260918/assets/visual-01.png",
+      "asset_sha256": "5a0a10e89f9842e9e068518b557ccd12f85679f3922fd9e04bfdd169050c8e27",
+      "mime_type": "image/png",
+      "width": 1254,
+      "height": 1254,
+      "asset_byte_size": 1484509
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "brief-hook-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/hook_strategy",
+      "supports": "hook strategy and hook type"
+    },
+    {
+      "ref_id": "brief-visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "visual strategy, motif boundaries and restrictions"
+    },
+    {
+      "ref_id": "brief-asset-requirements",
+      "source": "authoring-brief.json",
+      "json_pointer": "/asset_requirements",
+      "supports": "asset count, MIME preference and deterministic asset path"
+    },
+    {
+      "ref_id": "brief-publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_technical_proof",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "hook_strategy_inherited": true,
+      "hook_variant_count_met": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "visual_strategy_inherited": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "asset_hash_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true,
+      "asset_byte_size_recorded": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+    "brief_revision": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+    "processing_key": "vu-permcheck-brief-20260918:vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
