@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-14T01:36:21.925Z",
+  "generatedAt": "2026-10-14T02:30:09.611Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6686
   },
   "sources": {
-    "ingestStatus": "2026-10-13T04:13:55.374Z",
-    "factors": "2026-10-13T04:14:42.397Z",
+    "ingestStatus": "2026-10-14T02:26:50.325Z",
+    "factors": "2026-10-14T02:28:15.121Z",
     "intradaySession": "2026-10-13",
-    "discover": "2026-10-13T15:28:04.692Z"
+    "discover": "2026-10-14T02:30:04.967Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -21,41 +21,41 @@
     "tiingoResolved": 6686,
     "tiingoUnresolved": 0,
     "marketDataFetched": 6686,
-    "historicalAvailable": 5742,
+    "historicalAvailable": 5743,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 5127,
-    "liveCapable": 1399,
-    "factorEligible": 6579,
+    "intradayAvailable": 1399,
+    "liveCapable": 1350,
+    "factorEligible": 6580,
     "fundamentals": 5215,
     "fundamentals10y": 2210,
     "fundamentals5y": 3412,
     "fundamentalsTtm": 5030,
-    "discoverEligible": 5927,
-    "stockPages": 6126,
+    "discoverEligible": 5930,
+    "stockPages": 6127,
     "namesMissing": 20,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3728,
-    "NO_IEX_BARS": 1558,
+    "NO_INTRADAY_SNAPSHOT": 5244,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
     "INSUFFICIENT_HISTORY": 927,
-    "NO_STOCK_PAGE": 560,
+    "NO_STOCK_PAGE": 559,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 462,
-    "NOT_TRADING:STALE_SERIES": 188,
+    "NOT_TRADING:STALE_SERIES": 187,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 125,
-    "NO_FACTOR_ROW:FAIL": 102,
-    "NO_DISCOVER_CARD": 91,
+    "NO_FACTOR_ROW:FAIL": 101,
+    "NO_DISCOVER_CARD": 90,
+    "NOT_IN_LIVE_SCOPE": 49,
+    "NO_IEX_BARS": 43,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
-    "NO_COMPACT_SERIES": 15,
-    "NOT_TRADING:DATA_QUALITY_REVIEW": 11,
+    "NO_COMPACT_SERIES": 14,
+    "NOT_TRADING:DATA_QUALITY_REVIEW": 10,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
-    "QUALITY_REJECTED:too_few_bars": 2,
-    "NO_INTRADAY_SNAPSHOT": 1
+    "QUALITY_REJECTED:too_few_bars": 2
   },
   "spotCheck": [
     {
