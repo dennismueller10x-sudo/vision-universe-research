@@ -1,0 +1,147 @@
+{
+  "source": "Official Higgsfield API model documentation, checked 2026-10-14",
+  "source_priority": "Model-specific docs are authoritative; console account access remains unverified.",
+  "models": [
+    {
+      "name": "Kling 3.0 Standard",
+      "model_id": "kling-video/v3.0/std",
+      "provider": "Kuaishou / Kling",
+      "operations": {
+        "text_to_video": "kling-video/v3.0/std/text-to-video",
+        "image_to_video": "kling-video/v3.0/std/image-to-video"
+      },
+      "reference_images": "single input image as first frame; optional last_image_url; no multi-reference support documented here",
+      "native_audio": true,
+      "duration_seconds": {
+        "min": 3,
+        "max": 15
+      },
+      "resolutions": null,
+      "aspect_ratios": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "seed": false,
+      "price": {
+        "method": "account-specific estimate endpoint required",
+        "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+        "promotional_listing": {
+          "displayed_from_usd_per_second": "0.042",
+          "displayed_regular_usd_per_second": "0.084",
+          "source": "https://open.higgsfield.ai/quick-start",
+          "checked_on": "2026-10-14",
+          "qualification": "Promotional 'from' listing; not an account quote or guaranteed total. Always use the authenticated estimate endpoint."
+        }
+      },
+      "documentation": [
+        "https://docs.higgsfield.ai/docs/models/kling-3/standard-text-to-video.md",
+        "https://docs.higgsfield.ai/docs/models/kling-3/standard-image-to-video.md"
+      ],
+      "availability": "documented; account entitlement not verified"
+    },
+    {
+      "name": "Seedance 2.0",
+      "model_id": "bytedance/seedance-2.0",
+      "provider": "ByteDance",
+      "operations": {
+        "text_to_video": "bytedance/seedance-2.0/text-to-video",
+        "image_to_video": "bytedance/seedance-2.0/image-to-video",
+        "reference_to_video": "bytedance/seedance-2.0/reference-to-video"
+      },
+      "reference_images": "image_url for first frame; reference_to_video accepts image_urls (up to 9) and media arrays",
+      "native_audio": true,
+      "duration_seconds": {
+        "min": 1,
+        "max": 15
+      },
+      "resolutions": [
+        "480p",
+        "720p",
+        "1080p",
+        "4k"
+      ],
+      "aspect_ratios": [
+        "16:9",
+        "4:3",
+        "1:1",
+        "3:4",
+        "9:16",
+        "21:9"
+      ],
+      "seed": false,
+      "price": {
+        "method": "account-specific estimate endpoint required",
+        "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+        "promotional_listing": {
+          "displayed_from_usd_per_second": "0.099",
+          "displayed_regular_usd_per_second": "0.141",
+          "source": "https://open.higgsfield.ai/quick-start",
+          "checked_on": "2026-10-14",
+          "qualification": "Promotional 'from' listing; not an account quote or guaranteed total. Always use the authenticated estimate endpoint."
+        }
+      },
+      "documentation": [
+        "https://docs.higgsfield.ai/docs/models/seedance-2/text-to-video.md",
+        "https://docs.higgsfield.ai/docs/models/seedance-2/image-to-video.md",
+        "https://docs.higgsfield.ai/docs/models/seedance-2/reference-to-video.md"
+      ],
+      "availability": "documented; account entitlement not verified"
+    },
+    {
+      "name": "Seedance 2.5",
+      "model_id": "bytedance/seedance-2.5",
+      "provider": "ByteDance",
+      "approved_production_reference": {
+        "asset_id": "vu-the-arrival-final-master-20261014",
+        "path": "brand-media/higgsfield/references/the-arrival-final-master.jpg",
+        "sha256": "f447e8eb2a4a30b430978e407390fa9b611dba9002ab7bcfaa5fd027f67f02a1",
+        "width": 1536,
+        "height": 864,
+        "status": "sole approved visual reference for THE ARRIVAL Higgsfield Seedance 2.5 production"
+      },
+      "operations": {
+        "text_to_video": "bytedance/seedance-2.5/text-to-video",
+        "image_to_video": "bytedance/seedance-2.5/image-to-video",
+        "reference_to_video": "bytedance/seedance-2.5/reference-to-video"
+      },
+      "reference_images": "image_url for first frame; reference_to_video accepts image_urls (up to 30) and media arrays",
+      "native_audio": true,
+      "duration_seconds": {
+        "min": 1,
+        "max": 30
+      },
+      "resolutions": [
+        "480p",
+        "720p",
+        "1080p"
+      ],
+      "aspect_ratios": [
+        "16:9",
+        "4:3",
+        "1:1",
+        "3:4",
+        "9:16",
+        "21:9"
+      ],
+      "seed": false,
+      "price": {
+        "method": "account-specific estimate endpoint required",
+        "source": "https://docs.higgsfield.ai/docs/concepts/billing-and-retention.md",
+        "promotional_listing": {
+          "displayed_from_usd_per_second": "0.144",
+          "displayed_regular_usd_per_second": "0.206",
+          "source": "https://open.higgsfield.ai/quick-start",
+          "checked_on": "2026-10-14",
+          "qualification": "Promotional 'from' listing; not an account quote or guaranteed total. Always use the authenticated estimate endpoint."
+        }
+      },
+      "documentation": [
+        "https://docs.higgsfield.ai/docs/models/seedance-2-5/text-to-video.md",
+        "https://docs.higgsfield.ai/docs/models/seedance-2-5/image-to-video.md",
+        "https://docs.higgsfield.ai/docs/models/seedance-2-5/reference-to-video.md"
+      ],
+      "availability": "documented; account entitlement not verified"
+    }
+  ]
+}
