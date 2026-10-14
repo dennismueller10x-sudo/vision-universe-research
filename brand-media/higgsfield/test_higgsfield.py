@@ -107,6 +107,39 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(metadata["estimate"], None)
         self.assertEqual(metadata["actual_cost"], None)
 
+    def test_status_download_is_read_only(self):
+        calls = []
+
+        class FakeClient:
+            def __init__(self, api_key):
+                self.api_key = api_key
+            def status(self, request_id):
+                calls.append(("status", request_id))
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination):
+                calls.append(("download", url))
+                Path(destination).write_bytes(b"test mp4")
+            def estimate(self, *args, **kwargs):
+                raise AssertionError("status retrieval must not estimate")
+            def submit(self, *args, **kwargs):
+                raise AssertionError("status retrieval must not generate")
+
+        args = SimpleNamespace(
+            action="status", model="alibaba/wan-3.0", request_id="request-123",
+            output_dir="", prompt="approved prompt",
+        )
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {"HIGGSFIELD_API_KEY": "test-secret"}), patch.object(higgsfield, "Client", FakeClient):
+            args.output_dir = temp
+            higgsfield.run(args)
+            video = Path(temp) / "request-123.mp4"
+            downloaded = video.is_file()
+            metadata = json.loads((Path(temp) / "request-123.json").read_text(encoding="utf-8"))
+
+        self.assertTrue(downloaded)
+        self.assertEqual(calls[0], ("status", "request-123"))
+        self.assertEqual([call[0] for call in calls], ["status", "download"])
+        self.assertIsNone(metadata["actual_cost"])
+
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):
             higgsfield.Client("")
