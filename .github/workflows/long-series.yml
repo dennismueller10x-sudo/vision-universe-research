@@ -7,7 +7,11 @@ name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
 # (quant/data/market/discover-series-long/). Die Tagesreihe des juengsten
 # Jahres haengt der Client hinten an.
 #
-# Zeitplan nur auf dem Default-Branch: monatlich, erster Samstag. Oefter
+# Zeitplan nur auf dem Default-Branch: Samstag innerhalb der ersten sieben
+# Kalendertage ODER am 1.-7. des Monats (GitHub verknuepft Tag-des-Monats und
+# Wochentag mit ODER; faktisch also jeden Samstag und die ersten sieben Tage
+# des Monats). Gezielter Nachbau einzelner Titel (z. B. nach einem Reverse
+# Split, DQ-PX-4): workflow_dispatch mit `only`. Urspruenglicher Gedanke: Oefter
 # ist nicht noetig - der Client haengt die taegliche Jahresreihe hinten an,
 # die Wochenreihe muss nur bis an deren Anfang reichen. (6 308 Reihen sind
 # rund 113 MB; jeder Lauf schreibt sie neu, die Git-Historie waechst
@@ -17,6 +21,11 @@ name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
 
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Nur diese Kuerzel neu bauen (kommagetrennt, z. B. NXGL,ZBAO). Leer = alle im Umfang.'
+        required: false
+        default: ''
   schedule:
     - cron: '40 7 1-7 * 6'
   push:
@@ -69,7 +78,15 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/market/publish-long-series.mjs
+          ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
+        run: |
+          # Eingabe nur ueber env (ADR-005); nur Kuerzel zulassen.
+          if [ -n "$ONLY" ]; then
+            if ! printf '%s' "$ONLY" | grep -Eq '^[A-Za-z0-9.,-]+$'; then echo "Ungueltige Kuerzel-Liste."; exit 1; fi
+            node scripts/market/publish-long-series.mjs --only="$ONLY"
+          else
+            node scripts/market/publish-long-series.mjs
+          fi
 
       - name: Abhaengige Discover-Daten neu bauen
         run: |

@@ -15,12 +15,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "ci"))
+from isolated_git_env import isolated_git_env  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[3]
 SKRIPT = ROOT / "scripts" / "ci" / "pruefe-datengroesse.sh"
 
 
 def git(*args, cwd):
-    subprocess.run(["git", *args], cwd=cwd, check=True,
+    subprocess.run(["git", *args], cwd=cwd, check=True, env=isolated_git_env(),
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -42,7 +45,7 @@ class GroessenkontrolleTests(unittest.TestCase):
     def _lauf(self, grenze="400"):
         return subprocess.run(
             ["bash", str(SKRIPT)], cwd=self.repo, capture_output=True, text=True,
-            env={**os.environ, "GRENZE_MB": grenze})
+            env=isolated_git_env({"GRENZE_MB": grenze}))
 
     def _schreibe(self, pfad, megabyte):
         ziel = self.repo / pfad
@@ -97,7 +100,7 @@ class CommitAndPushKonfliktTests(unittest.TestCase):
     SKRIPT = Path(__file__).resolve().parents[3] / "scripts" / "ci" / "commit-and-push.sh"
 
     def _git(self, cwd, *args):
-        return subprocess.run(["git", *args], cwd=cwd, check=True, text=True,
+        return subprocess.run(["git", *args], cwd=cwd, check=True, env=isolated_git_env(), text=True,
                               capture_output=True).stdout
 
     def setUp(self):
@@ -119,7 +122,7 @@ class CommitAndPushKonfliktTests(unittest.TestCase):
         self._git(self.lauf, "pull", "-q", "origin", "main")
 
     def _skript(self, cwd, *pfade):
-        env = dict(os.environ, GITHUB_REF_NAME="main")
+        env = isolated_git_env({"GITHUB_REF_NAME": "main"})
         return subprocess.run(["bash", str(self.SKRIPT), "Laufergebnis", *pfade], cwd=cwd,
                               env=env, text=True, capture_output=True)
 
@@ -133,7 +136,7 @@ class CommitAndPushKonfliktTests(unittest.TestCase):
         ergebnis = self._skript(self.lauf, "gen.json")
         self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)
         self._git(self.upstream, "fetch", "-q", "origin")
-        inhalt = subprocess.run(["git", "show", "origin/main:gen.json"], cwd=self.upstream,
+        inhalt = subprocess.run(["git", "show", "origin/main:gen.json"], cwd=self.upstream, env=isolated_git_env(),
                                 check=True, text=True, capture_output=True).stdout
         self.assertNotIn("<<<<<<<", inhalt)
         self.assertEqual(json.loads(inhalt)["generatedAt"], "LAUF")
@@ -164,7 +167,7 @@ class JsonPruefungTests(unittest.TestCase):
         return root
 
     def _lauf(self, root):
-        return subprocess.run(["bash", str(self.SKRIPT)], cwd=root, text=True, capture_output=True)
+        return subprocess.run(["bash", str(self.SKRIPT)], cwd=root, env=isolated_git_env(), text=True, capture_output=True)
 
     def test_gueltiges_json_besteht(self):
         self.assertEqual(self._lauf(self._repo('{"a": 1}\n')).returncode, 0)

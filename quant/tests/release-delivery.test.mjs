@@ -7,6 +7,7 @@
    (vu2 gebündelt, quant/ leitete nach /vu2/ um); die Fixture baut deshalb
    jetzt quant/index.html mit Skript statt vu2/index.html. */
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {createRequire} from 'node:module';
+import '../../scripts/ci/scrub-git-env.mjs';import {isolatedGitEnv} from '../../scripts/ci/isolated-git-env.mjs';
 import {projectInspector,permitted,SEC_BUDGET} from '../../scripts/vu2/build-release.mjs';
 const require=createRequire(import.meta.url),History=require('../api/fundamentals-contract.js');
 const load=p=>JSON.parse(readFileSync(new URL('../data/sec/'+p,import.meta.url)));
@@ -19,7 +20,7 @@ test('release projection preserves every existing history metric and period resu
  }
 });
 test('full SEC/fundamental stores and test fixtures cannot enter the static artifact',()=>{
- for(const path of ['quant/data/sec/consumer/a.json','quant/data/sec/canonical/a.json','quant/data/sec/inspector/a.json','quant/data/fundamentals/issuers/a.json','quant/tests/fixtures/a.json','.env','.git/config'])assert.equal(permitted(path),false,path);
+ for(const path of ['quant/data/sec/consumer/a.json','quant/data/sec/canonical/a.json','quant/data/sec/inspector/a.json','quant/data/fundamentals/issuers/a.json','quant/tests/fixtures/a.json','.env','.git/config','brand-media/originals/lea_master_original.png','brand-media/registry/asset-registry.json'])assert.equal(permitted(path),false,path);
  for(const path of ['vu2/index.html','Quant/index.html','quant/index.html','quant/app/app.js','quant/app/app.css','discover/data/stocks/NVDA.json','quant/api/product-services.js','CNAME','.nojekyll'])assert.equal(permitted(path),true,path);
  assert.equal(SEC_BUDGET,8388608);
 });
@@ -40,8 +41,8 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await writeFile(join(root,'quant/app/ui.js'),'var ui=0;');await writeFile(join(root,'quant/app/app.js'),'void 0;');
   /* Die Quelle von vu2/index.html ist irrelevant: das Release ueberschreibt sie mit der Weiterleitung. */
   await mkdir(join(root,'vu2'));await writeFile(join(root,'vu2/index.html'),'<body>alt</body>');
-  execFileSync('git',['init','-q'],{cwd:root});execFileSync('git',['add','.'],{cwd:root});
-  execFileSync('git',['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture'],{cwd:root});
+  execFileSync('git',['init','-q'],{cwd:root,env:isolatedGitEnv()});execFileSync('git',['add','.'],{cwd:root,env:isolatedGitEnv()});
+  execFileSync('git',['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture'],{cwd:root,env:isolatedGitEnv()});
   await assert.rejects(buildRelease({root,output:join(root,'site')}),/OUTPUT_MUST_BE_OUTSIDE_SOURCE/);
   const report=await buildRelease({root,output});assert.equal(report.status,'PASS');
   /* /quant/ ist das gebuendelte kanonische Produkt. */
@@ -72,7 +73,7 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await assert.rejects(readFile(join(output,'quant/data/sec/canonical/private.json')),/ENOENT/);
   await assert.rejects(readFile(join(output,'quant/data/sec/consumer/private.json')),/ENOENT/);
   await assert.rejects(buildRelease({root,output}),/OUTPUT_NOT_EMPTY/);
-  await symlink(join(root,'quant/data/sec/canonical/private.json'),join(root,'leak.json'));execFileSync('git',['add','leak.json'],{cwd:root});
+  await symlink(join(root,'quant/data/sec/canonical/private.json'),join(root,'leak.json'));execFileSync('git',['add','leak.json'],{cwd:root,env:isolatedGitEnv()});
   await assert.rejects(buildRelease({root,output:join(tmp,'symlink-site')}),/NON_FILE_INPUT/);
  }finally{await rm(tmp,{recursive:true,force:true});}
 });

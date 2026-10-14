@@ -256,7 +256,7 @@
       "role": "Strategiesignale (CANSLIM, Minervini, Darvas, Weinstein, Turtle, ...) aus den gemeinsamen Kurs- und Fundamentaldaten.",
       "producer": "scripts/supertrader/build.mjs",
       "workflow": "supertrader-signals.yml",
-      "schedule": "Di-Sa 06:17 UTC",
+      "schedule": "Nach dem Nachtlauf: Stufe `supertrader` in market-data-refresh.yml stoesst den Workflow per workflow_dispatch an (nur bei validierten Daten, siehe scripts/ci/supertrader-chain.mjs). Rueckfall: Di-Sa 06:17 UTC (kommt erfahrungsgemaess Stunden zu spaet)",
       "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 2 },
       "consumers": ["/supertrader/", "Ask"]
     },

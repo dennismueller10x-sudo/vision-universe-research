@@ -29,10 +29,10 @@ try{
  const closed=await browser.newPage();await closed.goto(origin+'/discover/#/s/US_REAL/AAPL');await closed.waitForSelector('#research-access-gate');assert.equal(await closed.locator('.ci-company-intelligence').count(),0);await closed.close();
  const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);
  for(const ticker of (routine?['AAPL','XPEV']:['AAPL','NVDA','TSLA','MSFT','PLTR','GOOG','GOOGL','XPEV','BOH','SBSI','AMPY'])){
-  const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[],responses=[];
-  activePage=page;active={ticker,errors,responses};
+  const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[],responses=[],diagnostics=[];
+  activePage=page;active={ticker,errors,responses,diagnostics};
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
-  page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
+  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')diagnostics.push('console: '+m.text().slice(0,300));});page.on('requestfailed',r=>diagnostics.push('requestfailed: '+r.url().slice(0,200)+' '+(r.failure()?.errorText||'')));page.on('response',r=>{if(r.status()>=400&&r.url().startsWith(origin))diagnostics.push('http '+r.status()+' '+r.url().slice(0,200));});page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence h2');
   const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assertConsumerResponses(responses,ticker);
@@ -43,9 +43,10 @@ try{
  console.log(JSON.stringify({status:'PASS',sourceCommit:release.sourceCommit,generation:delivery.generation,assets:assetEntries.length,stocks:cases.length,routine}));
 }catch(error){
  const markers=activePage?await activePage.locator('.ci-company-intelligence').evaluateAll(es=>es.map(e=>({state:e.dataset.state,companyId:e.dataset.companyId,generatedAt:e.dataset.generatedAt,text:e.innerText.slice(0,1200)}))).catch(()=>[]):[];
+ const pageText=activePage?await activePage.evaluate(()=>document.body.innerText.slice(0,400)).catch(()=>null):null;
  const accessGate=activePage?await activePage.locator('#research-access-gate').count().catch(()=>null):null;
  if(activePage)await activePage.screenshot({path:out+'/failure.png'}).catch(()=>{});
  const message=String(error.message).replaceAll(process.env.RESEARCH_ACCESS_PASSWORD||'__NO_SECRET__','[REDACTED]').slice(0,2000);
- writeFileSync(out+'/report.json',JSON.stringify({status:'FAIL',sourceCommit:release.sourceCommit,generation:delivery.generation,active,markers,accessGate,error:{name:error.name,message},completedCases:cases.length},null,2)+'\n');
+ writeFileSync(out+'/report.json',JSON.stringify({status:'FAIL',sourceCommit:release.sourceCommit,generation:delivery.generation,active,markers,accessGate,pageText,error:{name:error.name,message},completedCases:cases.length},null,2)+'\n');
  throw error;
 }finally{await browser.close();}
