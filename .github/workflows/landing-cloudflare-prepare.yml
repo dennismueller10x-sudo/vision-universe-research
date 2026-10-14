@@ -1,14 +1,87 @@
 name: Coming-soon | bestehendes Cloudflare-Pages-Projekt prüfen
 on:
   workflow_dispatch:
+    inputs:
+      newsletter_operation:
+        description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
+        type: choice
+        options: [audit, setup, controlled, observe, close, public, e2e]
+        default: audit
+      authorize_controlled_test:
+        description: Nur observe/e2e – kontrollierte DOI- und administrative Testbestätigung erlauben
+        type: boolean
+        default: false
+      privacy_document_sha256:
+        description: SHA256 des konkret freigegebenen Datenschutzdokuments; niemals Schlüssel oder Adressen
+        type: string
+        default: ''
+      test_access_hash:
+        description: controlled – SHA256 eines privat übergebenen zufälligen Zugangscodes, niemals der Code selbst
+        type: string
+        default: ''
+      test_until_ms:
+        description: controlled – Ablauf als UTC Unix-Millisekunden, höchstens zwei Stunden
+        type: string
+        default: ''
+      verified_test_run_id:
+        description: public – erfolgreicher observe-Lauf mit unveränderter Operator-Quellversion
+        type: string
+        default: ''
+      inbox_verified:
+        description: public – Betreiber hat tatsächlichen Eingang, Inhalte, Klicks und Wiederholung privat bestätigt
+        type: boolean
+        default: false
 permissions:
   contents: read
+  actions: read
 concurrency:
-  group: landing-cloudflare-prepare-${{ github.ref_name }}
+  group: landing-cloudflare-prepare-${{ github.ref_name }}-${{ inputs.newsletter_operation == 'audit' && 'audit' || inputs.newsletter_operation == 'observe' && 'observer' || 'configure' }}
   cancel-in-progress: false
 jobs:
+  newsletter_server_operator:
+    if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/feat/brevo-app-waitlist-doi' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 605647e8d1becad59280e65c5c256309bed7ed7c
+          persist-credentials: false
+          sparse-checkout: landing
+      - name: Private audit or closed setup (no contact writes or emails)
+        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe'
+        env:
+          NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
+          NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
+          NEWSLETTER_OPERATOR_TEST_HASH: ${{ inputs.test_access_hash }}
+          NEWSLETTER_OPERATOR_TEST_UNTIL: ${{ inputs.test_until_ms }}
+          NEWSLETTER_OPERATOR_TEST_RUN_ID: ${{ inputs.verified_test_run_id }}
+          NEWSLETTER_OPERATOR_INBOX_VERIFIED: ${{ inputs.inbox_verified && 'true' || 'false' }}
+          GH_TOKEN: ${{ github.token }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LANDING_CLOUDFLARE_API_TOKEN: ${{ secrets.LANDING_CLOUDFLARE_API_TOKEN }}
+          BREVO_CLOUDFLARE_DNS_TOKEN: ${{ secrets.BREVO_CLOUDFLARE_DNS_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: python3 landing/scripts/newsletter-server-admin.py
+      - name: Explicit controlled DOI and unsubscribe test (never main-list delivery)
+        if: inputs.newsletter_operation == 'e2e' && inputs.authorize_controlled_test && github.ref == 'refs/heads/feat/brevo-app-waitlist-doi'
+        env:
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: ${{ inputs.authorize_controlled_test && 'true' || 'false' }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
+        run: python3 landing/scripts/newsletter-e2e.py
+      - name: Observe owner signup and verify Brevo unsubscribe
+        if: inputs.newsletter_operation == 'observe' && inputs.authorize_controlled_test && github.ref == 'refs/heads/main'
+        env:
+          NEWSLETTER_E2E_OPERATION: observe
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: python3 landing/scripts/newsletter-e2e.py
   prepare:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && inputs.newsletter_operation == 'audit'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

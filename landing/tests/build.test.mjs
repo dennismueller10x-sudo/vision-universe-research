@@ -12,20 +12,33 @@ test('Ohne Einrichtung bleibt das Formular auch ohne JavaScript gesperrt',async(
   assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'none'/);
 });
 test('Ungültige oder unvollständige Konfiguration wird abgelehnt',()=>{
-  for(const config of [{apiKey:'TEST-SECRET'}, {actionUrl:'https://evil.example/serve/id'}, {actionUrl:'https://test.sibforms.com/serve/TEST'}, {actionUrl:'https://test.sibforms.com/serve/TEST',doubleOptInVerified:true,privacyReviewed:true,privacyHtmlPath:'privacy.html',sourceAttribute:'EMAIL'}])assert.throws(()=>validateConfig(config));
+  for(const config of [{apiKey:'TEST-SECRET'}, {actionUrl:'https://evil.example/serve/id'}, {actionUrl:'https://test.sibforms.com/serve/TEST'}, {actionUrl:'/api/waitlist/signup',doubleOptInVerified:true,privacyReviewed:true,privacyHtmlPath:'privacy.html',sourceAttribute:'EMAIL'}])assert.throws(()=>validateConfig(config));
 });
 test('Öffentlicher Build benötigt passende geprüfte Datenschutzhinweise',async()=>{
   await assert.rejects(build({production:true,output:resolve(root,'tests/output/production-blocked')}),/Datenschutzhinweise/);
 });
-test('Konfiguriertes Formular sendet ausschließlich an Brevo mit Einwilligung und Quelle',async()=>{
+test('Freigegebenes Formular behält eigene Oberfläche und sendet ausschließlich zur eigenen API',async()=>{
   await mkdir(resolve(root,'tests/output'),{recursive:true});
   await writeFile(resolve(root,'tests/output/privacy-fixture.html'),'<!doctype html><html lang="de"><head><title>Nur Testfixture</title></head><body>Kein freigegebener Rechtstext</body></html>');
   const output=resolve(root,'tests/output/ready');
-  await build({output,config:{actionUrl:'https://test.sibforms.com/serve/TEST-ONLY',doubleOptInVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html',sourceAttribute:'SOURCE'}});
+  await build({output,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
   const html=await readFile(resolve(output,'index.html'),'utf8');
-  assert.match(html,/action="https:\/\/test.sibforms.com\/serve\/TEST-ONLY"/);assert.match(html,/name="SOURCE" value="Coming-soon-Landingpage"/);assert.match(html,/name="OPT_IN" type="checkbox" value="1" required/);assert.doesNotMatch(html,/<fieldset disabled>|checked[\s=>]|novalidate/);assert.match(html,/Bestätige darin deine Anmeldung/);
-  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action https:\/\/test.sibforms.com/);
+  assert.match(html,/action="\/api\/newsletter\/subscribe"/);
+  assert.match(html,/name="EMAIL"/);assert.match(html,/name="OPT_IN"/);assert.doesNotMatch(html,/<iframe|sibforms|<fieldset disabled>|novalidate/);
+  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'; frame-src 'none'/);
+  const confirmed=await readFile(resolve(output,'newsletter/bestaetigt/index.html'),'utf8');assert.match(confirmed,/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.doesNotMatch(confirmed,/<script|token|\/api\//);
+
 });
 test('Build darf keine Research- oder beliebigen Verzeichnisse überschreiben',async()=>{
   for(const output of [root,resolve(root,'..'),'/tmp/landing-unowned'])await assert.rejects(build({output}),/Ausgabe nur/);
+});
+test('Kontrollierter Hauptdomain-Build lässt normale Besucher geschlossen und verlangt konkrete Freigabe',async()=>{
+  assert.throws(()=>validateConfig({mode:'controlled'}),/Datenschutz/);
+  await mkdir(resolve(root,'tests/output'),{recursive:true});
+  await writeFile(resolve(root,'tests/output/privacy-controlled.html'),'<!doctype html><html lang="de"><head><title>Nur synthetische Freigabe</title></head><body>Test</body></html>');
+  const output=resolve(root,'tests/output/controlled');
+  await build({output,production:true,config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-controlled.html'}});
+  const html=await readFile(resolve(output,'index.html'),'utf8');
+  assert.match(html,/data-ready="false" data-controlled="true"/);assert.match(html,/<fieldset disabled>/);
+  assert.doesNotMatch(html,/NEWSLETTER_TEST_ACCESS_HASH|#vu-test=/);assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'/);
 });
