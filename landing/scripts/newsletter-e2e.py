@@ -46,7 +46,8 @@ def run():
     def events():
         result=[]
         for offset in range(0,1000,100):
-            page=read('/smtp/statistics/events?templateId=8&days=1&limit=100&offset='+str(offset)).get('events')
+            report=read('/smtp/statistics/events?templateId=8&days=1&limit=100&offset='+str(offset))
+            page=[] if report=={} else report.get('events')
             if not isinstance(page,list):raise ValueError('Event shape uncertain')
             result.extend(page)
             if len(page)<100:return result

@@ -122,8 +122,11 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         // Global provider events survive POP changes; API lag still exists.
         const events=await provider('/smtp/statistics/events?templateId='+encodeURIComponent(env.NEWSLETTER_DOI_TEMPLATE_ID||'')+'&email='+encodeURIComponent(email)+'&days=1&limit=1',env);
         if(events.status!==200)throw Error('Event read uncertain');
-        const history=await events.json();if(!Array.isArray(history.events))throw Error('Event shape');
-        if(history.events.length)return out(202,PENDING);
+        const history=await events.json();
+        // Brevo omits its optional events field for an empty successful report.
+        const eventRows=history&&typeof history==='object'&&!Array.isArray(history)&&Object.keys(history).length===0?[]:history?.events;
+        if(!Array.isArray(eventRows))throw Error('Event shape');
+        if(eventRows.length)return out(202,PENDING);
         const id=Number(env.NEWSLETTER_DOI_TEMPLATE_ID);
         if(!Number.isInteger(id)||id<=4)throw Error('Wrong template');
         const attributesResponse=await provider('/contacts/attributes',env);
