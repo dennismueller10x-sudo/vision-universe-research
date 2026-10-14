@@ -32,6 +32,27 @@ function parseArgs(argv){
  for(let i=0;i<argv.length;i+=2){const k=argv[i],v=argv[i+1];demand(allowed.includes(k)&&!(k in out)&&v&&!v.startsWith('--'),'EXPLICIT_UNIQUE_V3_ARGUMENTS_REQUIRED');out[k]=v;}
  demand(allowed.every(k=>out[k]),'ALL_V3_ARGUMENTS_REQUIRED');return out;
 }
+
+/** JSON-equivalent serializer that never builds one string above the V8 limit (~512 MB); returns a Buffer. */
+export function serializeLarge(value){
+ const parts=[];
+ const push=s=>parts.push(Buffer.from(s));
+ const walk=(v,depth)=>{
+  if(v===null||typeof v!=='object'||depth>=5){push(JSON.stringify(v)??'null');return;}
+  if(Array.isArray(v)){
+   push('[');
+   for(let i=0;i<v.length;i+=1000){const slice=JSON.stringify(v.slice(i,i+1000));push((i?',':'')+slice.slice(1,-1));}
+   push(']');return;
+  }
+  push('{');let first=true;
+  for(const [k,x] of Object.entries(v)){
+   if(x===undefined||typeof x==='function'||typeof x==='symbol')continue;
+   push((first?'':',')+JSON.stringify(k)+':');first=false;walk(x,depth+1);
+  }
+  push('}');
+ };
+ walk(value,0);return Buffer.concat(parts);
+}
 function seal(file,bytes){
  const keys=[['owner','scripts/supertrader/validation/results-public-key.pem'],['session','scripts/supertrader/research/tournament/session-public-key.pem']];
  const written=[];
@@ -68,7 +89,7 @@ export async function runMethodV3(args){
    metrics.effect=monthlyEffect(run);
    metrics.sourceLogRisk=sourceLogRisk(run,riskFreeDaily,frame.data.benchmark?.bars?.map(b=>b.date)??frame.data.calendar);
    const artifact={schema:'supertrader-calibration-v3-stock-construction-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,window:frame.protocol.window,run,metrics};
-   const bytes=Buffer.from(JSON.stringify(artifact));
+   const bytes=serializeLarge(artifact);
    const base=path.join(out,`${args['--method']}-${costMode}`);
    Object.assign(entry,{status:run.status,plaintextSha256:sha(bytes),plaintextBytes:bytes.length,sealed:seal(base,bytes),
     formations:{total:run.formations.length,ready:run.formations.filter(f=>f.status==='READY').length,partial:run.formations.filter(f=>f.status==='PARTIAL').length,other:run.formations.filter(f=>!['READY','PARTIAL'].includes(f.status)).length},
@@ -77,7 +98,7 @@ export async function runMethodV3(args){
   }catch(error){
    const code=/^[A-Z0-9_]+$/.test(error.message)?error.message:'PRIVATE_RUN_FAILURE';
    Object.assign(entry,{status:'FAILED_CLOSED',errorCode:code,bookTrace:publicTrace(error.bookTrace)});
-   entry.sealedFailure=seal(path.join(out,`${args['--method']}-${costMode}.failure`),Buffer.from(JSON.stringify({schema:'supertrader-calibration-v3-failure-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,errorName:error.name,message:error.message,stack:error.stack,bookTrace:error.bookTrace??null,parameterChanges:false})));
+   entry.errorClass=error.name;entry.errorHint=/^[A-Za-z ,.:'()_-]{1,80}$/.test(error.message)&&!/^[A-Z0-9_]+$/.test(error.message)?error.message:null;entry.sealedFailure=seal(path.join(out,`${args['--method']}-${costMode}.failure`),Buffer.from(JSON.stringify({schema:'supertrader-calibration-v3-failure-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,errorName:error.name,message:error.message,stack:error.stack,bookTrace:error.bookTrace??null,parameterChanges:false})));
   }
   summary.results.push(entry);if(global.gc)global.gc();
  }

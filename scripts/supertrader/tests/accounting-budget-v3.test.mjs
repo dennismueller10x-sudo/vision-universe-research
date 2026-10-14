@@ -26,3 +26,13 @@ test('v3 does not change an ordinary-price book and keeps the unchanged toleranc
  const r=V3.reconcileBook(b3);assert.equal(r.dustWriteOffs.count,0);
  const bad=run(V3,100);bad.trades[0].pnl+=1;assert.equal(V3.reconcileBook(bad).pass,false);
 });
+test('ordinary full closes are not recorded as dust write-offs; only real residuals are',()=>{
+ const b=run(V3,100);assert.equal(V3.reconcileBook(b).dustWriteOffs.count,0);
+ const d=run(V3,2e11);assert.equal(V3.reconcileBook(d).dustWriteOffs.count,1);
+});
+test('serializeLarge is JSON-equivalent and chunk-safe',async()=>{
+ const {serializeLarge}=await import('../research/calibration/run-calibration-v3.mjs');
+ const v={a:[...Array(2500)].map((_,i)=>({i,x:'y'.repeat(i%7),n:null})),b:{c:[1,2,[3,{d:undefined,e:1}]],f:'z'},g:undefined,h:[]};
+ assert.deepEqual(JSON.parse(serializeLarge(v).toString()),JSON.parse(JSON.stringify(v)));
+ assert.equal(serializeLarge([]).toString(),'[]');assert.equal(serializeLarge({}).toString(),'{}');
+});

@@ -57,7 +57,7 @@ function closeShares(book,p,shares,bar,date,cfg,reason,terminalFactor=1) {
   book.trades.push({id:p.id,ticker:p.ticker,entryDate:p.entryDate,date,cost:allocatedCost,pnl:gross-fee+allocatedDiv-allocatedCost,returnPct:(gross-fee+allocatedDiv)/allocatedCost-1,reason,transactionCosts:fee+shares*(mark-fill),fraction});
   p.shares-=shares;p.cost-=allocatedCost;p.dividends-=allocatedDiv;
   book.fills.push({id:p.id,date,side:'SELL',shares,price:fill,reason});
-  if(p.shares<1e-10){(book.dustWriteOffs??=[]).push({date,shares:p.shares,cost:p.cost,dividends:p.dividends,markValue:p.shares*mark});book.positions.delete(p.id);}
+  if(p.shares<1e-10){if(p.shares>0||p.cost!==0||p.dividends!==0)(book.dustWriteOffs??=[]).push({date,shares:p.shares,cost:p.cost,dividends:p.dividends,markValue:p.shares*mark});book.positions.delete(p.id);}
   return gross;
 }
 // Ex-date distribution belongs only to yesterday's held shares. A new open
