@@ -48,7 +48,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
       .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
   }
   // Remove upstream Research-only navigation from the isolated static output.
-  for (const path of ['index.html','impressum/index.html','datenschutz/index.html']) {
+  for (const path of ['index.html','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html']) {
     let page = path === 'index.html' ? html : await readFile(resolve(output,path),'utf8');
     page = page.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','');
     if (path === 'index.html') html = page; else await writeFile(resolve(output,path),page);
