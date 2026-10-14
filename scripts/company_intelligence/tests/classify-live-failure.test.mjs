@@ -124,3 +124,19 @@ test('main: schreibt Ausgaben, Datei und Summary; Datei fehlt -> REAL; Modus aus
   assert.doesNotMatch(readFileSync(sum,'utf8'),/password|secret/i);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('lazy-detail: weitere Skripte mit HTTP 403 im Detail machen den Fehler REAL; 5xx/404 bleiben transient',()=>{
+ const lazy=detail=>propagationReport([{name:'lazy-detail',ok:false,cause:'STALE',detail,status:null,headers:{}}]);
+ assert.equal(run(lazy('3 von 9 Skripten: /a.js HTTP 503; /b.js HTTP 404')).class,T_PROP);
+ assert.equal(run(lazy('3 von 9 Skripten: /a.js HTTP 503; /b.js HTTP 403')).class,REAL);
+ assert.equal(run(lazy('2 von 9 Skripten: /a.js HTTP 401')).class,REAL);
+});
+
+test('Bericht mit fremdem sourceCommit ist REAL; passender oder fehlender bleibt wie gehabt',()=>{
+ const rep=sha=>propagationReport([check('a','STALE')],{sourceCommit:sha});
+ const c=(r,expectedSha)=>classify({depsOutcome:'success',qaOutcome:'failure',report:r,expectedSha});
+ assert.equal(c(rep('a'.repeat(40)),'a'.repeat(40)).class,T_PROP);
+ assert.equal(c(rep('b'.repeat(40)),'a'.repeat(40)).class,REAL);
+ assert.equal(c(propagationReport([check('a','STALE')]),'a'.repeat(40)).class,T_PROP); // OFF-Bericht ohne sourceCommit
+ assert.equal(c(rep('b'.repeat(40)),null).class,T_PROP);
+});

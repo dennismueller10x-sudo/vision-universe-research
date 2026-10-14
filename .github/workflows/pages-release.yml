@@ -472,6 +472,7 @@ jobs:
           OFF_OUTCOME: ${{ steps.gate_off.outcome }}
           LIVE_OUTCOME: ${{ steps.live.outcome }}
           ENABLED: ${{ steps.approved.outputs.enabled }}
+          EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
         run: node scripts/company_intelligence/classify-live-failure.mjs
       - name: Bounded re-verification after transient failure (read-only; changes no state)
         id: retry
@@ -500,7 +501,7 @@ jobs:
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
         # Erst NACH Klassifikation und begrenzter Wiederholung (Schritte classify/retry, beide ohne Zustandsaenderung).
         # Rollback nur, wenn der Verbraucher aktiv war (enabled == 'true') oder der Modus unbekannt ist (approved gescheitert).
-        # Im OFF-Modus gibt es nichts zurueckzunehmen: dort nur der Abschlussschritt unten (Fehlermeldung, Job rot).
+        # Im OFF-Modus gibt es nichts zurueckzunehmen: dort nur der naechste Schritt (Gate zu) und der Abschlussschritt unten.
         if: >-
           always() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true &&
           (steps.approved.outcome == 'failure' ||
@@ -521,6 +522,23 @@ jobs:
           # Emergency delivery must still close both products if R2 is unreachable.
           gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
           exit "$gate_failure"
+      # OFF-Modus (ci_enabled=false) entsteht auch, wenn Konsumentendaten nicht ladbar sind, waehrend das persistente R2-Gate noch
+      # AVAILABLE sein kann. Scheitert dann der Beweis des harten Aus (gate_off: index.state DISABLED, keine Konsumenten-Requests)
+      # endgueltig, wird das Gate geschlossen: NUR production-release disable (idempotent). Kein refresh-run rollback (es gibt
+      # nichts zurueckzunehmen) und kein OFF-Dispatch (der Build ist bereits OFF). Der Job bleibt rot (Abschlussschritt).
+      - name: Fail-closed gate close in OFF mode (disable only; no rollback, no dispatch)
+        if: >-
+          always() && steps.approved.outputs.prepared == 'true' && steps.approved.outcome == 'success' &&
+          steps.approved.outputs.enabled != 'true' && inputs.company_intelligence_off != true &&
+          (failure() ||
+          ((steps.deps.outcome == 'failure' || steps.gate_off.outcome == 'failure') && steps.retry.outputs.result != 'PASS'))
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/production-release.mjs disable
       - uses: actions/upload-artifact@v4
         if: always() && steps.approved.outputs.prepared == 'true'
         with:

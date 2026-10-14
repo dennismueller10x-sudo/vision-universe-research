@@ -3,6 +3,8 @@
 # Gleicher Ablauf beim ersten Versuch und bei der begrenzten Wiederholung (retry-live-qa.mjs); Berichte unter "$RUNNER_TEMP".
 # Rein lesend gegenueber Produktion: kein R2-Schreiben, kein Gate, kein GOOD-Zeiger.
 set -e
+# Kein Bericht eines frueheren Laufs darf die Klassifikation beeinflussen.
+rm -f "$RUNNER_TEMP/live-fast/report.json"
 if [ "$FULL_ACCEPTANCE" != true ]; then
   node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
   exit 0

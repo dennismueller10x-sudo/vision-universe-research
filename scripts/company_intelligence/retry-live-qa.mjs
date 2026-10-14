@@ -42,15 +42,16 @@ export function budget({nowS, startedAtS, cls, qa, full, timeoutS = JOB_TIMEOUT_
  * attempt({n, cls, qa, qaBudgetMs}) -> {depsFailed?:boolean, report?:object|null, ok:boolean}
  */
 export async function runRetries({cls, qa, full = false, startedAtS, now = () => Date.now() / 1000, sleep = async () => {}, attempt, d = DEFAULTS, timeoutS = JOB_TIMEOUT_S}) {
+ if (!Number.isFinite(startedAtS) || startedAtS <= 0) return {result: 'SKIPPED', finalClass: cls, reason: 'STARTED_AT_INVALID', attempts: []}; // Zeitbudget unbekannt: fail-closed
  if (cls !== CLASSES.PROPAGATION && cls !== CLASSES.INFRA) return {result: 'SKIPPED', finalClass: cls, reason: 'NOT_TRANSIENT', attempts: []};
  const attempts = [];
  let current = cls;
  for (let n = 1; n <= d.maxAttempts[cls]; n++) {
+  if (n > 1 && current === CLASSES.INFRA && d.pauseInfraS) await sleep(d.pauseInfraS * 1000); // Pause zaehlt zur Zeit
   const b = budget({nowS: now(), startedAtS, cls: current, qa, full, timeoutS, d});
   if (!b.ok) return {result: attempts.length ? 'FAIL' : 'SKIPPED', finalClass: current, reason: 'NO_TIME_BUDGET (rest ' + b.leftS + ' s < Bedarf ' + b.needS + ' s)', attempts};
-  if (n > 1 && current === CLASSES.INFRA && d.pauseInfraS) await sleep(d.pauseInfraS * 1000);
   let r;
-  try { r = await attempt({n, cls: current, qa, qaBudgetMs: b.qaBudgetMs}); } catch (error) { r = {ok: false, depsFailed: false, report: null, error: String(error?.name || 'Error')}; }
+  try { r = await attempt({n, cls: current, qa, qaBudgetMs: b.qaBudgetMs, deadlineS: startedAtS + timeoutS - d.handlerReserveS}); } catch (error) { r = {ok: false, depsFailed: false, report: null, error: String(error?.name || 'Error')}; }
   const next = r.ok ? null : r.depsFailed ? {class: CLASSES.INFRA, reason: 'BROWSER_DEPENDENCIES_FAILED'} : classifyReport(r.report);
   attempts.push({n, ok: !!r.ok, class: next?.class ?? null, reason: next?.reason ?? null, ...(r.error ? {error: r.error} : {})});
   if (r.ok) return {result: 'PASS', finalClass: current, reason: 'PASSED_ON_RETRY_' + n, attempts};
@@ -61,6 +62,7 @@ export async function runRetries({cls, qa, full = false, startedAtS, now = () =>
 }
 
 /** Befehle eines Versuchs. Bewusst nur Installation und QA - die Tests pruefen, dass nie ein zustandsaendernder Befehl darin steht. */
+export {realAttempt};
 export function attemptCommands({qa, installFirst}) {
  const cmds = [];
  if (installFirst) cmds.push({cmd: 'bash', args: ['scripts/company_intelligence/live-browser-setup.sh'], kind: 'deps'});
@@ -69,14 +71,16 @@ export function attemptCommands({qa, installFirst}) {
  return cmds;
 }
 
-function realAttempt(env, spawn = spawnSync) {
- return async ({n, cls, qa, qaBudgetMs}) => {
+function realAttempt(env, spawn = spawnSync, nowS = () => Date.now() / 1000) {
+ return async ({n, cls, qa, deadlineS}) => {
   const base = (env.RUNNER_TEMP || '/tmp') + '/retry-' + n;
   mkdirSync(base, {recursive: true});
-  const childEnv = {...env, RUNNER_TEMP: base, CI_QA_BUDGET_MS: String(qaBudgetMs)};
   for (const c of attemptCommands({qa, installFirst: cls === CLASSES.INFRA})) {
+   /* Zeitlimit je Befehl = Rest bis zur Handler-Reserve, nach der Installation neu berechnet. */
+   const leftMs = Math.floor((deadlineS - nowS()) * 1000);
+   if (leftMs < 1000) return {ok: false, depsFailed: c.kind === 'deps', report: null};
    console.log(`Wiederholung ${n}: ${c.kind}`);
-   const res = spawn(c.cmd, c.args, {env: childEnv, stdio: 'inherit', timeout: Math.max(1000, qaBudgetMs), killSignal: 'SIGTERM'});
+   const res = spawn(c.cmd, c.args, {env: {...env, RUNNER_TEMP: base, CI_QA_BUDGET_MS: String(leftMs)}, stdio: 'inherit', timeout: leftMs, killSignal: 'SIGTERM'});
    if (res.error || res.status !== 0) {
     if (c.kind === 'deps') return {ok: false, depsFailed: true, report: null};
     return {ok: false, depsFailed: false, report: readReport(reportFile(base, qa))};
@@ -88,7 +92,7 @@ function realAttempt(env, spawn = spawnSync) {
 
 export async function main(env = process.env) {
  const cls = env.CLASS, qa = env.QA === 'off' ? 'off' : 'live', full = env.FULL_ACCEPTANCE === 'true';
- const startedAtS = Number(env.STARTED_AT) || Math.floor(Date.now() / 1000);
+ const startedAtS = Number(env.STARTED_AT); // fehlt/ungueltig -> runRetries liefert SKIPPED (fail-closed)
  const out = await runRetries({cls, qa, full, startedAtS, sleep: ms => new Promise(r => setTimeout(r, ms)), attempt: realAttempt(env)});
  const root = env.RUNNER_TEMP || '/tmp';
  try { mkdirSync(root + '/live-failure', {recursive: true}); writeFileSync(root + '/live-failure/retry.json', JSON.stringify(out, null, 2) + '\n'); } catch { /* Beleg optional */ }

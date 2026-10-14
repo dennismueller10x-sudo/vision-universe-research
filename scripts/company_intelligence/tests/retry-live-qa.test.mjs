@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {runRetries,attemptCommands,budget,needSeconds,DEFAULTS,JOB_TIMEOUT_S} from '../retry-live-qa.mjs';
+import {runRetries,attemptCommands,budget,needSeconds,realAttempt,DEFAULTS,JOB_TIMEOUT_S} from '../retry-live-qa.mjs';
 import {CLASSES} from '../classify-live-failure.mjs';
 
 const P=CLASSES.PROPAGATION,I=CLASSES.INFRA,REAL=CLASSES.REAL;
@@ -84,4 +84,33 @@ test('Versuchsbefehle enthalten nur Installation und QA - keinen zustandsaendern
  }
  assert.deepEqual(attemptCommands({qa:'off',installFirst:false})[0].args,['scripts/company_intelligence/production-off-qa.mjs']);
  assert.deepEqual(attemptCommands({qa:'live',installFirst:false})[0].args,['scripts/company_intelligence/live-qa-suite.sh']);
+});
+
+test('STARTED_AT fehlt/ungueltig -> SKIPPED ohne Versuch (fail-closed)',async()=>{
+ for(const startedAtS of [undefined,NaN,0,-5,Number(''),Number('abc')]){
+  const s=scripted({ok:true});
+  const r=await runRetries({cls:P,qa:'live',startedAtS,now:clock(0),attempt:s.attempt});
+  assert.equal(r.result,'SKIPPED',String(startedAtS));assert.equal(r.reason,'STARTED_AT_INVALID');assert.equal(s.calls.length,0);
+ }
+});
+
+test('Infra: die Pause zaehlt zur Zeit - reicht die Restzeit danach nicht, kein zweiter Versuch',async()=>{
+ let t=T0+100;const now=()=>t;
+ const need=needSeconds(I,{qa:'live',full:false})+DEFAULTS.handlerReserveS;
+ t=T0+JOB_TIMEOUT_S-need-10;                       // knapp genug fuer Versuch 1
+ const s=scripted({ok:false,depsFailed:true},{ok:true});
+ const r=await runRetries({cls:I,qa:'live',startedAtS:T0,now,sleep:async ms=>{t+=ms;},attempt:s.attempt});
+ assert.equal(s.calls.length,1);assert.equal(r.result,'FAIL');assert.match(r.reason,/NO_TIME_BUDGET/);
+});
+
+test('realAttempt: Zeitlimit je Befehl = Rest bis Reserve, nach der Installation neu berechnet; keine Zeit -> kein Start',async()=>{
+ const calls=[];let t=1000;
+ const spawn=(cmd,args,o)=>{calls.push({args,timeout:o.timeout,budget:o.env.CI_QA_BUDGET_MS,tmp:o.env.RUNNER_TEMP});t+=200;return {status:0};};
+ const ok=await realAttempt({RUNNER_TEMP:'/tmp/x-retry-test'},spawn,()=>t)({n:1,cls:I,qa:'live',deadlineS:1600});
+ assert.equal(ok.ok,true);assert.equal(calls.length,2);
+ assert.equal(calls[0].timeout,600000);assert.equal(calls[1].timeout,400000);assert.equal(calls[1].budget,'400000');assert.match(calls[1].tmp,/retry-1$/);
+ /* Deadline waehrend der Installation erreicht -> QA startet nicht */
+ const calls2=[];let t2=1000;
+ const r=await realAttempt({RUNNER_TEMP:'/tmp/x-retry-test'},(c,a,o)=>{calls2.push(a);t2+=700;return {status:0};},()=>t2)({n:1,cls:I,qa:'live',deadlineS:1600});
+ assert.equal(r.ok,false);assert.equal(calls2.length,1);
 });

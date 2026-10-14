@@ -11,7 +11,10 @@
  *                         JEDE fehlgeschlagene Pruefung des letzten Durchlaufs hat eine Auslieferungs-Ursache (STALE, MIXED,
  *                         MISSING, REQUEST_FAILED, HTTP 429/5xx ...). Der Release ist dann nachweislich noch nicht (vollstaendig)
  *                         ausgeliefert - die Seite wurde NICHT bewertet.
- *  REAL                   alles andere: Browser-Assertion nach bewiesener Propagation, WRONG_PRODUCTION_COMMIT, Hash-/Datenfehler,
+ *                         Hinweis: Bei gesetztem EXPECTED_PRODUCTION_SHA meldet schon der Propagationsbeweis einen falschen/anderen Commit
+ *                         als STALE (also TRANSIENT_PROPAGATION, bis die Wiederholung scheitert); WRONG_PRODUCTION_COMMIT der Browser-Phase
+ *                         tritt nur ohne erwarteten Commit auf und ist REAL.
+ *  REAL                   alles andere: Browser-Assertion nach bewiesener Propagation, Hash-/Datenfehler,
  *                         Zugriffs-/Sicherheitsfehler (HTTP 401/403, Gate), INVALID-Antworten, Bericht fehlt/unlesbar/PASS trotz
  *                         Fehler, unbekannte Ursache. FAIL-CLOSED: Im Zweifel REAL.
  */
@@ -33,10 +36,11 @@ export function isDeliveryCause(cause) {
 const real = (reason, detail) => ({class: CLASSES.REAL, reason, ...(detail ? {detail} : {})});
 
 /** Beurteilt nur den Propagationsbericht; alles Unbewiesene ist REAL. */
-export function classifyReport(report) {
+export function classifyReport(report, {expectedSha = null} = {}) {
  if (!report || typeof report !== 'object' || Array.isArray(report)) return real('REPORT_MISSING_OR_INVALID');
  if (report.status !== 'FAIL') return real('REPORT_STATUS_NOT_FAIL', String(report.status).slice(0, 40)); // z. B. PASS-Bericht, spaeterer Befehl scheiterte
  if (report.cause !== PROPAGATION_CAUSE) return real('CAUSE_NOT_PROPAGATION', String(report.cause).slice(0, 80));
+ if (expectedSha && typeof report.sourceCommit === 'string' && report.sourceCommit !== expectedSha) return real('REPORT_COMMIT_MISMATCH'); // fremder/alter Bericht
  const p = report.propagation;
  if (!p || p.status !== 'NOT_PROPAGATED' || p.cause !== PROPAGATION_CAUSE) return real('PROPAGATION_NOT_PROVEN_ABSENT');
  if (report.previousFailure) return real('BROWSER_FAILURE_BEFORE_PROPAGATION_LOSS'); // Browser sah schon einen Fehler: nicht beruhigend wiederholen
@@ -46,6 +50,9 @@ export function classifyReport(report) {
  if (!failed.length) return real('NO_FAILED_CHECK_EVIDENCE');
  const causes = failed.map(c => c?.cause);
  const bad = causes.filter(c => !isDeliveryCause(c));
+ /* lazy-detail meldet nur die Ursache des ERSTEN Skripts als cause; weitere stehen im detail-Text (propagation-proof.mjs, nicht hier aenderbar).
+    HTTP-Codes dort, die keine Auslieferungsursache sind (401/403/400 ...), machen den Fehler REAL. */
+ for (const c of failed) for (const m of String(c?.detail ?? '').matchAll(/\bHTTP (\d{3})\b/g)) if (!isDeliveryCause('HTTP_' + m[1]) && m[1] !== '404') bad.push('DETAIL_HTTP_' + m[1]);
  if (bad.length) return real('NON_DELIVERY_CAUSE', [...new Set(bad.map(String))].join(',').slice(0, 120));
  if (causes.every(c => c === 'SKIPPED' || c === 'DEADLINE')) return real('NO_ROOT_DELIVERY_CAUSE');
  return {class: CLASSES.PROPAGATION, reason: 'DELIVERY_NOT_PROPAGATED', detail: [...new Set(causes)].join(',')};
@@ -55,11 +62,11 @@ export function classifyReport(report) {
  * @param {{depsOutcome?:string, qaOutcome?:string, report?:any}} input
  * depsOutcome/qaOutcome: Ergebnis (steps.<id>.outcome) von "Browser dependencies" bzw. der OFF-/Live-QA.
  */
-export function classify({depsOutcome = '', qaOutcome = '', report = null} = {}) {
+export function classify({depsOutcome = '', qaOutcome = '', report = null, expectedSha = null} = {}) {
  if (depsOutcome === 'failure') return {class: CLASSES.INFRA, reason: 'BROWSER_DEPENDENCIES_FAILED'};
  if (depsOutcome !== 'success') return real('DEPENDENCIES_NOT_SUCCESSFUL', String(depsOutcome).slice(0, 40));
  if (qaOutcome !== 'failure') return real('QA_NOT_FAILED_UNEXPECTED_STATE', String(qaOutcome).slice(0, 40));
- return classifyReport(report);
+ return classifyReport(report, {expectedSha});
 }
 
 export function readReport(file) {
@@ -80,7 +87,7 @@ export function main(env = process.env) {
  const qaOutcome = qa === 'live' ? env.LIVE_OUTCOME : env.OFF_OUTCOME;
  let result;
  try {
-  result = classify({depsOutcome: env.DEPS_OUTCOME, qaOutcome, report: readReport(reportFile(root, qa))});
+  result = classify({depsOutcome: env.DEPS_OUTCOME, qaOutcome, report: readReport(reportFile(root, qa)), expectedSha: env.EXPECTED_PRODUCTION_SHA || null});
  } catch (error) {
   result = real('CLASSIFIER_ERROR', error?.name); // fail-closed
  }

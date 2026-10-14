@@ -14,7 +14,7 @@ const wf=JSON.parse(parsed.stdout),job=wf.jobs['company-intelligence-live'],step
 const byId=id=>steps.find(s=>s.id===id);
 const byName=re=>steps.find(s=>re.test(s.name||''));
 const index=s=>steps.indexOf(s);
-const handler=byName(/^Fail-closed persistent consumer gate/),conclude=byName(/^Conclude live verification/),record=byName(/^Record actual verified publication/),upload=steps.find(s=>String(s.uses).startsWith('actions/upload-artifact'));
+const handler=byName(/^Fail-closed persistent consumer gate/),offStop=byName(/^Fail-closed gate close in OFF mode/),conclude=byName(/^Conclude live verification/),record=byName(/^Record actual verified publication/),upload=steps.find(s=>String(s.uses).startsWith('actions/upload-artifact'));
 
 /* --- minimaler GitHub-Ausdrucksauswerter (nur die im Job verwendeten Konstrukte; unbekanntes wirft) --- */
 function evalIf(expression,ctx){
@@ -51,7 +51,7 @@ function simulate(s){
   else if(step.id==='retry'){outputs={result:s.retry==='CRASH'?'':s.retry};if(s.retry==='CRASH')outcome='failure';}
   else if(step.id&&s.results?.[step.id])outcome=s.results[step.id];
   else if(step===handler)outcome=s.results?.handler||'success';
-  else if(step===conclude)outcome='failure';          // endet mit exit 1
+  else if(step===conclude)outcome=/\nexit 0\s*$/m.test(step.run)||!/\nexit [1-9]\d*\s*$/m.test(step.run)?'success':'failure'; // Ergebnis aus dem run-Text
   else if(s.results?.[step.name||step.uses])outcome=s.results[step.name||step.uses];
   state[step.id||'_'+index(step)]={outcome,conclusion:step['continue-on-error']&&outcome==='failure'?'success':outcome,outputs:outputsOf(outputs)};
   if(step.id)state[step.id]=state['_'+index(step)]=state[step.id];
@@ -63,13 +63,17 @@ const stale={status:'FAIL',cause:'AUSLIEFERUNG_NICHT_PROPAGIERT',propagation:{st
 const browser={status:'FAIL',cause:'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION',propagation:{status:'PROPAGATED'},error:{name:'AssertionError',message:'x'}};
 const A=(over={})=>({outcome:'success',prepared:'true',enabled:'true',...over});
 const H='Fail-closed persistent consumer gate and emergency Pages rollback';
-const ranHandler=r=>r.ran.has(handler.name);
+const ranHandler=r=>r.ran.has(handler.name),ranStop=r=>r.ran.has(offStop.name);
 
 test('Struktur: Schrittreihenfolge approved < deps < QA < classify < retry < record < Handler < Upload < Abschluss',()=>{
  const order=['approved','deps','gate_off','live','classify','retry'].map(id=>index(byId(id)));
  assert.deepEqual(order,[...order].sort((a,b)=>a-b));
  assert(index(byId('live'))<index(record)&&index(byId('retry'))<index(record)&&index(record)<index(handler)&&index(handler)<index(upload)&&index(upload)<index(conclude));
  assert(index(byId('classify'))<index(handler)&&index(byId('retry'))<index(handler),'Handler erst nach Klassifikation und Wiederholung');
+});
+
+test('Struktur: classify bekommt den erwarteten Commit',()=>{
+ assert.equal(byId('classify').env.EXPECTED_PRODUCTION_SHA,'${{ needs.package.outputs.source_sha }}');
 });
 
 test('Struktur: Pruefschritte continue-on-error; classify/retry ohne R2-/GH-Geheimnisse und ohne Zustandsbefehle',()=>{
@@ -81,6 +85,7 @@ test('Struktur: Pruefschritte continue-on-error; classify/retry ohne R2-/GH-Gehe
   for(const bad of ['refresh-run','production-release','gh ','workflow run','rollback','disable'])assert(!run.includes(bad),id+': '+bad);
  }
  assert.equal(handler.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');
+ assert.match(conclude.run,/\nexit 1\s*$/,'Abschlussschritt muss mit exit 1 enden');
 });
 
 test('Struktur: Handler-Befehle unveraendert und in alter Reihenfolge (rollback, disable, OFF-Dispatch)',()=>{
@@ -147,26 +152,45 @@ test('Szenario: Browser-Installation scheitert (Infra), Wiederholung besteht / s
  assert(ranHandler(r));assert.equal(r.jobFailed,true);assert(!r.ran.has(record.name));
 });
 
-test('Szenario OFF-Modus: Fehlschlag loest NIE den Handler (kein Rollback) aus, Job wird rot; Wiederholung moeglich',()=>{
- for(const inputsOff of [false,true]){
-  let r=simulate({inputsOff,approved:A({enabled:'false'}),results:{gate_off:'failure'},reports:{off:browser}});
+test('Struktur: OFF-Zweig fuehrt NUR production-release disable aus (kein Rollback, kein Dispatch)',()=>{
+ assert.equal(offStop.run.trim(),'node scripts/company_intelligence/production-release.mjs disable');
+ assert.equal(offStop.env.GH_TOKEN,undefined);assert(index(handler)<index(offStop)&&index(offStop)<index(upload));
+ assert.match(offStop.if,/enabled != 'true'/);assert.match(offStop.if,/company_intelligence_off != true/);
+});
+
+test('Szenario OFF-Modus: kein Rollback, kein Dispatch; disable bei REAL oder gescheiterter Wiederholung; Job rot',()=>{
+ const off=A({enabled:'false'});
+ /* REAL (Browser-Assertion / Bericht fehlt): kein Retry, disable, Job rot */
+ for(const report of [browser,null]){
+  const r=simulate({approved:off,results:{gate_off:'failure'},reports:{off:report}});
   assert.equal(r.state.classify.outputs.class,'REAL');assert.equal(r.state.classify.outputs.qa,'off');
-  assert(!ranHandler(r));assert(r.ran.has(conclude.name));assert.equal(r.jobFailed,true);
-  r=simulate({inputsOff,approved:A({enabled:'false'}),results:{gate_off:'failure'},reports:{off:stale},retry:'PASS'});
-  assert(r.ran.has('retry')&&!ranHandler(r)&&!r.ran.has(conclude.name));assert.equal(r.jobFailed,false);
-  r=simulate({inputsOff,approved:A({enabled:'false'}),results:{gate_off:'failure'},reports:{off:stale},retry:'FAIL'});
-  assert(!ranHandler(r)&&r.ran.has(conclude.name));assert.equal(r.jobFailed,true);
-  r=simulate({inputsOff,approved:A({enabled:'false'}),results:{deps:'failure'},retry:'CRASH'});
-  assert(!ranHandler(r)&&r.jobFailed);
+  assert(!r.ran.has('retry')&&!ranHandler(r)&&ranStop(r)&&r.ran.has(conclude.name));assert.equal(r.jobFailed,true);
  }
- /* OFF-Pruefung laeuft nur im OFF-Modus */
- assert(!simulate({approved:A({enabled:'false'}),results:{}}).ran.has('live'));
+ /* transient: Retry PASS -> weder disable noch Rollback, Job gruen */
+ let r=simulate({approved:off,results:{gate_off:'failure'},reports:{off:stale},retry:'PASS'});
+ assert(r.ran.has('retry')&&!ranHandler(r)&&!ranStop(r)&&!r.ran.has(conclude.name));assert.equal(r.jobFailed,false);
+ r=simulate({approved:off,results:{deps:'failure'},retry:'PASS'});
+ assert(!ranHandler(r)&&!ranStop(r)&&!r.jobFailed);
+ /* transient: Retry FAIL/SKIPPED/CRASH -> disable, kein Rollback, Job rot */
+ for(const retry of ['FAIL','SKIPPED','CRASH']){
+  for(const results of [{gate_off:'failure'},{deps:'failure'}]){
+   r=simulate({approved:off,results,reports:{off:stale},retry});
+   assert(!ranHandler(r)&&ranStop(r)&&r.ran.has(conclude.name),retry+JSON.stringify(results));assert.equal(r.jobFailed,true);
+  }
+ }
+ /* Notaus-Dispatch (inputs=true): Gate wurde dort schon geschlossen; kein Handler, kein disable, Job rot */
+ r=simulate({inputsOff:true,approved:off,results:{gate_off:'failure'},reports:{off:browser}});
+ assert(!ranHandler(r)&&!ranStop(r)&&r.jobFailed);
+ /* OFF-Pruefung laeuft nur im OFF-Modus; Aktiv-Modus nie der OFF-Zweig */
+ assert(!simulate({approved:off,results:{}}).ran.has('live'));
  assert(!simulate({approved:A(),results:{}}).ran.has('gate_off'));
+ r=simulate({approved:A(),results:{live:'failure'},reports:{live:browser}});
+ assert(ranHandler(r)&&!ranStop(r));
 });
 
 test('Szenario: approved scheitert (Modus unbekannt) -> bisheriger Pfad; mit Notaus-Eingabe kein Handler',()=>{
  let r=simulate({approved:A({outcome:'failure',enabled:''}),results:{}});
- assert(ranHandler(r));assert(!r.ran.has('classify'));assert.equal(r.jobFailed,true);
+ assert(ranHandler(r));assert(!ranStop(r));assert(!r.ran.has('classify'));assert.equal(r.jobFailed,true);
  r=simulate({inputsOff:true,approved:A({outcome:'failure',enabled:''}),results:{}});
  assert(!ranHandler(r));assert.equal(r.jobFailed,true);
 });
@@ -183,7 +207,7 @@ test('Szenario: Fehler nach bestandener QA (Record scheitert) bleibt fail-closed
 
 test('Szenario: Vorbereitung nicht erfolgt (prepared leer) -> nichts davon laeuft',()=>{
  const r=simulate({approved:A({prepared:'',enabled:''}),results:{}});
- for(const k of ['deps','classify','retry',handler.name,conclude.name])assert(!r.ran.has(k),k);
+ for(const k of ['deps','classify','retry',handler.name,offStop.name,conclude.name])assert(!r.ran.has(k),k);
 });
 
 test('Szenario REAL bleibt REAL ueber Sicherheits-/Datenfehler-Berichte (nie Wiederholung)',()=>{
@@ -194,7 +218,7 @@ test('Szenario REAL bleibt REAL ueber Sicherheits-/Datenfehler-Berichte (nie Wie
  for(const rep of reals)for(const [enabled,key,res] of [['true','live','live'],['false','off','gate_off']]){
   const r=simulate({approved:A({enabled}),results:{[res]:'failure'},reports:{[key]:rep},retry:'PASS'});
   assert(!r.ran.has('retry'),JSON.stringify(rep));assert.equal(r.jobFailed,true);
-  assert.equal(ranHandler(r),enabled==='true');
+  assert.equal(ranHandler(r),enabled==='true');assert.equal(ranStop(r),enabled!=='true');
  }
 });
 
