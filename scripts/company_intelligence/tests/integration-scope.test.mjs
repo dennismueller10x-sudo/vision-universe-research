@@ -5,7 +5,9 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { permittedStockHook, unexpectedProtectedChanges } from '../check-quant-integration.mjs';
+const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 const modulePaths = ['company-intelligence/config/rollout.js','company-intelligence/ui/stock-section.js'];
 const mount = 'if (global.VUCompanyIntelligenceStock) disposers.push(global.VUCompanyIntelligenceStock.mount(bodyHost, ticker));';
 const assets = ['<link rel="stylesheet" href="/company-intelligence/ui/stock-section.css">','<script src="/company-intelligence/api/contract.js"></script>','<script src="/company-intelligence/config/rollout.js"></script>','<script src="/company-intelligence/ui/stock-section.js"></script>'];
@@ -54,9 +56,9 @@ test('Master-page exception permits only the exact issuer mount and availability
  const {masterDetailIntegrationOnly}=await import('../master-detail-integration.mjs');
  // Immutable accepted hook example. Unrelated later renderer changes on main
  // do not broaden the protected-path exception; negative assertions stay exact.
- const accepted=spawnSync('git',['show','f667d82649986d681d76cb5da1176d3b6bea265d:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(accepted.status,0);
+ const accepted=spawnSync('git',['show','f667d82649986d681d76cb5da1176d3b6bea265d:discover/ui/detail.js'],{encoding:'utf8',cwd:REPO_ROOT,env:isolatedGitEnv()});assert.equal(accepted.status,0);
  const after=accepted.stdout;
- const prior=spawnSync('git',['show','440a1645048d6b559988488f9a0f3148f21d3cdd:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(prior.status,0);
+ const prior=spawnSync('git',['show','440a1645048d6b559988488f9a0f3148f21d3cdd:discover/ui/detail.js'],{encoding:'utf8',cwd:REPO_ROOT,env:isolatedGitEnv()});assert.equal(prior.status,0);
  assert(masterDetailIntegrationOnly(prior.stdout,after));
  assert(!masterDetailIntegrationOnly(prior.stdout,after+'\nrecalculateQuant();\n'));
  assert(!masterDetailIntegrationOnly(prior.stdout,after.replace('caps.HAS_PRICE_HISTORY','true')));
