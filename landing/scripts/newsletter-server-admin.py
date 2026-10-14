@@ -52,7 +52,8 @@ def api(origin,path,key,method='GET',body=None):
     except urllib.error.HTTPError as error:
         try:value=json.loads(error.read(65536))
         except Exception:value={}
-        return error.code,{'safe_codes':[e['code'] for e in value.get('errors',[]) if type(e.get('code')) is int]}
+        return error.code,{'safe_codes':[e['code'] for e in value.get('errors',[]) if type(e.get('code')) is int],
+                           'brevo_code':value.get('code') if value.get('code') in ('CONSENT_GROUP_NOT_ENABLED','unauthorized','permission_denied') else None}
 
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main'):raise ValueError('Manual approved branch only')
@@ -75,8 +76,36 @@ def run():
             if len(page)<50:return sorted(result,key=lambda c:c['id'])
         raise ValueError('Contact pagination incomplete')
     before={n:contacts(n) for n in (4,5,6)};old={n:read('/smtp/templates/'+str(n)) for n in (1,2,3,4)}
-    report['free_plan']=any(p.get('type')=='free' for p in read('/account').get('plan',[]))
-    report['consent_attribute_compatible']=any(a.get('name')=='VU_EMAIL_CONSENT' and a.get('category')=='normal' and a.get('type')=='text' for a in read('/contacts/attributes').get('attributes',[]))
+    account=read('/account')
+    report['free_plan']=any(p.get('type')=='free' for p in account.get('plan',[]))
+    attribute_rows=read('/contacts/attributes').get('attributes',[])
+    report['consent_attribute_compatible']=any(a.get('name')=='VU_EMAIL_CONSENT' and a.get('category')=='normal' and a.get('type')=='text' for a in attribute_rows)
+    # Metadata only; no account address, email, token or raw settings response.
+    def setting_keys(value,prefix=''):
+        result=[]
+        if isinstance(value,dict):
+            for name,child in value.items():
+                path=prefix+'.'+name if prefix else name
+                if re.search(r'track|retention|consent|gdpr',name,re.I):result.append(path)
+                if isinstance(child,(dict,list)):result.extend(setting_keys(child,path))
+        elif isinstance(value,list):
+            for child in value:result.extend(setting_keys(child,prefix+'[]'))
+        return result
+    report['privacy_metadata']={'account_tracking_or_retention_setting_keys':setting_keys(account),
+        'per_contact_pixel_attribute_present':any(a.get('name')=='_PIXEL_TRACKING_CONSENT' for a in attribute_rows),
+        'tracking_feature_and_default_verified':False,'transactional_retention_rule_verified':False,
+        'account_specific_contract_record_verified':False}
+    status,groups=api(BREVO,'/contacts/consent-groups?limit=100&offset=0',key)
+    report['privacy_metadata']['consent_groups_http']=status
+    if status==403:report['privacy_metadata']['consent_groups_feature_disabled']=groups.get('brevo_code')=='CONSENT_GROUP_NOT_ENABLED'
+    elif status==200:
+        rows=groups.get('consentGroups',groups.get('groups'))
+        report['privacy_metadata']['consent_group_count']=len(rows) if isinstance(rows,list) else None
+    status,hooks=api(BREVO,'/webhooks',key)
+    report['privacy_metadata']['webhooks_read_http']=status
+    if status==200 and isinstance(hooks.get('webhooks'),list):
+        report['privacy_metadata']['webhook_count']=len(hooks['webhooks'])
+        report['privacy_metadata']['transactional_webhook_count']=sum(h.get('type')=='transactional' for h in hooks['webhooks'])
     report['lists_before']={str(n):len(v) for n,v in before.items()}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
@@ -123,6 +152,13 @@ def run():
         status,value=api(CF,path,token);result['pages_read_http']=status
         if status==200 and value.get('success'):
             project=value['result'];result['existing_project_matches']=project.get('name')=='vision-universe'
+            build_config=project.get('build_config',{})
+            result['privacy_metadata']={'web_analytics_tag_present':bool(build_config.get('web_analytics_tag')),
+                'web_analytics_token_present':bool(build_config.get('web_analytics_token')),
+                'observability_fields':{s:sorted(k for k in c if re.search(r'log|observ',k,re.I)) for s,c in project.get('deployment_configs',{}).items()},
+                'observability_enabled':{s:c.get('observability',{}).get('enabled') if isinstance(c.get('observability'),dict) else None for s,c in project.get('deployment_configs',{}).items()},
+                'd1_bindings_present':any(bool(c.get('d1_databases')) for c in project.get('deployment_configs',{}).values()),
+                'provider_retention_configuration_verified':False}
             result['runtime_types']={stage:{n:c.get('env_vars',{}).get(n,{}).get('type') for n in RUNTIME} for stage,c in project.get('deployment_configs',{}).items()}
             result['public_gates_closed']=all(not all(c.get('env_vars',{}).get(n,{}).get('value')=='true' for n in ('NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED')) for c in project.get('deployment_configs',{}).values())
             result['template_bindings_match']=bool(matches) and all(c.get('env_vars',{}).get('NEWSLETTER_DOI_TEMPLATE_ID',{}).get('value')==str(matches[0]['id']) for c in project.get('deployment_configs',{}).values())
