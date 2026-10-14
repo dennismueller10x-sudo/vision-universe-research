@@ -5,7 +5,9 @@
    und die lokale Identitaet. Deshalb werden ALLE GIT_*-Variablen entfernt und
    nur die unten genannten gesetzt. Die echte lokale und globale Konfiguration
    bleibt unberuehrt (GIT_CONFIG_GLOBAL/NOSYSTEM zeigen nur fuer das Kindprozess-
-   Environment ins Leere). */
+   Environment ins Leere). Die Fixture-Identitaet steht nur im Environment des
+   Kindprozesses; sie schreibt nie `git config`. Wer eine Identitaet pruefen will,
+   uebergibt die GIT_AUTHOR- und GIT_COMMITTER-Variablen ueber `extra`. */
 export function isolatedGitEnv(extra = {}, base = process.env) {
   const env = {};
   for (const [k, v] of Object.entries(base)) if (!k.startsWith("GIT_")) env[k] = v;

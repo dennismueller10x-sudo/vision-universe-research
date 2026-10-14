@@ -98,3 +98,14 @@ test("scrub-git-env bereinigt process.env eines Kindprozesses mit gesetztem GIT_
     assert.ok(keys.includes("GIT_CONFIG_GLOBAL"));
   } finally { rmSync(decoy, { recursive: true, force: true }); }
 });
+
+test("Python-Spiegel und JS-Helfer liefern fuer dieselbe Umgebung identische Ergebnisse", () => {
+  const base = { PATH: "/x", HOME: "/h", GIT_DIR: "/d", GIT_WORK_TREE: "/w", GIT_INDEX_FILE: "/i", GIT_TRACE: "1", GIT_CONFIG_COUNT: "1", OTHER: "o" };
+  const extra = { GIT_AUTHOR_NAME: "t", GRENZE_MB: "5" };
+  const js = isolatedGitEnv(extra, base);
+  const py = JSON.parse(execFileSync("python3", ["-I", "-B", "-c",
+    "import sys,json;sys.path.insert(0,'scripts/ci');from isolated_git_env import isolated_git_env as f;" +
+    "print(json.dumps(f(json.loads(sys.argv[1]), json.loads(sys.argv[2]))))", JSON.stringify(extra), JSON.stringify(base)],
+    { encoding: "utf8", cwd: new URL("../..", import.meta.url).pathname }));
+  assert.deepEqual(py, js);
+});
