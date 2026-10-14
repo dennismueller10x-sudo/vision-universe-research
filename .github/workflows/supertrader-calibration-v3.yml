@@ -1,0 +1,62 @@
+name: Supertrader calibration V3 (in-runner capture, private plaintext never uploaded)
+on:
+  push:
+    branches:
+      - 'research/supertrader-calibration-v3-durable'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [capture]
+        default: capture
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-calibration-v3-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:capture]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'capture')
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture canonical dataset in the runner; verify before any performance
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out "$RUNNER_TEMP/v3-canonical" --public-out "$RUNNER_TEMP/v3-public/capture-receipt.json"
+      - name: Preserve public capture receipt only (counts, hashes, codes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-v3-capture-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/v3-public/capture-receipt.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/v3-canonical"
