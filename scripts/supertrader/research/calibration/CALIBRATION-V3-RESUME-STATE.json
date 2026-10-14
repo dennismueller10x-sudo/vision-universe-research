@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_DETAIL_DIAGNOSTIC_WORKFLOW_CORRECTED",
+  "status": "CANONICAL_EXCLUSION_CAUSE_REPRODUCTION_RUNNING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -237,14 +237,16 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "runId": 38568980568,
-    "head": "38579ac8903fae79cd696e9ae01947f4f11d55aa",
-    "status": "IN_PROGRESS",
-    "purpose": "Corrected status-only canonical normalization now explicitly activates canonical mode and emits bounded rejection details without encrypted bulk recapture."
+    "runId": 38570403846,
+    "head": "7784ab7295f55372c71f619890272f5a96420504",
+    "status": "QUEUED",
+    "purpose": "Canonical-only status diagnostic after preserving core rejection detail across prefix truncation. Expected safe detail counts should identify exact corporate-action contradiction subcause."
   },
   "codeHashesForNextCapture": {
-    "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
-    "safeDiagnosticTest": "aa0648931a81ebf328545477e63919356965d728c21788a2ef28bf9b02074bfb"
+    "dataInventory": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+    "safeDiagnosticTest": "29f6ed0043c789009122601ef4b3311f99da3b5fb92fb0bc4080c43f34b0e477",
+    "canonicalData": "a9135c13e5ced199326cdaece3a3e5cf402417a9f2a938e88b63be1b269a41f8",
+    "inventoryTest": "4cebc337193297c1fb94baf723e2927ae551770885aa6c019a539f4e82a8d8d4"
   },
   "dataBlockedMethods": [
     "buyback_announcement_event",
@@ -267,5 +269,5 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Verify run 38568980568 output has mode READ_ONLY_CANONICAL_INVENTORY and aggregate detail counts totaling two CORPORATE_ACTION_CONTRADICTED segments; hash the status Artifact. Then persist cause and create V3 freeze."
+  "exactNextStep": "Poll run 38570403846; verify status artifact digest and READ_ONLY_CANONICAL_INVENTORY mode. Validate canonical rejection details total exactly two. Persist cause and freeze before any method calibration."
 }
