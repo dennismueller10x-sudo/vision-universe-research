@@ -128,6 +128,10 @@ def run():
     blocked=read('/smtp/blockedContacts?limit=1&offset=0');report['smtp_suppression_readable']=isinstance(blocked.get('contacts'),list)
     report['smtp_suppression_count']=blocked.get('count') if type(blocked.get('count')) is int else None
     daily=read('/smtp/statistics/aggregatedReport?days=1&tag='+TAG);report['tag_budget_readable']=type(daily.get('requests')) is int
+    event_http,event_result=api(BREVO,'/smtp/statistics/events?templateId=8&days=1&limit=100&offset=0',key)
+    report['doi_event_readback']={'http':event_http,'events_array':isinstance(event_result.get('events'),list),
+        'returned_count':len(event_result['events']) if isinstance(event_result.get('events'),list) else None,
+        'empty_response_object':event_result=={},'safe_error_code':event_result.get('brevo_code') if event_http!=200 else None}
     test_email=os.environ.get('BREVO_DOI_TEST_EMAIL','').strip().lower();report['controlled_test_address_present']=bool(test_email)
     if test_email:
         if not re.fullmatch(r'[^\s@]{1,64}@[^\s@]+\.[^\s@]+',test_email) or len(test_email)>254:raise ValueError('Test address malformed')

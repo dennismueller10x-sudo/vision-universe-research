@@ -14,9 +14,10 @@ class Response:
     def __exit__(self,*args):pass
 
 class Provider:
-    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False):
+    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False,empty_baseline=False):
         self.calls=[];self.existing=existing;self.bad_draft=bad_draft;self.doi=0;self.lookups=0;self.sent=False;self.draft=None
         self.observe=observe;self.ambiguous=ambiguous;self.event_reads=0
+        self.empty_baseline=empty_baseline
         self.old={'id':1,'email':'old@example.test','listIds':[4],'emailBlacklisted':False}
         self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False,'attributes':{'VU_EMAIL_CONSENT':'subscribed'}}
     def open(self,request,**kwargs):
@@ -33,7 +34,7 @@ class Provider:
         if path=='/contacts':return Response(200,{'contacts':[self.old]})
         if path=='/smtp/statistics/events':
             self.event_reads+=1
-            if self.event_reads==1:return Response(200,{'events':[]})
+            if self.event_reads==1:return Response(200,{} if self.empty_baseline else {'events':[]})
             self.doi=2
             rows=[{'messageId':'synthetic-message-1','email':'new@example.test','event':'request','date':'2026-10-14T12:00:00Z'}]
             if self.ambiguous:rows.append({**rows[0],'email':'other@example.test','messageId':'synthetic-message-2'})
@@ -80,6 +81,9 @@ class Contract(unittest.TestCase):
         self.assertFalse(any(m=='PUT' for _,m,_ in p.calls))
     def test_owner_form_observer_does_not_submit_address_itself(self):
         p=Provider(observe=True);self.run_operator(p)
+        self.assertTrue(p.sent);self.assertFalse(any(path=='/api/newsletter/subscribe' for path,_,_ in p.calls))
+    def test_documented_empty_event_baseline_allows_private_observation(self):
+        p=Provider(observe=True,empty_baseline=True);self.run_operator(p)
         self.assertTrue(p.sent);self.assertFalse(any(path=='/api/newsletter/subscribe' for path,_,_ in p.calls))
     def test_ambiguous_observed_addresses_block_all_mutations(self):
         p=Provider(observe=True,ambiguous=True)

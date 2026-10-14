@@ -12,7 +12,7 @@ function fixture(options={}){
     const path=new URL(url).pathname;calls.push({path,method:init.method,body:init.body&&JSON.parse(init.body)});
     if(path.startsWith('/v3/contacts/')&&path!=='/v3/contacts/attributes'&&init.method==='GET')return json(options.existing||{},options.lookupStatus||(options.existing?200:404));
     if(path==='/v3/smtp/blockedContacts')return json({contacts:options.blocked||[]});
-    if(path==='/v3/smtp/statistics/events')return json({events:options.events||[]});
+    if(path==='/v3/smtp/statistics/events')return json(Object.hasOwn(options,'eventResponse')?options.eventResponse:{events:options.events||[]});
     if(path==='/v3/contacts/attributes')return json({attributes:options.attributes??[{name:'VU_EMAIL_CONSENT',category:'normal',type:'text'}]});
     if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT,...options.template});
     if(path==='/v3/smtp/statistics/aggregatedReport')return json({requests:options.budget??0});
@@ -62,6 +62,12 @@ test('Jeder Bestandskontakt bleibt unverändert, einschließlich Abmeldung und i
 test('Transaktionale Sperren und bereits protokollierte DOI-Anfragen werden nicht erneut versendet',async()=>{
   for(const options of [{blocked:[{email:'NEW+QA@example.test'}]},{events:[{event:'request'}]}]){
     const f=fixture(options);assert.equal((await f.handler(f.request(),f.env)).status,202);assert.equal(f.sends().length,0);
+  }
+});
+test('Dokumentierter leerer Brevo-Ereignisbericht erlaubt erste Anmeldung; unklare Formen bleiben gesperrt',async()=>{
+  const empty=fixture({eventResponse:{}});assert.equal((await empty.handler(empty.request(),empty.env)).status,202);assert.equal(empty.sends().length,1);
+  for(const eventResponse of [null,[],{events:null},{events:{}},{unexpected:[]}]){
+    const f=fixture({eventResponse});assert.equal((await f.handler(f.request(),f.env)).status,503);assert.equal(f.sends().length,0);
   }
 });
 test('Neue Adresse behält Plus-Alias; ausschließlich offizielles DOI an Liste 4',async()=>{
