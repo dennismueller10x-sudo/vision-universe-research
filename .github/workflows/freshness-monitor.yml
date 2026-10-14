@@ -211,7 +211,7 @@ jobs:
   # offen bleibt, bis ein gruener Monitorlauf es schliesst.
   # ===================================================================
   alarm:
-    needs: [monitor, produktstand]
+    needs: [monitor, produktstand, supertrader]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -239,6 +239,7 @@ jobs:
           ALARM_TITLE: 'Veroeffentlichte Markt-/Discover-Daten veraltet'
           RESULT_MONITOR: ${{ needs.monitor.result }}
           RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
+          RESULT_SUPERTRADER: ${{ needs.supertrader.result }}
           ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-live.txt
         run: node scripts/ci/pipeline-alarm.mjs
 

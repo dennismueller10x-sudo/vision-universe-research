@@ -18,10 +18,11 @@ const CHAIN = join(ROOT, "scripts", "ci", "supertrader-chain.mjs");
 const { planDispatch, assessChain, CONFIG } = await import(CHAIN);
 const lies = (rel) => readFileSync(join(ROOT, rel), "utf8");
 
+const EING = { spyTo: "2026-10-13", regimeAsOf: "2026-10-13", healthSession: "2026-10-13" };
 const GUT = { QUANT_CURRENT: "PASS", PRODUCT_MATERIALIZATION_CURRENT: "CURRENT", MARKET_STORE_CURRENT: "CURRENT", LATEST_PRODUCT_ASOF: "2026-10-13", LATEST_MARKET_SESSION: "2026-10-13" };
 
 test("SC1 · Anstoss: nur bei validierten, vollstaendig veroeffentlichten Daten - und nur wenn noetig", () => {
-  const plan = (o) => planDispatch(Object.assign({ pipeline: GUT, basisAsOf: "2026-10-13", supertraderAsOf: "2026-10-12", runs: [] }, o));
+  const plan = (o) => planDispatch(Object.assign({ pipeline: GUT, basisAsOf: "2026-10-13", supertraderAsOf: "2026-10-12", runs: [], inputs: EING, deadRefs: [], universeOk: true }, o));
   assert.equal(plan({}).action, "DISPATCH");
   /* nicht validiert: nie anstossen */
   for (const [name, o] of [
@@ -37,8 +38,18 @@ test("SC1 · Anstoss: nur bei validierten, vollstaendig veroeffentlichten Daten 
     assert.equal(p.action, "REFUSE", name);
     assert.ok(["NO_PIPELINE_REPORT", "DATA_NOT_VALIDATED"].includes(p.reason), name);
   }
+  /* Eingaben des Builds (Benchmark, Regime, Boersenstatus) muessen denselben Stichtag tragen: der Build kuerzt einen alten SPY still */
+  for (const [name, eing] of [["SPY alt", { ...EING, spyTo: "2026-10-12" }], ["Regime alt", { ...EING, regimeAsOf: "2026-10-12" }], ["Status alt", { ...EING, healthSession: "2026-10-12" }], ["SPY fehlt", { ...EING, spyTo: null }], ["gar nichts", undefined]]) {
+    const p = plan({ inputs: eing });
+    assert.equal(p.action, "REFUSE", name); assert.equal(p.reason, "INPUT_NOT_CURRENT", name);
+  }
+  assert.equal(plan({ universeOk: false }).reason, "DATA_NOT_VALIDATED", "Discover-Aktienindex nicht lesbar");
   /* nicht noetig */
   assert.equal(plan({ supertraderAsOf: "2026-10-13" }).reason, "UP_TO_DATE");
+  /* Universum hat sich nach dem Lauf geaendert (toter Verweis): Neubau heilt, auch bei gleichem Stichtag */
+  const heil = plan({ supertraderAsOf: "2026-10-13", deadRefs: ["QRVO"] });
+  assert.equal(heil.action, "DISPATCH"); assert.equal(heil.reason, "DEAD_TICKER_REFS");
+  assert.equal(plan({ supertraderAsOf: "2026-10-13", deadRefs: ["QRVO"], runs: [{ status: "queued" }] }).reason, "ALREADY_QUEUED", "auch hier kein Doppellauf");
   assert.equal(plan({ supertraderAsOf: "2026-10-14" }).reason, "UP_TO_DATE", "nie rueckwaerts, auch nicht bei spaeterem Stand");
   /* kein Doppellauf: ein wartender Lauf liest beim Start den aktuellen Stand */
   for (const status of CONFIG.waitingStates) assert.equal(plan({ runs: [{ status }] }).reason, "ALREADY_QUEUED", status);
@@ -78,7 +89,7 @@ test("SC2 · Monitor: Stichtag gegen die Produktdaten, Zeitstufen, tote Ticker-V
 });
 
 /* --------------------------------------------------------------- Ende-zu-Ende */
-function fixture({ metaAsOf = "2026-10-13", metaGen = "2026-10-14T02:28:00Z", stAsOf = "2026-10-12", symbols = ["AAA", "BBB"], index = ["AAA", "BBB"], unavailable = [] } = {}) {
+function fixture({ metaAsOf = "2026-10-13", metaGen = "2026-10-14T02:28:00Z", stAsOf = "2026-10-12", symbols = ["AAA", "BBB"], index = ["AAA", "BBB"], unavailable = [], eing = EING } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "vu-stchain-"));
   for (const d of ["discover/data/stock-index", "supertrader/data"]) mkdirSync(join(dir, d), { recursive: true });
   writeFileSync(join(dir, "discover/data/meta.json"), JSON.stringify({ universes: [{ universeId: "US_REAL", asOf: metaAsOf, generatedAt: metaGen }] }));
@@ -86,6 +97,10 @@ function fixture({ metaAsOf = "2026-10-13", metaGen = "2026-10-14T02:28:00Z", st
   writeFileSync(join(dir, "supertrader/data/build.json"), JSON.stringify({ asOf: stAsOf }));
   writeFileSync(join(dir, "supertrader/data/signals.json"), JSON.stringify({ bySymbol: Object.fromEntries(symbols.map((s) => [s, {}])), discoverAvailability: { unavailable } }));
   writeFileSync(join(dir, "pipeline.json"), JSON.stringify(GUT));
+  for (const d of ["quant/data/market/multi-asset/series", "quant/data/product", "quant/data/market/freshness"]) mkdirSync(join(dir, d), { recursive: true });
+  writeFileSync(join(dir, "quant/data/market/multi-asset/series/SPY.json"), JSON.stringify({ to: eing.spyTo, points: [] }));
+  writeFileSync(join(dir, "quant/data/product/market-regime-v1.json"), JSON.stringify({ asOf: eing.regimeAsOf }));
+  writeFileSync(join(dir, "quant/data/market/freshness/health.json"), JSON.stringify({ market: { lastCompletedSession: eing.healthSession } }));
   return dir;
 }
 function lauf(args, env = {}) {
@@ -96,13 +111,19 @@ function lauf(args, env = {}) {
   });
 }
 /* Mini-GitHub: GET runs / POST dispatches. */
-function githubMock({ queued = false, postStatus = 204 } = {}) {
+function githubMock({ queued = false, postStatus = 204, postFolge = null, running = false, runsStatus = 200 } = {}) {
   const posts = []; let gepostet = false;
   const server = createServer((req, res) => {
     let body = ""; req.on("data", (d) => (body += d));
     req.on("end", () => {
-      if (req.method === "POST") { posts.push({ url: req.url, body: JSON.parse(body || "{}"), auth: req.headers.authorization }); gepostet = postStatus === 204; res.statusCode = postStatus; return res.end(postStatus === 204 ? "" : '{"message":"Workflow does not have workflow_dispatch trigger"}'); }
+      if (req.method === "POST") {
+        posts.push({ url: req.url, body: JSON.parse(body || "{}"), auth: req.headers.authorization });
+        const st = postFolge ? postFolge[Math.min(posts.length - 1, postFolge.length - 1)] : postStatus;
+        gepostet = st === 204; res.statusCode = st; return res.end(st === 204 ? "" : '{"message":"Workflow does not have workflow_dispatch trigger"}');
+      }
+      if (runsStatus !== 200 && !gepostet) { res.statusCode = runsStatus; return res.end("{}"); }
       const runs = [];
+      if (running) runs.push({ status: "in_progress", event: "schedule", created_at: new Date(Date.now() - 600000).toISOString(), html_url: "http://run/laeuft" });
       if (queued) runs.push({ status: "queued", event: "workflow_dispatch", created_at: new Date().toISOString(), html_url: "http://run/queued" });
       if (gepostet) runs.push({ status: "in_progress", event: "workflow_dispatch", created_at: new Date().toISOString(), html_url: "http://run/neu" });
       res.setHeader("content-type", "application/json"); res.end(JSON.stringify({ workflow_runs: runs }));
@@ -240,4 +261,86 @@ test("SC7 · Isolation: das Skript liest nur, fasst keine Signallogik an und ruf
   /* Aufrufe nach aussen: ausschliesslich die GitHub-API des eigenen Repositorys */
   assert.equal((ohneKommentare.match(/fetch\(/g) || []).length, 1);
   assert.match(ohneKommentare, /GITHUB_API_URL/);
+});
+
+test("SC8 · Anstoss unter Last: laufender Lauf, 5xx-Wiederholung, Laeufe-API tot, Universum geaendert, Eingaben alt", async () => {
+  const dir = fixture();
+  const p = ["--root=" + dir, "--pipeline=" + join(dir, "pipeline.json")];
+  const ausgabe = join(dir, "out.txt");
+  try {
+    /* laeuft schon ein Lauf (altes Datenfenster): dahinter einreihen */
+    let gh = await githubMock({ running: true });
+    let r = await lauf(["dispatch", ...p], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 1); assert.match(r.out, /DISPATCH_BEHIND_RUNNING/);
+    /* 503, 503, dann 204: drei Versuche, ein Erfolg */
+    gh = await githubMock({ postFolge: [503, 503, 204] });
+    r = await lauf(["dispatch", ...p], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 3);
+    /* dauerhaft 503: nach drei Versuchen Exit 1 mit Detail fuer den Alarm */
+    gh = await githubMock({ postStatus: 503 });
+    r = await lauf(["dispatch", ...p], { GITHUB_API_URL: gh.url, GITHUB_OUTPUT: ausgabe }); gh.server.close();
+    assert.equal(r.code, 1, r.out); assert.equal(gh.posts.length, 3);
+    assert.match(readFileSync(ausgabe, "utf8"), /^detail=Dispatch abgewiesen: HTTP 503/m);
+    /* 4xx ist endgueltig: genau ein Versuch */
+    gh = await githubMock({ postStatus: 403 });
+    r = await lauf(["dispatch", ...p], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 1); assert.equal(gh.posts.length, 1);
+    /* Server nicht erreichbar: Netzfehler -> Exit 1 mit Detail (nie eine Ausnahme ohne Erklaerung) */
+    writeFileSync(ausgabe, "");
+    r = await lauf(["dispatch", ...p], { GITHUB_API_URL: "http://127.0.0.1:9", GITHUB_OUTPUT: ausgabe });
+    assert.equal(r.code, 1, r.out); assert.match(readFileSync(ausgabe, "utf8"), /^detail=Dispatch nicht erreichbar/m);
+    /* Laeufe-Abfrage scheitert: Warnung, es wird trotzdem geplant und angestossen */
+    gh = await githubMock({ runsStatus: 500 });
+    r = await lauf(["dispatch", ...p], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 1); assert.match(r.out, /Warteschlange unbekannt/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+  /* Universum hat sich bei GLEICHEM Stichtag geaendert: toter Verweis -> Neubau */
+  const tot = fixture({ stAsOf: "2026-10-13", symbols: ["AAA", "QRVO"], index: ["AAA"] });
+  try {
+    const gh = await githubMock();
+    const r = await lauf(["dispatch", "--root=" + tot, "--pipeline=" + join(tot, "pipeline.json")], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 1); assert.match(r.out, /DEAD_TICKER_REFS/);
+  } finally { rmSync(tot, { recursive: true, force: true }); }
+  /* Eingaben des Builds noch alt (SPY): kein Anstoss, Alarm-Detail */
+  const alt = fixture({ eing: { spyTo: "2026-10-12", regimeAsOf: "2026-10-13", healthSession: "2026-10-13" } });
+  try {
+    const gh = await githubMock();
+    const a = join(alt, "o.txt");
+    const r = await lauf(["dispatch", "--root=" + alt, "--pipeline=" + join(alt, "pipeline.json")], { GITHUB_API_URL: gh.url, GITHUB_OUTPUT: a }); gh.server.close();
+    assert.equal(r.code, 1, r.out); assert.equal(gh.posts.length, 0, "nie auf einem veralteten Benchmark");
+    assert.match(readFileSync(a, "utf8"), /^detail=INPUT_NOT_CURRENT: .*SPY 2026-10-12/m);
+  } finally { rmSync(alt, { recursive: true, force: true }); }
+  /* Aktienindex fehlt: nicht validiert, kein Anstoss */
+  const ohne = fixture();
+  try {
+    rmSync(join(ohne, "discover/data/stock-index/US_REAL.json"));
+    const gh = await githubMock();
+    const r = await lauf(["dispatch", "--root=" + ohne, "--pipeline=" + join(ohne, "pipeline.json")], { GITHUB_API_URL: gh.url }); gh.server.close();
+    assert.equal(r.code, 1); assert.equal(gh.posts.length, 0); assert.match(r.out, /Aktienindex nicht lesbar/);
+  } finally { rmSync(ohne, { recursive: true, force: true }); }
+});
+
+test("SC9 · Monitor: fehlender Stand/Index ist ein eigener Befund (kein Fehlalarm auf alle Titel), gescheiterter oder laufender Lauf", () => {
+  const nowMs = Date.parse("2026-10-14T20:00:00Z");
+  const basis = { asOf: "2026-10-13", generatedAt: "2026-10-14T02:28:00Z" };        /* 17,5 h alt */
+  const bas = (o) => assessChain(Object.assign({ nowMs, pipeline: GUT, basis, supertraderAsOf: "2026-10-12", symbols: ["AAA"], universe: new Set(["AAA"]), unavailable: [], lastRun: null }, o));
+  const codes = (r) => r.findings.map((f) => f.code);
+  assert.ok(codes(bas({ supertraderAsOf: null })).includes("NO_STATE"));
+  const keinIndex = bas({ universe: null, supertraderAsOf: "2026-10-13" });
+  assert.deepEqual(codes(keinIndex), ["NO_UNIVERSE"]);
+  assert.equal(keinIndex.level, "WARN", "ein unlesbarer Index macht nicht alle Signal-Titel zu toten Verweisen");
+  /* gescheiterter Lauf wird benannt */
+  const fail = bas({ lastRun: { event: "schedule", createdAt: "2026-10-14T13:00:00Z", conclusion: "failure", status: "completed", url: "http://run/1" } });
+  assert.ok(codes(fail).includes("SUPERTRADER_RUN_FAILED")); assert.ok(codes(fail).includes("SUPERTRADER_STALE")); assert.equal(fail.level, "FAIL");
+  /* ein Lauf laeuft/wartet gerade: nur WARN (der Rueckfall steht in der Warteschlange) */
+  for (const status of ["queued", "in_progress"]) {
+    const r = bas({ lastRun: { event: "schedule", createdAt: "2026-10-14T19:55:00Z", status, conclusion: null } });
+    assert.equal(r.level, "WARN", status); assert.ok(!codes(r).includes("SUPERTRADER_STALE"), status);
+  }
+});
+
+test("SC10 · Freshness-Monitor: Ergebnis des Supertrader-Jobs landet im Alarm (Issue), nicht nur in einem roten Lauf", () => {
+  const fm = lies(".github/workflows/freshness-monitor.yml");
+  assert.match(fm, /alarm:\n\s+needs: \[monitor, produktstand, supertrader\]/);
+  assert.match(fm, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result \}\}/);
 });

@@ -25,10 +25,17 @@
                   tragen die letzte abgeschlossene Sitzung
                   (measure-pipeline-freshness: QUANT_CURRENT == PASS)
                 - das Discover-Universum (meta.json) traegt dasselbe Datum
+                - die uebrigen Eingaben des Builds tragen es ebenfalls:
+                  Benchmark SPY, Marktregime, Boersenstatus (der Build kuerzt
+                  einen zu alten SPY still und zeigt ein altes Regime nur an)
+                - der Discover-Aktienindex ist lesbar
               Und nur wenn noetig:
                 - Supertrader steht nicht schon auf diesem Datum
                 - es wartet nicht schon ein Lauf in der Warteschlange (er
                   liest beim Start den dann aktuellen Stand)
+              Oder wenn Supertrader zwar auf dem Datum steht, aber Signale auf
+              Titel zeigen, die nicht mehr im Universum stehen und nicht
+              ausgewiesen sind: ein Neubau weist sie aus (heilt den toten Link).
               Keine Signallogik, keine Anbieteranfrage hier: der Lauf selbst
               holt hoechstens Minutenkerzen fuer noch nicht verarbeitete
               Kauf-Stop-Tage (intraday-prefetch.mjs); ein Wiederholungslauf
@@ -76,7 +83,7 @@ export const CONFIG = {
  *   supertraderAsOf  Stand von supertrader/data/build.json
  *   runs             juengste Laeufe von supertrader-signals.yml [{status, ...}]
  */
-export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs }) {
+export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs, inputs, deadRefs, universeOk }) {
   if (!pipeline) return { action: "REFUSE", reason: "NO_PIPELINE_REPORT", detail: "Kein Bericht ueber den Produktstand." };
   const ziel = pipeline.LATEST_PRODUCT_ASOF;
   const fakten = {
@@ -86,10 +93,20 @@ export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs }) {
   const validiert = pipeline.QUANT_CURRENT === "PASS" && pipeline.PRODUCT_MATERIALIZATION_CURRENT === "CURRENT" &&
     pipeline.MARKET_STORE_CURRENT === "CURRENT" && !!ziel && ziel === pipeline.LATEST_MARKET_SESSION && basisAsOf === ziel;
   if (!validiert) return { action: "REFUSE", reason: "DATA_NOT_VALIDATED", detail: "Marktdaten nicht vollstaendig veroeffentlicht/validiert: " + JSON.stringify(fakten) };
-  if (supertraderAsOf && supertraderAsOf >= ziel) return { action: "SKIP", reason: "UP_TO_DATE", detail: "Supertrader steht schon auf " + supertraderAsOf + ".", ziel };
+  if (universeOk === false) return { action: "REFUSE", reason: "DATA_NOT_VALIDATED", detail: "Discover-Aktienindex nicht lesbar oder leer." };
+  /* Die uebrigen Eingaben des Builds (Benchmark SPY, Marktregime, Boersenstatus) haben eigene Erzeuger.
+     Der Build kuerzt einen zu alten Benchmark still und zeigt ein altes Regime nur an - deshalb hier pruefen. */
+  const eing = inputs || {};
+  const alt = [["SPY", eing.spyTo], ["Marktregime", eing.regimeAsOf], ["Boersenstatus", eing.healthSession]].filter(([, d]) => !d || d < ziel);
+  if (alt.length) return { action: "REFUSE", reason: "INPUT_NOT_CURRENT", detail: "Eingaben des Supertrader-Builds noch nicht auf " + ziel + ": " + alt.map(([n, d]) => n + " " + (d || "fehlt")).join(", ") + ". Der Zeitplan-Rueckfall rechnet spaeter." };
   const wartend = (runs || []).filter((r) => CONFIG.waitingStates.includes(r.status));
+  const tot = deadRefs || [];
+  /* Supertrader steht schon auf dem Datum - aber das Universum hat sich danach geaendert (Signal auf Titel ohne Seite):
+     der Build weist entfallene Titel aus, ein Neubau heilt den toten Link. */
+  if (supertraderAsOf && supertraderAsOf >= ziel && !tot.length) return { action: "SKIP", reason: "UP_TO_DATE", detail: "Supertrader steht schon auf " + supertraderAsOf + ".", ziel };
   if (wartend.length) return { action: "SKIP", reason: "ALREADY_QUEUED", detail: "Ein Lauf wartet bereits und liest beim Start den aktuellen Stand.", ziel };
   const laufend = (runs || []).filter((r) => r.status === "in_progress");
+  if (supertraderAsOf && supertraderAsOf >= ziel) return { action: "DISPATCH", reason: "DEAD_TICKER_REFS", detail: tot.length + " Signal-Titel ohne Discover-Seite und ohne Ausweis: " + tot.slice(0, 8).join(", ") + ".", ziel };
   return { action: "DISPATCH", reason: laufend.length ? "DISPATCH_BEHIND_RUNNING" : "DISPATCH", detail: "Supertrader " + (supertraderAsOf || "-") + " < Produktstand " + ziel + ".", ziel };
 }
 
@@ -100,6 +117,7 @@ export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs }) {
  *   symbols (Signale), universe (Set), unavailable (Array), lastRun (oder null)
  */
 export function assessChain({ nowMs, pipeline, basis, supertraderAsOf, symbols, universe, unavailable, lastRun }) {
+  /* universe === null: Aktienindex nicht lesbar (kein Urteil ueber Verweise). */
   const findings = [];
   const add = (level, code, text) => findings.push({ level, code, text });
   const ziel = pipeline ? pipeline.LATEST_PRODUCT_ASOF : null;
@@ -108,17 +126,23 @@ export function assessChain({ nowMs, pipeline, basis, supertraderAsOf, symbols, 
   const zurueck = !!(ziel && supertraderAsOf && supertraderAsOf < ziel);
   const lauf = lastRun ? " Letzter Lauf: " + lastRun.event + " " + lastRun.createdAt + " " + (lastRun.conclusion || lastRun.status) + (lastRun.url ? " (" + lastRun.url + ")" : "") + "." : "";
 
+  const wartetOderLaeuft = !!(lastRun && (CONFIG.waitingStates.includes(lastRun.status) || lastRun.status === "in_progress"));
   if (!pipeline) add("WARN", "NO_PIPELINE_REPORT", "Produktstand nicht messbar; Supertrader-Stand nicht beurteilbar.");
+  if (!supertraderAsOf) add("WARN", "NO_STATE", "supertrader/data/build.json fehlt oder ist unlesbar; Supertrader-Stand nicht beurteilbar.");
+  if (!universe) add("WARN", "NO_UNIVERSE", "discover/data/stock-index/US_REAL.json fehlt oder ist leer; Ticker-Verweise nicht beurteilbar.");
   if (zurueck && pipeline.QUANT_CURRENT === "PASS" && ziel === marktDatum && basis && basis.asOf === ziel && basisAlterMin !== null) {
     /* Die Daten sind vollstaendig da; die Kette haette laufen muessen. */
-    if (basisAlterMin > CONFIG.staleMin) add("FAIL", "SUPERTRADER_STALE", "Supertrader steht auf " + supertraderAsOf + ", die validierten Produktdaten auf " + ziel + " (seit " + basisAlterMin + " Min.). Weder die Nachtlauf-Stufe noch der Zeitplan-Rueckfall haben Supertrader erreicht." + lauf);
+    if (lastRun && lastRun.conclusion === "failure") add("WARN", "SUPERTRADER_RUN_FAILED", "Der letzte Supertrader-Lauf ist gescheitert (Integritaetstests oder Push); die Signale bleiben unveraendert." + lauf);
+    /* Ein laufender/wartender Lauf kommt gerade: erst WARN (der Rueckfall steht in der Warteschlange). */
+    if (basisAlterMin > CONFIG.staleMin && wartetOderLaeuft) add("WARN", "SUPERTRADER_LATE", "Supertrader steht auf " + supertraderAsOf + ", die validierten Produktdaten auf " + ziel + " (seit " + basisAlterMin + " Min.); ein Lauf laeuft/wartet bereits." + lauf);
+    else if (basisAlterMin > CONFIG.staleMin) add("FAIL", "SUPERTRADER_STALE", "Supertrader steht auf " + supertraderAsOf + ", die validierten Produktdaten auf " + ziel + " (seit " + basisAlterMin + " Min.). Weder die Nachtlauf-Stufe noch der Zeitplan-Rueckfall haben Supertrader erreicht." + lauf);
     else if (basisAlterMin > CONFIG.lateMin) add("WARN", "SUPERTRADER_LATE", "Supertrader steht auf " + supertraderAsOf + ", die validierten Produktdaten auf " + ziel + " (seit " + basisAlterMin + " Min.)." + lauf);
   }
 
   /* Veraltete Ticker-Verweise: Signal ohne Discover-Seite (toter Link). */
   const ausgewiesen = new Set(unavailable || []);
-  const tot = (symbols || []).filter((s) => !universe.has(s) && !ausgewiesen.has(s)).sort();
-  const veraltetesMal = [...ausgewiesen].filter((s) => universe.has(s)).sort();
+  const tot = universe ? (symbols || []).filter((s) => !universe.has(s) && !ausgewiesen.has(s)).sort() : [];
+  const veraltetesMal = universe ? [...ausgewiesen].filter((s) => universe.has(s)).sort() : [];
   if (tot.length) {
     const text = tot.length + " Signal-Titel ohne Discover-Seite und ohne Ausweis (toter Link): " + tot.slice(0, 12).join(", ") + (tot.length > 12 ? " ..." : "") + ".";
     /* Steht Supertrader noch zurueck, heilt der naechste Lauf das (Ausweis im Build); sonst ist es ein Befund. */
@@ -151,8 +175,13 @@ function zustand(root) {
     basis: u ? { asOf: u.asOf, generatedAt: u.generatedAt || null } : null,
     supertraderAsOf: build ? build.asOf : null,
     symbols: Object.keys(signals.bySymbol || {}),
-    universe: new Set((index && index.symbols) || []),
-    unavailable: (signals.discoverAvailability && signals.discoverAvailability.unavailable) || []
+    universe: index && Array.isArray(index.symbols) && index.symbols.length ? new Set(index.symbols) : null,
+    unavailable: (signals.discoverAvailability && signals.discoverAvailability.unavailable) || [],
+    inputs: {
+      spyTo: ((lies(join(root, "quant", "data", "market", "multi-asset", "series", "SPY.json")) || {}).to || "").slice(0, 10) || null,
+      regimeAsOf: (lies(join(root, "quant", "data", "product", "market-regime-v1.json")) || {}).asOf || null,
+      healthSession: (((lies(join(root, "quant", "data", "market", "freshness", "health.json")) || {}).market) || {}).lastCompletedSession || null
+    }
   };
 }
 
@@ -190,7 +219,8 @@ async function dispatch(args, env) {
   const pipeline = messePipeline(root, args);
   let runs = [];
   try { runs = await holeLaeufe(args, env); } catch (e) { console.log("::warning title=Supertrader-Kette::" + e.message + " - Warteschlange unbekannt, es wird trotzdem geplant."); }
-  const plan = planDispatch({ pipeline, basisAsOf: z.basis && z.basis.asOf, supertraderAsOf: z.supertraderAsOf, runs });
+  const tot = z.universe ? z.symbols.filter((x) => !z.universe.has(x) && !new Set(z.unavailable).has(x)).sort() : [];
+  const plan = planDispatch({ pipeline, basisAsOf: z.basis && z.basis.asOf, supertraderAsOf: z.supertraderAsOf, runs, inputs: z.inputs, deadRefs: tot, universeOk: !!z.universe });
   const kopf = ["### Supertrader nach dem Nachtlauf", "", "| Feld | Wert |", "|---|---|",
     "| Entscheidung | " + plan.action + " / " + plan.reason + " |", "| Grund | " + plan.detail + " |",
     "| Produktstand | " + (pipeline ? pipeline.LATEST_PRODUCT_ASOF : "-") + " |", "| Discover-Basis | " + (z.basis ? z.basis.asOf : "-") + " |",
@@ -205,12 +235,22 @@ async function dispatch(args, env) {
 
   const ref = env.GITHUB_REF_NAME || "main";
   const t0 = Date.now() - 5000;
-  const res = await api("/actions/workflows/" + CONFIG.workflow + "/dispatches", { method: "POST", body: JSON.stringify({ ref }), headers: { "content-type": "application/json" } }, env);
-  if (res.status !== 204) {
-    const fehlerText = "Dispatch abgewiesen: HTTP " + res.status + " " + (await res.text()).slice(0, 200);
+  /* Bis zu drei Versuche bei Netzfehlern und 5xx (kurzer Abstand); 4xx ist endgueltig. */
+  const takt0 = Number(env.SUPERTRADER_CHAIN_POLL_MS) || 5000;
+  let res = null, netzfehler = null;
+  for (let versuch = 1; versuch <= 3; versuch++) {
+    try {
+      res = await api("/actions/workflows/" + CONFIG.workflow + "/dispatches", { method: "POST", body: JSON.stringify({ ref }), headers: { "content-type": "application/json" } }, env);
+      netzfehler = null;
+      if (res.status === 204 || res.status < 500) break;
+    } catch (e) { netzfehler = e; res = null; }
+    if (versuch < 3) await new Promise((r) => setTimeout(r, takt0 * versuch));
+  }
+  if (!res || res.status !== 204) {
+    const fehlerText = res ? "Dispatch abgewiesen: HTTP " + res.status + " " + (await res.text()).slice(0, 200) : "Dispatch nicht erreichbar: " + String(netzfehler && netzfehler.message || netzfehler);
     console.log("::error title=Supertrader-Kette::" + fehlerText);
     ausgabe(env, "detail", fehlerText);
-    zusammenfassung(kopf.concat(["| Aktion | Dispatch ABGEWIESEN (HTTP " + res.status + ") |"]), env);
+    zusammenfassung(kopf.concat(["| Aktion | Dispatch FEHLGESCHLAGEN (" + fehlerText.slice(0, 80) + ") |"]), env);
     return 1;
   }
   /* Beleg: erscheint der Lauf? (Nur Beobachtung - ein spaeterer Start ist kein Fehler.) */
