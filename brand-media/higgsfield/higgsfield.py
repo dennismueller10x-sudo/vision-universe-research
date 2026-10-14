@@ -20,6 +20,8 @@ BASE_URL = "https://api.higgsfield.ai"
 REGISTRY_PATH = Path(__file__).with_name("registry.json")
 TERMINAL = {"completed", "failed", "nsfw", "canceled"}
 APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
+WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-UP-TO-5-USD"
+WAN_MAX_USD = Decimal("5.00")
 
 
 class HiggsfieldError(RuntimeError):
@@ -59,9 +61,9 @@ def validate(model, operation, prompt, duration, resolution, aspect_ratio, refer
         if candidate.is_absolute() or ".." in candidate.parts:
             raise HiggsfieldError("Reference path must stay inside the checked-out repository")
         approved = model.get("approved_production_reference")
-        if model["model_id"] == "bytedance/seedance-2.5" and operation == "image_to_video":
+        if approved and operation == "image_to_video":
             if not approved or candidate.as_posix() != approved["path"]:
-                raise HiggsfieldError("Seedance 2.5 accepts only the registered THE ARRIVAL master reference")
+                raise HiggsfieldError("Image-to-video accepts only the registered THE ARRIVAL master reference")
             digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
             if digest != approved["sha256"]:
                 raise HiggsfieldError("Registered master reference checksum mismatch")
@@ -117,10 +119,14 @@ class Client:
     def estimate(self, endpoint, params):
         response = self._request("POST", "/estimate/" + endpoint, params)
         try:
+            if not isinstance(response, dict):
+                raise TypeError
             amount = Decimal(str(response["usd"]))
             credits = str(response["credits"])
         except (KeyError, InvalidOperation, TypeError):
-            raise HiggsfieldError("Malformed price estimate; generation blocked") from None
+            names = sorted(k for k in response if isinstance(response, dict) and isinstance(k, str) and re.fullmatch(r"[A-Za-z0-9_-]{1,40}", k)) if isinstance(response, dict) else []
+            detail = ",".join(names) if names else "no top-level fields"
+            raise HiggsfieldError(f"Malformed price estimate; expected documented usd and credits fields (received field names: {detail}); generation blocked") from None
         if amount < 0 or not amount.is_finite():
             raise HiggsfieldError("Malformed price estimate; generation blocked")
         return {"usd": str(amount), "credits": credits, "source": "authenticated estimate endpoint"}
@@ -151,8 +157,8 @@ class Client:
             raise HiggsfieldError(f"Reference upload failed ({type(exc).__name__})") from None
         return public_url
 
-    def submit(self, endpoint, params):
-        reply = self._request("POST", "/" + endpoint, params, idempotency_key=str(uuid.uuid4()))
+    def submit(self, endpoint, params, idempotency_key=None):
+        reply = self._request("POST", "/" + endpoint, params, idempotency_key=idempotency_key or str(uuid.uuid4()))
         try:
             request_id = reply["request_id"]
             status_url = reply["status_url"]
@@ -197,7 +203,11 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
         cap = Decimal(str(budget_usd))
     except (InvalidOperation, TypeError):
         raise HiggsfieldError("Invalid cost or budget amount; generation blocked") from None
-    if not amount.is_finite() or amount < 0 or not cap.is_finite() or cap <= 0 or amount > cap:
+    if not amount.is_finite() or amount < 0 or not cap.is_finite() or cap <= 0:
+        raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
+    if action == "produce" and (cap > WAN_MAX_USD or amount > WAN_MAX_USD):
+        raise HiggsfieldError("WAN production is limited to the approved 5.00 USD maximum; generation blocked")
+    if amount > cap:
         raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
     if action == "generate":
         try:
@@ -210,10 +220,9 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
 
 
 def build_params(model, operation, prompt, duration, resolution, aspect_ratio, native_audio):
-    # Seedance 2.5 image-to-video rejects additionalProperties and derives
-    # framing from image_url; aspect_ratio is intentionally metadata-only there.
     params = {"prompt": prompt, "duration": duration}
-    if operation != "image_to_video" and aspect_ratio:
+    # Seedance 2.5 image-to-video derives framing from image_url and rejects this field.
+    if not (model["model_id"] == "bytedance/seedance-2.5" and operation == "image_to_video") and aspect_ratio:
         params["aspect_ratio"] = aspect_ratio
     if resolution:
         params["resolution"] = resolution
@@ -221,12 +230,31 @@ def build_params(model, operation, prompt, duration, resolution, aspect_ratio, n
         params["sound"] = "on" if native_audio else "off"
     else:
         params["generate_audio"] = native_audio
+    if model["model_id"] == "alibaba/wan-3.0":
+        params["enable_thinking"] = False
     return params
 
 
 def run(args):
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
+    if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
+        raise HiggsfieldError("Wan 3.0 production must use the one-estimate, one-generation produce action")
+    if args.action == "produce":
+        if args.model != "alibaba/wan-3.0" or args.operation != "image_to_video":
+            raise HiggsfieldError("Single-shot production is restricted to the approved Wan 3.0 image-to-video order")
+        if (args.duration, args.resolution, args.aspect_ratio, args.native_audio) != (20, "1080p", "9:16", "true"):
+            raise HiggsfieldError("Wan production parameters must be 20 seconds, 1080p, 9:16, and native audio enabled")
+        if args.approval != WAN_APPROVAL_PHRASE:
+            raise HiggsfieldError("Explicit approval for one Wan generation up to 5.00 USD is required")
+        try:
+            requested_cap = Decimal(str(args.budget_usd))
+        except (InvalidOperation, TypeError):
+            raise HiggsfieldError("Invalid production budget; generation blocked") from None
+        if not requested_cap.is_finite() or requested_cap <= 0 or requested_cap > WAN_MAX_USD:
+            raise HiggsfieldError("Wan production budget cannot exceed the approved 5.00 USD maximum")
+        if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
+            raise HiggsfieldError("Wan production is single-attempt; reruns are blocked")
     client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
     params = build_params(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.native_audio == "true")
     if args.operation == "image_to_video":
@@ -241,9 +269,11 @@ def run(args):
     print(json.dumps({"preflight": "passed", "model_id": model["model_id"], "estimate_usd": estimate["usd"], "budget_usd": str(cap)}))
     if args.action == "estimate":
         return
-    if args.approval != APPROVAL_PHRASE:
+    if args.action == "generate" and args.approval != APPROVAL_PHRASE:
         raise HiggsfieldError("Explicit single-generation approval is required")
-    request_id = client.submit(endpoint, params)
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    idempotency_key = f"vu-higgsfield-{run_id}" if run_id and args.action == "produce" else None
+    request_id = client.submit(endpoint, params, idempotency_key=idempotency_key)
     result = None
     for delay in (2, 3, 5, 8, 10):
         result = client.status(request_id)
@@ -262,7 +292,7 @@ def run(args):
     if args.reference:
         approved = model.get("approved_production_reference", {})
         reference = {
-            "asset_id": approved.get("asset_id") if model["model_id"] == "bytedance/seedance-2.5" and args.operation == "image_to_video" else (args.asset_id or Path(args.reference).stem),
+            "asset_id": approved.get("asset_id") if approved and args.operation == "image_to_video" else (args.asset_id or Path(args.reference).stem),
             "path": args.reference,
             "sha256": hashlib.sha256(Path(args.reference).read_bytes()).hexdigest(),
         }
@@ -270,7 +300,7 @@ def run(args):
         "request_id": request_id, "model_id": model["model_id"], "provider": model["provider"],
         "prompt": args.prompt, "seed": None, "parameters": params,
         "requested_aspect_ratio": args.aspect_ratio,
-        "aspect_ratio_source": "reference image framing" if args.operation == "image_to_video" else "request parameter",
+        "aspect_ratio_source": "request parameter" if model["model_id"] == "alibaba/wan-3.0" else ("reference image framing" if args.operation == "image_to_video" else "request parameter"),
         "reference_image": reference, "estimate": estimate,
         "status": result["status"], "result_file": str(video_path),
         "hyperframes_ready": True, "social_upload": False
@@ -280,7 +310,7 @@ def run(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", choices=("estimate", "generate"), required=True)
+    parser.add_argument("--action", choices=("estimate", "generate", "produce"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--operation", choices=("text_to_video", "image_to_video", "reference_to_video"), required=True)
     parser.add_argument("--prompt", required=True)
