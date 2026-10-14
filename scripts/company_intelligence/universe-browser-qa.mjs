@@ -11,6 +11,7 @@ import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
 import {readLiveAsset} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
+import {expectsEstimatedWindow} from './estimated-window-expectation.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
@@ -67,7 +68,11 @@ try{
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+':overflow');assert.deepEqual(errors,[],ticker);
    assert(requests.some(r=>r.path.includes(m.generation)));assert(requests.every(r=>r.status===200));
    if(expected.latestFinancials.stale&&flags.financials)assert(text.includes('Veraltete Geschäftszahlen'));
-   if(expected.events.some(e=>e.confirmationStatus==='ESTIMATED'))assert(text.includes('Geschätzt'));
+   // Expectation comes from the shipped view model (hidden past/superseded estimates are not defects);
+   // the rendered event pills must match it in both directions.
+   const estimatedPills=await chapter.locator('.ci-event .ci-pill',{hasText:'Geschätzt'}).count();
+   assert.equal(estimatedPills>0,expectsEstimatedWindow(expected),ticker+':estimated-window');
+   if(estimatedPills>0)assert(text.includes('Geschätzt'));
    assert(!text.includes('keine Meldungen enthalten'));assert(!text.includes('Kein bestätigter kommender Termin'));
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(l=>l.height>0).every(l=>l.height>=44&&l.url.startsWith('https:')));
    if(width===390&&theme==='dark'||matrices.includes(ticker)&&[430,1440].includes(width)&&theme==='dark')await chapter.screenshot({path:out+'-'+ticker+'-'+width+'-'+theme+'.png'});
