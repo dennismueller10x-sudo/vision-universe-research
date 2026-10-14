@@ -22,7 +22,8 @@
 .el-title{display:flex;align-items:center;gap:14px;margin:0;font-size:var(--vu-hero-title);line-height:var(--vu-hero-leading);letter-spacing:var(--vu-hero-tracking);font-weight:800}
 .el-mark{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:26%;background:#07090b;color:var(--vu-accent);box-shadow:0 0 0 1px rgba(200,245,49,.28),0 10px 30px -12px rgba(200,245,49,.4)}
 .el-mark svg{width:27px;height:27px}
-.el-lead{margin:8px 0 14px;font-size:clamp(16px,4.2vw,22px);line-height:1.35;color:var(--vu-text-secondary);max-width:34ch}
+.el-lead{margin:8px 0 14px;font-size:clamp(16px,4.2vw,22px);line-height:1.35;color:var(--vu-text-secondary);max-width:30ch}
+.el-lead span{display:block}
 .el-search{position:relative;max-width:640px}
 .el-input{width:100%;box-sizing:border-box;height:52px;padding:0 48px 0 20px;border:1px solid var(--vu-line-strong);border-radius:999px;background:var(--vu-elevated);color:var(--vu-text);font:500 17px Inter,inherit;-webkit-appearance:none;appearance:none}
 .el-input::placeholder{color:var(--vu-muted)}
@@ -121,3 +122,37 @@
 }
 @media(prefers-reduced-motion:reduce){.el-card,.el-skel{transition:none;animation:none}.el-card:hover{transform:none}}
 @media(max-width:350px){.el-track .el-slot{flex-basis:86vw}}
+
+/* ---- Politur: Kennzahlen mit Verhaeltnis, Flaggschiff-Reihe, Kontext, leise Reihen */
+.el-statwrap{display:grid;gap:10px}
+.el-stats{margin-top:12px}
+.el-stat.tone-up strong{color:var(--el-up)}
+.el-stat.tone-down strong{color:var(--el-down)}
+.el-stat:hover{border-color:var(--vu-line-strong)}
+.el-split{display:flex;height:6px;border-radius:999px;overflow:hidden;background:var(--vu-line);gap:2px}
+.el-split span{min-width:6px;border-radius:999px}
+.el-split-up{background:var(--el-up);opacity:.75}
+.el-split-down{background:var(--el-down);opacity:.75}
+.el-row.is-flagship{margin-top:22px;padding:18px 0 4px;border-top:1px solid var(--vu-line)}
+.el-row.is-flagship .el-row-title{font-size:26px}
+.el-row.is-flagship .el-track .el-slot{flex-basis:min(82vw,330px)}
+.el-card.is-flagship{background:linear-gradient(180deg,var(--vu-accent-soft),transparent 55%),var(--el-card);border-color:var(--vu-line-strong)}
+.el-row.is-secondary{margin-top:36px;padding-top:18px;border-top:1px dashed var(--vu-line)}
+.el-row.is-secondary .el-row-title{font-size:18px;color:var(--vu-text-secondary)}
+.el-row.is-secondary .el-card{background:transparent}
+.el-ctx{display:flex;flex-wrap:wrap;gap:4px 12px;margin:2px 0 0;padding:0;list-style:none;font-size:12px;color:var(--vu-muted)}
+.el-ctx b{color:var(--vu-text);font-weight:700}
+.el-meta{display:flex;gap:8px;align-items:center}
+.el-card{box-shadow:0 1px 0 rgba(0,0,0,.02),0 14px 30px -26px rgba(0,0,0,.28)}
+.el-card:hover{box-shadow:0 18px 36px -24px rgba(0,0,0,.34)}
+
+/* ---- Aktienbild im Gast-Betrieb (Chartbild unter /elliott/#/<T>) */
+.el-detail{min-height:60vh}
+.el-detail[hidden]{display:none!important}
+.el-skel-detail{height:320px;margin-top:24px;border-radius:var(--vu-radius)}
+.dx .el-detail,.qd .el-detail{background:transparent}
+@media(min-width:1100px){.el-row.is-flagship .el-track .el-slot{flex-basis:340px}}
+@media(min-width:1100px){
+  .el-stats{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
+  .el-stat{min-width:0}
+}

@@ -63,10 +63,10 @@
     stocks: function () { return "#/aktien"; },
     method: function (topic) { return "#/methodik" + (topic ? "/" + topic : ""); },
     technical: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/technik"; },
-    /* Elliott ist ein eigenes Produkt (/elliott/); sein Aktienbild rendert diese SPA unter #/elliott/<T>.
-       chartbild bleibt als Name erhalten, zeigt aber auf dieselbe eine Adresse (alte Links: siehe app.js, canonicalize). */
-    elliott: function (t, q) { return "#/elliott/" + encodeURIComponent(String(t || "").toUpperCase()) + (q ? "?" + q : ""); },
-    chartbild: function (t) { return "#/elliott/" + encodeURIComponent(String(t || "").toUpperCase()); },
+    /* Elliott ist ein eigenes Produkt: sein Aktienbild liegt unter /elliott/#/<T>. Diese Links sind ABSOLUT (sie verlassen die
+       Quant-SPA). chartbild bleibt als Name erhalten und zeigt auf dieselbe eine Adresse (alte Links: app.js, canonicalElliott). */
+    elliott: function (t, q) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()) + (q ? "?" + q : ""); },
+    chartbild: function (t) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()); },
     chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }

@@ -486,7 +486,7 @@
   function elliottBar(ctx, ticker) {
     var name = (ctx && ctx.names && ctx.names[ticker]) || ticker;
     return el("nav", { class: "cb-crumbs", "aria-label": "Elliott" }, [
-      el("a", { class: "cb-crumb-home", href: "/elliott/", text: "← Elliott" }),
+      el("a", { class: "cb-crumb-home", href: "/elliott/#/", text: "← Elliott" }),
       el("span", { class: "cb-crumb-now", text: name + (name !== ticker ? " (" + ticker + ")" : "") }),
       el("a", { class: "cb-crumb-link", href: X.routes.stock(ticker), text: "Aktie in Quant" }),
       el("a", { class: "cb-crumb-link", href: "/ask/?q=" + encodeURIComponent("Erkläre die aktuelle Elliott-Lesart von " + ticker + " mit ihrer Invalidierung"), text: "Frag VU zu dieser Lesart" })
@@ -735,8 +735,18 @@
     // ---------------------------------------------- Ansicht-Schalter + Profi
     var proHost = el("section", { class: "cb-pro", "aria-label": "Profi-Ansicht" }), proOpen = el("button", { type: "button", class: "cb-pro-open", text: "Details anzeigen (Profi-Ansicht)" });
     var viewSeg;
+    /* Im Elliott-Produkt steht der Profi-Modus in der Adresse (/elliott/#/<T>?ansicht=profi): ohne neuen Verlaufseintrag, ohne hashchange. */
+    function syncUrl(v) {
+      if (!(opts && opts.host === "elliott")) return;
+      try {
+        var parts = global.location.hash.split("?"), q = new URLSearchParams(parts[1] || "");
+        if (v === "pro") q.set("ansicht", "profi"); else q.delete("ansicht");
+        var qs = q.toString();
+        global.history.replaceState(global.history.state, "", global.location.pathname + global.location.search + parts[0] + (qs ? "?" + qs : ""));
+      } catch (e) { /* nur Adresszeile */ }
+    }
     function setView(v) {
-      view = v; writeView(v);
+      view = v; writeView(v); syncUrl(v);
       if (v === "pro") wavesOn = true;
       if (v === "pro" && !proHost.firstChild) proView(a, rules, methodEv, showProjection).forEach(function (n) { if (n) proHost.append(n); });
       proHost.hidden = v !== "pro"; proOpen.hidden = v === "pro";
@@ -758,7 +768,7 @@
         el("h2", { class: "cb-nothesis-h", text: "Keine belastbare Elliott-Lesart" }),
         el("p", { text: "Für " + ticker + " zeigt Vision Universe derzeit keine Elliott-Projektion. Die Engine enthält sich, wenn keine Zählung verlässlich genug ist – lieber keine Aussage als eine geratene." }),
         pjSel && pjSel.p && pjSel.p.reason ? el("p", { class: "cb-small cb-dim", text: (view === "pro" ? "Grund (Fachansicht): " : "") + pjSel.p.reason }) : null,
-        el("p", { class: "cb-small cb-dim" }, [el("span", { text: "Die übrige technische Analyse unten bleibt verfügbar. " }), el("a", { href: "/elliott/", text: "Aktuelle Elliott-Lesarten ansehen" })])
+        el("p", { class: "cb-small cb-dim" }, [el("span", { text: "Die übrige technische Analyse unten bleibt verfügbar. " }), el("a", { href: "/elliott/#/", text: "Aktuelle Elliott-Lesarten ansehen" })])
       ].filter(Boolean)));
     }
     host.append(el("div", { class: "cb-viewswitch" }, [viewSeg]));

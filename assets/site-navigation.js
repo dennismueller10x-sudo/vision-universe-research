@@ -1,5 +1,7 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
+  // Idempotent: im Gastbetrieb (/elliott/#/<T>) laedt das Quant-Buendel des Release die Shell ein zweites Mal mit.
+  if (customElements.get && customElements.get('vu-navigation')) return;
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
@@ -20,7 +22,8 @@
      der Produkteintrag nur, in welchem Produkt man ist. */
   const hashPart = (loc, i) => (loc.hash.replace(/^#\/?/, '').split('?')[0].split('/')[i] || '');
   /* Elliott ist ein eigenes Produkt. Seine Startseite liegt unter /elliott/; die Detailansicht einer Aktie (Chartbild) rendert die Quant-SPA
-     unter #/elliott/<TICKER> und gehoert fuer die Shell trotzdem zu Elliott. match bekommt Pfad UND Adresse. */
+     unter #/elliott/<TICKER> und gehoert fuer die Shell trotzdem zu Elliott (nur noch ein Altlink: die SPA leitet auf /elliott/#/<T>
+     um). Das native Aktienbild /elliott/#/<T> hat den Pfad /elliott/. match bekommt Pfad UND Adresse. */
   const isElliottDetail = (p, loc) => p === '/quant/' && !!loc && /^#\/elliott(\/|$|\?)/.test(loc.hash || '');
   const PRODUCTS = [
     {id: 'discover', label: 'Discover', match: p => p.startsWith('/discover/'),
@@ -35,6 +38,7 @@
       items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
       active: loc => {
         if (loc.pathname !== '/elliott/') return null;
+        if (hashPart(loc, 0)) return null;   // Aktienbild /elliott/#/<T>: nur Produktkontext
         const q = new URLSearchParams((loc.hash || '').split('?')[1] || '');
         if (q.get('suche') === '1') return 'suche';
         if (q.get('neu') === '1') return 'neu';
@@ -113,7 +117,7 @@
       const aliases = { '/quant/methodology/':'/quant/#/methodik', '/quant/watchlist/':'/quant/#/aktien' };
       href = aliases[loc.pathname] || (dock && dock[2]);
       if (product.id === 'quant' && href === '/quant/#/') href = '/quant/';
-      if (product.id === 'elliott' && loc.pathname !== '/elliott/') href = '/elliott/';
+      if (product.id === 'elliott' && (loc.pathname !== '/elliott/' || hashPart(loc, 0))) href = '/elliott/';
       if (product.id === 'hedgefonds' && hashPart(loc, 0) === 'fonds') href = '/hedgefonds/#/datenbank';
       if (product.id === 'discover' && hashPart(loc, 0) === 's') href = '/discover/#/einzeln/US_REAL';
     }

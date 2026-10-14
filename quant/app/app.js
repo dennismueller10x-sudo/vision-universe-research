@@ -11,9 +11,13 @@
      #/strategien/<id>       eine Strategie
      #/aktien                Aktien (Suche, zuletzt, gemerkt)
      #/aktie/<TICKER>        Aktienanalyse
-     #/elliott/<T>           Elliott-Aktienbild (Chartbild: Ausblick, Zonen, Szenarien, Evidenz); Produkt: /elliott/
-     #/aktie/<T>/technik     ALT, wird zu #/elliott/<T> (?elliott=1 -> ansicht=profi)
-     #/aktie/<T>/chartbild   ALT, wird zu #/elliott/<T>
+     #/elliott/<T>           ALT, wird zu /elliott/#/<T> (Elliott ist ein eigenes Produkt)
+     #/aktie/<T>/technik     ALT, wird zu /elliott/#/<T> (?elliott=1 -> ansicht=profi)
+     #/aktie/<T>/chartbild   ALT, wird zu /elliott/#/<T>
+
+   GAST-BETRIEB (window.QX_HOST = "elliott"): /elliott/ laedt dieses Buendel hinter seiner Aktien-Route (/elliott/#/<T>) und
+   haengt das Chartbild ueber QXApp.mountElliott in seine Seite. Dann startet app.js KEINEN eigenen Router und keine Suche
+   (kein hashchange, kein "/"-Kuerzel): die Adresse gehoert dem Produkt.
      #/chartlagen            Technische Lagen im Ueberblick
      #/aktie/<T>/zahlen      Unternehmenszahlen ueber die Jahre
      #/vergleich/<A,B,...>   Vergleich
@@ -26,6 +30,7 @@
 (function (global) {
   "use strict";
   var S = global.QuantShell, X = global.QX, el = X.el;
+  var HOSTED = !!global.QX_HOST;      // Gast im Elliott-Produkt (siehe Kopf)
 
   /* ---------------------------------------------- Alte Routen -> neue */
   function legacyRoute(search) {
@@ -38,7 +43,7 @@
       home: "#/", stock: okT ? "#/aktie/" + t : "#/aktien", quant: okT ? "#/aktie/" + t : "#/aktien",
       aktien: "#/aktien", stocks: "#/aktien", screener: "#/screener", strategies: "#/strategien", strategien: "#/strategien",
       explain: "#/methodik", methodik: "#/methodik", methodology: "#/methodik",
-      technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "#/elliott/" + t + "?ansicht=profi" : "#/elliott",
+      technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "/elliott/#/" + t + "?ansicht=profi" : "/elliott/",
       fundamentals: okT ? "#/aktie/" + t + "/zahlen" : "#/aktien",
       compare: "#/vergleich" + (p.get("tickers") ? "/" + p.get("tickers") : okT ? "/" + t : ""),
       watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", backtest: "#/backtest", backtesting: "#/backtest", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
@@ -57,7 +62,7 @@
     if (q.get("elliott") === "1") { q.set("ansicht", "profi"); }
     q.delete("elliott");
     var qs = q.toString();
-    return "#/elliott/" + encodeURIComponent(r.ticker) + (qs ? "?" + qs : "");
+    return "/elliott/#/" + encodeURIComponent(r.ticker) + (qs ? "?" + qs : "");
   }
 
   function parse(hash) {
@@ -225,17 +230,22 @@
      Bereich aktiv ist (Router als Quelle der Wahrheit). Die Suche bleibt
      Quant-Suche: im Hero, auf "Aktien", mit / und Strg+K. */
   var main;
-  function buildShell() {
-    var root = document.getElementById("qx-app");
+  function buildShell(rootEl) {
+    var root = rootEl || document.getElementById("qx-app");
     main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
-    var foot = el("footer", { class: "q-foot qx-foot" }, [
+    var foot = HOSTED ? el("footer", { class: "q-foot qx-foot" }, [
+      el("b", { text: "VISION UNIVERSE® ELLIOTT" }),
+      el("p", {}, [el("span", { class: "q-beta", text: "Experimentell" }), el("span", { text: " Elliott ist ein experimentelles Strukturmodell. Projektion ≠ Wahrscheinlichkeit: Szenarien beschreiben Bedingungen, keine Vorhersage, kein Kursziel, keine Anlageempfehlung." })]),
+      el("p", {}, [el("a", { href: "/quant/#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/elliott/#/", text: "Zur Elliott-Übersicht" })])
+    ]) : el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       el("p", { text: "Daten heute. Bessere Entscheidungen für morgen." }),
       el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
       el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
     root.replaceChildren(main, foot);
-    document.querySelector(".qx-skip").addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
+    var skip = document.querySelector(".qx-skip");
+    if (skip) skip.addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
   /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
      sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
@@ -304,6 +314,7 @@
     dialog.addEventListener("close", function () { if (dialog.open) return; if (opener && opener.focus) opener.focus(); });
     function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); }
     document.addEventListener("keydown", function (e) {
+      if (HOSTED) return;      // im Elliott-Produkt gehoeren "/" und Strg+K der Elliott-Suche
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
       if ((e.key === "/" && !typing) || (e.key.toLowerCase() === "k" && (e.ctrlKey || e.metaKey))) { e.preventDefault(); open(); }
     });
@@ -317,7 +328,7 @@
     if (dispose) { try { dispose(); } catch (e) { /* bereits beendet */ } dispose = null; }
     var r = parse(location.hash);
     /* Alte Chartbild-/Technik-Adressen und der Elliott-Hauptlink: eine Adresse, ohne Verlaufseintrag (location.replace loest hashchange aus). */
-    if (r.view === "chartbild" || r.view === "technik") { global.location.replace(canonicalElliott(r)); return; }
+    if (r.view === "chartbild" || r.view === "technik" || r.view === "elliott") { global.location.replace(canonicalElliott(r)); return; }
     if (r.view === "elliottHome") { global.location.replace("/elliott/"); return; }
     search.close();
     markNav(SECTION[r.view] || null);
@@ -352,7 +363,6 @@
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
-        case "elliott": await ctx.loadNames(); await (await loadChartbild()).chartbild(main, ctx, r.ticker, r.params, { product: "elliott" }); break;
         case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
@@ -376,7 +386,7 @@
      stehen. */
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest("a[href^='#']");
-    if (!a) return;
+    if (!a || e.defaultPrevented) return;
     var href = a.getAttribute("href");
     if (href.indexOf("#/") === 0) return;
     var target = document.getElementById(href.slice(1));
@@ -389,11 +399,61 @@
   function boot() {
     buildShell();
     var legacy = legacyRoute(location.search);
+    /* Absolute Ziele (Elliott: /elliott/#/<T>) verlassen /quant/ - sonst entstuende /quant//elliott/… */
+    if (legacy && legacy.charAt(0) === "/") { global.location.replace(legacy); return; }
     if (legacy) history.replaceState(null, "", location.pathname + legacy);
     else if (!location.hash) history.replaceState(null, "", location.pathname + "#/");
     global.addEventListener("hashchange", route);
     route();
   }
-  global.QXApp = { parse: parse, canonicalElliott: canonicalElliott, legacyRoute: legacyRoute, ctx: ctx, route: route };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  /* ------------------------------------------------- Gast im Elliott-Produkt
+     /elliott/ ruft mountElliott(root, ticker, params) fuer #/<TICKER> auf. Jeder Aufruf baut ein eigenes <main>: ein spaeter
+     Abschluss einer verworfenen Darstellung haengt dann an einem entfernten Knoten und nie an der neuen Seite.
+     Quant-Links im Chartbild ("#/aktie/T", "#/methodik" ...) zeigen im Gast-Betrieb auf /quant/ (MutationObserver, auch fuer
+     Mittelklick und neuen Tab); Elliott-Links sind schon absolut (X.routes.elliott). */
+  var hostedGen = 0, hostedObserver = null;
+  function toQuantHref(a) {
+    var h = a.getAttribute && a.getAttribute("href");
+    if (h && h.indexOf("#/") === 0) a.setAttribute("href", "/quant/" + h);
+  }
+  function rewriteQuantLinks(node) {
+    if (node.nodeType !== 1) return;
+    if (node.tagName === "A") toQuantHref(node);
+    var list = node.querySelectorAll ? node.querySelectorAll('a[href^="#/"]') : [];
+    for (var i = 0; i < list.length; i++) toQuantHref(list[i]);
+  }
+  async function mountElliott(rootEl, ticker, params) {
+    var gen = ++hostedGen;
+    if (hostedObserver) hostedObserver.disconnect();
+    var shellMain = (buildShell(rootEl), main);
+    main = shellMain;
+    shellMain.dataset.view = "elliott"; shellMain.dataset.ready = "false"; shellMain.setAttribute("aria-busy", "true");
+    hostedObserver = new MutationObserver(function (list) { list.forEach(function (m) { m.addedNodes.forEach(rewriteQuantLinks); }); });
+    hostedObserver.observe(shellMain, { childList: true, subtree: true });
+    shellMain.append(X.loading("Elliott-Analyse wird geladen …"));
+    try {
+      await Promise.all([ctx.language(), ctx.loadNames()]);
+      if (gen !== hostedGen) return null;
+      var page = await loadChartbild();
+      if (gen !== hostedGen) return null;
+      shellMain.replaceChildren();
+      await page.chartbild(shellMain, ctx, ticker, params, { product: "elliott", host: "elliott" });
+    } catch (err) {
+      if (gen !== hostedGen) return null;
+      shellMain.replaceChildren(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), el("p", { class: "v2-lead", text: "Die Elliott-Analyse konnte nicht geladen werden. Bitte versuche es erneut." }),
+        el("a", { class: "v2-button qx-btn", href: "/elliott/#/" + encodeURIComponent(ticker), text: "Erneut versuchen", onclick: function (e) { e.preventDefault(); mountElliott(rootEl, ticker, params); } })]));
+      if (global.console) console.error("Elliott mount", err);
+    } finally {
+      if (gen === hostedGen) { shellMain.setAttribute("aria-busy", "false"); shellMain.dataset.ready = "true"; }
+    }
+    return shellMain;
+  }
+  function unmountElliott() {
+    hostedGen++;
+    if (hostedObserver) { hostedObserver.disconnect(); hostedObserver = null; }
+  }
+
+  global.QXApp = { parse: parse, canonicalElliott: canonicalElliott, legacyRoute: legacyRoute, ctx: ctx, route: route, mountElliott: mountElliott, unmountElliott: unmountElliott, hosted: HOSTED };
+  if (HOSTED) { /* kein eigener Router */ }
+  else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(window);

@@ -8,7 +8,8 @@
 //   5 Aktie ohne Elliott-Lesart (ehrliche Aussage, keine Umleitung)
 //   6 zurueckgehaltene (STALE) Aktie
 //   7 Zurueck-Navigation
-//   8 Deep-Link-Reload (Startseite mit Filter, Aktienbild)
+//   8 Deep-Link-Reload (Startseite mit Filter, Aktienbild unter /elliott/#/<T>)
+//   9 Altlinks /quant/#/elliott/<T>, technik, chartbild -> nativ
 // Dazu: keine Konsolenfehler, kein horizontaler Overflow, nichts Bedienbares unter der Leiste,
 // kein Shard-Abruf auf der Startseite, Anfragen und Bytes der Startseite.
 //
@@ -95,9 +96,9 @@ for (const vp of VIEWPORTS) {
     if (await w3.count()) {
       const symbol = await w3.getAttribute('data-symbol');
       await w3.click();
-      await page.waitForURL(/\/quant\/#\/elliott\//);
+      await page.waitForURL(/\/elliott\/#\/[A-Z]/);
       await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
-      check(page.url().endsWith('/elliott/' + symbol), 'Karte oeffnet ' + symbol + ' im Elliott-Detail');
+      check(new URL(page.url()).pathname === '/elliott/' && page.url().includes('#/' + symbol), 'Karte oeffnet ' + symbol + ' unter /elliott/#/' + symbol + ' (nativ, kein /quant/)');
       check(await page.locator('.cb-crumbs').count() === 1, 'Elliott-Kopfzeile statt Quant-Rueckweg');
       check(await page.locator('#vu-dock a[aria-current], #vu-dock a.is-context').first().innerText().then((t) => /Elliott/.test(t)).catch(() => false), 'Leiste im Detail: Elliott');
       check(await page.locator('vu-navigation').evaluate((n) => n.getAttribute('dock')) === 'elliott', 'Shell-Produkt im Detail: elliott');
@@ -116,14 +117,19 @@ for (const vp of VIEWPORTS) {
     check(downs === 0, 'Filter Abwaerts zeigt nur Abwaertslesarten');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-filter.png` });
     await page.locator('.el-grid .el-card').first().click();
-    await page.waitForURL(/\/quant\/#\/elliott\//);
+    await page.waitForURL(/\/elliott\/#\/[A-Z]/);
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
     check(true, 'Filter -> Karte -> Detail');
+    await page.goBack({ waitUntil: 'networkidle' });
+    await page.waitForSelector('.el-grid .el-card');
+    check(/richtung=ab/.test(page.url()), 'Zurueck stellt den Filter Abwaerts wieder her');
+    await page.goForward({ waitUntil: 'networkidle' });
+    await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
 
     // Weg 8: Deep-Link-Reload
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
-    check(/\/quant\/#\/elliott\//.test(page.url()) && await page.locator('.cb-crumbs').count() === 1, 'Detail-Deep-Link ueberlebt den Reload');
+    check(/\/elliott\/#\/[A-Z]/.test(page.url()) && await page.locator('.cb-crumbs').count() === 1, 'Detail-Deep-Link ueberlebt den Reload (bleibt auf der Aktie)');
     await page.goto(BASE + '/elliott/#/?welle=3&status=bestaetigt', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
     check(await page.locator('.el-chip.is-on').count() >= 2, 'Filter-Deep-Link stellt die Auswahl her');
@@ -136,9 +142,12 @@ for (const vp of VIEWPORTS) {
     check((await page.locator('.el-hit').first().innerText()).includes('NVDA'), 'Suche NVDA findet NVIDIA');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-search.png` });
     await page.keyboard.press('Enter');
-    await page.waitForURL(/\/quant\/#\/elliott\/NVDA/);
+    await page.waitForURL(/\/elliott\/#\/NVDA/);
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
-    check(true, 'Suche -> Elliott-Detail NVDA (nicht ueber Quant)');
+    check(!page.url().includes('/quant/'), 'Suche -> Elliott-Detail NVDA (nativ, nicht ueber Quant)');
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
+    check(page.url().includes('/elliott/#/NVDA'), 'Reload bleibt auf /elliott/#/NVDA');
     // Weg 5: Aktie ohne Lesart: ehrliche Aussage, Aktie bleibt sichtbar
     const nothesis = await page.locator('.cb-nothesis').count(), hero = await page.locator('.cb-hero').count();
     check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
@@ -146,17 +155,21 @@ for (const vp of VIEWPORTS) {
     // Weg 3: Aktienseite -> Elliott
     await page.goto(BASE + '/quant/#/aktie/NVDA', { waitUntil: 'networkidle' });
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
-    const link = page.locator('a[href="#/elliott/NVDA"]').first();
+    const link = page.locator('a[href="/elliott/#/NVDA"]').first();
     check(await link.count() > 0, 'Aktienseite fuehrt auf Elliott');
-    if (await link.count()) { await link.click(); await page.waitForURL(/#\/elliott\/NVDA/); check(true, 'Aktienseite -> Elliott'); }
+    if (await link.count()) { await link.click(); await page.waitForURL(/\/elliott\/#\/NVDA/); check(true, 'Aktienseite -> Elliott (nativ)'); }
 
     // Altlink: Chartbild/Technik -> Elliott
     await page.goto(BASE + '/quant/#/aktie/NVDA/technik?elliott=1', { waitUntil: 'networkidle' });
-    await page.waitForFunction(() => /#\/elliott\/NVDA/.test(location.hash));
-    check(page.url().endsWith('#/elliott/NVDA?ansicht=profi'), 'Altlink technik?elliott=1 -> #/elliott/NVDA?ansicht=profi');
+    await page.waitForFunction(() => location.pathname === '/elliott/' && /#\/NVDA/.test(location.hash));
+    check(page.url().endsWith('/elliott/#/NVDA?ansicht=profi'), 'Altlink technik?elliott=1 -> /elliott/#/NVDA?ansicht=profi');
+    await page.goto(BASE + '/quant/#/elliott/NVDA', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => location.pathname === '/elliott/');
+    await page.waitForTimeout(300);
+    check(/\/elliott\/#\/NVDA(\?ansicht=profi)?$/.test(page.url()), 'Altlink /quant/#/elliott/NVDA -> /elliott/#/NVDA (' + page.url() + ')');
 
     // Weg 6: zurueckgehaltene Aktie (falls der Index eine nennt) bleibt sichtbar, ohne laufende These
-    await page.goto(BASE + '/quant/#/elliott/AIXC', { waitUntil: 'networkidle' });
+    await page.goto(BASE + '/elliott/#/AIXC', { waitUntil: 'networkidle' });
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
     const body = await page.locator('main#qx-main').innerText();
     check(body.length > 80 && !/Diese Seite gibt es nicht/.test(body), 'zurueckgehaltene oder unbekannte Aktie: ehrlicher Zustand, kein 404');

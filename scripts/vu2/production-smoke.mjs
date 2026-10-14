@@ -98,7 +98,7 @@ const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant
  '/quant/#/aktie/GOOG','/quant/#/aktie/GOOGL','/quant/#/aktie/T','/quant/#/aktie/SO','/quant/#/aktie/AAAC',
  '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO',
  '/quant/#/aktie/ZZZZZ',
- '/quant/#/elliott/NVDA','/quant/#/elliott/AAPL?ansicht=profi','/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
+ '/elliott/#/NVDA','/elliott/#/AAPL?ansicht=profi','/quant/#/elliott/NVDA','/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
  '/quant/#/vergleich/NVDA,MSFT','/quant/#/vergleich/AAPL,MSFT,GOOGL',
  '/quant/#/methodik',
  '/quant/#/methodik/daten','/quant/#/methodik/faktoren','/quant/#/methodik/gewichtung','/quant/#/methodik/branchen',
@@ -123,10 +123,11 @@ const LEGACY={
  '/Quant/?view=explain':'/quant/#/methodik',
  '/vu2/?view=fundamentals&ticker=NVDA':'/quant/#/aktie/NVDA/zahlen?kennzahl=revenue&periode=annual',
  /* Elliott ist ein eigenes Produkt (/elliott/): alte Technik- und Chartbild-Adressen enden auf #/elliott/<T>. */
- '/quant/#/aktie/NVDA/technik':'/quant/#/elliott/NVDA',
- '/quant/#/aktie/NVDA/technik?elliott=1':'/quant/#/elliott/NVDA?ansicht=profi',
- '/quant/#/aktie/NVDA/chartbild':'/quant/#/elliott/NVDA',
- '/quant/#/aktie/AAPL/chartbild?ansicht=profi':'/quant/#/elliott/AAPL?ansicht=profi'
+ '/quant/#/elliott/NVDA':'/elliott/#/NVDA',
+ '/quant/#/aktie/NVDA/technik':'/elliott/#/NVDA',
+ '/quant/#/aktie/NVDA/technik?elliott=1':'/elliott/#/NVDA?ansicht=profi',
+ '/quant/#/aktie/NVDA/chartbild':'/elliott/#/NVDA',
+ '/quant/#/aktie/AAPL/chartbild?ansicht=profi':'/elliott/#/AAPL?ansicht=profi'
 };
 /* Absichtliche Absagen: die Seite IST die Auskunft "gibt es nicht". Sie
    tragen ihre eigene Ueberschrift und einen Weg zurueck; der Inhaltsboden
@@ -193,15 +194,17 @@ for(const width of [1440,390]){
   if(!/^https?:$/.test(location.protocol))return;
   localStorage.setItem(config.storageKey,JSON.stringify(config.state));
  },ACCESS_GATE);
- const errors=[];let fremdFehlgeschlagen=false;
+ const errors=[];let fremdFehlgeschlagen=false;let currentView='';
+ /* Eine Umleitung auf ein anderes Dokument (alte Quant-Adresse -> /elliott/) bricht Anfragen der verlassenen Seite ab; das ist kein Fehler. */
  page.on('pageerror',e=>errors.push('pageerror: '+e.message));
  /* Nur Anfragen an einen fremden Host (etwa die Schriften von Google) duerfen
     in einer abgeschotteten Umgebung scheitern. Eine gescheiterte Anfrage an
     das Release selbst ist ein Fehler. 404 bleibt ausgenommen: der
     Produktdienst probiert fuer duenne Titel bewusst mehrere Quellen. */
- page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else errors.push('requestfailed: '+r.url().replace(origin,''));});
+ page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,''));});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
  for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
+  currentView=view;
   await page.goto('about:blank');
   await page.goto(origin+view);
   const app=!view.startsWith('/quant/methodology/');
@@ -244,7 +247,8 @@ for(const width of [1440,390]){
   if(hits.length)bad.push('FORBIDDEN:'+hits.join('|'));
 
   /* ALTE ADRESSEN LANDEN AUF IHRER NEUEN ROUTE - ohne ?view= in der Adresse. */
-  if(LEGACY[view]&&ort!==LEGACY[view])bad.push('UMLEITUNG:'+ort);
+  /* Im Elliott-Bild steht die gemerkte Fachansicht in der Adresse (/elliott/#/<T>?ansicht=profi): sie darf an einer Umleitung haengen. */
+  if(LEGACY[view]&&ort!==LEGACY[view]&&!(LEGACY[view].startsWith('/elliott/#/')&&!LEGACY[view].includes('?')&&ort===LEGACY[view]+'?ansicht=profi'))bad.push('UMLEITUNG:'+ort);
 
   /* DIE FUENF BEREICHE SIND VON JEDER ANSICHT ERREICHBAR, UND NUR SIE.
      Eine Navigation, die auf einer Unterseite ein fremdes Produkt anbietet
@@ -268,8 +272,8 @@ for(const width of [1440,390]){
       "Home"); der sichtbare Eintrag "Screener" steht neben "Quant" und
       heisst fuer Screenreader "Quant Screener" (Owner-Entscheid 29.09.2026
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
-   /* Elliott ist ein eigenes Produkt: sein Aktienbild (#/elliott/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
-   const elliottBild=/#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
+   /* Elliott ist ein eigenes Produkt: sein Aktienbild (/elliott/#/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
+   const elliottBild=/^\/elliott\/#\/|#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
    const sollBereiche=elliottBild?['Elliott','Welle 3','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am

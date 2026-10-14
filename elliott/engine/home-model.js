@@ -15,11 +15,12 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "elliott-home-model-1.0.0";
-  var SCHEMA = "vu-elliott-home-1.0.0";
-  var INDEX_VERSION = "elliott-home-1.0.0";
+  var VERSION = "elliott-home-model-1.1.0";
+  /* 1.1.0 fuegt Reihen (kind, cap, vollstaendige ids) und Kennzahlen hinzu; die Karten bleiben gleich: 1.0.0 wird weiter gelesen. */
+  var SCHEMAS = { "vu-elliott-home-1.0.0": "elliott-home-1.0.0", "vu-elliott-home-1.1.0": "elliott-home-1.1.0" };
   var INDEX_PATH = "/quant/data/technical-intelligence/v3/elliott-home.json";
-  var DETAIL_BASE = "/quant/#/elliott/";
+  /* Das Aktienbild gehoert dem Produkt: /elliott/#/<TICKER>[?ansicht=profi]. */
+  var DETAIL_BASE = "/elliott/#/";
   var PAGE = 24;
 
   var WAVE_LABEL = { "3": "Mögliche Welle 3", "5": "Mögliche Welle 5", C: "Mögliche Welle C" };
@@ -43,6 +44,7 @@
   var DIR_LABEL = { UP: "Aufwärts", DOWN: "Abwärts" };
   var TIER_LABEL = { base: "Basis", ext: "Erweitert", xtr: "Extrem" };
   var CHANGE_LABEL = { NEW: "Neu", CONFIRMED: "Neu bestätigt", ROLE: "Rolle gewechselt", REVISED: "Überarbeitet", ZONE: "Zone erreicht" };
+  var TREND_WORD = { POSITIVE: "positiv", NEGATIVE: "negativ", NEUTRAL: "neutral" };
   var TREND_LABEL = { POSITIVE: "Trend positiv", NEGATIVE: "Trend negativ", NEUTRAL: "Trend neutral" };
 
   /* ---------------------------------------------------------- Zahlen */
@@ -89,6 +91,16 @@
     if (c && typeof c.rs === "number") out.push("RS stärker als " + Math.round(c.rs * 100) + " %");
     return out;
   }
+  /** Kontext in drei knappen Angaben: Trend, Relative Staerke (Rang 0-100 im 26-Wochen-Vergleich), Marktstruktur. Fehlt eine, entfaellt sie. */
+  function structureLabel(ms) { return typeof ms !== "number" ? null : ms >= 0.25 ? "positiv" : ms <= -0.25 ? "negativ" : "neutral"; }
+  function contextChips(card) {
+    var out = [], c = card.ctx;
+    if (!c) return out;
+    if (c.trend && TREND_WORD[c.trend]) out.push({ k: "Trend", v: TREND_WORD[c.trend] });
+    if (typeof c.rs === "number") out.push({ k: "RS", v: String(Math.round(c.rs * 100)) });
+    var st = structureLabel(c.ms); if (st) out.push({ k: "Struktur", v: st });
+    return out;
+  }
   function poolLine(card) { return card.pool ? "Rang " + card.pool.pos + " von " + card.pool.size + " im Kandidatenpool" : null; }
   function ariaLabel(card) {
     var h = headlineTier(card);
@@ -101,20 +113,21 @@
   var ST_PARAM = { bestaetigt: "CONFIRMED", aufbau: "DEVELOPING" };
   var ROLE_PARAM = { engine: ["PRIMARY", "ALTERNATIVE", "HIGH_UPSIDE"], primaer: ["PRIMARY"], alternative: ["ALTERNATIVE", "HIGH_UPSIDE", "MOTIVE_ALTERNATIVE"], highlight: ["EXPLORE_HIGHLIGHT"] };
 
-  /** "#/?welle=3&richtung=ab" -> Zustand. Unbekannte Werte werden verworfen (keine leere Liste durch einen Tippfehler in der Adresse). */
+  /** "#/?welle=3&richtung=ab" -> Zustand. Unbekannte Werte werden verworfen (keine leere Liste durch einen Tippfehler in der Adresse).
+      "#/<TICKER>?ansicht=profi" -> Aktienbild: ticker und detailQuery (der Rest gehoert dem Chartbild). */
   function parseHash(hash) {
     var h = String(hash || "").replace(/^#\/?/, ""), q = h.indexOf("?"), params = new URLSearchParams(q >= 0 ? h.slice(q + 1) : "");
     var lead = (q >= 0 ? h.slice(0, q) : h).replace(/\/+$/, "");
-    var s = { welle: null, richtung: null, status: null, rolle: null, neu: false, suche: false, q: "", ticker: null };
+    var s = { welle: null, richtung: null, status: null, rolle: null, neu: false, reihe: null, suche: false, q: "", ticker: null, detailQuery: "" };
     var w = params.get("welle"); if (w === "3" || w === "5" || w === "C" || w === "c") s.welle = w.toUpperCase();
     var r = params.get("richtung"); if (DIR_PARAM[r]) s.richtung = r;
     var st = params.get("status"); if (ST_PARAM[st]) s.status = st;
     var ro = params.get("rolle"); if (ROLE_PARAM[ro]) s.rolle = ro;
     s.neu = params.get("neu") === "1";
+    var re = params.get("reihe"); if (re && /^[A-Za-z0-9]{1,24}$/.test(re)) s.reihe = re;
     s.suche = params.get("suche") === "1";
     s.q = (params.get("q") || "").slice(0, 60);
-    /* Alias: /elliott/#/<TICKER> fuehrt zur Aktie (Detail liegt in der Quant-SPA, siehe detailHref). */
-    if (/^[A-Za-z0-9.-]{1,12}$/.test(lead)) s.ticker = lead.toUpperCase();
+    if (/^[A-Za-z0-9.-]{1,12}$/.test(lead)) { s.ticker = lead.toUpperCase(); s.detailQuery = q >= 0 ? h.slice(q + 1) : ""; }
     return s;
   }
   function buildHash(s) {
@@ -124,11 +137,12 @@
     if (s.status) p.push("status=" + s.status);
     if (s.rolle) p.push("rolle=" + s.rolle);
     if (s.neu) p.push("neu=1");
+    if (s.reihe) p.push("reihe=" + s.reihe);
     if (s.suche) p.push("suche=1");
     if (s.q) p.push("q=" + encodeURIComponent(s.q));
     return "#/" + (p.length ? "?" + p.join("&") : "");
   }
-  function isFiltered(s) { return !!(s.welle || s.richtung || s.status || s.rolle || s.neu); }
+  function isFiltered(s) { return !!(s.welle || s.richtung || s.status || s.rolle || s.neu || s.reihe); }
   function matches(card, s) {
     if (s.welle && card.wave !== s.welle) return false;
     if (s.richtung && card.dir !== DIR_PARAM[s.richtung]) return false;
@@ -138,10 +152,16 @@
     return true;
   }
   /** Gefilterte Karten in der Reihenfolge des Index (Index ist bereits geordnet). Neu-Filter: juengste Ereignisse zuerst. */
-  function filterCards(cards, s) {
+  function filterCards(cards, s, rows) {
     var out = cards.filter(function (c) { return matches(c, s); });
+    /* Eine Reihe als Liste: die Karten der Reihe in der Reihenfolge des Erzeugers (nicht neu sortiert). */
+    if (s.reihe && rows) {
+      var row = rows.filter(function (r) { return r.id === s.reihe; })[0], pos = {};
+      if (row) { row.ids.forEach(function (id, i) { pos[id] = i; }); out = out.filter(function (c) { return pos[c.id] !== undefined; }).sort(function (a, b) { return pos[a.id] - pos[b.id]; }); }
+      else out = [];
+    }
     /* Neu und veraendert: dieselbe Reihenfolge wie die Reihe (juengstes Datum, dann Ereignisart), sonst die Ordnung des Index */
-    if (s.neu) {
+    if (s.neu && !s.reihe) {
       var prio = { CONFIRMED: 0, ROLE: 1, NEW: 2, ZONE: 3, REVISED: 4 };
       out = out.map(function (c, i) { return { c: c, i: i }; }).sort(function (a, b) {
         return (a.c.chg.d < b.c.chg.d ? 1 : a.c.chg.d > b.c.chg.d ? -1 : 0) || (prio[a.c.chg.k] - prio[b.c.chg.k]) || a.i - b.i;
@@ -169,11 +189,12 @@
     }).filter(function (g) { return g.options.length > 0; });
   }
   function withChip(s, groupId, value) {
-    var n = Object.assign({}, s); n.suche = false; n.q = "";
+    var n = Object.assign({}, s); n.suche = false; n.q = ""; n.reihe = null;
     n[groupId] = s[groupId] === value ? null : value;     // erneut antippen hebt den Filter auf
     return n;
   }
-  function filterTitle(s) {
+  function filterTitle(s, rows) {
+    if (s.reihe) { var row = (rows || []).filter(function (r) { return r.id === s.reihe; })[0]; return row ? row.title : "Reihe"; }
     var parts = [];
     if (s.welle) parts.push("Welle " + s.welle);
     if (s.richtung) parts.push(DIR_LABEL[DIR_PARAM[s.richtung]]);
@@ -184,23 +205,24 @@
   }
 
   /* ---------------------------------------------------------- Reihen */
-  /** Reihen der Startseite mit aufgeloesten Karten. Karten, die der Index nicht (mehr) kennt, entfallen still (nie eine leere Kachel). */
+  /** Reihen der Startseite mit aufgeloesten Karten (nur die ersten cap; total und ids tragen alle). Karten, die der Index nicht (mehr) kennt,
+      entfallen still (nie eine leere Kachel). */
   function rowsOf(home) {
     var byId = {};
     home.cards.forEach(function (c) { byId[c.id] = c; });
     return (home.rows || []).map(function (r) {
-      return { id: r.id, title: r.title, rule: r.rule, total: r.total, cards: r.ids.map(function (id) { return byId[id]; }).filter(Boolean) };
+      var cap = typeof r.cap === "number" ? r.cap : PAGE;
+      return { id: r.id, kind: r.kind || "primary", title: r.title, rule: r.rule, total: r.total, cap: cap,
+        cards: r.ids.slice(0, cap).map(function (id) { return byId[id]; }).filter(Boolean) };
     }).filter(function (r) { return r.cards.length > 0; });
   }
-  /** Filter, der "Alle ansehen" einer Reihe oeffnet; null, wenn die Reihe keinem Chip entspricht. */
-  function rowFilter(rowId) {
-    return { wave3: { welle: "3" }, wave5: { welle: "5" }, waveC: { welle: "C" }, recent: { neu: true }, bullish: { richtung: "auf" }, bearish: { richtung: "ab" }, engine: { rolle: "engine" } }[rowId] || null;
-  }
+  /** "Alle N" einer Reihe: die ganze Reihe als Liste (#/?reihe=<id>), in der Reihenfolge des Erzeugers. */
+  function rowHref(row) { return buildHash({ reihe: row.id }); }
 
   /* ---------------------------------------------------------- Vertrag */
   /** Prueft den Index. Eine fremde Version wird nicht "irgendwie" angezeigt, sondern als nicht verfuegbar behandelt. */
   function validate(home) {
-    if (!home || home.schemaVersion !== SCHEMA || home.version !== INDEX_VERSION) return { ok: false, reason: "VERSION" };
+    if (!home || !SCHEMAS[home.schemaVersion] || home.version !== SCHEMAS[home.schemaVersion]) return { ok: false, reason: "VERSION" };
     if (!Array.isArray(home.cards) || !Array.isArray(home.rows)) return { ok: false, reason: "SHAPE" };
     return { ok: true };
   }
@@ -247,12 +269,12 @@
   }
 
   var api = {
-    VERSION: VERSION, SCHEMA: SCHEMA, INDEX_VERSION: INDEX_VERSION, INDEX_PATH: INDEX_PATH, DETAIL_BASE: DETAIL_BASE, PAGE: PAGE,
+    VERSION: VERSION, SCHEMAS: SCHEMAS, INDEX_PATH: INDEX_PATH, DETAIL_BASE: DETAIL_BASE, PAGE: PAGE,
     ROLE_LABEL: ROLE_LABEL, ROLE_NOTE: ROLE_NOTE, STATUS_LABEL: STATUS_LABEL, DIR_LABEL: DIR_LABEL, CHANGE_LABEL: CHANGE_LABEL,
     pct: pct, range: range, headlineTier: headlineTier, otherTiers: otherTiers, price: price, dateDe: dateDe,
-    waveLabel: waveLabel, roleLabel: roleLabel, contextLine: contextLine, poolLine: poolLine, ariaLabel: ariaLabel, detailHref: detailHref,
+    waveLabel: waveLabel, roleLabel: roleLabel, contextLine: contextLine, contextChips: contextChips, structureLabel: structureLabel, poolLine: poolLine, ariaLabel: ariaLabel, detailHref: detailHref,
     parseHash: parseHash, buildHash: buildHash, isFiltered: isFiltered, matches: matches, filterCards: filterCards, chipGroups: chipGroups, withChip: withChip, filterTitle: filterTitle,
-    rowsOf: rowsOf, rowFilter: rowFilter, validate: validate, emptyState: emptyState, missingRowNote: missingRowNote,
+    rowsOf: rowsOf, rowHref: rowHref, validate: validate, emptyState: emptyState, missingRowNote: missingRowNote,
     norm: norm, searchEntries: searchEntries, cardsByTicker: cardsByTicker, searchHint: searchHint
   };
   global.VUElliottHome = api;
