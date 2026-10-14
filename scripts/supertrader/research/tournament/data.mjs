@@ -272,7 +272,7 @@ function normalizeSegment(seg, listing, window, retainRaw = true) {
   }
   if (raw.length < 2) return { rejection: quarantine?.reason || 'INSUFFICIENT_BARS' };
   const tr = validity.result || reconstruct(raw);
-  if (!tr.reconstructed) return { rejection: tr.reason };
+  if (!tr.reconstructed) return { rejection: tr.reason, ...(typeof tr.detail === 'string' ? { rejectionDetail: tr.detail } : {}) };
   const factors = ReturnSeries.splitFactors(raw);
   const bars = raw.map((b, i) => ({ date: b.date, open: b.open / factors[i], high: b.high / factors[i], low: b.low / factors[i], close: b.close / factors[i], volume: b.volume * factors[i],
     rawOpen: b.open, rawHigh: b.high, rawLow: b.low, rawClose: b.close, rawVolume: b.volume,
@@ -303,13 +303,13 @@ function canonicalAccumulator(window, retainRaw = true) {
 }
 
 function collectNormalized(results) {
-  const securities = [], segs = [], rejected = {};
+  const securities = [], segs = [], rejected = {}, rejectionDetails = {};
   for (const result of results) {
-    if (result.rejection) { rejected[result.rejection] = (rejected[result.rejection] || 0) + 1; continue; }
+    if (result.rejection) { rejected[result.rejection] = (rejected[result.rejection] || 0) + 1; if(result.rejectionDetail){const byDetail=rejectionDetails[result.rejection]??={};byDetail[result.rejectionDetail]=(byDetail[result.rejectionDetail]||0)+1;} continue; }
     securities.push(result.security);
     if (result.seg) segs.push(result.seg);
   }
-  return { securities, segs, rejected, inputSegments: results.length };
+  return { securities, segs, rejected, rejectionDetails, inputSegments: results.length };
 }
 
 export function prepareHistoricalData(payload, options = {}) {
@@ -322,7 +322,7 @@ export function prepareHistoricalData(payload, options = {}) {
   return completePreparedData(payload, window, collectNormalized((payload.segs || []).map((seg) => consume(seg, payload.listings || []))));
 }
 
-function completePreparedData(payload, window, { securities, segs, rejected, inputSegments }, compact = false) {
+function completePreparedData(payload, window, { securities, segs, rejected, rejectionDetails = {}, inputSegments }, compact = false) {
   const spyRaw = (payload.spyRaw || []).filter((b) => b.date >= window.warmupFrom && b.date <= window.to);
   const benchmark = spyRaw.length >= 2 ? normalizeSegment({ id: 'BENCHMARK', raw: spyRaw, delisted: false }, { id: 'tiingo:NYSE:SPY:1993-01-29', ticker: 'SPY', securityId: Identity.securityIdForTicker('SPY'), startDate: '1993-01-29', endDate: null, active: true }, window, !compact).security : null;
   const calendar = (payload.calendar || []).filter((d) => d >= window.from && d <= window.to);
@@ -332,7 +332,7 @@ function completePreparedData(payload, window, { securities, segs, rejected, inp
     securities, segs, calendar, ...(compact ? {} : { spyRaw }), benchmark, spyBars, spyAdj: { date: spyBars.map((b) => b.date), open: spyBars.map((b) => b.open), high: spyBars.map((b) => b.high), low: spyBars.map((b) => b.low), close: spyBars.map((b) => b.close), volume: spyBars.map((b) => b.volume) },
     spyTR: spyBars.filter((b) => b.date >= window.from).map((b) => ({ date: b.date, value: b.totalReturnIndex })),
     fingerprint: fingerprintData(payload.listings, securities, spyRaw, calendar),
-    coverage: { inputSegments, usableSegments: securities.length, rejected, withFundamentals: securities.filter((s) => s.fundamentals.length).length, benchmarkAvailable: Boolean(benchmark) && !benchmark?.dataQuarantine, quarantined: securities.filter((s) => s.dataQuarantine).length, loader: payload.loaderCoverage || null,
+    coverage: { inputSegments, usableSegments: securities.length, rejected, rejectionDetails, withFundamentals: securities.filter((s) => s.fundamentals.length).length, benchmarkAvailable: Boolean(benchmark) && !benchmark?.dataQuarantine, quarantined: securities.filter((s) => s.dataQuarantine).length, loader: payload.loaderCoverage || null,
       canonicalContractHash: hash({ totalReturn: TotalReturn.contractVersions(), config: TotalReturn.CONFIG, split: ReturnSeries.ENGINE_VERSION }) },
     limitations: ['DELISTING_PROCEEDS_ASSUMED_NOT_OBSERVED', 'REUSED_TICKER_HISTORY_INCOMPLETE', 'PIT_QUALITY_DATA_MISSING', ...(securities.some((s) => s.dataQuarantine) ? ['DATA_QUARANTINE_SCENARIO_UNCERTAINTY'] : [])] };
 }

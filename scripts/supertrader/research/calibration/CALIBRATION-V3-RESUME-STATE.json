@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_AVAILABLE_SEGMENT_ATTRIBUTION_AND_HASH_RECEIPTS_RUNNING",
+  "status": "CANONICAL_CAPTURE_HASH_BOUND_CAUSE_DETAIL_PENDING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -17,9 +17,12 @@
     "V3_REFERENCE_ARTIFACT_RECEIPTS_VERIFIED",
     "V3_REFERENCE_PARSER_OUTPUT_CREATED_AND_ENCRYPTED",
     "CANONICAL_CAPTURE_STATUS_ARTIFACT_ZIP_DIGEST_VERIFIED",
-    "CANONICAL_CAPTURE_AVAILABLE_COUNTS_VERIFIED"
+    "CANONICAL_CAPTURE_AVAILABLE_COUNTS_VERIFIED",
+    "CANONICAL_CAPTURE_ARTIFACT_SHA256_VERIFIED_AVAILABLE",
+    "CANONICAL_MANIFEST_AND_500_PART_HASH_RECEIPTS_VERIFIED",
+    "CANONICAL_REJECTION_CATEGORY_ATTRIBUTED_TO_CORPORATE_ACTION_CONTRADICTION"
   ],
-  "currentPhase": "CANONICAL_SAFE_MANIFEST_AND_REJECTION_RECEIPTS",
+  "currentPhase": "CANONICAL_REJECTION_DETAIL_DIAGNOSIS",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -202,6 +205,15 @@
       "artifactId": 11889873959,
       "runId": 38555503225,
       "statusZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-CANONICAL-CAPTURE-SAFE-STATUS.json",
+      "sha256": "0c2a926c05ee2a8e924b4e206a5248369705c5e7b4f9dc92afc63e6b31f3ff7b",
+      "artifactId": 11895119485,
+      "runId": 38566792132,
+      "statusZipSha256": "1ee5f772ebf8ad7b1c74ce67133ac9935cd2e475891b8215f9855295a41391d7",
+      "encryptedInputArtifactId": 11895314451,
+      "encryptedInputZipSha256": "e334357b8f5d7c960d5da8e7bd80c1d36589e1a66bcbabb27cb2434ed25b6763"
     }
   ],
   "blockers": [
@@ -225,10 +237,9 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "runId": 38566792132,
-    "head": "e693e6c7de279840cb03a089ad481063291a0e65",
-    "status": "IN_PROGRESS",
-    "purpose": "Emit allowlisted aggregate causes for rejected canonical segments and per-part/manifest content and ciphertext hashes."
+    "runId": null,
+    "status": "NOT_STARTED",
+    "purpose": "Obtain only allowlisted subreason of the 2 CORPORATE_ACTION_CONTRADICTED rejections via status-only normalization; do not resave/recompute calibration data."
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
@@ -255,5 +266,5 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Poll Actions run 38566792132. Verify its separate status artifact digest/content SHA; verify inputSegments = usableSegments + categorized rejected counts; verify manifest and all 500 part hashes and corresponding sealed-file receipts. Then create final V3 freeze before method calibration."
+  "exactNextStep": "Run a status-only canonical diagnostic which emits only allowlisted corporate-action contradiction detail counts, then verify exactly 2 details explain the 2 rejected segments. Once cause is proved, finalize V3 freeze bound to run 38566792132 receipt; then implement method-by-method durable calibration workflow."
 }

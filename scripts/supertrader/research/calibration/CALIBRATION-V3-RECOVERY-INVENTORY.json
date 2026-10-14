@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-recovery-inventory-1.0.0",
   "capturedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_AVAILABLE_HASH_RECEIPT_AND_SEGMENT_ATTRIBUTION_PENDING",
+  "status": "CANONICAL_CAPTURE_HASH_BOUND_REJECTION_CAUSE_PARTIAL",
   "repository": "dennismueller10x-sudo/vision-universe-research",
   "pr643": {
     "state": "OPEN",
@@ -407,13 +407,21 @@
     "workflow": ".github/workflows/supertrader-certification.yml"
   },
   "canonicalCaptureRun": {
-    "runId": 38555503225,
+    "runId": 38566792132,
     "canonicalStatus": "AVAILABLE",
     "inputSegments": 9410,
     "usableSegments": 9408,
+    "rejectedSegments": 2,
+    "rejectionAttribution": {
+      "reasons": {
+        "CORPORATE_ACTION_CONTRADICTED": 2
+      },
+      "unknownReasonCount": 0
+    },
     "sealedParts": 500,
-    "statusArtifactZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
-    "encryptedInputZipSha256": "621b5941fd88903d1d3bf6c796144fe3a701a6a31ebc7ac7829eb3c3b4d1d308",
-    "segmentRejectAttribution": "PENDING"
+    "partSecurityCount": 9408,
+    "manifestPlaintextSha256": "34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713",
+    "safeStatusArtifactZipSha256": "1ee5f772ebf8ad7b1c74ce67133ac9935cd2e475891b8215f9855295a41391d7",
+    "encryptedInputArtifactSha256": "e334357b8f5d7c960d5da8e7bd80c1d36589e1a66bcbabb27cb2434ed25b6763"
   }
 }

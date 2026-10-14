@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   data-probe:
-    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || (github.event_name == 'workflow_dispatch' && (inputs.mode == 'probe' || inputs.mode == 'canonical'))
+    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') || (github.event_name == 'workflow_dispatch' && (inputs.mode == 'probe' || inputs.mode == 'canonical'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -52,15 +52,20 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
           CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || inputs.mode == 'canonical' }}
+          CERTIFICATION_STATUS_ONLY: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') }}
         run: |
           set -euo pipefail
           if [ "$CERTIFICATION_CANONICAL" = "true" ]; then
-            node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical
+            if [ "$CERTIFICATION_STATUS_ONLY" = "true" ]; then
+              node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical --status-only
+            else
+              node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical
+            fi
           else
             node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 0
           fi
       - name: Preserve encrypted inventory and public statuses only
-        if: always()
+        if: always() && !contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]')
         uses: actions/upload-artifact@v4
         with:
           name: supertrader-certification-probe-${{ github.run_id }}

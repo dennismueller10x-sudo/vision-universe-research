@@ -3531,32 +3531,43 @@
     "classification": "HASH_VERIFIED_OFFICIAL_INPUTS_AND_PARSED_REFERENCE_ENCRYPTED_PENDING_INDEPENDENT_REVIEW"
   },
   "latestCanonicalDiagnosticRun": {
-    "runId": 38555503225,
-    "head": "6e28a4db900f8f3aa09ee627da9ebc047e0d91c0",
-    "status": "COMPLETED_SUCCESS_CANONICAL_AVAILABLE",
+    "runId": 38566792132,
+    "head": "e693e6c7de279840cb03a089ad481063291a0e65",
+    "status": "COMPLETED_SUCCESS_HASH_BOUND_CANONICAL_CAPTURE",
     "statusArtifact": {
-      "artifactId": 11889873959,
-      "name": "supertrader-certification-status-38555503225",
-      "expiresAt": "2027-01-12T11:17:18Z",
-      "bytes": 623,
-      "githubDigest": "sha256:02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
-      "localZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
-      "statusContentSha256": "d3b50b7092c4c49254bdc8cea9565fb4a8f6eb976c7e18c8063cb56f08fa7e6a"
+      "artifactId": 11895119485,
+      "name": "supertrader-certification-status-38566792132",
+      "expiresAt": "2027-01-12T12:49:34Z",
+      "bytes": 71967,
+      "githubDigest": "sha256:1ee5f772ebf8ad7b1c74ce67133ac9935cd2e475891b8215f9855295a41391d7",
+      "localZipSha256": "1ee5f772ebf8ad7b1c74ce67133ac9935cd2e475891b8215f9855295a41391d7",
+      "statusContentSha256": "0c2a926c05ee2a8e924b4e206a5248369705c5e7b4f9dc92afc63e6b31f3ff7b"
     },
     "canonicalCounts": {
       "inputSegments": 9410,
       "usableSegments": 9408
     },
+    "canonicalRejections": {
+      "reasons": {
+        "CORPORATE_ACTION_CONTRADICTED": 2
+      },
+      "unknownReasonCount": 0
+    },
     "sourceObjectsAvailable": 9,
     "sourceObjectsMissing": 0,
-    "encryptedCaptureArtifact": {
-      "artifactId": 11890418615,
-      "name": "supertrader-certification-probe-38555503225",
-      "bytes": 1247958485,
-      "githubDigest": "sha256:621b5941fd88903d1d3bf6c796144fe3a701a6a31ebc7ac7829eb3c3b4d1d308",
-      "expiresAt": "2027-01-12T11:17:18Z"
+    "sealedParts": 500,
+    "partSecurityCount": 9408,
+    "manifestPlaintextSha256": "34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713",
+    "partReceiptCount": 500,
+    "encryptedInputArtifact": {
+      "artifactId": 11895314451,
+      "name": "supertrader-certification-probe-38566792132",
+      "expiresAt": "2027-01-12T12:49:34Z",
+      "bytes": 1248029372,
+      "githubDigest": "sha256:e334357b8f5d7c960d5da8e7bd80c1d36589e1a66bcbabb27cb2434ed25b6763"
     },
-    "segmentRejectionAttribution": "NOT_PRESENT_IN_THIS_RUN_STATUS_PENDING_SAFE_AGGREGATE_RECEIPT",
-    "manifestAndPartHashes": "NOT_PRESENT_IN_THIS_RUN_STATUS_PENDING_SAFE_AGGREGATE_RECEIPT"
+    "safeStatusRepoPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-CANONICAL-CAPTURE-SAFE-STATUS.json",
+    "safeStatusRepoSha256": "0c2a926c05ee2a8e924b4e206a5248369705c5e7b4f9dc92afc63e6b31f3ff7b",
+    "encryptedValuesPublished": false
   }
 }

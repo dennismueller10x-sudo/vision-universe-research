@@ -14,7 +14,7 @@ test('unknown canonical failure metadata stays private',()=>{
 });
 
 test('canonical rejection receipt exposes only bounded reason aggregates',()=>{
- const value=safeCanonicalRejections({INSUFFICIENT_BARS:1,CORPORATE_ACTION_CONTRADICTED:1,PRIVATE_TICKER_ABC:1,OHLCV_INVALID:'2'});
- assert.deepEqual(value,{reasons:{INSUFFICIENT_BARS:1,CORPORATE_ACTION_CONTRADICTED:1},unknownReasonCount:1});
- assert.equal(JSON.stringify(value).includes('PRIVATE_TICKER'),false);
+ const value=safeCanonicalRejections({INSUFFICIENT_BARS:1,CORPORATE_ACTION_CONTRADICTED:1,PRIVATE_TICKER_ABC:1,OHLCV_INVALID:'2'},{CORPORATE_ACTION_CONTRADICTED:{SPLIT_FACTOR_OUT_OF_RANGE:1,PRIVATE_DETAIL:1}});
+ assert.deepEqual(value,{reasons:{INSUFFICIENT_BARS:1,CORPORATE_ACTION_CONTRADICTED:1},unknownReasonCount:1,details:{CORPORATE_ACTION_CONTRADICTED:{SPLIT_FACTOR_OUT_OF_RANGE:1}},unknownDetailCount:1});
+ assert.equal(JSON.stringify(value).includes('PRIVATE_TICKER'),false);assert.equal(JSON.stringify(value).includes('PRIVATE_DETAIL'),false);
 });
