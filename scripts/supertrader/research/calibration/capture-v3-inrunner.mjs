@@ -15,7 +15,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {collectDataInventory} from '../certification/data-inventory.mjs';
-import {iterateCanonicalSecurities,loadCanonicalManifest,loadCanonicalData} from '../certification/canonical-input.mjs';
+import {iterateCanonicalSecurities,loadCanonicalManifest,createCanonicalSourceOverlay} from '../certification/canonical-input.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../../..');
@@ -60,19 +60,22 @@ export function writePlaintextCanonical(result,dest){
 }
 
 /** Re-reads everything from disk. Throws a bounded code on the first violation. */
-export async function verifyPlaintextCanonical(dest,written,result){
+export async function verifyPlaintextCanonical(dest,written,expectedUsable){
  const m=loadCanonicalManifest(dest);
  demand(m.parts.length===written.parts.length,'VERIFY_PART_COUNT_MISMATCH');
  demand(sha(fs.readFileSync(path.join(dest,'canonical-dataset-manifest.json')))===sha(written.manifest),'VERIFY_MANIFEST_HASH_MISMATCH');
- demand(sha(fs.readFileSync(path.join(dest,'data-certification-inputs.json')))===sha(written.inputs),'VERIFY_INPUTS_HASH_MISMATCH');
+ const inputBytes=fs.readFileSync(path.join(dest,'data-certification-inputs.json'));
+ demand(sha(inputBytes)===sha(written.inputs),'VERIFY_INPUTS_HASH_MISMATCH');
+ // Streaming: the full dataset is already large; never hold a second copy.
+ const overlay=createCanonicalSourceOverlay(JSON.parse(inputBytes),m);
  let total=0;const ids=new Set();
- for(const s of iterateCanonicalSecurities(dest,{verify:true})){total++;demand(typeof s.id==='string'&&!ids.has(s.id),'VERIFY_DUPLICATE_OR_MISSING_SECURITY_ID');ids.add(s.id);}
+ for(const s of iterateCanonicalSecurities(dest,{verify:true})){
+  total++;demand(typeof s.id==='string'&&!ids.has(s.id),'VERIFY_DUPLICATE_OR_MISSING_SECURITY_ID');ids.add(s.id);
+  overlay.apply(s);
+ }
  demand(total===m.securities&&total===written.parts.reduce((s,p)=>s+p.securities,0),'VERIFY_SECURITY_COUNT_MISMATCH');
- demand(total===(result.canonicalData.coverage?.usableSegments??-1),'VERIFY_USABLE_SEGMENT_COUNT_MISMATCH');
- const loaded=await loadCanonicalData(dest,{sourceProvenanceOverlay:true,expectedSourceMetadataSha256:sha(written.inputs)});
- demand(loaded.securities.length===total,'VERIFY_LOADER_COUNT_MISMATCH');
- const overlay=loaded.sourceProvenanceOverlay?.counts??{};
- return {securities:total,overlayCounts:overlay};
+ demand(total===expectedUsable,'VERIFY_USABLE_SEGMENT_COUNT_MISMATCH');
+ return {securities:total,overlayCounts:overlay.proof().counts};
 }
 
 export async function captureV3({out,publicOut,factDocLimit=4,collect=collectDataInventory,options={}}){
@@ -80,7 +83,10 @@ export async function captureV3({out,publicOut,factDocLimit=4,collect=collectDat
  const result=await collect({canonical:true,factDocLimit,...options});
  demand(result.canonicalData?.state==='AVAILABLE','CANONICAL_CAPTURE_NOT_AVAILABLE:'+(result.canonicalData?.state??'NONE'));
  const written=writePlaintextCanonical(result,dest);
- const verified=await verifyPlaintextCanonical(dest,written,result);
+ const expectedUsable=result.canonicalData.coverage?.usableSegments??-1,fingerprint=result.canonicalData.fingerprint;
+ // Release the in-memory dataset before the streaming re-read (no second full copy).
+ result.canonicalData.securities=[];result.canonicalData.benchmark=null;
+ const verified=await verifyPlaintextCanonical(dest,written,expectedUsable);
  const status=result.publicStatus,private_=result.privateInput;
  const receipt={
   schema:CAPTURE_V3_SCHEMA,
@@ -91,7 +97,7 @@ export async function captureV3({out,publicOut,factDocLimit=4,collect=collectDat
   inputs:{
    manifestSha256:sha(written.manifest),manifestBytes:written.manifest.length,
    sourceMetadataSha256:sha(written.inputs),sourceMetadataBytes:written.inputs.length,
-   dataFingerprint:result.canonicalData.fingerprint,
+   dataFingerprint:fingerprint,
    parts:written.parts.map(({stem,sha256,plaintextBytes,securities})=>({stem,sha256,plaintextBytes,securities})),
    sourceObjectSetSha256:setHash((private_.sourceObjects||[]).map(o=>`${o.key}|${o.status}|${o.sha256}`)),
    readReceiptSetSha256:setHash((private_.readReceipts||[]).map(o=>`${o.sourceKey}|${o.sha256}`)),
