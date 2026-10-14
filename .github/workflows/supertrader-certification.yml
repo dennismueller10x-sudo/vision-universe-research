@@ -51,7 +51,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
-          CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || inputs.mode == 'canonical' }}
+          CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') || inputs.mode == 'canonical' }}
           CERTIFICATION_STATUS_ONLY: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') }}
         run: |
           set -euo pipefail
