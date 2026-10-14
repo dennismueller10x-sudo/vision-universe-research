@@ -32,8 +32,26 @@ function weeklyDir(ids, until) {
   return w;
 }
 
+/* Eingangsdaten auf den Datenstand des veroeffentlichten Produkts kuerzen (Vertrag von identityOne: "ungekuerzt bis zum veroeffentlichten Stand").
+   Die Marktdaten (golden-preview, discover-series-long) laufen im Tagesrhythmus vor dem Chartbild-Produkt; ohne Kuerzung haengt der Test vom Zeitpunkt des Laufs ab (INPUT_NEWER_OR_OLDER). */
+function inputsAtPublishedStand(symbols) {
+  const pub = PV.publishedProduct(), inDir = mkdtempSync(join(tmpdir(), "pv-in-")), work = mkdtempSync(join(tmpdir(), "pv-wk-"));
+  mkdirSync(join(work, "tiingo", "daily"), { recursive: true });
+  for (const t of symbols) {
+    const P = pub.bySymbol.get(t); assert.ok(P, t + " ist im Produkt veroeffentlicht");
+    if (P.tf === "1D") {
+      const j = readJson(join(ROOT, "quant/data/market/golden-preview/daily/ref_" + t + ".json")), bars = j.bars.filter((b) => b.date <= P.asOf);
+      writeFileSync(join(work, "tiingo", "daily", "ref_" + t + ".json"), JSON.stringify({ ...j, bars, last: bars[bars.length - 1].date }));
+    } else {
+      const f = "ref_" + t + ".json", j = readJson(join(LONG, f));
+      writeFileSync(join(inDir, f), JSON.stringify({ ...j, points: j.points.filter((p) => p[0] <= P.asOf) }));
+    }
+  }
+  return { productInputDir: inDir, workDir: work };
+}
+
 test("M11-P1 Registry-Produktsicht = veroeffentlichtes Chartbild, Byte fuer Byte (Woche und Tag)", async () => {
-  const r = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA", "AAL", "XOM"], workers: 3 });
+  const r = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA", "AAL", "XOM"]), identitySymbols: ["AA", "AAL", "XOM"], workers: 3 });
   assert.equal(r.ok, true, JSON.stringify(r.differences));
   assert.equal(r.compared, 3); assert.equal(r.identical, 3);
 });
