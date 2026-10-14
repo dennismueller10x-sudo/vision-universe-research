@@ -1,5 +1,5 @@
 // V3 copy of portfolio-calibration-v2: identical construction and tolerance; only adds an identity-free failure trace to the reconciliation error.
-import {createBook,equityAt,creditDividends,executeTargets,settleTerminals,markClose,reconcileBook} from './accounting-budget-v2.mjs';
+import {createBook,equityAt,creditDividends,executeTargets,settleTerminals,markClose,reconcileBook} from './accounting-budget-v3.mjs';
 import {populateForwardReturns} from './runner-certified-v2.mjs';
 import {getReferenceMethod,evaluateReference} from './reference-engines.mjs';
 export {populateForwardReturns as guardedSignalOutcomes};
@@ -60,11 +60,12 @@ export function sourceMonthContributions(data,cohorts,leg,startDate,endDate,coho
  return{startDate,endDate,status:missing.length?'DATA_GAP':'READY',return:missing.length?null:contributions.reduce((s,c)=>s+c.contribution,0),expectedInvestedWeight:cohorts.reduce((s,c)=>s+c[leg].reduce((n,t)=>n+t.weight/cohortMonths,0),0),coveredWeight:totalWeight,contributions,missing,basis:'MONTHLY_CLOSE_TOTAL_RETURN_COHORT_CONTRIBUTIONS_WITH_SEPARATE_TERMINAL_SCENARIO',matchingNextOpenExecution:false,missingPolicy:'FAIL_MONTH_NO_SURVIVOR_RENORMALIZATION'};
 }
 function heldSnapshot(book,bars){const equity=equityAt(book,bars);return[...book.positions.values()].map(p=>({id:p.id,ticker:p.ticker,shares:p.shares,weight:equity?p.shares*(bars.get(p.id)?.close??book.lastMarks.get(p.id)??p.entryPrice)/equity:0})).sort((a,b)=>a.id.localeCompare(b.id,'en'));}
+function summarizeDust(book){const w=book.dustWriteOffs??[];return{count:w.length,totalMarkValue:w.reduce((a,x)=>a+x.markValue,0),largestMarkValue:w.reduce((a,x)=>Math.max(a,x.markValue),0),entries:w.map(x=>({date:x.date,shares:x.shares,markValue:x.markValue}))};}
 function bookTrace(book,reconciliation,leg){
  const realized=book.trades.reduce((a,t)=>a+t.pnl,0),last=book.curve.at(-1);
  return{leg,reconciliation,tolerance:Math.max(1e-6,reconciliation.actual*1e-10),initialCapital:book.initialCapital,cash:book.cash,realizedPnl:realized,tradeCount:book.trades.length,fillCount:book.fills.length,openPositions:book.positions.size,receivableCount:book.receivables.size,curveLength:book.curve.length,lastCurveDate:last?.date??null,lastCurveEquity:last?.equity??null,cashPrecisionCorrections:(book.cashPrecisionCorrections??[]).length,rejections:book.rejections.length,corporateActionAuditEntries:book.corporateActionAudit.length};
 }
-function finishBook(book,leg){const reconciliation=reconcileBook(book);if(!reconciliation.pass){const e=Error('REFERENCE_BOOK_RECONCILIATION_FAILED');e.bookTrace=bookTrace(book,reconciliation,leg);throw e;}return{curve:book.curve,trades:book.trades,fills:book.fills,endingPositions:[...book.positions.values()],turnover:book.turnover,executionCosts:book.executionCosts,dividends:book.dividends,terminalCount:book.terminalCount,rejections:book.rejections,reconciliation,cashPrecisionCorrections:book.cashPrecisionCorrections??[]};}
+function finishBook(book,leg){const reconciliation=reconcileBook(book);if(!reconciliation.pass){const e=Error('REFERENCE_BOOK_RECONCILIATION_FAILED');e.bookTrace=bookTrace(book,reconciliation,leg);throw e;}return{curve:book.curve,trades:book.trades,fills:book.fills,endingPositions:[...book.positions.values()],turnover:book.turnover,executionCosts:book.executionCosts,dividends:book.dividends,terminalCount:book.terminalCount,rejections:book.rejections,reconciliation,cashPrecisionCorrections:book.cashPrecisionCorrections??[],dustWriteOffs:summarizeDust(book)};}
 export function runReferencePortfolio(data,methodOrId,protocol,{costMode='SOURCE_GROSS',scenario=protocol.delisting.baseline,riskFreeDaily=[],onDayClose=null}={}){
  const method=typeof methodOrId==='string'?getReferenceMethod(methodOrId):methodOrId,calendar=assertData(data,protocol),cohortMonths=method.portfolioSemantics.cohortMonths;
  if(!['SOURCE_GROSS','SAME_TOURNAMENT_NET'].includes(costMode))throw Error('FROZEN_COST_MODE_REQUIRED');

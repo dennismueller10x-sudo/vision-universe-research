@@ -1,16 +1,27 @@
 {
   "schema": "vision-universe-calibration-v3-discrepancies-1.0.0",
-  "status": "CAUSE_UNRESOLVED_NO_FAILED_BOOK_CAPTURE",
+  "status": "CAUSE_ATTRIBUTED_INFRASTRUCTURE_BOOKKEEPING_DEFECT_FIX_PENDING_REMEASURE",
   "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
   "errorCode": "REFERENCE_BOOK_RECONCILIATION_FAILED",
-  "attributionCategory": null,
-  "cause": null,
+  "attributionCategory": "ACCOUNTING_SHARE_DUST_DELETION_NOT_VALUE_AWARE",
+  "cause": "closeShares deletes a position when shares<1e-10. One security in the GH2004 top leg carries an implausible adjusted price level (first buy ~1.97e11 per share), so a deleted remainder of ~8e-11 shares carried ~15.6 of cost/value without any booking. reconcileBook correctly failed closed. Cost-conservation audit: exactly one id leaks 15.608203005072355; daily gap first breaks 2021-04-01 with -15.608203005685937; cash matches fills (diff 1e-8).",
   "toleranceChanged": false,
-  "evidenceAvailable": [],
-  "evidenceMissing": [
-    "failed-book numeric trace",
-    "canonical source/manifest bound by freeze",
-    "reference parsed artifact"
+  "evidenceAvailable": [
+    "CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-SOURCE_GROSS-38623481514.json",
+    "CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-SOURCE_GROSS-38630329740.json",
+    "CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-SAME_TOURNAMENT_NET-38630329740.json"
   ],
-  "provenDefectNearby": "BINARY64_BUDGET_ROUNDOFF_V2; isolated accounting defect proven, but not causally linked to this 52W failure."
+  "evidenceMissing": [],
+  "provenDefectNearby": "BINARY64_BUDGET_ROUNDOFF_V2 is a separate, already fixed defect; it is NOT the cause of the 52W failure.",
+  "fix": {
+    "file": "scripts/supertrader/research/calibration/accounting-budget-v3.mjs",
+    "nature": "Dust deletion unchanged; residual booked in book.dustWriteOffs and included in reconcileBook expected equity. Equity, cash, curve, trades and metrics are bit-identical to v2 (test accounting-budget-v3.test.mjs).",
+    "tolerance": "max(1e-6, actual*1e-10) unchanged",
+    "v2File": "untouched"
+  },
+  "dataQualityFinding": {
+    "status": "OPEN_NOT_FIXED_HERE",
+    "note": "An adjusted close of ~2e11 per share is implausible. The canonical data contract does not bound the adjusted price level. Reported to data owners; no contract change in this PR (frozen data contract)."
+  },
+  "nextStep": "New freeze + re-measure all four numeric methods in one run (tag supertrader-v3:measure)."
 }

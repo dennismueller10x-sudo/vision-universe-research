@@ -13,7 +13,7 @@ import {loadCanonicalData} from '../certification/canonical-input.mjs';
 import {prepareRerunData} from '../certification/run-rerun.mjs';
 import {referenceMethods} from './reference-engines.mjs';
 import {runReferencePortfolio} from './portfolio-calibration-v3.mjs';
-import {reconcileBook} from './accounting-budget-v2.mjs';
+import {reconcileBook} from './accounting-budget-v3.mjs';
 import {referenceFrame,} from './run-calibration-v2.mjs';
 import {ENGINE_ID} from './run-calibration-v3.mjs';
 import crypto from 'node:crypto';

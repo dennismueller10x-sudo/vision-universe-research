@@ -72,3 +72,14 @@ A read-only canonical inventory workflow is configured on the V3 branch. The ava
 
 
 Earlier canonical capture run `38547641330` is a blocked forensic artifact and is superseded by the available capture above. The latter is usable as a durable receipt, not as local plaintext. `CALIBRATION-V3-RESUME-STATE.json` distinguishes these states and sets the next step to authorized decryption-capable execution followed by V3 freeze and method checkpoints.
+
+## 52W reconciliation (`REFERENCE_BOOK_RECONCILIATION_FAILED`) – cause attributed
+
+Measurement run 38613060318 measured JT, LowVol and Equal Weight with reconciled books; the GH2004 (52W) top leg failed with a gap of about 15.6 (3.6e-5 relative). Two diagnostic runs (38623481514, 38630329740) replayed the unchanged construction with a no-op daily hook:
+
+- the whole gap appears on one day (2021-04-01, a large rebalance); every other day moves it by at most 3e-9;
+- price terms cancel in the book identity, so the leak is in cost/cash bookkeeping; cash matches fills and dividends;
+- a per-position cost-conservation audit finds exactly one position that loses cost: 15.608203005 (gap -15.608203006);
+- that position has an implausible adjusted price level (first buy ≈ 1.97e11 per share); its remaining ≈ 8e-11 shares fall under the absolute `1e-10` share threshold in `closeShares`, the position is deleted and its residual cost/value is never booked.
+
+This is an infrastructure bookkeeping defect, not a strategy or tolerance issue. The fix is the new `accounting-budget-v3.mjs`: deletion is unchanged (equity, cash, curve, trades and metrics are bit-identical to v2, proven by `accounting-budget-v3.test.mjs`), the deleted residual is booked in a write-off ledger and included in the expected equity. The tolerance `max(1e-6, actual*1e-10)` is unchanged and `accounting-budget-v2.mjs` is untouched. The implausible price level itself is a separate, open data-quality finding; the frozen data contract is not changed here. All four numeric methods are re-measured in one run under a new freeze.

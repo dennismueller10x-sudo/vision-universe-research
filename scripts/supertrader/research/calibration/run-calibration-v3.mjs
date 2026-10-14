@@ -72,7 +72,7 @@ export async function runMethodV3(args){
    const base=path.join(out,`${args['--method']}-${costMode}`);
    Object.assign(entry,{status:run.status,plaintextSha256:sha(bytes),plaintextBytes:bytes.length,sealed:seal(base,bytes),
     formations:{total:run.formations.length,ready:run.formations.filter(f=>f.status==='READY').length,partial:run.formations.filter(f=>f.status==='PARTIAL').length,other:run.formations.filter(f=>!['READY','PARTIAL'].includes(f.status)).length},
-    months:run.monthly.length,reconciliation:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{pass:run[k].reconciliation.pass,absoluteDifference:run[k].reconciliation.absoluteDifference}])),
+    months:run.monthly.length,dustWriteOffs:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{count:run[k].dustWriteOffs.count,totalMarkValue:run[k].dustWriteOffs.totalMarkValue,largestMarkValue:run[k].dustWriteOffs.largestMarkValue}])),reconciliation:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{pass:run[k].reconciliation.pass,absoluteDifference:run[k].reconciliation.absoluteDifference}])),
     sourceSpreadDirection:direction(metrics.effect.monthlySourceSpreadMean),sourceSpreadValidMonths:metrics.effect.sourceSpreadValidMonths});
   }catch(error){
    const code=/^[A-Z0-9_]+$/.test(error.message)?error.message:'PRIVATE_RUN_FAILURE';
