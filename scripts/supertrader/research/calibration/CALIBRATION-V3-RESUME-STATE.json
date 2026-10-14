@@ -1,26 +1,26 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_COMPLETED_EMPTY_BLOCKED",
+  "status": "PARTIAL_METHOD_ASSESSMENT_CANONICAL_CAPTURE_PENDING",
   "completedPhases": [
-    "PR_AND_BRANCH_RECOVERY_INVENTORY",
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
-    "PERSISTED_ACCOUNTING_FIX_REVIEW",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
-    "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE",
-    "CURRENT_CAPTURE_SAFE_STATUS_READ_AND_VERIFIED",
-    "HISTORICAL_CANONICAL_CAPTURE_RUN_COMPLETED",
     "CANONICAL_CAPTURE_ARTIFACT_SHA256_VERIFIED",
-    "CANONICAL_CAPTURE_SAFE_STATUS_VERIFIED_EMPTY"
+    "CANONICAL_CAPTURE_SAFE_STATUS_VERIFIED_EMPTY",
+    "CURRENT_CAPTURE_SAFE_STATUS_READ_AND_VERIFIED",
+    "FUNDAMENTAL_METHOD_DATA_CONTRACT_BLOCKERS_ASSESSED",
+    "HISTORICAL_CANONICAL_CAPTURE_RUN_COMPLETED",
+    "PERSISTED_ACCOUNTING_FIX_REVIEW",
+    "PR_AND_BRANCH_RECOVERY_INVENTORY",
+    "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE"
   ],
-  "currentPhase": "CANONICAL_CAPTURE_DIAGNOSIS",
+  "currentPhase": "CALIBRATION_METHOD_DATA_CONTRACT_ASSESSMENT",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
     "CAL_GH2004_52WH_30_6_NO_SKIP",
     "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
     "CALIB_EQUAL_WEIGHT",
-    "gross_profitability_novy_marx",
     "piotroski_value_fscore",
     "value_plus_momentum",
     "buyback_announcement_event"
@@ -28,7 +28,7 @@
   "artifactRefs": [
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "artifactId": 11802445766,
@@ -46,7 +46,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-MANIFEST.json",
@@ -54,7 +54,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "5b2fa4fc4ade8dd5e5b3b4ad56eec8ff0d2d820c3f1913e41b66784528850394"
+      "sha256": "00951db459856b09df12d79131cb5519b241db49e7ef76929bd4f3ff05fc3533"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -70,7 +70,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -82,23 +82,23 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "5b2fa4fc4ade8dd5e5b3b4ad56eec8ff0d2d820c3f1913e41b66784528850394"
+      "sha256": "00951db459856b09df12d79131cb5519b241db49e7ef76929bd4f3ff05fc3533"
     },
     {
       "path": "scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
-      "sha256": "ed66edc4bb900274ba8f4ea7a431f396e6355236378fa63d3112ce64bd01779c"
+      "sha256": "e52f44dad95d785f080c2b7dff7a78c80f81720ed2f84bccddbb87817be14694"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "5b2fa4fc4ade8dd5e5b3b4ad56eec8ff0d2d820c3f1913e41b66784528850394"
+      "sha256": "00951db459856b09df12d79131cb5519b241db49e7ef76929bd4f3ff05fc3533"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-SOURCE-MANIFEST.json",
@@ -106,11 +106,11 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "5b2fa4fc4ade8dd5e5b3b4ad56eec8ff0d2d820c3f1913e41b66784528850394"
+      "sha256": "00951db459856b09df12d79131cb5519b241db49e7ef76929bd4f3ff05fc3533"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-SOURCE-MANIFEST.json",
@@ -118,11 +118,11 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "5b2fa4fc4ade8dd5e5b3b4ad56eec8ff0d2d820c3f1913e41b66784528850394"
+      "sha256": "00951db459856b09df12d79131cb5519b241db49e7ef76929bd4f3ff05fc3533"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "3acb1491f3aa583cddf754e17951a71295f16bf2b3d91bfbe821e931fbb0080b"
+      "sha256": "265b50e05bf837c73a76a9f8932ca7346cd0f596dc12f6c28a136b9ab4a001fc"
     },
     {
       "artifactId": 11885354425,
@@ -131,6 +131,12 @@
       "expiresAt": "2026-11-13T10:25:51Z",
       "canonicalStatus": "BLOCKED",
       "receiptPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json"
+    },
+    {
+      "workflowRunId": 38553639552,
+      "headSha": "a51af763063cb197e451ec7c33e35dcc3fac4bb0",
+      "status": "IN_PROGRESS",
+      "purpose": "safe canonical diagnostic capture"
     }
   ],
   "blockers": [
@@ -146,7 +152,7 @@
   "nextCommand": "Add allowlisted symbolic canonicalData.reason and privateDiagnostics.phase to the public safe status (never message/stack/provider values), rerun canonical inventory, then only freeze if a hash-bound canonical manifest with usable parts exists.",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Diagnose zero-segment canonical capture from safe symbolic reason/phase; do not create the V3 freeze or run numeric methods until canonical data and reference inputs are complete.",
+  "nextStep": "Complete the in-progress safe canonical diagnostic capture; do not start numeric methods until usable, hash-bound canonical data and reference inputs exist.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
@@ -168,5 +174,8 @@
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
     "safeDiagnosticTest": "aa0648931a81ebf328545477e63919356965d728c21788a2ef28bf9b02074bfb"
-  }
+  },
+  "dataBlockedMethods": [
+    "gross_profitability_novy_marx"
+  ]
 }

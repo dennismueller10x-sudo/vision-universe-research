@@ -15,7 +15,7 @@ const Guard=require('../../../../quant/engines/zero-cost-guard.js');
 const Master=require('../../../../quant/engines/us-security-master.js');
 export const INVENTORY_VERSION='supertrader-private-data-inventory-1.0.0';
 const SAFE_CANONICAL_REASONS=new Set(['HISTORICAL_DATA_LOAD_FAILED','NO_USABLE_SECURITIES','PRIVATE_DATA_NOT_CONFIGURED','WINDOW_NOT_SUPPORTED','ZERO_COST_GUARD_BLOCKED']);
-const SAFE_CANONICAL_PHASES=new Set(['RAW_HISTORICAL_LOADER','CANONICAL_NORMALIZATION','INJECTED_PIT_LOADER']);
+const SAFE_CANONICAL_PHASES=new Set(['WINDOW_VALIDATION','PUBLIC_UNIVERSE_METADATA','SUPPORTED_TICKER_LIST','LISTING_BUILD','R2_SETUP','R2_USAGE_GUARD','R2_MANIFEST','R2_SEC_AND_BENCHMARK','MEMBER_CLASSIFICATION','R2_SERIES','SEGMENT_BUILD','CANONICAL_NORMALIZATION','INJECTED_PIT_LOADER','RAW_HISTORICAL_LOADER']);
 /** Public status may expose only allowlisted symbolic failure metadata, never private error text. */
 export function safeCanonicalDiagnostic(data){
  const reason=SAFE_CANONICAL_REASONS.has(data?.reason)?data.reason:null;

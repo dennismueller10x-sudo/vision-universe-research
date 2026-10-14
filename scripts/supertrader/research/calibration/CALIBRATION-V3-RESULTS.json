@@ -1,6 +1,6 @@
 {
   "schema": "vision-universe-calibration-v3-results-1.0.0",
-  "status": "NOT_RUN_INPUTS_REQUIRED",
+  "status": "PARTIAL_METHODS_DATA_BLOCKED_AND_NUMERIC_CAPTURE_PENDING",
   "overallVerdict": "NOT_CERTIFIED",
   "methods": [
     {
@@ -37,11 +37,22 @@
     },
     {
       "methodId": "gross_profitability_novy_marx",
-      "verdict": null,
-      "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
+      "verdict": "DATA_BLOCKED",
+      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
+      "status": "DATA_BLOCKED",
       "output": null,
-      "checkpoint": "CALIBRATION-V3-gross_profitability_novy_marx-CHECKPOINT.json"
+      "checkpoint": "CALIBRATION-V3-gross_profitability_novy_marx-CHECKPOINT.json",
+      "blockerRequirements": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "HISTORICAL_ORIGINAL_SIC_AND_FINANCIAL_EXCLUSIONS",
+        "NYSE_GP_QUINTILE_BREAKPOINT_DENOMINATOR",
+        "SOURCE_EXACT_REVT_AND_COGS_SCOPE",
+        "SOURCE_FISCAL_YEAR_TO_JUNE_ALIGNMENT"
+      ]
     },
     {
       "methodId": "piotroski_value_fscore",
