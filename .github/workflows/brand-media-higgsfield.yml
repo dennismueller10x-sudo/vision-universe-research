@@ -29,6 +29,11 @@ on:
         description: Resolution tier; leave blank only where the registry marks it unspecified
         type: string
         required: false
+      native_audio:
+        description: Enable native audio generation (sound off for mute output)
+        type: boolean
+        required: true
+        default: true
       aspect_ratio:
         description: Aspect ratio
         type: string
@@ -79,7 +84,7 @@ jobs:
       - name: Show documentation-derived model registry
         if: inputs.action == 'discover'
         run: python -m json.tool brand-media/higgsfield/registry.json
-      - name: Estimate exact request cost (read only)
+      - name: Estimate exact request cost (no video generation; selected reference may be uploaded)
         if: inputs.action == 'estimate' || inputs.action == 'generate'
         env:
           HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
@@ -90,6 +95,7 @@ jobs:
           INPUT_DURATION: ${{ inputs.duration }}
           INPUT_RESOLUTION: ${{ inputs.resolution }}
           INPUT_ASPECT_RATIO: ${{ inputs.aspect_ratio }}
+          INPUT_NATIVE_AUDIO: ${{ inputs.native_audio }}
           INPUT_REFERENCE_PATH: ${{ inputs.reference_path }}
           INPUT_ASSET_ID: ${{ inputs.asset_id }}
           INPUT_BUDGET_USD: ${{ inputs.budget_usd }}
@@ -98,7 +104,7 @@ jobs:
         run: |
           args=(--action "$INPUT_ACTION" --model "$INPUT_MODEL_ID" --operation "$INPUT_OPERATION" \
             --prompt "$INPUT_PROMPT" --duration "$INPUT_DURATION" --resolution "$INPUT_RESOLUTION" \
-            --aspect-ratio "$INPUT_ASPECT_RATIO" --reference "$INPUT_REFERENCE_PATH" \
+            --aspect-ratio "$INPUT_ASPECT_RATIO" --native-audio "$INPUT_NATIVE_AUDIO" --reference "$INPUT_REFERENCE_PATH" \
             --asset-id "$INPUT_ASSET_ID" --budget-usd "$INPUT_BUDGET_USD")
           if [ "$INPUT_ACTION" = generate ]; then
             args+=(--approval "$INPUT_APPROVAL" --approved-estimate-usd "$INPUT_APPROVED_ESTIMATE_USD")
