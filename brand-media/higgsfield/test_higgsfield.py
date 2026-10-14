@@ -107,6 +107,59 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(metadata["estimate"], None)
         self.assertEqual(metadata["actual_cost"], None)
 
+    def test_wan_three_shots_are_sequential_text_only_and_submit_exactly_three(self):
+        calls = {"estimate": 0, "submit": [], "status": []}
+        class FakeClient:
+            def __init__(self, api_key): self.api_key = api_key
+            def estimate(self, *args, **kwargs):
+                calls["estimate"] += 1
+                raise AssertionError("produce-three must not estimate")
+            def submit(self, endpoint, params, idempotency_key=None):
+                calls["submit"].append((endpoint, params, idempotency_key))
+                return f"request-{len(calls['submit'])}"
+            def status(self, request_id):
+                calls["status"].append(request_id)
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination): Path(destination).write_bytes(b"mp4")
+
+        args = SimpleNamespace(
+            action="produce-three", model="alibaba/wan-3.0", operation="text_to_video",
+            resolution="1080p", aspect_ratio="9:16", native_audio="true", reference="", asset_id="",
+            approval=higgsfield.WAN_THREE_SHOTS_APPROVAL_PHRASE,
+            shot1_prompt="Arrival prompt", shot2_prompt="Approach prompt", shot3_prompt="Orbit prompt",
+            output_dir="",
+        )
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {
+            "HIGGSFIELD_API_KEY": "test-secret", "GITHUB_RUN_ID": "456", "GITHUB_RUN_ATTEMPT": "1"
+        }), patch.object(higgsfield, "Client", FakeClient), patch.object(higgsfield.time, "sleep"):
+            args.output_dir = temp
+            higgsfield.run(args)
+            manifest = json.loads((Path(temp) / "three-shot-manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(calls["estimate"], 0)
+        self.assertEqual(len(calls["submit"]), 3)
+        self.assertEqual(len(calls["status"]), 3)
+        self.assertEqual([x[0] for x in calls["submit"]], ["alibaba/wan-3.0/text-to-video"] * 3)
+        self.assertEqual([x[1]["duration"] for x in calls["submit"]], [6, 6, 8])
+        self.assertTrue(all("image_url" not in x[1] and x[1]["aspect_ratio"] == "9:16" for x in calls["submit"]))
+        self.assertEqual([x[2] for x in calls["submit"]], [
+            "vu-higgsfield-456-shot-1-arrival", "vu-higgsfield-456-shot-2-approach", "vu-higgsfield-456-shot-3-orbit"
+        ])
+        self.assertEqual(len(manifest["shots"]), 3)
+        self.assertTrue(all(x["status"] == "completed" for x in manifest["shots"]))
+
+    def test_wan_three_shots_require_approval_and_reject_references(self):
+        base = dict(action="produce-three", model="alibaba/wan-3.0", operation="text_to_video",
+                    resolution="1080p", aspect_ratio="9:16", native_audio="true", asset_id="",
+                    shot1_prompt="one", shot2_prompt="two", shot3_prompt="three", output_dir="")
+        with patch.dict(os.environ, {"GITHUB_RUN_ID": "456", "GITHUB_RUN_ATTEMPT": "1"}):
+            args = SimpleNamespace(**base, approval="", reference="")
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "Explicit approval"):
+                higgsfield.produce_three_text_shots(args)
+            args.approval = higgsfield.WAN_THREE_SHOTS_APPROVAL_PHRASE
+            args.reference = "some-image.jpg"
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "does not accept references"):
+                higgsfield.produce_three_text_shots(args)
+
     def test_status_download_is_read_only(self):
         calls = []
 

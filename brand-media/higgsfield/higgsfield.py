@@ -21,6 +21,7 @@ REGISTRY_PATH = Path(__file__).with_name("registry.json")
 TERMINAL = {"completed", "failed", "nsfw", "canceled"}
 APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
 WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-NO-ESTIMATE"
+WAN_THREE_SHOTS_APPROVAL_PHRASE = "APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS"
 
 
 class HiggsfieldError(RuntimeError):
@@ -272,9 +273,68 @@ def build_params(model, operation, prompt, duration, resolution, aspect_ratio, n
     return params
 
 
+def produce_three_text_shots(args):
+    """Submit exactly three sequential, approved WAN T2V jobs without references or retries."""
+    if args.model != "alibaba/wan-3.0" or args.operation != "text_to_video":
+        raise HiggsfieldError("Three-shot production is restricted to Wan 3.0 text-to-video")
+    if (args.resolution, args.aspect_ratio, args.native_audio) != ("1080p", "9:16", "true"):
+        raise HiggsfieldError("Three-shot production requires 1080p, 9:16, and native audio")
+    if args.reference or args.asset_id:
+        raise HiggsfieldError("Text-to-video production does not accept references or asset IDs")
+    if args.approval != WAN_THREE_SHOTS_APPROVAL_PHRASE:
+        raise HiggsfieldError("Explicit approval for exactly three Wan text-to-video jobs is required")
+    if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
+        raise HiggsfieldError("Three-shot production is single-attempt; workflow reruns are blocked")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not run_id:
+        raise HiggsfieldError("Three-shot production requires a unique GitHub Actions run ID")
+    shots = (("shot-1-arrival", args.shot1_prompt, 6),
+             ("shot-2-approach", args.shot2_prompt, 6),
+             ("shot-3-orbit", args.shot3_prompt, 8))
+    if any(not isinstance(prompt, str) or not prompt.strip() for _, prompt, _ in shots):
+        raise HiggsfieldError("All three separate shot prompts are required")
+    model = get_model(args.model)
+    endpoint = validate(model, "text_to_video", shots[0][1], 6, "1080p", "9:16")
+    client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
+    out = Path(args.output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    manifest = {"model_id": args.model, "operation": "text_to_video", "reference_image": None,
+                "estimate": None, "actual_cost": None, "social_upload": False, "shots": []}
+    print(json.dumps({"approval_gate": "passed", "model_id": args.model,
+                      "generation_submissions": 3, "submission_mode": "sequential_no_retry"}))
+    for shot_id, prompt, duration in shots:
+        params = build_params(model, "text_to_video", prompt, duration, "1080p", "9:16", True)
+        request_id = client.submit(endpoint, params, idempotency_key=f"vu-higgsfield-{run_id}-{shot_id}")
+        item = {"shot_id": shot_id, "request_id": request_id, "prompt": prompt,
+                "parameters": params, "status": "submitted", "actual_cost": None}
+        # Poll only this request. A non-terminal job remains recorded for read-only retrieval.
+        result = None
+        for delay in (2, 3, 5, 8, 10, 15, 20, 30):
+            result = client.status(request_id)
+            if result["status"] in TERMINAL:
+                break
+            time.sleep(delay)
+        item["status"] = result["status"] if result else "submitted"
+        if item["status"] == "completed" and isinstance(result.get("video"), dict) and result["video"].get("url"):
+            video_path = out / f"{shot_id}-{request_id}.mp4"
+            client.download(result["video"]["url"], video_path)
+            item["result_file"] = str(video_path)
+            item["hyperframes_ready"] = True
+        elif item["status"] in TERMINAL and item["status"] != "completed":
+            item["failure"] = "provider terminal failure; no retry submitted"
+        manifest["shots"].append(item)
+        safe_metadata(manifest, secret=os.environ.get("HIGGSFIELD_API_KEY"))
+        (out / "three-shot-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"generation_submissions": len(manifest["shots"]),
+                      "completed": sum(x["status"] == "completed" for x in manifest["shots"]),
+                      "manifest": str(out / "three-shot-manifest.json")}))
+
+
 def run(args):
     if args.action == "status":
         return retrieve_completed_job(args)
+    if args.action == "produce-three":
+        return produce_three_text_shots(args)
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
@@ -352,7 +412,7 @@ def run(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", choices=("estimate", "generate", "produce", "status"), required=True)
+    parser.add_argument("--action", choices=("estimate", "generate", "produce", "produce-three", "status"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--operation", choices=("text_to_video", "image_to_video", "reference_to_video"), required=True)
     parser.add_argument("--prompt", required=True)
@@ -367,6 +427,9 @@ def main(argv=None):
     parser.add_argument("--approved-estimate-usd", default="")
     parser.add_argument("--request-id", default="")
     parser.add_argument("--output-dir", default="brand-media/output/higgsfield")
+    parser.add_argument("--shot1-prompt", default="")
+    parser.add_argument("--shot2-prompt", default="")
+    parser.add_argument("--shot3-prompt", default="")
     args = parser.parse_args(argv)
     try:
         run(args)
