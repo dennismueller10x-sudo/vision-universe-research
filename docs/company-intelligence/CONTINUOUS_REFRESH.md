@@ -99,6 +99,78 @@ Actual publication is recorded only after live QA; a consumer R2 commit alone is
 not called a successful production publication. Public refresh metadata redacts
 the private checkpoint certificate and all operational namespaces.
 
+### Health-Semantik (Stand PR D)
+
+Der read-only Health-Lauf (`refresh-run.mjs health`, Workflow
+`company-intelligence-health.yml`) liest GOOD-Zeiger, `observed.json` und den
+Produktions-Gate (`gate.json`, derselbe R2-Treiber, nur GET) und fragt die
+ausgelieferte `company-intelligence-delivery.json` per GET ab. Keine Provider-,
+Schreib- oder Gate-Zugriffe.
+
+`productionState`, strikt in dieser Reihenfolge der Beweislast:
+
+| Zustand | Bedingung | Wirkung |
+|---|---|---|
+| `VERIFIED` | Auslieferung lesbar, Generation/Umfang = GOOD = akzeptierte Beobachtung | Publikations-SLO nach Alter |
+| `MISMATCH` | Auslieferung lesbar, aber andere Generation/anderer Umfang | CRITICAL |
+| `GATE_CLOSED` | `delivery.json` ist HTTP **404** UND `gate.json` wurde fehlerfrei gelesen, ist für diese Freigabe gültig (Schema, `approvalId`, `generation`) UND `state==DISABLED` | bewusst aus, `publicationSLO=OFF`, kein Alarm |
+| `UNAVAILABLE` | alles andere: HTTP 4xx/5xx, Timeout, Netzfehler, HTML/Passwortseite, Gate-Lesefehler/-fehlend/-ungültig, Gate `AVAILABLE`/`STAGED` bei fehlender Lieferung | CRITICAL |
+
+`productionReason` nennt den Grund (z. B. `DELIVERY_HTTP_500`, `DELIVERY_TIMEOUT`,
+`DELIVERY_NOT_JSON`, `DELIVERY_MISSING_GATE_AVAILABLE`,
+`DELIVERY_MISSING_GATE_READ_FAILED`); `gateState` ist `AVAILABLE|DISABLED|STAGED|null`.
+Im Zweifel bleibt es ein Ausfall.
+
+Gesamtstatus und Exit-Code:
+
+| `status` | Bedingung | Exit |
+|---|---|---|
+| `HEALTHY` | alle drei SLOs HEALTHY | 0 |
+| `WARNING` | ein SLO älter als 8 h | 0 (`::warning::`) |
+| `OFF` | `GATE_CLOSED` und Refresh-/Build-SLO HEALTHY | 0 (`::notice::`) |
+| `CRITICAL` | ein SLO älter als 12 h/fehlend, `UNAVAILABLE`, `MISMATCH` | 1 |
+| Absturz des Checks | Exception, fehlende Secrets, ENOENT/Importfehler | 2 (`::error::health crashed`) |
+
+Bewusst AUS ist kein Alarm, wird aber nie als `HEALTHY` gemeldet. Die Frische von
+Refresh und Consumer-Build wird im Zustand OFF unverändert bewertet (WARNING/CRITICAL
+bleiben möglich); nur das Publikations-SLO entfällt, weil nichts ausgeliefert werden
+soll. Die Schwellen 8 h WARNING / 12 h CRITICAL sind unverändert und in
+`refresh-approval.mjs#freshness` fest verdrahtet. `warningHours`/`criticalHours` in
+`company-intelligence/config/continuous-refresh.json` werden nicht gelesen, sie
+dokumentieren nur dieselben Werte (Änderung dort wirkt nicht). Der Workflow ordnet
+Exit 1 ohne Verdikt-Datei (z. B. Node-Importfehler durch Sparse-Checkout) als Absturz
+(Exit 2) ein, nicht als Datenausfall.
+
+Felder der Health-Ausgabe:
+
+- `lastSuccessfulGoodRefresh`: Zeitpunkt des letzten erfolgreichen Refresh laut GOOD-Zeiger
+  (`health.lastSuccessfulRefresh`). `lastSuccessfulPrivateRefresh` ist ein veralteter
+  Alias mit identischem Wert (der Name war irreführend; der Wert stammt nicht aus dem
+  privaten Ledger `latest-run.json`, das nur im privaten Checkpoint-Archiv liegt und
+  ohne Zugriff auf privaten Zustand nicht lesbar ist, daher bewusst kein eigenes Feld).
+  Die in GOOD veröffentlichte Metadatei `company-intelligence-refresh.json` behält
+  ihren Schlüssel `lastSuccessfulPrivateRefresh` (Vertrag mit `release-health.mjs`).
+- `goodDataAgeHours`, `consumerBuildAgeHours`, `deliveryVerifiedAgeHours`.
+- `lastSuccessfulProductionPublication` belegt "Auslieferung gegen GOOD verifiziert"
+  (jeder Pages-Deploy mit `observe --same-generation-only` stempelt neu), **nicht**
+  "neue Daten". Das Alter der Daten zeigt `goodDataAgeHours`.
+- `failureStage`/`failureCode`: nur aus `good.health`, falls dort vorhanden, sonst
+  `null` mit `failureSource=NOT_RECORDED_IN_GOOD_HEALTH`. Fehlgeschlagene Läufe
+  committen GOOD nicht; Stufe und Code des letzten Laufs stehen im `health.json`
+  des Refresh-Laufs.
+- `gateState`, `productionReason`, `exitCode`.
+
+Run-eigener `refreshSLO` im Refresh-Report: `runSLO()` setzt ihn nur dann nach
+Alter von `health.lastSuccessfulRefresh` fest, wenn der Lauf `SUCCESS` war, kein
+`failureStage` hat und `published:true`, `retainedLastGood:false` ist. Jeder andere
+Lauf ist `CRITICAL` mit `failureCode` und `runSucceeded:false`. Vorher bewertete der
+Report einen Zeitstempel, den die Engine im selben Lauf auf "jetzt" setzt, und war bei
+`PIPELINE_FAILURE` trotzdem `HEALTHY`.
+
+Bekannte Grenze: `continuous_refresh.py` setzt `lastSuccessfulRefresh` schon bei
+einer einzigen erfolgreichen Quelle. Eine strengere Definition ("alle Pflichtspuren")
+gehört in die Python-Engine und ist hier nicht geändert.
+
 ## Configuration and rollback
 
 The committed approved config enables the bounded pipeline on main. Optional
