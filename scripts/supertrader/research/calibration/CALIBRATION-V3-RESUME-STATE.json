@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "DATA_CONTRACT_BLOCKERS_ASSESSED_CANONICAL_DIAGNOSTIC_RUNNING",
+  "status": "CANONICAL_CAPTURE_DIAGNOSTIC_RERUN_IN_PROGRESS",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -216,12 +216,10 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "workflowRunId": 38553639552,
-    "headSha": "a51af763063cb197e451ec7c33e35dcc3fac4bb0",
-    "mode": "canonical",
-    "job": "data-probe",
-    "status": "in_progress",
-    "purpose": "allowlisted symbolic canonical failure reason and loader phase"
+    "runId": 38555503225,
+    "head": "6e28a4db900f8f3aa09ee627da9ebc047e0d91c0",
+    "status": "IN_PROGRESS",
+    "nextStep": "Read bounded public status artifact; diagnose allowlisted failure phase/code; fix proven loader infrastructure only, then recapture until manifest and parts are present."
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
@@ -247,5 +245,6 @@
     "safeStatusSha256": "8ad6d9eb1ac9a0ecddf33f64dac930c4f328b8cbcd30bb89e62ce49230da9732",
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
-  }
+  },
+  "exactNextStep": "Poll Actions run 38555503225. Download artifact supertrader-certification-status-38555503225 separately and verify status hash. Do not start calibration while canonical manifest/parts are absent."
 }
