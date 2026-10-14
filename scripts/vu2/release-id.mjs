@@ -24,6 +24,11 @@ import {fileURLToPath} from 'node:url';
 
 export const SCHEMA='vu-release-id-1';
 export const META_NAME='vu-release';
+/* Nur-Stempel-Baeume: alle HTML-Seiten darunter (rekursiv) bekommen ?v=<Hash> an ihren JS-/CSS-Verweisen, aber weder
+   Meta-Tag noch Eintrag in /release-id.json (kein Waechter, kein Nachladen). Supertrader: ~1.200 statische Seiten laden
+   st-chart.js/supertrader.js/supertrader.css; nach einem Release, das einen Datenpfad entfernt, holte eine Navigation
+   im offenen Tab nur das neue HTML, den alten Code aber aus dem 10-Minuten-Cache (Chart "nicht verfuegbar"). */
+export const STAMP_ONLY=['supertrader'];
 /* page: HTML-Seite des Produkts; dirs: Verzeichnisse mit Code, den die Seite erst bei Bedarf nachlaedt (loadScript,
    lazy.js); top: JS/CSS-Dateien direkt in einem Verzeichnis (Discover: app.js, home.js ...). */
 export const PRODUCTS={
@@ -55,14 +60,37 @@ const REF=/(\b(?:src|href)\s*=\s*["'])(\/[^"'#?]+\.(?:js|css))(?:\?[^"']*)?(["']
 /** Seite ohne Stempel und Meta-Tag: die Grundlage des Hashes (damit Stempeln wiederholbar ist). */
 export const plain=html=>stripMeta(html).replace(REF,'$1$2$3');
 /** Setzt ?v=<Hash der Datei> an jedes lokale JS-/CSS-Asset der Seite. */
-export async function stampAssets(html,site){
- const digests=new Map();
+export async function stampAssets(html,site,digests=new Map()){   // digests: optionaler Cache ueber viele Seiten
  for(const m of html.matchAll(REF)){
   const rel=m[2].slice(1);if(digests.has(rel))continue;
   let bytes;try{bytes=await readFile(resolve(site,rel));}catch{throw Error('RELEASE_ID_ASSET_MISSING:'+rel);}
   digests.set(rel,sha(bytes).slice(0,16));
  }
  return html.replace(REF,(_,before,path,after)=>before+path+'?v='+digests.get(path.slice(1))+after);
+}
+
+async function htmlPages(root,rel,out){
+ let entries;try{entries=await readdir(resolve(root,rel),{withFileTypes:true});}catch{return;}
+ for(const e of entries){
+  const path=rel+'/'+e.name;
+  if(e.isDirectory())await htmlPages(root,path,out);
+  else if(e.isFile()&&/\.html$/i.test(e.name))out.push(path);
+ }
+}
+/** Stempelt alle Seiten der Nur-Stempel-Baeume (gleicher Hash und gleiche Funktion wie bei den Produktseiten).
+    Wiederholbar: ein vorhandenes ?v= wird ersetzt. Liefert die Zahl der geaenderten Seiten. */
+export async function stampTrees(site,trees=STAMP_ONLY){
+ site=resolve(site);
+ const digests=new Map();let changed=0,pages=0;
+ for(const tree of trees){
+  const list=[];await htmlPages(site,tree,list);
+  for(const page of list.sort()){
+   const file=resolve(site,page),html=await readFile(file,'utf8');
+   const next=await stampAssets(html,site,digests);pages++;
+   if(next!==html){await writeFile(file,next);changed++;}
+  }
+ }
+ return {pages,changed};
 }
 
 /** Kennung eines Produkts: Hash ueber (Pfad, Hash) aller Codedateien, sortiert; Seite ohne Meta-Tag. */
@@ -102,6 +130,7 @@ export async function stampRelease(site,{commit}={}){
   const page=resolve(site,PRODUCTS[key].page);
   await writeFile(page,withMeta(await stampAssets(await readFile(page,'utf8'),site),key,id));
  }
+ await stampTrees(site);
  let sourceCommit=commit;
  if(!sourceCommit){try{sourceCommit=JSON.parse(await readFile(join(site,'release-delivery.json'),'utf8')).sourceCommit;}catch{/* ohne Angabe */}}
  const report={schema:SCHEMA,commit:typeof sourceCommit==='string'?sourceCommit:null,products};

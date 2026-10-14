@@ -541,3 +541,6 @@
 .cb-nothesis{margin:0 0 18px;padding:16px 18px;border:1px solid var(--vu-line,rgba(127,127,127,.25));border-radius:18px}
 .cb-nothesis-h{margin:0 0 6px;font-size:18px;letter-spacing:-.01em}
 .cb-nothesis p{margin:0 0 6px}
+
+/* Helles Farbschema: die Palette oben ist fuer dunklen Grund gewaehlt (Limette auf Weiss ist kaum lesbar). Dunklere Toene derselben Bedeutungen. */
+html[data-theme=light] .qd .cb,html[data-theme=light] .qd .cb-teaser{--cb-entry:#4f6b00;--cb-target:#1f62b8;--cb-invalid:#c0392b;--cb-alt:#5f46d1;--cb-up:#2c6e31;--cb-down:#b3321f;--cb-flat:#5b616a;--cb-mixed:#8a6100}

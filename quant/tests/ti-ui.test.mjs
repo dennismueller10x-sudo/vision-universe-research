@@ -96,12 +96,28 @@ test("API-1 · meta, index, Reihen und Evidenzsumme vorhanden und konsistent", {
   assert.equal(JSON.stringify(ev).includes("calibratedProbability"), false);
 });
 
+function assertWithheldShell(a) {
+  const id = a.symbol + " (withheld)";
+  assert.equal(a.withheld, true, id);
+  assert.ok(a.freshness && a.freshness.withheld === true && ["STALE", "NON_TRADING"].includes(a.freshness.state), id + ": freshness.state " + (a.freshness && a.freshness.state));
+  assert.equal(a.outlook.label, "WITHHELD", id);
+  assert.equal(a.confidence, null, id + ": keine erfundene Konfidenz");
+  assert.equal(a.explain, null, id);
+  assert.deepEqual(a.scenarios, [], id);
+  assert.equal(a.diagnostics.isProbability, false, id);
+  assert.ok(a.projection && a.projection.status === "WITHHELD" && a.projection.consumerVisible === false && a.projection.primary === null, id + ": Projektion nicht sichtbar");
+  assert.deepEqual(a.pro, { withheld: true }, id); assert.deepEqual(a.overlays, { withheld: true }, id);
+  assert.ok(a.chart.timestamps.length === a.chart.close.length && a.chart.close.length > 0, id + ": Chart bleibt");
+}
+
 test("API-2 · Payload: keine Wahrscheinlichkeit ohne Kalibrierung, jede Einstiegszone mit Invalidation, Texte ohne verbotene Sprache", { skip: !hasData }, () => {
   const shards = readdirSync(join(ROOT, V2, "shards")).slice(0, 60);
-  let checked = 0;
+  let checked = 0, withheld = 0;
   for (const f of shards) {
     const s = gz(V2 + "shards/" + f);
     for (const a of Object.values(s.instruments)) {
+      /* Datenstand-Richtlinie (data-freshness-1.0.0): zurueckgehaltene Titel tragen eine ausdrueckliche Huelle statt einer Analyse (kein confidence-Wert, keine Erklaerung, keine Szenarien) */
+      if (a.withheld) { assertWithheldShell(a); withheld++; continue; }
       assert.equal(a.confidence.calibrated, null, a.symbol);
       assert.equal(a.diagnostics.isProbability, false);
       a.scenarios.filter((x) => x.kind !== "TAIL" && x.entryZone).forEach((x) => assert.ok(x.invalidation, a.symbol + " " + x.kind));
@@ -117,6 +133,19 @@ test("API-2 · Payload: keine Wahrscheinlichkeit ohne Kalibrierung, jede Einstie
     }
   }
   assert.ok(checked > 100, "nur " + checked);
+});
+
+test("API-2b · Zurueckgehaltene Titel (alle Shards): ausdrueckliche Huelle, keine erfundene Konfidenz, keine sichtbare Projektion", { skip: !hasData }, () => {
+  let withheld = 0, total = 0;
+  for (const f of readdirSync(join(ROOT, V2, "shards"))) {
+    for (const a of Object.values(gz(V2 + "shards/" + f).instruments)) {
+      total++;
+      if (a.withheld) { assertWithheldShell(a); withheld++; }
+      else assert.notEqual(a.outlook.label, "WITHHELD", a.symbol + ": WITHHELD ohne withheld-Kennzeichen");
+    }
+  }
+  assert.ok(total > 100, "nur " + total);
+  console.log("# API-2b: " + withheld + " zurueckgehaltene Titel von " + total + " geprueft");
 });
 
 test("API-3 · Tagesanalyse fuer die Referenztitel mit Wochenkontext", { skip: !hasData }, () => {

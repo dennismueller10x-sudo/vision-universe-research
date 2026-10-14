@@ -1,6 +1,6 @@
 # Elliott als eigenes Produkt – Informationsarchitektur
 
-**Stand:** 12. Oktober 2026 · Index `elliott-home-1.0.0` · Elliott-Engine 3.2.2 und Projection Engine 1.3.0 **unverändert** (reine Produktschicht, kein Methodikwechsel).
+**Stand:** 13. Oktober 2026 · Index `elliott-home-1.1.0` · native Route `/elliott/#/<TICKER>` · Elliott-Engine 3.2.2 und Projection Engine 1.3.0 **unverändert** (reine Produktschicht, kein Methodikwechsel).
 Einstieg der Plattform: [VISION_UNIVERSE_ARCHITECTURE.md](VISION_UNIVERSE_ARCHITECTURE.md). Fachliche Grundlagen: [technical-intelligence/](technical-intelligence/).
 
 ## 1. Entscheidung
@@ -31,57 +31,29 @@ Alle Navigations-Entscheidungen leben weiter nur in `assets/site-navigation.js`.
 | Elliott-Startseite | `/elliott/` | `elliott/` (eigene kleine Seite, kein Quant-Bündel) |
 | Filter (teilbar) | `/elliott/#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1` | `elliott/app.js` |
 | Suche öffnen | `/elliott/#/?suche=1` | `elliott/app.js` |
-| **Aktie im Elliott-Bild (stabiler Deep Link)** | `/quant/#/elliott/<TICKER>[?ansicht=profi]` | Quant-SPA, wiederverwendet `page-chartbild.js` |
-| Alias | `/elliott/#/<TICKER>` | `location.replace` auf den Deep Link |
-| ALT `/quant/#/aktie/<T>/technik[?elliott=1]` | wird zu `#/elliott/<T>` (`?elliott=1` → `?ansicht=profi`) | `location.replace`, kein Verlaufseintrag |
-| ALT `/quant/#/aktie/<T>/chartbild[?…]` | wird zu `#/elliott/<T>[?…]` | wie oben |
-| ALT `/quant/?view=elliott&ticker=<T>` | `#/elliott/<T>?ansicht=profi` | `legacyRoute` |
+| **Aktie im Elliott-Bild (stabiler Deep Link)** | `/elliott/#/<TICKER>[?ansicht=profi]` | `elliott/app.js` (Host) lädt den Quant-Stack und mountet `page-chartbild.js` |
+| ALT `/quant/#/elliott/<TICKER>[?…]` | wird zu `/elliott/#/<TICKER>[?…]` | Quant-SPA, `location.replace`, kein Verlaufseintrag |
+| ALT `/quant/#/aktie/<T>/technik[?elliott=1]` | wird zu `/elliott/#/<T>` (`?elliott=1` → `?ansicht=profi`) | wie oben |
+| ALT `/quant/#/aktie/<T>/chartbild[?…]` | wird zu `/elliott/#/<T>[?…]` | wie oben |
+| ALT `/quant/?view=elliott&ticker=<T>` | `/elliott/#/<T>?ansicht=profi` | `legacyRoute` |
 | `/quant/#/elliott` (ohne Aktie) | `/elliott/` | Quant-SPA |
-| Startseite der Plattform, Ask, Seite einer Aktie | zeigen auf `/elliott/` bzw. `#/elliott/<T>` | |
+| Startseite der Plattform, Ask, Seite einer Aktie, Discover, Karten, Suche | zeigen auf `/elliott/` bzw. `/elliott/#/<T>` | |
 
-**Warum liegt das Aktienbild unter `/quant/`?** Das Chartbild braucht die komplette Quant-Datenschicht (rund 100 Skripte, im Release ein Bündel). Die Elliott-Startseite soll sofort erscheinen und darf dieses Bündel nicht laden. Deshalb: Startseite = eigene leichte Seite; Aktienbild = die vorhandene Implementierung, aber **für die gemeinsame Shell ein Elliott-Bild** (Leiste, Menü, Kopfzeile „← Elliott · Name · Aktie in Quant · Frag VU“). Das Chartbild wird nicht dupliziert. Spätere Option: das Chartbild als eigenes Bündel aus der Quant-SPA lösen und unter `/elliott/` hosten – dann ändert sich nur der Adresspräfix, nicht das Produktmodell.
+**Native Route und Gastbetrieb.** Die Adresse einer Aktie beginnt mit `/elliott/`. Das Chartbild selbst bleibt **eine** Implementierung (`quant/app/page-chartbild.js`, keine Kopie): `elliott/app.js` setzt `window.QX_HOST = "elliott"`, lädt beim Öffnen einer Aktie den vorhandenen Quant-Stack (die Skriptliste liest der Lader aus `/quant/index.html`; im Release ist das dasselbe gecachte Bündel `quant/release-bundle.js?v=<Hash>`) und ruft `QXApp.mountElliott(root, ticker, params)`. Im Gastbetrieb startet die Quant-SPA keinen eigenen Router und keine eigene Adressleiste; interne Quant-Links (`#/aktie/…`) werden auf `/quant/#/…` umgeschrieben. Die Startseite lädt das Bündel **nicht** (nur Absicht: Aufwärmen bei Zeiger-, Fokus- oder Touch-Annäherung an eine Karte; bei einem Deep Link auf eine Aktie entfällt der Start-Index). Die Quant-Stylesheets sind auf `.qd`/`body.dx` begrenzt; der Host setzt diese Klassen am `body`, deshalb sieht das Chartbild gleich aus.
 
-Zurück-Taste: Startseite → Karte → Aktienbild ist ein Seitenwechsel; „Zurück“ führt zur Elliott-Startseite (Filter und Auswahl stehen im Hash, die Scrollposition merkt `elliott/app.js` selbst (anderes Dokument als das Aktienbild)). Altlinks werden per `location.replace` umgeleitet und erzeugen keinen Zwischenschritt.
+**Verbleibende Quant-Abhängigkeit (bewusst):** Das Chartbild braucht die komplette Quant-Datenschicht und UI-Bibliothek (`QX`, `ctx`, Namen, Sprache, Projektionsleiter). Sie wird nur beim Öffnen einer Aktie geladen. Aus Kundensicht ist Quant nicht mehr sichtbar (Adresse, Leiste, Kopfzeile). Eine spätere Ablösung des Chartbilds als eigenes Bündel ändert weder Adressen noch Produktmodell. Die Dateien liegen weiter unter `quant/` (Eigentümer-Regel, Gates).
 
-## 4. Kundenreise
+**URL-Zustand:** Aktie und Ansicht (`?ansicht=profi`) stehen in der Adresse und überstehen Neuladen und „Zurück“. Der Profi-Modus wird beim Umschalten in die Adresse geschrieben (`replaceState`) und zusätzlich als Vorliebe gemerkt; Filter der Startseite stehen im Hash der Startseite und kommen mit „Zurück“ wieder.
 
-```
-MENÜ → Elliott
-  Elliott-Startseite  ── Suche „NVDA“ ──────────────┐
-    │  Reihe „Welle-3-Lesarten“ → Karte ───────────┤
-    │  Chip „Abwärts“ → Raster → Karte ────────────┤
-    ▼                                               ▼
-  [Zurück]  ◄──────────────  Aktie im Elliott-Bild (#/elliott/<T>)
-                              Primär · Alternative · Explore Highlight · Projektionsleiter
-                              Invalidierung · Fahrplan · Chart · Pro: Candidate Explorer · Evidenz
-Aktienseite (Quant) → „Chartbild öffnen“/Kachel → Aktie im Elliott-Bild
-Universal-Suche / Ask → Aktie → Elliott
-Keine Lesart? → „Keine belastbare Elliott-Lesart“ (die Aktie bleibt sichtbar, mit Grund in der Fachansicht)
-Zurückgehalten (STALE/NON_TRADING)? → bestehende Hinweisseite der Datenstand-Richtlinie
-```
-
-## 5. Datenfluss
-
-```
-scripts/technical/build-technical-intelligence.mjs   (Erzeuger, unverändert; Workflow technical-intelligence-build.yml)
-   └─ quant/data/technical-intelligence/v3/{index.json.gz, shards/*.json.gz, meta.json}   (committet, eigener Erzeuger)
-          │
-          ▼  scripts/vu2/build-release.mjs  →  scripts/technical/elliott-home/home.mjs
-   Auslieferung: quant/data/technical-intelligence/v3/elliott-home.json      (nur im Release, nie committet)
-          │   ≈ 80 KB roh · ≈ 14 KB gzip · 186 Lesarten (Stand 09.10.2026)
-          ▼
-   /elliott/  (elliott/app.js + engine/home-model.js)  — eine Datenanfrage; Namen für die Suche erst beim Fokussieren
-```
-
-Warum Auslieferungsansicht und kein neues committetes Artefakt: Dateien unter `quant/data` gehören ihrem Erzeuger; ein PR, der sie mitbringt, lässt Datenläufe kollidieren (CLAUDE.md). Die Startseitenansicht ist eine reine Funktion der veröffentlichten Shards (wie `technical-signals-v1/by-ticker`), wird bei jedem Release deterministisch neu gebildet und kann nicht von den Shards abweichen. Der Erzeuger-Fingerabdruck des TI-Builds (`scripts/technical/lib`, Build-Skript) bleibt unberührt; der Code liegt deshalb in `scripts/technical/elliott-home/` und löst keinen 55-Minuten-Neulauf aus. Fehlt die Datei (lokal, Ausfall), zeigt die Seite „nicht verfügbar“; die Suche und jede Aktie funktionieren weiter.
+Zurück-Taste: Startseite → Karte → Aktienbild bleibt innerhalb **einer** Seite (`/elliott/`), der Hash wechselt; „Zurück“ führt zur Startseite mit demselben Filter. Altlinks werden per `location.replace` umgeleitet und erzeugen keinen Zwischenschritt. Die Leiste markiert im Aktienbild nur das Produkt Elliott (nie Quant).
 
 Lokal: `node scripts/technical/elliott-home/build.mjs --out /tmp/elliott-home.json`.
 
-### Vertrag `elliott-home-1.0.0` (`vu-elliott-home-1.0.0`)
+### Vertrag `elliott-home-1.1.0` (`vu-elliott-home-1.1.0`)
 
-`{schemaVersion, version, source{api,bundle,elliott,projection,freshness,indexGeneratedAt}, dataAsOf, summary{theses,securities,bullish,bearish,confirmed,developing,wave3,wave5,waveC,delayed,recent}, filters, rows[{id,title,rule,total,ids[≤24]}], cards[…]}`
+`{schemaVersion, version, source{api,bundle,elliott,projection,freshness,indexGeneratedAt}, dataAsOf, summary{theses,securities,bullish,bearish,confirmed,developing,wave3,wave5,waveC,delayed,recent}, filters, rows[{id,kind,title,rule,cap,total,ids[alle, in Reihenfolge]}], cards[…]}`
 
-Karte: `id, t, n, cur, role, type, wave, dir, st, pattern, close, tiers{base|ext|xtr:[pctLow,pctHigh]}, inv{p,dir}, fr, last, pool{pos,size}, gate[], ctx{trend,rs,ms}, agree, chg{k,d}`. Prozentwerte sind Bruchteile des aktuellen Kurses. Eine fremde `version` wird von der Seite nicht angezeigt.
+Karte: `id, t, n, cur, role, type, wave, dir, st, pattern, close, tiers{base|ext|xtr:[pctLow,pctHigh]}, inv{p,dir}, fr, last, pool{pos,size}, gate[], ctx{trend,rs,ms}, agree, chg{k,d}`. Neu in 1.1.0: `rows[].kind` (`flagship`/`primary`/`secondary`), `rows[].cap`, vollständige `ids` je Reihe (die Seite zeigt `cap`), `ctx.rs` (Relative Stärke 26 W), Reihen `trend`, `strength`, `confirmed`, `span`, `bullHighlights`, `bearHighlights`, `waveC`. Prozentwerte sind Bruchteile des aktuellen Kurses. Eine fremde `version` wird von der Seite nicht angezeigt.
 
 ### Auswahlregeln (alle aus dem Produkt übernommen)
 
@@ -89,15 +61,29 @@ Karte: `id, t, n, cur, role, type, wave, dir, st, pattern, close, tiers{base|ext
 2. **Datenstand (`data-freshness-1.0.0`):** nur `FRESH` und `DELAYED`. Zurückgehaltene Titel tragen im Shard keine Projektion. `DELAYED` zeigt die bestehende Warnung „Kursdaten verzögert · letzter Stand …“.
 3. **Wertpapierart:** nur Titel des Produktuniversums des Builds (Index-Zeile) mit Namenseintrag der Art `COMMON_STOCK` und ohne Identitätskonflikt (`ic`) in der Universumsliste – keine Vorzugsaktien, ETFs oder Anleihen. Unbekannte Thesenstatus (außer CONFIRMED/DEVELOPING) werden nicht gezeigt. Keine eigene Eignungslogik.
 4. **Kein Treffer ohne offene Zone:** Thesen, deren Zonen alle durchlaufen (`PASSED`) sind oder gegen die Thesenrichtung liegen, sind keine Entdeckung. Enthält eine Zone den Kurs, zeigt die Karte nur den Teil in Thesenrichtung; der Chart zeigt die volle Zone.
-5. **Reihenfolge:** Rolle (Primär → Alternative → Motiv-Alternative → Highlight), bestätigt vor im Aufbau, Rang im Kandidatenpool, Kontext (Trend und Marktstruktur in Thesenrichtung; Relative Stärke bewusst nicht), Kürzel. **Nie nach Projektionsgröße, nie Zukunftsdaten.**
+5. **Premium-Reihen (Präsentation, kein neuer Score):** Flaggschiff „Top Welle 3“ ordnet bestätigt vor im Aufbau, dann Kontext in Thesenrichtung (Trend und Marktstruktur), Rang im Kandidatenpool, Relative Stärke, Kürzel – **nie nach Projektionsgröße**. Die Reihe „Große Projektionsspanne“ ist zweitrangig und letzte Reihe: nur `FRESH`, nur Aufwärtslesarten, nur offene erweiterte Zone mit Obergrenze ≥ +200 %, ausdrücklich als rechnerische Spanne beschriftet, nicht als erwartete Rendite; sie sortiert nicht das Produkt.
+6. **Reihenfolge der Index-Karten:** Rolle (Primär → Alternative → Motiv-Alternative → Highlight), bestätigt vor im Aufbau, Rang im Kandidatenpool, Kontext (Trend und Marktstruktur in Thesenrichtung; Relative Stärke bewusst nicht), Kürzel. **Nie nach Projektionsgröße, nie Zukunftsdaten.**
 
 ## 6. Startseite
 
-Hero (Name, Satz, Suche, vier Kennzahlen als Filter, Datenstand, aufklappbar „Wie ist das gemeint?“) → Filterchips (Alle · Welle 3/5/C · Aufwärts/Abwärts · Bestätigt/Im Aufbau · Primär/Alternative/Highlight; nur Chips mit Treffern) → Reihen (horizontal, Scroll-Snap; ab der dritten Reihe erst beim Annähern gebaut) → Links zu Screener und Quant. Bei aktivem Filter ersetzt ein Raster (24, „Mehr anzeigen“) die Reihen.
+Hero (Name, Leitsatz „Strukturelle Marktszenarien. Klare Projektionen. Transparente Invalidierung.“, Suche, vier Kennzahlen als Filter, Datenstand, aufklappbar „Wie ist das gemeint?“) → Filterchips (Alle · Welle 3/5/C · Aufwärts/Abwärts · Bestätigt/Im Aufbau · Primär/Alternative/Highlight; nur Chips mit Treffern) → Reihen (horizontal, Scroll-Snap; ab der dritten Reihe erst beim Annähern gebaut) → Links zu Screener und Quant. Bei aktivem Filter ersetzt ein Raster (24, „Mehr anzeigen“) die Reihen.
 
-Reihen sind **datenabhängig**: `wave3`, `wave5`, `waveC`, `recent`, `bullish`, `bearish`, `engine`; Reihen mit weniger als 3 Karten entfallen (Welle 5 hat im Stand 09.10.2026 genau 1 Lesart und ist als Chip erreichbar, mit ehrlichem Hinweis statt einer erfundenen Reihe). „Neu und verändert“ nutzt den Lebenszyklus der Thesen im Shard (Fenster 2 Tage ab Datenstand), nicht das Register.
+Reihen sind **datenabhängig** (Reihenfolge in `ROW_DEFS`): `wave3` (Flaggschiff), `confirmed`, `recent`, `trend`, `strength`, `bullHighlights`, `bearHighlights`, `wave5`, `waveC`, `engine`, `span` (zweitrangig); Reihen mit weniger als 3 Karten entfallen (Welle 5 hat im Stand 09.10.2026 genau 1 Lesart und ist als Chip erreichbar, mit ehrlichem Hinweis statt einer erfundenen Reihe). „Neu und verändert“ nutzt den Lebenszyklus der Thesen im Shard (Fenster 2 Tage ab Datenstand), nicht das Register.
 
 Karte: Rolle (nie ein Highlight als Primärlesart), Name, Kürzel · Kurs, Welle · Richtung, **eine** große Projektionszone (Erweitert, sonst Basis, sonst Extrem) mit den übrigen Stufen klein, Status · Trend, Verzögerungshinweis, „Analyse öffnen →“. Details gehören ins Aktienbild.
+
+### Messung (Release-Build, Chromium, Handy 430 px, 1,6 Mbit/s, CPU ×4, Median aus 5 Läufen, kalter Cache)
+
+| | alt `/quant/#/elliott/NVDA` | neu `/elliott/#/NVDA` |
+|---|---|---|
+| Analyse fertig | 5,78 s | 6,06 s (+5 %) |
+| erster Inhalt (FCP) | 752 ms | 436 ms |
+| Anfragen / übertragen / davon JS | 20 / 936 KB / 470 KB | 30 / 974 KB / 503 KB |
+| Neuladen (warmer Cache) | 1,11 s | 1,17 s |
+| Startseite fertig / Anfragen / KB | 1,04 s / 9 / 51 KB | 1,07 s / 9 / 56 KB |
+| Karte → Analyse / Zurück | 5,03 s / 0,36 s | 5,19 s / 0,18 s |
+
+Mehrkosten kommen vom Elliott-Host (rund 33 KB JS) und der Lade-Kette `app.js → /quant/index.html → Bündel`; bei einem Deep Link startet `elliott/index.html` die Kette parallel zu `app.js`. Das Bündel bleibt dasselbe gecachte Release-Bündel. Die Startseite lädt es nicht.
 
 ## 7. Wiederverwendet / neu
 
@@ -115,7 +101,7 @@ Heute: **Elliott**. Später denkbar: ein Produkt **Technical** mit Linsen (Ellio
 
 ## 9. Grenzen
 
-* Aktienbild-Adresse beginnt mit `/quant/` (siehe Abschnitt 3).
+* Das Chartbild lädt beim Öffnen einer Aktie den Quant-Stack (siehe Abschnitt 3, „Verbleibende Quant-Abhängigkeit“).
 * Keine Beobachtungsliste auf den Karten (Watchlist-Umbau war ausdrücklich nicht Teil der Aufgabe).
 * Kein Screener-Deep-Link auf „Welle 3“: der Screener hat kein Welle-3-Feld; es gibt nur einen allgemeinen Link.
 * Die Quant-Menüeinträge „Technische Analyse“ und „Fundamentaldaten“ öffnen weiter NVDA – Quant-Eigentum, nicht Teil dieser Änderung.
