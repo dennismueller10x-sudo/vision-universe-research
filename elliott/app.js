@@ -82,7 +82,11 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
+      /* Hinter dem Research-Zugang liefert /quant/index.html die Zugangsseite; das Original liegt unter script[data-content]. */
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
+        var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
+        return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
+      }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
         doc.querySelectorAll('link[rel="stylesheet"]').forEach(function (l) {
           var href = l.getAttribute("href");

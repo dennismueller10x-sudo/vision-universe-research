@@ -288,7 +288,7 @@ test("EH-15 · the page never scans shards, never defaults to a stock, loads one
   /* Kein <script> mit Fremdquelle, keine Inline-Handler */
   assert.doesNotMatch(html, /\son[a-z]+=/i);
   const bytes = ["elliott/app.js", "elliott/engine/home-model.js", "elliott/elliott.css"].reduce((n, p) => n + readFileSync(join(ROOT, p)).length, 0);
-  assert.ok(bytes < 60 * 1024, "kleines Produktbuendel: " + bytes + " B");
+  assert.ok(bytes < 64 * 1024, "kleines Produktbuendel: " + bytes + " B");
 });
 
 test("EH-16 · accessibility basics of the page", () => {
@@ -438,4 +438,10 @@ test("EH-25 · hosted lifecycle: absolute legacy targets leave /quant/, Quant st
   assert.match(app, /l\.media = on \? "all" : "not all"/);
   assert.doesNotMatch(app, /addEventListener\("touchstart", function \(ev\) \{ if \(ev\.target\.closest/, "Wischen waermt das Quant-Buendel nicht auf");
   assert.match(app, /a\.el-skip/, "Sprunglink funktioniert auch im Aktienbild");
+});
+
+test("EH-26 · behind the Research access gate the stack list comes from the gate's original content, not the gate page", () => {
+  const app = read("elliott/app.js"), html = read("elliott/index.html");
+  assert.match(app, /querySelector\("script\[data-content\]"\)[^]*?fetchRes\(gate\.getAttribute\("data-content"\)\)/);
+  assert.match(html, /querySelector\("script\[data-content\]"\)/, "auch das Vorladen folgt dem Zugangs-Original");
 });
