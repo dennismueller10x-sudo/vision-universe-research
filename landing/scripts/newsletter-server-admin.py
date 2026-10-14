@@ -95,17 +95,19 @@ def run():
         'per_contact_pixel_attribute_present':any(a.get('name')=='_PIXEL_TRACKING_CONSENT' for a in attribute_rows),
         'tracking_feature_and_default_verified':False,'transactional_retention_rule_verified':False,
         'account_specific_contract_record_verified':False}
-    status,groups=api(BREVO,'/contacts/consent-groups?limit=100&offset=0',key)
+    status,groups=api(BREVO,'/contacts/consent-groups?limit=50&offset=0',key)
     report['privacy_metadata']['consent_groups_http']=status
-    if status==403:report['privacy_metadata']['consent_groups_feature_disabled']=groups.get('brevo_code')=='CONSENT_GROUP_NOT_ENABLED'
+    if status==403:report['privacy_metadata']['consent_groups_feature_disabled']=True if groups.get('brevo_code')=='CONSENT_GROUP_NOT_ENABLED' else None
     elif status==200:
         rows=groups.get('consentGroups',groups.get('groups'))
-        report['privacy_metadata']['consent_group_count']=len(rows) if isinstance(rows,list) else None
-    status,hooks=api(BREVO,'/webhooks',key)
-    report['privacy_metadata']['webhooks_read_http']=status
-    if status==200 and isinstance(hooks.get('webhooks'),list):
-        report['privacy_metadata']['webhook_count']=len(hooks['webhooks'])
-        report['privacy_metadata']['transactional_webhook_count']=sum(h.get('type')=='transactional' for h in hooks['webhooks'])
+        report['privacy_metadata']['consent_groups_returned']=len(rows) if isinstance(rows,list) else None
+        report['privacy_metadata']['consent_group_total']=groups.get('total') if type(groups.get('total')) is int else None
+    report['privacy_metadata']['webhooks_by_type']={}
+    for webhook_type in ('transactional','marketing'):
+        status,hooks=api(BREVO,'/webhooks?type='+webhook_type+'&sort=desc',key)
+        result={'http':status};report['privacy_metadata']['webhooks_by_type'][webhook_type]=result
+        if status==200 and isinstance(hooks.get('webhooks'),list):
+            result['count']=len(hooks['webhooks'])
     report['lists_before']={str(n):len(v) for n,v in before.items()}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}

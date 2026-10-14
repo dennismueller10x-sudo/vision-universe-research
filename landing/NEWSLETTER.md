@@ -10,6 +10,10 @@ Die native Vorlage **4** enthält `{{ doubleoptin }}` und passt **nicht** zum AP
 
 Der Pages-PATCH lieferte **200**. **BREVO_API_KEY** und **NEWSLETTER_RATE_KEY** liegen in Preview und Production als **secret_text** vor; DOI-Vorlagenbindung **8**, öffentliche Freigaben **false**, Testmodus ohne Testadresse **false**. Andere Projektkonfiguration und vorhandene Variablen bleiben unverändert. [Unabhängiger Leseaudit 38554409255](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38554409255) bestätigt diese Bindungen, die geschlossenen Gates, Vorlage 8 sowie unveränderte vollständige Kontaktobjekte in Listen 4/5/6. **Null E-Mails und null Kontakt-Schreibaufrufe** in beiden Läufen. Kein Schlüssel wird zurückgeliefert, in Dateien geschrieben oder in Logs ausgegeben. Ein Projekt-Secret gilt für neue Deployments; ältere Deployments können noch die vorherige Konfiguration besitzen.
 
+## Datenschutzabgleich vom 14. Oktober
+
+[Belegter Abgleich und konkrete offene Kontowerte](legal-drafts/newsletter-privacy-audit-2026-10-14.md). Neuer manueller Leseaudit **38586686572** bestätigt unveränderte Kontakte **135/0/2**, Vorlage 8, geschlossene Runtime-Gates und nicht konfigurierte Cloudflare Web Analytics. Die tatsächlichen Brevo-Tracking- und Log-/Vorschau-Einstellungen sind nicht durch die Account-API belegt. Zusatzabfragen zu Einwilligungsgruppen und Webhooks lieferten **400**, deshalb keine Abwesenheit behauptet; die Folgeversion korrigiert Gruppenlimit und explizite Webhook-Typen, Live-Wiederholung steht aus. Der Text ist überarbeitet, aber noch keine endgültige Freigabefassung. Keine neuen E-Mails oder Kontakt-/DNS-Schreibaufrufe.
+
 ## Hauptdomain-Test nach Betreiberfreigabe
 
 Der Betreiberauftrag vom 14. Oktober ersetzt die bisher vorgeschlagene Übergabe einer Adresse über **BREVO_DOI_TEST_EMAIL**. Die Adresse wird **selbst im eigenen Formular eingegeben**. Ein neuer GitHub-E-Mail-Secret, Cloudflare-Token oder eine Datenbank ist dafür nicht erforderlich. Der ältere `e2e`-Preview-Weg bleibt optional; für diese Abnahme wird **observe** verwendet.
