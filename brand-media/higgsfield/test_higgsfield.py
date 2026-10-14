@@ -24,13 +24,21 @@ class IntegrationTests(unittest.TestCase):
         self.model = higgsfield.get_model("bytedance/seedance-2.0")
 
     def test_native_audio_parameter_mapping(self):
-        seedance = higgsfield.build_params(self.model, "prompt", 20, "1080p", "16:9", True)
+        seedance = higgsfield.build_params(self.model, "text_to_video", "prompt", 20, "1080p", "16:9", True)
         self.assertIs(seedance["generate_audio"], True)
         self.assertNotIn("sound", seedance)
         kling = higgsfield.get_model("kling-video/v3.0/std")
-        muted = higgsfield.build_params(kling, "prompt", 5, "", "16:9", False)
+        muted = higgsfield.build_params(kling, "text_to_video", "prompt", 5, "", "16:9", False)
         self.assertEqual(muted["sound"], "off")
         self.assertNotIn("generate_audio", muted)
+
+    def test_seedance_25_image_to_video_uses_reference_framing_without_unsupported_ratio(self):
+        model = higgsfield.get_model("bytedance/seedance-2.5")
+        params = higgsfield.build_params(model, "image_to_video", "prompt", 20, "1080p", "16:9", True)
+        self.assertEqual(params["duration"], 20)
+        self.assertEqual(params["resolution"], "1080p")
+        self.assertIs(params["generate_audio"], True)
+        self.assertNotIn("aspect_ratio", params)
 
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):

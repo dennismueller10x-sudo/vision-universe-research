@@ -202,8 +202,12 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
     return amount, cap
 
 
-def build_params(model, prompt, duration, resolution, aspect_ratio, native_audio):
-    params = {"prompt": prompt, "duration": duration, "aspect_ratio": aspect_ratio}
+def build_params(model, operation, prompt, duration, resolution, aspect_ratio, native_audio):
+    # Seedance 2.5 image-to-video rejects additionalProperties and derives
+    # framing from image_url; aspect_ratio is intentionally metadata-only there.
+    params = {"prompt": prompt, "duration": duration}
+    if operation != "image_to_video" and aspect_ratio:
+        params["aspect_ratio"] = aspect_ratio
     if resolution:
         params["resolution"] = resolution
     if model["model_id"].startswith("kling-video/"):
@@ -217,7 +221,7 @@ def run(args):
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
-    params = build_params(model, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.native_audio == "true")
+    params = build_params(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.native_audio == "true")
     if args.operation == "image_to_video":
         params["image_url"] = client.upload_image(args.reference)
     elif args.operation == "reference_to_video":
@@ -253,6 +257,8 @@ def run(args):
     metadata = safe_metadata({
         "request_id": request_id, "model_id": model["model_id"], "provider": model["provider"],
         "prompt": args.prompt, "seed": None, "parameters": params,
+        "requested_aspect_ratio": args.aspect_ratio,
+        "aspect_ratio_source": "reference image framing" if args.operation == "image_to_video" else "request parameter",
         "reference_image": reference, "estimate": estimate,
         "status": result["status"], "result_file": str(video_path),
         "hyperframes_ready": True, "social_upload": False
