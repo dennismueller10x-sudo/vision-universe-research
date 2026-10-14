@@ -91,6 +91,10 @@
     "scopeGuard": {
       "path": "scripts/supertrader/guard-protected-paths.mjs",
       "sha256": "e74cee59559b91aeeb7d182d7c381385713fa5c98010006f2244ab93e4a380c2"
+    },
+    "sourceCaptureWorkflow": {
+      "path": ".github/workflows/supertrader-certification.yml",
+      "sha256": "c61f40e3eafdfc41b0e2c01a88eb9a428959d5499070c34f7c9ff0e500817a05"
     }
   },
   "artifacts": [
@@ -245,7 +249,7 @@
     "value_plus_momentum",
     "buyback_announcement_event"
   ],
-  "nextAction": "Implement a durable historical-source capture workflow and a V3 runner/validator that consumes the new parser and V3 freeze. Then run the source capture and persist receipts before any outcome calculation.",
+  "nextAction": "Run the read-only canonical data inventory in GitHub Actions via the committed V3 branch trigger; verify its safe status, encrypted artifact manifest and each package receipt before creating the V3 measurement freeze.",
   "volatileWorkspaceIsEvidence": false,
   "scannerRepair": {
     "status": "SEMANTIC_RENAME_COMPLETE_FOCUSED_TEST_PASS",
@@ -275,7 +279,7 @@
   "durableArtifactManifestSha256": "28a78252bab6c25f8728a18695bf93c01628c70572465437f25e70435480a150",
   "executionAvailability": {
     "v3CalibrationRunner": "MISSING",
-    "historicalSourceCaptureWorkflow": "MISSING",
+    "historicalSourceCaptureWorkflow": "CONFIGURED_PUSH_TRIGGER_PENDING_ACTIONS_RUN",
     "v2Runner": "PRESENT_BUT_HASH_BOUND_TO_PRE_SCANNER_PARSER",
     "strategyDefinitionsChanged": false
   },

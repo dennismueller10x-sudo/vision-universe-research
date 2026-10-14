@@ -1,7 +1,9 @@
 name: Supertrader data and execution certification (private)
 on:
   push:
-    branches: ['research/supertrader-data-execution-certification-*']
+    branches:
+      - 'research/supertrader-data-execution-certification-*'
+      - 'research/supertrader-calibration-v3-durable'
   workflow_dispatch:
     inputs:
       mode:

@@ -1,20 +1,31 @@
 {
   "schema": "vision-universe-calibration-v3-source-manifest-1.0.0",
-  "status": "SOURCE_CAPTURE_REQUIRED",
+  "status": "V3_CAPTURE_REQUESTED",
   "repositoryHead": "cc9ecb5b677035338f034cd0f3c21a24b02c9fa2",
   "freezeSha256V2": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
   "expectedCanonicalInputs": [
     {
       "path": "canonical-dataset-manifest.json",
       "expectedSha256": "083f8fc53fc7799813c612cd729e509a9ea23414bde7537c034407ee5a207f38",
-      "classification": "MISSING_READABLE_COPY"
+      "classification": "PRIOR_V2_HASH_NOT_REQUIRED_FOR_V3_RECAPTURE"
     },
     {
       "path": "data-certification-inputs.json",
       "expectedSha256": "a0e2273c96b35444a8a080d02c13cbe3a20767f91c62533c51c1b77a212242a1",
-      "classification": "MISSING_READABLE_COPY"
+      "classification": "PRIOR_V2_HASH_NOT_REQUIRED_FOR_V3_RECAPTURE"
     }
   ],
   "captureRecords": [],
-  "noProviderValuesOrSecurityIdentitiesIncluded": true
+  "noProviderValuesOrSecurityIdentitiesIncluded": true,
+  "historicalCanonicalCapture": {
+    "workflow": ".github/workflows/supertrader-certification.yml",
+    "mode": "canonical",
+    "branch": "research/supertrader-calibration-v3-durable",
+    "triggerCommitMessage": "[supertrader-certification:canonical]",
+    "asOfPolicy": "Frozen tournament window; capture timestamp and source manifest produced by workflow",
+    "artifactRetentionDays": 30,
+    "runId": null,
+    "artifactId": null,
+    "captureStatus": "AWAITING_ACTIONS_RUN"
+  }
 }

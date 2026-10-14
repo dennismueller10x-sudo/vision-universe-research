@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "PAUSED_FOR_DURABLE_CANONICAL_INPUT_CAPTURE",
+  "status": "CANONICAL_CAPTURE_TRIGGERED_BY_NEXT_BRANCH_PUSH",
   "completedPhases": [
     "PR_AND_BRANCH_RECOVERY_INVENTORY",
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
@@ -10,7 +10,7 @@
     "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE",
     "CURRENT_CAPTURE_SAFE_STATUS_READ_AND_VERIFIED"
   ],
-  "currentPhase": "V3_RUNNER_AND_HISTORICAL_SOURCE_CAPTURE_WORKFLOW",
+  "currentPhase": "HISTORICAL_CANONICAL_CAPTURE_PENDING_ACTIONS",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -25,7 +25,7 @@
   "artifactRefs": [
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
     },
     {
       "artifactId": 11802445766,
@@ -43,7 +43,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-MANIFEST.json",
@@ -51,7 +51,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "c65b1ae1260794dc739e8f5b37b89629300c288dc31000733058a6e31094423a"
+      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -67,7 +67,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -79,7 +79,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "c65b1ae1260794dc739e8f5b37b89629300c288dc31000733058a6e31094423a"
+      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
     },
     {
       "path": "scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
@@ -87,15 +87,27 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "c65b1ae1260794dc739e8f5b37b89629300c288dc31000733058a6e31094423a"
+      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-SOURCE-MANIFEST.json",
+      "sha256": "3d4894136346a2bedb8ea18c0ceac19ad6bd3bac4843b1681d0f1e2db36822cd"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
+      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
+      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
     }
   ],
   "blockers": [
@@ -107,10 +119,10 @@
     "V3 calibration runner/validator has not yet been created.",
     "No workflow in this branch creates the historical canonical source parts and binds them to the V3 source manifest."
   ],
-  "nextCommand": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
+  "nextCommand": "GitHub Actions: supertrader-certification.yml, mode=canonical (trigger commit is tagged; record workflow run ID after push)",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Add and validate the V3 capture/measurement workflow and freeze-aware runner. The exact required inventory document is allowed by the scope guard; no protected Discovery/Quant path is opened.",
+  "nextStep": "Wait for the canonical inventory Action to finish; persist its run/artifact IDs, expiry, safe-status hash, repack manifest hash and every encrypted bundle receipt, then verify from a fresh clone.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",

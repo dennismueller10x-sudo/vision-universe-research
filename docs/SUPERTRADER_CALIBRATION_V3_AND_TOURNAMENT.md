@@ -64,3 +64,6 @@ The fresh-resume validator is `scripts/supertrader/research/calibration/verify-v
 
 
 Fresh-executor status reconstruction passed from a new sparse clone of the pushed V3 branch using `node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs`. This verified only the persisted inventory/checkpoint/receipt graph; it did not decrypt private inputs or run a calibration.
+
+
+A read-only canonical inventory workflow is now configured to run on a tagged push to the V3 branch. It will capture a new, hash-addressed historical input manifest and preserve only encrypted source inputs plus safe status in Actions artifacts. Measurements remain gated on verifying that run and building the V3 runner/freeze.
