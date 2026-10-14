@@ -65,7 +65,7 @@ function bookTrace(book,reconciliation,leg){
  return{leg,reconciliation,tolerance:Math.max(1e-6,reconciliation.actual*1e-10),initialCapital:book.initialCapital,cash:book.cash,realizedPnl:realized,tradeCount:book.trades.length,fillCount:book.fills.length,openPositions:book.positions.size,receivableCount:book.receivables.size,curveLength:book.curve.length,lastCurveDate:last?.date??null,lastCurveEquity:last?.equity??null,cashPrecisionCorrections:(book.cashPrecisionCorrections??[]).length,rejections:book.rejections.length,corporateActionAuditEntries:book.corporateActionAudit.length};
 }
 function finishBook(book,leg){const reconciliation=reconcileBook(book);if(!reconciliation.pass){const e=Error('REFERENCE_BOOK_RECONCILIATION_FAILED');e.bookTrace=bookTrace(book,reconciliation,leg);throw e;}return{curve:book.curve,trades:book.trades,fills:book.fills,endingPositions:[...book.positions.values()],turnover:book.turnover,executionCosts:book.executionCosts,dividends:book.dividends,terminalCount:book.terminalCount,rejections:book.rejections,reconciliation,cashPrecisionCorrections:book.cashPrecisionCorrections??[]};}
-export function runReferencePortfolio(data,methodOrId,protocol,{costMode='SOURCE_GROSS',scenario=protocol.delisting.baseline,riskFreeDaily=[]}={}){
+export function runReferencePortfolio(data,methodOrId,protocol,{costMode='SOURCE_GROSS',scenario=protocol.delisting.baseline,riskFreeDaily=[],onDayClose=null}={}){
  const method=typeof methodOrId==='string'?getReferenceMethod(methodOrId):methodOrId,calendar=assertData(data,protocol),cohortMonths=method.portfolioSemantics.cohortMonths;
  if(!['SOURCE_GROSS','SAME_TOURNAMENT_NET'].includes(costMode))throw Error('FROZEN_COST_MODE_REQUIRED');
  if(![protocol.delisting.baseline,...protocol.delisting.sensitivity].includes(scenario))throw Error('FROZEN_TERMINAL_SCENARIO_REQUIRED');
@@ -78,7 +78,7 @@ export function runReferencePortfolio(data,methodOrId,protocol,{costMode='SOURCE
   for(const t of terminals)if(t.kind==='DATA_QUARANTINE'&&!bars.has(t.id))bars.set(t.id,{date,open:t.lastClose,close:t.lastClose,rawClose:Infinity,dividend:0});
   for(const [leg,book]of Object.entries(books)){
    creditDividends(book,bars);let turnover=0;if(pending)turnover=executeTargets(book,pending[leg],bars,date,cfg,{asOf:pending.asOf});
-   const before=equityAt(book,bars),terminalTurn=settleTerminals(book,bars,terminals,date,cfg,scenario);if(before>0){turnover+=terminalTurn/before;book.turnover+=terminalTurn/before;}markClose(book,bars,date,turnover);
+   const before=equityAt(book,bars),terminalTurn=settleTerminals(book,bars,terminals,date,cfg,scenario);if(before>0){turnover+=terminalTurn/before;book.turnover+=terminalTurn/before;}markClose(book,bars,date,turnover);if(onDayClose)onDayClose({leg,date,book,bars,terminals});
   }
   pending=null;
   const monthEnd=di===data.calendar.length-1||date.slice(0,7)!==data.calendar[di+1].slice(0,7);if(!monthEnd)continue;
