@@ -167,9 +167,18 @@ test("M11-P7 Registry 1.5.0: bestehende Ereignisse der breiten Kohorte (1.4.0) b
 });
 
 test("M11-P8 Vollvergleich der Explore Highlights ist standardmaessig scharf: fehlen Titel mit veroeffentlichten Highlights im Register-Eingang, wird nichts registriert", async () => {
+  /* Umfang des Tests ist der Highlight-Vergleich; der Datenstand-Vergleich (compareFreshness, #615) laeuft davor und wird auf den Fixture-Titel begrenzt (M11-P9 prueft ihn voll) */
   const w = weeklyDir(["ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-g-"));
   const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
-  await assert.rejects(Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity }), /Explore Highlights weichen vom veroeffentlichten Produkt ab.*nichts registriert/);
+  await assert.rejects(Reg.register({ freshnessTickers: ["AA"], weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity }), /Explore Highlights weichen vom veroeffentlichten Produkt ab.*nichts registriert/);
+  assert.equal(Led.readLedger(reg).length, 0, "nichts geschrieben");
+});
+
+test("M11-P9 Vollvergleich des Datenstands ist standardmaessig scharf: fehlen Produkttitel im Register-Eingang, wird nichts registriert (freshnessTickers begrenzt nur ausdruecklich)", async () => {
+  /* Gegenstueck zu M11-P8: dort begrenzt freshnessTickers den Datenstand-Vergleich auf den Fixture-Titel, damit der Highlight-Vergleich erreicht wird. Ohne die Option gilt der Vollvergleich ueber alle Produkttitel. */
+  const w = weeklyDir(["ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-f-"));
+  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  await assert.rejects(Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity }), /Datenstand \(letzte Bar, Zustand\) weicht vom veroeffentlichten Produkt ab.*NOT_IN_REGISTRY_UNIVERSE.*nichts registriert/);
   assert.equal(Led.readLedger(reg).length, 0, "nichts geschrieben");
 });
 
