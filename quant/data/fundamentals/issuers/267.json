@@ -6,9 +6,9 @@
       "cik": "0000076267",
       "name": "PARK AEROSPACE CORP",
       "sic": "3728",
-      "rawFacts": 16889,
-      "mappedFacts": 6747,
-      "unmappedFacts": 10584,
+      "rawFacts": 17110,
+      "mappedFacts": 6815,
+      "unmappedFacts": 10746,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 65,
       "firstPeriodEnd": "2010-02-28",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-30",
       "historyYears": 16.08,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2010-02-28",
-          "lastAvailablePeriod": "2026-03-01",
-          "historyYears": 16.08
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 16.08
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2010-02-28",
+          "lastAvailablePeriod": "2026-03-01",
+          "historyYears": 16.08
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 16.08,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 16.08
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 16.08
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-02-28",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 16.08
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-02-27",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 15.08
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-02-27",
           "lastAvailablePeriod": "2026-03-01",
           "historyYears": 15.08
@@ -117,49 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 562,
+        "HIGH": 569,
         "MEDIUM": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 600,
-        "resolvedValues": 600
+        "datableValues": 607,
+        "resolvedValues": 607
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10887,
+        "total": 11027,
         "by_severity": {
           "ERROR": 7,
-          "INFO": 10584,
-          "WARNING": 296
+          "INFO": 10746,
+          "WARNING": 274
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 181,
+          "CONCEPT_DISAGREEMENT": 159,
           "FISCAL_PERIOD_CONFLICT": 5,
           "FUTURE_DATA_LEAK": 7,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 108,
-          "UNKNOWN_CONCEPT": 10584
+          "UNKNOWN_CONCEPT": 10746
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-023883",
-        "filing_date": "2026-07-20",
+        "accession": "0001437749-26-032567",
+        "filing_date": "2026-10-13",
         "form": "10-Q",
-        "periodic_filings": 136
+        "periodic_filings": 137,
+        "acceptance_datetime": "2026-10-14T00:28:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "789ded67fb1c26115e68bf475063ba5ee52354191b385f53a94e17e043c79338",
+      "sourceDigest": "0b655c2efe90762df8923d8c05b4bbeea9e3f0e1b8a404828dab14e2b9f588f8",
       "issuerId": "iss_cik_0000076267"
     },
     {

@@ -798,9 +798,9 @@
       "cik": "0002083452",
       "name": "Shreya Acquisition Group",
       "sic": "6770",
-      "rawFacts": 57,
-      "mappedFacts": 21,
-      "unmappedFacts": 37,
+      "rawFacts": 140,
+      "mappedFacts": 51,
+      "unmappedFacts": 93,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -812,11 +812,11 @@
         "SAGU-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 5,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-03-31",
-      "historyYears": 0.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -853,17 +853,17 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2026-06-30",
+          "lastAvailablePeriod": "2026-06-30",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 1,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "firstAvailablePeriod": "2026-06-30",
+          "lastAvailablePeriod": "2026-06-30",
           "historyYears": 0.0
         },
         "revenue": {
@@ -881,18 +881,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -912,41 +912,44 @@
         }
       },
       "quality": {
-        "HIGH": 11
+        "HIGH": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 11,
-        "resolvedValues": 11
+        "datableValues": 18,
+        "resolvedValues": 18
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 37,
+        "total": 97,
         "by_severity": {
-          "INFO": 37
+          "INFO": 93,
+          "WARNING": 4
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 37
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 93
         }
       },
       "latestFiling": {
-        "accession": "0001829126-26-006697",
-        "filing_date": "2026-06-18",
-        "form": "10-Q",
-        "periodic_filings": 1
+        "accession": "0001829126-26-011085",
+        "filing_date": "2026-10-13",
+        "form": "10-K",
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-10-14T00:30:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "368a2209b40c89420bc1e7b8f1dd7d96f2574ba95e07b88266b6fb598d224646",
+      "sourceDigest": "d2eea9514aa594068fbc8d90b950d7c28fd3774a92664bf6d600702ddd78c72a",
       "issuerId": "iss_cik_0002083452"
     },
     {

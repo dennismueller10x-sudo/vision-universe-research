@@ -525,9 +525,9 @@
       "cik": "0002089283",
       "name": "Eagle Nuclear Energy Corp.",
       "sic": "1090",
-      "rawFacts": 415,
-      "mappedFacts": 118,
-      "unmappedFacts": 290,
+      "rawFacts": 604,
+      "mappedFacts": 170,
+      "unmappedFacts": 430,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -538,14 +538,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-11-30",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -559,7 +559,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -579,14 +579,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -607,14 +607,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 0.0
@@ -637,44 +637,45 @@
         }
       },
       "quality": {
-        "HIGH": 24,
-        "MEDIUM": 2
+        "HIGH": 30,
+        "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 26,
-        "resolvedValues": 26
+        "datableValues": 34,
+        "resolvedValues": 34
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 296,
+        "total": 441,
         "by_severity": {
-          "INFO": 290,
-          "WARNING": 6
+          "INFO": 430,
+          "WARNING": 11
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 6,
-          "UNKNOWN_CONCEPT": 290
+          "CONCEPT_DISAGREEMENT": 11,
+          "UNKNOWN_CONCEPT": 430
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-085069",
-        "filing_date": "2026-07-20",
+        "accession": "0001104659-26-115550",
+        "filing_date": "2026-10-13",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-10-14T01:01:09.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "5440a22a0a1c5cc91fdab708840d42bb99749977958480d0b3737e0bc2b77cba",
+      "sourceDigest": "3bd3d6590f49f8bbb7a3fe2e743a1ea469175fc05bb9af6ba192e504217e6539",
       "issuerId": "iss_cik_0002089283"
     }
   ]
