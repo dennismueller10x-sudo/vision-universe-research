@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: f0066e036
+          ref: f0066e03660d76a972d1be5cdbdda717b5e8093c
           persist-credentials: false
           sparse-checkout: landing
       - name: Native form prerequisites; no email or contact writes

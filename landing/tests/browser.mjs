@@ -82,6 +82,6 @@ try{
   assert.equal(await page.locator('#email').isDisabled(),true);
   assert.equal(await page.locator('iframe').count(),0);
   await nojs.close();
-  await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Konfigurierte POST-Zustände gegen abgefangenen Testanbieter geprüft. Kein echter Brevo-Kontakt oder Live-DOI getestet.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
+  await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Brevo-Iframe mit abgefangener synthetischer Providerseite geprüft. Kein echter Brevo-Kontakt, Postfach- oder Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
   console.log(JSON.stringify({metrics,formChecks:'blocked/no-JS, synthetic provider iframe at 1440/390/320, no parent POST, no referrer, static redirect notice, provider unsubscribe link',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}
