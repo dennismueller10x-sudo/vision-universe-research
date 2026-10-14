@@ -23,6 +23,15 @@ class IntegrationTests(unittest.TestCase):
     def setUp(self):
         self.model = higgsfield.get_model("bytedance/seedance-2.0")
 
+    def test_native_audio_parameter_mapping(self):
+        seedance = higgsfield.build_params(self.model, "prompt", 20, "1080p", "16:9", True)
+        self.assertIs(seedance["generate_audio"], True)
+        self.assertNotIn("sound", seedance)
+        kling = higgsfield.get_model("kling-video/v3.0/std")
+        muted = higgsfield.build_params(kling, "prompt", 5, "", "16:9", False)
+        self.assertEqual(muted["sound"], "off")
+        self.assertNotIn("generate_audio", muted)
+
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):
             higgsfield.Client("")
