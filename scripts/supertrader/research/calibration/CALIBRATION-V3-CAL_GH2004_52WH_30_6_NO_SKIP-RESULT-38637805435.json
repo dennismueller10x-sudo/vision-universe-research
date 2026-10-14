@@ -1,0 +1,52 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-7d1efccc4a3aa0a9",
+  "freezeFileSha256": "a28e350f5329b24ca6ee7e7218bec5bb23f1d3fa3ba2862f2c940d0168c97690",
+  "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+  "engineMethodId": "CALIB_GH52WH",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "FAILED_CLOSED",
+      "errorCode": "PRIVATE_RUN_FAILURE",
+      "bookTrace": null,
+      "sealedFailure": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.failure.owner.sealed.json",
+          "sha256": "aae3cdc0607e98b457b38a95c54467325979c1e2e78d3d2ee66be8ce3932d255",
+          "bytes": 1346
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.failure.session.sealed.json",
+          "sha256": "3ff508da3de14bd5019cfa4ff320fb67ac4891177cd5ba23d1c7ed48a73950a6",
+          "bytes": 1174
+        }
+      ]
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAILED_CLOSED",
+      "errorCode": "PRIVATE_RUN_FAILURE",
+      "bookTrace": null,
+      "sealedFailure": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.failure.owner.sealed.json",
+          "sha256": "48641f9ac542ac5f71f68ac3dc8835a056eba0048d1381f8f63fca7c0066f235",
+          "bytes": 1354
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.failure.session.sealed.json",
+          "sha256": "be0fd2476fff3d54a3de0d450eecec240f94da619834ef64c127ad60f668dfa8",
+          "bytes": 1182
+        }
+      ]
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "FAILED_CLOSED_CAUSE_RECORDED"
+}

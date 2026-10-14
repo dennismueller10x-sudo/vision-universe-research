@@ -1,0 +1,132 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-7d1efccc4a3aa0a9",
+  "freezeFileSha256": "a28e350f5329b24ca6ee7e7218bec5bb23f1d3fa3ba2862f2c940d0168c97690",
+  "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+  "engineMethodId": "CALIB_LOW_VOL",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "780f62e6ae3082215ccc4b8cbb22ac78f130d64d48dd9acbf7fcdbefc99e7ff6",
+      "plaintextBytes": 350768043,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "bd03a2ccfee00dfd3444a10f2599c895e78c8776f993df1c4f4b7df723e1e060",
+          "bytes": 82373322
+        },
+        {
+          "audience": "session",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SOURCE_GROSS.session.sealed.json",
+          "sha256": "3212d9e11dc5e58bad7762425fb12937766b42a4befcb1aa2344cf6340be1dbb",
+          "bytes": 82373150
+        }
+      ],
+      "formations": {
+        "total": 104,
+        "ready": 0,
+        "partial": 104,
+        "other": 0
+      },
+      "months": 103,
+      "dustWriteOffs": {
+        "top": {
+          "count": 1792,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 1855,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "eligibleUniverse": {
+          "count": 1763,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 8.440110832452774e-10
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 4.842877388000488e-8
+        },
+        "eligibleUniverse": {
+          "pass": true,
+          "absoluteDifference": 2.0954757928848267e-9
+        }
+      },
+      "sourceSpreadDirection": "NEGATIVE",
+      "sourceSpreadValidMonths": 45
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "9f21aa86baa3e8ca7de3b782c0e84da5fa2deca3db63663e13e900aa3a91430c",
+      "plaintextBytes": 357840299,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "918209318099fe6fd037090f8cda842f182a66b49e86f10a1e1d158229a137d0",
+          "bytes": 86638022
+        },
+        {
+          "audience": "session",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "aa2b85b7886892715696e800f4b66466fa262acec71321fb8e29b379b55fabb7",
+          "bytes": 86637850
+        }
+      ],
+      "formations": {
+        "total": 104,
+        "ready": 0,
+        "partial": 104,
+        "other": 0
+      },
+      "months": 103,
+      "dustWriteOffs": {
+        "top": {
+          "count": 1792,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 1855,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "eligibleUniverse": {
+          "count": 1763,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 2.0372681319713593e-10
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 2.2351741790771484e-8
+        },
+        "eligibleUniverse": {
+          "pass": true,
+          "absoluteDifference": 1.1641532182693481e-9
+        }
+      },
+      "sourceSpreadDirection": "NEGATIVE",
+      "sourceSpreadValidMonths": 45
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}
