@@ -94,7 +94,7 @@
     },
     "sourceCaptureWorkflow": {
       "path": ".github/workflows/supertrader-certification.yml",
-      "sha256": "acf1271276fa0800c1fa0e230945d45e5573c9cdd189650459a22e99f69da78e"
+      "sha256": "5c20566d270de1b5aa02eff182ab04047a574a7f418db0614f0eb11b285bccb0"
     },
     "dataInventory": {
       "path": "scripts/supertrader/research/certification/data-inventory.mjs",
@@ -103,6 +103,14 @@
     "safeDiagnosticTest": {
       "path": "scripts/supertrader/tests/certification-data-inventory-safe-diagnostic.test.mjs",
       "sha256": "5411340d110f792ade9004cae6510f9989b738bfb68957153a38c95ad8e85a1c"
+    },
+    "referenceCaptureRunner": {
+      "path": "scripts/supertrader/research/calibration/capture-reference-v3.mjs",
+      "sha256": "5f878e45c5c0202760d117a88e5ee0bf9b116996a621a9c33d914c18b5431223"
+    },
+    "referenceCaptureTest": {
+      "path": "scripts/supertrader/tests/calibration-reference-capture-v3.test.mjs",
+      "sha256": "f17d95b0d242dd3e17d113c50e1e44c2637976a0b2d7fe026314d72a9d7f1b0c"
     }
   },
   "artifacts": [

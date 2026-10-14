@@ -8,7 +8,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [probe, canonical, repack, current]
+        options: [probe, canonical, repack, current, reference]
         default: probe
       source_run:
         type: string
@@ -122,6 +122,34 @@ jobs:
               if (uploaded.status !== 0) throw new Error('BOUNDED_ARTIFACT_UPLOAD_FAILED');
             }
             core.info(JSON.stringify({status: 'ENCRYPTED_BUNDLES_PRESERVED', bundles: manifest.bundles.length, providerReads: 0, performanceCalculated: false}));
+
+  calibration-reference-capture-v3:
+    if: contains(github.event.head_commit.message, '[supertrader-certification:reference]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'reference')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /quant/engines/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify frozen official source receipts and encrypt parsed reference
+        run: node scripts/supertrader/research/calibration/capture-reference-v3.mjs --out "$RUNNER_TEMP/calibration-v3-reference"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-calibration-v3-reference-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/calibration-v3-reference/*sealed.json
+            ${{ runner.temp }}/calibration-v3-reference/reference-safe-status.json
+          if-no-files-found: error
+          retention-days: 90
 
   current-rerun:
     if: contains(github.event.head_commit.message, '[supertrader-certification:current]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'current')
