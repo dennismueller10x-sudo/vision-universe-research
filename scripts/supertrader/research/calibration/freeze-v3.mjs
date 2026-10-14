@@ -22,7 +22,8 @@ export const CONTRACT_FILES=[
  'scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V2.json',
  'scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json',
  'scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json',
- 'scripts/supertrader/research/tournament/protocol.json'
+ 'scripts/supertrader/research/tournament/protocol.json',
+ '.github/workflows/supertrader-calibration-v3.yml'
 ];
 export const ENTRY_POINTS=[
  'scripts/supertrader/research/calibration/run-calibration-v3.mjs',

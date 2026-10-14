@@ -77,6 +77,7 @@ jobs:
             !/scripts/supertrader/research/tournament/sealed/
             /scripts/market/storage/
             /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
             /quant/engines/
             /quant/config/
             /quant/data/market/scale/universe-FULL_UNIVERSE.json
@@ -115,14 +116,16 @@ jobs:
         run: |
           set -euo pipefail
           CAL=scripts/supertrader/research/calibration
-          node $CAL/freeze-v3.mjs build --capture-receipt "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out "$CAL/BACKTEST-CALIBRATION-FREEZE-V3-FINAL.json"
-          cp "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT.json"
+          FREEZE="$CAL/BACKTEST-CALIBRATION-FREEZE-V3-${GITHUB_RUN_ID}.json"
+          echo "FREEZE=$FREEZE" >> "$GITHUB_ENV"
+          node $CAL/freeze-v3.mjs build --capture-receipt "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out "$FREEZE"
+          cp "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$CAL/BACKTEST-CALIBRATION-FREEZE-V3-FINAL.json" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT.json"
+          git add "$FREEZE" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
           git commit -m "Supertrader V3: final pre-measurement freeze and capture receipt (no performance yet)"
           scripts/ci/push-with-retry.sh "$BRANCH"
-          node $CAL/freeze-v3.mjs verify --freeze "$CAL/BACKTEST-CALIBRATION-FREEZE-V3-FINAL.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json
       - name: Phase C - numeric calibration methods, one process per method
         env:
           NODE_OPTIONS: --max-old-space-size=12000
@@ -131,7 +134,7 @@ jobs:
           CAL=scripts/supertrader/research/calibration
           FAIL=0
           for M in CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP CAL_GH2004_52WH_30_6_NO_SKIP CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS CALIB_EQUAL_WEIGHT; do
-            node --expose-gc $CAL/run-calibration-v3.mjs --freeze "$CAL/BACKTEST-CALIBRATION-FREEZE-V3-FINAL.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-$M-RESULT.json" || FAIL=1
+            node --expose-gc $CAL/run-calibration-v3.mjs --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --method "$M" --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-$M-RESULT-${GITHUB_RUN_ID}.json" || FAIL=1
           done
           exit $FAIL
       - name: Persist public method summaries (status, counts, hashes, codes)
@@ -142,12 +145,12 @@ jobs:
           set -euo pipefail
           CAL=scripts/supertrader/research/calibration
           shopt -s nullglob
-          FILES=("$RUNNER_TEMP"/pub/CALIBRATION-V3-*-RESULT.json)
+          FILES=("$RUNNER_TEMP"/pub/CALIBRATION-V3-*-RESULT-*.json)
           if [ "${#FILES[@]}" -gt 0 ]; then
             cp "${FILES[@]}" "$CAL/"
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "$CAL"/CALIBRATION-V3-*-RESULT.json
+            git add "$CAL"/CALIBRATION-V3-*-RESULT-*.json
             git commit -m "Supertrader V3: public calibration method summaries (counts, hashes, codes)"
             scripts/ci/push-with-retry.sh "$BRANCH"
           fi
