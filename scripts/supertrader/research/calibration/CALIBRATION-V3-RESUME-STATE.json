@@ -170,6 +170,12 @@
     {
       "path": ".github/workflows/supertrader-certification.yml",
       "sha256": "5c20566d270de1b5aa02eff182ab04047a574a7f418db0614f0eb11b285bccb0"
+    },
+    {
+      "runId": 38554833188,
+      "headSha": "8e03553193a20446bc5c13f7ef159acd57b5edc8",
+      "status": "IN_PROGRESS",
+      "purpose": "V3 encrypted official reference capture"
     }
   ],
   "blockers": [
@@ -209,5 +215,12 @@
     "gross_profitability_novy_marx",
     "piotroski_value_fscore",
     "value_plus_momentum"
-  ]
+  ],
+  "activeReferenceCapture": {
+    "workflowRunId": 38554833188,
+    "headSha": "8e03553193a20446bc5c13f7ef159acd57b5edc8",
+    "job": "calibration-reference-capture-v3",
+    "status": "in_progress",
+    "purpose": "retrieve official French archive inputs, verify frozen hashes, parse and owner/session encrypt"
+  }
 }
