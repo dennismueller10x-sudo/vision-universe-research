@@ -202,13 +202,22 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
     return amount, cap
 
 
+def build_params(model, prompt, duration, resolution, aspect_ratio, native_audio):
+    params = {"prompt": prompt, "duration": duration, "aspect_ratio": aspect_ratio}
+    if resolution:
+        params["resolution"] = resolution
+    if model["model_id"].startswith("kling-video/"):
+        params["sound"] = "on" if native_audio else "off"
+    else:
+        params["generate_audio"] = native_audio
+    return params
+
+
 def run(args):
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
-    params = {"prompt": args.prompt, "duration": args.duration, "aspect_ratio": args.aspect_ratio}
-    if args.resolution:
-        params["resolution"] = args.resolution
+    params = build_params(model, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.native_audio == "true")
     if args.operation == "image_to_video":
         params["image_url"] = client.upload_image(args.reference)
     elif args.operation == "reference_to_video":
@@ -260,6 +269,7 @@ def main(argv=None):
     parser.add_argument("--duration", type=int, required=True)
     parser.add_argument("--resolution", default="")
     parser.add_argument("--aspect-ratio", default="16:9")
+    parser.add_argument("--native-audio", choices=("true", "false"), default="true")
     parser.add_argument("--reference", default="")
     parser.add_argument("--asset-id", default="")
     parser.add_argument("--budget-usd", required=True)
