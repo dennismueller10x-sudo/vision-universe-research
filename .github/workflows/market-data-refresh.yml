@@ -703,6 +703,68 @@ jobs:
           exit 1
 
   # ===================================================================
+  # SUPERTRADER NACH DEM NACHTLAUF
+  #
+  # Supertrader (supertrader-signals.yml) rechnet auf dem Universum und der
+  # technischen Materialisierung dieses Laufs. Sein eigener Zeitplan ist
+  # keine Kette: 15 von 15 Zeitplanlaeufen (29.09.-10.10.2026) kamen 323 bis
+  # 428 Minuten zu spaet; nach einer Universumsaenderung (13.10.: QRVO)
+  # stand er bis dahin auf dem Vortag, mit einem toten Link auf der Seite.
+  #
+  # Diese Stufe stoesst ihn an - erst wenn refresh, materialize und
+  # freshness-contract grün sind UND scripts/ci/supertrader-chain.mjs bestaetigt:
+  # Produktdaten, dauerhafte Ablage und Discover-Universum tragen dieselbe
+  # letzte abgeschlossene Sitzung. Nur wenn Supertrader noch nicht darauf
+  # steht und kein Lauf wartet. Der Zeitplan in supertrader-signals.yml bleibt
+  # als Rueckfall bestehen; ein Wiederholungslauf ist idempotent (keine neuen
+  # Tage, keine Minutenabrufe, kein Commit).
+  #
+  # ENTKOPPELT: workflow_dispatch startet einen EIGENEN Lauf (eigene
+  # Concurrency-Gruppe supertrader-signals, eigene Integritaetstests vor dem
+  # Commit, unveraenderte Signallogik). Ein Supertrader-Fehler kann diesen
+  # Nachtlauf und Discover nicht rot machen. Schritte sind continue-on-error;
+  # scheitert nur der Anstoss selbst, meldet es der Pipeline-Alarm.
+  # ===================================================================
+  supertrader:
+    needs: [refresh, materialize, freshness-contract]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && github.event_name != 'push' &&
+      needs.refresh.result == 'success' && needs.materialize.result == 'success' &&
+      needs.freshness-contract.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: write
+    outputs:
+      ergebnis: ${{ (steps.checkout.outcome == 'failure' || steps.node.outcome == 'failure' || steps.anstossen.outcome == 'failure') && 'failure' || 'success' }}
+      detail: ${{ steps.anstossen.outputs.detail }}
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+        continue-on-error: true
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        id: node
+        if: steps.checkout.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        with:
+          node-version: '22'
+      - name: Supertrader anstossen (nur bei validierten Daten und wenn noetig)
+        id: anstossen
+        if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          node scripts/ci/supertrader-chain.mjs dispatch
+
+  # ===================================================================
   # PIPELINE-ALARM: EIN ROTER LAUF BLEIBT NICHT UNBEMERKT.
   #
   # 15.09.-12.10.2026 scheiterten 13 von 19 geplanten Laeufen; gemeldet
@@ -713,7 +775,7 @@ jobs:
   # selben Issue, ohne es zu oeffnen.
   # ===================================================================
   alarm:
-    needs: [refresh, materialize, freshness-contract, imblick]
+    needs: [refresh, materialize, freshness-contract, imblick, supertrader]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -749,10 +811,20 @@ jobs:
           # Slot rechnet ohnehin neu, die Ueberwachung (BASIS_NOT_PUBLISHED) sieht es.
           RESULT_IMBLICK: ${{ needs.imblick.result == 'failure' && 'failure' || needs.imblick.outputs.ergebnis == 'failure' && 'failure' || needs.imblick.result == 'success' && 'success' || 'skipped' }}
           IMBLICK_DETAIL: ${{ needs.imblick.outputs.detail }}
+          # Supertrader-Anstoss: nur der ANSTOSS zaehlt hier (ein Supertrader-Lauf selbst ist ein
+          # eigener Workflow-Lauf; sein Stand wird vom Freshness-Monitor ueberwacht).
+          RESULT_SUPERTRADER: ${{ needs.supertrader.result == 'failure' && 'failure' || needs.supertrader.outputs.ergebnis == 'failure' && 'failure' || needs.supertrader.result == 'success' && 'success' || 'skipped' }}
+          SUPERTRADER_DETAIL: ${{ needs.supertrader.outputs.detail }}
           GATE_DIR: ${{ runner.temp }}/gates
         run: |
+          : > "$RUNNER_TEMP/stufen-detail.txt"
           if [ -n "${IMBLICK_DETAIL:-}" ]; then
-            printf 'Im Blick (Nachtlauf-Stufe): %s\n' "$IMBLICK_DETAIL" > "$RUNNER_TEMP/imblick-detail.txt"
-            export ALARM_DETAIL_FILE="$RUNNER_TEMP/imblick-detail.txt"
+            printf 'Im Blick (Nachtlauf-Stufe): %s\n' "$IMBLICK_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
+          fi
+          if [ -n "${SUPERTRADER_DETAIL:-}" ]; then
+            printf 'Supertrader (Anstoss nach dem Nachtlauf): %s\n' "$SUPERTRADER_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
+          fi
+          if [ -s "$RUNNER_TEMP/stufen-detail.txt" ]; then
+            export ALARM_DETAIL_FILE="$RUNNER_TEMP/stufen-detail.txt"
           fi
           node scripts/ci/pipeline-alarm.mjs

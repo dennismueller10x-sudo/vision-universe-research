@@ -323,7 +323,7 @@ test("NL5 · Workflow: Stufe nach allen Pruefungen, kein roter Nachtlauf, gleich
   const andere = wf.replace(job, "");
   const mitNeeds = andere.split("\n").filter((z) => /needs:/.test(z) && /imblick/.test(z));
   assert.equal(mitNeeds.length, 1, "nur der Alarm-Job wartet auf imblick");
-  assert.match(teil(wf, "\n  alarm:\n"), /needs: \[refresh, materialize, freshness-contract, imblick\]/);
+  assert.match(teil(wf, "\n  alarm:\n"), /needs: \[refresh, materialize, freshness-contract, imblick(?:, supertrader)?\]/);
   assert.match(wf, /RESULT_IMBLICK: \$\{\{ needs\.imblick\.result == 'failure' && 'failure' \|\| needs\.imblick\.outputs\.ergebnis == 'failure'/);
   assert.match(wf, /ALARM_DETAIL_FILE/);
   /* keine Anbieteranfrage in der Stufe und im Baustein */
@@ -488,5 +488,5 @@ test("NL12 · Alarm-Zuordnung: RESULT_IMBLICK aus dem echten Workflow-Ausdruck; 
     assert.equal(zustand(erwartet), rot, result + "/" + ergebnis);
   }
   /* Ein roter Job oeffnet nicht das Gleiche wie ein gruener Lauf: der Detailtext reist mit */
-  assert.match(wf, /ALARM_DETAIL_FILE="\$RUNNER_TEMP\/imblick-detail\.txt"/);
+  assert.match(wf, /ALARM_DETAIL_FILE="\$RUNNER_TEMP\/stufen-detail\.txt"/);
 });
