@@ -3,8 +3,8 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-10-13T04:51:37.000Z",
- "asOf": "2026-10-12",
+ "generatedAt": "2026-10-14T03:17:50.000Z",
+ "asOf": "2026-10-13",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -55,16 +55,16 @@
     "WEAK": 36.58
    },
    "momentum": {
-    "VERY_STRONG": 82.31,
-    "STRONG": 68.96,
-    "NEUTRAL": 48.36,
-    "WEAK": 32.62
+    "VERY_STRONG": 82.59,
+    "STRONG": 69.13,
+    "NEUTRAL": 48.1,
+    "WEAK": 32.52
    },
    "value": {
-    "VERY_STRONG": 77.3,
-    "STRONG": 66.49,
-    "NEUTRAL": 49.04,
-    "WEAK": 38.6
+    "VERY_STRONG": 77.22,
+    "STRONG": 66.42,
+    "NEUTRAL": 49.2,
+    "WEAK": 38.7
    },
    "profitability": {
     "VERY_STRONG": 81.45,
@@ -74,10 +74,10 @@
    },
    "revisions": null,
    "risk": {
-    "VERY_STRONG": 87.49,
-    "STRONG": 75.62,
-    "NEUTRAL": 50.06,
-    "WEAK": 30.86
+    "VERY_STRONG": 87.42,
+    "STRONG": 75.56,
+    "NEUTRAL": 50.1,
+    "WEAK": 30.96
    }
   },
   "minimumUniverse": 100,
@@ -778,29 +778,30 @@
    "2026-10-05",
    "2026-10-06",
    "2026-10-09",
-   "2026-10-12"
+   "2026-10-12",
+   "2026-10-13"
   ],
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
-  "scoreMomentumOpen": false,
+  "scoreMomentumOpen": true,
   "recomputationDrift": null
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-10-13T04:14:42.397Z",
-   "securities": 6579,
+   "generatedAt": "2026-10-14T02:28:15.121Z",
+   "securities": 6580,
    "benchmark": {
     "id": "SPY",
-    "bars": 8483,
-    "last": "2026-10-12",
+    "bars": 8484,
+    "last": "2026-10-13",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-10-12",
+    "newestSecurityDate": "2026-10-13",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
@@ -812,12 +813,12 @@
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5517,
+   "rows": 5518,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 6653
+   "tickers": 6654
   }
  },
  "notAnEquityListing": {
@@ -980,57 +981,57 @@
  },
  "counts": {
   "productUniverse": 6686,
-  "priceFactorSecurities": 6579,
+  "priceFactorSecurities": 6580,
   "priceFactorRowsOutsideProductUniverse": 0,
   "notAnEquityListing": 144,
-  "published": 6435,
+  "published": 6436,
   "withFundamentals": 5156,
   "withMarketCap": 3709,
-  "quotesFromPublishedSeries": 1022,
+  "quotesFromPublishedSeries": 1023,
   "withMarketCapFromPublishedSeries": 109
  },
  "factorStates": {
   "quality": {
    "AVAILABLE": 3662,
-   "UNAVAILABLE": 2773,
+   "UNAVAILABLE": 2774,
    "NOT_APPLICABLE": 0
   },
   "growth": {
    "AVAILABLE": 3242,
-   "UNAVAILABLE": 3193,
+   "UNAVAILABLE": 3194,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
    "AVAILABLE": 5624,
-   "UNAVAILABLE": 811,
+   "UNAVAILABLE": 812,
    "NOT_APPLICABLE": 0
   },
   "value": {
    "AVAILABLE": 2582,
-   "UNAVAILABLE": 3853,
+   "UNAVAILABLE": 3854,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
    "AVAILABLE": 1947,
-   "UNAVAILABLE": 4488,
+   "UNAVAILABLE": 4489,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6435,
+   "UNAVAILABLE": 6436,
    "NOT_APPLICABLE": 0
   },
   "risk": {
    "AVAILABLE": 5624,
-   "UNAVAILABLE": 811,
+   "UNAVAILABLE": 812,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
   "INSUFFICIENT_WEIGHTED_COVERAGE": 2174,
-  "BLOCKED_EXTERNAL": 6435,
-  "INSUFFICIENT_COMPONENTS": 4239,
-  "INPUT_NOT_MATERIALIZED": 8903,
+  "BLOCKED_EXTERNAL": 6436,
+  "INSUFFICIENT_COMPONENTS": 4241,
+  "INPUT_NOT_MATERIALIZED": 8907,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 340,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 249,
   "MANDATORY_COMPONENT_MISSING": 24
@@ -1047,7 +1048,7 @@
   "growth:operatingMarginExpansion3y": 3290,
   "growth:revenueGrowthAcceleration": 3999,
   "momentum:priceReturn12m1m": 5624,
-  "momentum:priceReturn6m": 6039,
+  "momentum:priceReturn6m": 6042,
   "momentum:priceReturn3m": 6366,
   "momentum:relativeStrength12m1m": 5624,
   "momentum:distanceTo52wHigh": 5624,
@@ -1062,7 +1063,7 @@
   "risk:realizedVolatility252d": 5624,
   "risk:downsideVolatility252d": 5632,
   "risk:maxDrawdown252d": 5624,
-  "risk:beta252d": 5639,
+  "risk:beta252d": 5641,
   "quality:netDebtToAssets": 485,
   "INDUSTRY:quality:equityToAssets": 838,
   "INDUSTRY:quality:roaStability5y": 795,
@@ -1089,7 +1090,7 @@
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6435,
+  "rows": 6436,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -1154,10 +1155,10 @@
   "NOT_AN_EQUITY_LISTING:ETF": 136,
   "IDENTITY_UNRESOLVED": 930,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 474,
-  "FUNDAMENTALS_DOCUMENT_MISSING": 349,
+  "FUNDAMENTALS_DOCUMENT_MISSING": 350,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 249,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 14650,
- "contentHash": "1966e703afed35d1"
+ "runtimeMs": 17626,
+ "contentHash": "4855a0465fa3bcd1"
 }

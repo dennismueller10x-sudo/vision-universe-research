@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-13T05:08:39.473Z",
- "asOf": "2026-10-13",
+ "generatedAt": "2026-10-14T03:37:57.940Z",
+ "asOf": "2026-10-14",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -334,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1838 Wochen, 142 Quartale, effektiv ≈ 20060 unabhängige Fälle",
+       "value": "1838 Wochen, 142 Quartale, effektiv ≈ 20061 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -401,7 +401,7 @@
       "uniquePeriods": 1838,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 20060,
+      "effectiveN": 20061,
       "designEffect": 4.42
      },
      "returnType": "TOTAL_RETURN",
@@ -522,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 24486 unabhängige Fälle",
+       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 24485 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -610,7 +610,7 @@
       "uniquePeriods": 1839,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 24486,
+      "effectiveN": 24485,
       "designEffect": 3.63
      },
      "returnType": "TOTAL_RETURN",
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1838 Wochen, 142 Quartale, effektiv ≈ 26531 unabhängige Fälle",
+       "value": "1838 Wochen, 142 Quartale, effektiv ≈ 26533 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -805,7 +805,7 @@
       "uniquePeriods": 1838,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 26531,
+      "effectiveN": 26533,
       "designEffect": 3.24
      },
      "returnType": "TOTAL_RETURN",
@@ -1142,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1833 Wochen, 142 Quartale, effektiv ≈ 11373 unabhängige Fälle",
+       "value": "1833 Wochen, 142 Quartale, effektiv ≈ 11374 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1230,7 +1230,7 @@
       "uniquePeriods": 1833,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 11373,
+      "effectiveN": 11374,
       "designEffect": 4.94
      },
      "returnType": "TOTAL_RETURN",
@@ -1299,7 +1299,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "11 von 11 geprüft",
+     "value": "12 von 12 geprüft",
      "required": null,
      "reason": null
     },
@@ -1317,7 +1317,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 11,
+     "value": 12,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1326,7 +1326,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "32 Tage",
+     "value": "33 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1410,14 +1410,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 11,
+     "value": 12,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "32 Tage",
+     "value": "33 Tage",
      "required": "180 Tage"
     },
     {
@@ -1465,25 +1465,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 109,
+     "remaining": 108,
      "date": "2027-03-14"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 11,
-    "spanDays": 32,
+    "historyDates": 12,
+    "spanDays": 33,
     "transitions": {
-     "SETUP_CONFIRMED": 95,
-     "SETUP_NEW": 1009,
-     "SETUP_WEAKENED": 1340
+     "SETUP_CONFIRMED": 99,
+     "SETUP_NEW": 1081,
+     "SETUP_WEAKENED": 1420
     },
     "completedM6": 0,
-    "contractTradesCompleted": 500
+    "contractTradesCompleted": 537
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "1672/1672",
+    "parity": "1822/1822",
     "mismatches": 0
    }
   },
@@ -1524,7 +1524,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (11 Stände seit 2026-09-23)",
+     "value": "2 (12 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1578,7 +1578,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "2 (11 Stände seit 2026-09-23)",
+     "value": "2 (12 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1590,7 +1590,7 @@
      "latest": "2026-10-10",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 3
+     "staleDays": 4
     },
     "NDX": {
      "snapshots": 4,
@@ -1599,7 +1599,7 @@
      "latest": "2026-10-10",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 3
+     "staleDays": 4
     },
     "DJIA": {
      "snapshots": 4,
@@ -1608,17 +1608,17 @@
      "latest": "2026-10-10",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 3
+     "staleDays": 4
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 11,
+    "snapshots": 12,
     "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-10-12",
+    "latest": "2026-10-13",
     "maxGapDays": 3,
-    "medianGapDays": 2,
+    "medianGapDays": 1,
     "staleDays": 1
    },
    "eta": {
@@ -1628,7 +1628,7 @@
     },
     "factor": {
      "remaining": 22,
-     "date": "2028-08-11"
+     "date": "2028-08-12"
     }
    }
   },
@@ -1728,7 +1728,7 @@
    "eta": {
     "factor": {
      "remaining": 22,
-     "date": "2028-08-11"
+     "date": "2028-08-12"
     }
    }
   }

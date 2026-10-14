@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-13T04:51:50.000Z",
- "asOf": "2026-10-12",
+ "generatedAt": "2026-10-14T03:18:05.000Z",
+ "asOf": "2026-10-13",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -327,9 +327,9 @@
  "observed": 5631,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4363,
-  "WATCH": 695,
-  "SETUP_FORMING": 555,
+  "NO_SETUP": 4377,
+  "WATCH": 685,
+  "SETUP_FORMING": 551,
   "CONFIRMED": 18,
   "ACTIVE": 0,
   "RISK_RISING": 0,
@@ -337,10 +337,10 @@
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 555,
-  "setup.none.fallback": 4363,
-  "setup.watch.bullish-trend": 406,
-  "setup.watch.confirmed-structure-near-high": 289,
+  "setup.forming.complete-setup-awaiting-trigger": 551,
+  "setup.none.fallback": 4377,
+  "setup.watch.bullish-trend": 397,
+  "setup.watch.confirmed-structure-near-high": 288,
   "setup.confirmed.structure-trend-volume": 18
  },
  "pathTier": {
@@ -370,7 +370,8 @@
    "2026-10-05",
    "2026-10-06",
    "2026-10-09",
-   "2026-10-12"
+   "2026-10-12",
+   "2026-10-13"
   ],
   "minimumRequired": 2
  },
@@ -1018,8 +1019,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 63,
-  "cutoff": "2026-10-12",
+  "count": 64,
+  "cutoff": "2026-10-13",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-09-29": 5,
@@ -1046,6 +1047,7 @@
    "2026-10-09": 1,
    "2026-08-19": 1,
    "2026-08-12": 1,
+   "2026-10-12": 1,
    "2026-09-09": 1,
    "2026-10-05": 1,
    "2026-08-25": 2,
@@ -1200,6 +1202,10 @@
     "dataCutoff": "2026-08-12"
    },
    {
+    "ticker": "MIMI",
+    "dataCutoff": "2026-10-12"
+   },
+   {
     "ticker": "MTUL",
     "dataCutoff": "2026-08-18"
    },
@@ -1250,10 +1256,6 @@
    {
     "ticker": "SCDL",
     "dataCutoff": "2026-08-18"
-   },
-   {
-    "ticker": "SNYR",
-    "dataCutoff": "2026-09-18"
    }
   ]
  }

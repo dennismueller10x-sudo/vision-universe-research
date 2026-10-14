@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-13T05:09:04.920Z",
- "radarAsOf": "2026-10-12",
+ "generatedAt": "2026-10-14T03:38:27.403Z",
+ "radarAsOf": "2026-10-13",
  "signalAsOf": "2026-10-09",
- "setupAsOf": "2026-10-12",
+ "setupAsOf": "2026-10-13",
  "measures": {
   "SETUP_BACKTEST_READY": {
    "ready": true,
@@ -15,7 +15,7 @@
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
    "replayTitles": 157,
-   "parity": "1672/1672"
+   "parity": "1822/1822"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -57,9 +57,9 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 561,
-  "RADAR_EVENTS_TOTAL": 1113,
-  "WATCHLIST_EVENTS_TRACKABLE": 5568,
+  "RADAR_EVENTS_WITH_BACKTEST": 508,
+  "RADAR_EVENTS_TOTAL": 902,
+  "WATCHLIST_EVENTS_TRACKABLE": 5567,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
   "LOOKAHEAD_PASS": "PASS",
@@ -122,33 +122,33 @@
  "sample": [
   {
    "ticker": "NVDA",
-   "state": "SETUP_FORMING",
-   "since": "2026-10-12",
+   "state": "WATCH",
+   "since": "2026-10-13",
    "durationDays": 0,
    "invalidation": 206,
-   "next": "Setup bestätigt (2/5)",
+   "next": "Setup entsteht (1/4)",
    "evidence": "BROAD",
    "events": [
-    "SETUP_NEW:WITHHELD SETUP_HISTORY_TOO_SHORT"
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
    ]
   },
   {
    "ticker": "AAPL",
    "state": "SETUP_FORMING",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": 297,
    "next": "Setup bestätigt (2/5)",
    "evidence": "BROAD",
    "events": [
-    "STRATEGY_MATCH_NEW:WITHHELD MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT"
+    "NEW_52W_HIGH:LIMITED n=56239"
    ]
   },
   {
    "ticker": "MSFT",
    "state": "WATCH",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": 343,
    "next": "Setup entsteht (1/4)",
    "evidence": "THIN",
@@ -158,8 +158,8 @@
    "ticker": "JPM",
    "state": "WATCH",
    "since": "2026-09-30",
-   "durationDays": 12,
-   "invalidation": 291,
+   "durationDays": 13,
+   "invalidation": 322,
    "next": "Setup entsteht (2/4)",
    "evidence": "BROAD",
    "events": []
@@ -168,7 +168,7 @@
    "ticker": "GOOG",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": null,
    "next": "Beobachten (1/2)",
    "evidence": "BROAD",
@@ -178,8 +178,8 @@
    "ticker": "AMD",
    "state": "SETUP_FORMING",
    "since": "2026-09-24",
-   "durationDays": 18,
-   "invalidation": 429,
+   "durationDays": 19,
+   "invalidation": 428,
    "next": "Setup bestätigt (1/5)",
    "evidence": "WITHHELD",
    "events": []
@@ -188,8 +188,8 @@
    "ticker": "META",
    "state": "SETUP_FORMING",
    "since": "2026-09-24",
-   "durationDays": 18,
-   "invalidation": 526,
+   "durationDays": 19,
+   "invalidation": 525,
    "next": "Setup bestätigt (3/5)",
    "evidence": "BROAD",
    "events": []
@@ -198,7 +198,7 @@
    "ticker": "DXPE",
    "state": "WATCH",
    "since": "2026-10-09",
-   "durationDays": 3,
+   "durationDays": 4,
    "invalidation": 174,
    "next": "Setup entsteht (1/4)",
    "evidence": "BROAD",
@@ -208,9 +208,9 @@
    "ticker": "ABCB",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": null,
-   "next": "Beobachten (1/2)",
+   "next": "Beobachten (1/1)",
    "evidence": "THIN",
    "events": []
   },
@@ -218,7 +218,7 @@
    "ticker": "O",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "UNAVAILABLE",
@@ -228,11 +228,13 @@
    "ticker": "CRWV",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 32,
+   "durationDays": 33,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "NONE",
-   "events": []
+   "events": [
+    "FACTOR_CHANGED:WITHHELD FACTOR_HISTORY_TOO_SHORT"
+   ]
   },
   {
    "ticker": "AACI",
