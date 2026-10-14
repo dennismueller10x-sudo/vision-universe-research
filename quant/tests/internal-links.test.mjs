@@ -212,7 +212,10 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
   };
   assert.deepEqual(Object.keys(routes).sort(), Object.keys(erwartet).sort(),
     "X.routes hat sich geaendert - dieser Test muss die neue Route kennen");
+  /* Elliott ist ein eigenes Produkt: seine Links sind absolut (/elliott/#/<T>) und verlassen die Quant-SPA. */
+  const NATIV = new Set(["chartbild", "elliott"]);
   for (const [name, [view, arg]] of Object.entries(erwartet)) {
+    if (NATIV.has(name)) { assert.equal(routes[name](arg), "/elliott/#/NVDA", "X.routes." + name); continue; }
     assert.equal(parse(routes[name](arg)).view, view, "X.routes." + name + " -> " + routes[name](arg));
     /* Ohne Wert muss nur eine Route ohne Pflichtwert funktionieren. */
     if (!["stock", "technical", "fundamentals", "chartbild", "elliott"].includes(name)) {
@@ -227,8 +230,8 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
   for (const view of views) {
     for (const search of ["?view=" + view, "?view=" + view + "&ticker=NVDA", "?view=" + view + "&tickers=NVDA,AAPL&query=x&faktoren=value"]) {
       const ziel = legacyRoute(search);
-      assert.ok(ziel && ziel.startsWith("#/"), search + " -> " + ziel);
-      assert.notEqual(parse(ziel).view, "notfound", search + " -> " + ziel + " kennt parse nicht");
+      assert.ok(ziel && (ziel.startsWith("#/") || ziel.startsWith("/elliott/")), search + " -> " + ziel);
+      if (ziel.startsWith("#/")) assert.notEqual(parse(ziel).view, "notfound", search + " -> " + ziel + " kennt parse nicht");
     }
   }
 });

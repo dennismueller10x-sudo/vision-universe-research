@@ -202,7 +202,7 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   assert.equal(state('/elliott/#/?richtung=ab').expanded, 'elliott');
   assert.equal(state('/elliott/#/?richtung=ab').href, '/elliott/#/?richtung=ab');
   // Aktienbild: Pfad /quant/, aber Produkt Elliott (kein doppelter aktiver Zustand)
-  for (const url of ['/quant/#/elliott/NVDA', '/quant/#/elliott/SE?ansicht=profi']) {
+  for (const url of ['/elliott/#/NVDA', '/elliott/#/SE?ansicht=profi', '/quant/#/elliott/NVDA', '/quant/#/elliott/SE?ansicht=profi']) {
     assert.equal(state(url).group, 'elliott', url);
     assert.equal(state(url).href, '/elliott/', url);
   }
@@ -210,17 +210,20 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   assert.equal(state('/quant/#/aktien').group, 'quant');
   const product = url => PRODUCTS.find(p => p.match(loc(url).pathname, loc(url))).id;
   assert.equal(product('/elliott/'), 'elliott');
+  assert.equal(product('/elliott/#/NVDA'), 'elliott', 'native Aktien-Route');
   assert.equal(product('/quant/#/elliott/NVDA'), 'elliott');
   assert.equal(product('/quant/#/aktie/NVDA'), 'quant');
   assert.equal(product('/quant/'), 'quant');
   // genau ein Produkt je Adresse
-  for (const url of ['/elliott/', '/quant/#/elliott/NVDA', '/quant/', '/discover/#/', '/screener/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
+  for (const url of ['/elliott/', '/elliott/#/NVDA', '/quant/#/elliott/NVDA', '/quant/', '/discover/#/', '/screener/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
   const dock = PRODUCTS.find(p => p.id === 'elliott');
   assert.equal(dock.active(loc('/elliott/')), 'elliott');
   assert.equal(dock.active(loc('/elliott/#/?welle=3')), 'welle3');
   assert.equal(dock.active(loc('/elliott/#/?neu=1')), 'neu');
   assert.equal(dock.active(loc('/elliott/#/?suche=1')), 'suche');
   assert.equal(dock.active(loc('/elliott/#/?richtung=ab')), null, 'Filter ohne eigenen Eintrag markiert nur das Produkt');
+  assert.equal(dock.active(loc('/elliott/#/NVDA')), null, 'natives Aktienbild markiert nur das Produkt (nicht Quant)');
+  assert.equal(dock.active(loc('/elliott/#/NVDA?ansicht=profi')), null);
   assert.equal(dock.active(loc('/quant/#/elliott/NVDA')), null, 'Aktienbild markiert nur das Produkt');
   // Die Leiste baut sich neu auf, wenn eine SPA das Produkt unter demselben Pfad wechselt
   assert.match(source, /const reshape=\(\)=>/);

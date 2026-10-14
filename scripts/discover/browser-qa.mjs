@@ -329,10 +329,22 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   for(const selector of ['.v2-market-today','.v2-themes','.v2-spotlight','.v2-pulse-teaser'])assert.equal(await page.locator(selector).count(),1,selector+' missing');
   const featured=page.locator('.v2-spotlight-featured .v2-focus');
   assert.equal(await featured.locator('[role=tab]').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
+  // Die Erwartung kommt aus den ausgelieferten Daten der Karte (wie featured.js: >=2 Geschaeftsjahre mit endlichem Wert).
+  // Die Auswahl der Karte wechselt mit dem Datenstand; hat sie fuer eine Kennzahl keine zwei Jahre (z. B. BMBL: kein Free Cashflow),
+  // zeigt featured.js bewusst den Leerzustand. Mit Jahresreihe bleibt der Balkenblock Pflicht.
+  const featuredSymbol=await featured.getAttribute('data-symbol');
+  const featuredTracks=await page.evaluate(async symbol=>{const r=await fetch('/discover/data/stocks/US_REAL/'+encodeURIComponent(symbol)+'.json');const d=await r.json();return d?.fundamentals?.journey?.tracks||{};},featuredSymbol);
+  const trackKeys={Umsatz:'revenue',Gewinn:'net_income',Cashflow:'free_cash_flow'};
   for(const label of ['Umsatz','Gewinn','Cashflow']){
    await featured.getByRole('tab',{name:label}).click();
-   await featured.locator('.v2-focus-bars').waitFor();
-   assert(await featured.locator('.v2-focus-bar').count()>=2,label+' has no annual series');
+   const years=(featuredTracks[trackKeys[label]]||[]).filter(p=>Number.isFinite(p.v)&&Number.isFinite(p.fy)).length;
+   if(years>=2){
+    await featured.locator('.v2-focus-bars').waitFor();
+    assert(await featured.locator('.v2-focus-bar').count()>=2,featuredSymbol+' '+label+' has no annual series');
+   }else{
+    await featured.locator('.v2-focus-empty').waitFor();
+    assert.equal(await featured.locator('.v2-focus-bars').count(),0,featuredSymbol+' '+label+' shows bars without two fiscal years');
+   }
    assert.equal(await featured.locator('.v2-focus-stage').getAttribute('aria-label'),label);
   }
   await featured.getByRole('tab',{name:'Chart'}).click();

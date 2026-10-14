@@ -7,7 +7,7 @@ import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {stampRelease,productId,linkedAssets,stripMeta,withMeta,PRODUCTS} from '../../scripts/vu2/release-id.mjs';
+import {stampRelease,stampTrees,productId,linkedAssets,stripMeta,withMeta,PRODUCTS,STAMP_ONLY} from '../../scripts/vu2/release-id.mjs';
 
 const repo=resolve(fileURLToPath(import.meta.url),'../../..');
 async function put(site,path,text){await mkdir(join(site,path,'..'),{recursive:true});await writeFile(join(site,path),text);}
@@ -95,4 +95,73 @@ test('die echten Seiten: jedes verlinkte Skript und Stilblatt von Quant und Disc
   const missing=[...linkedAssets(html)].filter(f=>!existsSync(join(repo,f)));
   assert.deepEqual(missing,[],key+': verlinkte Dateien fehlen (die Pipeline bricht sonst ab)');
  }
+});
+
+// Supertrader: Nur-Stempel-Baum (mehrere Seiten, kein Meta-Tag, kein Eintrag in release-id.json)
+const ST_PAGE=(title,extra='')=>'<!doctype html><html><head><meta charset="utf-8"><title>'+title+'</title><link rel="stylesheet" href="/assets/site-navigation.css"><link rel="stylesheet" href="/supertrader/assets/supertrader.css"></head><body><script src="/assets/site-navigation.js"></script><script src="/supertrader/assets/st-chart.js"></script><script src="/supertrader/assets/supertrader.js"></script>'+extra+'</body></html>';
+async function stSite(){
+ const dir=await site();
+ await put(dir,'assets/site-navigation.css','n{}');await put(dir,'assets/site-navigation.js','var nav=1;');
+ await put(dir,'supertrader/assets/st-chart.js','var chart=1;');await put(dir,'supertrader/assets/supertrader.js','var st=1;');await put(dir,'supertrader/assets/supertrader.css','s{}');
+ for(const p of ['supertrader/index.html','supertrader/signals/index.html','supertrader/stock/AAPL/index.html','supertrader/stock/MSFT/index.html'])await put(dir,p,ST_PAGE(p));
+ await put(dir,'supertrader/data/x.json','{"d":1}');
+ return dir;
+}
+const digestOf=async(dir,f)=>createHash('sha256').update(await readFile(join(dir,f))).digest('hex').slice(0,16);
+const stPages=['supertrader/index.html','supertrader/signals/index.html','supertrader/stock/AAPL/index.html','supertrader/stock/MSFT/index.html'];
+
+test('Supertrader: jede Seite des Baums traegt den Hash der ausgelieferten Bytes, ohne Meta-Tag und ohne release-id-Eintrag',async()=>{
+ const dir=await stSite();
+ try{
+  assert.deepEqual(STAMP_ONLY,['supertrader']);assert.ok(!('supertrader' in PRODUCTS),'kein Produkt: kein Waechter, keine Kennung');
+  const report=await stampRelease(dir,{commit:'c0ffee'});
+  assert.deepEqual(Object.keys(report.products),['quant','discover'],'release-id.json unveraendert im Format');
+  assert.deepEqual(JSON.parse(await readFile(join(dir,'release-id.json'),'utf8')),report);
+  for(const p of stPages){
+   const html=await readFile(join(dir,p),'utf8');
+   for(const f of ['supertrader/assets/st-chart.js','supertrader/assets/supertrader.js','supertrader/assets/supertrader.css','assets/site-navigation.js','assets/site-navigation.css'])
+    assert.ok(html.includes('/'+f+'?v='+await digestOf(dir,f)),p+': '+f);
+   assert.ok(!html.includes('vu-release'),p+': kein Meta-Tag');
+  }
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('Supertrader: wiederholbar; Hashes aendern sich nur mit dem Code, nicht mit Daten oder Seitentext',async()=>{
+ const dir=await stSite();
+ try{
+  await stampRelease(dir);
+  const once=await Promise.all(stPages.map(p=>readFile(join(dir,p),'utf8')));
+  assert.deepEqual(await stampTrees(dir),{pages:4,changed:0},'zweiter Lauf aendert nichts');
+  await stampRelease(dir);
+  assert.deepEqual(await Promise.all(stPages.map(p=>readFile(join(dir,p),'utf8'))),once);
+  await put(dir,'supertrader/data/x.json','{"d":2}');
+  assert.equal((await stampTrees(dir)).changed,0,'reine Datenaenderung');
+  await put(dir,'supertrader/assets/st-chart.js','var chart=2;');
+  assert.equal((await stampTrees(dir)).changed,4,'Codeaenderung erreicht jede Seite');
+  const h=await readFile(join(dir,'supertrader/stock/MSFT/index.html'),'utf8');
+  assert.ok(h.includes('/supertrader/assets/st-chart.js?v='+await digestOf(dir,'supertrader/assets/st-chart.js')));
+  assert.ok(h.includes('/supertrader/assets/supertrader.js?v='+await digestOf(dir,'supertrader/assets/supertrader.js')),'unveraendert, aber im Hash der eigenen Bytes');
+  assert.ok(!h.includes('?v=?v='));
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('Supertrader: fehlendes Asset bricht ab; ein Release ohne Supertrader-Baum stempelt nichts',async()=>{
+ const dir=await stSite();
+ try{
+  await rm(join(dir,'supertrader/assets/supertrader.css'));
+  await assert.rejects(stampTrees(dir),/RELEASE_ID_ASSET_MISSING:supertrader\/assets\/supertrader\.css/);
+  assert.deepEqual(await stampTrees(dir,['gibt-es-nicht']),{pages:0,changed:0});
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('die echten Supertrader-Seiten verweisen nur absolut auf JS/CSS (relative Pfade blieben ungestempelt)',async()=>{
+ const {readdir}=await import('node:fs/promises');
+ const pages=[];
+ const walk=async rel=>{for(const e of await readdir(join(repo,rel),{withFileTypes:true})){const p=rel+'/'+e.name;if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))pages.push(p);}};
+ await walk('supertrader');
+ assert.ok(pages.length>0);
+ const ANY=/\b(?:src|href)\s*=\s*["']([^"'#?]*\.(?:js|css))(?:\?[^"']*)?["']/g;
+ const bad=[];
+ for(const p of pages){const html=await readFile(join(repo,p),'utf8');for(const m of html.matchAll(ANY))if(!m[1].startsWith('/')||!existsSync(join(repo,m[1])))bad.push(p+' '+m[1]);}
+ assert.deepEqual(bad.slice(0,5),[],'relative oder fehlende JS/CSS-Verweise in Supertrader-Seiten');
 });

@@ -69,6 +69,8 @@ const ROUTES=[
  /* Seit Technical Intelligence v3 zeigen die alten Technik-Routen das Chartbild (Lesezeichen bleiben gueltig). */
  ['technik','#/aktie/NVDA/technik'],
  ['elliott','#/aktie/NVDA/technik?elliott=1'],
+ /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
+ ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
@@ -86,7 +88,7 @@ async function bereit(page,view){
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
  await page.waitForTimeout(150);
 }
-async function frisch(page,hash,view){await page.goto('about:blank');await page.goto(Q+hash);await bereit(page,view);}
+async function frisch(page,hash,view){await page.goto('about:blank');await page.goto(hash.startsWith('/')?origin+hash:Q+hash);await bereit(page,view);}
 /* ALLE AUFKLAPPER OEFFNEN - UND ZWAR WIRKLICH ALLE. Ein geoeffneter
    Aufklapper legt verschachtelte nach; deshalb nach jedem Oeffnen neu
    suchen, mit einer Schranke gegen eine Endlosschleife. */
@@ -153,7 +155,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   {
    const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
    /* Elliott ist ein eigenes Produkt: die alten Technik-/Chartbild-Adressen enden auf #/elliott/<T> und tragen die Elliott-Leiste. */
-   const soll=['technik','elliott','chartbild'].includes(view)?['Elliott','Welle 3','Neu','Suche']:SOLL_BEREICHE;
+   const soll=['technik','elliott','elliott-nativ','chartbild'].includes(view)?['Elliott','Welle 3','Neu','Suche']:SOLL_BEREICHE;
    if(bereiche.join('|')!==soll.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
     if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
@@ -367,7 +369,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if((await page.locator('main h1').innerText()).trim()!=='Aktie nicht gefunden')befund(view,width,'unbekanntes Kuerzel ohne Absage');
    danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
-  if(view==='technik'||view==='elliott'||view==='chartbild'){
+  if(view==='technik'||view==='elliott'||view==='elliott-nativ'||view==='chartbild'){
    /* CHARTBILD (Technical Intelligence v3): Ausblick, Szenario-Wechsel, Chart mit Zonen. Die alten Routen
       zeigen dieselbe Seite; ?elliott=1 oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
    await page.locator('#qx-main .cb-outlook').first().waitFor();
@@ -379,7 +381,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!/Szenario/i.test(text))befund(view,width,'kein Szenario');
    if(!/Ungültig|Invalid/i.test(text))befund(view,width,'keine Ungueltig-Linie');
    if(/Validierte Zählung|Method Fit/.test(text))befund(view,width,'V1-Elliott-Wortlaut im Chartbild');
-   if(view==='elliott'){
+   if(view==='elliott'||view==='elliott-nativ'){
     await page.locator('#qx-main section.cb-pro').waitFor();
     if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
    }

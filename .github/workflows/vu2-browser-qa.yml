@@ -54,6 +54,10 @@ jobs:
       # PR #619 (Discover): ein WebKit-Race trat nur ueber die Zugangsmaske auf (document.write-Pfad). Das Skript verpackt die
       # HTML-Seiten des Release wie pages-release.yml (protectRelease, Einmalpasswort) und laedt jede Quant-Route durch die
       # Maske, auch unter langsamer Verbindung und parallel. Leere Seiten gelten nicht als bestanden.
+      # Phase 4: die Direktlink-Pruefung vergleicht meta vu-release mit /release-id.json und jeden ?v= mit den ausgelieferten Bytes. Dafuer
+      # braucht der Release die Kennung - in pages-release.yml steht dieser Schritt nach dem Verkleinern und vor der Passwortsperre.
+      - name: Stamp release identifier like pages-release (meta vu-release, release-id.json, ?v= stamps)
+        run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/quant2-site"
       - name: Direct links through the active access gate, slow networks and parallel loads
         env:
           NODE_PATH: /tmp/vu2-qa/node_modules

@@ -341,13 +341,17 @@ p { margin: 0; }
 @media (max-width: 640px) {
   .st-hero { padding: 14px 0 8px; gap: 6px; }
   .st-hero h1 { font-size: 27px; }
-  .st-lens-h { padding: 10px 0 4px; }
+  .st-lens-h { padding: 8px 0 2px; }
   .st-lens-h h1 { font-size: 28px; }
   .st-lens-h .co { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52vw; }
   .st-price strong { font-size: 15px; }
   .st-price span { max-width: 40vw; }
-  .st-lensblock { gap: 7px; padding: 10px; }
-  .st-chips.lens { margin-top: 6px; margin-bottom: 6px; }
+  .st-lensblock { gap: 6px; padding: 10px; }
+  .st-lensblock .r1 { row-gap: 4px; }
+  .st-lensblock .st-cells .c { padding: 7px 8px; }
+  .st-lensblock .st-next { padding: 8px 10px; }
+  .st-lensblock .st-next p { line-height: 1.4; }
+  .st-chips.lens { margin-top: 4px; margin-bottom: 6px; }
 }
 .st-extra[hidden] { display: none; }
 .st-crit .v.mkt.ok { color: var(--st-good); } .st-crit .v.mkt.no { color: var(--st-bad); }

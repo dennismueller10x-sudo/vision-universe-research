@@ -73,6 +73,8 @@ Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/
   ohne sessionStorage nur mit Hinweis. Reine Datenläufe ändern die Kennung nicht. **Folge für Autoren:** ein Release darf Dateipfade ändern oder entfernen, ohne
   die alten parallel auszuliefern (die Scherben allein kosteten +230 MB im Pages-Artefakt, Limit 1 GB). Beleg: `quant/tests/release-guard.test.mjs`,
   `quant/tests/release-id.test.mjs`, `scripts/vu2/deploy-switch-qa.mjs` (Browser, Chromium und WebKit, hinter der Sperre, mit Gegenprobe `--without-guard`).
+  Die ~1.200 Supertrader-Seiten erhalten dieselben `?v=<Hash>`-Stempel (`STAMP_ONLY` in `release-id.mjs`), aber weder Meta-Tag noch Wächter noch Eintrag in `/release-id.json`:
+  eine Navigation im offenen Tab holt so den neuen Code statt `st-chart.js` aus dem 10-Minuten-Cache (nur „Klick ohne Navigation“ bleibt unbehandelt).
 - **Vercel** hostet nur die Funktionen unter `api/` (`vercel.json`). Die Daten liest es zur Laufzeit von der Pages-Auslieferung oder aus R2.
 - **Cloudflare Workers** sind getrennte Deployments: `worker/` (vu-live, Realtime-WebSocket), `workers/vu-ask` (AI Atlas),
   `workers/vision-universe-social`, `worker-waker/`.

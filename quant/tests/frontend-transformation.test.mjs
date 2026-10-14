@@ -141,8 +141,9 @@ test("Die Navigationsänderung hat keine Ansicht entfernt", () => {
     "radar", "atlas", "portfolio", "markets", "discover", "research"]) {
     for (const suche of ["?view=" + bestand, "?view=" + bestand + "&ticker=AAPL"]) {
       const ziel = routing.legacyRoute(suche);
-      assert.ok(typeof ziel === "string" && ziel.startsWith("#/"), "Ansicht " + bestand + " hat kein Ziel: " + ziel);
-      assert.notEqual(routing.parse(ziel).view, "notfound", "Ansicht " + bestand + " ist nicht mehr erreichbar (" + suche + " -> " + ziel + ")");
+      /* Elliott ist ein eigenes Produkt: seine Ziele liegen unter /elliott/ (absolut); alle anderen sind Hash-Routen von Quant. */
+      assert.ok(typeof ziel === "string" && (ziel.startsWith("#/") || ziel.startsWith("/elliott/")), "Ansicht " + bestand + " hat kein Ziel: " + ziel);
+      if (ziel.startsWith("#/")) assert.notEqual(routing.parse(ziel).view, "notfound", "Ansicht " + bestand + " ist nicht mehr erreichbar (" + suche + " -> " + ziel + ")");
     }
   }
   /* Eine Aktienansicht mit Ticker landet auf der Aktie, nicht nur im Bereich. */
@@ -154,11 +155,11 @@ test("Die Navigationsänderung hat keine Ansicht entfernt", () => {
   assert.match(src("vu2/index.html"), /location\.replace\("\/quant\/"\s*\+\s*location\.search\s*\+\s*location\.hash\)/);
   /* Jede Ansicht, die parse() liefert, hat im Router einen Fall. */
   const router = abschnitt(appSrc, "async function route(", "document.addEventListener(\"click\"");
-  for (const view of ["home", "screener", "strategien", "aktien", "aktie", "elliott", "zahlen", "vergleich", "methodik"]) {
+  for (const view of ["home", "screener", "strategien", "aktien", "aktie", "zahlen", "vergleich", "methodik"]) {
     assert.match(router, new RegExp('case "' + view + '":'), "der Router behandelt " + view + " nicht");
   }
   /* Die alte Technik-/Chartbild-Ansicht bleibt eine gueltige Adresse, wird aber auf #/elliott/<T> umgeleitet (ein Kundenbild). */
-  assert.match(router, /r\.view === "chartbild" \|\| r\.view === "technik"/, "alte Chartbild-Adressen muessen umgeleitet werden");
+  assert.match(router, /r\.view === "chartbild" \|\| r\.view === "technik" \|\| r\.view === "elliott"/, "alte Chartbild-/Elliott-Adressen muessen auf /elliott/ umgeleitet werden");
   /* Die Routen werden nicht aus der Navigation abgeleitet. */
   assert.ok(!/NAV/.test(abschnitt(appSrc, "function legacyRoute(", "var SECTION")),
     "die Routen duerfen nicht wieder aus der Navigation abgeleitet werden");
