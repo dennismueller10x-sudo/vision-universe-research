@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Discover, estimate only, generate against a prior estimate, or produce one capped Wan 3.0 job from a single estimate.
+        description: Discover, estimate only, generate against a prior estimate, or produce one Wan 3.0 job from a single estimate (up to the approved 10 USD estimate threshold).
         type: choice
         required: true
         options: [discover, estimate, generate, produce]
@@ -52,7 +52,7 @@ on:
         type: string
         required: true
       paid_approval:
-        description: For generate enter the existing approval phrase; for produce enter the exact one-shot Wan approval phrase.
+        description: For generate enter the existing approval phrase; for produce enter the exact one-shot Wan approval phrase for up to 10 USD estimated cost.
         type: string
         required: false
       approved_estimate_usd:
@@ -84,7 +84,7 @@ jobs:
       - name: Show documentation-derived model registry
         if: inputs.action == 'discover'
         run: python -m json.tool brand-media/higgsfield/registry.json
-      - name: Estimate cost; produce submits at most one approved Wan generation only when the quote is within budget
+      - name: One estimate; produce submits at most one approved Wan generation only when the quote is within budget
         if: inputs.action == 'estimate' || inputs.action == 'generate' || inputs.action == 'produce'
         env:
           HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}

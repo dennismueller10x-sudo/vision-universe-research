@@ -65,12 +65,12 @@ class IntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
             higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", "brand-media/higgsfield/test_higgsfield.py")
 
-    def test_wan_production_budget_is_hard_capped_at_five(self):
-        self.assertEqual(higgsfield.enforce_cost("4.99", "5.00", "produce")[0], higgsfield.Decimal("4.99"))
-        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
-            higgsfield.enforce_cost("5.01", "5.00", "produce")
-        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
-            higgsfield.enforce_cost("4.00", "5.01", "produce")
+    def test_wan_production_estimate_threshold_is_ten(self):
+        self.assertEqual(higgsfield.enforce_cost("9.99", "10.00", "produce")[0], higgsfield.Decimal("9.99"))
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "10.00 USD maximum"):
+            higgsfield.enforce_cost("10.01", "10.00", "produce")
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "10.00 USD maximum"):
+            higgsfield.enforce_cost("4.00", "10.01", "produce")
 
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):

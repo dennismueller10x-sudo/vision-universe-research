@@ -20,8 +20,8 @@ BASE_URL = "https://api.higgsfield.ai"
 REGISTRY_PATH = Path(__file__).with_name("registry.json")
 TERMINAL = {"completed", "failed", "nsfw", "canceled"}
 APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
-WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-UP-TO-5-USD"
-WAN_MAX_USD = Decimal("5.00")
+WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-UP-TO-10-USD"
+WAN_MAX_USD = Decimal("10.00")
 
 
 class HiggsfieldError(RuntimeError):
@@ -206,7 +206,7 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
     if not amount.is_finite() or amount < 0 or not cap.is_finite() or cap <= 0:
         raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
     if action == "produce" and (cap > WAN_MAX_USD or amount > WAN_MAX_USD):
-        raise HiggsfieldError("WAN production is limited to the approved 5.00 USD maximum; generation blocked")
+        raise HiggsfieldError("WAN production is limited to the approved 10.00 USD maximum; generation blocked")
     if amount > cap:
         raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
     if action == "generate":
@@ -246,13 +246,13 @@ def run(args):
         if (args.duration, args.resolution, args.aspect_ratio, args.native_audio) != (20, "1080p", "9:16", "true"):
             raise HiggsfieldError("Wan production parameters must be 20 seconds, 1080p, 9:16, and native audio enabled")
         if args.approval != WAN_APPROVAL_PHRASE:
-            raise HiggsfieldError("Explicit approval for one Wan generation up to 5.00 USD is required")
+            raise HiggsfieldError("Explicit approval for one Wan generation up to 10.00 USD is required")
         try:
             requested_cap = Decimal(str(args.budget_usd))
         except (InvalidOperation, TypeError):
             raise HiggsfieldError("Invalid production budget; generation blocked") from None
         if not requested_cap.is_finite() or requested_cap <= 0 or requested_cap > WAN_MAX_USD:
-            raise HiggsfieldError("Wan production budget cannot exceed the approved 5.00 USD maximum")
+            raise HiggsfieldError("Wan production budget cannot exceed the approved 10.00 USD maximum")
         if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
             raise HiggsfieldError("Wan production is single-attempt; reruns are blocked")
     client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
