@@ -48,6 +48,30 @@ class IntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
             higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "16:9", "brand-media/higgsfield/test_higgsfield.py")
 
+    def test_wan_3_vertical_parameters(self):
+        model = higgsfield.get_model("alibaba/wan-3.0")
+        params = higgsfield.build_params(model, "image_to_video", "prompt", 20, "1080p", "9:16", True)
+        self.assertEqual(model["operations"]["image_to_video"], "alibaba/wan-3.0/image-to-video")
+        self.assertEqual(params["aspect_ratio"], "9:16")
+        self.assertEqual(params["resolution"], "1080p")
+        self.assertEqual(params["duration"], 20)
+        self.assertIs(params["generate_audio"], True)
+        self.assertIs(params["enable_thinking"], False)
+
+    def test_wan_3_accepts_only_registered_master(self):
+        model = higgsfield.get_model("alibaba/wan-3.0")
+        approved = model["approved_production_reference"]
+        self.assertEqual(higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", approved["path"]), model["operations"]["image_to_video"])
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
+            higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", "brand-media/higgsfield/test_higgsfield.py")
+
+    def test_wan_production_budget_is_hard_capped_at_five(self):
+        self.assertEqual(higgsfield.enforce_cost("4.99", "5.00", "produce")[0], higgsfield.Decimal("4.99"))
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
+            higgsfield.enforce_cost("5.01", "5.00", "produce")
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
+            higgsfield.enforce_cost("4.00", "5.01", "produce")
+
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):
             higgsfield.Client("")
@@ -77,6 +101,15 @@ class IntegrationTests(unittest.TestCase):
     def test_estimate_must_match_separate_approval(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "differs"):
             higgsfield.enforce_cost("1.01", "2.00", "generate", "1.00")
+
+    def test_malformed_estimate_reports_field_names_not_values(self):
+        secret = "never-display-this-secret"
+        client = higgsfield.Client(secret, opener=lambda *a, **k: Response(b'{"error":"private message"}'))
+        with self.assertRaises(higgsfield.HiggsfieldError) as ctx:
+            client.estimate("alibaba/wan-3.0/image-to-video", {})
+        self.assertIn("error", str(ctx.exception))
+        self.assertNotIn(secret, str(ctx.exception))
+        self.assertNotIn("private message", str(ctx.exception))
 
     def test_api_error_no_secret_in_message(self):
         secret = "top-secret-xyz"

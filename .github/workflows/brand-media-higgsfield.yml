@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Action. Run estimate first; generate requires a separate dispatch after reviewing it.
+        description: Discover, estimate only, generate against a prior estimate, or produce one capped Wan 3.0 job from a single estimate.
         type: choice
         required: true
-        options: [discover, estimate, generate]
+        options: [discover, estimate, generate, produce]
       model_id:
         description: Exact model ID from brand-media/higgsfield/registry.json
         type: string
@@ -52,7 +52,7 @@ on:
         type: string
         required: true
       paid_approval:
-        description: For generate only, enter APPROVE-ONE-PAID-GENERATION in a separate dispatch after reviewing estimate
+        description: For generate enter the existing approval phrase; for produce enter the exact one-shot Wan approval phrase.
         type: string
         required: false
       approved_estimate_usd:
@@ -84,8 +84,8 @@ jobs:
       - name: Show documentation-derived model registry
         if: inputs.action == 'discover'
         run: python -m json.tool brand-media/higgsfield/registry.json
-      - name: Estimate exact request cost (no video generation; selected reference may be uploaded)
-        if: inputs.action == 'estimate' || inputs.action == 'generate'
+      - name: Estimate cost; produce submits at most one approved Wan generation only when the quote is within budget
+        if: inputs.action == 'estimate' || inputs.action == 'generate' || inputs.action == 'produce'
         env:
           HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
           INPUT_ACTION: ${{ inputs.action }}
@@ -106,16 +106,35 @@ jobs:
             --prompt "$INPUT_PROMPT" --duration "$INPUT_DURATION" --resolution "$INPUT_RESOLUTION" \
             --aspect-ratio "$INPUT_ASPECT_RATIO" --native-audio "$INPUT_NATIVE_AUDIO" --reference "$INPUT_REFERENCE_PATH" \
             --asset-id "$INPUT_ASSET_ID" --budget-usd "$INPUT_BUDGET_USD")
-          if [ "$INPUT_ACTION" = generate ]; then
+          if [ "$INPUT_ACTION" = generate ] || [ "$INPUT_ACTION" = produce ]; then
             args+=(--approval "$INPUT_APPROVAL" --approved-estimate-usd "$INPUT_APPROVED_ESTIMATE_USD")
           fi
           python brand-media/higgsfield/higgsfield.py "${args[@]}"
 
+      - name: Verify 1080x1920 output and create compressed preview
+        if: inputs.action == 'produce'
+        shell: bash
+        run: |
+          shopt -s nullglob
+          videos=(brand-media/output/higgsfield/*.mp4)
+          if [ "${#videos[@]}" -ne 1 ]; then
+            echo "Expected exactly one original video; found ${#videos[@]}" >&2
+            exit 1
+          fi
+          dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${videos[0]}")
+          echo "Video dimensions: $dimensions"
+          if [ "$dimensions" != "1080x1920" ]; then
+            echo "Provider output was not 1080x1920; original retained without transcoding." >&2
+            exit 1
+          fi
+          preview="${videos[0]%.mp4}-preview.mp4"
+          ffmpeg -nostdin -y -i "${videos[0]}" -vf scale=540:960 -c:v libx264 -preset veryfast -crf 28 -c:a aac -b:a 96k -movflags +faststart "$preview"
+
       - name: Upload HyperFrames-ready output
-        if: inputs.action == 'generate'
+        if: always() && (inputs.action == 'generate' || inputs.action == 'produce')
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
         with:
           name: higgsfield-video-${{ github.run_id }}
           path: brand-media/output/higgsfield/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
