@@ -61,11 +61,12 @@ export const SPECS = {
 // ---------------------------------------------------------------- Erwartung aus den Daten (Node-Seite, kein Browser)
 /** Liest den Datensatz des Titels, den die Route zeigt, aus dem Release. null = Route ohne Titeldatensatz (Listen, Europa, Unbekannt).
  *  Die Seite entscheidet nicht, was sie zeigen muss - der Datensatz tut es. */
-export function discoverExpectation(release, routePath) {
+export function discoverExpectation(release, routePath, {overlay = null} = {}) {
   const m = /^\/discover\/#\/s\/([A-Z0-9_]+)\/([A-Za-z0-9._-]+)$/.exec(routePath);
   if (!m) return null;
-  const file = release + '/discover/data/stocks/' + m[1] + '/' + m[2] + '.json';
-  if (!existsSync(file)) return null;
+  // overlay: Schicht ueber dem Release (Mutationsnachweise); die Erwartung folgt dem, was ausgeliefert wird.
+  const file = [overlay, release].filter(Boolean).map(root => root + '/discover/data/stocks/' + m[1] + '/' + m[2] + '.json').find(f => existsSync(f));
+  if (!file) return null;
   let d;
   try { d = JSON.parse(readFileSync(file, 'utf8')); } catch (error) { return {symbol: m[2], unreadable: true, reason: 'Datensatz unlesbar: ' + error.message}; }
   const layers = (d.technicalIntelligence && d.technicalIntelligence.layers) || {};
@@ -78,17 +79,25 @@ export function discoverExpectation(release, routePath) {
   };
 }
 
+/** Kerntitel, deren Kursverlauf und Kursstruktur strikt erwartet werden: DATENGETRIEBEN aus einer Kandidatenliste, nur solche, deren
+ *  Datensatz im Release series.available UND available Technical-Intelligence-Schichten traegt. Ein einzelner zurueckgehaltener
+ *  Kandidat ist Enthaltung (seine Route folgt dem Datensatz); erst wenn weniger als `min` qualifizieren, ist das ein Datenproblem. */
+export const CORE_CANDIDATES = ['NVDA', 'AAPL', 'MSFT', 'JPM', 'XOM', 'AMZN', 'GOOGL', 'META'];
+export function qualifyingCoreTitles(release, {candidates = CORE_CANDIDATES, overlay = null} = {}) {
+  return candidates.filter(t => { const e = discoverExpectation(release, '/discover/#/s/US_REAL/' + t, {overlay}); return e && !e.unreadable && e.series.available && e.technical.available; });
+}
+
 /** Titel fuer den Gegennachweis "zulaessige Enthaltung" aus dem Release (US_REAL): einer, dessen Technical-Intelligence-Schicht
  *  zurueckgehalten ist (available = false), und einer mit zurueckgehaltener Sparkline (WITHHELD_*, Lizenz) oder ohne Aufnahme
  *  (discoveryEligible = false). Je der erste in Dateireihenfolge; fehlt die Art, bleibt der Eintrag null. */
-export function pickWithheldProbes(release) {
+export function pickWithheldProbes(release, {overlay = null} = {}) {
   const dir = release + '/discover/data/stocks/US_REAL/';
   const out = {technicalWithheld: null, redistributionWithheld: null};
   let names;
   try { names = readdirSync(dir).filter(n => n.endsWith('.json')).sort(); } catch { return out; }
   for (const name of names) {
     if (out.technicalWithheld && out.redistributionWithheld) break;
-    const e = discoverExpectation(release, '/discover/#/s/US_REAL/' + name.slice(0, -5));
+    const e = discoverExpectation(release, '/discover/#/s/US_REAL/' + name.slice(0, -5), {overlay});
     if (!e || e.unreadable || !e.series.available) continue;
     if (!out.technicalWithheld && !e.technical.available) out.technicalWithheld = e.symbol;
     else if (!out.redistributionWithheld && (e.withheld.sparkline || e.withheld.ineligible)) out.redistributionWithheld = e.symbol;

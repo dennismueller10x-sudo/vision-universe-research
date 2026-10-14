@@ -6,7 +6,7 @@ import {mkdtemp, mkdir, writeFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {SPECS, STRICT_ERRORS, fullSpec, verdict, expectationProblems, discoverExpectation, pickWithheldProbes,
-  assessRequests, assessRelease, pageStamps, isDataRequest, collectFacts} from '../../scripts/discover/direct-link-lib.mjs';
+  assessRequests, assessRelease, pageStamps, isDataRequest, collectFacts, qualifyingCoreTitles} from '../../scripts/discover/direct-link-lib.mjs';
 
 const stock = overrides => ({loadFailedHits: [], loadingHits: [], emptyChapters: [], ti: {present: true, rows: {Marktstruktur: 'Aufwärtsstruktur · HH/HL', 'Support / Resistance': '4 Zonen'}, chartLink: true}, hasMain: true, busy: 'false', gateVisible: false, textLength: 9000, h1: ['NVIDIA'], strictHits: [], includesMissing: [], textReHit: true,
   priceOk: true, coreCount: 2, coreBad: null, coreSkeletons: 0, charts: [{w: 374, h: 405, geometry: 2}], ...overrides});
@@ -182,4 +182,14 @@ test('Kennung: meta vu-release gegen release-id.json; statisch verlinkte Dateien
 
 test('collectFacts ist ein einzelner, eigenstaendiger Funktionskoerper (Playwright serialisiert ihn in den Browser)', () => {
   assert(!/\bimport\b|\brequire\(/.test(collectFacts.toString()) && !collectFacts.toString().includes('readFileSync'));
+});
+
+test('Kerntitel werden datengetrieben gewaehlt: ein zurueckgehaltener Kandidat ist Enthaltung, erst zu wenige qualifizierte sind ein Datenproblem', async () => {
+  const dir = await release({NVDA: dataset({ti: false}), AAPL: dataset(), MSFT: dataset({series: false}), JPM: dataset(), XOM: dataset()});
+  const fewer = await release({NVDA: dataset({ti: false}), AAPL: dataset(), MSFT: dataset({series: false})});
+  try {
+    assert.deepEqual(qualifyingCoreTitles(dir), ['AAPL', 'JPM', 'XOM']);
+    assert(qualifyingCoreTitles(fewer).length < 2, 'weniger als 2 Kandidaten: lauter Fehler im Runner');
+    assert.deepEqual(qualifyingCoreTitles(join(dir, 'gibt-es-nicht')), []);
+  } finally { await rm(dir, {recursive: true, force: true}); await rm(fewer, {recursive: true, force: true}); }
 });
