@@ -1,3 +1,4 @@
+import '../../ci/scrub-git-env.mjs';import {isolatedGitEnv} from '../../ci/isolated-git-env.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -36,7 +37,7 @@ test('Git failures stop the check instead of reporting an empty diff',()=>{
 });
 test('real Git history retains the exception while rejecting later engine or stock logic changes',()=>{
  const root=mkdtempSync(join(tmpdir(),'intelligence-scope-'));
- const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',env:isolatedGitEnv()});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
  const put=(path,body)=>{mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),body);};
  const commit=()=>{git(['add','.']);git(['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']);return git(['rev-parse','HEAD']);};
  const run=(cmd,args,opts)=>spawnSync(cmd,args,{...opts,cwd:root});
