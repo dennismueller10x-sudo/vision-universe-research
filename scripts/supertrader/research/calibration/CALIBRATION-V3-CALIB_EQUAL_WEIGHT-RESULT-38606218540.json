@@ -1,0 +1,81 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-e54aa8728b55f8d8",
+  "freezeFileSha256": "617fa08f6841b17723d9aa81424c47667becb4822f3f44e855e5b67e58371541",
+  "methodId": "CALIB_EQUAL_WEIGHT",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "2877fedc721f7775688e9b81f322f3559917b76be86fb30978415b2f5d424160",
+      "plaintextBytes": 377491444,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "c8632e604e0ddc441b47ce28a6d6ac4883d23ab9412b7e48d8e1c5837f951fd9",
+          "bytes": 82188762
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.session.sealed.json",
+          "sha256": "c279bdc45dae6bc32e9ad5d15748991d42506f2dcd25b813557c973dd6efbf00",
+          "bytes": 82188590
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 7.82310962677002e-8
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "2fae45b0b39992539af1181fe7aa8bd1c28bb9e82a7965088f0c9c81d87e1da6",
+      "plaintextBytes": 384656939,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "a73403772c7e97902d2c990422fba1fcf62741ee39f1154e69062bb67e41ac2a",
+          "bytes": 86498102
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "a1d0c628b2bdd07b032200f08575b3b075dc75fe24f09efad4bf2fca110f8cb9",
+          "bytes": 86497930
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.7136335372924805e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}
