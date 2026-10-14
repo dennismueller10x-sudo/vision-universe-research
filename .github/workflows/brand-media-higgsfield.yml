@@ -1,0 +1,115 @@
+name: Brand Media · Higgsfield
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Action. Run estimate first; generate requires a separate dispatch after reviewing it.
+        type: choice
+        required: true
+        options: [discover, estimate, generate]
+      model_id:
+        description: Exact model ID from brand-media/higgsfield/registry.json
+        type: string
+        required: true
+      operation:
+        description: Workflow operation
+        type: choice
+        required: true
+        options: [text_to_video, image_to_video, reference_to_video]
+      prompt:
+        description: Prompt text
+        type: string
+        required: true
+      duration:
+        description: Duration in seconds
+        type: number
+        required: true
+      resolution:
+        description: Resolution tier; leave blank only where the registry marks it unspecified
+        type: string
+        required: false
+      aspect_ratio:
+        description: Aspect ratio
+        type: string
+        required: true
+        default: '16:9'
+      reference_path:
+        description: Explicit repository path to a reference image (no implicit reuse)
+        type: string
+        required: false
+      asset_id:
+        description: Reference asset ID for metadata
+        type: string
+        required: false
+      budget_usd:
+        description: Maximum permitted estimate in USD
+        type: string
+        required: true
+      paid_approval:
+        description: For generate only, enter APPROVE-ONE-PAID-GENERATION in a separate dispatch after reviewing estimate
+        type: string
+        required: false
+      approved_estimate_usd:
+        description: Exact USD estimate reviewed in the prior estimate run; generation blocks if it changed
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: higgsfield-paid-generation
+  cancel-in-progress: false
+
+jobs:
+  trusted-input-check:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted main branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Show documentation-derived model registry
+        if: inputs.action == 'discover'
+        run: python -m json.tool brand-media/higgsfield/registry.json
+      - name: Estimate exact request cost (read only)
+        if: inputs.action == 'estimate' || inputs.action == 'generate'
+        env:
+          HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
+          INPUT_ACTION: ${{ inputs.action }}
+          INPUT_MODEL_ID: ${{ inputs.model_id }}
+          INPUT_OPERATION: ${{ inputs.operation }}
+          INPUT_PROMPT: ${{ inputs.prompt }}
+          INPUT_DURATION: ${{ inputs.duration }}
+          INPUT_RESOLUTION: ${{ inputs.resolution }}
+          INPUT_ASPECT_RATIO: ${{ inputs.aspect_ratio }}
+          INPUT_REFERENCE_PATH: ${{ inputs.reference_path }}
+          INPUT_ASSET_ID: ${{ inputs.asset_id }}
+          INPUT_BUDGET_USD: ${{ inputs.budget_usd }}
+          INPUT_APPROVAL: ${{ inputs.paid_approval }}
+          INPUT_APPROVED_ESTIMATE_USD: ${{ inputs.approved_estimate_usd }}
+        run: |
+          args=(--action "$INPUT_ACTION" --model "$INPUT_MODEL_ID" --operation "$INPUT_OPERATION" \
+            --prompt "$INPUT_PROMPT" --duration "$INPUT_DURATION" --resolution "$INPUT_RESOLUTION" \
+            --aspect-ratio "$INPUT_ASPECT_RATIO" --reference "$INPUT_REFERENCE_PATH" \
+            --asset-id "$INPUT_ASSET_ID" --budget-usd "$INPUT_BUDGET_USD")
+          if [ "$INPUT_ACTION" = generate ]; then
+            args+=(--approval "$INPUT_APPROVAL" --approved-estimate-usd "$INPUT_APPROVED_ESTIMATE_USD")
+          fi
+          python brand-media/higgsfield/higgsfield.py "${args[@]}"
+
+      - name: Upload HyperFrames-ready output
+        if: inputs.action == 'generate'
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+        with:
+          name: higgsfield-video-${{ github.run_id }}
+          path: brand-media/output/higgsfield/
+          if-no-files-found: error
+          retention-days: 14
