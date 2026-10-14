@@ -1,10 +1,13 @@
+import '../../ci/scrub-git-env.mjs';import {isolatedGitEnv} from '../../ci/isolated-git-env.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { permittedStockHook, unexpectedProtectedChanges } from '../check-quant-integration.mjs';
+const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 const modulePaths = ['company-intelligence/config/rollout.js','company-intelligence/ui/stock-section.js'];
 const mount = 'if (global.VUCompanyIntelligenceStock) disposers.push(global.VUCompanyIntelligenceStock.mount(bodyHost, ticker));';
 const assets = ['<link rel="stylesheet" href="/company-intelligence/ui/stock-section.css">','<script src="/company-intelligence/api/contract.js"></script>','<script src="/company-intelligence/config/rollout.js"></script>','<script src="/company-intelligence/ui/stock-section.js"></script>'];
@@ -36,7 +39,7 @@ test('Git failures stop the check instead of reporting an empty diff',()=>{
 });
 test('real Git history retains the exception while rejecting later engine or stock logic changes',()=>{
  const root=mkdtempSync(join(tmpdir(),'intelligence-scope-'));
- const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',env:isolatedGitEnv()});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
  const put=(path,body)=>{mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),body);};
  const commit=()=>{git(['add','.']);git(['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']);return git(['rev-parse','HEAD']);};
  const run=(cmd,args,opts)=>spawnSync(cmd,args,{...opts,cwd:root});
@@ -53,9 +56,9 @@ test('Master-page exception permits only the exact issuer mount and availability
  const {masterDetailIntegrationOnly}=await import('../master-detail-integration.mjs');
  // Immutable accepted hook example. Unrelated later renderer changes on main
  // do not broaden the protected-path exception; negative assertions stay exact.
- const accepted=spawnSync('git',['show','f667d82649986d681d76cb5da1176d3b6bea265d:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(accepted.status,0);
+ const accepted=spawnSync('git',['show','f667d82649986d681d76cb5da1176d3b6bea265d:discover/ui/detail.js'],{encoding:'utf8',cwd:REPO_ROOT,env:isolatedGitEnv()});assert.equal(accepted.status,0);
  const after=accepted.stdout;
- const prior=spawnSync('git',['show','440a1645048d6b559988488f9a0f3148f21d3cdd:discover/ui/detail.js'],{encoding:'utf8'});assert.equal(prior.status,0);
+ const prior=spawnSync('git',['show','440a1645048d6b559988488f9a0f3148f21d3cdd:discover/ui/detail.js'],{encoding:'utf8',cwd:REPO_ROOT,env:isolatedGitEnv()});assert.equal(prior.status,0);
  assert(masterDetailIntegrationOnly(prior.stdout,after));
  assert(!masterDetailIntegrationOnly(prior.stdout,after+'\nrecalculateQuant();\n'));
  assert(!masterDetailIntegrationOnly(prior.stdout,after.replace('caps.HAS_PRICE_HISTORY','true')));

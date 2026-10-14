@@ -1,3 +1,4 @@
+import '../../ci/scrub-git-env.mjs';import {isolatedGitEnv} from '../../ci/isolated-git-env.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
@@ -7,7 +8,7 @@ import {spawnSync} from 'node:child_process';
 import {productionBaseline,identicalProtectedInputs} from '../production-regression-base.mjs';
 test('actual GitHub PR merge parent and main push before retain an independent unchanged product control',()=>{
  const root=mkdtempSync(join(tmpdir(),'ci-production-control-'));
- const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',env:isolatedGitEnv()});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
  const save=(path,value)=>{mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),value);};
  const commit=message=>{git('add','.');git('commit','-m',message);return git('rev-parse','HEAD');};
  const eventPath=join(root,'.git','trusted-event.json');
