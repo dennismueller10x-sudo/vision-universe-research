@@ -21,7 +21,8 @@
     "CANONICAL_MANIFEST_AND_500_PART_HASH_RECEIPTS_VERIFIED",
     "CANONICAL_REJECTION_CATEGORY_ATTRIBUTED_TO_CORPORATE_ACTION_CONTRADICTION",
     "CANONICAL_REJECTION_DETAIL_RUN_VERIFIED",
-    "CANONICAL_TWO_SPLIT_NOT_IN_RAW_PRICE_CAUSE_PROVEN"
+    "CANONICAL_TWO_SPLIT_NOT_IN_RAW_PRICE_CAUSE_PROVEN",
+    "CANONICAL_RECEIPT_STRUCTURE_RECHECKED"
   ],
   "currentPhase": "V3_FREEZE_AND_CALIBRATION_INPUT_ACCESS",
   "completedCalibrationMethods": [],
@@ -146,7 +147,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "b0c3ca9f1d88868cadcd79ccc72c2add05cc8de723f76774e2d539c1bbc463cf"
+      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
@@ -154,7 +155,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "b0c3ca9f1d88868cadcd79ccc72c2add05cc8de723f76774e2d539c1bbc463cf"
+      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json",
@@ -198,7 +199,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "b0c3ca9f1d88868cadcd79ccc72c2add05cc8de723f76774e2d539c1bbc463cf"
+      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-CANONICAL-CAPTURE-SAFE-STATUS.json",
@@ -232,13 +233,13 @@
     "V3 calibration runner/validator has not yet been created.",
     "Capture diagnostic currently omits the symbolic loader reason and phase; safe allowlisted fields were added to data-inventory and a recapture is required.",
     "Canonical capture is AVAILABLE and hash-bound: Actions run 38566792132, artifact 11895314451, safe manifest SHA256 34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713, 500 parts / 9,408 securities; canonical rejection cause proven separately by run 38570403846 as DATA_CONTRACT_CORPORATE_ACTION_CONFLICT (2 \u00d7 SPLIT_NOT_IN_RAW_PRICE).",
-    "The canonical dataset and source metadata are present only as owner/session-encrypted files. The workspace has neither a recipient private key nor an established decrypt-capable Actions secret/path; status receipts prove ciphertext and plaintext hash receipts but do not make the plaintext files locally usable. Do not claim numeric calibration execution or final V3 input-receipt binding until a trusted runner can decrypt or a same-run canonical-to-calibration pipeline is established.",
-    "The proposed local per-method runner patch was reverted because its V3 bindings and Actions-compatible private paths are not fully tested; current branch runner remains unchanged."
+    "The proposed local per-method runner patch was reverted because its V3 bindings and Actions-compatible private paths are not fully tested; current branch runner remains unchanged.",
+    "No recipient private key or authorized decrypt-capable Actions path is available to this executor; GitHub Actions secret-name listing returned 403 (names and values inaccessible). Public receipt graph validated (500 part receipts, 9,408 security-count sum, 1,000 sealed-file digests), but canonical plaintext bytes and source metadata cannot be rehashed here."
   ],
-  "nextCommand": "Establish an owner-authorized decrypt-capable GitHub Actions execution path for artifact 11895314451 (or a same-run canonical capture\u2192calibration job); before performance, verify all 500 plaintext part hashes and source-metadata SHA against the persisted receipts. Then finalize V3 freeze and execute only the four pending non-fundamental calibration methods one at a time.",
+  "nextCommand": "Run the existing canonical plaintext receipt verifier inside an authorized recipient context for artifact 11895314451; verify 500 part files and data-certification-inputs.json hashes, then finalize the V3 freeze and run only the four pending numeric methods sequentially.",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Provide the existing secure recipient decryption mechanism inside GitHub Actions without exposing plaintext, then verify canonical plaintext receipts in that runner; only after receipt verification freeze the V3 inputs and run pending method checkpoints. The split-conflict cause is proven and must remain disclosed.",
+  "nextStep": "Await or provision an already-authorized recipient decryption mechanism. Never expose private values in repo or logs. Once available, decrypt inside a controlled ephemeral runner and validate every canonical plaintext receipt before measurement.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "f5baa227",
