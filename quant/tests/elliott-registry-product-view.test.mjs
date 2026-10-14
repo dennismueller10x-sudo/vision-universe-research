@@ -32,10 +32,56 @@ function weeklyDir(ids, until) {
   return w;
 }
 
+const nextDay = (d, n = 1) => new Date(Date.parse(d + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+/* Eingangsdaten auf den Datenstand des veroeffentlichten Produkts kuerzen (Vertrag von identityOne: "ungekuerzt bis zum veroeffentlichten Stand").
+   Die Marktdaten (golden-preview, discover-series-long) laufen im Tagesrhythmus vor dem Chartbild-Produkt; ohne Kuerzung haengt der Test vom Zeitpunkt des Laufs ab (INPUT_NEWER_OR_OLDER). */
+/* Latente Kopplung: productContext/workCtx waehlt bei gesetztem workDir die Tabelle evidence-1D-universe.json und faellt sonst auf evidence-1D-golden.json zurueck. Im Repo existiert nur die golden-Tabelle, daher rechnet der Test mit denselben Evidenzdaten wie das Produkt. Entstuende evidence-1D-universe.json, muesste dieser Test (und seine workDir-Nutzung) neu bewertet werden.
+   shift: 0 = Gleichstand; +1 = eine (synthetische, deterministische) Bar NEUER als das Produkt; -1 = letzte Bar entfernt (aelter). */
+function inputsAtPublishedStand(symbols, shift = 0) {
+  const pub = PV.publishedProduct(), inDir = mkdtempSync(join(tmpdir(), "pv-in-")), work = mkdtempSync(join(tmpdir(), "pv-wk-"));
+  mkdirSync(join(work, "tiingo", "daily"), { recursive: true });
+  for (const t of symbols) {
+    const P = pub.bySymbol.get(t); assert.ok(P, t + " ist im Produkt veroeffentlicht");
+    if (P.tf === "1D") {
+      const j = readJson(join(ROOT, "quant/data/market/golden-preview/daily/ref_" + t + ".json")), bars = j.bars.filter((b) => b.date <= P.asOf);
+      if (shift > 0) bars.push({ ...bars[bars.length - 1], date: nextDay(P.asOf) }); if (shift < 0) bars.pop();
+      writeFileSync(join(work, "tiingo", "daily", "ref_" + t + ".json"), JSON.stringify({ ...j, bars, last: bars[bars.length - 1].date }));
+    } else {
+      const f = "ref_" + t + ".json", j = readJson(join(LONG, f));
+      const points = j.points.filter((p) => p[0] <= P.asOf);
+      if (shift > 0) points.push([nextDay(P.asOf, 7), ...points[points.length - 1].slice(1)]); if (shift < 0) points.pop();
+      writeFileSync(join(inDir, f), JSON.stringify({ ...j, points }));
+    }
+  }
+  return { productInputDir: inDir, workDir: work };
+}
+
 test("M11-P1 Registry-Produktsicht = veroeffentlichtes Chartbild, Byte fuer Byte (Woche und Tag)", async () => {
-  const r = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA", "AAL", "XOM"], workers: 3 });
+  const r = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA", "AAL", "XOM"]), identitySymbols: ["AA", "AAL", "XOM"], workers: 3 });
   assert.equal(r.ok, true, JSON.stringify(r.differences));
   assert.equal(r.compared, 3); assert.equal(r.identical, 3);
+});
+
+test("M11-P1b Datenstand-Gate der Identitaet: Eingang neuer oder aelter als das Produkt-asOf => INPUT_NEWER_OR_OLDER, nicht verglichen; Gleichstand wird verglichen", async () => {
+  const syms = ["AA", "AAL", "XOM"], run = (shift) => Reg.checkProductIdentity({ ...inputsAtPublishedStand(syms, shift), identitySymbols: syms, workers: 3 });
+  const same = await run(0); assert.equal(same.compared, 3); assert.equal(same.notComparable, 0);
+  for (const shift of [1, -1]) {
+    const r = await run(shift);
+    assert.equal(r.compared, 0, "shift " + shift + ": nichts vergleichbar"); assert.equal(r.notComparable, 3); assert.equal(r.ok, false, "ohne Vergleich nie ok");
+  }
+  /* Status ausdruecklich (nicht nur "nicht vergleichbar"): identityOne meldet INPUT_NEWER_OR_OLDER mit beiden Staenden */
+  const pub = PV.publishedProduct();
+  for (const shift of [1, -1]) for (const t of ["AA", "XOM"]) {
+    const inp = inputsAtPublishedStand([t], shift), st = PV.identityOne(t, PV.productContext(pub, inp.workDir), pub, inp.productInputDir);
+    assert.equal(st.status, "INPUT_NEWER_OR_OLDER", t + " shift " + shift); assert.equal(st.publishedAsOf, pub.bySymbol.get(t).asOf); assert.notEqual(st.inputAsOf, st.publishedAsOf);
+  }
+  for (const t of ["AA", "XOM"]) { const inp = inputsAtPublishedStand([t], 0); assert.notEqual(PV.identityOne(t, PV.productContext(pub, inp.workDir), pub, inp.productInputDir).status, "INPUT_NEWER_OR_OLDER", t); }
+  /* nur ein Titel verschoben: genau dieser faellt aus dem Vergleich */
+  const aa = inputsAtPublishedStand(["AA"], 1), rest = inputsAtPublishedStand(["AAL", "XOM"], 0);
+  for (const f of readdirSync(rest.productInputDir)) copyFileSync(join(rest.productInputDir, f), join(aa.productInputDir, f));
+  for (const f of readdirSync(join(rest.workDir, "tiingo", "daily"))) copyFileSync(join(rest.workDir, "tiingo", "daily", f), join(aa.workDir, "tiingo", "daily", f));
+  const m = await Reg.checkProductIdentity({ ...aa, identitySymbols: syms, workers: 3 });
+  assert.equal(m.compared, 2); assert.equal(m.notComparable, 1); assert.equal(m.identical, 2);
 });
 
 test("M11-P2 Produktsicht nutzt die Produktfunktion: gekuerzte Woche = analyzeProduct mit Produkt-Optionen", () => {
