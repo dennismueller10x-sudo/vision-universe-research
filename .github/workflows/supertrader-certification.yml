@@ -68,7 +68,7 @@ jobs:
             ${{ runner.temp }}/datacert/*status.json
             ${{ runner.temp }}/datacert/*.sealed.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
   repack-existing-encrypted-inputs:
     if: contains(github.event.head_commit.message, '[supertrader-certification:repack]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'repack')
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
           path: |
             ${{ runner.temp }}/repacked/repack-status.json
             ${{ runner.temp }}/repacked/repack-manifest.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
       - name: Upload each bounded encrypted package with the official artifact client
         uses: actions/github-script@v7
@@ -168,7 +168,7 @@ jobs:
           path: |
             ${{ runner.temp }}/current-v2/safe-status.json
             ${{ runner.temp }}/current-v2/*.sealed.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
 
       - name: Bound encrypted current source inputs without provider rereads
@@ -179,7 +179,7 @@ jobs:
           path: |
             ${{ runner.temp }}/current-input-bundles/repack-manifest.json
             ${{ runner.temp }}/current-input-bundles/repack-status.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
       - name: Upload each bounded encrypted current input package
         uses: actions/github-script@v7
