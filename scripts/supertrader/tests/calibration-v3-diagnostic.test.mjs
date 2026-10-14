@@ -21,3 +21,12 @@ test('a corrupted book is located on the exact day with its event class',()=>{
  try{runReferencePortfolio(data(),'CALIB_JT6_6_NO_SKIP',protocol,{onDayClose:bad});}catch(e){assert.equal(e.message,'REFERENCE_BOOK_RECONCILIATION_FAILED');assert.ok(e.bookTrace);}
  const s=tracker.summarize().top;assert.equal(s.firstDayAboveTolerance?.date,'2018-01-10');assert.ok(Math.abs(s.largestGapChanges[0].delta)>4.9);
 });
+test('conservation audit finds a cost leak and reports balanced cash for a clean book',async()=>{
+ const {auditBook}=await import('../research/calibration/diagnose-reconciliation-v3.mjs');
+ const tracker=createGapTracker({legs:['top']});let last;
+ const hook=a=>{last=a.book;tracker.hook(a);};
+ runReferencePortfolio(data(),'CALIB_JT6_6_NO_SKIP',protocol,{costMode:'SOURCE_GROSS',onDayClose:hook});
+ const clean=auditBook(last,0);assert.equal(clean.idsWithCostOrShareLeak,0);assert.ok(Math.abs(clean.cash.difference)<1e-6);
+ const p=[...last.positions.values()][0];p.cost+=7;
+ const bad=auditBook(last,0);assert.equal(bad.idsWithCostOrShareLeak,1);assert.ok(Math.abs(bad.costLeakSum+7)<1e-9);
+});

@@ -23,11 +23,34 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const baseProtocol=JSON.parse(fs.readFileSync(path.join(HERE,'../tournament/protocol.json')));
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 
-export function createGapTracker({legs=['top','bottom','eligibleUniverse']}={}){
- const state=new Map(),days=[];
+
+/** Conservation audit, id-free output. Cost: sum of BUY fills = closed cost + open cost. Cash: from fills and dividends. */
+export function auditBook(book,commissionRate=0){
+ const byId=new Map(),cashFromFills={buy:0,sell:0};
+ for(const f of book.fills){
+  const e=byId.get(f.id)??{buyCost:0,buyShares:0,buys:0,sells:0,sellShares:0,firstBuyPrice:null,closedCost:0,terminalSells:0};
+  if(f.side==='BUY'){const gross=f.shares*f.price;e.buyCost+=gross*(1+commissionRate);e.buyShares+=f.shares;e.buys++;if(e.firstBuyPrice===null)e.firstBuyPrice=f.price;cashFromFills.buy+=gross*(1+commissionRate);}
+  else{e.sells++;e.sellShares+=f.shares;if(f.reason==='TERMINAL_SCENARIO')e.terminalSells++;cashFromFills.sell+=f.shares*f.price*(1-commissionRate);}
+  byId.set(f.id,e);
+ }
+ for(const t of book.trades){const e=byId.get(t.id);if(e)e.closedCost+=t.cost;}
+ let leakSum=0,leakIds=0;const rows=[];
+ for(const [id,e] of byId){
+  const open=book.positions.get(id),openCost=open?.cost??0,openShares=open?.shares??0,diff=e.buyCost-(e.closedCost+openCost),shareDiff=e.buyShares-e.sellShares-openShares;
+  if(Math.abs(diff)>1e-9||Math.abs(shareDiff)>1e-9){leakIds++;leakSum+=diff;rows.push({costDiff:diff,shareDiff,firstBuyPrice:e.firstBuyPrice,buys:e.buys,sells:e.sells,terminalSells:e.terminalSells,stillOpen:Boolean(open),buyShares:e.buyShares});}
+ }
+ const cashExpected=book.initialCapital-cashFromFills.buy+cashFromFills.sell+book.dividends;
+ return{idsWithFills:byId.size,idsWithCostOrShareLeak:leakIds,costLeakSum:leakSum,cash:{actual:book.cash,fromFillsAndDividends:cashExpected,difference:book.cash-cashExpected},
+  largestLeaks:rows.sort((a,b)=>Math.abs(b.costDiff)-Math.abs(a.costDiff)).slice(0,10),
+  leakByShape:{stillOpen:rows.filter(r=>r.stillOpen).length,closed:rows.filter(r=>!r.stillOpen).length,withTerminalSell:rows.filter(r=>r.terminalSells>0).length,multiBuy:rows.filter(r=>r.buys>1).length,priceBelow1:rows.filter(r=>r.firstBuyPrice<1).length,priceAbove1000:rows.filter(r=>r.firstBuyPrice>1000).length}};
+}
+
+export function createGapTracker({legs=['top','bottom','eligibleUniverse'],commissionRate=0}={}){
+ const state=new Map(),days=[],books=new Map(),audits={};
  const hook=({leg,date,book,bars,terminals})=>{
   if(!legs.includes(leg))return;
   const r=reconcileBook(book),gap=r.actual-r.expected,tolerance=Math.max(1e-6,r.actual*1e-10);
+  books.set(leg,book);
   const prev=state.get(leg)??{gap:0,dividends:0,terminalCount:0,trades:0,fills:0,rejections:0,positions:0};
   let withoutBar=0,staleBar=0;
   for(const p of book.positions.values()){const b=bars.get(p.id);if(!b)withoutBar++;else if(b.date!==date)staleBar++;}
@@ -40,6 +63,7 @@ export function createGapTracker({legs=['top','bottom','eligibleUniverse']}={}){
    positions:book.positions.size,positionsDelta:book.positions.size-prev.positions,positionsWithoutBar:withoutBar,positionsWithStaleBar:staleBar,
    cashNegative:book.cash<0};
   state.set(leg,{gap,dividends:book.dividends,terminalCount:book.terminalCount,trades:book.trades.length,fills:book.fills.length,rejections:book.rejections.length,positions:book.positions.size});
+  if(!audits[leg]&&Math.abs(gap)>tolerance)audits[leg]={atDate:date,audit:auditBook(book,commissionRate)};
   days.push(row);
  };
  const summarize=(top=12)=>{
@@ -59,7 +83,8 @@ export function createGapTracker({legs=['top','bottom','eligibleUniverse']}={}){
   }
   return out;
  };
- return {hook,summarize,days};
+ const finalAudits=()=>Object.fromEntries([...books].map(([leg,b])=>[leg,auditBook(b,commissionRate)]));
+ return {hook,summarize,days,audits,finalAudits};
 }
 
 export async function diagnose({inputDir,referenceParsed,method,publicOut,costMode='SOURCE_GROSS',legs}){
@@ -69,11 +94,11 @@ export async function diagnose({inputDir,referenceParsed,method,publicOut,costMo
  const parsed=JSON.parse(fs.readFileSync(referenceParsed));
  const data=await loadCanonicalData(inputDir,{sourceProvenanceOverlay:true,expectedSourceMetadataSha256:sha(inputsBytes)});
  const prepared=prepareRerunData(data,baseProtocol),contract=JSON.parse(fs.readFileSync(path.join(HERE,'protocol.json')));
- const frame=referenceFrame(prepared.data,engine,baseProtocol,contract),tracker=createGapTracker({legs});
+ const frame=referenceFrame(prepared.data,engine,baseProtocol,contract),tracker=createGapTracker({legs,commissionRate:costMode==='SOURCE_GROSS'?0:baseProtocol.execution.commissionBpsPerSide/10000});
  let outcome;
  try{runReferencePortfolio(frame.data,engine,frame.protocol,{costMode,riskFreeDaily:parsed.dailyRF?.rows??parsed.riskFreeDaily??[],onDayClose:tracker.hook});outcome={reconciliation:'PASSED'};}
  catch(e){outcome={reconciliation:e.message==='REFERENCE_BOOK_RECONCILIATION_FAILED'?'FAILED':'ERROR',errorCode:/^[A-Z0-9_]+$/.test(e.message)?e.message:'PRIVATE_FAILURE'};}
- const report={schema:'supertrader-calibration-v3-reconciliation-diagnostic-1.0.0',methodId:method,engineMethodId:engine.id,costMode,inputBasis:{manifestSha256:sha(manifestBytes),sourceMetadataSha256:sha(inputsBytes)},outcome,gap:tracker.summarize(),toleranceChanged:false,stateChanged:false,performanceNumbersPublished:false};
+ const report={schema:'supertrader-calibration-v3-reconciliation-diagnostic-1.0.0',methodId:method,engineMethodId:engine.id,costMode,inputBasis:{manifestSha256:sha(manifestBytes),sourceMetadataSha256:sha(inputsBytes)},outcome,gap:tracker.summarize(),auditAtFirstBreak:tracker.audits,finalAudit:tracker.finalAudits(),toleranceChanged:false,stateChanged:false,performanceNumbersPublished:false};
  fs.mkdirSync(path.dirname(path.resolve(publicOut)),{recursive:true});fs.writeFileSync(publicOut,JSON.stringify(report,null,2)+'\n');
  return report;
 }
