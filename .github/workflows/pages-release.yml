@@ -415,6 +415,8 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
+          # Beginn fuer das Zeitbudget der begrenzten Wiederholung (retry-live-qa.mjs); Job-Timeout 35 min.
+          echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
           if [ -f company-intelligence/config/production-approval.json ]; then
             node --input-type=module <<'NODE'
           import {approval} from './scripts/company_intelligence/production-approval.mjs';
@@ -438,41 +440,53 @@ jobs:
         with:
           node-version: '22'
       - name: Browser dependencies
+        id: deps
+        # Fehler hier sind meist Netz/Paketspiegel: nicht sofort Rollback, sondern erst klassifizieren und begrenzt wiederholen.
+        continue-on-error: true
         if: steps.approved.outputs.prepared == 'true'
-        run: |
-          npm install --prefix /tmp/ci-live --no-audit --no-fund playwright@1.55.0
-          node scripts/company_intelligence/install-browser-deps.mjs /tmp/ci-live/node_modules/.bin/playwright
+        run: bash scripts/company_intelligence/live-browser-setup.sh
       - name: Prove actual production gate-off behavior before activation or after rollback
-        if: steps.approved.outputs.prepared == 'true' && steps.approved.outputs.enabled != 'true'
+        id: gate_off
+        continue-on-error: true
+        if: steps.approved.outputs.prepared == 'true' && steps.approved.outputs.enabled != 'true' && steps.deps.outcome == 'success'
         env:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
         run: node scripts/company_intelligence/production-off-qa.mjs
       - name: Actual production hash, access, stock and mobile acceptance
         id: live
-        if: steps.approved.outputs.enabled == 'true'
+        continue-on-error: true
+        if: steps.approved.outputs.enabled == 'true' && steps.deps.outcome == 'success'
         env:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
           FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
-        run: |
-          if [ "$FULL_ACCEPTANCE" != true ]; then
-            node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
-            exit 0
-          fi
-          node scripts/company_intelligence/protected-hydration-qa.mjs
-          node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
-          universe=$(node --input-type=module -e 'import {runtimeCandidate} from "./scripts/company_intelligence/runtime-candidate.mjs";console.log((await runtimeCandidate()).manifest.scope==="PER_ISSUER_ELIGIBILITY")')
-          if [ "$universe" = true ]; then
-            node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/live-universe.json"
-            exit 0
-          fi
-          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
-          node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"
-          node scripts/company_intelligence/consumer-experience-qa.mjs --version after --out "$RUNNER_TEMP/live-v2"
+        run: bash scripts/company_intelligence/live-qa-suite.sh
+      - name: Classify failure (read-only; changes no state)
+        id: classify
+        if: always() && steps.approved.outcome == 'success' && steps.approved.outputs.prepared == 'true' && (steps.deps.outcome == 'failure' || steps.gate_off.outcome == 'failure' || steps.live.outcome == 'failure')
+        env:
+          DEPS_OUTCOME: ${{ steps.deps.outcome }}
+          OFF_OUTCOME: ${{ steps.gate_off.outcome }}
+          LIVE_OUTCOME: ${{ steps.live.outcome }}
+          ENABLED: ${{ steps.approved.outputs.enabled }}
+        run: node scripts/company_intelligence/classify-live-failure.mjs
+      - name: Bounded re-verification after transient failure (read-only; changes no state)
+        id: retry
+        if: always() && (steps.classify.outputs.class == 'TRANSIENT_PROPAGATION' || steps.classify.outputs.class == 'TRANSIENT_INFRA')
+        env:
+          NODE_PATH: /tmp/ci-live/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
+          FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
+          CLASS: ${{ steps.classify.outputs.class }}
+          QA: ${{ steps.classify.outputs.qa }}
+          STARTED_AT: ${{ steps.approved.outputs.started_at }}
+        run: node scripts/company_intelligence/retry-live-qa.mjs
       - name: Record actual verified publication separately from private refresh
-        if: steps.live.outcome == 'success'
+        if: steps.live.outcome == 'success' || (steps.retry.outputs.result == 'PASS' && steps.approved.outputs.enabled == 'true')
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -484,7 +498,15 @@ jobs:
             node scripts/company_intelligence/refresh-run.mjs observe --same-generation-only
           fi
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
-        if: failure() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true
+        # Erst NACH Klassifikation und begrenzter Wiederholung (Schritte classify/retry, beide ohne Zustandsaenderung).
+        # Rollback nur, wenn der Verbraucher aktiv war (enabled == 'true') oder der Modus unbekannt ist (approved gescheitert).
+        # Im OFF-Modus gibt es nichts zurueckzunehmen: dort nur der Abschlussschritt unten (Fehlermeldung, Job rot).
+        if: >-
+          always() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true &&
+          (steps.approved.outcome == 'failure' ||
+          (steps.approved.outputs.enabled == 'true' &&
+          (failure() ||
+          ((steps.deps.outcome == 'failure' || steps.live.outcome == 'failure') && steps.retry.outputs.result != 'PASS'))))
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -509,4 +531,18 @@ jobs:
             ${{ runner.temp }}/live-dark/
             ${{ runner.temp }}/live-v2/
             ${{ runner.temp }}/live-off/
+            ${{ runner.temp }}/live-failure/
+            ${{ runner.temp }}/retry-*/
           retention-days: 14
+      # continue-on-error verdeckt den Fehlschlag der Pruefschritte; ohne bestandene Wiederholung muss der Job rot bleiben
+      # (auch im OFF-Modus, wo bewusst kein Rollback laeuft).
+      - name: Conclude live verification
+        if: always() && steps.approved.outcome == 'success' && steps.approved.outputs.prepared == 'true' && (steps.deps.outcome == 'failure' || steps.gate_off.outcome == 'failure' || steps.live.outcome == 'failure') && steps.retry.outputs.result != 'PASS'
+        env:
+          FAILURE_CLASS: ${{ steps.classify.outputs.class }}
+          FAILURE_REASON: ${{ steps.classify.outputs.reason }}
+          RETRY_RESULT: ${{ steps.retry.outputs.result }}
+          ENABLED: ${{ steps.approved.outputs.enabled }}
+        run: |
+          echo "::error title=Company Intelligence live verification failed::class=${FAILURE_CLASS:-UNKNOWN} reason=${FAILURE_REASON:-UNKNOWN} retry=${RETRY_RESULT:-none} consumer_enabled=${ENABLED:-unknown}"
+          exit 1
