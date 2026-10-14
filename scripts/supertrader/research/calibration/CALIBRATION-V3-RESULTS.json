@@ -96,11 +96,17 @@
     },
     {
       "methodId": "buyback_announcement_event",
-      "verdict": null,
-      "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
+      "verdict": "DATA_BLOCKED",
+      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
+      "status": "DATA_BLOCKED",
       "output": null,
-      "checkpoint": "CALIBRATION-V3-buyback_announcement_event-CHECKPOINT.json"
+      "checkpoint": "CALIBRATION-V3-buyback_announcement_event-CHECKPOINT.json",
+      "blockerRequirements": [
+        "COMPLETE_AUTHENTIC_ORIGINAL_HISTORICAL_REPURCHASE_ANNOUNCEMENT_PANEL",
+        "ANNOUNCEMENT_FIRST_PUBLIC_UTC_AND_SECURITY_IDENTITY",
+        "SOURCE_ORIGINAL_PAPER_EVENT_MATCH_SAMPLE_HOLDING_BENCHMARK",
+        "CANCELLATIONS_AND_EVENT_DUPLICATE_RULES"
+      ]
     }
   ],
   "strategyDefinitionsChanged": false
