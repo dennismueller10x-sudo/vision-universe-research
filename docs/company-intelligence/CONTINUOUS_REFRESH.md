@@ -503,3 +503,76 @@ of all 105 sources being due together or a complete queue/latency distribution.
 Public standard-Linux compute has no incremental minute charge; account-wide
 artifact/billing remains unverified. R2/paid-data cost assumptions above remain
 unchanged. There is no new cadence increase or per-visitor processing.
+
+## Ausgelassene Schedule-Laeufe und Finanz-Gate (14 October 2026)
+
+Reine Metadaten-Messung (GitHub Actions API, nur lesend), Fenster 10.10. 00:00 bis 14.10. 15:00 UTC,
+28 Cron-Slots je Workflow.
+
+| Workflow (Cron) | Soll-Slots | angelegt | ausgefallen | Verzug min / Median / max |
+|---|---|---|---|---|
+| Refresh `17 */4` | 28 | 16 | 12 | 36 / 145 / 239 min |
+| Health `57 */4` (eigene Concurrency-Gruppe, Lauf ca. 1 min) | 28 | 16 | 12 | 42 / 127 / 226 min |
+
+Muster: die Slots 00:17 und 08:17 fehlen an fast jedem Tag, 12:17, 16:17 und 20:17 kommen 1,5 bis 4 h
+spaet. Health und Refresh verlieren dieselben Slots. Repo-weit entstanden vom 13.10. 00:00 bis 14.10. 15:00
+nur 65 Schedule-Laeufe fuer 32 Cron-Workflows (z. B. `pages-release` `*/5` an Werktagen praktisch keine).
+
+Urteil, BELEGT: Ausfall und Verzug sind plattformweit (GitHub-Scheduler), nicht
+Concurrency-Verdraengung. (1) Der Health-Workflow hat eine eigene Gruppe und verliert dieselben Slots.
+(2) Fuer die fehlenden Slots existiert kein Lauf in irgendeinem Status; im Fenster gibt es keinen
+`cancelled` Schedule-Lauf des Refresh. Die `cancelled`-Laeufe (profile-source am 12.10., universe-release
+am 10.10.) sind Dispatch-gegen-Dispatch in derselben Gruppe, ein Refresh-Lauf wurde am Timeout (60 min)
+abgebrochen. HYPOTHESE, nicht belegt: Lastspitzen der Plattform bevorzugen bestimmte Stunden; die
+Minute :17 ist nicht ursaechlich (Health :57 verhaelt sich gleich).
+Unabhaengig davon scheiterten 8 von 17 Schedule-Laeufen seit 11.10. im Schritt "Restore, bounded
+refresh, fresh restore, validate and commit consumer"; das ist kein Scheduler-Thema.
+
+### Finanz-Gate (zustandsbasiert)
+
+Vorher: `--financial` nur bei UTC-Stunde % 8 == 0. Verspaetete Schedule-Laeufe trafen das selten
+(1 von 17 seit 10.10.). Jetzt entscheidet `scripts/company_intelligence/scheduler-gate.mjs` im Job `gate`:
+Finanz-Refresh laeuft, wenn der letzte erfolgreiche **Produktions**-Lauf mit Finanz-Refresh
+(Start) aelter als `financialHours` (8 h, `continuous-refresh.json`) minus 0,5 h Verzugstoleranz ist.
+Andere Ereignisse als `schedule` behalten `--financial` immer. Jede Unklarheit (API-Fehler, kaputte
+Antwort, ungueltige Konfiguration, Zeitstempel in der Zukunft, kein markierter Lauf) ergibt
+Finanz-Refresh AN und Lauf AN. Der Zustand kommt ohne R2 aus den Actions-Metadaten:
+ein erfolgreicher Lauf laedt ein Marker-Artefakt `ci-refresh-mode-<runId>-<production|verification>-<financial|plain>`
+hoch. Der Gesundheits-Artefaktname `company-intelligence-refresh-health-<runId>` bleibt unveraendert
+(das Scale-Receipt der Universe-Freigabe liest ihn). Erst nach dem ersten Lauf mit Marker greifen
+Wache und Gate; davor laeuft jeder Schedule-Lauf mit Finanz-Refresh.
+
+Last: `--financial` selbst fuehrt `project_company(c)` ohne `fetch_sec` aus und liest nur lokale
+Quant-SEC-Rohdaten; es sendet keine Anfrage. `advance_financial_filing` (hoechstens 20 companyfacts-
+Abrufe je Lauf, nur bei ungesehenem 10-Q/10-K/20-F/40-F) laeuft in jedem Lauf mit SEC-Zugriff,
+unabhaengig von `--financial`; das feste SEC-Budget (110 Anfragen / 240 s) begrenzt beides und
+bleibt unveraendert. Zusatzlast des Gates: Finanz-Laeufe steigen von rund 0,1 bis 0,3 auf rund 3 pro
+Tag; Obergrenze zusaetzlicher companyfacts-Abrufe 3 x 20 = 60 pro Tag, tatsaechlich nur so viele wie neue
+periodische Filings, die ein budgetierter Nicht-Finanzlauf wegen erschoepftem SEC-Budget aufschob.
+Die lokale Projektion kostet CPU-Sekunden, keine Provider-Anfrage.
+
+### Frische-Wache und Redundanz-Slots
+
+Zusaetzlicher Cron `47 2-22/4 * * *` (02:47, 06:47, ... 22:47; 2,5 h nach dem Primaerslot, nicht auf
+:00/:30). Der Job `gate` laeuft NACH Erhalt der Concurrency-Gruppe und beendet den Slot, ohne dass
+`refresh` startet (kein Quellenzugriff, keine R2-Verbindung, rund eine Minute Runner), wenn
+
+* ein erfolgreicher, markierter **Produktions**-Lauf juenger als 2,5 h ist (Verifikationslaeufe, fehlgeschlagene
+  und abgebrochene Laeufe und Erfolge ohne Marker zaehlen nie als Frische), oder
+* ein Schedule-Lauf in den letzten 45 min fehlschlug und seither kein Erfolg folgte (kein sofortiger
+  Zweitversuch; ein Fehler wird nicht verdoppelt).
+
+Im Normalbetrieb (Primaerlauf 00:17 fertig gegen 00:45) wird 02:47 uebersprungen und 04:17 laeuft:
+Takt und Last bleiben bei etwa 6 Produktionslaeufen pro Tag. Faellt ein Primaerslot aus, holt der
+naechste Slot ihn spaetestens 2,5 h spaeter nach. Maximal 12 Gate-Jobs pro Tag, davon im Normalfall 6 uebersprungen.
+`workflow_dispatch` und `workflow_call` laufen immer.
+
+Concurrency (unveraendert, ein laufender und ein wartender Lauf je Gruppe
+`company-intelligence-continuous-production`, `cancel-in-progress: false`): ein Schedule-Lauf, der
+einen wartenden Lauf derselben Gruppe vorfindet, ersetzt diesen (der aeltere wird `cancelled`, bevor er
+einen Schritt ausfuehrt, es geht kein Schreibzugriff verloren, aber die Arbeit wird nicht erledigt).
+Moeglich ist das gegen einen wartenden Dispatch, `profile-source` (03:47) oder `universe-release`, wenn
+gleichzeitig ein Lauf die Gruppe haelt. Die Wache kann das nicht verhindern, weil sie erst nach dem
+Erhalt der Gruppe laeuft. Ein Umbau auf Job-Concurrency wurde bewusst nicht vorgenommen (ungeprueftes
+Sperrverhalten des einzigen R2-Schreibers). Verbleibend: wer waehrend eines laufenden Produktionslaufs
+dispatcht, prueft danach, ob sein Lauf `cancelled` wurde.

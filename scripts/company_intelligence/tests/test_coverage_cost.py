@@ -68,8 +68,14 @@ class CoverageCostTests(unittest.TestCase):
         self.assertNotIn("cron: '43 * * * *'", workflow)
         self.assertNotIn('cron:', workflow)
         production=(root / '.github/workflows/company-intelligence-refresh.yml').read_text()
+        # Primaerer Vier-Stunden-Slot plus ein um 2,5 h versetzter Redundanz-Slot.
+        # Der Redundanz-Slot ist nur zulaessig, solange der Gate-Job einen Slot bei
+        # frischem Produktionslauf ohne Quellenzugriff beendet (kein doppeltes Polling).
         self.assertEqual(production.count("cron: '17 */4 * * *'"),1)
-        self.assertEqual(production.count('cron:'),1)
+        self.assertEqual(production.count("cron: '47 2-22/4 * * *'"),1)
+        self.assertEqual(production.count('cron:'),2)
+        self.assertIn('scheduler-gate.mjs',production)
+        self.assertIn("needs.gate.outputs.run != 'false'",production)
         self.assertIn('company-intelligence-continuous-',production)
         self.assertIn('% 4', (root / 'scripts/company_intelligence/pilot.sh').read_text())
 
