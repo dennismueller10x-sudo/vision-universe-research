@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {candidateRollout} from '../candidate-rollout.mjs';
-import {expectsEstimatedWindow} from '../estimated-window-expectation.mjs';
+import {expectsEstimatedWindow,mustShowEstimatedWindow} from '../estimated-window-expectation.mjs';
+import {createRequire} from 'node:module';
 
 const generation='a'.repeat(24);
 const served=readFileSync(new URL('./fixtures/rollout.served-minified.js',import.meta.url),'utf8'); // bytes served by Pages (gate OFF, release-minified)
@@ -47,4 +48,59 @@ test('QA expects an estimated window only where the chapter must render one',()=
  assert.equal(expectsEstimatedWindow(payload([]),now),false);
  // Time dependence that made the old assertion flap: same payload, later clock.
  assert.equal(expectsEstimatedWindow(payload([estimate()]),Date.parse('2026-10-31T00:00:00Z')),false);
+});
+
+test('independent lower bound: valid estimates, margins, supersession, first-window rule',()=>{
+ const must=(events,at=now)=>mustShowEstimatedWindow(payload(events),at).length>0;
+ assert.equal(must([estimate()]),true);
+ assert.equal(must([estimate({dateEnd:'2026-10-15'})]),true,'end = today+2 qualifies');
+ assert.equal(must([estimate({dateEnd:'2026-10-14'})]),false,'inside the midnight safety margin');
+ assert.equal(must([estimate({dateEnd:'2026-10-09'})]),false);
+ assert.equal(must([estimate(),scheduled()]),false);
+ assert.equal(must([estimate(),scheduled({fiscalQuarter:'Q4'})]),true);
+ assert.equal(must([estimate({eventStatus:'POSTPONED'})]),false);assert.equal(must([estimate({status:'CANCELLED'})]),false);
+ assert.equal(must([estimate({startsAt:'2026-10-20T00:00:00Z'})]),false,'clock instants are judged by the view model');
+ assert.equal(must([estimate({dateEnd:'garbage'})]),false);assert.equal(must([]),false);
+ assert.equal(must([estimate({fiscalQuarter:'Q4'}),estimate()]),true,'first-window rule: at least one pill, never a count');
+});
+
+test('lower bound is a strict subset of what the shipped view model renders (no false alarms)',()=>{
+ const days=[...Array(120).keys()].map(i=>now+i*86400000);
+ const ends=['2026-10-14','2026-10-15','2026-10-16','2026-11-30','2027-01-31'];
+ for(const at of days)for(const dateEnd of ends)for(const extra of [[],[scheduled()],[scheduled({fiscalQuarter:'Q4'})],[estimate({fiscalQuarter:'Q4',dateEnd:'2026-10-01'})]])
+  for(const flags of [{},{eventStatus:'CANCELLED'},{startsAt:'2026-10-20T00:00:00Z'}]){
+   const p=payload([estimate({dateEnd,...flags}),...extra]);
+   if(mustShowEstimatedWindow(p,at).length>0)assert.equal(expectsEstimatedWindow(p,at),true,JSON.stringify({at,dateEnd,extra,flags}));
+  }
+});
+
+test('MUTATION: a view model that discards valid estimates is invisible to a view-model oracle but caught by the lower bound',()=>{
+ const require=createRequire(import.meta.url),api=require('../../../company-intelligence/api/contract.js');
+ const text=readFileSync(new URL('../../../company-intelligence/ui/stock-section.js',import.meta.url),'utf8');
+ const broken=text.replace('estimates:estimates.slice(0,1)','estimates:[]');
+ assert.notEqual(broken,text);
+ const sandbox={VUCompanyIntelligence:api};runInNewContext(broken,sandbox);
+ const p=payload([estimate()]);
+ // The broken chapter renders no pill; an oracle built on the same broken view model expects none: circular pass.
+ const brokenVm=sandbox.VUCompanyIntelligenceStock.viewModel(p,now).estimates.length>0;
+ const renderedPills=brokenVm?1:0;
+ assert.equal(renderedPills>0,brokenVm,'circular check would pass');
+ // The QA assertion in universe-browser-qa.mjs: fail when pills===0 and a valid estimate exists.
+ const qaFails=pills=>!(pills>0||mustShowEstimatedWindow(p,now).length===0);
+ assert.equal(qaFails(renderedPills),true);
+ assert.equal(qaFails(1),false);
+ const passed=payload([estimate({dateEnd:'2026-10-09'})]);
+ assert.equal(!(0>0||mustShowEstimatedWindow(passed,now).length===0),false,'hidden passed window is not a failure');
+});
+
+const gate=(text,gen=generation)=>candidateRollout(text,gen);
+test('HARDENING: anchored gate pattern and evaluated semantics reject decoys, keep both real spellings',()=>{
+ const decoyComment=served.replace('const config={stage:0,productionOff:!0,','const config={stage:2,productionOff:!0,')+'\n// const config = {stage:1, cohort}\n';
+ assert.throws(()=>gate(decoyComment),/CANDIDATE_UI_BASELINE_MISMATCH/);
+ assert.throws(()=>gate(served.replace('productionOff:!0','productionOff:!1')),/CANDIDATE_UI_BASELINE_MISMATCH/,'OFF without productionOff');
+ assert.throws(()=>gate(served.replace('productionOff:!0','productionOff:false')),/CANDIDATE_UI_BASELINE_MISMATCH/);
+ assert.throws(()=>gate(served.replace('const config={','const xconfig={')),/CANDIDATE_UI_BASELINE_MISMATCH|ReferenceError/);
+ assert.throws(()=>gate(served.replace('const config={','const obj.config={')),/SyntaxError|CANDIDATE_UI_BASELINE_MISMATCH/);
+ assert.throws(()=>gate(source.replace('const config = {stage:1,','const config = {stage:1,productionOff:true,')),/CANDIDATE_UI_BASELINE_MISMATCH/,'stage 1 with productionOff is contradictory');
+ assert.equal(evaluate(gate(served)).productionOff,undefined);assert.equal(evaluate(gate(source)).enabled('AAPL'),true);
 });

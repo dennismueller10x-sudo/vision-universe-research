@@ -11,7 +11,7 @@ import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
 import {readLiveAsset} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
-import {expectsEstimatedWindow} from './estimated-window-expectation.mjs';
+import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
@@ -72,6 +72,8 @@ try{
    // the rendered event pills must match it in both directions.
    const estimatedPills=await chapter.locator('.ci-event .ci-pill',{hasText:'Geschätzt'}).count();
    assert.equal(estimatedPills>0,expectsEstimatedWindow(expected),ticker+':estimated-window');
+   // Independent lower bound from raw events: a valid future estimate must be shown even if the view model drops it.
+   assert(estimatedPills>0||mustShowEstimatedWindow(expected).length===0,ticker+':valid-estimated-window-not-rendered');
    if(estimatedPills>0)assert(text.includes('Geschätzt'));
    assert(!text.includes('keine Meldungen enthalten'));assert(!text.includes('Kein bestätigter kommender Termin'));
    const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(l=>l.height>0).every(l=>l.height>=44&&l.url.startsWith('https:')));
