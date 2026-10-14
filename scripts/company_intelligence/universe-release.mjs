@@ -15,7 +15,7 @@ import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mj
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
 import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
-import {ensureRollbackFreeze,refreezeRollback} from './frozen-refreeze.mjs';
+import {ensureRollbackFreeze,refreezeRollback,fetchLiveDelivery} from './frozen-refreeze.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -61,8 +61,7 @@ try{
   save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
  }else if(args[0]==='refreeze'){
   // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
-  const live=async()=>(await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?refreeze='+Date.now())).json();
-  const result=await refreezeRollback(driver,{temporary,fetchDelivery:live,expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
+    const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
   save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
  }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));

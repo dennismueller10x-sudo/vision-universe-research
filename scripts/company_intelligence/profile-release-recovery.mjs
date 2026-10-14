@@ -1,6 +1,6 @@
 /* Explicit main-only recovery of an already approved full-eligible scope.
    A closed gate stays closed until fresh acceptance; an already open gate (serving the
-   verified legacy 46) is never closed, and the full scope only goes live after a
+   verified legacy 46) is never written by recovery, and the full scope only goes live after a
    full-asset readback. */
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
@@ -21,7 +21,7 @@ import {download} from './download-public.mjs';
    ROLLBACK_46): switching the activation pointer is itself the exposure, so the
    same full-asset readback moves BEFORE that write (finishProfileRecovery) and the
    served legacy 46 GOOD must be intact (`legacy`), which is also what a failed
-   recovery returns to. An open gate is never closed or reopened by recovery. */
+   recovery returns to. The recovery never writes an open gate, not even on failure. */
 export function assertRecoveryBaseline({activation,gate,receipt,full,frozen,legacy},env=process.env){
  assert.equal(env.GITHUB_REF,'refs/heads/main','RECOVERY_MAIN_ONLY');
  assert.equal(env.GITHUB_REPOSITORY,'dennismueller10x-sudo/vision-universe-research','RECOVERY_REPOSITORY_REQUIRED');
@@ -32,7 +32,7 @@ export function assertRecoveryBaseline({activation,gate,receipt,full,frozen,lega
  assert(universeApproved(full?.manifest),'PRIOR_VERIFIED_FULL_GOOD_REQUIRED');
  assert(Object.keys(full.manifest.eligibility).length>45,'PRIOR_FULL_ELIGIBLE_SCOPE_REQUIRED');
  // The receipt proved one rollback generation; a certified re-freeze descends from it (lineage).
- const proven=receipt.rollback.generation,descends=frozen?.generation===proven||(frozen?.refreeze?.schema===1&&frozen.refreeze.sourceGeneration===frozen.generation&&Array.isArray(frozen.refreeze.lineage)&&frozen.refreeze.lineage[0]===proven);
+ const proven=receipt.rollback.generation,descends=frozen?.generation===proven||(frozen?.refreeze?.schema===1&&frozen.refreeze.sourceGeneration===frozen.generation&&Array.isArray(frozen.refreeze.lineage)&&frozen.refreeze.lineage.includes(proven)&&frozen.refreeze.lineage.at(-1)===frozen.refreeze.previousGeneration);
  assert(frozen?.manifest?.tickers?.length===46&&Object.keys(frozen.inventory||{}).length===45&&descends,'IMMUTABLE_ROLLBACK_REQUIRED');
 }
 export async function prepareProfileRecovery(driver,temporary){
@@ -70,9 +70,9 @@ export async function finishProfileRecovery(driver,context,report){
   if(gateOpen)assert(Buffer.from(await driver.get(context.gateKey)).equals(context.gateBytes),'RECOVERY_GATE_CHANGED');
   else await setProductionGate(driver,'AVAILABLE');
  }catch(error){
-  // Closed-gate baseline returns to a closed gate; an open gate is restored byte for byte, never closed.
-  if(gateOpen)await exactRestore(driver,context.gateKey,context.gateBytes,'RECOVERY_GATE_RESTORE_READBACK_FAILED');
-  else await setProductionGate(driver,'DISABLED');
+  // Closed-gate baseline returns to a closed gate. An open gate is NEVER written here: another actor may have
+  // closed it meanwhile, and writing stale bytes would reopen it. Only the activation pointer is reset.
+  if(!gateOpen)await setProductionGate(driver,'DISABLED');
   await exactRestore(driver,activationKey(),context.activationBytes,'RECOVERY_ROLLBACK_READBACK_FAILED');
   throw error;
  }

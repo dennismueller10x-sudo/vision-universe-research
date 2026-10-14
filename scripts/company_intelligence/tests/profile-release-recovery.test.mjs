@@ -75,6 +75,10 @@ test('a certified re-freeze descends from the rollback the acceptance receipt pr
  assert.throws(()=>assertRecoveryBaseline(v,env),/IMMUTABLE_ROLLBACK_REQUIRED/);
  v.frozen.refreeze={schema:1,sourceGeneration:fresh,previousGeneration:proven,lineage:[proven]};
  assert.doesNotThrow(()=>assertRecoveryBaseline(v,env));
+ // after two re-freezes the proven generation is no longer the last lineage entry
+ v.frozen.refreeze.previousGeneration='5'.repeat(24);v.frozen.refreeze.lineage=[proven,'5'.repeat(24)];assert.doesNotThrow(()=>assertRecoveryBaseline(v,env));
+ v.frozen.refreeze.lineage=['4'.repeat(24),'5'.repeat(24)];assert.throws(()=>assertRecoveryBaseline(v,env),/IMMUTABLE_ROLLBACK_REQUIRED/);
+ v.frozen.refreeze.previousGeneration=proven;
  v.frozen.refreeze.lineage=['d'.repeat(24)];assert.throws(()=>assertRecoveryBaseline(v,env),/IMMUTABLE_ROLLBACK_REQUIRED/);
  v.frozen.refreeze.lineage=[proven];v.frozen.refreeze.sourceGeneration='8'.repeat(24);assert.throws(()=>assertRecoveryBaseline(v,env),/IMMUTABLE_ROLLBACK_REQUIRED/);
 });
@@ -107,4 +111,11 @@ test('open gate: a failing activation write restores activation and leaves the o
  w.driver.get=async k=>{const b=await get(k);if(k===activationKey()&&corrupt&&JSON.parse(b).state==='AVAILABLE'){corrupt=false;return Buffer.from('{}');}return b;};
  await assert.rejects(finishProfileRecovery(w.driver,w.context,w.report),/RECOVERY_ACTIVATION_READBACK_FAILED/);
  assert(w.objects.get(activationKey()).equals(w.activationBytes));assert.equal(JSON.parse(w.objects.get(w.gateKey)).state,'AVAILABLE');
+ assert(!w.writes.includes(w.gateKey),'gate never written, also on failure');
+});
+test('open gate: a gate closed in parallel is not reopened by the failure path',async()=>{
+ const w=openWorld();const closed=Buffer.from(JSON.stringify({...JSON.parse(w.gateBytes),state:'DISABLED'}));let corrupt=true;const get=w.driver.get;
+ w.driver.get=async k=>{const b=await get(k);if(k===activationKey()&&corrupt&&JSON.parse(b).state==='AVAILABLE'){corrupt=false;w.objects.set(w.gateKey,closed);return Buffer.from('{}');}return b;};
+ await assert.rejects(finishProfileRecovery(w.driver,w.context,w.report));
+ assert(w.objects.get(w.gateKey).equals(closed));assert(!w.writes.includes(w.gateKey));assert(w.objects.get(activationKey()).equals(w.activationBytes));
 });

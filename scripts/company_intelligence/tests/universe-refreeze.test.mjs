@@ -9,7 +9,7 @@ import {prepareCandidate,commitGood,goodState,goodKey,activationKey,downloadGood
 import {universeConfig} from '../universe-approval.mjs';
 import {approval} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
-import {refreezeRollback,assertRollbackFreeze,ensureRollbackFreeze,assertLegacyScope,refreezeArchiveKey,REFREEZE_MAX_LAG_MS} from '../frozen-refreeze.mjs';
+import {fetchLiveDelivery,refreezeRollback,assertRollbackFreeze,ensureRollbackFreeze,assertLegacyScope,refreezeArchiveKey,REFREEZE_MAX_LAG_MS} from '../frozen-refreeze.mjs';
 // In-memory R2 driver (same contract as the other CI tests: get -> Buffer|null, put).
 function driver(){const objects=new Map(),puts=[];return {objects,puts,get:async k=>objects.get(k)||null,put:async(k,v)=>{puts.push(k);objects.set(k,Buffer.from(v));}};}
 const LEGACY=refreshConfig.consumerNamespace,ROLLBACK=universeConfig.rollbackNamespace,H=3600000;
@@ -66,7 +66,7 @@ test('refreeze re-bases the frozen GOOD on the served legacy GOOD, archives the 
   assert.equal(frozen.generation,w.current.m.generation);assert.equal(frozen.previous,null);
   assert.equal(frozen.refreeze.previousGeneration,oldGeneration);assert.equal(frozen.refreeze.previousPointerSha256,createHash('sha256').update(oldBytes).digest('hex'));
   const archive=JSON.parse(w.d.objects.get(refreezeArchiveKey(oldGeneration)));
-  assert.equal(archive.pointer,oldBytes.toString('utf8'));assert.equal(archive.supersededBy,w.current.m.generation);
+  assert.equal(archive.pointer,oldBytes.toString('utf8'));assert.equal(archive.pointerSha256,createHash('sha256').update(oldBytes).digest('hex'));assert.equal(archive.supersededBy,undefined);
   assert.deepEqual(guarded(w.d),before);assert(w.d.objects.get(goodKey(LEGACY)).equals(legacyBefore));
   const prefix=prefixFor(ROLLBACK).slice(0,-1);
   assert(w.d.puts.length>0&&w.d.puts.every(k=>k.startsWith(prefix)),'every write is inside the rollback namespace: '+w.d.puts.filter(k=>!k.startsWith(prefix)));
@@ -93,6 +93,9 @@ test('after a refreeze activation passes the freeze check (exact and with legacy
   const archiveKey=refreezeArchiveKey(frozen.refreeze.previousGeneration),archive=w.d.objects.get(archiveKey);
   w.d.objects.delete(archiveKey);await assert.rejects(assertRollbackFreeze(w.d,{frozen,known}),/ROLLBACK_FREEZE_ARCHIVE_INVALID/);
   w.d.objects.set(archiveKey,Buffer.from(JSON.stringify({...JSON.parse(archive),pointer:'{}'})));await assert.rejects(assertRollbackFreeze(w.d,{frozen,known}),/ROLLBACK_FREEZE_ARCHIVE_INVALID/);
+  const parsed=JSON.parse(archive);
+  w.d.objects.set(archiveKey,Buffer.from(JSON.stringify({...parsed,pointer:JSON.stringify({...JSON.parse(parsed.pointer),health:{forged:true}})})));await assert.rejects(assertRollbackFreeze(w.d,{frozen,known}),/ROLLBACK_FREEZE_ARCHIVE_INVALID/);
+  w.d.objects.set(archiveKey,Buffer.from(JSON.stringify({...parsed,pointerSha256:'0'.repeat(64)})));await assert.rejects(assertRollbackFreeze(w.d,{frozen,known}),/ROLLBACK_FREEZE_ARCHIVE_INVALID/);
   w.d.objects.set(archiveKey,archive);
   const { refreeze,...plain }=frozen;await assert.rejects(assertRollbackFreeze(w.d,{frozen:plain,known}),/ROLLBACK_FREEZE_ALREADY_EXISTS_WITH_DIFFERENT_GENERATION/);
   await assert.rejects(assertRollbackFreeze(w.d,{frozen:{...frozen,refreeze:{...refreeze,archiveKey:'v1/elsewhere.json'}},known}),/ROLLBACK_FREEZE_ALREADY_EXISTS_WITH_DIFFERENT_GENERATION/);
@@ -221,4 +224,46 @@ test('refreeze is idempotent when the freeze already equals the served GOOD',asy
   await run(w);w.d.puts.length=0;rmSync(join(w.temporary,'refreeze-readback'),{recursive:true,force:true});
   const r=await run(w);assert.equal(r.status,'ALREADY_CURRENT');assert.equal(w.d.puts.length,0);
  }finally{w.done();}
+});
+
+test('F1: an aborted refreeze followed by a newer legacy GOOD can be retried; a tampered archive still blocks',async()=>{
+ const w=await world();try{
+  const put=w.d.put;let hit=false;
+  w.d.put=async(k,v)=>{await put(k,v);if(!hit&&k.startsWith(PAYLOAD_R)){hit=true;w.d.objects.set(goodKey(LEGACY),Buffer.from(JSON.stringify({...JSON.parse(w.d.objects.get(goodKey(LEGACY))),health:{moved:1}})));}};
+  await assert.rejects(run(w),/REFREEZE_CURRENT_CHANGED/);
+  w.d.put=put;
+  const old=await goodState(w.d,ROLLBACK),archiveKey=refreezeArchiveKey(old.generation),archive=w.d.objects.get(archiveKey);assert(archive,'archive written before the aborted swap');
+  const next=w.mk(0x6bf9,600000);await advance(w.d,LEGACY,next);
+  const retry=await refreezeRollback(w.d,{temporary:mkdtempSync(join(tmpdir(),'refreeze-retry-')),fetchDelivery:async()=>({status:'PASS',generation:next.m.generation,cohortStocks:46,issuers:45})});
+  assert.equal(retry.status,'REFROZEN');assert.equal(retry.generation,next.m.generation);assert(w.d.objects.get(archiveKey).equals(archive));
+  // tamper: a wrong hash under the archive key is refused on the next re-freeze
+  const next2=w.mk(0x6bfa,0);await advance(w.d,LEGACY,next2);
+  const f=await goodState(w.d,ROLLBACK),key2=refreezeArchiveKey(f.generation);
+  w.d.objects.set(key2,Buffer.from(JSON.stringify({schema:1,kind:'ROLLBACK_FREEZE_ARCHIVE',generation:f.generation,payloadNamespace:f.payloadNamespace,pointerSha256:'0'.repeat(64),pointer:'{}'})));
+  await assert.rejects(refreezeRollback(w.d,{temporary:mkdtempSync(join(tmpdir(),'refreeze-t2-')),fetchDelivery:async()=>({status:'PASS',generation:next2.m.generation,cohortStocks:46,issuers:45})}),/REFREEZE_ARCHIVE_COLLISION/);
+ }finally{w.done();}
+});
+
+test('M5/F3: marker must match its freeze (sourceGeneration, asset hash) and the real legacy source while it is still known',async()=>{
+ const w=await world();try{
+  await run(w);const next=w.mk(0x6bfb,0);await advance(w.d,LEGACY,next);
+  const known=await goodState(w.d,LEGACY),frozen=await goodState(w.d,ROLLBACK);
+  assert.equal(known.previous.generation,frozen.generation);
+  assert.equal((await assertRollbackFreeze(w.d,{frozen,known})).mode,'REFREEZE');
+  const bad=(patch)=>({...frozen,refreeze:{...frozen.refreeze,...patch}});
+  await assert.rejects(assertRollbackFreeze(w.d,{frozen:bad({sourceGeneration:'7'.repeat(24)}),known}),/ROLLBACK_FREEZE_ALREADY_EXISTS_WITH_DIFFERENT_GENERATION/);
+  await assert.rejects(assertRollbackFreeze(w.d,{frozen:bad({sourceAssetsSha256:'0'.repeat(64)}),known}),/ROLLBACK_FREEZE_MARKER_ASSETS_MISMATCH/);
+  const forged=JSON.parse(JSON.stringify(known));forged.previous.manifest.assets['index.json'].sha256='1'.repeat(64);
+  await assert.rejects(assertRollbackFreeze(w.d,{frozen,known:forged}),/ROLLBACK_FREEZE_DIFFERS_FROM_LEGACY_SOURCE/);
+  // two steps later the source manifest is gone: documented limit, still accepted within the lag window
+  const n2=w.mk(0x6bfc,0);await advance(w.d,LEGACY,n2);
+  assert.equal((await assertRollbackFreeze(w.d,{frozen,known:await goodState(w.d,LEGACY)})).mode,'REFREEZE');
+ }finally{w.done();}
+});
+
+test('fetchLiveDelivery is bounded and rejects non-2xx answers',async()=>{
+ let seen;
+ const ok=await fetchLiveDelivery(async(u,o)=>{seen=o;return {ok:true,status:200,json:async()=>({status:'PASS'})};});
+ assert.equal(ok.status,'PASS');assert(seen.signal instanceof AbortSignal);
+ await assert.rejects(fetchLiveDelivery(async()=>({ok:false,status:503,json:async()=>({status:'PASS',generation:'x'})})),/REFREEZE_LIVE_DELIVERY_HTTP_503/);
 });

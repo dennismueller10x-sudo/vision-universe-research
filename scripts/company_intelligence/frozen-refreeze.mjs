@@ -103,7 +103,8 @@ export async function refreezeRollback(driver,{temporary,fetchDelivery,expectGen
  writeFileSync(join(source,'manifest.json'),JSON.stringify(current.manifest)+'\n');
  // 6. Keep the old freeze as immutable evidence (pointer bytes + hash) before it is replaced.
  const archiveKey=refreezeArchiveKey(old.generation);
- const archive=Buffer.from(JSON.stringify({schema:1,kind:'ROLLBACK_FREEZE_ARCHIVE',generation:old.generation,payloadNamespace:old.payloadNamespace,pointerSha256:sha(oldBytes),pointer:oldBytes.toString('utf8'),supersededBy:current.generation}));
+ const archive=Buffer.from(JSON.stringify({schema:1,kind:'ROLLBACK_FREEZE_ARCHIVE',generation:old.generation,payloadNamespace:old.payloadNamespace,pointerSha256:sha(oldBytes),pointer:oldBytes.toString('utf8')}));
+ // Keyed by the superseded pointer only: an aborted run followed by a newer legacy GOOD writes the identical archive on retry.
  const existingArchive=await bytesOf(driver,archiveKey);
  assert(!existingArchive||existingArchive.equals(archive),'REFREEZE_ARCHIVE_COLLISION');
  if(!existingArchive){await driver.put(archiveKey,archive);const back=await bytesOf(driver,archiveKey);assert(back&&back.equals(archive),'REFREEZE_ARCHIVE_READBACK_FAILED');}
@@ -114,7 +115,7 @@ export async function refreezeRollback(driver,{temporary,fetchDelivery,expectGen
  const legacyAgain=await bytesOf(driver,goodKey(legacy));
  assert(legacyBytes&&legacyAgain&&legacyAgain.equals(legacyBytes),'REFREEZE_CURRENT_CHANGED');
  const lineage=[...(old.refreeze?.lineage||[]),old.generation];
- const marker={schema:1,sourceNamespace:legacy,sourceGeneration:current.generation,previousGeneration:old.generation,previousPointerSha256:sha(oldBytes),archiveKey,lineage,certifiedAt:new Date(now()).toISOString()};
+ const marker={schema:1,sourceNamespace:legacy,sourceGeneration:current.generation,previousGeneration:old.generation,previousPointerSha256:sha(oldBytes),sourceAssetsSha256:sha(JSON.stringify(current.manifest.assets)),archiveKey,lineage,certifiedAt:new Date(now()).toISOString()};
  const next={schema:1,state:'GOOD',generation:candidate.manifest.generation,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health:current.health,inventory:current.inventory,previous:null,refreeze:marker};
  const newBytes=await commitRefreeze(driver,{namespace,candidate,oldBytes,next});
  // 8. Fresh-directory hash readback of the new freeze plus an untouched-state proof; otherwise undo.
@@ -138,10 +139,15 @@ export async function assertRollbackFreeze(driver,{frozen,known}){
  const r=frozen.refreeze;
  if(!(r?.schema===1&&r.sourceGeneration===frozen.generation&&hex24.test(r.previousGeneration||'')&&Array.isArray(r.lineage)&&r.lineage.at(-1)===r.previousGeneration&&r.archiveKey===refreezeArchiveKey(r.previousGeneration)&&/^[a-f0-9]{64}$/.test(r.previousPointerSha256||'')))throw reject();
  assertLegacyScope(frozen,'ROLLBACK_FREEZE_SCOPE_INVALID');assertLegacyScope(known,'LATEST_GOOD_46_REQUIRED');
+ // The marker is self-attested; tie it to the bytes it claims. The frozen asset list must match the hash in the
+ // marker and, while the source is still the legacy `previous` (one step back), the real legacy asset list.
+ // Known limit: once the legacy GOOD advanced twice the source manifest no longer exists to compare.
+ assert(/^[a-f0-9]{64}$/.test(r.sourceAssetsSha256||'')&&sha(JSON.stringify(frozen.manifest.assets))===r.sourceAssetsSha256,'ROLLBACK_FREEZE_MARKER_ASSETS_MISMATCH');
+ if(known.previous?.generation===frozen.generation)assert(same(known.previous.manifest.assets,frozen.manifest.assets),'ROLLBACK_FREEZE_DIFFERS_FROM_LEGACY_SOURCE');
  const lagMs=Date.parse(known.manifest.generatedAt)-Date.parse(frozen.manifest.generatedAt);
  assert(lagMs>=0&&lagMs<=REFREEZE_MAX_LAG_MS,'ROLLBACK_FREEZE_TOO_OLD_FOR_LIVE_GOOD');
  const raw=await bytesOf(driver,r.archiveKey),archive=raw&&JSON.parse(raw);
- assert(archive?.kind==='ROLLBACK_FREEZE_ARCHIVE'&&archive.generation===r.previousGeneration&&archive.supersededBy===frozen.generation&&sha(Buffer.from(archive.pointer))===r.previousPointerSha256,'ROLLBACK_FREEZE_ARCHIVE_INVALID');
+ assert(archive?.kind==='ROLLBACK_FREEZE_ARCHIVE'&&archive.generation===r.previousGeneration&&archive.pointerSha256===r.previousPointerSha256&&typeof archive.pointer==='string'&&sha(Buffer.from(archive.pointer))===r.previousPointerSha256&&JSON.parse(archive.pointer).generation===r.previousGeneration,'ROLLBACK_FREEZE_ARCHIVE_INVALID');
  return {mode:'REFREEZE',lagMs};
 }
 /* The freeze step of `activate`, extracted so it can be tested without R2. */
@@ -157,4 +163,10 @@ export async function ensureRollbackFreeze(driver,{known,directory,temporary}){
  const rollback=await downloadGood(driver,{namespace,output:join(temporary,'fresh-rollback')});
  assert.equal(rollback.generation,existing?existing.generation:known.generation);
  return {rollback,mode};
+}
+/* Production delivery probe for `refreeze`: bounded, HTTP status checked. */
+export async function fetchLiveDelivery(fetchImpl=fetch,url='https://research.visionuniverse.de/company-intelligence-delivery.json'){
+ const r=await fetchImpl(url+'?refreeze='+Date.now(),{signal:AbortSignal.timeout(15000)});
+ assert(r.ok,'REFREEZE_LIVE_DELIVERY_HTTP_'+r.status);
+ return r.json();
 }
