@@ -6,7 +6,7 @@ PR #643 and its V2 code/contracts were read from persisted Git. All 23/23 V2 fre
 
 ## What was recomputed
 
-No numeric calibration was run: freeze-bound canonical source data and reference artifacts are not readable. Prior Momentum output bytes also remain unverifiable; V3 reproduction has not started.
+No numeric calibration was run. The canonical input is now present as a complete, hash-bound encrypted Actions artifact, but its plaintext cannot be read by this executor. Prior Momentum output bytes also remain unverifiable; V3 reproduction has not started.
 
 ## Calibration reference sources
 
@@ -50,7 +50,9 @@ No methods are claim-ready from this V3 work.
 
 ## Remaining blockers
 
-Run 38555503225 produced an `AVAILABLE` canonical capture; run 38566792132 then emitted and verified durable per-part receipts. The 9,410 input segments comprise 9,408 usable securities and two rejected segments. The exact rejection reason was independently reproduced by run 38570403846: both segments were `CORPORATE_ACTION_CONTRADICTED / SPLIT_NOT_IN_RAW_PRICE`. Applying the source split factor made each source close movement farther from zero than the unadjusted movement; prefix validation then left fewer than two usable bars. This is a source corporate-action/price conflict under frozen arithmetic, not a proved runner defect. Private security identities remain unpublished. The separate 52W reference-book reconciliation is still open; this two-segment data cause does not explain its prior discrepancy. No numeric calibration has run yet. Next: bind the canonical/reference receipts in the V3 freeze, then assess only pending method checkpoints. Tournament, current replay, independent reviews and owner delivery remain pending.
+Run 38555503225 produced an `AVAILABLE` canonical capture; run 38566792132 emitted and verified durable per-part receipts (manifest SHA256 `34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713`; 500 parts; 9,408 usable securities). The 9,410 input segments include two rejected segments. Run 38570403846 independently proved both as `CORPORATE_ACTION_CONTRADICTED / SPLIT_NOT_IN_RAW_PRICE`: applying the source split factor made each source close movement farther from zero than the unadjusted movement; prefix validation then left fewer than two usable bars. This is a source corporate-action/price conflict under frozen arithmetic, not a proved runner defect. Private security identities remain unpublished. The separate 52W reference-book reconciliation remains open and is not explained by these exclusions.
+
+The canonical artifact `11895314451` is sealed for owner and session recipients; its ciphertext and all plaintext part digests are durably receipted. No recipient private key or decrypt-capable Actions path is available to this executor, so it cannot provide the verified plaintext source metadata and canonical files required by the numeric runner. V3 freeze remains a candidate (`NOT_FROZEN_MISSING_DURABLE_INPUT_RECEIPTS`); the pending numeric methods have not run. Tournament, current replay, independent reviews and owner delivery remain pending. Resume state records the exact prerequisite and next step.
 
 ## Durability verification
 
@@ -66,7 +68,7 @@ The fresh-resume validator is `scripts/supertrader/research/calibration/verify-v
 Fresh-executor status reconstruction passed from a new sparse clone of the pushed V3 branch using `node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs`. This verified only the persisted inventory/checkpoint/receipt graph; it did not decrypt private inputs or run a calibration.
 
 
-A read-only canonical inventory workflow is now configured to run on a tagged push to the V3 branch. It will capture a new, hash-addressed historical input manifest and preserve only encrypted source inputs plus safe status in Actions artifacts. Measurements remain gated on verifying that run and building the V3 runner/freeze.
+A read-only canonical inventory workflow is configured on the V3 branch. The available capture and all part receipts are verified. Measurements remain gated on authorized plaintext access inside a trusted runner, which must verify all 500 part hashes and source metadata before finalizing the V3 freeze.
 
 
-Historical canonical capture run `38547641330` completed successfully on commit `110853d3b678d2dc88d2329f8e1d4459597b9bca`. Artifact `11885354425` expires `2026-11-13T10:25:51Z`; GitHub digest and a local ZIP SHA256 both equal `30e13fdb4835159ba1e35b3352c7f343b3d81baff9c44120e1d4e0c898850438`. Its public safe status is `canonicalStatus: BLOCKED`, with zero input segments and zero usable segments; it contains no canonical manifest or data parts. Ciphertext content hashes and anonymized status hash are in `CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json`. The original encrypted diagnostic remains unreadable here. A public-status change now allows only an enum-allowlisted reason and phase, with a focused test, so a new capture can isolate the loader failure without exposing messages, stack traces or provider values.
+Earlier canonical capture run `38547641330` is a blocked forensic artifact and is superseded by the available capture above. The latter is usable as a durable receipt, not as local plaintext. `CALIBRATION-V3-RESUME-STATE.json` distinguishes these states and sets the next step to authorized decryption-capable execution followed by V3 freeze and method checkpoints.

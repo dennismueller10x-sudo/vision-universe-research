@@ -1,12 +1,11 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_CAUSE_PROVEN_V3_FREEZE_NEXT",
+  "status": "CANONICAL_AVAILABLE_CAUSE_PROVEN_EXECUTION_BLOCKED_BY_ENCRYPTED_INPUT_ACCESS",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
     "CANONICAL_CAPTURE_ARTIFACT_SHA256_VERIFIED",
-    "CANONICAL_CAPTURE_SAFE_STATUS_VERIFIED_EMPTY",
     "CURRENT_CAPTURE_SAFE_STATUS_READ_AND_VERIFIED",
     "FUNDAMENTAL_METHOD_DATA_CONTRACT_BLOCKERS_ASSESSED",
     "HISTORICAL_CANONICAL_CAPTURE_RUN_COMPLETED",
@@ -24,7 +23,7 @@
     "CANONICAL_REJECTION_DETAIL_RUN_VERIFIED",
     "CANONICAL_TWO_SPLIT_NOT_IN_RAW_PRICE_CAUSE_PROVEN"
   ],
-  "currentPhase": "V3_FREEZE",
+  "currentPhase": "V3_FREEZE_AND_CALIBRATION_INPUT_ACCESS",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -226,24 +225,25 @@
     }
   ],
   "blockers": [
-    "Canonical Actions run 38547641330 completed successfully, but data-certification-status.json reports canonicalStatus=BLOCKED, inputSegments=0, usableSegments=0; no canonical manifest/parts exist. The encrypted private diagnostic is not readable with this executor.",
     "Historical reference CSV inputs and source plan are absent; capture new versioned references before V3 freeze.",
     "No proven numeric cause for prior 52W reconciliation error.",
     "The scanner-safe parser change supersedes two V2 hash bindings; V3 freeze remains explicitly unfinalized pending source receipts.",
     "Current 2026-10-12 scan is captured but review-pending and owner/session sealed; only anonymized availability counts are available.",
     "V3 calibration runner/validator has not yet been created.",
-    "No workflow in this branch creates the historical canonical source parts and binds them to the V3 source manifest.",
-    "Capture diagnostic currently omits the symbolic loader reason and phase; safe allowlisted fields were added to data-inventory and a recapture is required."
+    "Capture diagnostic currently omits the symbolic loader reason and phase; safe allowlisted fields were added to data-inventory and a recapture is required.",
+    "Canonical capture is AVAILABLE and hash-bound: Actions run 38566792132, artifact 11895314451, safe manifest SHA256 34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713, 500 parts / 9,408 securities; canonical rejection cause proven separately by run 38570403846 as DATA_CONTRACT_CORPORATE_ACTION_CONFLICT (2 \u00d7 SPLIT_NOT_IN_RAW_PRICE).",
+    "The canonical dataset and source metadata are present only as owner/session-encrypted files. The workspace has neither a recipient private key nor an established decrypt-capable Actions secret/path; status receipts prove ciphertext and plaintext hash receipts but do not make the plaintext files locally usable. Do not claim numeric calibration execution or final V3 input-receipt binding until a trusted runner can decrypt or a same-run canonical-to-calibration pipeline is established.",
+    "The proposed local per-method runner patch was reverted because its V3 bindings and Actions-compatible private paths are not fully tested; current branch runner remains unchanged."
   ],
-  "nextCommand": "gh run view 38553639552 --repo dennismueller10x-sudo/vision-universe-research",
+  "nextCommand": "Establish an owner-authorized decrypt-capable GitHub Actions execution path for artifact 11895314451 (or a same-run canonical capture\u2192calibration job); before performance, verify all 500 plaintext part hashes and source-metadata SHA against the persisted receipts. Then finalize V3 freeze and execute only the four pending non-fundamental calibration methods one at a time.",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Independent numeric review of parsed reference arithmetic, then resolve the canonical loader failure from the in-progress run 38553639552. Do not finalize the V3 freeze or run calibrations until the canonical manifest and usable parts are hash-bound.",
+  "nextStep": "Provide the existing secure recipient decryption mechanism inside GitHub Actions without exposing plaintext, then verify canonical plaintext receipts in that runner; only after receipt verification freeze the V3 inputs and run pending method checkpoints. The split-conflict cause is proven and must remain disclosed.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
-    "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
-    "command": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
-    "fullCompletionFromCurrentArtifactsAlone": false
+    "testedBranchHead": "f5baa227",
+    "fullCompletionFromCurrentArtifactsAlone": false,
+    "reason": "public repo plus receipts reconstruct artifact identity and counts; encrypted private inputs cannot be consumed without authorized decryption capability"
   },
   "activeWorkflowRun": null,
   "codeHashesForNextCapture": {
