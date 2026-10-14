@@ -23,7 +23,7 @@ import {createRequire} from 'node:module';
 import {createServer} from 'node:http';
 import {randomBytes, createHash} from 'node:crypto';
 import {existsSync, readFileSync} from 'node:fs';
-import {gunzipSync} from 'node:zlib';
+import {gunzipSync, gzipSync} from 'node:zlib';
 import {mkdtemp, mkdir, readdir, readFile, writeFile, copyFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve, join, extname, dirname, relative, sep} from 'node:path';
@@ -79,6 +79,26 @@ if (overlay) for (const file of await htmlFiles(overlay)) { await mkdir(dirname(
 const password = randomBytes(32).toString('hex'); // wie bei PR-Pruefungen: Einmalpasswort, nie ausgegeben
 const gateReport = await protectRelease({output: gated, password});
 const mime = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.gif': 'image/gif', '.ico': 'image/x-icon', '.woff': 'font/woff', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2'};
+// Wie GitHub Pages (curl -sI -H 'Accept-Encoding: gzip' am 14.10.: html, js, css und json kommen mit content-encoding: gzip, vary: Accept-Encoding
+// und passender content-length; catalog.json 7,5 MB -> 489 KB, manifest.json 356 KB -> 56 KB). Ohne das zog die Drosselung (200 KB/s) 7,9 MB
+// durch und die Europa-Route brauchte 56 s statt etwa 15 s. Einmal je Datei komprimiert (Cache), nicht je Anfrage. Die Datei auf der Platte
+// bleibt unveraendert: Stempel und Hashes (?v=, sha256 im Manifest) werden gegen die dekomprimierten Bytes gebildet, die auch der Browser
+// bei response.body() sieht. --no-compress liefert wie frueher unkomprimiert (nur fuer den Vergleich).
+const compressible = /^(text\/html|text\/javascript|text\/css|application\/json|image\/svg\+xml|application\/manifest\+json)\b/, gzipCache = new Map();
+const compress = !argv.includes('--no-compress');
+function gzipResponse(req, res) { // ersetzt res.end: komprimiert, was Pages komprimiert, und nur, wenn der Browser gzip annimmt
+  const end = res.end.bind(res);
+  res.end = (chunk, ...rest) => {
+    if (!compress || !Buffer.isBuffer(chunk) || chunk.length < 256 || res.getHeader('Content-Encoding') || !compressible.test(String(res.getHeader('Content-Type') || ''))) return end(chunk, ...rest);
+    res.setHeader('Vary', 'Accept-Encoding');
+    if (!/\bgzip\b/.test(String(req.headers['accept-encoding'] || ''))) return end(chunk, ...rest);
+    const key = createHash('sha1').update(chunk).digest('hex');
+    if (!gzipCache.has(key)) gzipCache.set(key, gzipSync(chunk, {level: 6}));
+    const sent = gzipCache.get(key);
+    res.setHeader('Content-Encoding', 'gzip'); res.setHeader('Content-Length', sent.length);
+    return end(sent, ...rest);
+  };
+}
 const layers = [...(gateOn ? [gated] : []), ...(overlay ? [overlay] : []), release];
 // Was die Seite von einer Datei zu sehen bekommt, ist auch deren Lesbarkeit: JSON und JSON.gz werden beim Ausliefern einmal je Pfad
 // geprueft (Parsefehler, leere Datei), das Ergebnis lesen die Netzpruefungen unten. Dateien ueber 6 MB bleiben ungeprueft.
@@ -112,6 +132,7 @@ function stampsOfPage(routePath) { // die Stempel der Seite, die diese Route aus
 }
 const server = createServer(async (req, res) => {
   try {
+    gzipResponse(req, res);
     let path = decodeURIComponent(new URL(req.url, 'http://local').pathname);
     if (path.endsWith('/')) path += 'index.html';
     if (hangPaths.has(path)) return; // nie antworten; der Browser schliesst die Verbindung am Ende
