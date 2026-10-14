@@ -34,7 +34,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','warteliste/bestaetigen/index.html','warteliste/bestaetigt/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -49,13 +49,13 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Brevo owns all input fields, CAPTCHA, submission, DOI and unsubscribe state.
   // No exported provider script is copied into our document and no local API exists.
   if (ready) {
-    const frame = `<div class="brevo-form"><iframe title="Anmeldung zur VU App-Warteliste" src="${esc(config.formUrl)}" height="${config.frameHeight || 850}" loading="lazy" referrerpolicy="no-referrer"></iframe><p>Wird das Formular nicht angezeigt? <a href="${esc(config.formUrl)}" target="_blank" rel="noopener noreferrer">Brevo-Formular öffnen</a>.</p></div>`;
+    const frame = `<div class="brevo-form"><iframe title="Anmeldung zum Vision-Universe-Newsletter" src="${esc(config.formUrl)}" height="${config.frameHeight || 850}" loading="lazy" referrerpolicy="no-referrer"></iframe><p>Wird das Formular nicht angezeigt? <a href="${esc(config.formUrl)}" target="_blank" rel="noopener noreferrer">Brevo-Formular öffnen</a>.</p></div>`;
     html = html.replace(/<form\b[^>]*id="newsletter-form"[\s\S]*?<\/form>/, frame);
   }
   // A native unsubscribe link remains available while public signup is blocked.
   // This permits the private provider test without prematurely opening signup.
   if (config.unsubscribeFormUrl) {
-    const confirmedPath = resolve(output,'warteliste/bestaetigt/index.html');
+    const confirmedPath = resolve(output,'newsletter/bestaetigt/index.html');
     const confirmed = await readFile(confirmedPath,'utf8');
     await writeFile(confirmedPath,confirmed.replace(/<div id="brevo-unsubscribe">[\s\S]*?<\/div>/,`<div id="brevo-unsubscribe"><p><a class="button" href="${esc(config.unsubscribeFormUrl)}" rel="noreferrer">Bei Brevo abmelden</a></p><p>Brevos Abmeldeformular kann E-Mail-Marketing kontoweit sperren. Es bestätigt die tatsächliche Abmeldung selbst.</p></div>`));
   }

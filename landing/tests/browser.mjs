@@ -69,9 +69,9 @@ try{
     assert.equal(providerLoads,1);
     assert.equal(await page.locator('#newsletter-form,input[name=EMAIL]').count(),0);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
-    assert.equal(await page.locator('iframe').getAttribute('title'),'Anmeldung zur VU App-Warteliste');
+    assert.equal(await page.locator('iframe').getAttribute('title'),'Anmeldung zum Vision-Universe-Newsletter');
     assert.ok(await page.locator('.brevo-form a').isVisible());
-    await page.goto(base+'/ready/warteliste/bestaetigt/');
+    await page.goto(base+'/ready/newsletter/bestaetigt/');
     assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
     assert.equal(await page.locator('#brevo-unsubscribe a').getAttribute('href'),'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE');
     assert.equal(await page.locator('main button,main input').count(),0);

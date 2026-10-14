@@ -45,7 +45,7 @@
       invalid = email;
     }
     if (!consent.checked) {
-      error(consent, 'Bitte stimme dem Erhalt der Launch-News zu.');
+      error(consent, 'Bitte stimme dem Erhalt des Vision-Universe-Newsletters zu.');
       invalid ??= consent;
     }
     if (invalid) { event.preventDefault(); invalid.focus(); return; }

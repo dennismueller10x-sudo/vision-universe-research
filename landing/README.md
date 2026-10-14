@@ -36,13 +36,15 @@ node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 
 Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
-## Brevo: App-Warteliste mit nativem Formular
+## Brevo: dauerhafter Vision-Universe-Newsletter
 
-PR #659 verwendet ein **von Brevo gehostetes Formular** als Iframe. Brevo übernimmt Eingabeprüfung, CAPTCHA, Double Opt In, Aufnahme in **VU | App-Warteliste (5)** und die Abmeldung. Die Landingpage bleibt statisch: keine D1-Datenbank, kein Worker, keine eigenen DOI-/Abmelde-Endpunkte oder Berechtigungstoken. Der Browser erhält keinen Brevo-API-Schlüssel. Liste 4 mit 135 Kontakten und Liste 6 mit zwei internen Testkontakten werden nicht verändert; die 13 ausgeschlossenen Nicht-Abonnenten bleiben ausgeschlossen.
+PR #659 bereitet ein **natives, von Brevo gehostetes Newsletter-Anmeldeformular** als Iframe vor. Es verwendet ausschließlich **VU | Newsletter (ID 4)**. Der Newsletter informiert über Vision Universe, neue Research-Inhalte und Produkte einschließlich des App-Starts. App-Themen ändern weder Namen noch Einwilligungszweck des Systems.
 
-Die bisher angelegten API-Vorlagen 1/2 sind **nicht als native Formularvorlagen geprüft**. Die deutsche [Formular-DOI-Vorlage](mail/app-doi.html), tatsächlich als **ID 3** angelegt und API-rückgelesen, verwendet den nativen Platzhalter `{{ doubleoptin }}`. Ob sie im tatsächlichen Formular auswählbar ist und den gültigen Link versendet, muss in Brevo und im echten Postfach getestet werden.
+Die 135 vorhandenen Newsletter-Kontakte werden nicht erneut angemeldet, ihre Einwilligungen nicht umgedeutet und keine rückwirkenden DOI-Nachweise gesetzt. **VU | App-Warteliste (5)** und **VU | Newsletter-Test (6)** bleiben unverändert und werden vom Formular nicht verwendet; 13 Nicht-Abonnenten bleiben ausgeschlossen. Brevo übernimmt den neuen Anmelde-/DOI-/Abmeldeweg. Die Landingpage bleibt statisch, ohne D1, eigenen DOI-Endpunkt oder API-Schlüssel im Browser/Build.
 
-**Öffentlich gesperrt; echter DOI-/Abmeldetest fehlt.** Ein tatsächlich gespeichertes Brevo-Formular samt Anmelde- und Abmelde-URL, eine neue kontrollierte Testadresse mit Postfachzugriff und die Freigabe des konkreten Datenschutztextes fehlen. [Genauer Brevo-Klickweg, Betriebsnachweise und Abnahme](WAITLIST.md). Keine weitere Cloudflare-D1- oder API-Token-Einrichtung. Ein Merge aktiviert das Formular nicht. `newsletter.config.example.json` und der Standardbuild bleiben gesperrt.
+Die bisherigen App-Vorlagen **1, 2 und 3** werden auf belegbare Nutzung geprüft und nicht überschrieben oder gelöscht. Die separate deutsche [Newsletter-DOI-Vorlage](mail/newsletter-doi.html) verwendet `{{ doubleoptin }}`. API-Rücklesen beweist nicht ihre Auswahl im Formular oder einen funktionierenden Mail-Link. [Aktueller Nutzungsnachweis, exakter Brevo-Klickweg und Abnahme](NEWSLETTER.md).
+
+**Öffentlich weiterhin gesperrt:** tatsächliche Anmelde-/Abmelde-URLs, kontrollierter echter DOI-/Abmeldetest und Freigabe des konkreten Datenschutztextes fehlen. `newsletter.config.example.json` bleibt gesperrt; ein Merge öffnet die Anmeldung nicht. Keine weitere Cloudflare-D1- oder API-Token-Einrichtung.
 
 ## Historische GitHub-Pages-Vorbereitung
 

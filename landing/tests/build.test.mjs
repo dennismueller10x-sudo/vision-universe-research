@@ -23,12 +23,12 @@ test('Konfiguriertes Formular bettet Brevo ein; keine eigenen Eingaben oder POST
   const output=resolve(root,'tests/output/ready');
   await build({output,config:{formUrl:'https://test.sibforms.com/serve/SYNTHETIC_FORM',unsubscribeFormUrl:'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
   const html=await readFile(resolve(output,'index.html'),'utf8');
-  assert.match(html,/iframe title="Anmeldung zur VU App-Warteliste"/);
+  assert.match(html,/iframe title="Anmeldung zum Vision-Universe-Newsletter"/);
   assert.match(html,/src="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_FORM"/);
   assert.match(html,/referrerpolicy="no-referrer"/);assert.match(html,/rel="noopener noreferrer"/);
   assert.doesNotMatch(html,/<form\b|name="EMAIL"|name="OPT_IN"|\/api\/waitlist/);
   assert.match(await readFile(resolve(output,'_headers'),'utf8'),/connect-src 'none'; form-action 'none'; frame-src https:\/\/test.sibforms.com/);
-  const confirmed=await readFile(resolve(output,'warteliste/bestaetigt/index.html'),'utf8');
+  const confirmed=await readFile(resolve(output,'newsletter/bestaetigt/index.html'),'utf8');
   assert.match(confirmed,/href="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_UNSUBSCRIBE"/);
   assert.match(confirmed,/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
   assert.doesNotMatch(confirmed,/<script|params\.|token|\/api\//);

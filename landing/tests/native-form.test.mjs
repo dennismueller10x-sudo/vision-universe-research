@@ -25,15 +25,15 @@ test('Statischer Build enthält keine Worker, Datenbank, Operatoren oder Secrets
   try{
     const output=resolve(root,'tests/output/static-only');await build({output});
     const files=await readdir(output,{recursive:true});
-    assert.ok(files.every(name=>!/(^|\/)(server|scripts|mail|functions|_worker[^/]*|_routes.json|abmelden)(\/|$)/.test(name)));
+    assert.ok(files.every(name=>!/(^|\/)(server|scripts|mail|functions|warteliste|_worker[^/]*|_routes.json|abmelden)(\/|$)/.test(name)));
     for(const name of files.filter(n=>/\.(html|js|json|css)$/.test(n)))assert.ok(!(await readFile(resolve(output,name),'utf8')).includes(secret));
     const html=await readFile(resolve(output,'index.html'),'utf8');assert.doesNotMatch(html,/<iframe/);
   }finally{delete process.env.BREVO_API_KEY;delete process.env.WAITLIST_TOKEN_KEY;}
 });
 test('DOI-Mail nutzt nativen Platzhalter und wortgleiche Einwilligung',async()=>{
-  const html=await readFile(resolve(root,'mail/app-doi.html'),'utf8');
-  assert.match(html,/href="{{ doubleoptin }}"/);assert.doesNotMatch(html,/params\.|\/api\/|token|unsubscribe_url/);
-  const consent='Ich möchte von Vision Universe per E-Mail über den Start der App und Neuigkeiten zur App informiert werden. Ich kann meine Einwilligung jederzeit über den Abmeldelink widerrufen.';
+  const html=await readFile(resolve(root,'mail/newsletter-doi.html'),'utf8');
+  assert.match(html,/href="{{ doubleoptin }}"/);assert.doesNotMatch(html,/App-Warteliste|App-Anmeldung|App-Mail|Launch-News/);assert.doesNotMatch(html,/params\.|\/api\/|token|unsubscribe_url/);
+  const consent='Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.';
   assert.ok(html.includes(consent));assert.ok((await readFile(resolve(root,'index.html'),'utf8')).includes(consent));
 });
 
@@ -43,7 +43,7 @@ test('Nativer Abmeldelink ist für den privaten Test verfügbar, öffentliche An
   const home=await readFile(resolve(output,'index.html'),'utf8');
   assert.match(home,/<fieldset disabled>/);assert.doesNotMatch(home,/<iframe|<form[^>]*action=/);
   assert.match(await readFile(resolve(output,'_headers'),'utf8'),/frame-src 'none'/);
-  const confirmation=await readFile(resolve(output,'warteliste/bestaetigt/index.html'),'utf8');
+  const confirmation=await readFile(resolve(output,'newsletter/bestaetigt/index.html'),'utf8');
   assert.ok(confirmation.includes(ready.unsubscribeFormUrl));assert.doesNotMatch(confirmation,/<script|<form/);
   for(const url of ['https://evil.example/serve/id','/api/waitlist/unsubscribe'])assert.throws(()=>validateConfig({unsubscribeFormUrl:url}));
 });
