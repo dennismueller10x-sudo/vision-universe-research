@@ -14,6 +14,15 @@ const CLOSED='Die Anmeldung ist noch nicht freigeschaltet. Deine E-Mail-Adresse 
 const TOO_MANY='Zu viele Anfragen. Bitte versuche es später erneut.';
 const H={'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
 
+async function authorizedTest(request,env,now){
+  if(env.NEWSLETTER_STAGE!=='production'||env.NEWSLETTER_CONTROLLED_ENABLED!=='true'||env.NEWSLETTER_PRIVACY_APPROVED!=='true'||!Number.isSafeInteger(Number(env.NEWSLETTER_TEST_UNTIL))||Number(env.NEWSLETTER_TEST_UNTIL)<=now)return false;
+  const token=request.headers.get('Authorization')?.match(/^Bearer ([A-Za-z0-9_-]{43})$/)?.[1];
+  const expected=env.NEWSLETTER_TEST_ACCESS_HASH;
+  if(!token||typeof expected!=='string'||!/^[a-f0-9]{64}$/.test(expected))return false;
+  const actual=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))].map(v=>v.toString(16).padStart(2,'0')).join('');
+  let diff=0;for(let i=0;i<64;i++)diff|=actual.charCodeAt(i)^expected.charCodeAt(i);return diff===0;
+}
+
 export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>globalThis.caches.default,now=Date.now}={}){
   const locks=new Map();
   async function exclusive(key,task){
@@ -58,7 +67,8 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
     if(!expected||url.origin!==expected||request.headers.get('Origin')!==expected||!['same-origin',null].includes(request.headers.get('Sec-Fetch-Site')))return out(403,BAD);
     const publicReady=stage==='production'&&['NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED'].every(n=>env[n]==='true');
     const testing=stage==='preview'&&env.NEWSLETTER_TEST_MODE==='true'&&typeof env.NEWSLETTER_TEST_EMAIL==='string'&&env.NEWSLETTER_TEST_EMAIL.length>3;
-    if(!publicReady&&!testing)return out(503,CLOSED);
+    const controlled=await authorizedTest(request,env,now());
+    if(!publicReady&&!testing&&!controlled)return out(503,CLOSED);
     if(!['application/json','application/x-www-form-urlencoded'].includes(type))return out(415,BAD);
     if(!env.BREVO_API_KEY||typeof env.NEWSLETTER_RATE_KEY!=='string'||env.NEWSLETTER_RATE_KEY.length<32)return out(503,CLOSED);
     const ip=request.headers.get('CF-Connecting-IP');if(!ip||ip.length>64||!/^[:.0-9a-f]+$/i.test(ip))return out(403,BAD);
@@ -81,6 +91,17 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
       });
       if(!permitted)return out(429,TOO_MANY,{'Retry-After':'600'});
       const emailHash=await digest('email:'+email,env.NEWSLETTER_RATE_KEY);
+      if(controlled){
+        // Pseudonymous, short-lived address binding for the one operator link.
+        // Cache is per POP; possession of the private link authorizes the owner.
+        const testKey=new Request(url.origin+'/.newsletter-internal/test/'+env.NEWSLETTER_TEST_ACCESS_HASH);
+        const own=await exclusive('test:'+env.NEWSLETTER_TEST_ACCESS_HASH,async()=>{
+          const prior=await cache.match(testKey);
+          if(prior)return (await prior.text())===emailHash;
+          await cache.put(testKey,new Response(emailHash,{headers:{'Cache-Control':'max-age='+Math.min(7200,Math.max(1,Math.ceil((Number(env.NEWSLETTER_TEST_UNTIL)-now())/1000)))}}));return true;
+        });
+        if(!own)return out(503,CLOSED);
+      }
       return await exclusive('email:'+emailHash,async()=>{
         const hold=new Request(url.origin+'/.newsletter-internal/email/'+emailHash);
         if(await cache.match(hold))return out(202,PENDING);

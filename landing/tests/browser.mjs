@@ -13,9 +13,10 @@ const privacyPath=resolve(root,'tests/output/privacy-fixture.html');
 await writeFile(privacyPath,'<!doctype html><html lang="de"><head><title>Testfixture</title></head><body>Nur für Integrationstests.</body></html>');
 await build({output:resolve(output,'blocked')});
 await build({output:resolve(output,'ready'),config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
+await build({output:resolve(output,'controlled'),config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
-  try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
+  try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/')||pathname.startsWith('/controlled/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${server.address().port}`;
@@ -79,6 +80,20 @@ try{
   await page.route('**/api/newsletter/subscribe',route=>route.abort());
   await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
+  for(const width of [1440,390,320]){
+    const context=await browser.newContext({viewport:{width,height:844}});const page=await context.newPage();let posts=0;
+    await page.route('**/api/newsletter/subscribe',async route=>{
+      posts++;assert.equal(route.request().headers().authorization,'Bearer '+ 'a'.repeat(43));assert.ok(!route.request().url().includes('vu-test'));
+      await route.fulfill({status:202,contentType:'application/json',body:JSON.stringify({message:'Bitte prüfe dein Postfach.'})});
+    });
+    await page.goto(base+'/controlled/');assert.equal(await page.locator('#email').isDisabled(),true);
+    await page.goto(base+'/controlled/#vu-test='+ 'a'.repeat(43));assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(new URL(page.url()).hash,'');
+    await page.locator('#email').fill('new-controlled@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
+    await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
+    assert.deepEqual((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.map(v=>v.id),[]);
+    await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.evaluate(()=>localStorage.length),0);await context.close();
+  }
   const nojs=await browser.newContext({javaScriptEnabled:false});const native=await nojs.newPage();
   await native.goto(base+'/blocked/');assert.equal(await native.locator('#email').isDisabled(),true);
   await native.route('**/api/newsletter/subscribe',async route=>{
@@ -87,5 +102,5 @@ try{
   });
   await native.goto(base+'/ready/');await native.locator('#email').fill('qa@example.test');await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('**/newsletter/bestaetigen/');assert.match(await native.locator('main').innerText(),/Bestätigungsmail/);await nojs.close();
   await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Eigene Formularoberfläche und gleiche Herkunft mit synthetischen API-Antworten geprüft. Kein echter Postfach-/Klick-/Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
-  console.log(JSON.stringify({metrics,formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',liveBrevo:'BLOCKED'},null,2));
+  console.log(JSON.stringify({metrics,formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',controlledChecks:'ordinary visitors disabled, private fragment removed, bearer only in header, owner types address, same-document activation, no local storage, mobile reflow',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}

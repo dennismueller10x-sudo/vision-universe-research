@@ -8,9 +8,10 @@ export function validateConfig(config = {}) {
   const keys=['mode','liveFlowVerified','privacyReviewed','privacyHtmlPath'];
   if(Object.keys(config).some(k=>!keys.includes(k)))throw new Error('Unbekanntes Konfigurationsfeld. Keine Schlüssel oder fremden Formularaktionen verwenden.');
   const mode=config.mode||'closed';
-  if(!['closed','test','public'].includes(mode))throw new Error('Unbekannter Formularmodus.');
+  if(!['closed','test','controlled','public'].includes(mode))throw new Error('Unbekannter Formularmodus.');
   for(const n of ['liveFlowVerified','privacyReviewed'])if(config[n]!==undefined&&typeof config[n]!=='boolean')throw new Error('Freigaben müssen boolesch sein.');
   if(mode==='public'&&(config.liveFlowVerified!==true||config.privacyReviewed!==true||!config.privacyHtmlPath))throw new Error('Echter DOI-/Abmeldetest und freigegebener Datenschutz fehlen.');
+  if(mode==='controlled'&&(config.privacyReviewed!==true||!config.privacyHtmlPath))throw new Error('Kontrollierter Hauptdomain-Test benötigt freigegebenen Datenschutz.');
   if(config.privacyReviewed===true&&!config.privacyHtmlPath)throw new Error('Pfad zu freigegebenen Datenschutzhinweisen fehlt.');
   return mode!=='closed';
 }
@@ -37,7 +38,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
   let html = await readFile(resolve(output,'index.html'),'utf8');
-  if(ready){
+  if(config.mode==='controlled'){
+    html=html.replace('data-ready="false"','data-ready="false" data-controlled="true"');
+  }else if(ready){
     html=html.replace('data-ready="false"','data-ready="true" action="/api/newsletter/subscribe"').replace('<fieldset disabled>','<fieldset>')
       .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden prüfen wir deine Anfrage. Erst der Klick in der Bestätigungsmail bestätigt deine neue Anmeldung.')
       .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden prüfe dein Postfach und bestätige deine neue Anmeldung.')

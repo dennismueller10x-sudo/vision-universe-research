@@ -32,3 +32,13 @@ test('Freigegebenes Formular behält eigene Oberfläche und sendet ausschließli
 test('Build darf keine Research- oder beliebigen Verzeichnisse überschreiben',async()=>{
   for(const output of [root,resolve(root,'..'),'/tmp/landing-unowned'])await assert.rejects(build({output}),/Ausgabe nur/);
 });
+test('Kontrollierter Hauptdomain-Build lässt normale Besucher geschlossen und verlangt konkrete Freigabe',async()=>{
+  assert.throws(()=>validateConfig({mode:'controlled'}),/Datenschutz/);
+  await mkdir(resolve(root,'tests/output'),{recursive:true});
+  await writeFile(resolve(root,'tests/output/privacy-controlled.html'),'<!doctype html><html lang="de"><head><title>Nur synthetische Freigabe</title></head><body>Test</body></html>');
+  const output=resolve(root,'tests/output/controlled');
+  await build({output,production:true,config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-controlled.html'}});
+  const html=await readFile(resolve(output,'index.html'),'utf8');
+  assert.match(html,/data-ready="false" data-controlled="true"/);assert.match(html,/<fieldset disabled>/);
+  assert.doesNotMatch(html,/NEWSLETTER_TEST_ACCESS_HASH|#vu-test=/);assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'/);
+});

@@ -1,13 +1,38 @@
 """Isolated manual operator. No send, contact-write, WAF, DNS or billing endpoint."""
-import json,os,re,secrets,urllib.error,urllib.request,urllib.parse
+import base64,hashlib,json,os,re,secrets,subprocess,time,urllib.error,urllib.request,urllib.parse
 from pathlib import Path
 BREVO='https://api.brevo.com/v3';CF='https://api.cloudflare.com/client/v4'
 NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='vu-newsletter-api-doi-v1'
 SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
-RUNTIME=('BREVO_API_KEY','NEWSLETTER_RATE_KEY','NEWSLETTER_DOI_TEMPLATE_ID','NEWSLETTER_STAGE','NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED','NEWSLETTER_TEST_EMAIL','NEWSLETTER_TEST_MODE','NEWSLETTER_FORM_MODE')
+RUNTIME=('BREVO_API_KEY','NEWSLETTER_RATE_KEY','NEWSLETTER_DOI_TEMPLATE_ID','NEWSLETTER_STAGE','NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED','NEWSLETTER_TEST_EMAIL','NEWSLETTER_TEST_MODE','NEWSLETTER_FORM_MODE','NEWSLETTER_CONTROLLED_ENABLED','NEWSLETTER_TEST_ACCESS_HASH','NEWSLETTER_TEST_UNTIL')
+POLICY='legal-drafts/newsletter-release-2026-10-14.html'
+
+def release_prerequisites(operation):
+    if operation not in ('controlled','public'):return {}
+    policy=Path(__file__).resolve().parents[1].joinpath(POLICY).read_bytes()
+    digest=hashlib.sha256(policy).hexdigest()
+    if os.environ.get('NEWSLETTER_OPERATOR_PRIVACY_SHA256')!=digest or b'data-policy-status="approved"' not in policy or b'data-policy-status="draft"' in policy:raise ValueError('Specific approved privacy document required')
+    proof={'privacy_document_sha256':digest}
+    if operation=='controlled':
+        test_hash=os.environ.get('NEWSLETTER_OPERATOR_TEST_HASH','');until=os.environ.get('NEWSLETTER_OPERATOR_TEST_UNTIL','')
+        if not re.fullmatch('[a-f0-9]{64}',test_hash) or not until.isdigit() or not time.time()*1000<int(until)<=time.time()*1000+7200000:raise ValueError('Private access hash and at most two-hour window required')
+    if operation=='public':
+        run_id=os.environ.get('NEWSLETTER_OPERATOR_TEST_RUN_ID','')
+        if not run_id.isdigit() or os.environ.get('NEWSLETTER_OPERATOR_INBOX_VERIFIED')!='true':raise ValueError('Real inbox acceptance missing')
+        def github(path):
+            req=urllib.request.Request('https://api.github.com/repos/dennismueller10x-sudo/vision-universe-research'+path,headers={'Authorization':'Bearer '+os.environ.get('GH_TOKEN',''),'Accept':'application/vnd.github+json','User-Agent':'VisionUniverse-Newsletter-Release/1.0'})
+            with urllib.request.urlopen(req,timeout=30) as response:return json.loads(response.read())
+        run=github('/actions/runs/'+run_id);jobs=github('/actions/runs/'+run_id+'/jobs')['jobs']
+        if run.get('event')!='workflow_dispatch' or run.get('conclusion')!='success' or run.get('head_branch')!='main' or run.get('path')!='.github/workflows/landing-cloudflare-prepare.yml':raise ValueError('Wrong acceptance run')
+        if not any(j.get('conclusion')=='success' and any(s.get('name')=='Observe owner signup and verify Brevo unsubscribe' and s.get('conclusion')=='success' for s in j.get('steps',[])) for j in jobs):raise ValueError('No successful actual acceptance step')
+        source=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+        workflow=github('/contents/.github/workflows/landing-cloudflare-prepare.yml?ref='+run['head_sha'])
+        if 'ref: '+source not in base64.b64decode(workflow['content']).decode():raise ValueError('Acceptance used another source version')
+        proof['verified_test_run_id']=int(run_id)
+    return proof
 
 def api(origin,path,key,method='GET',body=None):
-    if method!='GET' and not (origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path)):
+    if method!='GET' and not (origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path) or origin==CF and method=='POST' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe/deployments/[a-f0-9-]{36}/retry',path)):
         raise ValueError('Unapproved mutation')
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self,*args,**kwargs):return None
@@ -24,11 +49,14 @@ def api(origin,path,key,method='GET',body=None):
         return error.code,{'safe_codes':[e['code'] for e in value.get('errors',[]) if type(e.get('code')) is int]}
 
 def run():
-    if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF')!='refs/heads/feat/brevo-app-waitlist-doi':raise ValueError('Manual isolated branch only')
+    if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main'):raise ValueError('Manual approved branch only')
     operation=os.environ.get('NEWSLETTER_OPERATOR_OPERATION','audit')
-    if operation not in ('audit','setup'):raise ValueError('Unknown mode')
+    if operation not in ('audit','setup','controlled','close','public'):raise ValueError('Unknown mode')
+    if operation in ('controlled','public') and os.environ.get('GITHUB_REF')!='refs/heads/main':raise ValueError('Main-domain release from main only')
+    release=release_prerequisites(operation)
     key=os.environ.get('BREVO_API_KEY','')
     report={'operation':operation,'emails_sent':0,'contact_write_calls':0,'brevo_secret_present':bool(key)}
+    report.update(release)
     def read(path):
         status,value=api(BREVO,path,key)
         if status!=200:raise ValueError('Brevo read blocked')
@@ -89,8 +117,11 @@ def run():
         if status==200 and value.get('success'):
             project=value['result'];result['existing_project_matches']=project.get('name')=='vision-universe'
             result['runtime_types']={stage:{n:c.get('env_vars',{}).get(n,{}).get('type') for n in RUNTIME} for stage,c in project.get('deployment_configs',{}).items()}
-            result['public_gates_closed']=all(c.get('env_vars',{}).get(n,{}).get('value')=='false' for c in project.get('deployment_configs',{}).values() for n in ('NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED'))
+            result['public_gates_closed']=all(not all(c.get('env_vars',{}).get(n,{}).get('value')=='true' for n in ('NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED')) for c in project.get('deployment_configs',{}).values())
             result['template_bindings_match']=bool(matches) and all(c.get('env_vars',{}).get('NEWSLETTER_DOI_TEMPLATE_ID',{}).get('value')==str(matches[0]['id']) for c in project.get('deployment_configs',{}).values())
+            dep_status,deployments=api(CF,path+'/deployments?per_page=20',token);result['deployments_read_http']=dep_status
+            if dep_status==200 and deployments.get('success'):
+                result['main_git_deployment_available']=any(d.get('environment')=='production' and d.get('deployment_trigger',{}).get('metadata',{}).get('branch')=='main' for d in deployments.get('result',[]))
             if selected is None and name!='BREVO_CLOUDFLARE_DNS_TOKEN':selected=(name,token,path,project)
         status,zones=api(CF,'/zones?name=visionuniverse.de',token);result['zone_read_http']=status
         if status==200 and zones.get('success'):
@@ -98,7 +129,7 @@ def run():
             if len(zone)==1:
                 status,value=api(CF,'/zones/'+zone[0]['id']+'/rulesets/phases/http_ratelimit/entrypoint',token);result['rate_rules_read_http']=status;result['rate_rules_error_codes']=value.get('safe_codes',[])
                 if status==200 and value.get('success'):result['rate_rule_count']=len(value['result'].get('rules',[]))
-    if operation=='setup':
+    if operation!='audit':
         if selected is None or not matches:raise ValueError('Pages setup unavailable')
         name,token,path,project=selected;configs=project.get('deployment_configs',{})
         if project.get('name')!='vision-universe' or set(configs)!={'preview','production'}:raise ValueError('Unexpected project')
@@ -110,8 +141,16 @@ def run():
                 if n not in variables:env[n]={'type':'secret_text','value':v}
             plain={'NEWSLETTER_DOI_TEMPLATE_ID':str(matches[0]['id']),'NEWSLETTER_STAGE':stage,
                    'NEWSLETTER_PUBLIC_ENABLED':'false','NEWSLETTER_PRIVACY_APPROVED':'false','NEWSLETTER_E2E_VERIFIED':'false',
-                   'NEWSLETTER_TEST_MODE':'true' if stage=='preview' and test_email else 'false',
-                   'NEWSLETTER_FORM_MODE':'test' if stage=='preview' and test_email else 'closed'}
+                   'NEWSLETTER_TEST_MODE':'true' if stage=='preview' and test_email and operation=='setup' else 'false',
+                   'NEWSLETTER_FORM_MODE':'test' if stage=='preview' and test_email and operation=='setup' else 'closed',
+                   'NEWSLETTER_CONTROLLED_ENABLED':'false','NEWSLETTER_TEST_UNTIL':'0'}
+            if stage=='production' and operation in ('controlled','public'):
+                plain.update({'NEWSLETTER_PRIVACY_APPROVED':'true','LANDING_PRIVACY_REVIEWED':'true','LANDING_PRIVACY_HTML_PATH':POLICY,
+                              'NEWSLETTER_FORM_MODE':'controlled' if operation=='controlled' else 'public',
+                              'NEWSLETTER_PUBLIC_ENABLED':'true' if operation=='public' else 'false',
+                              'NEWSLETTER_E2E_VERIFIED':'true' if operation=='public' else 'false',
+                              'NEWSLETTER_LIVE_VERIFIED':'true' if operation=='public' else 'false'})
+                if operation=='controlled':plain.update({'NEWSLETTER_CONTROLLED_ENABLED':'true','NEWSLETTER_TEST_ACCESS_HASH':os.environ['NEWSLETTER_OPERATOR_TEST_HASH'],'NEWSLETTER_TEST_UNTIL':os.environ['NEWSLETTER_OPERATOR_TEST_UNTIL']})
             env.update({n:{'type':'plain_text','value':v} for n,v in plain.items()})
             if stage=='preview' and test_email:env['NEWSLETTER_TEST_EMAIL']={'type':'secret_text','value':test_email}
             changed[stage]={'env_vars':env}
@@ -120,11 +159,31 @@ def run():
         status,value=api(CF,path,token)
         if status!=200 or not value.get('success'):raise ValueError('Pages setup readback failed')
         after=value['result'];report['runtime_secret_types_verified']=all(after['deployment_configs'][s].get('env_vars',{}).get(n,{}).get('type')=='secret_text' for s in configs for n in ('BREVO_API_KEY','NEWSLETTER_RATE_KEY'))
-        report['public_gates_closed']=all(after['deployment_configs'][s]['env_vars'][n].get('value')=='false' for s in configs for n in ('NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED'))
+        report['public_gates_closed']=all(not all(after['deployment_configs'][s]['env_vars'][n].get('value')=='true' for n in ('NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED')) for s in configs)
+        report['runtime_mode_readback_matches']=all(
+            all(after['deployment_configs'][s].get('env_vars',{}).get(n,{}).get('value')==v['value'] for n,v in c['env_vars'].items() if v['type']=='plain_text') for s,c in changed.items())
         report['other_project_configuration_unchanged']=all(after.get(n)==project.get(n) for n in ('name','source','build_config','production_branch','domains')) and all(
             all(after['deployment_configs'][s].get('env_vars',{}).get(n)==v for n,v in c.get('env_vars',{}).items() if n not in changed[s]['env_vars']) and
             {n:v for n,v in c.items() if n!='env_vars'}=={n:v for n,v in after['deployment_configs'][s].items() if n!='env_vars'} for s,c in configs.items())
-        if not all(report[n] for n in ('runtime_secret_types_verified','public_gates_closed','other_project_configuration_unchanged')):raise ValueError('Pages readback mismatch')
+        if not all(report[n] for n in ('runtime_secret_types_verified','runtime_mode_readback_matches','other_project_configuration_unchanged')):raise ValueError('Pages readback mismatch')
+        if operation in ('controlled','public','close'):
+            status,value=api(CF,path+'/deployments?per_page=20',token)
+            if status!=200 or not value.get('success'):raise ValueError('Deployment inventory unavailable')
+            candidates=[d for d in value['result'] if d.get('environment')=='production' and d.get('deployment_trigger',{}).get('metadata',{}).get('branch')=='main']
+            if not candidates:raise ValueError('Existing main deployment unavailable')
+            deployment=max(candidates,key=lambda d:d.get('created_on',''));deployment_id=deployment.get('id','')
+            if not re.fullmatch('[a-f0-9-]{36}',deployment_id):raise ValueError('Unexpected deployment identity')
+            # Rebuild the existing Git deployment after env changes, preserving
+            # project/source/domain settings. Never upload a replacement bundle.
+            deadline=time.monotonic()+600
+            while deployment.get('latest_stage',{}).get('status') not in ('success','failure','canceled'):
+                if time.monotonic()>=deadline:raise ValueError('Main deployment still busy; no blind retry')
+                time.sleep(10);status,value=api(CF,path+'/deployments/'+deployment_id,token)
+                if status!=200 or not value.get('success'):raise ValueError('Deployment state unavailable')
+                deployment=value['result']
+            status,value=api(CF,path+'/deployments/'+deployment_id+'/retry',token,'POST')
+            if status not in (200,201) or not value.get('success'):raise ValueError('Existing main redeploy failed')
+            report['main_redeploy_id']=value['result']['id'];report['main_redeploy_requested']=True
     after={n:contacts(n) for n in before};old_after={n:read('/smtp/templates/'+str(n)) for n in old}
     report['protected_contact_objects_unchanged']=before==after;report['old_templates_unchanged']=old==old_after;report['lists_after']={str(n):len(v) for n,v in after.items()}
     if before!=after or old!=old_after:raise ValueError('Protected data changed externally')

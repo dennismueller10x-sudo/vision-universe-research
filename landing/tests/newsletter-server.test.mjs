@@ -33,6 +33,19 @@ test('Alle öffentlichen Gates und Preview-Testadressen werden serverseitig erzw
   const req=new Request(preview+'/api/newsletter/subscribe',{method:'POST',headers:{Origin:preview,'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1'},body:JSON.stringify({email:'other@example.test',consent:true,consentVersion:CONSENT_VERSION,honeypot:''})});
   assert.equal((await f.handler(req,f.env)).status,503);assert.equal(f.calls.length,0);
 });
+test('Privater Hauptdomain-Test benötigt Freigabe, geheimes Zugangsmerkmal und gültige Frist',async()=>{
+  const token='a'.repeat(43);
+  const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))].map(v=>v.toString(16).padStart(2,'0')).join('');
+  function controlled(){const f=fixture();Object.assign(f.env,{NEWSLETTER_PUBLIC_ENABLED:'false',NEWSLETTER_E2E_VERIFIED:'false',NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});return f;}
+  for(const [patch,authorization] of [[{},undefined],[{},'Bearer '+ 'b'.repeat(43)],[{NEWSLETTER_PRIVACY_APPROVED:'false'},'Bearer '+token],[{NEWSLETTER_TEST_UNTIL:'0'},'Bearer '+token],[{NEWSLETTER_CONTROLLED_ENABLED:'false'},'Bearer '+token]]){
+    const f=controlled();Object.assign(f.env,patch);assert.equal((await f.handler(f.request(undefined,{},authorization?{Authorization:authorization}:{}),f.env)).status,503);assert.equal(f.calls.length,0);
+  }
+  const f=controlled();const req=(email)=>f.request(email,{}, {Authorization:'Bearer '+token});
+  assert.equal((await f.handler(req('new@example.test'),f.env)).status,202);assert.equal(f.sends().length,1);
+  assert.equal((await f.handler(req('other@example.test'),f.env)).status,503);assert.equal(f.sends().length,1);
+  assert.equal((await f.handler(req('new@example.test'),f.env)).status,202);assert.equal(f.sends().length,1);
+  f.advance(7200001);assert.equal((await f.handler(req('new@example.test'),f.env)).status,503);assert.equal(f.sends().length,1);
+});
 test('Origin, Eingaben, Consentversion, Größe und Honeypot begrenzen den Endpoint',async()=>{
   for(const [patch,headers,status] of [[{}, {Origin:'https://evil.example'},403],[{consent:false},{},400],[{consentVersion:'old'},{},400],[{email:'bad'},{},400],[{listIds:[5,6]},{},400],[{email:'x'.repeat(5000)},{},400],[{honeypot:'bot'},{},202]]){
     const f=fixture();assert.equal((await f.handler(f.request(undefined,patch,headers),f.env)).status,status);assert.equal(f.calls.length,0);

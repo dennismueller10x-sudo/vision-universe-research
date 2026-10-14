@@ -3,6 +3,18 @@
   const form=document.querySelector('#newsletter-form');if(!form)return;
   const status=document.querySelector('#signup-status'),button=form.querySelector('button'),email=form.querySelector('#email'),consent=form.querySelector('#consent');
   const label=button.innerHTML;let submitting=false,finished=false;
+  let testAccess='';
+  function activateTest(){
+    if(form.dataset.controlled!=='true')return;
+    const match=location.hash.match(/^#vu-test=([A-Za-z0-9_-]{43})$/);
+    if(match){
+      testAccess=match[1];history.replaceState(null,'',location.pathname+location.search);
+      form.dataset.ready='true';form.action='/api/newsletter/subscribe';form.querySelector('fieldset').disabled=false;
+      button.disabled=submitting||finished;form.noValidate=true;
+      status.textContent='Privater Betreiber-Test: Gib eine neue, von dir kontrollierte Adresse ein. Erst der Klick in der DOI-Mail bestätigt die Anmeldung.';
+    }
+  }
+  activateTest();window.addEventListener('hashchange',activateTest);
   if(form.dataset.ready==='true')form.noValidate=true;
   function error(input,message){const n=document.querySelector('#'+input.id+'-error');n.textContent=message;n.hidden=!message;if(message)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid');}
   [email,consent].forEach(input=>input.addEventListener('input',()=>error(input,'')));
@@ -22,7 +34,7 @@
     status.textContent='Deine Anfrage wird geprüft. Deine Anmeldung ist noch nicht bestätigt.';
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),30000);
     try{
-      const response=await fetch('/api/newsletter/subscribe',{method:'POST',credentials:'same-origin',redirect:'error',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.value,consent:consent.checked,consentVersion:form.elements.CONSENT_VERSION.value,honeypot:form.elements.email_address_check.value})});
+      const response=await fetch('/api/newsletter/subscribe',{method:'POST',credentials:'same-origin',redirect:'error',signal:controller.signal,headers:{'Content-Type':'application/json',...(testAccess?{'Authorization':'Bearer '+testAccess}:{})},body:JSON.stringify({email:email.value,consent:consent.checked,consentVersion:form.elements.CONSENT_VERSION.value,honeypot:form.elements.email_address_check.value})});
       const data=await response.json();if(typeof data.message!=='string'||data.message.length>500)throw Error();
       status.textContent=data.message;
       finished=response.status===202||response.status>=500;
