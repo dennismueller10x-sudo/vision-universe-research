@@ -2,10 +2,9 @@ name: Company Intelligence Continuous Production Refresh
 on:
   schedule:
     - cron: '17 */4 * * *'
-    # Redundanz fuer ausgelassene GitHub-Slots (versetzt um 2,5 h). Der Gate-Job
-    # beendet einen Slot ohne Quellenzugriff, wenn ein Produktionslauf juenger als
-    # 2,5 h ist; im Normalfall entsteht daraus keine zusaetzliche Last.
-    - cron: '47 2-22/4 * * *'
+    # Weitere Schedule-Slots gehoeren NICHT hierher: jeder Schedule-Lauf besetzt die
+    # Schreibergruppe, ein neuer wartender verdraengt den alten. Redundanz liefert
+    # company-intelligence-refresh-watchdog.yml (eigene Gruppe, dispatcht nur bei Veraltung).
   workflow_dispatch:
     inputs:
       verification:
@@ -16,6 +15,10 @@ on:
         description: 'Isolated full-universe scaling verification; requires verification'
         type: boolean
         default: false
+      financial:
+        description: 'Financial projection; true (default) keeps every dispatch as before'
+        type: boolean
+        default: true
   workflow_call:
     inputs:
       verification:
@@ -24,6 +27,9 @@ on:
       universe:
         type: boolean
         default: false
+      financial:
+        type: boolean
+        default: true
 permissions:
   contents: read
   actions: write
@@ -38,6 +44,9 @@ jobs:
     if: vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
     outputs:
       run: ${{ steps.gate.outputs.run }}
       financial: ${{ steps.gate.outputs.financial }}
@@ -56,6 +65,7 @@ jobs:
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_FINANCIAL: ${{ inputs.financial }}
         run: node scripts/company_intelligence/scheduler-gate.mjs
   refresh:
     needs: gate
@@ -120,11 +130,15 @@ jobs:
           if [ "$VERIFICATION" = true ]; then options+=(--verification); fi
           if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe --source-audit); fi
           # Finanz-Refresh zustandsbasiert (scheduler-gate.mjs): nur ein ausdrueckliches
-          # FINANCIAL=false im Schedule schaltet ihn aus; jedes andere Ereignis oder
-          # jede Unklarheit laesst ihn an.
-          if [ "$GITHUB_EVENT_NAME" != schedule ] || [ "$FINANCIAL" != false ]; then options+=(--financial); fi
-          echo "FINANCIAL_REFRESH=$([ "$GITHUB_EVENT_NAME" != schedule ] || [ "$FINANCIAL" != false ] && echo on || echo off)" >> "$GITHUB_STEP_SUMMARY"
+          # FINANCIAL=false (Schedule-Urteil oder Dispatch-Eingabe) schaltet ihn aus;
+          # jede Unklarheit (leere Ausgabe, Gate-Fehler) laesst ihn an.
+          if [ "$FINANCIAL" != false ]; then options+=(--financial); fi
           node scripts/company_intelligence/refresh-run.mjs --temporary "$RUNNER_TEMP/ci-refresh" --identity-root .accepted-identities "${options[@]}"
+      - name: Record financial refresh decision
+        if: ${{ !cancelled() }}
+        env:
+          FINANCIAL: ${{ needs.gate.outputs.financial }}
+        run: echo "FINANCIAL_REFRESH=$([ "$FINANCIAL" != false ] && echo on || echo off)" >> "$GITHUB_STEP_SUMMARY"
       - name: Deploy existing Pages pipeline and verify actual production generation
         id: deploy_live
         if: inputs.verification != true
@@ -182,11 +196,12 @@ jobs:
           FINANCIAL: ${{ needs.gate.outputs.financial }}
         run: |
           mode=production; if [ "$VERIFICATION" = true ]; then mode=verification; fi
-          fin=financial; if [ "$GITHUB_EVENT_NAME" = schedule ] && [ "$FINANCIAL" = false ]; then fin=plain; fi
+          fin=financial; if [ "$FINANCIAL" = false ]; then fin=plain; fi
           echo "$mode $fin" > "$RUNNER_TEMP/ci-refresh-mode.txt"
           echo "MARKER=ci-refresh-mode-${GITHUB_RUN_ID}-${mode}-${fin}" >> "$GITHUB_ENV"
       - name: Upload run marker
         if: success()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.MARKER }}

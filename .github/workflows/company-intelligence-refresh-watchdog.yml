@@ -1,0 +1,45 @@
+name: Company Intelligence Refresh Watchdog
+# Zweiter, versetzter Ausloeser fuer ausgelassene GitHub-Cron-Slots des Refresh.
+# Eigene Concurrency-Gruppe: er besetzt die Schreibergruppe des Refresh nie selbst und
+# dispatcht nur, wenn dort nichts laeuft oder wartet und der letzte Produktionslauf
+# veraltet ist. Dispatch -> Refresh mit verification=false (Produktion).
+on:
+  schedule:
+    - cron: '47 2-22/4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: company-intelligence-watchdog-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  watchdog:
+    if: vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout: |
+            scripts/company_intelligence
+            company-intelligence/config
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Decide (read-only API; any doubt means no dispatch and a failed job)
+        id: watch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/company_intelligence/refresh-watchdog.mjs
+      - name: Dispatch production refresh only when stale and the group is idle
+        if: steps.watch.outputs.dispatch == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+          FINANCIAL: ${{ steps.watch.outputs.financial }}
+        run: |
+          gh workflow run company-intelligence-refresh.yml --ref "$REF_NAME" -f verification=false -f universe=false -f financial="$FINANCIAL"

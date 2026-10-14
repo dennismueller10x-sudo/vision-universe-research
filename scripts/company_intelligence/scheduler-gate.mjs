@@ -81,8 +81,8 @@ export function decide({event,now,runs,config={}}){
 }
 
 // API-Zugriff. fetchJson(path) -> geparstes JSON; wirft bei HTTP-/Parsefehlern.
-export async function collectRuns({fetchJson,repo,workflowFile,limit=30,maxArtifactLookups=8}){
-  const list=await fetchJson(`/repos/${repo}/actions/workflows/${workflowFile}/runs?per_page=${limit}&exclude_pull_requests=true`);
+export async function collectRuns({fetchJson,repo,workflowFile,branch='main',limit=30,maxArtifactLookups=8}){
+  const list=await fetchJson(`/repos/${repo}/actions/workflows/${workflowFile}/runs?branch=${encodeURIComponent(branch)}&per_page=${limit}&exclude_pull_requests=true`);
   if(!list||!Array.isArray(list.workflow_runs))throw new Error('RUN_LIST_MALFORMED');
   const runs=[];let lookups=0;let needProd=true,needFin=true;
   const sorted=[...list.workflow_runs].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
@@ -112,7 +112,11 @@ export function loadConfig(path){
 }
 
 export async function evaluate({event,now=new Date(),fetchJson,repo,workflowFile,configPath,env={}}){
-  if(event!=='schedule')return decide({event,now,runs:[]});
+  if(event!=='schedule'){
+    // Dispatch/Call: Finanz-Refresh bleibt an, ausser ein Aufrufer setzt ausdruecklich financial=false.
+    const base=decide({event,now,runs:[]});
+    return env.INPUT_FINANCIAL==='false'?{...base,financial:false,reason:'DISPATCH_FINANCIAL_DISABLED_BY_INPUT'}:base;
+  }
   try{
     const config=configPath?loadConfig(configPath):{};
     if(env.CI_GATE_GUARD_HOURS)config.guardHours=Number(env.CI_GATE_GUARD_HOURS);
@@ -125,12 +129,12 @@ export async function evaluate({event,now=new Date(),fetchJson,repo,workflowFile
   }
 }
 
-function makeFetchJson(token){
+export function makeFetchJson(token,base='https://api.github.com'){
   return async path=>{
     let last;
     for(let attempt=0;attempt<2;attempt++){
       try{
-        const response=await fetch('https://api.github.com'+path,{signal:AbortSignal.timeout(15000),headers:{accept:'application/vnd.github+json','x-github-api-version':'2022-11-28',...(token?{authorization:'Bearer '+token}:{})}});
+        const response=await fetch(base+path,{signal:AbortSignal.timeout(15000),headers:{accept:'application/vnd.github+json','x-github-api-version':'2022-11-28',...(token?{authorization:'Bearer '+token}:{})}});
         if(!response.ok)throw new Error('HTTP_'+response.status);
         return await response.json();
       }catch(e){last=e;}
@@ -141,9 +145,10 @@ function makeFetchJson(token){
 
 async function main(){
   const env=process.env;
+  if(env.CI_GATE_TEST_CRASH)throw new Error('TEST_CRASH');
   const result=await evaluate({
     event:env.GITHUB_EVENT_NAME,repo:env.GITHUB_REPOSITORY,workflowFile:'company-intelligence-refresh.yml',
-    fetchJson:makeFetchJson(env.GH_TOKEN),configPath:'company-intelligence/config/continuous-refresh.json',env});
+    fetchJson:makeFetchJson(env.GH_TOKEN,env.CI_GATE_API_BASE||undefined),configPath:'company-intelligence/config/continuous-refresh.json',env});
   const lines=[`run=${result.run}`,`financial=${result.financial}`,`reason=${result.reason}`];
   if(env.GITHUB_OUTPUT)appendFileSync(env.GITHUB_OUTPUT,lines.join('\n')+'\n');
   const text=`Scheduler gate: ${JSON.stringify(result)}`;

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
+import {createServer} from 'node:http';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 
 const here=fileURLToPath(new URL('.',import.meta.url));
@@ -163,26 +164,65 @@ test('Konfiguration der Produktion liefert financialHours 8',async()=>{
   assert.equal(gate.loadConfig(cfg).financialHours,8);
 });
 
-test('Workflow: Gate, Cron-Redundanz, Finanz-Kopplung und ADR-005',()=>{
-  const wf=readFileSync(join(repoRoot,'.github/workflows/company-intelligence-refresh.yml'),'utf8');
+const refreshWorkflowPath=join(repoRoot,'.github/workflows/company-intelligence-refresh.yml');
+// Struktur-Vertrag des Refresh-Workflows; wirft bei Abweichung (auch fuer Mutationen genutzt).
+export function checkRefreshWorkflow(wf){
   assert.doesNotMatch(wf,/date -u \+%H\) % 8/,'Startstunden-Kopplung entfernt');
-  assert.match(wf,/node scripts\/company_intelligence\/scheduler-gate\.mjs/);
+  assert.match(wf,/run: node scripts\/company_intelligence\/scheduler-gate\.mjs/);
   assert.match(wf,/FINANCIAL: \$\{\{ needs\.gate\.outputs\.financial \}\}/);
-  assert.match(wf,/needs\.gate\.outputs\.run != 'false'/);
+  assert.match(wf,/if \[ "\$FINANCIAL" != false \]; then options\+=\(--financial\); fi/,'Finanz-Bedingung: nur ausdrueckliches false schaltet ab');
+  assert.match(wf,/needs: gate\n    #[^\n]*\n    #[^\n]*\n    if: \$\{\{ !cancelled\(\) && vars\.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs\.gate\.outputs\.run != 'false' \}\}/,'refresh laeuft ausser bei ausdruecklichem run=false (auch nach Gate-Fehler)');
+  assert.match(wf,/id: gate\n        continue-on-error: true\n/,'Gate-Fehler darf den Refresh nicht abschalten');
+  assert.match(wf,/name: Upload run marker\n        if: success\(\)\n        continue-on-error: true\n/,'Marker-Upload darf einen Erfolg nicht kippen');
   assert.match(wf,/MARKER=ci-refresh-mode-\$\{GITHUB_RUN_ID\}-\$\{mode\}-\$\{fin\}/);
   assert.match(wf,/name: \$\{\{ env\.MARKER \}\}/);
+  assert.match(wf,/name: Record financial refresh decision\n/,'Zusammenfassungszeile in eigenem Schritt');
+  assert.doesNotMatch(wf,/options\+=\(--financial\); fi\n\s+echo "FINANCIAL_REFRESH/);
   assert.match(wf,/name: company-intelligence-refresh-health-\$\{\{ github\.run_id \}\}\n/,'Gesundheits-Artefaktname unveraendert');
+  assert.match(wf,/  gate:\n[\s\S]*?    permissions:\n      actions: read\n      contents: read\n    outputs:/,'Gate-Job: minimale Rechte');
   const crons=[...wf.matchAll(/- cron: '([^']+)'/g)].map(m=>m[1]);
-  assert.deepEqual(crons,['17 */4 * * *','47 2-22/4 * * *']);
-  // Slots duerfen sich nie ueberlappen und nie auf :00/:30 liegen.
-  for(const c of crons)assert.doesNotMatch(c,/^(0|30) /);
-  // Eingaben nur ueber env: nie ${{ inputs.* }} im Shell-Text.
+  assert.deepEqual(crons,['17 */4 * * *'],'nur der Primaerslot; Redundanz liegt im Waechter-Workflow');
   for(const block of wf.split(/\n\s+run: /).slice(1)){
     const body=block.split(/\n\s{6}- /)[0];
     assert.doesNotMatch(body,/\$\{\{\s*inputs\./,'Eingabe im run-Block');
   }
   assert.match(wf,/permissions:\n  contents: read\n  actions: write\n/,'Rechte unveraendert');
   assert.match(wf,/group: company-intelligence-continuous-\$\{\{ inputs\.verification && 'verification' \|\| 'production' \}\}\n  cancel-in-progress: false/,'Concurrency unveraendert');
+  assert.match(wf,/financial:\n        description:[^\n]*\n        type: boolean\n        default: true/,'Dispatch-Eingang financial: Default true');
+}
+test('Workflow: Gate, Fail-safe-Zeilen, Finanz-Kopplung, ein Cron und ADR-005',()=>{
+  checkRefreshWorkflow(readFileSync(refreshWorkflowPath,'utf8'));
+});
+
+function runCli(script,env){
+  return new Promise(resolve=>{
+    const dir=mkdtempSync(join(tmpdir(),'gate-cli-'));
+    const out=join(dir,'out.txt');writeFileSync(out,'');
+    const child=spawn(process.execPath,[script],{cwd:repoRoot,env:{PATH:process.env.PATH,GITHUB_OUTPUT:out,...env}});
+    let log='';child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);
+    child.on('close',code=>{const output=readFileSync(out,'utf8');rmSync(dir,{recursive:true});resolve({code,output,log});});
+  });
+}
+const gateScript=process.env.SCHEDULER_GATE_MODULE||join(repoRoot,'scripts/company_intelligence/scheduler-gate.mjs');
+test('CLI: API-Fehler 401 -> run=true financial=true, Exit 0',async()=>{
+  const server=createServer((q,r)=>{r.statusCode=401;r.end('{}');});
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  try{
+    const r=await runCli(gateScript,{GITHUB_EVENT_NAME:'schedule',GITHUB_REPOSITORY:'o/r',CI_GATE_API_BASE:'http://127.0.0.1:'+server.address().port});
+    assert.equal(r.code,0);
+    assert.match(r.output,/^run=true\nfinancial=true\nreason=API_OR_CONFIG_ERROR:HTTP_401\n$/);
+  }finally{server.close();}
+});
+test('CLI: Absturz -> run=true financial=true, Exit 0 (nie run=false)',async()=>{
+  const r=await runCli(gateScript,{GITHUB_EVENT_NAME:'schedule',GITHUB_REPOSITORY:'o/r',CI_GATE_TEST_CRASH:'1'});
+  assert.equal(r.code,0);
+  assert.equal(r.output,'run=true\nfinancial=true\nreason=GATE_CRASH_FAIL_SAFE\n');
+});
+test('CLI: Dispatch ohne API; financial=false nur auf ausdruecklichen Eingang',async()=>{
+  const base={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_REPOSITORY:'o/r',CI_GATE_API_BASE:'http://127.0.0.1:1'};
+  assert.match((await runCli(gateScript,{...base,INPUT_FINANCIAL:'true'})).output,/^run=true\nfinancial=true\n/);
+  assert.match((await runCli(gateScript,{...base,INPUT_FINANCIAL:''})).output,/^run=true\nfinancial=true\n/);
+  assert.match((await runCli(gateScript,{...base,INPUT_FINANCIAL:'false'})).output,/^run=true\nfinancial=false\n/);
 });
 
 // Mutationen: dieselbe Suite muss gegen eine kaputte Wache/ein kaputtes Gate ROT werden.
@@ -195,6 +235,7 @@ if(!process.env.SCHEDULER_GATE_MODULE){
     'Finanz-Gate immer an':[/const financial=!\(finAge<c\.financialHours-c\.financialGraceHours\);/,'const financial=true;'],
     'Verifikation zaehlt als Frische':[/r\.marker\.mode==='production'&&Number/,"(r.marker.mode==='production'||r.marker.mode==='verification')&&Number"],
     'Fehler nicht fail-safe':[/return failSafe\('API_OR_CONFIG_ERROR:'[^;]*;/,"return {run:false,financial:false,reason:'ERR'};"],
+    'Absturz-Handler schreibt run=false':[/appendFileSync\(process\.env\.GITHUB_OUTPUT,'run=true\\nfinancial=true\\nreason=GATE_CRASH_FAIL_SAFE\\n'\)/,"appendFileSync(process.env.GITHUB_OUTPUT,'run=false\\nfinancial=false\\nreason=GATE_CRASH_FAIL_SAFE\\n')"],
     'Erfolg ohne Markierung zaehlt':[/r\.conclusion==='success'&&r\.marker&&r\.marker\.mode==='production'&&/,"r.conclusion==='success'&&"]
   };
   for(const [name,[pattern,replacement]] of Object.entries(mutations)){
@@ -207,6 +248,28 @@ if(!process.env.SCHEDULER_GATE_MODULE){
         const run=spawnSync(process.execPath,['--test',fileURLToPath(import.meta.url)],{env,encoding:'utf8'});
         assert.notEqual(run.status,0,'Mutation "'+name+'" wurde nicht erkannt');
       }finally{rmSync(dir,{recursive:true});}
+    });
+  }
+}
+
+if(!process.env.SCHEDULER_GATE_MODULE){
+  const original=readFileSync(refreshWorkflowPath,'utf8');
+  const wfMutations={
+    'Workflow: !cancelled() entfernt':["!cancelled() && vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs.gate.outputs.run","vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs.gate.outputs.run"],
+    'Workflow: run != false -> run == true':["needs.gate.outputs.run != 'false'","needs.gate.outputs.run == 'true'"],
+    'Workflow: continue-on-error am Gate entfernt':["id: gate\n        continue-on-error: true\n","id: gate\n"],
+    'Workflow: Finanz-Bedingung == true':['if [ "$FINANCIAL" != false ]; then options','if [ "$FINANCIAL" = true ]; then options'],
+    'Workflow: Finanz-Gate immer aus':['if [ "$FINANCIAL" != false ]; then options','if false; then options'],
+    'Workflow: zweiter Cron im Refresh':["- cron: '17 */4 * * *'\n","- cron: '17 */4 * * *'\n    - cron: '47 2-22/4 * * *'\n"],
+    'Workflow: Marker-Upload ohne continue-on-error':["        if: success()\n        continue-on-error: true\n","        if: success()\n"],
+    'Workflow: Gate-Job ohne Rechte':["    permissions:\n      actions: read\n      contents: read\n",""],
+    'Workflow: inputs im run-Text':['run: node scripts/company_intelligence/scheduler-gate.mjs','run: echo ${{ inputs.verification }} && node scripts/company_intelligence/scheduler-gate.mjs']
+  };
+  for(const [name,[from,to]] of Object.entries(wfMutations)){
+    test('Mutation rot: '+name,()=>{
+      assert.ok(original.includes(from),'Mutationsstelle existiert');
+      assert.doesNotThrow(()=>checkRefreshWorkflow(original),'Ausgangszustand muss gruen sein');
+      assert.throws(()=>checkRefreshWorkflow(original.replace(from,to)),'Mutation "'+name+'" wurde nicht erkannt');
     });
   }
 }
