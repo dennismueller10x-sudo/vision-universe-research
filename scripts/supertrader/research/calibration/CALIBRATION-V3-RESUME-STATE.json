@@ -92,6 +92,10 @@
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
       "sha256": "c65b1ae1260794dc739e8f5b37b89629300c288dc31000733058a6e31094423a"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
+      "sha256": "df80ba0ad71de761f541184aeaed2cffc6dc6a683c75163474b61080a334b04f"
     }
   ],
   "blockers": [
@@ -106,5 +110,11 @@
   "nextCommand": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Add and validate the V3 capture/measurement workflow and freeze-aware runner. The exact required inventory document is allowed by the scope guard; no protected Discovery/Quant path is opened."
+  "nextStep": "Add and validate the V3 capture/measurement workflow and freeze-aware runner. The exact required inventory document is allowed by the scope guard; no protected Discovery/Quant path is opened.",
+  "durabilityVerification": {
+    "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
+    "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
+    "command": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
+    "fullCompletionFromCurrentArtifactsAlone": false
+  }
 }

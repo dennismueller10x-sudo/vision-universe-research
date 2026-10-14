@@ -283,5 +283,19 @@
     "path": "scripts/supertrader/guard-protected-paths.mjs",
     "change": "Allow exact required V3 recovery-inventory documentation path in the Supertrader-only PR scope guard.",
     "protectedPathsUnchanged": true
+  },
+  "durabilityTest": {
+    "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
+    "freshClone": "/tmp/v3-fresh-check",
+    "branch": "research/supertrader-calibration-v3-durable",
+    "testedHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
+    "command": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
+    "result": "RESUME_METADATA_VERIFIED_NOT_NUMERICALLY_COMPLETE",
+    "methods": 8,
+    "checkpoints": 8,
+    "privateInputBundles": 116,
+    "privateSourceFiles": 1734,
+    "fullCalibrationCompletion": false,
+    "oldWorkspaceRequired": false
   }
 }
