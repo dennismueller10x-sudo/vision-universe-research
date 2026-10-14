@@ -27,3 +27,7 @@ python -m unittest discover -s brand-media/higgsfield -p 'test_*.py' -v
 ```
 
 These tests use mocked responses and do not contact Higgsfield or incur charges.
+
+## Three-shot Wan text-to-video mode
+
+The official Wan 3.0 text-to-video schema documents `POST /alibaba/wan-3.0/text-to-video`, 2–30 seconds, 480p/720p/1080p, 9:16, `generate_audio`, and `enable_thinking`. Source: <https://docs.higgsfield.ai/docs/models/wan-3/text-to-video.md>. The manual `produce-three` action accepts only Wan 3.0 text-to-video, 1080p, 9:16, native audio, and exactly three independent prompts. It submits 6s, 6s, and 8s jobs sequentially, without references, estimate calls, retries, parallel submissions, or model fallbacks. It requires `APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS` and rejects workflow reruns. Each request uses a run-and-shot idempotency key. The phrase is not consumed across distinct workflow dispatches, so a new manual dispatch can authorize another set. Provider billing has no repository-enforced ceiling; actual costs may not be returned, and native audio does not guarantee only the requested natural effects. If a job remains nonterminal after polling, its request ID is recorded in the manifest for read-only retrieval; no replacement generation is submitted. Independent text-only clips cannot guarantee identical human identity between shots.
