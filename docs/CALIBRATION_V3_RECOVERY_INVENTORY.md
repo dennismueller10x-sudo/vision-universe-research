@@ -37,3 +37,6 @@ Fresh-executor status reconstruction passed from a new sparse clone of the pushe
 
 
 A read-only canonical inventory workflow is now configured to run on a tagged push to the V3 branch. It will capture a new, hash-addressed historical input manifest and preserve only encrypted source inputs plus safe status in Actions artifacts. Measurements remain gated on verifying that run and building the V3 runner/freeze.
+
+
+Historical canonical capture is running in GitHub Actions run `38547641330` on commit `110853d3b678d2dc88d2329f8e1d4459597b9bca`; resume state now records its exact ID and next command.

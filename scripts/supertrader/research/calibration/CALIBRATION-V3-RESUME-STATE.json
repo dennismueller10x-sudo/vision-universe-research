@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_TRIGGERED_BY_NEXT_BRANCH_PUSH",
+  "status": "CANONICAL_CAPTURE_RUNNING",
   "completedPhases": [
     "PR_AND_BRANCH_RECOVERY_INVENTORY",
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
@@ -10,7 +10,7 @@
     "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE",
     "CURRENT_CAPTURE_SAFE_STATUS_READ_AND_VERIFIED"
   ],
-  "currentPhase": "HISTORICAL_CANONICAL_CAPTURE_PENDING_ACTIONS",
+  "currentPhase": "HISTORICAL_CANONICAL_CAPTURE_RUNNING",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -25,7 +25,7 @@
   "artifactRefs": [
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     },
     {
       "artifactId": 11802445766,
@@ -43,7 +43,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-MANIFEST.json",
@@ -51,7 +51,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
+      "sha256": "fd8cb01e75eb08cebb37e3b8d577f2263501b89af1bf82986ce9eff318c8da87"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -67,7 +67,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
@@ -79,7 +79,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
+      "sha256": "fd8cb01e75eb08cebb37e3b8d577f2263501b89af1bf82986ce9eff318c8da87"
     },
     {
       "path": "scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
@@ -87,27 +87,39 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
+      "sha256": "fd8cb01e75eb08cebb37e3b8d577f2263501b89af1bf82986ce9eff318c8da87"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-SOURCE-MANIFEST.json",
-      "sha256": "3d4894136346a2bedb8ea18c0ceac19ad6bd3bac4843b1681d0f1e2db36822cd"
+      "sha256": "395972cccbac8f4875329b2ca78e08b9c79599dbc663380e9cbb4c7e0beef254"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
-      "sha256": "e18c127c3d0f87ba63b5a0918686766a6b8253ca82f1f2f5ae56dc8cc9543fb7"
+      "sha256": "fd8cb01e75eb08cebb37e3b8d577f2263501b89af1bf82986ce9eff318c8da87"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
-      "sha256": "337d8cd933fd4e4db2531df442fe7dae8586f68df6f6d2e3efa6562b5049b124"
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-SOURCE-MANIFEST.json",
+      "sha256": "395972cccbac8f4875329b2ca78e08b9c79599dbc663380e9cbb4c7e0beef254"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
+      "sha256": "fd8cb01e75eb08cebb37e3b8d577f2263501b89af1bf82986ce9eff318c8da87"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
+      "sha256": "c58c0b7e0831a33c54dbe20390bff5298ea5395e97a545ef38152e852d1d4ba4"
     }
   ],
   "blockers": [
@@ -119,14 +131,20 @@
     "V3 calibration runner/validator has not yet been created.",
     "No workflow in this branch creates the historical canonical source parts and binds them to the V3 source manifest."
   ],
-  "nextCommand": "GitHub Actions: supertrader-certification.yml, mode=canonical (trigger commit is tagged; record workflow run ID after push)",
+  "nextCommand": "gh run view 38547641330 --repo dennismueller10x-sudo/vision-universe-research",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Wait for the canonical inventory Action to finish; persist its run/artifact IDs, expiry, safe-status hash, repack manifest hash and every encrypted bundle receipt, then verify from a fresh clone.",
+  "nextStep": "Wait for the read-only canonical inventory job. Once complete, fetch artifacts and persist every artifact ID, expiry, safe-status hash, manifest hash and per-bundle hash.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "cd3c4f9a023f12e1a902999cc024c971d3f3fb96",
     "command": "node scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
     "fullCompletionFromCurrentArtifactsAlone": false
+  },
+  "activeWorkflowRun": {
+    "workflowRunId": 38547641330,
+    "headSha": "110853d3b678d2dc88d2329f8e1d4459597b9bca",
+    "mode": "canonical",
+    "job": "data-probe"
   }
 }

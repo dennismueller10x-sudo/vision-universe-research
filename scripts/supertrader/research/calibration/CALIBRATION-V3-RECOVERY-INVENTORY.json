@@ -249,7 +249,7 @@
     "value_plus_momentum",
     "buyback_announcement_event"
   ],
-  "nextAction": "Run the read-only canonical data inventory in GitHub Actions via the committed V3 branch trigger; verify its safe status, encrypted artifact manifest and each package receipt before creating the V3 measurement freeze.",
+  "nextAction": "Await run 38547641330; verify status and artifact receipts before changing the source manifest to COMPLETE.",
   "volatileWorkspaceIsEvidence": false,
   "scannerRepair": {
     "status": "SEMANTIC_RENAME_COMPLETE_FOCUSED_TEST_PASS",
@@ -279,7 +279,7 @@
   "durableArtifactManifestSha256": "28a78252bab6c25f8728a18695bf93c01628c70572465437f25e70435480a150",
   "executionAvailability": {
     "v3CalibrationRunner": "MISSING",
-    "historicalSourceCaptureWorkflow": "CONFIGURED_PUSH_TRIGGER_PENDING_ACTIONS_RUN",
+    "historicalSourceCaptureWorkflow": "RUNNING",
     "v2Runner": "PRESENT_BUT_HASH_BOUND_TO_PRE_SCANNER_PARSER",
     "strategyDefinitionsChanged": false
   },
@@ -301,5 +301,12 @@
     "privateSourceFiles": 1734,
     "fullCalibrationCompletion": false,
     "oldWorkspaceRequired": false
+  },
+  "activeCaptureRun": {
+    "workflowRunId": 38547641330,
+    "commit": "110853d3b678d2dc88d2329f8e1d4459597b9bca",
+    "event": "push",
+    "mode": "canonical",
+    "workflow": ".github/workflows/supertrader-certification.yml"
   }
 }
