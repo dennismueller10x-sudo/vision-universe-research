@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_HASH_BOUND_CAUSE_DETAIL_PENDING",
+  "status": "CANONICAL_REJECTION_DETAIL_DIAGNOSTIC_RUNNING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -237,9 +237,10 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "runId": null,
-    "status": "NOT_STARTED",
-    "purpose": "Obtain only allowlisted subreason of the 2 CORPORATE_ACTION_CONTRADICTED rejections via status-only normalization; do not resave/recompute calibration data."
+    "runId": 38568696058,
+    "head": "514ae1a9dcf686c6a29afbc60c6bf20c7f060fc0",
+    "status": "QUEUED",
+    "purpose": "Status-only canonical normalization to identify allowlisted detail counts behind exactly two CORPORATE_ACTION_CONTRADICTED exclusions; no recalibration or full encrypted recapture."
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
@@ -266,5 +267,5 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Run a status-only canonical diagnostic which emits only allowlisted corporate-action contradiction detail counts, then verify exactly 2 details explain the 2 rejected segments. Once cause is proved, finalize V3 freeze bound to run 38566792132 receipt; then implement method-by-method durable calibration workflow."
+  "exactNextStep": "Poll run 38568696058; download and verify its small status artifact. Confirm exactly two allowlisted detail counts sum to CORPORATE_ACTION_CONTRADICTED=2. Then finalize and persist BACKTEST-CALIBRATION-FREEZE-V3.json; only after frozen inputs, add durable per-method execution/checkpoint mechanism."
 }
