@@ -23,7 +23,9 @@ def run():
         except urllib.error.HTTPError as error:error.close();return error.code,{}
     def read(path):
         code,value=request(API,path)
-        if code!=200:raise ValueError('Read unavailable')
+        if code!=200:
+            print(json.dumps({'read_phase':'doi_events' if path.startswith('/smtp/statistics/events?') else 'required_private_read','http':code}),flush=True)
+            raise ValueError('Read unavailable')
         return value
     def mutation(path,method,body=None):
         code,value=request(API,path,method,body)
@@ -153,4 +155,7 @@ def run():
 
 if __name__=='__main__':
     try:run()
-    except Exception:print('Controlled test blocked or incomplete. No personalized data emitted; never blindly retry a delivery.');raise SystemExit(1) from None
+    except Exception as error:
+        safe=('Controlled main-domain UI not deployed','Event shape uncertain','Original inventory unavailable','Sender/domain unavailable','Read unavailable')
+        if isinstance(error,ValueError) and str(error) in safe:print(json.dumps({'safe_failure':str(error)}))
+        print('Controlled test blocked or incomplete. No personalized data emitted; never blindly retry a delivery.');raise SystemExit(1) from None
