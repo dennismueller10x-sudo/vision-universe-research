@@ -16,6 +16,7 @@ def release_prerequisites(operation):
     policy=Path(__file__).resolve().parents[1].joinpath(POLICY).read_bytes()
     digest=hashlib.sha256(policy).hexdigest()
     if os.environ.get('NEWSLETTER_OPERATOR_PRIVACY_SHA256')!=digest or b'data-policy-status="approved"' not in policy or b'data-policy-status="draft"' in policy:raise ValueError('Specific approved privacy document required')
+    if operation=='public' and b'data-newsletter-release-scope="controlled"' in policy:raise ValueError('Privacy approval limited to controlled test')
     proof={'privacy_document_sha256':digest}
     if operation=='controlled':
         test_hash=os.environ.get('NEWSLETTER_OPERATOR_TEST_HASH','');until=os.environ.get('NEWSLETTER_OPERATOR_TEST_UNTIL','')

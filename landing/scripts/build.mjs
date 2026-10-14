@@ -35,6 +35,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     const privacy = await readFile(resolve(root,config.privacyHtmlPath),'utf8');
     if (!/<html\b/i.test(privacy) || !/<html[^>]+lang=["']de["']/i.test(privacy) || !/<title>/i.test(privacy)) throw new Error('Datenschutzhinweise müssen ein vollständiges deutsches HTML-Dokument sein.');
     if (/data-policy-status=["']draft["']/i.test(privacy)) throw new Error('Die Vorschau-Datenschutzhinweise sind noch kein freigegebener Rechtstext.');
+    if (config.mode === 'public' && /data-newsletter-release-scope=["']controlled["']/i.test(privacy)) throw new Error('Datenschutzfreigabe gilt ausschließlich für den kontrollierten Test.');
     await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
   let html = await readFile(resolve(output,'index.html'),'utf8');

@@ -114,6 +114,11 @@ class ReleaseContract(unittest.TestCase):
                 if valid:self.assertEqual(self.check('public',{**env,'NEWSLETTER_OPERATOR_INBOX_VERIFIED':inbox})['verified_test_run_id'],123)
                 else:
                     with self.assertRaises(ValueError):self.check('public',{**env,'NEWSLETTER_OPERATOR_INBOX_VERIFIED':inbox})
+    def test_controlled_privacy_scope_cannot_be_promoted_to_public(self):
+        self.file.write_text('<html lang="de" data-policy-status="approved" data-newsletter-release-scope="controlled">Synthetic policy</html>')
+        env={'NEWSLETTER_OPERATOR_PRIVACY_SHA256':hashlib.sha256(self.file.read_bytes()).hexdigest(),'NEWSLETTER_OPERATOR_TEST_HASH':'f'*64,'NEWSLETTER_OPERATOR_TEST_UNTIL':'8200000','NEWSLETTER_OPERATOR_TEST_RUN_ID':'123','NEWSLETTER_OPERATOR_INBOX_VERIFIED':'true'}
+        self.assertIn('privacy_document_sha256',self.check('controlled',env))
+        with self.assertRaisesRegex(ValueError,'limited to controlled test'):self.check('public',env)
     def test_deployment_retry_waits_until_actual_deploy_finishes(self):
         self.assertFalse(admin.deployment_finished({'latest_stage':{'name':'build','status':'success'}}))
         self.assertFalse(admin.deployment_finished({'latest_stage':{'name':'deploy','status':'active'}}))
