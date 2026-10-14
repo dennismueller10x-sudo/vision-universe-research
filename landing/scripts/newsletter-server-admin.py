@@ -53,8 +53,14 @@ def api(origin,path,key,method='GET',body=None):
     except urllib.error.HTTPError as error:
         try:value=json.loads(error.read(65536))
         except Exception:value={}
+        message=value.get('message','')
+        # Fixed classification only. Never return a provider's free-form message,
+        # URL, authentication header or personalized response body.
+        empty_webhooks=bool(path.startswith('/webhooks?') and error.code==400 and isinstance(message,str) and re.fullmatch(
+            r'(?:no webhooks? (?:found|available|configured|exists?)|webhooks? (?:not found|not available|do(?:es)? not exist))(?: (?:for|with) (?:this|the) type)?[.!]?',message.strip(),re.I))
         return error.code,{'safe_codes':[e['code'] for e in value.get('errors',[]) if type(e.get('code')) is int],
-                           'brevo_code':value.get('code') if value.get('code') in ('CONSENT_GROUP_NOT_ENABLED','unauthorized','permission_denied') else None}
+                           'brevo_code':value.get('code') if value.get('code') in ('CONSENT_GROUP_NOT_ENABLED','unauthorized','permission_denied','document_not_found','not_exist','not_found','invalid_parameter','bad_request') else None,
+                           'error_category':'no_webhooks_reported' if empty_webhooks else 'unclassified'}
 
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main'):raise ValueError('Manual approved branch only')
@@ -109,6 +115,8 @@ def run():
         result={'http':status};report['privacy_metadata']['webhooks_by_type'][webhook_type]=result
         if status==200 and isinstance(hooks.get('webhooks'),list):
             result['count']=len(hooks['webhooks'])
+        elif status!=200:
+            result.update({'brevo_code':hooks.get('brevo_code'),'error_category':hooks.get('error_category')})
     report['lists_before']={str(n):len(v) for n,v in before.items()}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
