@@ -14,6 +14,14 @@ const Store=require('../../../../quant/engines/history-store.js');
 const Guard=require('../../../../quant/engines/zero-cost-guard.js');
 const Master=require('../../../../quant/engines/us-security-master.js');
 export const INVENTORY_VERSION='supertrader-private-data-inventory-1.0.0';
+const SAFE_CANONICAL_REASONS=new Set(['HISTORICAL_DATA_LOAD_FAILED','NO_USABLE_SECURITIES','PRIVATE_DATA_NOT_CONFIGURED','WINDOW_NOT_SUPPORTED','ZERO_COST_GUARD_BLOCKED']);
+const SAFE_CANONICAL_PHASES=new Set(['RAW_HISTORICAL_LOADER','CANONICAL_NORMALIZATION','INJECTED_PIT_LOADER']);
+/** Public status may expose only allowlisted symbolic failure metadata, never private error text. */
+export function safeCanonicalDiagnostic(data){
+ const reason=SAFE_CANONICAL_REASONS.has(data?.reason)?data.reason:null;
+ const phase=SAFE_CANONICAL_PHASES.has(data?.privateDiagnostics?.phase)?data.privateDiagnostics.phase:null;
+ return reason?{reason,...(phase?{phase}:{})}:null;
+}
 const privateKeys=['_validation/manifest.json.gz','_validation/sec-pit-r13.json.gz','_validation/sec-delist-r13.json.gz'];
 const secKeys=['v1/sec/fundamentals/_manifest.json','v1/sec/fundamentals/_index.json.gz'];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -109,7 +117,7 @@ export async function collectDataInventory(options={}){
   availableOfficialResources:[{url:'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',role:'RAW_COMPANYFACTS_BULK_NO_HISTORICAL_SECURITY_ROSTER'},{url:'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip',role:'FILINGS_AND_CURRENT_PROFILE_NOT_HISTORICAL_TICKER_VALIDITY'},{url:'https://www.sec.gov/files/company_tickers_exchange.json',role:'CURRENT_ISSUER_TICKER_SNAPSHOT_NOT_HISTORICAL_MAPPING'}],
   limits:['SEC_NORMALIZED_R2_FACTBOOKS_ARE_SOURCE_INPUTS_NOT_A_MIGRATED_CORE_CERTIFICATE','LEGACY_SHARES_DEI_SUM_AND_WADSO_FALLBACK_REQUIRE_REVALIDATION','SEC_SUBMISSIONS_FORMER_NAMES_DATES_DO_NOT_DATE_SECURITY_OR_EXCHANGE_MEMBERSHIP','CURRENT_INSTRUMENT_CLASS_NOT_RETROACTIVE_PIT_CLASS_PROOF'],performanceCalculated:false};
  const publicStatus={schema:INVENTORY_VERSION,status:manifest&&pit?'SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED':'PARTIAL_SOURCE_INPUTS',mode:options.canonical?'READ_ONLY_CANONICAL_INVENTORY':'READ_ONLY_COMPACT_INVENTORY',universeState:certification.state,counts:{providerSupportedListingRecords:sourceRows.supported,sourceRowsRejected:Object.values(sourceRows.rejected).reduce((s,n)=>s+n,0),observedListingGenerations:listings.length,legacyPitEntries:Object.keys(pit||{}).length,legacyDelistingEntries:Object.keys(delist||{}).length,secFundamentalIndexedIssuers:Object.keys(secIndex?.objects||{}).length,sourceObjectsAvailable:sourceObjects.filter(o=>o.status==='AVAILABLE').length,sourceObjectsMissing:sourceObjects.filter(o=>o.status==='MISSING').length,readOnlyGetCalls:budget.spent.classB,writeCalls:budget.spent.classA},sourceRights:'PRIVATE_OWNER_SESSION_ONLY',performanceCalculated:false};
- if(canonicalData){publicStatus.canonicalStatus=canonicalData.state;publicStatus.canonicalCounts={inputSegments:canonicalData.coverage?.inputSegments??0,usableSegments:canonicalData.coverage?.usableSegments??0};if(canonicalData.state==='BLOCKED')privateInput.canonicalPrivateDiagnostic=canonicalData.privateDiagnostics||{reason:canonicalData.reason};}
+ if(canonicalData){publicStatus.canonicalStatus=canonicalData.state;publicStatus.canonicalCounts={inputSegments:canonicalData.coverage?.inputSegments??0,usableSegments:canonicalData.coverage?.usableSegments??0};if(canonicalData.state==='BLOCKED'){publicStatus.canonicalDiagnostic=safeCanonicalDiagnostic(canonicalData);privateInput.canonicalPrivateDiagnostic=canonicalData.privateDiagnostics||{reason:canonicalData.reason};}}
  return {privateInput,publicStatus,canonicalData};
 }
 export function sealInventory(result,out,{ownerKey,sessionKey,canonicalChunkBytes=8*1024*1024}){

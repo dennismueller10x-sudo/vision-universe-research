@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-recovery-inventory-1.0.0",
   "capturedAt": "2026-10-14",
-  "status": "RECOVERY_INVENTORY_COMPLETE_NUMERIC_REBUILD_BLOCKED_ON_MISSING_CANONICAL_INPUTS",
+  "status": "RECOVERY_INVENTORY_COMPLETE_NUMERIC_REBUILD_BLOCKED_CANONICAL_CAPTURE_EMPTY",
   "repository": "dennismueller10x-sudo/vision-universe-research",
   "pr643": {
     "state": "OPEN",
@@ -95,6 +95,14 @@
     "sourceCaptureWorkflow": {
       "path": ".github/workflows/supertrader-certification.yml",
       "sha256": "c61f40e3eafdfc41b0e2c01a88eb9a428959d5499070c34f7c9ff0e500817a05"
+    },
+    "dataInventory": {
+      "path": "scripts/supertrader/research/certification/data-inventory.mjs",
+      "sha256": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003"
+    },
+    "safeDiagnosticTest": {
+      "path": "scripts/supertrader/tests/certification-data-inventory-safe-diagnostic.test.mjs",
+      "sha256": "aa0648931a81ebf328545477e63919356965d728c21788a2ef28bf9b02074bfb"
     }
   },
   "artifacts": [
@@ -126,7 +134,7 @@
     {
       "id": "canonical historical dataset parts and metadata",
       "classification": "MISSING",
-      "evidence": "Readable canonical-dataset-manifest.json, data-certification-inputs.json and canonical-dataset-part-*.json are absent. V2 runner requires exact frozen hashes."
+      "evidence": "Actions run 38547641330 succeeded and its encrypted artifact ZIP digest was locally verified, but safe status reports canonicalStatus=BLOCKED, inputSegments=0, usableSegments=0. No canonical manifest or parts were created."
     },
     {
       "id": "parsed reference artifact and source plan",
@@ -224,6 +232,23 @@
         "currentResultExpiry": "2026-11-12T09:42:55Z",
         "methodFreezeSha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
       }
+    },
+    {
+      "id": "2026-10-14 canonical capture artifact",
+      "classification": "REUSABLE_BUT_NOT_REVERIFIABLE",
+      "evidence": {
+        "workflowRunId": 38547641330,
+        "artifactId": 11885354425,
+        "expiresAt": "2026-11-13T10:25:51Z",
+        "artifactZipSha256": "30e13fdb4835159ba1e35b3352c7f343b3d81baff9c44120e1d4e0c898850438",
+        "safeStatusSha256": "ed5a24fe9abe4a457c622b5a314d7727f76cfacb2a97fb790ebe2e472cdbf55c",
+        "canonicalStatus": "BLOCKED",
+        "inputSegments": 0,
+        "usableSegments": 0,
+        "recipientScheme": "OWNER_AND_SESSION_ENVELOPES",
+        "decrypted": false,
+        "classification": "RECEIPT_VERIFIED_BUT_CANONICAL_DATA_ABSENT"
+      }
     }
   ],
   "qa": {
@@ -276,7 +301,7 @@
     "requiresNewV3Freeze": true
   },
   "durableArtifactManifestPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
-  "durableArtifactManifestSha256": "28a78252bab6c25f8728a18695bf93c01628c70572465437f25e70435480a150",
+  "durableArtifactManifestSha256": "2187844fa2eb89fc8b291aa46565feee066d0c0a424d690eb8db7efe73ca3c8c",
   "executionAvailability": {
     "v3CalibrationRunner": "MISSING",
     "historicalSourceCaptureWorkflow": "RUNNING",

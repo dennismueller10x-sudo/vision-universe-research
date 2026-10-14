@@ -1,6 +1,6 @@
 {
   "schema": "vision-universe-calibration-v3-source-manifest-1.0.0",
-  "status": "V3_CAPTURE_REQUESTED",
+  "status": "CAPTURE_COMPLETED_CANONICAL_INPUTS_BLOCKED",
   "repositoryHead": "cc9ecb5b677035338f034cd0f3c21a24b02c9fa2",
   "freezeSha256V2": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
   "expectedCanonicalInputs": [
@@ -15,7 +15,24 @@
       "classification": "PRIOR_V2_HASH_NOT_REQUIRED_FOR_V3_RECAPTURE"
     }
   ],
-  "captureRecords": [],
+  "captureRecords": [
+    {
+      "workflowRunId": 38547641330,
+      "headSha": "110853d3b678d2dc88d2329f8e1d4459597b9bca",
+      "artifactId": 11885354425,
+      "artifactName": "supertrader-certification-probe-38547641330",
+      "expiresAt": "2026-11-13T10:25:51Z",
+      "artifactZipSha256": "30e13fdb4835159ba1e35b3352c7f343b3d81baff9c44120e1d4e0c898850438",
+      "status": "SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED",
+      "canonicalStatus": "BLOCKED",
+      "inputSegments": 0,
+      "usableSegments": 0,
+      "performanceCalculated": false,
+      "receiptPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
+      "recipientScheme": "OWNER_AND_SESSION_ENVELOPES",
+      "recipientId": "NOT_PUBLIC"
+    }
+  ],
   "noProviderValuesOrSecurityIdentitiesIncluded": true,
   "historicalCanonicalCapture": {
     "workflow": ".github/workflows/supertrader-certification.yml",
@@ -25,8 +42,13 @@
     "asOfPolicy": "Frozen tournament window; capture timestamp and source manifest produced by workflow",
     "artifactRetentionDays": 30,
     "runId": 38547641330,
-    "artifactId": null,
-    "captureStatus": "RUNNING",
-    "commit": "110853d3b678d2dc88d2329f8e1d4459597b9bca"
+    "artifactId": 11885354425,
+    "captureStatus": "COMPLETED_CANONICAL_BLOCKED",
+    "commit": "110853d3b678d2dc88d2329f8e1d4459597b9bca",
+    "artifactZipSha256": "30e13fdb4835159ba1e35b3352c7f343b3d81baff9c44120e1d4e0c898850438",
+    "canonicalStatus": "BLOCKED",
+    "canonicalInputParts": 0,
+    "usableSecurities": 0,
+    "expiresAt": "2026-11-13T10:25:51Z"
   }
 }
