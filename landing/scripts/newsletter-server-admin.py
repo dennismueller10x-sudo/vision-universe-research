@@ -54,12 +54,16 @@ def api(origin,path,key,method='GET',body=None):
         try:value=json.loads(error.read(65536))
         except Exception:value={}
         message=value.get('message','')
+        words={'a','an','any','are','available','been','configured','created','database','defined','do','does','exist','exists','for','found','has','have','in','is','no','not','of','the','there','this','to','type','webhook','webhooks','with','your','account'}
+        safe_webhook_message=(message.strip() if path.startswith('/webhooks?') and error.code==400 and isinstance(message,str)
+            and re.fullmatch(r'[A-Za-z .!-]{1,160}',message.strip()) and set(re.findall(r'[a-z]+',message.lower()))<=words else None)
         # Fixed classification only. Never return a provider's free-form message,
         # URL, authentication header or personalized response body.
         empty_webhooks=bool(path.startswith('/webhooks?') and error.code==400 and isinstance(message,str) and re.fullmatch(
             r'(?:no webhooks? (?:found|available|configured|exists?)|webhooks? (?:not found|not available|do(?:es)? not exist))(?: (?:for|with) (?:this|the) type)?[.!]?',message.strip(),re.I))
         return error.code,{'safe_codes':[e['code'] for e in value.get('errors',[]) if type(e.get('code')) is int],
                            'brevo_code':value.get('code') if value.get('code') in ('CONSENT_GROUP_NOT_ENABLED','unauthorized','permission_denied','document_not_found','not_exist','not_found','invalid_parameter','bad_request') else None,
+                           'safe_webhook_message':safe_webhook_message,
                            'error_category':'no_webhooks_reported' if empty_webhooks else 'unclassified'}
 
 def run():
@@ -116,7 +120,7 @@ def run():
         if status==200 and isinstance(hooks.get('webhooks'),list):
             result['count']=len(hooks['webhooks'])
         elif status!=200:
-            result.update({'brevo_code':hooks.get('brevo_code'),'error_category':hooks.get('error_category')})
+            result.update({'brevo_code':hooks.get('brevo_code'),'error_category':hooks.get('error_category'),'safe_message':hooks.get('safe_webhook_message')})
     report['lists_before']={str(n):len(v) for n,v in before.items()}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
