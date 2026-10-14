@@ -236,6 +236,7 @@ jobs:
       # diesem Release geoeffnet wurde, vergleicht beide, bevor er Code nachlaedt oder nach einem 404 "nicht
       # verfuegbar" zeigt, und laedt dann kontrolliert neu (quant/ui/release-guard.js). Nach dem Verkleinern (der Hash
       # gilt den ausgelieferten Bytes) und vor der Passwortsperre (sie kopiert die Seiten samt Meta-Tag).
+      # Zusaetzlich nur Stempel (?v=<Hash>) an allen Supertrader-Seiten, ohne Meta-Tag und ohne Eintrag in /release-id.json.
       - name: Stamp code identity per product
         run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/site"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
