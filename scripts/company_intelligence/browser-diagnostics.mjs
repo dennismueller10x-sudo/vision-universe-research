@@ -33,8 +33,8 @@ const CRITICAL = /\.(?:js|css|json)$/;
  * served: Skript-/Daten-Antworten desselben Ursprungs (Status + Header) - zeigt, welcher Stand ausgeliefert wurde.
  */
 export function attachDiagnostics(page, {origin = '', limit = 60} = {}) {
- const d = {console: [], pageErrors: [], failed: [], http: [], served: []};
- const push = (list, item) => { if (list.length < limit) list.push(item); };
+ const d = {console: [], pageErrors: [], failed: [], http: [], served: [], truncated: {}};
+ const push = (list, item) => { if (list.length < limit) list.push(item); else for (const k of Object.keys(d)) if (d[k] === list) d.truncated[k] = true; };
  page.on('console', m => { if (m.type() === 'error') push(d.console, String(m.text()).slice(0, 300)); });
  page.on('pageerror', e => push(d.pageErrors, String(e?.message ?? e).slice(0, 300)));
  page.on('requestfailed', r => push(d.failed, {url: safeUrl(r.url(), origin), error: String(r.failure?.()?.errorText || '').slice(0, 120)}));
@@ -75,6 +75,12 @@ export function pageStateInBrowser() {
   vuCompanyIntelligenceRollout: globalThis.VUCompanyIntelligenceRollout ? {stage: globalThis.VUCompanyIntelligenceRollout.stage, productionOff: globalThis.VUCompanyIntelligenceRollout.productionOff} : null,
   scriptResources: resources.length, scriptResourcesSuspicious: suspicious.slice(0, 40), text: document.body.innerText.slice(0, 400)
  };
+}
+
+/** Redaktion eines serialisierten Berichts: Geheimnis im Klartext UND in JSON-escapter Form (Anfuehrungszeichen, Backslash, Unicode). */
+export function redactor(secrets) {
+ const variants = [...new Set(secrets.filter(v => typeof v === 'string' && v.length >= 8).flatMap(v => [v, JSON.stringify(v).slice(1, -1)]))];
+ return text => variants.reduce((t, v) => t.split(v).join('[REDACTED]'), text);
 }
 
 /** Begrenzt jede Diagnose-Abfrage; ein haengender Browser darf den Fehlerbericht nicht verhindern. */

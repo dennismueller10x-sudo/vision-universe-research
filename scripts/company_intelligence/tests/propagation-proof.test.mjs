@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import {createHash} from 'node:crypto';
-import {verifyPropagation, probeOnce, evaluateRelease, retryDecision, PropagationError, CAUSE, headerEvidence} from '../propagation-proof.mjs';
+import {verifyPropagation, probeOnce, evaluateRelease, retryDecision, PropagationError, CAUSE, headerEvidence, referenceDataSha256, DEFAULTS} from '../propagation-proof.mjs';
 
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 const SCRIPTS = ['/quant/ui/charts.js', '/discover/ui/detail.js', '/company-intelligence/ui/stock-section.js'];

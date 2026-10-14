@@ -24,6 +24,7 @@
  * retryDecision (der Stand hat sich zwischen Beweis und Browserlauf nachweislich geaendert).
  */
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 
 export const CAUSE = 'AUSLIEFERUNG_NICHT_PROPAGIERT';
 export const SCHEMA = 'vu-release-id-1';
@@ -51,7 +52,7 @@ export function headerEvidence(response) {
 
 async function read(ctx, path) {
  const url = ctx.origin + path + (path.includes('?') ? '&' : '?') + 'ci-proof=' + ctx.nonce();
- const timeout = Math.max(1000, Math.min(ctx.requestTimeoutMs, ctx.deadline - ctx.now() + 1000));
+ const timeout = Math.min(ctx.requestTimeoutMs, Math.max(1000, ctx.deadline - ctx.now() + 1000));
  try {
   const response = await ctx.fetch(url, {cache: 'no-store', headers: {'cache-control': 'no-cache', pragma: 'no-cache'}, signal: AbortSignal.timeout(timeout)});
   const bytes = Buffer.from(await response.arrayBuffer());
@@ -147,8 +148,9 @@ export async function probeOnce(ctx) {
     else if (sha16(r.bytes) !== v) bad.push({path, cause: 'MIXED', detail: 'sha256[:16] ' + sha16(r.bytes) + ' != ?v ' + v, headers: r.headers});
    }
    observed.lazyChecked = seen;
+   if (stamped.length > ctx.maxLazyScripts) { observed.lazyTruncated = true; observed.lazyTotal = stamped.length; }
    if (bad.length) fail('lazy-detail', bad[0].cause, bad.length + ' von ' + seen + ' Skripten: ' + bad.slice(0, 5).map(b => b.path + ' ' + b.detail).join('; '), {status: null, headers: bad[0].headers || {}});
-   else pass('lazy-detail', null, seen + ' Skripte, Hash == ?v');
+   else pass('lazy-detail', null, seen + (observed.lazyTruncated ? ' von ' + stamped.length + ' (abgeschnitten, truncated:true)' : '') + ' Skripte, Hash == ?v');
   }
  } else fail('lazy-detail', 'SKIPPED', 'ohne gueltigen Gate-Inhalt nicht pruefbar');
 
@@ -196,6 +198,15 @@ export async function verifyPropagation(options = {}) {
  }
 }
 
+/**
+ * Referenz-Hash der Discover-Datei aus dem Checkout. Fehlt die Datei, entfaellt NUR der Byte-Vergleich
+ * (200 + gueltiges JSON bleibt Pflicht); das ist kein Propagationsfehler.
+ */
+export function referenceDataSha256(file, expectedSha) {
+ if (!expectedSha) return {sha256: null, reason: 'NO_EXPECTED_COMMIT'};
+ try { return {sha256: sha256(readFileSync(file)), reason: null}; } catch { return {sha256: null, reason: 'REFERENCE_FILE_MISSING'}; }
+}
+
 export class PropagationError extends Error {
  constructor(result) { super(CAUSE + ': ' + (result.message || '')); this.name = 'PropagationError'; this.cause_ = CAUSE; this.propagation = result; }
 }
@@ -219,14 +230,22 @@ export function retryDecision({proof, reproof, browser}) {
  * Beweis = echter Fehler, ausser retryDecision erlaubt GENAU eine Wiederholung (mit neuem vollstaendigem Beweis).
  * prove({once}) liefert ein Ergebnis von verifyPropagation; runBrowser({propagation, attempt, previousFailure}).
  */
-export async function evaluateRelease({prove, runBrowser}) {
+export async function evaluateRelease({prove, runBrowser, budget = null}) {
+ const now = budget?.now || Date.now;
  const proof = await prove({});
  if (proof.status !== 'PROPAGATED') throw new PropagationError(proof);
+ const browserStart = now();
  try {
   return {propagation: proof, retried: false, result: await runBrowser({propagation: proof, attempt: 1, previousFailure: null})};
  } catch (error) {
+  const browserMs = now() - browserStart;
   const reproof = await prove({once: true});
-  const decision = retryDecision({proof, reproof, browser: error?.observed});
+  let decision = retryDecision({proof, reproof, browser: error?.observed});
+  if (decision.retry && budget) {
+   // Eine Wiederholung braucht: voller neuer Beweis (bis maxMs) + Browserlauf (wie der erste) + Reserve im Job-Budget.
+   const left = budget.startedAt + budget.totalMs - now(), need = (budget.proofMaxMs || 0) + browserMs + (budget.reserveMs || 0);
+   if (left < need) decision = {retry: false, reason: 'NO_TIME_BUDGET', detail: 'Restzeit ' + Math.round(left / 1000) + ' s < benoetigt ' + Math.round(need / 1000) + ' s; Wiederholung wuerde das Job-Timeout riskieren (fail-closed, Ursache: ' + decision.reason + ')'};
+  }
   error.propagationEvidence = {proof, reproof, decision};
   if (!decision.retry) throw error;
   const second = await prove({});

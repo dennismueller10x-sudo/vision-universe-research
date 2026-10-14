@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
-import {attachDiagnostics, safeUrl, pickHeaders, collectFailure, pageStateInBrowser} from '../browser-diagnostics.mjs';
+import {attachDiagnostics, safeUrl, pickHeaders, collectFailure, pageStateInBrowser, redactor} from '../browser-diagnostics.mjs';
 
 const origin = 'https://research.visionuniverse.de';
 const response = (url, status, headers = {}) => ({url: () => url, status: () => status, headers: () => headers});
@@ -22,6 +22,25 @@ test('Konsole, pageerror, fehlgeschlagene und >=400-Requests landen im Bericht, 
  assert.deepEqual(d.http[0], {url: '/quant/engines/hash.js?v=123456', status: 404, headers: {age: '221', 'x-cache': 'HIT', 'x-served-by': 'cache-iad-1'}});
  assert.equal(d.served.length, 1);
  assert.equal(JSON.stringify(d).includes('set-cookie') || JSON.stringify(d).includes('a=b'), false);
+});
+
+test('Kuerzung wird kenntlich gemacht (truncated)', () => {
+ const page = new EventEmitter(), d = attachDiagnostics(page, {origin, limit: 2});
+ for (let i = 0; i < 5; i++) page.emit('response', response(origin + '/a' + i + '.js', 200, {}));
+ page.emit('pageerror', new Error('x'));
+ assert.equal(d.served.length, 2); assert.equal(d.truncated.served, true); assert.equal(d.truncated.pageErrors, undefined);
+});
+
+test('Redaktion erfasst Klartext und JSON-escapte Form des Geheimnisses', () => {
+ const secret = 'pa"ss\\wo\nrd-ä -1234';
+ const escaped = JSON.stringify(secret).slice(1, -1);
+ const report = JSON.stringify({a: secret, b: {text: 'x ' + secret + ' y'}, c: 'kurz'});
+ assert.ok(report.includes(escaped) && !report.includes(secret), 'Testannahme: der Bericht enthaelt die escapte Form');
+ const out = redactor([secret, 'kurz'])(report);
+ assert.equal(out.includes(escaped), false);
+ assert.equal(out.split('[REDACTED]').length - 1, 2);
+ assert.ok(out.includes('kurz'), 'zu kurze Werte (<8) werden nicht redigiert');
+ assert.equal(redactor([secret])(secret), '[REDACTED]');
 });
 
 test('Listen sind begrenzt; URLs ohne Query ausser ?v=; Fremdursprung wird ausgeschrieben', () => {

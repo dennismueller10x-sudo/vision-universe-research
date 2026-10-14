@@ -5,18 +5,18 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
-import {verifyPropagation,PropagationError,CAUSE} from './propagation-proof.mjs';
-import {attachDiagnostics,collectFailure} from './browser-diagnostics.mjs';
+import {verifyPropagation,PropagationError,CAUSE,referenceDataSha256} from './propagation-proof.mjs';
+import {attachDiagnostics,collectFailure,redactor} from './browser-diagnostics.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const out=process.env.RUNNER_TEMP+'/live-off',origin='https://research.visionuniverse.de';mkdirSync(out,{recursive:true});
 /* Erwarteter Commit: der Job checkt den gebauten Commit aus (needs.package.outputs.source_sha). Nur im Pages-Release-Lauf
    aus HEAD abgeleitet; sonst nur Konsistenzpruefung. */
 const headSha=()=>{try{return execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();}catch{return null;}};
 const expectedSha=process.env.EXPECTED_PRODUCTION_SHA||(process.env.GITHUB_WORKFLOW==='Quant 2.0 Production Pages'?headSha():null);
-const dataSha=()=>{try{return expectedSha?createHash('sha256').update(readFileSync(fileURLToPath(new URL('../../discover/data/stocks/US_REAL/AAPL.json',import.meta.url)))).digest('hex'):null;}catch{return null;}};
+const dataRef=referenceDataSha256(fileURLToPath(new URL('../../discover/data/stocks/US_REAL/AAPL.json',import.meta.url)),expectedSha),dataSha=()=>dataRef.sha256;
 const secrets=(()=>{try{const pw=process.env.RESEARCH_ACCESS_PASSWORD;return [pw,...Object.values(accessStateFor(pw)||{})].filter(v=>typeof v==='string'&&v.length>=8);}catch{return [];}})();
-const writeReport=report=>writeFileSync(out+'/report.json',secrets.reduce((t,v)=>t.split(v).join('[REDACTED]'),JSON.stringify(report,null,2))+'\n');
-const brief=p=>p&&{status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
+const redact=redactor(secrets),writeReport=report=>writeFileSync(out+'/report.json',redact(JSON.stringify(report,null,2))+'\n');
+const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
 const propagation=await verifyPropagation({origin,expectedSha,expectedDataSha256:dataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)}))});
 if(propagation.status!=='PROPAGATED'){
  // Klare Ursache statt eines spaeteren Timeouts: der Release ist nicht (vollstaendig) ausgeliefert. Fail-closed.

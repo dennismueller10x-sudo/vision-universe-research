@@ -8,8 +8,8 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 const {manifest:reviewed,delivery:runtimeDelivery}=await runtimeCandidate();
 import {assertConsumerResponses} from './browser-delivery-proof.mjs';
-import {verifyPropagation,evaluateRelease,PropagationError,CAUSE} from './propagation-proof.mjs';
-import {attachDiagnostics,collectFailure,bounded} from './browser-diagnostics.mjs';
+import {verifyPropagation,evaluateRelease,PropagationError,CAUSE,DEFAULTS,referenceDataSha256} from './propagation-proof.mjs';
+import {attachDiagnostics,collectFailure,bounded,redactor} from './browser-diagnostics.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const args=process.argv.slice(2),arg=(k,f)=>args.includes(k)?args[args.indexOf(k)+1]:f;
@@ -18,11 +18,13 @@ const origin=arg('--url','https://research.visionuniverse.de').replace(/\/$/,'')
 assert(origin==='https://research.visionuniverse.de','EXISTING_PRODUCTION_ORIGIN_REQUIRED');mkdirSync(out,{recursive:true});
 const expectedSha=process.env.EXPECTED_PRODUCTION_SHA||null;
 /* Referenz-Hash der Discover-Datei: nur mit erwartetem Commit, denn nur dann entspricht der Checkout dem gebauten Release. */
-const localDataSha=()=>{try{return expectedSha?createHash('sha256').update(readFileSync(fileURLToPath(new URL('../../discover/data/stocks/US_REAL/AAPL.json',import.meta.url)))).digest('hex'):null;}catch{return null;}};
+const dataRef=referenceDataSha256(fileURLToPath(new URL('../../discover/data/stocks/US_REAL/AAPL.json',import.meta.url)),expectedSha),localDataSha=()=>dataRef.sha256;
+/* Zeitbudget des Jobs (timeout-minutes 35, davon Checkout/Installation/andere QA-Schritte schon verbraucht): Reserve konfigurierbar. */
+const startedAt=Date.now(),budget={startedAt,totalMs:Number(process.env.CI_QA_BUDGET_MS)||20*60000,reserveMs:Number(process.env.CI_QA_RESERVE_MS)||3*60000,proofMaxMs:DEFAULTS.maxMs};
 const secrets=(()=>{try{const pw=process.env.RESEARCH_ACCESS_PASSWORD;return [pw,...Object.values(accessStateFor(pw)||{})].filter(v=>typeof v==='string'&&v.length>=8);}catch{return [];}})();
-const redact=text=>secrets.reduce((t,v)=>t.split(v).join('[REDACTED]'),text);
+const redact=redactor(secrets);
 const writeReport=report=>writeFileSync(out+'/report.json',redact(JSON.stringify(report,null,2))+'\n');
-const brief=p=>p&&{status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
+const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
 let failure=null;
 /* Eine Browser-Bewertung des bereits als ausgeliefert BEWIESENEN Releases. Fehler hier sind echte Fehler. */
 async function phase({propagation,attempt,previousFailure}){
@@ -65,10 +67,12 @@ try{
 }finally{if(browser)await browser.close();}
 }
 try{
- await evaluateRelease({
+ const done=await evaluateRelease({
+  budget,
   prove:o=>verifyPropagation({origin,expectedSha,expectedDataSha256:localDataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)})),...o}),
   runBrowser:phase
  });
+ if(done.retried)console.log('::warning title=Live-QA erst im zweiten Versuch bestanden::'+redact(String(done.previousFailure?.message||'').replace(/[\r\n%]+/g,' ').slice(0,300))+' | Grund: '+(done.previousFailure?.decision?.reason||'?')+' | Kennung: '+(done.propagation?.fingerprint||'?'));
 }catch(error){
  if(error instanceof PropagationError)writeReport({status:'FAIL',cause:CAUSE,origin,sourceCommit:expectedSha,propagation:brief(error.propagation),previousFailure:error.previousFailure??null,error:{name:error.name,message:String(error.message).slice(0,2000)}});
  else if(failure&&error.propagationEvidence){const e=error.propagationEvidence;writeReport({...failure,previousFailure:error.previousFailure??failure.previousFailure,propagation:brief(e.proof),reproof:brief(e.reproof),retryDecision:e.decision});}
