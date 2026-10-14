@@ -6,7 +6,9 @@ Das vorhandene Formular auf www.visionuniverse.de bleibt vollständig im Vision-
 
 [Erster Audit 38548517130](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38548517130): GitHub-Secret **BREVO_API_KEY** vorhanden, Free-Tarif, Absender/Domain bestätigt, Kontakte **Liste 4:135 / 5:0 / 6:2**. `CLOUDFLARE_API_TOKEN` kann das bestehende Pages-Projekt lesen; `LANDING_CLOUDFLARE_API_TOKEN` fehlt. Der separate DNS-Token kann keine Pages-Konfiguration lesen. Beide vorhandenen Tokens erhalten beim Lesen der WAF-Ratenregeln **403 / Code 10000**. Kein WAF-Schutz als vorhanden behauptet; keine Token-Rechte geändert, keine DNS-Änderungen.
 
-Die native Vorlage **4** enthält `{{ doubleoptin }}` und passt **nicht** zum API-Endpunkt. Eine separate deutsche Vorlage **VU | Newsletter | DE | API Double Opt In | v1**, Betreff **Bestätige deine Anmeldung zum Vision-Universe-Newsletter**, verwendet `{{ params.DOIurl }}`. Vorlagen 1–4 bleiben unverändert. Erstellungs- und Pages-Secret-Lesebelege werden nach dem gesperrten Setup ergänzt. Kein Schlüssel wird zurückgeliefert, in Dateien geschrieben oder in Logs ausgegeben.
+Die native Vorlage **4** enthält `{{ doubleoptin }}` und passt **nicht** zum API-Endpunkt. [Setup 38554305099](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38554305099) hat die separate deutsche **API-Vorlage 8**, **VU | Newsletter | DE | API Double Opt In | v1**, Betreff **Bestätige deine Anmeldung zum Vision-Universe-Newsletter**, angelegt. Sie verwendet `{{ params.DOIurl }}`. Anschließendes Lesen bestätigt aktiv, identischen Quellinhalt nach Leerraumnormalisierung, Betreff und Statistik-Tag. Vorlagen 1–4 wurden vollständig vorher/nachher verglichen und bleiben unverändert; keine vorhandene Vorlage wurde überschrieben.
+
+Der Pages-PATCH lieferte **200**. **BREVO_API_KEY** und **NEWSLETTER_RATE_KEY** liegen in Preview und Production als **secret_text** vor; DOI-Vorlagenbindung **8**, öffentliche Freigaben **false**, Testmodus ohne Testadresse **false**. Andere Projektkonfiguration und vorhandene Variablen bleiben unverändert. [Unabhängiger Leseaudit 38554409255](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38554409255) bestätigt diese Bindungen, die geschlossenen Gates, Vorlage 8 sowie unveränderte vollständige Kontaktobjekte in Listen 4/5/6. **Null E-Mails und null Kontakt-Schreibaufrufe** in beiden Läufen. Kein Schlüssel wird zurückgeliefert, in Dateien geschrieben oder in Logs ausgegeben. Ein Projekt-Secret gilt für neue Deployments; ältere Deployments können noch die vorherige Konfiguration besitzen.
 
 ## Genau ein nötiger Kontoschritt für den echten Test
 
@@ -18,6 +20,24 @@ Im Arbeitszugang ist das Hinterlegen von GitHub-Secrets gesperrt: Abruf des Repo
 - Wert **eine neue, von dir kontrollierte Testadresse**, die noch nicht bei Brevo existiert und zu keinem Kunden/Dennis/Ralf gehört.
 
 Danach übernimmt der manuelle Setup-Lauf die Adresse ausschließlich als verschlüsseltes Preview-Secret. Bestehender Brevo-Schlüssel und Cache-Schlüssel werden mit vorhandenen Pages-Rechten serverseitig hinterlegt; kein neuer Cloudflare-Token, kein D1 und kein Brevo-Anmeldeformular nötig. Zugriff auf das Testpostfach bzw. dessen private Prüfung wird zusätzlich für Eingang/Inhalt/Klick benötigt; Passwort oder persönliche Links niemals in PRs/Logs/Artefakte geben. Dieser Kontoschritt ersetzt weder Postfachprüfung noch Datenschutzfreigabe.
+
+## Ausführung nach der privaten Adressübergabe
+
+Der Workflow **Coming-soon | bestehendes Cloudflare-Pages-Projekt prüfen** ist ausschließlich manuell, sein Newsletter-Job ausschließlich für den isolierten PR-Branch. Checkout ist auf den geprüften vollständigen Quell-Commit gepinnt, Standardoperation **audit**, E2E-Autorisierung standardmäßig **false**. Push/PR/Build lösen keinen Mailversand aus. Der Newsletter-Job lädt keine Artefakte hoch; Adressen werden nur aus Secrets gelesen, nie aus öffentlichen Workflow-Inputs. Im Standardbranch läuft weiterhin nur der bestehende lesende Infrastruktur-Audit.
+
+Nach Hinterlegen von **BREVO_DOI_TEST_EMAIL** führt der Bearbeiter aus, kein zusätzlicher Betreiber-Kontoschritt:
+
+```sh
+gh workflow run landing-cloudflare-prepare.yml --ref feat/brevo-app-waitlist-doi -f newsletter_operation=setup -f authorize_controlled_test=false
+```
+
+Setup muss die Adresse zunächst über Brevo als neu bestätigen. Danach neues Branch-Preview-Deployment mit den aktualisierten Bindungen abwarten, Formular sichtbar im Testmodus und Runtime weiterhin auf genau diese Adresse begrenzt. Erst dann ausdrücklich den kontrollierten E2E-Test starten:
+
+```sh
+gh workflow run landing-cloudflare-prepare.yml --ref feat/brevo-app-waitlist-doi -f newsletter_operation=e2e -f authorize_controlled_test=true
+```
+
+Während des Laufs im **privaten Testpostfach** deutsche DOI-Mail prüfen und Bestätigungsbutton klicken; anschließend ausschließlich die administrative Testbestätigung öffnen und deren Brevo-Abmeldelink benutzen. Der Lauf wartet je Phase höchstens zehn Minuten. Eingang, korrekter Mailinhalt und tatsächlich benutzte Links müssen privat vom Postfachinhaber bestätigt werden; ein API-Erfolg ersetzt das nicht. Nicht mit einer neuen Adresse blind erneut starten, wenn ein Ergebnis unklar ist.
 
 ## Ablauf und Bestandsschutz
 
@@ -42,6 +62,8 @@ Der Cache wirkt **pro Cloudflare-Rechenzentrum**, kann früher verworfen werden 
 ## Tatsächlicher DOI- und Marketing-Abmeldetest
 
 Noch **nicht durchgeführt**; Testadresse und private Postfachprüfung fehlen. Lokale Mocks sind kein Live-Nachweis.
+
+Lokale Validierung: **23 Node-Tests** einschließlich vier synthetischer Operator-Vertragstests; Browserprüfung bei 1440/390/320 px ohne horizontalen Überlauf oder axe-Verstöße, eigene Inline-Rückmeldungen sowie gebrandeter No-JS-Weg. Diese Nachweise zeigen keinen realen Brevo-Mail-Eingang, Klick oder Abmeldung.
 
 Der ausschließlich manuell autorisierte E2E-Weg überprüft eine **zuvor nicht vorhandene** Testadresse und hält komplette Bestandsobjekte während des Tests nur im Runner-Speicher. Dann eigene Preview-Anmeldung, vor Klick keine neue Mitgliedschaft in Liste 4, wiederholtes Absenden, echter deutscher Mail-Eingang und echter DOI-Klick, danach genau eine neue Mitgliedschaft. Keine Kunden oder internen Testkontakte benutzen. Originale 135 Objekte, Liste 5/6 und ausgeschlossene 13 werden nicht verändert.
 
