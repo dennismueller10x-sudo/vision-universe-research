@@ -68,6 +68,23 @@ function writeGzip(path, payload) {
    Datei genauso braucht. */
 const ACCEPTED_ADJUSTMENT = new Set(["adjusted", "splitAdjustedReconstructible"]);
 
+/* Die Signalbars tragen die SPLIT_ADJUSTED-Reihe in ALLEN Kursspalten.
+
+   market-signal-contract.js rechnet ueber Panel.buildPanel: `close` ist dort
+   die Spalte, auf der factors.js priceTo50dma/priceTo200dma und das 52-Wochen-
+   Hoch bildet, `adjustedClose` die der Momentum-Faktoren. Bis hierher wurde nur
+   adjustedClose ersetzt; `close` blieb der Rohschluss des Anbieters. An einem
+   Split hat die 200-Tage-Linie dann Vor- und Nachsplit-Preise gemischt, und
+   priceTo200dma sprang an der Split-Kante (DFLI/MDCX/NXGL/ZBAO/POAS, Reverse
+   Splits vom 12.10.2026: -76,8 % -> +74,1 %, ein falsches TREND_UP). Die
+   Mathematik der Faktoren ist unveraendert; sie bekommt hier dieselbe Reihe,
+   die Technical und Elliott schon bekamen. Volumen und Rohdaten bleiben
+   unberuehrt (kein Split-Faktor auf Stueckzahlen erfunden). */
+export function splitAdjustedSignalBars(bars, series) {
+  return bars.map((bar, i) => ({ ...bar, open: series.open[i], high: series.high[i], low: series.low[i],
+    close: series.close[i], adjustedClose: series.close[i] }));
+}
+
 function validatedInput(payload, member) {
   if (!payload || payload.ticker !== member.s || payload.securityId !== member.m || payload.provider !== "tiingo" ||
       !ACCEPTED_ADJUSTMENT.has(payload.adjustmentStatus) || !Array.isArray(payload.bars)) throw new Error("INVALID_HISTORY_PROVENANCE");
@@ -96,7 +113,7 @@ function validatedInput(payload, member) {
   const series = worlds.SPLIT_ADJUSTED, validation = Canonical.validateSeries(series);
   if (!validation.valid) throw new Error("INVALID_CANONICAL_SERIES:" + validation.errors[0]);
   const reconciled = { status: "PASS", method: "CANONICAL_SPLIT_FACTORS_V1", priceSeriesType: "SPLIT_ADJUSTED", events: splits };
-  const signalBars = payload.bars.map((bar, i) => ({ ...bar, adjustedClose: series.close[i] }));
+  const signalBars = splitAdjustedSignalBars(payload.bars, series);
   return { series, signalSource: { ticker: member.s, securityId: member.m, provider: "tiingo", dataMode: "real",
     isMock: false, publishBasis: "CANONICAL_PRODUCT_MATERIALIZATION", currency: payload.currency || "USD",
     adjustmentStatus: "adjusted", updatedAt: observedAt, bars: signalBars, corporateActionReconciliation: reconciled },

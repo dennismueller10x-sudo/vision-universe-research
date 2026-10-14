@@ -48,6 +48,7 @@ const HistoricalCases = require(join(ROOT, "quant/engines/historical-cases.js"))
 const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
 const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
+const EventQuarantine = require(join(ROOT, "quant/engines/radar-event-quarantine.js"));
 const VM = require(join(ROOT, "quant/app/view-model.js"));
 
 const P = (...p) => join(ROOT, ...p);
@@ -462,8 +463,12 @@ writeGz(join(EVENT_HISTORY, latest.date + ".json.gz"), { schemaVersion: "radar-e
   columns: ["ticker", "eventType", "direction", "occurredAt"], rows: events.map((e) => [e.ticker, e.eventType, e.direction, e.occurredAt]) });
 const eventHistory = {};
 const historyCutoff = new Date(Date.parse(latest.date) - 90 * 86400000).toISOString().slice(0, 10);
+/* Einzeln benannte Rechenartefakte (quant/config/radar-event-quarantine.json) erscheinen nicht in der Historie je
+   Aktie; die Tagessnapshots selbst bleiben unveraendert. */
+const quarantined = EventQuarantine.index(JSON.parse(readFileSync(P("quant/config/radar-event-quarantine.json"), "utf8")));
 for (const f of readdirSync(EVENT_HISTORY).filter((x) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(x) && x.slice(0, 10) >= historyCutoff).sort()) {
   for (const [t, type, dir, at] of gz(join(EVENT_HISTORY, f)).rows) {
+    if (EventQuarantine.isQuarantined(quarantined, t, type, at)) continue;
     const list = (eventHistory[t] = eventHistory[t] || []);
     if (!list.some((x) => x[0] === type && x[2] === at)) list.push([type, dir, at]);
   }
