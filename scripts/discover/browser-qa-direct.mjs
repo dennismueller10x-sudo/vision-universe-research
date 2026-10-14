@@ -12,15 +12,23 @@
 //          [--out <Verzeichnis>] [--scale 1] [--seed N] [--overlay <Verzeichnis>] [--empty /pfad ...]
 //   --overlay  Dateien, die VOR dem Verpacken ueber das Release gelegt werden (Mutationsnachweis).
 //   --empty    diesen Pfad leer (200, 0 Byte) ausliefern (Mutationsnachweis: leere Inhaltsdatei).
+//   --fail     /pfad=404|503 diesen Pfad mit dem Statuscode ausliefern (Mutationsnachweis: fehlender Scherben, Serverfehler).
+//   --hang     diesen Pfad nie beantworten (Mutationsnachweis: nicht aufgeloester Ladezustand).
+//   --tamper   diesen Pfad mit anderen Bytes ausliefern als auf der Platte liegen (Mutationsnachweis: Auslieferungsabweichung).
+//   --corrupt  diesen Pfad mit unlesbarem Inhalt ausliefern (Mutationsnachweis: Parsefehler).
+//   --serve    /pfad=lokale-Datei  diesen Pfad aus einer anderen Datei bedienen (Mutationsnachweis: alte Kennung).
+//   --allow-no-release-id  Lauf gegen einen Release ohne release-id.json zulassen (sonst: Fehler; die CI stempelt vorher).
 // Es werden keine Produktionsdaten geschrieben; Arbeitsverzeichnis ist ein Temp-Ordner.
 import {createRequire} from 'node:module';
 import {createServer} from 'node:http';
-import {randomBytes} from 'node:crypto';
+import {randomBytes, createHash} from 'node:crypto';
+import {existsSync, readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
 import {mkdtemp, mkdir, readdir, readFile, writeFile, copyFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve, join, extname, dirname, relative, sep} from 'node:path';
 import {protectRelease, accessStateFor, verifierForKey} from '../access-gate/build.mjs';
-import {SPECS, waitRendered, sleep} from './direct-link-lib.mjs';
+import {SPECS, waitRendered, sleep, collectFacts, fullSpec, assessRequests, assessRelease, pageStamps, discoverExpectation, pickWithheldProbes, qualifyingCoreTitles, CORE_CANDIDATES} from './direct-link-lib.mjs';
 
 const require = createRequire(import.meta.url);
 let playwright;
@@ -38,6 +46,13 @@ const seed = Number(arg('seed', String(Date.now() % 100000)));
 const overlay = arg('overlay') ? resolve(arg('overlay')) : null;
 const emptyPaths = new Set(args('empty'));
 const gatePrefixes = ['discover'];
+const PRODUCT = 'discover';
+const failPaths = new Map(args('fail').map(a => { const i = a.lastIndexOf('='); return [a.slice(0, i), Number(a.slice(i + 1))]; }));
+const corruptPaths = new Set(args('corrupt'));
+const tamperPaths = new Set(args('tamper'));
+const hangPaths = new Set(args('hang'));
+const servePaths = new Map(args('serve').map(a => { const i = a.indexOf('='); return [a.slice(0, i), resolve(a.slice(i + 1))]; }));
+const allowNoReleaseId = argv.includes('--allow-no-release-id');
 const gateOn = !argv.includes('--no-gate'); // nur fuer den Vergleich mit der ungesperrten Auslieferung
 
 await mkdir(out, {recursive: true});
@@ -65,17 +80,53 @@ const password = randomBytes(32).toString('hex'); // wie bei PR-Pruefungen: Einm
 const gateReport = await protectRelease({output: gated, password});
 const mime = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.gif': 'image/gif', '.ico': 'image/x-icon', '.woff': 'font/woff', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2'};
 const layers = [...(gateOn ? [gated] : []), ...(overlay ? [overlay] : []), release];
+// Was die Seite von einer Datei zu sehen bekommt, ist auch deren Lesbarkeit: JSON und JSON.gz werden beim Ausliefern einmal je Pfad
+// geprueft (Parsefehler, leere Datei), das Ergebnis lesen die Netzpruefungen unten. Dateien ueber 6 MB bleiben ungeprueft.
+const validity = new Map();
+function checkReadable(path, body) {
+  if (!/\.json(\.gz)?$/.test(path)) return;
+  if (validity.has(path)) return;
+  let error = null;
+  try {
+    if (body.length > 6e6) { validity.set(path, null); return; }
+    const raw = path.endsWith('.gz') ? gunzipSync(body) : body;
+    if (!raw.length) throw Error('leere Datei');
+    JSON.parse(raw.toString('utf8'));
+  } catch (caught) { error = String(caught.message).slice(0, 80); }
+  validity.set(path, error);
+}
+// Auslieferungsschichten OHNE Zugangsmaske: so liegt eine Datei im Release (Grundlage fuer "404 trotz vorhandener Datei" und die ?v=-Stempel).
+const releaseLayers = [...(overlay ? [overlay] : []), release];
+const releaseHas = path => releaseLayers.some(root => { const file = resolve(root, '.' + path); return file.startsWith(root + sep) && existsSync(file); });
+const readRelease = path => { for (const root of releaseLayers) { try { return readFileSync(resolve(root, '.' + path)); } catch { /* naechste Schicht */ } } return null; };
+const stamps = new Map();
+function stampOf(path) {
+  if (!stamps.has(path)) { const bytes = readRelease(path); stamps.set(path, bytes ? createHash('sha256').update(bytes).digest('hex').slice(0, 16) : null); }
+  return stamps.get(path);
+}
+const pageHtml = new Map();
+function stampsOfPage(routePath) { // die Stempel der Seite, die diese Route ausliefert
+  let page = routePath.split('#')[0].split('?')[0]; if (page.endsWith('/')) page += 'index.html';
+  if (!pageHtml.has(page)) pageHtml.set(page, pageStamps((readRelease(page) || '').toString()));
+  return pageHtml.get(page);
+}
 const server = createServer(async (req, res) => {
   try {
     let path = decodeURIComponent(new URL(req.url, 'http://local').pathname);
     if (path.endsWith('/')) path += 'index.html';
-    if (emptyPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); res.end(''); return; }
+    if (hangPaths.has(path)) return; // nie antworten; der Browser schliesst die Verbindung am Ende
+    if (failPaths.has(path)) { res.statusCode = failPaths.get(path); res.end('fault'); return; }
+    if (corruptPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); const body = Buffer.from(path.endsWith('.gz') ? 'kein gzip' : '{"abgeschnitten": [1, 2'); checkReadable(path, body); res.end(body); return; }
+    if (tamperPaths.has(path)) { for (const root of layers) { try { const body = Buffer.concat([await readFile(resolve(root, '.' + path)), Buffer.from('\n/* abweichend ausgeliefert */\n')]); res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); res.end(body); return; } catch { /* naechste Schicht */ } } }
+    if (emptyPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); validity.set(path, 'leere Datei'); res.end(''); return; }
+    if (servePaths.has(path)) { const body = await readFile(servePaths.get(path)); res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); res.end(body); return; }
     for (const root of layers) {
       const file = resolve(root, '.' + path);
       if (!file.startsWith(root + sep)) continue;
       try {
         const body = await readFile(file);
         res.setHeader('Content-Type', file.endsWith('.gz') ? 'application/octet-stream' : mime[extname(file)] || 'application/octet-stream');
+        checkReadable(path, body);
         res.end(body); return;
       } catch { /* naechste Schicht */ }
     }
@@ -85,6 +136,9 @@ const server = createServer(async (req, res) => {
 await new Promise(done => server.listen(0, '127.0.0.1', done));
 const base = 'http://127.0.0.1:' + server.address().port;
 const config = JSON.parse(await readFile(join(gated, '__research/config.json'), 'utf8'));
+// Die Kennung, die ein Browser jetzt von /release-id.json bekommt (der Release-Waechter der Seite liest dieselbe Datei).
+let releaseIdJson = null;
+try { const answer = await fetch(base + '/release-id.json'); if (answer.ok) releaseIdJson = await answer.json(); } catch { /* ohne Kennung */ }
 const state = accessStateFor(password);
 if (verifierForKey(state.key) !== config.verifier) throw Error('Zugangszustand passt nicht zur Maske');
 
@@ -108,15 +162,25 @@ const check = async (name, fn) => {
 };
 
 // Eine Route, eine frische Seite, durch die Maske. Gibt Maengel samt Beleg zurueck.
-async function loadThroughGate({device, spec, hash, throttle = null, delays = false, context = null, access = true, timeout}) {
+async function loadThroughGate({device, spec, hash, throttle = null, delays = false, context = null, access = true, timeout, keepFacts = false}) {
   const own = !context;
   context ||= await browser.newContext(device.options);
   if (access && gateOn) await context.addInitScript(([key, value]) => { try { localStorage.setItem(key, value); } catch {} }, [config.storageKey, JSON.stringify(state)]);
   const page = await context.newPage();
-  const pageErrors = [], contentFetches = [], failedRequests = [];
+  const pageErrors = [], contentFetches = [], failedRequests = [], records = [];
   page.on('pageerror', error => pageErrors.push(error.message));
+  page.on('requestfailed', request => { try { const u = new URL(request.url()); if (u.origin === base) records.push({type: request.resourceType(), path: u.pathname, search: u.search, failed: (request.failure() || {}).errorText || 'failed'}); } catch { /* ignorieren */ } });
   page.on('response', response => {
     const url = response.url();
+    try {
+      const u = new URL(url);
+      if (u.origin === base) {
+        const record = {type: response.request().resourceType(), path: u.pathname, search: u.search, status: response.status()};
+        // Hash der tatsaechlich EMPFANGENEN Bytes statisch gestempelter Skripte/Stile (nicht der Datei auf der Platte).
+        if ((record.type === 'script' || record.type === 'stylesheet') && record.status === 200 && /[?&]v=[0-9a-f]+/.test(u.search)) record.received = response.body().then(b => createHash('sha256').update(b).digest('hex').slice(0, 16), () => null);
+        records.push(record);
+      }
+    } catch { /* ignorieren */ }
     if (url.includes('/__research/content/')) contentFetches.push({status: response.status(), url: new URL(url).pathname});
     else if (response.status() >= 500) failedRequests.push(response.status() + ' ' + new URL(url).pathname);
   });
@@ -146,6 +210,23 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
     const rendered = await waitRendered(page, spec.specName, {timeout: timeout ?? (throttle || delays ? 60000 : 25000)});
     outcome.ms = rendered.ms;
     outcome.problems.push(...rendered.problems);
+    if (access) {
+      // Netz und Kennung (Phase 4): jede Antwort dieser Seite, nicht nur die sichtbaren Folgen.
+      outcome.problems.push(...assessRequests(records.map(r => ({...r, parseError: r.failed ? null : validity.get(r.path) || null})), {has: releaseHas, allow404: !!spec.specName.allow404Data}));
+      // Die Kennungs- und Stempelpruefung gilt Seiten der gestempelten Produkte (release-id.mjs#PRODUCTS: quant, discover). Leitet eine Route
+      // auf eine Seite ausserhalb um (kein meta vu-release, kein Eintrag in release-id.json), wird sie dort nicht verlangt; Chart, Netz,
+      // Ladezustand und Leere der Route bleiben aktiv. Heute leitet keine Discover-Route um (geprueft).
+      const finalPath = (() => { try { return new URL(page.url()).pathname; } catch { return ''; } })();
+      const stampedProduct = finalPath.startsWith('/' + PRODUCT + '/');
+      if (stampedProduct && (releaseIdJson || !allowNoReleaseId)) {
+        const meta = await page.evaluate(() => { const m = document.querySelector('meta[name="vu-release"]'); return m ? {product: m.getAttribute('data-product'), content: m.getAttribute('content')} : null; }).catch(() => null);
+        const own = stampsOfPage(spec.path.split('#')[0] || '/discover/');
+        const stampsSeen = records.filter(r => (r.type === 'script' || r.type === 'stylesheet') && /[?&]v=([0-9a-f]+)/.test(r.search || '')).map(r => ({path: r.path, v: r.search.match(/[?&]v=([0-9a-f]+)/)[1], actual: stampOf(r.path), fixed: own.has(r.path), received: r.received}));
+        for (const st of stampsSeen) { st.received = await st.received; if (st.received) st.actual = st.received; }
+        outcome.problems.push(...assessRelease({meta, json: releaseIdJson, product: PRODUCT, stamps: stampsSeen, known: [...own.values()]}));
+      }
+      if (keepFacts) outcome.facts = await page.evaluate(collectFacts, fullSpec(spec.specName)).catch(() => null);
+    }
     if (access && gateOn && !contentFetches.some(f => f.status === 200)) outcome.problems.push('kein /__research/content/-Abruf mit 200 beobachtet (Maske nicht durchlaufen)');
     if (pageErrors.length) outcome.problems.push('Seitenfehler: ' + pageErrors.slice(0, 2).join(' | '));
     outcome.page = page;
@@ -156,7 +237,11 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
   if (own) { await page.close().catch(() => {}); await context.close().catch(() => {}); delete outcome.page; }
   return outcome;
 }
-const named = (key, extra = {}) => ({...SPECS[key], specName: {...SPECS[key], ...extra}});
+// Datenerwartung aus dem Datensatz des Titels im Release (nur Routen mit Titel; sonst keine).
+const named = (key, extra = {}) => {
+  const expect = discoverExpectation(release, SPECS[key].path, {overlay});
+  return {...SPECS[key], specName: {...SPECS[key], ...(expect ? {expect} : {}), ...extra}};
+};
 const label = (device, key, i, n) => device.name + ' ' + key + (n > 1 ? ' #' + (i + 1) : '');
 const reps = n => Math.max(1, Math.round(n * scale));
 
@@ -191,6 +276,41 @@ for (const device of devices) {
     }
     assert(!failures.length, failures.length + ' von ' + loads + ' Ladevorgaengen ohne Inhalt:\n' + failures.slice(0, 8).join('\n'));
     return {loads};
+  });
+}
+
+// ---------------------------------------------------------------- 2b. Fachliche Erwartung aus den Daten
+// Die Erwartung kommt aus dem Datensatz des Titels im Release (discover/data/stocks/...), nie aus dem Seitentext. Ohne Datensatz
+// fuer NVDA bliebe die Kursstruktur ungeprueft - das ist selbst ein Fehler und bleibt nicht still.
+await check('Datenerwartung: mindestens 2 Kerntitel tragen Kursverlauf und Technical-Intelligence-Schichten im Release', async () => {
+  // Datengetrieben: ein einzelner zurueckgehaltener Kerntitel ist zulaessige Enthaltung; seine Route folgt dem Datensatz.
+  // Erst wenn weniger als 2 Kandidaten qualifizieren, ist das ein Datenproblem.
+  const qualified = qualifyingCoreTitles(release, {overlay});
+  assert(qualified.length >= 2, 'Kerntitel haben keine veroeffentlichte Auswertung (' + qualified.length + ' von ' + CORE_CANDIDATES.length + ' Kandidaten qualifizieren) - Kursstruktur waere ungeprueft');
+  return {qualifiziert: qualified, zurueckgehalten_oder_ohne_datensatz: CORE_CANDIDATES.filter(t => !qualified.includes(t))};
+});
+// Gegennachweis: zulaessige Enthaltung ist KEIN Fehler. Ein Titel mit zurueckgehaltener Technical-Intelligence-Schicht
+// (available = false) zeigt "nicht verfügbar" oder keine Zeile und muss dabei gruen sein; ein Titel mit zurueckgehaltener
+// Sparkline (WITHHELD_*, Lizenz) oder ohne Aufnahme (discoveryEligible = false) ebenso.
+const probes = pickWithheldProbes(release, {overlay});
+for (const device of devices) {
+  await check('Zulaessige Enthaltung ist kein Fehler (TI zurueckgehalten ' + (probes.technicalWithheld || '-') + ', Sparkline/Aufnahme zurueckgehalten ' + (probes.redistributionWithheld || '-') + '): ' + device.name, async () => {
+    const detail = {};
+    if (!probes.technicalWithheld && !probes.redistributionWithheld) { console.warn('WARNUNG: der Release enthaelt keinen zurueckgehaltenen Titel - Gegennachweis uebersprungen'); return {uebersprungen: true}; }
+    for (const [kind, symbol] of Object.entries(probes)) {
+      if (!symbol) continue;
+      const path = '/discover/#/s/US_REAL/' + symbol, expect = discoverExpectation(release, path, {overlay});
+      const result = await loadThroughGate({device, spec: {path, specName: {path, h1: '\\S', minText: 1000, expect}}, keepFacts: true});
+      assert(!result.problems.length, symbol + ' (' + kind + ') wurde als Fehler gewertet: ' + result.problems.join('; '));
+      const ti = result.facts && result.facts.ti;
+      if (kind === 'technicalWithheld') {
+        assert(!expect.technical.available, symbol + ': Datensatz ist nicht zurueckgehalten, Gegennachweis leer');
+        assert(ti && ti.present, symbol + ': Kapitel "Chartbild — Kursstruktur" fehlt');
+        assert(Object.values(ti.rows || {}).every(v => /nicht verfügbar/i.test(v)), symbol + ': zurueckgehaltene Schicht zeigt einen Wert: ' + JSON.stringify(ti.rows));
+      }
+      detail[kind] = {symbol, zeilen: ti && ti.rows};
+    }
+    return detail;
   });
 }
 
