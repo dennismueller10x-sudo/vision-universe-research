@@ -232,7 +232,7 @@ function firstCanonicalFailure(raw, reconstruct) {
     const result = reconstruct(raw.slice(0, i + 1));
     if (!result.reconstructed) {
       const at = result.date ? raw.findIndex((b) => b.date === result.date) : i;
-      return { index: at >= 0 ? Math.min(at, i) : i, observedAt: raw[i].date, reason: result.reason };
+      return { index: at >= 0 ? Math.min(at, i) : i, observedAt: raw[i].date, reason: result.reason, ...(typeof result.detail === 'string' ? { detail: result.detail } : {}) };
     }
   }
   const full = reconstruct(raw);
@@ -241,9 +241,9 @@ function firstCanonicalFailure(raw, reconstruct) {
   // search: DATE_SHIFT and provider-coverage availability are not monotone.
   for (let i = 1; i < raw.length; i++) {
     const result = reconstruct(raw.slice(0, i + 1));
-    if (!result.reconstructed) return { index: i, observedAt: raw[i].date, reason: result.reason };
+    if (!result.reconstructed) return { index: i, observedAt: raw[i].date, reason: result.reason, ...(typeof result.detail === 'string' ? { detail: result.detail } : {}) };
   }
-  return { index: raw.length - 1, observedAt: raw.at(-1).date, reason: full.reason };
+  return { index: raw.length - 1, observedAt: raw.at(-1).date, reason: full.reason, ...(typeof full.detail === 'string' ? { detail: full.detail } : {}) };
 }
 
 function normalizeSegment(seg, listing, window, retainRaw = true) {
@@ -262,15 +262,15 @@ function normalizeSegment(seg, listing, window, retainRaw = true) {
     quarantine = { from: raw[badOhlc].date, observedAt: raw[badOhlc].date, reason: 'OHLCV_INVALID', confidence: 'LOW' };
     raw = raw.slice(0, badOhlc);
   }
-  if (raw.length < 2) return { rejection: quarantine?.reason || 'INSUFFICIENT_BARS' };
+  if (raw.length < 2) return { rejection: quarantine?.reason || 'INSUFFICIENT_BARS', ...(typeof quarantine?.detail === 'string' ? { rejectionDetail: quarantine.detail } : {}) };
   const reconstruct = (r) => TotalReturn.reconstruct(r, { identity: { state: 'CONFIRMED', listingId: listing.id, basis: 'EXISTING_LISTING_TABLE_AND_DATE_WINDOW' }, delisted: Boolean(seg.delisted) });
   const validity = firstCanonicalFailure(raw, reconstruct);
   if (validity.index !== undefined) {
     const badDate = raw[validity.index].date;
-    quarantine = { from: badDate, observedAt: validity.observedAt, reason: validity.reason, confidence: 'LOW' };
+    quarantine = { from: badDate, observedAt: validity.observedAt, reason: validity.reason, ...(typeof validity.detail === 'string' ? { detail: validity.detail } : {}), confidence: 'LOW' };
     raw = raw.slice(0, validity.index);
   }
-  if (raw.length < 2) return { rejection: quarantine?.reason || 'INSUFFICIENT_BARS' };
+  if (raw.length < 2) return { rejection: quarantine?.reason || 'INSUFFICIENT_BARS', ...(typeof quarantine?.detail === 'string' ? { rejectionDetail: quarantine.detail } : {}) };
   const tr = validity.result || reconstruct(raw);
   if (!tr.reconstructed) return { rejection: tr.reason, ...(typeof tr.detail === 'string' ? { rejectionDetail: tr.detail } : {}) };
   const factors = ReturnSeries.splitFactors(raw);

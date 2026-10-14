@@ -7,6 +7,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import {certifyHistoricalIdentity,listingAtDate,certifyUniversePanel} from '../research/certification/universe-certification.mjs';
 import {collectDataInventory,sealInventory} from '../research/certification/data-inventory.mjs';
+import {prepareHistoricalData,DATA_WINDOW} from '../research/tournament/data.mjs';
 import {decryptSealed} from '../validation/lib.mjs';
 const window={warmupFrom:'2015-01-01',from:'2018-01-02',to:'2026-09-30'};
 const old={id:'tiingo:NASDAQ:ABC:2016-01-01',ticker:'ABC',exchange:'NASDAQ',startDate:'2016-01-01',listEnd:'2019-12-31',reusedLater:true};
@@ -105,6 +106,10 @@ test('optional canonical probe reuses the exact source snapshot and preserves ev
 test('status-only canonical diagnostics persist safe counts without writing private source or dataset artifacts',async()=>{
  const f=fixture(),securities=[{id:'private-identity',ticker:'PRIVATE',bars:[],fundamentals:[]}],canonicalLoader=async()=>({state:'AVAILABLE',window,coverage:{inputSegments:3,usableSegments:1,rejected:{CORPORATE_ACTION_CONTRADICTED:2},rejectionDetails:{CORPORATE_ACTION_CONTRADICTED:{SPLIT_FACTOR_OUT_OF_RANGE:2}}},securities,benchmark:null,calendar:[],fingerprint:'c'.repeat(64)}),x=await collectDataInventory({...f.options,canonical:true,canonicalLoader}),keys=crypto.generateKeyPairSync('rsa',{modulusLength:2048,publicKeyEncoding:{type:'spki',format:'pem'},privateKeyEncoding:{type:'pkcs8',format:'pem'}}),out=fs.mkdtempSync(path.join(os.tmpdir(),'cert-status-only-'));
  try{sealInventory(x,out,{ownerKey:keys.publicKey,sessionKey:keys.publicKey,statusOnly:true});assert.deepEqual(fs.readdirSync(out),['data-certification-status.json']);const pub=JSON.parse(fs.readFileSync(path.join(out,'data-certification-status.json'),'utf8'));assert.equal(pub.canonicalStatus,'AVAILABLE');assert.deepEqual(pub.canonicalRejections.details,{CORPORATE_ACTION_CONTRADICTED:{SPLIT_FACTOR_OUT_OF_RANGE:2}});assert.equal(JSON.stringify(pub).includes('private-identity'),false);}finally{fs.rmSync(out,{recursive:true,force:true});}
+});
+test('canonical reject detail survives chronological quarantine truncation as a safe enum',()=>{
+ const id='tiingo:NASDAQ:X:2016-01-01',data=prepareHistoricalData({listings:[{id,ticker:'X',exchange:'NASDAQ',startDate:'2016-01-01',endDate:null,active:true,storeClass:'EQUITY_COMMON'}],segs:[{id,cls:'EQUITY_COMMON',raw:[{date:'2016-01-04',open:100,high:100,low:100,close:100,volume:100,dividend:0,splitFactor:1},{date:'2016-01-05',open:100,high:100,low:100,close:100,volume:100,dividend:0,splitFactor:0}]}]},{window:{...DATA_WINDOW,warmupFrom:'2016-01-01',from:'2016-01-04',to:'2016-01-05'}});
+ assert.deepEqual(data.coverage.rejected,{CORPORATE_ACTION_CONTRADICTED:1});assert.deepEqual(data.coverage.rejectionDetails,{CORPORATE_ACTION_CONTRADICTED:{SPLIT_FACTOR_OUT_OF_RANGE:1}});
 });
 test('canonical price provenance binds exact physical R2 read receipts, never a fabricated provider label',async()=>{
  const f=fixture(),raw=Buffer.from('exact fixture object bytes'),key='v1/tiingo/daily/US/ABC.json.'+(typeof zlib.zstdCompressSync==='function'?'zst':'gz');f.objects.set(key,raw);
