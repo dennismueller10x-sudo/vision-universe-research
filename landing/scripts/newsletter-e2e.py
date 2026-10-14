@@ -89,6 +89,7 @@ def run():
         if code!=202:raise ValueError('DOI request not accepted')
     code,c=request(API,contact_path)
     if code==200 and 4 in c.get('listIds',[]):raise ValueError('List membership before confirmation')
+    if code==200 and c.get('attributes',{}).get('VU_EMAIL_CONSENT')=='subscribed':raise ValueError('Campaign consent marker applied before confirmation')
     if code not in (200,404):raise ValueError('Pre-click state uncertain')
     if not observe:
         code,_=request(origin,'/api/newsletter/subscribe','POST',{'email':email,'consent':True,'consentVersion':'vu-newsletter-v1','honeypot':''})
@@ -100,7 +101,7 @@ def run():
         if code==200 and 4 in c.get('listIds',[]):contact=c;break
         if code not in (200,404):raise ValueError('Provider state uncertain')
         time.sleep(10)
-    if contact is None or contact['id'] in protected or contact.get('email','').lower()!=email or contact.get('emailBlacklisted') is True:raise ValueError('New DOI membership not verified')
+    if contact is None or contact['id'] in protected or contact.get('email','').lower()!=email or contact.get('emailBlacklisted') is True or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('New DOI membership and explicit consent not verified')
     if [c['id'] for c in records(4)].count(contact['id'])!=1:raise ValueError('Membership not unique')
     if not observe:
         code,_=request(origin,'/api/newsletter/subscribe','POST',{'email':email,'consent':True,'consentVersion':'vu-newsletter-v1','honeypot':''})

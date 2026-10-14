@@ -126,6 +126,10 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         if(history.events.length)return out(202,PENDING);
         const id=Number(env.NEWSLETTER_DOI_TEMPLATE_ID);
         if(!Number.isInteger(id)||id<=4)throw Error('Wrong template');
+        const attributesResponse=await provider('/contacts/attributes',env);
+        if(attributesResponse.status!==200)throw Error('Consent attribute unavailable');
+        const attributes=await attributesResponse.json();
+        if(!Array.isArray(attributes.attributes)||!attributes.attributes.some(a=>a.name==='VU_EMAIL_CONSENT'&&a.category==='normal'&&a.type==='text'))throw Error('Consent schema mismatch');
         const templateResponse=await provider('/smtp/templates/'+id,env);
         if(templateResponse.status!==200)throw Error('Template unavailable');
         const template=await templateResponse.json();
@@ -140,7 +144,7 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         const secondCheck=await provider('/contacts/'+encodeURIComponent(email),env);
         if(secondCheck.status===200)return out(202,PENDING);
         if(secondCheck.status!==404)throw Error('Second lookup uncertain');
-        const result=await provider('/contacts/doubleOptinConfirmation',env,{email,includeListIds:[4],templateId:id,redirectionUrl:expected+'/newsletter/bestaetigt/',contactPixelTrackingConsent:false});
+        const result=await provider('/contacts/doubleOptinConfirmation',env,{email,includeListIds:[4],templateId:id,redirectionUrl:expected+'/newsletter/bestaetigt/',contactPixelTrackingConsent:false,attributes:{VU_EMAIL_CONSENT:'subscribed'}});
         if(result.status!==201)throw Error('Delivery outcome uncertain');
         return out(202,PENDING);
       });

@@ -7,6 +7,10 @@ SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
 RUNTIME=('BREVO_API_KEY','NEWSLETTER_RATE_KEY','NEWSLETTER_DOI_TEMPLATE_ID','NEWSLETTER_STAGE','NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED','NEWSLETTER_TEST_EMAIL','NEWSLETTER_TEST_MODE','NEWSLETTER_FORM_MODE','NEWSLETTER_CONTROLLED_ENABLED','NEWSLETTER_TEST_ACCESS_HASH','NEWSLETTER_TEST_UNTIL')
 POLICY='legal-drafts/newsletter-release-2026-10-14.html'
 
+def deployment_finished(deployment):
+    stage=deployment.get('latest_stage',{})
+    return stage.get('status') in ('failure','canceled') or stage.get('name')=='deploy' and stage.get('status')=='success'
+
 def release_prerequisites(operation):
     if operation not in ('controlled','public'):return {}
     policy=Path(__file__).resolve().parents[1].joinpath(POLICY).read_bytes()
@@ -21,7 +25,9 @@ def release_prerequisites(operation):
         if not run_id.isdigit() or os.environ.get('NEWSLETTER_OPERATOR_INBOX_VERIFIED')!='true':raise ValueError('Real inbox acceptance missing')
         def github(path):
             req=urllib.request.Request('https://api.github.com/repos/dennismueller10x-sudo/vision-universe-research'+path,headers={'Authorization':'Bearer '+os.environ.get('GH_TOKEN',''),'Accept':'application/vnd.github+json','User-Agent':'VisionUniverse-Newsletter-Release/1.0'})
-            with urllib.request.urlopen(req,timeout=30) as response:return json.loads(response.read())
+            class NoRedirect(urllib.request.HTTPRedirectHandler):
+                def redirect_request(self,*args,**kwargs):return None
+            with urllib.request.build_opener(NoRedirect).open(req,timeout=30) as response:return json.loads(response.read())
         run=github('/actions/runs/'+run_id);jobs=github('/actions/runs/'+run_id+'/jobs')['jobs']
         if run.get('event')!='workflow_dispatch' or run.get('conclusion')!='success' or run.get('head_branch')!='main' or run.get('path')!='.github/workflows/landing-cloudflare-prepare.yml':raise ValueError('Wrong acceptance run')
         if not any(j.get('conclusion')=='success' and any(s.get('name')=='Observe owner signup and verify Brevo unsubscribe' and s.get('conclusion')=='success' for s in j.get('steps',[])) for j in jobs):raise ValueError('No successful actual acceptance step')
@@ -70,6 +76,7 @@ def run():
         raise ValueError('Contact pagination incomplete')
     before={n:contacts(n) for n in (4,5,6)};old={n:read('/smtp/templates/'+str(n)) for n in (1,2,3,4)}
     report['free_plan']=any(p.get('type')=='free' for p in read('/account').get('plan',[]))
+    report['consent_attribute_compatible']=any(a.get('name')=='VU_EMAIL_CONSENT' and a.get('category')=='normal' and a.get('type')=='text' for a in read('/contacts/attributes').get('attributes',[]))
     report['lists_before']={str(n):len(v) for n,v in before.items()}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
@@ -130,7 +137,7 @@ def run():
                 status,value=api(CF,'/zones/'+zone[0]['id']+'/rulesets/phases/http_ratelimit/entrypoint',token);result['rate_rules_read_http']=status;result['rate_rules_error_codes']=value.get('safe_codes',[])
                 if status==200 and value.get('success'):result['rate_rule_count']=len(value['result'].get('rules',[]))
     if operation!='audit':
-        if selected is None or not matches:raise ValueError('Pages setup unavailable')
+        if selected is None or not matches or not report['consent_attribute_compatible']:raise ValueError('Pages or consent setup unavailable')
         name,token,path,project=selected;configs=project.get('deployment_configs',{})
         if project.get('name')!='vision-universe' or set(configs)!={'preview','production'}:raise ValueError('Unexpected project')
         changed={};salt=secrets.token_hex(32)
@@ -176,7 +183,7 @@ def run():
             # Rebuild the existing Git deployment after env changes, preserving
             # project/source/domain settings. Never upload a replacement bundle.
             deadline=time.monotonic()+600
-            while deployment.get('latest_stage',{}).get('status') not in ('success','failure','canceled'):
+            while not deployment_finished(deployment):
                 if time.monotonic()>=deadline:raise ValueError('Main deployment still busy; no blind retry')
                 time.sleep(10);status,value=api(CF,path+'/deployments/'+deployment_id,token)
                 if status!=200 or not value.get('success'):raise ValueError('Deployment state unavailable')

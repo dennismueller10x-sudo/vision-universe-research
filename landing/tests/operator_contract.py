@@ -18,7 +18,7 @@ class Provider:
         self.calls=[];self.existing=existing;self.bad_draft=bad_draft;self.doi=0;self.lookups=0;self.sent=False;self.draft=None
         self.observe=observe;self.ambiguous=ambiguous;self.event_reads=0
         self.old={'id':1,'email':'old@example.test','listIds':[4],'emailBlacklisted':False}
-        self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False}
+        self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False,'attributes':{'VU_EMAIL_CONSENT':'subscribed'}}
     def open(self,request,**kwargs):
         path=urllib.parse.urlsplit(request.full_url).path.removeprefix('/v3');method=request.get_method()
         body=json.loads(request.data) if request.data else None;self.calls.append((path,method,body))
@@ -108,9 +108,16 @@ class ReleaseContract(unittest.TestCase):
                 if path.endswith('/jobs'):return Response(200,{'jobs':[{'conclusion':'success','steps':[{'name':step_name,'conclusion':'success'}]}]})
                 if '/contents/' in path:return Response(200,{'content':base64.b64encode(('ref: '+source).encode()).decode()})
                 return Response(200,{'event':'workflow_dispatch','conclusion':'success','head_branch':'main','path':'.github/workflows/landing-cloudflare-prepare.yml','head_sha':'b'*40})
-            with patch.object(admin.urllib.request,'urlopen',side_effect=github),patch.object(admin.subprocess,'check_output',return_value='f'*40):
+            class Opener:
+                def open(self,req,**kwargs):return github(req,**kwargs)
+            with patch.object(admin.urllib.request,'build_opener',return_value=Opener()),patch.object(admin.subprocess,'check_output',return_value='f'*40):
                 if valid:self.assertEqual(self.check('public',{**env,'NEWSLETTER_OPERATOR_INBOX_VERIFIED':inbox})['verified_test_run_id'],123)
                 else:
                     with self.assertRaises(ValueError):self.check('public',{**env,'NEWSLETTER_OPERATOR_INBOX_VERIFIED':inbox})
+    def test_deployment_retry_waits_until_actual_deploy_finishes(self):
+        self.assertFalse(admin.deployment_finished({'latest_stage':{'name':'build','status':'success'}}))
+        self.assertFalse(admin.deployment_finished({'latest_stage':{'name':'deploy','status':'active'}}))
+        self.assertTrue(admin.deployment_finished({'latest_stage':{'name':'deploy','status':'success'}}))
+        self.assertTrue(admin.deployment_finished({'latest_stage':{'name':'build','status':'failure'}}))
 
 if __name__=='__main__':unittest.main()

@@ -10,9 +10,10 @@ function fixture(options={}){
   const handler=createHandler({cacheProvider:()=>cache,now:()=>clock,providerFetch:async(url,init)=>{
     assert.equal(init.headers['api-key'],env.BREVO_API_KEY);assert.equal(init.redirect,'error');
     const path=new URL(url).pathname;calls.push({path,method:init.method,body:init.body&&JSON.parse(init.body)});
-    if(path.startsWith('/v3/contacts/')&&init.method==='GET')return json(options.existing||{},options.lookupStatus||(options.existing?200:404));
+    if(path.startsWith('/v3/contacts/')&&path!=='/v3/contacts/attributes'&&init.method==='GET')return json(options.existing||{},options.lookupStatus||(options.existing?200:404));
     if(path==='/v3/smtp/blockedContacts')return json({contacts:options.blocked||[]});
     if(path==='/v3/smtp/statistics/events')return json({events:options.events||[]});
+    if(path==='/v3/contacts/attributes')return json({attributes:options.attributes??[{name:'VU_EMAIL_CONSENT',category:'normal',type:'text'}]});
     if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT,...options.template});
     if(path==='/v3/smtp/statistics/aggregatedReport')return json({requests:options.budget??0});
     if(path==='/v3/contacts/doubleOptinConfirmation'){
@@ -66,7 +67,7 @@ test('Transaktionale Sperren und bereits protokollierte DOI-Anfragen werden nich
 test('Neue Adresse behält Plus-Alias; ausschließlich offizielles DOI an Liste 4',async()=>{
   const f=fixture();const result=await f.handler(f.request(' NEW+QA@example.test '),f.env);
   assert.equal(result.status,202);assert.equal(f.sends().length,1);
-  assert.deepEqual(f.sends()[0],{path:'/v3/contacts/doubleOptinConfirmation',method:'POST',body:{email:'new+qa@example.test',includeListIds:[4],templateId:5,redirectionUrl:origin+'/newsletter/bestaetigt/',contactPixelTrackingConsent:false}});
+  assert.deepEqual(f.sends()[0],{path:'/v3/contacts/doubleOptinConfirmation',method:'POST',body:{email:'new+qa@example.test',includeListIds:[4],templateId:5,redirectionUrl:origin+'/newsletter/bestaetigt/',contactPixelTrackingConsent:false,attributes:{VU_EMAIL_CONSENT:'subscribed'}}});
   assert.equal((await result.json()).message,PENDING);assert.equal(result.headers.get('Cache-Control'),'no-store');
   assert.ok([...f.stored.keys()].every(k=>!k.includes('example.test')&&!k.includes('192.0.2.1')));
 });
@@ -81,7 +82,7 @@ test('Parallele Wiederholung und unklarer Provider-Ausgang bleiben lokal reservi
 test('Ratenfenster, Budget, unklare Bestandsabfrage und falsche Vorlage stoppen Versand',async()=>{
   const f=fixture();for(let i=0;i<3;i++)await f.handler(f.request('n'+i+'@example.test'),f.env);
   assert.equal((await f.handler(f.request('four@example.test'),f.env)).status,429);assert.equal(f.sends().length,3);
-  for(const options of [{budget:50},{lookupStatus:403},{template:{htmlContent:'{{ doubleoptin }}'}}]){
+  for(const options of [{budget:50},{lookupStatus:403},{attributes:[]},{attributes:[{name:'VU_EMAIL_CONSENT',category:'normal',type:'boolean'}]},{template:{htmlContent:'{{ doubleoptin }}'}}]){
     const g=fixture(options);assert.ok([429,503].includes((await g.handler(g.request(),g.env)).status));assert.equal(g.sends().length,0);
   }
   const g=fixture();g.env.NEWSLETTER_DOI_TEMPLATE_ID='4';assert.equal((await g.handler(g.request(),g.env)).status,503);assert.equal(g.sends().length,0);
