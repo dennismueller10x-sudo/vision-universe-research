@@ -1,42 +1,108 @@
 {
   "schema": "vision-universe-calibration-v3-reference-manifest-1.0.0",
-  "status": "REFERENCE_CAPTURE_REQUIRED",
+  "status": "SOURCE_METADATA_RECOVERED_FROM_FROZEN_643_CENSUS_REFERENCE_BYTES_MISSING",
   "sources": [
     {
       "id": "FRENCH_MOM10",
-      "expectedSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
-      "parser": "reference-return-arithmetic.mjs",
-      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "sourceUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "captureDate": "2026-10-13",
+      "retrievedAt": "2026-10-13T08:50:45.821731+00:00",
+      "archiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "archiveBytes": 119089,
+      "contentType": "application/x-zip-compressed",
+      "lastModified": "Fri, 25 Sep 2026 21:55:47 GMT",
+      "sourceRights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      },
       "inputPresent": false,
-      "captureDate": null,
-      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "memberName": "10_Portfolios_Prior_12_2.csv",
+      "memberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+      "memberBytes": 484135,
+      "sourcePeriod": {
+        "first": "192701",
+        "last": "202608"
+      },
+      "verifiedRows": 4784
     },
     {
       "id": "FRENCH_VAR",
-      "expectedSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
-      "parser": "reference-return-arithmetic.mjs",
-      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "sourceUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "captureDate": "2026-10-13",
+      "retrievedAt": "2026-10-13T08:50:46.134109+00:00",
+      "archiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "archiveBytes": 147521,
+      "contentType": "application/x-zip-compressed",
+      "lastModified": "Fri, 25 Sep 2026 21:54:52 GMT",
+      "sourceRights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
+      },
       "inputPresent": false,
-      "captureDate": null,
-      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "memberName": "Portfolios_Formed_on_VAR.csv",
+      "memberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+      "memberBytes": 584013,
+      "sourcePeriod": {
+        "first": "196307",
+        "last": "202608"
+      },
+      "verifiedRows": 3790
     },
     {
       "id": "FRENCH_DAILY_RF",
-      "expectedSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
-      "parser": "reference-return-arithmetic.mjs",
-      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "sourceUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+      "resolvedUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+      "captureDate": "2026-10-13",
+      "retrievedAt": "2026-10-13T08:57:09.082385+00:00",
+      "archiveSha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+      "archiveBytes": null,
+      "contentType": "application/x-zip-compressed",
+      "lastModified": "Fri, 25 Sep 2026 21:55:02 GMT",
+      "sourceRights": {
+        "public_access": "AVAILABLE",
+        "copyright_retained": true,
+        "redistribution_license": "NOT_ESTABLISHED",
+        "use": "PRIVATE_RESEARCH_ONLY"
+      },
       "inputPresent": false,
-      "captureDate": null,
-      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "memberName": "F-F_Research_Data_Factors_daily.csv",
+      "memberSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+      "memberBytes": null,
+      "sourcePeriod": {
+        "first": "19260701",
+        "last": "20260831"
+      },
+      "verifiedRows": 26317
     }
   ],
   "parsedArtifact": null,
-  "tolerancePolicy": "Use preregistered BACKTEST-CALIBRATION-METHODS and protocol thresholds; no post-result changes.",
+  "tolerancePolicy": "Use preregistered BACKTEST-CALIBRATION-METHODS and protocol thresholds; do not change after seeing results.",
   "parserRepair": {
     "sha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
     "logicChanged": false,
     "focusedTestSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
     "focusedTestCount": 22,
     "freezeCompatibilityTestSha256": "881bdc27b4254584be3e35c53243508073c5d98a232e493f734a3c29aaa4f8e0"
-  }
+  },
+  "priorMethodSourcePlanSha256": "24df5d7cc913c727c168d6147dfdc20ede8692435d4ad018711bcd258cd55bd0",
+  "sourceCensusPath": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-METHODS.json",
+  "sourceCensusSha256": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+  "referenceCaptureRequired": true,
+  "parserVersion": {
+    "path": "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs",
+    "sha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db"
+  },
+  "noPrivateProviderValuesIncluded": true
 }
