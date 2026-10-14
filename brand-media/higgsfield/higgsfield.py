@@ -216,6 +216,46 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
     return amount, cap
 
 
+def retrieve_completed_job(args):
+    """Read one existing job status and download its completed output; never submits work."""
+    if args.model != "alibaba/wan-3.0":
+        raise HiggsfieldError("Status retrieval is restricted to the approved Wan 3.0 job")
+    if not re.fullmatch(r"[A-Za-z0-9-]+", args.request_id or ""):
+        raise HiggsfieldError("Invalid request ID")
+    model = get_model(args.model)
+    client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
+    result = client.status(args.request_id)
+    if result["status"] in {"queued", "processing", "in_progress"}:
+        print(json.dumps({"request_id": args.request_id, "status": result["status"], "generation_submissions": 0}))
+        return
+    if result["status"] != "completed" or not isinstance(result.get("video"), dict) or not result["video"].get("url"):
+        raise HiggsfieldError(f"Generation ended with status {result['status']}")
+
+    out = Path(args.output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    video_path = out / f"{args.request_id}.mp4"
+    client.download(result["video"]["url"], video_path)
+    approved = model.get("approved_production_reference", {})
+    reference_path = Path(approved.get("path", ""))
+    reference = None
+    if reference_path.is_file():
+        digest = hashlib.sha256(reference_path.read_bytes()).hexdigest()
+        if digest != approved.get("sha256"):
+            raise HiggsfieldError("Registered master reference checksum mismatch")
+        reference = {"asset_id": approved.get("asset_id"), "path": approved["path"], "sha256": digest}
+    metadata = safe_metadata({
+        "request_id": args.request_id, "model_id": model["model_id"], "provider": model["provider"],
+        "prompt": args.prompt, "seed": None,
+        "parameters": build_params(model, "image_to_video", args.prompt, 20, "1080p", "9:16", True),
+        "requested_aspect_ratio": "9:16", "aspect_ratio_source": "request parameter",
+        "reference_image": reference, "estimate": None, "actual_cost": None,
+        "status": result["status"], "result_file": str(video_path),
+        "hyperframes_ready": True, "social_upload": False,
+    }, secret=os.environ.get("HIGGSFIELD_API_KEY"))
+    (out / f"{args.request_id}.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"request_id": args.request_id, "status": "completed", "video_file": str(video_path), "actual_cost": None}))
+
+
 def build_params(model, operation, prompt, duration, resolution, aspect_ratio, native_audio):
     params = {"prompt": prompt, "duration": duration}
     # Seedance 2.5 image-to-video derives framing from image_url and rejects this field.
@@ -233,6 +273,8 @@ def build_params(model, operation, prompt, duration, resolution, aspect_ratio, n
 
 
 def run(args):
+    if args.action == "status":
+        return retrieve_completed_job(args)
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
@@ -310,7 +352,7 @@ def run(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", choices=("estimate", "generate", "produce"), required=True)
+    parser.add_argument("--action", choices=("estimate", "generate", "produce", "status"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--operation", choices=("text_to_video", "image_to_video", "reference_to_video"), required=True)
     parser.add_argument("--prompt", required=True)
@@ -323,6 +365,7 @@ def main(argv=None):
     parser.add_argument("--budget-usd", default="")
     parser.add_argument("--approval", default="")
     parser.add_argument("--approved-estimate-usd", default="")
+    parser.add_argument("--request-id", default="")
     parser.add_argument("--output-dir", default="brand-media/output/higgsfield")
     args = parser.parse_args(argv)
     try:
