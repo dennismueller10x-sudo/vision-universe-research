@@ -42,7 +42,7 @@ PR #659 bereitet ein **natives, von Brevo gehostetes Newsletter-Anmeldeformular*
 
 Die 135 vorhandenen Newsletter-Kontakte werden nicht erneut angemeldet, ihre Einwilligungen nicht umgedeutet und keine rückwirkenden DOI-Nachweise gesetzt. **VU | App-Warteliste (5)** und **VU | Newsletter-Test (6)** bleiben unverändert und werden vom Formular nicht verwendet; 13 Nicht-Abonnenten bleiben ausgeschlossen. Brevo übernimmt den neuen Anmelde-/DOI-/Abmeldeweg. Die Landingpage bleibt statisch, ohne D1, eigenen DOI-Endpunkt oder API-Schlüssel im Browser/Build.
 
-Die bisherigen App-Vorlagen **1, 2 und 3** werden auf belegbare Nutzung geprüft und nicht überschrieben oder gelöscht. Die separate deutsche [Newsletter-DOI-Vorlage](mail/newsletter-doi.html) verwendet `{{ doubleoptin }}`. API-Rücklesen beweist nicht ihre Auswahl im Formular oder einen funktionierenden Mail-Link. [Aktueller Nutzungsnachweis, exakter Brevo-Klickweg und Abnahme](NEWSLETTER.md).
+Die bisherigen App-Vorlagen **1, 2 und 3** werden auf belegbare Nutzung geprüft und nicht überschrieben oder gelöscht. Die separate deutsche [Newsletter-DOI-Vorlage](mail/newsletter-doi.html), tatsächlich als **ID 4** angelegt und API-rückgelesen, verwendet `{{ doubleoptin }}`. API-Rücklesen beweist nicht ihre Auswahl im Formular oder einen funktionierenden Mail-Link. [Aktueller Nutzungsnachweis, exakter Brevo-Klickweg und Abnahme](NEWSLETTER.md).
 
 **Öffentlich weiterhin gesperrt:** tatsächliche Anmelde-/Abmelde-URLs, kontrollierter echter DOI-/Abmeldetest und Freigabe des konkreten Datenschutztextes fehlen. `newsletter.config.example.json` bleibt gesperrt; ein Merge öffnet die Anmeldung nicht. Keine weitere Cloudflare-D1- oder API-Token-Einrichtung.
 
