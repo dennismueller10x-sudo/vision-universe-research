@@ -14,12 +14,13 @@ export function validateConfig(config = {}) {
   if (Object.keys(config).some(k => !keys.includes(k))) throw new Error('Unbekanntes Konfigurationsfeld. Keine API-Schlüssel verwenden.');
   for (const name of ['liveFlowVerified','privacyReviewed']) if (config[name] !== undefined && typeof config[name] !== 'boolean') throw new Error('Freigaben müssen boolesch sein.');
   if (config.frameHeight !== undefined && (!Number.isInteger(config.frameHeight) || config.frameHeight < 640 || config.frameHeight > 1600)) throw new Error('Formularhöhe muss zwischen 640 und 1600 liegen.');
+  if (config.unsubscribeFormUrl) providerUrl(config.unsubscribeFormUrl);
   if (config.formUrl) {
     providerUrl(config.formUrl); providerUrl(config.unsubscribeFormUrl);
     if (config.formUrl === config.unsubscribeFormUrl) throw new Error('Anmelde- und Abmeldeformular müssen verschieden sein.');
     if (config.liveFlowVerified !== true) throw new Error('Echter DOI-/Abmeldetest ist noch nicht geprüft.');
     if (config.privacyReviewed !== true || !config.privacyHtmlPath) throw new Error('Freigegebene Datenschutzhinweise fehlen.');
-  } else if (config.unsubscribeFormUrl) throw new Error('Unvollständige Formularkonfiguration.');
+  }
   if (config.privacyReviewed === true && !config.privacyHtmlPath) throw new Error('Pfad zu freigegebenen Datenschutzhinweisen fehlt.');
   return Boolean(config.formUrl);
 }
@@ -50,6 +51,10 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   if (ready) {
     const frame = `<div class="brevo-form"><iframe title="Anmeldung zur VU App-Warteliste" src="${esc(config.formUrl)}" height="${config.frameHeight || 850}" loading="lazy" referrerpolicy="no-referrer"></iframe><p>Wird das Formular nicht angezeigt? <a href="${esc(config.formUrl)}" target="_blank" rel="noopener noreferrer">Brevo-Formular öffnen</a>.</p></div>`;
     html = html.replace(/<form\b[^>]*id="newsletter-form"[\s\S]*?<\/form>/, frame);
+  }
+  // A native unsubscribe link remains available while public signup is blocked.
+  // This permits the private provider test without prematurely opening signup.
+  if (config.unsubscribeFormUrl) {
     const confirmedPath = resolve(output,'warteliste/bestaetigt/index.html');
     const confirmed = await readFile(confirmedPath,'utf8');
     await writeFile(confirmedPath,confirmed.replace(/<div id="brevo-unsubscribe">[\s\S]*?<\/div>/,`<div id="brevo-unsubscribe"><p><a class="button" href="${esc(config.unsubscribeFormUrl)}" rel="noreferrer">Bei Brevo abmelden</a></p><p>Brevos Abmeldeformular kann E-Mail-Marketing kontoweit sperren. Es bestätigt die tatsächliche Abmeldung selbst.</p></div>`));

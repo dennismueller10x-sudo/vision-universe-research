@@ -36,3 +36,14 @@ test('DOI-Mail nutzt nativen Platzhalter und wortgleiche Einwilligung',async()=>
   const consent='Ich möchte von Vision Universe per E-Mail über den Start der App und Neuigkeiten zur App informiert werden. Ich kann meine Einwilligung jederzeit über den Abmeldelink widerrufen.';
   assert.ok(html.includes(consent));assert.ok((await readFile(resolve(root,'index.html'),'utf8')).includes(consent));
 });
+
+test('Nativer Abmeldelink ist für den privaten Test verfügbar, öffentliche Anmeldung bleibt gesperrt',async()=>{
+  const output=resolve(root,'tests/output/unsubscribe-only');
+  await build({output,config:{unsubscribeFormUrl:ready.unsubscribeFormUrl}});
+  const home=await readFile(resolve(output,'index.html'),'utf8');
+  assert.match(home,/<fieldset disabled>/);assert.doesNotMatch(home,/<iframe|<form[^>]*action=/);
+  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/frame-src 'none'/);
+  const confirmation=await readFile(resolve(output,'warteliste/bestaetigt/index.html'),'utf8');
+  assert.ok(confirmation.includes(ready.unsubscribeFormUrl));assert.doesNotMatch(confirmation,/<script|<form/);
+  for(const url of ['https://evil.example/serve/id','/api/waitlist/unsubscribe'])assert.throws(()=>validateConfig({unsubscribeFormUrl:url}));
+});
