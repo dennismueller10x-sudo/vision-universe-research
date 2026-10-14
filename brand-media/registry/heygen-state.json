@@ -15,7 +15,8 @@
       "afterPlateTest": 14.42,
       "afterTheRoomProduction": 13.92,
       "afterTheFuture": 12.67,
-      "afterTheArrival": 10.67
+      "afterTheArrival": 10.67,
+      "afterTheArrivalMaster": 9.13
     },
     "note": "MCP-Verbindung (OAuth) bucht auf den Web-Tarif (free), REST mit API-Key bucht auf das Wallet. Generierung lief per REST."
   },
@@ -478,5 +479,47 @@
     },
     "references": "keine (nur Text-to-Video, kein Startframe)",
     "final": "brand-media/video/trailer/the_arrival_clean/final/vision_universe_the_arrival_20s_1920x1080.mp4"
+  },
+  "theArrivalMaster": {
+    "status": "REVIEW",
+    "producedAt": "2026-10-14",
+    "budgetUsd": 4.0,
+    "walletBefore": 10.67,
+    "walletAfter": 9.13,
+    "chargedUsd": 1.54,
+    "model": "heygen-video-1",
+    "masterAssetId": "fe3aa8fbb0c84cccbf3cfab11f176c2f",
+    "masterSha256": "e6efce37a4097f82af1a6f55131e0aed877139ec287e6b8decea55c6bd569a39",
+    "clips": [
+      {
+        "id": "c1_a",
+        "mode": "reference_to_video",
+        "seed": 8101,
+        "res": "768p",
+        "sec": 14,
+        "usd": 0.7,
+        "verdict": "NOT USED (Personen nur von hinten, klein)"
+      },
+      {
+        "id": "c1_b",
+        "mode": "reference_to_video",
+        "seed": 8102,
+        "res": "768p",
+        "sec": 14,
+        "usd": 0.7,
+        "verdict": "USED (0-6,1 s und 9,9-14,4 s)"
+      },
+      {
+        "id": "c2_orbit_a",
+        "mode": "image_to_video (Masterbild)",
+        "seed": 8111,
+        "res": "768p",
+        "sec": 7,
+        "usd": 0.14,
+        "verdict": "USED"
+      }
+    ],
+    "audio": "nur nativer HeyGen-Ton + sehr leiser Raumton, keine Musik/Sprache/Effekte (nicht angehoert)",
+    "final": "brand-media/video/trailer/the_arrival_master_final/final/vision_universe_the_arrival_master_20s_1920x1080.mp4"
   }
 }
