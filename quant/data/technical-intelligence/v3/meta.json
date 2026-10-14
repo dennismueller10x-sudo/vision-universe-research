@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-13T13:41:03.537Z",
+ "generatedAt": "2026-10-14T11:49:26.466Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,20 +43,20 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 2739,
+ "runtimeSec": 4558,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4394,
-   "DATA_INVALID": 445,
+   "ABSTAIN": 4379,
+   "DATA_INVALID": 443,
+   "WITHHELD": 72,
    "NO_PROJECTION": 106,
-   "AVAILABLE": 41,
-   "WITHHELD": 54
+   "AVAILABLE": 40
   },
-  "consumerVisible": 41,
+  "consumerVisible": 40,
   "types": {
-   "NEXT_MOVE": 33,
+   "NEXT_MOVE": 32,
    "WAVE_C": 2,
    "REVERSAL": 2,
    "THRUST": 3,
@@ -106,8 +106,8 @@
      "UP 100-250%": 18,
      "UP 50-100%": 8,
      "UP 500-1000%": 2,
-     "DOWN 50-100%": 6,
      "DOWN 100-250%": 1,
+     "DOWN 50-100%": 6,
      "UP 250-500%": 8,
      "UP >1000%": 2,
      "UP <50%": 7
@@ -124,38 +124,38 @@
     }
    },
    "candidates": {
-    "securities": 3745,
-    "entries": 13288,
+    "securities": 3744,
+    "entries": 13283,
     "perSecurity": {
      "1": 476,
      "2": 710,
      "3": 685,
      "4": 688,
-     "5": 531,
+     "5": 530,
      "6": 655
     },
     "direction": {
-     "DOWN": 6825,
-     "UP": 6463
+     "DOWN": 6824,
+     "UP": 6459
     },
     "type": {
-     "WAVE_C": 9899,
-     "WAVE_3": 2979,
+     "WAVE_C": 9895,
+     "WAVE_3": 2978,
      "WAVE_5": 410
     },
     "failedSet": {
-     "G3+G4": 1930,
+     "G3+G4": 1929,
      "G3+G4+G5": 581,
      "G2+G3+G4": 3092,
-     "G2+G3+G4+G5": 1456,
-     "G2+G3": 1511,
+     "G2+G3+G4+G5": 1455,
+     "G2+G3": 1510,
      "G3": 777,
      "G3+G5": 480,
      "G2+G4": 757,
+     "G2+G3+G5": 910,
      "G2+G5": 199,
      "G4+G5": 258,
      "G2+G4+G5": 511,
-     "G2+G3+G5": 912,
      "G4": 514,
      "G2": 197,
      "G5": 113
@@ -163,7 +163,7 @@
    }
   },
   "splitResolved": 202,
-  "normalAlternative": 39,
+  "normalAlternative": 38,
   "motiveAlternative": 33,
   "motiveDOWN": 29,
   "motiveUP": 4,
@@ -177,39 +177,42 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-12",
+   "reference": "2026-10-13",
    "titles": 5035,
    "states": {
-    "FRESH": 4979,
-    "STALE": 51,
-    "NON_TRADING": 3,
-    "DELAYED": 2
+    "FRESH": 5,
+    "DELAYED": 4958,
+    "NON_TRADING": 20,
+    "STALE": 52
    },
    "reasons": {
-    "REFRESH_STOPPED": 26,
-    "NO_NEWER_BARS": 27,
-    "SECURITY_INACTIVE": 3
+    "REFRESH_STOPPED": 4983,
+    "SECURITY_INACTIVE": 20,
+    "NO_NEWER_BARS": 27
    },
-   "reasonsKnown": 3,
-   "delayedWithNotice": 2,
+   "reasonsKnown": 20,
+   "delayedWithNotice": 4958,
    "affected": {
-    "titles": 54,
-    "primary": 48,
-    "alternative": 45,
+    "titles": 72,
+    "primary": 63,
+    "alternative": 61,
     "motiveAlternative": 0,
     "exploreHighlights": 6,
-    "exploreCandidates": 107,
-    "consumerVisibleProjections": 0
+    "exploreCandidates": 112,
+    "consumerVisibleProjections": 1
    },
    "ageBuckets": {
-    "0-3": 4980,
+    "0-3": 4979,
     "6-10": 17,
     "21-40": 29,
-    "11-20": 7,
+    "11-20": 8,
     ">40": 1,
     "4-5": 1
    },
    "withheldTitles": [
+    "ADAMM",
+    "ADAMN",
+    "ADSE",
     "AIXC",
     "APGE",
     "ANY",
@@ -220,39 +223,54 @@
     "CSAN",
     "CRNX",
     "DBRG",
-    "DBRG-P-H",
-    "DBRG-P-I",
     "DBRG-P-J",
+    "DBRG-P-I",
+    "DBRG-P-H",
     "DOMO",
+    "EFOR",
     "FBRX",
+    "FBRT",
     "FGNX",
     "FGNXP",
     "FSEA",
     "GBTG",
+    "GOODN",
     "GWH",
     "HLX",
     "IWML",
-    "JUPGF",
     "IWFL",
+    "JUPGF",
+    "JPM-P-M",
+    "KREF-P-A",
+    "LANDP",
     "LBRDK",
-    "LBRDP",
     "LBRDA",
+    "LBRDP",
     "LEG",
     "MAA-P-I",
     "MDV",
     "MDV-P-A",
     "MTUL",
+    "MS-P-O",
     "NCSM",
     "NLY-P-I",
     "NSTS",
     "NTZ",
+    "OXLCP",
     "PHGE",
+    "PSA-P-Q",
+    "QRVO",
     "QULL",
+    "RIV-P-A",
+    "RPT",
     "RMAX",
+    "SEVN",
     "SAT",
     "SCDL",
+    "SF-P-B",
     "SNYR",
     "TALK",
+    "THRD",
     "TWO-P-A",
     "TWO",
     "TWO-P-B",
@@ -266,12 +284,12 @@
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0107,
+    "share": 0.0143,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 3,
+  "lifecycleEvents": 4,
   "tracked": 6990
  }
 }
