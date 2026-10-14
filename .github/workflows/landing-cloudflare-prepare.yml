@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       waitlist_operation:
-        description: Isolierter DOI-Betrieb; setup sendet keine E-Mails
+        description: Einmalige native Migration; keine E-Mails oder Kontaktänderungen
         type: choice
-        options: [audit, setup]
+        options: [audit, prepare_native, cleanup]
         default: audit
 permissions:
   contents: read
@@ -20,19 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: a04b5acdd554a23350fe8f7e1262ca334fcaaef3
+          ref: f0066e036
           persist-credentials: false
           sparse-checkout: landing
-      - name: Private DOI prerequisites, no email or contact mutations
+      - name: Native form prerequisites; no email or contact writes
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
-          LANDING_CLOUDFLARE_API_TOKEN: ${{ secrets.LANDING_CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           WAITLIST_OPERATION: ${{ inputs.waitlist_operation }}
-        run: python3 landing/scripts/waitlist-admin.py
+        run: python3 landing/scripts/native-form-migration.py
   prepare:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
