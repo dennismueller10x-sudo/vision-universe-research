@@ -77,11 +77,22 @@
     },
     {
       "methodId": "value_plus_momentum",
-      "verdict": null,
-      "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
+      "verdict": "DATA_BLOCKED",
+      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
+      "status": "DATA_BLOCKED",
       "output": null,
-      "checkpoint": "CALIBRATION-V3-value_plus_momentum-CHECKPOINT.json"
+      "checkpoint": "CALIBRATION-V3-value_plus_momentum-CHECKPOINT.json",
+      "blockerRequirements": [
+        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
+        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
+        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
+        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
+        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
+        "SOURCE_FULL_MARKET_90PCT_ME_DENOMINATOR",
+        "SOURCE_PREFERRED_AND_BOOK_EQUITY_SCOPE",
+        "ACTUAL_HISTORICAL_EXCLUSION_TYPE_AND_US_COMMON_CLASS",
+        "SOURCE_SHORTABLE_FACTOR_PORTFOLIO_COST_FINANCING_IF_STOCK_FACTOR_SIMULATION"
+      ]
     },
     {
       "methodId": "buyback_announcement_event",
