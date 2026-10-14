@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
   "updatedAt": "2026-10-14",
-  "status": "CANONICAL_CAPTURE_DIAGNOSTIC_RERUN_IN_PROGRESS",
+  "status": "CANONICAL_AVAILABLE_SEGMENT_ATTRIBUTION_AND_HASH_RECEIPTS_RUNNING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -15,9 +15,11 @@
     "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE",
     "V3_OFFICIAL_REFERENCE_ARCHIVES_CAPTURED_HASH_VERIFIED",
     "V3_REFERENCE_ARTIFACT_RECEIPTS_VERIFIED",
-    "V3_REFERENCE_PARSER_OUTPUT_CREATED_AND_ENCRYPTED"
+    "V3_REFERENCE_PARSER_OUTPUT_CREATED_AND_ENCRYPTED",
+    "CANONICAL_CAPTURE_STATUS_ARTIFACT_ZIP_DIGEST_VERIFIED",
+    "CANONICAL_CAPTURE_AVAILABLE_COUNTS_VERIFIED"
   ],
-  "currentPhase": "CANONICAL_CAPTURE_DIAGNOSIS",
+  "currentPhase": "CANONICAL_SAFE_MANIFEST_AND_REJECTION_RECEIPTS",
   "completedCalibrationMethods": [],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
@@ -193,6 +195,13 @@
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
       "sha256": "d171f257b43fec459ec4ed42e4e3364bdc4970ad4a4d382f13ad0d79e6e07b38"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-CANONICAL-CAPTURE-SAFE-STATUS.json",
+      "sha256": "d3b50b7092c4c49254bdc8cea9565fb4a8f6eb976c7e18c8063cb56f08fa7e6a",
+      "artifactId": 11889873959,
+      "runId": 38555503225,
+      "statusZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0"
     }
   ],
   "blockers": [
@@ -216,10 +225,10 @@
     "fullCompletionFromCurrentArtifactsAlone": false
   },
   "activeWorkflowRun": {
-    "runId": 38555503225,
-    "head": "6e28a4db900f8f3aa09ee627da9ebc047e0d91c0",
+    "runId": 38566792132,
+    "head": "e693e6c7de279840cb03a089ad481063291a0e65",
     "status": "IN_PROGRESS",
-    "nextStep": "Read bounded public status artifact; diagnose allowlisted failure phase/code; fix proven loader infrastructure only, then recapture until manifest and parts are present."
+    "purpose": "Emit allowlisted aggregate causes for rejected canonical segments and per-part/manifest content and ciphertext hashes."
   },
   "codeHashesForNextCapture": {
     "dataInventory": "ff3d51a105f3d8eb666d53640c74a4123d84e2066abb26f20b9c3707ac42a003",
@@ -246,5 +255,5 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Poll Actions run 38555503225. Download artifact supertrader-certification-status-38555503225 separately and verify status hash. Do not start calibration while canonical manifest/parts are absent."
+  "exactNextStep": "Poll Actions run 38566792132. Verify its separate status artifact digest/content SHA; verify inputSegments = usableSegments + categorized rejected counts; verify manifest and all 500 part hashes and corresponding sealed-file receipts. Then create final V3 freeze before method calibration."
 }

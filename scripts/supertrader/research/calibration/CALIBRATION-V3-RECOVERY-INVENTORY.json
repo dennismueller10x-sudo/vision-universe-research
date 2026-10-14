@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-recovery-inventory-1.0.0",
   "capturedAt": "2026-10-14",
-  "status": "RECOVERY_INVENTORY_COMPLETE_NUMERIC_REBUILD_BLOCKED_CANONICAL_CAPTURE_EMPTY",
+  "status": "CANONICAL_CAPTURE_AVAILABLE_HASH_RECEIPT_AND_SEGMENT_ATTRIBUTION_PENDING",
   "repository": "dennismueller10x-sudo/vision-universe-research",
   "pr643": {
     "state": "OPEN",
@@ -405,5 +405,15 @@
     "event": "push",
     "mode": "canonical",
     "workflow": ".github/workflows/supertrader-certification.yml"
+  },
+  "canonicalCaptureRun": {
+    "runId": 38555503225,
+    "canonicalStatus": "AVAILABLE",
+    "inputSegments": 9410,
+    "usableSegments": 9408,
+    "sealedParts": 500,
+    "statusArtifactZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
+    "encryptedInputZipSha256": "621b5941fd88903d1d3bf6c796144fe3a701a6a31ebc7ac7829eb3c3b4d1d308",
+    "segmentRejectAttribution": "PENDING"
   }
 }

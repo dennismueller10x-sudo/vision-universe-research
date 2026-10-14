@@ -3533,10 +3533,30 @@
   "latestCanonicalDiagnosticRun": {
     "runId": 38555503225,
     "head": "6e28a4db900f8f3aa09ee627da9ebc047e0d91c0",
-    "status": "IN_PROGRESS",
-    "purpose": "Expose allowlisted canonical diagnostic in a separate bounded public status artifact; encrypted input bundle remains private.",
-    "statusArtifactName": "supertrader-certification-status-38555503225",
-    "artifactId": null,
-    "artifactSha256": null
+    "status": "COMPLETED_SUCCESS_CANONICAL_AVAILABLE",
+    "statusArtifact": {
+      "artifactId": 11889873959,
+      "name": "supertrader-certification-status-38555503225",
+      "expiresAt": "2027-01-12T11:17:18Z",
+      "bytes": 623,
+      "githubDigest": "sha256:02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
+      "localZipSha256": "02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0",
+      "statusContentSha256": "d3b50b7092c4c49254bdc8cea9565fb4a8f6eb976c7e18c8063cb56f08fa7e6a"
+    },
+    "canonicalCounts": {
+      "inputSegments": 9410,
+      "usableSegments": 9408
+    },
+    "sourceObjectsAvailable": 9,
+    "sourceObjectsMissing": 0,
+    "encryptedCaptureArtifact": {
+      "artifactId": 11890418615,
+      "name": "supertrader-certification-probe-38555503225",
+      "bytes": 1247958485,
+      "githubDigest": "sha256:621b5941fd88903d1d3bf6c796144fe3a701a6a31ebc7ac7829eb3c3b4d1d308",
+      "expiresAt": "2027-01-12T11:17:18Z"
+    },
+    "segmentRejectionAttribution": "NOT_PRESENT_IN_THIS_RUN_STATUS_PENDING_SAFE_AGGREGATE_RECEIPT",
+    "manifestAndPartHashes": "NOT_PRESENT_IN_THIS_RUN_STATUS_PENDING_SAFE_AGGREGATE_RECEIPT"
   }
 }
