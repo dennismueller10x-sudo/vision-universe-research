@@ -23,7 +23,7 @@ import {createRequire} from 'node:module';
 import {createServer} from 'node:http';
 import {randomBytes, createHash} from 'node:crypto';
 import {existsSync, readFileSync} from 'node:fs';
-import {gunzipSync} from 'node:zlib';
+import {gunzipSync, gzipSync} from 'node:zlib';
 import {mkdtemp, mkdir, readdir, readFile, writeFile, copyFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve, join, extname, dirname, relative, sep} from 'node:path';
@@ -85,7 +85,6 @@ const mime = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.c
 // bleibt unveraendert: Stempel und Hashes (?v=, sha256 im Manifest) werden gegen die dekomprimierten Bytes gebildet, die auch der Browser
 // bei response.body() sieht. --no-compress liefert wie frueher unkomprimiert (nur fuer den Vergleich).
 const compressible = /^(text\/html|text\/javascript|text\/css|application\/json|image\/svg\+xml|application\/manifest\+json)\b/, gzipCache = new Map();
-const {gzipSync} = process.getBuiltinModule('node:zlib'), {createHash} = process.getBuiltinModule('node:crypto');
 const compress = !argv.includes('--no-compress');
 function gzipResponse(req, res) { // ersetzt res.end: komprimiert, was Pages komprimiert, und nur, wenn der Browser gzip annimmt
   const end = res.end.bind(res);
