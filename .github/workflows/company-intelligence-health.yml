@@ -32,10 +32,31 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/company_intelligence/refresh-run.mjs health --out "$RUNNER_TEMP/refresh-slo.json"
+        run: |
+          # Exit contract: 0 = HEALTHY/WARNING/OFF (deliberately closed gate, fresh data),
+          # 1 = SLO CRITICAL (a verdict file with status CRITICAL exists),
+          # 2 = the check itself crashed (no verdict). Static import failures such as
+          # ENOENT from a sparse checkout exit 1 in Node without a verdict file; they are
+          # mapped to 2 here so a crash is never reported as a data outage.
+          out="$RUNNER_TEMP/refresh-slo.json"
+          rm -f "$out"
+          rc=0
+          node scripts/company_intelligence/refresh-run.mjs health --out "$out" || rc=$?
+          if [ "$rc" -eq 1 ] && ! grep -q '"status": *"CRITICAL"' "$out" 2>/dev/null; then
+            echo "::error::health crashed (exit 1 without an SLO verdict file); not an SLO finding"
+            rc=2
+          fi
+          case "$rc" in
+            0) ;;
+            1) echo "::error::Company Intelligence SLO CRITICAL (verdict in artifact company-intelligence-refresh-slo-${GITHUB_RUN_ID})" ;;
+            2) echo "::error::health crashed; see job log. No SLO verdict was produced" ;;
+            *) echo "::error::health exited with unexpected code $rc"; rc=2 ;;
+          esac
+          exit "$rc"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: company-intelligence-refresh-slo-${{ github.run_id }}
           path: ${{ runner.temp }}/refresh-slo.json
+          if-no-files-found: ignore
           retention-days: 14
