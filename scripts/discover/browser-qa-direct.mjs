@@ -107,6 +107,13 @@ const check = async (name, fn) => {
   console.log((last.pass ? 'PASS ' : 'FAIL ') + name + ' (' + last.milliseconds + ' ms)' + (last.pass ? '' : '\n     ' + last.error.split('\n').join('\n     ')));
 };
 
+// Wartegrenze je Route bei CDP-Drosselung (150 ms, 1,6 Mbit/s = 200 KB/s, CPU x4). Gemessen (CI 14.10., lokal 5 Laeufe): NVDA 28 s,
+// einzeln 13 s, Daten 12 s, Rheinmetall 56 s (CI-Lauf 38541004665 brauchte mehr als 60 s und scheiterte mit leerer Chartliste; sonst war nur
+// der Chart nicht da). Die Zeit ist Uebertragung: die Europa-Route holt manifest.json (356 KB) und catalog.json (7,5 MB) UNKOMPRIMIERT von
+// diesem Testserver (GitHub Pages liefert sie gzip: 55 KB + 443 KB), also ~7,9 MB / 200 KB/s = 40 s plus Ketten bei 150 ms und Hash/Parse bei CPU x4.
+// 60 s liessen 4 s Luft; 120 s sind das Doppelte der gemessenen Last. Der Chart MUSS weiter gezeichnet werden (verdict unveraendert);
+// nur die Obergrenze wartet laenger. Wer die Europa-Daten vergroessert, sieht die Messzeit im Detail des Checks.
+const THROTTLED_BUDGET_MS = 120000;
 // Eine Route, eine frische Seite, durch die Maske. Gibt Maengel samt Beleg zurueck.
 async function loadThroughGate({device, spec, hash, throttle = null, delays = false, context = null, access = true, timeout}) {
   const own = !context;
@@ -143,7 +150,7 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
     outcome.maskServed = document.includes('research-access-settings') && document.includes('research-access-form');
     if (gateOn && !outcome.maskServed) outcome.problems.push('Ausgeliefert wurde NICHT die Zugangsmaske (Test liefe ungesperrt)');
     outcome.gotoMs = Date.now() - started;
-    const rendered = await waitRendered(page, spec.specName, {timeout: timeout ?? (throttle || delays ? 60000 : 25000)});
+    const rendered = await waitRendered(page, spec.specName, {timeout: timeout ?? (throttle ? THROTTLED_BUDGET_MS : delays ? 60000 : 25000)});
     outcome.ms = rendered.ms;
     outcome.problems.push(...rendered.problems);
     if (access && gateOn && !contentFetches.some(f => f.status === 200)) outcome.problems.push('kein /__research/content/-Abruf mit 200 beobachtet (Maske nicht durchlaufen)');
@@ -218,12 +225,14 @@ for (const device of devices) {
 // ---------------------------------------------------------------- 4. Langsame Verbindungen
 for (const device of engine === 'chromium' ? [devices[0]] : devices) {
   if (engine === 'chromium') await check('Langsames Netz (CDP 150 ms, 1,6 Mbit/s, CPU x4): ' + device.name, async () => {
-    const failures = [];
+    const failures = [], renderMs = {};
     for (const key of ['nvda', 'rheinmetall', 'einzeln', 'daten']) for (let i = 0; i < reps(1); i++) {
       const result = await loadThroughGate({device, spec: named(key), throttle: 'cdp'});
+      renderMs[key] = result.ms;
       if (result.problems.length) failures.push(key + ' #' + (i + 1) + ': ' + result.problems.join('; '));
     }
-    assert(!failures.length, failures.join('\n'));
+    assert(!failures.length, failures.join('\n') + '\n(gerendert nach ms: ' + JSON.stringify(renderMs) + ', Grenze ' + THROTTLED_BUDGET_MS + ' ms)');
+    return {renderMs, budgetMs: THROTTLED_BUDGET_MS};
   });
   await check('Zufaellige Verzoegerung 20-350 ms je js/css/json (Seed ' + seed + '): ' + device.name, async () => {
     const failures = [];
