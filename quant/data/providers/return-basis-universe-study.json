@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-10-14T03:04:12.000Z",
+ "generatedAt": "2026-10-14T11:42:43.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -1768,9 +1768,9 @@
  "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
-  "entries": 6435,
+  "entries": 6436,
   "priceBasisCounts": {
-   "close": 6435
+   "close": 6436
   },
   "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
  },
@@ -3818,12 +3818,12 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": true,
     "strategyBasis": "EVIDENCE_AT_OR_BEFORE_CUTOFF",
-    "publishedEvidenceAsOf": "2026-10-12",
-    "publishedEvidenceLagDays": -1,
+    "publishedEvidenceAsOf": "2026-10-13",
+    "publishedEvidenceLagDays": 0,
     "excludedForLateFundamentals": 0,
     "limitation": null,
-    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.936319,
-    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.945737,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.940154,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.950046,
     "publishedScored": 5613,
     "simulatedScoredOnPrice": 5766,
     "simulatedScoredOnTotal": 5766,
@@ -3840,11 +3840,11 @@
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 357,
-     "MEMBERS_ON_TOTAL_RETURN": 347,
+     "MEMBERS_ON_PRICE_RETURN": 358,
+     "MEMBERS_ON_TOTAL_RETURN": 348,
      "LEAVING": 15,
      "ENTERING": 5,
-     "MEMBERSHIP_CHURN_SHARE": 0.056,
+     "MEMBERSHIP_CHURN_SHARE": 0.0559,
      "leavingExamples": [
       "NVDA",
       "CRM",
@@ -3896,11 +3896,11 @@
     },
     "value-momentum": {
      "label": "Value Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 195,
-     "MEMBERS_ON_TOTAL_RETURN": 191,
+     "MEMBERS_ON_PRICE_RETURN": 192,
+     "MEMBERS_ON_TOTAL_RETURN": 187,
      "LEAVING": 9,
-     "ENTERING": 5,
-     "MEMBERSHIP_CHURN_SHARE": 0.0718,
+     "ENTERING": 4,
+     "MEMBERSHIP_CHURN_SHARE": 0.0677,
      "leavingExamples": [
       "CAL",
       "CMC",
@@ -3914,7 +3914,6 @@
      ],
      "enteringExamples": [
       "SON",
-      "CNA",
       "TROW",
       "UG",
       "ETD"
@@ -5954,8 +5953,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-10-12",
-    "publishedEvidenceLagDays": 367,
+    "publishedEvidenceAsOf": "2026-10-13",
+    "publishedEvidenceLagDays": 368,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -5976,7 +5975,7 @@
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -8008,8 +8007,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-10-12",
-    "publishedEvidenceLagDays": 734,
+    "publishedEvidenceAsOf": "2026-10-13",
+    "publishedEvidenceLagDays": 735,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -8030,7 +8029,7 @@
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -10072,8 +10071,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-10-12",
-    "publishedEvidenceLagDays": 1102,
+    "publishedEvidenceAsOf": "2026-10-13",
+    "publishedEvidenceLagDays": 1103,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -10094,7 +10093,7 @@
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -12126,8 +12125,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-10-12",
-    "publishedEvidenceLagDays": 1468,
+    "publishedEvidenceAsOf": "2026-10-13",
+    "publishedEvidenceLagDays": 1469,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -12148,7 +12147,7 @@
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   }
  ],
@@ -12171,5 +12170,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 43513
+ "runtimeMs": 34849
 }
