@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "vu-trigger-proof-brief-20260917-001",
+  "content_id": "vu-trigger-proof-20260917-001",
+  "fixture_type": "automated_trigger_proof",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "curiosity-gap-system-proof-v1",
+    "hook_type": "curiosity_gap",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-trigger-proof-20260917-001:73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e:curiosity_gap:01",
+      "hook_type": "curiosity_gap",
+      "text": "Kann ein einziger Pull Request einen Creative Agent vollständig automatisch in Bewegung setzen?",
+      "brief_revision": "73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e"
+    },
+    {
+      "hook_variant_id": "vu-trigger-proof-20260917-001:73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e:curiosity_gap:02",
+      "hook_type": "curiosity_gap",
+      "text": "Was passiert, wenn Vision Universe einen Brief übergibt und der Creative Agent den Rest selbst dokumentiert?",
+      "brief_revision": "73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e"
+    },
+    {
+      "hook_variant_id": "vu-trigger-proof-20260917-001:73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e:curiosity_gap:03",
+      "hook_type": "curiosity_gap",
+      "text": "Lässt sich ein Creative-Ergebnis automatisch erzeugen, prüfen und zurückschreiben – ganz ohne klassische API?",
+      "brief_revision": "73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e"
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-trigger-proof-20260917-001:73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e:curiosity_gap:03",
+    "recommendation_reason": "Die Variante verdichtet den zu beweisenden Ablauf zu einer klaren Frage und benennt zugleich das zentrale Zero-API-Merkmal.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Dieser technische Proof prüft einen vollständig eventgetriebenen Authoring-Schritt: Vision Universe stellt einen strukturierten Brief bereit, der Creative Agent verarbeitet ausschließlich dessen vorgegebene Hook-Strategie und schreibt ein maschinenlesbares Ergebnis auf den isolierten Request-Branch zurück. Testfixture – keine Marktbehauptung, keine Anlageberatung und keine Veröffentlichung.",
+  "visual_brief": {
+    "purpose": "Technische Darstellung des automatischen Creative-Agent-Roundtrips",
+    "composition": "Dunkle Vision-Universe-Szene mit drei verbundenen Stationen: GitHub Request-PR, Creative Agent und strukturiertes JSON-Ergebnis.",
+    "style": "Clean, hochwertig und technisch; tiefes Schwarz, Weiß, Chrom sowie dezente farbige Lichtakzente.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Aktienkurs",
+      "Keine Renditezahl",
+      "Keine Marktprognose",
+      "Keine Publishing-Aktion"
+    ]
+  },
+  "evidence_refs": [
+    {
+      "ref_id": "brief-hook-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/hook_strategy",
+      "supports": "hook_strategy, hook_type and wording scope"
+    },
+    {
+      "ref_id": "brief-objective",
+      "source": "authoring-brief.json",
+      "json_pointer": "/objective",
+      "supports": "caption and hook subject"
+    },
+    {
+      "ref_id": "brief-authoring-requirements",
+      "source": "authoring-brief.json",
+      "json_pointer": "/authoring_requirements",
+      "supports": "variant count, identity rules and recommendation boundary"
+    },
+    {
+      "ref_id": "brief-publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_automated_trigger_proof",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "hook_strategy_inherited_from_brief": true,
+      "hook_variant_ids_bound_to_brief_blob_sha": true,
+      "stable_hook_variant_ids_present": true,
+      "hook_types_present": true,
+      "required_hook_variant_count_met": true,
+      "recommended_hook_is_noncanonical": true,
+      "selected_hook_absent": true,
+      "evidence_refs_present": true,
+      "contains_productive_market_claims": false,
+      "contains_investment_advice": false,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e",
+    "brief_revision": "73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e",
+    "processing_key": "vu-trigger-proof-brief-20260917-001:vu-trigger-proof-20260917-001:73cc77b5d4c98fc99ba6e4ce72cfac74cdcbe33e:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false
+  },
+  "publishing_allowed": false
+}
