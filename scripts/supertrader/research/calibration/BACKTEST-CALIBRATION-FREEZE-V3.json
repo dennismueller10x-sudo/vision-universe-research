@@ -44,12 +44,13 @@
   "requiredBeforeFreeze": [
     "canonical manifest exact bytes and per-part SHA256s",
     "source provenance metadata exact bytes",
-    "reference source plan and captured source bytes",
     "parsed reference artifact",
     "scanner-safe parser hash and passing focused tests",
     "frozen universe/data/execution/cost/corporate-action contracts",
     "V3 measurement runner and durable historical source-capture workflow must exist and pass preflight",
-    "V3 capture workflow must complete and its encrypted input manifest/artifact receipt must be verified"
+    "V3 capture workflow must complete and its encrypted input manifest/artifact receipt must be verified",
+    "reference source plan SHA256: 20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+    "reference source bytes and parsed private artifact receipts"
   ],
   "frozenAt": null,
   "premeasurementInfrastructureAmendments": [
@@ -78,5 +79,6 @@
     ]
   },
   "sourceManifestSha256": "d0d3a6485296ae76e0eb98758b8a41f8feaa7ee4b670a5c90608ed38f32470b9",
-  "currentCaptureSafeStatusSha256": "4b5575c27c6f0394ec26561ee5814f9880127d2d14209946797a1d0932b44215"
+  "currentCaptureSafeStatusSha256": "4b5575c27c6f0394ec26561ee5814f9880127d2d14209946797a1d0932b44215",
+  "referenceSourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2"
 }
