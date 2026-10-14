@@ -1,0 +1,41 @@
+{
+  "schema": "vision-universe-calibration-v3-reference-manifest-1.0.0",
+  "status": "REFERENCE_CAPTURE_REQUIRED",
+  "sources": [
+    {
+      "id": "FRENCH_MOM10",
+      "expectedSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+      "parser": "reference-return-arithmetic.mjs",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "inputPresent": false,
+      "captureDate": null,
+      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+    },
+    {
+      "id": "FRENCH_VAR",
+      "expectedSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+      "parser": "reference-return-arithmetic.mjs",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "inputPresent": false,
+      "captureDate": null,
+      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+    },
+    {
+      "id": "FRENCH_DAILY_RF",
+      "expectedSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+      "parser": "reference-return-arithmetic.mjs",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "inputPresent": false,
+      "captureDate": null,
+      "sourceUrl": "NOT_RECORDED_IN_FROZEN_RECEIPT"
+    }
+  ],
+  "parsedArtifact": null,
+  "tolerancePolicy": "Use preregistered BACKTEST-CALIBRATION-METHODS and protocol thresholds; no post-result changes.",
+  "parserRepair": {
+    "sha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+    "logicChanged": false,
+    "focusedTestSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
+    "focusedTestCount": 22
+  }
+}

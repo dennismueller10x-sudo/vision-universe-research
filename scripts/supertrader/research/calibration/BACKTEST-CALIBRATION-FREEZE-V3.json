@@ -1,0 +1,56 @@
+{
+  "schema": "supertrader-calibration-v3-premeasurement-freeze-1.0.0",
+  "status": "NOT_FROZEN_MISSING_DURABLE_INPUT_RECEIPTS",
+  "createdAt": "2026-10-14",
+  "basedOnHead": "cc9ecb5b677035338f034cd0f3c21a24b02c9fa2",
+  "parentFreezeSha256": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
+  "strategyDefinitionsChanged": false,
+  "postResultTuningAllowed": false,
+  "codeAndContractHashes": {
+    "calibrationProtocol": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "calibrationDefinitions": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "calibrationFreezeV1": "4aff8935e7564de492570a95f45ddf9a4f0c74f43ca83af16198deca12a4cea9",
+    "calibrationFreezeV2": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
+    "accountingBugNote": "84b5bc1d78b4e469698f49c98244db7b581b3d6678d2ef31a67ecdd3c1da7dc7",
+    "accountingFix": "248bacbb4d22e2955102aff83b1f9749623ee8270aa751b40476c145377ec655",
+    "accountingFixTest": "b0db96a92c08b1ed33dc7d9a312a302debd3000710c9a35bcfd4d8da46e9da6a",
+    "executionOpenGuardTest": "925b250e985305037176f396bc8251c869fd31e6bd887487ce09d93b3ad405d0",
+    "referenceArithmetic": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+    "referenceArithmeticTest": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
+    "calibrationRunner": "5a79c1e3a61ebd9bd389653c3e3de81b81be77e5c732cb4ab37c0739613de828",
+    "portfolioRunner": "15c4ffaff5b382c9b67930ecab7553fddd6df72725e3506ba16a2502168684c6",
+    "tournamentProtocol": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+    "methodFreezes": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+  },
+  "canonicalSourceManifestSha256": "02485da15fcff715b1d9b70384d62718756a17372e73eb74bf67a74f1a75078f",
+  "referenceManifestSha256": "df22b702c3c889d71769ca636d85ea77d6271b36fc4002f91ced0aa9635da76b",
+  "methodIds": [
+    "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+    "CAL_GH2004_52WH_30_6_NO_SKIP",
+    "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+    "CALIB_EQUAL_WEIGHT",
+    "gross_profitability_novy_marx",
+    "piotroski_value_fscore",
+    "value_plus_momentum",
+    "buyback_announcement_event"
+  ],
+  "tolerancePolicy": "INHERIT_FROZEN_PROTOCOL_NO_POST_RESULT_ADJUSTMENT",
+  "requiredBeforeFreeze": [
+    "canonical manifest exact bytes and per-part SHA256s",
+    "source provenance metadata exact bytes",
+    "reference source plan and captured source bytes",
+    "parsed reference artifact",
+    "scanner-safe parser hash and passing focused tests",
+    "frozen universe/data/execution/cost/corporate-action contracts"
+  ],
+  "frozenAt": null,
+  "premeasurementInfrastructureAmendments": [
+    {
+      "change": "scanner-safe local parser identifier rename token -> monthCell",
+      "logicChanged": false,
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "testSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
+      "focusedTestStatus": "22_PASSED"
+    }
+  ]
+}

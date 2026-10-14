@@ -22,6 +22,11 @@ test('momentum reads exact EW block despite preceding value-weight decoy, conver
   assert.equal(p.rows.length, 2); assert.equal(p.rows[0].values['Hi PRIOR'], 0.12); assert.equal(p.rows[0].values['Lo PRIOR'], -0.02);
   assert.equal(p.rows[1].values['Hi PRIOR'], 0); assert.equal(p.stockConstructionCertified, false);
 });
+test('reference parser accepts a six-digit month cell and emits the canonical month without parser-side effects', () => {
+  const p = parseFrenchMonthlyPortfolios(monthly('MOMENTUM_EW', [['202610', { 'Hi PRIOR': 2.5 }]]), { kind: 'MOMENTUM_EW' });
+  assert.equal(p.rows[0].month, '2026-10');
+  assert.equal(p.rows[0].values['Hi PRIOR'], 0.025);
+});
 test('variance excludes five quintiles and uses explicit Lo10/Hi10 EW deciles', () => {
   const p = parseFrenchMonthlyPortfolios(monthly('VARIANCE_EW', [['201801', { 'Lo 20': 900, 'Lo 10': 3, 'Hi 10': -4 }]]), { kind: 'VARIANCE_EW' });
   assert.equal(p.columns.length, 10); assert.equal(p.longColumn, 'Lo 10'); assert.equal(p.shortColumn, 'Hi 10');

@@ -1,0 +1,69 @@
+{
+  "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
+  "updatedAt": "2026-10-14",
+  "status": "PAUSED_FOR_DURABLE_CANONICAL_INPUT_CAPTURE",
+  "completedPhases": [
+    "PR_AND_BRANCH_RECOVERY_INVENTORY",
+    "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
+    "PERSISTED_ACCOUNTING_FIX_REVIEW",
+    "ACTIONS_ARTIFACT_METADATA_INVENTORY",
+    "SCANNER_SAFE_PARSER_RENAME_AND_22_TEST_FOCUSED_SUITE"
+  ],
+  "currentPhase": "DURABLE_HISTORICAL_CANONICAL_INPUT_CAPTURE_AND_REFERENCE_REBUILD",
+  "completedCalibrationMethods": [],
+  "pendingMethods": [
+    "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+    "CAL_GH2004_52WH_30_6_NO_SKIP",
+    "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+    "CALIB_EQUAL_WEIGHT",
+    "gross_profitability_novy_marx",
+    "piotroski_value_fscore",
+    "value_plus_momentum",
+    "buyback_announcement_event"
+  ],
+  "artifactRefs": [
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
+      "sha256": "3f17fa82fdde3271747222373c75c6069072cd18f931189296b52db818c38428"
+    },
+    {
+      "artifactId": 11802445766,
+      "runId": 38374493235,
+      "sha256": "50aa3d67c1be47dc50ff415b170f2fbd5cbd7c178bdeb2b54a66c31dbe681db5",
+      "expiresAt": "2026-11-12T09:42:55Z"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
+      "sha256": "b75f7819b5ea1921cb7f562217f8cc193c7982009d95e72386c03a19326a197d",
+      "artifactId": 11802072231,
+      "runId": 38374493235,
+      "expiresAt": "2026-11-12T09:43:22Z",
+      "contentManifestSha256": "7df4b8f2184309a623029855514b24395eb47cfdeb35af8dd8510aa67ed237ee"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
+      "sha256": "7eb62d764ef0980d21df403deb8b4e87cbe7aa48e9a5104b87a7e14a7c648e9c"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-MANIFEST.json",
+      "sha256": "725365dd5f7d4bcfc286e806f19a2ea09405977e536a91db75a9b7e78b86d225"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
+      "sha256": "ae21afcae8ffb03ca55c288b93b91f8e8e7b2eb79451fcb70eb61808e8e82f63"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
+      "sha256": "d3d12ab75edc502574fbf884f1ab829c7bc72a9836b237bf1f64f088c91d52ad"
+    }
+  ],
+  "blockers": [
+    "Readable historical canonical dataset not available. Persisted current-source input bundles (116 encrypted packages, 1,734 files) are durably indexed but cannot replace the historical PIT calibration panel or be decrypted here.",
+    "Historical reference CSV inputs and source plan are absent; capture new versioned references before V3 freeze.",
+    "No proven numeric cause for prior 52W reconciliation error.",
+    "The scanner-safe parser change supersedes two V2 hash bindings; V3 freeze remains explicitly unfinalized pending source receipts."
+  ],
+  "nextCommand": "No calibration command is authorized to pass preflight yet. First create and persist an input manifest and encrypted source bundles whose hashes satisfy or supersede the V3 preregistered source contract; then update resume state and start one method.",
+  "freshExecutorCanContinue": true,
+  "fullCompletionFromCurrentArtifactsAlone": false
+}
