@@ -48,3 +48,9 @@ input:disabled{opacity:.65}
 @media(max-width:520px){.form-row{grid-template-columns:1fr}.nl-form .btn{width:100%}.preview-caption{max-width:none}}
 @media(max-width:520px){.newsletter{padding-block:12px}.nl-box{padding:12px;gap:14px}}
 @media(prefers-reduced-motion:reduce){.skip-link{transition:none}}
+
+/* Brevo hosts the responsive form; no parent access to its input or state. */
+.brevo-form {min-width:0;width:100%;}
+.brevo-form iframe {display:block;width:100%;border:0;background:#fff;border-radius:12px;}
+.brevo-form p {font-size:14px;line-height:1.6;margin:12px 0 0;}
+.brevo-form a {color:inherit;text-decoration:underline;}

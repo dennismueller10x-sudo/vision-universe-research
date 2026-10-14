@@ -4,17 +4,24 @@ import {fileURLToPath} from 'node:url';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function providerUrl(value) {
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || !/^[a-z0-9-]+\.sibforms\.com$/.test(url.hostname) || !/^\/serve\/[A-Za-z0-9_-]+$/.test(url.pathname) || url.username || url.password || url.port || url.search || url.hash) throw new Error('Nur die HTTPS-Adresse aus Brevos Iframe-Export ist erlaubt.');
+  return url;
+}
 export function validateConfig(config = {}) {
-  const keys = ['actionUrl','doubleOptInVerified','privacyReviewed','sourceAttribute','privacyHtmlPath'];
+  const keys = ['formUrl','unsubscribeFormUrl','liveFlowVerified','privacyReviewed','privacyHtmlPath','frameHeight'];
   if (Object.keys(config).some(k => !keys.includes(k))) throw new Error('Unbekanntes Konfigurationsfeld. Keine API-Schlüssel verwenden.');
-  if (config.actionUrl) {
-    if (config.actionUrl !== '/api/waitlist/signup') throw new Error('Nur der eigene serverseitige DOI-Endpunkt ist erlaubt.');
-    if (config.doubleOptInVerified !== true) throw new Error('Double-Opt-in ist noch nicht geprüft.');
+  for (const name of ['liveFlowVerified','privacyReviewed']) if (config[name] !== undefined && typeof config[name] !== 'boolean') throw new Error('Freigaben müssen boolesch sein.');
+  if (config.frameHeight !== undefined && (!Number.isInteger(config.frameHeight) || config.frameHeight < 640 || config.frameHeight > 1600)) throw new Error('Formularhöhe muss zwischen 640 und 1600 liegen.');
+  if (config.formUrl) {
+    providerUrl(config.formUrl); providerUrl(config.unsubscribeFormUrl);
+    if (config.formUrl === config.unsubscribeFormUrl) throw new Error('Anmelde- und Abmeldeformular müssen verschieden sein.');
+    if (config.liveFlowVerified !== true) throw new Error('Echter DOI-/Abmeldetest ist noch nicht geprüft.');
     if (config.privacyReviewed !== true || !config.privacyHtmlPath) throw new Error('Freigegebene Datenschutzhinweise fehlen.');
-    if (!/^[A-Z][A-Z0-9_]{0,49}$/.test(config.sourceAttribute || '') || ['EMAIL','OPT_IN','LOCALE'].includes(config.sourceAttribute)) throw new Error('Brevo-Textattribut für die Quelle fehlt oder ist ungültig.');
-  }
+  } else if (config.unsubscribeFormUrl) throw new Error('Unvollständige Formularkonfiguration.');
   if (config.privacyReviewed === true && !config.privacyHtmlPath) throw new Error('Pfad zu freigegebenen Datenschutzhinweisen fehlt.');
-  return Boolean(config.actionUrl);
+  return Boolean(config.formUrl);
 }
 
 export async function build({output = resolve(root,'dist'), config = {}, production = false} = {}) {
@@ -26,14 +33,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','waitlist-pages.js','impressum/index.html','datenschutz/index.html','warteliste/bestaetigen/index.html','warteliste/bestaetigt/index.html','warteliste/abmelden/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','warteliste/bestaetigen/index.html','warteliste/bestaetigt/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
-    if(path.endsWith('.html')){
-      const content=await readFile(resolve(output,path),'utf8');
-      await writeFile(resolve(output,path),content.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','')
-        .replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>',''));
-    }
   }
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
   if (config.privacyHtmlPath) {
@@ -43,36 +45,29 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
   let html = await readFile(resolve(output,'index.html'),'utf8');
+  // Brevo owns all input fields, CAPTCHA, submission, DOI and unsubscribe state.
+  // No exported provider script is copied into our document and no local API exists.
   if (ready) {
-    html = html.replace('data-ready="false"',`data-ready="true" action="${esc(config.actionUrl)}"`).replace('<fieldset disabled>','<fieldset>')
-      .replace('<input type="hidden" name="locale" value="de">',`<input type="hidden" name="locale" value="de"><input type="hidden" name="${esc(config.sourceAttribute)}" value="Coming-soon-Landingpage">`)
-      .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden erhältst du eine E-Mail. Bestätige darin deine Anmeldung.')
-      .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden erhältst du eine Bestätigungsmail. Erst mit deinem Klick ist die Anmeldung bestätigt.')
-      .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
-    // Native validity remains available without JavaScript. JS adds German inline messages.
+    const frame = `<div class="brevo-form"><iframe title="Anmeldung zur VU App-Warteliste" src="${esc(config.formUrl)}" height="${config.frameHeight || 850}" loading="lazy" referrerpolicy="no-referrer"></iframe><p>Wird das Formular nicht angezeigt? <a href="${esc(config.formUrl)}" target="_blank" rel="noopener noreferrer">Brevo-Formular öffnen</a>.</p></div>`;
+    html = html.replace(/<form\b[^>]*id="newsletter-form"[\s\S]*?<\/form>/, frame);
+    const confirmedPath = resolve(output,'warteliste/bestaetigt/index.html');
+    const confirmed = await readFile(confirmedPath,'utf8');
+    await writeFile(confirmedPath,confirmed.replace(/<div id="brevo-unsubscribe">[\s\S]*?<\/div>/,`<div id="brevo-unsubscribe"><p><a class="button" href="${esc(config.unsubscribeFormUrl)}" rel="noreferrer">Bei Brevo abmelden</a></p><p>Brevos Abmeldeformular kann E-Mail-Marketing kontoweit sperren. Es bestätigt die tatsächliche Abmeldung selbst.</p></div>`));
   }
+  // Remove upstream Research-only navigation from the isolated static output.
+  for (const path of ['index.html','impressum/index.html','datenschutz/index.html']) {
+    let page = path === 'index.html' ? html : await readFile(resolve(output,path),'utf8');
+    page = page.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','');
+    if (path === 'index.html') html = page; else await writeFile(resolve(output,path),page);
+  }
+
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
-  const formOrigin = ready ? "'self'" : "'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formOrigin}; base-uri 'none'; object-src 'none'`;
+  const frameOrigin = ready ? new URL(config.formUrl).origin : "'none'";
+  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; frame-src ${frameOrigin}; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   await writeFile(resolve(output,'index.html'),html);
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
-  // Single self-contained Pages advanced-mode Worker, no env values or secret interpolation.
-  const runtime=await readFile(resolve(root,'server/waitlist.mjs'),'utf8');
-  await writeFile(resolve(output,'_worker.js'),runtime+`\nexport default {async fetch(request,env){
-    const path=new URL(request.url).pathname;
-    if(path.startsWith('/_worker')||path.startsWith('/server/'))return new Response('Not found',{status:404});
-    const response=await handleWaitlist(request,env);
-    if(!response)return env.ASSETS.fetch(request);
-    if((request.headers.get('Accept')||'').includes('text/html')){
-      if(response.status===202)return new Response(null,{status:303,headers:{Location:'/warteliste/bestaetigen/','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
-      const message=(await response.json()).message;
-      return new Response(message,{status:response.status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
-    }
-    return response;
-  }};\n`);
-  await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/waitlist/*','/_worker*','/server/*'],exclude:[]}));
   // Pages handles apex -> www in custom-domain settings, not _redirects.
   // Static aliases keep the existing Research legal links working later.
   for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
@@ -84,7 +79,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
   if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
   const files = await readdir(output);
-  return {newsletter:ready?'Server-DOI vorbereitet; zusätzliche Runtime-Freigaben erforderlich':'BLOCKIERT: DOI/Datenschutz nicht freigegeben',mode:production?'production':'preview',output,entries:files.length};
+  return {newsletter:ready?'Brevo-Iframe; DOI/Abmeldung ausschließlich beim Anbieter':'BLOCKIERT: kein Brevo-Formular konfiguriert',mode:production?'production':'preview',output,entries:files.length};
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
@@ -93,12 +88,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const publicationMode=process.env.LANDING_PUBLICATION_MODE||'preview';
     if(!['preview','production'].includes(publicationMode))throw new Error('Ungültiger Veröffentlichungsmodus.');
-    const hasEnv = ['BREVO_FORM_ACTION','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
+    const hasEnv = ['BREVO_FORM_URL','BREVO_UNSUBSCRIBE_FORM_URL','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
     const config = configArg ? JSON.parse(await readFile(resolve(configArg),'utf8')) : hasEnv ? {
-      actionUrl: process.env.BREVO_FORM_ACTION || '',
-      doubleOptInVerified: process.env.BREVO_DOUBLE_OPT_IN_VERIFIED === 'true',
+      formUrl: process.env.BREVO_FORM_URL || '',
+      unsubscribeFormUrl: process.env.BREVO_UNSUBSCRIBE_FORM_URL || '',
+      liveFlowVerified: process.env.BREVO_FORM_LIVE_VERIFIED === 'true',
       privacyReviewed: process.env.LANDING_PRIVACY_REVIEWED === 'true',
-      sourceAttribute: process.env.BREVO_SOURCE_ATTRIBUTE || 'VU_SOURCE',
       privacyHtmlPath: process.env.LANDING_PRIVACY_HTML_PATH || ''
     } : {};
     console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')||publicationMode==='production'})));

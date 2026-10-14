@@ -12,7 +12,7 @@ await mkdir(output,{recursive:true});
 const privacyPath=resolve(root,'tests/output/privacy-fixture.html');
 await writeFile(privacyPath,'<!doctype html><html lang="de"><head><title>Testfixture</title></head><body>Nur für Integrationstests.</body></html>');
 await build({output:resolve(output,'blocked')});
-await build({output:resolve(output,'ready'),config:{actionUrl:'/api/waitlist/signup',doubleOptInVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html',sourceAttribute:'SOURCE'}});
+await build({output:resolve(output,'ready'),config:{formUrl:'https://test.sibforms.com/serve/SYNTHETIC_FORM',unsubscribeFormUrl:'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
   try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
@@ -53,43 +53,35 @@ try{
     });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();
   }
-  const page=await browser.newPage({viewport:{width:390,height:844}});
-  await page.goto(base+'/ready/',{waitUntil:'networkidle'});
-  let posts=[];
-  const pattern='**/api/waitlist/signup';
-  const record=route=>{posts.push({method:route.request().method(),data:route.request().postData()});};
-  await page.route(pattern,async route=>{record(route);await route.fulfill({status:202,contentType:'application/json',body:JSON.stringify({message:'Bitte bestätige deine E-Mail-Adresse.'})});});
-  await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/E-Mail-Adresse/);
-  await page.locator('#email').fill('ungueltig');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/gültige/);
-  await page.locator('#email').fill('qa@example.test');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
-  await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/nicht gesendet/);
-  await page.locator('#email-address-check').fill('');
-  await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.match(await page.locator('#signup-status').innerText(),/offline/);assert.equal(posts.length,0);await page.context().setOffline(false);
-  let release;const pending=new Promise(resolve=>{release=resolve});
-  await page.unroute(pattern);await page.route(pattern,async route=>{record(route);await pending;await route.fulfill({status:202,contentType:'application/json',body:JSON.stringify({message:'Bitte bestätige deine E-Mail-Adresse.'})});});
-  await page.locator('button[type=submit]').click();assert.equal(await page.locator('#newsletter-form').getAttribute('aria-busy'),'true');assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
-  release();await page.waitForURL('**/warteliste/bestaetigen/');assert.equal(posts.length,1);
-  const payload=new URLSearchParams(posts[0].data);assert.equal(payload.get('EMAIL'),'qa@example.test');assert.equal(payload.get('OPT_IN'),'1');assert.equal(payload.get('consent_version'),'vu-app-launch-v1');
-  assert.match(await page.locator('h1').innerText(),/Bitte bestätige/);
-  await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();
-  await page.unroute(pattern);await page.route(pattern,async route=>{record(route);await route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({message:'Zu viele Anfragen. Bitte versuche es später erneut.'})});});
-  await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Zu viele'));assert.equal(posts.length,2);assert.equal(await page.locator('#email').inputValue(),'qa@example.test');
-  await page.clock.install();let finishTimeout;const delayed=new Promise(resolve=>{finishTimeout=resolve});
-  await page.unroute(pattern);await page.route(pattern,async route=>{await delayed;try{await route.fulfill({status:202,contentType:'application/json',body:'{}'});}catch{}});
-  await page.locator('button[type=submit]').click();await page.clock.fastForward(20001);await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('nicht bestätigt'));assert.equal(await page.locator('button[type=submit]').isDisabled(),false);finishTimeout();await page.clock.resume();
-  const native=await browser.newPage({javaScriptEnabled:false});await native.route(pattern,async route=>{record(route);await route.fulfill({status:303,headers:{location:'/warteliste/bestaetigen/'},body:''});});
-  await native.goto(base+'/ready/');await native.locator('#email').fill('native@example.test');await native.locator('button[type=submit]').click();assert.equal(posts.length,2);await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('**/warteliste/bestaetigen/');assert.equal(posts.length,3);
-  await native.close();await page.close();
-  const accountContext=await browser.newContext({viewport:{width:390,height:844}});const account=await accountContext.newPage();let withdrawals=0;
-  await account.route('**/api/waitlist/confirmed',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({confirmed:true,message:'Deine E-Mail-Adresse ist bestätigt.'})}));
-  await account.route('**/api/waitlist/unsubscribe',async route=>{withdrawals++;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({unsubscribed:true,message:'Du bist von der App-Warteliste abgemeldet.'})});});
-  await account.goto(base+'/warteliste/bestaetigt/#t=synthetic');await account.locator('#unsubscribe-link').waitFor({state:'visible'});assert.equal(new URL(account.url()).hash,'');
-  await account.locator('#unsubscribe-link').click();assert.equal(withdrawals,0);await account.locator('#unsubscribe-button').click();await account.waitForFunction(()=>document.querySelector('#waitlist-status').textContent.includes('abgemeldet'));assert.equal(withdrawals,1);assert.equal(new URL(account.url()).hash,'');
-  for(const name of ['bestaetigen','bestaetigt','abmelden']){
-    await account.goto(base+'/warteliste/'+name+'/');assert.equal(await account.evaluate(()=>document.documentElement.scrollWidth),390);
-    const axe=await new AxeBuilder({page:account}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>v.id),[]);
+  // Provider fixture proves iframe integration, never real DOI or mail delivery.
+  for(const width of [1440,390,320]){
+    const page=await browser.newPage({viewport:{width,height:844}});
+    let providerLoads=0;
+    await page.route('https://test.sibforms.com/**',async route=>{
+      providerLoads++;
+      assert.equal(route.request().method(),'GET');
+      assert.equal(route.request().headers()['referer'],undefined);
+      await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:12px"><h1>Nur synthetisches Brevo-Formular</h1><label>E-Mail <input type="email" required></label><p>Diese Fixture meldet niemanden an.</p></body></html>'});
+    });
+    await page.goto(base+'/ready/',{waitUntil:'networkidle'});
+    await page.locator('iframe').scrollIntoViewIfNeeded();
+    await page.frameLocator('iframe').locator('h1').waitFor();
+    assert.equal(providerLoads,1);
+    assert.equal(await page.locator('#newsletter-form,input[name=EMAIL]').count(),0);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
+    assert.equal(await page.locator('iframe').getAttribute('title'),'Anmeldung zur VU App-Warteliste');
+    assert.ok(await page.locator('.brevo-form a').isVisible());
+    await page.goto(base+'/ready/warteliste/bestaetigt/');
+    assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
+    assert.equal(await page.locator('#brevo-unsubscribe a').getAttribute('href'),'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE');
+    assert.equal(await page.locator('main button,main input').count(),0);
+    await page.close();
   }
-  await accountContext.close();
+  const nojs=await browser.newContext({javaScriptEnabled:false});
+  const page=await nojs.newPage();await page.goto(base+'/blocked/');
+  assert.equal(await page.locator('#email').isDisabled(),true);
+  assert.equal(await page.locator('iframe').count(),0);
+  await nojs.close();
   await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Konfigurierte POST-Zustände gegen abgefangenen Testanbieter geprüft. Kein echter Brevo-Kontakt oder Live-DOI getestet.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
-  console.log(JSON.stringify({metrics,formChecks:'blocked, validation, consent, honeypot, loading, POST payload, offline, timeout, provider rejection, no-JS, confirmation, unsubscribe, fragment removal',liveBrevo:'BLOCKED'},null,2));
+  console.log(JSON.stringify({metrics,formChecks:'blocked/no-JS, synthetic provider iframe at 1440/390/320, no parent POST, no referrer, static redirect notice, provider unsubscribe link',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}

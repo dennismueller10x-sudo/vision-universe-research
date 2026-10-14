@@ -36,13 +36,13 @@ node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 
 Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
-## Brevo: eigenständige App-Warteliste mit serverseitigem DOI
+## Brevo: App-Warteliste mit nativem Formular
 
-Der aktuelle Ablauf verwendet ausschließlich die bestehende **VU | App-Warteliste, ID 5**. Deutsche DOI-Vorlage ID 1, Anmeldebestätigung mit persönlichem Abmeldelink ID 2 und separate App-Merkmale sind in Brevo eingerichtet. Die beiden Runtime-Schlüssel sind verschlüsselt im bestehenden Cloudflare-Pages-Projekt hinterlegt. Liste 4 (135 Kontakte) und Liste 6 (zwei interne Testkontakte) bleiben unverändert; 13 Nicht-Abonnenten werden nicht importiert.
+PR #659 verwendet ein **von Brevo gehostetes Formular** als Iframe. Brevo übernimmt Eingabeprüfung, CAPTCHA, Double Opt In, Aufnahme in **VU | App-Warteliste (5)** und die Abmeldung. Die Landingpage bleibt statisch: keine D1-Datenbank, kein Worker, keine eigenen DOI-/Abmelde-Endpunkte oder Berechtigungstoken. Der Browser erhält keinen Brevo-API-Schlüssel. Liste 4 mit 135 Kontakten und Liste 6 mit zwei internen Testkontakten werden nicht verändert; die 13 ausgeschlossenen Nicht-Abonnenten bleiben ausgeschlossen.
 
-Der Formularexport nach sibforms ist durch einen eigenen Cloudflare-Pages-DOI-Endpunkt ersetzt. Keine normale Kontaktanlage als DOI-Ersatz, kein Key im Browser/HTML/Build, kein Bestandskontakt erneut angemeldet. D1-Reservierungen schützen gegen parallele/repetitive Mails, der private Rückvergleich prüft Brevos tatsächliche Bestätigung; die Abmeldung entfernt ausschließlich Liste 5. Vorlagen, Seiten und 20 synthetische Tests sind vorbereitet.
+Die bisher angelegten API-Vorlagen 1/2 sind **nicht als native Formularvorlagen geprüft**. Die deutsche [Formular-DOI-Vorlage](mail/app-doi.html) verwendet den nativen Platzhalter `{{ doubleoptin }}`. Ob sie im tatsächlichen Formular auswählbar ist und den gültigen Link versendet, muss in Brevo und im echten Postfach getestet werden.
 
-**Öffentlich weiterhin gesperrt, echter Postfach-/Klicktest nicht durchgeführt.** D1-Rechte am vorhandenen Zugang fehlen; kontrollierte neue Testadresse/Postfach und Datenschutzfreigabe fehlen ebenfalls. [Belege, exakte Token-/Secret-Einrichtung, Serverkonfiguration und Abnahmeschritte](WAITLIST.md). Ein Merge aktiviert das Formular nicht. `newsletter.config.example.json` bleibt gesperrt; Konfiguration und Runtime-Freigaben erst nach echter Abnahme setzen.
+**Öffentlich gesperrt; echter DOI-/Abmeldetest fehlt.** Ein tatsächlich gespeichertes Brevo-Formular samt Anmelde- und Abmelde-URL, eine neue kontrollierte Testadresse mit Postfachzugriff und die Freigabe des konkreten Datenschutztextes fehlen. [Genauer Brevo-Klickweg, Betriebsnachweise und Abnahme](WAITLIST.md). Keine weitere Cloudflare-D1- oder API-Token-Einrichtung. Ein Merge aktiviert das Formular nicht. `newsletter.config.example.json` und der Standardbuild bleiben gesperrt.
 
 ## Historische GitHub-Pages-Vorbereitung
 

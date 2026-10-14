@@ -17,14 +17,22 @@ test('Ungültige oder unvollständige Konfiguration wird abgelehnt',()=>{
 test('Öffentlicher Build benötigt passende geprüfte Datenschutzhinweise',async()=>{
   await assert.rejects(build({production:true,output:resolve(root,'tests/output/production-blocked')}),/Datenschutzhinweise/);
 });
-test('Konfiguriertes Formular sendet ausschließlich an den eigenen DOI-Endpunkt mit Einwilligung',async()=>{
+test('Konfiguriertes Formular bettet Brevo ein; keine eigenen Eingaben oder POSTs',async()=>{
   await mkdir(resolve(root,'tests/output'),{recursive:true});
   await writeFile(resolve(root,'tests/output/privacy-fixture.html'),'<!doctype html><html lang="de"><head><title>Nur Testfixture</title></head><body>Kein freigegebener Rechtstext</body></html>');
   const output=resolve(root,'tests/output/ready');
-  await build({output,config:{actionUrl:'/api/waitlist/signup',doubleOptInVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html',sourceAttribute:'SOURCE'}});
+  await build({output,config:{formUrl:'https://test.sibforms.com/serve/SYNTHETIC_FORM',unsubscribeFormUrl:'https://test.sibforms.com/serve/SYNTHETIC_UNSUBSCRIBE',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
   const html=await readFile(resolve(output,'index.html'),'utf8');
-  assert.match(html,/action="\/api\/waitlist\/signup"/);assert.match(html,/name="SOURCE" value="Coming-soon-Landingpage"/);assert.match(html,/name="OPT_IN" type="checkbox" value="1" required/);assert.doesNotMatch(html,/<fieldset disabled>|checked[\s=>]|novalidate/);assert.match(html,/Bestätige darin deine Anmeldung/);
-  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'/);
+  assert.match(html,/iframe title="Anmeldung zur VU App-Warteliste"/);
+  assert.match(html,/src="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_FORM"/);
+  assert.match(html,/referrerpolicy="no-referrer"/);assert.match(html,/rel="noopener noreferrer"/);
+  assert.doesNotMatch(html,/<form\b|name="EMAIL"|name="OPT_IN"|\/api\/waitlist/);
+  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/connect-src 'none'; form-action 'none'; frame-src https:\/\/test.sibforms.com/);
+  const confirmed=await readFile(resolve(output,'warteliste/bestaetigt/index.html'),'utf8');
+  assert.match(confirmed,/href="https:\/\/test.sibforms.com\/serve\/SYNTHETIC_UNSUBSCRIBE"/);
+  assert.match(confirmed,/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);
+  assert.doesNotMatch(confirmed,/<script|params\.|token|\/api\//);
+
 });
 test('Build darf keine Research- oder beliebigen Verzeichnisse überschreiben',async()=>{
   for(const output of [root,resolve(root,'..'),'/tmp/landing-unowned'])await assert.rejects(build({output}),/Ausgabe nur/);
