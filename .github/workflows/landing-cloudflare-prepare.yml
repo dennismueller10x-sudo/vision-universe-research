@@ -1,24 +1,36 @@
 name: Coming-soon | bestehendes Cloudflare-Pages-Projekt prüfen
 on:
   workflow_dispatch:
+    inputs:
+      newsletter_operation:
+        description: Newsletter-Operator (nur isolierter PR-Branch; audit sendet und schreibt nichts)
+        type: choice
+        options: [audit, setup, e2e]
+        default: audit
+      authorize_controlled_test:
+        description: Nur e2e – ausdrücklich DOI und administrative Bestätigung an neue geheime Testadresse erlauben
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
   group: landing-cloudflare-prepare-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
-  newsletter_server_audit:
+  newsletter_server_operator:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/brevo-app-waitlist-doi'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: c9b8f08a82105437f5eda552084adb859a4cb0ba
+          ref: bd4510c57e9e15088f9782715aa5aa18ebc33b7e
           persist-credentials: false
           sparse-checkout: landing
-      - name: Private prerequisite audit only
+      - name: Private audit or closed setup (no contact writes or emails)
+        if: inputs.newsletter_operation != 'e2e'
         env:
+          NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -27,6 +39,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
         run: python3 landing/scripts/newsletter-server-admin.py
+      - name: Explicit controlled DOI and unsubscribe test (never main-list delivery)
+        if: inputs.newsletter_operation == 'e2e' && inputs.authorize_controlled_test
+        env:
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: ${{ inputs.authorize_controlled_test && 'true' || 'false' }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_DOI_TEST_EMAIL: ${{ secrets.BREVO_DOI_TEST_EMAIL }}
+        run: python3 landing/scripts/newsletter-e2e.py
   prepare:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
