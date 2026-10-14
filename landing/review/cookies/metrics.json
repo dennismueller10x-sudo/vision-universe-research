@@ -1,0 +1,66 @@
+{
+  "testedAt": "2026-10-12T16:56:46.255Z",
+  "browser": "Chromium; iPhone viewport, no physical Safari",
+  "metrics": [
+    {
+      "name": "desktop",
+      "viewport": "1440 × 900",
+      "height": 1192,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dialogTextZoom": {
+        "width": 638,
+        "scrollWidth": 638,
+        "scrollHeight": 1076,
+        "height": 866
+      },
+      "axeViolations": 0,
+      "resourceErrors": 0
+    },
+    {
+      "name": "iphone",
+      "viewport": "390 × 844",
+      "height": 1686,
+      "width": 390,
+      "scrollWidth": 390,
+      "dialogTextZoom": {
+        "width": 354,
+        "scrollWidth": 354,
+        "scrollHeight": 1690,
+        "height": 810
+      },
+      "axeViolations": 0,
+      "resourceErrors": 0
+    },
+    {
+      "name": "narrow",
+      "viewport": "320 × 800",
+      "height": 1751,
+      "width": 320,
+      "scrollWidth": 320,
+      "dialogTextZoom": {
+        "width": 284,
+        "scrollWidth": 284,
+        "scrollHeight": 2063,
+        "height": 766
+      },
+      "axeViolations": 0,
+      "resourceErrors": 0
+    }
+  ],
+  "checks": [
+    "first visit: no stored selection or cookies",
+    "equal actions and 44px targets",
+    "modal focus, Escape and no implicit consent",
+    "necessary/all/granular choices",
+    "reload and shared legal routes",
+    "200% text reflow",
+    "activation and withdrawal callbacks with local mocks only",
+    "invalid storage",
+    "blocked storage: honest visible message",
+    "no JavaScript fallback",
+    "newsletter remains independent and disabled"
+  ],
+  "liveTracking": false,
+  "liveBrevo": false
+}

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs",
+    "test:browser": "node tests/browser.mjs && node tests/cookie-browser.mjs",
     "test:design": "node scripts/compare-research.mjs",
     "sync:research": "node scripts/sync-research.mjs"
   },

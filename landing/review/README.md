@@ -26,3 +26,9 @@ Siehe [metrics.json](metrics.json): 1440 × 900 **1.191 px**, 390 × 844 **1.684
 ## Status der privaten Vorschau
 
 Der aktualisierte Build mit Modul-Icons wurde als Version 3 der bestehenden privaten Review-Site gespeichert. Die Veröffentlichung am 09.10.2026 scheitert nach einem 504-Fehler wiederholt mit `Unable to authenticate request`. Eine erfolgreiche Aktualisierung der Online-Vorschau wird deshalb nicht behauptet; die hier verlinkten Screenshots zeigen den getesteten neuen Stand. Nach Behebung des Hosting-Fehlers dieselbe gespeicherte Version erneut veröffentlichen, ohne eine neue Site oder einen weiteren Anbieter anzulegen. IDs und Build-Provenienz sind in PR #543 dokumentiert. GitHub-Pages-Vorbereitung, Research und Brevo bleiben unverändert.
+
+## Cookie-Erweiterung
+
+Der aktuelle Build ergänzt den ausdrücklich gewünschten eigenen Cookie-Banner und Footer-Einstellungen. Die 17 geprüften Stilgruppen des Research-Headers/Heros bleiben unverändert. Die Gegenüberstellungen zeigen die neue Erstbesuchsansicht mit Banner; nach einer Entscheidung ist die unveränderte Hero-Gestaltung wieder vollständig sichtbar. Auf Mobil liegt der zusätzliche Cookie-Link im bestehenden kompakten Footer-Raster. Der Banner ist keine zusätzliche Scroll-Sektion; bei vergrößertem Text darf sein Inhalt ebenso wie der Einstellungsdialog scrollen.
+
+[Desktop-Banner](cookies/desktop-banner.png) · [iPhone-Banner](cookies/iphone-banner.png) · [Desktop-Einstellungen](cookies/desktop-settings.png) · [iPhone-Einstellungen](cookies/iphone-settings.png) · [Cookie-Abnahme](cookies/metrics.json). Lokale Browserprüfung, keine bereits behauptete Live-Veröffentlichung. Im Cookie-Dialog sind Statistik/Marketing derzeit mangels Diensten deaktiviert; keine Scheinfreigabe für unbekannte zukünftige Anbieter.

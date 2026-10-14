@@ -1,0 +1,24 @@
+<section class="cookie-banner" id="cookie-banner" aria-labelledby="cookie-banner-title" hidden>
+  <div class="cookie-copy">
+    <h2 id="cookie-banner-title">Cookies &amp; Datenschutz</h2>
+    <p><span id="cookie-banner-summary">Wir speichern deine Cookie-Auswahl in diesem Browser. Aktuell verwenden wir keine optionalen Analyse- oder Marketingdienste.</span> <a href="{{PRIVACY_URL}}#cookie-einstellungen">Mehr zum Datenschutz</a></p>
+  </div>
+  <div class="cookie-actions">
+    <button type="button" class="cookie-button" data-cookie-choice="necessary">Nur notwendige</button>
+    <button type="button" class="cookie-button" data-cookie-choice="all">Alle akzeptieren</button>
+    <button type="button" class="cookie-button" data-cookie-settings>Einstellungen</button>
+  </div>
+</section>
+<dialog class="cookie-dialog" id="cookie-dialog" aria-labelledby="cookie-dialog-title" aria-describedby="cookie-dialog-description">
+  <div class="cookie-dialog-heading"><h2 id="cookie-dialog-title">Cookie-Einstellungen</h2><button type="button" class="cookie-close" id="cookie-close" aria-label="Cookie-Einstellungen schließen" autofocus>×</button></div>
+  <p id="cookie-dialog-description">Du entscheidest über optionale Dienste. Deine Auswahl gilt nur für diese Website und kann hier jederzeit geändert werden.</p>
+  <form id="cookie-form">
+    <fieldset class="cookie-category"><legend>Notwendig</legend><label><input type="checkbox" checked disabled>Immer aktiv</label><p>Speichert deine Auswahl für bis zu 180 Tage. Hosting-Sicherheit schützt die Website.</p></fieldset>
+    <fieldset class="cookie-category"><legend>Statistik</legend><label><input type="checkbox" id="cookie-statistics" disabled>Statistik erlauben</label><p id="cookie-statistics-description">Derzeit nicht verwendet.</p></fieldset>
+    <fieldset class="cookie-category"><legend>Marketing</legend><label><input type="checkbox" id="cookie-marketing" disabled>Marketing erlauben</label><p id="cookie-marketing-description">Derzeit nicht verwendet.</p></fieldset>
+    <p class="cookie-detail">Deine Auswahl und ihr Geltungsstand bleiben nur in diesem Browser. Keine E-Mail-Adresse oder Nutzerkennung. <a href="{{PRIVACY_URL}}#cookie-einstellungen">Datenschutzhinweise</a></p>
+    <div class="cookie-actions"><button type="button" class="cookie-button" data-cookie-choice="necessary">Nur notwendige</button><button type="button" class="cookie-button" data-cookie-choice="all">Alle akzeptieren</button><button type="submit" class="cookie-button">Auswahl speichern</button></div>
+    <p class="cookie-message" id="cookie-message" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+<p class="cookie-announcement" id="cookie-announcement" role="status" aria-live="polite"></p>

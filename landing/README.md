@@ -4,7 +4,7 @@ Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 üb
 
 ## Aktuelle Hosting-Vorgabe: Cloudflare Pages
 
-Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe**, GitHub dieses Repository, Produktion main, Root landing, Build node scripts/build.mjs, Ausgabe dist. [Öffentliche Seite](https://www.visionuniverse.de/) · [Pages-Adresse](https://vision-universe.pages.dev/). Research bleibt auf GitHub Pages. [Nachweise, API-Rechte und offene Punkte](deployment/README.md). Öffentlich steht noch ein Preview-Build mit noindex und vorläufigem Datenschutz; die früher fehlerhaften globalen Navigationsreferenzen sind in PR #577 entfernt. Keine finale Datenschutz- oder vollständige Browserfreigabe behaupten. Kein weiteres Projekt/Repository anlegen.
+Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe**, GitHub dieses Repository, Produktion main, Root landing, Build node scripts/build.mjs, Ausgabe dist. [Öffentliche Seite](https://www.visionuniverse.de/) · [Pages-Adresse](https://vision-universe.pages.dev/). Research bleibt auf GitHub Pages. [Nachweise, API-Rechte und offene Punkte](deployment/README.md). Öffentlich steht noch ein Preview-Build mit noindex und vorläufigem Datenschutz; die früher fehlerhaften globalen Navigationsreferenzen sind in PR #577 entfernt. Die letzte Live-Fassung wurde am 12.10.2026 geprüft; die Cookie-Erweiterung dieses Branches ist zunächst ein getesteter Review-Stand. Kein weiteres Projekt/Repository anlegen.
 
 ## Vorschau und Abnahme
 
@@ -26,7 +26,7 @@ npm run build
 python3 -m http.server 8787 --directory dist
 ```
 
-Node 22+, keine Laufzeitabhängigkeiten, kein Tracking. Playwright/axe nur für Entwicklung. Browserprüfungen: Chromium mit 1440 × 900, iPhone-Viewport 390 × 844 und 320 px; keine Prüfung auf einem physischen iPhone. Echte 200-%-Textvergrößerung verdoppelt die berechneten Textgrößen, nicht nur eine wirkungslose Root-Schriftgröße. Anbieterantworten werden abgefangen; kein Live-Brevo-Versand behauptet.
+Node 22+, keine Laufzeitabhängigkeiten, kein Tracking. Eigener Cookie-Banner ohne externen CMP-Dienst; nur die ausdrücklich getroffene Cookie-Auswahl wird im Browser gespeichert. Playwright/axe nur für Entwicklung. Browserprüfungen: Chromium mit 1440 × 900, iPhone-Viewport 390 × 844 und 320 px; keine Prüfung auf einem physischen iPhone. Echte 200-%-Textvergrößerung verdoppelt die berechneten Textgrößen, nicht nur eine wirkungslose Root-Schriftgröße. Anbieterantworten werden abgefangen; kein Live-Brevo-Versand behauptet.
 
 Die ursprünglichen Designregeln liegen in `assets/home/home.css`. Nur deren Font-URL wurde relativ gemacht, damit auch ein Pages-Projektpfad funktioniert. `styles.css` ergänzt die Modulübersicht innerhalb der unveränderten Gerätehüllen, Formularzustände, Reflow/Fokus und die kompakte Newsletter-/Footer-Komposition. `hero-intro.js` ist die unveränderte Original-Animation; `presentation.js` übernimmt nur Bewegungspräferenz und Scroll-Header. Neue Research-Snapshots erfolgen ausschließlich mit explizitem Commit:
 
@@ -67,3 +67,11 @@ Der ausschließlich manuelle Workflow landing-pages-publish.yml und seine Stagin
 ## Rechtstext-Stand 12.10.2026
 
 Alle fünf Original-Shoptexte sind vollständig gesichert. Die künftige App/Web-App mit Free/Paid-Abos erfordert eine inhaltliche Anpassung gegenüber dem PDF-Shop. [Coming-soon-Rechtsseiten, vollständige Quellen, Änderungstabelle und Abo-Entwürfe](legal-drafts/README.md). Kein erfundener Tarif, keine automatische Verlängerungsregel und keine Zahlungsanbindung angenommen. Beide Rechtsseiten sind Entwürfe; Abo-Texte und Originalquellen bleiben außerhalb des Builds. Produktionsprüfung und Brevo-Sperre bleiben unverändert.
+
+## Cookie-Banner und Rechtsseiten vorbereiten
+
+Die Cookie-Oberfläche ist in allen fünf veröffentlichten Routen enthalten: Startseite, Datenschutz, Impressum und beide bisherigen /policies/-Aliase. Gleichwertige Aktionen „Nur notwendige“, „Alle akzeptieren“, „Einstellungen“; granulare Auswahl und erneutes Öffnen im Footer. Escape/Schließen erteilt keine Einwilligung. Ohne JavaScript führt der Footer-Link zu den Datenschutzhinweisen.
+
+Aktuell keine optionalen Dienste. Statistik/Marketing sind deshalb inaktiv und als „derzeit nicht verwendet“ beschrieben. „Alle akzeptieren“ erzeugt keine pauschale vorweggenommene Zustimmung für spätere Anbieter. Neue Dienste oder eine neue POLICY_VERSION erfordern eine neue Entscheidung. localStorage-Schlüssel vu_cookie_preferences: Kategorien, Zeitpunkt, Ablauf nach 180 Tagen, Version und Dienstkennungen; keine Nutzer-ID oder Formularinhalte. Vor Auswahl keine Speicherung; gesperrter Speicher wird sichtbar als nur für den Besuch wirksam gemeldet. Unterscheidung zu tatsächlichen Cloudflare-Sicherheitscookies im Datenschutz beschrieben.
+
+Details, künftiger Integrationsvertrag, Prüfungen und verbleibende reale Kontoinformationen: [Cookie- und Datenschutz-Vorbereitung](deployment/cookies-and-legal.md). Die vorhandenen Datenschutz-/Brevo-Gates bleiben bestehen. Der Banner aktiviert keine Analyse, kein Marketing und kein Brevo-Formular.

@@ -28,12 +28,14 @@ try{
     const page=await context.newPage();
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
+    if(name!=='narrow')await page.screenshot({path:resolve(screenshots,name+'-cookie-banner.png'),fullPage:true});
     const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
     assert.ok(m.height<=limit,`${name} height ${m.height}>${limit}`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
-    assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
+    assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('#newsletter-form button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
+    await page.locator('#cookie-banner [data-cookie-choice=necessary]').click();await page.goto(base+'/blocked/');assert.equal(await page.locator('#cookie-banner').isVisible(),false);
     for(const link of ['.lp-cta','.hero .btn']){if(!(await page.locator(link).isVisible()))continue;await page.locator(link).click();assert.equal(new URL(page.url()).hash,'#newsletter');const y=await page.locator('#newsletter').evaluate(e=>e.getBoundingClientRect().top);assert.ok(y<height&&y>=0,`${name} anchor not visible`);await page.goto(base+'/blocked/');}
     assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
     assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
@@ -55,12 +57,13 @@ try{
   }
   const page=await browser.newPage({viewport:{width:390,height:844}});
   await page.goto(base+'/ready/',{waitUntil:'networkidle'});
+  await page.locator('#cookie-banner [data-cookie-choice=necessary]').click();
   let posts=[];
   await page.route('https://test.sibforms.com/**',async route=>{const req=route.request();posts.push({method:req.method(),data:req.postData()});await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><title>Brevo – simulierte Testantwort</title><p>Bitte bestätige deine E-Mail-Adresse. TEST, kein Live-Versand.</p></html>'});});
-  await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/E-Mail-Adresse/);assert.equal(await page.locator('#email').getAttribute('aria-invalid'),'true');
-  await page.locator('#email').fill('ungueltig');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/gültige/);
-  await page.locator('#email').fill('qa@example.com');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
-  await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/nicht gesendet/);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');
+  await page.locator('#newsletter-form button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/E-Mail-Adresse/);assert.equal(await page.locator('#email').getAttribute('aria-invalid'),'true');
+  await page.locator('#email').fill('ungueltig');await page.locator('#newsletter-form button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#email-error').innerText(),/gültige/);
+  await page.locator('#email').fill('qa@example.com');await page.locator('#newsletter-form button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
+  await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('#newsletter-form button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/nicht gesendet/);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');
   await page.locator('#email-address-check').fill('');
   // Inspect loading synchronously before native POST navigation starts. Some
   // Chromium versions defer separate locator queries while navigation is pending.
@@ -68,20 +71,20 @@ try{
   const submissionReleased=new Promise(resolve=>{releaseSubmission=resolve});
   await page.route('https://test.sibforms.com/**',async route=>{await submissionReleased;const req=route.request();posts.push({method:req.method(),data:req.postData()});await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html lang="de"><title>Nur Test</title><p>Bitte bestätige deine E-Mail-Adresse. TEST, kein Live-Versand.</p></html>'});});
   const loading=await page.evaluate(()=>{
-    const button=document.querySelector('button[type=submit]');
+    const button=document.querySelector('#newsletter-form button[type=submit]');
     button.click();
     return {busy:document.querySelector('#newsletter-form').getAttribute('aria-busy'),disabled:button.disabled};
   });
   assert.deepEqual(loading,{busy:'true',disabled:true});
   releaseSubmission();
   await page.waitForURL('https://test.sibforms.com/**');assert.equal(posts.length,1);assert.equal(posts[0].method,'POST');const payload=new URLSearchParams(posts[0].data);assert.equal(payload.get('EMAIL'),'qa@example.com');assert.equal(payload.get('OPT_IN'),'1');assert.equal(payload.get('SOURCE'),'Coming-soon-Landingpage');assert.equal(payload.get('email_address_check'),'');
-  await page.goBack();assert.equal(await page.locator('button[type=submit]').isDisabled(),false);assert.equal(await page.locator('#newsletter-form').getAttribute('aria-busy'),null);
-  await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.match(await page.locator('#signup-status').innerText(),/offline/);assert.equal(posts.length,1);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');await page.context().setOffline(false);
-  await page.clock.install();await page.evaluate(()=>document.querySelector('#newsletter-form').addEventListener('submit',e=>e.preventDefault(),{once:true}));await page.locator('button[type=submit]').click();await page.clock.fastForward(20001);assert.match(await page.locator('#signup-status').innerText(),/nicht bestätigt/);assert.equal(await page.locator('button[type=submit]').isDisabled(),false);assert.equal(posts.length,1);
+  await page.goBack();assert.equal(await page.locator('#newsletter-form button[type=submit]').isDisabled(),false);assert.equal(await page.locator('#newsletter-form').getAttribute('aria-busy'),null);
+  await page.context().setOffline(true);await page.locator('#newsletter-form button[type=submit]').click();assert.match(await page.locator('#signup-status').innerText(),/offline/);assert.equal(posts.length,1);assert.equal(await page.locator('#email').inputValue(),'qa@example.com');await page.context().setOffline(false);
+  await page.clock.install();await page.evaluate(()=>document.querySelector('#newsletter-form').addEventListener('submit',e=>e.preventDefault(),{once:true}));await page.locator('#newsletter-form button[type=submit]').click();await page.clock.fastForward(20001);assert.match(await page.locator('#signup-status').innerText(),/nicht bestätigt/);assert.equal(await page.locator('#newsletter-form button[type=submit]').isDisabled(),false);assert.equal(posts.length,1);
   await page.clock.resume();
-  await page.unroute('https://test.sibforms.com/**');await page.route('https://test.sibforms.com/**',async route=>{posts.push({method:route.request().method(),data:route.request().postData()});await route.fulfill({status:400,contentType:'text/html',body:'<p>Die Anmeldung ist fehlgeschlagen. Nur simulierte Testantwort.</p>'});});await page.locator('button[type=submit]').click();await page.waitForURL('https://test.sibforms.com/**');assert.match(await page.locator('body').innerText(),/fehlgeschlagen/);assert.equal(posts.length,2);
+  await page.unroute('https://test.sibforms.com/**');await page.route('https://test.sibforms.com/**',async route=>{posts.push({method:route.request().method(),data:route.request().postData()});await route.fulfill({status:400,contentType:'text/html',body:'<p>Die Anmeldung ist fehlgeschlagen. Nur simulierte Testantwort.</p>'});});await page.locator('#newsletter-form button[type=submit]').click();await page.waitForURL('https://test.sibforms.com/**');assert.match(await page.locator('body').innerText(),/fehlgeschlagen/);assert.equal(posts.length,2);
   // JavaScript-off path retains native labels, required consent and real POST.
-  const native=await browser.newPage({javaScriptEnabled:false});await native.route('https://test.sibforms.com/**',async route=>{posts.push({method:route.request().method(),data:route.request().postData()});await route.fulfill({status:200,contentType:'text/html',body:'<p>Bitte bestätige deine E-Mail-Adresse. Nur Test.</p>'});});await native.goto(base+'/ready/');await native.locator('#email').fill('native@example.com');await native.locator('button[type=submit]').click();assert.equal(posts.length,2);await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('https://test.sibforms.com/**');assert.equal(posts.length,3);
+  const native=await browser.newPage({javaScriptEnabled:false});await native.route('https://test.sibforms.com/**',async route=>{posts.push({method:route.request().method(),data:route.request().postData()});await route.fulfill({status:200,contentType:'text/html',body:'<p>Bitte bestätige deine E-Mail-Adresse. Nur Test.</p>'});});await native.goto(base+'/ready/');await native.locator('#email').fill('native@example.com');await native.locator('#newsletter-form button[type=submit]').click();assert.equal(posts.length,2);await native.locator('#consent').check();await native.locator('#newsletter-form button[type=submit]').click();await native.waitForURL('https://test.sibforms.com/**');assert.equal(posts.length,3);
   await native.close();await page.close();
   await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Konfigurierte POST-Zustände gegen abgefangenen Testanbieter geprüft. Kein echter Brevo-Kontakt oder Live-DOI getestet.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
   console.log(JSON.stringify({metrics,formChecks:'blocked, validation, consent, honeypot, loading, POST payload, back navigation, offline, timeout, provider rejection, no-JS',liveBrevo:'BLOCKED'},null,2));

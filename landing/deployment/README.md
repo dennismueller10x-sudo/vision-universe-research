@@ -110,3 +110,7 @@ Der Konto-GET bestätigte nach direktem Upload unverändert source=github, main,
 **Weiterhin bewusst offen:** Hosting-/Mail-Vertrags- und Speicherangaben sowie die künftigen Abo-/Zahlungsregeln. Rechtsseiten bleiben Entwürfe, robots/header weiterhin noindex, Newsletter gesperrt. App-Abo-Texte und vollständige Originalquellen sind außerhalb des Landing-Builds. Nachreichen der Geschäftsangaben ist keine bereits erfolgte App-/Brevo-Aktivierung.
 
 [HTTP-Nachweis](release-2026-10-12/http.json) · [DNS-Stichprobe](release-2026-10-12/protected-dns-sample.json) · [Browserwerte](release-2026-10-12/browser.json) · [Git-Deploy](release-2026-10-12/git-deployment.json) · [Desktop](release-2026-10-12/desktop.png) · [iPhone](release-2026-10-12/iphone.png).
+
+## Cookie-Banner und Rechtsvorbereitung – nächster Review-Stand
+
+Der Owner hat die vollständige Vorbereitung einschließlich Cookie-Banner ausdrücklich beauftragt. Die neue isolierte Umsetzung liegt im Landing-Branch und enthält eigene Einstellungen, Widerruf, überprüfbare Freigabe-Callbacks und aktualisierte Datenschutzhinweise. [Konkrete Umsetzung und verbleibende Angaben](cookies-and-legal.md). Keine neuen Anbieter oder Projekte, keine Aktivierung von Tracking/Brevo, kein DNS-/Research-/Mail-/Shopify-Eingriff. Eine erfolgreiche Browserprüfung ist keine Bestätigung der noch fehlenden tatsächlichen Konto-/Vertragsdaten. Dieser Abschnitt behauptet keine schon erfolgte Produktionsveröffentlichung der Cookie-Erweiterung; der dokumentierte Live-Release oben bleibt ein eigener historischer Nachweis.

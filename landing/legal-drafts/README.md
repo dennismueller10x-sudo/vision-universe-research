@@ -5,12 +5,12 @@ Arbeitsstand: **12.10.2026**. Die Originale des PDF-Shops sind vollständig unte
 ## Konkrete reviewbare Ergebnisse
 
 - [Datenschutz der Coming-soon-Seite](../datenschutz/index.html): vollständiger Entwurf mit 16 Themenbereichen, bestätigten Unternehmensangaben, tatsächlichem Cloudflare-Hosting und gesperrtem Newsletter. Keine behaupteten Shopify-Konten, Zahlungen, Google-/Meta-Analyse oder bereits eingerichtete Brevo-Anmeldung. Kontobezogene Hosting-/Mail-/Aufbewahrungsangaben bleiben sichtbar offen.
-- [Impressum der Coming-soon-Seite](../impressum/index.html): bestätigte Firma, Vertretung, Adresse, Register, Steuernummer und Kontakt; aktualisierter DDG-Verweis, Ankündigungsstatus, sachliche Finanz-/Urheberrechtshinweise. Kein PDF-Kauf, Shopify-Konto oder alter OS-Plattform-Link.
+- [Impressum der Coming-soon-Seite](../impressum/index.html): für die aktuelle Ankündigungsseite angepasste Fassung mit bestätigter Firma, Vertretung, Adresse, Register, Steuernummer und Kontakt; aktualisierter DDG-Verweis, Ankündigungsstatus, sachliche Finanz-/Urheberrechtshinweise. Kein PDF-Kauf, Shopify-Konto oder alter OS-Plattform-Link.
 - [AGB für App/Web-App und Abos](agb-app-abos.md): ausformulierte Struktur mit Free/Paid, Leistungsbeschreibung, Vertragsschluss, Bereitstellung, Laufzeit, Kündigung, Verbraucherrechten, Updates und Haftung. Geschäftsentscheidungen stehen als `[[OFFEN: …]]`, nicht als erfundene Zusagen.
 - [Widerruf](widerruf-app-abos.md): Grundbelehrung und Musterformular, getrennte Prüfung der digitalen Dienstleistung und digitaler Inhalte, elektronischer Widerruf und Kündigung als unterschiedliche Abläufe.
 - [Bereitstellung](bereitstellung-app-abos.md): ersetzt für den späteren Produktstart Versand/PDF-Download durch den tatsächlich vereinbarten digitalen Zugang. Keine erfundene Sofortfreischaltung oder 24-Stunden-Garantie.
 
-Nur die beiden aktuellen Coming-soon-Rechtsseiten und deren bisherige /policies/-Aliase gehören zum Preview-Build. Abo-Entwürfe, Quellen und Arbeitsnotizen werden **nicht** ausgeliefert. Die Haupt-Landingpage und ihr kompakter Footer bleiben unverändert. Beide Rechtsseiten und der Cloudflare-Datenschutzentwurf bleiben `data-policy-status="draft"`; der bestehende Datenschutz-Gate und der gesperrte Newsletter bleiben erhalten.
+Nur die beiden aktuellen Coming-soon-Rechtsseiten und deren bisherige /policies/-Aliase gehören zum Preview-Build. Abo-Entwürfe, Quellen und Arbeitsnotizen werden **nicht** ausgeliefert. Der Footer erhält Cookie-Einstellungen. Das Impressum verwendet die bestätigten Unternehmensangaben und die aus der Originalquelle übernommene Nichtteilnahme-Erklärung; es trägt keine allgemeine Draft-Markierung mehr. Datenschutz und Cloudflare-Datenschutzvorlage bleiben `data-policy-status="draft"`, solange die konkreten Konto-/Mailangaben fehlen. Der bestehende Datenschutz-Gate und der gesperrte Newsletter bleiben erhalten.
 
 Die neuen Texte sind Entwürfe anhand der vorhandenen Angaben, keine bestätigte rechtliche Freigabe. Vor Abo-Vertragsstart müssen die tatsächlichen Abläufe, Klauseln und vorvertraglichen Informationen fachlich abgestimmt werden. PDF-Haftungsausschlüsse und Lizenzverbote werden nicht blind zu SaaS-Bedingungen.
 
@@ -23,7 +23,8 @@ Die neuen Texte sind Entwürfe anhand der vorhandenen Angaben, keine bestätigte
 | Shopify Payments, PayPal, Apple Pay usw. | Auf Coming soon keine Zahlungen; tatsächliche Abo-Anbieter/Vertriebskanäle festlegen |
 | Shopify-Hosting | Für die Landingpage Cloudflare Pages; App-/Backend-Hosting nicht automatisch dasselbe |
 | Shopify Email mit Name/E-Mail | Newsletter aktuell deaktiviert; bestehender Brevo-Prozess separat, keine neue Liste/Formular |
-| Google Analytics, Meta Pixel/CAPI, Cookie-Banner | Keine entsprechenden Skripte in der Landing-Anwendung; mögliche spätere Einführung gesondert prüfen |
+| Google Analytics, Meta Pixel/CAPI | Weiterhin keine entsprechenden Skripte in der Landing-Anwendung; Einführung nur nach aktualisierten Hinweisen und echter Einwilligung |
+| Cookie-Banner | Eigene Oberfläche vorbereitet: notwendige/all/granulare Auswahl, Footer-Einstellungen, zeitlich begrenzte Browserspeicherung; keine optionalen Dienste aktiviert |
 | Affiliate-Tracking | Nicht auf der Coming-soon-Seite eingesetzt; zukünftige Entscheidung offen |
 | Kein Updateanspruch für einmalige PDFs | Dauerhafte digitale Produkte: tatsächliche Leistungen und gesetzliche Aktualisierungspflichten berücksichtigen |
 | Erlöschen des Widerrufsrechts mit Leistungsbeginn | Nicht pauschal für laufende digitale Dienstleistungen; Vertragsart und alle Voraussetzungen prüfen |
@@ -75,10 +76,14 @@ Kostenlos ist nicht automatisch frei von Verbraucherrecht: mögliche Gegenleistu
 
 Research, dessen Deployment/CNAME, DNS, Brevo und Shopify-Abo werden durch diese Arbeiten nicht verändert. Der Owner hat inzwischen den Merge und die Veröffentlichung der soweit vorbereiteten Coming-soon-Fassung autorisiert. Die Abo-Texte bleiben interne Entwürfe; Hosting-/Mail-Details werden nicht automatisch bestätigt.
 
-## Prüfung der Umsetzung
+## Prüfung der vorherigen Rechtstext-Anpassung (historisch)
 
 Alle drei Anhänge wurden bytegenau kopiert; SHA-256/Dateigröße sämtlicher fünf archivierten Quellen geprüft. Quellen und Abo-Entwürfe fehlen erwartungsgemäß im öffentlichen Build. Beide Rechtsseiten und die /policies/-Aliase behalten die Draft-Markierung; Newsletter weiterhin gesperrt.
 
 10 vorhandene Landing-Tests und Preview-Build bestanden. Neue Rechtsseiten auf Desktop 1440×900 und iPhone-Viewport 390×844 geprüft: Axe 0, keine Ressourcen-/Skriptfehler, sichtbarer Tastaturfokus und kein horizontaler Überlauf bei normaler oder echter 200-%-Schriftvergrößerung. Lange deutsche Rechtsbegriffe umbrechen in legal.css, ohne Abschneiden/Scroll-Sperre. Hero/Design, Newsletter-JavaScript und Build-Gates wurden nicht geändert; die ungültigen globalen Navigationsreferenzen wurden auch aus der Hauptseite entfernt.
 
 [Messwerte](review/metrics.json) · [Datenschutz Desktop](review/datenschutz-desktop.png) · [Datenschutz iPhone](review/datenschutz-iphone.png) · [Impressum Desktop](review/impressum-desktop.png) · [Impressum iPhone](review/impressum-iphone.png). Die separaten Rechtsseiten dürfen länger als zwei Bildschirmhöhen sein; das Landing-Längenbudget wird nicht verändert. Physisches Safari-Gerät nicht geprüft.
+
+## Cookie-Erweiterung
+
+Der Datenschutz beschreibt nun vollständig die implementierte Speicherung unter vu_cookie_preferences und den tatsächlich vorhandenen Banner. [Umsetzung und genaue Freigabe-Checkliste](../deployment/cookies-and-legal.md). Alle zusätzlichen Vertragsentwürfe sind weiterhin vorbereitet, aber ohne konkrete Tarife/Laufzeiten/Kaufwege nicht als fertige Abo-Verträge verwendbar. Für die reine Coming-soon-Seite wird kein Verkauf fingiert.

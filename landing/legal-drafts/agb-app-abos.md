@@ -78,7 +78,7 @@ Bei einfacher Fahrlässigkeit im Zusammenhang mit wesentlichen Vertragspflichten
 
 ## 11. Datenschutz und Werbung
 
-Die zum tatsächlichen App-/Web-App-Betrieb passende Datenschutzerklärung beschreibt Konten, Hosting, Zahlung, Kommunikation und gegebenenfalls optionale Analyseverfahren. Newsletter-Einwilligung ist keine Voraussetzung für den Abo-Vertrag. Einwilligungsbedürftige Verarbeitung darf nicht durch Zustimmung zu diesen AGB ersetzt werden.
+Die zum tatsächlichen App-/Web-App-Betrieb passende Datenschutzerklärung beschreibt Konten, Hosting, Zahlung, Kommunikation und gegebenenfalls optionale Analyseverfahren. Newsletter-Einwilligung ist keine Voraussetzung für den Abo-Vertrag. Einwilligungsbedürftige Verarbeitung darf nicht durch Zustimmung zu diesen AGB ersetzt werden. Der vorbereitete Cookie-Banner speichert eine eigenständige Auswahl; optionale Dienste werden erst nach Einwilligung freigegeben und können über Cookie-Einstellungen widerrufen werden. Die derzeitige Coming-soon-Seite nutzt keine optionalen Statistik- oder Marketingdienste.
 
 Werbung, Affiliate-Marketing oder App-Tracking werden durch diesen Entwurf weder aktiviert noch als eingesetzt behauptet. `[[OFFEN: ob solche Verfahren überhaupt vorgesehen sind]]`
 
