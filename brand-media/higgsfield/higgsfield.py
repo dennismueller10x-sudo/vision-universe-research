@@ -20,8 +20,7 @@ BASE_URL = "https://api.higgsfield.ai"
 REGISTRY_PATH = Path(__file__).with_name("registry.json")
 TERMINAL = {"completed", "failed", "nsfw", "canceled"}
 APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
-WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-UP-TO-5-USD"
-WAN_MAX_USD = Decimal("5.00")
+WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-NO-ESTIMATE"
 
 
 class HiggsfieldError(RuntimeError):
@@ -205,8 +204,6 @@ def enforce_cost(estimate_usd, budget_usd, action, approved_estimate_usd=""):
         raise HiggsfieldError("Invalid cost or budget amount; generation blocked") from None
     if not amount.is_finite() or amount < 0 or not cap.is_finite() or cap <= 0:
         raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
-    if action == "produce" and (cap > WAN_MAX_USD or amount > WAN_MAX_USD):
-        raise HiggsfieldError("WAN production is limited to the approved 5.00 USD maximum; generation blocked")
     if amount > cap:
         raise HiggsfieldError("Budget exceeded or invalid; generation blocked")
     if action == "generate":
@@ -239,22 +236,18 @@ def run(args):
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
-        raise HiggsfieldError("Wan 3.0 production must use the one-estimate, one-generation produce action")
+        raise HiggsfieldError("Wan 3.0 production must use the manually approved one-shot produce action")
     if args.action == "produce":
         if args.model != "alibaba/wan-3.0" or args.operation != "image_to_video":
             raise HiggsfieldError("Single-shot production is restricted to the approved Wan 3.0 image-to-video order")
         if (args.duration, args.resolution, args.aspect_ratio, args.native_audio) != (20, "1080p", "9:16", "true"):
             raise HiggsfieldError("Wan production parameters must be 20 seconds, 1080p, 9:16, and native audio enabled")
         if args.approval != WAN_APPROVAL_PHRASE:
-            raise HiggsfieldError("Explicit approval for one Wan generation up to 5.00 USD is required")
-        try:
-            requested_cap = Decimal(str(args.budget_usd))
-        except (InvalidOperation, TypeError):
-            raise HiggsfieldError("Invalid production budget; generation blocked") from None
-        if not requested_cap.is_finite() or requested_cap <= 0 or requested_cap > WAN_MAX_USD:
-            raise HiggsfieldError("Wan production budget cannot exceed the approved 5.00 USD maximum")
+            raise HiggsfieldError("Explicit approval for one Wan generation without a price estimate is required")
         if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
             raise HiggsfieldError("Wan production is single-attempt; reruns are blocked")
+        if not os.environ.get("GITHUB_RUN_ID"):
+            raise HiggsfieldError("Wan production requires a unique GitHub Actions run ID; generation blocked")
     client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
     params = build_params(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.native_audio == "true")
     if args.operation == "image_to_video":
@@ -263,12 +256,18 @@ def run(args):
         if not args.reference or not Path(args.reference).is_file():
             raise HiggsfieldError("Reference image file is missing")
         params["image_urls"] = [client.upload_image(args.reference)]
-    # Estimate is performed for this exact endpoint and parameter set before any paid submission.
-    estimate = client.estimate(endpoint, params)
-    amount, cap = enforce_cost(estimate["usd"], args.budget_usd, args.action, args.approved_estimate_usd)
-    print(json.dumps({"preflight": "passed", "model_id": model["model_id"], "estimate_usd": estimate["usd"], "budget_usd": str(cap)}))
-    if args.action == "estimate":
-        return
+    estimate = None
+    if args.action != "produce":
+        # Non-production estimate/generate actions retain their numeric estimate checks.
+        estimate = client.estimate(endpoint, params)
+        amount, cap = enforce_cost(estimate["usd"], args.budget_usd, args.action, args.approved_estimate_usd)
+        print(json.dumps({"preflight": "passed", "model_id": model["model_id"], "estimate_usd": estimate["usd"], "budget_usd": str(cap)}))
+        if args.action == "estimate":
+            return
+    else:
+        # The user explicitly authorized one paid test despite the provider's non-numeric quote.
+        # No estimate request is made; the generation API itself decides whether the account can submit it.
+        print(json.dumps({"approval_gate": "passed", "model_id": model["model_id"], "price_estimate": "not_requested", "generation_submissions": 1}))
     if args.action == "generate" and args.approval != APPROVAL_PHRASE:
         raise HiggsfieldError("Explicit single-generation approval is required")
     run_id = os.environ.get("GITHUB_RUN_ID")
@@ -302,6 +301,7 @@ def run(args):
         "requested_aspect_ratio": args.aspect_ratio,
         "aspect_ratio_source": "request parameter" if model["model_id"] == "alibaba/wan-3.0" else ("reference image framing" if args.operation == "image_to_video" else "request parameter"),
         "reference_image": reference, "estimate": estimate,
+        "actual_cost": None,
         "status": result["status"], "result_file": str(video_path),
         "hyperframes_ready": True, "social_upload": False
     }, secret=os.environ.get("HIGGSFIELD_API_KEY"))
@@ -320,7 +320,7 @@ def main(argv=None):
     parser.add_argument("--native-audio", choices=("true", "false"), default="true")
     parser.add_argument("--reference", default="")
     parser.add_argument("--asset-id", default="")
-    parser.add_argument("--budget-usd", required=True)
+    parser.add_argument("--budget-usd", default="")
     parser.add_argument("--approval", default="")
     parser.add_argument("--approved-estimate-usd", default="")
     parser.add_argument("--output-dir", default="brand-media/output/higgsfield")
