@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 146053cffcf953fc8d5b017417d2ff2fcbce583c
+          ref: 605647e8d1becad59280e65c5c256309bed7ed7c
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
