@@ -257,6 +257,70 @@
         "decrypted": false,
         "classification": "RECEIPT_VERIFIED_BUT_CANONICAL_DATA_ABSENT"
       }
+    },
+    {
+      "id": "V3 official French reference capture and parsed artifact",
+      "classification": "REUSABLE_AND_VERIFIED_ENCRYPTED_PENDING_NUMERIC_REVIEW",
+      "evidence": {
+        "workflowRunId": 38554833188,
+        "artifactId": 11887784036,
+        "expiresAt": "2027-01-12T11:11:30Z",
+        "artifactZipSha256": "388bc31ddaa765fa75ef04b11ba8bffaabcf370b8220dc31f059ab0b4bec9c9a",
+        "contentManifestSha256": "24bbe6f7ea70fc731e6c06a67b74f544c3fe089ca8f35a42ff3339c4079b9928",
+        "safeStatusSha256": "8ad6d9eb1ac9a0ecddf33f64dac930c4f328b8cbcd30bb89e62ce49230da9732",
+        "schemaHash": "e605d8dbb0648b6bc4b551e7577b198cee3582ad61d7c90498f688731be477b6",
+        "sourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+        "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+        "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
+        "sources": [
+          {
+            "id": "FRENCH_MOM10",
+            "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+            "archiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+            "archiveBytes": 119089,
+            "memberName": "10_Portfolios_Prior_12_2.csv",
+            "memberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+            "memberBytes": 484135,
+            "period": {
+              "first": "1927-01",
+              "last": "2026-08",
+              "rows": 1196
+            }
+          },
+          {
+            "id": "FRENCH_VAR",
+            "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+            "archiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+            "archiveBytes": 147521,
+            "memberName": "Portfolios_Formed_on_VAR.csv",
+            "memberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+            "memberBytes": 584013,
+            "period": {
+              "first": "1963-07",
+              "last": "2026-08",
+              "rows": 758
+            }
+          },
+          {
+            "id": "FRENCH_DAILY_RF",
+            "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+            "archiveSha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+            "archiveBytes": 178184,
+            "memberName": "F-F_Research_Data_Factors_daily.csv",
+            "memberSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+            "memberBytes": 1210997,
+            "period": {
+              "first": "1926-07-01",
+              "last": "2026-08-31",
+              "rows": 26317
+            }
+          }
+        ],
+        "privateFiles": 14,
+        "ownerAndSessionEncrypted": true,
+        "plaintextCommitted": false,
+        "independentReview": "PENDING"
+      }
     }
   ],
   "qa": {
@@ -309,7 +373,7 @@
     "requiresNewV3Freeze": true
   },
   "durableArtifactManifestPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
-  "durableArtifactManifestSha256": "2187844fa2eb89fc8b291aa46565feee066d0c0a424d690eb8db7efe73ca3c8c",
+  "durableArtifactManifestSha256": "0d1169d9236cb32dab5c152a7f8149cd394d042e3742927c4a6f2bdb583f8ba9",
   "executionAvailability": {
     "v3CalibrationRunner": "MISSING",
     "historicalSourceCaptureWorkflow": "RUNNING",

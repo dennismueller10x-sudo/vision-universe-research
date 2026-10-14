@@ -1,6 +1,6 @@
 {
   "schema": "vision-universe-calibration-v3-reference-manifest-1.0.0",
-  "status": "SOURCE_METADATA_RECOVERED_FROM_FROZEN_643_CENSUS_REFERENCE_BYTES_MISSING",
+  "status": "REFERENCE_CAPTURE_PARSED_ENCRYPTED_PENDING_INDEPENDENT_REVIEW",
   "sources": [
     {
       "id": "FRENCH_MOM10",
@@ -19,8 +19,8 @@
         "redistribution_license": "NOT_ESTABLISHED",
         "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
       },
-      "inputPresent": false,
-      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "inputPresent": true,
+      "status": "CAPTURED_HASH_VERIFIED_ENCRYPTED",
       "memberName": "10_Portfolios_Prior_12_2.csv",
       "memberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
       "memberBytes": 484135,
@@ -28,7 +28,17 @@
         "first": "192701",
         "last": "202608"
       },
-      "verifiedRows": 4784
+      "verifiedRows": 4784,
+      "actualArchiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "actualMemberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+      "actualMemberBytes": 484135,
+      "capturedPeriod": {
+        "first": "1927-01",
+        "last": "2026-08",
+        "rows": 1196
+      },
+      "captureRunId": 38554833188,
+      "artifactId": 11887784036
     },
     {
       "id": "FRENCH_VAR",
@@ -47,8 +57,8 @@
         "redistribution_license": "NOT_ESTABLISHED",
         "use": "PRIVATE_RESEARCH; publish URLs, hashes and permitted factual method summaries only"
       },
-      "inputPresent": false,
-      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "inputPresent": true,
+      "status": "CAPTURED_HASH_VERIFIED_ENCRYPTED",
       "memberName": "Portfolios_Formed_on_VAR.csv",
       "memberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
       "memberBytes": 584013,
@@ -56,7 +66,17 @@
         "first": "196307",
         "last": "202608"
       },
-      "verifiedRows": 3790
+      "verifiedRows": 3790,
+      "actualArchiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "actualMemberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+      "actualMemberBytes": 584013,
+      "capturedPeriod": {
+        "first": "1963-07",
+        "last": "2026-08",
+        "rows": 758
+      },
+      "captureRunId": 38554833188,
+      "artifactId": 11887784036
     },
     {
       "id": "FRENCH_DAILY_RF",
@@ -75,8 +95,8 @@
         "redistribution_license": "NOT_ESTABLISHED",
         "use": "PRIVATE_RESEARCH_ONLY"
       },
-      "inputPresent": false,
-      "status": "SOURCE_METADATA_REUSED_FROM_FROZEN_643_CENSUS_BYTES_MISSING",
+      "inputPresent": true,
+      "status": "CAPTURED_HASH_VERIFIED_ENCRYPTED",
       "memberName": "F-F_Research_Data_Factors_daily.csv",
       "memberSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
       "memberBytes": null,
@@ -84,10 +104,27 @@
         "first": "19260701",
         "last": "20260831"
       },
-      "verifiedRows": 26317
+      "verifiedRows": 26317,
+      "actualArchiveSha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+      "actualMemberSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+      "actualMemberBytes": 1210997,
+      "capturedPeriod": {
+        "first": "1926-07-01",
+        "last": "2026-08-31",
+        "rows": 26317
+      },
+      "captureRunId": 38554833188,
+      "artifactId": 11887784036
     }
   ],
-  "parsedArtifact": null,
+  "parsedArtifact": {
+    "schema": "vision-universe-calibration-v3-parsed-reference-private-1.0.0",
+    "plaintextSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
+    "privateArtifactId": 11887784036,
+    "ownerAndSessionEncrypted": true,
+    "decrypted": false,
+    "independentReview": "PENDING"
+  },
   "tolerancePolicy": "Use preregistered BACKTEST-CALIBRATION-METHODS and protocol thresholds; do not change after seeing results.",
   "parserRepair": {
     "sha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
@@ -107,5 +144,13 @@
   "noPrivateProviderValuesIncluded": true,
   "sourcePlanPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json",
   "sourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
-  "sourcePlanStatus": "PERSISTED_HASH_BOUND_CAPTURE_PLAN_REFERENCE_BYTES_ABSENT"
+  "sourcePlanStatus": "PERSISTED_HASH_BOUND_CAPTURE_PLAN_REFERENCE_BYTES_ABSENT",
+  "referenceCaptureArtifactId": 11887784036,
+  "workflowRunId": 38554833188,
+  "artifactExpiresAt": "2027-01-12T11:11:30Z",
+  "artifactZipSha256": "388bc31ddaa765fa75ef04b11ba8bffaabcf370b8220dc31f059ab0b4bec9c9a",
+  "safeStatusSha256": "8ad6d9eb1ac9a0ecddf33f64dac930c4f328b8cbcd30bb89e62ce49230da9732",
+  "contentManifestSha256": "24bbe6f7ea70fc731e6c06a67b74f544c3fe089ca8f35a42ff3339c4079b9928",
+  "schemaHash": "e605d8dbb0648b6bc4b551e7577b198cee3582ad61d7c90498f688731be477b6",
+  "privateValuesNotPublished": true
 }

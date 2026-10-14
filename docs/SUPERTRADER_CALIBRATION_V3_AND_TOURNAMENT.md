@@ -10,7 +10,7 @@ No numeric calibration was run: freeze-bound canonical source data and reference
 
 ## Calibration reference sources
 
-Frozen #643 source-census metadata supplies the official French Library URLs, prior capture date, archive/member hashes, periods and rights notes for three reference inputs. The original source-plan bytes, reference payload bytes and parsed output are absent; the V3 manifest marks these inputs for capture, not measurement. See `CALIBRATION-V3-REFERENCE-MANIFEST.json`.
+Frozen #643 source-census metadata supplies the official French Library URLs, prior capture date, archive/member hashes, periods and rights notes for three reference inputs. The V3 source plan is now hash-bound; run 38554833188 captured and verified all three official archives and CSV members against the declared SHA256 values, parsed the source references, and sealed archives, CSVs and parsed output for owner/session. Its Actions artifact is `11887784036` (expires 2027-01-12); independent numeric review remains pending. No private return values are published. See `CALIBRATION-V3-REFERENCE-MANIFEST.json`.
 
 ## 52W reconciliation result
 
