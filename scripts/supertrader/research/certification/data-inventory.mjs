@@ -16,11 +16,15 @@ const Master=require('../../../../quant/engines/us-security-master.js');
 export const INVENTORY_VERSION='supertrader-private-data-inventory-1.0.0';
 const SAFE_CANONICAL_REASONS=new Set(['HISTORICAL_DATA_LOAD_FAILED','NO_USABLE_SECURITIES','PRIVATE_DATA_NOT_CONFIGURED','WINDOW_NOT_SUPPORTED','ZERO_COST_GUARD_BLOCKED']);
 const SAFE_CANONICAL_PHASES=new Set(['WINDOW_VALIDATION','PUBLIC_UNIVERSE_METADATA','SUPPORTED_TICKER_LIST','LISTING_BUILD','R2_SETUP','R2_USAGE_GUARD','R2_MANIFEST','R2_SEC_AND_BENCHMARK','MEMBER_CLASSIFICATION','R2_SERIES','SEGMENT_BUILD','CANONICAL_NORMALIZATION','INJECTED_PIT_LOADER','RAW_HISTORICAL_LOADER']);
+const SAFE_CANONICAL_ERROR_NAMES=new Set(['Error','TypeError','RangeError','SyntaxError','ReferenceError','URIError','AggregateError','AbortError','TimeoutError','NoSuchKey','AccessDenied']);
+const SAFE_CANONICAL_ERROR_CODES=new Set(['ENOENT','EACCES','ECONNRESET','ECONNREFUSED','ECONNABORTED','EPIPE','ETIMEDOUT','EAI_AGAIN','ENOTFOUND','ERR_INVALID_ARG_TYPE','ERR_STREAM_PREMATURE_CLOSE','NoSuchKey','AccessDenied','SlowDown','InvalidAccessKeyId','SignatureDoesNotMatch','RequestTimeout','ServiceUnavailable','InternalError']);
 /** Public status may expose only allowlisted symbolic failure metadata, never private error text. */
 export function safeCanonicalDiagnostic(data){
  const reason=SAFE_CANONICAL_REASONS.has(data?.reason)?data.reason:null;
  const phase=SAFE_CANONICAL_PHASES.has(data?.privateDiagnostics?.phase)?data.privateDiagnostics.phase:null;
- return reason?{reason,...(phase?{phase}:{})}:null;
+ const errorName=SAFE_CANONICAL_ERROR_NAMES.has(data?.privateDiagnostics?.errorName)?data.privateDiagnostics.errorName:null;
+ const errorCode=SAFE_CANONICAL_ERROR_CODES.has(data?.privateDiagnostics?.code)?data.privateDiagnostics.code:null;
+ return reason?{reason,...(phase?{phase}:{}),...(errorName?{errorName}:{}),...(errorCode?{errorCode}:{})}:null;
 }
 const privateKeys=['_validation/manifest.json.gz','_validation/sec-pit-r13.json.gz','_validation/sec-delist-r13.json.gz'];
 const secKeys=['v1/sec/fundamentals/_manifest.json','v1/sec/fundamentals/_index.json.gz'];
