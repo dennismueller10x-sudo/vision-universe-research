@@ -86,3 +86,15 @@ test("Python-Spiegel liefert dieselbe Bereinigung", () => {
   assert.equal(e.GIT_DIR, undefined); assert.equal(e.GIT_WORK_TREE, undefined); assert.equal(e.GIT_INDEX_FILE, undefined);
   assert.equal(e.GIT_CONFIG_GLOBAL, "/dev/null"); assert.equal(e.PATH, "/x");
 });
+
+test("scrub-git-env bereinigt process.env eines Kindprozesses mit gesetztem GIT_DIR", () => {
+  const decoy = koeder();
+  try {
+    const out = execFileSync(process.execPath, ["--input-type=module", "-e",
+      "await import('./scripts/ci/scrub-git-env.mjs');console.log(JSON.stringify(Object.keys(process.env).filter(k=>k.startsWith('GIT_'))))"],
+      { encoding: "utf8", cwd: new URL("../..", import.meta.url).pathname, env: { ...sauber, ...LECKS(decoy) } });
+    const keys = JSON.parse(out);
+    for (const k of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_CONFIG_COUNT"]) assert.ok(!keys.includes(k), k);
+    assert.ok(keys.includes("GIT_CONFIG_GLOBAL"));
+  } finally { rmSync(decoy, { recursive: true, force: true }); }
+});
