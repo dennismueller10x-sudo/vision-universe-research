@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Discover, estimate only, generate against a prior estimate, or produce one Wan 3.0 job from a single estimate (up to the approved 10 USD estimate threshold).
+        description: Discover, estimate only, generate against a prior estimate, or submit one manually approved Wan 3.0 production job without an estimate.
         type: choice
         required: true
         options: [discover, estimate, generate, produce]
@@ -48,11 +48,11 @@ on:
         type: string
         required: false
       budget_usd:
-        description: Maximum permitted estimate in USD
+        description: Numeric estimate budget for estimate/generate only; unused for produce
         type: string
-        required: true
+        required: false
       paid_approval:
-        description: For generate enter the existing approval phrase; for produce enter the exact one-shot Wan approval phrase for up to 10 USD estimated cost.
+        description: For generate enter the existing approval phrase; for produce enter the explicit no-estimate Wan one-shot approval phrase.
         type: string
         required: false
       approved_estimate_usd:
@@ -84,7 +84,7 @@ jobs:
       - name: Show documentation-derived model registry
         if: inputs.action == 'discover'
         run: python -m json.tool brand-media/higgsfield/registry.json
-      - name: One estimate; produce submits at most one approved Wan generation only when the quote is within budget
+      - name: Prepare request; produce skips estimates and submits at most one manually approved Wan generation
         if: inputs.action == 'estimate' || inputs.action == 'generate' || inputs.action == 'produce'
         env:
           HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
@@ -105,9 +105,15 @@ jobs:
           args=(--action "$INPUT_ACTION" --model "$INPUT_MODEL_ID" --operation "$INPUT_OPERATION" \
             --prompt "$INPUT_PROMPT" --duration "$INPUT_DURATION" --resolution "$INPUT_RESOLUTION" \
             --aspect-ratio "$INPUT_ASPECT_RATIO" --native-audio "$INPUT_NATIVE_AUDIO" --reference "$INPUT_REFERENCE_PATH" \
-            --asset-id "$INPUT_ASSET_ID" --budget-usd "$INPUT_BUDGET_USD")
+            --asset-id "$INPUT_ASSET_ID")
+          if [ -n "$INPUT_BUDGET_USD" ]; then
+            args+=(--budget-usd "$INPUT_BUDGET_USD")
+          fi
           if [ "$INPUT_ACTION" = generate ] || [ "$INPUT_ACTION" = produce ]; then
-            args+=(--approval "$INPUT_APPROVAL" --approved-estimate-usd "$INPUT_APPROVED_ESTIMATE_USD")
+            args+=(--approval "$INPUT_APPROVAL")
+          fi
+          if [ "$INPUT_ACTION" = generate ]; then
+            args+=(--approved-estimate-usd "$INPUT_APPROVED_ESTIMATE_USD")
           fi
           python brand-media/higgsfield/higgsfield.py "${args[@]}"
 
