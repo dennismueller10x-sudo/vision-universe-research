@@ -54,9 +54,9 @@ def api(origin,path,key,method='GET',body=None):
         try:value=json.loads(error.read(65536))
         except Exception:value={}
         message=value.get('message','')
-        words={'a','an','any','are','available','been','configured','created','database','defined','do','does','exist','exists','for','found','has','have','in','is','no','not','of','the','there','this','to','type','webhook','webhooks','with','your','account'}
+        words={'a','an','any','are','available','been','configured','created','database','defined','do','does','doesn','don','t','exist','exists','for','found','has','have','in','is','no','not','of','on','the','there','this','to','type','web','hook','hooks','webhook','webhooks','with','your','account','transactional','marketing'}
         safe_webhook_message=(message.strip() if path.startswith('/webhooks?') and error.code==400 and isinstance(message,str)
-            and re.fullmatch(r'[A-Za-z .!-]{1,160}',message.strip()) and set(re.findall(r'[a-z]+',message.lower()))<=words else None)
+            and re.fullmatch(r'''[A-Za-z .!,'"-]{1,160}''',message.strip()) and set(re.findall(r'[a-z]+',message.lower()))<=words else None)
         # Fixed classification only. Never return a provider's free-form message,
         # URL, authentication header or personalized response body.
         empty_webhooks=bool(path.startswith('/webhooks?') and error.code==400 and isinstance(message,str) and re.fullmatch(
