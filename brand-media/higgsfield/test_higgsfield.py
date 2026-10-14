@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import urllib.error
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import higgsfield
@@ -65,12 +66,79 @@ class IntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
             higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", "brand-media/higgsfield/test_higgsfield.py")
 
-    def test_wan_production_budget_is_hard_capped_at_five(self):
-        self.assertEqual(higgsfield.enforce_cost("4.99", "5.00", "produce")[0], higgsfield.Decimal("4.99"))
-        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
-            higgsfield.enforce_cost("5.01", "5.00", "produce")
-        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "5.00 USD maximum"):
-            higgsfield.enforce_cost("4.00", "5.01", "produce")
+    def test_wan_produce_skips_estimate_and_submits_exactly_once(self):
+        model = higgsfield.get_model("alibaba/wan-3.0")
+        approval = higgsfield.WAN_APPROVAL_PHRASE
+        calls = {"estimate": 0, "submit": []}
+
+        class FakeClient:
+            def __init__(self, api_key):
+                self.api_key = api_key
+            def upload_image(self, path):
+                return "https://uploads.example/master.jpg"
+            def estimate(self, endpoint, params):
+                calls["estimate"] += 1
+                raise AssertionError("produce must not request an estimate")
+            def submit(self, endpoint, params, idempotency_key=None):
+                calls["submit"].append((endpoint, params, idempotency_key))
+                return "request-123"
+            def status(self, request_id):
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination):
+                Path(destination).write_bytes(b"test mp4")
+
+        args = SimpleNamespace(
+            model="alibaba/wan-3.0", operation="image_to_video", prompt="approved prompt",
+            duration=20, resolution="1080p", aspect_ratio="9:16", native_audio="true",
+            reference=model["approved_production_reference"]["path"], asset_id="vu-the-arrival-final-master-20261014",
+            action="produce", approval=approval, budget_usd="", approved_estimate_usd="",
+            output_dir="",
+        )
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {
+            "HIGGSFIELD_API_KEY": "test-secret", "GITHUB_RUN_ID": "12345", "GITHUB_RUN_ATTEMPT": "1"
+        }), patch.object(higgsfield, "Client", FakeClient), patch.object(higgsfield.time, "sleep"):
+            args.output_dir = temp
+            higgsfield.run(args)
+            metadata = json.loads((Path(temp) / "request-123.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(calls["estimate"], 0)
+        self.assertEqual(len(calls["submit"]), 1)
+        self.assertEqual(calls["submit"][0][2], "vu-higgsfield-12345")
+        self.assertEqual(metadata["estimate"], None)
+        self.assertEqual(metadata["actual_cost"], None)
+
+    def test_status_download_is_read_only(self):
+        calls = []
+
+        class FakeClient:
+            def __init__(self, api_key):
+                self.api_key = api_key
+            def status(self, request_id):
+                calls.append(("status", request_id))
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination):
+                calls.append(("download", url))
+                Path(destination).write_bytes(b"test mp4")
+            def estimate(self, *args, **kwargs):
+                raise AssertionError("status retrieval must not estimate")
+            def submit(self, *args, **kwargs):
+                raise AssertionError("status retrieval must not generate")
+
+        args = SimpleNamespace(
+            action="status", model="alibaba/wan-3.0", request_id="request-123",
+            output_dir="", prompt="approved prompt",
+        )
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {"HIGGSFIELD_API_KEY": "test-secret"}), patch.object(higgsfield, "Client", FakeClient):
+            args.output_dir = temp
+            higgsfield.run(args)
+            video = Path(temp) / "request-123.mp4"
+            downloaded = video.is_file()
+            metadata = json.loads((Path(temp) / "request-123.json").read_text(encoding="utf-8"))
+
+        self.assertTrue(downloaded)
+        self.assertEqual(calls[0], ("status", "request-123"))
+        self.assertEqual([call[0] for call in calls], ["status", "download"])
+        self.assertIsNone(metadata["actual_cost"])
 
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):
