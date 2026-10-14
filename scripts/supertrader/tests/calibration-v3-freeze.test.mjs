@@ -30,3 +30,9 @@ test('final freeze binds inputs, reference artifact and the import closure; any 
 test('closure covers every entry point and is stable',()=>{
  const a=importClosure(ENTRY_POINTS),b=importClosure(ENTRY_POINTS);assert.deepEqual(a,b);for(const e of ENTRY_POINTS)assert.ok(a.includes(e));
 });
+test('every measurable registry method maps to a frozen engine method',async()=>{
+ const {ENGINE_ID}=await import('../research/calibration/run-calibration-v3.mjs'),{referenceMethods}=await import('../research/calibration/reference-engines.mjs');
+ const registry=JSON.parse(fs.readFileSync(new URL('../research/calibration/BACKTEST-CALIBRATION-METHODS.json',import.meta.url))).referenceScreens.filter(x=>x.status!=='BLOCKED_DATA').map(x=>x.id);
+ assert.deepEqual(Object.keys(ENGINE_ID).sort(),registry.slice().sort());
+ for(const id of registry)assert.ok(referenceMethods.some(m=>m.id===ENGINE_ID[id]),id);
+});

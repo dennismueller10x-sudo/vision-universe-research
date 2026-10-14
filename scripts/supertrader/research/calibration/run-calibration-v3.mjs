@@ -23,6 +23,8 @@ const ROOT=path.resolve(HERE,'../../../..');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const baseProtocol=JSON.parse(fs.readFileSync(path.join(HERE,'../tournament/protocol.json')));
+// Registry ids (BACKTEST-CALIBRATION-METHODS.json) -> frozen engine ids (reference-engines.mjs); same parameters, no new method.
+export const ENGINE_ID={CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP:'CALIB_JT6_6_NO_SKIP',CAL_GH2004_52WH_30_6_NO_SKIP:'CALIB_GH52WH',CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS:'CALIB_LOW_VOL',CALIB_EQUAL_WEIGHT:'CALIB_EQUAL_WEIGHT'};
 const direction=x=>!Number.isFinite(x)?'UNAVAILABLE':x>0?'POSITIVE':x<0?'NEGATIVE':'ZERO';
 
 function parseArgs(argv){
@@ -48,7 +50,7 @@ export async function runMethodV3(args){
  const freezeBytes=fs.readFileSync(args['--freeze']),freeze=JSON.parse(freezeBytes);
  verifyFreezeV3(freeze);verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath:args['--reference-parsed']});
  demand(freeze.methods.measurable.includes(args['--method']),'METHOD_NOT_MEASURABLE_UNDER_FREEZE');
- const method=referenceMethods.find(m=>m.id===args['--method']);demand(method,'REGISTERED_REFERENCE_METHOD_REQUIRED');
+ const method=referenceMethods.find(m=>m.id===ENGINE_ID[args['--method']]);demand(method,'REGISTERED_REFERENCE_METHOD_REQUIRED');
  const parsedBytes=fs.readFileSync(args['--reference-parsed']),parsed=JSON.parse(parsedBytes);
  const sourceMetadataSha=freeze.inputReceipts.find(r=>r.role==='CANONICAL_SOURCE_PROVENANCE_INPUTS').sha256;
  const data=await loadCanonicalData(inputDir,{sourceProvenanceOverlay:true,expectedSourceMetadataSha256:sourceMetadataSha});
@@ -56,7 +58,7 @@ export async function runMethodV3(args){
  const contract=JSON.parse(fs.readFileSync(path.join(HERE,'protocol.json')));
  const riskFreeDaily=parsed.dailyRF?.rows??parsed.riskFreeDaily??[];
  const frame=referenceFrame(prepared.data,method,baseProtocol,contract);
- const summary={schema:'supertrader-calibration-v3-method-public-summary-1.0.0',freezeId:freeze.freezeId,freezeFileSha256:sha(freezeBytes),methodId:method.id,runnerNode:process.version,results:[],performanceNumbersPublished:false};
+ const summary={schema:'supertrader-calibration-v3-method-public-summary-1.0.0',freezeId:freeze.freezeId,freezeFileSha256:sha(freezeBytes),methodId:args['--method'],engineMethodId:method.id,runnerNode:process.version,results:[],performanceNumbersPublished:false};
  for(const costMode of ['SOURCE_GROSS','SAME_TOURNAMENT_NET']){
   verifyFreezeV3(freeze);
   const entry={costMode};
@@ -65,9 +67,9 @@ export async function runMethodV3(args){
    const metrics=Object.fromEntries(['top','bottom','eligibleUniverse'].map(k=>[k,run[k]?portfolioMetrics(run[k].curve,{initialCapital:baseProtocol.execution.initialCapital,turnover:run[k].turnover,trades:run[k].trades,executionCosts:run[k].executionCosts}):null]));
    metrics.effect=monthlyEffect(run);
    metrics.sourceLogRisk=sourceLogRisk(run,riskFreeDaily,frame.data.benchmark?.bars?.map(b=>b.date)??frame.data.calendar);
-   const artifact={schema:'supertrader-calibration-v3-stock-construction-private-1.0.0',freezeId:freeze.freezeId,methodId:method.id,costMode,window:frame.protocol.window,run,metrics};
+   const artifact={schema:'supertrader-calibration-v3-stock-construction-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,window:frame.protocol.window,run,metrics};
    const bytes=Buffer.from(JSON.stringify(artifact));
-   const base=path.join(out,`${method.id}-${costMode}`);
+   const base=path.join(out,`${args['--method']}-${costMode}`);
    Object.assign(entry,{status:run.status,plaintextSha256:sha(bytes),plaintextBytes:bytes.length,sealed:seal(base,bytes),
     formations:{total:run.formations.length,ready:run.formations.filter(f=>f.status==='READY').length,partial:run.formations.filter(f=>f.status==='PARTIAL').length,other:run.formations.filter(f=>!['READY','PARTIAL'].includes(f.status)).length},
     months:run.monthly.length,reconciliation:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{pass:run[k].reconciliation.pass,absoluteDifference:run[k].reconciliation.absoluteDifference}])),
@@ -75,7 +77,7 @@ export async function runMethodV3(args){
   }catch(error){
    const code=/^[A-Z0-9_]+$/.test(error.message)?error.message:'PRIVATE_RUN_FAILURE';
    Object.assign(entry,{status:'FAILED_CLOSED',errorCode:code,bookTrace:publicTrace(error.bookTrace)});
-   entry.sealedFailure=seal(path.join(out,`${method.id}-${costMode}.failure`),Buffer.from(JSON.stringify({schema:'supertrader-calibration-v3-failure-private-1.0.0',freezeId:freeze.freezeId,methodId:method.id,costMode,errorName:error.name,message:error.message,stack:error.stack,bookTrace:error.bookTrace??null,parameterChanges:false})));
+   entry.sealedFailure=seal(path.join(out,`${args['--method']}-${costMode}.failure`),Buffer.from(JSON.stringify({schema:'supertrader-calibration-v3-failure-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,errorName:error.name,message:error.message,stack:error.stack,bookTrace:error.bookTrace??null,parameterChanges:false})));
   }
   summary.results.push(entry);if(global.gc)global.gc();
  }
