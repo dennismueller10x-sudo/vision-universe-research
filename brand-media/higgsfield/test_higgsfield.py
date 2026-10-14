@@ -40,6 +40,14 @@ class IntegrationTests(unittest.TestCase):
         self.assertIs(params["generate_audio"], True)
         self.assertNotIn("aspect_ratio", params)
 
+    def test_seedance_25_accepts_only_sha256_verified_master(self):
+        model = higgsfield.get_model("bytedance/seedance-2.5")
+        approved = model["approved_production_reference"]
+        endpoint = higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "16:9", approved["path"])
+        self.assertEqual(endpoint, model["operations"]["image_to_video"])
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
+            higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "16:9", "brand-media/higgsfield/test_higgsfield.py")
+
     def test_missing_secret(self):
         with self.assertRaisesRegex(higgsfield.HiggsfieldError, "missing"):
             higgsfield.Client("")

@@ -58,6 +58,13 @@ def validate(model, operation, prompt, duration, resolution, aspect_ratio, refer
         candidate = Path(reference_path)
         if candidate.is_absolute() or ".." in candidate.parts:
             raise HiggsfieldError("Reference path must stay inside the checked-out repository")
+        approved = model.get("approved_production_reference")
+        if model["model_id"] == "bytedance/seedance-2.5" and operation == "image_to_video":
+            if not approved or candidate.as_posix() != approved["path"]:
+                raise HiggsfieldError("Seedance 2.5 accepts only the registered THE ARRIVAL master reference")
+            digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
+            if digest != approved["sha256"]:
+                raise HiggsfieldError("Registered master reference checksum mismatch")
     return endpoints[operation]
 
 
@@ -253,7 +260,12 @@ def run(args):
     client.download(result["video"]["url"], video_path)
     reference = None
     if args.reference:
-        reference = {"asset_id": args.asset_id or Path(args.reference).stem, "path": args.reference, "sha256": hashlib.sha256(Path(args.reference).read_bytes()).hexdigest()}
+        approved = model.get("approved_production_reference", {})
+        reference = {
+            "asset_id": approved.get("asset_id") if model["model_id"] == "bytedance/seedance-2.5" and args.operation == "image_to_video" else (args.asset_id or Path(args.reference).stem),
+            "path": args.reference,
+            "sha256": hashlib.sha256(Path(args.reference).read_bytes()).hexdigest(),
+        }
     metadata = safe_metadata({
         "request_id": request_id, "model_id": model["model_id"], "provider": model["provider"],
         "prompt": args.prompt, "seed": None, "parameters": params,
