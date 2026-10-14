@@ -77,9 +77,10 @@ export function readJsonGz(file) { return JSON.parse(gunzipSync(readFileSync(fil
  *  available = die Daten tragen eine veroeffentlichte, herkunftsgepruefte Auswertung (dieselben Bedingungen wie im Dienst):
  *  dann MUSS der Abschnitt stehen, mit den Beschriftungen aus dem Vertrag. Sonst (kein Bundle, Herkunft nicht bestanden)
  *  ist Enthaltung die richtige Seite. */
-export function technicalExpectation(release, ticker, {today = new Date().toISOString().slice(0, 10)} = {}) {
-  const dir = release + '/quant/data/product/technical-signals-v1/';
-  const file = [dir + 'by-ticker/' + ticker + '.json.gz', dir + technicalShardKey(ticker) + '.json.gz'].find(f => existsSync(f));
+export function technicalExpectation(release, ticker, {today = new Date().toISOString().slice(0, 10), overlay = null} = {}) {
+  // overlay: Schicht, die ueber dem Release ausgeliefert wird (Mutationsnachweise); die Erwartung folgt dem, was ausgeliefert wird.
+  const dirs = [overlay, release].filter(Boolean).map(root => root + '/quant/data/product/technical-signals-v1/');
+  const file = dirs.flatMap(dir => [dir + 'by-ticker/' + ticker + '.json.gz', dir + technicalShardKey(ticker) + '.json.gz']).find(f => existsSync(f));
   if (!file) return null;
   let doc;
   try { doc = readJsonGz(file); } catch (error) { return {ticker, available: false, unreadable: true, reason: 'Datensatz unlesbar: ' + error.message}; }
@@ -94,9 +95,17 @@ export function technicalExpectation(release, ticker, {today = new Date().toISOS
   return {ticker, available: true, labels, codes, dataCutoff: b.dataCutoff, methodology: b.methodologyVersion};
 }
 
+/** Kerntitel, deren Auswertung strikt erwartet wird: DATENGETRIEBEN aus einer Kandidatenliste, nur solche mit veroeffentlichter,
+ *  herkunftsgepruefter Auswertung im Release. Ein einzelner zurueckgehaltener Kandidat (UNDETERMINED, kein Bundle, Stand in der
+ *  Zukunft) ist zulaessige Enthaltung; erst wenn weniger als `min` qualifizieren, fehlt den Kerntiteln die Auswertung (Datenproblem). */
+export const CORE_CANDIDATES = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META', 'JPM', 'XOM', 'AVGO', 'TSLA'];
+export function qualifyingCoreTitles(release, {candidates = CORE_CANDIDATES, today, overlay = null} = {}) {
+  return candidates.filter(t => { const e = technicalExpectation(release, t, {...(today ? {today} : {}), overlay}); return e && e.available; });
+}
+
 /** Titel fuer den Gegennachweis "zulaessige Enthaltung" aus dem Release: einer mit unbestimmtem Zustand (UNDETERMINED) und
  *  einer ohne veroeffentlichtes Bundle. Je der erste in Dateireihenfolge; fehlt die Art im Release, bleibt der Eintrag null. */
-export function pickWithheldProbes(release) {
+export function pickWithheldProbes(release, {overlay = null} = {}) {
   const dir = release + '/quant/data/product/technical-signals-v1/by-ticker/';
   const out = {undetermined: null, noBundle: null};
   let names;
@@ -104,7 +113,7 @@ export function pickWithheldProbes(release) {
   for (const name of names) {
     if (out.undetermined && out.noBundle) break;
     const ticker = name.slice(0, -8);
-    const e = technicalExpectation(release, ticker);
+    const e = technicalExpectation(release, ticker, {overlay});
     if (!e) continue;
     if (!e.available && !e.unreadable && !out.noBundle) out.noBundle = ticker;
     else if (e.available && e.codes.Kursdynamik === 'UNDETERMINED' && !out.undetermined) out.undetermined = ticker;

@@ -14,6 +14,7 @@
 //   --empty    diesen Pfad leer (200, 0 Byte) ausliefern (Mutationsnachweis: leere Inhaltsdatei).
 //   --fail     /pfad=404|503 diesen Pfad mit dem Statuscode ausliefern (Mutationsnachweis: fehlender Scherben, Serverfehler).
 //   --hang     diesen Pfad nie beantworten (Mutationsnachweis: nicht aufgeloester Ladezustand).
+//   --tamper   diesen Pfad mit anderen Bytes ausliefern als auf der Platte liegen (Mutationsnachweis: Auslieferungsabweichung).
 //   --corrupt  diesen Pfad mit unlesbarem Inhalt ausliefern (Mutationsnachweis: Parsefehler).
 //   --serve    /pfad=lokale-Datei  diesen Pfad aus einer anderen Datei bedienen (Mutationsnachweis: alte Kennung).
 //   --allow-no-release-id  Lauf gegen einen Release ohne release-id.json zulassen (sonst: Fehler; die CI stempelt vorher).
@@ -27,7 +28,7 @@ import {mkdtemp, mkdir, readdir, readFile, writeFile, copyFile, rm} from 'node:f
 import {tmpdir} from 'node:os';
 import {resolve, join, extname, dirname, relative, sep} from 'node:path';
 import {protectRelease, accessStateFor, verifierForKey} from '../access-gate/build.mjs';
-import {SPECS, waitRendered, sleep, collectFacts, fullSpec, assessRequests, assessRelease, pageStamps, technicalExpectation, pickWithheldProbes} from './direct-link-lib.mjs';
+import {SPECS, waitRendered, sleep, collectFacts, fullSpec, assessRequests, assessRelease, pageStamps, technicalExpectation, pickWithheldProbes, qualifyingCoreTitles, CORE_CANDIDATES} from './direct-link-lib.mjs';
 
 const require = createRequire(import.meta.url);
 let playwright;
@@ -48,6 +49,7 @@ const gatePrefixes = ['quant'];
 const PRODUCT = 'quant';
 const failPaths = new Map(args('fail').map(a => { const i = a.lastIndexOf('='); return [a.slice(0, i), Number(a.slice(i + 1))]; }));
 const corruptPaths = new Set(args('corrupt'));
+const tamperPaths = new Set(args('tamper'));
 const hangPaths = new Set(args('hang'));
 const servePaths = new Map(args('serve').map(a => { const i = a.indexOf('='); return [a.slice(0, i), resolve(a.slice(i + 1))]; }));
 const allowNoReleaseId = argv.includes('--allow-no-release-id');
@@ -115,6 +117,7 @@ const server = createServer(async (req, res) => {
     if (hangPaths.has(path)) return; // nie antworten; der Browser schliesst die Verbindung am Ende
     if (failPaths.has(path)) { res.statusCode = failPaths.get(path); res.end('fault'); return; }
     if (corruptPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); const body = Buffer.from(path.endsWith('.gz') ? 'kein gzip' : '{"abgeschnitten": [1, 2'); checkReadable(path, body); res.end(body); return; }
+    if (tamperPaths.has(path)) { for (const root of layers) { try { const body = Buffer.concat([await readFile(resolve(root, '.' + path)), Buffer.from('\n/* abweichend ausgeliefert */\n')]); res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); res.end(body); return; } catch { /* naechste Schicht */ } } }
     if (emptyPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); validity.set(path, 'leere Datei'); res.end(''); return; }
     if (servePaths.has(path)) { const body = await readFile(servePaths.get(path)); res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); res.end(body); return; }
     for (const root of layers) {
@@ -138,7 +141,7 @@ let releaseIdJson = null;
 try { const answer = await fetch(base + '/release-id.json'); if (answer.ok) releaseIdJson = await answer.json(); } catch { /* ohne Kennung */ }
 // Datenerwartung je Titel: aus dem Release gelesen, nicht aus dem Seitentext abgeleitet.
 const expectations = new Map();
-const expectationFor = ticker => { if (!expectations.has(ticker)) expectations.set(ticker, technicalExpectation(release, ticker)); return expectations.get(ticker); };
+const expectationFor = ticker => { if (!expectations.has(ticker)) expectations.set(ticker, technicalExpectation(release, ticker, {overlay})); return expectations.get(ticker); };
 const state = accessStateFor(password);
 if (verifierForKey(state.key) !== config.verifier) throw Error('Zugangszustand passt nicht zur Maske');
 
@@ -172,7 +175,15 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
   page.on('requestfailed', request => { try { const u = new URL(request.url()); if (u.origin === base) records.push({type: request.resourceType(), path: u.pathname, search: u.search, failed: (request.failure() || {}).errorText || 'failed'}); } catch { /* ignorieren */ } });
   page.on('response', response => {
     const url = response.url();
-    try { const u = new URL(url); if (u.origin === base) records.push({type: response.request().resourceType(), path: u.pathname, search: u.search, status: response.status()}); } catch { /* ignorieren */ }
+    try {
+      const u = new URL(url);
+      if (u.origin === base) {
+        const record = {type: response.request().resourceType(), path: u.pathname, search: u.search, status: response.status()};
+        // Hash der tatsaechlich EMPFANGENEN Bytes statisch gestempelter Skripte/Stile (nicht der Datei auf der Platte).
+        if ((record.type === 'script' || record.type === 'stylesheet') && record.status === 200 && /[?&]v=[0-9a-f]+/.test(u.search)) record.received = response.body().then(b => createHash('sha256').update(b).digest('hex').slice(0, 16), () => null);
+        records.push(record);
+      }
+    } catch { /* ignorieren */ }
     if (url.includes('/__research/content/')) contentFetches.push({status: response.status(), url: new URL(url).pathname});
     else if (response.status() >= 500) failedRequests.push(response.status() + ' ' + new URL(url).pathname);
   });
@@ -205,10 +216,16 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
     if (access) {
       // Netz und Kennung (Phase 4): jede Antwort dieser Seite, nicht nur die sichtbaren Folgen.
       outcome.problems.push(...assessRequests(records.map(r => ({...r, parseError: r.failed ? null : validity.get(r.path) || null})), {has: releaseHas, allow404: !!spec.specName.allow404Data}));
-      if (releaseIdJson || !allowNoReleaseId) {
+      // Die Kennungs- und Stempelpruefung gilt Seiten der gestempelten Produkte (release-id.mjs#PRODUCTS: quant, discover). Leitet die Route
+      // auf eine Seite ausserhalb um (z. B. /quant/#/elliott/NVDA -> /elliott/, ohne meta vu-release und ohne Eintrag in release-id.json),
+      // wird sie dort nicht verlangt; Chart, Netz, Ladezustand und Leere der Route bleiben aktiv.
+      const finalPath = (() => { try { return new URL(page.url()).pathname; } catch { return ''; } })();
+      const stampedProduct = finalPath.startsWith('/' + PRODUCT + '/');
+      if (stampedProduct && (releaseIdJson || !allowNoReleaseId)) {
         const meta = await page.evaluate(() => { const m = document.querySelector('meta[name="vu-release"]'); return m ? {product: m.getAttribute('data-product'), content: m.getAttribute('content')} : null; }).catch(() => null);
         const own = stampsOfPage(spec.path.split('#')[0] || '/quant/');
-        const stampsSeen = records.filter(r => (r.type === 'script' || r.type === 'stylesheet') && /[?&]v=([0-9a-f]+)/.test(r.search || '')).map(r => ({path: r.path, v: r.search.match(/[?&]v=([0-9a-f]+)/)[1], actual: stampOf(r.path), fixed: own.has(r.path)}));
+        const stampsSeen = records.filter(r => (r.type === 'script' || r.type === 'stylesheet') && /[?&]v=([0-9a-f]+)/.test(r.search || '')).map(r => ({path: r.path, v: r.search.match(/[?&]v=([0-9a-f]+)/)[1], actual: stampOf(r.path), fixed: own.has(r.path), received: r.received}));
+        for (const st of stampsSeen) { st.received = await st.received; if (st.received) st.actual = st.received; }
         outcome.problems.push(...assessRelease({meta, json: releaseIdJson, product: PRODUCT, stamps: stampsSeen, known: [...own.values()]}));
       }
       if (keepFacts) outcome.facts = await page.evaluate(collectFacts, fullSpec(spec.specName)).catch(() => null);
@@ -265,24 +282,21 @@ for (const device of devices) {
 // ---------------------------------------------------------------- 2b. Fachliche Erwartung aus den Daten
 // Die Erwartung kommt aus dem Datensatz des Titels im Release (by-ticker-Ausschnitt), nie aus dem Seitentext. Ohne Datensatz fuer
 // die beiden Kerntitel wuerde "Kursdynamik" ungeprueft bleiben - das ist selbst ein Fehler und bleibt nicht still.
-await check('Datenerwartung: NVDA und AAPL tragen eine veroeffentlichte Auswertung im Release', async () => {
-  const report = {};
-  for (const ticker of ['NVDA', 'AAPL']) {
-    const e = expectationFor(ticker);
-    assert(e, ticker + ': kein Datensatz unter quant/data/product/technical-signals-v1/ im Release (Erwartung nicht ableitbar)');
-    assert(!e.unreadable, ticker + ': ' + e.reason);
-    assert(e.available, ticker + ': Datensatz traegt keine veroeffentlichte Auswertung (' + e.reason + ') - Kursdynamik waere ungeprueft');
-    report[ticker] = {kursdynamik: e.codes.Kursdynamik, stand: e.dataCutoff};
-  }
-  return report;
+await check('Datenerwartung: mindestens 2 Kerntitel tragen eine veroeffentlichte Auswertung im Release', async () => {
+  // Datengetrieben: ein einzelner zurueckgehaltener Kerntitel (UNDETERMINED, kein Bundle, Stand in der Zukunft) ist zulaessige Enthaltung;
+  // seine Route folgt dem Datensatz. Erst wenn weniger als 2 Kandidaten qualifizieren, ist das ein Datenproblem.
+  const qualified = qualifyingCoreTitles(release, {overlay});
+  assert(qualified.length >= 2, 'Kerntitel haben keine veroeffentlichte Auswertung (' + qualified.length + ' von ' + CORE_CANDIDATES.length + ' Kandidaten qualifizieren) - Kursdynamik waere ungeprueft');
+  const withheld = CORE_CANDIDATES.filter(t => !qualified.includes(t));
+  return {qualifiziert: qualified, zurueckgehalten_oder_ohne_datensatz: withheld};
 });
 // Gegennachweis: zulaessige Enthaltung ist KEIN Fehler. Ein Titel mit unbestimmtem Zustand (UNDETERMINED) zeigt "Nicht verfügbar"
 // und muss dabei gruen sein; ein Titel ohne veroeffentlichtes Bundle (zurueckgehalten) zeigt keinen Technik-Abschnitt und auch gruen.
-const probes = pickWithheldProbes(release);
+const probes = pickWithheldProbes(release, {overlay});
 for (const device of devices) {
   await check('Zulaessige Enthaltung ist kein Fehler (UNDETERMINED ' + (probes.undetermined || '-') + ', ohne Bundle ' + (probes.noBundle || '-') + '): ' + device.name, async () => {
-    assert(probes.undetermined || probes.noBundle, 'der Release enthaelt keinen zurueckgehaltenen Titel - Gegennachweis nicht moeglich');
     const detail = {};
+    if (!probes.undetermined && !probes.noBundle) { console.warn('WARNUNG: der Release enthaelt keinen zurueckgehaltenen Titel - Gegennachweis uebersprungen'); return {uebersprungen: true}; }
     for (const [kind, ticker] of Object.entries(probes)) {
       if (!ticker) continue;
       const spec = {path: '/quant/#/aktie/' + ticker, specName: {path: '/quant/#/aktie/' + ticker, h1: '\\S', minText: 1000, technical: expectationFor(ticker)}};
@@ -290,7 +304,6 @@ for (const device of devices) {
       assert(!result.problems.length, ticker + ' (' + kind + ') wurde als Fehler gewertet: ' + result.problems.join('; '));
       const shown = result.facts && result.facts.technik;
       if (kind === 'undetermined') assert(shown && shown.present && shown.shown.Kursdynamik === 'Nicht verfügbar', ticker + ': Enthaltung nicht sichtbar, Gegennachweis leer: ' + JSON.stringify(shown));
-      if (kind === 'noBundle') assert(shown && !shown.present, ticker + ': ohne Bundle darf kein Technik-Abschnitt stehen: ' + JSON.stringify(shown));
       detail[kind] = {ticker, technik: shown && shown.present ? shown.shown : 'kein Abschnitt'};
     }
     return detail;

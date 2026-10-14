@@ -10,7 +10,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {gzipSync} from 'node:zlib';
 import {SPECS, STRICT_ERRORS, TECHNICAL_LABELS, NO_LABEL, fullSpec, verdict, technicalProblems, technicalExpectation, pickWithheldProbes,
-  assessRequests, assessRelease, pageStamps, isDataRequest, collectFacts} from '../../scripts/vu2/direct-link-lib.mjs';
+  assessRequests, assessRelease, pageStamps, isDataRequest, collectFacts, qualifyingCoreTitles} from '../../scripts/vu2/direct-link-lib.mjs';
 
 const root = new URL('../../', import.meta.url);
 const TODAY = '2026-10-14';
@@ -227,4 +227,14 @@ test('pageStamps liest die Stempel der Verweise im ausgelieferten HTML', () => {
 test('collectFacts ist ein einzelner, eigenstaendiger Funktionskoerper (Playwright serialisiert ihn in den Browser)', () => {
   const source = collectFacts.toString();
   assert(!/\bimport\b|\brequire\(/.test(source) && !source.includes('readFileSync'), 'collectFacts darf keine Node-Abhaengigkeit tragen');
+});
+
+test('Kerntitel werden datengetrieben gewaehlt: ein zurueckgehaltener Kandidat ist Enthaltung, erst zu wenige qualifizierte sind ein Datenproblem', async () => {
+  const dir = await release({NVDA: instrument('NVDA', {momentum: 'UNDETERMINED'}), AAPL: instrument('AAPL'), MSFT: instrument('MSFT', {bundle: false}), AMZN: instrument('AMZN', {cutoff: '2099-01-01'}), GOOGL: instrument('GOOGL')});
+  const fewer = await release({NVDA: instrument('NVDA', {bundle: false}), AAPL: instrument('AAPL', {cutoff: '2099-01-01'}), MSFT: instrument('MSFT')});
+  try {
+    assert.deepEqual(qualifyingCoreTitles(dir, {today: TODAY}), ['NVDA', 'AAPL', 'GOOGL'], 'UNDETERMINED qualifiziert (Bundle vorhanden); ohne Bundle und Stand 2099 nicht');
+    assert(qualifyingCoreTitles(fewer, {today: TODAY}).length < 2, 'weniger als 2 Kandidaten: lauter Fehler im Runner');
+    assert.deepEqual(qualifyingCoreTitles(join(dir, 'gibt-es-nicht')), []);
+  } finally { await rm(dir, {recursive: true, force: true}); await rm(fewer, {recursive: true, force: true}); }
 });
