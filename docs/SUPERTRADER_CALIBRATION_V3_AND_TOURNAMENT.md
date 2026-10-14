@@ -50,7 +50,7 @@ No methods are claim-ready from this V3 work.
 
 ## Remaining blockers
 
-Usable durable canonical historical data and reference source inputs; run 38547641330 completed but emitted zero canonical segments and no manifest/parts. Its sealed private diagnostic could not be read. Safe symbolic reason/phase reporting is being rerun in Actions run 38553639552. Then an independently linked 52W failed-book trace, hash-bound premeasurement freeze, remaining method assessments, tournament, current replay, final numeric/adversarial review and owner delivery are still pending.
+Run 38555503225 has since produced an `AVAILABLE` canonical capture: 9,410 input segments, 9,408 usable segments, 500 sealed parts, all 9 source objects available and none missing. Its separate 623-byte status Artifact (11889873959) was downloaded and locally verified against GitHub digest `02faaebf825d6bd8c4801e8508501e7ea445ea29a283677836af0daa115babd0`; status-content SHA256 is `d3b50b7092c4c49254bdc8cea9565fb4a8f6eb976c7e18c8063cb56f08fa7e6a`. The full encrypted capture Artifact (11890418615) is 1,247,958,485 bytes with GitHub digest `621b5941fd88903d1d3bf6c796144fe3a701a6a31ebc7ac7829eb3c3b4d1d308`. The two excluded segments are not yet attributed to safe rejection categories, and the V3 public receipt does not yet bind the manifest and individual sealed-part hashes. Actions run 38566792132 is regenerating that bounded receipt from the same canonical normalization path. No numeric calibration has run. An independently linked 52W failed-book trace, final premeasurement freeze, method assessments, tournament, current replay, final numeric/adversarial review and owner delivery remain pending.
 
 ## Durability verification
 
