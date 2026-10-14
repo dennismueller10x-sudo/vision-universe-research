@@ -25,3 +25,9 @@ Cause remains unresolved. The failed-book numeric trace and the specific canonic
 Capture the exact canonical historical input set and academic reference sources into a durable manifest plus encrypted Actions artifacts, record artifact IDs/run/expiry/content and schema hashes, verify all hashes in a fresh executor, and create a premeasurement V3 freeze. Then execute one calibration method at a time, writing and committing its output, review and resume checkpoint before advancing.
 
 `CALIBRATION-V3-RESUME-STATE.json` is the authoritative restart pointer. Current status is blocked before measurement; no performance values, certification or tournament rerun are claimed.
+
+
+Current capture safe status (run 38374493235, 2026-10-12): 10 methods, 0 eligible, 6 partial, 4 blocked; exact closed session available; 866 source-input chunks; 0 forward records; final review pending. Its result artifact is retained until 2026-11-12 and its owner/session payloads remain encrypted. These counts are diagnostic only, not qualified signals.
+
+
+The fresh-resume validator is `scripts/supertrader/research/calibration/verify-v3-durable-state.mjs`. Its next engineering prerequisites are a V3 measurement runner and a provider-backed historical source-capture workflow; neither is present yet. The 2026-10-12 current capture is diagnostic and still review-pending.

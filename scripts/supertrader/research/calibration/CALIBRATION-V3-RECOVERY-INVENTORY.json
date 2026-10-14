@@ -21,7 +21,7 @@
     "baseBoundFileCount": 23,
     "baseVerifiedCount": 23,
     "baseMismatches": [],
-    "currentBranchStatus": "HISTORICAL_V2_BINDING_SUPERSEDED_FOR_PARSER_BYTES"
+    "currentBranchStatus": "HISTORICAL_V2_BINDING_SUPERSEDED_FOR_PARSER_AND_FREEZE_TEST_BYTES"
   },
   "persistedCodeHashes": {
     "calibrationProtocol": {
@@ -79,6 +79,18 @@
     "methodFreezes": {
       "path": "scripts/supertrader/research/certification/SUPERTRADER-METHOD-FREEZES-V2.json",
       "sha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+    },
+    "infrastructureVersioningTest": {
+      "path": "scripts/supertrader/tests/calibration-infra-versioning-v2.test.mjs",
+      "sha256": "881bdc27b4254584be3e35c53243508073c5d98a232e493f734a3c29aaa4f8e0"
+    },
+    "durableStateVerifier": {
+      "path": "scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
+      "sha256": "ed66edc4bb900274ba8f4ea7a431f396e6355236378fa63d3112ce64bd01779c"
+    },
+    "scopeGuard": {
+      "path": "scripts/supertrader/guard-protected-paths.mjs",
+      "sha256": "e74cee59559b91aeeb7d182d7c381385713fa5c98010006f2244ab93e4a380c2"
     }
   },
   "artifacts": [
@@ -165,6 +177,49 @@
         "encryptedBundleContentHashesVerifiedAgainstRepackManifest": true,
         "decryptionStatus": "NOT_DECRYPTED"
       }
+    },
+    {
+      "id": "12 October current safe status",
+      "classification": "REUSABLE_BUT_NOT_REVERIFIABLE",
+      "evidence": {
+        "schema": "vision-universe-current-capture-safe-receipt-1.0.0",
+        "classification": "REUSABLE_BUT_NOT_REVERIFIABLE_FINAL_REVIEW_PENDING",
+        "workflowRunId": 38374493235,
+        "runHead": "79b145813d76b4595d79445a53dbcdeea68e12dc",
+        "artifactId": 11802445766,
+        "artifactName": "supertrader-calibration-current-38374493235",
+        "expiresAt": "2026-11-12T09:42:55Z",
+        "artifactZipSha256": "50aa3d67c1be47dc50ff415b170f2fbd5cbd7c178bdeb2b54a66c31dbe681db5",
+        "safeStatusSha256": "6912d9e5d9e2809016726f37c686e80125d11574d159fc4e8053beb2281c0371",
+        "schemaHash": "ff54a8004306536ee4df24cfb025daf6be7ca518fe773c5c952d0e4d021bca21",
+        "methodFreezeV2Sha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+        "safeStatus": {
+          "schema": "supertrader-current-rerun-safe-status-2.0.0",
+          "status": "CURRENT_SCANNED_REVIEW_PENDING",
+          "mode": "CURRENT_ONLY",
+          "methods": 10,
+          "eligibleMethods": 0,
+          "partialMethods": 6,
+          "blockedMethods": 4,
+          "exactClosedSessionAvailable": true,
+          "sourceInputChunks": 866,
+          "historicalPerformanceCalculated": false,
+          "forwardRecords": 0,
+          "finalReviewPending": true
+        },
+        "privateOwnerAndSessionPayloads": 2,
+        "privatePayloadRecipientScheme": "OWNER_AND_SESSION_ENVELOPES",
+        "recipientId": "NOT_PUBLIC",
+        "contentManifestHash": null,
+        "decryptionStatus": "NOT_DECRYPTED",
+        "qualification": "NOT_FINAL_REVIEWED",
+        "note": "Safe counts only; no security identities or provider values persisted.",
+        "privatePayloadCount": 2,
+        "safeStatusSchemaHash": "ff54a8004306536ee4df24cfb025daf6be7ca518fe773c5c952d0e4d021bca21",
+        "currentResultArtifactId": 11802445766,
+        "currentResultExpiry": "2026-11-12T09:42:55Z",
+        "methodFreezeSha256": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+      }
     }
   ],
   "qa": {
@@ -190,7 +245,7 @@
     "value_plus_momentum",
     "buyback_announcement_event"
   ],
-  "nextAction": "Run a controlled source-input capture from configured market-data storage, persist its opaque manifest and encrypted bounded artifact receipts, then reconcile new capture hashes with V3 premeasurement freeze. Only then calculate and persist one method checkpoint at a time.",
+  "nextAction": "Implement a durable historical-source capture workflow and a V3 runner/validator that consumes the new parser and V3 freeze. Then run the source capture and persist receipts before any outcome calculation.",
   "volatileWorkspaceIsEvidence": false,
   "scannerRepair": {
     "status": "SEMANTIC_RENAME_COMPLETE_FOCUSED_TEST_PASS",
@@ -201,17 +256,32 @@
     "testFile": "scripts/supertrader/tests/calibration-reference-return-arithmetic.test.mjs",
     "testsPassed": 22,
     "secretScannerPatternScan": "NO_MATCH",
-    "v2FreezeEffect": "Historical V2 source/test hash bindings no longer match this forward branch; V3 candidate freeze binds the repaired bytes. Original PR #643 remains unchanged."
+    "v2FreezeEffect": "Historical V2 source/test hash bindings no longer match this forward branch; V3 candidate freeze binds the repaired bytes. Original PR #643 remains unchanged.",
+    "freezeTestFile": "scripts/supertrader/tests/calibration-infra-versioning-v2.test.mjs",
+    "freezeTestCount": 10,
+    "freezeTestStatus": "PASSED"
   },
   "currentBranchV2FreezeState": {
     "originalBaseVerification": "23/23 at verified PR #643 head",
     "mismatchedBecauseOfV3ParserRepair": [
       "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs",
+      "scripts/supertrader/tests/calibration-infra-versioning-v2.test.mjs",
       "scripts/supertrader/tests/calibration-reference-return-arithmetic.test.mjs"
     ],
     "strategyDefinitionsChanged": false,
     "requiresNewV3Freeze": true
   },
   "durableArtifactManifestPath": "scripts/supertrader/research/calibration/CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json",
-  "durableArtifactManifestSha256": "d3d12ab75edc502574fbf884f1ab829c7bc72a9836b237bf1f64f088c91d52ad"
+  "durableArtifactManifestSha256": "28a78252bab6c25f8728a18695bf93c01628c70572465437f25e70435480a150",
+  "executionAvailability": {
+    "v3CalibrationRunner": "MISSING",
+    "historicalSourceCaptureWorkflow": "MISSING",
+    "v2Runner": "PRESENT_BUT_HASH_BOUND_TO_PRE_SCANNER_PARSER",
+    "strategyDefinitionsChanged": false
+  },
+  "scopeGuardAmendment": {
+    "path": "scripts/supertrader/guard-protected-paths.mjs",
+    "change": "Allow exact required V3 recovery-inventory documentation path in the Supertrader-only PR scope guard.",
+    "protectedPathsUnchanged": true
+  }
 }

@@ -20,10 +20,13 @@
     "calibrationRunner": "5a79c1e3a61ebd9bd389653c3e3de81b81be77e5c732cb4ab37c0739613de828",
     "portfolioRunner": "15c4ffaff5b382c9b67930ecab7553fddd6df72725e3506ba16a2502168684c6",
     "tournamentProtocol": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
-    "methodFreezes": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090"
+    "methodFreezes": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+    "infrastructureVersioningTest": "881bdc27b4254584be3e35c53243508073c5d98a232e493f734a3c29aaa4f8e0",
+    "durableStateVerifier": "ed66edc4bb900274ba8f4ea7a431f396e6355236378fa63d3112ce64bd01779c",
+    "scopeGuard": "e74cee59559b91aeeb7d182d7c381385713fa5c98010006f2244ab93e4a380c2"
   },
   "canonicalSourceManifestSha256": "02485da15fcff715b1d9b70384d62718756a17372e73eb74bf67a74f1a75078f",
-  "referenceManifestSha256": "df22b702c3c889d71769ca636d85ea77d6271b36fc4002f91ced0aa9635da76b",
+  "referenceManifestSha256": "a9624db6bb363d02c8352adb5aa38a05b72c548f966eb55a3ac716d15991cdb1",
   "methodIds": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
     "CAL_GH2004_52WH_30_6_NO_SKIP",
@@ -41,7 +44,8 @@
     "reference source plan and captured source bytes",
     "parsed reference artifact",
     "scanner-safe parser hash and passing focused tests",
-    "frozen universe/data/execution/cost/corporate-action contracts"
+    "frozen universe/data/execution/cost/corporate-action contracts",
+    "V3 measurement runner and durable historical source-capture workflow must exist and pass preflight"
   ],
   "frozenAt": null,
   "premeasurementInfrastructureAmendments": [
@@ -52,5 +56,23 @@
       "testSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
       "focusedTestStatus": "22_PASSED"
     }
-  ]
+  ],
+  "dataContractHash": "41910853970aff1202c12b6f3460170a0efa9cb7227bbb93e1bf3e2a4acf0c2d",
+  "executionContractHash": "76ba26d90ae1c8a96c9c04c55681232d264e0dbaa59d48c5c23edd49a083b899",
+  "costModelHash": "2b53975eef785ab5fcaf898be6721854cfb13a07f995b02d735143fc19dacfbe",
+  "universeContractHash": "d2b0de1124cbf4b9a775421f9d5ffaeb0bf64962d802d1605832b8734d63b062",
+  "sourceMapHash": "54da1c0d801ea3a5ac00e0cb494e6031b9fc8f579cf3b7a1e98ac69c2e23bd58",
+  "corporateActionContract": {
+    "contract": "Frozen price engine handling recorded in source code; source completeness still unverified for historical panel.",
+    "codePaths": [
+      "scripts/supertrader/research/certification/market-equity.mjs",
+      "scripts/supertrader/research/tournament/protocol.json"
+    ],
+    "codeHashes": [
+      "568b070d3ef5e228c2a1c1fd619f9b2ff5382c56c4c401eedffeefff65bcc0e4",
+      "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247"
+    ]
+  },
+  "sourceManifestSha256": "02485da15fcff715b1d9b70384d62718756a17372e73eb74bf67a74f1a75078f",
+  "currentCaptureSafeStatusSha256": "4b5575c27c6f0394ec26561ee5814f9880127d2d14209946797a1d0932b44215"
 }
