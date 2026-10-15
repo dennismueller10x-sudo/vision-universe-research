@@ -476,7 +476,7 @@ jobs:
         run: node scripts/company_intelligence/classify-live-failure.mjs
       - name: Bounded re-verification after transient failure (read-only; changes no state)
         id: retry
-        if: always() && (steps.classify.outputs.class == 'TRANSIENT_PROPAGATION' || steps.classify.outputs.class == 'TRANSIENT_INFRA')
+        if: always() && (steps.classify.outputs.class == 'TRANSIENT_PROPAGATION' || steps.classify.outputs.class == 'TRANSIENT_INFRA' || steps.classify.outputs.class == 'TRANSIENT_BROWSER_HTTP')
         env:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}

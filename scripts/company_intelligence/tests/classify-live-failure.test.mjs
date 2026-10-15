@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {classify,classifyReport,isDeliveryCause,main,CLASSES,PROPAGATION_CAUSE} from '../classify-live-failure.mjs';
+import {classify,classifyReport,classifyBrowserHttp,isDeliveryCause,main,CLASSES,PROPAGATION_CAUSE} from '../classify-live-failure.mjs';
 import {verifyPropagation,CAUSE} from '../propagation-proof.mjs';
 
-const T_PROP=CLASSES.PROPAGATION,T_INFRA=CLASSES.INFRA,REAL=CLASSES.REAL;
+const T_BROWSER=CLASSES.BROWSER,T_PROP=CLASSES.PROPAGATION,T_INFRA=CLASSES.INFRA,REAL=CLASSES.REAL;
 const check=(name,cause,detail='x')=>({name,ok:false,cause,detail,status:null,headers:{}});
 /* Bericht im Format von live-production-qa.mjs / production-off-qa.mjs (PropagationError-Pfad, brief()). */
 const propagationReport=(failed,extra={},prop={})=>({status:'FAIL',cause:CAUSE,origin:'https://research.visionuniverse.de',propagation:{status:'NOT_PROPAGATED',cause:CAUSE,message:'x',attemptCount:2,
@@ -139,4 +139,76 @@ test('Bericht mit fremdem sourceCommit ist REAL; passender oder fehlender bleibt
  assert.equal(c(rep('b'.repeat(40)),'a'.repeat(40)).class,REAL);
  assert.equal(c(propagationReport([check('a','STALE')]),'a'.repeat(40)).class,T_PROP); // OFF-Bericht ohne sourceCommit
  assert.equal(c(rep('b'.repeat(40)),null).class,T_PROP);
+});
+
+/* ---- TRANSIENT_BROWSER_HTTP (Fixture: anonymisierter Bericht des Laufs 38590652362, gleiche Struktur) ---- */
+const SHA='0123456789abcdef0123456789abcdef01234567';
+const fixture=()=>JSON.parse(readFileSync(new URL('./fixtures/live-report-lazy-503.json',import.meta.url),'utf8'));
+const cb=(r,expectedSha=SHA)=>classify({depsOutcome:'success',qaOutcome:'failure',report:r,expectedSha});
+const mut=f=>{const r=fixture();f(r);return r;};
+const httpEntry=(url,status,ct='text/html; charset=utf-8')=>({url,status,headers:{'content-type':ct}});
+
+test('Browser: 503 auf Lazy-Skript (echter Fall) -> TRANSIENT_BROWSER_HTTP',()=>{
+ const r=cb(fixture());
+ assert.equal(r.class,T_BROWSER);assert.match(r.reason,/503/);
+ for(const st of [502,504,429])assert.equal(cb(mut(x=>{x.browserDiagnostics.http[0].status=st;x.pageState.scriptResourcesSuspicious[0].s=st;x.browserDiagnostics.console[0]=x.browserDiagnostics.console[0].replace('503',String(st));})).class,T_BROWSER,String(st));
+});
+
+test('Browser: alles andere bleibt REAL',()=>{
+ const cases={
+  extra403:r=>r.browserDiagnostics.http.push(httpEntry('/discover/data/x.json',403)),
+  extra404:r=>r.browserDiagnostics.http.push(httpEntry('/discover/data/x.json',404)),
+  extraOther503:r=>r.browserDiagnostics.http.push(httpEntry('/company-intelligence/data/index.json',503)),
+  status500:r=>{r.browserDiagnostics.http[0].status=500;},
+  status401:r=>{r.browserDiagnostics.http[0].status=401;},
+  status403:r=>{r.browserDiagnostics.http[0].status=403;},
+  status404:r=>{r.browserDiagnostics.http[0].status=404;},
+  status200:r=>{r.browserDiagnostics.http[0].status=200;},
+  noHtml:r=>{r.browserDiagnostics.http[0].headers['content-type']='application/javascript';},
+  noContentType:r=>{delete r.browserDiagnostics.http[0].headers['content-type'];},
+  json503:r=>{r.browserDiagnostics.http[0].headers['content-type']='application/json';},
+  foreignOrigin:r=>{r.browserDiagnostics.http[0].url='https://evil.example/discover/engines/narrative.js';},
+  foreignNamedAsCause:r=>{r.browserDiagnostics.http[0].url='https://evil.example/a.js';r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:https://evil.example/a.js';r.pageState.scriptResourcesSuspicious=[];r.browserDiagnostics.failed=[];},
+  protocolRelativeNamed:r=>{r.browserDiagnostics.http[0].url='//evil.example/a.js';r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED://evil.example/a.js';r.pageState.scriptResourcesSuspicious=[];r.browserDiagnostics.failed=[];},
+  protocolRelative:r=>{r.browserDiagnostics.http[0].url='//evil.example/a.js';},
+  causeOtherUrl:r=>{r.browserDiagnostics.console[0]='A bad HTTP response code (503). LAZY_SCRIPT_FAILED:/discover/engines/other.js';},
+  causeTwoUrlsOneOther:r=>{r.browserDiagnostics.console.push('LAZY_SCRIPT_FAILED:/discover/engines/other.js');},
+  noLazyNamed:r=>{r.browserDiagnostics.console=['A bad HTTP response code (503) was received'];},
+  consoleUnexplained:r=>r.browserDiagnostics.console.push('Uncaught ReferenceError: x is not defined'),
+  consoleOtherStatus:r=>r.browserDiagnostics.console.push('Failed to load resource: the server responded with a status of 403 ()'),
+  pageErrors:r=>r.browserDiagnostics.pageErrors.push('TypeError: boom'),
+  activeErrors:r=>{r.active.errors=['x'];},
+  failedOtherUrl:r=>r.browserDiagnostics.failed.push({url:'/discover/app.js?v=1',error:'net::ERR_FAILED'}),
+  pageStateOtherUrl:r=>r.pageState.scriptResourcesSuspicious.push({n:'/discover/app.js',s:503}),
+  pageStateOtherStatus:r=>{r.pageState.scriptResourcesSuspicious[0].s=403;},
+  pageStateMissing:r=>{delete r.pageState;},
+  pageStateNoList:r=>{delete r.pageState.scriptResourcesSuspicious;},
+  otherRelease:r=>{r.pageState.metaRelease='relzzzzzzzzzzzz';},
+  diagnosticsMissing:r=>{delete r.browserDiagnostics;},
+  diagnosticsNull:r=>{r.browserDiagnostics=null;},
+  httpMissing:r=>{delete r.browserDiagnostics.http;},
+  httpEmpty:r=>{r.browserDiagnostics.http=[];},
+  truncated:r=>{r.browserDiagnostics.truncated={http:true};},
+  notTimeout:r=>{r.error.name='AssertionError';},
+  noError:r=>{delete r.error;},
+  previousFailure:r=>{r.previousFailure={message:'x'};},
+  wrongCommit:r=>{r.sourceCommit='f'.repeat(40);},
+  noCommit:r=>{delete r.sourceCommit;},
+  notPropagated:r=>{r.propagation.status='NOT_PROPAGATED';},
+  statusNotFail:r=>{r.status='PASS';},
+ };
+ for(const [name,f] of Object.entries(cases))assert.equal(cb(mut(f)).class,REAL,name);
+ assert.equal(cb(fixture(),null).class,REAL,'ohne erwarteten Commit nicht pruefbar');
+ assert.equal(cb(fixture(),'f'.repeat(40)).class,REAL);
+});
+
+test('Browser: Generische Konsolenmeldung mit passendem Status ist erlaubt, mit anderem Status nicht',()=>{
+ assert.equal(cb(mut(r=>r.browserDiagnostics.console.push('Failed to load resource: the server responded with a status of 503 ()'))).class,T_BROWSER);
+ assert.equal(cb(mut(r=>r.browserDiagnostics.console.push('Failed to load resource: the server responded with a status of 502 ()'))).class,REAL);
+});
+
+test('Browser: classifyBrowserHttp wird nur fuer die Browser-Ursache benutzt; Propagationsbericht unberuehrt',()=>{
+ assert.equal(classifyBrowserHttp(fixture(),{expectedSha:SHA}).class,T_BROWSER);
+ assert.equal(run(propagationReport([check('a','STALE')])).class,T_PROP);
+ assert.equal(cb({...fixture(),cause:'SOMETHING_ELSE'}).class,REAL);
 });

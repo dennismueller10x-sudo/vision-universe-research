@@ -114,3 +114,29 @@ test('realAttempt: Zeitlimit je Befehl = Rest bis Reserve, nach der Installation
  const r=await realAttempt({RUNNER_TEMP:'/tmp/x-retry-test'},(c,a,o)=>{calls2.push(a);t2+=700;return {status:0};},()=>t2)({n:1,cls:I,qa:'live',deadlineS:1600});
  assert.equal(r.ok,false);assert.equal(calls2.length,1);
 });
+
+test('Browser-HTTP: bis zu 2 Wiederholungen mit Pause davor; erneutes 5xx -> weiter, danach FAIL',async()=>{
+ const B=CLASSES.BROWSER,SHA='a'.repeat(40);
+ const again={status:'FAIL',cause:'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION',sourceCommit:SHA,propagation:{status:'PROPAGATED'},error:{name:'TimeoutError'},
+  browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{scriptResourcesSuspicious:[]}};
+ const sleeps=[];
+ let s=scripted({ok:false,report:again},{ok:false,report:again},{ok:true});
+ let r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(300),sleep:async ms=>sleeps.push(ms),attempt:s.attempt});
+ assert.equal(r.result,'FAIL');assert.equal(s.calls.length,2);assert.equal(r.reason,'RETRIES_EXHAUSTED');assert.deepEqual(sleeps,[30000,30000]);
+ s=scripted({ok:false,report:again},{ok:true});
+ r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(300),sleep:async()=>{},attempt:s.attempt});
+ assert.equal(r.result,'PASS');assert.equal(s.calls.length,2);
+ /* Wiederholung zeigt 403 -> REAL, sofort Ende */
+ const real403={...again,browserDiagnostics:{...again.browserDiagnostics,http:[{url:'/x.js',status:403,headers:{'content-type':'text/html'}}]}};
+ s=scripted({ok:false,report:real403},{ok:true});
+ r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(300),sleep:async()=>{},attempt:s.attempt});
+ assert.equal(r.result,'FAIL');assert.equal(r.finalClass,REAL);assert.equal(s.calls.length,1);
+ /* ohne erwarteten Commit wird die Wiederholung REAL */
+ s=scripted({ok:false,report:again},{ok:true});
+ r=await runRetries({cls:B,qa:'live',startedAtS:T0,now:clock(300),sleep:async()=>{},attempt:s.attempt});
+ assert.equal(r.finalClass,REAL);assert.equal(s.calls.length,1);
+ /* Zeitbudget */
+ s=scripted({ok:true});
+ r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(JOB_TIMEOUT_S-60),attempt:s.attempt});
+ assert.equal(r.result,'SKIPPED');
+});

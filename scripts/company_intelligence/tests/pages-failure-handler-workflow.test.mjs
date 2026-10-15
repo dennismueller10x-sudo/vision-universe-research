@@ -1,16 +1,14 @@
 /* Workflow-Vertrag des Fail-closed-Handlers im Job company-intelligence-live (pages-release.yml).
- * Das echte YAML wird geparst (PyYAML, kein Netz) und Schritt fuer Schritt mit dem echten Klassifikator simuliert:
+ * Das echte YAML wird geparst (abhaengigkeitsfreier Teilmengen-Parser tests/helpers/workflow-yaml.mjs) und Schritt fuer Schritt mit dem echten Klassifikator simuliert:
  * Bedingungen, Reihenfolge, Umgebung. Kein Workflow-Lauf; der erste echte Nachweis ist der naechste Pages-Lauf nach dem Merge. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {classify,readReport} from '../classify-live-failure.mjs';
+import {loadYamlFile} from './helpers/workflow-yaml.mjs';
 
 const file=process.env.CI_LIVE_FAILURE_TEST_WORKFLOW||fileURLToPath(new URL('../../../.github/workflows/pages-release.yml',import.meta.url));
-const parsed=spawnSync('python3',['-I','-c','import sys,json,yaml;print(json.dumps(yaml.safe_load(open(sys.argv[1],encoding="utf8"))))',file],{encoding:'utf8'});
-assert.equal(parsed.status,0,'YAML muss parsebar sein (PyYAML): '+parsed.stderr);
-const wf=JSON.parse(parsed.stdout),job=wf.jobs['company-intelligence-live'],steps=job.steps;
+const wf=loadYamlFile(file),job=wf.jobs['company-intelligence-live'],steps=job.steps;
 const byId=id=>steps.find(s=>s.id===id);
 const byName=re=>steps.find(s=>re.test(s.name||''));
 const index=s=>steps.indexOf(s);
@@ -45,7 +43,7 @@ function simulate(s){
   if(step.id==='approved'){outcome=s.approved.outcome;outputs={prepared:s.approved.prepared,enabled:s.approved.enabled,started_at:'1'};}
   else if(step.id==='classify'){
    const qa=ctx.steps.approved.outputs.enabled==='true'?'live':'off';
-   const c=classify({depsOutcome:ctx.steps.deps.outcome,qaOutcome:qa==='live'?ctx.steps.live.outcome:ctx.steps.gate_off.outcome,report:qa==='live'?s.reports?.live:s.reports?.off});
+   const c=classify({depsOutcome:ctx.steps.deps.outcome,qaOutcome:qa==='live'?ctx.steps.live.outcome:ctx.steps.gate_off.outcome,report:qa==='live'?s.reports?.live:s.reports?.off,expectedSha:s.expectedSha||null});
    outputs={class:c.class,reason:c.reason,qa};
   }
   else if(step.id==='retry'){outputs={result:s.retry==='CRASH'?'':s.retry};if(s.retry==='CRASH')outcome='failure';}
@@ -142,6 +140,25 @@ test('Szenario: Auslieferung nicht propagiert, Wiederholung scheitert/uebersprun
   const r=simulate({approved:A(),results:{live:'failure'},reports:{live:stale},retry});
   assert(r.ran.has('retry'),retry);assert(ranHandler(r),retry);assert(r.ran.has(conclude.name),retry);assert.equal(r.jobFailed,true,retry);assert(!r.ran.has(record.name),retry);
  }
+});
+
+const lazy503=()=>({status:'FAIL',cause:'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION',sourceCommit:'abc',propagation:{status:'PROPAGATED'},error:{name:'TimeoutError'},
+ browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{scriptResourcesSuspicious:[]}});
+
+test('Szenario: einzelnes 503 auf Lazy-Skript im Browser -> Wiederholung; PASS ohne Rollback, FAIL mit Rollback',()=>{
+ /* classify bekommt im Test keinen erwarteten Commit -> REAL; daher Klassifikation direkt mit Commit pruefen und Ausgabe vorgeben */
+ assert.match(byId('classify').env.EXPECTED_PRODUCTION_SHA,/source_sha/);
+ assert.match(byId('retry').if,/TRANSIENT_BROWSER_HTTP/);
+ const sim=retry=>simulate({approved:A(),results:{live:'failure'},reports:{live:lazy503()},retry,expectedSha:'abc'});
+ let r=sim('PASS');
+ assert.equal(r.state.classify.outputs.class,'TRANSIENT_BROWSER_HTTP');
+ assert(r.ran.has('retry')&&!ranHandler(r)&&!r.jobFailed&&r.ran.has(record.name));
+ r=sim('FAIL');
+ assert(ranHandler(r)&&r.jobFailed&&!r.ran.has(record.name));
+ /* 403 zusaetzlich -> REAL, keine Wiederholung */
+ const rep=lazy503();rep.browserDiagnostics.http.push({url:'/x.json',status:403,headers:{'content-type':'text/html'}});
+ r=simulate({approved:A(),results:{live:'failure'},reports:{live:rep},retry:'PASS',expectedSha:'abc'});
+ assert(!r.ran.has('retry')&&ranHandler(r)&&r.jobFailed);
 });
 
 test('Szenario: Browser-Installation scheitert (Infra), Wiederholung besteht / scheitert',()=>{

@@ -14,6 +14,10 @@
  *                         Hinweis: Bei gesetztem EXPECTED_PRODUCTION_SHA meldet schon der Propagationsbeweis einen falschen/anderen Commit
  *                         als STALE (also TRANSIENT_PROPAGATION, bis die Wiederholung scheitert); WRONG_PRODUCTION_COMMIT der Browser-Phase
  *                         tritt nur ohne erwarteten Commit auf und ist REAL.
+ *  TRANSIENT_BROWSER_HTTP Bericht: cause BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION (Propagation bewiesen), Fehler ist ein Playwright-
+ *                         TimeoutError, und ALLE Auffaelligkeiten erklaeren sich durch ein voruebergehendes 502/503/504 (optional 429) mit
+ *                         text/html auf Lazy-Skripten desselben Ursprungs (Beleg Lauf 38590652362: 503 auf /discover/engines/narrative.js,
+ *                         discover/ui/lazy.js laedt Lazy-Skripte ohne Wiederholung). Siehe classifyBrowserHttp; jede Abweichung ist REAL.
  *  REAL                   alles andere: Browser-Assertion nach bewiesener Propagation, Hash-/Datenfehler,
  *                         Zugriffs-/Sicherheitsfehler (HTTP 401/403, Gate), INVALID-Antworten, Bericht fehlt/unlesbar/PASS trotz
  *                         Fehler, unbekannte Ursache. FAIL-CLOSED: Im Zweifel REAL.
@@ -21,7 +25,8 @@
 import {readFileSync,writeFileSync,appendFileSync,mkdirSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
-export const CLASSES = Object.freeze({INFRA: 'TRANSIENT_INFRA', PROPAGATION: 'TRANSIENT_PROPAGATION', REAL: 'REAL'});
+export const CLASSES = Object.freeze({INFRA: 'TRANSIENT_INFRA', PROPAGATION: 'TRANSIENT_PROPAGATION', BROWSER: 'TRANSIENT_BROWSER_HTTP', REAL: 'REAL'});
+export const BROWSER_CAUSE = 'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION';
 export const PROPAGATION_CAUSE = 'AUSLIEFERUNG_NICHT_PROPAGIERT';
 
 /* Ursachen aus propagation-proof.mjs (failureOf / probeOnce), die "noch nicht ausgeliefert" bedeuten. INVALID (Schema, fehlende
@@ -33,12 +38,61 @@ export function isDeliveryCause(cause) {
  return !!http && (http[1] === '429' || /^5\d\d$/.test(http[1]));
 }
 
+const BROWSER_STATUSES = [502, 503, 504, 429];
+const pathOf = u => String(u ?? '').split('?')[0];
+
+/**
+ * Belegbar transienter Browser-Fehler: nur 502/503/504/429 mit text/html auf Same-Origin-Skripten, die genau als
+ * LAZY_SCRIPT_FAILED gemeldet wurden. Alles Weitere (andere Status, andere URLs, pageErrors, weitere fehlgeschlagene
+ * Requests, unerklaerte Konsole, fremder Commit, previousFailure, fehlende Diagnose) ist REAL.
+ */
+export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
+ const no = reason => real(reason);
+ if (!expectedSha || report.sourceCommit !== expectedSha) return no('BROWSER_COMMIT_NOT_VERIFIED');
+ if (report.previousFailure) return no('BROWSER_PREVIOUS_FAILURE');
+ if (report.propagation?.status !== 'PROPAGATED') return no('BROWSER_PROPAGATION_NOT_PROVEN');
+ if (report.error?.name !== 'TimeoutError') return no('BROWSER_ERROR_NOT_TIMEOUT');
+ const d = report.browserDiagnostics;
+ if (!d || typeof d !== 'object' || !['console', 'pageErrors', 'failed', 'http'].every(k => Array.isArray(d[k]))) return no('BROWSER_DIAGNOSTICS_MISSING');
+ if (d.truncated && Object.keys(d.truncated).length) return no('BROWSER_DIAGNOSTICS_TRUNCATED');
+ if (d.pageErrors.length) return no('BROWSER_PAGE_ERRORS');
+ if (Array.isArray(report.active?.errors) && report.active.errors.length) return no('BROWSER_PAGE_ERRORS');
+ if (!d.http.length) return no('BROWSER_NO_HTTP_EVIDENCE');
+ const statuses = new Set(), paths = new Set();
+ for (const h of d.http) {
+  const url = h?.url;
+  if (typeof url !== 'string' || !url.startsWith('/') || url.startsWith('//')) return no('BROWSER_HTTP_NOT_SAME_ORIGIN'); // safeUrl laesst nur fremde Ursprungs-Praefixe stehen
+  if (!BROWSER_STATUSES.includes(h.status)) return no('BROWSER_HTTP_STATUS_' + String(h.status).replace(/\D/g, '').slice(0, 3));
+  if (!/^text\/html/i.test(String(h.headers?.['content-type'] ?? ''))) return no('BROWSER_HTTP_NOT_HTML');
+  statuses.add(h.status); paths.add(pathOf(url));
+ }
+ for (const f of d.failed) if (!paths.has(pathOf(f?.url))) return no('BROWSER_OTHER_FAILED_REQUEST');
+ const lazy = new Set();
+ for (const line of d.console) {
+  const text = String(line);
+  const named = [...text.matchAll(/LAZY_SCRIPT_FAILED:(\S+)/g)].map(m => pathOf(m[1].replace(/[.,;)'"]+$/, '')));
+  for (const n of named) { if (!paths.has(n)) return no('BROWSER_LAZY_URL_MISMATCH'); lazy.add(n); }
+  if (named.length) continue;
+  const generic = /(?:status of|response code \()\s*(\d{3})/.exec(text);
+  if (!generic || !statuses.has(Number(generic[1]))) return no('BROWSER_CONSOLE_UNEXPLAINED');
+ }
+ if (!lazy.size) return no('BROWSER_NO_LAZY_FAILURE_NAMED');
+ for (const path of paths) if (!lazy.has(path)) return no('BROWSER_HTTP_URL_NOT_NAMED_AS_CAUSE'); // jedes 5xx muss als Ursache benannt sein
+ const ps = report.pageState;
+ if (!ps || typeof ps !== 'object' || !Array.isArray(ps.scriptResourcesSuspicious)) return no('BROWSER_PAGESTATE_MISSING');
+ for (const r of ps.scriptResourcesSuspicious) if (!paths.has(pathOf(r?.n)) || !(BROWSER_STATUSES.includes(r.s) || r.s === 0)) return no('BROWSER_PAGESTATE_MISMATCH');
+ const seen = report.propagation?.observed?.discoverId;
+ if (ps.metaRelease && seen && ps.metaRelease !== seen) return no('BROWSER_SAW_OTHER_RELEASE');
+ return {class: CLASSES.BROWSER, reason: 'LAZY_SCRIPT_HTTP_' + [...statuses].sort().join('_'), detail: [...lazy].join(',').slice(0, 120)};
+}
+
 const real = (reason, detail) => ({class: CLASSES.REAL, reason, ...(detail ? {detail} : {})});
 
 /** Beurteilt nur den Propagationsbericht; alles Unbewiesene ist REAL. */
 export function classifyReport(report, {expectedSha = null} = {}) {
  if (!report || typeof report !== 'object' || Array.isArray(report)) return real('REPORT_MISSING_OR_INVALID');
  if (report.status !== 'FAIL') return real('REPORT_STATUS_NOT_FAIL', String(report.status).slice(0, 40)); // z. B. PASS-Bericht, spaeterer Befehl scheiterte
+ if (report.cause === BROWSER_CAUSE) return classifyBrowserHttp(report, {expectedSha});
  if (report.cause !== PROPAGATION_CAUSE) return real('CAUSE_NOT_PROPAGATION', String(report.cause).slice(0, 80));
  if (expectedSha && typeof report.sourceCommit === 'string' && report.sourceCommit !== expectedSha) return real('REPORT_COMMIT_MISMATCH'); // fremder/alter Bericht
  const p = report.propagation;
