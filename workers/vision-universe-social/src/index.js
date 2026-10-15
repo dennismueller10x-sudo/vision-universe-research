@@ -56,7 +56,7 @@ import {
   mediaInsights, MEDIA_INSIGHT_CALLS,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION,
-  hashtagId, hashtagMedia
+  hashtagId, hashtagMedia, profileDetails, listMedia
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
@@ -1274,6 +1274,53 @@ async function handleHashtagCapability(request, url, env) {
   });
 }
 
+/**
+ * Profil und Beitragsliste des verbundenen Kontos - fuer die Steuerung aus
+ * Claude Code (scripts/social/ig.mjs). Rein lesend, hinter dem Admin-Schluessel,
+ * 2 Graph-Aufrufe. Das Token verlaesst den Worker nicht; die Antwort enthaelt
+ * nur Konto- und Beitragsdaten.
+ */
+async function handleProfile(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected", message: "Es besteht keine Verbindung." }, 409);
+  }
+  const erlaubt = allowedTargets(env);
+  if (!isAllowedTarget({
+    instagramAccountId: record.instagramAccountId,
+    instagramUsername: record.instagramUsername
+  }, erlaubt)) {
+    return json({ error: "targetNotAllowed",
+      message: "Das gespeicherte Konto steht nicht (mehr) auf der Ziel-Allowlist.",
+      allowed: erlaubt.beschreibung }, 403);
+  }
+
+  const ctx = graphContext(env);
+  const profil = await profileDetails(ctx, record);
+  if (!profil.ok) {
+    return json({ error: profil.reason, message: profil.message, meta: metaFehlerdaten(profil, env) }, 502);
+  }
+  const medien = await listMedia(ctx, {
+    instagramAccountId: record.instagramAccountId,
+    pageAccessToken: record.pageAccessToken,
+    limit: url.searchParams.get("limit"),
+    after: url.searchParams.get("after")
+  });
+  if (!medien.ok) {
+    return json({ error: medien.reason, message: medien.message, meta: metaFehlerdaten(medien, env) }, 502);
+  }
+  const d = medien.data || {};
+  return json({
+    ok: true,
+    profile: profil.data,
+    media: d.data || [],
+    next: (d.paging && d.paging.cursors && d.paging.next) ? d.paging.cursors.after : null
+  });
+}
+
 async function handleInsights(request, url, env) {
   const gate = requireAdmin(request, url, env);
   if (!gate.ok) return gate.response;
@@ -2384,6 +2431,10 @@ export default {
           }, 405);
         }
         return await handlePublish(request, url, env);
+      }
+      if (path === "/social/meta/profile") {
+        if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
+        return await handleProfile(request, url, env);
       }
       if (path === "/social/meta/insights") {
         /* Lesend. GET genuegt, weil nichts entsteht — im Gegensatz zu
