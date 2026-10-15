@@ -1,0 +1,461 @@
+{
+  "schema": "supertrader-calibration-v4-freeze-1.0.0",
+  "generation": "CALIBRATION_V4",
+  "postHoc": true,
+  "supersedesNothing": "V3_FREEZES_AND_RESULTS_REMAIN_HISTORICAL_EVIDENCE",
+  "status": "FROZEN_BEFORE_V4_MEASUREMENT",
+  "strategyDefinitionsChanged": false,
+  "postResultTuningAllowed": false,
+  "sourceRuleContract": {
+    "file": "scripts/supertrader/research/v4/SUPERTRADER-V4-SOURCE-ACCEPTANCE.json",
+    "sha256": "07f2354072504304caee4238684057495a2e0c79bcfb051bf186bfbc55fba305"
+  },
+  "dataContract": {
+    "canonicalCapture": {
+      "schema": "supertrader-calibration-v3-content-binding-1.0.0",
+      "normalizedPartListSha256": "abf9d7212302a7fa90d31eecbd7a8f660f60f9bd8e724107020c730245b888f3",
+      "normalizedManifestSha256": "7c03ed555118ce64bf363b5a08181b50dbf6f3153d2f61344244b1a77fbe4e12",
+      "normalizedInputsSha256": "d3e63791b9fb74dc36479e154d989532fd23902ef82471eaf8bf74cf60901e52",
+      "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+      "sourceObjectSetSha256": "e3726bf0164af71dfc4c428d1551127408678beff2a62fafcc2712c683a16f42",
+      "readReceiptSetSha256": "3626ca58442a3d8f745e1ffdcb05e9d8646b5b9af09a3de2c5c090266897dbb3",
+      "listingSourceSha256": "be5bb80921edb5e70c588d0e9902e4fa4b29a750ef5ec1d7006f3ff15ee16f4f",
+      "parts": 500,
+      "securities": 9408
+    },
+    "captureCounts": {
+      "inputSegments": 9410,
+      "usableSegments": 9408,
+      "parts": 500,
+      "verifiedSecurities": 9408,
+      "providerSupportedListingRecords": 16562,
+      "observedListingGenerations": 15564,
+      "readOnlyGetCalls": 9051,
+      "writeCalls": 0
+    },
+    "inputs": {
+      "manifestSha256": "dbe2c1f832c0df3004146d06e79686ec8eb795b82badf026547b47f6ce5363e0",
+      "sourceMetadataSha256": "7231789d4441246b042f36de8f4f9cb9bd7661702d619b732acc395f9aa45d96"
+    }
+  },
+  "universe": {
+    "instrumentType": "EQUITY_COMMON",
+    "exchanges": [
+      "NYSE",
+      "NASDAQ",
+      "NYSE MKT",
+      "NYSE AMERICAN",
+      "AMEX"
+    ],
+    "breakpointExchange": "NYSE",
+    "minimumBreakpointNames": 100,
+    "priceFloor": null,
+    "reason": "FRENCH/CRSP SHARE CODES 10-11 ON NYSE/AMEX/NASDAQ WITH NYSE BREAKPOINTS; NO PRICE FLOOR IN THE ORACLE"
+  },
+  "corporateActions": {
+    "id": "VU_V4_CORPORATE_ACTION_SPLIT_POLICY",
+    "files": [
+      "quant/engines/return-series.js",
+      "quant/engines/canonical-total-return.js",
+      "quant/engines/published-close.js",
+      "scripts/supertrader/research/tournament/data.mjs",
+      "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs",
+      "scripts/supertrader/research/v4/measurement/price-sanity-v4.mjs",
+      "scripts/supertrader/research/v4/measurement/accounting-v4.mjs"
+    ],
+    "runtimeFiles": [
+      "quant/engines/return-series.js",
+      "quant/engines/canonical-total-return.js",
+      "scripts/supertrader/research/tournament/data.mjs",
+      "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs",
+      "scripts/supertrader/research/v4/measurement/price-sanity-v4.mjs",
+      "scripts/supertrader/research/v4/measurement/accounting-v4.mjs"
+    ],
+    "publishedCloseNote": "published-close.js is hash-bound but not on the calibration runtime path (ADR-002 deviation, finding A12: calibration reads the canonical total-return index, which uses the same splitFactors)",
+    "functions": [
+      "return-series.js#splitFactors",
+      "canonical-total-return.js#reconstruct",
+      "data.mjs#normalizeSegment",
+      "data.mjs#firstCanonicalFailure"
+    ],
+    "adjustmentMode": "BACKWARD_CUMULATIVE_SPLIT_FACTORS (adjusted = raw / cumulative factor of later splits)",
+    "rawAdjustedConvention": "bars carry raw OHLCV (rawOpen..rawVolume) and split-adjusted OHLCV; dividends split-adjusted; total-return index from the canonical core",
+    "exceptionCodes": "canonical core reasons (FIRST_CANONICAL_FAILURE -> DATA_QUARANTINE of the future, valid prefix kept); V4 price sanity classes",
+    "terminalHandling": {
+      "MISSING_ONE_SESSION": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_MULTIPLE_SESSIONS_UP_TO_LIMIT": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_BEYOND_LIMIT_NO_TERMINAL": "SETTLE_SECURITY_UNAVAILABLE_AT_LAST_CLOSE_TIMES_DATA_EVENT_FACTOR_ON_SESSION_LIMIT_PLUS_ONE",
+      "SUSPENDED": "NOT_DISTINGUISHABLE_FROM_MISSING_IN_SOURCE; SAME_AS_MISSING",
+      "DELISTED_UNKNOWN_CLASS": "FROZEN_PROTOCOL_ECONOMIC_SCENARIO (baseline -30 %, sensitivities last price and distress zero)",
+      "ACQUISITION_OFFICIAL_CLASS": "LAST_OBSERVED_PRICE_AS_CASH_PROCEEDS (frozen protocol)",
+      "DATA_QUARANTINE": "TERMINAL_ON_FIRST_SESSION_ON_OR_AFTER_MAX(FROM,OBSERVED_AT); DATA_EVENT_FACTOR",
+      "STALE_PRICING": "ZERO_VOLUME_UNCHANGED_CLOSE_DOES_NOT_RESET_THE_STALE_COUNTER",
+      "SECURITY_UNAVAILABLE": "SAME_AS_MISSING_BEYOND_LIMIT"
+    },
+    "acquisitionHandling": "LAST_OBSERVED_PRICE_AS_CASH_PROCEEDS (frozen protocol)",
+    "cashProceeds": "not observed; scenario factors only (frozen protocol); certified cash events fail closed in calibration",
+    "delistingHandling": "FROZEN_PROTOCOL_ECONOMIC_SCENARIO (baseline -30 %, sensitivities last price and distress zero)",
+    "fileHashes": {
+      "quant/engines/canonical-total-return.js": "b569e63bef67604d96f1f7fba1f3ee9e7033564e0b9b0af08f81769c4d0e2b2c",
+      "quant/engines/published-close.js": "e0b8792d9818c0307ef4ff11d26f18d4114b04fbd235d0dd19f7e9ddb5eeef98",
+      "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+      "scripts/supertrader/research/tournament/data.mjs": "a9135c13e5ced199326cdaece3a3e5cf402417a9f2a938e88b63be1b269a41f8",
+      "scripts/supertrader/research/v4/measurement/accounting-v4.mjs": "48b5bfd195aa4a0a0f6a3ad0e323d04542dbe17bde2390353745f1a76c75e00d",
+      "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs": "30c20d2430f0440987e35c70b37353ad3f9e7f67d3943932efbd32ef555fa301",
+      "scripts/supertrader/research/v4/measurement/price-sanity-v4.mjs": "78369b97d6c45e1e6a7f1b71690830c49dfa12bf6d564fd3fb6951c8d2b40a25"
+    }
+  },
+  "missingBars": {
+    "id": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+    "version": "1.0.0",
+    "registeredBeforeV4Measurement": true,
+    "staleCarryMaxSessions": 5,
+    "staleCarryReason": "ONE_TRADING_WEEK; NOT_DERIVED_FROM_ANY_RESULT",
+    "zeroVolumeUnchangedCloseCountsAsStale": true,
+    "cases": {
+      "MISSING_ONE_SESSION": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_MULTIPLE_SESSIONS_UP_TO_LIMIT": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_BEYOND_LIMIT_NO_TERMINAL": "SETTLE_SECURITY_UNAVAILABLE_AT_LAST_CLOSE_TIMES_DATA_EVENT_FACTOR_ON_SESSION_LIMIT_PLUS_ONE",
+      "SUSPENDED": "NOT_DISTINGUISHABLE_FROM_MISSING_IN_SOURCE; SAME_AS_MISSING",
+      "DELISTED_UNKNOWN_CLASS": "FROZEN_PROTOCOL_ECONOMIC_SCENARIO (baseline -30 %, sensitivities last price and distress zero)",
+      "ACQUISITION_OFFICIAL_CLASS": "LAST_OBSERVED_PRICE_AS_CASH_PROCEEDS (frozen protocol)",
+      "DATA_QUARANTINE": "TERMINAL_ON_FIRST_SESSION_ON_OR_AFTER_MAX(FROM,OBSERVED_AT); DATA_EVENT_FACTOR",
+      "STALE_PRICING": "ZERO_VOLUME_UNCHANGED_CLOSE_DOES_NOT_RESET_THE_STALE_COUNTER",
+      "SECURITY_UNAVAILABLE": "SAME_AS_MISSING_BEYOND_LIMIT"
+    },
+    "dataEventScenarios": {
+      "baseline": "LAST_VALID_CLOSE",
+      "sensitivity": [
+        "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+        "ZERO_PROCEEDS"
+      ]
+    },
+    "economicScenarios": {
+      "baseline": "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+      "sensitivity": [
+        "LAST_OBSERVED_PRICE",
+        "DISTRESS_ZERO_OTHER_MINUS_30"
+      ]
+    },
+    "ordersOnlyOnRealSourceBars": true,
+    "syntheticBarsSettlementOnly": true
+  },
+  "execution": {
+    "calibration": "MONTHLY_CLOSE_TO_CLOSE_ARITHMETIC + CLOSE_BOOK (measurement adapter) + NEXT_OPEN_BOOK (frozen tournament convention)",
+    "ordersOnlyOnRealSourceBars": true
+  },
+  "costs": {
+    "calibration": "ZERO (oracle returns are gross)",
+    "tournamentProtocol": "scripts/supertrader/research/tournament/protocol.json (unchanged)"
+  },
+  "portfolio": {
+    "EW_MARKET": {
+      "oracle": "FRENCH_ME_EW_FIRM_COUNT_WEIGHTED",
+      "eligibility": "BAR_AT_FORMATION_AND_AT_LAST_JUNE_MONTH_END (French size portfolios are formed each June)"
+    },
+    "MOM_12_2_EW_DECILES": {
+      "oracle": "FRENCH_10_PORTFOLIOS_PRIOR_12_2_EW",
+      "signal": "TR(end of month m-2) / TR(end of month m-13) - 1",
+      "buckets": 10
+    },
+    "VAR_60D_EW_QUINTILES": {
+      "oracle": "FRENCH_PORTFOLIOS_FORMED_ON_VAR_EW",
+      "signal": "variance of daily total returns over the 60 sessions ending at F, at least 20 returns",
+      "buckets": 5
+    }
+  },
+  "oracleParsedSha256": "ec6a86601c7ca1be6d9c2ed8fe776ac25742b453a05800399e447b132e308d85",
+  "openFindings": [
+    {
+      "id": "A1",
+      "severity": "BLOCKER",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A2",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A3",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A4",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A5",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A6",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A7",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A8",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A9",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A10",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A11",
+      "severity": "MODERATE",
+      "status": "OPEN"
+    },
+    {
+      "id": "A12",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A13",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "A14",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "B2",
+      "severity": "ALREADY_FIXED",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R1",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R2",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R3",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R4",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R5",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R6",
+      "severity": "MAJOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R7",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R8",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R9",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R10",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R11",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R12",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R13",
+      "severity": "MODERATE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R14",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R15",
+      "severity": "MINOR",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R16",
+      "severity": "NON_ISSUE",
+      "status": "CLOSED"
+    },
+    {
+      "id": "V4-R17",
+      "severity": "NON_ISSUE",
+      "status": "CLOSED"
+    }
+  ],
+  "calibrationOracle": [
+    {
+      "id": "FRENCH_ME",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_ME_CSV.zip",
+      "archiveSha256": "f6c4c440b4c6f26f1f01365e84ccae5338ae52e65057034d2ef3d3c0c1843020",
+      "memberName": "Portfolios_Formed_on_ME.csv",
+      "memberSha256": "686eaba65743b4dff261ddc2e8a16743668cce3c4e0bdab43a78268a883180c0"
+    },
+    {
+      "id": "FRENCH_MOM10",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "archiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "memberName": "10_Portfolios_Prior_12_2.csv",
+      "memberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f"
+    },
+    {
+      "id": "FRENCH_VAR",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "archiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "memberName": "Portfolios_Formed_on_VAR.csv",
+      "memberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943"
+    }
+  ],
+  "tolerances": {
+    "external": {
+      "schema": "supertrader-v4-oracle-tolerances-1.0.0",
+      "registeredBeforeV4Measurement": true,
+      "minimumValidMonthShare": 0.95,
+      "correlation": {
+        "market": 0.95,
+        "bucket": 0.9,
+        "spread": 0.6
+      },
+      "meanDifference": {
+        "floor": 0.0025,
+        "standardErrors": 2,
+        "absoluteCap": {
+          "market": 0.005,
+          "bucket": 0.005,
+          "spread": 0.0075
+        },
+        "note": "floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation; V4.1 (review R9): the SE allowance can never exceed the absolute cap, so worse tracking cannot buy a wider band"
+      },
+      "trackingErrorAnnualizedCap": {
+        "market": 0.08,
+        "bucket": 0.12,
+        "spread": 0.2
+      },
+      "minimumVuCoverageOfReferenceMonths": 0.95,
+      "volatilityRelative": 0.25,
+      "maxDrawdownAbsolute": 0.05,
+      "directionFloor": 0.0025,
+      "holdingCount": "INFORMATIONAL_UNIVERSE_DIFFERS",
+      "turnover": "UNAVAILABLE_FROM_ORACLE_VU_INFORMATIONAL",
+      "exposure": "STRUCTURAL_FULLY_INVESTED_BOTH_SIDES",
+      "rebalanceDates": "MONTH_END_BOTH_SIDES_EXACT"
+    },
+    "internal": {
+      "perMonthAbsolute": 0.0005,
+      "requiredMonthShare": 0.99,
+      "meanAbsolute": 0.0001,
+      "reason": "book credits dividends as cash while the TR index reinvests them on the ex-date; the difference is second order (yield x intra-month return)"
+    }
+  },
+  "contracts": {
+    ".github/workflows/supertrader-v4-calibration.yml": "ccc9d2ddd8f4996244145d21ab3a1ab4dd913140b8e06c0efe66fd41f4474ce9",
+    "scripts/supertrader/research/calibration/protocol.json": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "scripts/supertrader/research/tournament/protocol.json": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+    "scripts/supertrader/research/v4/SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json": "00f8683a346ba3c2a9503643462eb6a55466867c4446eb34c5b4f4c9bdfc9931",
+    "scripts/supertrader/research/v4/SUPERTRADER-V4-CALIBRATION-SPEC.json": "7e4052e303f63b7e540b889ebc6578f3bc045902a53cf2931776fe9631d12466",
+    "scripts/supertrader/research/v4/SUPERTRADER-V4-ORACLE-MANIFEST.json": "672577876a5938f772a8385c3cd2b34d833073bd2f85fbebd356821beb526913"
+  },
+  "code": {
+    "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+    "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+    "quant/engines/canonical-total-return.js": "b569e63bef67604d96f1f7fba1f3ee9e7033564e0b9b0af08f81769c4d0e2b2c",
+    "quant/engines/company-master.js": "f7bd29a8a22ce9f6c9dcd5717bed12a4faf36f7f760dc96aa76cae2437cb6cbf",
+    "quant/engines/hash.js": "c48ad5c3dc81aaf1fc88fc614db5d08e0a9fe7c56e9f4d3d4ed553b86896eefc",
+    "quant/engines/history-store.js": "755804a9939a1f19e586feea6694c6831c6bf4d8d693876ac2a23cca22522493",
+    "quant/engines/instrument-classification.js": "86fd46b650400a1763a77dd8e04e23ad8618ab38577af5b928bf25ba3bedf817",
+    "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+    "quant/engines/us-security-master.js": "cde6827d4112bb8f55bb818bd39322c580e25a6e721b3e3ddc9d05513fc287d9",
+    "quant/engines/zero-cost-guard.js": "3a3942e50d9605d9fd09127a5446371ebe77dfed09f64d32291cebcc0b26bac9",
+    "scripts/market/storage/s3-driver.mjs": "4ed3315cfd325c376b57067631b9b14c370e2aea8bd3690be14a4a4b2e17269a",
+    "scripts/supertrader/research/calibration/capture-v3-inrunner.mjs": "1af858f9ca968673127b39f5d0783e1889fa2e1f6fe47ce15feb30f75f27e1ba",
+    "scripts/supertrader/research/certification/canonical-input.mjs": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+    "scripts/supertrader/research/certification/data-inventory.mjs": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+    "scripts/supertrader/research/certification/execution-audit-accounting.mjs": "919215c83df18dad85a0ffd7cb624126cf58b7e05efbc7bb5d06275c192fb996",
+    "scripts/supertrader/research/certification/execution-audit.mjs": "22610695cda1d5024d49425cdd4a332a439d6b8b61f2d437c8e5c6df089f246f",
+    "scripts/supertrader/research/certification/freeze-v2.mjs": "4f7136bb597f67f48d6be74245b74d53c6577715fc806d7debcf0a8341a7e06c",
+    "scripts/supertrader/research/certification/run-rerun.mjs": "fd213207451c52abf5243521a936df56071bd142a6b9b4da14d3239ac131b5b1",
+    "scripts/supertrader/research/certification/runner-v2.mjs": "9b2ae889295476d79c617d61c166d8293cbd468b0fe5eec03d1b3cde64644e67",
+    "scripts/supertrader/research/certification/universe-certification.mjs": "04bb41caf15fb70b7068ccab54df0146823b5be5b88e3a747e4af655314bcf8f",
+    "scripts/supertrader/research/tournament/accounting.mjs": "e2a8b535989254b7bc4cb8ce073aa6e114aa1ee236d5892f31255a6069fb833b",
+    "scripts/supertrader/research/tournament/data.mjs": "a9135c13e5ced199326cdaece3a3e5cf402417a9f2a938e88b63be1b269a41f8",
+    "scripts/supertrader/research/tournament/engines/academic.mjs": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
+    "scripts/supertrader/research/tournament/engines/fundamental.mjs": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
+    "scripts/supertrader/research/tournament/engines/kullamagi.mjs": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+    "scripts/supertrader/research/tournament/engines/legendary.mjs": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5",
+    "scripts/supertrader/research/tournament/freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
+    "scripts/supertrader/research/tournament/methods.mjs": "4517b2996d870cd4fc738d14e2f2f6ed4397b293a2a1b0fed6a1e819a6171f7c",
+    "scripts/supertrader/research/tournament/metrics.mjs": "655a5d89d6de204e65c30d37d0d45a8ece780d60447049dbbccd539ebc823ca5",
+    "scripts/supertrader/research/tournament/runner.mjs": "5fe0bfb65ac9d2fea54348ad98e162e7b9036c892a5346eb41b6e257a74ac9ed",
+    "scripts/supertrader/research/v4/capture-oracle-v4.mjs": "d607a25e1e616de941de7844d6919bae0cb7a3780c67648c02d0105b004094e5",
+    "scripts/supertrader/research/v4/completion-v4.mjs": "c5bcda25d0a9cf4e2d5195bb2b3bfb1ba7a4f5b66a68803778edd575392edb63",
+    "scripts/supertrader/research/v4/freeze-v4.mjs": "5621763ac0a0d4174dd7f3f7b8dda2b129eeaa505c069532fdd40c1738f0e604",
+    "scripts/supertrader/research/v4/measurement/accounting-v4.mjs": "48b5bfd195aa4a0a0f6a3ad0e323d04542dbe17bde2390353745f1a76c75e00d",
+    "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs": "30c20d2430f0440987e35c70b37353ad3f9e7f67d3943932efbd32ef555fa301",
+    "scripts/supertrader/research/v4/measurement/price-sanity-v4.mjs": "78369b97d6c45e1e6a7f1b71690830c49dfa12bf6d564fd3fb6951c8d2b40a25",
+    "scripts/supertrader/research/v4/oracle/book-v4.mjs": "79ecb8392a9fb3af5e8b7d85e6502d50ad8c2ada75760bb20acc10c14e6987a1",
+    "scripts/supertrader/research/v4/oracle/compare-v4.mjs": "c2f8a8e01ebba802026d019eaf860113313c9e70a58910289ba0bcf8077710f7",
+    "scripts/supertrader/research/v4/oracle/constructions-v4.mjs": "b1b633876d3b9daffff4c7790fa055699b96dc4fa4ef93056ecbaba5fabbcfb6",
+    "scripts/supertrader/research/v4/oracle/french-library-v4.mjs": "078ee49678eb5f6ae4183103d4fd0afee40222b21a748d2f92adb4c5f09b3878",
+    "scripts/supertrader/research/v4/review/review-v4.mjs": "de669a21ebbe3f26789572c6ae4d26a09c1ebf178b12d5040dc03beb5feb655c",
+    "scripts/supertrader/research/v4/run-calibration-v4.mjs": "507b01e3d96114773d86f77dc5f9440eb5362ab49f875a9d5e1c12f421239c83",
+    "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c"
+  },
+  "testSuite": {
+    "scripts/supertrader/tests/v4-fixtures.mjs": "e96a19b721cd44e7ca8c16d019c4d2be71f17b282f5630497e113d96b25e09b4",
+    "scripts/supertrader/tests/v4-measurement.test.mjs": "c263bdc05f3d5d5a7702616ca8d1fa25f8391cfcadb5ea3cb159f0c806847b7a",
+    "scripts/supertrader/tests/v4-performance.test.mjs": "8714b8675304c5791ea1e0d08a583bee101d745c0bda6d39ea361b1f052b09b6",
+    "scripts/supertrader/tests/v4-turtle-golden.test.mjs": "fb1f2b6a2b89543d4aace02a23304dbc34234586ba778f36068cc355673cf2c4"
+  },
+  "freezeId": "V4-beae51ae1b07768b",
+  "createdAt": "2026-10-15T10:57:18.125Z",
+  "provenance": {
+    "workflowRunId": "38722939085",
+    "codeCommit": "34c0869fd2c8e30d1d842c18fade6af7091d33c7",
+    "node": "v22.23.3",
+    "pinning": "GIT_COMMIT_PUSHED_BEFORE_MEASUREMENT"
+  }
+}
