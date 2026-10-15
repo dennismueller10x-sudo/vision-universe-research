@@ -1,0 +1,212 @@
+{
+  "schema": "supertrader-v4-corporate-action-policy-1.0.0",
+  "generation": "V4-DATA-FIX",
+  "postHoc": true,
+  "canonicalCore": {
+    "totalReturn": "canonical-total-return-1.2.0",
+    "corporateActions": "corporate-action-contract-1.2.0",
+    "benchmark": "benchmark-contract-1.0.0"
+  },
+  "priceIntegrity": "price-integrity-1.1.0",
+  "privateEvidence": {
+    "plaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "sealedPlaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "bound": true,
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "PRICE-INTEGRITY-PRIVATE.owner.sealed.json",
+        "sha256": "7d187eb36574132b213f72f802e8a5c75452ccc36dcc8576f6179f51af696f0e"
+      },
+      {
+        "audience": "session",
+        "file": "PRICE-INTEGRITY-PRIVATE.session.sealed.json",
+        "sha256": "50e18377dbe431adfb3d258f21c59adb9e537dcc87db3c8023f14cb4250df4c0"
+      }
+    ]
+  },
+  "runs": {
+    "preRegistered_1_1_0": {
+      "runId": "38766580165",
+      "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49"
+    },
+    "final_1_2_0": {
+      "runId": "38772238376",
+      "codeCommit": "e049f4c8a6198c6cd2f24d8009136675a55c09e9"
+    }
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "scope": "canonical (quant/engines), applies to every consumer of canonical-total-return, not only Supertrader",
+  "outcomes": [
+    "ACCEPT",
+    "NORMALIZE",
+    "QUARANTINE",
+    "HOLD",
+    "REJECT"
+  ],
+  "policy": [
+    {
+      "cls": "CONFIRMED_SPLIT",
+      "outcome": "NORMALIZE",
+      "reason": "SPLIT_DECLARED_CONSISTENT",
+      "core": "TOTAL_RETURN_RECONSTRUCTED",
+      "rule": "gemeldeter Faktor, Rohkurs springt passend, Anbieterspalte in Paritaet"
+    },
+    {
+      "cls": "CONFLICTING_SPLIT",
+      "outcome": "QUARANTINE",
+      "reason": "CORPORATE_ACTION_CONTRADICTED",
+      "core": "CORPORATE_ACTION_CONTRADICTED",
+      "rule": "gemeldeter Faktor widerspricht dem Rohkurs (SPLIT_NOT_IN_RAW_PRICE, EVENT_GROSS_OUT_OF_BAND, ausserhalb 1:1000..1000:1)"
+    },
+    {
+      "cls": "SPLIT_MISSING_IN_INPUT",
+      "outcome": "HOLD",
+      "reason": "SPLIT_MISSING",
+      "core": "SPLIT_MISSING",
+      "rule": "Anbieterspalte zeigt einen Split, unser splitFactor nicht (Ingestion)"
+    },
+    {
+      "cls": "SUSPECTED_UNDECLARED_SPLIT",
+      "outcome": "HOLD",
+      "reason": "SPLIT_SUSPECTED_UNDECLARED",
+      "core": "SPLIT_SUSPECTED_UNDECLARED",
+      "rule": "keine Meldung; Rohschluss und Eroeffnung beim k-fachen (k ueblicher Split-Kurs >= 5, +-25 %, oder Sprung >= 100x) mit Stueckvolumen < Median und (bei ueblichem k) <= 3/k davon - ODER Schluss und Eroeffnung exakt (2 %) bei k >= 5"
+    },
+    {
+      "cls": "PROVIDER_SPIKE",
+      "outcome": "HOLD",
+      "reason": "PRICE_SPIKE_REVERTED",
+      "core": "PRICE_SPIKE_REVERTED",
+      "rule": "Einzelkerze >= 5-fach, Folgetag auf 10 % zurueck, keine Meldung"
+    },
+    {
+      "cls": "UNRESOLVED_PRICE_DISCONTINUITY",
+      "outcome": "ACCEPT",
+      "reason": "DISCONTINUITY_COUNTED_NOT_PROVEN",
+      "core": "TOTAL_RETURN_RECONSTRUCTED",
+      "rule": ">= 10-facher Tagessprung ohne Meldung und ohne Signatur: gezaehlt, nicht gesperrt (Groesse allein ist kein Beweis)"
+    },
+    {
+      "cls": "LEGITIMATE_HIGH_NOMINAL_PRICE",
+      "outcome": "ACCEPT",
+      "reason": "HIGH_NOMINAL_PRICE_NO_DEFECT",
+      "core": "TOTAL_RETURN_RECONSTRUCTED",
+      "rule": "hoher Rohkurs ohne Sprung und ohne Ereigniswiderspruch; keine Preisobergrenze"
+    },
+    {
+      "cls": "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS",
+      "outcome": "NORMALIZE",
+      "reason": "BACK_ADJUSTED_LEVEL_ARITHMETIC",
+      "core": "TOTAL_RETURN_RECONSTRUCTED",
+      "rule": "splitbereinigtes Niveau > 1e6 entsteht rechnerisch aus gemeldeten, konsistenten Reverse Splits; Renditen korrekt"
+    },
+    {
+      "cls": "STALE_OR_UNAVAILABLE",
+      "outcome": "HOLD",
+      "reason": "STALE",
+      "core": "STALE",
+      "rule": "keine frische Kerze (Volumen 0 und unveraenderter Schluss) laenger als der Verbraucher erlaubt; Verbraucher-Policy (z. B. 5 Sitzungen) setzt das Ende"
+    },
+    {
+      "cls": "LISTING_OR_IDENTITY_BREAK",
+      "outcome": "REJECT",
+      "reason": "LISTING_DISCONTINUITY",
+      "core": "LISTING_DISCONTINUITY",
+      "rule": "Luecke > 365 Tage oder Segmentgrenze: neue Identitaet, keine Rendite ueber die Grenze"
+    }
+  ],
+  "causeToPolicy": {
+    "CONFIRMED_SPLIT": "CONFIRMED_SPLIT",
+    "UNDECLARED_REVERSE_SPLIT": "SUSPECTED_UNDECLARED_SPLIT",
+    "UNDECLARED_FORWARD_SPLIT_POSSIBLE": "UNRESOLVED_PRICE_DISCONTINUITY",
+    "DECLARED_SPLIT_INCONSISTENT": "CONFLICTING_SPLIT",
+    "DECLARED_SPLIT_DATE_SHIFT": "CONFLICTING_SPLIT",
+    "TICKER_IDENTITY_MISMATCH": "LISTING_OR_IDENTITY_BREAK",
+    "LISTING_CHANGE": "LISTING_OR_IDENTITY_BREAK",
+    "CURRENCY_OR_UNIT": "UNRESOLVED_PRICE_DISCONTINUITY",
+    "STALE_PRICE": "STALE_OR_UNAVAILABLE",
+    "CORPORATE_ACTION_MISMATCH": "CONFLICTING_SPLIT",
+    "LEGITIMATE_HIGH_NOMINAL_PRICE": "LEGITIMATE_HIGH_NOMINAL_PRICE",
+    "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS",
+    "PROVIDER_SPIKE": "PROVIDER_SPIKE",
+    "GENUINE_PRICE_MOVE": null,
+    "UNRESOLVED": "UNRESOLVED_PRICE_DISCONTINUITY"
+  },
+  "causeLocus": {
+    "CONFIRMED_SPLIT": "NONE",
+    "UNDECLARED_REVERSE_SPLIT": "PROVIDER",
+    "UNDECLARED_FORWARD_SPLIT_POSSIBLE": "PROVIDER",
+    "DECLARED_SPLIT_INCONSISTENT": "PROVIDER",
+    "DECLARED_SPLIT_DATE_SHIFT": "PROVIDER",
+    "TICKER_IDENTITY_MISMATCH": "IDENTITY_LISTING_MAPPING",
+    "LISTING_CHANGE": "IDENTITY_LISTING_MAPPING",
+    "CURRENCY_OR_UNIT": "PROVIDER",
+    "STALE_PRICE": "PROVIDER",
+    "CORPORATE_ACTION_MISMATCH": "PROVIDER",
+    "PROVIDER_SPIKE": "PROVIDER",
+    "LEGITIMATE_HIGH_NOMINAL_PRICE": "NONE",
+    "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": "NONE",
+    "GENUINE_PRICE_MOVE": "NONE",
+    "UNRESOLVED": "UNKNOWN"
+  },
+  "undeclaredSplit": {
+    "outcome": "HOLD",
+    "reasonCode": "SPLIT_SUSPECTED_UNDECLARED",
+    "silentCorrection": false,
+    "release": "only by a corporate-action record (provider or exchange) that confirms the event; then the declared factor normalizes the series (CONFIRMED_SPLIT)",
+    "detection": {
+      "ratios": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        50,
+        60,
+        70,
+        75,
+        80,
+        100,
+        120,
+        125,
+        150,
+        200,
+        250,
+        300,
+        400,
+        500,
+        1000
+      ],
+      "tolerance": 1.25,
+      "exact": 1.02,
+      "outOfRange": 100,
+      "volumeActivity": 3,
+      "volumeBase": 20
+    },
+    "neverFromReturnSizeAlone": true
+  },
+  "history": [
+    {
+      "version": "corporate-action-contract-1.1.0",
+      "status": "REJECTED_AFTER_AUDIT",
+      "run": "38766580165",
+      "reason": "false-positive check failed: SEC share count contradicts the split for most k = 2/3 holds (218 holds, 115 false-positive candidates)"
+    },
+    {
+      "version": "corporate-action-contract-1.2.0",
+      "status": "CURRENT_POST_HOC",
+      "run": "38772238376",
+      "change": "k >= 5; exact-ratio overnight path; >= 100x overnight with falling volume; tolerances unchanged; no correlation or performance used"
+    }
+  ]
+}

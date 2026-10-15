@@ -1,0 +1,167 @@
+{
+  "schema": "supertrader-v4-d1-d2-root-causes-1.0.0",
+  "generation": "V4-DATA-FIX",
+  "postHoc": true,
+  "canonicalCore": {
+    "totalReturn": "canonical-total-return-1.2.0",
+    "corporateActions": "corporate-action-contract-1.2.0",
+    "benchmark": "benchmark-contract-1.0.0"
+  },
+  "priceIntegrity": "price-integrity-1.1.0",
+  "privateEvidence": {
+    "plaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "sealedPlaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "bound": true,
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "PRICE-INTEGRITY-PRIVATE.owner.sealed.json",
+        "sha256": "7d187eb36574132b213f72f802e8a5c75452ccc36dcc8576f6179f51af696f0e"
+      },
+      {
+        "audience": "session",
+        "file": "PRICE-INTEGRITY-PRIVATE.session.sealed.json",
+        "sha256": "50e18377dbe431adfb3d258f21c59adb9e537dcc87db3c8023f14cb4250df4c0"
+      }
+    ]
+  },
+  "runs": {
+    "preRegistered_1_1_0": {
+      "runId": "38766580165",
+      "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49"
+    },
+    "final_1_2_0": {
+      "runId": "38772238376",
+      "codeCommit": "e049f4c8a6198c6cd2f24d8009136675a55c09e9"
+    }
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "population": {
+    "reproducedExactly": true,
+    "v4Freeze": "V4-beae51ae1b07768b",
+    "canonicalCapture": {
+      "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+      "normalizedPartListSha256": "abf9d7212302a7fa90d31eecbd7a8f660f60f9bd8e724107020c730245b888f3",
+      "normalizedManifestSha256": "7c03ed555118ce64bf363b5a08181b50dbf6f3153d2f61344244b1a77fbe4e12",
+      "securities": 9408,
+      "sameCanonicalContentAsV4Freeze": true
+    },
+    "extremeSecurityMonths": {
+      "gt100pct": 2200,
+      "gt1000pct": 65,
+      "ltMinus99pct": 13
+    },
+    "byDiagnosticClass": {
+      "UNEXPLAINED_PRICE_MOVE": 1352,
+      "SUB_DOLLAR_GENUINE_OR_UNVERIFIED": 765,
+      "UNDECLARED_RAW_JUMP_10X": 55,
+      "DECLARED_SPLIT_IN_MONTH": 28,
+      "LT_MINUS_99PCT": 13
+    }
+  },
+  "V4_D1": {
+    "definition": "the 83 security-months of the #705 diagnostic: UNDECLARED_RAW_JUMP_10X (55) + DECLARED_SPLIT_IN_MONTH (28)",
+    "cases": 83,
+    "byCause": {
+      "UNDECLARED_REVERSE_SPLIT": 23,
+      "PROVIDER_SPIKE": 4,
+      "CURRENCY_OR_UNIT": 7,
+      "UNRESOLVED": 5,
+      "GENUINE_PRICE_MOVE": 40,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "STALE_PRICE": 2,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "byLocus": {
+      "PROVIDER": 38,
+      "UNKNOWN": 5,
+      "NONE": 40
+    },
+    "byCauseAndDiagnosticClass": {
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT": 23,
+      "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE": 4,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT": 7,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 5,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE": 26,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE": 14,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT": 1,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE": 2,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "byCauseAndFate": {
+      "UNDECLARED_REVERSE_SPLIT|NEW_HOLD": 19,
+      "PROVIDER_SPIKE|NEW_HOLD": 4,
+      "CURRENCY_OR_UNIT|NEW_HOLD": 4,
+      "UNRESOLVED|NONE": 3,
+      "GENUINE_PRICE_MOVE|NONE": 36,
+      "GENUINE_PRICE_MOVE|NEW_HOLD": 4,
+      "UNDECLARED_REVERSE_SPLIT|NONE": 4,
+      "DECLARED_SPLIT_INCONSISTENT|NONE": 1,
+      "CURRENCY_OR_UNIT|NONE": 3,
+      "UNRESOLVED|NEW_HOLD": 2,
+      "STALE_PRICE|NEW_HOLD": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|NONE": 1
+    },
+    "providerAdjustedColumnOnDefectDay": {
+      "UNDECLARED_REVERSE_SPLIT|UNCHANGED": 23,
+      "PROVIDER_SPIKE|UNCHANGED": 4,
+      "CURRENCY_OR_UNIT|UNCHANGED": 7,
+      "UNRESOLVED|UNCHANGED": 5,
+      "DECLARED_SPLIT_INCONSISTENT|MOVED": 1,
+      "STALE_PRICE|UNCHANGED": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|UNCHANGED": 1
+    },
+    "rootCause": {
+      "provider": "Tiingo carried no splitFactor for the reverse split AND its adjustedClose moved with the raw quote (provider factor unchanged on every undeclared-split day): the provider corporate-action feed missed the event",
+      "vuNormalization": "canonical-total-return 1.0.0 detected a missing split only through the provider adjusted column (SPLIT_MISSING) or, without that column, through a ratio list up to 20 (SPLIT_SUSPECTED); when the provider column moved with the raw quote, a 10x-5000x overnight jump was accepted as a market move. The V4 price-sanity classifier only examined adjusted levels above 1e6.",
+      "entryPoint": "quant/engines/canonical-total-return.js#reconstruct (crossCheck) -> scripts/supertrader/research/tournament/data.mjs#firstCanonicalFailure accepted the series as VALID",
+      "identityListing": "no case of the 83 is an identity or listing defect: segments break at gaps > 30 days (data.mjs) before returns are formed; 61 listing-change jumps exist in the daily census and stay outside returns"
+    },
+    "evidenceLabel": "cause = forensic root cause (quant/engines/price-integrity.js#explainDay on the raw store series) refined by finalCause() (SEC share count, volume) - explanation only"
+  },
+  "V4_D2": {
+    "definition": "price plausibility: the 74 securities with a split-adjusted level above 1e6 (#705 census) and the remaining extreme security-months",
+    "adjustedLevelGt1e6": {
+      "securities": 74,
+      "byV4SanityClass": {
+        "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS": 71,
+        "SPLIT_ARTIFACT": 3
+      },
+      "byCause": {
+        "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": 61,
+        "UNDECLARED_JUMP_IN_HISTORY": 10,
+        "DECLARED_SPLIT_INCONSISTENT": 3
+      },
+      "firstUndeclaredJumpCause": {
+        "NONE": 63,
+        "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 6,
+        "DECLARED_SPLIT_DATE_SHIFT": 1,
+        "UNRESOLVED": 3,
+        "STALE_PRICE": 1
+      },
+      "legitimate": 61,
+      "legitimateHighNominal": 0,
+      "note": "a split-adjusted level above 1e6 is the arithmetic of consistent, declared serial reverse splits on penny stocks (returns are correct); no blanket price cap"
+    },
+    "allExtremeSecurityMonths": {
+      "cases": 2213,
+      "byCause": {
+        "GENUINE_PRICE_MOVE": 2151,
+        "UNDECLARED_REVERSE_SPLIT": 31,
+        "PROVIDER_SPIKE": 4,
+        "CURRENCY_OR_UNIT": 9,
+        "UNRESOLVED": 11,
+        "STALE_PRICE": 5,
+        "DECLARED_SPLIT_INCONSISTENT": 1,
+        "DECLARED_SPLIT_DATE_SHIFT": 1
+      },
+      "byLocus": {
+        "NONE": 2151,
+        "PROVIDER": 51,
+        "UNKNOWN": 11
+      }
+    },
+    "originalV4D2NotAPriceDefect": "#705 V4-D2 (VU EW population ~1.34x the CRSP size-portfolio population) is a universe-definition finding, not a price defect; it is not changed by this fix and stays open"
+  }
+}

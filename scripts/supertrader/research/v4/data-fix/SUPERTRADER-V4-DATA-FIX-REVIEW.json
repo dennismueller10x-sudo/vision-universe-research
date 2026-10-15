@@ -1,0 +1,244 @@
+{
+  "schema": "price-integrity-adversarial-review-1.0.0",
+  "scope": "branch quant/canonical-price-integrity-d1-d2 vs origin/main; core 1.2.0 run 38772238376",
+  "findings": [
+    {
+      "id": "R1",
+      "area": "1 false-positive split detection / audit validity",
+      "severity": "HIGH",
+      "finding": "The audit's false-positive measure is not independent of the detector, and an independent SEC-share-count label shows a materially higher false-positive rate than the 1.2.0 rationale claims.",
+      "evidence": [
+        "scripts/quant/price-integrity-audit.mjs:273-277: falsePositiveCandidate = !(plausible && persistsOrSpike); SEC share count is not decisive, persistence alone clears a hold.",
+        "quant/engines/price-integrity.js explainDay: 'if (up && match && (sig || ...))' -> cause UNDECLARED_REVERSE_SPLIT whenever the core signature fires; confidence HIGH for sig && persists, regardless of secSharesRatio.",
+        "Independent label on rebuild.newHolds (SPLIT_SUSPECTED_UNDECLARED, n=90): 58 no SEC evidence; of 32 with SEC evidence: 13 SPLIT (shares x k within x1.5), 5 LEAN_SPLIT (shares x k <= 3), 14 CONTRADICTED (shares fell far less than 1/k), 5 of them with shares unchanged within +-1%.",
+        "Only 7 of the 14 contradicted holds carry falsePositiveCandidate=true; one hold with a ~25x jump and SEC share ratio 1.000 is labelled UNDECLARED_REVERSE_SPLIT/HIGH.",
+        "Contradicted by path: VOLUME_INVERSE 9/18 SEC-evidenced, EXACT_RATIO_OVERNIGHT 4/13, OUT_OF_RANGE 1/1.",
+        "Commit e049f4c claims 2/11 false for k>=5 in 1.1.0; for 1.2.0 the independent rate is 16% (strict, shares unchanged) to 44% (broad) of SEC-evidenced holds."
+      ],
+      "harm": "Genuine series are truncated as HOLD and the published acceptance metric (falsePositiveCandidates=35) understates this, so a calibration start would rest on a non-independent quality claim.",
+      "recommendation": "Define FP/TP solely by an independent label (SEC shares ratio vs 1/k, pre-registered tolerance) and report precision with CI per path; never let forensic cause derive from CTR.undeclaredReverseSplitSignature. Set a pre-registered acceptance threshold for precision before re-running.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R2",
+      "area": "1 false-positive split detection",
+      "severity": "MEDIUM",
+      "finding": "The k>=5 floor of 1.2.0 leaks: the +-25% tolerance lets raw ratios 4.0-5.0 match k=5.",
+      "evidence": [
+        "canonical-total-return.js undeclaredReverseSplitSignature: conventional = best <= log(1.25); |log(4/5)| == log(1.25) so an exact 4.0x passes as k=5.",
+        "14 of 90 SPLIT_SUSPECTED_UNDECLARED holds have raw close ratio < 5 (4 of them exactly 4.0x); of the 3 with SEC evidence, 2 are contradicted (shares unchanged / rising)."
+      ],
+      "harm": "Re-admits exactly the k<5 sub-penny tick-move class that 1.1.0 failed on.",
+      "recommendation": "Make the floor explicit (rawRatio >= k_min / small tolerance) or narrow the tolerance at the floor; pre-register.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R3",
+      "area": "1 false-positive split detection",
+      "severity": "MEDIUM",
+      "finding": "EXACT_RATIO_OVERNIGHT premise ('a market move does not land exactly on 10.00x') fails for tick-quantized sub-cent prices; this path ignores volume.",
+      "evidence": [
+        "27 of 51 exact-path holds have a sub-cent prior close, where one-tick moves produce exact integer ratios.",
+        "4 of 13 SEC-evidenced exact-path holds are contradicted; one forensically STALE_PRICE hold at exactly 5x has SEC share ratio 1.001."
+      ],
+      "harm": "Illiquid sub-cent names are held as splits on tick noise.",
+      "recommendation": "Require exactness to be resolvable above tick granularity (prior close >= N ticks) or require volume evidence for the exact path at low price levels.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R4",
+      "area": "2 false-negative split detection / residual extreme returns",
+      "severity": "HIGH",
+      "finding": "Large residual of undeclared extreme raw jumps remains inside canonical-valid bars; several SEC-confirmed reverse splits still pass as returns; no detection at all for the downward direction.",
+      "evidence": [
+        "QUANT-PRICE-INTEGRITY-REBUILD.json corporateActionConsistency.undeclared10xJumpsInsideCanonicalBars.after = 188 (190 under 1.1.0).",
+        "known83: 48/83 still extreme (UNRESOLVED 12, UNDECLARED_REVERSE_SPLIT 4, DECLARED_SPLIT_INCONSISTENT 1, DECLARED_SPLIT_DATE_SHIFT 1, GENUINE_PRICE_MOVE 30). All 2213: still-extreme with defect cause UNRESOLVED 21, UNDECLARED_REVERSE_SPLIT 7, STALE 3, UNIT 1, DATE_SHIFT 1, INCONSISTENT 1.",
+        "Golden G-KNOWN-FN-10.3X: SEC confirms ~1:11, volume 0.40x > 3/k -> passes as a >+1000% month (authors label it a blocker).",
+        "An overnight ~1115x jump with day volume 1.04x of median passes (OUT_OF_RANGE path requires volume < median).",
+        "k-selection defect: k is chosen as nearest to the close only, then open is tested against that k. Cases 23.5x close / 19.7x open (both within 25% of k=20; SEC shares fell ~7.5x) and 148x / 236x (SEC shares fell ~70x) are rejected.",
+        "Raw census: 296 >=10x downward daily jumps (UNRESOLVED 145, FORWARD_SPLIT_POSSIBLE 35, CURRENCY_OR_UNIT 33, PROVIDER_SPIKE 36 ...); the core returns null for r<1 except reverted spikes (PI18 documents this)."
+      ],
+      "harm": "+900% / -90% one-day moves that are data errors stay in the canonical dataset and dominate tail statistics (momentum, volatility, drawdown) of any calibration.",
+      "recommendation": "Choose k minimizing max(|log(close/k)|,|log(open/k)|); add a frozen down-direction/unit rule (HOLD on >=10x moves with forward-split or unit signature, or SEC-confirmed); use SEC shares, when available at t, as a confirming path; report residual count inside the intended calibration universe.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R5",
+      "area": "2/6 V4-D2 high adjusted level",
+      "severity": "HIGH",
+      "finding": "Of 74 securities with split-adjusted level > 1e6, 13 carry a defect cause; 11 of those remain canonical without any core quarantine. Only 1 was newly quarantined by the fix.",
+      "evidence": [
+        "rebuild.highLevelFate: UNDECLARED_JUMP_IN_HISTORY 9 unquarantined (first jump cause: 6 forward-split-possible, 2 unresolved, 1 date shift), DECLARED_SPLIT_INCONSISTENT 2 unquarantined, both V4 SPLIT_ARTIFACT, core state TOTAL_RETURN_RECONSTRUCTED.",
+        "Core event band 0.4..2.5 accepts declared-split-day gross 2.0-2.5 that the forensic (and V4 band 2) call inconsistent.",
+        "V4 price-sanity-v4 cuts SPLIT_ARTIFACT downstream, but classifies 10-50x undeclared jumps as GENUINE (UNIT_JUMP_RATIO=50); quant consumers have no such layer."
+      ],
+      "harm": "Known, located fake jumps and inconsistent split days remain in the canonical data; the D2 claim (no blanket cap, cause-based handling) is right in principle but incomplete in effect.",
+      "recommendation": "Quarantine these from the defect event by a frozen cause-based rule in the core (align core event band with the forensic band or HOLD on inconsistent split days); re-measure.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R6",
+      "area": "3 survivorship / terminal handling",
+      "severity": "MEDIUM",
+      "finding": "HOLD is effectively permanent and in V4 becomes a DATA_QUARANTINE terminal whose handling is outcome-correlated; no classical survivorship (valid prefix kept), but informative censoring.",
+      "evidence": [
+        "No confirmation path exists in canonical-total-return.js (no override/allowlist); 'until a corporate-action source confirms' is not implemented.",
+        "data.mjs:267-281 slices raw at the event, terminal kind DATA_QUARANTINE; runner.mjs:147 censors any signal horizon containing it; accounting.mjs:81-88 settles at last pre-event close x scenario factor.",
+        "runner.mjs:104 injects the terminal bar with rawClose: Infinity, so the DISTRESS_ZERO scenario test rawClose<1 can never fire; 89 of 106 new holds have a sub-dollar prior close.",
+        "Bars removed 87,790 (~830 per hold); DELISTED terminals 3195->3156 replaced by DATA_QUARANTINE (proceeds treatment changes)."
+      ],
+      "harm": "Reverse splits are distress events; censoring their forward windows biases signal-level forward returns upward for strategies selecting distressed names; distress-scenario sensitivity is understated.",
+      "recommendation": "Normalize SEC-confirmed cases instead of holding; pre-register censoring counts by reason and a worst-case treatment of DATA_QUARANTINE in sensitivity; carry lastRawClose in the injected bar (separate V4 PR).",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R7",
+      "area": "4 point-in-time / causality",
+      "severity": "MEDIUM",
+      "finding": "Split signature is causal (bars <= t; observedAt == from for all 90). PRICE_SPIKE_REVERTED is detected at t+1 but quarantined from t, and the V4 consumer keys eligibility and settlement on terminal.date, not observedAt: one-session look-ahead. A single reverted bad tick also ends the series permanently.",
+      "evidence": [
+        "16 holds with observedAt = from + 1 session, all PRICE_SPIKE_REVERTED.",
+        "data.mjs:382 and :461 'terminal.date > asOf' excludes the security on the spike day; accounting.mjs:84 settles on terminal.date.",
+        "canonical-total-return.js revertedSpike returns date of bar i-1; reconstruct returns UNAVAILABLE for everything after, although the series is valid after the revert."
+      ],
+      "harm": "A backtest removes a security on the day its bad tick appears, using information from the next day; a live system could not. Small (16 securities), but categorical.",
+      "recommendation": "Invalidate only the spike bar (or use observedAt for eligibility/settlement) and continue the series after the revert; test with a prefix ending on the spike day.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R8",
+      "area": "8 universe shrinkage / cross-consumer impact",
+      "severity": "HIGH",
+      "finding": "V4 coverage loss is modest, but outside V4 a hold removes the whole total-return history, and this was not measured.",
+      "evidence": [
+        "V4: securities 9408->9399 (-9), bars 14,374,702->14,286,912 (-0.61%), DATA_QUARANTINE terminals 521->592 (+71), OPEN 5692->5651 (-41).",
+        "scripts/quant/lib/daily-prices.mjs:56: tr = ctr.reconstructed ? ... : null; whole-series unavailability (no prefix) for signal/setup backtests, survivorship control; also used by scripts/market/refresh-benchmark-history.mjs and scripts/vorsorge/ingest-tiingo-etfs.mjs.",
+        "Fixture evidence in quant/tests/total-return-contract.test.mjs and benchmark-reference.test.mjs: one decades-old undeclared event removes a published long series from the study (titles 58->57, TR coverage 93.3%->91.7%).",
+        "CLAUDE.md: changes to quant models need their own PR with a before/after comparison; none exists for these consumers."
+      ],
+      "harm": "Quant products lose entire histories (with an FP rate of 16-44% on SEC-evidenced holds), and the published studies change without a measured comparison.",
+      "recommendation": "Either adopt prefix semantics in daily-prices (as V4 does) or gate the new reasons behind an opt-in for non-V4 consumers; produce the before/after for quant consumers.",
+      "blocksCalibration": false,
+      "blocksMerge": true
+    },
+    {
+      "id": "R9",
+      "area": "5 security identity",
+      "severity": "LOW",
+      "finding": "No extreme cases on reused listings; HOLD is a safe outcome, but some holds may be listing events mislabelled as splits.",
+      "evidence": [
+        "extremeCases reusedLater: 0 of 2213.",
+        "6 holds follow a 10-29 day gap (below the 30-day segment split).",
+        "16 core-signature days in the raw census fall on LISTING_CHANGE (>30 day gap) days; in quant consumers without 30-day segmentation they would be labelled SPLIT_SUSPECTED_UNDECLARED rather than LISTING_DISCONTINUITY."
+      ],
+      "recommendation": "Give listing gaps precedence over the signature; record gapDays in the core result.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R10",
+      "area": "6 currency / unit",
+      "severity": "MEDIUM",
+      "finding": "Unit changes are accepted (policy CURRENCY_OR_UNIT -> UNRESOLVED_PRICE_DISCONTINUITY -> ACCEPT); there is no core rule for them, and no currency check in the core.",
+      "evidence": [
+        "Raw census: 39 unit-ratio jumps (33 down >=10x).",
+        "1 extreme -99% month still extreme with cause CURRENCY_OR_UNIT.",
+        "All extremes are on US exchanges; no non-USD evidence."
+      ],
+      "harm": "A 100x unit change passes as a -99% return.",
+      "recommendation": "Fold into the R4 down-direction rule; pre-register.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R11",
+      "area": "7 stale data",
+      "severity": "LOW",
+      "finding": "Holds on stale series carry split/spike reason codes, and the volume test is weak on illiquid series.",
+      "evidence": [
+        "13 holds forensically STALE_PRICE (>=5 stale bars before the jump) carry SPLIT_SUSPECTED_UNDECLARED (12) or PRICE_SPIKE_REVERTED (1).",
+        "Volume median uses only volume>0 bars and reaches back arbitrarily far."
+      ],
+      "recommendation": "Check stale runs before the signature and use a STALE reason; bound the volume look-back in calendar time.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R12",
+      "area": "9 strategy leakage",
+      "severity": "INFO",
+      "finding": "No dependency on strategy or performance results found.",
+      "evidence": [
+        "Audit imports only capture/measurement/diagnostic modules; public JSON performanceCalculated:false, calibrationRun:false.",
+        "Thresholds are ratio/volume constants. The case population was selected via monthly EW_MARKET holding returns >100% (a benchmark construction, not a strategy); the rules are signature-based, not return-size based."
+      ],
+      "recommendation": "Keep it that way: no threshold change after any calibration output is seen.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R13",
+      "area": "10 result-driven thresholds",
+      "severity": "MEDIUM",
+      "finding": "The 1.1.0->1.2.0 revision is partly justified by independent evidence (k=2/3 SEC-contradicted 51/53), but it is in-sample and not a pure tightening: two new detection paths were added after seeing the 83 cases, and the forensic labeler that defines the evaluation was changed at the same time.",
+      "evidence": [
+        "git diff dbb9aba e049f4c: undeclaredSplitOutOfRange (>=100x) and undeclaredSplitExact (2%) paths added; persistence rule and an intraday-squeeze GENUINE rule added to explainDay.",
+        "Goldens are drawn from the audit cases (e.g. G-D1-EXACT-40X 'from the 83 list').",
+        "Same data, different labels: in83 root causes UNDECLARED_REVERSE_SPLIT 16->23, UNRESOLVED 32->20, GENUINE 26->32 between runs.",
+        "No correlation or performance used (confirmed in code)."
+      ],
+      "harm": "Detector and its yardstick were co-tuned on the same population, so resolution rates (35/83 by NEW_HOLD) are optimistic.",
+      "recommendation": "Freeze the rules; measure precision/recall on a held-out label set (SEC-labelled jumps not in the 83, or a held-out period) with a pre-registered pass threshold; decouple the forensic labeler from the core.",
+      "blocksCalibration": true
+    },
+    {
+      "id": "R14",
+      "area": "reporting hygiene",
+      "severity": "LOW",
+      "finding": "Stale version strings and an inconsistent public census.",
+      "evidence": [
+        "price-integrity.js header says price-integrity-1.0.0 / corporate-action-contract-1.1.0 while VERSION=price-integrity-1.1.0 and contract 1.2.0; CONFIG comments say 1.1.0.",
+        "dailyRawJumpCensus.total 2566 (canonical-prefix bars) vs byCause sum 2839 (all raw bars including quarantined suffixes), mixed in one object."
+      ],
+      "recommendation": "Fix the labels and state both denominators.",
+      "blocksCalibration": false
+    },
+    {
+      "id": "R15",
+      "area": "verification",
+      "severity": "INFO",
+      "finding": "Required checks pass.",
+      "evidence": [
+        "node --test quant/tests/price-integrity.test.mjs quant/tests/canonical-total-return.test.mjs: 53/53 pass; full quant/tests: 2825/2825 pass.",
+        "git diff origin/main...HEAD: no files under quant/data, discover/data, supertrader/data, social/data.",
+        "No blanket price cap: core has none; 1e6 appears only in the forensic explainHighLevel; test PI11 (400k nominal) passes.",
+        "Workflow follows ADR-005 (ref github.ref, push-with-retry, ref_name concurrency, top-level contents: read, set -euo pipefail).",
+        "Public JSON files contain no tickers or segment IDs. Note: a test comment and a commit message name one public fixture security."
+      ],
+      "blocksCalibration": false
+    },
+    {
+      "id": "R16",
+      "area": "4 point-in-time (pinned V4 consumer)",
+      "severity": "MEDIUM",
+      "finding": "The V4 price-sanity layer that still runs after the core only applies its defect checks to securities whose maximum split-adjusted level over the full history exceeds 1e6. That level depends on future reverse splits.",
+      "evidence": [
+        "price-sanity-v4.mjs classifyPriceLevel: returns null unless max(close) > 1e6 over all bars; adjusted closes are back-propagated from later splits; called in loadPrepared before the calibration."
+      ],
+      "harm": "Whether a defect at time t is quarantined depends on corporate actions after t (look-ahead-conditioned data cleaning).",
+      "recommendation": "Retire the level-conditioned layer in favor of the core's cause-based rules applied to all securities, or apply its defect checks unconditionally; declare it in the new protocol.",
+      "blocksCalibration": true
+    }
+  ],
+  "verdict": {
+    "cleanEnoughToStartPreRegisteredCalibration": false,
+    "summary": "1.2.0 removes the most egregious undeclared reverse splits causally, without a price cap and without performance input, and V4 coverage loss is small (0.6% of bars). But it is not yet clean enough to start a new pre-registered calibration.",
+    "remainingBlockers": [
+      "B1 (R1,R13): freeze the rules and measure precision/recall against an independent SEC label on a held-out set with a pre-registered threshold; current independent FP rate on SEC-evidenced holds is 16-44%.",
+      "B2 (R4,R10): 188 undeclared >=10x jumps remain inside canonical bars; add a frozen down-direction/unit rule and fix the open/close k-selection defect, or pre-register a calibration universe that provably excludes them, and report the residual count inside that universe.",
+      "B3 (R5): quarantine the 11 known D2 defect securities via a cause-based core rule.",
+      "B4 (R7,R16): remove the one-session spike look-ahead (use observedAt or invalidate only the bad bar) and the level-conditioned V4 price-sanity selection, or declare them in the protocol.",
+      "B5 (R6): pre-register DATA_QUARANTINE censoring and settlement handling, including the rawClose:Infinity distress gap."
+    ],
+    "nonBlockingButMergeRelevant": [
+      "R8: whole-series total-return loss in quant consumers needs a before/after comparison or prefix semantics before merge."
+    ]
+  },
+  "note": "Public version: counts and finding text only; case lists are in the private file."
+}
