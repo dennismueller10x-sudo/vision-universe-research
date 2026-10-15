@@ -33,6 +33,7 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
   var CTR = isNode ? require("./canonical-total-return.js") : global.VUCanonicalTotalReturn;
+  var RS = isNode ? require("./return-series.js") : global.VUReturnSeries;
   var VERSION = "price-integrity-1.1.0";
 
   /* Die Policy. Reihenfolge = Vorrang, wenn ein Tag mehrere Klassen traegt. */
@@ -221,12 +222,14 @@
     var bars = security.bars || [], maxAdj = 0, maxRaw = 0, at = -1;
     for (var i = 0; i < bars.length; i++) { if (bars[i].close > maxAdj) { maxAdj = bars[i].close; at = i; } if (bars[i].rawClose > maxRaw) maxRaw = bars[i].rawClose; }
     if (!(maxAdj > threshold)) return null;
-    var reverse = 0, inconsistent = 0, jumps = 0, cumulative = 1;
+    var reverse = 0, inconsistent = 0, jumps = 0;
+    /* Eine Preiswahrheit (ADR-002): der kumulierte Faktor kommt aus return-series.js#splitFactors. */
+    var cumulative = bars.length ? RS.splitFactors(bars)[0] : 1;
     for (var j = 1; j < bars.length; j++) {
       var a = bars[j - 1], b = bars[j];
       if (!(a.rawClose > 0 && b.rawClose > 0)) continue;
       if (declared(b)) {
-        if (b.splitFactor < 1) { reverse++; cumulative *= b.splitFactor; }
+        if (b.splitFactor < 1) reverse++;
         var g = b.splitFactor * b.rawClose / a.rawClose; if (Math.abs(Math.log(g)) >= Math.log(2)) inconsistent++;
       } else if (Math.abs(Math.log(b.rawClose / a.rawClose)) >= Math.log(10)) jumps++;
     }
