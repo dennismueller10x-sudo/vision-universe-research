@@ -163,7 +163,10 @@ jobs:
           }
           if(!served)throw Error('PRODUCTION_PUBLICATION_SLO_FAILED');
           NODE
-          node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
+          # Live-QA mit begrenzter, lesender Wiederholung NUR bei belegtem transientem Auslieferungsfehler (Mischstand, STALE, 5xx;
+          # Klassifikator und Propagationsbeweis aus Pages-Release). Echte Fehler und erschoepfte Obergrenze enden mit Exit 1:
+          # der Schritt "Fail closed" unten rollt dann wie bisher sofort zurueck.
+          node scripts/company_intelligence/refresh-live-verify.mjs --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
           node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json"
       - name: Fail closed on actual production regression
         if: failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true
@@ -188,6 +191,7 @@ jobs:
             ${{ runner.temp }}/ci-refresh/candidate-qa.json
             ${{ runner.temp }}/ci-refresh/candidate-qa.json-failure.png
             ${{ runner.temp }}/ci-refresh/live-qa.json
+            ${{ runner.temp }}/ci-refresh/live-qa.json.verify.json
           retention-days: 14
       - name: Mark successful run (mode and financial state for the next freshness guard)
         if: success()
