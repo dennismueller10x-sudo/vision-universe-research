@@ -1,0 +1,386 @@
+name: Supertrader V3 pipeline (freeze, calibration, completion, tournament; private plaintext never uploaded)
+on:
+  push:
+    branches:
+      - 'research/supertrader-calibration-v3-durable'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-v3-pipeline-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  CAL: scripts/supertrader/research/calibration
+jobs:
+  freeze:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:pipeline]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    outputs:
+      freeze_commit: ${{ steps.commit.outputs.freeze_commit }}
+      freeze_file: ${{ steps.commit.outputs.freeze_file }}
+      freeze_id: ${{ steps.commit.outputs.freeze_id }}
+      observed_at: ${{ steps.clock.outputs.observed_at }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Fixed observation time for every job of this pipeline
+        id: clock
+        run: echo "observed_at=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> "$GITHUB_OUTPUT"
+      - name: Phase A - capture and verify canonical dataset; reference sources against pre-registered hashes
+        env:
+          V3_OBSERVED_AT: ${{ steps.clock.outputs.observed_at }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json"
+          node $CAL/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+      - name: Phase B - build and commit the V3 freeze before any measurement
+        id: commit
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          FREEZE="$CAL/BACKTEST-CALIBRATION-FREEZE-V3-${GITHUB_RUN_ID}.json"
+          node $CAL/freeze-v3.mjs build --capture-receipt "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out "$FREEZE"
+          cp "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FREEZE" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
+          git commit -m "Supertrader V3 pipeline: final pre-measurement freeze and capture receipt (no performance yet)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json
+          echo "freeze_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "freeze_file=$FREEZE" >> "$GITHUB_OUTPUT"
+          echo "freeze_id=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('$FREEZE')).freezeId)")" >> "$GITHUB_OUTPUT"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  calibrate:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        method:
+          - CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP
+          - CAL_GH2004_52WH_30_6_NO_SKIP
+          - CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS
+          - CALIB_EQUAL_WEIGHT
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.freeze.outputs.freeze_commit }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Re-capture, prove content equality with the freeze, then measure this method
+        env:
+          V3_OBSERVED_AT: ${{ needs.freeze.outputs.observed_at }}
+          FREEZE: ${{ needs.freeze.outputs.freeze_file }}
+          METHOD: ${{ matrix.method }}
+          V3_BIND_MODE: CONTENT
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node $CAL/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --content
+          node --expose-gc $CAL/run-calibration-v3.mjs --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --method "$METHOD" --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-$METHOD-RESULT-${GITHUB_RUN_ID}.json"
+      - name: Public method summary (status, counts, hashes, codes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-public-calibration-${{ matrix.method }}
+          path: ${{ runner.temp }}/pub/CALIBRATION-V3-*-RESULT-*.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Sealed results (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-sealed-calibration-${{ matrix.method }}
+          path: /workspace/private/results/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  completion:
+    needs: [freeze, calibrate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    outputs:
+      completion_commit: ${{ steps.publish.outputs.completion_commit }}
+      completion_file: ${{ steps.publish.outputs.completion_file }}
+      completion_sha: ${{ steps.publish.outputs.completion_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.freeze.outputs.freeze_commit }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v3-public-calibration-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/summaries
+      - name: Mechanical completion under the pre-registered verdict definitions; commit it
+        id: publish
+        env:
+          BRANCH: ${{ github.ref_name }}
+          FREEZE: ${{ needs.freeze.outputs.freeze_file }}
+          FREEZE_ID: ${{ needs.freeze.outputs.freeze_id }}
+        run: |
+          set -euo pipefail
+          node $CAL/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+          COMPLETION="$CAL/CALIBRATION-V3-COMPLETION-${FREEZE_ID}.json"
+          node $CAL/build-completion-v3.mjs --freeze "$FREEZE" --summaries "$RUNNER_TEMP/summaries" --reference-parsed /workspace/private/reference/reference-parsed.json --out "$COMPLETION"
+          cp "$RUNNER_TEMP"/summaries/CALIBRATION-V3-*-RESULT-*.json "$CAL/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$COMPLETION" "$CAL"/CALIBRATION-V3-*-RESULT-${GITHUB_RUN_ID}.json
+          git commit -m "Supertrader V3 pipeline: calibration completion (public, hash-bound) and method summaries"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+          echo "completion_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "completion_file=$COMPLETION" >> "$GITHUB_OUTPUT"
+          echo "completion_sha=$(sha256sum "$COMPLETION" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  tournament:
+    needs: [freeze, completion]
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        method:
+          - cross_sectional_momentum
+          - 52_week_high_effect
+          - LOW_VOLATILITY
+          - TURTLE_S2_EQUITY_DAILY
+          - WEINSTEIN_STAGE_DAILY
+          - KULLAMAGI_DAILY_ADAPTATION
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.completion.outputs.completion_commit }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Re-capture, prove content equality, verify completion, run the frozen method (4 variants)
+        env:
+          V3_OBSERVED_AT: ${{ needs.freeze.outputs.observed_at }}
+          FREEZE: ${{ needs.freeze.outputs.freeze_file }}
+          COMPLETION: ${{ needs.completion.outputs.completion_file }}
+          COMPLETION_SHA: ${{ needs.completion.outputs.completion_sha }}
+          METHOD: ${{ matrix.method }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node $CAL/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --content
+          mkdir -p /workspace/private/tournament
+          node --expose-gc $CAL/run-post-calibration-v3.mjs --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out /workspace/private/tournament --public-out "$RUNNER_TEMP/pub/TOURNAMENT-V3-$METHOD-SUMMARY-${GITHUB_RUN_ID}.json" --calibration-completion "$COMPLETION" --completion-sha "$COMPLETION_SHA" --worker-method "$METHOD"
+      - name: Public method summary (status, hashes, codes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-public-tournament-${{ matrix.method }}
+          path: ${{ runner.temp }}/pub/TOURNAMENT-V3-*-SUMMARY-*.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Sealed results within a size budget (summary and baseline always)
+        if: always()
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/sealed-stage"
+          cd /workspace/private/tournament 2>/dev/null || exit 0
+          for f in summary.private.json.sealed data-ready.private.json.sealed baseline-raw.private.json.sealed overlap-input.private.json.sealed; do [ -f "$f" ] && cp "$f" "$RUNNER_TEMP/sealed-stage/"; done
+          TOTAL=$(du -sb "$RUNNER_TEMP/sealed-stage" | cut -f1)
+          for f in *.sealed; do
+            [ -f "$RUNNER_TEMP/sealed-stage/$f" ] && continue
+            S=$(stat -c %s "$f")
+            if [ $((TOTAL + S)) -lt 900000000 ]; then cp "$f" "$RUNNER_TEMP/sealed-stage/"; TOTAL=$((TOTAL + S)); fi
+          done
+          ls "$RUNNER_TEMP/sealed-stage" | wc -l
+      - name: Sealed results (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-sealed-tournament-${{ matrix.method }}
+          path: ${{ runner.temp }}/sealed-stage/*
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  publish:
+    needs: [freeze, completion, tournament]
+    if: always() && needs.completion.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.completion.outputs.completion_commit }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v3-public-tournament-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/summaries
+        continue-on-error: true
+      - name: Commit public tournament summaries
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          FILES=("$RUNNER_TEMP"/summaries/TOURNAMENT-V3-*-SUMMARY-*.json)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            cp "${FILES[@]}" "$CAL/"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$CAL"/TOURNAMENT-V3-*-SUMMARY-*.json
+            git commit -m "Supertrader V3 pipeline: public tournament method summaries (hashes, codes)"
+            scripts/ci/push-with-retry.sh "$BRANCH"
+          fi

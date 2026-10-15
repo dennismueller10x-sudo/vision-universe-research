@@ -33,6 +33,50 @@ function privateDirectory(out){
 }
 const setHash=rows=>sha(Buffer.from(rows.slice().sort().join('\n')));
 
+
+/**
+ * Content-level binding. Two captures of the same source differ only by timestamps and by the async order of
+ * read receipts / source objects (proven by CALIBRATION-V3-CAPTURE-STRUCTURAL-DIFF-38658089561). This binding
+ * removes exactly those, so independent jobs can re-capture and prove they hold the same input.
+ */
+const TIME_ONLY_FIELDS=['observedAt'];
+export function normalizedInputs(inputs){
+ const x=JSON.parse(JSON.stringify(inputs));
+ for(const f of TIME_ONLY_FIELDS)delete x[f];
+ if(x.listingSource)delete x.listingSource.observedAt;
+ delete x.provenance;
+ x.readReceipts=(x.readReceipts||[]).map(({capturedAt,...r})=>r).sort((a,b)=>a.sourceKey<b.sourceKey?-1:a.sourceKey>b.sourceKey?1:0);
+ x.sourceObjects=(x.sourceObjects||[]).map(({retrievedAt,...r})=>r).sort((a,b)=>a.key<b.key?-1:a.key>b.key?1:0);
+ return x;
+}
+export function normalizedSecurity(s){
+ if(s&&s.priceSource&&'capturedAt' in s.priceSource){const {capturedAt,...rest}=s.priceSource;return {...s,priceSource:rest};}
+ return s;
+}
+export function computeContentBinding(dir){
+ const manifest=JSON.parse(fs.readFileSync(path.join(dir,'canonical-dataset-manifest.json'),'utf8'));
+ const inputs=JSON.parse(fs.readFileSync(path.join(dir,'data-certification-inputs.json'),'utf8'));
+ const partHashes=[];
+ for(const p of manifest.parts){
+  const part=JSON.parse(fs.readFileSync(path.join(dir,p.stem+'.json'),'utf8'));
+  partHashes.push({stem:p.stem,securities:p.securities,normalizedSha256:sha(Buffer.from(JSON.stringify(part.securities.map(normalizedSecurity))))});
+ }
+ const m=JSON.parse(JSON.stringify(manifest));
+ m.parts=partHashes;if(m.benchmark?.priceSource)delete m.benchmark.priceSource.capturedAt;
+ const ni=normalizedInputs(inputs);
+ return{
+  schema:'supertrader-calibration-v3-content-binding-1.0.0',
+  normalizedPartListSha256:sha(Buffer.from(JSON.stringify(partHashes))),
+  normalizedManifestSha256:sha(Buffer.from(JSON.stringify(m))),
+  normalizedInputsSha256:sha(Buffer.from(JSON.stringify(ni))),
+  dataFingerprint:manifest.fingerprint,
+  sourceObjectSetSha256:setHash((inputs.sourceObjects||[]).map(o=>`${o.key}|${o.status}|${o.sha256}`)),
+  readReceiptSetSha256:setHash((inputs.readReceipts||[]).map(o=>`${o.sourceKey}|${o.sha256}`)),
+  listingSourceSha256:inputs.listingSource?.sha256??null,
+  parts:partHashes.length,securities:partHashes.reduce((a,x)=>a+x.securities,0)
+ };
+}
+
 /** Writes plaintext parts exactly as the sealed writer chunks them (same bounded chunking, no truncation). */
 export function writePlaintextCanonical(result,dest){
  const data=result.canonicalData;
@@ -80,7 +124,9 @@ export async function verifyPlaintextCanonical(dest,written,expectedUsable){
 
 export async function captureV3({out,publicOut,factDocLimit=4,collect=collectDataInventory,options={}}){
  const dest=privateDirectory(out);
- const result=await collect({canonical:true,factDocLimit,...options});
+ const fixedObservedAt=process.env.V3_OBSERVED_AT||null;
+ if(fixedObservedAt)demand(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(fixedObservedAt),'V3_OBSERVED_AT_INVALID');
+ const result=await collect({canonical:true,factDocLimit,...(fixedObservedAt?{observedAt:fixedObservedAt}:{}),...options});
  demand(result.canonicalData?.state==='AVAILABLE','CANONICAL_CAPTURE_NOT_AVAILABLE:'+(result.canonicalData?.state??'NONE'));
  const written=writePlaintextCanonical(result,dest);
  const expectedUsable=result.canonicalData.coverage?.usableSegments??-1,fingerprint=result.canonicalData.fingerprint;
@@ -108,6 +154,7 @@ export async function captureV3({out,publicOut,factDocLimit=4,collect=collectDat
   rejections:status.canonicalRejections??null,
   overlay:verified.overlayCounts,
   verification:{rereadFromDisk:true,perPartHashesMatchManifest:true,uniqueSecurityIds:true,partsSumEqualsUsableSegments:true,loaderWithSourceOverlayPassed:true},
+  contentBinding:computeContentBinding(dest),
   performanceCalculated:false,privateIdentitiesPublished:false,plaintextUploaded:false
  };
  if(publicOut){fs.mkdirSync(path.dirname(path.resolve(publicOut)),{recursive:true});fs.writeFileSync(publicOut,JSON.stringify(receipt,null,2)+'\n');}

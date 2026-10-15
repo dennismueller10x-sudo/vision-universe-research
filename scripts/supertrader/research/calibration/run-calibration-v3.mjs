@@ -16,7 +16,8 @@ import * as Listing from '../../validation/lib.mjs';
 import {referenceMethods} from './reference-engines.mjs';
 import {runReferencePortfolio} from './portfolio-calibration-v3.mjs';
 import {referenceFrame,monthlyEffect,sourceLogRisk} from './run-calibration-v2.mjs';
-import {verifyFreezeV3,verifyInputsAgainstFreeze} from './freeze-v3.mjs';
+import {reviewConstruction} from './numeric-review-v3.mjs';
+import {verifyFreezeV3,verifyInputsAgainstFreeze,verifyContentAgainstFreeze} from './freeze-v3.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../../..');
@@ -69,17 +70,18 @@ export async function runMethodV3(args){
  const out=path.resolve(args['--out']);demand(out.startsWith('/workspace/private/'),'PRIVATE_OUTPUT_REQUIRED');fs.mkdirSync(out,{recursive:true,mode:0o700});
  const inputDir=path.resolve(args['--input-dir']);demand(inputDir.startsWith('/workspace/private/'),'PRIVATE_INPUT_REQUIRED');
  const freezeBytes=fs.readFileSync(args['--freeze']),freeze=JSON.parse(freezeBytes);
- verifyFreezeV3(freeze);verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath:args['--reference-parsed']});
+ verifyFreezeV3(freeze);
+ const contentCheck=process.env.V3_BIND_MODE==='CONTENT'?verifyContentAgainstFreeze(freeze,{inputDir,referenceParsedPath:args['--reference-parsed']}):(verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath:args['--reference-parsed']}),{contentBindingVerified:false,byteExactSameJob:true});
  demand(freeze.methods.measurable.includes(args['--method']),'METHOD_NOT_MEASURABLE_UNDER_FREEZE');
  const method=referenceMethods.find(m=>m.id===ENGINE_ID[args['--method']]);demand(method,'REGISTERED_REFERENCE_METHOD_REQUIRED');
  const parsedBytes=fs.readFileSync(args['--reference-parsed']),parsed=JSON.parse(parsedBytes);
- const sourceMetadataSha=freeze.inputReceipts.find(r=>r.role==='CANONICAL_SOURCE_PROVENANCE_INPUTS').sha256;
+ const sourceMetadataSha=crypto.createHash('sha256').update(fs.readFileSync(path.join(inputDir,'data-certification-inputs.json'))).digest('hex');
  const data=await loadCanonicalData(inputDir,{sourceProvenanceOverlay:true,expectedSourceMetadataSha256:sourceMetadataSha});
  const prepared=prepareRerunData(data,baseProtocol);
  const contract=JSON.parse(fs.readFileSync(path.join(HERE,'protocol.json')));
  const riskFreeDaily=parsed.dailyRF?.rows??parsed.riskFreeDaily??[];
  const frame=referenceFrame(prepared.data,method,baseProtocol,contract);
- const summary={schema:'supertrader-calibration-v3-method-public-summary-1.0.0',freezeId:freeze.freezeId,freezeFileSha256:sha(freezeBytes),methodId:args['--method'],engineMethodId:method.id,runnerNode:process.version,results:[],performanceNumbersPublished:false};
+ const summary={schema:'supertrader-calibration-v3-method-public-summary-1.0.0',freezeId:freeze.freezeId,freezeFileSha256:sha(freezeBytes),methodId:args['--method'],engineMethodId:method.id,runnerNode:process.version,inputVerification:contentCheck,results:[],performanceNumbersPublished:false};
  for(const costMode of ['SOURCE_GROSS','SAME_TOURNAMENT_NET']){
   verifyFreezeV3(freeze);
   const entry={costMode};
@@ -88,10 +90,11 @@ export async function runMethodV3(args){
    const metrics=Object.fromEntries(['top','bottom','eligibleUniverse'].map(k=>[k,run[k]?portfolioMetrics(run[k].curve,{initialCapital:baseProtocol.execution.initialCapital,turnover:run[k].turnover,trades:run[k].trades,executionCosts:run[k].executionCosts}):null]));
    metrics.effect=monthlyEffect(run);
    metrics.sourceLogRisk=sourceLogRisk(run,riskFreeDaily,frame.data.benchmark?.bars?.map(b=>b.date)??frame.data.calendar);
-   const artifact={schema:'supertrader-calibration-v3-stock-construction-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,window:frame.protocol.window,run,metrics};
+   const review=reviewConstruction({run,metrics,data:frame.data,protocol:frame.protocol,costMode,methodId:args['--method']});
+   const artifact={schema:'supertrader-calibration-v3-stock-construction-private-1.0.0',freezeId:freeze.freezeId,methodId:args['--method'],engineMethodId:method.id,costMode,window:frame.protocol.window,run,metrics,independentNumericReview:review};
    const bytes=serializeLarge(artifact);
    const base=path.join(out,`${args['--method']}-${costMode}`);
-   Object.assign(entry,{status:run.status,plaintextSha256:sha(bytes),plaintextBytes:bytes.length,sealed:seal(base,bytes),
+   Object.assign(entry,{status:run.status,numericReview:{status:review.status,reviewSha256:sha(Buffer.from(JSON.stringify(review))),independence:review.independence,books:review.books.map(b=>({book:b.book,status:b.status,hardChecks:b.hardChecks,failedHardChecks:b.failedHardChecks,informational:b.checks.filter(c=>!c.hard).map(({id,status,checked,violations,securitiesAboveThreshold})=>({id,status,checked,violations,securitiesAboveThreshold}))}))},plaintextSha256:sha(bytes),plaintextBytes:bytes.length,sealed:seal(base,bytes),
     formations:{total:run.formations.length,ready:run.formations.filter(f=>f.status==='READY').length,partial:run.formations.filter(f=>f.status==='PARTIAL').length,other:run.formations.filter(f=>!['READY','PARTIAL'].includes(f.status)).length},
     months:run.monthly.length,dustWriteOffs:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{count:run[k].dustWriteOffs.count,totalMarkValue:run[k].dustWriteOffs.totalMarkValue,largestMarkValue:run[k].dustWriteOffs.largestMarkValue}])),reconciliation:Object.fromEntries(['top','bottom','eligibleUniverse'].filter(k=>run[k]).map(k=>[k,{pass:run[k].reconciliation.pass,absoluteDifference:run[k].reconciliation.absoluteDifference}])),
     sourceSpreadDirection:direction(metrics.effect.monthlySourceSpreadMean),sourceSpreadValidMonths:metrics.effect.sourceSpreadValidMonths});
@@ -102,7 +105,7 @@ export async function runMethodV3(args){
   }
   summary.results.push(entry);if(global.gc)global.gc();
  }
- summary.verdict=summary.results.every(r=>r.status!=='FAILED_CLOSED')?'MEASURED_REVIEW_PENDING':'FAILED_CLOSED_CAUSE_RECORDED';
+ summary.verdict=summary.results.some(r=>r.status==='FAILED_CLOSED')?'FAILED_CLOSED_CAUSE_RECORDED':summary.results.every(r=>r.numericReview?.status==='PASS')?'MEASURED_NUMERIC_REVIEW_PASSED':'MEASURED_NUMERIC_REVIEW_FAILED';
  fs.mkdirSync(path.dirname(path.resolve(args['--public-out'])),{recursive:true});
  fs.writeFileSync(args['--public-out'],JSON.stringify(summary,null,2)+'\n');
  return summary;

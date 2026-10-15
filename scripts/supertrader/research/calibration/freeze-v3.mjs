@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {computeContentBinding} from './capture-v3-inrunner.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../../..');
@@ -23,13 +24,16 @@ export const CONTRACT_FILES=[
  'scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json',
  'scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json',
  'scripts/supertrader/research/tournament/protocol.json',
- '.github/workflows/supertrader-calibration-v3.yml'
+ '.github/workflows/supertrader-calibration-v3.yml',
+ '.github/workflows/supertrader-calibration-v3-pipeline.yml'
 ];
 export const ENTRY_POINTS=[
  'scripts/supertrader/research/calibration/run-calibration-v3.mjs',
  'scripts/supertrader/research/calibration/capture-v3-inrunner.mjs',
  'scripts/supertrader/research/calibration/capture-reference-v3.mjs',
- 'scripts/supertrader/research/calibration/freeze-v3.mjs'
+ 'scripts/supertrader/research/calibration/freeze-v3.mjs',
+ 'scripts/supertrader/research/calibration/run-post-calibration-v3.mjs',
+ 'scripts/supertrader/research/calibration/build-completion-v3.mjs'
 ];
 
 /** Static relative import/require closure (ESM `from './x'` and `require('./x')`). */
@@ -52,9 +56,11 @@ export function hashFiles(files,root=ROOT){
  return Object.fromEntries(files.slice().sort().map(f=>[f,sha(fs.readFileSync(path.join(root,f)))]));
 }
 
+export function normalizedReference(bytes){const x=JSON.parse(bytes);delete x.createdAt;return sha(Buffer.from(JSON.stringify(x)));}
 export function buildFreezeV3({root=ROOT,captureReceipt,inputDir,referenceParsedPath,runId=null,codeCommit=null,now=new Date().toISOString()}){
  demand(captureReceipt?.status==='V3_CANONICAL_CAPTURE_VERIFIED_IN_RUNNER','CAPTURE_RECEIPT_NOT_VERIFIED');
  demand(captureReceipt.counts.usableSegments===captureReceipt.counts.verifiedSecurities&&captureReceipt.counts.parts>0,'CAPTURE_COUNTS_INCONSISTENT');
+ demand(captureReceipt.contentBinding?.schema==='supertrader-calibration-v3-content-binding-1.0.0','CAPTURE_CONTENT_BINDING_REQUIRED');
  const manifestBytes=fs.readFileSync(path.join(inputDir,'canonical-dataset-manifest.json')),inputsBytes=fs.readFileSync(path.join(inputDir,'data-certification-inputs.json'));
  demand(sha(manifestBytes)===captureReceipt.inputs.manifestSha256&&sha(inputsBytes)===captureReceipt.inputs.sourceMetadataSha256,'CAPTURE_RECEIPT_DISK_HASH_MISMATCH');
  const parsedBytes=fs.readFileSync(referenceParsedPath),parsed=JSON.parse(parsedBytes);
@@ -70,7 +76,9 @@ export function buildFreezeV3({root=ROOT,captureReceipt,inputDir,referenceParsed
    {role:'CANONICAL_MANIFEST_PLAINTEXT',sha256:sha(manifestBytes),bytes:manifestBytes.length},
    {role:'CANONICAL_SOURCE_PROVENANCE_INPUTS',sha256:sha(inputsBytes),bytes:inputsBytes.length},
    {role:'CANONICAL_PART_HASH_LIST',sha256:sha(Buffer.from(JSON.stringify(captureReceipt.inputs.parts))),parts:captureReceipt.inputs.parts.length,securities:captureReceipt.counts.usableSegments},
-   {role:'REFERENCE_PARSED_PLAINTEXT',sha256:sha(parsedBytes),bytes:parsedBytes.length,sourcePlanSha256:parsed.sourcePlanSha256,parserSha256:parsed.parserSha256}
+   {role:'REFERENCE_PARSED_PLAINTEXT',sha256:sha(parsedBytes),bytes:parsedBytes.length,sourcePlanSha256:parsed.sourcePlanSha256,parserSha256:parsed.parserSha256},
+   {role:'REFERENCE_PARSED_NORMALIZED',sha256:normalizedReference(parsedBytes),excludes:['createdAt'],sourcePlanSha256:parsed.sourcePlanSha256,parserSha256:parsed.parserSha256},
+   {role:'CANONICAL_CONTENT_BINDING',sha256:sha(Buffer.from(JSON.stringify(captureReceipt.contentBinding))),binding:captureReceipt.contentBinding}
   ],
   captureReceipt:{provenance:captureReceipt.provenance,counts:captureReceipt.counts,rejections:captureReceipt.rejections,contract:captureReceipt.contract,manifestSha256:captureReceipt.inputs.manifestSha256,sourceMetadataSha256:captureReceipt.inputs.sourceMetadataSha256,sourceObjectSetSha256:captureReceipt.inputs.sourceObjectSetSha256,readReceiptSetSha256:captureReceipt.inputs.readReceiptSetSha256},
   contracts:{
@@ -97,7 +105,7 @@ export function verifyFreezeV3(freeze,{root=ROOT}={}){
   demand(!path.isAbsolute(f)&&!f.split('/').includes('..')&&/^[a-f0-9]{64}$/.test(digest),'V3_FREEZE_PATH_INVALID');
   const file=path.resolve(root,f);demand(file.startsWith(root+path.sep)&&fs.existsSync(file)&&sha(fs.readFileSync(file))===digest,'V3_FROZEN_FILE_CHANGED');
  }
- const rolesRequired=['CANONICAL_MANIFEST_PLAINTEXT','CANONICAL_SOURCE_PROVENANCE_INPUTS','CANONICAL_PART_HASH_LIST','REFERENCE_PARSED_PLAINTEXT'];
+ const rolesRequired=['CANONICAL_MANIFEST_PLAINTEXT','CANONICAL_SOURCE_PROVENANCE_INPUTS','CANONICAL_PART_HASH_LIST','REFERENCE_PARSED_PLAINTEXT','REFERENCE_PARSED_NORMALIZED','CANONICAL_CONTENT_BINDING'];
  for(const role of rolesRequired)demand(freeze.inputReceipts?.filter(r=>r.role===role).length===1,'V3_FREEZE_INPUT_RECEIPT_REQUIRED');
  return true;
 }
@@ -114,6 +122,15 @@ export function verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath})
  return true;
 }
 
+/** Cross-job verification: a re-capture holds the same input iff its content binding equals the frozen one. */
+export function verifyContentAgainstFreeze(freeze,{inputDir,referenceParsedPath}){
+ const get=role=>freeze.inputReceipts.find(r=>r.role===role);
+ const frozen=get('CANONICAL_CONTENT_BINDING').binding,actual=computeContentBinding(inputDir);
+ for(const k of Object.keys(frozen))demand(JSON.stringify(frozen[k])===JSON.stringify(actual[k]),'CONTENT_BINDING_MISMATCH:'+k.toUpperCase());
+ demand(normalizedReference(fs.readFileSync(referenceParsedPath))===get('REFERENCE_PARSED_NORMALIZED').sha256,'FROZEN_REFERENCE_CONTENT_MISMATCH');
+ return {contentBindingVerified:true,parts:actual.parts,securities:actual.securities};
+}
+
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const a=process.argv.slice(2),arg=f=>{const i=a.indexOf(f);return i>=0?a[i+1]:null;};
  try{
@@ -125,7 +142,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
    process.stdout.write(JSON.stringify({status:freeze.status,freezeId:freeze.freezeId,files:Object.keys(freeze.files).length,freezeFileSha256:sha(fs.readFileSync(arg('--out')))})+'\n');
   }else if(cmd==='verify'){
    const freeze=JSON.parse(fs.readFileSync(arg('--freeze'),'utf8'));verifyFreezeV3(freeze);
-   if(arg('--input-dir'))verifyInputsAgainstFreeze(freeze,{inputDir:arg('--input-dir'),referenceParsedPath:arg('--reference-parsed')});
+   if(arg('--input-dir')){if(a.includes('--content'))process.stdout.write(JSON.stringify(verifyContentAgainstFreeze(freeze,{inputDir:arg('--input-dir'),referenceParsedPath:arg('--reference-parsed')}))+'\n');else verifyInputsAgainstFreeze(freeze,{inputDir:arg('--input-dir'),referenceParsedPath:arg('--reference-parsed')});}
    process.stdout.write(JSON.stringify({status:'V3_FREEZE_VERIFIED',freezeId:freeze.freezeId})+'\n');
   }else throw new Error('UNKNOWN_FREEZE_COMMAND');
  }catch(e){process.stderr.write(JSON.stringify({status:'V3_FREEZE_FAILED_CLOSED',code:/^[A-Z0-9_]+$/.test(e.message)?e.message:'FREEZE_FAILURE'})+'\n');process.exitCode=1;}
