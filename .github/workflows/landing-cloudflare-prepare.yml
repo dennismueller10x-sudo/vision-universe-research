@@ -5,10 +5,10 @@ on:
       newsletter_operation:
         description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
         type: choice
-        options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose, doi-template-fix]
+        options: [audit, setup, controlled, observe, finish-test, close, public, e2e, doi-diagnose, doi-template-fix, doi-copy-update]
         default: audit
       authorize_controlled_test:
-        description: Nur observe/e2e/doi-diagnose – kontrollierte DOI- und administrative Testbestätigung erlauben
+        description: Nur observe/finish-test/e2e/doi-diagnose – kontrollierte Testmails erlauben
         type: boolean
         default: false
       privacy_document_sha256:
@@ -49,7 +49,7 @@ jobs:
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
-        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'doi-diagnose'
+        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'finish-test' && inputs.newsletter_operation != 'doi-diagnose'
         env:
           NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
           NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
@@ -87,6 +87,14 @@ jobs:
           NEWSLETTER_OBSERVE_UNTIL: ${{ inputs.test_until_ms }}
           NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: python3 landing/scripts/newsletter-e2e.py
+      - name: Finish verified owner confirmation and native unsubscribe
+        if: inputs.newsletter_operation == 'finish-test' && inputs.authorize_controlled_test && github.ref == 'refs/heads/main'
+        env:
+          NEWSLETTER_E2E_OPERATION: finish-test
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_IMPORT_PAYLOAD: ${{ secrets.BREVO_IMPORT_PAYLOAD }}
         run: python3 landing/scripts/newsletter-e2e.py
   prepare:
     if: github.ref == 'refs/heads/main' && inputs.newsletter_operation == 'audit'

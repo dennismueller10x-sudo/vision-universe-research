@@ -1,5 +1,7 @@
 # Vision Universe · Coming soon
 
+Newsletter-Stand 15.10.2026: Betreiber bestätigt DOI-Mail und Klick; privater API-Abgleich bestätigt die neue Mitgliedschaft. Aktueller Gesamtbestand Listen 4/5/6 **135/0/2**. Native Abmeldung und endgültige öffentliche Datenschutzfreigabe stehen noch aus; allgemeine Anmeldung geschlossen. [Belege, Textbereinigung und sichere Fortsetzung](NEWSLETTER.md#betreiber-abnahme-und-bereinigung-vom-15102026). Keine rückwirkenden DOI-Nachweise für Bestandskontakte.
+
 Isolierte Coming-soon-Seite für **https://www.visionuniverse.de/**. PR #543 übernimmt jetzt das tatsächliche Design der Research-Startseite: Original-Header/Logo, Inter, dunkler Hero mit grünem Raster und Glow, identische Schriftgrößen, Buttons, Gerätebühne, Original-Icons und responsive Regeln. Die Geräte zeigen eine zeitlose Modulübersicht mit Überschrift, ohne NVIDIA, Kurse, Charts oder Kennzahlen. Keine Änderung an Research, dessen `CNAME`, Pages-Workflow, API, DNS oder Shopify. Der Owner hat den Merge des getesteten Vorbereitungscodes und die spätere getrennte Cloudflare-Veröffentlichung autorisiert.
 
 ## Aktuelle Hosting-Vorgabe: Cloudflare Pages

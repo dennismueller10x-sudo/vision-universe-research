@@ -1,8 +1,38 @@
 """Explicit controlled test only. Personal data stays in runner memory, never logs/artifacts."""
-import json,os,time,urllib.parse,urllib.request,urllib.error
+import base64,gzip,hashlib,io,json,os,time,urllib.parse,urllib.request,urllib.error
+from datetime import datetime,timezone
 from pathlib import Path
 from newsletter_mail import mail_source
 ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';API='https://api.brevo.com/v3'
+ACCEPTED_RUNTIME_SHA='7cdd63206784fad68e7e021ecf3f238e00a4110a985e8c172d0d9db549972173'
+
+def confirmed_owner_from_payload():
+    encoded=os.environ.get('BREVO_IMPORT_PAYLOAD','').strip()
+    if hashlib.sha256(encoded.encode()).hexdigest()!='484d81a155374aa286207953fdf0b5bf56e5708b909eb626a542637f4c0b8319':raise ValueError('Private owner handover mismatch')
+    with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(encoded,validate=True))) as stream:value=json.loads(stream.read(1048577))
+    rows=value.get('records')
+    if not isinstance(rows,list) or len(rows)!=137:raise ValueError('Private owner shape')
+    email=rows[111].get('email','').strip().lower()
+    if not email or '@' not in email:raise ValueError('Private owner missing')
+    return email
+
+def utc_time(value):
+    stamp=datetime.fromisoformat(value.replace('Z','+00:00'))
+    if stamp.tzinfo is None:raise ValueError('Provider timezone missing')
+    return stamp.astimezone(timezone.utc)
+
+def verify_confirmed_owner(contact,email,events):
+    # Resume only the one genuinely new owner DOI accepted by the real form on
+    # 15 October. Never make an imported customer eligible for this send path.
+    start=utc_time('2026-10-15T17:54:37Z');request_end=utc_time('2026-10-15T17:57:00Z');confirmed_end=utc_time('2026-10-15T18:27:00Z')
+    rows=[e for e in events if e.get('email','').strip().lower()==email]
+    messages={e.get('messageId') for e in rows if e.get('messageId')}
+    requests=[e for e in rows if e.get('event') in ('request','requests')]
+    if len(messages)!=1 or not requests or any(not start<=utc_time(e.get('date',''))<=request_end for e in requests):raise ValueError('Actual initial DOI request not verified')
+    # Confirmed list membership plus the DOI-only consent marker prove the
+    # confirmation; optional individual click tracking is not a prerequisite.
+    if type(contact.get('id')) is not int or contact.get('email','').strip().lower()!=email or set(contact.get('listIds',[]))!={4} or contact.get('emailBlacklisted') is not False or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('Controlled confirmation mismatch')
+    if not start<=utc_time(contact.get('createdAt',''))<=confirmed_end:raise ValueError('Only the newly created owner contact')
 
 def owner_wait_seconds():
     until=os.environ.get('NEWSLETTER_OBSERVE_UNTIL','')
@@ -13,10 +43,13 @@ def owner_wait_seconds():
 
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main') or os.environ.get('NEWSLETTER_AUTHORIZE_CONTROLLED_TEST')!='true':raise ValueError('Controlled test not authorized')
-    observe=os.environ.get('NEWSLETTER_E2E_OPERATION')=='observe'
+    resume=os.environ.get('NEWSLETTER_E2E_OPERATION')=='finish-test'
+    observe=os.environ.get('NEWSLETTER_E2E_OPERATION') in ('observe','finish-test')
+    if resume and os.environ.get('GITHUB_REF')!='refs/heads/main':raise ValueError('Acceptance continuation from main only')
+    if resume and hashlib.sha256(Path(__file__).resolve().parents[1].joinpath('server/newsletter.mjs').read_bytes()).hexdigest()!=ACCEPTED_RUNTIME_SHA:raise ValueError('Actual DOI runtime changed; new full test required')
     owner_wait=owner_wait_seconds() if observe else 600
     origin='https://www.visionuniverse.de' if observe else ORIGIN
-    email=os.environ.get('BREVO_DOI_TEST_EMAIL','').strip().lower();key=os.environ.get('BREVO_API_KEY','')
+    email=confirmed_owner_from_payload() if resume else os.environ.get('BREVO_DOI_TEST_EMAIL','').strip().lower();key=os.environ.get('BREVO_API_KEY','')
     if not key or not observe and not email:raise ValueError('Private test address/key missing')
     def request(origin,path,method='GET',body=None):
         class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -49,7 +82,7 @@ def run():
             if len(page)<50:return sorted(result,key=lambda c:c['id'])
         raise ValueError('Pagination incomplete')
     before={n:records(n) for n in (4,5,6)};protected={c['id'] for rows in before.values() for c in rows}
-    if observe:
+    if observe and not resume:
         req=urllib.request.Request(origin+'/',headers={'User-Agent':'VisionUniverse-Brevo/1.0'})
         with urllib.request.build_opener().open(req,timeout=30) as response:
             page=response.read(200000).decode()
@@ -82,7 +115,18 @@ def run():
     senders=[s['id'] for s in read('/senders').get('senders',[]) if s.get('active') is True and s.get('email','').endswith('@visionuniverse.de')]
     if len(senders)!=1 or not domain.get('verified') or not domain.get('authenticated'):raise ValueError('Sender/domain unavailable')
     # Phase messages contain neither email nor personalized DOI/unsubscribe URL.
-    if observe:
+    if resume:
+        contact_path='/contacts/'+urllib.parse.quote(email,safe='')
+        code,c=request(API,contact_path)
+        if code!=200:raise ValueError('Confirmed owner missing')
+        verify_confirmed_owner(c,email,baseline_events)
+        template=read('/smtp/templates/8')
+        if template.get('id')!=8 or template.get('doiTemplate') is not True or template.get('isActive') is not True or template.get('tag')!='optin' or ''.join(template.get('htmlContent','').split())!=''.join(mail_source('newsletter-api-doi.html').split()):raise ValueError('Current DOI template differs from reviewed copy')
+        if sum(v.get('id')==c['id'] and v.get('email','').strip().lower()==email for v in originals)!=1:raise ValueError('Private inventory ambiguous')
+        protected.remove(c['id']);originals=[v for v in originals if v['id']!=c['id']]
+        before={n:[v for v in rows if v['id']!=c['id']] for n,rows in before.items()}
+        print(json.dumps({'actual_owner_doi_request_and_confirmation_verified':True,'new_confirmed_membership_verified':True,'doi_resend_calls':0}),flush=True)
+    elif observe:
         print('Ready for private owner form submission on the main domain. Enter one new controlled address; wait for the pre-click check before using the DOI link.',flush=True)
         baseline_ids={(e.get('messageId'),e.get('event'),e.get('date'),e.get('email')) for e in baseline_events}
         deadline=time.monotonic()+owner_wait
@@ -101,14 +145,15 @@ def run():
         print('Controlled test: sending one DOI request to the private preview. Inbox receipt is not proven by API acceptance.',flush=True)
         code,_=request(origin,'/api/newsletter/subscribe','POST',{'email':email,'consent':True,'consentVersion':'vu-newsletter-v1','honeypot':''})
         if code!=202:raise ValueError('DOI request not accepted')
-    code,c=request(API,contact_path)
-    if code==200 and 4 in c.get('listIds',[]):raise ValueError('List membership before confirmation')
-    if code==200 and c.get('attributes',{}).get('VU_EMAIL_CONSENT')=='subscribed':raise ValueError('Campaign consent marker applied before confirmation')
-    if code not in (200,404):raise ValueError('Pre-click state uncertain')
+    if not resume:
+        code,c=request(API,contact_path)
+        if code==200 and 4 in c.get('listIds',[]):raise ValueError('List membership before confirmation')
+        if code==200 and c.get('attributes',{}).get('VU_EMAIL_CONSENT')=='subscribed':raise ValueError('Campaign consent marker applied before confirmation')
+        if code not in (200,404):raise ValueError('Pre-click state uncertain')
     if not observe:
         code,_=request(origin,'/api/newsletter/subscribe','POST',{'email':email,'consent':True,'consentVersion':'vu-newsletter-v1','honeypot':''})
         if code!=202:raise ValueError('Pre-click repeat not protected')
-    print('Private inbox step: verify the German DOI content and click its confirmation button. Waiting for provider membership.',flush=True)
+    if not resume:print('Private inbox step: verify the German DOI content and click its confirmation button. Waiting for provider membership.',flush=True)
     deadline=time.monotonic()+600;contact=None
     while time.monotonic()<deadline:
         code,c=request(API,contact_path)
@@ -124,7 +169,22 @@ def run():
     # links or sendTest preview links cannot prove marketing suppression.
     run_id=os.environ.get('GITHUB_RUN_ID','')
     if not run_id.isdigit():raise ValueError('Run identity unavailable')
-    name='VU | DOI-Abnahme | '+run_id
+    name='VU | DOI-Abnahme | Betreiber Oktober 2026' if resume else 'VU | DOI-Abnahme | '+run_id
+    if resume:
+        # Stable purpose identity prevents a second delivery after an uncertain
+        # send or runner failure. There is no delivery retry operation.
+        for offset in range(0,10000,50):
+            lists=read('/contacts/lists?limit=50&offset='+str(offset)).get('lists')
+            if not isinstance(lists,list):raise ValueError('Prior test list inventory unavailable')
+            if any(v.get('name')==name for v in lists):raise ValueError('Prior owner test list exists; inspect before continuation')
+            if len(lists)<50:break
+        else:raise ValueError('Test list inventory incomplete')
+        for offset in range(0,10000,50):
+            campaigns=read('/emailCampaigns?type=classic&limit=50&offset='+str(offset)).get('campaigns')
+            if not isinstance(campaigns,list):raise ValueError('Prior test campaign inventory unavailable')
+            if any(v.get('name')==name for v in campaigns):raise ValueError('Prior owner acceptance exists; never resend')
+            if len(campaigns)<50:break
+        else:raise ValueError('Test campaign inventory incomplete')
     folders=read('/contacts/lists/4').get('folderId')
     if type(folders) is not int:raise ValueError('Existing folder missing')
     test_list=mutation('/contacts/lists','POST',{'name':name,'folderId':folders}).get('id')
@@ -160,6 +220,15 @@ def run():
         if len(messages)!=1:raise ValueError('Single DOI delivery not proven')
     after={n:[c for c in records(n) if c['id']!=contact['id']] for n in before}
     if before!=after:raise ValueError('Protected contact objects changed')
+    if resume:
+        after_originals=[]
+        for offset in range(0,10000,50):
+            rows=read('/contacts?limit=50&offset='+str(offset)).get('contacts')
+            if not isinstance(rows,list):raise ValueError('Final inventory unavailable')
+            after_originals.extend(v for v in rows if v.get('id')!=contact['id'])
+            if len(rows)<50:break
+        else:raise ValueError('Final inventory incomplete')
+        if sorted(originals,key=lambda v:v['id'])!=sorted(after_originals,key=lambda v:v['id']):raise ValueError('Original account contacts changed')
     own=read('/contacts/lists/'+str(test_list));rows=records(test_list)
     if own.get('name')==name and len(rows)==1 and rows[0]['id']==contact['id']:
         mutation('/contacts/lists/'+str(test_list),'DELETE')
@@ -168,6 +237,6 @@ def run():
 if __name__=='__main__':
     try:run()
     except Exception as error:
-        safe=('Controlled main-domain UI not deployed','Event shape uncertain','Original inventory unavailable','Sender/domain unavailable','Read unavailable')
+        safe=('Controlled main-domain UI not deployed','Event shape uncertain','Original inventory unavailable','Sender/domain unavailable','Read unavailable','Actual initial DOI request not verified','Controlled confirmation mismatch','Only the newly created owner contact','Prior owner acceptance exists; never resend','Actual DOI runtime changed; new full test required','Private owner handover mismatch','Provider timezone missing')
         if isinstance(error,ValueError) and str(error) in safe:print(json.dumps({'safe_failure':str(error)}))
         print('Controlled test blocked or incomplete. No personalized data emitted; never blindly retry a delivery.');raise SystemExit(1) from None

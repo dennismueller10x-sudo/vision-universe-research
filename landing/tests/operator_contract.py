@@ -16,12 +16,12 @@ class Response:
     def __exit__(self,*args):pass
 
 class Provider:
-    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False,empty_baseline=False):
+    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False,empty_baseline=False,resume=False,prior_campaign=False):
         self.calls=[];self.existing=existing;self.bad_draft=bad_draft;self.doi=0;self.lookups=0;self.sent=False;self.draft=None
-        self.observe=observe;self.ambiguous=ambiguous;self.event_reads=0
+        self.resume=resume;self.prior_campaign=prior_campaign;self.observe=observe or resume;self.ambiguous=ambiguous;self.event_reads=0
         self.empty_baseline=empty_baseline
         self.old={'id':1,'email':'old@example.test','listIds':[4],'emailBlacklisted':False}
-        self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False,'attributes':{'VU_EMAIL_CONSENT':'subscribed'}}
+        self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False,'attributes':{'VU_EMAIL_CONSENT':'subscribed'},'createdAt':'2026-10-15T18:18:00Z'}
     def open(self,request,**kwargs):
         path=urllib.parse.urlsplit(request.full_url).path.removeprefix('/v3');method=request.get_method()
         body=json.loads(request.data) if request.data else None;self.calls.append((path,method,body))
@@ -29,13 +29,17 @@ class Provider:
         if path=='/api/newsletter/subscribe':self.doi+=1;return Response(202,{})
         if path=='/contacts/new%40example.test':
             self.lookups+=1
+            if self.resume:return Response(200,{**self.new,'emailBlacklisted':self.sent or self.new['emailBlacklisted']})
             if self.existing:return Response(200,self.old)
             if not self.doi or self.lookups==(1 if self.observe else 2):
                 raise operator.urllib.error.HTTPError(request.full_url,404,'Not found',{},io.BytesIO())
             return Response(200,{**self.new,'emailBlacklisted':self.sent})
-        if path=='/contacts':return Response(200,{'contacts':[self.old]})
+        if path=='/contacts':return Response(200,{'contacts':[self.old]+([{**self.new,'emailBlacklisted':self.sent}] if self.resume else [])})
         if path=='/smtp/statistics/events':
             self.event_reads+=1
+            if self.resume:
+                base={'messageId':'synthetic-message-1','email':'new@example.test','date':'2026-10-15T17:55:00Z'}
+                return Response(200,{'events':[{**base,'event':'requests'},{**base,'event':'click','date':'2026-10-15T18:18:00Z'}]})
             if self.event_reads==1:return Response(200,{} if self.empty_baseline else {'events':[]})
             self.doi=2
             rows=[{'messageId':'synthetic-message-1','email':'new@example.test','event':'request','date':'2026-10-14T12:00:00Z'}]
@@ -43,15 +47,18 @@ class Provider:
             return Response(200,{'events':rows})
         if path=='/senders/domains/visionuniverse.de':return Response(200,{'verified':True,'authenticated':True})
         if path=='/senders':return Response(200,{'senders':[{'id':1,'active':True,'email':'info@visionuniverse.de'}]})
+        if path=='/smtp/templates/8':return Response(200,{'id':8,'doiTemplate':True,'isActive':True,'tag':'optin','htmlContent':mail_source('newsletter-api-doi.html')})
         if path=='/contacts/lists' and method=='POST':return Response(201,{'id':7})
+        if path=='/contacts/lists' and method=='GET':return Response(200,{'lists':[]})
         if path=='/contacts/lists/7/contacts/add':
             assert body=={'ids':[2]};return Response(201,{})
         if path.endswith('/contacts'):
-            n=int(path.split('/')[-2]);rows=[self.old]+([self.new] if self.doi>=2 else []) if n==4 else [self.new] if n==7 else []
+            n=int(path.split('/')[-2]);rows=[self.old]+([self.new] if self.doi>=2 or self.resume else []) if n==4 else [self.new] if n==7 else []
             return Response(200,{'contacts':rows})
         if path=='/contacts/lists/4':return Response(200,{'folderId':1})
-        if path=='/contacts/lists/7':return Response(200,{'name':'VU | DOI-Abnahme | 123'})
+        if path=='/contacts/lists/7':return Response(200,{'name':'VU | DOI-Abnahme | Betreiber Oktober 2026' if self.resume else 'VU | DOI-Abnahme | 123'})
         if path=='/emailCampaigns':
+            if method=='GET':return Response(200,{'campaigns':[{'name':'VU | DOI-Abnahme | Betreiber Oktober 2026'}] if self.prior_campaign else []})
             assert body['recipients']=={'listIds':[7]};self.draft={**body,'id':8,'status':'draft'};return Response(201,{'id':8})
         if path=='/emailCampaigns/8':return Response(200,{**self.draft,'recipients':{'listIds':[4]}} if self.bad_draft else self.draft)
         if path=='/emailCampaigns/8/sendNow':self.sent=True;return Response(204,{})
@@ -80,8 +87,8 @@ class MailContract(unittest.TestCase):
 class Contract(unittest.TestCase):
     def run_operator(self,provider,authorized=True):
         env={'GITHUB_ACTIONS':'true','GITHUB_EVENT_NAME':'workflow_dispatch','GITHUB_REF':'refs/heads/feat/brevo-app-waitlist-doi','NEWSLETTER_AUTHORIZE_CONTROLLED_TEST':'true' if authorized else 'false','BREVO_DOI_TEST_EMAIL':'new@example.test','BREVO_API_KEY':'synthetic','GITHUB_RUN_ID':'123'}
-        if provider.observe:env.update({'NEWSLETTER_E2E_OPERATION':'observe','GITHUB_REF':'refs/heads/main','BREVO_DOI_TEST_EMAIL':''})
-        with patch.dict(os.environ,env,clear=True),patch.object(operator.urllib.request,'build_opener',return_value=provider),contextlib.redirect_stdout(io.StringIO()):operator.run()
+        if provider.observe:env.update({'NEWSLETTER_E2E_OPERATION':'finish-test' if provider.resume else 'observe','GITHUB_REF':'refs/heads/main','BREVO_DOI_TEST_EMAIL':''})
+        with patch.dict(os.environ,env,clear=True),patch.object(operator,'confirmed_owner_from_payload',return_value='new@example.test'),patch.object(operator.urllib.request,'build_opener',return_value=provider),contextlib.redirect_stdout(io.StringIO()):operator.run()
     def test_no_authorization_opens_no_connection(self):
         p=Provider()
         with self.assertRaises(ValueError):self.run_operator(p,False)
@@ -132,8 +139,48 @@ class Contract(unittest.TestCase):
         p=Provider(observe=True,ambiguous=True)
         with self.assertRaises(ValueError):self.run_operator(p)
         self.assertTrue(all(m=='GET' for _,m,_ in p.calls))
+    def test_confirmed_owner_continues_only_unsubscribe_without_doi_or_contact_mutations(self):
+        p=Provider(resume=True);self.run_operator(p)
+        self.assertTrue(p.sent)
+        self.assertEqual(sum(path.endswith('/sendNow') for path,_,_ in p.calls),1)
+        self.assertFalse(any(path=='/api/newsletter/subscribe' or 'doubleOptinConfirmation' in path for path,_,_ in p.calls))
+        self.assertFalse(any(method=='PUT' for _,method,_ in p.calls))
+    def test_confirmed_owner_rejects_historical_import_and_other_lists_before_any_write(self):
+        for changes in ({'createdAt':'2026-10-10T12:00:00Z'},{'listIds':[4,5]},{'emailBlacklisted':True},{'attributes':{'VU_EMAIL_CONSENT':'unknown'}}):
+            p=Provider(resume=True);p.new.update(changes)
+            with self.assertRaises(ValueError):self.run_operator(p)
+            self.assertTrue(all(method=='GET' for _,method,_ in p.calls))
+    def test_existing_owner_test_campaign_blocks_repeat_delivery(self):
+        p=Provider(resume=True,prior_campaign=True)
+        with self.assertRaises(ValueError):self.run_operator(p)
+        self.assertTrue(all(method=='GET' for _,method,_ in p.calls))
+    def test_changed_doi_runtime_blocks_continuation(self):
+        p=Provider(resume=True)
+        with patch.object(operator,'ACCEPTED_RUNTIME_SHA','f'*64):
+            with self.assertRaises(ValueError):self.run_operator(p)
+        self.assertEqual(p.calls,[])
+    def test_continuation_requires_real_unique_initial_request_and_confirmed_profile(self):
+        p=Provider(resume=True);email=p.new['email'];base={'email':email,'messageId':'one','event':'requests','date':'2026-10-15T17:55:00Z'}
+        for rows in ([],[{**base,'date':'2026-10-10T12:00:00Z'},{**base,'event':'click'}],[base,{**base,'event':'click','messageId':'two'}]):
+            with self.assertRaises(ValueError):operator.verify_confirmed_owner(p.new,email,rows)
+        operator.verify_confirmed_owner(p.new,email,[base])
+    def test_private_owner_payload_never_falls_back_to_another_address(self):
+        with patch.dict(os.environ,{'BREVO_IMPORT_PAYLOAD':'wrong'},clear=True):
+            with self.assertRaises(ValueError):operator.confirmed_owner_from_payload()
 
 class ReleaseContract(unittest.TestCase):
+    def test_copy_update_can_only_put_the_owned_template_and_exact_reviewed_html(self):
+        html=mail_source('newsletter-api-doi.html')
+        class Opener:
+            def open(self,req,**kwargs):return Response(204,{})
+        with patch.object(admin.urllib.request,'build_opener',return_value=Opener()) as request:
+            self.assertEqual(admin.api(admin.BREVO,'/smtp/templates/8','synthetic','PUT',{'htmlContent':html})[0],204)
+            request.reset_mock()
+            for path,body in [('/smtp/templates/4',{'htmlContent':html}),('/smtp/templates/8',{'htmlContent':'other'}),('/smtp/templates/8',{'htmlContent':html,'sender':{'id':2}}),('/contacts/123',{'emailBlacklisted':False})]:
+                with self.assertRaises(ValueError):admin.api(admin.BREVO,path,'synthetic','PUT',body)
+            request.assert_not_called()
+        legacy=html.replace('über den Abmeldelink in jedem späteren','über den Brevo-Abmeldelink in jedem späteren')
+        self.assertEqual(hashlib.sha256(''.join(legacy.split()).encode()).hexdigest(),admin.PREVIOUS_COPY_SHA)
     def test_provider_errors_never_return_personalized_message_or_key(self):
         for message in ('Failure for synthetic-person@example.invalid', 'SYNTHETIC_PRIVATE_API_KEY'):
             class Opener:
@@ -160,7 +207,7 @@ class ReleaseContract(unittest.TestCase):
         with self.assertRaises(ValueError):self.check('controlled',{**env,'NEWSLETTER_OPERATOR_PRIVACY_SHA256':hashlib.sha256(self.file.read_bytes()).hexdigest()})
     def test_public_mode_requires_actual_observer_step_and_private_inbox_confirmation(self):
         env={'NEWSLETTER_OPERATOR_PRIVACY_SHA256':self.digest,'NEWSLETTER_OPERATOR_TEST_RUN_ID':'123','NEWSLETTER_OPERATOR_INBOX_VERIFIED':'true','GH_TOKEN':'synthetic'}
-        for step_name,inbox,source,valid in [('Observe owner signup and verify Brevo unsubscribe','true','f'*40,True),('Private audit or closed setup','true','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','false','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','true','a'*40,False)]:
+        for step_name,inbox,source,valid in [('Observe owner signup and verify Brevo unsubscribe','true','f'*40,True),('Finish verified owner confirmation and native unsubscribe','true','f'*40,True),('Private audit or closed setup','true','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','false','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','true','a'*40,False)]:
             def github(req,**kwargs):
                 path=urllib.parse.urlsplit(req.full_url).path
                 if path.endswith('/jobs'):return Response(200,{'jobs':[{'conclusion':'success','steps':[{'name':step_name,'conclusion':'success'}]}]})
