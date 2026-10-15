@@ -238,3 +238,41 @@ test("PI24 Intraday-Squeeze (Eroeffnung am Vortag, Schluss x15, Volumen x2000): 
   assert.equal(CTR.reconstruct(b, OK).state, "TOTAL_RETURN_RECONSTRUCTED");
   assert.equal(PI.explainDay(b, 60, {}).cause, "GENUINE_PRICE_MOVE");
 });
+
+/* GOLDEN CASES AUS DEM AUDIT (Laeufe 38766580165 / 38772238376). Nur die relative
+   Signatur echter Faelle (Verhaeltnisse, Eroeffnung, Volumen gegen Median, Anbieterfaktor),
+   keine Kurse, Ticker oder Daten - die stehen versiegelt in scripts/quant/price-integrity/sealed. */
+const golden = (o) => bars(120, { start: o.start ?? 0.1, drift: o.drift ?? 0.001, events: { 60: { jump: o.r, open: o.o, volume: o.v * 1e6 } } });
+const GOLDEN = [
+  { id: "G-D1-EXACT-40X", r: 40, o: 40, v: 19, expect: "SPLIT_SUSPECTED_UNDECLARED", note: "exakt 40x ueber Nacht trotz 19x Volumen, Anbieterfaktor unveraendert (V4-D1, 83er-Liste)" },
+  { id: "G-D1-EXACT-20X", r: 20, o: 20, v: 3, expect: "SPLIT_SUSPECTED_UNDECLARED", note: "exakt 20x, Volumen 3x (V4-D1)" },
+  { id: "G-D1-VOLUME-60X", r: 60.86, o: 60.86, v: 0.022, expect: "SPLIT_SUSPECTED_UNDECLARED", note: "60,9x, Volumen 0,02x Median" },
+  { id: "G-D1-OUT-OF-RANGE-2000X", r: 2000, o: 2000, v: 0.103, expect: "SPLIT_SUSPECTED_UNDECLARED", note: "2000x ueber Nacht, Volumen faellt" },
+  { id: "G-FP-SUBPENNY-TICK", start: 0.0035, drift: 0, r: 1.714, o: 1.714, v: 0.32, expect: "TOTAL_RETURN_RECONSTRUCTED", note: "Sub-Penny-Tick 0,0035 -> 0,006 (1.1.0-Fehlalarm, SEC: kein Split)" },
+  { id: "G-FP-SQUEEZE", start: 0.5, r: 10.515, o: 2.699, v: 7338, expect: "TOTAL_RETURN_RECONSTRUCTED", note: "Intraday-Squeeze, Volumen x7338, SEC-Aktienzahl unveraendert" },
+  { id: "G-FP-SQUEEZE-2", start: 0.5, r: 40.725, o: 8.879, v: 1500, expect: "TOTAL_RETURN_RECONSTRUCTED", note: "Squeeze mit Gap 8,9x und Volumen x1500" },
+  { id: "G-KNOWN-FN-10.3X", r: 10.345, o: 10.345, v: 0.398, expect: "TOTAL_RETURN_RECONSTRUCTED", note: "BEKANNTE LUECKE: 10,3x (3,4 % neben 10), Volumen 0,4x > 3/k; SEC bestaetigt 1:11 - rein preisbasiert nicht belegbar (Blocker)" },
+  { id: "G-KNOWN-FN-152X", r: 152.3, o: 140.3, v: 0.112, expect: "TOTAL_RETURN_RECONSTRUCTED", note: "BEKANNTE LUECKE: 152x (k=150), Eroeffnung 6,5 % daneben, Volumen 0,11x > 3/150" },
+];
+for (const g of GOLDEN) {
+  test(`${g.id}: ${g.note}`, () => {
+    const r = CTR.reconstruct(golden(g), OK);
+    if (g.expect === "TOTAL_RETURN_RECONSTRUCTED") assert.equal(r.state, g.expect);
+    else { assert.equal(r.reason, g.expect); assert.equal(r.date, golden(g)[60].date); }
+  });
+}
+
+test("G-D2-ADJUSTED-LEVEL: Serien-Reverse-Splits 1:6, 1:3, 1:9 heben das bereinigte Anfangsniveau ueber 1e6 - NORMALIZE, keine Sperre", () => {
+  const b = bars(400, { start: 40000, drift: 0, events: { 100: { split: 1 / 6, volume: 1.6e5 }, 200: { split: 1 / 3, volume: 3e5 }, 300: { split: 1 / 9, volume: 1e5 } } });
+  assert.equal(CTR.reconstruct(b, OK).state, "TOTAL_RETURN_RECONSTRUCTED");
+  const f = RS.splitFactors(b), sec = { bars: b.map((x, i) => ({ ...x, rawClose: x.close, close: x.close / f[i] })) };
+  assert.ok(sec.bars[0].close > 1e6);
+  assert.equal(PI.explainHighLevel(sec).cause, "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS");
+});
+
+test("G-D1-DECLARED-SPLIT-MONTH: gemeldeter Reverse Split 1:12 mit -8 % am Tag, danach echte Bewegung: rekonstruiert (26 der 28 DECLARED_SPLIT_IN_MONTH-Faelle)", () => {
+  const b = bars(120, { start: 0.47, events: { 60: { split: 1 / 12, jump: 0.92, volume: 2e6 }, 70: { jump: 3 } } });
+  const r = CTR.reconstruct(b, OK);
+  assert.equal(r.state, "TOTAL_RETURN_RECONSTRUCTED");
+  assert.ok(Math.abs(r.priceReturnIndex[60] / r.priceReturnIndex[59] - 0.92) < 0.01);
+});
