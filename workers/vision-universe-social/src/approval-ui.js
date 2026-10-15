@@ -170,7 +170,7 @@ export function approvalResponse(titel, inhalt, status = 200, headers = {}) {
          keinem geteilten Zwischenspeicher liegen. */
       "cache-control": "no-store, private",
       "content-security-policy":
-        "default-src 'none'; style-src 'unsafe-inline'; img-src https:; " +
+        "default-src 'none'; style-src 'unsafe-inline'; img-src https:; media-src https:; " +
         "form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
       "referrer-policy": "no-referrer",
       "x-content-type-options": "nosniff",
@@ -662,7 +662,7 @@ function bildLage(i) {
      die veroeffentlicht wuerde, gehoert es zu einem anderen Bild —
      dann ist DIESES ungeprueft, und zwar unabhaengig davon, was das
      Urteil sagt. */
-  const adresse = (i && i.payload && i.payload.imageUrl) || null;
+  const adresse = (i && i.payload && (i.payload.kind === "REEL" ? i.payload.videoUrl : i.payload.imageUrl)) || null;
   if (!a.url || a.url !== adresse) {
     return { erreichbar: false, geprueft: false,
       satz: "Gemessen wurde nicht das Bild, das hier veroeffentlicht wuerde. " +
@@ -728,6 +728,13 @@ function slidesBlock(i, bild) {
     : " Ob dort etwas liegt, wurde nicht geprueft.");
   const c = i.carousel;
   const urls = i.payload && Array.isArray(i.payload.imageUrls) ? i.payload.imageUrls : null;
+  if (i.payload && i.payload.kind === "REEL") {
+    return `<figure>
+  <video src="${escapeHtml(i.payload.videoUrl)}" controls preload="metadata" playsinline width="360"></video>
+  <figcaption class="leise">Dieses Reel wuerde veroeffentlicht — unter genau dieser
+  Adresse.${hinweis}</figcaption>
+</figure>`;
+  }
   if (!c || !urls || urls.length < 2) {
     return `<figure>
   <img src="${escapeHtml(i.payload.imageUrl)}" alt="" width="1080" height="1350">

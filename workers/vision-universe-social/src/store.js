@@ -325,14 +325,56 @@ const QUEUE_KEY = "approval:queue:v1";
 export async function readQueue(env) {
   if (!env.VU_SOCIAL_KV) return null;
   const raw = await env.VU_SOCIAL_KV.get(QUEUE_KEY);
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch (err) { return null; }
+  let projektion = null;
+  if (raw) { try { projektion = JSON.parse(raw); } catch (err) { projektion = null; } }
+  /* REELS liegen ausserhalb der Repository-Projektion (die ersetzt die Schlange bei jeder
+     Uebertragung vollstaendig) und werden HIER dazugelegt - an der einzigen Lesestelle. */
+  const reels = await readReelItems(env);
+  if (!reels.length) return projektion;
+  const basis = projektion || { version: 1, generatedAt: new Date().toISOString(), activeCount: 0,
+    source: "reel-only", complete: true, unresolved: [], items: [] };
+  const vorhanden = new Set((basis.items || []).map((i) => i.candidateId));
+  const neu = reels.filter((r) => !vorhanden.has(r.candidateId));
+  return Object.assign({}, basis, {
+    items: (basis.items || []).concat(neu),
+    activeCount: (Number(basis.activeCount) || 0) + neu.length
+  });
 }
 
 export async function writeQueue(env, projektion) {
   if (!env.VU_SOCIAL_KV) throw new Error("KV-Bindung VU_SOCIAL_KV fehlt");
   await env.VU_SOCIAL_KV.put(QUEUE_KEY, JSON.stringify(projektion));
   return projektion;
+}
+
+/* REEL-KANDIDATEN: eigener Schluesselraum, 14 Tage Lebensdauer. */
+const REEL_INDEX_KEY = "reel:index:v1";
+const reelKey = (id) => "reel:item:" + id;
+const REEL_TTL_S = 14 * 24 * 3600;
+
+export async function putReelItem(env, item) {
+  if (!env.VU_SOCIAL_KV) throw new Error("KV-Bindung VU_SOCIAL_KV fehlt");
+  await env.VU_SOCIAL_KV.put(reelKey(item.candidateId), JSON.stringify(item), { expirationTtl: REEL_TTL_S });
+  const rawIdx = await env.VU_SOCIAL_KV.get(REEL_INDEX_KEY);
+  let idx = [];
+  try { idx = rawIdx ? JSON.parse(rawIdx) : []; } catch (err) { idx = []; }
+  if (!idx.includes(item.candidateId)) idx.push(item.candidateId);
+  await env.VU_SOCIAL_KV.put(REEL_INDEX_KEY, JSON.stringify(idx.slice(-50)));
+  return item;
+}
+
+export async function readReelItems(env) {
+  if (!env.VU_SOCIAL_KV) return [];
+  const rawIdx = await env.VU_SOCIAL_KV.get(REEL_INDEX_KEY);
+  let idx = [];
+  try { idx = rawIdx ? JSON.parse(rawIdx) : []; } catch (err) { idx = []; }
+  const out = [];
+  for (const id of idx) {
+    const raw = await env.VU_SOCIAL_KV.get(reelKey(id));
+    if (!raw) continue;
+    try { out.push(JSON.parse(raw)); } catch (err) { /* defekter Eintrag zaehlt nicht */ }
+  }
+  return out;
 }
 
 export { QUEUE_KEY };
