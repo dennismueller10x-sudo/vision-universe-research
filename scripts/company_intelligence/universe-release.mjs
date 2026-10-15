@@ -15,6 +15,7 @@ import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mj
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
 import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
+import {ensureRollbackFreeze,refreezeRollback,fetchLiveDelivery} from './frozen-refreeze.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -58,6 +59,10 @@ try{
   assert(Buffer.from(await driver.get(currentKey)).equals(before),'CURRENT_CHANGED_DURING_HEALTH_REPAIR');
   const result=await updateAcceptedHealth(driver,{namespace:universeConfig.consumerNamespace,expectedGood:good,health});
   save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
+ }else if(args[0]==='refreeze'){
+  // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
+    const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
+  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
  }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));
  }else{
@@ -73,14 +78,8 @@ try{
   const release=await(await fetch('https://research.visionuniverse.de/release-delivery.json?freeze='+Date.now())).json();
   const old=join(temporary,'known-good-46');await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
   writeFileSync(join(old,'manifest.json'),JSON.stringify(known.manifest)+'\n');
-  const existingFrozen=await goodState(driver,universeConfig.rollbackNamespace);
-  if(existingFrozen)assert.equal(existingFrozen.generation,known.generation,'ROLLBACK_FREEZE_ALREADY_EXISTS_WITH_DIFFERENT_GENERATION');
-  else{
-   const frozen=await prepareCandidate(driver,{namespace:universeConfig.rollbackNamespace,directory:old,good:null});
-   await commitGood(driver,{namespace:universeConfig.rollbackNamespace,payloadNamespace:frozen.payloadNamespace,manifest:frozen.manifest,health:known.health,inventory:known.inventory,expectedGood:null});
-  }
-  // Empty fresh directory proves all rollback bytes independent of the live slot.
-  const rollback=await downloadGood(driver,{namespace:universeConfig.rollbackNamespace,output:join(temporary,'fresh-rollback')});assert.equal(rollback.generation,known.generation);
+  // Strict generation equality, or a certified `refreeze` of the identical 46/45 scope (see frozen-refreeze.mjs).
+  const {rollback}=await ensureRollbackFreeze(driver,{known,directory:old,temporary});
   const changes=universeChanges(directory,old);const structural=await universeContracts(directory);
   m.productionApproval=universeConfig.approvalId;m.releaseState='APPROVED_CONTROLLED_PRODUCTION';
   m.refreshValidation={status:'PASS',structural:'PASS',privateCompanies:audit.privatePayloadCount,checkpointSha256:audit.r2CheckpointSha256,codeSha:process.env.GITHUB_SHA};assert(universeApproved(m));
@@ -105,10 +104,10 @@ try{
   const warm=await downloadGood(cached.driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public-cached')});
   assert.equal(warm.generation,m.generation);assert(cached.stats.cachedAssets>=Object.keys(m.assets).length);assert(cached.stats.remoteAssets<=1);
   const certificate={schema:1,status:'R2_CANDIDATE_ACCEPTED',generation:m.generation,codeSha:process.env.GITHUB_SHA,privateGeneration:audit.authoritativeStateGeneration,privateCheckpointSha256:audit.r2CheckpointSha256,consumerBuiltAt:health.lastSuccessfulConsumerBuild,
-   rollback:{generation:known.generation,codeSha:release.sourceCommit,stocks:46,issuers:45,namespace:universeConfig.rollbackNamespace,freshReadback:true},structural,consumerCache:cached.stats,browserCases:browser.cases.length,scalingRunId:scaling.runId,changes,privateStateModified:false};
+   rollback:{generation:rollback.generation,codeSha:release.sourceCommit,stocks:46,issuers:45,namespace:universeConfig.rollbackNamespace,freshReadback:true},structural,consumerCache:cached.stats,browserCases:browser.cases.length,scalingRunId:scaling.runId,changes,privateStateModified:false};
   await driver.put(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json',Buffer.from(JSON.stringify(certificate)));
   const receipt=JSON.parse(await driver.get(prefixFor(universeConfig.consumerNamespace)+'release-acceptance.json'));assert.equal(receipt.generation,m.generation);
-  activationWritten=true;await pointer('AVAILABLE',{generation:m.generation,rollbackGeneration:known.generation});
+  activationWritten=true;await pointer('AVAILABLE',{generation:m.generation,rollbackGeneration:rollback.generation});
   save({...certificate,status:'ACTIVATED_AWAITING_PRODUCTION_QA'});console.log(JSON.stringify({status:'ACTIVATED_AWAITING_PRODUCTION_QA',generation:m.generation,issuers:Object.keys(m.eligibility).length,stocks:m.tickers.length}));
  }
 }catch(error){
