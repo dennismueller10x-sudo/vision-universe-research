@@ -53,6 +53,16 @@ test('Origin, Eingaben, Consentversion, Größe und Honeypot begrenzen den Endpo
   }
   const f=fixture();assert.equal((await f.handler(new Request(origin+'/api/newsletter/subscribe'),f.env)).status,405);assert.equal(f.calls.length,0);
 });
+test('Testzugang wird vor Feldeingabe ohne Provider, Adresse oder Cache-Schreibzugriff geprüft',async()=>{
+  const token='a'.repeat(43),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  const f=fixture();Object.assign(f.env,{NEWSLETTER_PUBLIC_ENABLED:'false',NEWSLETTER_E2E_VERIFIED:'false',NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+  const request=(headers={},method='POST')=>new Request(origin+'/api/newsletter/test-access',{method,headers:{Origin:origin,Authorization:'Bearer '+token,...headers}});
+  const ok=await f.handler(request(),f.env);assert.equal(ok.status,200);assert.deepEqual(await ok.json(),{expiresAt:7200000});assert.equal(ok.headers.get('Cache-Control'),'no-store');
+  for(const headers of [{Authorization:''},{Authorization:'Bearer '+'b'.repeat(43)},{Origin:'https://visionuniverse.de'},{'Sec-Fetch-Site':'cross-site'}])assert.ok([403,503].includes((await f.handler(request(headers),f.env)).status));
+  assert.equal((await f.handler(request({},'GET'),f.env)).status,405);
+  f.advance(7200000);const expired=await f.handler(request(),f.env);assert.equal(expired.status,503);assert.match((await expired.json()).message,/abgelaufen/);
+  assert.equal(f.calls.length,0);assert.equal(f.stored.size,0);
+});
 test('Jeder Bestandskontakt bleibt unverändert, einschließlich Abmeldung und interner Listen',async()=>{
   for(const contact of [{listIds:[4],attributes:{buyer:true}},{listIds:[6]},{emailBlacklisted:true},{listIds:[],attributes:{status:'unclear'}}]){
     const f=fixture({existing:contact});const result=await f.handler(f.request(),f.env);

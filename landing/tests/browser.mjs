@@ -82,12 +82,16 @@ try{
   await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
   for(const width of [1440,390,320]){
     const context=await browser.newContext({viewport:{width,height:844}});const page=await context.newPage();let posts=0;
+    await page.route('**/api/newsletter/test-access',async route=>{
+      assert.equal(route.request().method(),'POST');assert.equal(route.request().postData(),null);assert.equal(route.request().headers().authorization,'Bearer '+'a'.repeat(43));
+      await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({expiresAt:Date.now()+60000})});
+    });
     await page.route('**/api/newsletter/subscribe',async route=>{
       posts++;assert.equal(route.request().headers().authorization,'Bearer '+ 'a'.repeat(43));assert.ok(!route.request().url().includes('vu-test'));
       await route.fulfill({status:202,contentType:'application/json',body:JSON.stringify({message:'Bitte prüfe dein Postfach.'})});
     });
     await page.goto(base+'/controlled/');assert.equal(await page.locator('#email').isDisabled(),true);
-    await page.goto(base+'/controlled/#vu-test='+ 'a'.repeat(43));assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(new URL(page.url()).hash,'');
+    await page.goto(base+'/controlled/#vu-test='+ 'a'.repeat(43));await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(new URL(page.url()).hash,'');
     await page.locator('#email').fill('new-controlled@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
     await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);

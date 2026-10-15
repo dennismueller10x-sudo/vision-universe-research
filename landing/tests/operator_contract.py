@@ -1,7 +1,9 @@
 """Synthetic operator contract; never opens a network connection or sends mail."""
-import base64,contextlib,hashlib,importlib.util,io,json,os,unittest,urllib.parse
+import base64,contextlib,hashlib,importlib.util,io,json,os,sys,unittest,urllib.parse
 from pathlib import Path
 from unittest.mock import patch
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+from newsletter_mail import mail_source
 spec=importlib.util.spec_from_file_location('operator',Path(__file__).resolve().parents[1]/'scripts/newsletter-e2e.py')
 operator=importlib.util.module_from_spec(spec);spec.loader.exec_module(operator)
 admin_spec=importlib.util.spec_from_file_location('admin',Path(__file__).resolve().parents[1]/'scripts/newsletter-server-admin.py')
@@ -54,6 +56,26 @@ class Provider:
         if path=='/emailCampaigns/8':return Response(200,{**self.draft,'recipients':{'listIds':[4]}} if self.bad_draft else self.draft)
         if path=='/emailCampaigns/8/sendNow':self.sent=True;return Response(204,{})
         raise AssertionError('Unexpected endpoint or mutation')
+
+class MailContract(unittest.TestCase):
+    def test_observer_wait_can_match_access_expiry_but_never_extend_it(self):
+        with patch.object(operator.time,'time',return_value=1000):
+            for until,expected in [('',600),('8200000',7200),('1060000',60)]:
+                with patch.dict(os.environ,{'NEWSLETTER_OBSERVE_UNTIL':until}):self.assertEqual(operator.owner_wait_seconds(),expected)
+            for until in ('999999','8200001','invalid'):
+                with patch.dict(os.environ,{'NEWSLETTER_OBSERVE_UNTIL':until}):
+                    with self.assertRaises(ValueError):operator.owner_wait_seconds()
+    def test_shared_browser_navigation_never_becomes_mail_content(self):
+        for name in ('newsletter-api-doi.html','newsletter-test-confirmed.html'):
+            html=mail_source(name)
+            self.assertNotIn('site-navigation',html)
+            self.assertNotIn('<script',html.lower())
+            self.assertNotIn('<vu-navigation',html)
+        self.assertIn('{{ params.DOIurl }}',mail_source('newsletter-api-doi.html'))
+        self.assertIn('{{ unsubscribe }}',mail_source('newsletter-test-confirmed.html'))
+        with patch('newsletter_mail.Path.read_text',return_value='<html><script>unexpected</script></html>'):
+            with self.assertRaises(ValueError):mail_source('newsletter-api-doi.html')
+        with self.assertRaises(ValueError):mail_source('../other.html')
 
 class Contract(unittest.TestCase):
     def run_operator(self,provider,authorized=True):

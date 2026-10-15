@@ -1,6 +1,7 @@
 """Isolated manual operator. No send, contact-write, WAF, DNS or billing endpoint."""
 import base64,hashlib,json,os,re,secrets,subprocess,time,urllib.error,urllib.request,urllib.parse
 from pathlib import Path
+from newsletter_mail import mail_source
 BREVO='https://api.brevo.com/v3';CF='https://api.cloudflare.com/client/v4'
 NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='vu-newsletter-api-doi-v1'
 SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
@@ -77,7 +78,11 @@ def run():
     report.update(release)
     def read(path):
         status,value=api(BREVO,path,key)
-        if status!=200:raise ValueError('Brevo read blocked')
+        if status!=200:
+            # Fixed resource categories only; never emit a path/query/address.
+            resource=next((name for prefix,name in [('/contacts/lists/','list_contacts'),('/smtp/templates','templates'),('/account','account'),('/contacts/attributes','attribute_schema'),('/senders','sender_domain'),('/smtp/blockedContacts','suppression'),('/smtp/statistics','statistics')] if path.startswith(prefix)),'other')
+            print(json.dumps({'required_brevo_read':resource,'http':status}),flush=True)
+            raise ValueError('Brevo read blocked')
         return value
     def contacts(n):
         result=[]
@@ -145,7 +150,7 @@ def run():
     else:raise ValueError('Template pagination incomplete')
     matches=[t for t in templates if t.get('name')==NAME]
     if len(matches)>1:raise ValueError('Duplicate API DOI template')
-    html=Path(__file__).resolve().parents[1].joinpath('mail/newsletter-api-doi.html').read_text()
+    html=mail_source('newsletter-api-doi.html')
     if '{{ params.DOIurl }}' not in html or '{{ doubleoptin }}' in html:raise ValueError('Wrong API template link')
     if operation=='setup' and not matches:
         if not report['free_plan'] or len(sender)!=1 or not all(report['domain_flags'].values()) or not report['smtp_suppression_readable'] or not report['tag_budget_readable']:raise ValueError('Brevo setup prerequisites')
@@ -252,4 +257,8 @@ def run():
     return report
 if __name__=='__main__':
     try:print(json.dumps(run()))
-    except Exception:print('Scoped operator blocked; no raw responses, keys or personal data emitted.');raise SystemExit(1) from None
+    except Exception as error:
+        reasons={'Brevo read blocked':'required_read_failed','API template mismatch; no overwrite':'template_readback_mismatch','Duplicate API DOI template':'ambiguous_template','Protected data changed externally':'protected_snapshot_changed','Pages or consent setup unavailable':'pages_or_schema_missing','Pages readback mismatch':'pages_readback_mismatch'}
+        reason=reasons.get(str(error),'unclassified') if type(error) is ValueError else 'transport_or_response_failure'
+        print(json.dumps({'operator_failure':reason}),flush=True)
+        print('Scoped operator blocked; no raw responses, keys or personal data emitted.');raise SystemExit(1) from None

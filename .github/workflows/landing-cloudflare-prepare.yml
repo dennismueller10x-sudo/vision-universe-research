@@ -20,7 +20,7 @@ on:
         type: string
         default: ''
       test_until_ms:
-        description: controlled – Ablauf als UTC Unix-Millisekunden, höchstens zwei Stunden
+        description: controlled/observe – Ablauf als UTC Unix-Millisekunden, höchstens zwei Stunden
         type: string
         default: ''
       verified_test_run_id:
@@ -41,11 +41,11 @@ jobs:
   newsletter_server_operator:
     if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/feat/brevo-app-waitlist-doi' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: ${{ inputs.newsletter_operation == 'observe' && 150 || 40 }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 02f3a71ac0a4749f78c6a6f0fbe00a0cb8401d20
+          ref: e0d883cba03c33aba2e2f54923ca21ca51d0281e
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
@@ -77,6 +77,7 @@ jobs:
         if: inputs.newsletter_operation == 'observe' && inputs.authorize_controlled_test && github.ref == 'refs/heads/main'
         env:
           NEWSLETTER_E2E_OPERATION: observe
+          NEWSLETTER_OBSERVE_UNTIL: ${{ inputs.test_until_ms }}
           NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
         run: python3 landing/scripts/newsletter-e2e.py

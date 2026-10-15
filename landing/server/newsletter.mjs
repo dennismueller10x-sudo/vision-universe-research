@@ -8,6 +8,7 @@ const PUBLIC_ORIGIN='https://www.visionuniverse.de';
 const PREVIEW_ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';
 const API='https://api.brevo.com/v3';
 const PATH='/api/newsletter/subscribe';
+const ACCESS_PATH='/api/newsletter/test-access';
 const BAD='Die Anmeldung konnte nicht verarbeitet werden. Bitte prüfe deine Eingaben und versuche es später erneut.';
 const UNKNOWN='Wir konnten die Anfrage nicht abschließend prüfen. Eine Anmeldung ist nicht bestätigt. Bitte prüfe dein Postfach; es erfolgt keine automatische Wiederholung.';
 const CLOSED='Die Anmeldung ist noch nicht freigeschaltet. Deine E-Mail-Adresse wurde nicht zur Anmeldung übermittelt.';
@@ -57,7 +58,7 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
   }
   return async function handle(request,env){
     const url=new URL(request.url);
-    if(url.pathname!==PATH)return new Response('Nicht gefunden',{status:404,headers:H});
+    if(![PATH,ACCESS_PATH].includes(url.pathname))return new Response('Nicht gefunden',{status:404,headers:H});
     if(request.method!=='POST')return new Response('Nur POST',{status:405,headers:{...H,Allow:'POST'}});
     const type=(request.headers.get('Content-Type')||'').split(';')[0].trim().toLowerCase();
     const form=type==='application/x-www-form-urlencoded';
@@ -68,6 +69,12 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
     const publicReady=stage==='production'&&['NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED'].every(n=>env[n]==='true');
     const testing=stage==='preview'&&env.NEWSLETTER_TEST_MODE==='true'&&typeof env.NEWSLETTER_TEST_EMAIL==='string'&&env.NEWSLETTER_TEST_EMAIL.length>3;
     const controlled=await authorizedTest(request,env,now());
+    // Validate access before the browser enables fields. No body, contact/API
+    // lookup, cache write, email address or provider call is needed here.
+    if(url.pathname===ACCESS_PATH){
+      if(!controlled||!env.BREVO_API_KEY||typeof env.NEWSLETTER_RATE_KEY!=='string'||env.NEWSLETTER_RATE_KEY.length<32)return out(503,'Der private Testzugang ist abgelaufen oder nicht mehr gültig. Bitte öffne einen aktuellen privaten Testlink. Deine E-Mail-Adresse wurde nicht übermittelt.');
+      return new Response(JSON.stringify({expiresAt:Number(env.NEWSLETTER_TEST_UNTIL)}),{status:200,headers:{...H,'Content-Type':'application/json; charset=utf-8'}});
+    }
     if(!publicReady&&!testing&&!controlled)return out(503,CLOSED);
     if(!['application/json','application/x-www-form-urlencoded'].includes(type))return out(415,BAD);
     if(!env.BREVO_API_KEY||typeof env.NEWSLETTER_RATE_KEY!=='string'||env.NEWSLETTER_RATE_KEY.length<32)return out(503,CLOSED);
