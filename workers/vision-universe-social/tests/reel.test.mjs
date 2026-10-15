@@ -478,3 +478,11 @@ test("R23 · /social/reel/status zeigt Karte und Anspruch, ohne Token, ohne Meta
   assert.equal(g.aufrufe.length, n, "kein Meta-Aufruf");
   assert.ok(!JSON.stringify(nach).includes(PAGE_TOKEN));
 });
+
+test("R24 · prepare warnt bei signierten (ablaufenden) Videoadressen", async () => {
+  const { env } = await aufbau();
+  const a = await (await vorbereiten(env, { videoUrl: VIDEO + "?X-Amz-Expires=3600&X-Amz-Signature=abc" })).json();
+  assert.deepEqual(a.warnings, ["VIDEO_URL_MAY_EXPIRE"]);
+  const b = await (await vorbereiten(env, { contentId: INHALT + "_b" })).json();
+  assert.deepEqual(b.warnings, []);
+});

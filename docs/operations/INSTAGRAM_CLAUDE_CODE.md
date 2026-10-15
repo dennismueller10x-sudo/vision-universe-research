@@ -45,7 +45,7 @@ Archivierte Beiträge liefert die Meta-API nicht mehr aus. Deshalb vor dem Archi
 
 Bilder und Carousels laufen unverändert über die Pipeline: Kandidat (`scripts/social/make-publish-candidate.mjs`, `make-carousel-candidates.mjs`) → Freigabe im Approval Center → Worker `POST /social/meta/publish` (Idempotenz, JPEG-/Fingerabdruck-Prüfung, Allowlist). Es gibt bewusst keinen freien „poste das jetzt"-Befehl am Freigabeweg vorbei.
 
-**Reels sind im Worker noch nicht implementiert** (Video-Container, Verarbeitungs-Polling, Freigabe mit Video-Fingerabdruck). Das ist ein eigener Social-PR. Bis dahin: Reels manuell in der Instagram-App oder Meta Business Suite.
+**Reels:** siehe [INSTAGRAM_REELS.md](INSTAGRAM_REELS.md) (Recherche mit Apify, Vorbereiten, Freigabe im Approval Center, fortsetzbares Publishing).
 
 ## Zielkonto-Allowlist
 

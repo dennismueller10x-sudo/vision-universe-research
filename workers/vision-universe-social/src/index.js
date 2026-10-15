@@ -827,8 +827,19 @@ async function handleReelPrepare(request, url, env) {
   };
   await putReelItem(env, item);
 
+  /* Signierte Adressen (HeyGen, S3, CDN-Token) laufen ab. Meta holt das Video beim Anlegen des
+     Containers - nach der Freigabe, vielleicht Stunden spaeter. Eine abgelaufene Adresse scheitert
+     sicher (videoUnreachable), aber sie sollte vorher auffallen. */
+  const warnungen = [];
+  try {
+    const q = new URL(videoUrl).searchParams;
+    if ([...q.keys()].some((k) => /^(x-amz-(signature|expires)|signature|expires|token|se|sig)$/i.test(k))) {
+      warnungen.push("VIDEO_URL_MAY_EXPIRE");
+    }
+  } catch (err) { /* schon geprueft */ }
+
   return json({
-    prepared: true, published: false, candidateId: item.candidateId, contentId,
+    prepared: true, published: false, candidateId: item.candidateId, contentId, warnings: warnungen,
     contentHash: abdruck, sizeBytes: messung.sizeBytes, contentType: messung.contentType,
     approvalUrl: String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "") + "/approval/" + item.candidateId,
     message: "Das Reel liegt im Approval Center zur Freigabe. Es wurde NICHTS veroeffentlicht."
