@@ -50,7 +50,6 @@ jobs:
           fi
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
           fetch-depth: ${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}
       - uses: actions/checkout@v4
         if: inputs.mode != 'health' && inputs.mode != 'refreeze'

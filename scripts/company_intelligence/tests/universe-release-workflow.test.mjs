@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 const path=fileURLToPath(new URL('../../../.github/workflows/company-intelligence-universe-release.yml',import.meta.url));
 // Dependency-free structural reader for this workflow's YAML subset (no PyYAML in the validate job).
@@ -71,7 +74,8 @@ test('refreeze runs checkout, node, the command, its evaluation and the artifact
  assert.ok(!run.some(n=>/Browser|playwright|scale receipt|Deploy existing Pages|production broad sample|Fail closed|Preserve 46|Current private|rollback acceptance/i.test(n)),run.join('|'));
  assert.deepEqual(run.filter(n=>n!=='actions/setup-python@v5'),['actions/checkout@v4','actions/setup-node@v4','Re-freeze immutable 46 rollback onto current legacy GOOD','Require untouched gate, activation and universe GOOD after refreeze','actions/upload-artifact@v4']);
  const [first,second]=doc.steps.filter(s=>s.uses==='actions/checkout@v4');
- assert.equal(first.with.ref,'${{ github.ref }}');
+ assert.equal(first.with.ref,undefined,'first checkout must stay exactly as on main (no ref override)');
+ assert.ok(!/^ {10}ref:/m.test(first.block));
  assert.equal(first.with['fetch-depth'],"${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}");
  assert.equal(condition(second.if,{mode:'refreeze'}),false);
 });
@@ -131,4 +135,45 @@ test('mutation: dropping the expect_generation env wiring is detected',()=>{
 test('mutation: a weakened refreeze evaluation is detected',()=>{
  const m=mutate("assert.strictEqual(r[k],false","assert.ok(r[k]!==true");
  assert.doesNotMatch(find(m,'Require untouched gate').run,/strictEqual\(r\[k\],false/);
+});
+
+// Execute the evaluation heredoc of the workflow against fixtures.
+function evaluate(doc,release){
+ const ev=find(doc,'Require untouched gate'),m=ev.run.match(/<<'NODE'\n([\s\S]*?)\n\s*NODE\s*$/);
+ assert.ok(m,'evaluation heredoc not found');
+ const code=m[1].split('\n').map(l=>l.replace(/^ {10}/,'')).join('\n');
+ const dir=mkdtempSync(join(tmpdir(),'refreeze-eval-'));
+ try{
+  mkdirSync(join(dir,'universe-release','evidence'),{recursive:true});
+  if(release!==undefined)writeFileSync(join(dir,'universe-release','evidence','release.json'),typeof release==='string'?release:JSON.stringify(release));
+  return spawnSync(process.execPath,['--input-type=module','-e',code],{env:{...process.env,RUNNER_TEMP:dir},encoding:'utf8'}).status;
+ }finally{rmSync(dir,{recursive:true,force:true});}
+}
+const flags=()=>({privateStateModified:false,activationModified:false,gateModified:false,universeGoodModified:false});
+const good=status=>({status,generation:'a'.repeat(24),previousGeneration:null,...flags()});
+test('the refreeze evaluation passes only REFROZEN/ALREADY_CURRENT with four exact false flags (executed)',()=>{
+ assert.equal(evaluate(doc,good('REFROZEN')),0);
+ assert.equal(evaluate(doc,good('ALREADY_CURRENT')),0);
+ for(const k of Object.keys(flags())){
+  assert.notEqual(evaluate(doc,{...good('REFROZEN'),[k]:true}),0,k+' true');
+  assert.notEqual(evaluate(doc,{...good('REFROZEN'),[k]:'false'}),0,k+' string');
+  const missing=good('REFROZEN');delete missing[k];assert.notEqual(evaluate(doc,missing),0,k+' missing');
+ }
+ assert.notEqual(evaluate(doc,good('ROLLED_BACK')),0);
+ assert.notEqual(evaluate(doc,undefined),0,'missing file');
+ assert.notEqual(evaluate(doc,'{not json'),0,'invalid json');
+});
+test('mutation: a loosened evaluation is caught by execution',()=>{
+ const t=readFileSync(path,'utf8');
+ const loosened=load(t.replace("assert.strictEqual(r[k],false,'REFREEZE_PROTECTED_STATE_FLAG_NOT_FALSE:'+k)","assert.ok(!r[k])"));
+ assert.equal(evaluate(loosened,{...good('REFROZEN'),gateModified:'false'.slice(5)}),0);
+ assert.equal(evaluate(loosened,(()=>{const r=good('REFROZEN');delete r.gateModified;return r;})()),0,'loosened version accepts a missing flag');
+ assert.notEqual(evaluate(doc,(()=>{const r=good('REFROZEN');delete r.gateModified;return r;})()),0);
+ const status=load(t.replace("['REFROZEN','ALREADY_CURRENT'].includes(r.status)","true"));
+ assert.equal(evaluate(status,good('ROLLED_BACK')),0);
+});
+test('mutation: restoring the ref override on the first checkout is detected',()=>{
+ const m=mutate('        with:\n          fetch-depth','        with:\n          ref: ${{ github.ref }}\n          fetch-depth');
+ const [first]=m.steps.filter(s=>s.uses==='actions/checkout@v4');
+ assert.equal(first.with.ref,'${{ github.ref }}');
 });

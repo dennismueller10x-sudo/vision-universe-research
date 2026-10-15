@@ -12,7 +12,7 @@ Baut auf `universe-release.mjs refreeze` und `frozen-refreeze.mjs` (PR #694, gem
 
 ## Schritte pro Modus
 
-`refreeze` läuft nur über: Checkout (`ref: github.ref`, Tiefe 1, nur `main`), Node-Setup, `universe-release.mjs refreeze`, strikte Auswertung, Artefakt-Upload (`evidence/release.json`). Übersprungen werden: Browser-/Playwright-Suite, Identitäts-Checkout, Scale-Receipt-Verifikation, Audit, Pages-Dispatch samt Wait (der Wait erwartet `release.json.generation == ausgeliefert` und würde scheitern, sobald das Legacy-GOOD weiterrückt) und die Live-QA.
+`refreeze` läuft nur über: Checkout (unverändert wie in den anderen Modi, Tiefe 1, nur `main`), Node-Setup, `universe-release.mjs refreeze`, strikte Auswertung, Artefakt-Upload (`evidence/release.json`). Übersprungen werden: Browser-/Playwright-Suite, Identitäts-Checkout, Scale-Receipt-Verifikation, Audit, Pages-Dispatch samt Wait (der Wait erwartet `release.json.generation == ausgeliefert` und würde scheitern, sobald das Legacy-GOOD weiterrückt) und die Live-QA.
 
 Auswertung: `status` ist `REFROZEN` oder `ALREADY_CURRENT`, und `privateStateModified`, `activationModified`, `gateModified`, `universeGoodModified` sind exakt `false`. Fehlt ein Feld oder ist es `true`, schlägt der Job fehl.
 
@@ -29,6 +29,6 @@ Der Schritt „Fail closed to immutable 46 scope“ ist für `refreeze` ausgenom
 ## Betrieb
 
 - Concurrency unverändert (`company-intelligence-continuous-production`, kein Abbruch laufender Läufe), Berechtigungen unverändert (`contents: read`, `actions: write`).
-- Der eingefrorene Rollback verfällt sieben Tage nach `generatedAt`; Re-Freeze alle 3 bis 5 Tage, solange das Universum nicht aktiv ist. Ein Zeitplan ist bewusst nicht Teil dieser Änderung (Eigentümerentscheidung).
+- Der eingefrorene Rollback verfällt sieben Tage nach `generatedAt`; Empfohlenes Intervall: alle 3 bis 5 Tage; absolute Obergrenze: spätestens 6 Tage nach dem letzten Re-Freeze (Verfall nach 7 Tagen, 1 Tag Reserve). Gilt, solange das Universum nicht aktiv ist. Ein Zeitplan ist bewusst nicht Teil dieser Änderung (Eigentümerentscheidung).
 - Der Test liest den Workflow-Text strukturell (ohne YAML-Parser, kein PyYAML im `validate`-Job) und hat Wächter-Assertions, dass die erwarteten Schritte gefunden wurden.
 - Tests: `scripts/company_intelligence/tests/universe-release-workflow.test.mjs` (Bedingungen je Modus, keine `inputs.*` in `run:`, Mutationen).
