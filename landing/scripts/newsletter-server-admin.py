@@ -5,6 +5,7 @@ from newsletter_mail import mail_source
 BREVO='https://api.brevo.com/v3';CF='https://api.cloudflare.com/client/v4'
 NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='optin'
 LEGACY_TAG='vu-newsletter-api-doi-v1'
+PREVIOUS_COPY_SHA='b9cb70ae3cb14cecaa608603c993110302671d480bca417616dae24ee39456c0'
 SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
 RUNTIME=('BREVO_API_KEY','NEWSLETTER_RATE_KEY','NEWSLETTER_DOI_TEMPLATE_ID','NEWSLETTER_STAGE','NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED','NEWSLETTER_TEST_EMAIL','NEWSLETTER_TEST_MODE','NEWSLETTER_FORM_MODE','NEWSLETTER_CONTROLLED_ENABLED','NEWSLETTER_TEST_ACCESS_HASH','NEWSLETTER_TEST_UNTIL')
 POLICY='legal-drafts/newsletter-release-2026-10-14.html'
@@ -33,7 +34,8 @@ def release_prerequisites(operation):
             with urllib.request.build_opener(NoRedirect).open(req,timeout=30) as response:return json.loads(response.read())
         run=github('/actions/runs/'+run_id);jobs=github('/actions/runs/'+run_id+'/jobs')['jobs']
         if run.get('event')!='workflow_dispatch' or run.get('conclusion')!='success' or run.get('head_branch')!='main' or run.get('path')!='.github/workflows/landing-cloudflare-prepare.yml':raise ValueError('Wrong acceptance run')
-        if not any(j.get('conclusion')=='success' and any(s.get('name')=='Observe owner signup and verify Brevo unsubscribe' and s.get('conclusion')=='success' for s in j.get('steps',[])) for j in jobs):raise ValueError('No successful actual acceptance step')
+        accepted_steps=('Observe owner signup and verify Brevo unsubscribe','Finish verified owner confirmation and native unsubscribe')
+        if not any(j.get('conclusion')=='success' and any(s.get('name') in accepted_steps and s.get('conclusion')=='success' for s in j.get('steps',[])) for j in jobs):raise ValueError('No successful actual acceptance step')
         source=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
         workflow=github('/contents/.github/workflows/landing-cloudflare-prepare.yml?ref='+run['head_sha'])
         if 'ref: '+source not in base64.b64decode(workflow['content']).decode():raise ValueError('Acceptance used another source version')
@@ -41,7 +43,8 @@ def release_prerequisites(operation):
     return proof
 
 def api(origin,path,key,method='GET',body=None):
-    if method!='GET' and not (origin==BREVO and method=='PUT' and path=='/smtp/templates/8' and body=={'tag':'optin'} or origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path) or origin==CF and method=='POST' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe/deployments/[a-f0-9-]{36}/retry',path)):
+    owned_copy_update=origin==BREVO and method=='PUT' and path=='/smtp/templates/8' and body=={'htmlContent':mail_source('newsletter-api-doi.html')}
+    if method!='GET' and not (owned_copy_update or origin==BREVO and method=='PUT' and path=='/smtp/templates/8' and body=={'tag':'optin'} or origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path) or origin==CF and method=='POST' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe/deployments/[a-f0-9-]{36}/retry',path)):
         raise ValueError('Unapproved mutation')
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self,*args,**kwargs):return None
@@ -71,7 +74,7 @@ def api(origin,path,key,method='GET',body=None):
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main'):raise ValueError('Manual approved branch only')
     operation=os.environ.get('NEWSLETTER_OPERATOR_OPERATION','audit')
-    if operation not in ('audit','setup','controlled','close','public','doi-template-fix'):raise ValueError('Unknown mode')
+    if operation not in ('audit','setup','controlled','close','public','doi-template-fix','doi-copy-update'):raise ValueError('Unknown mode')
     if operation in ('controlled','public') and os.environ.get('GITHUB_REF')!='refs/heads/main':raise ValueError('Main-domain release from main only')
     release=release_prerequisites(operation)
     key=os.environ.get('BREVO_API_KEY','')
@@ -163,6 +166,18 @@ def run():
     report['api_template_ids']=[t['id'] for t in matches]
     if matches:
         t=read('/smtp/templates/'+str(matches[0]['id']))
+        if operation=='doi-copy-update':
+            previous=hashlib.sha256(''.join(t.get('htmlContent','').split()).encode()).hexdigest()
+            current=hashlib.sha256(''.join(html.split()).encode()).hexdigest()
+            if t.get('id')!=8 or t.get('name')!=NAME or t.get('isActive') is not True or t.get('doiTemplate') is not True or t.get('tag')!=TAG or t.get('subject')!=SUBJECT or previous not in (PREVIOUS_COPY_SHA,current):raise ValueError('Owned template copy mismatch')
+            if previous!=current:
+                status,_=api(BREVO,'/smtp/templates/8',key,'PUT',{'htmlContent':html})
+                report['doi_copy_update_http']=status
+                if status not in (200,204):raise ValueError('DOI copy update rejected')
+            updated=read('/smtp/templates/8')
+            report['doi_copy_other_fields_unchanged']={k:v for k,v in t.items() if k not in ('htmlContent','modifiedAt')}=={k:v for k,v in updated.items() if k not in ('htmlContent','modifiedAt')}
+            if not report['doi_copy_other_fields_unchanged']:raise ValueError('Unexpected copy mutation')
+            t=updated
         if operation=='doi-template-fix':
             report['doi_template_before']=t.get('doiTemplate') if type(t.get('doiTemplate')) is bool else None
             if matches[0]['id']!=8 or t.get('id')!=8 or t.get('name')!=NAME or t.get('isActive') is not True or t.get('subject')!=SUBJECT or t.get('tag') not in (LEGACY_TAG,TAG) or ''.join(t.get('htmlContent','').split())!=''.join(html.split()):raise ValueError('Owned DOI template mismatch')
@@ -212,7 +227,7 @@ def run():
             if len(zone)==1:
                 status,value=api(CF,'/zones/'+zone[0]['id']+'/rulesets/phases/http_ratelimit/entrypoint',token);result['rate_rules_read_http']=status;result['rate_rules_error_codes']=value.get('safe_codes',[])
                 if status==200 and value.get('success'):result['rate_rule_count']=len(value['result'].get('rules',[]))
-    if operation not in ('audit','doi-template-fix'):
+    if operation not in ('audit','doi-template-fix','doi-copy-update'):
         if selected is None or not matches or not report['consent_attribute_compatible']:raise ValueError('Pages or consent setup unavailable')
         name,token,path,project=selected;configs=project.get('deployment_configs',{})
         if project.get('name')!='vision-universe' or set(configs)!={'preview','production'}:raise ValueError('Unexpected project')

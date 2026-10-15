@@ -5,10 +5,10 @@ on:
       newsletter_operation:
         description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
         type: choice
-        options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose, doi-template-fix]
+        options: [audit, setup, controlled, observe, finish-test, close, public, e2e, doi-diagnose, doi-template-fix, doi-copy-update]
         default: audit
       authorize_controlled_test:
-        description: Nur observe/e2e/doi-diagnose – kontrollierte DOI- und administrative Testbestätigung erlauben
+        description: Nur observe/finish-test/e2e/doi-diagnose – kontrollierte Testmails erlauben
         type: boolean
         default: false
       privacy_document_sha256:
@@ -20,7 +20,7 @@ on:
         type: string
         default: ''
       test_until_ms:
-        description: controlled/observe – Ablauf als UTC Unix-Millisekunden, höchstens zwei Stunden
+        description: controlled/observe/finish-test – Ablauf als UTC Unix-Millisekunden, höchstens zwei Stunden
         type: string
         default: ''
       verified_test_run_id:
@@ -41,15 +41,15 @@ jobs:
   newsletter_server_operator:
     if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/feat/brevo-app-waitlist-doi' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.newsletter_operation == 'observe' && 150 || 40 }}
+    timeout-minutes: ${{ (inputs.newsletter_operation == 'observe' || inputs.newsletter_operation == 'finish-test') && 150 || 40 }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: e2ea0480f05a954d5465f94647cef1f59d773f94
+          ref: 76951e20ba2c9a456ea2e6b56269e680639fc1ec
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
-        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'doi-diagnose'
+        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'finish-test' && inputs.newsletter_operation != 'doi-diagnose'
         env:
           NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
           NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
@@ -87,6 +87,15 @@ jobs:
           NEWSLETTER_OBSERVE_UNTIL: ${{ inputs.test_until_ms }}
           NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: python3 landing/scripts/newsletter-e2e.py
+      - name: Finish verified owner confirmation and native unsubscribe
+        if: inputs.newsletter_operation == 'finish-test' && inputs.authorize_controlled_test && github.ref == 'refs/heads/main'
+        env:
+          NEWSLETTER_E2E_OPERATION: finish-test
+          NEWSLETTER_OBSERVE_UNTIL: ${{ inputs.test_until_ms }}
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_IMPORT_PAYLOAD: ${{ secrets.BREVO_IMPORT_PAYLOAD }}
         run: python3 landing/scripts/newsletter-e2e.py
   prepare:
     if: github.ref == 'refs/heads/main' && inputs.newsletter_operation == 'audit'
