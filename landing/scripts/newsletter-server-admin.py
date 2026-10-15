@@ -133,6 +133,13 @@ def run():
         elif status!=200:
             result.update({'brevo_code':hooks.get('brevo_code'),'error_category':hooks.get('error_category'),'safe_message':hooks.get('safe_webhook_message')})
     report['lists_before']={str(n):len(v) for n,v in before.items()}
+    if operation=='audit':
+        report['acceptance_inventory_readback']={}
+        for kind,path,field in [('lists','/contacts/lists?limit=50&offset=0','lists'),('campaigns','/emailCampaigns?type=classic&limit=50&offset=0','campaigns')]:
+            status,result=api(BREVO,path,key)
+            rows=result.get(field)
+            own=[v for v in rows if isinstance(v,dict) and v.get('name')=='VU | DOI-Abnahme | Betreiber Oktober 2026'] if isinstance(rows,list) else []
+            report['acceptance_inventory_readback'][kind]={'http':status,'empty_object':result=={},'array_present':isinstance(rows,list),'rows_returned':len(rows) if isinstance(rows,list) else None,'count':result.get('count') if type(result.get('count')) is int else None,'only_known_fields':set(result)<={field,'count'},'owner_test_matches':len(own)}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
     sender=[s['id'] for s in read('/senders').get('senders',[]) if s.get('active') is True and s.get('email','').endswith('@visionuniverse.de')];report['sender_ids']=sender
