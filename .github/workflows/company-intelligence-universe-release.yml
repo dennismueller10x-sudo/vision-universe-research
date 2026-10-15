@@ -4,12 +4,16 @@ on:
     inputs:
       mode:
         type: choice
-        options: [activate, rollback, health]
+        options: [activate, rollback, health, refreeze]
         default: activate
       scaling_run:
-        description: 'Successful isolated full-universe refresh run ID'
+        description: 'Successful isolated full-universe refresh run ID (required for activate, unused otherwise)'
         type: string
-        required: true
+        required: false
+      expect_generation:
+        description: 'Optional refreeze guard: exact current legacy GOOD generation'
+        type: string
+        required: false
 permissions:
   contents: read
   actions: write
@@ -35,11 +39,20 @@ jobs:
       VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Require a scaling run for activate (fail closed)
+        if: inputs.mode == 'activate'
+        env:
+          SCALE_RUN: ${{ inputs.scaling_run }}
+        run: |
+          if ! [[ "$SCALE_RUN" =~ ^[0-9]+$ ]]; then
+            echo "::error::scaling_run (numeric run ID) is required for mode=activate"
+            exit 1
+          fi
       - uses: actions/checkout@v4
         with:
-          fetch-depth: ${{ inputs.mode == 'health' && 1 || 0 }}
+          fetch-depth: ${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}
       - uses: actions/checkout@v4
-        if: inputs.mode != 'health'
+        if: inputs.mode != 'health' && inputs.mode != 'refreeze'
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-identities
@@ -54,7 +67,7 @@ jobs:
         with:
           node-version: '22'
       - name: Browser and policy contracts
-        if: inputs.mode != 'health'
+        if: inputs.mode != 'health' && inputs.mode != 'refreeze'
         run: |
           node --test scripts/company_intelligence/tests/*.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_universe_*.py'
@@ -87,11 +100,37 @@ jobs:
           node scripts/company_intelligence/universe-browser-qa.mjs --consumer "$RUNNER_TEMP/universe-release/first/consumer" --sample "$RUNNER_TEMP/universe-release/evidence/sample.json" --out "$RUNNER_TEMP/universe-release/evidence/browser.json"
       - name: Preserve 46 rollback, verify full R2 consumer and activate eligible gate
         id: activation
+        if: inputs.mode != 'refreeze'
         env:
           RELEASE_MODE: ${{ inputs.mode }}
         run: node scripts/company_intelligence/universe-release.mjs "$RELEASE_MODE" --temporary "$RUNNER_TEMP/universe-release" --scaling "$RUNNER_TEMP/scale-receipt/health.json"
+      - name: Re-freeze immutable 46 rollback onto current legacy GOOD
+        id: refreeze
+        if: inputs.mode == 'refreeze'
+        env:
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [ -n "$EXPECT_GENERATION" ]; then
+            [[ "$EXPECT_GENERATION" =~ ^[0-9a-f]{24}$ ]] || { echo "::error::expect_generation must be 24 lowercase hex characters"; exit 1; }
+            extra=(--expect-generation "$EXPECT_GENERATION")
+          fi
+          node scripts/company_intelligence/universe-release.mjs refreeze --temporary "$RUNNER_TEMP/universe-release" "${extra[@]}"
+      - name: Require untouched gate, activation and universe GOOD after refreeze
+        if: inputs.mode == 'refreeze'
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          const r=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json'));
+          assert(['REFROZEN','ALREADY_CURRENT'].includes(r.status),'REFREEZE_STATUS_UNEXPECTED');
+          for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified'])assert.strictEqual(r[k],false,'REFREEZE_PROTECTED_STATE_FLAG_NOT_FALSE:'+k);
+          console.log(JSON.stringify({status:r.status,generation:r.generation,previousGeneration:r.previousGeneration}));
+          NODE
       - name: Deploy existing Pages and wait for exact consumer generation
         id: deployment
+        if: inputs.mode != 'refreeze'
         run: |
           gh workflow run pages-release.yml --ref main
           node --input-type=module <<'NODE'
@@ -139,7 +178,7 @@ jobs:
           assert.equal(health.generation,release.generation);assert.equal(health.productionState,'VERIFIED');assert.equal(health.status,'HEALTHY');
           NODE
       - name: Fail closed to immutable 46 scope on material production failure
-        if: (failure() || cancelled()) && inputs.mode != 'health' && steps.activation.outcome == 'success'
+        if: (failure() || cancelled()) && inputs.mode != 'health' && inputs.mode != 'refreeze' && steps.activation.outcome == 'success'
         run: |
           recovery_status=0
           node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery" || recovery_status=$?
