@@ -1,0 +1,96 @@
+{
+  "schema": "supertrader-current-replay-v3-public-summary-1.0.0",
+  "version": "V3_CURRENT_REPLAY_DIAGNOSTIC_SEPARATE_FROM_QUALIFIED_1",
+  "freezeId": "V3-84caf2e84e560bec",
+  "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+  "calibrationCompletionSha256": "8f4cc43afb557d11c5d9a08d9571963546250245d7f59f8a8d2d8463ca2b86ea",
+  "calibrationOverallVerdict": "PARTIALLY_CERTIFIED",
+  "status": "CURRENT_REPLAYED_DIAGNOSTIC_REVIEW_PENDING",
+  "asOf": "2026-10-14",
+  "methodsScanned": 10,
+  "perMethod": [
+    {
+      "id": "cross_sectional_momentum",
+      "status": "PARTIAL",
+      "numberMatches": 305
+    },
+    {
+      "id": "52_week_high_effect",
+      "status": "PARTIAL",
+      "numberMatches": 889
+    },
+    {
+      "id": "LOW_VOLATILITY",
+      "status": "PARTIAL",
+      "numberMatches": 278
+    },
+    {
+      "id": "gross_profitability_novy_marx",
+      "status": "BLOCKED_DATA",
+      "numberMatches": 0
+    },
+    {
+      "id": "piotroski_value_fscore",
+      "status": "BLOCKED_DATA",
+      "numberMatches": 0
+    },
+    {
+      "id": "greenblatt_magic_formula",
+      "status": "BLOCKED_DATA",
+      "numberMatches": 0
+    },
+    {
+      "id": "value_plus_momentum",
+      "status": "BLOCKED_DATA",
+      "numberMatches": 0
+    },
+    {
+      "id": "TURTLE_S2_EQUITY_DAILY",
+      "status": "READY",
+      "numberMatches": 38
+    },
+    {
+      "id": "WEINSTEIN_STAGE_DAILY",
+      "status": "READY",
+      "numberMatches": 1
+    },
+    {
+      "id": "KULLAMAGI_DAILY_ADAPTATION",
+      "status": "READY",
+      "numberMatches": 1
+    }
+  ],
+  "consensus": {
+    "qualified": {
+      "methodIds": 0,
+      "names": "NONE_CERTIFIED",
+      "tickersWithAtLeastTwoMethods": 0,
+      "rule": "ONLY_METHODS_WITH_FULLYQUALIFIED_AND_PASSED_TOURNAMENT_REVIEW"
+    },
+    "diagnostic": {
+      "allFrozenMethods": 6,
+      "tickersWithAtLeastTwoMethods": 333,
+      "researchOnly": true,
+      "notAnIndependentTradingScore": true
+    }
+  },
+  "universeInputsSha256": {
+    "universe": "8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741",
+    "eligibility": "b8f85c88d5e9291d0c9bee08334843d372df7e6fd464d88645300ec105523060",
+    "companyNames": "a6145e828867a8e8232b71a2263d30906a9588ddf782869d82e11324226bb841"
+  },
+  "limitation": "CURRENT_UNIVERSE_AND_ELIGIBILITY_ARE_THE_BRANCH_SNAPSHOT_FILES_NOT_MAIN",
+  "sealed": {
+    "name": "current-replay.private.json.sealed",
+    "plaintextSha256": "1c519cf80ddb0fe4978dc8a6a9a1b229e9845128c43c0d94234350521850a6b9",
+    "plaintextBytes": 1276248,
+    "sealedSha256": "966b0d7f485551a25bf622c8de2f3155b62c17c2a03f6aeac44f9cd8f3f585ed",
+    "sealedBytes": 83075,
+    "audiences": [
+      "owner",
+      "session"
+    ]
+  },
+  "candidateListsPublished": false,
+  "performanceNumbersPublished": false
+}
