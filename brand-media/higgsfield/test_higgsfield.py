@@ -160,6 +160,53 @@ class IntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(higgsfield.HiggsfieldError, "does not accept references"):
                 higgsfield.produce_three_text_shots(args)
 
+    def test_wan_single_continuous_t2v_submits_once_without_estimate_or_reference(self):
+        calls = {"submit": [], "status": []}
+        class FakeClient:
+            def __init__(self, api_key): pass
+            def submit(self, endpoint, params, idempotency_key=None):
+                calls["submit"].append((endpoint, params, idempotency_key))
+                return "single-request-123"
+            def status(self, request_id):
+                calls["status"].append(request_id)
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination): Path(destination).write_bytes(b"mp4")
+
+        args = SimpleNamespace(action="produce-single-t2v", model="alibaba/wan-3.0", operation="text_to_video",
+            prompt="one continuous shot", duration=20, resolution="1080p", aspect_ratio="9:16",
+            native_audio="true", reference="", asset_id="", approval=higgsfield.WAN_SINGLE_T2V_APPROVAL_PHRASE,
+            output_dir="")
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {
+            "HIGGSFIELD_API_KEY": "test-secret", "GITHUB_RUN_ID": "789", "GITHUB_RUN_ATTEMPT": "1"
+        }), patch.object(higgsfield, "Client", FakeClient), patch.object(higgsfield.time, "sleep"):
+            args.output_dir = temp
+            higgsfield.run(args)
+            manifest = json.loads((Path(temp) / "single-t2v-manifest.json").read_text(encoding="utf-8"))
+            output_exists = (Path(temp) / "single-request-123.mp4").is_file()
+        self.assertEqual(len(calls["submit"]), 1)
+        self.assertEqual(calls["submit"][0][0], "alibaba/wan-3.0/text-to-video")
+        self.assertEqual(calls["submit"][0][2], "vu-higgsfield-789-single-continuous-t2v")
+        self.assertEqual(calls["submit"][0][1]["duration"], 20)
+        self.assertEqual(calls["submit"][0][1]["aspect_ratio"], "9:16")
+        self.assertIs(calls["submit"][0][1]["generate_audio"], True)
+        self.assertIs(calls["submit"][0][1]["enable_thinking"], False)
+        self.assertNotIn("image_url", calls["submit"][0][1])
+        self.assertIsNone(manifest["estimate"])
+        self.assertIsNone(manifest["reference_image"])
+        self.assertTrue(output_exists)
+
+    def test_wan_single_continuous_t2v_requires_approval_and_rejects_references(self):
+        args = SimpleNamespace(action="produce-single-t2v", model="alibaba/wan-3.0", operation="text_to_video",
+            prompt="prompt", duration=20, resolution="1080p", aspect_ratio="9:16", native_audio="true",
+            reference="", asset_id="", approval="", output_dir="")
+        with patch.dict(os.environ, {"GITHUB_RUN_ID": "789", "GITHUB_RUN_ATTEMPT": "1"}):
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "Explicit approval"):
+                higgsfield.produce_single_text_video(args)
+            args.approval = higgsfield.WAN_SINGLE_T2V_APPROVAL_PHRASE
+            args.reference = "old-frame.jpg"
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "does not accept references"):
+                higgsfield.produce_single_text_video(args)
+
     def test_status_download_is_read_only(self):
         calls = []
 
