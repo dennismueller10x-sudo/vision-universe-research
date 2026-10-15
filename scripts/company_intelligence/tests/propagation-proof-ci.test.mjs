@@ -4,60 +4,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import {readFileSync} from 'node:fs';
-import {createHash} from 'node:crypto';
 import {verifyPropagation, probeOnce, parseRollout, referenceDataSha256, CAUSE, DEFAULTS, CI_INDEX_SCHEMA} from '../propagation-proof.mjs';
 
-const sha256 = b => createHash('sha256').update(b).digest('hex');
-const sha16 = b => sha256(b).slice(0, 16);
-const J = o => Buffer.from(JSON.stringify(o));
-const COMMIT = 'b'.repeat(40);
-const D = '/discover/data/stocks/US_REAL/AAPL.json';
-
-function stampedPage(meta, product, assets) {
- const links = assets.map(a => a.path.endsWith('.css') ? '<link rel="stylesheet" href="' + a.path + '?v=' + a.v + '">' : '<script src="' + a.path + '?v=' + a.v + '"></script>').join('\n');
- return Buffer.from('<!doctype html><meta name="vu-release" data-product="' + product + '" content="' + meta + '">\n' + links);
-}
-
-/** Ein in sich stimmiges Release: Discover + Quant + (mode ON|OFF) Company Intelligence. Die Generation wird aus Salt/Commit abgeleitet. */
-function build({commit = COMMIT, mode = 'ON', salt = '', quant = true} = {}) {
- const map = new Map(), put = (p, b) => map.set(p, Buffer.isBuffer(b) ? b : Buffer.from(b));
- // Discover (wie im Hauptfixture, kompakt)
- const dScript = Buffer.from('/* detail ' + commit + ' */'), dId = sha16(Buffer.from('d' + commit));
- const dContent = Buffer.from('<meta name="vu-release" data-product="discover" content="' + dId + '">\n<template id="dx-lazy-detail"><script src="/discover/ui/detail.js?v=' + sha16(dScript) + '"></script></template>');
- put('/discover/', '<script data-content="/__research/content/discover/index.html?v=' + sha16(dContent) + '"></script>');
- put('/__research/content/discover/index.html', dContent); put('/discover/ui/detail.js', dScript); put(D, J({symbol: 'AAPL', commit}));
- // Quant
- const qId = sha16(Buffer.from('q' + commit + salt));
- if (quant) {
-  const js = Buffer.from('/* quant bundle ' + commit + ' */'), css = Buffer.from('/* quant css ' + commit + ' */');
-  const qContent = stampedPage(qId, 'quant', [{path: '/quant/ui/quant.css', v: sha16(css)}, {path: '/quant/release-bundle.js', v: sha16(js)}]);
-  put('/quant/', '<script data-content="/__research/content/quant/index.html?v=' + sha16(qContent) + '"></script>');
-  put('/__research/content/quant/index.html', qContent); put('/quant/release-bundle.js', js); put('/quant/ui/quant.css', css);
- }
- put('/release-id.json', J({schema: 'vu-release-id-1', commit, products: quant ? {quant: qId, discover: dId} : {discover: dId}}));
- put('/release-delivery.json', J({sourceCommit: commit}));
- const gen = sha256(Buffer.from('gen-' + commit + salt)).slice(0, 24), generatedAt = '2026-10-14T13:45:17Z';
- const info = {commit, map, gen, qId, dId, dataSha256: sha256(map.get(D)), generatedAt, lookupPath: 'snapshots/' + gen + '/lookup/AA.json', issuerPath: 'snapshots/' + gen + '/iss_cik_0000000001.json'};
- const rolloutText = (stage, off, g) => '(function(g){"use strict";const cohort=["AAPL","NVDA"];function enabled(){}const config={stage:' + stage + ',' + (off ? 'productionOff:!0,' : '') + 'cohort,eligibility:null,enabled,expectedGeneration:"' + g + '",base:"/company-intelligence/data/"};typeof module<"u"&&module.exports?module.exports=config:g.VUCompanyIntelligenceRollout=config})(typeof globalThis<"u"?globalThis:this);';
- if (mode === 'ON') {
-  const lookup = J({shard: 'AA', gen}), issuer = J({companyId: 'iss_cik_0000000001', gen});
-  const index = J({companyCount: 1, coveredCompanyCount: 1, generatedAt, generation: gen, lookupShards: ['AA', 'AC'], schema: CI_INDEX_SCHEMA, scope: 'CONTROLLED_COHORT', state: 'PREVIEW'});
-  const manifest = {schema: 1, generation: gen, generatedAt, assets: {'index.json': {bytes: index.length, sha256: sha256(index)}, [info.lookupPath]: {bytes: lookup.length, sha256: sha256(lookup)}, [info.issuerPath]: {bytes: issuer.length, sha256: sha256(issuer)}}, tickers: ['AAPL', 'NVDA']};
-  put('/company-intelligence/data/index.json', index);
-  put('/company-intelligence/data/' + info.lookupPath, lookup); put('/company-intelligence/data/' + info.issuerPath, issuer);
-  put('/company-intelligence/config/rollout.js', rolloutText(1, false, gen));
-  put('/company-intelligence-delivery.json', J({status: 'PASS', generation: gen, files: 3, bytes: 99, retainedGenerations: 1, privateObjectsRead: 0, approvalId: 'x', cohortStocks: 2, issuers: 1, checkedAt: '2026-10-14T15:27:35.565Z'}));
-  put('/company-intelligence-refresh.json', J({schema: 1, status: 'PASS', generation: gen, generatedAt, manifest, inventory: {}, cohortStocks: 2, issuers: 1}));
-  Object.assign(info, {index, lookup, issuer, manifest});
- } else {
-  const index = J({schema: CI_INDEX_SCHEMA, state: 'DISABLED', companies: {}, tickers: {}});
-  put('/company-intelligence/data/index.json', index);
-  put('/company-intelligence/config/rollout.js', rolloutText(0, true, 'f'.repeat(24)));
-  info.index = index;   // delivery.json und refresh.json fehlen: 404
- }
- info.rolloutText = rolloutText;
- return info;
-}
+import {build, sha256, sha16, J, COMMIT, D} from './fixtures/ci-site.mjs';
 
 async function server(site) {
  const st = {site, requests: [], override: new Map()};
@@ -245,6 +194,71 @@ test('ON Snapshot: Groesse und Hash werden einzeln gegen das Manifest geprueft',
   // richtiger Hash, falsche Groesse im Manifest: nur der Groessenvergleich trennt
   s.override.clear(); s.override.set(REF, mod(o => { o.manifest.assets[site.lookupPath].bytes += 1; }));
   f = failedOf(await run(s, site, {ci: 'ON'}))['ci-snapshots']; assert.equal(f.cause, 'MIXED');
+ } finally { await s.close(); }
+});
+
+// ---------------- Bootstrap-Pfad (refresh.json optional) ----------------
+test('Bootstrap-Pfad (delivery.acceptedGeneration, kein consumerCache): refresh.json darf 404 sein, Rest bleibt Pflicht', async () => {
+ const site = build({legacy: true}), s = await server(site);
+ try {
+  assert.equal(site.map.has(REF), false, 'Fixture: Bootstrap schreibt keine refresh.json');
+  const r = await run(s, site, {ci: 'ON'});
+  assert.equal(r.status, 'PROPAGATED', JSON.stringify(r.attempts.at(-1).failed));
+  assert.equal(r.observed.ciBootstrap, true); assert.equal(r.observed.ciSnapshotsChecked, undefined);
+  assert.ok(r.fingerprint.includes('bootstrap'));
+  // Index/Rollout/Delivery bleiben Pflicht und werden gegeneinander geprueft
+  const other = build({legacy: true, salt: 'alt'});
+  for (const [path, body, check] of [[IDX, other.index, 'ci-consistency'], [ROLL, site.rolloutText(1, false, other.gen), 'ci-consistency'], [ROLL, site.rolloutText(0, true, site.gen), 'ci-rollout'], [DEL, 404, 'ci-delivery'], [IDX, 404, 'ci-index'], [ROLL, 404, 'ci-rollout']]) {
+   s.override.clear(); s.override.set(path, body);
+   const f = failedOf(await run(s, site, {ci: 'ON'}));
+   assert.ok(f[check], path + ' -> ' + check + ' erwartet, war ' + Object.keys(f));
+  }
+ } finally { await s.close(); }
+});
+
+test('refresh.json fehlt ohne Bootstrap-Beleg: Fehler (fail-closed)', async () => {
+ const good = build(), boot = build({legacy: true}), s = await server(good);
+ try {
+  // GOOD-Pfad (consumerCache, keine acceptedGeneration) + refresh 404
+  s.override.set(REF, 404); assert.equal(failedOf(await run(s, good, {ci: 'ON'}))['ci-refresh'].cause, 'MISSING');
+  // acceptedGeneration leer / zusammen mit consumerCache = kein Bootstrap-Beleg
+  const del = JSON.parse(boot.map.get(DEL));
+  for (const o of [{...del, acceptedGeneration: ''}, {...del, consumerCache: {cachedAssets: 0}}, {...del, acceptedGeneration: 7}]) {
+   s.override.set(DEL, J(o)); assert.equal(failedOf(await run(s, good, {ci: 'ON'}))['ci-refresh'].cause, 'MISSING', JSON.stringify(o));
+  }
+  // delivery.json selbst fehlt: kein Beleg
+  s.override.set(DEL, 404); assert.ok(failedOf(await run(s, good, {ci: 'ON'}))['ci-refresh']);
+ } finally { await s.close(); }
+});
+
+test('Bootstrap: nur 404 ist erlaubt - HTML-Fallback (200) und 500 an refresh.json bleiben Fehler', async () => {
+ const site = build({legacy: true}), s = await server(site);
+ try {
+  s.override.set(REF, HTML); assert.equal(failedOf(await run(s, site, {ci: 'ON'}))['ci-refresh'].cause, 'INVALID');
+  s.override.set(REF, 500); assert.equal(failedOf(await run(s, site, {ci: 'ON'}))['ci-refresh'].cause, 'HTTP_500');
+ } finally { await s.close(); }
+});
+
+test('Quant mit 0 gestempelten Assets ist INVALID (bewusst streng)', async () => {
+ const site = build(), s = await server(site), P = '/__research/content/quant/index.html';
+ try {
+  const bare = Buffer.from('<!doctype html><meta name="vu-release" data-product="quant" content="' + site.qId + '"><p>ohne Stempel</p>');
+  s.override.set(P, bare); s.override.set('/quant/', Buffer.from('<script data-content="' + P + '?v=' + sha16(bare) + '"></script>'));
+  const f = failedOf(await run(s, site));
+  assert.equal(f['quant-assets'].cause, 'INVALID'); assert.match(f['quant-assets'].detail, /ohne gestempelte Assets/);
+ } finally { await s.close(); }
+});
+
+test('Gate offen -> zu: jeder Fehlversuch (200 statt 404) wird wiederholt; erst der letzte zaehlt, und der bleibt ein Fehler', async () => {
+ const on = build(), site = build({mode: 'OFF'}), s = await server(site), c = clock();
+ try {
+  s.override.set(DEL, on.map.get(DEL)); s.override.set(REF, on.map.get(REF));
+  const r = await verifyPropagation({origin: s.origin, ci: 'OFF', now: c.now, sleep: c.sleep, maxMs: DEFAULTS.maxMs});
+  assert.equal(r.status, 'NOT_PROPAGATED'); assert.equal(r.cause, CAUSE); assert.ok(r.attemptCount >= 8, 'mehrere Versuche vor dem Urteil');
+  // Edge-Cache laeuft nach max-age=600 aus: spaeter 404 -> propagiert
+  const c2 = clock(n => { if (n === 6) { s.override.delete(DEL); s.override.delete(REF); } });
+  const ok = await verifyPropagation({origin: s.origin, ci: 'OFF', now: c2.now, sleep: c2.sleep, maxMs: DEFAULTS.maxMs});
+  assert.equal(ok.status, 'PROPAGATED'); assert.equal(ok.intermediateSeen, true);
  } finally { await s.close(); }
 });
 

@@ -32,6 +32,9 @@ const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal
 const fetchJSON=async path=>{const r=await get(path);assert(r.ok,path+' '+r.status);return r.json();};
 let release=null,delivery=null,browser=null,assetEntries=[],activePage=null,active=null;const cases=[];
 try{
+ /* Erwartetes Manifest erst NACH dem Propagationsbeweis laden: ein Abruf davor brach bei gemischtem Stand ungeschuetzt ab
+    (kein Bericht, keine Ursache). Fehler hier sind echte Fehler nach bewiesener Propagation (Bericht + Rollback-Pfad). */
+ const {manifest:reviewed}=await runtimeCandidate();
  release=await fetchJSON('/release-delivery.json');
  if(expectedSha)assert.equal(release.sourceCommit,expectedSha,'WRONG_PRODUCTION_COMMIT');
  delivery=await fetchJSON('/company-intelligence-delivery.json');assert.equal(delivery.generation,reviewed.generation);assert.equal(delivery.issuers,reviewed.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(reviewed.eligibility).length:45);assert.equal(delivery.cohortStocks,reviewed.tickers.length);

@@ -28,6 +28,8 @@
  *                          Generation/generatedAt, Hash+Groesse von index.json im Manifest == ausgelieferte Bytes) und je
  *                          ein Lookup- und ein Issuer-Snapshot der Generation (Bytes+sha256 == Manifest). Alle muessen
  *                          zueinander passen; die Soll-Generation ist die der delivery.json (Beobachtung, nie hartkodiert).
+ *                          refresh.json darf NUR im Bootstrap-Pfad fehlen (404 UND delivery.json mit acceptedGeneration ohne consumerCache);
+ *                          dann entfallen nur refresh/Manifest-Querpruefungen/Snapshots, nie Index/Rollout/Delivery.
  *     CI, Option ci:'OFF' (Gate zu): index.json state DISABLED (oder sha256 == Platzhalter des Checkouts), rollout.js
  *                          stage 0 + productionOff, delivery.json und refresh.json antworten 404.
  *     Ohne Option ci werden die CI-Objekte nicht geprueft (rueckwaertskompatibel).
@@ -198,7 +200,7 @@ export async function probeOnce(ctx) {
  else if (ctx.ci === 'OFF') await probeCiOff(ctx, {pass, fail, observed});
 
  return {ok: checks.every(c => c.ok), checks, observed, fingerprint: [observed.commit, observed.discoverId, observed.shellV, observed.contentSha16, observed.dataSha256,
-  observed.quantId, observed.quantContentSha16, observed.ciGeneration, observed.ciIndexSha16, observed.rolloutStage].join('|')};
+  observed.quantId, observed.quantContentSha16, observed.ciGeneration, observed.ciIndexSha16, observed.rolloutStage, observed.ciBootstrap ? 'bootstrap' : ''].join('|')};
 }
 
 /** Quant: Shell -> Inhalt (Hash == ?v, Meta == release-id) -> gestempelte Assets (Hash == ?v). */
@@ -220,6 +222,8 @@ async function probeQuant(ctx, quantId, {pass, fail, observed}) {
  if (meta !== quantId) { fail('quant-content', 'MIXED', 'Meta ' + meta + ' != release-id.json products.quant ' + quantId, contentRes); return; }
  pass('quant-content', contentRes, 'meta=' + meta);
  const stamped = [...new Map([...html.matchAll(/\b(?:src|href)="(\/[^"?#]+\.(?:js|css))\?v=([0-9a-f]{16})"/g)].map(x => [x[1] + '?v=' + x[2], {path: x[1], v: x[2]}])).values()];
+ /* Bewusst streng: die ausgelieferte Quant-Seite stempelt ihre Assets immer (release-id.mjs stampAssets, heute 7). 0 gestempelte
+    Assets heisst: Seite nicht in Endfassung (oder Stempel-Schritt fehlt) = echter Befund, kein Grund zur Nachsicht. */
  if (!stamped.length) { fail('quant-assets', 'INVALID', 'Quant-Seite ohne gestempelte Assets'); return; }
  const bad = []; let seen = 0;
  for (const {path, v} of stamped.slice(0, ctx.maxQuantAssets)) {
@@ -286,7 +290,12 @@ async function probeCiOn(ctx, {pass, fail, observed}) {
   else { delivery = d; observed.ciGeneration = d.generation; pass('ci-delivery', delRes, 'generation=' + d.generation + ' cohortStocks=' + d.cohortStocks + ' issuers=' + d.issuers); }
  }
 
- if (!refRes.ok) fail('ci-refresh', ...Object.values(failureOf(refRes)), refRes);
+ /* refresh.json ist NUR im GOOD-Pfad (stageProduction -> downloadGood) Teil des Releases; der Legacy-/Bootstrap-Pfad
+    (verifyProductionConsumer, production-release.mjs) schreibt nur delivery.json und kennzeichnet sie mit acceptedGeneration
+    (im GOOD-Pfad fehlt das Feld, dort steht consumerCache). Nur dann ist 404 hier erlaubt; alles andere bleibt Pflicht. */
+ const bootstrap = !!delivery && typeof delivery.acceptedGeneration === 'string' && delivery.acceptedGeneration.length > 0 && delivery.consumerCache == null;
+ if (refRes.status === 404 && bootstrap) { observed.ciBootstrap = true; pass('ci-refresh', refRes, 'Bootstrap-Pfad (delivery.acceptedGeneration, kein consumerCache): refresh.json fehlt erlaubt'); }
+ else if (!refRes.ok) fail('ci-refresh', ...Object.values(failureOf(refRes)), refRes);
  else {
   const r = json(refRes), assets = r?.manifest?.assets;
   if (!r || typeof r !== 'object' || !assets || typeof assets !== 'object') fail('ci-refresh', 'INVALID', 'Manifest fehlt (Fallback-Seite?)', refRes);
@@ -319,6 +328,7 @@ async function probeCiOn(ctx, {pass, fail, observed}) {
  }
 
  // Snapshot-/Lookup-Objekte der Generation (Bytes + sha256 gegen das Manifest)
+ if (observed.ciBootstrap && !refresh) { pass('ci-snapshots', null, 'entfaellt im Bootstrap-Pfad (kein Manifest zum Abgleich)'); return; }
  if (!(refresh && want && index)) { fail('ci-snapshots', 'SKIPPED', 'ohne index/delivery/refresh nicht pruefbar'); return; }
  const assets = refresh.manifest.assets, picks = [], notes = [];
  const shard = Array.isArray(index.lookupShards) ? [...index.lookupShards].filter(x => typeof x === 'string').sort()[0] : null;
