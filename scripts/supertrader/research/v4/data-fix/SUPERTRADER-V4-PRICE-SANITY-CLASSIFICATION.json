@@ -1,0 +1,109 @@
+{
+  "schema": "supertrader-v4-price-sanity-classification-1.0.0",
+  "generation": "V4-DATA-FIX",
+  "postHoc": true,
+  "canonicalCore": {
+    "totalReturn": "canonical-total-return-1.2.0",
+    "corporateActions": "corporate-action-contract-1.2.0",
+    "benchmark": "benchmark-contract-1.0.0"
+  },
+  "priceIntegrity": "price-integrity-1.1.0",
+  "privateEvidence": {
+    "plaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "sealedPlaintextSha256": "c8f0d79534e73480754becb2d276ed03464a901aedba80f05d23f776ab8f86d6",
+    "bound": true,
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "PRICE-INTEGRITY-PRIVATE.owner.sealed.json",
+        "sha256": "7d187eb36574132b213f72f802e8a5c75452ccc36dcc8576f6179f51af696f0e"
+      },
+      {
+        "audience": "session",
+        "file": "PRICE-INTEGRITY-PRIVATE.session.sealed.json",
+        "sha256": "50e18377dbe431adfb3d258f21c59adb9e537dcc87db3c8023f14cb4250df4c0"
+      }
+    ]
+  },
+  "runs": {
+    "preRegistered_1_1_0": {
+      "runId": "38766580165",
+      "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49"
+    },
+    "final_1_2_0": {
+      "runId": "38772238376",
+      "codeCommit": "e049f4c8a6198c6cd2f24d8009136675a55c09e9"
+    }
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "adjustedLevelGt1e6": {
+    "securities": 74,
+    "byV4SanityClass": {
+      "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS": 71,
+      "SPLIT_ARTIFACT": 3
+    },
+    "byCause": {
+      "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": 61,
+      "UNDECLARED_JUMP_IN_HISTORY": 10,
+      "DECLARED_SPLIT_INCONSISTENT": 3
+    },
+    "firstUndeclaredJumpCause": {
+      "NONE": 63,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 6,
+      "DECLARED_SPLIT_DATE_SHIFT": 1,
+      "UNRESOLVED": 3,
+      "STALE_PRICE": 1
+    },
+    "legitimate": 61,
+    "legitimateHighNominal": 0,
+    "note": "a split-adjusted level above 1e6 is the arithmetic of consistent, declared serial reverse splits on penny stocks (returns are correct); no blanket price cap",
+    "after": {
+      "total": 74,
+      "presentAfter": 74,
+      "legitimatePresentAfter": 57,
+      "legitimateTotal": 61,
+      "newlyQuarantined": 1
+    }
+  },
+  "dailyRawJumpCensus": {
+    "scope": "every session with a raw ratio >= 3 (either direction) without a declared split inside the BEFORE canonical bars",
+    "total": 2566,
+    "byDirection": {
+      "UP": 1311,
+      "DOWN": 1255
+    },
+    "coreSignature": 327,
+    "coreSpike": 137,
+    "byCause": {
+      "GENUINE_PRICE_MOVE": 1635,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 231,
+      "UNRESOLVED": 309,
+      "UNDECLARED_REVERSE_SPLIT": 274,
+      "CURRENCY_OR_UNIT": 39,
+      "PROVIDER_SPIKE": 129,
+      "STALE_PRICE": 155,
+      "LISTING_CHANGE": 61,
+      "DECLARED_SPLIT_DATE_SHIFT": 6
+    },
+    "byLocus": {
+      "NONE": 1635,
+      "PROVIDER": 834,
+      "UNKNOWN": 309,
+      "IDENTITY_LISTING_MAPPING": 61
+    }
+  },
+  "classes": {
+    "GENUINE_PRICE_MOVE": "market move without data signature (incl. intraday squeezes on >= 100x volume)",
+    "UNDECLARED_REVERSE_SPLIT": "overnight jump at a conventional ratio with split evidence (core signature, exact ratio, SEC share count)",
+    "CURRENCY_OR_UNIT": ">= 100x overnight scale change or unit ratio without inverse volume",
+    "PROVIDER_SPIKE": "single reverted bad tick",
+    "STALE_PRICE": "jump after a run of stale quotes",
+    "LISTING_CHANGE": "jump after a gap > 30 days (segment boundary)",
+    "DECLARED_SPLIT_INCONSISTENT": "declared factor does not explain the raw move",
+    "DECLARED_SPLIT_DATE_SHIFT": "declared factor recorded on a neighbouring day",
+    "UNDECLARED_FORWARD_SPLIT_POSSIBLE": "downward overnight move at a split ratio; not separable from a crash without a corporate-action record",
+    "UNRESOLVED": "no explanation; counted"
+  },
+  "noPriceCap": true
+}
