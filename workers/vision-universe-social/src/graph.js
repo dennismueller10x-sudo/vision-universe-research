@@ -428,6 +428,23 @@ export async function probeAccount(ctx, { instagramAccountId, pageAccessToken })
   }, pageAccessToken);
 }
 
+/** Profil des eigenen Kontos fuer die Claude-Code-Steuerung — lesend. */
+export async function profileDetails(ctx, { instagramAccountId, pageAccessToken }) {
+  return graph(ctx, String(instagramAccountId), {
+    fields: "id,username,name,biography,website,profile_picture_url,followers_count,follows_count,media_count"
+  }, pageAccessToken);
+}
+
+/** Eigene Beitraege und Reels, seitenweise — lesend. `media_product_type` trennt FEED/REELS/STORY. */
+export async function listMedia(ctx, { instagramAccountId, pageAccessToken, limit = 12, after = null }) {
+  const params = {
+    fields: "id,caption,media_type,media_product_type,permalink,timestamp,like_count,comments_count,thumbnail_url",
+    limit: Math.min(Math.max(Number(limit) || 12, 1), 25)
+  };
+  if (after) params.after = String(after);
+  return graph(ctx, `${instagramAccountId}/media`, params, pageAccessToken);
+}
+
 /** Kontokennzahlen — lesend, erzeugt nichts. */
 export async function accountInsights(ctx, { instagramAccountId, pageAccessToken, period = "day" }) {
   return graph(ctx, `${instagramAccountId}/insights`, {
