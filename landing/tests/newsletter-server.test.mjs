@@ -7,7 +7,7 @@ function fixture(options={}){
   const cache={async match(r){const v=stored.get(r.url);if(!v||v.until<=clock)return undefined;return new Response(v.body);},async put(r,s){stored.set(r.url,{body:await s.text(),until:clock+Number(s.headers.get('Cache-Control').split('=')[1])*1000});}};
   const env={NEWSLETTER_STAGE:'production',NEWSLETTER_PUBLIC_ENABLED:'true',NEWSLETTER_PRIVACY_APPROVED:'true',NEWSLETTER_E2E_VERIFIED:'true',BREVO_API_KEY:'synthetic-api-key',NEWSLETTER_RATE_KEY:'a'.repeat(64),NEWSLETTER_DOI_TEMPLATE_ID:'5'};
   const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
-  const handler=createHandler({cacheProvider:()=>cache,now:()=>clock,providerFetch:async(url,init)=>{
+  const handler=createHandler({cacheProvider:()=>{if(options.cacheFailure)throw Error('Secret cache details new+qa@example.test');return cache;},now:()=>clock,providerFetch:async(url,init)=>{
     assert.equal(init.headers['api-key'],env.BREVO_API_KEY);assert.equal(init.redirect,'error');
     const path=new URL(url).pathname;calls.push({path,method:init.method,body:init.body&&JSON.parse(init.body)});
     if(path.startsWith('/v3/contacts/')&&path!=='/v3/contacts/attributes'&&init.method==='GET')return json(options.existing||{},options.lookupStatus||(options.existing?200:404));
@@ -33,6 +33,29 @@ test('Alle öffentlichen Gates und Preview-Testadressen werden serverseitig erzw
   const preview='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';
   const req=new Request(preview+'/api/newsletter/subscribe',{method:'POST',headers:{Origin:preview,'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1'},body:JSON.stringify({email:'other@example.test',consent:true,consentVersion:CONSENT_VERSION,honeypot:''})});
   assert.equal((await f.handler(req,f.env)).status,503);assert.equal(f.calls.length,0);
+});
+test('Private Laufzeitdiagnose prüft dieselben GETs und Cache ohne DOI, Reservierung oder Adressbindung',async()=>{
+  const token='a'.repeat(43),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  const f=fixture();Object.assign(f.env,{NEWSLETTER_PUBLIC_ENABLED:'false',NEWSLETTER_E2E_VERIFIED:'false',NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+  const diagnostic=(headers={})=>new Request(origin+'/api/newsletter/test-diagnostics',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...headers},body:JSON.stringify({email:'new+qa@example.test',consent:true,consentVersion:CONSENT_VERSION,honeypot:''})});
+  assert.equal((await f.handler(diagnostic(),f.env)).status,503);assert.equal(f.calls.length,0);
+  const result=await f.handler(diagnostic({Authorization:'Bearer '+token}),f.env);
+  assert.equal(result.status,200);assert.deepEqual(await result.json(),{diagnostic:{stage:'ready',http:200,reserved:false,provider_write_calls:0}});
+  assert.equal(result.headers.get('Cache-Control'),'no-store');assert.equal(f.sends().length,0);
+  assert.equal(f.calls.length,6);assert.ok(f.calls.every(c=>c.method==='GET'));
+  assert.ok([...f.stored.keys()].every(k=>k.includes('/diagnostic/')));
+  // A read-only probe must not consume the first-send reservation or bind it.
+  assert.equal((await f.handler(f.request(undefined,{}, {Authorization:'Bearer '+token}),f.env)).status,202);assert.equal(f.sends().length,1);
+});
+test('Feste private Fehlerphasen zeigen Cache- und Providerfehler ohne Rohdaten; öffentlich keine Diagnose',async()=>{
+  const token='a'.repeat(43),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  for(const [options,stage,http] of [[{cacheFailure:true},'cache',null],[{lookupStatus:403},'contact_lookup',403],[{template:{isActive:false}},'template',200]]){
+    const f=fixture(options);Object.assign(f.env,{NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+    const response=await f.handler(f.request(undefined,{}, {Authorization:'Bearer '+token}),f.env);
+    assert.equal(response.status,503);const text=await response.text();assert.deepEqual(JSON.parse(text).diagnostic,{stage,http});
+    assert.doesNotMatch(text,/synthetic-api-key|Secret cache|new\+qa@example/);assert.equal(f.sends().length,0);
+    const publicResponse=await f.handler(f.request(),f.env);assert.equal(publicResponse.status,503);assert.equal((await publicResponse.json()).diagnostic,undefined);
+  }
 });
 test('Privater Hauptdomain-Test benötigt Freigabe, geheimes Zugangsmerkmal und gültige Frist',async()=>{
   const token='a'.repeat(43);
