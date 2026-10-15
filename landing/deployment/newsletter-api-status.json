@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-14",
+  "pullRequest": 659,
+  "merged": false,
+  "project": "vision-universe",
+  "operatorSourceCommit": "bd4510c57e9e15088f9782715aa5aa18ebc33b7e",
+  "setupRun": 38554305099,
+  "independentAuditRun": 38567268467,
+  "pagesSetupHttp": 200,
+  "runtimeSecretsVerified": true,
+  "otherProjectConfigurationUnchanged": true,
+  "publicGatesClosed": true,
+  "apiDoiTemplate": {
+    "id": 8,
+    "name": "VU | Newsletter | DE | API Double Opt In | v1",
+    "active": true,
+    "sourceReadbackMatchesNormalized": true,
+    "confirmationPlaceholder": "{{ params.DOIurl }}"
+  },
+  "templates1Through4Unchanged": true,
+  "listCounts": {
+    "4": 135,
+    "5": 0,
+    "6": 2
+  },
+  "protectedContactObjectsUnchanged": true,
+  "smtpSuppressionReadable": true,
+  "smtpSuppressionCount": 0,
+  "senderActiveIds": [
+    1
+  ],
+  "domainVerified": true,
+  "domainAuthenticated": true,
+  "emailsSent": 0,
+  "contactWriteCalls": 0,
+  "controlledTestAddressPresent": false,
+  "liveDoiInboxClickUnsubscribeTest": "NOT_PERFORMED",
+  "privacyApproved": false,
+  "wafRateRulesRead": {
+    "http": 403,
+    "code": 10000
+  },
+  "wafProtectionVerified": false,
+  "nextAccountStep": "Approve the exact privacy text; owner enters new controlled address through private time-limited main-domain access, no new email secret required",
+  "publicationPreparation": {
+    "privacyDocument": "legal-drafts/newsletter-release-2026-10-14.html",
+    "privacyStatus": "AWAITING_EXPLICIT_APPROVAL",
+    "controlledMainDomainMode": "PREPARED_NOT_PUBLISHED",
+    "newEmailSecretRequired": false,
+    "testWindowMaxMinutes": 120,
+    "publicReleaseRequiresSuccessfulObserverAndPrivateInboxAcceptance": true
+  }
+}
