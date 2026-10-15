@@ -1,0 +1,23 @@
+{
+ "status": "FAIL",
+ "cause": "BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION",
+ "sourceCommit": "0123456789abcdef0123456789abcdef01234567",
+ "generation": "gen0000000000000000000000",
+ "attempt": 1,
+ "previousFailure": null,
+ "propagation": {"status": "PROPAGATED", "attemptCount": 1, "observed": {"commit": "0123456789abcdef0123456789abcdef01234567", "discoverId": "rel0123456789ab"}, "attempts": [{"n": 1, "atMs": 0, "ok": true, "observed": {}}]},
+ "active": {"ticker": "AAPL", "errors": [], "responses": []},
+ "markers": [],
+ "accessGate": false,
+ "pageState": {"href": "/discover/#/s/US_REAL/AAPL", "readyState": "complete", "metaRelease": "rel0123456789ab", "metaProduct": "discover", "accessGate": false, "ciSections": 0, "scriptResources": 12,
+  "scriptResourcesSuspicious": [{"n": "/discover/engines/narrative.js?v=42e21a50739d2345", "s": 503}]},
+ "browserDiagnostics": {
+  "console": ["A bad HTTP response code (503) was received when fetching the script. LAZY_SCRIPT_FAILED:/discover/engines/narrative.js"],
+  "pageErrors": [],
+  "failed": [{"url": "/discover/engines/narrative.js?v=42e21a50739d2345", "error": "net::ERR_ABORTED"}],
+  "http": [{"url": "/discover/engines/narrative.js?v=42e21a50739d2345", "status": 503, "headers": {"x-cache": "MISS", "content-type": "text/html; charset=utf-8", "content-length": "54887"}}],
+  "served": [], "truncated": {}
+ },
+ "error": {"name": "TimeoutError", "message": "page.waitForSelector: Timeout 30000ms exceeded. waiting for locator('.ci-company-intelligence h2')"},
+ "completedCases": 0
+}
