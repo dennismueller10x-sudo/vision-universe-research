@@ -32,6 +32,15 @@ Natürlich sagen: „Zeig mir mein Instagram-Profil", „Liste meine letzten 10 
 
 Insights: `GET /social/meta/insights` (bestehend).
 
+## Verbindung prüfen und Beitragsdaten sichern (ohne Schlüssel im Chat)
+
+Workflow `Social Instagram Check` (`workflow_dispatch`), nutzt nur das Repository-Secret `VU_SOCIAL_ADMIN_KEY`:
+
+- `backup=false`: liest `/social/meta/profile` live und bricht ab, wenn das Konto nicht `@app.visionuniverse` / `17841480148117405` ist. Ausgabe nur Konto, ID, Zähler.
+- `backup=true`: sichert zusätzlich alle Beiträge (ID, Datum, Caption, Typ, Permalink, Likes/Kommentare, Reichweite u. a.) als Artefakt `instagram-backup` (90 Tage) und auf einem neuen Branch `backup/instagram-<Zeitstempel>`. Lokal derselbe Ablauf: `node scripts/social/ig-check.mjs --expect-id … --expect-username … --out datei.json`.
+
+Archivierte Beiträge liefert die Meta-API nicht mehr aus. Deshalb vor dem Archivieren sichern.
+
 ## Veröffentlichen (bestehende Freigabe bleibt)
 
 Bilder und Carousels laufen unverändert über die Pipeline: Kandidat (`scripts/social/make-publish-candidate.mjs`, `make-carousel-candidates.mjs`) → Freigabe im Approval Center → Worker `POST /social/meta/publish` (Idempotenz, JPEG-/Fingerabdruck-Prüfung, Allowlist). Es gibt bewusst keinen freien „poste das jetzt"-Befehl am Freigabeweg vorbei.

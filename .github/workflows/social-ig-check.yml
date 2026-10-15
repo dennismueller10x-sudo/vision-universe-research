@@ -1,0 +1,93 @@
+# Instagram-Verbindung pruefen und Beitragsdaten sichern (rein lesend).
+#
+# - check:  GET /social/meta/profile gegen den Live-Worker; bricht ab, wenn das Konto
+#           nicht @app.visionuniverse / 17841480148117405 ist. Ausgabe nur Konto, ID, Zaehler.
+# - backup: nur mit backup=true. Liest alle Beitraege samt Kennzahlen und legt sie als
+#           Artefakt (90 Tage) und auf einem neuen Waisen-Branch backup/instagram-<Zeitstempel>
+#           ab. Der Branch ist neu und eindeutig, es gibt keinen Wettlauf um main und keine
+#           erzeugten Artefakte; deshalb hier kein push-with-retry.
+#
+# Der Admin-Schluessel kommt nur ueber env: und wird nie ausgegeben. Veroeffentlicht, archiviert
+# oder aendert nichts.
+name: Social Instagram Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      backup:
+        description: 'Beitragsdaten zusaetzlich sichern (Artefakt + Backup-Branch)'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: social-ig-check-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  VU_SOCIAL_WORKER_URL: https://social.visionuniverse.de
+  EXPECT_ID: "17841480148117405"
+  EXPECT_USERNAME: app.visionuniverse
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verbindung und Identitaet pruefen
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/ig-check.mjs --expect-id "$EXPECT_ID" --expect-username "$EXPECT_USERNAME"
+
+  backup:
+    needs: check
+    if: ${{ inputs.backup }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Beitraege und Kennzahlen lesen
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ig-backup"
+          node scripts/social/ig-check.mjs --expect-id "$EXPECT_ID" --expect-username "$EXPECT_USERNAME" \
+            --out "$RUNNER_TEMP/ig-backup/instagram-backup.json"
+      - name: Als Artefakt ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: instagram-backup
+          path: ${{ runner.temp }}/ig-backup/instagram-backup.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Auf neuem Backup-Branch ablegen
+        run: |
+          set -euo pipefail
+          BR="backup/instagram-$(date -u +%Y%m%d-%H%M)"
+          cp "$RUNNER_TEMP/ig-backup/instagram-backup.json" "$RUNNER_TEMP/instagram-backup.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan "$BR"
+          git rm -rf -q .
+          cp "$RUNNER_TEMP/instagram-backup.json" instagram-backup.json
+          git add instagram-backup.json
+          git commit -q -m "Instagram-Sicherung vor Neustart"
+          git push origin "$BR"
+          echo "Backup-Branch: $BR"
