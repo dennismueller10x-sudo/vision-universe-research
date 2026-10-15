@@ -53,7 +53,7 @@ jobs:
           node-version: '22'
       - name: Scope, policy and failure-safety contracts
         run: |
-          node --test scripts/company_intelligence/tests/continuous-refresh.test.mjs
+          node --test scripts/company_intelligence/tests/continuous-refresh.test.mjs scripts/company_intelligence/tests/refresh-publication.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_continuous_refresh.py'
       - name: Existing browser runtime; no AI dependency
         run: |
@@ -87,9 +87,25 @@ jobs:
           if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe --source-audit); fi
           if [ $((10#$(date -u +%H) % 8)) = 0 ] || [ "$GITHUB_EVENT_NAME" != schedule ]; then options+=(--financial); fi
           node scripts/company_intelligence/refresh-run.mjs --temporary "$RUNNER_TEMP/ci-refresh" --identity-root .accepted-identities "${options[@]}"
+      # Only a cleanly read, valid production gate with state DISABLED skips live verification: with the gate
+      # closed there is no production to verify (delivery.json is not served) and no fail-closed action to take.
+      # Any read failure keeps the strict VERIFY path (scripts/company_intelligence/refresh-publication.mjs).
+      - name: Production gate decides whether this refresh can be verified live
+        id: publication_plan
+        if: inputs.verification != true
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/refresh-publication.mjs plan
+      - name: Production gate closed; refreshed data stays private until an explicit enable
+        if: inputs.verification != true && steps.publication_plan.outputs.mode == 'GATE_CLOSED'
+        run: echo "::notice::Company Intelligence production gate is DISABLED; the refreshed GOOD stays private and is verified live only after an explicit production_release=enable."
       - name: Deploy existing Pages pipeline and verify actual production generation
         id: deploy_live
-        if: inputs.verification != true
+        if: inputs.verification != true && steps.publication_plan.outputs.mode == 'VERIFY'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_PATH: /tmp/ci-refresh/node_modules
@@ -101,16 +117,9 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           gh workflow run pages-release.yml --ref main
-          node --input-type=module <<'NODE'
-          import {readFileSync} from 'node:fs';
-          const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-refresh/health.json')).consumerGeneration;
-          const deadline=Date.now()+15*60000;let served=false;
-          while(Date.now()<deadline){
-            try{const response=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?refresh='+Date.now(),{signal:AbortSignal.timeout(15000)});const d=await response.json();if(d.generation===expected){served=true;break;}}catch{}
-            await new Promise(r=>setTimeout(r,10000));
-          }
-          if(!served)throw Error('PRODUCTION_PUBLICATION_SLO_FAILED');
-          NODE
+          # delivery.json and refresh.json must both carry the new generation without interruption for a full
+          # Fastly cache window (max-age=600, query not part of the cache key) before the live QA reads them.
+          node scripts/company_intelligence/refresh-publication.mjs await --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/publication.json"
           node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
           node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json"
       - name: Fail closed on actual production regression
@@ -136,4 +145,5 @@ jobs:
             ${{ runner.temp }}/ci-refresh/candidate-qa.json
             ${{ runner.temp }}/ci-refresh/candidate-qa.json-failure.png
             ${{ runner.temp }}/ci-refresh/live-qa.json
+            ${{ runner.temp }}/ci-refresh/publication.json
           retention-days: 14
