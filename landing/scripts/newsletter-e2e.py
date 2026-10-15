@@ -31,11 +31,13 @@ def run():
                 raw=response.read();return response.status,json.loads(raw) if raw else {}
         except urllib.error.HTTPError as error:error.close();return error.code,{}
     def read(path):
-        code,value=request(API,path)
-        if code!=200:
+        # Only GET reads may be retried. Never retry a mutation/send endpoint.
+        for attempt in range(3):
+            code,value=request(API,path)
+            if code==200:return value
             print(json.dumps({'read_phase':'doi_events' if path.startswith('/smtp/statistics/events?') else 'required_private_read','http':code}),flush=True)
-            raise ValueError('Read unavailable')
-        return value
+            if code!=429 or attempt==2:raise ValueError('Read unavailable')
+            time.sleep(60)
     def mutation(path,method,body=None):
         code,value=request(API,path,method,body)
         if code not in (200,201,204):raise ValueError('Mutation outcome uncertain; never retry delivery')
@@ -92,7 +94,7 @@ def run():
                 email=next(iter(addresses))
                 if email in original_emails:raise ValueError('Existing contact cannot be a test recipient')
                 break
-            time.sleep(10)
+            time.sleep(60)
         else:raise ValueError('No private controlled submission observed')
         contact_path='/contacts/'+urllib.parse.quote(email,safe='')
     else:

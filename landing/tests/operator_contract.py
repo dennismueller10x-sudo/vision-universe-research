@@ -107,6 +107,27 @@ class Contract(unittest.TestCase):
     def test_documented_empty_event_baseline_allows_private_observation(self):
         p=Provider(observe=True,empty_baseline=True);self.run_operator(p)
         self.assertTrue(p.sent);self.assertFalse(any(path=='/api/newsletter/subscribe' for path,_,_ in p.calls))
+    def test_rate_limited_reads_back_off_without_repeating_delivery(self):
+        p=Provider(observe=True);original=p.open;attempts=0
+        def limited(request,**kwargs):
+            nonlocal attempts
+            if '/smtp/statistics/events?' in request.full_url and attempts<2:
+                attempts+=1
+                raise operator.urllib.error.HTTPError(request.full_url,429,'Rate limited',{},io.BytesIO())
+            return original(request,**kwargs)
+        p.open=limited
+        with patch.object(operator.time,'sleep') as pause:self.run_operator(p)
+        self.assertEqual(attempts,2);self.assertEqual([c.args[0] for c in pause.call_args_list],[60,60])
+        self.assertEqual(sum(path.endswith('/sendNow') for path,_,_ in p.calls),1)
+    def test_persistent_read_limit_stops_before_mutations(self):
+        p=Provider(observe=True);original=p.open
+        def limited(request,**kwargs):
+            if '/smtp/statistics/events?' in request.full_url:raise operator.urllib.error.HTTPError(request.full_url,429,'Rate limited',{},io.BytesIO())
+            return original(request,**kwargs)
+        p.open=limited
+        with patch.object(operator.time,'sleep') as pause:
+            with self.assertRaises(ValueError):self.run_operator(p)
+        self.assertEqual(pause.call_count,2);self.assertTrue(all(m=='GET' for _,m,_ in p.calls))
     def test_ambiguous_observed_addresses_block_all_mutations(self):
         p=Provider(observe=True,ambiguous=True)
         with self.assertRaises(ValueError):self.run_operator(p)

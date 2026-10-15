@@ -13,6 +13,7 @@ const BAD='Die Anmeldung konnte nicht verarbeitet werden. Bitte prüfe deine Ein
 const UNKNOWN='Wir konnten die Anfrage nicht abschließend prüfen. Eine Anmeldung ist nicht bestätigt. Bitte prüfe dein Postfach; es erfolgt keine automatische Wiederholung.';
 const CLOSED='Die Anmeldung ist noch nicht freigeschaltet. Deine E-Mail-Adresse wurde nicht zur Anmeldung übermittelt.';
 const TOO_MANY='Zu viele Anfragen. Bitte versuche es später erneut.';
+const TEST_EXISTING='Für diesen Betreiber-Test brauchst du eine neue, von dir kontrollierte Adresse, die bisher nicht in Brevo vorhanden ist. Der vorhandene Kontakt wurde nicht verändert und keine Bestätigungsmail angefordert.';
 const H={'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
 
 async function authorizedTest(request,env,now){
@@ -98,23 +99,14 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
       });
       if(!permitted)return out(429,TOO_MANY,{'Retry-After':'600'});
       const emailHash=await digest('email:'+email,env.NEWSLETTER_RATE_KEY);
-      if(controlled){
-        // Pseudonymous, short-lived address binding for the one operator link.
-        // Cache is per POP; possession of the private link authorizes the owner.
-        const testKey=new Request(url.origin+'/.newsletter-internal/test/'+env.NEWSLETTER_TEST_ACCESS_HASH);
-        const own=await exclusive('test:'+env.NEWSLETTER_TEST_ACCESS_HASH,async()=>{
-          const prior=await cache.match(testKey);
-          if(prior)return (await prior.text())===emailHash;
-          await cache.put(testKey,new Response(emailHash,{headers:{'Cache-Control':'max-age='+Math.min(7200,Math.max(1,Math.ceil((Number(env.NEWSLETTER_TEST_UNTIL)-now())/1000)))}}));return true;
-        });
-        if(!own)return out(503,CLOSED);
-      }
       return await exclusive('email:'+emailHash,async()=>{
         const hold=new Request(url.origin+'/.newsletter-internal/email/'+emailHash);
         if(await cache.match(hold))return out(202,PENDING);
         // Every existing contact, regardless of list/status, remains untouched.
         const contact=await provider('/contacts/'+encodeURIComponent(email),env);
-        if(contact.status===200)return out(202,PENDING);
+        // The authenticated owner test needs a genuinely new address. Public
+        // responses remain neutral and never disclose contact membership.
+        if(contact.status===200)return out(controlled?409:202,controlled?TEST_EXISTING:PENDING);
         if(contact.status!==404)throw Error('Lookup uncertain');
         // Respect transactional blocks even if no marketing profile remains.
         let suppressionComplete=false;
@@ -149,6 +141,17 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         const budget=await budgetResponse.json();
         if(!Number.isInteger(budget.requests)||budget.requests<0)throw Error('Budget shape');
         if(budget.requests>=50)return out(429,TOO_MANY,{'Retry-After':'3600'});
+        if(controlled){
+          // Pseudonymous, short-lived address binding for the one operator link.
+          // Cache is per POP; possession of the private link authorizes the owner.
+          const testKey=new Request(url.origin+'/.newsletter-internal/test/'+env.NEWSLETTER_TEST_ACCESS_HASH);
+          const own=await exclusive('test:'+env.NEWSLETTER_TEST_ACCESS_HASH,async()=>{
+            const prior=await cache.match(testKey);
+            if(prior)return (await prior.text())===emailHash;
+            await cache.put(testKey,new Response(emailHash,{headers:{'Cache-Control':'max-age='+Math.min(7200,Math.max(1,Math.ceil((Number(env.NEWSLETTER_TEST_UNTIL)-now())/1000)))}}));return true;
+          });
+          if(!own)return out(503,CLOSED);
+        }
         // Reserve before the only delivery call. Keep on errors/uncertain results.
         await cache.put(hold,new Response('reserved',{headers:{'Cache-Control':'max-age=86400'}}));
         const secondCheck=await provider('/contacts/'+encodeURIComponent(email),env);
