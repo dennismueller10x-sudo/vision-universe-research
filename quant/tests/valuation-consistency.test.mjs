@@ -227,7 +227,25 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
   const PANELWEG = ["earningsYield", "priceToFcf"];
   const BREITER_WEG = ["priceEarnings", "priceSales"];
   const hatWert = (m) => m && m.state === "AVAILABLE" && Number.isFinite(m.value);
-  const kandidaten = KENNZAHLEN_KANDIDATEN.slice();
+  /* Begruendete Ausfaelle der Bewertung: (1) der Titel steht im Faktorbestand
+     unter `skipped` (z. B. FAIL stale_last_bar bei einem Delisting), oder
+     (2) die Kennzahl traegt selbst einen bewussten Zurueckhaltungsgrund (die
+     Gruende, die figuresSection als "bewusst nicht genannt" zeigt). Ein Titel
+     ohne einen dieser Gruende, dessen Bewertungsfamilie leer ist, ist ein
+     Datenverlust und kein Marktereignis. */
+  const ZURUECKHALTUNG = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING",
+    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "DISPLAY_NOT_PERMITTED"];
+  let uebersprungen = null;
+  const ausgeschlossenGrund = (ticker, metrics) => {
+    if (metrics.some((m) => ZURUECKHALTUNG.includes(m.reason))) return "Zurueckhaltung";
+    if (!uebersprungen) {
+      const pfad = join(ROOT, "quant/data/market/factors/factors-FULL_UNIVERSE.json");
+      const roh = existsSync(pfad) ? JSON.parse(readFileSync(pfad, "utf8")) : {};
+      uebersprungen = new Map((roh.skipped || []).map((e) => [e.ticker, e.reason + " " + (e.message || "")]));
+    }
+    return uebersprungen.has(ticker) ? "skipped " + uebersprungen.get(ticker) : null;
+  };
+  const kandidaten = KENNZAHLEN_KANDIDATEN;
   assert.ok(kandidaten.length > 0, "der Kandidatenbestand ist leer - dann prueft dieser Fall nichts");
   const verschwunden = [], geprueftTitel = [], mitWert = { panel: [], breit: [] }, nurSatz = [];
   for (const ticker of kandidaten) {
@@ -255,6 +273,8 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
       /* Familie da, aber keine einzige Bewertungszahl (Delisting, veraltete
          Notierung): Zeilen anderer Familien oder der erklaerende Satz -
          niemals ein leerer Kasten. */
+      const grund = ausgeschlossenGrund(ticker, metrics);
+      assert.ok(grund, ticker + ": Bewertungswerte ohne erklaerenden Grund verschwunden (nicht im skipped-Bestand, keine Zurueckhaltung)");
       assert.ok(zeilen.length > 0 || saetze.length > 0, ticker + ": weder Zeilen noch ein erklaerender Satz im Kasten");
       if (zeilen.length === 0) {
         assert.equal(behaelter.length, 0, ticker + ": ein leerer Kennzahlenkasten ist entstanden");
@@ -263,9 +283,10 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
       }
     }
   }
-  const lage = "geprueft: [" + geprueftTitel.join(",") + "], verschwunden: [" + verschwunden.join(",") + "]";
+  const lage = "geprueft: [" + geprueftTitel.join(",") + "], nur Satz: [" + nurSatz.join(",") + "], verschwunden: [" + verschwunden.join(",") + "]";
+  const mitEchtemWert = new Set([...mitWert.panel, ...mitWert.breit]);
   assert.ok(geprueftTitel.length > 0, "kein einziger Kandidat ist im Bestand - der Kandidatenbestand ist leer. " + lage);
-  assert.ok(geprueftTitel.length >= 2, "nur " + geprueftTitel.length + " Titel geprueft, mindestens 2 verlangt. " + lage);
+  assert.ok(mitEchtemWert.size >= 2, "nur " + mitEchtemWert.size + " Titel mit echtem Bewertungswert im Kasten, mindestens 2 verlangt. " + lage);
   assert.ok(mitWert.panel.length >= 1, "kein Titel des Panelwegs (" + PANELWEG.join("/") + ") mit echtem Wert gefunden. " + lage);
   assert.ok(mitWert.breit.length >= 1, "kein Titel des breiten Wegs (" + BREITER_WEG.join("/") + ") mit echtem Wert gefunden. " + lage);
   /* Und ohne eine einzige zeigbare Kennzahl steht ein Satz statt eines
