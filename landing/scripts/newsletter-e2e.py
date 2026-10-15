@@ -205,7 +205,7 @@ def run():
     print('One administrative confirmation for the new test contact only; no regular newsletter, main-list or internal-test-list delivery.',flush=True)
     mutation('/emailCampaigns/'+str(campaign)+'/sendNow','POST')
     print('Private inbox step: verify this confirmation and use its native Brevo unsubscribe link. Waiting for marketing suppression.',flush=True)
-    deadline=time.monotonic()+600;withdrawn=False
+    deadline=time.monotonic()+(owner_wait if resume else 600);withdrawn=False
     while time.monotonic()<deadline:
         c=read(contact_path)
         if c.get('emailBlacklisted') is True:withdrawn=True;break
