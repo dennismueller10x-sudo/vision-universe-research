@@ -269,3 +269,26 @@ test("A6 · Ohne Allowlist bleibt das Verhalten wie bisher", async () => {
   const { callback } = await completeConnect(worker, env);
   assert.equal(callback.status, 200);
 });
+
+test("A6 · Umbenanntes Konto: ID-Anker, neuer und alter Handle werden akzeptiert, fremde ID nicht", async () => {
+  const ID = "17841480148117405";
+  const ERLAUBT = "app.visionuniverse,visionuniverse.aktienreports";
+  for (const handle of ["app.visionuniverse", "visionuniverse.aktienreports"]) {
+    const graph = mitKonto(handle, ID);
+    const env = createEnv({
+      META_IG_ALLOWED_USERNAMES: ERLAUBT, META_IG_ACCOUNT_ID: ID,
+      __graph: graph, __fetchImpl: graph.fetchImpl
+    });
+    const { callback } = await completeConnect(worker, env);
+    assert.equal(callback.status, 200, handle);
+  }
+  /* Richtiger Handle, fremde ID: bleibt gesperrt. */
+  const graph = mitKonto("app.visionuniverse", "17841499999999999");
+  const env = createEnv({
+    META_IG_ALLOWED_USERNAMES: ERLAUBT, META_IG_ACCOUNT_ID: ID,
+    __graph: graph, __fetchImpl: graph.fetchImpl
+  });
+  const { callback } = await completeConnect(worker, env);
+  assert.equal(callback.status, 400);
+  assert.equal(env.VU_SOCIAL_KV.__size(), 0);
+});
