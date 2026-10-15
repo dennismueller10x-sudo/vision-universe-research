@@ -166,7 +166,7 @@ test("signal study: titles without a complete corporate-action record drop out o
   assert.equal(study.source.titles, 58, "die beiden Titel rechnen nicht als Gesamtrendite mit");
   assert.equal(quality.rejected.rows.length, 2);
   assert.ok(quality.rejected.rows.every((r) => r[1] === "DIVIDEND_MISSING"));
-  assert.equal(quality.contract, "canonical-total-return-1.0.0");
+  assert.equal(quality.contract, "canonical-total-return-1.1.0");
   assert.equal(quality.benchmark.role, "BENCHMARK_REFERENCE");
   assert.equal(quality.crossCheck.matchingTitles, 58);
   assert.ok(!/"close"|"adjustedClose"/.test(JSON.stringify(quality)), "keine Kurse im Artefakt");

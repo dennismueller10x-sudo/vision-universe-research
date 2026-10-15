@@ -104,7 +104,7 @@ test("SPY total return is AVAILABLE only when the same canonical engine reconstr
   const ok = [bar("2024-01-02", 100), bar("2024-01-03", 99.5, 0.5), bar("2024-01-04", 100)];
   const r = totalReturnState(ok);
   assert.equal(r.state, "AVAILABLE", JSON.stringify(r));
-  assert.equal(r.contract, "canonical-total-return-1.0.0");
+  assert.equal(r.contract, "canonical-total-return-1.1.0");
   assert.equal(r.benchmarkContract, "benchmark-contract-1.0.0");
   assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101)]).reason, "BENCHMARK_DIVIDENDS_MISSING", "ein Vergleichsmassstab ohne erfasste Ausschuettung ist unvollstaendig");
   assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101, null)]).reason, "DIVIDEND_FIELD_MISSING");

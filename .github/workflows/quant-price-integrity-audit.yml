@@ -1,0 +1,145 @@
+name: Quant price-integrity audit (V4-D1/D2, no performance, private evidence sealed)
+# Reconstructs the V4-D1/D2 error population on the canonical capture of the unchanged core (BEFORE), rebuilds the
+# canonical dataset with the fixed core (AFTER, canonical-total-return-1.1.0), and commits public counts/hashes and
+# the sealed private case file. The capture/measurement pipeline is the pinned #705 research code (read-only); only
+# quant/engines/canonical-total-return.js is overlaid for AFTER. Runs only with [price-integrity:audit].
+on:
+  push:
+    branches:
+      - 'quant/canonical-price-integrity-d1-d2'
+permissions:
+  contents: read
+concurrency:
+  group: quant-price-integrity-audit-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  BASE_COMMIT: 547d604d9596b0f4af4c13ac31bebce48b3948ec
+  OUT: docs/data-quality/price-integrity
+jobs:
+  audit:
+    if: contains(github.event.head_commit.message, '[price-integrity:audit]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: fix
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/price-integrity-audit.mjs
+            /scripts/quant/price-integrity/
+            /scripts/market/storage/
+            /scripts/ci/
+            /docs/data-quality/
+            /.github/workflows/quant-price-integrity-audit.yml
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+          df -h / | tail -1
+      - name: BEFORE capture (unchanged core, pinned pipeline)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          grep -q '"canonical-total-return-1.0.0"' base/quant/engines/canonical-total-return.js
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/before --public-out "$RUNNER_TEMP/pub/capture-before.json"
+      - name: Population (V4 diagnostic reproduction + forensics)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node fix/scripts/quant/price-integrity-audit.mjs --stage population --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/before --private /workspace/private/audit --public "$RUNNER_TEMP/pub/QUANT-PRICE-INTEGRITY-POPULATION.json"
+          rm -rf /workspace/private/before
+      - name: AFTER capture (core 1.1.0 overlaid, same pipeline)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          cp fix/quant/engines/canonical-total-return.js base/quant/engines/canonical-total-return.js
+          grep -q '"canonical-total-return-1.1.0"' base/quant/engines/canonical-total-return.js
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/after --public-out "$RUNNER_TEMP/pub/capture-after.json"
+      - name: Rebuild comparison (before/after counts, new holds, false-positive check)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node fix/scripts/quant/price-integrity-audit.mjs --stage rebuild --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/after --private /workspace/private/audit --public "$RUNNER_TEMP/pub/QUANT-PRICE-INTEGRITY-REBUILD.json"
+      - name: Seal private evidence (owner and session envelopes)
+        if: always()
+        run: |
+          set -euo pipefail
+          test -f /workspace/private/audit/population.json || exit 0
+          node fix/scripts/quant/price-integrity-audit.mjs --stage seal --base-root "$GITHUB_WORKSPACE/base" --private /workspace/private/audit \
+            --owner-key base/scripts/supertrader/validation/results-public-key.pem --session-key fix/scripts/quant/price-integrity/session-public-key.pem \
+            --sealed-dir fix/scripts/quant/price-integrity/sealed --public "$RUNNER_TEMP/pub/QUANT-PRICE-INTEGRITY-SEALED.json"
+      - name: Commit public counts and sealed evidence
+        if: always()
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p "fix/$OUT"
+          cp "$RUNNER_TEMP"/pub/*.json "fix/$OUT/" 2>/dev/null || true
+          cd fix
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$OUT"
+          if [ -d scripts/quant/price-integrity/sealed ]; then git add scripts/quant/price-integrity/sealed; fi
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "Quant price integrity: audit results (public counts, sealed evidence; no performance)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private

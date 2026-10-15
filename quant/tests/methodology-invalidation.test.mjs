@@ -43,8 +43,8 @@ test("a new total-return, corporate-action or benchmark contract version changes
   const src = join(ROOT, "quant/engines/canonical-total-return.js"), orig = readFileSync(src, "utf8");
   const base = fingerprint();
   try {
-    for (const [name, from, to] of [["totalReturn", '"canonical-total-return-1.0.0"', '"canonical-total-return-9.9.9"'],
-      ["corporateActions", '"corporate-action-contract-1.0.0"', '"corporate-action-contract-9.9.9"'], ["benchmark", '"benchmark-contract-1.0.0"', '"benchmark-contract-9.9.9"']]) {
+    for (const [name, from, to] of [["totalReturn", '"canonical-total-return-1.1.0"', '"canonical-total-return-9.9.9"'],
+      ["corporateActions", '"corporate-action-contract-1.1.0"', '"corporate-action-contract-9.9.9"'], ["benchmark", '"benchmark-contract-1.0.0"', '"benchmark-contract-9.9.9"']]) {
       assert.ok(orig.includes(from), name);
       writeFileSync(src, orig.replace(from, to));
       const fp = fingerprint();

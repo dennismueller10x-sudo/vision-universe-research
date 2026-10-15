@@ -59,6 +59,38 @@
                       den Daten und wird nicht geschaetzt
                       (terminal: DELISTING_PROCEEDS_UNKNOWN).
 
+   NICHT GEMELDETER REVERSE SPLIT (corporate-action-contract-1.1.0, V4-D1)
+
+     Die Gegenprobe oben erkennt einen fehlenden Split nur, wenn die
+     Anbieterspalte ihn zeigt. Hat der Anbieter den Split ebenfalls nicht
+     (Splitfaktor 1 UND adjustedClose springt mit dem Rohkurs), lief der
+     Sprung bisher als Marktbewegung durch. Ein Reverse Split hat aber eine
+     eigene Datensignatur, die eine Kursbewegung nicht hat - und erst die
+     Kombination zaehlt, nie die Groesse der Rendite allein:
+       1. kein gemeldetes Ereignis an diesem Tag (Splitfaktor 1, keine Dividende)
+       2. der Rohschluss liegt beim k-fachen des Vortags, k ein ueblicher
+          Split-Kurs (2..1000 : 1), Abweichung hoechstens 25 %
+       3. schon die Eroeffnung liegt beim k-fachen (der Sprung passiert ueber
+          Nacht, nicht im Handel), dieselbe Toleranz
+       4. das Stueckvolumen faellt umgekehrt: unter dem Median der vorigen
+          bis zu 20 Kerzen UND hoechstens 3/k davon (eine Nachricht treibt das
+          Volumen hoch, ein Reverse Split teilt die Stueckzahl durch k; ein
+          Kurs, der sich bei gleichem Volumen verdoppelt, ist kein Split)
+     Fehlt Eroeffnung oder Volumen, ist die Signatur nicht pruefbar und es
+     bleibt beim bisherigen Verhalten. Erfuellt ein Tag alle vier Punkte:
+     SPLIT_SUSPECTED_UNDECLARED. Die Reihe wird NICHT still korrigiert: ab
+     diesem Tag ist sie nicht rekonstruierbar (Policy HOLD), bis eine
+     Corporate-Action-Quelle den Split bestaetigt.
+
+     Eine Einzelkerze, die um mindestens das 5-fache springt und am
+     naechsten Tag auf hoechstens 10 % an den alten Stand zurueckfaellt,
+     ohne Ereignis an beiden Tagen, ist ein Fehlkurs des Anbieters:
+     PRICE_SPIKE_REVERTED, ab dem Fehlkurs (erkannt am Folgetag).
+
+     Ein Sprung um das 10-fache oder mehr ohne Ereignis und ohne Signatur
+     wird gezaehlt (events.unresolvedDiscontinuities) und nicht gesperrt:
+     eine grosse Rendite allein beweist keinen Datenfehler.
+
    Widerspruechliche Angaben (Split <= 0 oder ausserhalb 1:1000..1000:1,
    negative Dividende, Dividende ueber dem Vortageskurs, Ereignistag mit
    einer Bruttorendite ausserhalb 0,4..2,5) sind kein Ereignis, sondern ein
@@ -90,8 +122,8 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var VERSION = "canonical-total-return-1.0.0";
-  var CORPORATE_ACTION_CONTRACT = "corporate-action-contract-1.0.0";
+  var VERSION = "canonical-total-return-1.1.0";
+  var CORPORATE_ACTION_CONTRACT = "corporate-action-contract-1.1.0";
   var BENCHMARK_CONTRACT = "benchmark-contract-1.0.0";
 
   var CONFIG = {
@@ -109,7 +141,18 @@
     suspectedSplitMove: 0.30,
     splitRatios: [2, 3, 4, 5, 6, 7, 8, 10, 20, 1.5],
     shiftWindow: 3,
-    maxUnexplainedDrift: 0.005     // kumuliert, unter der Rauschschwelle
+    maxUnexplainedDrift: 0.005,    // kumuliert, unter der Rauschschwelle
+    /* Nicht gemeldeter Reverse Split (1.1.0): uebliche Verhaeltnisse
+       N:1, wie sie Emittenten ankuendigen. */
+    undeclaredSplitRatios: [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 100,
+                            120, 125, 150, 200, 250, 300, 400, 500, 1000],
+    undeclaredSplitTolerance: 1.25,  // Schluss und Eroeffnung je hoechstens 25 % neben k
+    undeclaredSplitVolumeBase: 20,   // Kerzen fuer den Volumenmedian davor
+    undeclaredSplitVolumeMinBase: 5, // mindestens so viele Kerzen mit Volumen
+    undeclaredSplitActivity: 3,      // Stueckvolumen hoechstens 3/k des Medians
+    spikeMinRatio: 5,                // Fehlkurs: mindestens 5-facher Sprung ...
+    spikeRevertTolerance: 1.10,      // ... und am Folgetag auf 10 % zurueck
+    unresolvedJumpRatio: 10          // nur gezaehlt
   };
 
   var REASON_BUCKET = {
@@ -117,6 +160,8 @@
     DIVIDEND_FIELD_MISSING: "REJECTED_DIVIDEND_GAP",
     SPLIT_MISSING: "REJECTED_SPLIT_GAP",
     SPLIT_SUSPECTED: "REJECTED_SPLIT_GAP",
+    SPLIT_SUSPECTED_UNDECLARED: "REJECTED_SPLIT_GAP",
+    PRICE_SPIKE_REVERTED: "REJECTED_OTHER",
     SPLIT_FACTOR_FIELD_MISSING: "REJECTED_SPLIT_GAP",
     IDENTITY_UNCERTAIN: "REJECTED_IDENTITY",
     LISTING_DISCONTINUITY: "REJECTED_IDENTITY"
@@ -140,6 +185,52 @@
       if (Math.abs(ratio - 1 / r) * r <= 0.04) return true;
     }
     return false;
+  }
+
+  function noAction(b) {
+    return isNum(b.splitFactor) && Math.abs(b.splitFactor - 1) <= 1e-9 && isNum(b.dividend) && b.dividend === 0;
+  }
+
+  /**
+   * Signatur eines nicht gemeldeten Reverse Splits am Tag i (nur Tage
+   * <= i werden gelesen: kausal). null, wenn eine Bedingung fehlt oder
+   * nicht pruefbar ist.
+   */
+  function undeclaredReverseSplitSignature(bars, i) {
+    var cur = bars[i], prev = bars[i - 1];
+    if (!cur || !prev || !noAction(cur) || !(prev.close > 0) || !(cur.close > 0)) return null;
+    var r = cur.close / prev.close, tol = Math.log(CONFIG.undeclaredSplitTolerance);
+    if (r < 1) return null;
+    var k = null, best = Infinity;
+    for (var j = 0; j < CONFIG.undeclaredSplitRatios.length; j++) {
+      var dev = Math.abs(Math.log(r / CONFIG.undeclaredSplitRatios[j]));
+      if (dev < best) { best = dev; k = CONFIG.undeclaredSplitRatios[j]; }
+    }
+    if (!(best <= tol)) return null;
+    if (!isNum(cur.open) || !(cur.open > 0)) return null;
+    var o = cur.open / prev.close;
+    if (!(Math.abs(Math.log(o / k)) <= tol)) return null;
+    if (!isNum(cur.volume) || !(cur.volume >= 0)) return null;
+    var vols = [];
+    for (var m = i - 1; m >= 0 && vols.length < CONFIG.undeclaredSplitVolumeBase; m--) {
+      if (isNum(bars[m].volume) && bars[m].volume > 0) vols.push(bars[m].volume);
+    }
+    if (vols.length < CONFIG.undeclaredSplitVolumeMinBase) return null;
+    vols.sort(function (x, y) { return x - y; });
+    var base = quantile(vols, 0.5), vr = cur.volume / base;
+    if (!(vr < 1 && vr <= CONFIG.undeclaredSplitActivity / k)) return null;
+    return { conventionalRatio: k, rawRatio: round(r, 4), openRatio: round(o, 4), volumeRatio: round(vr, 4) };
+  }
+
+  /** Fehlkurs: Tag i-1 springt mindestens 5-fach, Tag i kehrt zurueck (beide ohne Ereignis). */
+  function revertedSpike(bars, i) {
+    if (i < 2) return null;
+    var a = bars[i - 2], b = bars[i - 1], c = bars[i];
+    if (!noAction(b) || !noAction(c) || !(a.close > 0) || !(b.close > 0) || !(c.close > 0)) return null;
+    var r1 = b.close / a.close, r2 = c.close / b.close;
+    if (!(Math.abs(Math.log(r1)) >= Math.log(CONFIG.spikeMinRatio))) return null;
+    if (!(Math.abs(Math.log(r1 * r2)) <= Math.log(CONFIG.spikeRevertTolerance))) return null;
+    return { date: day(b.date), spikeRatio: round(r1, 4), revertRatio: round(r2, 4) };
   }
 
   function quantile(sorted, q) {
@@ -189,7 +280,7 @@
 
     /* 1. Ereignisse pruefen und Bruttorenditen bilden. */
     var gross = new Float64Array(n), price = new Float64Array(n);
-    var events = { splits: 0, reverseSplits: 0, dividends: 0, specialDividends: 0, splitWithDividend: 0 };
+    var events = { splits: 0, reverseSplits: 0, dividends: 0, specialDividends: 0, splitWithDividend: 0, unresolvedDiscontinuities: 0 };
     var gaps = [];
     gross[0] = 1; price[0] = 1;
     for (i = 1; i < n; i++) {
@@ -226,6 +317,17 @@
     /* 2. Gegenprobe gegen die Anbieterspalte. */
     var cc = crossCheck(bars, gross);
     if (cc.blocking) return unavailable(cc.blocking.reason, { date: cc.blocking.date, events: events, crossCheck: cc.summary });
+    /* 2b. Nicht gemeldeter Reverse Split und Fehlkurs (1.1.0) - nach der
+       Gegenprobe, damit ein Split, den der Anbieter kennt, als
+       SPLIT_MISSING (unser Input fehlt) erscheint. Der frueheste Befund gilt. */
+    for (i = 1; i < n; i++) {
+      var spike = revertedSpike(bars, i);
+      if (spike) return unavailable("PRICE_SPIKE_REVERTED", { date: spike.date, spikeRatio: spike.spikeRatio, revertRatio: spike.revertRatio, events: events });
+      var sig = undeclaredReverseSplitSignature(bars, i);
+      if (sig) return unavailable("SPLIT_SUSPECTED_UNDECLARED", Object.assign({ date: day(bars[i].date), events: events }, sig));
+      if (noAction(bars[i]) && bars[i - 1].close > 0 &&
+          Math.abs(Math.log(bars[i].close / bars[i - 1].close)) >= Math.log(CONFIG.unresolvedJumpRatio)) events.unresolvedDiscontinuities++;
+    }
     if (!cc.summary.available && gaps.length) return unavailable("TRADING_GAP_UNVERIFIED", { gaps: gaps.length, firstGap: gaps[0], events: events });
     if (!cc.summary.available) {
       /* Ohne Anbieterspalte bleibt nur der Rohkurs: springt er wie ein
@@ -362,7 +464,7 @@
                 reasons: {}, crossCheck: { compared: 0, matchingTitles: 0, conflictingTitles: 0, notAvailable: 0,
                   medianAbsError: null, p95AbsError: null, maxAbsError: null, levelP95: null, levelMax: null,
                   dividendEvents: 0, dividendParity: 0, dividendParityShare: null, splitEvents: 0, splitParity: 0, splitParityShare: null },
-                events: { splits: 0, reverseSplits: 0, dividends: 0, specialDividends: 0, splitWithDividend: 0 } };
+                events: { splits: 0, reverseSplits: 0, dividends: 0, specialDividends: 0, splitWithDividend: 0, unresolvedDiscontinuities: 0 } };
     var med = [], p95 = [], mx = [], lvl = [];
     results.forEach(function (r) {
       if (r.reconstructed) out.TOTAL_RETURN_RECONSTRUCTED++;
@@ -403,7 +505,8 @@
 
   var api = { VERSION: VERSION, CORPORATE_ACTION_CONTRACT: CORPORATE_ACTION_CONTRACT, BENCHMARK_CONTRACT: BENCHMARK_CONTRACT,
               CONFIG: CONFIG, REASON_BUCKET: REASON_BUCKET, bucketOf: bucketOf,
-              reconstruct: reconstruct, summarize: summarize, contractVersions: contractVersions };
+              reconstruct: reconstruct, summarize: summarize, contractVersions: contractVersions,
+              undeclaredReverseSplitSignature: undeclaredReverseSplitSignature, revertedSpike: revertedSpike };
   if (isNode) module.exports = api;
   else global.VUCanonicalTotalReturn = api;
 })(typeof window !== "undefined" ? window : globalThis);
