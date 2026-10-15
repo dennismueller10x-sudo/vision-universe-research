@@ -1,6 +1,7 @@
 """Explicit controlled test only. Personal data stays in runner memory, never logs/artifacts."""
 import json,os,time,urllib.parse,urllib.request,urllib.error
 from pathlib import Path
+from newsletter_mail import mail_source
 ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';API='https://api.brevo.com/v3'
 
 def run():
@@ -121,7 +122,7 @@ def run():
     mutation('/contacts/lists/'+str(test_list)+'/contacts/add','POST',{'ids':[contact['id']]})
     rows=records(test_list)
     if len(rows)!=1 or rows[0]['id']!=contact['id'] or rows[0]['id'] in protected:raise ValueError('Unsafe test recipients')
-    html=Path(__file__).resolve().parents[1].joinpath('mail/newsletter-test-confirmed.html').read_text()
+    html=mail_source('newsletter-test-confirmed.html')
     if '{{ unsubscribe }}' not in html:raise ValueError('Native unsubscribe link missing')
     campaign=mutation('/emailCampaigns','POST',{'name':name,'type':'classic','sender':{'id':senders[0]},'subject':'Deine Testanmeldung ist bestätigt – kontrollierter Abmeldetest','htmlContent':html,'recipients':{'listIds':[test_list]},'inlineImageActivation':False}).get('id')
     if type(campaign) is not int:raise ValueError('Test campaign not created')

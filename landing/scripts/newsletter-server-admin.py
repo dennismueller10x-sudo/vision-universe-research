@@ -1,6 +1,7 @@
 """Isolated manual operator. No send, contact-write, WAF, DNS or billing endpoint."""
 import base64,hashlib,json,os,re,secrets,subprocess,time,urllib.error,urllib.request,urllib.parse
 from pathlib import Path
+from newsletter_mail import mail_source
 BREVO='https://api.brevo.com/v3';CF='https://api.cloudflare.com/client/v4'
 NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='vu-newsletter-api-doi-v1'
 SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
@@ -149,7 +150,7 @@ def run():
     else:raise ValueError('Template pagination incomplete')
     matches=[t for t in templates if t.get('name')==NAME]
     if len(matches)>1:raise ValueError('Duplicate API DOI template')
-    html=Path(__file__).resolve().parents[1].joinpath('mail/newsletter-api-doi.html').read_text()
+    html=mail_source('newsletter-api-doi.html')
     if '{{ params.DOIurl }}' not in html or '{{ doubleoptin }}' in html:raise ValueError('Wrong API template link')
     if operation=='setup' and not matches:
         if not report['free_plan'] or len(sender)!=1 or not all(report['domain_flags'].values()) or not report['smtp_suppression_readable'] or not report['tag_budget_readable']:raise ValueError('Brevo setup prerequisites')
