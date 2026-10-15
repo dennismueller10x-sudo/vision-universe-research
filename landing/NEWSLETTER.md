@@ -101,11 +101,11 @@ Observer 38722376438 wurde am 15.10. um 11:51 UTC durch einen Ereignis-Leseaufru
 Nur im gültig authentifizierten Betreiber-Test führt eine bereits vorhandene Adresse zu einer erklärenden **409**-Rückmeldung: eine neue kontrollierte Adresse ist erforderlich; keine DOI-Mail angefordert und kein vorhandener Kontakt geändert. Öffentliche Antworten bleiben neutral, ohne Auskunft zum Kontaktbestand. Das ist eine zusätzliche Testdiagnose, kein Nachweis, dass die vom Betreiber aktuell eingegebene Adresse vorhanden war.
 
 Ein explizites erneutes Öffnen des vollständigen privaten Fragment-Links im selben Browserfenster setzt nun den beendeten **Client**-Zustand zurück und prüft den Zugang erneut. Zuvor blieben `finished` und damit der Button auch nach erneutem gültigem Link gesperrt. Ohne einen weiteren bewussten Formularklick wird keine Anmeldung gesendet. Serverseitige Reservierungen, Sperren und Wiederholungsschutz werden nicht gelöscht oder umgangen. Nur ein Browser-Neuladen allein reaktiviert keinen Zugang. Chromium/WebKit-Regression prüft Wiederöffnung nach abgeschlossener Anfrage ohne zusätzlichen POST.
-# Laufzeitdiagnose des kontrollierten Tests (15. Oktober)
+
+## Laufzeitdiagnose des kontrollierten Tests (15. Oktober)
 
 Der erneute Betreiber-Versuch endete mit der generischen serverseitigen Fehlermeldung; ein Mail-Eingang ist nicht belegt. Der lesende [Audit 38759599700](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38759599700) meldet keine DOI-Ereignisse für Vorlage 8 und unveränderte Bestandsobjekte: Liste 4 **134**, Liste 5 **0**, Liste 6 **2**. Die Abweichung zum historischen Import von 135 ist ungeklärt; keinen Kontakt automatisch wieder aufnehmen.
 
 `POST /api/newsletter/test-diagnostics` ist ausschließlich mit dem gültigen privaten Betreiberzugang, gleicher Herkunft und JSON-Eingabe erreichbar. Die Diagnose führt dieselben vorgelagerten Brevo-GETs aus und prüft den tatsächlichen Edge-Cache mit einem konstanten kurzlebigen Testwert. Sie sendet keine Mail, setzt keine Versandreservierung und bindet den Testzugang nicht an eine Adresse. Die Antwort enthält nur feste Phasenbezeichnungen, HTTP-Status und Statusflags, keine Adressen, Schlüssel, Provider-Rohdaten oder freien Fehlermeldungen. Private fehlgeschlagene Anmeldungen nennen dieselben sicheren Phasen; öffentliche Antworten bleiben allgemein. Diagnoseantworten werden nicht gespeichert oder als Actions-Artefakt hochgeladen.
 
 Der allgemeine Zugang bleibt geschlossen. Diese Diagnose ist kein erfolgreicher DOI-, Zustell- oder Abmeldenachweis.
-
