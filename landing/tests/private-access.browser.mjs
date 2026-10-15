@@ -58,6 +58,11 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
       await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);assert.ok(accessCalls>=7);
       assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
       const bounds=await page.locator('#signup-status').boundingBox();assert.ok(bounds.y>=0&&bounds.y+bounds.height<=844,'result must be visible after a mobile tap');
+      // Reopening the original link in the same webview does not reload JS.
+      // It must rearm the button after validation, without resending anything.
+      await page.evaluate(t=>location.hash='vu-test='+t,token);
+      await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true'&&!document.querySelector('#newsletter-form button').disabled);
+      assert.equal(posts,1);assert.equal(await page.locator('button[type=submit]').innerText(),'Newsletter abonnieren');
       await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);
       assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);assert.equal(await context.cookies().then(c=>c.length),0);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);
