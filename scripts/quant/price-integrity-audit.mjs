@@ -291,7 +291,7 @@ export async function rebuildCore(P, after, binding, makeReader, o) {
   fs.writeFileSync(path.join(o.private, 'rebuild.json'), JSON.stringify(priv), { mode: 0o600 });
   const tally = (rows, k) => rows.reduce((a, r) => inc(a, r[k] ?? 'NONE'), {});
   const f83 = fate.filter((f) => f.in83);
-  const pub = { schema: 'quant-price-integrity-rebuild-1.0.0', stage: 'AFTER (canonical-total-return-1.1.0, corporate-action-contract-1.1.0)', runId: process.env.GITHUB_RUN_ID ?? null, codeCommit: process.env.GITHUB_SHA ?? null,
+  const pub = { schema: 'quant-price-integrity-rebuild-1.0.0', stage: 'AFTER (canonical-total-return-1.2.0, corporate-action-contract-1.2.0)', runId: process.env.GITHUB_RUN_ID ?? null, codeCommit: process.env.GITHUB_SHA ?? null,
     capture: { dataFingerprint: binding.dataFingerprint, normalizedPartListSha256: binding.normalizedPartListSha256, normalizedManifestSha256: binding.normalizedManifestSha256, normalizedInputsSha256: binding.normalizedInputsSha256, sourceObjectSetSha256: binding.sourceObjectSetSha256, securities: binding.securities,
       sameSourceObjectsAsBefore: binding.sourceObjectSetSha256 === pop.captureBinding.sourceObjectSetSha256, sameReadReceiptsAsBefore: binding.readReceiptSetSha256 === pop.captureBinding.readReceiptSetSha256 },
     coverage: { before: pop.beforeCoverage, after: afterCov },

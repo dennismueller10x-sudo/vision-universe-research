@@ -104,7 +104,7 @@ test("SPY total return is AVAILABLE only when the same canonical engine reconstr
   const ok = [bar("2024-01-02", 100), bar("2024-01-03", 99.5, 0.5), bar("2024-01-04", 100)];
   const r = totalReturnState(ok);
   assert.equal(r.state, "AVAILABLE", JSON.stringify(r));
-  assert.equal(r.contract, "canonical-total-return-1.1.0");
+  assert.equal(r.contract, "canonical-total-return-1.2.0");
   assert.equal(r.benchmarkContract, "benchmark-contract-1.0.0");
   assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101)]).reason, "BENCHMARK_DIVIDENDS_MISSING", "ein Vergleichsmassstab ohne erfasste Ausschuettung ist unvollstaendig");
   assert.equal(totalReturnState([bar("2024-01-02", 100), bar("2024-01-03", 101, null)]).reason, "DIVIDEND_FIELD_MISSING");
@@ -154,7 +154,10 @@ function signalFixture(t, { spyCut = 0, spyGap = false, spyMissingDividend = fal
 test("total return on both sides: the study switches to TOTAL_RETURN and publishes the before/after comparison", (t) => {
   const s = signalFixture(t);
   assert.equal(s.returnType, "TOTAL_RETURN");
-  assert.equal(s.source.titles, 60, "der eingeschmuggelte SPY zaehlt nicht als Titel");
+  /* 59: der eingeschmuggelte SPY zaehlt nicht als Titel; ref_AGX faellt seit
+     corporate-action-contract-1.2.0 wegen eines nicht gemeldeten Reverse Splits
+     (1995, exakt 25x ueber Nacht) aus der Gesamtrendite heraus. */
+  assert.equal(s.source.titles, 59, "der eingeschmuggelte SPY zaehlt nicht als Titel");
   assert.equal(s.source.spyTotalReturn.state, "PASS");
   assert.match(s.source.benchmark, /BENCHMARK_REFERENCE/);
   assert.equal(SB.studyViolations(s).length, 0, JSON.stringify(SB.studyViolations(s)));

@@ -59,7 +59,7 @@
                       den Daten und wird nicht geschaetzt
                       (terminal: DELISTING_PROCEEDS_UNKNOWN).
 
-   NICHT GEMELDETER REVERSE SPLIT (corporate-action-contract-1.1.0, V4-D1)
+   NICHT GEMELDETER REVERSE SPLIT (corporate-action-contract-1.2.0, V4-D1)
 
      Die Gegenprobe oben erkennt einen fehlenden Split nur, wenn die
      Anbieterspalte ihn zeigt. Hat der Anbieter den Split ebenfalls nicht
@@ -69,13 +69,27 @@
      Kombination zaehlt, nie die Groesse der Rendite allein:
        1. kein gemeldetes Ereignis an diesem Tag (Splitfaktor 1, keine Dividende)
        2. der Rohschluss liegt beim k-fachen des Vortags, k ein ueblicher
-          Split-Kurs (2..1000 : 1), Abweichung hoechstens 25 %
+          Split-Kurs (5..1000 : 1), Abweichung hoechstens 25 % - oder der
+          Sprung ist mindestens 100-fach (k = Sprung; keine Kursbewegung einer
+          Aktie, aber auch kein uebliches Verhaeltnis)
        3. schon die Eroeffnung liegt beim k-fachen (der Sprung passiert ueber
           Nacht, nicht im Handel), dieselbe Toleranz
        4. das Stueckvolumen faellt umgekehrt: unter dem Median der vorigen
           bis zu 20 Kerzen UND hoechstens 3/k davon (eine Nachricht treibt das
           Volumen hoch, ein Reverse Split teilt die Stueckzahl durch k; ein
           Kurs, der sich bei gleichem Volumen verdoppelt, ist kein Split)
+     Zweiter Weg ohne Volumen: Schluss UND Eroeffnung treffen ein uebliches
+     k >= 5 auf 2 % genau (eine Marktbewegung landet nicht ueber Nacht exakt
+     auf 10,00x oder 20,00x; ein Split mit wenig Handel schon).
+
+     Warum k >= 5 (1.2.0, nach dem Audit-Lauf 38766580165 nachgeschaerft, siehe
+     docs/data-quality/price-integrity): Version 1.1.0 liess k = 2 und 3 zu.
+     Gegen die SEC-Aktienzahl als unabhaengigen Beleg waren dort 51 von 53
+     belegbaren Sperren KEIN Split (Kurssprung um wenige Ticks bei Sub-Penny-
+     Titeln mit zufaellig niedrigem Volumen); ab k = 5 waren es 2 von 11.
+     Reverse Splits zur Einhaltung von Boersen-Mindestkursen liegen ueblich
+     bei 1:5 und darueber. Die Toleranzen selbst sind unveraendert.
+
      Fehlt Eroeffnung oder Volumen, ist die Signatur nicht pruefbar und es
      bleibt beim bisherigen Verhalten. Erfuellt ein Tag alle vier Punkte:
      SPLIT_SUSPECTED_UNDECLARED. Die Reihe wird NICHT still korrigiert: ab
@@ -122,8 +136,8 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var VERSION = "canonical-total-return-1.1.0";
-  var CORPORATE_ACTION_CONTRACT = "corporate-action-contract-1.1.0";
+  var VERSION = "canonical-total-return-1.2.0";
+  var CORPORATE_ACTION_CONTRACT = "corporate-action-contract-1.2.0";
   var BENCHMARK_CONTRACT = "benchmark-contract-1.0.0";
 
   var CONFIG = {
@@ -144,8 +158,10 @@
     maxUnexplainedDrift: 0.005,    // kumuliert, unter der Rauschschwelle
     /* Nicht gemeldeter Reverse Split (1.1.0): uebliche Verhaeltnisse
        N:1, wie sie Emittenten ankuendigen. */
-    undeclaredSplitRatios: [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 100,
+    undeclaredSplitRatios: [5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 100,
                             120, 125, 150, 200, 250, 300, 400, 500, 1000],
+    undeclaredSplitOutOfRange: 100,  // ab hier: k = Sprung (kein ueblicher Kurs noetig)
+    undeclaredSplitExact: 1.02,      // zweiter Weg: Schluss und Eroeffnung auf 2 % an k
     undeclaredSplitTolerance: 1.25,  // Schluss und Eroeffnung je hoechstens 25 % neben k
     undeclaredSplitVolumeBase: 20,   // Kerzen fuer den Volumenmedian davor
     undeclaredSplitVolumeMinBase: 5, // mindestens so viele Kerzen mit Volumen
@@ -206,10 +222,13 @@
       var dev = Math.abs(Math.log(r / CONFIG.undeclaredSplitRatios[j]));
       if (dev < best) { best = dev; k = CONFIG.undeclaredSplitRatios[j]; }
     }
-    if (!(best <= tol)) return null;
+    var conventional = best <= tol;
+    if (!conventional) { if (r >= CONFIG.undeclaredSplitOutOfRange) { k = r; best = 0; } else return null; }
     if (!isNum(cur.open) || !(cur.open > 0)) return null;
     var o = cur.open / prev.close;
     if (!(Math.abs(Math.log(o / k)) <= tol)) return null;
+    var exact = conventional && best <= Math.log(CONFIG.undeclaredSplitExact) && Math.abs(Math.log(o / k)) <= Math.log(CONFIG.undeclaredSplitExact);
+    if (exact) return { conventionalRatio: k, rawRatio: round(r, 4), openRatio: round(o, 4), volumeRatio: null, path: "EXACT_RATIO_OVERNIGHT" };
     if (!isNum(cur.volume) || !(cur.volume >= 0)) return null;
     var vols = [];
     for (var m = i - 1; m >= 0 && vols.length < CONFIG.undeclaredSplitVolumeBase; m--) {
@@ -218,8 +237,9 @@
     if (vols.length < CONFIG.undeclaredSplitVolumeMinBase) return null;
     vols.sort(function (x, y) { return x - y; });
     var base = quantile(vols, 0.5), vr = cur.volume / base;
-    if (!(vr < 1 && vr <= CONFIG.undeclaredSplitActivity / k)) return null;
-    return { conventionalRatio: k, rawRatio: round(r, 4), openRatio: round(o, 4), volumeRatio: round(vr, 4) };
+    /* Ausserhalb ueblicher Kurse (>= 100x) reicht die Richtung: das Stueckvolumen faellt unter den Median. */
+    if (!(vr < 1 && (!conventional || vr <= CONFIG.undeclaredSplitActivity / k))) return null;
+    return { conventionalRatio: round(k, 4), rawRatio: round(r, 4), openRatio: round(o, 4), volumeRatio: round(vr, 4), path: conventional ? "VOLUME_INVERSE" : "OUT_OF_RANGE_VOLUME_INVERSE" };
   }
 
   /** Fehlkurs: Tag i-1 springt mindestens 5-fach, Tag i kehrt zurueck (beide ohne Ereignis). */

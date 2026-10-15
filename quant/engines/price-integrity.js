@@ -33,7 +33,7 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
   var CTR = isNode ? require("./canonical-total-return.js") : global.VUCanonicalTotalReturn;
-  var VERSION = "price-integrity-1.0.0";
+  var VERSION = "price-integrity-1.1.0";
 
   /* Die Policy. Reihenfolge = Vorrang, wenn ein Tag mehrere Klassen traegt. */
   var POLICY = [
@@ -44,7 +44,7 @@
     { cls: "SPLIT_MISSING_IN_INPUT", outcome: "HOLD", reason: "SPLIT_MISSING", core: "SPLIT_MISSING",
       rule: "Anbieterspalte zeigt einen Split, unser splitFactor nicht (Ingestion)" },
     { cls: "SUSPECTED_UNDECLARED_SPLIT", outcome: "HOLD", reason: "SPLIT_SUSPECTED_UNDECLARED", core: "SPLIT_SUSPECTED_UNDECLARED",
-      rule: "keine Meldung, Rohschluss und Eroeffnung beim k-fachen (k ueblicher Split-Kurs, +-25 %), Stueckvolumen < Median und <= 3/k des Medians" },
+      rule: "keine Meldung; Rohschluss und Eroeffnung beim k-fachen (k ueblicher Split-Kurs >= 5, +-25 %, oder Sprung >= 100x) mit Stueckvolumen < Median und (bei ueblichem k) <= 3/k davon - ODER Schluss und Eroeffnung exakt (2 %) bei k >= 5" },
     { cls: "PROVIDER_SPIKE", outcome: "HOLD", reason: "PRICE_SPIKE_REVERTED", core: "PRICE_SPIKE_REVERTED",
       rule: "Einzelkerze >= 5-fach, Folgetag auf 10 % zurueck, keine Meldung" },
     { cls: "UNRESOLVED_PRICE_DISCONTINUITY", outcome: "ACCEPT", reason: "DISCONTINUITY_COUNTED_NOT_PROVEN", core: "TOTAL_RETURN_RECONSTRUCTED",
@@ -182,10 +182,16 @@
     }
     var up = r >= 1, rr = up ? r : 1 / r;
     var kr = nearestRatio(rr, CTR.CONFIG.undeclaredSplitRatios), match = kr.logDev <= Math.log(1.25);
-    var persists = ev.persistenceRatio !== null && Math.abs(Math.log(ev.persistenceRatio / (up ? kr.k : 1 / kr.k))) <= Math.log(FORENSIC.persistenceTolerance);
+    /* Bestaendig = das neue Niveau bleibt in der Groessenordnung von k (nach Reverse Splits faellt der Kurs oft
+       deutlich; ein Fehlkurs kehrt dagegen ganz zurueck). */
+    var persists = ev.persistenceRatio !== null && (up ? ev.persistenceRatio >= kr.k / 3 && ev.persistenceRatio <= kr.k * FORENSIC.persistenceTolerance
+                                                       : ev.persistenceRatio <= 3 / kr.k && ev.persistenceRatio >= 1 / (kr.k * FORENSIC.persistenceTolerance));
     var sharesInverse = ev.secSharesRatio !== null && Math.abs(Math.log(ev.secSharesRatio * (up ? kr.k : 1 / kr.k))) <= Math.log(FORENSIC.sharesTolerance);
     var providerFollowed = ev.providerFactorStep !== null && Math.abs(ev.providerFactorStep - 1) <= 0.01;
     ev.nearestConventionalRatio = kr.k; ev.persists = persists; ev.secSharesInverse = sharesInverse; ev.providerFactorUnchanged = providerFollowed;
+    if (up && ev.openRatio !== null && ev.openRatio < 2 && ev.volumeRatioDay !== null && ev.volumeRatioDay >= 10 && !sig) {
+      return out("GENUINE_PRICE_MOVE", "MEDIUM", "market move", "x" + round4(r) + " built intraday (open x" + round4(ev.openRatio) + ") on " + round4(ev.volumeRatioDay) + "x volume");
+    }
     var unit = FORENSIC.unitRatios.some(function (u) { return Math.abs(Math.log(rr / u)) <= Math.log(1.1); }) && ev.volumeRatioDay !== null && ev.volumeRatioDay > 0.2;
     var volumeInverse = ev.volumeRatioAfter !== null && ev.volumeRatioAfter < 1 && ev.volumeRatioAfter <= FORENSIC.persistenceTolerance * CTR.CONFIG.undeclaredSplitActivity / kr.k &&
       ev.volumeRatioDay !== null && ev.volumeRatioDay < 1;

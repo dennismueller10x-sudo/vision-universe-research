@@ -1,6 +1,6 @@
 name: Quant price-integrity audit (V4-D1/D2, no performance, private evidence sealed)
 # Reconstructs the V4-D1/D2 error population on the canonical capture of the unchanged core (BEFORE), rebuilds the
-# canonical dataset with the fixed core (AFTER, canonical-total-return-1.1.0), and commits public counts/hashes and
+# canonical dataset with the fixed core (AFTER, canonical-total-return-1.2.0), and commits public counts/hashes and
 # the sealed private case file. The capture/measurement pipeline is the pinned #705 research code (read-only); only
 # quant/engines/canonical-total-return.js is overlaid for AFTER. Runs only with [price-integrity:audit].
 on:
@@ -102,7 +102,7 @@ jobs:
         run: |
           set -euo pipefail
           cp fix/quant/engines/canonical-total-return.js base/quant/engines/canonical-total-return.js
-          grep -q '"canonical-total-return-1.1.0"' base/quant/engines/canonical-total-return.js
+          grep -q '"canonical-total-return-1.2.0"' base/quant/engines/canonical-total-return.js
           export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
           node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/after --public-out "$RUNNER_TEMP/pub/capture-after.json"
       - name: Rebuild comparison (before/after counts, new holds, false-positive check)

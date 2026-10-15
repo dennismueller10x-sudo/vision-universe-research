@@ -1,5 +1,5 @@
 /* =========================================================================
-   PREISINTEGRITAET (corporate-action-contract-1.1.0, price-integrity-1.0.0)
+   PREISINTEGRITAET (corporate-action-contract-1.2.0, price-integrity-1.0.0)
    V4-D1 / V4-D2: nicht gemeldete Reverse Splits, Fehlkurse, hohe Niveaus.
 
    Synthetische Tageskerzen mit Eroeffnung und Stueckvolumen. Die
@@ -118,7 +118,7 @@ test("PI8 Verdopplung bei unveraendertem Volumen ist kein Split (Groesse allein 
 });
 
 test("PI9 >= 10-facher Sprung ohne Signatur (Volumen hoch): gezaehlt, nicht gesperrt, Forensik UNRESOLVED -> ACCEPT", () => {
-  const b = bars(120, { start: 0.2, events: { 60: { jump: 12, volume: 5e7 } } });
+  const b = bars(120, { start: 0.2, events: { 60: { jump: 12.7, volume: 5e7 } } });
   const r = CTR.reconstruct(b, OK);
   assert.equal(r.state, "TOTAL_RETURN_RECONSTRUCTED");
   assert.equal(r.events.unresolvedDiscontinuities, 1);
@@ -128,7 +128,7 @@ test("PI9 >= 10-facher Sprung ohne Signatur (Volumen hoch): gezaehlt, nicht gesp
 });
 
 test("PI10 Fehlkurs (x8, am Folgetag zurueck): PRICE_SPIKE_REVERTED ab dem Fehlkurs, erst am Folgetag erkennbar", () => {
-  const b = bars(120, { events: { 60: { jump: 8, volume: 2e6 }, 61: { jump: 1 / 8 } } });
+  const b = bars(120, { events: { 60: { jump: 8.4, volume: 2e6 }, 61: { jump: 1 / 8.4 } } });
   assert.equal(CTR.reconstruct(b.slice(0, 61), OK).state, "TOTAL_RETURN_RECONSTRUCTED", "am Fehlkurstag selbst noch nicht erkennbar");
   const r = CTR.reconstruct(b, OK);
   assert.equal(r.reason, "PRICE_SPIKE_REVERTED");
@@ -208,7 +208,33 @@ test("PI19 Policy ist vollstaendig: jede Ursache hat einen Ausgang aus ACCEPT/NO
 });
 
 test("PI20 Vertragsversionen: neue Corporate-Action-Regeln aendern den Methodik-Fingerabdruck", () => {
-  assert.deepEqual(CTR.contractVersions(), { totalReturn: "canonical-total-return-1.1.0", corporateActions: "corporate-action-contract-1.1.0", benchmark: "benchmark-contract-1.0.0" });
+  assert.deepEqual(CTR.contractVersions(), { totalReturn: "canonical-total-return-1.2.0", corporateActions: "corporate-action-contract-1.2.0", benchmark: "benchmark-contract-1.0.0" });
   assert.equal(CTR.bucketOf("SPLIT_SUSPECTED_UNDECLARED"), "REJECTED_SPLIT_GAP");
   assert.equal(CTR.bucketOf("PRICE_SPIKE_REVERTED"), "REJECTED_OTHER");
+});
+
+/* 1.2.0 - nach Audit-Lauf 38766580165 (SEC-Aktienzahl als unabhaengiger Beleg: k = 2/3 fast nie ein Split). */
+test("PI21 Sub-Penny-Tickbewegung (0,0035 -> 0,006, Volumen niedrig) ist kein Split (k >= 5)", () => {
+  const b = bars(120, { start: 0.0035, drift: 0, events: { 60: { jump: 0.006 / 0.0035, volume: 2e5 } } });
+  assert.equal(CTR.reconstruct(b, OK).state, "TOTAL_RETURN_RECONSTRUCTED");
+});
+
+test("PI22 exakt 20,00x ueber Nacht trotz hohem Volumen (Split mit Handel am Ereignistag): Weg EXACT_RATIO_OVERNIGHT", () => {
+  const b = bars(120, { start: 0.05, drift: 0, events: { 60: { jump: 20, volume: 5e6 } } });
+  const r = CTR.reconstruct(b, OK);
+  assert.equal(r.reason, "SPLIT_SUSPECTED_UNDECLARED");
+  assert.equal(r.path, "EXACT_RATIO_OVERNIGHT");
+});
+
+test("PI23 2000x ueber Nacht bei fallendem Volumen (ausserhalb jedes Split-Kurses): Weg OUT_OF_RANGE_VOLUME_INVERSE", () => {
+  const b = bars(120, { start: 0.001, events: { 60: { jump: 2000 * 1.07, volume: 1e5 } } });
+  const r = CTR.reconstruct(b, OK);
+  assert.equal(r.reason, "SPLIT_SUSPECTED_UNDECLARED");
+  assert.equal(r.path, "OUT_OF_RANGE_VOLUME_INVERSE");
+});
+
+test("PI24 Intraday-Squeeze (Eroeffnung am Vortag, Schluss x15, Volumen x2000): keine Sperre, Forensik GENUINE_PRICE_MOVE", () => {
+  const b = bars(120, { start: 0.5, events: { 60: { jump: 15.3, open: 1.05, volume: 2e9 } } });
+  assert.equal(CTR.reconstruct(b, OK).state, "TOTAL_RETURN_RECONSTRUCTED");
+  assert.equal(PI.explainDay(b, 60, {}).cause, "GENUINE_PRICE_MOVE");
 });
