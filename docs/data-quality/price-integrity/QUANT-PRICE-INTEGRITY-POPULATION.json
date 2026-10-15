@@ -1,8 +1,8 @@
 {
   "schema": "quant-price-integrity-population-1.0.0",
   "stage": "BEFORE (canonical-total-return-1.0.0)",
-  "runId": "38766580165",
-  "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49",
+  "runId": "38772238376",
+  "codeCommit": "e049f4c8a6198c6cd2f24d8009136675a55c09e9",
   "capture": {
     "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
     "normalizedPartListSha256": "abf9d7212302a7fa90d31eecbd7a8f660f60f9bd8e724107020c730245b888f3",
@@ -34,64 +34,62 @@
   "known83": {
     "cases": 83,
     "byRootCause": {
-      "UNRESOLVED": 32,
-      "UNDECLARED_REVERSE_SPLIT": 16,
+      "UNDECLARED_REVERSE_SPLIT": 23,
       "PROVIDER_SPIKE": 4,
-      "GENUINE_PRICE_MOVE": 26,
-      "CURRENCY_OR_UNIT": 1,
+      "UNRESOLVED": 20,
+      "GENUINE_PRICE_MOVE": 32,
       "DECLARED_SPLIT_INCONSISTENT": 1,
       "STALE_PRICE": 2,
       "DECLARED_SPLIT_DATE_SHIFT": 1
     },
     "byLocus": {
-      "UNKNOWN": 32,
-      "PROVIDER": 25,
-      "NONE": 26
+      "PROVIDER": 31,
+      "UNKNOWN": 20,
+      "NONE": 32
     },
     "byConfidence": {
-      "LOW": 35,
-      "MEDIUM": 32,
-      "HIGH": 16
+      "MEDIUM": 39,
+      "HIGH": 21,
+      "LOW": 23
     },
     "byOutcome": {
-      "ACCEPT": 59,
-      "HOLD": 22,
+      "HOLD": 29,
+      "ACCEPT": 52,
       "QUARANTINE": 2
     },
     "byDiagnosticClassAndCause": {
-      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 32,
-      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT": 16,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT": 23,
       "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE": 4,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 20,
       "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE": 26,
-      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT": 1,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE": 6,
       "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT": 1,
       "UNDECLARED_RAW_JUMP_10X|STALE_PRICE": 2,
       "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_DATE_SHIFT": 1
     },
-    "newCoreHoldsByMonthEnd": 40,
+    "newCoreHoldsByMonthEnd": 36,
     "newCoreReasons": {
-      "SPLIT_SUSPECTED_UNDECLARED": 32,
-      "RECONSTRUCTED": 43,
-      "PRICE_SPIKE_REVERTED": 8
+      "SPLIT_SUSPECTED_UNDECLARED": 34,
+      "RECONSTRUCTED": 47,
+      "PRICE_SPIKE_REVERTED": 2
     }
   },
   "allExtremeMonths": {
     "cases": 2213,
     "byRootCause": {
-      "GENUINE_PRICE_MOVE": 2115,
-      "UNRESOLVED": 43,
-      "UNDECLARED_REVERSE_SPLIT": 39,
+      "GENUINE_PRICE_MOVE": 2138,
+      "UNDECLARED_REVERSE_SPLIT": 31,
       "PROVIDER_SPIKE": 4,
+      "UNRESOLVED": 31,
       "STALE_PRICE": 5,
-      "CURRENCY_OR_UNIT": 3,
+      "CURRENCY_OR_UNIT": 2,
       "DECLARED_SPLIT_INCONSISTENT": 1,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 2,
       "DECLARED_SPLIT_DATE_SHIFT": 1
     },
     "byLocus": {
-      "NONE": 2115,
-      "UNKNOWN": 43,
-      "PROVIDER": 55
+      "NONE": 2138,
+      "PROVIDER": 44,
+      "UNKNOWN": 31
     }
   },
   "adjustedLevelGt1e6": {
@@ -107,12 +105,12 @@
     },
     "firstUndeclaredJumpCause": {
       "NONE": 63,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 5,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 6,
       "DECLARED_SPLIT_DATE_SHIFT": 1,
-      "UNRESOLVED": 4,
+      "UNRESOLVED": 3,
       "STALE_PRICE": 1
     },
-    "newCoreHolds": 6
+    "newCoreHolds": 3
   },
   "dailyRawJumpCensus": {
     "total": 2566,
@@ -120,23 +118,23 @@
       "UP": 1311,
       "DOWN": 1255
     },
-    "coreSignature": 176,
+    "coreSignature": 327,
     "coreSpike": 137,
     "byCause": {
-      "GENUINE_PRICE_MOVE": 1433,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 380,
-      "UNDECLARED_REVERSE_SPLIT": 186,
-      "UNRESOLVED": 411,
-      "CURRENCY_OR_UNIT": 78,
+      "GENUINE_PRICE_MOVE": 1635,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 231,
+      "UNRESOLVED": 309,
+      "UNDECLARED_REVERSE_SPLIT": 274,
+      "CURRENCY_OR_UNIT": 39,
       "PROVIDER_SPIKE": 129,
       "STALE_PRICE": 155,
       "LISTING_CHANGE": 61,
       "DECLARED_SPLIT_DATE_SHIFT": 6
     },
     "byLocus": {
-      "NONE": 1433,
-      "PROVIDER": 934,
-      "UNKNOWN": 411,
+      "NONE": 1635,
+      "PROVIDER": 834,
+      "UNKNOWN": 309,
       "IDENTITY_LISTING_MAPPING": 61
     }
   },
@@ -166,6 +164,6 @@
     "errors": 0,
     "lastError": null
   },
-  "privateSha256": "1b2ef3410cb73989e3e0d39a81844592553eeda1482e0e96abf60797b288a51f",
+  "privateSha256": "de51105e1204fd7f17a0d1a35565a9ac4a1922cae89e8943736f32a53eceb161",
   "performanceCalculated": false
 }
