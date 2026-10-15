@@ -3,7 +3,8 @@ import base64,hashlib,json,os,re,secrets,subprocess,time,urllib.error,urllib.req
 from pathlib import Path
 from newsletter_mail import mail_source
 BREVO='https://api.brevo.com/v3';CF='https://api.cloudflare.com/client/v4'
-NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='vu-newsletter-api-doi-v1'
+NAME='VU | Newsletter | DE | API Double Opt In | v1';TAG='optin'
+LEGACY_TAG='vu-newsletter-api-doi-v1'
 SUBJECT='Bestätige deine Anmeldung zum Vision-Universe-Newsletter'
 RUNTIME=('BREVO_API_KEY','NEWSLETTER_RATE_KEY','NEWSLETTER_DOI_TEMPLATE_ID','NEWSLETTER_STAGE','NEWSLETTER_PUBLIC_ENABLED','NEWSLETTER_PRIVACY_APPROVED','NEWSLETTER_E2E_VERIFIED','NEWSLETTER_TEST_EMAIL','NEWSLETTER_TEST_MODE','NEWSLETTER_FORM_MODE','NEWSLETTER_CONTROLLED_ENABLED','NEWSLETTER_TEST_ACCESS_HASH','NEWSLETTER_TEST_UNTIL')
 POLICY='legal-drafts/newsletter-release-2026-10-14.html'
@@ -40,7 +41,7 @@ def release_prerequisites(operation):
     return proof
 
 def api(origin,path,key,method='GET',body=None):
-    if method!='GET' and not (origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path) or origin==CF and method=='POST' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe/deployments/[a-f0-9-]{36}/retry',path)):
+    if method!='GET' and not (origin==BREVO and method=='PUT' and path=='/smtp/templates/8' and body=={'tag':'optin'} or origin==BREVO and method=='POST' and path=='/smtp/templates' or origin==CF and method=='PATCH' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe',path) or origin==CF and method=='POST' and re.fullmatch(r'/accounts/[a-f0-9]{32}/pages/projects/vision-universe/deployments/[a-f0-9-]{36}/retry',path)):
         raise ValueError('Unapproved mutation')
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self,*args,**kwargs):return None
@@ -70,7 +71,7 @@ def api(origin,path,key,method='GET',body=None):
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main'):raise ValueError('Manual approved branch only')
     operation=os.environ.get('NEWSLETTER_OPERATOR_OPERATION','audit')
-    if operation not in ('audit','setup','controlled','close','public'):raise ValueError('Unknown mode')
+    if operation not in ('audit','setup','controlled','close','public','doi-template-fix'):raise ValueError('Unknown mode')
     if operation in ('controlled','public') and os.environ.get('GITHUB_REF')!='refs/heads/main':raise ValueError('Main-domain release from main only')
     release=release_prerequisites(operation)
     key=os.environ.get('BREVO_API_KEY','')
@@ -162,7 +163,20 @@ def run():
     report['api_template_ids']=[t['id'] for t in matches]
     if matches:
         t=read('/smtp/templates/'+str(matches[0]['id']))
+        if operation=='doi-template-fix':
+            report['doi_template_before']=t.get('doiTemplate') if type(t.get('doiTemplate')) is bool else None
+            if matches[0]['id']!=8 or t.get('id')!=8 or t.get('name')!=NAME or t.get('isActive') is not True or t.get('subject')!=SUBJECT or t.get('tag') not in (LEGACY_TAG,TAG) or ''.join(t.get('htmlContent','').split())!=''.join(html.split()):raise ValueError('Owned DOI template mismatch')
+            if t.get('tag')!=TAG:
+                status,_=api(BREVO,'/smtp/templates/8',key,'PUT',{'tag':TAG})
+                report['doi_template_tag_update_http']=status
+                if status not in (200,204):raise ValueError('DOI tag update rejected')
+            updated=read('/smtp/templates/8')
+            print(json.dumps({'doi_template_fix_readback':{'before':report['doi_template_before'],'after':updated.get('doiTemplate') if type(updated.get('doiTemplate')) is bool else None,'tag_matches':updated.get('tag')==TAG}}),flush=True)
+            report['doi_template_other_fields_unchanged']={k:v for k,v in t.items() if k not in ('tag','doiTemplate','modifiedAt')}=={k:v for k,v in updated.items() if k not in ('tag','doiTemplate','modifiedAt')}
+            if not report['doi_template_other_fields_unchanged']:raise ValueError('Unexpected template mutation')
+            t=updated
         check={'active':t.get('isActive') is True,'api_link':'{{ params.DOIurl }}' in t.get('htmlContent',''),
+               'doi_template':t.get('doiTemplate') is True,
                'source_match_normalized':''.join(t.get('htmlContent','').split())==''.join(html.split()),
                'tag_matches':t.get('tag')==TAG,'subject_matches':t.get('subject')==SUBJECT}
         report['api_template_readback']=check
@@ -198,7 +212,7 @@ def run():
             if len(zone)==1:
                 status,value=api(CF,'/zones/'+zone[0]['id']+'/rulesets/phases/http_ratelimit/entrypoint',token);result['rate_rules_read_http']=status;result['rate_rules_error_codes']=value.get('safe_codes',[])
                 if status==200 and value.get('success'):result['rate_rule_count']=len(value['result'].get('rules',[]))
-    if operation!='audit':
+    if operation not in ('audit','doi-template-fix'):
         if selected is None or not matches or not report['consent_attribute_compatible']:raise ValueError('Pages or consent setup unavailable')
         name,token,path,project=selected;configs=project.get('deployment_configs',{})
         if project.get('name')!='vision-universe' or set(configs)!={'preview','production'}:raise ValueError('Unexpected project')

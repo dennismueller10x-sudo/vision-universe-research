@@ -2,7 +2,7 @@
 export const CONSENT_VERSION='vu-newsletter-v1';
 export const CONSENT_TEXT='Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.';
 export const TEMPLATE_NAME='VU | Newsletter | DE | API Double Opt In | v1';
-export const TEMPLATE_TAG='vu-newsletter-api-doi-v1';
+export const TEMPLATE_TAG='optin';
 export const PENDING='Wenn eine neue Anmeldung möglich ist, erhältst du eine Bestätigungsmail. Bitte prüfe dein Postfach. Erst dein Klick bestätigt die neue Anmeldung.';
 const PUBLIC_ORIGIN='https://www.visionuniverse.de';
 const PREVIEW_ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';
@@ -172,7 +172,7 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         const templateResponse=await checkedProvider('template','/smtp/templates/'+id);
         if(templateResponse.status!==200)throw Error('Template unavailable');
         const template=await templateResponse.json();
-        if(template.name!==TEMPLATE_NAME||template.isActive!==true||template.tag!==TEMPLATE_TAG||!template.htmlContent?.includes('{{ params.DOIurl }}')||!template.htmlContent.includes(CONSENT_TEXT)||template.htmlContent.includes('{{ doubleoptin }}'))throw Error('Template incompatible');
+        if(template.name!==TEMPLATE_NAME||template.isActive!==true||template.doiTemplate!==true||template.tag!==TEMPLATE_TAG||!template.htmlContent?.includes('{{ params.DOIurl }}')||!template.htmlContent.includes(CONSENT_TEXT)||template.htmlContent.includes('{{ doubleoptin }}'))throw Error('Template incompatible');
         const budgetResponse=await checkedProvider('budget','/smtp/statistics/aggregatedReport?days=1&tag='+TEMPLATE_TAG);
         if(budgetResponse.status!==200)throw Error('Budget unavailable');
         const budget=await budgetResponse.json();

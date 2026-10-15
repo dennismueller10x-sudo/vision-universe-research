@@ -18,7 +18,7 @@ export default {async fetch(request){
   }
   if(path==='/v3/smtp/blockedContacts')return json({contacts:[]});
   if(path==='/v3/smtp/statistics/events')return json({});
-  if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT});
+  if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,doiTemplate:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT});
   if(path==='/v3/smtp/statistics/aggregatedReport')return json({requests:0});
   unexpected++;return new Response(null,{status:500});
 }};

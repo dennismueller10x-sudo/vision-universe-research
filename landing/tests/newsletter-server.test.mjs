@@ -14,7 +14,7 @@ function fixture(options={}){
     if(path==='/v3/smtp/blockedContacts')return json({contacts:options.blocked||[]});
     if(path==='/v3/smtp/statistics/events')return json(Object.hasOwn(options,'eventResponse')?options.eventResponse:{events:options.events||[]});
     if(path==='/v3/contacts/attributes')return json({attributes:options.attributes??[{name:'VU_EMAIL_CONSENT',category:'normal',type:'text'}]});
-    if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT,...options.template});
+    if(path==='/v3/smtp/templates/5')return json({name:TEMPLATE_NAME,isActive:true,doiTemplate:true,tag:TEMPLATE_TAG,htmlContent:'{{ params.DOIurl }}'+CONSENT_TEXT,...options.template});
     if(path==='/v3/smtp/statistics/aggregatedReport')return json({requests:options.budget??0});
     if(path==='/v3/contacts/doubleOptinConfirmation'){
       if(options.throwSend)throw Error('Synthetic provider secret/personal details, never surface');
@@ -142,7 +142,7 @@ test('Parallele Wiederholung und unklarer Provider-Ausgang bleiben lokal reservi
 test('Ratenfenster, Budget, unklare Bestandsabfrage und falsche Vorlage stoppen Versand',async()=>{
   const f=fixture();for(let i=0;i<3;i++)await f.handler(f.request('n'+i+'@example.test'),f.env);
   assert.equal((await f.handler(f.request('four@example.test'),f.env)).status,429);assert.equal(f.sends().length,3);
-  for(const options of [{budget:50},{lookupStatus:403},{lookupStatus:302},{lookupStatus:307},{attributes:[]},{attributes:[{name:'VU_EMAIL_CONSENT',category:'normal',type:'boolean'}]},{template:{htmlContent:'{{ doubleoptin }}'}}]){
+  for(const options of [{budget:50},{template:{doiTemplate:false}},{template:{doiTemplate:undefined}},{lookupStatus:403},{lookupStatus:302},{lookupStatus:307},{attributes:[]},{attributes:[{name:'VU_EMAIL_CONSENT',category:'normal',type:'boolean'}]},{template:{htmlContent:'{{ doubleoptin }}'}}]){
     const g=fixture(options);assert.ok([429,503].includes((await g.handler(g.request(),g.env)).status));assert.equal(g.sends().length,0);
   }
   const g=fixture();g.env.NEWSLETTER_DOI_TEMPLATE_ID='4';assert.equal((await g.handler(g.request(),g.env)).status,503);assert.equal(g.sends().length,0);
